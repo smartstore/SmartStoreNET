@@ -36,6 +36,15 @@
 	<table id="pnlForumsEnabled" class="adminContent">
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SignaturesEnabled)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SignaturesEnabled)
+                @Html.ValidationMessageFor(model => model.SignaturesEnabled)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.RelativeDateTimeFormattingEnabled)
             </td>
             <td class="adminData">
@@ -99,6 +108,47 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowCustomersToVoteOnPosts)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.AllowCustomersToVoteOnPosts, Html.CheckBoxFor(x => x.AllowCustomersToVoteOnPosts, new { data_toggler_for = "#pnlForumsEnabled .post-voting" }))
+                @Html.ValidationMessageFor(model => model.AllowCustomersToVoteOnPosts)
+            </td>
+        </tr>
+        <tr class="post-voting">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowGuestsToVoteOnPosts)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.AllowGuestsToVoteOnPosts)
+                @Html.ValidationMessageFor(model => model.AllowGuestsToVoteOnPosts)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ForumEditor)
+            </td>
+            <td class="adminData">
+				@Html.EnumSettingEditorFor(model => model.ForumEditor)
+                @Html.ValidationMessageFor(model => model.ForumEditor)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminSeparator" colspan="2">
+                <hr />
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowSorting)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.AllowSorting)
+                @Html.ValidationMessageFor(model => model.AllowSorting)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.TopicsPageSize)
             </td>
             <td class="adminData">
@@ -122,24 +172,6 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.SearchResultsPageSize)
                 @Html.ValidationMessageFor(model => model.SearchResultsPageSize)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ForumEditor)
-            </td>
-            <td class="adminData">
-				@Html.EnumSettingEditorFor(model => model.ForumEditor)
-                @Html.ValidationMessageFor(model => model.ForumEditor)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SignaturesEnabled)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.SignaturesEnabled)
-                @Html.ValidationMessageFor(model => model.SignaturesEnabled)
             </td>
         </tr>
         <tr>

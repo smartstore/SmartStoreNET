@@ -77,9 +77,9 @@
 
                     navElems.on("click", function (e) {
                         var link = $(this).find(".nav-link");
-                        var opendMenuSelector = $(".nav-item.active .nav-link").data("target");
+                        var openedMenuSelector = $(".nav-item.active .nav-link").data("target");
 
-                        if (opendMenuSelector != link.data("target")) {
+                        if (openedMenuSelector != link.data("target")) {
                             e.preventDefault();
                             closeNow($(".nav-item.active .nav-link"));
                             tryOpen(link);
@@ -134,7 +134,8 @@
                     });
                 }
 
-				function alignDrop(popper, drop, container) {
+                function alignDrop(popper, drop, container) {
+
 					var nav = $(".navbar-nav", container),
 						left,
 						right,
@@ -142,8 +143,15 @@
 						dropWidth = drop.width(),
 						containerWidth = container.width();
 
-					if (!rtl) {
-						left = Math.ceil(popper.position().left + parseInt(nav.css('margin-left')));
+                    if (!rtl) {
+
+                        if (!Modernizr.touchevents) {
+                            left = Math.ceil(popper.position().left + parseInt(nav.css('margin-left')));
+                        }
+                        else {
+                            left = Math.ceil(popper.position().left + nav.position().left);
+                        }
+                        
 						right = "auto";
 
 						if (left < 0) {
@@ -155,8 +163,14 @@
 						}
 					}
 					else {
-						left = "auto";
-						right = Math.ceil(containerWidth - (popper.position().left + popperWidth));
+                        left = "auto";
+
+                        if (!Modernizr.touchevents) {
+                            right = Math.ceil(containerWidth - (popper.position().left + popperWidth));
+                        }
+                        else {
+                            right = Math.ceil(popper.position().right + nav.position().left);
+                        }
 
 						if (right < 0) {
 							right = 0;
@@ -179,14 +193,15 @@
 
 					// jQuery does not accept "!important"
 					drop[0].style.setProperty('left', left, 'important');
-					drop[0].style.setProperty('right', right, 'important');
+                    drop[0].style.setProperty('right', right, 'important');
 				}
 
                 // correct dropdown position
                 if (isSimple) {
-					var event = Modernizr.touchevents ? "click" : "mouseenter";
+                    var event = Modernizr.touchevents ? "click" : "mouseenter";
 
                     navElems.on(event, function (e) {
+                        
 						var navItem = $(this);
 						var targetSelector = navItem.find(".nav-link").data("target");
 						if (!targetSelector)
@@ -201,11 +216,6 @@
 				}
 
                 megamenuContainer.evenIfHidden(function (el) {
-                    var scrollCorrection = null;
-                    var lastVisibleElem = null;
-                    var firstVisibleElem = null;
-                    var isFirstItemVisible = true;
-                    var isLastItemVisible = false;
 
                     megamenuContainer.find('ul').wrap('<div class="nav-slider" style="overflow:hidden; position:relative;" />');
 
@@ -295,28 +305,35 @@
                         return result;
                     }
 
-                    function updateNavState() {
+					function updateNavState() {
                         // updates megamenu status: arrows etc.
-                        var realNavWidth = 0;
+						var navWidth = 0;
+						var realNavWidth = 0;
+						var curMarginStart = 0;
+
                         navElems.each(function (i, el) { realNavWidth += parseFloat($(this).outerWidth(true)); });
+						realNavWidth = Math.floor(realNavWidth);
 
-						var curMarginStart = parseFloat(nav.css(marginX));
+						if (Modernizr.touchevents) {
+							navWidth = nav.width();
+							var offset = nav.position().left;
+                            curMarginStart = rtl ? (offset - 1) * -1 : offset;
+						}
+						else {
+							navWidth = megamenu.width();
+							curMarginStart = parseFloat(nav.css(marginX));	
+						}
 
-                        if (realNavWidth > megamenu.width()) {
-                            // nav items don't fit in the megamenu container: display next arrow 
-                            megamenu.addClass('megamenu-blend--next');
-                        }
+                        // If nav items don't fit in the megamenu container: display next arrow, otherwise hide it. 
+						megamenu.toggleClass('megamenu-blend--next', realNavWidth > megamenu.width());
 
 						if (curMarginStart < 0) {
                             // user has scrolled: show prev arrow 
                             megamenu.addClass('megamenu-blend--prev');
 
-                            // determine whether we're at the end
-                            var endReached = nav.width() >= realNavWidth;
-                            if (endReached)
-                                megamenu.removeClass('megamenu-blend--next')
-                            else
-                                megamenu.addClass('megamenu-blend--next');
+                            // determine whether we reached the end
+							var endReached = navWidth + Math.abs(curMarginStart) >= realNavWidth;
+							megamenu.toggleClass('megamenu-blend--next', !endReached);
                         }
                         else {
                             // we're at the beginning: fade out prev arrow
@@ -326,13 +343,12 @@
 
                     // on touch
                     if (Modernizr.touchevents) {
-                        megamenu.tapstart(function () {
+                        megamenu.tapmove(function () {
                             closeNow($(".nav-item.active .nav-link"));
-                        }).tapend(function () {
-							updateNavState();
+                            updateNavState();
                         });
                     }
-
+                    
                     function onPageResized() {
                     	updateNavState();
 

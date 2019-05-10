@@ -30,7 +30,6 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 		ExportFeatures.CanProjectDescription |
 		ExportFeatures.UsesSkuAsMpnFallback |
 		ExportFeatures.OffersBrandFallback |
-		ExportFeatures.CanIncludeMainPicture |
 		ExportFeatures.UsesSpecialPrice |
 		ExportFeatures.UsesAttributeCombination)]
 	public class GmcXmlExportProvider : ExportProviderBase
@@ -312,7 +311,6 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 						{
 							string category = (gmc == null ? null : gmc.Taxonomy);
 							string productType = product._CategoryPath;
-							string mainImageUrl = product._MainPictureUrl;
 							var price = (decimal)product.Price;
 							var uniqueId = (string)product._UniqueId;
 							var isParent = (bool)product._IsParent;
@@ -320,6 +318,11 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							string gtin = product.Gtin;
 							string mpn = product.ManufacturerPartNumber;
 							var availability = defaultAvailability;
+							List<dynamic> productPictures = product.ProductPictures;
+							var pictureUrls = productPictures
+								.Select(x => (string)x.Picture._FullSizeImageUrl)
+								.Where(x => x.HasValue())
+								.ToList();
 
 							var attributeValues = !isParent && product._AttributeCombinationValues != null
 								? ((ICollection<ProductVariantAttributeValue>)product._AttributeCombinationValues).ToMultimap(x => x.ProductVariantAttribute.ProductAttributeId, x => x)
@@ -366,20 +369,19 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 
 							writer.WriteElementString("link", (string)product._DetailUrl);
 
-							if (mainImageUrl.HasValue())
+							if (pictureUrls.Any())
 							{
-								WriteString(writer, "image_link", mainImageUrl);
-							}
+								WriteString(writer, "image_link", pictureUrls.First());
 
-							if (config.AdditionalImages)
-							{
-								var imageCount = 0;
-								foreach (dynamic productPicture in product.ProductPictures)
+								if (config.AdditionalImages)
 								{
-									string pictureUrl = productPicture.Picture._ImageUrl;
-									if (pictureUrl.HasValue() && (mainImageUrl.IsEmpty() || !mainImageUrl.IsCaseInsensitiveEqual(pictureUrl)) && ++imageCount <= 10)
+									var imageCount = 0;
+									foreach (var url in pictureUrls.Skip(1))
 									{
-										WriteString(writer, "additional_image_link", pictureUrl);
+										if (++imageCount <= 10)
+										{
+											WriteString(writer, "additional_image_link", url);
+										}
 									}
 								}
 							}
@@ -478,16 +480,25 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							}
 
 							var customLabel0 = GetAttributeValue(attributeValues, "custom_label_0", languageId, gmc?.CustomLabel0, null);
-							var customLabel1 = GetAttributeValue(attributeValues, "custom_label_1", languageId, gmc?.CustomLabel1, null);
-							var customLabel2 = GetAttributeValue(attributeValues, "custom_label_2", languageId, gmc?.CustomLabel2, null);
-							var customLabel3 = GetAttributeValue(attributeValues, "custom_label_3", languageId, gmc?.CustomLabel3, null);
-							var customLabel4 = GetAttributeValue(attributeValues, "custom_label_4", languageId, gmc?.CustomLabel4, null);
+                            WriteString(writer, "custom_label_0", gmc.CustomLabel0.NullEmpty());
 
-							++context.RecordsSucceeded;
+                            var customLabel1 = GetAttributeValue(attributeValues, "custom_label_1", languageId, gmc?.CustomLabel1, null);
+                            WriteString(writer, "custom_label_1", gmc.CustomLabel1.NullEmpty());
+
+                            var customLabel2 = GetAttributeValue(attributeValues, "custom_label_2", languageId, gmc?.CustomLabel2, null);
+                            WriteString(writer, "custom_label_2", gmc.CustomLabel2.NullEmpty());
+
+                            var customLabel3 = GetAttributeValue(attributeValues, "custom_label_3", languageId, gmc?.CustomLabel3, null);
+                            WriteString(writer, "custom_label_3", gmc.CustomLabel3.NullEmpty());
+
+                            var customLabel4 = GetAttributeValue(attributeValues, "custom_label_4", languageId, gmc?.CustomLabel4, null);
+                            WriteString(writer, "custom_label_4", gmc.CustomLabel4.NullEmpty());
+
+                            ++context.RecordsSucceeded;
 						}
-						catch (Exception exception)
+						catch (Exception ex)
 						{
-							context.RecordException(exception, entity.Id);
+							context.RecordException(ex, entity.Id);
 						}
 
 						writer.WriteEndElement(); // item

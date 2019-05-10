@@ -1,8 +1,8 @@
-﻿using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Common
 {
@@ -19,5 +19,13 @@ namespace SmartStore.Admin.Models.Common
         public string EntityName { get; set; }
 
         public int EntityId { get; set; }
+    }
+
+    public partial class GenericAttributeValidator : AbstractValidator<GenericAttributeModel>
+    {
+        public GenericAttributeValidator()
+        {
+            RuleFor(x => x.Key).NotEmpty();
+        }
     }
 }

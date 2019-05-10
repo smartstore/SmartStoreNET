@@ -12,7 +12,7 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="fa fa-picture-o"></i>
+            <i class="fa fa-fill-drip"></i>
             @T("Admin.Configuration.Themes")
         </div>
         <div class="options">
@@ -23,7 +23,7 @@
                 <span>@T("Admin.Common.Save")</span>
             </button>
 			<a href='@Url.Action("ReloadThemes", new { storeId = Model.StoreId })' class="btn btn-secondary">
-				<i class="fa fa-refresh"></i>
+				<i class="fa fa-sync"></i>
 				<span>@T("Admin.Configuration.Themes.Reload")</span>
 			</a>
 			<a id="uploadpackage" href="#uploadpackage-window" data-toggle="modal" class="btn btn-secondary" role="button">
@@ -94,7 +94,7 @@
 				
 				<div class="col-auto" style="width: 280px">
 
-					<div class="card card-shadow theme-item@(isActive ? " active" : "")@(isBroken ? " broken" : "")" @Html.Attr("title", theme.Description.EmptyNull(), theme.Description.HasValue())>
+					<div class="card shadow-sm theme-item@(isActive ? " active" : "")@(isBroken ? " broken" : "")" @Html.Attr("title", theme.Description.EmptyNull(), theme.Description.HasValue())>
 						<div class="card-img-top theme-thumbnail" style="background-image: url('@Url.Content(theme.PreviewImageUrl)')"></div>
 
 						<div class="card-body p-3">
@@ -103,7 +103,7 @@
 								@if (theme.BaseTheme.HasValue())
 								{
 									<small class="fs-sm text-muted" title='@T("Admin.Configuration.Themes.IsBasedOn"): @theme.BaseTheme'>
-										<i class="fa fa-@(isBroken ? "chain-broken" : "chain") fa-flip-horizontal"></i>
+										<i class="fa fa-@(isBroken ? "unlink" : "link") fa-flip-horizontal"></i>
 										@theme.BaseTheme
 									</small>
 								}
@@ -134,7 +134,7 @@
 								{
 									<div class="btn-group ml-auto">
 										<a class="btn btn-outline-secondary btn-sm tooltip-toggle" href='@Url.Action("Preview", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' title="@T("Admin.Configuration.Themes.Preview")">
-											<i class="fa fa-fw fa-eye"></i>
+											<i class="far fa-fw fa-eye"></i>
 										</a>
 										@if (theme.IsConfigurable)
 										{

@@ -111,6 +111,7 @@ namespace SmartStore.Services.Authentication.External
                 result.AddError("Account is already assigned");
                 return result;
             }
+
             if (AccountDoesNotExistAndUserIsNotLoggedOn(userFound, userLoggedIn))
             {
                 ExternalAuthorizerHelper.StoreParametersForRoundTrip(parameters);
@@ -123,21 +124,19 @@ namespace SmartStore.Services.Authentication.External
                     var details = new RegistrationDetails(parameters);
                     var randomPassword = CommonHelper.GenerateRandomDigitCode(20);
 
-
                     bool isApproved = _customerSettings.UserRegistrationType == UserRegistrationType.Standard;
                     var registrationRequest = new CustomerRegistrationRequest(currentCustomer, details.EmailAddress,
-                        _customerSettings.UsernamesEnabled ? details.UserName : details.EmailAddress, randomPassword, PasswordFormat.Clear, isApproved);
+                        _customerSettings.CustomerLoginType != CustomerLoginType.Email ? details.UserName : details.EmailAddress, randomPassword, PasswordFormat.Clear, isApproved);
                     var registrationResult = _customerRegistrationService.RegisterCustomer(registrationRequest);
                     if (registrationResult.Success)
                     {
-                        //store other parameters (form fields)
-                        if (!String.IsNullOrEmpty(details.FirstName))
-                            _genericAttributeService.SaveAttribute(currentCustomer, SystemCustomerAttributeNames.FirstName, details.FirstName);
-                        if (!String.IsNullOrEmpty(details.LastName))
-                            _genericAttributeService.SaveAttribute(currentCustomer, SystemCustomerAttributeNames.LastName, details.LastName);
+						// store other parameters (form fields)
+						if (details.FirstName.HasValue())
+							currentCustomer.FirstName = details.FirstName;
+                        if (details.LastName.HasValue())
+							currentCustomer.LastName = details.LastName;
 
-
-                        userFound = currentCustomer;
+						userFound = currentCustomer;
                         _openAuthenticationService.AssociateExternalAccountWithUser(currentCustomer, parameters);
                         ExternalAuthorizerHelper.RemoveParameters();
 
@@ -154,27 +153,24 @@ namespace SmartStore.Services.Authentication.External
                         switch (_customerSettings.UserRegistrationType)
                         {
                             case UserRegistrationType.EmailValidation:
-                                {
-                                    // email validation message
-                                    _genericAttributeService.SaveAttribute(currentCustomer, SystemCustomerAttributeNames.AccountActivationToken, Guid.NewGuid().ToString());
-									_messageFactory.SendCustomerEmailValidationMessage(currentCustomer, _workContext.WorkingLanguage.Id);
+                            {
+                                // email validation message
+                                _genericAttributeService.SaveAttribute(currentCustomer, SystemCustomerAttributeNames.AccountActivationToken, Guid.NewGuid().ToString());
+								_messageFactory.SendCustomerEmailValidationMessage(currentCustomer, _workContext.WorkingLanguage.Id);
 
-                                    // result
-                                    return new AuthorizationResult(OpenAuthenticationStatus.AutoRegisteredEmailValidation);
-                                }
+                                return new AuthorizationResult(OpenAuthenticationStatus.AutoRegisteredEmailValidation);
+                            }
                             case UserRegistrationType.AdminApproval:
-                                {
-                                    // result
-                                    return new AuthorizationResult(OpenAuthenticationStatus.AutoRegisteredAdminApproval);
-                                }
+                            {
+                                return new AuthorizationResult(OpenAuthenticationStatus.AutoRegisteredAdminApproval);
+                            }
                             case UserRegistrationType.Standard:
-                                {
-									// send customer welcome message
-									_messageFactory.SendCustomerWelcomeMessage(currentCustomer, _workContext.WorkingLanguage.Id);
+                            {
+								// send customer welcome message
+								_messageFactory.SendCustomerWelcomeMessage(currentCustomer, _workContext.WorkingLanguage.Id);
 
-                                    //result
-                                    return new AuthorizationResult(OpenAuthenticationStatus.AutoRegisteredStandard);
-                                }
+                                return new AuthorizationResult(OpenAuthenticationStatus.AutoRegisteredStandard);
+                            }
                             default:
                                 break;
                         }
@@ -209,11 +205,11 @@ namespace SmartStore.Services.Authentication.External
                 _openAuthenticationService.AssociateExternalAccountWithUser(userLoggedIn, parameters);
             }
 
-            //migrate shopping cart
+            // migrate shopping cart
             _shoppingCartService.MigrateShoppingCart(_workContext.CurrentCustomer, userFound ?? userLoggedIn);
-            //authenticate
+            // authenticate
             _authenticationService.SignIn(userFound ?? userLoggedIn, false);
-            //activity log
+            // activity log
             _customerActivityService.InsertActivity("PublicStore.Login", _localizationService.GetResource("ActivityLog.PublicStore.Login"),
                 userFound ?? userLoggedIn);
 

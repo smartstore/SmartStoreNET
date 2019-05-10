@@ -233,7 +233,7 @@
 		border-radius: $btn-border-radius 0 0 $btn-border-radius;
 	}
 
-	#instasearch-drop {
+	.instasearch-drop {
 		right: 0;
 		left: auto;
 	}
@@ -478,9 +478,7 @@
 
 	#offcanvas-menu {
 		.menubar-link,
-		.manufacturer-container .ocm-item,
-		.category-container .ocm-item {
-
+		.ocm-item {
 			.ocm-link {
 				padding: 1rem 2rem 1rem 2.5rem;
 			}
@@ -489,6 +487,12 @@
 				right: auto;
 				left: 1rem;
 				content: "\f104";
+			}
+
+			&.selected:before,
+			&.expanded:before {
+				left: auto;
+				right: -1px;
 			}
 		}
 
@@ -514,6 +518,25 @@
 				}
 			}
 		}
+
+		.layer {
+			transform: translateX(30%);
+
+			&.show {
+				transform: translateX(0);
+			}
+
+			&.show ~ .layer {
+				transform: translateX(-100%);
+			}
+		}
+	}
+
+	&.wkit #offcanvas-menu .layer {
+		// Workaround for Chrome in RTL mode: https://stackoverflow.com/questions/28928992/offcanvas-menu-not-working-with-direction-rtl
+		// Reducing the transition duration from 300ms to 50ms seems to help, at least it is hard notice the glitch.
+		// Completely turning off the transition suppresses the transitionEnd event, which we actually need.
+		transition-duration: 0.05s;
 	}
 
 

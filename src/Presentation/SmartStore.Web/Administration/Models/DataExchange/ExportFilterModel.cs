@@ -127,11 +127,15 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.IsActiveSubscriber")]
 		public bool? IsActiveSubscriber { get; set; }
 
-		#endregion
+        [SmartResourceDisplayName("Admin.DataExchange.Export.Filter.WorkingLanguageId")]
+        public int? WorkingLanguageId { get; set; }
+        public List<SelectListItem> AvailableLanguages { get; set; }
 
-		#region Shopping Cart Items
+        #endregion
 
-		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.ShoppingCartTypeId")]
+        #region Shopping Cart Items
+
+        [SmartResourceDisplayName("Admin.DataExchange.Export.Filter.ShoppingCartTypeId")]
 		public int? ShoppingCartTypeId { get; set; }
 		public List<SelectListItem> AvailableShoppingCartTypes { get; set; }
 

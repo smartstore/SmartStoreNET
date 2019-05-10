@@ -16,6 +16,11 @@ namespace SmartStore.Core.Caching
 			_cache = cache;
 		}
 
+		public void AddRange(IEnumerable<string> items)
+		{
+			base.UnionWith(items);
+		}
+
 		public bool Move(string destinationKey, string item)
 		{
 			if (this.Contains(item))

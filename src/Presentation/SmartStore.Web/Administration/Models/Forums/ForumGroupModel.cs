@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Models.Stores;
-using SmartStore.Admin.Validators.Forums;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using System;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Forums
 {
     [Validator(typeof(ForumGroupValidator))]
-	public class ForumGroupModel : EntityModelBase, ILocalizedModel<ForumGroupLocalizedModel>, IStoreSelector
+	public class ForumGroupModel : EntityModelBase, ILocalizedModel<ForumGroupLocalizedModel>, IStoreSelector, IAclSelector
     {
         public ForumGroupModel()
         {
@@ -31,10 +30,10 @@ namespace SmartStore.Admin.Models.Forums
         [AllowHtml]
         public string Description { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Forums.ForumGroup.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Forums.ForumGroup.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
@@ -42,8 +41,11 @@ namespace SmartStore.Admin.Models.Forums
 		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 
-		public IList<ForumModel> ForumModels { get; set; }
+        public bool SubjectToAcl { get; set; }
+        public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
+        public int[] SelectedCustomerRoleIds { get; set; }
 
+        public IList<ForumModel> ForumModels { get; set; }
 		public IList<ForumGroupLocalizedModel> Locales { get; set; }
     }
 
@@ -63,4 +65,12 @@ namespace SmartStore.Admin.Models.Forums
 		[AllowHtml]
 		public string Description { get; set; }
 	}
+
+    public partial class ForumGroupValidator : AbstractValidator<ForumGroupModel>
+    {
+        public ForumGroupValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
+    }
 }

@@ -14,7 +14,6 @@ using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
-using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
@@ -52,9 +51,7 @@ namespace SmartStore.Web.Controllers
         private readonly IPaymentService _paymentService;
         private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private readonly IOrderService _orderService;
-        private readonly IWebHelper _webHelper;
         private readonly HttpContextBase _httpContext;
-		private readonly ISettingService _settingService;
         private readonly OrderSettings _orderSettings;
         private readonly PaymentSettings _paymentSettings;
         private readonly AddressSettings _addressSettings;
@@ -66,47 +63,54 @@ namespace SmartStore.Web.Controllers
 
 		#region Constructors
 
-		public CheckoutController(IWorkContext workContext, IStoreContext storeContext,
-            IShoppingCartService shoppingCartService, ILocalizationService localizationService, 
-            ITaxService taxService, ICurrencyService currencyService, 
-            IPriceFormatter priceFormatter, IOrderProcessingService orderProcessingService,
-            ICustomerService customerService,  IGenericAttributeService genericAttributeService,
+		public CheckoutController(
+            IWorkContext workContext,
+            IStoreContext storeContext,
+            IShoppingCartService shoppingCartService, 
+            ILocalizationService localizationService, 
+            ITaxService taxService, 
+            ICurrencyService currencyService, 
+            IPriceFormatter priceFormatter, 
+            IOrderProcessingService orderProcessingService,
+            ICustomerService customerService,
+            IGenericAttributeService genericAttributeService,
             ICountryService countryService,
-            IStateProvinceService stateProvinceService, IShippingService shippingService,
+            IStateProvinceService stateProvinceService, 
+            IShippingService shippingService,
 			IPaymentService paymentService, 
 			IOrderTotalCalculationService orderTotalCalculationService,
-            IOrderService orderService, IWebHelper webHelper,
-            HttpContextBase httpContext, IMobileDeviceHelper mobileDeviceHelper,
+            IOrderService orderService,
+            HttpContextBase httpContext,
             OrderSettings orderSettings, 
-            PaymentSettings paymentSettings, AddressSettings addressSettings,
-            ShoppingCartSettings shoppingCartSettings, ShippingSettings shippingSettings,
-			ISettingService settingService, PluginMediator pluginMediator)
+            PaymentSettings paymentSettings,
+            AddressSettings addressSettings,
+            ShoppingCartSettings shoppingCartSettings,
+            ShippingSettings shippingSettings,
+			PluginMediator pluginMediator)
         {
-            this._workContext = workContext;
-			this._storeContext = storeContext;
-            this._shoppingCartService = shoppingCartService;
-            this._localizationService = localizationService;
-            this._taxService = taxService;
-            this._currencyService = currencyService;
-            this._priceFormatter = priceFormatter;
-            this._orderProcessingService = orderProcessingService;
-            this._customerService = customerService;
-            this._genericAttributeService = genericAttributeService;
-            this._countryService = countryService;
-            this._stateProvinceService = stateProvinceService;
-            this._shippingService = shippingService;
-            this._paymentService = paymentService;
-            this._orderTotalCalculationService = orderTotalCalculationService;
-            this._orderService = orderService;
-            this._webHelper = webHelper;
-            this._httpContext = httpContext;
-			this._settingService = settingService;
-            this._orderSettings = orderSettings;
-            this._paymentSettings = paymentSettings;
-            this._addressSettings = addressSettings;
-            this._shippingSettings = shippingSettings;
-            this._shoppingCartSettings = shoppingCartSettings;
-			this._pluginMediator = pluginMediator;
+            _workContext = workContext;
+			_storeContext = storeContext;
+            _shoppingCartService = shoppingCartService;
+            _localizationService = localizationService;
+            _taxService = taxService;
+            _currencyService = currencyService;
+            _priceFormatter = priceFormatter;
+            _orderProcessingService = orderProcessingService;
+            _customerService = customerService;
+            _genericAttributeService = genericAttributeService;
+            _countryService = countryService;
+            _stateProvinceService = stateProvinceService;
+            _shippingService = shippingService;
+            _paymentService = paymentService;
+            _orderTotalCalculationService = orderTotalCalculationService;
+            _orderService = orderService;
+            _httpContext = httpContext;
+            _orderSettings = orderSettings;
+            _paymentSettings = paymentSettings;
+            _addressSettings = addressSettings;
+            _shippingSettings = shippingSettings;
+            _shoppingCartSettings = shoppingCartSettings;
+			_pluginMediator = pluginMediator;
         }
 
         #endregion
@@ -131,19 +135,19 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected CheckoutBillingAddressModel PrepareBillingAddressModel(int? selectedCountryId = null)
         {
+            var customer = _workContext.CurrentCustomer;
             var model = new CheckoutBillingAddressModel();
-            //existing addresses
-            var addresses = _workContext.CurrentCustomer.Addresses.Where(a => a.Country == null || a.Country.AllowsBilling).ToList();
+            
+            // Existing addresses.
+            var addresses = customer.Addresses.Where(a => a.Country == null || a.Country.AllowsBilling).ToList();
             foreach (var address in addresses)
             {
                 var addressModel = new AddressModel();
-                addressModel.PrepareModel(address, 
-                    false, 
-                    _addressSettings);
+                addressModel.PrepareModel(address, false, _addressSettings);
                 model.ExistingAddresses.Add(addressModel);
             }
 
-            //new address
+            // New address.
             model.NewAddress.CountryId = selectedCountryId;
             model.NewAddress.PrepareModel(null,
                 false,
@@ -151,25 +155,27 @@ namespace SmartStore.Web.Controllers
                 _localizationService,
                 _stateProvinceService,
                 () => _countryService.GetAllCountriesForBilling());
+            model.NewAddress.Email = customer?.Email;
+
             return model;
         }
 
         [NonAction]
         protected CheckoutShippingAddressModel PrepareShippingAddressModel(int? selectedCountryId = null)
         {
+            var customer = _workContext.CurrentCustomer;
             var model = new CheckoutShippingAddressModel();
-            //existing addresses
-            var addresses = _workContext.CurrentCustomer.Addresses.Where(a => a.Country == null || a.Country.AllowsShipping).ToList();
+            
+            // Existing addresses.
+            var addresses = customer.Addresses.Where(a => a.Country == null || a.Country.AllowsShipping).ToList();
             foreach (var address in addresses)
             {
                 var addressModel = new AddressModel();
-                addressModel.PrepareModel(address,
-                    false,
-                    _addressSettings);
+                addressModel.PrepareModel(address, false, _addressSettings);
                 model.ExistingAddresses.Add(addressModel);
             }
 
-            //new address
+            // New address.
             model.NewAddress.CountryId = selectedCountryId;
             model.NewAddress.PrepareModel(null,
                 false,
@@ -177,6 +183,8 @@ namespace SmartStore.Web.Controllers
                 _localizationService,
                 _stateProvinceService,
                 () => _countryService.GetAllCountriesForShipping());
+            model.NewAddress.Email = customer?.Email;
+
             return model;
         }
 
@@ -419,36 +427,47 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult Index()
         {
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+			var store = _storeContext.CurrentStore;
+			var customer = _workContext.CurrentCustomer;
+			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
+			if (!cart.Any())
+			{
+				return RedirectToRoute("ShoppingCart");
+			}
 
-			if (cart.Count == 0)
-                return RedirectToRoute("ShoppingCart");
+			if ((customer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
+			{
+				return new HttpUnauthorizedResult();
+			}
 
-            if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                return new HttpUnauthorizedResult();
+            _customerService.ResetCheckoutData(customer, store.Id);
 
-            //reset checkout data
-            _customerService.ResetCheckoutData(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id);
-
-            //validation (cart)
-			var checkoutAttributesXml = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
+            // Validate checkout attributes.
+			var checkoutAttributesXml = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
 			var scWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, true);
-            if (scWarnings.Count > 0)
-                return RedirectToRoute("ShoppingCart");
+			if (scWarnings.Any())
+			{
+				NotifyError(string.Join(Environment.NewLine, scWarnings));
+				return RedirectToRoute("ShoppingCart");
+			}
 
-            //validation (each shopping cart item)
+            // Valiadate each shopping cart item.
             foreach (var sci in cart)
             {
-                var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(_workContext.CurrentCustomer,
+                var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(customer,
                     sci.Item.ShoppingCartType,
                     sci.Item.Product,
 					sci.Item.StoreId,
                     sci.Item.AttributesXml,
                     sci.Item.CustomerEnteredPrice,
                     sci.Item.Quantity,
-                    false, childItems: sci.ChildItems);
-                if (sciWarnings.Count > 0)
-                    return RedirectToRoute("ShoppingCart");
+                    false,
+					childItems: sci.ChildItems);
+
+				if (sciWarnings.Any())
+				{
+					return RedirectToRoute("ShoppingCart");
+				}
             }
 
             return RedirectToAction("BillingAddress");
@@ -457,16 +476,14 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult BillingAddress()
         {
-            //validation
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
 			if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
-            if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
+            if (_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
                 return new HttpUnauthorizedResult();
 
-            //model
             var model = PrepareBillingAddressModel();
             return View(model);
         }
@@ -518,13 +535,12 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult ShippingAddress()
         {
-            //validation
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
 			if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
-            if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
+            if (_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
                 return new HttpUnauthorizedResult();
 
             if (!cart.RequiresShipping())
@@ -534,7 +550,6 @@ namespace SmartStore.Web.Controllers
                 return RedirectToAction("ShippingMethod");
             }
 
-            //model
             var model = PrepareShippingAddressModel();
             return View(model);
         }
@@ -595,37 +610,43 @@ namespace SmartStore.Web.Controllers
         
         public ActionResult ShippingMethod()
         {
-            //validation
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var store = _storeContext.CurrentStore;
+            var customer = _workContext.CurrentCustomer;
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
-			if (cart.Count == 0)
+            if (cart.Count == 0)
+            {
                 return RedirectToRoute("ShoppingCart");
+            }
 
-            if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
+            if (customer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
+            {
                 return new HttpUnauthorizedResult();
+            }
 
             if (!cart.RequiresShipping())
             {
-				_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, null, _storeContext.CurrentStore.Id);
+				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.SelectedShippingOption, null, store.Id);
 
                 return RedirectToAction("PaymentMethod");
             }
-                        
-            var shippingOptions = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, "", _storeContext.CurrentStore.Id).ShippingOptions;
 
-            var checkoutState = _httpContext.GetCheckoutState();
-            if (checkoutState.CustomProperties.ContainsKey("HasOnlyOneActiveShippingMethod"))
-                checkoutState.CustomProperties["HasOnlyOneActiveShippingMethod"] = shippingOptions.Count == 1;
-            else
-                checkoutState.CustomProperties.Add("HasOnlyOneActiveShippingMethod", shippingOptions.Count == 1);
-            
-            if (shippingOptions.Count <= 1 && _shippingSettings.SkipShippingIfSingleOption)
+            var response = _shippingService.GetShippingOptions(cart, customer.ShippingAddress, "", store.Id);
+            var options = response.ShippingOptions;
+            var state = _httpContext.GetCheckoutState();
+
+            if (state.CustomProperties.ContainsKey("HasOnlyOneActiveShippingMethod"))
             {
-                _genericAttributeService.SaveAttribute<ShippingOption>(
-                    _workContext.CurrentCustomer, 
-                    SystemCustomerAttributeNames.SelectedShippingOption, 
-                    shippingOptions.FirstOrDefault(), 
-                    _storeContext.CurrentStore.Id);
+                state.CustomProperties["HasOnlyOneActiveShippingMethod"] = options.Count == 1;
+            }
+            else
+            {
+                state.CustomProperties.Add("HasOnlyOneActiveShippingMethod", options.Count == 1);
+            }
+            
+            if (options.Count <= 1 && _shippingSettings.SkipShippingIfSingleOption && response.Success)
+            {
+                _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedShippingOption, options.FirstOrDefault(), store.Id);
 
 				var referrer = Services.WebHelper.GetUrlReferrer();
 				if (referrer.EndsWith("/PaymentMethod") || referrer.EndsWith("/Confirm"))
@@ -636,14 +657,12 @@ namespace SmartStore.Web.Controllers
 				return RedirectToAction("PaymentMethod");
             }
 
-            //model
             var model = PrepareShippingMethodModel(cart);
             return View(model);
         }
 
         [HttpPost, ActionName("ShippingMethod")]
         [FormValueRequired("nextstep")]
-        [ValidateInput(false)]
         public ActionResult SelectShippingMethod(string shippingoption)
         {
             //validation
@@ -756,7 +775,6 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost, ActionName("PaymentMethod")]
         [FormValueRequired("nextstep")]
-        [ValidateInput(false)]
         public ActionResult SelectPaymentMethod(string paymentmethod, CheckoutPaymentMethodModel model, FormCollection form)
         {
 			// validation
@@ -830,8 +848,8 @@ namespace SmartStore.Web.Controllers
 
             return View(model);
         }
+
         [HttpPost, ActionName("Confirm")]
-        [ValidateInput(false)]
         public ActionResult ConfirmOrder(FormCollection form)
         {
 			//validation
@@ -957,19 +975,14 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult CheckoutProgress(CheckoutProgressStep step)
         {
-            var model = new CheckoutProgressModel() {CheckoutProgressStep = step};
-
-            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-            var shippingOptions = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, "", _storeContext.CurrentStore.Id).ShippingOptions;
-
-            if (shippingOptions.Count <= 1 && _shippingSettings.SkipShippingIfSingleOption)
+            var model = new CheckoutProgressModel
             {
-                model.DisplayShippingOptions = false;
-            }
+                CheckoutProgressStep = step
+            };
 
             return PartialView(model);
         }
+        
         #endregion
-
     }
 }

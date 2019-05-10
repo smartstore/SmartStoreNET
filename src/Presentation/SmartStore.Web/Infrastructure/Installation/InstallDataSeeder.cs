@@ -18,6 +18,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Events;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Logging;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
@@ -35,7 +36,7 @@ using SmartStore.Web.Framework;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
-	public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
+    public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
     {
 		#region Fields & Constants
 
@@ -296,6 +297,8 @@ namespace SmartStore.Web.Infrastructure.Installation
             var products = _data.Products();
 			SaveRange(products);
 
+            _data.AddDownloads(products);
+
 			// Fix MainPictureId
 			DataMigrator.FixProductMainPictureIds(_ctx);
 
@@ -338,6 +341,11 @@ namespace SmartStore.Web.Infrastructure.Installation
 			SaveRange(topics);
 			PopulateUrlRecordsFor(topics);
 		}
+
+        private void PopulateMenus()
+        {
+            DataMigrator.CreateSystemMenus(_ctx);
+        }
 
         private void AddProductTag(Product product, string tag)
         {
@@ -479,9 +487,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 					rsResources.AutoCommitEnabled = false;
 
 					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
-					var storeService = new StoreService(new EfRepository<Store>(_ctx), NullEventPublisher.Instance, new SecuritySettings());
-					var storeContext = new WebStoreContext(storeService, new WebHelper(null), null);
-
+					var storeService = new StoreService(new EfRepository<Store>(_ctx));
+					var storeContext = new WebStoreContext(new Work<IStoreService>(x => storeService));
+                    
 					var locSettings = new LocalizationSettings();
 
 					var languageService = new LanguageService(
@@ -545,7 +553,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Populate("PopulateEmailAccounts", _data.EmailAccounts());
 			Populate("PopulateMessageTemplates", PopulateMessageTemplates);
 			Populate("PopulateTopics", PopulateTopics);
-			Populate("PopulateSettings", PopulateSettings);
+            Populate("PopulateSettings", PopulateSettings);
 			Populate("PopulateActivityLogTypes", _data.ActivityLogTypes());
 			Populate("PopulateCustomersAndUsers", () => HashDefaultCustomerPassword(_config.DefaultUserName, _config.DefaultUserPassword));
 			Populate("PopulateProductTemplates", _data.ProductTemplates());
@@ -553,8 +561,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Populate("PopulateManufacturerTemplates", PopulateManufacturerTemplates);
 			Populate("PopulateScheduleTasks", _data.ScheduleTasks());
 			Populate("PopulateLocaleResources", PopulateLocaleResources);
+            Populate("PopulateMenus", PopulateMenus);
 
-			if (_config.SeedSampleData)
+            if (_config.SeedSampleData)
             {
 				_logger.Info("Seeding sample data");
 
@@ -611,13 +620,15 @@ namespace SmartStore.Web.Infrastructure.Installation
 			where TEntity : BaseEntity, ISlugSupported
 		{
 			var seoSettings = new SeoSettings { LoadAllUrlAliasesOnStartup = false };
+			var perfSettings = new PerformanceSettings();
 
 			if (_urlRecordService == null)
 			{
 				_urlRecordService = new UrlRecordService(
 					NullCache.Instance, 
 					new EfRepository<UrlRecord>(_ctx) { AutoCommitEnabled = false },
-					seoSettings);
+					seoSettings,
+					perfSettings);
 			}
 
 			return entity.ValidateSeName<TEntity>("", name, true, _urlRecordService, seoSettings);

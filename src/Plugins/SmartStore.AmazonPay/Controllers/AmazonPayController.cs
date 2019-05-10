@@ -164,15 +164,16 @@ namespace SmartStore.AmazonPay.Controllers
 
 		public ActionResult AuthenticationButtonHandler()
 		{
+			var returnUrl = Session["AmazonAuthReturnUrl"] as string;
+
 			var processor = _openAuthenticationService.Value.LoadExternalAuthenticationMethodBySystemName(AmazonPayPlugin.SystemName, Services.StoreContext.CurrentStore.Id);
 			if (processor == null || !processor.IsMethodActive(_externalAuthenticationSettings.Value))
 			{
-				throw new SmartException(T("Plugins.Payments.AmazonPay.AuthenticationNotActive"));
+				NotifyError(T("Plugins.Payments.AmazonPay.AuthenticationNotActive"));
+				return new RedirectResult(Url.LogOn(returnUrl));
 			}
 
-			var returnUrl = Session["AmazonAuthReturnUrl"] as string;
 			var result = _apiService.Authorize(returnUrl);
-
 			switch (result.AuthenticationStatus)
 			{
 				case OpenAuthenticationStatus.Error:

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Catalog;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -61,4 +61,12 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string Description {get;set;}
     }
+
+	public partial class ProductAttributeValidator : AbstractValidator<ProductAttributeModel>
+	{
+		public ProductAttributeValidator()
+		{
+			RuleFor(x => x.Name).NotEmpty();
+		}
+	}
 }

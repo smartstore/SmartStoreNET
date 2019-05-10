@@ -1,0 +1,291 @@
+﻿@model ProductModel
+
+@using SmartStore.Core.Domain.Catalog;
+
+<table class="adminContent" id="group-downloads">
+    <tr>
+        <td colspan="2">
+            <div class="admin-config-group">
+                <div class="head">@T("Common.Download")</div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.IsDownload)
+        </td>
+        <td class="adminData">
+            @Html.CheckBoxFor(model => model.IsDownload, new { data_toggler_for = "#pnlIsDownload" })
+            @Html.ValidationMessageFor(model => model.IsDownload)
+        </td>
+    </tr>
+    <tbody id="pnlIsDownload">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DownloadId)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DownloadId, new { entityId = Model.Id, entityName = "Product" })
+                @Html.ValidationMessageFor(model => model.DownloadId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DownloadFileVersion)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DownloadFileVersion)
+                @Html.ValidationMessageFor(model => model.DownloadFileVersion)
+            </td>
+        </tr>
+
+        @if (Model.DownloadId != null)
+        {
+            <tr>
+                <td colspan="2">
+                    <div class="admin-config-group">
+                        <div class="head">@T("Common.Download.Versions")</div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.NewVersionDownloadId)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.NewVersionDownloadId, new { entityId = Model.Id, entityName = "Product" })
+                    @Html.ValidationMessageFor(model => model.NewVersionDownloadId)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.NewVersion)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.NewVersion)
+                    @Html.ValidationMessageFor(model => model.NewVersion)
+                </td>
+            </tr>
+
+            if(Model.DownloadVersions.Count > 1)
+            {
+                <tr>
+                    <td class="adminTitle"></td>
+                    <td class="adminData">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">@T("Common.Download.Version")</th>
+                                    <th scope="col">@T("Common.Download")</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var download in Model.DownloadVersions)
+                                {
+                                    <tr>
+                                        <th scope="row">
+                                            <div class="form-control-plaintext">
+                                                @download.FileVersion
+                                            </div>
+                                        </th>
+                                        <td>
+                                            <div class="form-control-plaintext text-truncate" style="min-width: 180px; max-width: 180px">
+                                                <a href="@download.DownloadUrl" class="filename" title="@download.FileName">
+                                                    @download.FileName
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <td align="right">
+                                            <a href="#" data-download-id="@download.DownloadId" class="btn btn-outline-secondary btn-sm btn-icon add-changelog-btn" title="@T("Admin.Catalog.Products.Download.AddChangelog")">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            <a href="@Url.Action("DeleteDownloadVersion", "Product", new { downloadId = download.DownloadId, productId = Model.Id })"
+                                                class="btn btn-outline-secondary btn-to-danger btn-sm btn-icon" title="@T("Common.Download.Delete")">
+                                                <i class="far fa-trash-alt"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            }
+        }
+
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="head">@T("Common.Options")</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.UnlimitedDownloads)
+            </td>
+            <td class="adminData">
+                @Html.CheckBoxFor(model => model.UnlimitedDownloads, new { data_toggler_for = "#pnlMaxNumberOfDownloads", data_toggler_reverse = true })
+                @Html.ValidationMessageFor(model => model.UnlimitedDownloads)
+            </td>
+        </tr>
+        <tr id="pnlMaxNumberOfDownloads">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MaxNumberOfDownloads)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.MaxNumberOfDownloads)
+                @Html.ValidationMessageFor(model => model.MaxNumberOfDownloads)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DownloadExpirationDays)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DownloadExpirationDays)
+                @Html.ValidationMessageFor(model => model.DownloadExpirationDays)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DownloadActivationTypeId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.DownloadActivationTypeId, ((DownloadActivationType)Model.DownloadActivationTypeId).ToSelectList())
+                @Html.ValidationMessageFor(model => model.DownloadActivationTypeId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.HasUserAgreement)
+            </td>
+            <td class="adminData">
+                @Html.CheckBoxFor(model => model.HasUserAgreement, new { data_toggler_for = "#pnlUserAgreementText" })
+                @Html.ValidationMessageFor(model => model.HasUserAgreement)
+            </td>
+        </tr>
+        <tr id="pnlUserAgreementText">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.UserAgreementText)
+            </td>
+            <td class="adminData wide">
+                @Html.EditorFor(model => model.UserAgreementText, "Html")
+                @Html.ValidationMessageFor(model => model.UserAgreementText)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.HasSampleDownload)
+            </td>
+            <td class="adminData">
+                @Html.CheckBoxFor(model => model.HasSampleDownload, new { data_toggler_for = "#pnlSampleDownloadFile" })
+                @Html.ValidationMessageFor(model => model.HasSampleDownload)
+            </td>
+        </tr>
+        <tr id="pnlSampleDownloadFile">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SampleDownloadId)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SampleDownloadId)
+                @Html.ValidationMessageFor(model => model.SampleDownloadId)
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript">
+
+    $(function () {
+
+        var dialog = $("#add-changelog-window");
+        var form = dialog.find("form");
+
+        $('.add-changelog-btn').click(function (e) {
+
+            var btn = $(e.currentTarget);
+            var idElem = dialog.find("#DownloadId");
+            var changelogElem = dialog.find("#AddChangelog");
+            var downloadId = btn.data("download-id");
+            
+            idElem.val(downloadId);
+            changelogElem.summernote('reset');
+
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '@Url.Action("GetChangelogText", "Download")',
+                data: {
+                    downloadId: downloadId
+                },
+                dataType: 'json',
+                success: function (data) {
+                    changelogElem.summernote('editor.pasteHTML', data.changelog);
+                    dialog.modal();
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('Failed to load changelog text.');
+                }
+            });
+        });
+
+        $('#add-changelog').click(function (e) {
+            e.preventDefault();
+            
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '@Url.Action("AddChangelog", "Download")',
+                data: {
+                    downloadId: form.find("#DownloadId").val(),
+                    changelogText: form.find("#AddChangelog").val(),
+                },
+                dataType: 'json',
+                success: function (data) {
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('Failed to add changelog text.');
+                },
+                complete: function () {
+                    $('#add-changelog-window').modal('hide');
+                }
+            });
+
+            return false;
+        });
+
+        dialog.on('shown.bs.modal', function (e) {
+            $(window).trigger('resize');
+        })
+
+    });
+</script>
+
+@{Html.SmartStore().Window()
+    .Name("add-changelog-window")
+    .Size(WindowSize.Large)
+    .Title(T("Admin.Catalog.Products.Download.AddChangelog"))
+    .Content(
+    @<text>
+        <form method="post">
+            <input type="hidden" id="DownloadId" name="DownloadId" value="0" />
+            <div>
+                @Html.EditorFor(model => model.AddChangelog)
+                @Html.ValidationMessageFor(model => model.AddChangelog)
+            </div>                    
+        </form>
+    </text>)
+    .FooterContent(@<text>
+            <button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">
+                <span>@T("Admin.Common.Cancel")</span>
+            </button>
+            <button id="add-changelog" type="submit" class="btn btn-primary" data-dismiss="modal">
+                <i class="fa fa-check"></i>
+                <span>@T("Common.AddNew")</span>
+            </button>
+    </text>)
+    .Render();
+}

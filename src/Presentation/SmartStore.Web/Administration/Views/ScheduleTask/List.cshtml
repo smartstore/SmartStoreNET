@@ -7,7 +7,7 @@
 
 <div class="section-header">
     <div class="title">
-		<i class="fa fa-clock-o"></i>
+		<i class="far fa-clock"></i>
         @T("Admin.System.ScheduleTasks")
     </div>
 </div>
@@ -17,7 +17,7 @@
 		<thead>
 			<tr>
 				<th>@T("Admin.System.ScheduleTasks.Name")</th>
-				<th>@T("Admin.System.ScheduleTasks.Enabled")</th>
+				<th class="text-center">@T("Admin.System.ScheduleTasks.Enabled")</th>
 				<th>@T("Admin.System.ScheduleTasks.CronExpression")</th>
 				<th style="min-width: 150px">@T("Admin.System.ScheduleTasks.LastStart")</th>
 				<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
@@ -27,11 +27,14 @@
 		<tbody>
 			@foreach (var task in Model)
 			{
-				<tr data-task-id='@task.Id' class='@(task.IsRunning ? "active-row" : "")@(task.Enabled ? "" : " table-light")'>
+                var isRunning = task.LastHistoryEntry.IsRunning;
+				<tr data-task-id='@task.Id' class='@(isRunning ? "active-row" : "")@(task.Enabled ? "" : " table-light")'>
 					<td>
 						<a href='@task.EditUrl'>@task.Name</a>
 					</td>
-					<td>@Html.SymbolForBool(task.Enabled)</td>
+					<td class="text-center">
+                        @Html.SymbolForBool(task.Enabled)
+                    </td>
 					<td>
 						<div>@task.CronExpression</div>
 						@if (task.CronDescription.HasValue())
@@ -50,20 +53,20 @@
 						<div class="next-run-info">
 							@{ Html.RenderPartial("_NextRun", task); }
 						</div>
-						<div class='task-progress text-muted@(task.IsRunning ? "" : " hide")' data-task-id='@task.Id' data-running='@(task.IsRunning ? "true" : "false")'></div>
+						<div class='task-progress text-muted@(isRunning ? "" : " hide")' data-task-id='@task.Id' data-running='@(isRunning ? "true" : "false")'></div>
 					</td>
 					<!-- Actions -->
 					<td class="omega text-truncate">
 						<a href='@task.EditUrl' class="btn btn-secondary btn-sm mb-1">@T("Common.Edit")</a>
-						<a href='@task.ExecuteUrl' data-task-id='@task.Id' class='btn btn-success btn-sm mb-1 btn-run-task@(task.IsRunning ? " hide" : "")'>
+						<a href='@task.ExecuteUrl' data-task-id='@task.Id' class='btn btn-success btn-sm mb-1 btn-run-task@(isRunning ? " hide" : "")'>
 							@T("Admin.System.ScheduleTasks.RunNow")
 						</a>
-						<a href='@task.CancelUrl' data-task-id='@task.Id' class='btn btn-danger btn-sm mb-1 btn-cancel-task@(!task.IsRunning ? " hide" : "")' onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>
+						<a href='@task.CancelUrl' data-task-id='@task.Id' class='btn btn-danger btn-sm mb-1 btn-cancel-task@(!isRunning ? " hide" : "")' onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>
 							@T("Common.Cancel")
 						</a>
 					</td>
 				</tr>
-								}
+			}
 		</tbody>
 	</table>
 </div>

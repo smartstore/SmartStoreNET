@@ -13,7 +13,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Messages
 {
-	public class CreateAttachmentsConsumer : IConsumer<MessageQueuingEvent>
+	public class CreateAttachmentsConsumer : IConsumer
 	{
 		private readonly PdfSettings _pdfSettings;
 		private readonly HttpRequestBase _httpRequest;

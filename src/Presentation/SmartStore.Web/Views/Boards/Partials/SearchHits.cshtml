@@ -1,0 +1,103 @@
+﻿@using SmartStore.Core.Domain.Forums;
+@using SmartStore.Web.Models.Boards;
+@model ForumSearchResultModel
+@{
+	Layout = "";
+}
+<tbody class="border-0"
+    data-page="@(Model.SearchResult.Hits.PageIndex + 1)"
+    data-hasnextpage="@Model.SearchResult.Hits.HasNextPage.ToString().ToLower()"
+    data-cumulativehits="@Model.CumulativeHitCount.ToString("N0")">
+    @foreach (ForumTopicRowModel topic in Model.PagedList)
+    {
+        <tr data-id="@topic.Id" class="topic@(topic.Published ? "" : " disabled")">
+            <td class="image">
+                @{ Html.RenderPartial("Customer.Avatar", topic.Avatar); }
+            </td>
+            <td class="topic-name">
+                @if (topic.ForumTopicType == ForumTopicType.Sticky)
+                {
+                    <span class="topictype"><label class="badge badge-success">@T("Forum.Sticky")</label></span>
+                }
+                else if (topic.ForumTopicType == ForumTopicType.Announcement)
+                {
+                    <span class="topictype"><label class="badge badge-info">@T("Forum.Announcement")</label></span>
+                }
+                <a href="@(Url.RouteUrl("TopicSlug", new { id = topic.Id, slug = topic.SeName }))@(Html.Raw(topic.AnchorTag))" class="topic-title">
+                    @Html.Raw(Model.Highlight(topic.Subject, "subject", Model.Query, null, "<mark>", "</mark>"))
+                </a>
+                @if (topic.NumPosts > Model.PostsPageSize)
+                {
+                    @(Html.SmartStore().Pager(topic.TotalPostPages)
+                        .QueryParam("page")
+                        .HtmlAttributes(new { @class = "topics-pager" })
+                        .WithRenderer<ForumTopicPagerRenderer>()
+                        .ShowPrevious(false)
+                        .ShowNext(false)
+                        .ItemTitleFormatString(T("Forum.Topics.GotoPostPager"))
+                        .Alignment(PagerAlignment.Left)
+                        .Size(PagerSize.Mini)
+                        .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
+                }
+                <div class="topic-starter">
+				    @if (topic.CustomerId > 0)
+				    {
+					    <div class="d-flex text-muted">
+						    <span class="pr-1">@T("Forum.Author"):</span>
+						    @if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)
+						    {
+							    <span>@Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })</span>
+						    }
+						    else
+						    {
+							    <span>@topic.CustomerName</span>
+						    }
+					    </div>
+                        if (topic.FirstPostId != 0 && Model.SearchResult.Engine != null && Model.Query.Fields != null && Model.Query.Fields.Contains("text"))
+                        {
+                            <div class="mt-2">
+                                @Html.Raw(Model.SearchResult.Engine.Highlight(topic.FirstPostId, "text", "<mark>", "</mark>", 3))
+                            </div>
+                        }
+				    }
+                </div>
+            </td>
+            <td class="replies">
+                @topic.NumReplies.ToString("N0")
+            </td>
+            <td class="views">
+                @topic.Views.ToString("N0")
+            </td>
+            <td class="last-post">
+                @{ Html.RenderPartial("LastPost", topic.LastPost); }
+            </td>
+        </tr>
+    }
+</tbody>
+@if (Model.PagedList.TotalCount == 0 || !Model.PagedList.HasNextPage)
+{
+    if (Model.PagedList.TotalPages > 1)
+    {
+        <tfoot class="border-0">
+            <tr>
+                <td colspan="5">
+                    <span class="text-muted">@T("Search.NoMoreHitsFound")</span>
+                </td>
+            </tr>
+        </tfoot>
+    }
+}
+else if (Model.Error.HasValue())
+{
+    <tfoot class="border-0">
+        <tr>
+            <td colspan="5">
+                <div class="alert alert-danger">@Model.Error</div>
+            </td>
+        </tr>
+    </tfoot>
+}
+else
+{
+    <tbody class="border-0 load-more" data-page="@(Model.SearchResult.Hits.PageIndex + 2)"></tbody>
+}

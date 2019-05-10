@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web;
-using System.Web.Routing;
+using SmartStore.Collections;
 
 namespace SmartStore
 {
@@ -14,20 +11,36 @@ namespace SmartStore
             if (other == null)
                 return;
 
-            var list = initial as List<T>;
+			if (initial is List<T> list)
+			{
+				list.AddRange(other);
+				return;
+			}
 
-            if (list != null)
-            {
-                list.AddRange(other);
-                return;
-            }
-
-            other.Each(x => initial.Add(x));
+			foreach (var local in other)
+			{
+				initial.Add(local);
+			}
         }
 
-        public static bool IsNullOrEmpty<T>(this ICollection<T> source)
+		public static SyncedCollection<T> AsSynchronized<T>(this ICollection<T> source)
+		{
+			return AsSynchronized(source, new object());
+		}
+
+		public static SyncedCollection<T> AsSynchronized<T>(this ICollection<T> source, object syncRoot)
+		{
+			if (source is SyncedCollection<T> sc)
+			{
+				return sc;
+			}
+
+			return new SyncedCollection<T>(source, syncRoot);
+		}
+
+		public static bool IsNullOrEmpty<T>(this ICollection<T> source)
         {
-            return (source == null || source.Count == 0);
+            return source == null || source.Count == 0;
         }
     }
 }

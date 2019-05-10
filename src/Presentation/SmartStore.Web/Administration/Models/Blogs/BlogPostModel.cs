@@ -1,17 +1,16 @@
-﻿using System;
+﻿using FluentValidation;
+using FluentValidation.Attributes;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
-using FluentValidation.Attributes;
-using SmartStore.Admin.Models.Stores;
-using SmartStore.Admin.Validators.Blogs;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Blogs
 {
     [Validator(typeof(BlogPostValidator))]
-    public class BlogPostModel : EntityModelBase, IStoreSelector
+    public class BlogPostModel : TabbableModel, IStoreSelector
 	{
 		[SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Language")]
         public int LanguageId { get; set; }
@@ -42,7 +41,7 @@ namespace SmartStore.Admin.Models.Blogs
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Comments")]
         public int Comments { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOnUtc { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.StartDate")]
@@ -63,7 +62,7 @@ namespace SmartStore.Admin.Models.Blogs
         [AllowHtml]
         public string MetaTitle { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
 		// Store mapping
@@ -71,5 +70,14 @@ namespace SmartStore.Admin.Models.Blogs
 		public bool LimitedToStores { get; set; }
 		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
+    }
+
+    public partial class BlogPostValidator : AbstractValidator<BlogPostModel>
+    {
+        public BlogPostValidator()
+        {
+            RuleFor(x => x.Title).NotNull();
+            RuleFor(x => x.Body).NotNull();
+        }
     }
 }

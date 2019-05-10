@@ -103,7 +103,8 @@ namespace SmartStore.FacebookAuth.Controllers
 			var processor = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName(FacebookExternalAuthMethod.SystemName, _services.StoreContext.CurrentStore.Id);
 			if (processor == null || !processor.IsMethodActive(_externalAuthenticationSettings))
 			{
-				throw new SmartException("Facebook module cannot be loaded");
+                NotifyError(T("Plugins.CannotLoadModule", T("Plugins.FriendlyName.SmartStore.FacebookAuth")));
+                return new RedirectResult(Url.LogOn(returnUrl));
 			}
 
 			var viewModel = new LoginModel();

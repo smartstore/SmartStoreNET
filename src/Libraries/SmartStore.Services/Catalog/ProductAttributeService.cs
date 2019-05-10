@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -320,6 +321,11 @@ namespace SmartStore.Services.Catalog
 		{
 			Guard.NotNull(productIds, nameof(productIds));
 
+            if (!productIds.Any())
+            {
+                return new Multimap<int, ProductVariantAttribute>();
+            }
+
 			var query = 
 				from pva in _productVariantAttributeRepository.TableUntracked.Expand(x => x.ProductAttribute).Expand(x => x.ProductVariantAttributeValues)
 				where productIds.Contains(pva.ProductId)
@@ -401,11 +407,13 @@ namespace SmartStore.Services.Catalog
 					(int)AttributeControlType.Boxes
 				};
 
-				var query = from x in _productVariantAttributeValueRepository.Table.Expand(y => y.ProductVariantAttribute.ProductAttribute)
+				var query = from x in _productVariantAttributeValueRepository.Table
 						  let attr = x.ProductVariantAttribute
 						  where productVariantAttributeValueIds.Contains(x.Id) && validTypeIds.Contains(attr.AttributeControlTypeId)
 						  orderby x.ProductVariantAttribute.DisplayOrder, x.DisplayOrder
 						  select x;
+
+				query = query.Include(y => y.ProductVariantAttribute.ProductAttribute);
 
 				return query.ToList();
 			});
@@ -661,6 +669,11 @@ namespace SmartStore.Services.Catalog
 		{
 			Guard.NotNull(productIds, nameof(productIds));
 
+            if (!productIds.Any())
+            {
+                return new Multimap<int, ProductVariantAttributeCombination>();
+            }
+
 			var query =
 				from pvac in _pvacRepository.TableUntracked
 				where productIds.Contains(pvac.ProductId)
@@ -700,12 +713,36 @@ namespace SmartStore.Services.Catalog
 
 		public virtual ProductVariantAttributeCombination GetProductVariantAttributeCombinationBySku(string sku)
 		{
-			if (sku.IsEmpty())
-				return null;
+            if (sku.IsEmpty())
+            {
+                return null;
+            }
 
-			var combination = _pvacRepository.Table.FirstOrDefault(x => x.Sku == sku && x.Product.Deleted == false && !x.Product.IsSystemProduct);
+			var combination = _pvacRepository.Table.FirstOrDefault(x => x.Sku == sku && !x.Product.Deleted);
 			return combination;
 		}
+
+        public virtual ProductVariantAttributeCombination GetAttributeCombinationByGtin(string gtin)
+        {
+            if (gtin.IsEmpty())
+            {
+                return null;
+            }
+
+            var combination = _pvacRepository.Table.FirstOrDefault(x => x.Gtin == gtin && !x.Product.Deleted);
+            return combination;
+        }
+
+        public virtual ProductVariantAttributeCombination GetAttributeCombinationByMpn(string manufacturerPartNumber)
+        {
+            if (manufacturerPartNumber.IsEmpty())
+            {
+                return null;
+            }
+
+            var combination = _pvacRepository.Table.FirstOrDefault(x => x.ManufacturerPartNumber == manufacturerPartNumber && !x.Product.Deleted);
+            return combination;
+        }
 
         public virtual void InsertProductVariantAttributeCombination(ProductVariantAttributeCombination combination)
         {

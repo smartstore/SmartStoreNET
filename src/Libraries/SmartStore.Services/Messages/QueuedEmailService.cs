@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
+using System.Threading.Tasks;
 using System.Web;
 using SmartStore.Core;
 using SmartStore.Core.Data;
@@ -184,7 +185,7 @@ namespace SmartStore.Services.Messages
             return queuedEmails;
         }
 
-		public virtual bool SendEmail(QueuedEmail queuedEmail)
+		public virtual async Task<bool> SendEmailAsync(QueuedEmail queuedEmail)
 		{
 			var result = false;
 
@@ -193,7 +194,7 @@ namespace SmartStore.Services.Messages
 				var smtpContext = new SmtpContext(queuedEmail.EmailAccount);
 				var msg = ConvertEmail(queuedEmail);
 
-				_emailSender.SendEmail(smtpContext, msg);
+				await _emailSender.SendEmailAsync(smtpContext, msg);
 
 				queuedEmail.SentOnUtc = DateTime.UtcNow;
 				result = true;

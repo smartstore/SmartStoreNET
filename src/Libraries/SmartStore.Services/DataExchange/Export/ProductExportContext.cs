@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
@@ -9,22 +8,24 @@ using SmartStore.Services.Catalog;
 
 namespace SmartStore.Services.DataExchange.Export
 {
-	/// <summary>
-	/// Cargo data to reduce database round trips during work with product batches (export, list model creation etc.)
-	/// </summary>
-	public class ProductExportContext : PriceCalculationContext
+    /// <summary>
+    /// Cargo data to reduce database round trips during work with product batches (export, list model creation etc.)
+    /// </summary>
+    public class ProductExportContext : PriceCalculationContext
 	{
 		private Func<int[], Multimap<int, ProductPicture>> _funcProductPictures;
 		private Func<int[], Multimap<int, ProductTag>> _funcProductTags;
 		private Func<int[], Multimap<int, ProductSpecificationAttribute>> _funcSpecificationAttributes;
 		private Func<int[], Multimap<int, Picture>> _funcPictures;
+        private Func<int[], Multimap<int, Download>> _funcDownloads;
 
-		private LazyMultimap<ProductPicture> _productPictures;
+        private LazyMultimap<ProductPicture> _productPictures;
 		private LazyMultimap<ProductTag> _productTags;
 		private LazyMultimap<ProductSpecificationAttribute> _specificationAttributes;
 		private LazyMultimap<Picture> _pictures;
+        private LazyMultimap<Download> _downloads;
 
-		public ProductExportContext(
+        public ProductExportContext(
 			IEnumerable<Product> products,
 			Func<int[], Multimap<int, ProductVariantAttribute>> attributes,
 			Func<int[], Multimap<int, ProductVariantAttributeCombination>> attributeCombinations,
@@ -34,9 +35,11 @@ namespace SmartStore.Services.DataExchange.Export
 			Func<int[], Multimap<int, ProductManufacturer>> productManufacturers,
 			Func<int[], Multimap<int, Discount>> appliedDiscounts,
 			Func<int[], Multimap<int, ProductBundleItem>> productBundleItems,
-			Func<int[], Multimap<int, Picture>> pictures,
+            Func<int[], Multimap<int, Product>> associatedProducts,
+            Func<int[], Multimap<int, Picture>> pictures,
 			Func<int[], Multimap<int, ProductPicture>> productPictures,
-			Func<int[], Multimap<int, ProductTag>> productTags)
+			Func<int[], Multimap<int, ProductTag>> productTags,
+            Func<int[], Multimap<int, Download>> downloads)
 			: base(products,
 				attributes,
 				attributeCombinations,
@@ -44,24 +47,23 @@ namespace SmartStore.Services.DataExchange.Export
 				productCategories,
 				productManufacturers,
 				appliedDiscounts,
-				productBundleItems)
+				productBundleItems,
+                associatedProducts)
 		{
 			_funcPictures = pictures;
 			_funcProductPictures = productPictures;
 			_funcProductTags = productTags;
 			_funcSpecificationAttributes = specificationAttributes;
+            _funcDownloads = downloads;
 		}
 
 		public new void Clear()
 		{
-			if (_productPictures != null)
-				_productPictures.Clear();
-			if (_productTags != null)
-				_productTags.Clear();
-			if (_specificationAttributes != null)
-				_specificationAttributes.Clear();
-			if (_pictures != null)
-				_pictures.Clear();
+            _productPictures?.Clear();
+            _productTags?.Clear();
+            _specificationAttributes?.Clear();
+            _pictures?.Clear();
+            _downloads?.Clear();
 
 			base.Clear();
 		}
@@ -113,5 +115,17 @@ namespace SmartStore.Services.DataExchange.Export
 				return _specificationAttributes;
 			}
 		}
+
+        public LazyMultimap<Download> Downloads
+        {
+            get
+            {
+                if (_downloads == null)
+                {
+                    _downloads = new LazyMultimap<Download>(keys => _funcDownloads(keys), _productIds);
+                }
+                return _downloads;
+            }
+        }
 	}
 }

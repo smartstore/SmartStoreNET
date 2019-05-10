@@ -1,0 +1,33 @@
+
+// Generate Duration && Delay
+// ----------------------------------
+// Edit info (mc):
+//  - Removed root [data-aos]
+//  - prepended 'body' to second selector because of correct specifity 
+//  - body[data-aos-duration='#{$i * 50}'] & >> body[data-aos-duration='#{$i * 50}'] [data-aos]
+//  - 50ms steps > 100ms steps
+//  - from 1 through 60 > 30
+// ----------------------------------
+
+@for $i from 1 through 30 {
+    body[data-aos-duration='#{$i * 100}'] [data-aos],
+    body [data-aos][data-aos-duration='#{$i * 100}'] {
+        transition-duration: #{$i * 100}ms;
+    }
+
+    body[data-aos-delay='#{$i * 100}'] [data-aos],
+    body [data-aos][data-aos-delay='#{$i * 100}'] {
+        transition-delay: 0s;
+
+        &.aos-animate {
+            transition-delay: #{$i * 100}ms;
+        }
+    }
+}
+
+[data-aos] {
+    pointer-events: none;
+    &.aos-animate {
+        pointer-events: auto;
+    }
+}

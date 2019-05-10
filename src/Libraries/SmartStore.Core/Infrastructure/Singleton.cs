@@ -9,7 +9,7 @@ namespace SmartStore.Core.Infrastructure
     /// sense of the word as a standardized way to store single instances.
     /// </summary>
     /// <typeparam name="T">The type of object to store.</typeparam>
-    /// <remarks>Access to the instance is not synchrnoized.</remarks>
+    /// <remarks>Access to the instance is not synchronized.</remarks>
     public class Singleton<T> : Singleton
     {
         static T instance;

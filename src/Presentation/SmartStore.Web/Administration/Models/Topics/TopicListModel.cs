@@ -14,6 +14,19 @@ namespace SmartStore.Admin.Models.Topics
 
 		[SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
 		public int SearchStoreId { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SystemName")]
+		public string SystemName { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Title")]
+		public string Title { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.RenderAsWidget")]
+		public bool? RenderAsWidget { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetZone")]
+		public string WidgetZone { get; set; }
+
 		public IList<SelectListItem> AvailableStores { get; set; }
 	}
 }

@@ -1,7 +1,6 @@
 ﻿using FluentValidation.TestHelper;
-using SmartStore.Web.Models.Customer;
-using SmartStore.Web.Validators.Customer;
 using NUnit.Framework;
+using SmartStore.Web.Models.Customer;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
 {
@@ -13,7 +12,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
         [SetUp]
         public new void Setup()
         {
-            _validator = new PasswordRecoveryValidator(_localizationService);
+            _validator = new PasswordRecoveryValidator();
         }
         
         [Test]

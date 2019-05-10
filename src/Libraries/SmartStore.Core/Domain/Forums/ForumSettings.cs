@@ -11,23 +11,24 @@ namespace SmartStore.Core.Domain.Forums
 			TopicSubjectMaxLength = 450;
 			PostMaxLength = 4000;
 			StrippedTopicMaxLength = 45;
-			TopicsPageSize = 10;
-			PostsPageSize = 10;
-			SearchResultsPageSize = 10;
-			LatestCustomerPostsPageSize = 10;
-			ShowCustomersPostCount = true;
+			TopicsPageSize = 20;
+			PostsPageSize = 20;
+            ForumFeedCount = 20;
+            SearchResultsPageSize = 20;
+            LatestCustomerPostsPageSize = 20;
+            AllowSorting = true;
+            ShowCustomersPostCount = true;
 			ForumEditor = EditorType.BBCodeEditor;
 			SignaturesEnabled = true;
-			PrivateMessagesPageSize = 10;
-			ForumSubscriptionsPageSize = 10;
+			PrivateMessagesPageSize = 20;
+			ForumSubscriptionsPageSize = 20;
 			PMSubjectMaxLength = 450;
 			PMTextMaxLength = 4000;
 			HomePageActiveDiscussionsTopicCount = 5;
 			ActiveDiscussionsPageTopicCount = 50;
 			ActiveDiscussionsFeedCount = 25;
-			ForumFeedCount = 10;
-			ForumSearchTermMinimumLength = 3;
-		}
+            AllowCustomersToVoteOnPosts = true;
+        }
 		
 		/// <summary>
         /// Gets or sets a value indicating whether forums are enabled
@@ -65,6 +66,16 @@ namespace SmartStore.Core.Domain.Forums
         public bool AllowCustomersToDeletePosts { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether customer can vote on posts
+        /// </summary>
+        public bool AllowCustomersToVoteOnPosts { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether guests are allowed to vote on posts
+        /// </summary>
+        public bool AllowGuestsToVoteOnPosts { get; set; }
+
+        /// <summary>
         /// Gets or sets maximum length of topic subject
         /// </summary>
         public int TopicSubjectMaxLength { get; set; }
@@ -90,14 +101,14 @@ namespace SmartStore.Core.Domain.Forums
         public int PostsPageSize { get; set; }
 
         /// <summary>
-        /// Gets or sets the number of links to display for pagination of posts in topics
-        /// </summary>
-        public int TopicPostsPageLinkDisplayCount { get; set; }
-
-        /// <summary>
         /// Gets or sets the page size for search result
         /// </summary>
         public int SearchResultsPageSize { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether sorting is enabled.
+        /// </summary>
+        public bool AllowSorting { get; set; }
 
         /// <summary>
         /// Gets or sets the page size for latest customer posts
@@ -183,10 +194,5 @@ namespace SmartStore.Core.Domain.Forums
         /// Gets or sets the number of items to display for Forum RSS Feed
         /// </summary>
         public int ForumFeedCount { get; set; }
-
-        /// <summary>
-        /// Gets or sets the minimum length for search term
-        /// </summary>
-        public int ForumSearchTermMinimumLength { get; set; }
     }
 }

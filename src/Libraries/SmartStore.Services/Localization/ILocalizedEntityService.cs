@@ -42,11 +42,44 @@ namespace SmartStore.Services.Localization
         /// <returns>Localized properties</returns>
         IList<LocalizedProperty> GetLocalizedProperties(int entityId, string localeKeyGroup);
 
-        /// <summary>
-        /// Inserts a localized property
-        /// </summary>
-        /// <param name="localizedProperty">Localized property</param>
-        void InsertLocalizedProperty(LocalizedProperty localizedProperty);
+		/// <summary>
+		/// Prefetches a collection of localized properties for a range of entities in one go
+		/// and caches them for the duration of the current request.
+		/// </summary>
+		/// <param name="localeKeyGroup">Locale key group (scope)</param>
+		/// <param name="entityIds">
+		/// The entity ids to prefetch translations for. Can be null,
+		/// in which case all translations for the requested scope are loaded.
+		/// </param>
+		/// <param name="isRange">Whether <paramref name="entityIds"/> represents a range of ids (perf).</param>
+		/// <param name="isSorted">Whether <paramref name="entityIds"/> is already sorted (perf).</param>
+		/// <returns>Localized property collection</returns>
+		/// <remarks>
+		/// Be careful not to load large amounts of data at once (e.g. for "Product" scope with large range).
+		/// </remarks>
+		void PrefetchLocalizedProperties(string localeKeyGroup, int languageId, int[] entityIds, bool isRange = false, bool isSorted = false);
+
+		/// <summary>
+		/// Gets a collection of localized properties for a range of entities in one go.
+		/// </summary>
+		/// <param name="localeKeyGroup">Locale key group (scope)</param>
+		/// <param name="entityIds">
+		/// The entity ids to load translations for. Can be null,
+		/// in which case all translations for the requested scope are loaded.
+		/// </param>
+		/// <param name="isRange">Whether <paramref name="entityIds"/> represents a range of ids (perf).</param>
+		/// <param name="isSorted">Whether <paramref name="entityIds"/> is already sorted (perf).</param>
+		/// <returns>Localized property collection</returns>
+		/// <remarks>
+		/// Be careful not to load large amounts of data at once (e.g. for "Product" scope with large range).
+		/// </remarks>
+		LocalizedPropertyCollection GetLocalizedPropertyCollection(string localeKeyGroup, int[] entityIds, bool isRange = false, bool isSorted = false);
+
+		/// <summary>
+		/// Inserts a localized property
+		/// </summary>
+		/// <param name="localizedProperty">Localized property</param>
+		void InsertLocalizedProperty(LocalizedProperty localizedProperty);
 
         /// <summary>
         /// Updates the localized property

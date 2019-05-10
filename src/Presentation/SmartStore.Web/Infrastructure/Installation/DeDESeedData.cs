@@ -1869,13 +1869,15 @@ namespace SmartStore.Web.Infrastructure.Installation
                 })
                 .Alter("PrivacyInfo", x =>
                 {
-                    x.Title = "Datenschutzerklärung";
-                    x.Body = "<p>Legen Sie Ihrer Datenschutzerkl&#228;rung hier fest. Sie können dies in der Admin-Seite zu bearbeiten.</p>";
+					x.ShortTitle = "Datenschutz";
+					x.Title = "Datenschutzerklärung";
+                    x.Body = "<p>Legen Sie Ihre Datenschutzerkl&#228;rung hier fest. Diesen Text können Sie auch im Administrations-Bereich editieren.</p>";
                 })
                 .Alter("ShippingInfo", x =>
                 {
-                    x.Title = "Versand und Rücksendungen";
-                    x.Body = "<p>Informationen zu Versand und Rücksendungen. Sie können diese in der Admin-Seite zu bearbeiten.</p>";
+					x.ShortTitle = "Versandinfos";
+					x.Title = "Versand und Rücksendungen";
+                    x.Body = "<p>Informationen zu Versand und Rücksendungen. Diesen Text können Sie auch im Administrations-Bereich editieren.</p>";
                 })
                 .Alter("Imprint", x =>
                 {
@@ -1921,12 +1923,12 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter("Disclaimer", x =>
                 {
                     x.Title = "Widerrufsrecht";
-                    x.Body = "<p>Fügen Sie Ihr Widerrufsrecht hier ein. Sie können diese in der Admin-Seite zu bearbeiten.</p>";
+                    x.Body = "<p>Fügen Sie Ihr Widerrufsrecht hier ein. Diesen Text können Sie auch im Administrations-Bereich editieren.</p>";
                 })
                 .Alter("PaymentInfo", x =>
                 {
                     x. Title = "Zahlungsarten";
-                    x.Body = "<p><p>Fügen Sie Informationen zu Zahlungsarten hier ein. Sie können diese in der Admin-Seite zu bearbeiten.</p>";
+                    x.Body = "<p>Fügen Sie Informationen zu Zahlungsarten hier ein. Diesen Text können Sie auch im Administrations-Bereich editieren.</p>";
                 });
         }
 
@@ -4005,7 +4007,7 @@ namespace SmartStore.Web.Infrastructure.Installation
             {
                 x.Title = "Kundendienst - Unser Service";
                 x.Body = "<p>Bei uns wird Service GROSS geschrieben! Auch nach Ihrem Einkauf bei uns können Sie mit uns Rechnen!<br></p>";
-                x.Tags = "Shopsystem, SmartStore.NET, asp.net, sample tag, Service";
+                x.Tags = "Shopsystem, Smartstore.NET, asp.net, sample tag, Service";
 				x.Language = base.DbContext.Set<Language>().FirstOrDefault();
             });
             
@@ -4018,19 +4020,19 @@ namespace SmartStore.Web.Infrastructure.Installation
             base.Alter(entities);
 
             entities.WithKey(x => x.MetaTitle)
-            .Alter("SmartStore.NET new release!", x =>
+            .Alter("Smartstore.NET new release!", x =>
             {
-                x.Title = "SmartStore.NET - das clevere Shopsystem!";
-                x.Short = "SmartStore.NET ist die neue dynamische E-Commerce Lösung von SmartStore. SmartStore.NET bietet alle Funktionen und Möglichkeiten, um schnell und einfach einen leistungsfähigen und funktional kompletten Online-Shop zu erstellen.";
-                x.Full = "<p>Mit SmartStore.NET haben Sie alles im Griff. Verwalten Sie Ihren Lagerbestand, Ihre Aufträge und alle kundenspezifischen Funktionen, wie kundenindividuelle Rabatte, Gutscheine oder Zugriffsrechte für spezielle Kundengruppen.  </p>  <p>  Durch sprechende URL's und eine durchdachte HTML-Struktur ist SmartStore.NET perfekt für Suchmaschinen optimiert.  </p>  <p>  SmartStore.NET erkennt automatisch, ob Ihre Shopbesucher mit einem mobilen Endgerät auf Ihren Shop zugreifen und zeigt den Shop in einer Ansicht, die für geringe Auflösungen optimiert ist.  </p>  <p>  Steigern sie Ihren Umsatz und animieren Sie mehr Kunden zum Kauf mit Produkt-Rezensionen und -Bewertungen.  </p>  <p>  SmartStore.NET wird bereits mit Sprachpaketen für Deutsch und Englisch ausgeliefert und unterstützt die Verwaltung unendlich vieler weiterer Sprachen.  </p>  <p>  Starten Sie sofort durch!<br>  Importieren Sie Ihren SmartStore.biz Shop mit nur einem Klick in SmartStore.NET.</p>";
+                x.Title = "Smartstore.NET - das clevere Shopsystem!";
+                x.Short = "Smartstore.NET ist die neue dynamische E-Commerce Lösung von Smartstore. Smartstore.NET bietet alle Funktionen und Möglichkeiten, um schnell und einfach einen leistungsfähigen und funktional kompletten Online-Shop zu erstellen.";
+                x.Full = "<p>Mit Smartstore.NET haben Sie alles im Griff. Verwalten Sie Ihren Lagerbestand, Ihre Aufträge und alle kundenspezifischen Funktionen, wie kundenindividuelle Rabatte, Gutscheine oder Zugriffsrechte für spezielle Kundengruppen.  </p>  <p>  Durch sprechende URL's und eine durchdachte HTML-Struktur ist Smartstore.NET perfekt für Suchmaschinen optimiert.  </p>  <p>  Smartstore.NET erkennt automatisch, ob Ihre Shopbesucher mit einem mobilen Endgerät auf Ihren Shop zugreifen und zeigt den Shop in einer Ansicht, die für geringe Auflösungen optimiert ist.  </p>  <p>  Steigern sie Ihren Umsatz und animieren Sie mehr Kunden zum Kauf mit Produkt-Rezensionen und -Bewertungen.  </p>  <p>  Smartstore.NET wird bereits mit Sprachpaketen für Deutsch und Englisch ausgeliefert und unterstützt die Verwaltung unendlich vieler weiterer Sprachen.  </p>  <p>  Starten Sie sofort durch!<br>  Importieren Sie Ihren Smartstore.biz Shop mit nur einem Klick in Smartstore.NET.</p>";
                 x.Language = defaultLanguage;
             })
 
-            .Alter("New online store is open!", x =>
+            .Alter("Smartstore.NET 3.2", x =>
             {
-                x.Title = "Kundendienst - Service";
-                x.Short = "Hier finden Sie Antworten auf Fragen zu unserem Onlineshop";
-                x.Full = "<p> Warum ein Benutzerkonto?<br> Wenn Sie in unserem Online-Shop bestellen wollen, können Sie gerne als Gast, ohne ein Benutzerkonto zu erstellen, oder als registrierter Kunde mmit einem Benutzerkonto bestellen. Mit dem Benutzerkonto gestaltet sich der Einkauf im Online-Shop bequemer und zusätzlich haben Sie eine Übersicht der hinterlegten Daten und Ihrer Bestellungen. </p> <p> Welche Funnktionen beinhaltet das Benutzerkonto?<br> In Ihrem Benutzerkonto haben Sie Zugriff auf alle wichtigen, persönlichen Daten und können diese bei Bedarf entsprechend bearbeiten: Bearbeiten der Rechnungsadresse Bearbeiten, Löschen und Neuanlage von Lieferadressen Ändern des Passwortes Aktuelle Bestellung und Übersicht über Ihre Bestellhistorie Merkliste <br> Darüberhinaus, können Sie im Forum teilnehmen, unsere Blogs und News kommentieren. </p>";
+                x.Title = "Smartstore.NET 3.2 jetzt mit dem neuen CMS Page Builder";
+                x.Short = "Erstellen Sie faszinierende Inhalte mit dem neuen Page Builder.";
+                x.Full = "<p>Mit dem neuen Smartstore.NET Page Builder gestalten Sie faszinierende Inhalte aus Produkten, Warengruppen, Bildern, Videos und Texten. Designelemente wie Animationen, Übergänge, Verläufe, Hover-Effekte, Overlays und die Bedienung über den WYSIWYG Editor lassen in Bezug auf Design und Flexibilität keine Wünsche offen.<br/>Mehr Informationen über Smartstore 3.2 und Page Builder finden Sie unter <a href=\"http://www.smartstore.com\">www.smartstore.com</a></p>";
                 x.Language = defaultLanguage;
             });
         }

@@ -18,10 +18,48 @@
  * http://www.opensource.org/licenses/MIT
  */
 
+ .fileupload-container {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    border: $input-border-width solid $input-border-color;
+    background-color: $input-bg;
+    border-radius: $input-border-radius;
+    overflow: hidden;
+
+    .fileupload-thumb-stage {
+        position: relative;
+        width: 64px;
+        max-width: 64px;
+        border-right: 1px solid rgba(#000, 0.2);
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3ggRDQA1Yl77tAAAAN1JREFUeNrt1rEJwCAURVEVFwruv4BEMtGHdGJpF4LHLqQ7+OTm3u+0nNau9XOMx995SnK2DyxYsD4/OSK86Jt/3SwzhAXrT6d60RW8GcKCpeAVvPtihrBgKXgFb4YIYMFS8AreDGEhgKXgFbwZwoKFQMEreDOEBUvBe9EVvBnCgqXgFbz7YoawYCl4BW+GCGDBUvAK3gxhIYCl4BW8GcKChUDBK3gzhAVLwXvRFbwZwoKl4BW8+2KGsGApeAVvhghgwVLwCt4MYSGApeAVvBnCgoVAwSt4M4QF6/jzAlCrcKXDcpR1AAAAAElFTkSuQmCC') repeat;
+    }
+
+    .fileupload-thumb {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .fileupload-controls {
+        flex-grow: 1;
+        padding: 0.5rem 0.5rem;
+    }
+ }
+
 .fileupload {
 	.btn.cancel {
 		display: none;
 	}
+
+    .fileupload-buttons {
+        position: relative;
+    }
 
 	.fileinput-button {
 		position: relative;
@@ -42,9 +80,35 @@
 		cursor: pointer;
 	}
 
-	.fileupload-progress .progress {
-		margin-bottom: 6px;
-	}
+    > .fileupload-progress {
+        position: absolute;
+        left: 0;
+        bottom: -1px;
+        right: 0;  
+        
+	    .progress {
+            height: 0.25rem;
+		    background: transparent;
+            margin: 0;
+            border-radius: 0;
+            border-bottom-left-radius: $input-border-radius;
+            border-bottom-right-radius: $input-border-radius;
+            box-shadow: none;
+
+            .progress-bar {
+                background-color: $primary;
+                transition: width 0.25s ease, background-color 0.25s ease;
+            }
+	    }
+
+        &.success {
+            transition-delay: 0.4s;
+        }
+
+        &.success .progress-bar {
+            background-color: $success !important;
+        }
+    }
 }
 
 

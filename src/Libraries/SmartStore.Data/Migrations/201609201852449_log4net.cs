@@ -11,13 +11,22 @@ namespace SmartStore.Data.Migrations
 	{
 		public override void Up()
         {
-			// Custom START
-			if (DataSettings.Current.IsSqlServer)
-			{
-				//DropIndex("dbo.Log", "IX_Log_ContentHash");
-				Sql("IF EXISTS (SELECT * FROM sys.indexes WHERE name='IX_Log_ContentHash' AND object_id = OBJECT_ID('[dbo].[Log]')) DROP INDEX [IX_Log_ContentHash] ON [dbo].[Log];");
-				Sql(@"Truncate Table [Log]");
-			}
+            // Custom START
+            if (HostingEnvironment.IsHosted)
+            {
+                if (DataSettings.Current.IsSqlServer)
+                {
+                    Sql("IF EXISTS (SELECT * FROM sys.indexes WHERE name='IX_Log_ContentHash' AND object_id = OBJECT_ID('[dbo].[Log]')) DROP INDEX [IX_Log_ContentHash] ON [dbo].[Log];");
+                    Sql(@"TRUNCATE Table [Log]");
+                }
+                else
+                {
+                    Sql(@"SET LOCK_TIMEOUT 20000;");
+                    // SQL CE: DropIndex fails during installation, IF EXISTS not supported.
+                    //DropIndex("Log", "IX_Log_ContentHash");
+                    Sql(@"DELETE FROM Log;");
+                }
+            }
 			// Custom END
 
 			AddColumn("dbo.Log", "Logger", c => c.String(nullable: false, maxLength: 400));

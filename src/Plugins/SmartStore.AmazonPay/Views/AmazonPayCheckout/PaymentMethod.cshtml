@@ -57,7 +57,7 @@
 		try {
 			new OffAmazonPayments.Widgets.Wallet({
 				sellerId: '@Model.SellerId',
-				scope: '',
+				scope: 'profile payments:widget payments:shipping_address payments:billing_address',
 				amazonOrderReferenceId: '@Model.OrderReferenceId',
 				design: {
 					designMode: 'responsive'

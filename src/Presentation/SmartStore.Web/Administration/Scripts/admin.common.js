@@ -74,12 +74,16 @@ SmartStore.Admin = {
 
 		$(ctl.data('toggler-for')).each(function (i, cel) {
 			var pnl = $(cel),
-				isGroup = pnl.is('tbody, .collapsible-group');
+                isGroup = pnl.is('tbody, .collapsible-group'),
+                reversePanel = pnl.data('panel-reverse'),
+                showPanel = show;
+
+            if (reversePanel) showPanel = !showPanel;
 
 			pnl.addClass('collapsible');
-			if (isGroup) pnl.addClass('collapsible-group')
+            if (isGroup) pnl.addClass('collapsible-group');
 
-			if (show) {
+            if (showPanel) {
 				if (!isGroup) {
 					pnl.show(duration, afterShow);
 				}

@@ -6,7 +6,7 @@ using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.DataExchange.Import
 {
-	public class ImportExecuteContext
+    public class ImportExecuteContext
 	{
 		private DataExchangeAbortion _abortion;
 		private ProgressValueSetter _progressValueSetter;
@@ -25,7 +25,6 @@ namespace SmartStore.Services.DataExchange.Import
 
 			CancellationToken = cancellation;
 			CustomProperties = new Dictionary<string, object>();
-			Result = new ImportResult();
 		}
 
 		public DataImportRequest Request
@@ -68,10 +67,19 @@ namespace SmartStore.Services.DataExchange.Import
 			internal set;
 		}
 
-		/// <summary>
-		/// Whether to only update existing records
-		/// </summary>
-		public bool UpdateOnly
+        /// <summary>
+        /// Infos about the import file.
+        /// </summary>
+        public ImportFile File
+        {
+            get;
+            internal set;
+        }
+
+        /// <summary>
+        /// Whether to only update existing records
+        /// </summary>
+        public bool UpdateOnly
 		{
 			get;
 			internal set;

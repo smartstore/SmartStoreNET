@@ -70,7 +70,7 @@
                 @Html.SmartLabelFor(model => model.ApiAccountPassword)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ApiAccountPassword)
+                @Html.SettingEditorFor(model => model.ApiAccountPassword, null, new { htmlAttributes = new { autocomplete = "new-password", value = Model.ApiAccountPassword } })
                 @Html.ValidationMessageFor(model => model.ApiAccountPassword)
             </td>
         </tr>

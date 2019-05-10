@@ -11,7 +11,7 @@
 	var numericList = Model.Where(x => Char.IsNumber(x.Name.Value[0])).OrderBy(x => x.Name);
 	var alphabeticalList = Model.Except(numericList).OrderBy(x => x.Name);
 	var currentLetter = String.Empty;
-	var areaLetter = alphabeticalList.FirstOrDefault().Name.Value.Substring(0, 1).ToUpper();
+	var areaLetter = alphabeticalList.FirstOrDefault()?.Name?.Value.EmptyNull().Substring(0, 1).ToUpper();
 	var catalogSettings = EngineContext.Current.Resolve<CatalogSettings>();
 }
 
@@ -20,7 +20,6 @@
         <h1 class="h2">@T("Manufacturers.List")</h1>
     </div>
     <div class="page-body">
-
         @{ Html.RenderWidget("manufacturers_all_top"); }
 
         @if (catalogSettings.SortManufacturersAlphabetically)
@@ -46,7 +45,7 @@
                     @{ 
                         // reset 
                         currentLetter = String.Empty;
-                        areaLetter = alphabeticalList.FirstOrDefault().Name.Value.Substring(0, 1).ToUpper();
+                        areaLetter = alphabeticalList.FirstOrDefault()?.Name?.Value.Substring(0, 1).ToUpper();
                     }
                 </ul>
             </div>

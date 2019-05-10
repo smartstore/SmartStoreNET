@@ -1,0 +1,49 @@
+﻿@using Telerik.Web.Mvc.UI
+
+@functions{
+	private byte? Value
+	{
+		get
+		{
+			byte? value = null;
+			if (ViewData.Model != null)
+			{
+				value = Convert.ToByte(ViewData.Model, System.Globalization.CultureInfo.InvariantCulture);
+			}
+			return value;
+		}
+	}
+
+	private string CssClass
+	{
+		get
+		{
+			var cls = "numerictextbox-group flex-grow-1";
+
+			if (TryGetMetadata<string>("size", out var size))
+			{
+				cls += " numerictextbox-group-" + size;
+			}
+
+			return cls;
+		}
+	}
+}
+
+<div class="@CssClass">
+	@(Html.Telerik().NumericTextBox<byte>()
+			.Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
+			.EmptyMessage(T("Common.EnterValue"))
+            .ButtonTitleUp(T("Common.IncreaseValue"))
+            .ButtonTitleDown(T("Common.DecreaseValue"))
+			.MinValue(GetMetadata<byte?>("min") ?? 0)
+			.MaxValue(GetMetadata<byte?>("max") ?? 255)
+			.IncrementStep(GetMetadata<byte?>("step") ?? 1)
+			.Value(Value)
+	)
+
+	@if (TryGetMetadata<string>("postfix", out var postfix))
+	{
+		<span class="numerictextbox-postfix">@postfix</span>
+	}
+</div>

@@ -22,6 +22,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Templating;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Messages
 {
@@ -187,7 +188,7 @@ namespace SmartStore.Services.Messages
 			{
 				parsed = RenderTemplate(email, ctx, required);
 
-				if (required || parsed != null)
+				if (required || parsed.HasValue())
 				{
 					return parsed.Convert<EmailAddress>();
 				}
@@ -383,11 +384,12 @@ namespace SmartStore.Services.Messages
 				parts = bagParts.Concat(parts.Except(bagParts));
 			}		
 
-			modelParts = parts.ToArray();
+			modelParts = parts.Where(x => x != null).ToArray();
 		}
 
 		protected EmailAccount GetEmailAccountOfMessageTemplate(MessageTemplate messageTemplate, int languageId)
 		{
+			// Note that the email account to be used can be specified separately for each language, that's why we use GetLocalized here.
 			var accountId = messageTemplate.GetLocalized(x => x.EmailAccountId, languageId);
 			var account = _emailAccountService.GetEmailAccountById(accountId);
 
@@ -625,8 +627,8 @@ namespace SmartStore.Services.Messages
 			if (count > 0)
 			{
 				// Fetch a random one
-				var skip = new Random().Next(count);
-				result = query.OrderBy(x => x.Id).Skip(skip).FirstOrDefault();
+				var skip = CommonHelper.GenerateRandomInteger(0, count);
+				result = query.OrderBy(x => x.Id).Skip(() => skip).FirstOrDefault();
 			}
 			else
 			{

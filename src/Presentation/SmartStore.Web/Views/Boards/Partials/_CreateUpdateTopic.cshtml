@@ -1,7 +1,12 @@
-﻿@model EditForumTopicModel
-@using SmartStore.Core.Domain.Forums;
+﻿@using SmartStore.Core.Domain.Forums;
 @using SmartStore.Web;
 @using SmartStore.Web.Models.Boards;
+@model EditForumTopicModel
+@{
+    var cancelUrl = Model.Id == 0 ? 
+        Url.RouteUrl("ForumSlug", new { id = Model.ForumId, slug = Model.ForumSeName }) :
+        Url.RouteUrl("TopicSlug", new { id = Model.Id, slug = Model.SeName });
+}
 
 @using (Html.BeginForm())
 {
@@ -41,7 +46,7 @@
             </div>
         </div>
 
-        @if (Model.IsCustomerAllowedToSetTopicPriority)
+        @if (Model.IsModerator)
         {
             <div class="form-group row">
                 <label class="col-sm-3 col-form-label">@T("Forum.Priority")</label>
@@ -49,14 +54,22 @@
                     @Html.DropDownList("TopicTypeId", new SelectList(Model.TopicPriorities, "Value", "Text", Model.TopicTypeId), new { @class = "form-control" } )
                 </div>
             </div>
-        }
-                           
-        @if (Model.IsCustomerAllowedToSubscribe)
-        {
+
             <div class="row justify-content-end">
                 <div class="col-sm-9">
 					<div class="form-check">
-						@Html.CheckBox("Subscribed", @Model.Subscribed, new { @class = "form-check-input" })
+                        @Html.CheckBoxFor(model => model.Published, new { @class = "form-check-input" })
+			            <label class="form-check-label" for="@Html.IdFor(model => model.Published)">
+				            @T("Common.Published")
+			            </label>
+					</div>
+                </div>
+            </div>
+
+            <div class="row justify-content-end">
+                <div class="col-sm-9">
+					<div class="form-check">
+						@Html.CheckBoxFor(model => model.Subscribed, new { @class = "form-check-input" })
 						<label class="form-check-label" for="Subscribed">@T("Forum.NotifyWhenSomeonePostsInThisTopic")</label>
 					</div>
                 </div>
@@ -69,16 +82,27 @@
 			</div>
 		</div>
 
+		@if (Model.DisplayCaptcha)
+		{
+			<div class="row justify-content-end mt-3">
+                <div class="col-sm-9">
+				    <div class="captcha-box">
+					    @Html.Raw(Html.GenerateCaptcha())
+				    </div>
+                </div>
+			</div>
+		}
+
         <div class="row justify-content-end">
             <div class="col-sm-9 mt-3">
                 <button type="submit" class="btn btn-primary">
 					<i class="fa fa-reply"></i>
                     <span>@T("Forum.Submit")</span>
 				</button>
-                <button class="btn btn-secondary" onclick="setLocation('@Url.RouteUrl("ForumSlug", new { id = Model.ForumId, slug = Model.ForumSeName }) '); return false;">
+                <a class="btn btn-secondary" href="@cancelUrl">
                     <i class="fa fa-times"></i>
                     <span>@T("Forum.Cancel")</span>
-                </button>
+                </a>
             </div>
         </div>
     </div>

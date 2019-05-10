@@ -1,7 +1,7 @@
-﻿@model ForumTopicPageModel
-@using SmartStore.Web.Models.Boards;
+﻿@using SmartStore.Web.Models.Boards;
 @using SmartStore.Web.Models.Common;
 @using SmartStore.Web.Framework.UI;
+@model ForumTopicPageModel
 @{
     Layout = "_Layout";
     Html.AddTitleParts(Model.Subject);
@@ -15,8 +15,9 @@
 </script>
 
 <div class="page forum-topic">
-    @{ Html.RenderPartial("_SearchBox"); }
-    
+    <div class="mt-2 mb-4 w-75">
+        @{ Html.RenderAction("SearchBox", "Boards"); }
+    </div>    
     <div class="title">
         <h2>@Model.Subject</h2>
     </div>
@@ -26,22 +27,22 @@
         <div class="manage btn-group my-3">
             @if (Model.IsCustomerAllowedToEditTopic)
 			{
-				<a href='@Url.Action("TopicEdit", new { id = Model.Id })' class="btn btn-secondary" rel="nofollow">
-					<i class="fa fa-pencil-square-o"></i>
+				<a href="@Url.Action("TopicEdit", new { id = Model.Id })" class="btn btn-secondary" rel="nofollow">
+					<i class="far fa-edit"></i>
                     <span>@T("Forum.EditTopic")</span>
 				</a>
 			}
             @if (Model.IsCustomerAllowedToDeleteTopic)
 			{
-				<a href='@Url.Action("TopicDelete", new { id = Model.Id })' class="btn btn-secondary" rel="nofollow" onclick='@(String.Format("return confirm({0});", T("Common.AreYouSure").JsText))'>
-					<i class="fa fa-trash-o"></i>
+				<a href="@Url.Action("TopicDelete", new { id = Model.Id })" class="btn btn-secondary" rel="nofollow" onclick='return confirm(@T("Common.AreYouSure").JsText);'>
+					<i class="far fa-trash-alt"></i>
 					<span>@T("Forum.DeleteTopic")</span>
 				</a>
 			}
             @if (Model.IsCustomerAllowedToMoveTopic)
 			{
-				<a href='@Url.Action("TopicMove", new { id = Model.Id })' class="btn btn-secondary" rel="nofollow">
-					<i class="fa fa-arrows"></i>
+				<a href="@Url.Action("TopicMove", new { id = Model.Id })" class="btn btn-secondary" rel="nofollow">
+					<i class="fa fa-arrows-alt"></i>
 					<span>@T("Forum.MoveTopic")</span>
 				</a>
 			}
@@ -51,32 +52,31 @@
     @ButtonBar()
 
     <div class="posts">
-        @foreach (var post in @Model.ForumPostModels)
+        @foreach (var post in Model.ForumPostModels)
         {
             Html.RenderPartial("_ForumPost", post);
         }
     </div>
 
     @ButtonBar()
-
 </div>
 
 @helper ButtonBar()
 {
     var pager = Html.SmartStore().Pager(Model.PostsPageIndex, Model.PostsPageSize, Model.PostsTotalRecords)
         .Name("paginator")
+        .QueryParam("page")
         .Size(PagerSize.Small)
         .Alignment(PagerAlignment.Centered)
         .Route("TopicSlug", new RouteValues { id = Model.Id, slug = Model.SeName });
 
     <div class="topic-options row my-2">
 		<div class="col">
-			<button class="btn btn-primary" onclick="setLocation('@Url.Action("PostCreate", new { id = @Model.Id })')">
+			<a class="btn btn-primary" href="@Url.Action("PostCreate", new { id = Model.Id })">
 				<i class="fa fa-share"></i>
 				<span>@T("Forum.Reply")</span>
-			</button>
+			</a>
 		</div>
-        
 
         @if (Model.IsCustomerAllowedToSubscribe)
         {
@@ -84,7 +84,7 @@
                 <i class="fa fa-bookmark"></i>
                 @Ajax.ActionLink(Model.WatchTopicText,
                     "TopicWatch",
-                    new { id = @Model.Id },
+                    new { id = Model.Id },
                     new AjaxOptions { HttpMethod = "Post", OnSuccess = "handleTopicWatch" },
                     new { @class = "watch-topic-link-button" })
             </div>
@@ -93,3 +93,38 @@
         @pager
     </div>
 }
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+
+		// Post voting.
+		$('button.post-vote-button').on('click', function () {
+            var self = $(this),
+                post = self.closest('.forum-post');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("PostVote", "Boards")',
+                data: { "id": post.data('id'), "vote": self.attr('value') },
+                cache: false,
+                success: function (resp) {
+                    if (resp.success) {
+                        self.closest('div').find(self.hasClass('post-vote-up') ? '.post-vote-down' : '.post-vote-up').show();
+                        self.hide();
+
+                        // Update counter.
+                        if (resp.voteCount > 0) {
+                            post.find('.votes').show().find('.vote-count').text(resp.voteCountString);
+                        }
+                        else {
+                            post.find('.votes').text(resp.voteCountString).hide();
+                        }
+                    }
+
+                    displayNotification(resp.message, resp.success ? 'success' : 'error');
+                }
+            });
+        });
+
+	});
+</script>

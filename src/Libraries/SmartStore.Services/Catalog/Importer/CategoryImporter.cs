@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Events;
 using SmartStore.Services.DataExchange.Import;
+using SmartStore.Services.DataExchange.Import.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Utilities;
@@ -152,7 +153,9 @@ namespace SmartStore.Services.Catalog.Importer
 							_categoryRepository.Context.AutoDetectChangesEnabled = false;
 						}
 					}
-				}
+
+                    context.Services.EventPublisher.Publish(new ImportBatchExecutedEvent<Category>(context, batch));
+                }
 
 				// map parent id of inserted categories
 				if (srcToDestId.Any() && segmenter.HasColumn("Id") && segmenter.HasColumn("ParentCategoryId") && !segmenter.IsIgnored("ParentCategoryId"))
@@ -221,15 +224,14 @@ namespace SmartStore.Services.Catalog.Importer
 											currentPictures.Add(picture);
 										}
 									}
-
-									var size = Size.Empty;
-									pictureBinary = _pictureService.ValidatePicture(pictureBinary, image.MimeType, out size);
+                                    
 									pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
 
 									if (pictureBinary != null && pictureBinary.Length > 0)
 									{
-										var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, size.Width, size.Height, false);
-										if (picture != null)
+										//var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, size.Width, size.Height, false);
+                                        var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false); ;
+                                        if (picture != null)
 										{
 											category.PictureId = picture.Id;
 											_categoryRepository.Update(category);

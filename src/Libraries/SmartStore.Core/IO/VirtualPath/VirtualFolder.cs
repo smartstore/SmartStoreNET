@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using SmartStore.Core.Logging;
 
 namespace SmartStore.Core.IO
@@ -117,6 +118,19 @@ namespace SmartStore.Core.IO
 			}
 		}
 
+		public async Task CreateTextFileAsync(string relativePath, string content)
+		{
+			Guard.NotEmpty(relativePath, nameof(relativePath));
+
+			using (var stream = CreateFile(relativePath))
+			{
+				using (var tw = new StreamWriter(stream))
+				{
+					await tw.WriteAsync(content);
+				}
+			}
+		}
+
 		public virtual Stream CreateFile(string relativePath)
 		{
 			var filePath = MapPath(relativePath);
@@ -166,6 +180,26 @@ namespace SmartStore.Core.IO
 				using (var reader = new StreamReader(stream))
 				{
 					return reader.ReadToEnd();
+				}
+			}
+		}
+
+		public virtual async Task<string> ReadFileAsync(string relativePath)
+		{
+			Guard.NotEmpty(relativePath, nameof(relativePath));
+
+			var path = GetVirtualPath(relativePath);
+
+			if (!_vpp.FileExists(path))
+			{
+				return null;
+			}
+
+			using (var stream = _vpp.OpenFile(path))
+			{
+				using (var reader = new StreamReader(stream))
+				{
+					return await reader.ReadToEndAsync();
 				}
 			}
 		}

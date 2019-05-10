@@ -409,7 +409,7 @@ Payment fee: {10}]]>
         <Value>
           <![CDATA[<p>PayPal PLUS is a solution where PayPal offers PayPal, Credit Card, Direct Debit (ELV) and pay upon invoice as individual payment options on the payment selection page.
 Pay upon invoice may not be available for all merchants. PayPal PLUS only supports the transaction type of instant settlement and is only available in Germany at the moment.</p>
-<p>PayPal PLUS replaces the list of payment methods in checkout by the PayPal payment wall. You can add up to 5 offline or redirection payment methods to the payment wall.</p>
+<p>PayPal PLUS replaces the list of payment methods in checkout by the PayPal payment wall. You can add up to 10 offline or redirection payment methods to the payment wall.</p>
 <p>How to set up PayPal PLUS:
 <ol>
 <li>Create a new REST API application under <a href="https://developer.paypal.com/developer/applications/" target="paypal">My Apps & Credentials</a>.
@@ -434,9 +434,6 @@ Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
       </LocaleResource>
       <LocaleResource Name="ThirdPartyPaymentMethods.Hint">
         <Value>You can set up to 5 more payment methods. These are offered along with the PayPal PLUS payment methods during the checkout process.</Value>
-      </LocaleResource>
-      <LocaleResource Name="ValidateThirdPartyPaymentMethods">
-        <Value>Maximum of 5 third party payment methods can be specified.</Value>
       </LocaleResource>
       <LocaleResource Name="DisplayPaymentMethodLogo">
         <Value>Display logo of other payment methods</Value>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Html;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
@@ -51,8 +52,7 @@ namespace SmartStore.Admin.Controllers
         #region Utilities
 
         [NonAction]
-        private void PrepareProductReviewModel(ProductReviewModel model,
-            ProductReview productReview, bool excludeProperties, bool formatReviewText)
+        private void PrepareProductReviewModel(ProductReviewModel model, ProductReview productReview, bool excludeProperties, bool formatReviewText)
         {
             if (model == null)
                 throw new ArgumentNullException("model");
@@ -80,7 +80,7 @@ namespace SmartStore.Admin.Controllers
             {
                 model.Title = productReview.Title;
                 if (formatReviewText)
-                    model.ReviewText = Core.Html.HtmlUtils.FormatText(productReview.ReviewText, false, true, false, false, false, false);
+                    model.ReviewText = HtmlUtils.ConvertPlainTextToHtml(productReview.ReviewText.HtmlEncode());
                 else
                     model.ReviewText = productReview.ReviewText;
                 model.IsApproved = productReview.IsApproved;

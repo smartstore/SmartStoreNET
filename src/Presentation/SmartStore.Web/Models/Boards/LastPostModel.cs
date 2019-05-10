@@ -1,9 +1,9 @@
-﻿
+﻿using SmartStore.Web.Framework.Modelling;
+
 namespace SmartStore.Web.Models.Boards
 {
-    public partial class LastPostModel
+    public partial class LastPostModel : EntityModelBase
     {
-        public int Id { get; set; }
         public int ForumTopicId { get; set; }
         public string ForumTopicSeName { get; set; }
         public string ForumTopicSubject { get; set; }
@@ -14,7 +14,8 @@ namespace SmartStore.Web.Models.Boards
         public bool IsCustomerGuest { get; set; }
 
         public string PostCreatedOnStr { get; set; }
-        
+        public bool Published { get; set; }
+
         public bool ShowTopic { get; set; }
     }
 }

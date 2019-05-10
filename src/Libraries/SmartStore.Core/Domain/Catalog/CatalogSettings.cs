@@ -68,7 +68,7 @@ namespace SmartStore.Core.Domain.Catalog
 			ShowColorSquaresInLists = true;
 			ShowDiscountSign = true;
 			ShowVariantCombinationPriceAdjustment = true;
-			ShowLinkedAttributeValueImage = true;
+            ShowLinkedAttributeValueImage = true;
 			EnableDynamicPriceUpdate = true;
             ShowProductReviewsInProductDetail = true;
             EnableHtmlTextCollapser = true;
@@ -129,10 +129,15 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         public bool ShowVariantCombinationPriceAdjustment { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether to display quantity of linked product at attribute values
-		/// </summary>
-		public bool ShowLinkedAttributeValueQuantity { get; set; }
+        /// <summary>
+        /// Indicates whether to show a login note if the user is not authorized to see prices.
+        /// </summary>
+        public bool ShowLoginForPriceNote { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to display quantity of linked product at attribute values
+        /// </summary>
+        public bool ShowLinkedAttributeValueQuantity { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to display the image of linked product at attribute values
@@ -188,11 +193,21 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets a value indicating whether and where to display a list of subcategories
 		/// </summary>
 		public SubCategoryDisplayType SubCategoryDisplayType { get; set; }
-        
-        /// <summary>
-        /// Gets or sets a value indicating whether a 'Share button' is enabled
-        /// </summary>
-        public bool ShowShareButton { get; set; }
+
+		/// <summary>
+		/// An option indicating whether sub pages should display the subcategories
+		/// </summary>
+		public bool ShowSubCategoriesInSubPages { get; set; }
+
+		/// <summary>
+		/// An option indicating whether sub pages should display the category/manufacturer description
+		/// </summary>
+		public bool ShowDescriptionInSubPages { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether a 'Share button' is enabled
+		/// </summary>
+		public bool ShowShareButton { get; set; }
 
         /// <summary>
         /// Gets or sets a share code (e.g. AddThis button code)
@@ -401,15 +416,25 @@ namespace SmartStore.Core.Domain.Catalog
 
         public bool ShowDiscountSign { get; set; }
 
-		/// <summary>
-		/// Gets or sets the available customer selectable default page size options
-		/// </summary>
-		public string DefaultPageSizeOptions { get; set; }
+        /// <summary>
+        /// Gets or sets the price display style for prices
+        /// </summary>
+        public PriceDisplayStyle PriceDisplayStyle { get; set; }
 
-		/// <summary>
-		/// Gets or sets the price display type for prices in product lists
-		/// </summary>
-		public PriceDisplayType PriceDisplayType { get; set; }
+        /// <summary>
+        /// Displays a textual resources instead of the decimal value when prices are 0
+        /// </summary>
+        public bool DisplayTextForZeroPrices { get; set; }
+
+        /// <summary>
+        /// Gets or sets the available customer selectable default page size options
+        /// </summary>
+        public string DefaultPageSizeOptions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the price display type for prices in product lists
+        /// </summary>
+        public PriceDisplayType PriceDisplayType { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to include "Short description" in compare products
@@ -430,11 +455,16 @@ namespace SmartStore.Core.Domain.Catalog
         /// An option indicating whether products on category and manufacturer pages should include featured products as well
         /// </summary>
         public bool IncludeFeaturedProductsInNormalLists { get; set; }
-        
-        /// <summary>
-        /// Gets or sets a value indicating whether tier prices should be displayed with applied discounts (if available)
-        /// </summary>
-        public bool DisplayTierPricesWithDiscounts { get; set; }
+
+		/// <summary>
+		/// An option indicating whether products on category and manufacturer pages should include featured products in sub pages as well
+		/// </summary>
+		public bool IncludeFeaturedProductsInSubPages { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether tier prices should be displayed with applied discounts (if available)
+		/// </summary>
+		public bool DisplayTierPricesWithDiscounts { get; set; }
         
         /// <summary>
         /// Gets or sets a value indicating whether to ignore discounts (side-wide)

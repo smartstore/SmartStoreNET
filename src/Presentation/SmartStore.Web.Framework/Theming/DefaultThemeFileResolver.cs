@@ -133,18 +133,18 @@ namespace SmartStore.Web.Framework.Theming
 				return null;
 			}
 
-			bool isExplicit = false;
+			bool isBased = false;
 
 			virtualPath = ThemeHelper.TokenizePath(virtualPath, out var requestedThemeName, out var relativePath, out var query);
 
 			Func<InheritedThemeFileResult> nullOrFile = () =>
 			{
-				return isExplicit 
-					? new InheritedThemeFileResult { IsExplicit = true, OriginalVirtualPath = virtualPath, Query = query } 
+				return isBased 
+					? new InheritedThemeFileResult { IsBased = true, OriginalVirtualPath = virtualPath, Query = query } 
 					: null;
 			};
 
-			ThemeManifest currentTheme = ResolveTheme(requestedThemeName, relativePath, query, out isExplicit);
+			ThemeManifest currentTheme = ResolveTheme(requestedThemeName, relativePath, query, out isBased);
 
 			if (currentTheme?.BaseTheme == null)
 			{
@@ -160,7 +160,7 @@ namespace SmartStore.Web.Framework.Theming
 					return nullOrFile();
 				}
 			}
-			else if (isExplicit && currentTheme.BaseTheme != null)
+			else if (isBased && currentTheme.BaseTheme != null)
 			{
 				// A file from the base theme has been requested
 				currentTheme = currentTheme.BaseTheme;
@@ -188,7 +188,7 @@ namespace SmartStore.Web.Framework.Theming
 								ResultPhysicalPath = resultPhysicalPath,
 								OriginalThemeName = requestedThemeName,
 								ResultThemeName = actualLocation,
-								IsExplicit = isExplicit,
+								IsBased = isBased,
 								Query = query
 							};
 						}
@@ -204,9 +204,9 @@ namespace SmartStore.Web.Framework.Theming
 			return result;
 		}
 
-		private ThemeManifest ResolveTheme(string requestedThemeName, string relativePath, string query, out bool isExplicit)
+		private ThemeManifest ResolveTheme(string requestedThemeName, string relativePath, string query, out bool isBased)
 		{
-			isExplicit = false;
+			isBased = false;
 			ThemeManifest currentTheme;
 
 			var isAdmin = EngineContext.Current.Resolve<IWorkContext>().IsAdmin;
@@ -237,16 +237,16 @@ namespace SmartStore.Web.Framework.Theming
 
 				currentTheme = ThemeHelper.ResolveCurrentTheme();
 
-				if (isPreprocessor && query != null && query.StartsWith("explicit", StringComparison.OrdinalIgnoreCase))
+				if (isPreprocessor && query != null && query.StartsWith("base", StringComparison.OrdinalIgnoreCase))
 				{
 					// special case to support SASS @import declarations
 					// within inherited SASS files. Snenario: an inheritor wishes to
 					// include the same file from it's base theme (e.g. custom.scss) just to tweak it
-					// a bit for his child theme. Without the 'explicit' query the resolution starting point
+					// a bit for his child theme. Without the 'base' query the resolution starting point
 					// for custom.scss would be the CURRENT theme's folder, and NOT the requested one's,
 					// which inevitably would result in a cyclic dependency.
 					currentTheme = _themeRegistry.GetThemeManifest(requestedThemeName);
-					isExplicit = true;
+					isBased = true;
 				}
 			}
 

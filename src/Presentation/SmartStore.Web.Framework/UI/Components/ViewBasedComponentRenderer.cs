@@ -1,9 +1,8 @@
-﻿using System;
-using System.Web.Mvc.Html;
+﻿using System.Web.Mvc.Html;
 
 namespace SmartStore.Web.Framework.UI
 {
-	public class ViewBasedComponentRenderer<TComponent> : ComponentRenderer<TComponent> where TComponent : Component
+    public class ViewBasedComponentRenderer<TComponent> : ComponentRenderer<TComponent> where TComponent : Component
 	{
 		private readonly string _viewName;
 
@@ -12,21 +11,26 @@ namespace SmartStore.Web.Framework.UI
 		{
 		}
 
-		public ViewBasedComponentRenderer(string viewName)
+        public ViewBasedComponentRenderer(string viewName)
 		{
 			Guard.NotEmpty(viewName, nameof(viewName));
 
 			_viewName = viewName;
 		}
 
-		public override void Render()
+        protected virtual string GetViewName()
+        {
+            return "Components/" + _viewName;
+        }
+
+        public override void Render()
 		{
-			HtmlHelper.RenderPartial("Components/" + _viewName, base.Component);
+			HtmlHelper.RenderPartial(GetViewName(), Component);
 		}
 
 		public override string ToHtmlString()
 		{
-			return HtmlHelper.Partial("Components/" + _viewName, base.Component).ToString();
+			return HtmlHelper.Partial(GetViewName(), Component).ToString();
 		}
 	}
 }

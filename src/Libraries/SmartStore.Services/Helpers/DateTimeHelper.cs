@@ -18,7 +18,8 @@ namespace SmartStore.Services.Helpers
 
 		private TimeZoneInfo _cachedUserTimeZone;
 
-        public DateTimeHelper(IWorkContext workContext,
+        public DateTimeHelper(
+			IWorkContext workContext,
 			IGenericAttributeService genericAttributeService,
             ISettingService settingService, 
             DateTimeSettings dateTimeSettings)

@@ -163,45 +163,17 @@ namespace SmartStore.Shipping.Services
                 .Where(sbt => sbt.ShippingMethodId == shippingMethodId && subtotal >= sbt.From && (sbt.To == null || subtotal <= sbt.To.Value))
                 .ToList();
 
-			//filter by store
-			var matchedByStore = new List<ShippingByTotalRecord>();
-			foreach (var sbw in existingRates)
-			{
-                if (sbw.StoreId == 0 || storeId == sbw.StoreId)
-				{
-					matchedByStore.Add(sbw);
-				}
-			}
+            //filter by store
+            var matchedByStore = existingRates.Where(x => x.StoreId == storeId || x.StoreId == 0).ToList();
 
             //filter by country
-            var matchedByCountry = new List<ShippingByTotalRecord>();
-			foreach (var sbt in matchedByStore)
-            {
-                if (sbt.CountryId.GetValueOrDefault() == 0 || countryId == sbt.CountryId.GetValueOrDefault())
-                {
-                    matchedByCountry.Add(sbt);
-                }
-            }
+            var matchedByCountry = matchedByStore.Where(x => x.CountryId.GetValueOrDefault() == countryId || x.CountryId.GetValueOrDefault() == 0).ToList();
 
             //filter by state/province
-            var matchedByStateProvince = new List<ShippingByTotalRecord>();
-            foreach (var sbt in matchedByCountry)
-            {
-                if (sbt.StateProvinceId.GetValueOrDefault() == 0 || stateProvinceId == sbt.StateProvinceId.GetValueOrDefault())
-                {
-                    matchedByStateProvince.Add(sbt);
-                }
-            }
+            var matchedByStateProvince = matchedByCountry.Where(x => x.StateProvinceId.GetValueOrDefault() == stateProvinceId || x.StateProvinceId.GetValueOrDefault() == 0).ToList();
 
             //filter by zip
-            var matchedByZip = new List<ShippingByTotalRecord>();
-            foreach (var sbt in matchedByStateProvince)
-            {
-                if ((zip.IsEmpty() && sbt.Zip.IsEmpty()) || (ZipMatches(zip, sbt.Zip)))
-                {
-                    matchedByZip.Add(sbt);
-                }
-            }
+            var matchedByZip = matchedByStateProvince.Where(x => (zip.IsEmpty() && x.Zip.IsEmpty()) || ZipMatches(zip, x.Zip)).ToList();
 
             return matchedByZip.LastOrDefault();
         }

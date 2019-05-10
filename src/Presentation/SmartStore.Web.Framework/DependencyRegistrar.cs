@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Web;
 using System.Web.Hosting;
-using System.Web.Mvc;
 using Autofac;
 using Autofac.Builder;
 using Autofac.Core;
@@ -95,13 +94,13 @@ using Module = Autofac.Module;
 
 namespace SmartStore.Web.Framework
 {
-	public class DependencyRegistrar : IDependencyRegistrar
+    public class DependencyRegistrar : IDependencyRegistrar
     {
 		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
 			// plugins
-			var pluginFinder = new PluginFinder();
-			builder.RegisterInstance(pluginFinder).As<IPluginFinder>().SingleInstance();
+			var pluginFinder = PluginFinder.Current;
+			builder.RegisterInstance(pluginFinder);
 			builder.RegisterType<PluginMediator>();
 
 			// modules
@@ -110,7 +109,6 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModule(new CachingModule());
 			builder.RegisterModule(new SearchModule());
 			builder.RegisterModule(new LocalizationModule());
-			builder.RegisterModule(new EventModule(typeFinder, pluginFinder));
 			builder.RegisterModule(new MessagingModule());
 			builder.RegisterModule(new WebModule(typeFinder));
 			builder.RegisterModule(new WebApiModule(typeFinder));
@@ -120,6 +118,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModule(new ProvidersModule(typeFinder, pluginFinder));
             builder.RegisterModule(new TasksModule(typeFinder));
 			builder.RegisterModule(new DataExchangeModule(typeFinder));
+			builder.RegisterModule(new EventModule(typeFinder, pluginFinder));
 		}
 
         public int Order
@@ -251,15 +250,18 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterType<PollService>().As<IPollService>().InstancePerRequest();
 			builder.RegisterType<BlogService>().As<IBlogService>().InstancePerRequest();
-			builder.RegisterType<WidgetService>().As<IWidgetService>().InstancePerRequest();
 			builder.RegisterType<TopicService>().As<ITopicService>().InstancePerRequest();
 			builder.RegisterType<NewsService>().As<INewsService>().InstancePerRequest();
 
-			builder.RegisterType<DateTimeHelper>().As<IDateTimeHelper>().InstancePerRequest();
+            builder.RegisterType<WidgetService>().As<IWidgetService>().InstancePerRequest();
+            builder.RegisterType<MenuStorage>().As<IMenuStorage>().InstancePerRequest();
+            builder.RegisterType<LinkResolver>().As<ILinkResolver>().InstancePerRequest();
+
+            builder.RegisterType<DateTimeHelper>().As<IDateTimeHelper>().InstancePerRequest();
 			builder.RegisterType<XmlSitemapGenerator>().As<IXmlSitemapGenerator>().InstancePerRequest();
 			builder.RegisterType<PageAssetsBuilder>().As<IPageAssetsBuilder>().InstancePerRequest();
 
-			builder.RegisterType<ScheduleTaskService>().As<IScheduleTaskService>().InstancePerRequest();
+            builder.RegisterType<ScheduleTaskService>().As<IScheduleTaskService>().InstancePerRequest();
 			builder.RegisterType<SyncMappingService>().As<ISyncMappingService>().InstancePerRequest();
 
 			builder.RegisterType<MobileDeviceHelper>().As<IMobileDeviceHelper>().InstancePerRequest();
@@ -279,7 +281,7 @@ namespace SmartStore.Web.Framework
 
 			if (servicesProperty == null)
 				return;
-
+			
 			registration.Metadata.Add("Property.ICommonServices", new FastProperty(servicesProperty));
 
 			registration.Activated += (sender, e) =>
@@ -361,14 +363,14 @@ namespace SmartStore.Web.Framework
 			builder.Register(x => (IEfDataProvider)x.Resolve<DataProviderFactory>().LoadDataProvider()).As<IEfDataProvider>().InstancePerDependency();
 
 			builder.RegisterType<DefaultDbHookHandler>().As<IDbHookHandler>().InstancePerRequest();
-
+			
 			builder.RegisterType<EfDbCache>().As<IDbCache>().SingleInstance();
 
 			if (DataSettings.DatabaseIsInstalled())
 			{
 				// register DB Hooks (only when app was installed properly)
 
-				Func<Type, Type> findHookedType = (t) => 
+				Type findHookedType(Type t)
 				{
 					var x = t;
 					while (x != null)
@@ -381,7 +383,7 @@ namespace SmartStore.Web.Framework
 					}
 
 					return typeof(BaseEntity);
-				};
+				}
 
 				var hooks = _typeFinder.FindClassesOfType<IDbHook>(ignoreInactivePlugins: true);
 				foreach (var hook in hooks)
@@ -395,7 +397,7 @@ namespace SmartStore.Web.Framework
 						{
 							m.For(em => em.HookedType, hookedType);
 							m.For(em => em.ImplType, hook);
-							m.For(em => em.IsLoadHook, typeof(IDbLoadHook).IsAssignableFrom(hook));
+							m.For(em => em.IsLoadHook, false);
 							m.For(em => em.Important, hook.HasAttribute<ImportantAttribute>(false));
 						});
 				}
@@ -415,7 +417,7 @@ namespace SmartStore.Web.Framework
 						}
 						catch
 						{
-							//return new SmartObjectContext();
+							// return new SmartObjectContext();
 							return null;
 						}
 
@@ -543,13 +545,14 @@ namespace SmartStore.Web.Framework
 		{
 			// Output cache
 			builder.RegisterType<DisplayControl>().As<IDisplayControl>().InstancePerRequest();
-			builder.Register<IOutputCacheInvalidationObserver>(c => NullOutputCacheInvalidationObserver.Instance).SingleInstance();
+			builder.Register(c => NullOutputCacheInvalidationObserver.Instance).SingleInstance();
 			builder.RegisterType<NullCacheableRouteRegistrar>().As<ICacheableRouteRegistrar>().InstancePerRequest();
 
 			// Request cache
 			builder.RegisterType<RequestCache>().As<IRequestCache>().InstancePerRequest();
 
 			// Model/Business cache (application scoped)
+			builder.RegisterType<CacheScopeAccessor>().As<ICacheScopeAccessor>().InstancePerRequest();
 			builder.RegisterType<MemoryCacheManager>().As<ICacheManager>().SingleInstance();
 			builder.RegisterType<NullCache>().Named<ICacheManager>("null").SingleInstance();
 
@@ -573,14 +576,23 @@ namespace SmartStore.Web.Framework
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
+            // General.
 			builder.RegisterType<DefaultIndexManager>().As<IIndexManager>().InstancePerRequest();
-			builder.RegisterType<CatalogSearchService>().As<ICatalogSearchService>().InstancePerRequest();
-			builder.RegisterType<LinqCatalogSearchService>().Named<ICatalogSearchService>("linq").InstancePerRequest();
-			builder.RegisterType<CatalogSearchQueryFactory>().As<ICatalogSearchQueryFactory>().InstancePerRequest();
-			builder.RegisterType<CatalogSearchQueryAliasMapper>().As<ICatalogSearchQueryAliasMapper>().InstancePerRequest();
-			builder.RegisterType<FacetUrlHelper>().InstancePerRequest();
-			builder.RegisterType<FacetTemplateProvider>().As<IFacetTemplateProvider>().InstancePerRequest();
-		}
+            builder.RegisterType<FacetUrlHelper>().InstancePerRequest();
+            builder.RegisterType<FacetTemplateProvider>().As<IFacetTemplateProvider>().InstancePerRequest();
+
+            // Catalog.
+            builder.RegisterType<CatalogSearchService>().As<ICatalogSearchService>().InstancePerRequest();
+            builder.RegisterType<LinqCatalogSearchService>().Named<ICatalogSearchService>("linq").InstancePerRequest();
+            builder.RegisterType<CatalogSearchQueryFactory>().As<ICatalogSearchQueryFactory>().InstancePerRequest();
+            builder.RegisterType<CatalogSearchQueryAliasMapper>().As<ICatalogSearchQueryAliasMapper>().InstancePerRequest();
+
+            // Forum.
+            builder.RegisterType<ForumSearchService>().As<IForumSearchService>().InstancePerRequest();
+            builder.RegisterType<LinqForumSearchService>().Named<IForumSearchService>("linq").InstancePerRequest();
+            builder.RegisterType<ForumSearchQueryFactory>().As<IForumSearchQueryFactory>().InstancePerRequest();
+            builder.RegisterType<ForumSearchQueryAliasMapper>().As<IForumSearchQueryAliasMapper>().InstancePerRequest();
+        }
 	}
 
 	public class EventModule : Module
@@ -598,37 +610,29 @@ namespace SmartStore.Web.Framework
 		{
 			builder.RegisterType<DefaultMessageBus>().As<IMessageBus>().SingleInstance();
 
+			builder.RegisterType<ConsumerRegistry>().As<IConsumerRegistry>().SingleInstance();
+			builder.RegisterType<ConsumerResolver>().As<IConsumerResolver>().SingleInstance();
+			builder.RegisterType<ConsumerInvoker>().As<IConsumerInvoker>().SingleInstance();
 			builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
-			builder.RegisterGeneric(typeof(DefaultConsumerFactory<>)).As(typeof(IConsumerFactory<>)).InstancePerDependency();
 
-			// Register event consumers
-			var consumerTypes = _typeFinder.FindClassesOfType(typeof(IConsumer<>));
-			foreach (var consumerType in consumerTypes)
+			var consumerTypes = _typeFinder.FindClassesOfType(typeof(IConsumer));
+			foreach (var type in consumerTypes)
 			{
-				Type[] implementedInterfaces = consumerType.FindInterfaces(IsConsumerInterface, typeof(IConsumer<>));
+				var registration = builder
+					.RegisterType(type)
+					.As<IConsumer>()
+					.Keyed<IConsumer>(type)
+					.InstancePerRequest();
 
-				var registration = builder.RegisterType(consumerType).As(implementedInterfaces);
-
-				var pluginDescriptor = _pluginFinder.GetPluginDescriptorByAssembly(consumerType.Assembly);
-				var isActive = PluginManager.IsActivePluginAssembly(consumerType.Assembly);
-				var shouldExecuteAsync = consumerType.GetAttribute<AsyncConsumerAttribute>(false) != null;
+				var pluginDescriptor = _pluginFinder.GetPluginDescriptorByAssembly(type.Assembly);
+				var isActive = PluginManager.IsActivePluginAssembly(type.Assembly);
 
 				registration.WithMetadata<EventConsumerMetadata>(m => {
 					m.For(em => em.IsActive, isActive);
-					m.For(em => em.ExecuteAsync, shouldExecuteAsync);
+					m.For(em => em.ContainerType, type);
 					m.For(em => em.PluginDescriptor, pluginDescriptor);
 				});
-
-				if (!shouldExecuteAsync)
-					registration.InstancePerRequest();
-
 			}
-		}
-
-		private static bool IsConsumerInterface(Type type, object criteria)
-		{
-			var isMatch = type.IsGenericType && ((Type)criteria).IsAssignableFrom(type.GetGenericTypeDefinition());
-			return isMatch;
 		}
 	}
 
@@ -710,7 +714,7 @@ namespace SmartStore.Web.Framework
 
 		static bool IsRequestValid()
 		{
-			if (HttpContext.Current == null)
+			if (HttpContext.Current?.Handler == null)
 				return false;
 
 			try
@@ -718,7 +722,7 @@ namespace SmartStore.Web.Framework
 				// The "Request" property throws at application startup on IIS integrated pipeline mode
 				var req = HttpContext.Current.Request;
 			}
-			catch (Exception)
+			catch
 			{
 				return false;
 			}
@@ -797,10 +801,10 @@ namespace SmartStore.Web.Framework
 	{
 		private readonly ITypeFinder _typeFinder;
 
-		public UiModule(ITypeFinder typeFinder)
+        public UiModule(ITypeFinder typeFinder)
 		{
 			_typeFinder = typeFinder;
-		}
+        }
 
 		protected override void Load(ContainerBuilder builder)
 		{
@@ -816,19 +820,45 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<PagerRenderer>().As<ComponentRenderer<Pager>>();
 			builder.RegisterType<WindowRenderer>().As<ComponentRenderer<Window>>();
 
-			builder.RegisterType<WidgetProvider>().As<IWidgetProvider>().InstancePerRequest();
+            builder.RegisterType<WidgetProvider>().As<IWidgetProvider>().InstancePerRequest();
 			builder.RegisterType<MenuPublisher>().As<IMenuPublisher>().InstancePerRequest();
 			builder.RegisterType<DefaultBreadcrumb>().As<IBreadcrumb>().InstancePerRequest();
+			builder.RegisterType<IconExplorer>().As<IIconExplorer>().SingleInstance();
 
-			// Sitemaps
-			builder.RegisterType<SiteMapService>().As<ISiteMapService>().InstancePerRequest();
+            // Menus.
+            builder.RegisterType<MenuService>().As<IMenuService>().InstancePerRequest();
+            
+            var menuResolverTypes = _typeFinder.FindClassesOfType<IMenuResolver>(ignoreInactivePlugins: true);
+            foreach (var type in menuResolverTypes)
+            {
+                builder.RegisterType(type).As<IMenuResolver>().PropertiesAutowired(PropertyWiringOptions.None).InstancePerRequest();
+            }
 
-			var siteMapTypes = _typeFinder.FindClassesOfType<ISiteMap>(ignoreInactivePlugins: true);
-			foreach (var type in siteMapTypes)
-			{
-				builder.RegisterType(type).As<ISiteMap>().PropertiesAutowired(PropertyWiringOptions.None).InstancePerRequest();
-			}
-		}
+            builder.RegisterType<DatabaseMenu>().Named<IMenu>("database").InstancePerDependency();
+
+            var menuTypes = _typeFinder.FindClassesOfType<IMenu>(ignoreInactivePlugins: true);
+            foreach (var type in menuTypes)
+            {
+                builder.RegisterType(type).As<IMenu>().PropertiesAutowired(PropertyWiringOptions.None).InstancePerRequest();
+            }
+
+            var menuItemProviderTypes = _typeFinder.FindClassesOfType<IMenuItemProvider>(ignoreInactivePlugins: true);
+            foreach (var type in menuItemProviderTypes)
+            {
+                var attribute = type.GetAttribute<MenuItemProviderAttribute>(false);
+                var registration = builder.RegisterType(type).As<IMenuItemProvider>().PropertiesAutowired(PropertyWiringOptions.None).InstancePerRequest();
+                registration.WithMetadata<MenuItemProviderMetadata>(m =>
+                {
+                    m.For(em => em.ProviderName, attribute.ProviderName);
+                    m.For(em => em.AppendsMultipleItems, attribute.AppendsMultipleItems);
+                });
+            }
+
+            if (DataSettings.DatabaseIsInstalled())
+            {
+                builder.RegisterType<UserMenuFilter>().AsResultFilterFor<SmartController>();
+            }
+        }
 	}
 
 	public class IOModule : Module
@@ -1174,8 +1204,8 @@ namespace SmartStore.Web.Framework
             BindingFlags.Static | BindingFlags.NonPublic);
 
         public IEnumerable<IComponentRegistration> RegistrationsFor(
-                Service service,
-                Func<Service, IEnumerable<IComponentRegistration>> registrations)
+			Service service,
+			Func<Service, IEnumerable<IComponentRegistration>> registrations)
         {
             if (service is TypedService ts && typeof(ISettings).IsAssignableFrom(ts.ServiceType))
             {
@@ -1236,8 +1266,7 @@ namespace SmartStore.Web.Framework
 
 		public IEnumerable<IComponentRegistration> RegistrationsFor(Service service, Func<Service, IEnumerable<IComponentRegistration>> registrationAccessor)
 		{
-			var swt = service as IServiceWithType;
-			if (swt == null || !IsClosingTypeOf(swt.ServiceType, typeof(Work<>)))
+			if (!(service is IServiceWithType swt) || !IsClosingTypeOf(swt.ServiceType, typeof(Work<>)))
 				return Enumerable.Empty<IComponentRegistration>();
 
 			var valueType = swt.ServiceType.GetGenericArguments()[0];

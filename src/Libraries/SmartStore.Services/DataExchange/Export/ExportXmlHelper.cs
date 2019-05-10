@@ -502,7 +502,6 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("RequiredProductIds", entity.RequiredProductIds);
 			_writer.Write("AutomaticallyAddRequiredProducts", entity.AutomaticallyAddRequiredProducts.ToString());
 			_writer.Write("IsDownload", entity.IsDownload.ToString());
-			_writer.Write("DownloadId", entity.DownloadId.ToString());
 			_writer.Write("UnlimitedDownloads", entity.UnlimitedDownloads.ToString());
 			_writer.Write("MaxNumberOfDownloads", entity.MaxNumberOfDownloads.ToString());
 			_writer.Write("DownloadExpirationDays", entity.DownloadExpirationDays.HasValue ? entity.DownloadExpirationDays.Value.ToString() : "");
@@ -606,6 +605,35 @@ namespace SmartStore.Services.DataExchange.Export
 				}
 				_writer.WriteEndElement();	// AppliedDiscounts
 			}
+
+            if (product.Downloads != null)
+            {
+                _writer.WriteStartElement("Downloads");
+                foreach (dynamic download in product.Downloads)
+                {
+                    Download downloadEntity = download.Entity;
+
+                    _writer.WriteStartElement("Download");
+                    _writer.Write("Id", downloadEntity.Id.ToString());
+                    _writer.Write("DownloadGuid", downloadEntity.DownloadGuid.ToString());
+                    _writer.Write("UseDownloadUrl", downloadEntity.UseDownloadUrl.ToString());
+                    _writer.Write("DownloadUrl", downloadEntity.DownloadUrl);
+                    _writer.Write("ContentType", downloadEntity.ContentType);
+                    _writer.Write("Filename", downloadEntity.Filename);
+                    _writer.Write("Extension", downloadEntity.Extension);
+                    _writer.Write("IsNew", downloadEntity.IsNew.ToString());
+                    _writer.Write("IsTransient", downloadEntity.IsTransient.ToString());
+                    _writer.Write("UpdatedOnUtc", downloadEntity.UpdatedOnUtc.ToString(_culture));
+                    _writer.Write("MediaStorageId", downloadEntity.MediaStorageId.HasValue ? downloadEntity.MediaStorageId.Value.ToString() : "");
+                    _writer.Write("EntityId", downloadEntity.EntityId.ToString());
+                    _writer.Write("EntityName", downloadEntity.EntityName);
+                    _writer.Write("FileVersion", downloadEntity.FileVersion);
+                    _writer.Write("Changelog", downloadEntity.Changelog);
+
+                    _writer.WriteEndElement();	// Download
+                }
+                _writer.WriteEndElement();	// Downloads
+            }
 
 			if (product.TierPrices != null)
 			{
@@ -724,7 +752,6 @@ namespace SmartStore.Services.DataExchange.Export
 					_writer.Write("BasePriceAmount", entityPvac.BasePriceAmount.HasValue ? entityPvac.BasePriceAmount.Value.ToString(_culture) : "");
 					_writer.Write("BasePriceBaseAmount", entityPvac.BasePriceBaseAmount.HasValue ? entityPvac.BasePriceBaseAmount.Value.ToString() : "");
 					_writer.Write("AssignedPictureIds", entityPvac.AssignedPictureIds);
-					_writer.Write("DeliveryTimeId", entityPvac.DeliveryTimeId.HasValue ? entityPvac.DeliveryTimeId.Value.ToString() : "");
 					_writer.Write("IsActive", entityPvac.IsActive.ToString());
 
 					WriteDeliveryTime(combination.DeliveryTime, "DeliveryTime");
@@ -914,7 +941,15 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("CreatedOnUtc", entity.CreatedOnUtc.ToString(_culture));
 			_writer.Write("LastLoginDateUtc", entity.LastLoginDateUtc.HasValue ? entity.LastLoginDateUtc.Value.ToString(_culture) : "");
 			_writer.Write("LastActivityDateUtc", entity.LastActivityDateUtc.ToString(_culture));
-			_writer.Write("RewardPointsBalance", ((int)customer._RewardPointsBalance).ToString());
+            //_writer.Write("Salutation", entity.Salutation); // TODO: marked as "for future use"
+            _writer.Write("Title", entity.Title);
+            _writer.Write("FirstName", entity.FirstName);
+            _writer.Write("LastName", entity.LastName);
+            _writer.Write("FullName", entity.FullName);
+            _writer.Write("Company", entity.Company);
+            _writer.Write("CustomerNumber", entity.CustomerNumber);
+            _writer.Write("BirthDate", entity.BirthDate.HasValue ? entity.BirthDate.Value.ToString(_culture) : "");
+            _writer.Write("RewardPointsBalance", ((int)customer._RewardPointsBalance).ToString());
 
 			if (customer.CustomerRoles != null)
 			{

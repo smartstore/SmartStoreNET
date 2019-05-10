@@ -4,7 +4,10 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
 using System.Linq;
+using SmartStore.Core.Data;
+using SmartStore.Data.Caching;
 using SmartStore.Data.Migrations;
+using SmartStore.Utilities;
 
 namespace SmartStore.Data.Setup
 {
@@ -16,7 +19,6 @@ namespace SmartStore.Data.Setup
 		where TContext : DbContext, new()
 		where TConfig : DbMigrationsConfiguration<TContext>, new()
 	{
-
 		#region Ctor
 
 		public MigrateDatabaseInitializer()
@@ -86,27 +88,31 @@ namespace SmartStore.Data.Setup
 				}
 			}
 
-			// run all pending migrations
-			var appliedCount = migrator.RunPendingMigrations(context);
+			using (new DbContextScope(context as IDbContext, hooksEnabled: false))
+			{
+				// run all pending migrations
+				var appliedCount = migrator.RunPendingMigrations(context);
 
-			if (appliedCount > 0)
-			{
-				Seed(context);
-			}
-			else
-			{
-				var coreConfig = config as MigrationsConfiguration;
-				if (coreConfig != null && context is SmartObjectContext)
+				if (appliedCount > 0)
+				{
+					Seed(context);
+				}
+				else
 				{
 					// DB is up-to-date and no migration ran.
-					// Call the main Seed method anyway (on every startup),
-					// we could have locale resources or settings to add/update.
-					coreConfig.SeedDatabase(context as SmartObjectContext);
-				}
-			}
+					EfMappingViewCacheFactory.SetContext(context);
 
-			// not needed anymore
-			this.DataSeeders = null;
+					if (config is MigrationsConfiguration coreConfig && context is SmartObjectContext ctx)
+					{
+						// Call the main Seed method anyway (on every startup),
+						// we could have locale resources or settings to add/update.
+						coreConfig.SeedDatabase(ctx);
+					}
+				}
+
+				// not needed anymore
+				this.DataSeeders = null;
+			}
 		}
 
 		#endregion
@@ -132,6 +138,15 @@ namespace SmartStore.Data.Setup
 			{
 				var dbContextInfo = new DbContextInfo(typeof(TContext));
 				config.TargetDatabase = new DbConnectionInfo(this.ConnectionString, dbContextInfo.ConnectionProviderName);
+			}
+
+			if (config.CommandTimeout == null && DataSettings.Current.IsSqlServer)
+			{
+				var commandTimeout = CommonHelper.GetAppSetting<int?>("sm:EfMigrationsCommandTimeout");
+				if (commandTimeout.HasValue)
+				{
+					config.CommandTimeout = commandTimeout.Value;
+				}
 			}
 
 			return config;

@@ -1,14 +1,16 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.DataExchange;
+using SmartStore.Core.Localization;
 using SmartStore.Services.DataExchange.Csv;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SmartStore.Admin.Models.DataExchange
 {
-	[Validator(typeof(CsvConfigurationValidator))]
+    [Validator(typeof(CsvConfigurationValidator))]
 	public class CsvConfigurationModel : ModelBase, ICloneable<CsvConfiguration>
 	{
 		public CsvConfigurationModel()
@@ -61,4 +63,30 @@ namespace SmartStore.Admin.Models.DataExchange
 			return config;
 		}
 	}
+
+    public partial class CsvConfigurationValidator : AbstractValidator<CsvConfigurationModel>
+    {
+        public CsvConfigurationValidator(Localizer T)
+        {
+            RuleFor(x => x.Delimiter)
+                .Must(x => !CsvConfiguration.PresetCharacters.Contains(x.ToChar(true)))
+                .WithMessage(T("Admin.DataExchange.Csv.Delimiter.Validation"));
+
+            RuleFor(x => x.Quote)
+                .Must(x => !CsvConfiguration.PresetCharacters.Contains(x.ToChar(true)))
+                .WithMessage(T("Admin.DataExchange.Csv.Quote.Validation"));
+
+            RuleFor(x => x.Escape)
+                .Must(x => !CsvConfiguration.PresetCharacters.Contains(x.ToChar(true)))
+                .WithMessage(T("Admin.DataExchange.Csv.Escape.Validation"));
+
+            RuleFor(x => x.Escape)
+                .Must((model, x) => x != model.Delimiter)
+                .WithMessage(T("Admin.DataExchange.Csv.EscapeDelimiter.Validation"));
+
+            RuleFor(x => x.Quote)
+                .Must((model, x) => x != model.Delimiter)
+                .WithMessage(T("Admin.DataExchange.Csv.QuoteDelimiter.Validation"));
+        }
+    }
 }

@@ -80,10 +80,10 @@ namespace SmartStore.Web.Framework.WebApi
 		{
 			var sb = new StringBuilder();
 
-			sb.AppendLine(string.Format("PublicKey: ", PublicKey));
-			sb.AppendLine(string.Format("Url: ", Url));
-			sb.AppendLine(string.Format("HttpMethod: ", HttpMethod));
-			sb.AppendLine(string.Format("HttpAcceptType: ", HttpAcceptType));
+			sb.AppendLine("PublicKey: " + PublicKey.EmptyNull());
+			sb.AppendLine("Url: " + Url.EmptyNull());
+			sb.AppendLine("HttpMethod: " + HttpMethod.EmptyNull());
+			sb.AppendLine("HttpAcceptType: " + HttpAcceptType.EmptyNull());
 
 			return sb.ToString();
 		}

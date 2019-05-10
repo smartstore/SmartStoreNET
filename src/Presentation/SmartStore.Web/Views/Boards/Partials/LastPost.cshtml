@@ -1,7 +1,6 @@
-﻿@model LastPostModel
-@using SmartStore.Web.Models.Boards;
-
-@if (@Model.Id > 0)
+﻿@using SmartStore.Web.Models.Boards;
+@model LastPostModel
+@if (Model.Id > 0)
 {
 	<div class="last-post text-muted">
 		<div class="createdon">@Model.PostCreatedOnStr</div>
@@ -9,8 +8,8 @@
 		{
 			<div>
 				<div class="d-inline-flex">
-					<span>@T("Forum.In"):</span>
-					@Html.RouteLink(Model.ForumTopicSubject.Truncate(30, "..."), "TopicSlug", new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName }, new { title = Model.ForumTopicSubject })
+					<span>@T("Forum.In"):&nbsp;</span>
+					@Html.RouteLink(Model.ForumTopicSubject.Truncate(24, "…"), "TopicSlug", new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName }, new { title = Model.ForumTopicSubject })
 				</div>
 			</div>
 		}
@@ -34,7 +33,7 @@
 }
 else
 {
-    <div class="nopost alert alert-warning">
+    <div class="nopost text-muted">
         @T("Forum.NoPosts")
     </div>
 }

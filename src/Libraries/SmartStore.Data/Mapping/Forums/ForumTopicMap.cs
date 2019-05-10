@@ -7,16 +7,18 @@ namespace SmartStore.Data.Mapping.Forums
     {
         public ForumTopicMap()
         {
-            this.ToTable("Forums_Topic");
-            this.HasKey(ft => ft.Id);
-            this.Property(ft => ft.Subject).IsRequired().HasMaxLength(450);
-            this.Ignore(ft => ft.ForumTopicType);
+            ToTable("Forums_Topic");
+            HasKey(ft => ft.Id);
+            Property(ft => ft.Subject).IsRequired().HasMaxLength(450);
 
-            this.HasRequired(ft => ft.Forum)
+            Ignore(ft => ft.ForumTopicType);
+            Ignore(ft => ft.FirstPostId);
+
+            HasRequired(ft => ft.Forum)
                 .WithMany()
                 .HasForeignKey(ft => ft.ForumId);
 
-            this.HasRequired(ft => ft.Customer)
+            HasRequired(ft => ft.Customer)
                .WithMany(c => c.ForumTopics)
                .HasForeignKey(ft => ft.CustomerId)
                .WillCascadeOnDelete(false);

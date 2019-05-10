@@ -78,7 +78,7 @@ namespace SmartStore.Services.DataExchange.Export
 			{
 				task = new ScheduleTask
 				{
-					CronExpression = "0 */6 * * *",     // every six hours
+					CronExpression = "0 */6 * * *",     // Every six hours.
 					Type = typeof(DataExportTask).AssemblyQualifiedNameWithoutVersion(),
 					Enabled = false,
 					StopOnError = false,
@@ -88,7 +88,6 @@ namespace SmartStore.Services.DataExchange.Export
 			else
 			{
 				task = cloneProfile.ScheduleTask.Clone();
-				task.LastEndUtc = task.LastStartUtc = task.LastSuccessUtc = null;
 			}
 
 			task.Name = string.Concat(name, " Task");
@@ -111,14 +110,14 @@ namespace SmartStore.Services.DataExchange.Export
 				}
 				else
 				{
-					// what we do here is to preset typical settings for feed creation
-					// but on the other hand they may be untypical for generic data export\exchange
+					// What we do here is to preset typical settings for feed creation
+					// but on the other hand they may be untypical for generic data export\exchange.
 					var projection = new ExportProjection
 					{
 						RemoveCriticalCharacters = true,
 						CriticalCharacters = "¼,½,¾",
 						PriceType = PriceDisplayType.PreSelectedPrice,
-						NoGroupedProducts = (features.HasFlag(ExportFeatures.CanOmitGroupedProducts) ? true : false),
+						NoGroupedProducts = features.HasFlag(ExportFeatures.CanOmitGroupedProducts) ? true : false,
 						OnlyIndividuallyVisibleAssociated = true,
 						DescriptionMerging = ExportDescriptionMerging.Description
 					};
@@ -222,23 +221,21 @@ namespace SmartStore.Services.DataExchange.Export
 
 		public virtual void UpdateExportProfile(ExportProfile profile)
 		{
-			if (profile == null)
-				throw new ArgumentNullException("profile");
+			Guard.NotNull(profile, nameof(profile));
 
-			profile.FolderName = FileSystemHelper.ValidateRootPath(profile.FolderName);
+			profile.FolderName = PathHelper.NormalizeAppRelativePath(profile.FolderName);
 
-			if (profile.FolderName == "~/")
-			{
-				throw new SmartException("Invalid export folder name.");
-			}
+            if (!PathHelper.IsSafeAppRootPath(profile.FolderName))
+            {
+                throw new SmartException(_localizationService.GetResource("Admin.DataExchange.Export.FolderName.Validate"));
+            }
 
 			_exportProfileRepository.Update(profile);
 		}
 
 		public virtual void DeleteExportProfile(ExportProfile profile, bool force = false)
 		{
-			if (profile == null)
-				throw new ArgumentNullException("profile");
+			Guard.NotNull(profile, nameof(profile));
 
 			if (!force && profile.IsSystemProfile)
 				throw new SmartException(_localizationService.GetResource("Admin.DataExchange.Export.CannotDeleteSystemProfile"));
@@ -246,7 +243,14 @@ namespace SmartStore.Services.DataExchange.Export
 			int scheduleTaskId = profile.SchedulingTaskId;
 			var folder = profile.GetExportFolder();
 
-			_exportProfileRepository.Delete(profile);
+            var deployments = profile.Deployments.Where(x => !x.IsTransientRecord()).ToList();
+            if (deployments.Any())
+            {
+                _exportDeploymentRepository.DeleteRange(deployments);
+                _exportDeploymentRepository.Context.SaveChanges();
+            }
+
+            _exportProfileRepository.Delete(profile);
 
 			var scheduleTask = _scheduleTaskService.GetTaskById(scheduleTaskId);
 			_scheduleTaskService.DeleteTask(scheduleTask);

@@ -7,7 +7,7 @@
 
 @Html.SmartStore().TabStrip().Name("category-edit").OnAjaxSuccess("categoryEditTab_onAjaxSuccess").Style(TabsStyle.Material).Position(TabsPosition.Left).Items(x => {
 
-	x.Add().Text(T("Admin.Catalog.Categories.Info").Text).Icon("fa fa-pencil fa-lg fa-fw").Content(TabInfo()).Selected(true);
+	x.Add().Text(T("Admin.Catalog.Categories.Info").Text).Icon("fa fa-pencil-alt fa-lg fa-fw").Content(TabInfo()).Selected(true);
 	x.Add().Text(T("Admin.Common.SEO").Text).Icon("fa fa-search fa-lg fa-fw").Content(TabSeo());
 	x.Add().Text(T("Admin.Catalog.Categories.Products").Text).Icon("fa fa-cube fa-lg fa-fw").Content(TabProducts());
 	x.Add().Text(T("Admin.Catalog.Categories.Discounts").Text).Icon("fa fa-percent fa-lg fa-fw").Content(TabDiscounts());
@@ -81,7 +81,7 @@
                 </td>
                 <td class="adminData">
 					<button type="button" class="btn btn-secondary description-toggle-button">
-						<i class="fa fa-exchange"></i>
+						<i class="fa fa-exchange-alt"></i>
 						<span>@T("Admin.Catalog.Categories.DescriptionToggle")</span>
 					</button>
                 </td>
@@ -138,7 +138,7 @@
 				<td class="adminTitle"></td>
 				<td class="adminData">
 					<button type="button" class="btn btn-secondary description-toggle-button">
-						<i class="fa fa-exchange"></i>
+						<i class="fa fa-exchange-alt"></i>
 						<span>@T("Admin.Catalog.Categories.DescriptionToggle")</span>
 					</button>
 				</td>
@@ -467,10 +467,10 @@
 	{
 		foreach (var discount in Model.AvailableDiscounts)
 		{
-			<div class="form-check">
+			<div class="custom-control custom-checkbox mb-1">
 				<input type="checkbox" name="SelectedDiscountIds" id="discount-@discount.Id"
-					   class="form-check-input" value="@discount.Id" checked="@(Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id))">
-				<label class="form-check-label" for="discount-@discount.Id">@discount.Name</label>	
+					   class="custom-control-input" value="@discount.Id" checked="@(Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id))">
+				<label class="custom-control-label" for="discount-@discount.Id">@discount.Name</label>	
 			</div>
 		}
 	}

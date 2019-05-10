@@ -1,12 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Web;
-using System.Web.Hosting;
 using DotLiquid;
 using DotLiquid.FileSystems;
 using DotLiquid.NamingConventions;
 using SmartStore.Core;
-using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.IO;
 using SmartStore.Core.Localization;
@@ -32,7 +30,18 @@ namespace SmartStore.Templating.Liquid
 			_vpp = vpp;
 			_localizer = localizer;
 			_themeContext = themeContext;
-		
+
+			// Register Value type transformers
+			var allowedMoneyProps = new[] 
+			{
+				nameof(Money.Amount),
+				nameof(Money.RoundedAmount),
+				nameof(Money.TruncatedAmount),
+				nameof(Money.Formatted),
+				nameof(Money.DecimalDigits)
+			};
+			Template.RegisterSafeType(typeof(Money), allowedMoneyProps, x => x);
+			
 			// Register tag "zone"
 			Template.RegisterTagFactory(new ZoneTagFactory(_services.Value.EventPublisher));
 

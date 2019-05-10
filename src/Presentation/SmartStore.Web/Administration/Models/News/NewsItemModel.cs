@@ -2,21 +2,16 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Models.Stores;
-using SmartStore.Admin.Validators.News;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.News
 {
     [Validator(typeof(NewsItemValidator))]
-    public class NewsItemModel : EntityModelBase, IStoreSelector
+    public class NewsItemModel : TabbableModel, IStoreSelector
     {
-		public NewsItemModel()
-		{
-		}
-
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Language")]
         public int LanguageId { get; set; }
 
@@ -74,7 +69,17 @@ namespace SmartStore.Admin.Models.News
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Comments")]
         public int Comments { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
+    }
+
+    public partial class NewsItemValidator : AbstractValidator<NewsItemModel>
+    {
+        public NewsItemValidator()
+        {
+            RuleFor(x => x.Title).NotEmpty();
+            RuleFor(x => x.Short).NotEmpty();
+            RuleFor(x => x.Full).NotEmpty();
+        }
     }
 }

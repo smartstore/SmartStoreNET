@@ -1,0 +1,88 @@
+﻿@using SmartStore.Admin.Models.Menus
+@model MenuRecordListModel
+@{    
+	ViewBag.Title = T("Admin.ContentManagement.Menus").Text;
+}
+
+<div class="section-header">
+    <div class="title">
+        <i class="far fa-stream"></i>
+        @T("Admin.ContentManagement.Menus")
+    </div>
+    <div class="options">
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Common.AddNew")</span>
+		</a>
+    </div>
+</div>
+
+<div class="row mt-3 grid-filter">
+	@if (Model.AvailableStores.Count > 1)
+	{
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(x => x.StoreId)
+			@Html.DropDownList("StoreId", Model.AvailableStores, T("Admin.Common.All"))
+		</div>
+	}
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(x => x.SystemName)
+		@Html.TextBoxFor(x => x.SystemName, new { @class = "form-control" })
+	</div>
+
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+        @Html.SmartLabel(string.Empty, string.Empty)
+		<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+			<span>@T("Admin.Common.ApplyFilter")</span>
+		</button>
+	</div>
+</div>
+
+<div>
+	@(Html.Telerik().Grid<MenuRecordModel>()
+			.Name("menus-grid")
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.SystemName)
+					.Width(280)
+					.ClientTemplate("<a href='Edit/<#= Id #>'><#= SystemName #></a>");
+				columns.Bound(x => x.Title);
+				columns.Bound(x => x.Published)
+					.ClientTemplate(@Html.SymbolForBool("Published"))
+					.Centered();
+				columns.Bound(x => x.LimitedToStores)
+					.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+					.Hidden(Model.AvailableStores.Count <= 1)
+					.Centered();
+			})
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Menu"))
+			.ClientEvents(events => events.OnDataBinding("onDataBinding").OnRowDataBound("onRowDataBound"))
+			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+			.PreserveGridState()
+			.EnableCustomBinding(true))
+</div>
+
+<script>
+	$(function() {
+		$('#btnSearch').click(function () {
+			var grid = $('#menus-grid').data('tGrid');
+			grid.currentPage = 1;
+			grid.ajaxRequest();
+			return false;
+		});
+	});
+
+	function onDataBinding(e) {
+		var searchModel = {
+			StoreId: $('#@Html.FieldIdFor(model => model.StoreId)').val(),
+			SystemName: $('#@Html.FieldIdFor(model => model.SystemName)').val()
+		};
+		e.data = searchModel;
+    }
+
+    function onRowDataBound(e) {
+	    if (!e.dataItem.Published) {
+		    $(e.row).find('td').wrapInner('<span class="muted" />');
+	    }
+    }
+</script>

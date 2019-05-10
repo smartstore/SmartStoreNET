@@ -16,7 +16,10 @@ namespace SmartStore.Core.Search.Facets
 		Availability,
 		NewArrivals,
 		Attribute,
-		Variant
+		Variant,
+        Forum,
+        Customer,
+        Date
 	}
 
 	[DebuggerDisplay("Key: {Key}, Label: {Label}, Kind: {Kind}")]
@@ -26,11 +29,12 @@ namespace SmartStore.Core.Search.Facets
 		private FacetGroupKind? _kind;
 
 		public FacetGroup()
-			: this (string.Empty, string.Empty, false, false, 0, Enumerable.Empty<Facet>())
+			: this (string.Empty, string.Empty, string.Empty, false, false, 0, Enumerable.Empty<Facet>())
 		{
 		}
 
 		public FacetGroup(
+            string scope,
 			string key,
 			string label,
 			bool isMultiSelect,
@@ -38,13 +42,16 @@ namespace SmartStore.Core.Search.Facets
 			int displayOrder,
 			IEnumerable<Facet> facets)
 		{
-			Guard.NotNull(key, nameof(key));
+            Guard.NotNull(scope, nameof(scope));
+            Guard.NotNull(key, nameof(key));
 			Guard.NotNull(facets, nameof(facets));
 
+            Scope = scope;
 			Key = key;
 			Label = label;
 			IsMultiSelect = isMultiSelect;
 			DisplayOrder = displayOrder;
+            IsScrollable = true;
 
 			_facets = new Dictionary<string, Facet>(StringComparer.OrdinalIgnoreCase);
 
@@ -57,14 +64,14 @@ namespace SmartStore.Core.Search.Facets
 				{
 					_facets.Add(x.Key, x);
 				}
-				catch (Exception exception)
+				catch (Exception ex)
 				{
-					exception.Dump();
+					ex.Dump();
 				}
 			});
 		}
 
-		public static FacetGroupKind GetKindByKey(string key)
+		public static FacetGroupKind GetKindByKey(string scope, string key)
 		{
 			if (key.StartsWith("attrid"))
 			{
@@ -74,41 +81,40 @@ namespace SmartStore.Core.Search.Facets
 			{
 				return FacetGroupKind.Variant;
 			}
-			else if (key == "categoryid" || key == "notfeaturedcategoryid")
-			{
-				return FacetGroupKind.Category;
-			}
-			else if (key == "manufacturerid")
-			{
-				return FacetGroupKind.Brand;
-			}
-			else if (key == "price")
-			{
-				return FacetGroupKind.Price;
-			}
-			else if (key == "rating")
-			{
-				return FacetGroupKind.Rating;
-			}
-			else if (key == "deliveryid")
-			{
-				return FacetGroupKind.DeliveryTime;
-			}
-			else if (key == "available")
-			{
-				return FacetGroupKind.Availability;
-			}
-			else if (key == "createdon")
-			{
-				return FacetGroupKind.NewArrivals;
-			}
-			else
-			{
-				return FacetGroupKind.Unknown;
-			}
-		}
 
-		public string Key
+            switch (key)
+            {
+                case "categoryid":
+                case "notfeaturedcategoryid":
+                    return FacetGroupKind.Category;
+                case "manufacturerid":
+                    return FacetGroupKind.Brand;
+                case "price":
+                    return FacetGroupKind.Price;
+                case "rating":
+                    return FacetGroupKind.Rating;
+                case "deliveryid":
+                    return FacetGroupKind.DeliveryTime;
+                case "available":
+                    return FacetGroupKind.Availability;
+                case "createdon":
+                    return scope == "Catalog" ? FacetGroupKind.NewArrivals : FacetGroupKind.Date;
+                case "forumid":
+                    return FacetGroupKind.Forum;
+                case "customerid":
+                    return FacetGroupKind.Customer;
+                default:
+                    return FacetGroupKind.Unknown;
+            }            
+        }
+
+        public string Scope
+        {
+            get;
+            private set;
+        }
+
+        public string Key
 		{
 			get;
 			private set;
@@ -126,7 +132,7 @@ namespace SmartStore.Core.Search.Facets
 			private set;
 		}
 
-		public bool HasChildren
+        public bool HasChildren
 		{
 			get;
 			private set;
@@ -138,7 +144,13 @@ namespace SmartStore.Core.Search.Facets
 			private set;
 		}
 
-		public IEnumerable<Facet> Facets
+        public bool IsScrollable
+        {
+            get;
+            set;
+        }
+
+        public IEnumerable<Facet> Facets
 		{
 			get
 			{
@@ -170,7 +182,7 @@ namespace SmartStore.Core.Search.Facets
 			{
 				if (_kind == null)
 				{
-					_kind = GetKindByKey(Key);
+					_kind = GetKindByKey(Scope, Key);
 				}
 
 				return _kind.Value;

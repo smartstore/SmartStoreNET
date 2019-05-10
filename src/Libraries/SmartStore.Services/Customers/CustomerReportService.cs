@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
@@ -106,8 +107,8 @@ namespace SmartStore.Services.Customers
                     throw new ArgumentException("Wrong orderBy parameter", "orderBy");
             }
 
-            //load 20 customers
-            query2 = query2.Take(20);
+            // load 20 customers
+            query2 = query2.Take(() => 20);
 
             var result = query2.ToList().Select(x =>
             {

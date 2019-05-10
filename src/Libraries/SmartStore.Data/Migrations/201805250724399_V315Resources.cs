@@ -29,7 +29,6 @@ namespace SmartStore.Data.Migrations
 			context.SaveChanges();
 
 			MigrateSettings(context);
-
 			context.SaveChanges();
 		}
 

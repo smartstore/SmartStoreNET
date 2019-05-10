@@ -1,13 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Validators.Customer;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace SmartStore.Web.Models.Customer
 {
-	[Validator(typeof(PasswordRecoveryValidator))]
+    [Validator(typeof(PasswordRecoveryValidator))]
     public partial class PasswordRecoveryModel : ModelBase
     {
         [AllowHtml]
@@ -24,5 +24,14 @@ namespace SmartStore.Web.Models.Customer
     {
         Success,
         Error
+    }
+
+    public class PasswordRecoveryValidator : AbstractValidator<PasswordRecoveryModel>
+    {
+        public PasswordRecoveryValidator()
+        {
+            RuleFor(x => x.Email).NotEmpty();
+            RuleFor(x => x.Email).EmailAddress();
+        }
     }
 }

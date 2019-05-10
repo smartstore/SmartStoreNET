@@ -1,20 +1,24 @@
 ﻿using System;
+using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.SessionState;
-using SmartStore.Core.Domain.Media;
-using SmartStore.Core.IO;
-using SmartStore.Services.Media;
-using SmartStore.Services.Common;
-using SmartStore.Core.Logging;
-using SmartStore.Utilities;
-using System.IO;
-using SmartStore.Core.Async;
-using SmartStore.Core.Events;
-using SmartStore.Web.Framework.Security;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Events;
+using SmartStore.Core.IO;
+using SmartStore.Core.Logging;
+using SmartStore.Services.Common;
+using SmartStore.Services.Media;
+using SmartStore.Services.Seo;
+using SmartStore.Utilities;
+using SmartStore.Utilities.Threading;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Controllers
 {
@@ -36,6 +40,9 @@ namespace SmartStore.Web.Controllers
 		private readonly IMediaFileSystem _mediaFileSystem;
 		private readonly MediaSettings _mediaSettings;
 
+		private readonly Lazy<SeoSettings> _seoSettings;
+		private readonly Lazy<IXmlSitemapGenerator> _sitemapGenerator;
+
 		public MediaController(
 			IPictureService pictureService,
 			IImageProcessor imageProcessor,
@@ -43,7 +50,9 @@ namespace SmartStore.Web.Controllers
 			IUserAgent userAgent,
 			IEventPublisher eventPublisher,
 			IMediaFileSystem mediaFileSystem,
-			MediaSettings mediaSettings)
+			MediaSettings mediaSettings,
+			Lazy<SeoSettings> seoSettings,
+			Lazy<IXmlSitemapGenerator> sitemapGenerator)
         {
 			_pictureService = pictureService;
 			_imageProcessor = imageProcessor;
@@ -52,11 +61,39 @@ namespace SmartStore.Web.Controllers
 			_eventPublisher = eventPublisher;
 			_mediaFileSystem = mediaFileSystem;
 			_mediaSettings = mediaSettings;
+			_seoSettings = seoSettings;
+			_sitemapGenerator = sitemapGenerator;
 
 			Logger = NullLogger.Instance;
         }
 
 		public ILogger Logger { get; set; }
+
+		#region XML sitemap
+
+		[Compress]
+		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		public async Task<ActionResult> XmlSitemap(int? index = null)
+		{
+			if (!_seoSettings.Value.XmlSitemapEnabled)
+				return HttpNotFound();
+
+			try
+			{
+				var partition = await _sitemapGenerator.Value.GetSitemapPartAsync(index ?? 0);
+				return new FileStreamResult(partition.Stream, "text/xml");
+			}
+			catch (IndexOutOfRangeException)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Sitemap index is out of range.");
+			}
+			catch (Exception ex)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, ex.Message);
+			}
+		}
+
+		#endregion
 
 		public async Task<ActionResult> Image(int id /* pictureId*/, string name)
 		{
@@ -278,11 +315,8 @@ namespace SmartStore.Web.Controllers
 			{
 				if (!cachedImage.Exists)
 				{
-					// get the async (semaphore) locker specific to this key
-					var keyLock = AsyncLock.Acquire("lock" + cachedImage.Path);
-
 					// Lock concurrent requests to same resource
-					using (await keyLock.LockAsync())
+					using (await KeyedLock.LockAsync("MediaController.HandleImage." + cachedImage.Path))
 					{
 						_imageCache.RefreshInfo(cachedImage);
 

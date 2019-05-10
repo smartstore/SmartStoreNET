@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Mvc.Html;
 using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -18,7 +20,6 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
-using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Catalog.Modelling;
@@ -28,14 +29,12 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
-using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
-using SmartStore.Services.Topics;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -44,8 +43,6 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.ShoppingCart;
-using System.IO;
-using System.Web.Mvc.Html;
 
 namespace SmartStore.Web.Controllers
 {
@@ -53,7 +50,6 @@ namespace SmartStore.Web.Controllers
     {
         #region Fields
 
-        private readonly ICommonServices _services;
         private readonly IProductService _productService;
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
@@ -82,7 +78,6 @@ namespace SmartStore.Web.Controllers
         private readonly IPermissionService _permissionService;
         private readonly IDownloadService _downloadService;
         private readonly ICacheManager _cacheManager;
-        private readonly IWebHelper _webHelper;
         private readonly ICustomerActivityService _customerActivityService;
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly IDeliveryTimeService _deliveryTimeService;
@@ -98,11 +93,9 @@ namespace SmartStore.Web.Controllers
         private readonly CustomerSettings _customerSettings;
         private readonly PluginMediator _pluginMediator;
         private readonly IQuantityUnitService _quantityUnitService;
-		private readonly Lazy<ITopicService> _topicService;
         private readonly IMeasureService _measureService;
         private readonly MeasureSettings _measureSettings;
         private readonly ICompareProductsService _compareProductsService;
-        private readonly CatalogHelper _helper;
 		private readonly ProductUrlHelper _productUrlHelper;
         private readonly RewardPointsSettings _rewardPointsSettings;
 
@@ -110,89 +103,103 @@ namespace SmartStore.Web.Controllers
 
         #region Constructors
 
-        public ShoppingCartController(ICommonServices services, IProductService productService,
-			IWorkContext workContext, IStoreContext storeContext,
-            IShoppingCartService shoppingCartService, IPictureService pictureService,
+        public ShoppingCartController(
+			IProductService productService,
+			IWorkContext workContext,
+			IStoreContext storeContext,
+            IShoppingCartService shoppingCartService, 
+			IPictureService pictureService,
             ILocalizationService localizationService, 
-            IProductAttributeService productAttributeService, IProductAttributeFormatter productAttributeFormatter,
+            IProductAttributeService productAttributeService, 
+			IProductAttributeFormatter productAttributeFormatter,
             IProductAttributeParser productAttributeParser,
-            ITaxService taxService, ICurrencyService currencyService, 
-            IPriceCalculationService priceCalculationService, IPriceFormatter priceFormatter,
-            ICheckoutAttributeParser checkoutAttributeParser, ICheckoutAttributeFormatter checkoutAttributeFormatter, 
+            ITaxService taxService,
+			ICurrencyService currencyService, 
+            IPriceCalculationService priceCalculationService,
+			IPriceFormatter priceFormatter,
+            ICheckoutAttributeParser checkoutAttributeParser,
+			ICheckoutAttributeFormatter checkoutAttributeFormatter, 
             IOrderProcessingService orderProcessingService,
-            IDiscountService discountService,ICustomerService customerService, 
-            IGiftCardService giftCardService, ICountryService countryService,
-            IStateProvinceService stateProvinceService, IShippingService shippingService, 
+            IDiscountService discountService,
+			ICustomerService customerService, 
+            IGiftCardService giftCardService, 
+			ICountryService countryService,
+            IStateProvinceService stateProvinceService, 
+			IShippingService shippingService, 
             IOrderTotalCalculationService orderTotalCalculationService,
-            ICheckoutAttributeService checkoutAttributeService, IPaymentService paymentService,
-            IPermissionService permissionService, IDeliveryTimeService deliveryTimeService,
-            IDownloadService downloadService, ICacheManager cacheManager,
-            IWebHelper webHelper, ICustomerActivityService customerActivityService,
+            ICheckoutAttributeService checkoutAttributeService,
+			IPaymentService paymentService,
+            IPermissionService permissionService, 
+			IDeliveryTimeService deliveryTimeService,
+            IDownloadService downloadService, 
+			ICacheManager cacheManager,
+            ICustomerActivityService customerActivityService,
 			IGenericAttributeService genericAttributeService,
-            MediaSettings mediaSettings, ShoppingCartSettings shoppingCartSettings,
-            CatalogSettings catalogSettings, OrderSettings orderSettings,
+            MediaSettings mediaSettings, 
+			ShoppingCartSettings shoppingCartSettings,
+            CatalogSettings catalogSettings, 
+			OrderSettings orderSettings,
             ShippingSettings shippingSettings, TaxSettings taxSettings,
-            CaptchaSettings captchaSettings, AddressSettings addressSettings,
+            CaptchaSettings captchaSettings, 
+			AddressSettings addressSettings,
             CustomerSettings customerSettings,
-            HttpContextBase httpContext, PluginMediator pluginMediator,
+            HttpContextBase httpContext,
+			PluginMediator pluginMediator,
             IQuantityUnitService quantityUnitService,
-			Lazy<ITopicService> topicService,
-            IMeasureService measureService, MeasureSettings measureSettings,
-            CatalogHelper helper, ICompareProductsService compareProductsService,
-			ProductUrlHelper productUrlHelper, RewardPointsSettings rewardPointsSettings)
+            IMeasureService measureService, 
+			MeasureSettings measureSettings,
+            ICompareProductsService compareProductsService,
+			ProductUrlHelper productUrlHelper,
+			RewardPointsSettings rewardPointsSettings)
         {
-            this._services = services;
-            this._productService = productService;
-            this._workContext = workContext;
-			this._storeContext = storeContext;
-            this._shoppingCartService = shoppingCartService;
-            this._pictureService = pictureService;
-            this._localizationService = localizationService;
-            this._productAttributeService = productAttributeService;
-            this._productAttributeFormatter = productAttributeFormatter;
-            this._productAttributeParser = productAttributeParser;
-            this._taxService = taxService;
-            this._currencyService = currencyService;
-            this._priceCalculationService = priceCalculationService;
-            this._priceFormatter = priceFormatter;
-            this._checkoutAttributeParser = checkoutAttributeParser;
-            this._checkoutAttributeFormatter = checkoutAttributeFormatter;
-            this._orderProcessingService = orderProcessingService;
-            this._discountService = discountService;
-            this._customerService = customerService;
-            this._giftCardService = giftCardService;
-            this._countryService = countryService;
-            this._stateProvinceService = stateProvinceService;
-            this._shippingService = shippingService;
-            this._orderTotalCalculationService = orderTotalCalculationService;
-            this._checkoutAttributeService = checkoutAttributeService;
-            this._paymentService = paymentService;
-            this._permissionService = permissionService;
-            this._downloadService = downloadService;
-            this._cacheManager = cacheManager;
-            this._webHelper = webHelper;
-            this._customerActivityService = customerActivityService;
-			this._genericAttributeService = genericAttributeService;
-            this._deliveryTimeService = deliveryTimeService;
-			this._httpContext = httpContext;
-            this._mediaSettings = mediaSettings;
-            this._shoppingCartSettings = shoppingCartSettings;
-            this._catalogSettings = catalogSettings;
-            this._orderSettings = orderSettings;
-            this._shippingSettings = shippingSettings;
-            this._taxSettings = taxSettings;
-            this._captchaSettings = captchaSettings;
-            this._addressSettings = addressSettings;
-            this._customerSettings = customerSettings;
-            this._pluginMediator = pluginMediator;
-            this._quantityUnitService = quantityUnitService;
-			this._topicService = topicService;
-            this._measureService = measureService;
-            this._measureSettings = measureSettings;
-            this._helper = helper;
-            this._compareProductsService = compareProductsService;
-			this._productUrlHelper = productUrlHelper;
-            this._rewardPointsSettings = rewardPointsSettings;
+            _productService = productService;
+            _workContext = workContext;
+			_storeContext = storeContext;
+            _shoppingCartService = shoppingCartService;
+            _pictureService = pictureService;
+            _localizationService = localizationService;
+            _productAttributeService = productAttributeService;
+            _productAttributeFormatter = productAttributeFormatter;
+            _productAttributeParser = productAttributeParser;
+            _taxService = taxService;
+            _currencyService = currencyService;
+            _priceCalculationService = priceCalculationService;
+            _priceFormatter = priceFormatter;
+            _checkoutAttributeParser = checkoutAttributeParser;
+            _checkoutAttributeFormatter = checkoutAttributeFormatter;
+            _orderProcessingService = orderProcessingService;
+            _discountService = discountService;
+            _customerService = customerService;
+            _giftCardService = giftCardService;
+            _countryService = countryService;
+            _stateProvinceService = stateProvinceService;
+            _shippingService = shippingService;
+            _orderTotalCalculationService = orderTotalCalculationService;
+            _checkoutAttributeService = checkoutAttributeService;
+            _paymentService = paymentService;
+            _permissionService = permissionService;
+            _downloadService = downloadService;
+            _cacheManager = cacheManager;
+            _customerActivityService = customerActivityService;
+			_genericAttributeService = genericAttributeService;
+            _deliveryTimeService = deliveryTimeService;
+			_httpContext = httpContext;
+            _mediaSettings = mediaSettings;
+            _shoppingCartSettings = shoppingCartSettings;
+            _catalogSettings = catalogSettings;
+            _orderSettings = orderSettings;
+            _shippingSettings = shippingSettings;
+            _taxSettings = taxSettings;
+            _captchaSettings = captchaSettings;
+            _addressSettings = addressSettings;
+            _customerSettings = customerSettings;
+            _pluginMediator = pluginMediator;
+            _quantityUnitService = quantityUnitService;
+            _measureService = measureService;
+            _measureSettings = measureSettings;
+            _compareProductsService = compareProductsService;
+			_productUrlHelper = productUrlHelper;
+            _rewardPointsSettings = rewardPointsSettings;
         }
 
         #endregion
@@ -276,7 +283,6 @@ namespace SmartStore.Web.Controllers
 				DisableWishlistButton = product.DisableWishlistButton
 			};
 
-			model.BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, customer, currency);
 			model.ProductUrl = _productUrlHelper.GetProductUrl(model.ProductSeName, sci);
 
 			if (item.BundleItem != null)
@@ -410,6 +416,8 @@ namespace SmartStore.Web.Controllers
 					model.Discount = _priceFormatter.FormatPrice(itemDiscount);
 				}
 
+                var basePriceAdjustment = (_priceCalculationService.GetFinalPrice(product, true) - _priceCalculationService.GetUnitPrice(sci, true)) * (-1);
+
                 model.BasePrice = product.GetBasePriceInfo(
                     _localizationService, 
                     _priceFormatter,
@@ -418,7 +426,7 @@ namespace SmartStore.Web.Controllers
                     _priceCalculationService,
 					customer,
                     currency,
-                    (product.Price - _priceCalculationService.GetUnitPrice(sci, true)) * (-1)
+                    basePriceAdjustment
                 );
 			}
 
@@ -657,10 +665,13 @@ namespace SmartStore.Web.Controllers
 		/// <param name="prepareAndDisplayOrderReviewData">A value indicating whether we should prepare review data (such as billing/shipping address, payment or shipping data entered during checkout)</param>
 		/// <returns>Model</returns>
 		[NonAction]
-		protected void PrepareShoppingCartModel(ShoppingCartModel model,
-			IList<OrganizedShoppingCartItem> cart, bool isEditable = true,
+		protected void PrepareShoppingCartModel(
+			ShoppingCartModel model,
+			IList<OrganizedShoppingCartItem> cart,
+			bool isEditable = true,
 			bool validateCheckoutAttributes = false,
-			bool prepareEstimateShippingIfEnabled = true, bool setEstimateShippingDefaultAddress = true,
+			bool prepareEstimateShippingIfEnabled = true, 
+			bool setEstimateShippingDefaultAddress = true,
 			bool prepareAndDisplayOrderReviewData = false)
 		{
 			if (cart == null)
@@ -1212,10 +1223,32 @@ namespace SmartStore.Web.Controllers
 			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.CheckoutAttributes, selectedAttributes);
         }
 
-        [HttpPost]
+		private IList<string> ValidateAndSaveCartData(ProductVariantQuery query, bool? useRewardPoints)
+		{
+			var customer = _workContext.CurrentCustomer;
+			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+
+			ParseAndSaveCheckoutAttributes(cart, query);
+
+			// Validate checkout attributes.
+			var checkoutAttributes = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
+			var warnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributes, true);
+			if (!warnings.Any())
+			{
+				// Reward points.
+				if (_rewardPointsSettings.Enabled)
+				{
+					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, useRewardPoints, _storeContext.CurrentStore.Id);
+				}
+			}
+
+			return warnings;
+		}
+
+		[HttpPost]
         public ActionResult UploadFileCheckoutAttribute(string controlId)
         {
-            var postedFile = this.Request.Files["file"].ToPostedFileResult();
+            var postedFile = Request.ToPostedFileResult();
             if (postedFile != null && postedFile.FileName.HasValue())
             {
                 int fileMaxSize = _catalogSettings.FileUploadMaximumSizeBytes;
@@ -1224,12 +1257,12 @@ namespace SmartStore.Web.Controllers
                     return Json(new
                     {
                         success = false,
-                        message = string.Format(_localizationService.GetResource("ShoppingCart.MaximumUploadedFileSize"), (int)(fileMaxSize / 1024))
+                        message = string.Format(_localizationService.GetResource("ShoppingCart.MaximumUploadedFileSize"), (int)(fileMaxSize / 1024)),
+                        downloadGuid = Guid.Empty
                     });
                 }
                 else
                 {
-                    //save an uploaded file
                     var download = new Download
                     {
                         DownloadGuid = Guid.NewGuid(),
@@ -1239,7 +1272,9 @@ namespace SmartStore.Web.Controllers
                         Filename = postedFile.FileTitle,
                         Extension = postedFile.FileExtension,
                         IsNew = true,
-                        UpdatedOnUtc = DateTime.UtcNow
+                        UpdatedOnUtc = DateTime.UtcNow,
+                        EntityId = 0,
+                        EntityName = "CheckoutAttribute"
                     };
 
                     _downloadService.InsertDownload(download, postedFile.Buffer);
@@ -1350,7 +1385,7 @@ namespace SmartStore.Web.Controllers
 
             // now product is in the cart
             // activity log
-			_customerActivityService.InsertActivity("PublicStore.AddToShoppingCart", _localizationService.GetResource("ActivityLog.PublicStore.AddToShoppingCart"), product.Name);
+            _customerActivityService.InsertActivity("PublicStore.AddToShoppingCart", _localizationService.GetResource("ActivityLog.PublicStore.AddToShoppingCart"), product.Name);
 
             if (_shoppingCartSettings.DisplayCartAfterAddingProduct || forceredirection)
             {
@@ -1372,7 +1407,6 @@ namespace SmartStore.Web.Controllers
         //add product to cart using AJAX
 		//currently we use this method on the product details pages
         [HttpPost]
-        [ValidateInput(false)]
         public ActionResult AddProduct(int productId, int shoppingCartTypeId, ProductVariantQuery query, FormCollection form)
         {
             var product = _productService.GetProductById(productId);
@@ -1549,8 +1583,10 @@ namespace SmartStore.Web.Controllers
                 Extension = postedFile.FileExtension,
                 IsNew = true,
 				IsTransient = true,
-				UpdatedOnUtc = DateTime.UtcNow
-			};
+				UpdatedOnUtc = DateTime.UtcNow,
+                EntityId = productId,
+                EntityName = "ProductAttribute"
+            };
 
             _downloadService.InsertDownload(download, postedFile.Buffer);
 
@@ -1642,7 +1678,7 @@ namespace SmartStore.Web.Controllers
                 var model = new ShoppingCartModel();
                 PrepareShoppingCartModel(model, cart);
                 cartHtml = this.RenderPartialViewToString("CartItems", model);
-                totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
+                totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
                 cartItemCount = cart.Count;
 				showCheckoutButtons = model.IsValidMinOrderSubtotal;
 			}
@@ -1659,7 +1695,6 @@ namespace SmartStore.Web.Controllers
 			});
         }
        
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("continueshopping")]
         public ActionResult ContinueShopping()
@@ -1668,35 +1703,21 @@ namespace SmartStore.Web.Controllers
 			return RedirectToReferrer(returnUrl);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("startcheckout")]
         public ActionResult StartCheckout(ProductVariantQuery query, bool? useRewardPoints)
         {
-            var customer = _workContext.CurrentCustomer;
-            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-            
-            ParseAndSaveCheckoutAttributes(cart, query);
+			var customer = _workContext.CurrentCustomer;
+			var warnings = ValidateAndSaveCartData(query, useRewardPoints);
+			if (warnings.Any())
+			{
+				var model = new ShoppingCartModel();
+				PrepareShoppingCartModel(model, customer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id), validateCheckoutAttributes: true);
+				return View(model);
+			}
 
-            //validate attributes
-			string checkoutAttributes = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
-			var checkoutAttributeWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributes, true);
-            if (checkoutAttributeWarnings.Count > 0)
-            {
-                //something wrong, redisplay the page with warnings
-                var model = new ShoppingCartModel();
-                PrepareShoppingCartModel(model, cart, validateCheckoutAttributes: true);
-                return View(model);
-            }
-
-            // reward points
-            if (_rewardPointsSettings.Enabled)
-            {   
-                _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, useRewardPoints, _storeContext.CurrentStore.Id);
-            }
-
-            //everything is OK
-            if (customer.IsGuest())
+			// Everything is OK.
+			if (customer.IsGuest())
             {
                 if (_customerSettings.UserRegistrationType == UserRegistrationType.Disabled)
                 {
@@ -1717,48 +1738,73 @@ namespace SmartStore.Web.Controllers
             }
         }
 
-        [ValidateInput(false)]
+		// Ajax. Required for cart payment buttons.
+		[HttpPost]
+		public ActionResult SaveCartData(ProductVariantQuery query, bool? useRewardPoints)
+		{
+			var warnings = ValidateAndSaveCartData(query, useRewardPoints);
+
+			return Json(new
+			{
+				success = !warnings.Any(),
+				message = string.Join(Environment.NewLine, warnings)
+			});
+		}
+
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("applydiscountcouponcode")]
         public ActionResult ApplyDiscountCoupon(string discountcouponcode, ProductVariantQuery query)
         {
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var model = new ShoppingCartModel();
+            model.DiscountBox.IsWarning = true;
+
+            var customer = _workContext.CurrentCustomer;
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
             ParseAndSaveCheckoutAttributes(cart, query);
 
-            var model = new ShoppingCartModel();
-			model.DiscountBox.IsWarning = true;
-
-			if (!String.IsNullOrWhiteSpace(discountcouponcode))
+            if (discountcouponcode.HasValue())
 			{
 				var discount = _discountService.GetDiscountByCouponCode(discountcouponcode);
 				var isDiscountValid = 
 					discount != null &&
 					discount.RequiresCouponCode &&
-					_discountService.IsDiscountValid(discount, _workContext.CurrentCustomer, discountcouponcode);
+					_discountService.IsDiscountValid(discount, customer, discountcouponcode);
 
 				if (isDiscountValid)
 				{
-					_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.DiscountCouponCode, discountcouponcode);
+                    var oldCartTotal = ((decimal?)_orderTotalCalculationService.GetShoppingCartTotal(cart)) ?? decimal.Zero;
 
-					model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.Applied");
-					model.DiscountBox.IsWarning = false;
-				}
+                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.DiscountCouponCode, discountcouponcode);
+
+                    var newCartTotal = ((decimal?)_orderTotalCalculationService.GetShoppingCartTotal(cart)) ?? decimal.Zero;
+
+                    if (oldCartTotal != newCartTotal)
+                    {
+                        model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.Applied");
+                        model.DiscountBox.IsWarning = false;
+                    }
+                    else
+                    {
+                        model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.NoMoreDiscount");
+
+                        _genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.DiscountCouponCode, null);
+                    }
+                }
 				else
 				{
 					model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.WrongDiscount");
-				}
+                }
 			}
 			else
 			{
 				model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.WrongDiscount");
-			}
+            }
 
             PrepareShoppingCartModel(model, cart);
             return View(model);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("applygiftcardcouponcode")]
         public ActionResult ApplyGiftCard(string giftcardcouponcode, ProductVariantQuery query)
@@ -1804,7 +1850,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("applyrewardpoints")]
         public ActionResult ApplyRewardPoints(bool useRewardPoints, ProductVariantQuery query)
@@ -1816,14 +1861,13 @@ namespace SmartStore.Web.Controllers
             var model = new ShoppingCartModel();
             model.RewardPoints.UseRewardPoints = useRewardPoints;
 
-            _genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer, 
-                SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, useRewardPoints, _services.StoreContext.CurrentStore.Id);
+            _genericAttributeService.SaveAttribute(Services.WorkContext.CurrentCustomer, 
+                SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, useRewardPoints, Services.StoreContext.CurrentStore.Id);
 
             PrepareShoppingCartModel(model, cart);
             return View(model);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("estimateshipping")]
         public ActionResult GetEstimateShipping(EstimateShippingModel shippingModel, ProductVariantQuery query)
@@ -1842,7 +1886,7 @@ namespace SmartStore.Web.Controllers
 
             if (cart.RequiresShipping())
             {
-				var shippingInfoUrl = Url.TopicUrl("ShippingInfo");
+				var shippingInfoUrl = Url.Topic("ShippingInfo").ToString();
 				if (shippingInfoUrl.HasValue())
 				{
 					model.EstimateShipping.ShippingInfoUrl = shippingInfoUrl;
@@ -2101,7 +2145,6 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("removesubtotaldiscount", "removeordertotaldiscount", "removediscountcouponcode")]
         public ActionResult RemoveDiscountCoupon()
@@ -2116,7 +2159,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("removegiftcard")]
         public ActionResult RemoveGiftardCode(int giftCardId)
@@ -2139,8 +2181,8 @@ namespace SmartStore.Web.Controllers
         {
             var model = new OffCanvasCartModel
 			{
-				ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled,
-				WishlistEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist),
+				ShoppingCartEnabled = Services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled,
+				WishlistEnabled = Services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist),
 				CompareProductsEnabled = _catalogSettings.CompareProductsEnabled
 			};
 
@@ -2226,7 +2268,7 @@ namespace SmartStore.Web.Controllers
                     var model = new ShoppingCartModel();
                     PrepareShoppingCartModel(model, cart);
                     cartHtml = this.RenderPartialViewToString("CartItems", model);
-                    totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
+                    totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
 					showCheckoutButtons = model.IsValidMinOrderSubtotal;
 				}
             }
@@ -2245,8 +2287,8 @@ namespace SmartStore.Web.Controllers
 		[HttpPost]
 		public ActionResult CartSummary(bool cart = false, bool wishlist = false, bool compare = false)
 		{
-			var cartEnabled = cart && _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled;
-			var wishlistEnabled = wishlist && _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
+			var cartEnabled = cart && Services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled;
+			var wishlistEnabled = wishlist && Services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
 			var compareEnabled = compare && _catalogSettings.CompareProductsEnabled;
 
 			int cartItemsCount = 0;
@@ -2258,13 +2300,13 @@ namespace SmartStore.Web.Controllers
 
 			if (cartEnabled || wishlistEnabled)
 			{
-				var customer = _services.WorkContext.CurrentCustomer;
+				var customer = Services.WorkContext.CurrentCustomer;
 
 				if (cartEnabled)
 				{
-					var cartItems = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
+					var cartItems = Services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, Services.StoreContext.CurrentStore.Id);
 					cartItemsCount = cartItems.GetTotalProducts();
-					//cartItemsCount = _shoppingCartService.CountItems(customer, ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
+					//cartItemsCount = _shoppingCartService.CountItems(customer, ShoppingCartType.ShoppingCart, Services.StoreContext.CurrentStore.Id);
 
 					subtotal = _shoppingCartService.GetCurrentCartSubTotal(cartItems);
 					if (subtotal != 0)
@@ -2275,8 +2317,8 @@ namespace SmartStore.Web.Controllers
 
 				if (wishlistEnabled)
 				{
-					//wishlistItemsCount = customer.CountProductsInCart(ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id);
-					wishlistItemsCount = _shoppingCartService.CountItems(customer, ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id);
+					//wishlistItemsCount = customer.CountProductsInCart(ShoppingCartType.Wishlist, Services.StoreContext.CurrentStore.Id);
+					wishlistItemsCount = _shoppingCartService.CountItems(customer, ShoppingCartType.Wishlist, Services.StoreContext.CurrentStore.Id);
 				}
 			}
 
@@ -2315,7 +2357,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-		[ValidateInput(false)]
 		[HttpPost, ActionName("Wishlist")]
 		[FormValueRequired("addtocartbutton")]
 		public ActionResult AddItemstoCartFromWishlist(Guid? customerGuid, FormCollection form)
@@ -2427,7 +2468,7 @@ namespace SmartStore.Web.Controllers
                             cart = customer.GetCartItems(cartType, _storeContext.CurrentStore.Id);
                             PrepareShoppingCartModel(model, cart);
                             cartHtml = this.RenderPartialViewToString("CartItems", model);
-                            totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
+                            totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
                             message = _localizationService.GetResource("Products.ProductHasBeenAddedToTheWishlist");
                             cartItemCount = cart.Count;
                         }
@@ -2514,7 +2555,7 @@ namespace SmartStore.Web.Controllers
 					_workContext.CurrentCustomer,
 					model.YourEmailAddress,
                     model.FriendEmail, 
-					Core.Html.HtmlUtils.FormatText(model.PersonalMessage, false, true, false, false, false, false));
+					Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.PersonalMessage.HtmlEncode()));
 
                 model.SuccessfullySent = true;
                 model.Result = _localizationService.GetResource("Wishlist.EmailAFriend.SuccessfullySent");
@@ -2529,21 +2570,5 @@ namespace SmartStore.Web.Controllers
         }
 
         #endregion
-
-        // TODO: (mc) duplicate of output cache plugin method, find a place for it and remove duplicates
-        private string InvokeAction(string actionName, string controllerName, RouteValueDictionary routeValues)
-        {
-            var viewContext = new ViewContext(
-                   ControllerContext,
-                   new WebFormView(ControllerContext, "tmp"),
-                   ViewData,
-                   TempData,
-                   TextWriter.Null
-            );
-
-            var htmlHelper = new HtmlHelper(viewContext, new ViewPage());
-
-            return htmlHelper.Action(actionName, controllerName, routeValues).ToString();
-        }
     }
 }

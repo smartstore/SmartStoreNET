@@ -183,9 +183,9 @@ namespace SmartStore.Admin.Models.Orders
 					case Core.Domain.Payments.PaymentStatus.Paid:
 						return "fa fa-fw fa-check text-success";
 					case Core.Domain.Payments.PaymentStatus.PartiallyRefunded:
-						return "fa fa-fw fa-exchange text-warning";
+						return "fa fa-fw fa-exchange-alt text-warning";
 					case Core.Domain.Payments.PaymentStatus.Refunded:
-						return "fa fa-fw fa-exchange text-success";
+						return "fa fa-fw fa-exchange-alt text-success";
 					case Core.Domain.Payments.PaymentStatus.Voided:
 						return "fa fa-fw fa-ban muted";
 					default:
@@ -317,7 +317,7 @@ namespace SmartStore.Admin.Models.Orders
         public bool HasDownloadableProducts { get; set; }
         public IList<OrderItemModel> Items { get; set; }
 
-        [SmartResourceDisplayName("Admin.Orders.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 		public string CreatedOnString { get; set; }
 
@@ -488,11 +488,14 @@ namespace SmartStore.Admin.Models.Orders
         public class OrderNote : EntityModelBase
         {
             public int OrderId { get; set; }
+
             [SmartResourceDisplayName("Admin.Orders.OrderNotes.Fields.DisplayToCustomer")]
             public bool DisplayToCustomer { get; set; }
+
             [SmartResourceDisplayName("Admin.Orders.OrderNotes.Fields.Note")]
             public string Note { get; set; }
-            [SmartResourceDisplayName("Admin.Orders.OrderNotes.Fields.CreatedOn")]
+
+            [SmartResourceDisplayName("Common.CreatedOn")]
             public DateTime CreatedOn { get; set; }
         }
 

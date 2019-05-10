@@ -182,12 +182,9 @@ namespace SmartStore.Core
 
             try
             {
-				if (_httpContext != null && _httpContext.Request != null)
+				if (_httpContext.Handler != null && _httpContext?.Request?.ServerVariables[name] != null)
 				{
-					if (_httpContext.Request.ServerVariables[name] != null)
-					{
-						result = _httpContext.Request.ServerVariables[name];
-					}
+					result = _httpContext.Request.ServerVariables[name];
 				}
             }
             catch
@@ -499,10 +496,7 @@ namespace SmartStore.Core
 				File.Delete(Path.Combine(userCacheDir, "MVC-ControllerTypeCache.xml"));
 				File.Delete(Path.Combine(userCacheDir, "MVC-AreaRegistrationTypeCache.xml"));
 			}
-			catch
-			{
-
-			}
+			catch { }
 		}
 
 		private bool TryWriteBinFolder()
@@ -612,7 +606,7 @@ namespace SmartStore.Core
 			Guard.NotEmpty(protocol, nameof(protocol));
 			Guard.NotEmpty(host, nameof(host));
 
-			string baseUrl = string.Format("{0}://{1}", protocol, host.TrimEnd('/'));
+			string baseUrl = protocol.EnsureEndsWith("://") + host.TrimEnd('/');
 
 			MatchEvaluator evaluator = (match) =>
 			{
@@ -629,8 +623,9 @@ namespace SmartStore.Core
 		/// <summary>
 		/// Prepends protocol and host to the given (relative) url
 		/// </summary>
+		/// <param name="protocol">Changes the protocol if passed.</param>
 		[SuppressMessage("ReSharper", "AccessToModifiedClosure")]
-		public static string GetAbsoluteUrl(string url, HttpRequestBase request)
+		public static string GetAbsoluteUrl(string url, HttpRequestBase request, bool enforceScheme = false, string protocol = null)
 		{
 			Guard.NotEmpty(url, nameof(url));
 			Guard.NotNull(request, nameof(request));
@@ -640,9 +635,18 @@ namespace SmartStore.Core
 				return url;
 			}
 
-			if (url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+			if (url.Contains("://"))
 			{
 				return url;
+			}
+
+			protocol = protocol ?? request.Url.Scheme;
+
+			if (url.StartsWith("//"))
+			{
+				return enforceScheme 
+					? String.Concat(protocol, ":", url)
+					: url;
 			}
 
 			if (url.StartsWith("~"))
@@ -650,7 +654,7 @@ namespace SmartStore.Core
 				url = VirtualPathUtility.ToAbsolute(url);
 			}
 
-			url = string.Format("{0}://{1}{2}", request.Url.Scheme, request.Url.Authority, url);
+			url = string.Format("{0}://{1}{2}", protocol, request.Url.Authority, url);
 			return url;
 		}
 

@@ -6,6 +6,7 @@ namespace SmartStore.Core.Caching
 	public interface ISet : IEnumerable<string>
 	{
 		bool Add(string item);
+		void AddRange(IEnumerable<string> items);
 		void Clear();
 		bool Contains(string item);
 		bool Remove(string item);

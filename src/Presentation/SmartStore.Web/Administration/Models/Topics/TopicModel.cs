@@ -1,17 +1,19 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Models.Stores;
-using SmartStore.Admin.Validators.Topics;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
+using System.Linq;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Admin.Models.Topics
 {
-	[Validator(typeof(TopicValidator))]
-    public class TopicModel : TabbableModel, ILocalizedModel<TopicLocalizedModel>, IStoreSelector
+    [Validator(typeof(TopicValidator))]
+    public class TopicModel : TabbableModel, ILocalizedModel<TopicLocalizedModel>, IStoreSelector, IAclSelector
     {       
         public TopicModel()
         {
@@ -34,9 +36,20 @@ namespace SmartStore.Admin.Models.Topics
 		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 
+		// ACL
+		public bool SubjectToAcl { get; set; }
+		public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
+		public int[] SelectedCustomerRoleIds { get; set; }
+
 		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SystemName")]
         [AllowHtml]
         public string SystemName { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.HtmlId")]
+        public string HtmlId { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.BodyCssClass")]
+        public string BodyCssClass { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.IncludeInSitemap")]
         public bool IncludeInSitemap { get; set; }
@@ -52,11 +65,19 @@ namespace SmartStore.Admin.Models.Topics
         [AllowHtml]
         public string Url { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Title")]
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.ShortTitle")]
+		[AllowHtml]
+		public string ShortTitle { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Title")]
         [AllowHtml]
         public string Title { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Body")]
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Intro")]
+		[AllowHtml]
+		public string Intro { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Body")]
         [AllowHtml]
         public string Body { get; set; }
 
@@ -81,7 +102,6 @@ namespace SmartStore.Admin.Models.Topics
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetZone")]
 		[UIHint("WidgetZone")]
 		public string[] WidgetZone { get; set; }
-		public MultiSelectList AvailableWidgetZones { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetWrapContent")]
 		public bool WidgetWrapContent { get; set; }
@@ -100,7 +120,10 @@ namespace SmartStore.Admin.Models.Topics
 
         public bool IsSystemTopic { get; set; }
 
-        public IList<SelectListItem> AvailableTitleTags { get; private set; }
+		[SmartResourceDisplayName("Common.Published")]
+		public bool IsPublished { get; set; }
+
+		public IList<SelectListItem> AvailableTitleTags { get; private set; }
 
         public IList<TopicLocalizedModel> Locales { get; set; }
     }
@@ -109,11 +132,19 @@ namespace SmartStore.Admin.Models.Topics
     {
         public int LanguageId { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Title")]
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.ShortTitle")]
+		[AllowHtml]
+		public string ShortTitle { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Title")]
         [AllowHtml]
         public string Title { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Body")]
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Intro")]
+		[AllowHtml]
+		public string Intro { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Body")]
         [AllowHtml]
         public string Body { get; set; }
 
@@ -132,4 +163,15 @@ namespace SmartStore.Admin.Models.Topics
 		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SeName")]
 		public string SeName { get; set; }
 	}
+
+    public partial class TopicValidator : AbstractValidator<TopicModel>
+    {
+        public TopicValidator(Localizer T)
+        {
+            RuleFor(x => x.SystemName).NotEmpty();
+            RuleFor(x => x.HtmlId)
+                .Must(u => u.IsEmpty() || !u.Any(x => char.IsWhiteSpace(x)))
+                .WithMessage(T("Admin.ContentManagement.Topics.Validation.NoWhiteSpace"));
+        }
+    }
 }

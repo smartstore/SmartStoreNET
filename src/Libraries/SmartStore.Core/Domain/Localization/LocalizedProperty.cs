@@ -28,6 +28,7 @@ namespace SmartStore.Core.Domain.Localization
         /// </summary>
 		[DataMember]
 		[Index("IX_LocalizedProperty_Compound", Order = 3)]
+		[Index("IX_LocalizedProperty_LocaleKeyGroup")]
 		public string LocaleKeyGroup { get; set; }
 
         /// <summary>

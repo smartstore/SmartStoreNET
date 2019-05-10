@@ -6,7 +6,6 @@ using System.Web.Hosting;
 using System.Web.Caching;
 using SmartStore.Utilities;
 using System.Web;
-using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Logging;
 
 namespace SmartStore.Core.IO

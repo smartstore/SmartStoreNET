@@ -15,6 +15,8 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Html;
 using SmartStore.Utilities;
 using System.Collections.Generic;
+using SmartStore.Core.Domain.Directory;
+using SmartStore.Core;
 
 namespace SmartStore.Services.Messages
 {
@@ -30,22 +32,22 @@ namespace SmartStore.Services.Messages
 
 		private string BuildUrl(string url, MessageContext ctx)
 		{
-			return ctx.BaseUri.ToString().TrimEnd('/') + url;
+			return ctx.BaseUri.GetLeftPart(UriPartial.Authority) + url.EnsureStartsWith("/");
 		}
 
 		private string BuildRouteUrl(object routeValues, MessageContext ctx)
 		{
-			return ctx.BaseUri.ToString().TrimEnd('/') + _urlHelper.RouteUrl(routeValues);
+			return ctx.BaseUri.GetLeftPart(UriPartial.Authority) + _urlHelper.RouteUrl(routeValues);
 		}
 
 		private string BuildRouteUrl(string routeName, object routeValues, MessageContext ctx)
 		{
-			return ctx.BaseUri.ToString().TrimEnd('/') + _urlHelper.RouteUrl(routeName, routeValues);
+			return ctx.BaseUri.GetLeftPart(UriPartial.Authority) + _urlHelper.RouteUrl(routeName, routeValues);
 		}
 
 		private string BuildActionUrl(string action, string controller, object routeValues, MessageContext ctx)
 		{
-			return ctx.BaseUri.ToString().TrimEnd('/') + _urlHelper.Action(action, controller, routeValues);
+			return ctx.BaseUri.GetLeftPart(UriPartial.Authority) + _urlHelper.Action(action, controller, routeValues);
 		}
 
 		private void PublishModelPartCreatedEvent<T>(T source, dynamic part) where T : class
@@ -74,7 +76,7 @@ namespace SmartStore.Services.Messages
 			var topicService = _services.Resolve<ITopicService>();
 
 			// Load by store
-			var topic = topicService.GetTopicBySystemName(topicSystemName);
+			var topic = topicService.GetTopicBySystemName(topicSystemName, ctx.StoreId ?? 0, false);
 
 			string body = topic?.GetLocalized(x => x.Body, ctx.Language);
 			if (body.HasValue())
@@ -110,18 +112,38 @@ namespace SmartStore.Services.Messages
 				_services.DateTimeHelper.GetCustomerTimeZone(messageContext.Customer));
 		}
 
-		private string FormatPrice(decimal price, Order order, MessageContext messageContext)
+		private Money FormatPrice(decimal price, Order order, MessageContext messageContext)
 		{
-			return FormatPrice(price, order.CurrencyRate, order.CustomerCurrencyCode, messageContext);
+			return FormatPrice(price, order.CustomerCurrencyCode, messageContext, order.CurrencyRate);
 		}
 
-		private string FormatPrice(decimal price, decimal currencyRate, string customerCurrencyCode, MessageContext messageContext)
+		private Money FormatPrice(decimal price, MessageContext messageContext, decimal exchangeRate = 1)
 		{
-			var language = messageContext.Language;
-			var currencyService = _services.Resolve<ICurrencyService>();
-			var priceFormatter = _services.Resolve<IPriceFormatter>();
+			return FormatPrice(price, (Currency)null, messageContext, exchangeRate);
+		}
 
-			return priceFormatter.FormatPrice(currencyService.ConvertCurrency(price, currencyRate), true, customerCurrencyCode, false, language);
+		private Money FormatPrice(decimal price, string currencyCode, MessageContext messageContext, decimal exchangeRate = 1)
+		{
+			return FormatPrice(
+				price,
+				_services.Resolve<ICurrencyService>().GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode },
+				messageContext,
+				exchangeRate);
+		}
+
+		private Money FormatPrice(decimal price, Currency currency, MessageContext messageContext, decimal exchangeRate = 1)
+		{
+			if (exchangeRate != 1)
+			{
+				price = _services.Resolve<ICurrencyService>().ConvertCurrency(price, exchangeRate);
+			}
+
+			if (currency == null)
+			{
+				currency = _services.Resolve<IWorkContext>().WorkingCurrency;
+			}
+
+			return new Money(price, currency);
 		}
 
 		private PictureInfo GetPictureFor(Product product, string attributesXml)

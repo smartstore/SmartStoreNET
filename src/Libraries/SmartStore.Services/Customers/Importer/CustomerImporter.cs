@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using SmartStore.Core.Async;
@@ -10,10 +9,10 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Media;
-using SmartStore.Core.Events;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Common;
 using SmartStore.Services.DataExchange.Import;
+using SmartStore.Services.DataExchange.Import.Events;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Media;
@@ -22,7 +21,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Customers.Importer
 {
-	public class CustomerImporter : EntityImporterBase
+    public class CustomerImporter : EntityImporterBase
 	{
 		private const string _attributeKeyGroup = "Customer";
 
@@ -91,9 +90,9 @@ namespace SmartStore.Services.Customers.Importer
 
 			var allStateProvinces = _stateProvinceService.GetAllStateProvinces(true)
 				.ToDictionarySafe(x => new Tuple<int, string>(x.CountryId, x.Abbreviation), x => x.Id);
-
+			
 			var allCustomerNumbers = new HashSet<string>(
-				_genericAttributeService.GetAttributes(SystemCustomerAttributeNames.CustomerNumber, _attributeKeyGroup).Select(x => x.Value),
+				_customerRepository.Table.Where(x => !String.IsNullOrEmpty(x.CustomerNumber)).Select(x => x.CustomerNumber),
 				StringComparer.OrdinalIgnoreCase);
 
 			var allCustomerRoles = _customerRoleRepository.Table
@@ -120,7 +119,7 @@ namespace SmartStore.Services.Customers.Importer
 					// ===========================================================================
 					try
 					{
-						ProcessCustomers(context, batch, allAffiliateIds);
+						ProcessCustomers(context, batch, allAffiliateIds, allCustomerNumbers);
 					}
 					catch (Exception exception)
 					{
@@ -157,7 +156,7 @@ namespace SmartStore.Services.Customers.Importer
 					// ===========================================================================
 					try
 					{
-						ProcessGenericAttributes(context, batch, allCountries, allStateProvinces, allCustomerNumbers);
+						ProcessGenericAttributes(context, batch, allCountries, allStateProvinces);
 					}
 					catch (Exception exception)
 					{
@@ -195,14 +194,17 @@ namespace SmartStore.Services.Customers.Importer
 					{
 						_services.DbContext.AutoDetectChangesEnabled = false;
 					}
-				}
+
+                    context.Services.EventPublisher.Publish(new ImportBatchExecutedEvent<Customer>(context, batch));
+                }
 			}
 		}
 
 		protected virtual int ProcessCustomers(
 			ImportExecuteContext context,
 			IEnumerable<ImportRow<Customer>> batch,
-			List<int> allAffiliateIds)
+			List<int> allAffiliateIds,
+			HashSet<string> allCustomerNumbers)
 		{
 			_customerRepository.AutoCommitEnabled = true;
 
@@ -280,6 +282,17 @@ namespace SmartStore.Services.Customers.Importer
 				row.SetProperty(context.Result, (x) => x.CustomerGuid);
 				row.SetProperty(context.Result, (x) => x.Username);
 				row.SetProperty(context.Result, (x) => x.Email);
+				row.SetProperty(context.Result, (x) => x.FirstName);
+				row.SetProperty(context.Result, (x) => x.LastName);
+
+				if (_customerSettings.TitleEnabled)
+					row.SetProperty(context.Result, (x) => x.Title);
+
+				if (_customerSettings.CompanyEnabled)
+					row.SetProperty(context.Result, (x) => x.Company);
+
+				if (_customerSettings.DateOfBirthEnabled)
+					row.SetProperty(context.Result, (x) => x.BirthDate);
 
 				if (email.HasValue() && currentCustomer.Email.IsCaseInsensitiveEqual(email))
 				{
@@ -302,6 +315,21 @@ namespace SmartStore.Services.Customers.Importer
 				if (affiliateId > 0 && allAffiliateIds.Contains(affiliateId))
 				{
 					customer.AffiliateId = affiliateId;
+				}
+
+				string customerNumber = null;
+
+				if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.AutomaticallySet && row.IsTransient)
+					customerNumber = row.Entity.Id.ToString();
+				else if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.Enabled && !row.IsTransient && row.HasDataValue("CustomerNumber"))
+					customerNumber = row.GetDataValue<string>("CustomerNumber");
+				
+				if (customerNumber.HasValue() || !allCustomerNumbers.Contains(customerNumber))
+				{
+					row.Entity.CustomerNumber = customerNumber;
+
+					if (!customerNumber.IsEmpty())
+						allCustomerNumbers.Add(customerNumber);
 				}
 
 				if (row.IsTransient)
@@ -483,25 +511,15 @@ namespace SmartStore.Services.Customers.Importer
 			ImportExecuteContext context,
 			IEnumerable<ImportRow<Customer>> batch,
 			Dictionary<string, int> allCountries,
-			Dictionary<Tuple<int, string>, int> allStateProvinces,
-			HashSet<string> allCustomerNumbers)
+			Dictionary<Tuple<int, string>, int> allStateProvinces)
 		{
 			foreach (var row in batch)
 			{
-				SaveAttribute(row, SystemCustomerAttributeNames.FirstName);
-				SaveAttribute(row, SystemCustomerAttributeNames.LastName);
-
 				if (_dateTimeSettings.AllowCustomersToSetTimeZone)
 					SaveAttribute(row, SystemCustomerAttributeNames.TimeZoneId);
 
 				if (_customerSettings.GenderEnabled)
 					SaveAttribute(row, SystemCustomerAttributeNames.Gender);
-
-				if (_customerSettings.DateOfBirthEnabled)
-					SaveAttribute<DateTime?>(row, SystemCustomerAttributeNames.DateOfBirth);
-
-				if (_customerSettings.CompanyEnabled)
-					SaveAttribute(row, SystemCustomerAttributeNames.Company);
 
 				if (_customerSettings.StreetAddressEnabled)
 					SaveAttribute(row, SystemCustomerAttributeNames.StreetAddress);
@@ -544,21 +562,6 @@ namespace SmartStore.Services.Customers.Importer
 				if (stateId.HasValue)
 				{
 					SaveAttribute(row, SystemCustomerAttributeNames.StateProvinceId, stateId.Value);
-				}
-
-				string customerNumber = null;
-
-				if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.AutomaticallySet)
-					customerNumber = row.Entity.Id.ToString();
-				else
-					customerNumber = row.GetDataValue<string>("CustomerNumber");
-
-				if (customerNumber.IsEmpty() || !allCustomerNumbers.Contains(customerNumber))
-				{
-					SaveAttribute(row, SystemCustomerAttributeNames.CustomerNumber, customerNumber);
-
-					if (!customerNumber.IsEmpty())
-						allCustomerNumbers.Add(customerNumber);
 				}
 			}
 
@@ -604,15 +607,14 @@ namespace SmartStore.Services.Customers.Importer
 								currentPictures.Add(picture);
 							}
 						}
-
-						var size = Size.Empty;
-						pictureBinary = _pictureService.ValidatePicture(pictureBinary, image.MimeType, out size);
+                        
 						pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
 
 						if (pictureBinary != null && pictureBinary.Length > 0)
 						{
-							var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, size.Width, size.Height, false);
-							if (picture != null)
+                            var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false);
+
+                            if (picture != null)
 							{
 								SaveAttribute(row, SystemCustomerAttributeNames.AvatarPictureId, picture.Id);
 							}

@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Common;
-using SmartStore.Web.Validators.Blogs;
+using System;
+using System.Collections.Generic;
 
 namespace SmartStore.Web.Models.Blogs
 {
@@ -30,4 +30,14 @@ namespace SmartStore.Web.Models.Blogs
 		public AddBlogCommentModel AddNewComment { get; set; }
 		public CommentListModel Comments { get; set; }
 	}
+
+    public class BlogPostValidator : AbstractValidator<BlogPostModel>
+    {
+        public BlogPostValidator()
+        {
+            RuleFor(x => x.AddNewComment.CommentText)
+                .NotEmpty()
+                .When(x => x.AddNewComment != null);
+        }
+    }
 }

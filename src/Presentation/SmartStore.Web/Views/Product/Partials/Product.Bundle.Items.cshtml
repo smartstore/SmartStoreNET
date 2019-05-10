@@ -41,7 +41,7 @@
 						}
 					</div>
 
-					@if (item.ShortDescription.Value.HasValue())
+					@if (item.ShortDescription.HasValue())
 					{
 						var shortDescription = item.ShortDescription.Value.Truncate(120, "...");
 						<div class="pd-bundle-item-description" @Html.LanguageAttributes(item.ShortDescription) @Html.Attr("title", item.ShortDescription, item.ShortDescription != shortDescription)>

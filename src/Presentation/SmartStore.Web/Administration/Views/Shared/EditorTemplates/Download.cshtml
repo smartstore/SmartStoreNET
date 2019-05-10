@@ -7,16 +7,19 @@
 @functions {
 	bool? _minimalMode = null;
 	string _fieldName = null;
-	
+	int _entityId = 0;
+	string _entityName = null;
+	string _fileTypes = null;
+
 	private bool MinimalMode
 	{
 		get
 		{
 			if (!_minimalMode.HasValue)
 			{
-				_minimalMode = ViewData.ContainsKey("minimalMode") ? ViewData["minimalMode"].Convert<bool>() : false;			
+				_minimalMode = ViewData.ContainsKey("minimalMode") ? ViewData["minimalMode"].Convert<bool>() : false;
 			}
-			return _minimalMode.Value;	
+			return _minimalMode.Value;
 		}
 	}
 
@@ -31,34 +34,70 @@
 			return _fieldName;
 		}
 	}
+
+	private int EntityId
+	{
+		get
+		{
+			if (_entityId == 0)
+			{
+				_entityId = ViewData.ContainsKey("entityId") ? ViewData["entityId"].Convert<int>() : 0;
+			}
+			return _entityId;
+		}
+	}
+
+	private string EntityName
+	{
+		get
+		{
+			if (_entityName == null)
+			{
+				_entityName = ViewData.ContainsKey("entityName") ? ViewData["entityName"].Convert<string>() : ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
+			}
+			return _entityName;
+		}
+	}
+
+	private string FileTypes
+	{
+		get
+		{
+			if (_fileTypes == null)
+			{
+				_fileTypes = ViewData.ContainsKey("fileTypes") ? ViewData["fileTypes"].Convert<string>() : "";
+			}
+			return _fileTypes;
+		}
+	}
 }
 
 @{
-	var random = CommonHelper.GenerateRandomInteger();
-	var clientId = "download-editor-" + random;
-	var downloadService = EngineContext.Current.Resolve<SmartStore.Services.Media.IDownloadService>();
-	var download = downloadService.GetDownloadById(Model.GetValueOrDefault());
-	var fileName = string.Empty;
-	var initiallyShowUrlPanel = false;
-	var hasFile = false;
-	var downloadUrl = "";
-	if (download != null) {
-		downloadUrl = Url.Action("DownloadFile", "Download", new { downloadId = download.Id });
-		initiallyShowUrlPanel = !MinimalMode && download.UseDownloadUrl;
-		hasFile = !download.UseDownloadUrl;
-		fileName = string.IsNullOrWhiteSpace(download.Filename) || download.Filename.IsCaseInsensitiveEqual("undefined") 
-			? download.Id.ToString() 
-			: string.Concat(download.Filename, download.Extension);
-	}
+    var random = CommonHelper.GenerateRandomInteger();
+    var clientId = "download-editor-" + random;
+    var downloadService = EngineContext.Current.Resolve<SmartStore.Services.Media.IDownloadService>();
+    var download = downloadService.GetDownloadById(Model.GetValueOrDefault());
+    var fileName = string.Empty;
+    var initiallyShowUrlPanel = false;
+    var hasFile = false;
+    var downloadUrl = "";
+    if (download != null) {
+        downloadUrl = Url.Action("DownloadFile", "Download", new { downloadId = download.Id });
+        initiallyShowUrlPanel = !MinimalMode && download.UseDownloadUrl;
+        hasFile = !download.UseDownloadUrl;
+        fileName = string.IsNullOrWhiteSpace(download.Filename) || download.Filename.IsCaseInsensitiveEqual("undefined")
+            ? download.Id.ToString()
+            : string.Concat(download.Filename, download.Extension);
+    }
 
-	Html.AddScriptParts(true, "~/Administration/Scripts/smartstore.download.js");
+    Html.AddScriptParts(true, "~/Administration/Scripts/smartstore.download.js");
 }
 
 <div id="@clientId" class="form-row flex-nowrap download-editor@(MinimalMode ? " minimal" : "")"
 	 data-download-id="@Model.GetValueOrDefault()"
 	 data-use-url="@(initiallyShowUrlPanel ? "true" : "false")"
-	 data-upload-url="@Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, area = "Admin" })"
-	 data-delete-url="@Url.Action("DeleteDownload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, area = "Admin" })">
+	 data-upload-url="@Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" })"
+	 data-delete-url="@Url.Action("DeleteDownload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" })">
 
 	<input type="hidden" id="@FieldName.SanitizeHtmlId()" name="@FieldName" value="@Model" class="hidden" />
 
@@ -77,7 +116,7 @@
 					{
 						<div class="dropdown-divider"></div>
 						<a href="#" class="dropdown-item remove-download">
-							<i class="fa fa-trash-o"></i>
+							<i class="far fa-trash-alt"></i>
 							<span>@T("Common.Remove")</span>
 						</a>
 					}
@@ -87,7 +126,7 @@
 		else if (hasFile)
 		{
 			<a href="#" class="btn btn-danger btn-icon remove-download" title='@T("Common.Remove")'>
-				<i class="fa fa-trash-o"></i>
+				<i class="far fa-trash-alt"></i>
 			</a>
 		}
 	</div>
@@ -108,7 +147,7 @@
 			}
 			<div class="col">
 				@(Html.SmartStore().FileUploader()
-					.UploadUrl(Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName }))
+					.UploadUrl(Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" }))
 					.AcceptedFileTypes("")
 					.IconCssClass(MinimalMode ? "fa fa-upload" : "")
 					.ButtonOutlineStyle(hasFile)
@@ -130,7 +169,7 @@
 					@{ var value = download != null ? download.DownloadUrl : ""; }
 					<input type="text" class="download-url-value form-control" value='@value' data-value='@value' />
 					<div class="input-group-append">
-						<a class="btn btn-outline-secondary save-download-url disabled" href="@Url.Action("SaveDownloadUrl", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, area = "Admin" })">
+						<a class="btn btn-outline-secondary save-download-url disabled" href="@Url.Action("SaveDownloadUrl", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" })">
 							<i class="fa fa-check"></i>
 							<span>@T("Common.Save")</span>
 						</a>

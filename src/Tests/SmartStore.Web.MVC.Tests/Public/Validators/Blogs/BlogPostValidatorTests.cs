@@ -1,5 +1,5 @@
-﻿using SmartStore.Web.Validators.Blogs;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using SmartStore.Admin.Models.Blogs;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators.Blogs
 {
@@ -11,8 +11,9 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Blogs
         [SetUp]
         public new void Setup()
         {
-            _validator = new BlogPostValidator(_localizationService);
+            _validator = new BlogPostValidator();
         }
+
         //TODO uncomment tests when the following FluentVlidation issue is fixed http://fluentvalidation.codeplex.com/workitem/7095
         //[Test]
         //public void Should_have_error_when_comment_is_null_or_empty()

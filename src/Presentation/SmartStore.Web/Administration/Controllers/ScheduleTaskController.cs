@@ -1,68 +1,46 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Web.Mvc;
-using SmartStore.Admin.Extensions;
 using SmartStore.Admin.Models.Tasks;
+using SmartStore.Core.Async;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Tasks;
-using SmartStore.Core.Plugins;
-using SmartStore.Services.Helpers;
-using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
-using SmartStore.Core;
-using SmartStore.Core.Async;
+using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public partial class ScheduleTaskController : AdminControllerBase
     {
 		private readonly IScheduleTaskService _scheduleTaskService;
         private readonly ITaskScheduler _taskScheduler;
-        private readonly IPermissionService _permissionService;
-        private readonly IDateTimeHelper _dateTimeHelper;
-		private readonly ILocalizationService _localizationService;
-        private readonly IWorkContext _workContext;
-		private readonly IStoreContext _storeContext;
 		private readonly IAsyncState _asyncState;
+        private readonly AdminModelHelper _adminModelHelper;
+        private readonly AdminAreaSettings _adminAreaSettings;
+        private readonly CommonSettings _commonSettings;
 
         public ScheduleTaskController(
             IScheduleTaskService scheduleTaskService, 
             ITaskScheduler taskScheduler, 
-            IPermissionService permissionService, 
-            IDateTimeHelper dateTimeHelper,
-			ILocalizationService localizationService,
-            IWorkContext workContext,
-			IStoreContext storeContext,
-			IAsyncState asyncState)
+			IAsyncState asyncState,
+            AdminModelHelper adminModelHelper,
+            AdminAreaSettings adminAreaSettings,
+            CommonSettings commonSettings)
         {
             _scheduleTaskService = scheduleTaskService;
 			_taskScheduler = taskScheduler;
-            _permissionService = permissionService;
-            _dateTimeHelper = dateTimeHelper;
-			_localizationService = localizationService;
-            _workContext = workContext;
-			_storeContext = storeContext;
 			_asyncState = asyncState;
+            _adminModelHelper = adminModelHelper;
+            _adminAreaSettings = adminAreaSettings;
+            _commonSettings = commonSettings;
         }
-
-		private bool IsTaskVisible(ScheduleTask task)
-		{
-			if (task.IsHidden)
-				return false;
-
-			var type = Type.GetType(task.Type);
-			if (type != null)
-			{
-				return PluginManager.IsActivePluginAssembly(type.Assembly);
-			}
-			return false;
-		}
 
 		private string GetTaskMessage(ScheduleTask task, string resourceKey)
 		{
@@ -76,7 +54,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (taskClassName.HasValue())
 			{
-				message = _localizationService.GetResource(string.Concat(resourceKey, ".", taskClassName), logIfNotFound: false, returnEmptyIfNotFound: true);
+				message = Services.Localization.GetResource(string.Concat(resourceKey, ".", taskClassName), logIfNotFound: false, returnEmptyIfNotFound: true);
 			}
 
 			if (message.IsEmpty())
@@ -94,48 +72,58 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult List()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
                 return AccessDeniedView();
 
-			var model = _scheduleTaskService.GetAllTasks(true)
-				.Where(IsTaskVisible)
-				.Select(x => x.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Url))
-				.ToList();
+            var models = new List<ScheduleTaskModel>();
+            var tasks = _scheduleTaskService.GetAllTasks(true);
+            var lastHistoryEntries = _scheduleTaskService.GetHistoryEntries(0, int.MaxValue, 0, true, true).ToDictionarySafe(x => x.ScheduleTaskId);
 
-            return View(model);
+            foreach (var task in tasks.Where(x => x.IsVisible()))
+            {
+                lastHistoryEntries.TryGetValue(task.Id, out var lastEntry);
+                var model = _adminModelHelper.CreateScheduleTaskModel(task, lastEntry);
+                if (model != null)
+                {
+                    models.Add(model);
+                }
+            }
+
+            return View(models);
         }
-
 
 		[HttpPost]
 		public ActionResult GetRunningTasks()
 		{
-			if (!_scheduleTaskService.HasRunningTasks())
-				return Json(new EmptyResult());
+            var runningHistoryEntries = _scheduleTaskService.GetHistoryEntries(0, int.MaxValue, 0, true, true, true);
+            if (!runningHistoryEntries.Any())
+            {
+                return Json(new EmptyResult());
+            }
 
-			var runningTasks = from t in _scheduleTaskService.GetRunningTasks()
-							   select new 
-							   {
- 								   id = t.Id,
-								   percent = t.ProgressPercent,
-								   message = t.ProgressMessage,
-							   };
+            var models = runningHistoryEntries
+                .Select(x => new
+                {
+                    id = x.ScheduleTaskId,
+                    percent = x.ProgressPercent,
+                    message = x.ProgressMessage
+                })
+                .ToArray();
 
-			return Json(runningTasks.ToArray());
-		}
+            return Json(models);
+        }
 
-		[HttpPost]
+        [HttpPost]
 		public ActionResult GetTaskRunInfo(int id /* taskId */)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
 				return new HttpUnauthorizedResult();
 
-			var task = _scheduleTaskService.GetTaskById(id);
-			if (task == null)
-			{
-				return HttpNotFound();
-			}
-
-			var model = task.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Url);
+            var model = _adminModelHelper.CreateScheduleTaskModel(id);
+            if (model == null)
+            {
+                return HttpNotFound();
+            }
 
 			return Json(new 
 			{
@@ -146,48 +134,47 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult RunJob(int id, string returnUrl = "")
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
 				return AccessDeniedView();
 
 			var taskParams = new Dictionary<string, string>
 			{
-				{ TaskExecutor.CurrentCustomerIdParamName, _workContext.CurrentCustomer.Id.ToString() },
-				{ TaskExecutor.CurrentStoreIdParamName,  _storeContext.CurrentStore.Id.ToString() }
+				{ TaskExecutor.CurrentCustomerIdParamName, Services.WorkContext.CurrentCustomer.Id.ToString() },
+				{ TaskExecutor.CurrentStoreIdParamName, Services.StoreContext.CurrentStore.Id.ToString() }
 			};
 
 			_taskScheduler.RunSingleTask(id, taskParams);
 
 			// The most tasks are completed rather quickly. Wait a while...
-			var start = DateTime.UtcNow;
 			Thread.Sleep(200);
 
-			// ...check and return suitable notifications
-			var task = _scheduleTaskService.GetTaskById(id);
-			if (task != null)
-			{
-				if (task.IsRunning)
-				{
-					NotifyInfo(GetTaskMessage(task, "Admin.System.ScheduleTasks.RunNow.Progress"));
-				}
-				else
-				{
-					if (task.LastError.HasValue())
-					{
-						NotifyError(task.LastError);
-					}
-					else
-					{
-						NotifySuccess(GetTaskMessage(task, "Admin.System.ScheduleTasks.RunNow.Success"));
-					}
-				}
-			}
+            // ...check and return suitable notifications
+            var lastEntry = _scheduleTaskService.GetLastHistoryEntryByTaskId(id);
+            if (lastEntry != null)
+            {
+                if (lastEntry.IsRunning)
+                {
+                    NotifyInfo(GetTaskMessage(lastEntry.ScheduleTask, "Admin.System.ScheduleTasks.RunNow.Progress"));
+                }
+                else
+                {
+                    if (lastEntry.Error.HasValue())
+                    {
+                        NotifyError(lastEntry.Error);
+                    }
+                    else
+                    {
+                        NotifySuccess(GetTaskMessage(lastEntry.ScheduleTask, "Admin.System.ScheduleTasks.RunNow.Success"));
+                    }
+                }
+            }
 
 			return RedirectToReferrer(returnUrl);
 		}
 
 		public ActionResult CancelJob(int id /* scheduleTaskId */, string returnUrl = "")
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
 				return AccessDeniedView();
 	
 			if (_asyncState.Cancel<ScheduleTask>(id.ToString()))
@@ -200,26 +187,29 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult Edit(int id /* taskId */, string returnUrl = null)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
-				return AccessDeniedView();
-			
-			var task = _scheduleTaskService.GetTaskById(id);
-			if (task == null)
-			{
-				return HttpNotFound();
-			}
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+                return AccessDeniedView();
 
-			var model = task.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Url);
-			ViewBag.ReturnUrl = returnUrl;
+            var model = _adminModelHelper.CreateScheduleTaskModel(id);
+            if (model == null)
+            {
+                return HttpNotFound();
+            }
 
-			return View(model);
+            ViewBag.ReturnUrl = returnUrl;
+            ViewBag.GridPageSize = _adminAreaSettings.GridPageSize;
+            ViewBag.HistoryCleanupNote = T("Admin.System.ScheduleTasks.HistoryCleanupNote", 
+                _commonSettings.MaxNumberOfScheduleHistoryEntries, 
+                _commonSettings.MaxScheduleHistoryAgeInDays).Text;
+
+            return View(model);
 		}
 
 		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		[ValidateAntiForgeryToken]
 		public ActionResult Edit(ScheduleTaskModel model, bool continueEditing, string returnUrl = null)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
 				return AccessDeniedView();
 
 			ViewBag.ReturnUrl = returnUrl;
@@ -257,7 +247,47 @@ namespace SmartStore.Admin.Controllers
 			return returnResult;
 		}
 
-		[HttpPost]
+        [GridAction(EnableCustomBinding = true)]
+        public ActionResult HistoryList(GridCommand command, int taskId)
+        {
+            var gridModel = new GridModel<ScheduleTaskHistoryModel>();
+
+            if (Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+            {
+                var history = _scheduleTaskService.GetHistoryEntries(command.Page - 1, command.PageSize, taskId);
+
+                gridModel.Total = history.TotalCount;
+                gridModel.Data = history.Select(x => _adminModelHelper.CreateScheduleTaskHistoryModel(x)).ToList();
+            }
+            else
+            {
+                gridModel.Data = Enumerable.Empty<ScheduleTaskHistoryModel>();
+                NotifyAccessDenied();
+            }
+
+            return new JsonResult
+            {
+                Data = gridModel
+            };
+        }
+
+        [GridAction(EnableCustomBinding = true)]
+        public ActionResult DeleteHistoryEntry(int id, GridCommand command)
+        {
+            var historyEntry = _scheduleTaskService.GetHistoryEntryById(id);
+
+            if (Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+            {
+                if (historyEntry != null)
+                {
+                    _scheduleTaskService.DeleteHistoryEntry(historyEntry);
+                }
+            }
+
+            return HistoryList(command, historyEntry.ScheduleTaskId);
+        }
+
+        [HttpPost]
 		public ActionResult FutureSchedules(string expression)
 		{
 			try
@@ -277,38 +307,33 @@ namespace SmartStore.Admin.Controllers
 		[ChildActionOnly]
 		public ActionResult MinimalTask(int taskId, string returnUrl /* mandatory on purpose */, bool cancellable = true, bool reloadPage = false)
 		{
-			var task = _scheduleTaskService.GetTaskById(taskId);
-			if (task == null)
-			{
-				return Content("");
-			}
+            var model = _adminModelHelper.CreateScheduleTaskModel(taskId);
+            if (model == null)
+            {
+                return new EmptyResult();
+            }
 
-			ViewBag.HasPermission = _permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks);
-			ViewBag.ReturnUrl = returnUrl;
-			ViewBag.Cancellable = cancellable;
-			ViewBag.ReloadPage = reloadPage;
+            ViewBag.HasPermission = Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks);
+            ViewBag.ReturnUrl = returnUrl;
+            ViewBag.Cancellable = cancellable;
+            ViewBag.ReloadPage = reloadPage;
 
-			var model = task.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Url);
-
-			return PartialView(model);
+            return PartialView(model);
 		}
 
 		[HttpPost]
 		public ActionResult GetMinimalTaskWidget(int taskId, string returnUrl /* mandatory on purpose */)
 		{
-			var task = _scheduleTaskService.GetTaskById(taskId);
-			if (task == null)
-			{
-				return Content("");
-			}
+            var model = _adminModelHelper.CreateScheduleTaskModel(taskId);
+            if (model == null)
+            {
+                return new EmptyResult();
+            }
 
-			ViewBag.HasPermission = _permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks);
-			ViewBag.ReturnUrl = returnUrl;
+            ViewBag.HasPermission = Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks);
+            ViewBag.ReturnUrl = returnUrl;
 
-			var model = task.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Url);
-
-			return PartialView("_MinimalTaskWidget", model);
+            return PartialView("_MinimalTaskWidget", model);
 		}
-
     }
 }

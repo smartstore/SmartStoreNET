@@ -139,7 +139,8 @@ namespace SmartStore.Services.Messages
 							Email = email,
 							Active = false,
 							CreatedOnUtc = DateTime.UtcNow,
-							StoreId = storeId
+							StoreId = storeId,
+                            WorkingLanguageId = _services.WorkContext.WorkingLanguage.Id
 						};
 						InsertNewsLetterSubscription(newsletter);
 

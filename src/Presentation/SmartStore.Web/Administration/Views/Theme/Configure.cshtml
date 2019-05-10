@@ -37,15 +37,15 @@
                 <span>@T("Admin.Common.SaveContinue")</span>
             </button>
             <a href="#importvariables-window" data-toggle="modal" class="btn btn-secondary">
-                <i class="fa fa-arrow-circle-o-up"></i>
+                <i class="far fa-arrow-alt-circle-up"></i>
                 <span>@T("Common.Import")</span>
             </a>
             <a href="#exportvariables-window" data-toggle="modal" class="btn btn-secondary">
-                <i class="fa fa-arrow-circle-o-down"></i>
+                <i class="far fa-arrow-alt-circle-down"></i>
                 <span>@T("Common.Export")</span>
             </a>
             <a href='@Url.Action("Reset", new { theme = Model.ThemeName, storeId = Model.StoreId })' id="reset-vars" class="btn btn-danger">
-                <i class="fa fa-trash-o"></i>
+                <i class="far fa-trash-alt"></i>
                 <span>@T("Admin.Common.Reset")</span>
             </a>
 
@@ -58,7 +58,7 @@
 		<div class="mb-5">
 			<h4 class="text-danger">@T("Admin.Configuration.Themes.Validation.ErrorReportTitle")</h4>
 			<pre>@parsingError</pre>
-			<a class="btn" href='@Url.Action("Configure", new { theme = Model.ThemeName, storeId = Model.StoreId })'>
+			<a class="btn btn-danger" href='@Url.Action("Configure", new { theme = Model.ThemeName, storeId = Model.StoreId })'>
 				@T("Admin.Configuration.Themes.Validation.RestorePrevValues")
 			</a>	
 		</div>

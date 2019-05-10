@@ -3,7 +3,7 @@
 @using SmartStore.Core.Search.Facets
 @using SmartStore.Services.Search.Extensions;
 
-<div class="facet-body-inner scrollable">
+<div class="facet-body-inner@(Model.IsScrollable ? " scrollable" : "")">
 	@foreach (var facet in Model.Facets)
 	{
 		if (facet.Published)

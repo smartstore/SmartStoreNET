@@ -353,9 +353,7 @@ namespace SmartStore.Data.Caching
 
 			var key = CreateKey();
 
-			object value;
-
-			if (_cacheTransactionInterceptor.GetItem(Transaction, key, out value))
+			if (_cacheTransactionInterceptor.GetItem(Transaction, key, out var value))
 			{
 				return value;
 			}

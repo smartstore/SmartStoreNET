@@ -58,8 +58,8 @@
 }
 
 @section left {
-	@{ 
-		Html.RenderAction("CategoryMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, area = "" });
+	@{
+        Html.SmartStore().Menu().Name("Main").Template("Categories").Render();
 		Html.RenderAction("Filters", "Search", new { model = Model });
 	}
 }
@@ -80,68 +80,68 @@
 		}
     </div>
 
-    <div class="page-body">
-        @{ Html.RenderWidget("categorydetails_top");}
+	<div class="page-body">
+		@{ Html.RenderWidget("categorydetails_top");}
 
-        @* Description *@
-        @if (!String.IsNullOrWhiteSpace(Model.Description.Value))
-        {
-            <div @Html.LanguageAttributes(Model.Description) class="category-description lead hide-on-active-filter html-editor-content">
-                @Html.Raw(Html.CollapsedText(Model.Description))
-            </div>
-        }
+		@* Description *@
+		@if (!string.IsNullOrWhiteSpace(Model.Description.Value))
+		{
+			<div @Html.LanguageAttributes(Model.Description) class="category-description lead hide-on-active-filter html-editor-content">
+				@Html.Raw(Html.CollapsedText(Model.Description))
+			</div>
+		}
 
-        @* Subcategories *@
-        @if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.AboveProductList)
-        {
-            Html.RenderWidget("categorydetails_before_subcategories");
-            @SubCategoryList()
-        }
+		@* Subcategories *@
+		@if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.AboveProductList)
+		{
+			Html.RenderWidget("categorydetails_before_subcategories");
+			@SubCategoryList()
+		}
 
-        @* Featured products *@
-        @if (Model.FeaturedProducts != null && Model.FeaturedProducts.Items.Count > 0)
-        {
-            Html.RenderWidget("categorydetails_before_featured_products");
+		@* Featured products *@
+		@if (Model.FeaturedProducts != null && Model.FeaturedProducts.Items.Count > 0)
+		{
+			Html.RenderWidget("categorydetails_before_featured_products");
 
 			<div class="product-grid featured-product-grid block hide-on-active-filter">
-                <div class="heading heading-center">
-                    <h3 class="heading-title fs-h1">@T("Products.FeaturedProducts")</h3>
-                </div>
+				<div class="heading heading-center">
+					<h3 class="heading-title fs-h1">@T("Products.FeaturedProducts")</h3>
+				</div>
 				<div class="block-body pt-3 artlist-no-separators">
 					@{
 						Html.RenderPartial("Product.List", Model.FeaturedProducts);
 					}
 				</div>
-            </div>
-        }
+			</div>
+		}
 
-        @* Product list *@
-        @{ Html.RenderWidget("categorydetails_before_product_list"); }
+		@* Product list *@
+		@{ Html.RenderWidget("categorydetails_before_product_list"); }
 
-        <div class="product-list-container">
-            @if (Model.Products != null)
-            {
-                Html.RenderPartial("Product.List", Model.Products);
-            }
-        </div>
+		<div class="product-list-container">
+			@if (Model.Products != null)
+			{
+				Html.RenderPartial("Product.List", Model.Products);
+			}
+		</div>
 
-        @if (Model.BottomDescription.Value.HasValue())
-        {
-            <div @Html.LanguageAttributes(Model.BottomDescription) class="category-description lead html-editor-content">
-                @Html.Raw(Html.CollapsedText(Model.BottomDescription))
-            </div>
-        }
+		@if (Model.BottomDescription.Value.HasValue())
+		{
+			<div @Html.LanguageAttributes(Model.BottomDescription) class="category-description lead html-editor-content">
+				@Html.Raw(Html.CollapsedText(Model.BottomDescription))
+			</div>
+		}
 
-        @* Subcategories *@
-        @if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.Bottom)
-        {
-            Html.RenderWidget("categorydetails_before_subcategories");
-            @SubCategoryList()
-        }
+		@* Subcategories *@
+		@if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.Bottom)
+		{
+			Html.RenderWidget("categorydetails_before_subcategories");
+			@SubCategoryList()
+		}
 
 		@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
 		@{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
 
-        @{ Html.RenderWidget("categorydetails_bottom"); }
-    </div>
+		@{ Html.RenderWidget("categorydetails_bottom"); }
+	</div>
 </div>

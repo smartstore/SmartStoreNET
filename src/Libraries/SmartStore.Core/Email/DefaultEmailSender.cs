@@ -83,20 +83,19 @@ namespace SmartStore.Core.Email
 			}
         }
 
-		public Task SendEmailAsync(SmtpContext context, EmailMessage message)
+		public async Task SendEmailAsync(SmtpContext context, EmailMessage message)
 		{
 			Guard.NotNull(context, nameof(context));
 			Guard.NotNull(message, nameof(message));
 
-			var client = context.ToSmtpClient();
-			ApplySettings(client);
-			var msg = this.BuildMailMessage(message);
-
-			return client.SendMailAsync(msg).ContinueWith(t => 
+			using (var msg = this.BuildMailMessage(message))
 			{
-				client.Dispose();
-				msg.Dispose();
-			});
+				using (var client = context.ToSmtpClient())
+				{
+					ApplySettings(client);
+					await client.SendMailAsync(msg);
+				}
+			}
 		}
 
 		private void ApplySettings(SmtpClient client)

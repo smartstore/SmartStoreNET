@@ -3,24 +3,24 @@
 	Layout = null;
 }
 
-@if (!Model.IsRunning && !Model.LastEnd.HasValue)
+@if (!Model.LastHistoryEntry.IsRunning && !Model.LastHistoryEntry.FinishedOn.HasValue)
 {
 	<div class="muted">@T("Common.Never")</div>
 }
-else if (Model.LastStart.HasValue)
+else if (Model.LastHistoryEntry.Id != 0)
 {
-	<div>@Model.LastStart.Value.ToString("g")</div>
-	<div class="muted">@Model.LastStartPretty</div>
-	if (Model.Duration.HasValue())
+	<div>@Model.LastHistoryEntry.StartedOn.ToString("g")</div>
+	<div class="muted">@Model.LastHistoryEntry.FinishedOnPretty</div>
+	if (Model.LastHistoryEntry.Duration.HasValue())
 	{
-		<div><span>@T("Common.Duration"): </span> <span class="muted">@Model.Duration</span></div>
+		<div><span>@T("Common.Duration"): </span> <span class="muted">@Model.LastHistoryEntry.Duration</span></div>
 	}
-	if (Model.LastError.HasValue())
+	if (Model.LastHistoryEntry.Error.HasValue())
 	{
-		<div class="text-danger mt-2"><strong>@T("Common.Error"): </strong> <span>@Model.LastError</span></div>
-		if (Model.LastSuccess.HasValue && Model.LastSuccess != Model.LastEnd)
+		<div class="text-danger mt-2"><strong class="font-weight-medium">@T("Common.Error"): </strong> <span>@Model.LastHistoryEntry.Error.Truncate(100, "...")</span></div>
+		if (Model.LastHistoryEntry.SucceededOn.HasValue && Model.LastHistoryEntry.SucceededOn != Model.LastHistoryEntry.FinishedOn)
 		{
-			<div><span>@T("Admin.System.ScheduleTasks.LastSuccess"): </span> <span class="muted">@Model.LastSuccess.Value.ToString("g")</span></div>
+			<div><span>@T("Admin.System.ScheduleTasks.LastSuccess"): </span> <span class="muted">@Model.LastHistoryEntry.SucceededOn.Value.ToString("g")</span></div>
 		}
 	}
 }

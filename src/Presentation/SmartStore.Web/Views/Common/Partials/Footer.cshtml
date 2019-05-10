@@ -1,26 +1,22 @@
 ﻿@model FooterModel
+
 @using SmartStore.Web.Models.Common;
+@using SmartStore.Services.Cms;
 
 @{ 
-	var footerLinks = new List<Tuple<string, string>>
+	var footerLinks = new List<LinkResolverResult>
 	{
-		// Item1 = TopicUrl, Item2 = Locale Resource Key
-		new Tuple<string, string>(Url.TopicUrl("aboutus"), "AboutUs"),
-		new Tuple<string, string>(Url.TopicUrl("imprint"), "Imprint"),
-		new Tuple<string, string>(Url.TopicUrl("disclaimer"), "Disclaimer"),
-		new Tuple<string, string>(Url.TopicUrl("privacyinfo"), "PrivacyNotice"),
-		new Tuple<string, string>(Url.TopicUrl("conditionsofuse"), "ConditionsOfUse")
+		LinkResolver.Resolve("topic:aboutus"),
+		LinkResolver.Resolve("topic:imprint"),
+		LinkResolver.Resolve("topic:disclaimer"),
+		LinkResolver.Resolve("topic:privacyinfo"),
+		LinkResolver.Resolve("topic:conditionsofuse")
 	};
 
 	var socialLinks = new List<Tuple<string, string>>();
 	if (Model.FacebookLink.HasValue())
 	{
-		socialLinks.Add(new Tuple<string, string>(Model.FacebookLink, "facebook"));
-	}
-
-	if (Model.GooglePlusLink.HasValue())
-	{
-		socialLinks.Add(new Tuple<string, string>(Model.GooglePlusLink, "google-plus"));
+		socialLinks.Add(new Tuple<string, string>(Model.FacebookLink, "facebook-f"));
 	}
 
 	if (Model.TwitterLink.HasValue())
@@ -30,7 +26,7 @@
 
 	if (Model.PinterestLink.HasValue())
 	{
-		socialLinks.Add(new Tuple<string, string>(Model.PinterestLink, "pinterest"));
+		socialLinks.Add(new Tuple<string, string>(Model.PinterestLink, "pinterest-p"));
 	}
 
 	if (Model.YoutubeLink.HasValue())
@@ -57,7 +53,7 @@
 					@foreach (var link in socialLinks)
 					{
 						<a href="@link.Item1" target="_blank" class="btn x-btn-@(invserseFooter ? "clear" : "secondary") btn-circle btn-social btn-brand-@link.Item2">
-							<i class="fa fa-@link.Item2"></i>
+							<i class="fab fa-@link.Item2"></i>
 						</a>
 					}
 				</div>
@@ -72,32 +68,11 @@
 
 			<div class="col-md-3">
 				<nav class="footer-links nav-collapsible">
-					<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-info" aria-controls="footer-info" aria-expanded="false">@T("Footer.Info")</h4>
+					<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-info" aria-controls="footer-info" aria-expanded="false">
+                        @T("Footer.Info")
+                    </h4>
 					<div class="collapse nav-collapse" id="footer-info">
-						<ul class="list-unstyled">
-
-                            @{ Html.RenderWidget("footer_col_1_before"); }
-
-							@if (Model.ManufacturerEnabled)
-							{
-								<li><a class="footer-link" href="@Url.RouteUrl("ManufacturerList")">@T("Manufacturers.List")</a></li>
-							}
-							@if (Model.RecentlyAddedProductsEnabled)
-							{
-								<li><a class="footer-link" href="@Url.RouteUrl("RecentlyAddedProducts")">@T("Products.NewProducts")</a></li>
-							}
-							@if (Model.RecentlyViewedProductsEnabled)
-							{
-								<li><a class="footer-link" href="@Url.RouteUrl("RecentlyViewedProducts")">@T("Products.RecentlyViewedProducts")</a></li>
-							}
-							@if (Model.CompareProductsEnabled)
-							{
-								<li><a class="footer-link" href="@Url.RouteUrl("CompareProducts")">@T("Products.Compare.List")</a></li>
-							}
-
-                            @{ Html.RenderWidget("footer_col_1_after"); }
-
-						</ul>
+                        @{ Html.SmartStore().Menu().Name("FooterInformation").Template("LinkList").Render(); }
 					</div>
 				</nav>
 			</div>
@@ -109,40 +84,7 @@
                         <span class="d-md-none">@T("Footer.Service.Mobile")</span>
                     </h4>
 					<div class="collapse nav-collapse" id="footer-service">
-						<ul class="list-unstyled">
-
-                            @{ 
-								Html.RenderWidget("footer_col_2_before");
-
-								var contactUsUrl = Url.RouteUrl("contactus");
-								var shippingInfoUrl = Url.TopicUrl("shippinginfo");
-								var paymentInfoUrl = Url.TopicUrl("paymentinfo");
-							}
-
-							@if (contactUsUrl.HasValue())
-							{
-								<li><a class="footer-link" href="@contactUsUrl">@T("ContactUs")</a></li>
-							}
-							@if (Model.BlogEnabled)
-							{
-								<li><a class="footer-link" href="@Url.RouteUrl("Blog")">@T("Blog")</a></li>
-							}
-							@if (Model.ForumEnabled)
-							{
-								<li><a class="footer-link" href="@Url.RouteUrl("Boards")">@T("Forum.Forums")</a></li>
-							}
-							@if (shippingInfoUrl.HasValue())
-							{
-								<li><a class="footer-link" href="@shippingInfoUrl">@T("ShippingReturns")</a></li>
-							}
-							@if (paymentInfoUrl.HasValue())
-							{
-								<li><a class="footer-link" href="@paymentInfoUrl">@T("Paymentinfo")</a></li>
-							}
-
-                            @{ Html.RenderWidget("footer_col_2_after"); }
-
-						</ul>
+                        @{ Html.SmartStore().Menu().Name("FooterService").Template("LinkList").Render(); }
 					</div>
 				</nav>
 			</div>
@@ -154,31 +96,14 @@
                         <span class="d-md-none">@T("Footer.Company.Mobile")</span>
                     </h4>
 					<div class="collapse nav-collapse" id="footer-company">
-						<ul class="list-unstyled">
-
-                            @{ Html.RenderWidget("footer_col_3_before"); }
-
-							@foreach (var link in footerLinks)
-							{
-								if (link.Item1.HasValue())
-								{
-									<li><a class="footer-link" href="@link.Item1">@T(link.Item2)</a></li>
-								}
-							}
-
-                            @if (Model.DisplayLoginLink)
-                            {
-                                <li><a class="footer-link" href="@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })">@T("Account.Login")</a></li>
-                            }
-
-                            @{ Html.RenderWidget("footer_col_3_after"); }
-
-						</ul>
+						@{ Html.SmartStore().Menu().Name("FooterCompany").Template("LinkList").Render(); }
 					</div>
 				</nav>
 			</div>
 
 			<div class="col-md-3">
+				@{ Html.RenderWidget("footer_col_4_before"); }
+				
 				@if (!Model.HideNewsletterBlock)
 				{
 					<div class="footer-newsletter nav-collapsible" data-subscription-url="@(Url.RouteUrl("SubscribeNewsletter"))">
@@ -218,7 +143,6 @@
 								@{ Html.RenderWidget("gdpr_consent_small"); }
 
 								@Html.ValidationMessageFor(x => x.NewsletterEmail)
-
 							</div>
 							<div id="newsletter-result-block" class="alert alert-success d-none"></div>
 						</div>
@@ -236,6 +160,8 @@
 						</div>
 					</div>
 				}
+
+				@{ Html.RenderWidget("footer_col_4_after"); }
 			</div>
 		</div>
 	</div>

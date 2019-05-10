@@ -6,31 +6,37 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Infrastructure.DependencyManagement;
+using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Security
 {
     public partial class AclService : IAclService
     {
-        private const string ACLRECORD_BY_ENTITYID_NAME_KEY = "aclrecord:entityid-name-{0}-{1}";
-        private const string ACLRECORD_PATTERN_KEY = "aclrecord:*";
-
+		/// <summary>
+		/// 0 = segment (EntityName.IdRange)
+		/// </summary>
+		const string ACL_SEGMENT_KEY = "acl:range-{0}";
+		const string ACL_SEGMENT_PATTERN = "acl:range-*";
 
         private readonly IRepository<AclRecord> _aclRecordRepository;
-        private readonly IWorkContext _workContext;
+        private readonly Work<IWorkContext> _workContext;
         private readonly ICacheManager _cacheManager;
+		private readonly ICustomerService _customerService;
+
 		private bool? _hasActiveAcl;
 
-        public AclService(ICacheManager cacheManager, IWorkContext workContext,
-            IRepository<AclRecord> aclRecordRepository)
+        public AclService(
+			ICacheManager cacheManager, 
+			Work<IWorkContext> workContext, 
+			IRepository<AclRecord> aclRecordRepository,
+			ICustomerService customerService)
         {
             _cacheManager = cacheManager;
             _workContext = workContext;
             _aclRecordRepository = aclRecordRepository;
-
-			QuerySettings = DbQuerySettings.Default;
+			_customerService = customerService;
 		}
-
-		public DbQuerySettings QuerySettings { get; set; }
 
 		public bool HasActiveAcl 
 		{
@@ -50,8 +56,8 @@ namespace SmartStore.Services.Security
 
             _aclRecordRepository.Delete(aclRecord);
 
-            _cacheManager.RemoveByPattern(ACLRECORD_PATTERN_KEY);
-        }
+			ClearCacheSegment(aclRecord.EntityName, aclRecord.EntityId);
+		}
 
         public virtual AclRecord GetAclRecordById(int aclRecordId)
         {
@@ -67,7 +73,7 @@ namespace SmartStore.Services.Security
 			Guard.NotNull(entity, nameof(entity));
 
 			int entityId = entity.Id;
-            string entityName = typeof(T).Name;
+            string entityName = entity.GetEntityName();
 
 			return GetAclRecordsFor(entityName, entityId);
         }
@@ -85,15 +91,37 @@ namespace SmartStore.Services.Security
 			return aclRecords;
 		}
 
+		public virtual void SaveAclMappings<T>(T entity, int[] selectedCustomerRoleIds) where T : BaseEntity, IAclSupported
+		{
+			var existingAclRecords = GetAclRecords(entity);
+			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
 
-        public virtual void InsertAclRecord(AclRecord aclRecord)
+			foreach (var customerRole in allCustomerRoles)
+			{
+				if (selectedCustomerRoleIds != null && selectedCustomerRoleIds.Contains(customerRole.Id))
+				{
+					// New role
+					if (!existingAclRecords.Any(x => x.CustomerRoleId == customerRole.Id))
+						InsertAclRecord(entity, customerRole.Id);
+				}
+				else
+				{
+					// Removed role
+					var aclRecordToDelete = existingAclRecords.FirstOrDefault(x => x.CustomerRoleId == customerRole.Id);
+					if (aclRecordToDelete != null)
+						DeleteAclRecord(aclRecordToDelete);
+				}
+			}
+		}
+
+		public virtual void InsertAclRecord(AclRecord aclRecord)
         {
 			Guard.NotNull(aclRecord, nameof(aclRecord));
 
 			_aclRecordRepository.Insert(aclRecord);
 
-            _cacheManager.RemoveByPattern(ACLRECORD_PATTERN_KEY);
-        }
+			ClearCacheSegment(aclRecord.EntityName, aclRecord.EntityId);
+		}
 
         public virtual void InsertAclRecord<T>(T entity, int customerRoleId) where T : BaseEntity, IAclSupported
         {
@@ -103,7 +131,7 @@ namespace SmartStore.Services.Security
                 throw new ArgumentOutOfRangeException(nameof(customerRoleId));
 
             int entityId = entity.Id;
-            string entityName = typeof(T).Name;
+            string entityName = entity.GetEntityName();
 
             var aclRecord = new AclRecord
             {
@@ -121,61 +149,123 @@ namespace SmartStore.Services.Security
 
 			_aclRecordRepository.Update(aclRecord);
 
-            _cacheManager.RemoveByPattern(ACLRECORD_PATTERN_KEY);
-        }
+			ClearCacheSegment(aclRecord.EntityName, aclRecord.EntityId);
+		}
 
-		public virtual int[] GetCustomerRoleIdsWithAccess(string entityName, int entityId)
+		public virtual int[] GetCustomerRoleIdsWithAccessTo(string entityName, int entityId)
 		{
 			Guard.NotEmpty(entityName, nameof(entityName));
 
 			if (entityId <= 0)
 				return new int[0];
 
-			string key = string.Format(ACLRECORD_BY_ENTITYID_NAME_KEY, entityId, entityName);
-			return _cacheManager.Get(key, () =>
-			{
-				var query = from ur in _aclRecordRepository.Table
-							where ur.EntityId == entityId &&
-							ur.EntityName == entityName
-							select ur.CustomerRoleId;
+			var cacheSegment = GetCacheSegment(entityName, entityId);
 
-				var result = query.ToArray();
-				return result;
-			});
+			if (!cacheSegment.TryGetValue(entityId, out var roleIds))
+			{
+				return Array.Empty<int>();
+			}
+
+			return roleIds;
 		}
 
 		public bool Authorize(string entityName, int entityId)
 		{
-			return Authorize(entityName, entityId, _workContext.CurrentCustomer);
+			return Authorize(entityName, entityId, _workContext.Value.CurrentCustomer?.CustomerRoles);
 		}
 
-		public virtual bool Authorize(string entityName, int entityId, Customer customer)
+		public virtual bool Authorize(string entityName, int entityId, IEnumerable<CustomerRole> roles)
 		{
 			Guard.NotEmpty(entityName, nameof(entityName));
 
 			if (entityId <= 0)
 				return false;
 
-			if (customer == null)
-				return false;
-
-			if (QuerySettings.IgnoreAcl)
+			if (!HasActiveAcl)
 				return true;
 
-			foreach (var role1 in customer.CustomerRoles.Where(cr => cr.Active))
+			if (roles == null)
+				return false;
+
+			foreach (var role in roles)
 			{
-				foreach (var role2Id in GetCustomerRoleIdsWithAccess(entityName, entityId))
+				if (!role.Active)
+					continue;
+
+				foreach (var role2Id in GetCustomerRoleIdsWithAccessTo(entityName, entityId))
 				{
-					if (role1.Id == role2Id)
+					if (role.Id == role2Id)
 					{
-						// yes, we have such permission
+						// Yes, we have such permission
 						return true;
 					}
 				}
 			}
 
-			// no permission granted
+			// No permission granted
 			return false;
 		}
+
+		#region Cache segmenting
+
+		protected virtual IDictionary<int, int[]> GetCacheSegment(string entityName, int entityId)
+		{
+			Guard.NotEmpty(entityName, nameof(entityName));
+
+			var segmentKey = GetSegmentKeyPart(entityName, entityId, out var minEntityId, out var maxEntityId);
+			var cacheKey = BuildCacheSegmentKey(segmentKey);
+
+			return _cacheManager.Get(cacheKey, () =>
+			{
+				var query = from sm in _aclRecordRepository.TableUntracked
+							where
+								sm.EntityId >= minEntityId &&
+								sm.EntityId <= maxEntityId &&
+								sm.EntityName == entityName
+							select sm;
+
+				var mappings = query.ToLookup(x => x.EntityId, x => x.CustomerRoleId);
+
+				var dict = new Dictionary<int, int[]>(mappings.Count);
+
+				foreach (var sm in mappings)
+				{
+					dict[sm.Key] = sm.ToArray();
+				}
+
+				return dict;
+			});
+		}
+
+		/// <summary>
+		/// Clears the cached segment from the cache
+		/// </summary>
+		protected virtual void ClearCacheSegment(string entityName, int entityId)
+		{
+			try
+			{
+				var segmentKey = GetSegmentKeyPart(entityName, entityId);
+				_cacheManager.Remove(BuildCacheSegmentKey(segmentKey));
+			}
+			catch { }
+		}
+
+		private string BuildCacheSegmentKey(string segment)
+		{
+			return String.Format(ACL_SEGMENT_KEY, segment);
+		}
+
+		private string GetSegmentKeyPart(string entityName, int entityId)
+		{
+			return GetSegmentKeyPart(entityName, entityId, out _, out _);
+		}
+
+		private string GetSegmentKeyPart(string entityName, int entityId, out int minId, out int maxId)
+		{
+			maxId = entityId.GetRange(1000, out minId);
+			return (entityName + "." + maxId.ToString()).ToLowerInvariant();
+		}
+
+		#endregion
 	}
 }

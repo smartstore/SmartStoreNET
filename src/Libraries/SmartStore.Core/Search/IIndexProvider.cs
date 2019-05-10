@@ -4,16 +4,16 @@ namespace SmartStore.Core.Search
 {
 	public interface IIndexProvider
 	{
-		/// <summary>
-		/// Gets a value indicating whether the index provider is active
-		/// </summary>
-		bool IsActive { get; }
+        /// <summary>
+        /// Gets a value indicating whether the search index given by scope is active
+        /// </summary>
+        bool IsActive(string scope);
 
-		/// <summary>
-		/// Enumerates the names of all EXISTING indexes. 
-		/// A name is required for the <see cref="GetIndexStore(string)"/> method.
-		/// </summary>
-		IEnumerable<string> EnumerateIndexes();
+        /// <summary>
+        /// Enumerates the names of all EXISTING indexes. 
+        /// A name is required for the <see cref="GetIndexStore(string)"/> method.
+        /// </summary>
+        IEnumerable<string> EnumerateIndexes();
 
 		/// <summary>
 		/// Creates an empty document

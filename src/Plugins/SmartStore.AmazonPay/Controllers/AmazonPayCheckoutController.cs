@@ -79,7 +79,15 @@ namespace SmartStore.AmazonPay.Controllers
 		[HttpPost]
 		public ActionResult PaymentMethod(FormCollection form)
 		{
+			// Display biling address on confirm page.
 			_apiService.GetBillingAddress();
+
+			var customer = Services.WorkContext.CurrentCustomer;
+			if (customer.BillingAddress == null)
+			{
+				NotifyError(T("Plugins.Payments.AmazonPay.MissingBillingAddress"));
+				return RedirectToAction("Cart", "ShoppingCart", new { area = "" });
+			}
 
 			return RedirectToAction("Confirm", "Checkout", new { area = "" });
 		}

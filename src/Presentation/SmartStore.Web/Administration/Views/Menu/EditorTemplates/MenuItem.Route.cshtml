@@ -1,0 +1,57 @@
+﻿@using Newtonsoft.Json
+
+@model string
+
+@{
+    var rnd = CommonHelper.GenerateRandomInteger();
+    var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+    var routeNameFieldId = string.Concat("RouteName", rnd);
+    var routeValuesFieldId = string.Concat("RouteValues", rnd);
+    var routeName = string.Empty;
+    var routeValuesStr = string.Empty;
+    var rawValue = ViewData.Model != null ? Convert.ToString(ViewData.Model) : null;
+
+    try
+    {
+        if (rawValue.HasValue())
+        {
+            var routeValues = JsonConvert.DeserializeObject<RouteValueDictionary>(rawValue);
+            object val;
+            if (routeValues.TryGetValue("routename", out val))
+            {
+                routeName = val as string;
+                routeValues.Remove("routename");
+            }
+
+            routeValuesStr = JsonConvert.SerializeObject(routeValues).EmptyNull();
+            if (routeValuesStr == "{}")
+            {
+                routeValuesStr = string.Empty;
+            }
+        }
+    }
+    catch { }
+}
+<div class="menu-item-route">
+    @Html.Hidden("", rawValue)
+    <div>
+        <input id="@routeNameFieldId" type="text" class="form-control" value="@routeName" placeholder="@T("Admin.ContentManagement.Menus.RouteName")" />
+    </div>
+    <div class="mt-1">
+        <textarea id="@routeValuesFieldId" class="form-control" rows="3" placeholder="@T("Admin.ContentManagement.Menus.RouteValues")">@routeValuesStr</textarea>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('#@routeNameFieldId, #@routeValuesFieldId').on('change', function () {
+            var container = $(this).closest('.menu-item-route'),
+                val = $('#@routeValuesFieldId').val();
+
+            var routeValues = _.isEmpty(val) ? { } : JSON.parse(val);
+            routeValues.routename = $('#@routeNameFieldId').val();
+
+            container.find('#@(id)').val(JSON.stringify(routeValues));
+        });
+    });
+</script>

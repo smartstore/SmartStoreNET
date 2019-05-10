@@ -25,7 +25,7 @@
 	"RENAMEFILE": "ProcessRequest?a=RENAMEFILE",
 	"GENERATETHUMB": true,
 	"DEFAULTVIEW": "list",
-	"FORBIDDEN_UPLOADS": "zip js jsp jsb mhtml mht xhtml xht php phtml php3 php4 php5 phps shtml jhtml pl sh py cgi exe scr dll msi vbs bat com pif cmd vxd cpl htpasswd htaccess aspx",
+	"FORBIDDEN_UPLOADS": "js jsp jsb mhtml mht xhtml xht php phtml php3 php4 php5 phps shtml jhtml pl sh py cgi exe scr dll msi vbs bat com pif cmd vxd cpl htpasswd htaccess aspx",
 	"ALLOWED_UPLOADS": "",
 	"FILEPERMISSIONS": "0644",
 	"DIRPERMISSIONS": "0755",

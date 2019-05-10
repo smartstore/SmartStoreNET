@@ -1,14 +1,13 @@
-﻿@model ImportProfileModel
-
-@using SmartStore.Admin.Models.DataExchange;
+﻿@using SmartStore.Admin.Models.DataExchange;
 @using SmartStore.Core.Domain.DataExchange;
+@model ImportProfileModel
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.TempFileName)
 @Html.HiddenFor(model => model.EntityType)
 
-@if (Model.ExistingFileNames.Count > 1)
+@if (Model.ExistingFiles.Count(x => !x.RelatedType.HasValue) > 1)
 {
 	<div class="alert alert-warning alert-dismissible">
 		@T("Admin.DataExchange.Import.MultipleFilesSameFileTypeNote")
@@ -27,30 +26,42 @@
 					.AcceptedFileTypes("csv|xlsx|txt|tab")
 					.ShowRemoveButton(false)
 					.ShowRemoveButtonAfterUpload(false)
-					.UploadText(T(Model.ExistingFileNames.Any() ? "Admin.DataExchange.Import.AddAnotherFile" : "Admin.DataExchange.Import.FileUpload").Text)
+					.UploadText(T(Model.ExistingFiles.Any() ? "Admin.DataExchange.Import.AddAnotherFile" : "Admin.DataExchange.Import.FileUpload").Text)
 					.OnUploadCompletedHandlerName("onUploadCompleted")
 				)
 			</td>
 		</tr>
-		<tr id="ImportFileListContainer" class="@(Model.ExistingFileNames.Any() ? "" : "d-none")">
+		<tr id="ImportFileListContainer" class="@(Model.ExistingFiles.Any() ? "" : "d-none")">
 			<td class="adminTitle">
 			</td>
-			<td id="ImportFileList" class="adminData">
-				@foreach (var fileName in Model.ExistingFileNames)
-				{
-					<div class="py-2 border-bottom form-row">
-						<div class="col d-flex align-items-center">
-							@Html.IconForFileExtension(Path.GetExtension(fileName), false)
-							<a class="pl-1" href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
-						</div>
-						<div class="col-auto">
-							<button type="button" class="btn btn-secondary btn-to-danger btn-sm import-file-delete ml-3" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = fileName })">
-								<i class="fa fa-trash-o"></i>
-								<span>@T("Admin.Common.Delete")</span>
-							</button>
-						</div>
-					</div>
-				}
+			<td id="ImportFileList" class="adminData wide">
+                <div class="w-50">
+				    @foreach (var file in Model.ExistingFiles)
+				    {
+					    <div class="py-2 border-bottom form-row">
+						    <div class="col d-flex align-items-center">
+                                @if (file.Label.HasValue())
+                                {
+                                    <span class="badge badge-info">
+                                        @Html.IconForFileExtension(file.Extension, false)
+                                        <span>@file.Label</span>
+                                    </span>
+                                }
+                                else
+                                {
+                                    @Html.IconForFileExtension(file.Extension, false)
+                                }
+							    <a class="pl-1" href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = file.Name })" download>@file.Name</a>
+						    </div>
+						    <div class="col-auto">
+							    <button type="button" class="btn btn-secondary btn-to-danger btn-sm import-file-delete ml-3" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = file.Name })">
+								    <i class="far fa-trash-alt"></i>
+								    <span>@T("Admin.Common.Delete")</span>
+							    </button>
+						    </div>
+					    </div>
+				    }
+                </div>
 			</td>
 		</tr>
 		@if (Model.ScheduleTaskId > 0)
@@ -102,6 +113,18 @@
 				@Html.ValidationMessageFor(x => x.Enabled)
 			</td>
 		</tr>
+		@if (Model.EntityType == ImportEntityType.Product)
+		{
+			<tr>
+			    <td class="adminTitle">
+				    @Html.SmartLabelFor(x => x.ImportRelatedData)
+			    </td>
+			    <td class="adminData">
+				    @Html.EditorFor(x => x.ImportRelatedData)
+				    @Html.ValidationMessageFor(x => x.ImportRelatedData)
+			    </td>
+			</tr>
+		}
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Name)
@@ -196,7 +219,7 @@
     Html.RenderPartial("CsvConfiguration", Model.CsvConfiguration, viewData);
 }
 
-@if (Model.ExistingFileNames.Any())
+@if (Model.ExistingFiles.Any(x => !x.RelatedType.HasValue))
 {
     Html.RenderPartial("_ColumnMappings");
 }
@@ -387,7 +410,7 @@
 				leftLabel.attr('title', '');
 			}
 
-			context.find('i').removeClass('fa-globe fa-chain-broken').addClass(isLocalized ? 'fa-globe' : 'fa-chain-broken');
+			context.find('i').removeClass('fa-globe fa-unlink').addClass(isLocalized ? 'fa-globe' : 'fa-unlink');
 		}
 
 		function initSelectBox(element, isProperty) {
@@ -455,7 +478,7 @@
 					if (option.length === 0) {
 						html += '<div class="mapping-list-item">';
 						html += '<span class="pr-2 d-inline-block">';
-						html += '	<i class="fa fa-fw ' + (isLocalized ? 'fa-globe' : 'fa-chain-broken') + ' text-success" />';
+						html += '	<i class="fa fa-fw ' + (isLocalized ? 'fa-globe' : 'fa-unlink') + ' text-success" />';
 						html += '</span>';
 					}
 					else {
@@ -478,7 +501,7 @@
 
 						html += '<span class="pr-2 d-inline-block">';
 						html += '<i class="fa fa-fw ';
-						html += (isLocalized ? 'fa-globe' : (mappingIndex === -1 ? 'fa-chain-broken' : 'fa-link'));
+						html += (isLocalized ? 'fa-globe' : (mappingIndex === -1 ? 'fa-unlink' : 'fa-link'));
 						html += (mappingIndex === -1 ? ' text-success" />' : ' text-warning" />');
 						html += '</span>';
 					}

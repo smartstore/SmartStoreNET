@@ -1,5 +1,5 @@
-﻿using SmartStore.Web.Validators.Catalog;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using SmartStore.Web.Models.Catalog;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators.Catalog
 {
@@ -11,7 +11,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Catalog
         [SetUp]
         public new void Setup()
         {
-            _validator = new ProductReviewsValidator(_localizationService);
+            _validator = new ProductReviewsValidator();
         }
 
         //TODO uncomment tests when the following FluentVlidation issue is fixed http://fluentvalidation.codeplex.com/workitem/7095

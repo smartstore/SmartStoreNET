@@ -217,7 +217,7 @@ namespace SmartStore.Services.Messages
 					modelPart = CreateModelPart(x, messageContext);
 					break;
 				case Customer x:
-					//modelPart = CreateModelPart(x, messageContext);
+					modelPart = CreateModelPart(x, messageContext);
 					break;
 				case Address x:
 					modelPart = CreateModelPart(x, messageContext);
@@ -258,6 +258,9 @@ namespace SmartStore.Services.Messages
 				case ForumPost x:
 					modelPart = CreateModelPart(x, messageContext);
 					break;
+                case ForumPostVote x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
 				case Forum x:
 					modelPart = CreateModelPart(x, messageContext);
 					break;
@@ -466,7 +469,7 @@ namespace SmartStore.Services.Messages
 			var host = messageContext.BaseUri.ToString();
 			var logoInfo = _services.PictureService.GetPictureInfo(messageContext.Store.LogoPictureId);
 
-			// Issue: https://github.com/smartstoreag/SmartStoreNET/issues/1321
+			// Issue: https://github.com/smartstore/SmartStoreNET/issues/1321
 
 			var m = new Dictionary<string, object>
 			{
@@ -542,8 +545,10 @@ namespace SmartStore.Services.Messages
 			var productUrlHelper = _services.Resolve<ProductUrlHelper>();
 
 			var currency = _services.WorkContext.WorkingCurrency;
-			var additionalShippingCharge = _services.Resolve<ICurrencyService>().ConvertFromPrimaryStoreCurrency(part.AdditionalShippingCharge, currency);
-			var additionalShippingChargeFormatted = _services.Resolve<IPriceFormatter>().FormatPrice(additionalShippingCharge, false, currency.CurrencyCode, false, messageContext.Language);
+			var additionalShippingCharge = new Money(
+				_services.Resolve<ICurrencyService>().ConvertFromPrimaryStoreCurrency(part.AdditionalShippingCharge, currency), 
+				currency, 
+				true);
 			var url = BuildUrl(productUrlHelper.GetProductUrl(part.Id, part.GetSeName(messageContext.Language.Id), attributesXml), messageContext);
 			var pictureInfo = GetPictureFor(part, attributesXml);
 			var name = part.GetLocalized(x => x.Name, messageContext.Language.Id).Value;
@@ -556,7 +561,7 @@ namespace SmartStore.Services.Messages
 				{ "Name", name },
 				{ "Description", part.GetLocalized(x => x.ShortDescription, messageContext.Language).Value.NullEmpty() },
 				{ "StockQuantity", part.StockQuantity },
-				{ "AdditionalShippingCharge", additionalShippingChargeFormatted.NullEmpty() },
+				{ "AdditionalShippingCharge", additionalShippingCharge },
 				{ "Url", url },
 				{ "Thumbnail", CreateModelPart(pictureInfo, messageContext, url, mediaSettings.MessageProductThumbPictureSize, new Size(50, 50), alt) },
 				{ "ThumbnailLg", CreateModelPart(pictureInfo, messageContext, url, mediaSettings.ProductThumbPictureSize, new Size(120, 120), alt) },
@@ -566,7 +571,7 @@ namespace SmartStore.Services.Messages
 
 			if (shoppingCartSettings.ShowDeliveryTimes && part.IsShipEnabled)
 			{
-				if (deliveryTimeService.GetDeliveryTime(part) is DeliveryTime dt)
+				if (deliveryTimeService.GetDeliveryTimeById(part.DeliveryTimeId ?? 0) is DeliveryTime dt)
 				{
 					m["DeliveryTime"] = new Dictionary<string, object>
 					{
@@ -594,12 +599,13 @@ namespace SmartStore.Services.Messages
 			var email = part.FindEmail();
 			var pwdRecoveryToken = part.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken).NullEmpty();
 			var accountActivationToken = part.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken).NullEmpty();
+            var customerVatStatus = (VatNumberStatus)part.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId);
 
-			int rewardPointsBalance = part.GetRewardPointsBalance();
+            int rewardPointsBalance = part.GetRewardPointsBalance();
 			decimal rewardPointsAmountBase = _services.Resolve<IOrderTotalCalculationService>().ConvertRewardPointsToAmount(rewardPointsBalance);
 			decimal rewardPointsAmount = _services.Resolve<ICurrencyService>().ConvertFromPrimaryStoreCurrency(rewardPointsAmountBase, _services.WorkContext.WorkingCurrency);
 
-			var m = new Dictionary<string, object>
+            var m = new Dictionary<string, object>
 			{
 				["Id"] = part.Id,
 				["CustomerGuid"] = part.CustomerGuid,
@@ -613,8 +619,8 @@ namespace SmartStore.Services.Messages
 
 				["FullName"] = GetDisplayNameForCustomer(part).NullEmpty(),
 				["VatNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber).NullEmpty(),
-				["VatNumberStatus"] = part.GetAttribute<VatNumberStatus>(SystemCustomerAttributeNames.VatNumberStatusId).GetLocalizedEnum(_services.Localization, messageContext.Language.Id).NullEmpty(),
-				["CustomerNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber).NullEmpty(),
+				["VatNumberStatus"] = customerVatStatus.GetLocalizedEnum(_services.Localization, messageContext.Language.Id).NullEmpty(),
+				["CustomerNumber"] = part.CustomerNumber.NullEmpty(),
 				["IsRegistered"] = part.IsRegistered(),
 
 				// URLs
@@ -633,7 +639,7 @@ namespace SmartStore.Services.Messages
 
 				// Reward Points
 				["RewardPointsAmount"] = rewardPointsAmount,
-				["RewardPointsBalance"] = _services.Resolve<IPriceFormatter>().FormatPrice(rewardPointsAmount, true, false),
+				["RewardPointsBalance"] = FormatPrice(rewardPointsAmount, messageContext),
 				["RewardPointsHistory"] = part.RewardPointsHistory.Count == 0 ? null : part.RewardPointsHistory.Select(x => CreateModelPart(x, messageContext)).ToList(),
 			};
 
@@ -654,7 +660,7 @@ namespace SmartStore.Services.Messages
 				{ "SenderEmail", part.SenderEmail.NullEmpty() },
 				{ "RecipientName", part.RecipientName.NullEmpty() },
 				{ "RecipientEmail", part.RecipientEmail.NullEmpty() },
-				{ "Amount", _services.Resolve<IPriceFormatter>().FormatPrice(part.Amount, true, false) },
+				{ "Amount", FormatPrice(part.Amount, messageContext) },
 				{ "CouponCode", part.GiftCardCouponCode.NullEmpty() }
 			};
 
@@ -662,17 +668,16 @@ namespace SmartStore.Services.Messages
 			var message = (string)null;
 			if (part.Message.HasValue())
 			{
-				message = HtmlUtils.FormatText(part.Message, true, false, false, false, false, false);
+				message = HtmlUtils.StripTags(part.Message);
 			}
 			m["Message"] = message;
 
 			// RemainingAmount
-			var remainingAmount = (string)null;
+			Money remainingAmount = null;
 			var order = part?.PurchasedWithOrderItem?.Order;
 			if (order != null)
 			{
-				var amount = _services.Resolve<ICurrencyService>().ConvertCurrency(part.GetGiftCardRemainingAmount(), order.CurrencyRate);
-				remainingAmount = _services.Resolve<IPriceFormatter>().FormatPrice(amount, true, false);
+				remainingAmount = FormatPrice(part.GetGiftCardRemainingAmount(), order, messageContext);
 			}
 			m["RemainingAmount"] = remainingAmount;
 
@@ -714,7 +719,7 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(part, nameof(part));
 
 			var protocol = messageContext.BaseUri.Scheme;
-			var host = messageContext.BaseUri.Authority;
+			var host = messageContext.BaseUri.Authority + messageContext.BaseUri.AbsolutePath;
 			var body = HtmlUtils.RelativizeFontSizes(part.Body.EmptyNull());
 
 			// We must render the body separately
@@ -741,7 +746,7 @@ namespace SmartStore.Services.Messages
 			var m = new Dictionary<string, object>
 			{
 				{ "Title", part.Title.NullEmpty() },
-				{ "Text", HtmlUtils.FormatText(part.ReviewText, true, false, false, false, false, false).NullEmpty() },
+				{ "Text", HtmlUtils.StripTags(part.ReviewText).NullEmpty() },
 				{ "Rating", part.Rating }
 			};
 
@@ -835,7 +840,7 @@ namespace SmartStore.Services.Messages
 			{
 				{  "NewsTitle", part.NewsItem.Title.NullEmpty() },
 				{  "Title", part.CommentTitle.NullEmpty() },
-				{  "Text", HtmlUtils.FormatText(part.CommentText, true, false, false, false, false, false).NullEmpty() },
+				{  "Text", HtmlUtils.StripTags(part.CommentText).NullEmpty() },
 				{  "NewsUrl", BuildRouteUrl("NewsItem", new { SeName = part.NewsItem.GetSeName(messageContext.Language.Id) }, messageContext) }
 			};
 
@@ -886,7 +891,27 @@ namespace SmartStore.Services.Messages
 			return m;
 		}
 
-		protected virtual object CreateModelPart(Forum part, MessageContext messageContext)
+        protected virtual object CreateModelPart(ForumPostVote part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
+
+            var m = new Dictionary<string, object>
+            {
+                { "ForumPostId", part.ForumPostId },
+                { "Vote", part.Vote },
+                { "TopicId", part.ForumPost.TopicId },
+                { "TopicSubject", part.ForumPost.ForumTopic.Subject.NullEmpty() },
+            };
+
+            ApplyCustomerContentPart(m, part, messageContext);
+
+            PublishModelPartCreatedEvent(part, m);
+
+            return m;
+        }
+
+        protected virtual object CreateModelPart(Forum part, MessageContext messageContext)
 		{
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));

@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Search;
-using SmartStore.Services;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Customers;
 using SmartStore.Services.Media;
 using SmartStore.Services.Search;
 using SmartStore.Services.Security;
@@ -17,49 +19,41 @@ using SmartStore.Web.Models.Entity;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class EntityController : PublicControllerBase
+    public partial class EntityController : PublicControllerBase
     {
-		private readonly ICommonServices _services;
 		private readonly ICatalogSearchService _catalogSearchService;
         private readonly CatalogSettings _catalogSettings;
 		private readonly MediaSettings _mediaSettings;
 		private readonly SearchSettings _searchSettings;
 		private readonly IPictureService _pictureService;
 		private readonly IManufacturerService _manufacturerService;
-		private readonly ICategoryService _categoryService;
-		private readonly IProductService _productService;
-		private readonly CatalogHelper _catalogHelper;
+        private readonly ICustomerService _customerService;
+        private readonly ICategoryService _categoryService;
 
-		public EntityController(
-			ICommonServices services,
+        public EntityController(
 			ICatalogSearchService catalogSearchService,
 			CatalogSettings catalogSettings,
 			MediaSettings mediaSettings,
 			SearchSettings searchSettings,
 			IPictureService pictureService,
 			IManufacturerService manufacturerService,
-			ICategoryService categoryService,
-			IProductService productService,
-			CatalogHelper catalogHelper)
+            ICustomerService customerService,
+            ICategoryService categoryService)
         {
-			_services = services;
 			_catalogSearchService = catalogSearchService;
             _catalogSettings = catalogSettings;
 			_mediaSettings = mediaSettings;
 			_searchSettings = searchSettings;
 			_pictureService = pictureService;
 			_manufacturerService = manufacturerService;
-			_categoryService = categoryService;
-			_productService = productService;
-			_catalogHelper = catalogHelper;
+            _customerService = customerService;
+            _categoryService = categoryService;
         }
 
 		#region Entity Picker
 
 		public ActionResult Picker(EntityPickerModel model)
 		{
-            model.PageSize = 96; // _commonSettings.EntityPickerPageSize;
-
 			if (model.EntityType.IsCaseInsensitiveEqual("product"))
 			{
 				ViewBag.AvailableCategories = _categoryService.GetCategoryTree(includeHidden: true)
@@ -71,150 +65,278 @@ namespace SmartStore.Web.Controllers
 					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
 					.ToList();
 
-				ViewBag.AvailableStores = _services.StoreService.GetAllStores()
+				ViewBag.AvailableStores = Services.StoreService.GetAllStores()
 					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
 					.ToList();
 
 				ViewBag.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
-			}
+            }
+            else if (model.EntityType.IsCaseInsensitiveEqual("customer"))
+            {
+                ViewBag.AvailableCustomerSearchTypes = new List<SelectListItem>
+                {
+                    new SelectListItem { Text = "Name", Value = "Name", Selected = true },
+                    new SelectListItem { Text = "Email", Value = "Email" }
+                };
 
-			return PartialView(model);
+                if (Services.Settings.GetSettingByKey<CustomerNumberMethod>("CustomerSettings.CustomerNumberMethod") != CustomerNumberMethod.Disabled)
+                {
+                    ViewBag.AvailableCustomerSearchTypes.Add(new SelectListItem { Text = T("Account.Fields.CustomerNumber"), Value = "CustomerNumber" });
+                }
+            }
+
+            return PartialView(model);
 		}
 
 		[HttpPost]
 		public ActionResult Picker(EntityPickerModel model, FormCollection form)
 		{
-            model.PageSize = 96; // _commonSettings.EntityPickerPageSize;
-
 			try
 			{
-				var disableIf = model.DisableIf.SplitSafe(",").Select(x => x.ToLower().Trim()).ToList();
+                var languageId = model.LanguageId == 0 ? Services.WorkContext.WorkingLanguage.Id : model.LanguageId;
+                var disableIf = model.DisableIf.SplitSafe(",").Select(x => x.ToLower().Trim()).ToList();
 				var disableIds = model.DisableIds.SplitSafe(",").Select(x => x.ToInt()).ToList();
+                var selected = model.Selected.SplitSafe(",");
+                var returnSku = model.ReturnField.IsCaseInsensitiveEqual("sku");
 
-				var selIds = new HashSet<int>(model.PreselectedEntityIds.ToIntArray());
-
-				using (var scope = new DbContextScope(_services.DbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
+                using (var scope = new DbContextScope(Services.DbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
 				{
-					if (model.EntityType.IsCaseInsensitiveEqual("product"))
-					{
-						#region Product
+                    if (model.EntityType.IsCaseInsensitiveEqual("product"))
+                    {
+                        model.SearchTerm = model.SearchTerm.TrimSafe();
 
-						model.SearchTerm = model.ProductName.TrimSafe();
+                        var hasPermission = Services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog);
+                        var disableIfNotSimpleProduct = disableIf.Contains("notsimpleproduct");
+                        var disableIfGroupedProduct = disableIf.Contains("groupedproduct");
+                        var labelTextGrouped = T("Admin.Catalog.Products.ProductType.GroupedProduct.Label").Text;
+                        var labelTextBundled = T("Admin.Catalog.Products.ProductType.BundledProduct.Label").Text;
+                        var sku = T("Products.Sku").Text;
 
-						var hasPermission = _services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog);
-						var disableIfNotSimpleProduct = disableIf.Contains("notsimpleproduct");
-						var disableIfGroupedProduct = disableIf.Contains("groupedproduct");
-						var labelTextGrouped = T("Admin.Catalog.Products.ProductType.GroupedProduct.Label").Text;
-						var labelTextBundled = T("Admin.Catalog.Products.ProductType.BundledProduct.Label").Text;
-						var sku = T("Products.Sku").Text;
+                        var fields = new List<string> { "name" };
+                        if (_searchSettings.SearchFields.Contains("sku"))
+                            fields.Add("sku");
+                        if (_searchSettings.SearchFields.Contains("shortdescription"))
+                            fields.Add("shortdescription");
 
-						var fields = new List<string> { "name" };
-						if (_searchSettings.SearchFields.Contains("sku"))
-							fields.Add("sku");
-						if (_searchSettings.SearchFields.Contains("shortdescription"))
-							fields.Add("shortdescription");
-						
-						var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchTerm)
-							.HasStoreId(model.StoreId);
+                        var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchTerm)
+                            .HasStoreId(model.StoreId);
 
-						if (!hasPermission)
-						{
-							searchQuery = searchQuery.VisibleOnly(_services.WorkContext.CurrentCustomer);
-						}
+                        if (!hasPermission)
+                        {
+                            searchQuery = searchQuery.VisibleOnly(Services.WorkContext.CurrentCustomer);
+                        }
 
-						if (model.ProductTypeId > 0)
-						{
-							searchQuery = searchQuery.IsProductType((ProductType)model.ProductTypeId);
-						}
+                        if (model.ProductTypeId > 0)
+                        {
+                            searchQuery = searchQuery.IsProductType((ProductType)model.ProductTypeId);
+                        }
 
-						if (model.ManufacturerId != 0)
-						{
-							searchQuery = searchQuery.WithManufacturerIds(null, model.ManufacturerId);
-						}
-						
-						if (model.CategoryId != 0)
-						{
-							var node = _categoryService.GetCategoryTree(model.CategoryId, true);
-							if (node != null)
-							{
-								searchQuery = searchQuery.WithCategoryIds(null, node.Flatten(true).Select(x => x.Id).ToArray());
-							}
-						}		
+                        if (model.ManufacturerId != 0)
+                        {
+                            searchQuery = searchQuery.WithManufacturerIds(null, model.ManufacturerId);
+                        }
 
-						var query = _catalogSearchService.PrepareQuery(searchQuery);
+                        if (model.CategoryId != 0)
+                        {
+                            var node = _categoryService.GetCategoryTree(model.CategoryId, true);
+                            if (node != null)
+                            {
+                                searchQuery = searchQuery.WithCategoryIds(null, node.Flatten(true).Select(x => x.Id).ToArray());
+                            }
+                        }
 
-						var products = query
-							.Select(x => new
-							{
-								x.Id,
-								x.Sku,
-								x.Name,
-								x.Published,
-								x.ProductTypeId,
-								x.MainPictureId
-							})
-							.OrderBy(x => x.Name)
-							.Skip(model.PageIndex * model.PageSize)
-							.Take(model.PageSize)
-							.ToList();
+                        var skip = model.PageIndex * model.PageSize;
+                        var query = _catalogSearchService.PrepareQuery(searchQuery);
 
-						var allPictureIds = products.Select(x => x.MainPictureId.GetValueOrDefault());
-						var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
+                        var products = query
+                            .Select(x => new
+                            {
+                                x.Id,
+                                x.Sku,
+                                x.Name,
+                                x.Published,
+                                x.ProductTypeId,
+                                x.MainPictureId
+                            })
+                            .OrderBy(x => x.Name)
+                            .Skip(() => skip)
+                            .Take(() => model.PageSize)
+                            .ToList();
 
-						model.SearchResult = products
-							.Select(x =>
-							{
-								var item = new EntityPickerModel.SearchResultModel
-								{
-									Id = x.Id,
-									ReturnValue = (model.ReturnField.IsCaseInsensitiveEqual("sku") ? x.Sku : x.Id.ToString()),
-									Title = x.Name,
-									Summary = x.Sku,
-									SummaryTitle = "{0}: {1}".FormatInvariant(sku, x.Sku.NaIfEmpty()),
-									Published = (hasPermission ? x.Published : (bool?)null),
-									Selected = selIds.Contains(x.Id)
-								};
+                        var allPictureIds = products.Select(x => x.MainPictureId.GetValueOrDefault());
+                        var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
 
-								if (disableIfNotSimpleProduct)
-								{
-									item.Disable = (x.ProductTypeId != (int)ProductType.SimpleProduct);
-								}
-								else if (disableIfGroupedProduct)
-								{
-									item.Disable = (x.ProductTypeId == (int)ProductType.GroupedProduct);
-								}
+                        model.SearchResult = products
+                            .Select(x =>
+                            {
+                                var item = new EntityPickerModel.SearchResultModel
+                                {
+                                    Id = x.Id,
+                                    Title = x.Name,
+                                    Summary = x.Sku,
+                                    SummaryTitle = "{0}: {1}".FormatInvariant(sku, x.Sku.NaIfEmpty()),
+                                    Published = hasPermission ? x.Published : (bool?)null,
+                                    ReturnValue = returnSku ? x.Sku : x.Id.ToString()
+                                };
 
-								if (!item.Disable && disableIds.Contains(x.Id))
-								{
-									item.Disable = true;
-								}
+                                item.Selected = selected.Contains(item.ReturnValue);
 
-								if (x.ProductTypeId == (int)ProductType.GroupedProduct)
-								{
-									item.LabelText = labelTextGrouped;
-									item.LabelClassName = "badge-success";
-								}
-								else if (x.ProductTypeId == (int)ProductType.BundledProduct)
-								{
-									item.LabelText = labelTextBundled;
-									item.LabelClassName = "badge-info";
-								}
+                                if (disableIfNotSimpleProduct)
+                                {
+                                    item.Disable = x.ProductTypeId != (int)ProductType.SimpleProduct;
+                                }
+                                else if (disableIfGroupedProduct)
+                                {
+                                    item.Disable = x.ProductTypeId == (int)ProductType.GroupedProduct;
+                                }
 
-								var pictureInfo = allPictureInfos.Get(x.MainPictureId.GetValueOrDefault());
-								var fallbackType = _catalogSettings.HideProductDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
+                                if (!item.Disable && disableIds.Contains(x.Id))
+                                {
+                                    item.Disable = true;
+                                }
 
-								item.ImageUrl = _pictureService.GetUrl(
-									allPictureInfos.Get(x.MainPictureId.GetValueOrDefault()),
-									_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage,
-									fallbackType);
+                                if (x.ProductTypeId == (int)ProductType.GroupedProduct)
+                                {
+                                    item.LabelText = labelTextGrouped;
+                                    item.LabelClassName = "badge-success";
+                                }
+                                else if (x.ProductTypeId == (int)ProductType.BundledProduct)
+                                {
+                                    item.LabelText = labelTextBundled;
+                                    item.LabelClassName = "badge-info";
+                                }
 
-								return item;
-							})
-							.ToList();
+                                var pictureInfo = allPictureInfos.Get(x.MainPictureId.GetValueOrDefault());
+                                var fallbackType = _catalogSettings.HideProductDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
 
-						#endregion
-					}
-				}
+                                item.ImageUrl = _pictureService.GetUrl(
+                                    allPictureInfos.Get(x.MainPictureId.GetValueOrDefault()),
+                                    _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage,
+                                    fallbackType);
+
+                                return item;
+                            })
+                            .ToList();
+                    }
+                    else if (model.EntityType.IsCaseInsensitiveEqual("category"))
+                    {
+                        var categories = _categoryService.GetAllCategories(model.SearchTerm, showHidden: true);
+                        var allPictureIds = categories.Select(x => x.PictureId.GetValueOrDefault());
+                        var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
+
+                        model.SearchResult = categories
+                            .Select(x =>
+                            {
+                                var path = ((ICategoryNode)x).GetCategoryPath(_categoryService, languageId, "({0})");
+                                var item = new EntityPickerModel.SearchResultModel
+                                {
+                                    Id = x.Id,
+                                    Title = x.Name,
+                                    Summary = path,
+                                    SummaryTitle = path,
+                                    Published = x.Published,
+                                    ReturnValue = x.Id.ToString(),
+                                    Selected = selected.Contains(x.Id.ToString()),
+                                    Disable = disableIds.Contains(x.Id)
+                                };
+
+                                if (x.Alias.HasValue())
+                                {
+                                    item.LabelText = x.Alias;
+                                    item.LabelClassName = "badge-secondary";
+                                }
+
+                                var pictureInfo = allPictureInfos.Get(x.PictureId.GetValueOrDefault());
+                                var fallbackType = _catalogSettings.HideProductDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
+
+                                item.ImageUrl = _pictureService.GetUrl(
+                                    allPictureInfos.Get(x.PictureId.GetValueOrDefault()),
+                                    _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage,
+                                    fallbackType);
+
+                                return item;
+                            })
+                            .ToList();
+                    }
+                    else if (model.EntityType.IsCaseInsensitiveEqual("manufacturer"))
+                    {
+                        var manufacturers = _manufacturerService.GetAllManufacturers(model.SearchTerm, model.PageIndex, model.PageSize, showHidden: true);
+                        var allPictureIds = manufacturers.Select(x => x.PictureId.GetValueOrDefault());
+                        var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
+
+                        model.SearchResult = manufacturers
+                            .Select(x =>
+                            {
+                                var item = new EntityPickerModel.SearchResultModel
+                                {
+                                    Id = x.Id,
+                                    Title = x.Name,
+                                    Published = x.Published,
+                                    ReturnValue = x.Id.ToString(),
+                                    Selected = selected.Contains(x.Id.ToString()),
+                                    Disable = disableIds.Contains(x.Id)
+                                };
+
+                                var pictureInfo = allPictureInfos.Get(x.PictureId.GetValueOrDefault());
+                                var fallbackType = _catalogSettings.HideProductDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
+
+                                item.ImageUrl = _pictureService.GetUrl(
+                                    allPictureInfos.Get(x.PictureId.GetValueOrDefault()),
+                                    _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage,
+                                    fallbackType);
+
+                                return item;
+                            })
+                            .ToList();
+                    }
+                    else if (model.EntityType.IsCaseInsensitiveEqual("customer"))
+                    {
+                        var registeredRoleId = _customerService.GetCustomerRoleBySystemName("Registered").Id;
+                        var searchTermName = string.Empty;
+                        var searchTermEmail = string.Empty;
+                        var searchTermCustomerNumber = string.Empty;
+
+                        if (model.CustomerSearchType.IsCaseInsensitiveEqual("Name"))
+                            searchTermName = model.SearchTerm;
+                        else if (model.CustomerSearchType.IsCaseInsensitiveEqual("Email"))
+                            searchTermEmail = model.SearchTerm;
+                        else if (model.CustomerSearchType.IsCaseInsensitiveEqual("CustomerNumber"))
+                            searchTermCustomerNumber = model.SearchTerm;
+
+                        var q = new CustomerSearchQuery
+                        {
+                            SearchTerm = searchTermName,
+                            Email = searchTermEmail,
+                            CustomerNumber = searchTermCustomerNumber,
+                            CustomerRoleIds = new int[] { registeredRoleId },
+                            PageIndex = model.PageIndex,
+                            PageSize = model.PageSize
+                        };
+
+                        var customers = _customerService.SearchCustomers(q);
+
+                        model.SearchResult = customers
+                            .Select(x =>
+                            {
+                                var fullName = x.GetFullName();
+
+                                var item = new EntityPickerModel.SearchResultModel
+                                {
+                                    Id = x.Id,
+                                    ReturnValue = x.Id.ToString(),
+                                    Title = x.Username.NullEmpty() ?? x.Email,
+                                    Summary = fullName,
+                                    SummaryTitle = fullName,
+                                    Published = true,
+                                    Selected = selected.Contains(x.Id.ToString()),
+                                    Disable = disableIds.Contains(x.Id)
+                                };
+
+                                return item;
+                            })
+                            .ToList();
+                    }
+                }
 			}
 			catch (Exception ex)
 			{

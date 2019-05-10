@@ -66,17 +66,15 @@
       <HintPath>..\..\..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Autofac, Version=4.9.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Autofac.4.9.0\lib\net45\Autofac.dll</HintPath>
     </Reference>
     <Reference Include="Autofac.Integration.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Autofac.Mvc5.4.0.2\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="AutoMapper, Version=6.0.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\AutoMapper.6.0.2\lib\net45\AutoMapper.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="AutoMapper, Version=8.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\AutoMapper.8.0.0\lib\net461\AutoMapper.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
@@ -86,17 +84,21 @@
       <HintPath>..\..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="FluentValidation, Version=6.4.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\FluentValidation.6.4.1\lib\Net45\FluentValidation.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="FluentValidation, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\FluentValidation.7.4.0\lib\net45\FluentValidation.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>False</Private>
       <HintPath>..\..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Microsoft.Web.XmlTransform, Version=3.0.0.34420, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.Web.Xdt.3.0.0\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Core, Version=2.14.0.832, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\NuGet.Core.2.14.0\lib\net40-Client\NuGet.Core.dll</HintPath>
     </Reference>
     <Reference Include="SmartStore.Licensing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -107,18 +109,16 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -128,14 +128,10 @@
     <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -143,25 +139,17 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
@@ -198,6 +186,7 @@
     <Compile Include="Controllers\CustomerRoleController.cs" />
     <Compile Include="Controllers\ExportController.cs" />
     <Compile Include="Controllers\ImportController.cs" />
+    <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\QuantityUnitController.cs" />
     <Compile Include="Controllers\DeliveryTimeController.cs" />
     <Compile Include="Controllers\DiscountController.cs" />
@@ -229,6 +218,7 @@
     <Compile Include="Controllers\ReturnRequestController.cs" />
     <Compile Include="Controllers\RoxyFileManagerController.cs" />
     <Compile Include="Controllers\ScheduleTaskController.cs" />
+    <Compile Include="Controllers\AdminModelHelper.cs" />
     <Compile Include="Controllers\SecurityController.cs" />
     <Compile Include="Controllers\UrlRecordController.cs" />
     <Compile Include="Controllers\SettingController.cs" />
@@ -241,8 +231,7 @@
     <Compile Include="Controllers\TopicController.cs" />
     <Compile Include="Controllers\WidgetController.cs" />
     <Compile Include="Extensions\HtmlHelperExtensions.cs" />
-    <Compile Include="Extensions\ScheduleTaskExtensions.cs" />
-    <Compile Include="Infrastructure\AdminSiteMap.cs" />
+    <Compile Include="Infrastructure\AdminMenu.cs" />
     <Compile Include="Infrastructure\DependencyRegistrar.cs" />
     <Compile Include="Infrastructure\PreviewModeFilter.cs" />
     <Compile Include="Infrastructure\RouteProvider.cs" />
@@ -282,6 +271,9 @@
     <Compile Include="Models\DataExchange\ExportProfileModel.cs" />
     <Compile Include="Models\Localization\AvailableLanguageModel.cs" />
     <Compile Include="Models\Localization\CheckAvailableResourcesResult.cs" />
+    <Compile Include="Models\Menus\MenuItemRecordModel.cs" />
+    <Compile Include="Models\Menus\MenuRecordListModel.cs" />
+    <Compile Include="Models\Menus\MenuRecordModel.cs" />
     <Compile Include="Models\Messages\MessageTemplateListModel.cs" />
     <Compile Include="Models\Messages\MessageTemplatePreviewModel.cs" />
     <Compile Include="Models\News\NewsItemListModel.cs" />
@@ -293,9 +285,12 @@
     <Compile Include="Models\Plugins\LicensePluginModel.cs" />
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Plugins\ProviderModelList.cs" />
+    <Compile Include="Models\Polls\PollVotingRecordModel.cs" />
+    <Compile Include="Models\Settings\ForumSearchSettingsModel.cs" />
     <Compile Include="Models\Settings\PaymentSettingsModel.cs" />
     <Compile Include="Models\Settings\SearchSettingsModel.cs" />
     <Compile Include="Models\Settings\DataExchangeSettingsModel.cs" />
+    <Compile Include="Models\Tasks\ScheduleTaskHistoryModel.cs" />
     <Compile Include="Models\UrlRecord\UrlRecordListModel.cs" />
     <Compile Include="Models\UrlRecord\UrlRecordModel.cs" />
     <Compile Include="Models\Customers\OnlineCustomerModel.cs" />
@@ -397,62 +392,6 @@
     <Compile Include="Models\Messages\QueuedEmailModel.cs" />
     <Compile Include="Models\Settings\TaxSettingsModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Validators\Catalog\CategoryValidator.cs" />
-    <Compile Include="Validators\Catalog\ProductTagValidator.cs" />
-    <Compile Include="Validators\Catalog\ManufacturerValidator.cs" />
-    <Compile Include="Validators\Catalog\ProductAttributeOptionModelValidator.cs" />
-    <Compile Include="Validators\Catalog\CopyProductValidator.cs" />
-    <Compile Include="Validators\Common\AddressValidator.cs" />
-    <Compile Include="Validators\Common\GenericAttributeValidator.cs" />
-    <Compile Include="Validators\DataExchange\ExportDeplomentValidator.cs" />
-    <Compile Include="Validators\DataExchange\CsvConfigurationValidator.cs" />
-    <Compile Include="Validators\DataExchange\ImportProfileValidator.cs" />
-    <Compile Include="Validators\DataExchange\ExportProfileValidator.cs" />
-    <Compile Include="Validators\Directory\DeliveryTimeValidator.cs" />
-    <Compile Include="Validators\Messages\NewsLetterSubscriptionValidator.cs" />
-    <Compile Include="Validators\Orders\CheckoutAttributeValueValidator.cs" />
-    <Compile Include="Validators\Orders\CheckoutAttributeValidator.cs" />
-    <Compile Include="Validators\Affiliates\AffiliateValidator.cs" />
-    <Compile Include="Validators\Messages\CampaignValidator.cs" />
-    <Compile Include="Validators\Blogs\BlogPostValidator.cs" />
-    <Compile Include="Validators\Plugins\PluginValidator.cs" />
-    <Compile Include="Validators\Polls\PollAnswerValidator.cs" />
-    <Compile Include="Validators\Polls\PollValidator.cs" />
-    <Compile Include="Validators\Settings\GeneralCommonSettingsValidator.cs" />
-    <Compile Include="Validators\Settings\CatalogSettingsValidator.cs" />
-    <Compile Include="Validators\Settings\OrderSettingsValidator.cs" />
-    <Compile Include="Validators\Settings\SearchSettingValidator.cs" />
-    <Compile Include="Validators\Settings\SettingValidator.cs" />
-    <Compile Include="Validators\Settings\RewardPointsSettingsValidator.cs" />
-    <Compile Include="Validators\Stores\StoreValidator.cs" />
-    <Compile Include="Validators\Tasks\ScheduleTaskValidator.cs" />
-    <Compile Include="Validators\Topics\TopicValidator.cs" />
-    <Compile Include="Validators\News\NewsItemValidator.cs" />
-    <Compile Include="Validators\Messages\MessageTemplateValidator.cs" />
-    <Compile Include="Validators\Messages\EmailAccountValidator.cs" />
-    <Compile Include="Validators\Directory\StateProvinceValidator.cs" />
-    <Compile Include="Validators\Directory\CountryValidator.cs" />
-    <Compile Include="Validators\Catalog\ProductReviewValidator.cs" />
-    <Compile Include="Validators\Orders\ReturnRequestValidator.cs" />
-    <Compile Include="Validators\Orders\RecurringPaymentValidator.cs" />
-    <Compile Include="Validators\Discounts\DiscountValidator.cs" />
-    <Compile Include="Validators\Catalog\ProductVariantAttributeValueModelValidator.cs" />
-    <Compile Include="Validators\Catalog\SpecificationAttributeOptionValidator.cs" />
-    <Compile Include="Validators\Catalog\SpecificationAttributeValidator.cs" />
-    <Compile Include="Validators\Catalog\ProductAttributeValidator.cs" />
-    <Compile Include="Validators\Customers\CustomerRoleValidator.cs" />
-    <Compile Include="Validators\Customers\CustomerValidator.cs" />
-    <Compile Include="Validators\Forums\ForumGroupValidator.cs" />
-    <Compile Include="Validators\Forums\ForumValidator.cs" />
-    <Compile Include="Validators\Messages\QueuedEmailValidator.cs" />
-    <Compile Include="Validators\Shipping\ShippingMethodValidator.cs" />
-    <Compile Include="Validators\Tax\TaxCategoryValidator.cs" />
-    <Compile Include="Validators\Directory\MeasureDimensionValidator.cs" />
-    <Compile Include="Validators\Directory\MeasureWeightValidator.cs" />
-    <Compile Include="Validators\Directory\CurrencyValidator.cs" />
-    <Compile Include="Validators\Localization\LanguageResourceValidator.cs" />
-    <Compile Include="Validators\Localization\LanguageValidator.cs" />
-    <Compile Include="Validators\Catalog\ProductValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\filemanager\css\images\animated-overlay.gif" />
@@ -569,6 +508,7 @@
     <Content Include="Scripts\jquery-shims.js" />
     <Content Include="Scripts\jquery.tmpl.min.js" />
     <Content Include="Scripts\admin.globalinit.js" />
+    <Content Include="Scripts\smartstore.iconchooser.js" />
     <Content Include="Scripts\smartstore.download.js" />
     <Content Include="Scripts\smartstore.discountrules.js" />
     <Content Include="Content\theme-rtl.scss" />
@@ -636,7 +576,6 @@
     <Content Include="Views\Setting\Partials\CommonFacet.cshtml" />
     <Content Include="Views\Plugin\Partials\LicenseLabel.cshtml" />
     <Content Include="Views\Language\Partials\AvailableLanguages.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\Liquid.cshtml" />
     <Content Include="Views\MessageTemplate\Preview.cshtml" />
     <Content Include="Views\Shared\Partials\StoreSelector.cshtml" />
     <Content Include="Views\Shared\Partials\AclSelector.cshtml" />
@@ -647,6 +586,21 @@
     <Content Include="Views\Shared\Layouts\_AdminBareLayout.cshtml" />
     <Content Include="Views\Setting\Payment.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\SelectList.cshtml" />
+    <Content Include="Views\Product\_CreateOrUpdate.Downloads.cshtml" />
+    <Content Include="Views\Menu\List.cshtml" />
+    <Content Include="Views\Menu\Edit.cshtml" />
+    <Content Include="Views\Menu\Create.cshtml" />
+    <Content Include="Views\Menu\_CreateOrUpdate.cshtml" />
+    <Content Include="Views\Menu\_CreateOrUpdate.Item.cshtml" />
+    <Content Include="Views\Menu\EditItem.cshtml" />
+    <Content Include="Views\Menu\CreateItem.cshtml" />
+    <Content Include="Views\Menu\ItemList.cshtml" />
+    <Content Include="Views\Menu\EditorTemplates\MenuItem.Entity.cshtml" />
+    <Content Include="Views\Menu\EditorTemplates\MenuItem.Route.cshtml" />
+    <Content Include="Views\Menu\EditorTemplates\MenuItem.Catalog.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\AccessPermissions.cshtml" />
+    <Content Include="Views\Shared\Menus\Admin.cshtml" />
+    <Content Include="Views\Shared\Partials\FontAwesomeIcon.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />
@@ -665,8 +619,6 @@
     <Content Include="Views\Language\_CreateOrUpdate.cshtml" />
     <Content Include="Views\Log\List.cshtml" />
     <Content Include="Views\Shared\Partials\Delete.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\Picture.cshtml" />
-    <Content Include="Views\Shared\Partials\Menu.cshtml" />
     <Content Include="Views\Shared\Layouts\_AdminLayout.cshtml" />
     <Content Include="Views\Web.config">
       <SubType>Designer</SubType>
@@ -1279,9 +1231,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Common\GenericAttributes.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\EditorTemplates\Html.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\EditorTemplates\AttributeControlType.cshtml" />

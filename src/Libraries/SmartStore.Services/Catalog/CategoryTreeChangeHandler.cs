@@ -10,6 +10,8 @@ using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Events;
+using SmartStore.Core.Search;
 
 namespace SmartStore.Services.Catalog
 {
@@ -33,7 +35,7 @@ namespace SmartStore.Services.Catalog
 		public CategoryTreeChangeReason Reason { get; private set; }
 	}
 
-	public class CategoryTreeChangeHook : IDbSaveHook
+	public class CategoryTreeChangeHook : IDbSaveHook, IConsumer
 	{
 		private readonly ICommonServices _services;
 		private readonly ICategoryService _categoryService;
@@ -102,7 +104,7 @@ namespace SmartStore.Services.Catalog
 
 				if (modProps.Keys.Any(x => _h.Contains(x)))
 				{
-					// Hierarchy affecting properties has changed. Nuke every tree.
+					// Hierarchy affecting properties has changed. Nuke each tree.
 					cache.RemoveByPattern(CategoryService.CATEGORY_TREE_PATTERN_KEY);
 					PublishEvent(CategoryTreeChangeReason.Hierarchy);
 					_invalidated = true;
@@ -253,6 +255,14 @@ namespace SmartStore.Services.Catalog
 						PublishEvent(CategoryTreeChangeReason.Acl);
 					}
 				}
+			}
+		}
+
+		public void HandleEvent(IndexingCompletedEvent message)
+		{
+			if (message.IndexInfo.IsModified)
+			{
+				PublishEvent(CategoryTreeChangeReason.ElementCounts);
 			}
 		}
 

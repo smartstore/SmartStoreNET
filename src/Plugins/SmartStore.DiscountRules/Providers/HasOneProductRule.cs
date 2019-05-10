@@ -38,10 +38,11 @@ namespace SmartStore.DiscountRules
 				.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
 				.Select(x => x.Trim())
 				.ToList();
+
 			if (restrictedProducts.Count == 0)
 				return false;
 
-			//cart
+			// cart
 			var cart = request.Customer.GetCartItems(ShoppingCartType.ShoppingCart, request.Store.Id);
 
 			bool found = false;
@@ -56,18 +57,15 @@ namespace SmartStore.DiscountRules
 					{
 						if (restrictedProduct.Contains("-"))
 						{
-							//the third way (the quantity rage specified)
-							//{Product ID}:{Min quantity}-{Max quantity}. For example, 77:1-3, 123:2-5, 156:3-8
-							int restrictedProductId = 0;
-							if (!int.TryParse(restrictedProduct.Split(new[] { ':' })[0], out restrictedProductId))
+							// the third way (the quantity rage specified)
+							// {Product ID}:{Min quantity}-{Max quantity}. For example, 77:1-3, 123:2-5, 156:3-8
+							if (!int.TryParse(restrictedProduct.Split(new[] { ':' })[0], out int restrictedProductId))
 								//parsing error; exit;
 								return false;
-							int quantityMin = 0;
-							if (!int.TryParse(restrictedProduct.Split(new[] { ':' })[1].Split(new[] { '-' })[0], out quantityMin))
+							if (!int.TryParse(restrictedProduct.Split(new[] { ':' })[1].Split(new[] { '-' })[0], out int quantityMin))
 								//parsing error; exit;
 								return false;
-							int quantityMax = 0;
-							if (!int.TryParse(restrictedProduct.Split(new[] { ':' })[1].Split(new[] { '-' })[1], out quantityMax))
+							if (!int.TryParse(restrictedProduct.Split(new[] { ':' })[1].Split(new[] { '-' })[1], out int quantityMax))
 								//parsing error; exit;
 								return false;
 
@@ -79,14 +77,12 @@ namespace SmartStore.DiscountRules
 						}
 						else
 						{
-							//the second way (the quantity specified)
-							//{Product ID}:{Quantity}. For example, 77:1, 123:2, 156:3
-							int restrictedProductId = 0;
-							if (!int.TryParse(restrictedProduct.Split(new[] { ':' })[0], out restrictedProductId))
+							// the second way (the quantity specified)
+							// {Product ID}:{Quantity}. For example, 77:1, 123:2, 156:3
+							if (!int.TryParse(restrictedProduct.Split(new[] { ':' })[0], out int restrictedProductId))
 								//parsing error; exit;
 								return false;
-							int quantity = 0;
-							if (!int.TryParse(restrictedProduct.Split(new[] { ':' })[1], out quantity))
+							if (!int.TryParse(restrictedProduct.Split(new[] { ':' })[1], out int quantity))
 								//parsing error; exit;
 								return false;
 

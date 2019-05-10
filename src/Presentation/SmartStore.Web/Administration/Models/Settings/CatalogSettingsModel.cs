@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using FluentValidation;
+using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework;
-using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Settings;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Settings
 {
@@ -35,6 +35,12 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDiscountSign")]
         public bool ShowDiscountSign { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.PriceDisplayStyle")]
+        public PriceDisplayStyle PriceDisplayStyle { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DisplayTextForZeroPrices")]
+        public bool DisplayTextForZeroPrices { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IgnoreDiscounts")]
         public bool IgnoreDiscounts { get; set; }
@@ -157,9 +163,18 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.PriceDisplayType")]
 		public PriceDisplayType PriceDisplayType { get; set; }
 		public SelectList AvailablePriceDisplayTypes { get; set; }
-
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.GridStyleListColumnSpan")]
+        
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.GridStyleListColumnSpan")]
 		public GridColumnSpan GridStyleListColumnSpan { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowSubCategoriesInSubPages")]
+		public bool ShowSubCategoriesInSubPages { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDescriptionInSubPages")]
+		public bool ShowDescriptionInSubPages { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IncludeFeaturedProductsInSubPages")]
+		public bool IncludeFeaturedProductsInSubPages { get; set; }
 
 		#endregion
 
@@ -285,6 +300,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowVariantCombinationPriceAdjustment")]
         public bool ShowVariantCombinationPriceAdjustment { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowLoginForPriceNote")]
+        public bool ShowLoginForPriceNote { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowLinkedAttributeValueQuantity")]
         public bool ShowLinkedAttributeValueQuantity { get; set; }
 
@@ -293,4 +311,12 @@ namespace SmartStore.Admin.Models.Settings
 
         #endregion 
 	}
+
+    public partial class CatalogSettingsValidator : AbstractValidator<CatalogSettingsModel>
+    {
+        public CatalogSettingsValidator()
+        {
+            RuleFor(x => x.LabelAsNewForMaxDays).LessThan(1000);
+        }
+    }
 }

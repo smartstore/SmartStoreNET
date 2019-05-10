@@ -15,9 +15,10 @@ namespace SmartStore
 
         public static string AssemblyQualifiedNameWithoutVersion(this Type type)
         {
-			Guard.NotNull(type, nameof(type));
+			if (type == null)
+				throw new ArgumentNullException(nameof(type));
 
-	        if (type.AssemblyQualifiedName != null)
+			if (type.AssemblyQualifiedName != null)
 	        {
 		        var strArray = type.AssemblyQualifiedName.Split(new char[] { ',' });
 		        return string.Format("{0}, {1}", strArray[0].Trim(), strArray[1].Trim());
@@ -26,7 +27,34 @@ namespace SmartStore
 	        return null;
         }
 
-        public static bool IsSequenceType(this Type type)
+		public static bool IsNumericType(this Type type)
+		{
+			switch (Type.GetTypeCode(type))
+			{
+				case TypeCode.Byte:
+				case TypeCode.SByte:
+				case TypeCode.UInt16:
+				case TypeCode.UInt32:
+				case TypeCode.UInt64:
+				case TypeCode.Int16:
+				case TypeCode.Int32:
+				case TypeCode.Int64:
+				case TypeCode.Decimal:
+				case TypeCode.Double:
+				case TypeCode.Single:
+					return true;
+				case TypeCode.Object:
+					if (type.IsNullable(out var innerType))
+					{
+						return innerType.IsNumericType();
+					}
+					return false;
+				default:
+					return false;
+			}
+		}
+
+		public static bool IsSequenceType(this Type type)
         {
 			if (type == typeof(string))
 				return false;
@@ -120,9 +148,10 @@ namespace SmartStore
 
         public static bool IsConstructable(this Type type)
         {
-            Guard.NotNull(type, "type");
+			if (type == null)
+				throw new ArgumentNullException(nameof(type));
 
-            if (type.IsAbstract || type.IsInterface || type.IsArray || type.IsGenericTypeDefinition || type == typeof(void))
+			if (type.IsAbstract || type.IsInterface || type.IsArray || type.IsGenericTypeDefinition || type == typeof(void))
                 return false;
 
             if (!HasDefaultConstructor(type))
@@ -154,9 +183,10 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static bool HasDefaultConstructor(this Type type)
         {
-            Guard.NotNull(type, nameof(type));
+			if (type == null)
+				throw new ArgumentNullException(nameof(type));
 
-            if (type.IsValueType)
+			if (type.IsValueType)
                 return true;
 
             return type.GetConstructors(BindingFlags.Instance | BindingFlags.Public)
@@ -165,16 +195,18 @@ namespace SmartStore
 
         public static bool IsSubClass(this Type type, Type check)
         {
-            Type implementingType;
-            return IsSubClass(type, check, out implementingType);
-        }
+			return IsSubClass(type, check, out Type implementingType);
+		}
 
         public static bool IsSubClass(this Type type, Type check, out Type implementingType)
         {
-            Guard.NotNull(type, "type");
-            Guard.NotNull(check, "check");
+			if (type == null)
+				throw new ArgumentNullException(nameof(type));
 
-            return IsSubClassInternal(type, type, check, out implementingType);
+			if (check == null)
+				throw new ArgumentNullException(nameof(check));
+
+			return IsSubClassInternal(type, type, check, out implementingType);
         }
 
         private static bool IsSubClassInternal(Type initialType, Type currentType, Type check, out Type implementingType)
@@ -249,6 +281,7 @@ namespace SmartStore
                 {
                     throw Error.MoreThanOneElement();
                 }
+
                 return (TAttribute)attributes[0];
             }
 
@@ -310,6 +343,7 @@ namespace SmartStore
                     }
                 }
             }
+
             attributes.AddRange(GetAttributes<TAttribute>(member, inherits));
             return attributes.ToArray();
         }

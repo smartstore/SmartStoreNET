@@ -40,7 +40,7 @@ namespace SmartStore.Services.Orders
             if (orderNote.Note.IsEmpty())
                 return string.Empty;
 
-            return HtmlUtils.FormatText(orderNote.Note, false, true, true, false, false, false);
+            return HtmlUtils.ConvertPlainTextToHtml(orderNote.Note);
         }
 
 		public static List<ProductBundleItemOrderData> GetBundleData(this OrderItem orderItem)

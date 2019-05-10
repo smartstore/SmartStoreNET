@@ -1,8 +1,8 @@
-﻿@model ForumPageModel
-@using SmartStore.Core.Domain.Forums;
+﻿@using SmartStore.Core.Domain.Forums;
 @using SmartStore.Web.Models.Boards;
 @using SmartStore.Web.Models.Common;
 @using SmartStore.Web.Framework.UI;
+@model ForumPageModel
 @{
     Layout = "_Layout";
 
@@ -11,6 +11,7 @@
 
     var pager = Html.SmartStore().Pager(Model.TopicPageIndex, Model.TopicPageSize, Model.TopicTotalRecords)
         .Name("paginator")
+        .QueryParam("page")
         .ShowSummary(false)
         .Route("ForumSlug", new RouteValues { id = Model.Id, slug = Model.SeName })
         .Alignment(PagerAlignment.Right);
@@ -33,8 +34,9 @@
 </script>
 
 <div class="page forum">
-    @{ Html.RenderPartial("_SearchBox"); }
-
+    <div class="mt-2 w-75">
+        @{ Html.RenderAction("SearchBox", "Boards"); }
+    </div>
     <div class="row mt-5">
         <div class="col">
             <div class="heading mb-4">
@@ -57,7 +59,7 @@
     <div>
         <div class="actions my-3 row sm-gutters">
             <div class="col col-sm-auto mt-1 mt-sm-0">
-                <a href='@Url.Action("TopicCreate", new { id = Model.Id })' class="btn btn-primary newtopic btn-block" rel="nofollow">
+                <a href="@Url.Action("TopicCreate", new { id = Model.Id })" class="btn btn-primary newtopic btn-block" rel="nofollow">
                     <i class="fa fa-plus"></i>
                     <span>@T("Forum.NewTopic")</span>
                 </a>
@@ -76,7 +78,7 @@
         @pager
     </div>
 
-    <div class="topics-group table-responsive clearfix">
+    <div class="topics-group table-responsive">
         <table class="table">
             @if (Model.ForumTopics.Count > 0)
             {
@@ -98,47 +100,22 @@
                     </tr>
                 </thead>
             }
-            @foreach (var topic in @Model.ForumTopics)
+            @foreach (var topic in Model.ForumTopics)
             {
-                <tr class="topic">
+                <tr class="topic@(topic.Published ? "" : " disabled")">
                     <td class="image">
-                        @{
-                            var topicType = "post";
-                            var topicText = String.Empty;
-                            var topicIcon = "fa fa-comment-o";
-                            switch (topic.ForumTopicType)
-                            {
-                                case ForumTopicType.Normal:
-                                    topicType = "post";
-                                    topicIcon = "fa fa-comment-o";
-                                    break;
-                                case ForumTopicType.Sticky:
-                                    topicType = "poststicky";
-                                    topicIcon = "fa fa-thumb-tack";
-                                    topicText = string.Format("<label class='label label-important'>{0}</label>", @T("Forum.Sticky").ToString());
-                                    break;
-                                case ForumTopicType.Announcement:
-                                    topicType = "post-annoucement";
-                                    topicIcon = "fa fa-bullhorn";
-                                    topicText = string.Format("<label class='label label-success'>{0}</label>", @T("Forum.Announcement").ToString());
-                                    break;
-                                default:
-                                    topicType = "post";
-                                    topicIcon = "fa fa-comment-o";
-                                    break;
-                            }
-                            <div class="@topicType">
-                                <i class="icon @topicIcon"></i>
-                            </div>
-                        }
+                        @{ Html.RenderPartial("Customer.Avatar", topic.Avatar); }
                     </td>
                     <td class="topic-name">
-                        @if (!String.IsNullOrEmpty(topicText))
+                        @if (topic.ForumTopicType == ForumTopicType.Sticky)
                         {
-                            <span class="topictype">@Html.Raw(topicText)</span>
+                            <span class="topictype"><label class="badge badge-success">@T("Forum.Sticky")</label></span>
                         }
-                        @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })
-                        
+                        else if (topic.ForumTopicType == ForumTopicType.Announcement)
+                        {
+                            <span class="topictype"><label class="badge badge-info">@T("Forum.Announcement")</label></span>
+                        }
+                        @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })                        
                         <div>
                             <div class="topic-starter text-muted d-inline-flex">
                                 @if (topic.CustomerId > 0)
@@ -158,6 +135,7 @@
                             @if (topic.NumPosts > Model.PostsPageSize)
                             {
                                 @(Html.SmartStore().Pager(topic.TotalPostPages)
+                                    .QueryParam("page")
                                     .HtmlAttributes(new { @class = "topics-pager" })
                                     .WithRenderer<ForumTopicPagerRenderer>()
                                     .ShowPrevious(false)
@@ -168,16 +146,15 @@
                                     .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
                             }
                         </div>
-
                     </td>
                     <td class="replies d-none d-md-table-cell">
-                        @topic.NumReplies
+                        @topic.NumReplies.ToString("N0")
                     </td>
                     <td class="views d-none d-md-table-cell">
-                        @topic.Views
+                        @topic.Views.ToString("N0")
                     </td>
                     <td class="last-post d-none d-md-table-cell">
-                        @{ Html.RenderAction("LastPost", new { forumPostId = topic.LastPostId, showTopic = false }); }
+                        @{ Html.RenderPartial("LastPost", topic.LastPost); }
                     </td>
                 </tr>
             }

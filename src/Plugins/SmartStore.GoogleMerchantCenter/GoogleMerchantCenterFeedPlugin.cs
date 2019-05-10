@@ -2,8 +2,10 @@
 using System.Web.Routing;
 using SmartStore.Core.Plugins;
 using SmartStore.GoogleMerchantCenter.Data.Migrations;
+using SmartStore.GoogleMerchantCenter.Providers;
 using SmartStore.GoogleMerchantCenter.Services;
 using SmartStore.Services;
+using SmartStore.Services.DataExchange.Export;
 
 namespace SmartStore.GoogleMerchantCenter
 {
@@ -11,13 +13,16 @@ namespace SmartStore.GoogleMerchantCenter
     {
         private readonly IGoogleFeedService _googleFeedService;
 		private readonly ICommonServices _services;
+        private readonly IExportProfileService _exportProfileService;
 
         public GoogleMerchantCenterFeedPlugin(
 			IGoogleFeedService googleFeedService,
-			ICommonServices services)
+			ICommonServices services,
+            IExportProfileService exportProfileService)
         {
             _googleFeedService = googleFeedService;
 			_services = services;
+            _exportProfileService = exportProfileService;
         }
 
 		public static string SystemName
@@ -35,7 +40,7 @@ namespace SmartStore.GoogleMerchantCenter
         {
             actionName = "Configure";
 			controllerName = "FeedGoogleMerchantCenter";
-			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.GoogleMerchantCenter.Controllers" }, { "area", SystemName } };
+			routeValues = new RouteValueDictionary { { "Namespaces", "SmartStore.GoogleMerchantCenter.Controllers" }, { "area", SystemName } };
         }
 
         /// <summary>
@@ -55,7 +60,11 @@ namespace SmartStore.GoogleMerchantCenter
         {
 			_services.Localization.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
 
-			var migrator = new DbMigrator(new Configuration());
+            // Delete existing export profiles.
+            var profiles = _exportProfileService.GetExportProfilesBySystemName(GmcXmlExportProvider.SystemName);
+            profiles.Each(x => _exportProfileService.DeleteExportProfile(x, true));
+
+            var migrator = new DbMigrator(new Configuration());
 			migrator.Update(DbMigrator.InitialDatabase);
 
             base.Uninstall();

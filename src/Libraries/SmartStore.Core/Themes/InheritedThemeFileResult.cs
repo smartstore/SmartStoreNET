@@ -34,10 +34,10 @@ namespace SmartStore.Core.Themes
 		/// </summary>
 		public string ResultThemeName { get; set; }
 
-		public bool IsExplicit { get; set; }
+		public bool IsBased { get; set; }
 
 		/// <summary>
-		/// The query string, e.g. '?explicit'
+		/// The query string, e.g. '?base'
 		/// </summary>
 		public string Query { get; set; }
 	}

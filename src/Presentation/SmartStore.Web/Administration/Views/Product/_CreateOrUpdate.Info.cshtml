@@ -397,106 +397,6 @@
 		</tr>
 	</table>
 
-	<table class="adminContent" id="group-downloads">
-		<tr class="adminSeparator">
-			<td colspan="2">
-				<hr />
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.IsDownload)
-			</td>
-			<td class="adminData">
-				@Html.CheckBoxFor(model => model.IsDownload, new { data_toggler_for = "#pnlIsDownload" })
-				@Html.ValidationMessageFor(model => model.IsDownload)
-			</td>
-		</tr>
-		<tbody id="pnlIsDownload">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.DownloadId)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.DownloadId)
-					@Html.ValidationMessageFor(model => model.DownloadId)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.UnlimitedDownloads)
-				</td>
-				<td class="adminData">
-					@Html.CheckBoxFor(model => model.UnlimitedDownloads, new { data_toggler_for = "#pnlMaxNumberOfDownloads", data_toggler_reverse = true })
-					@Html.ValidationMessageFor(model => model.UnlimitedDownloads)
-				</td>
-			</tr>
-			<tr id="pnlMaxNumberOfDownloads">
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.MaxNumberOfDownloads)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.MaxNumberOfDownloads)
-					@Html.ValidationMessageFor(model => model.MaxNumberOfDownloads)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.DownloadExpirationDays)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.DownloadExpirationDays)
-					@Html.ValidationMessageFor(model => model.DownloadExpirationDays)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.DownloadActivationTypeId)
-				</td>
-				<td class="adminData">
-					@Html.DropDownListFor(model => model.DownloadActivationTypeId, ((DownloadActivationType)Model.DownloadActivationTypeId).ToSelectList())
-					@Html.ValidationMessageFor(model => model.DownloadActivationTypeId)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.HasUserAgreement)
-				</td>
-				<td class="adminData">
-					@Html.CheckBoxFor(model => model.HasUserAgreement, new { data_toggler_for = "#pnlUserAgreementText" })
-					@Html.ValidationMessageFor(model => model.HasUserAgreement)
-				</td>
-			</tr>
-			<tr id="pnlUserAgreementText">
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.UserAgreementText)
-				</td>
-				<td class="adminData wide">
-					@Html.EditorFor(model => model.UserAgreementText, "Html")
-					@Html.ValidationMessageFor(model => model.UserAgreementText)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.HasSampleDownload)
-				</td>
-				<td class="adminData">
-					@Html.CheckBoxFor(model => model.HasSampleDownload, new {  data_toggler_for = "#pnlSampleDownloadFile" })
-					@Html.ValidationMessageFor(model => model.HasSampleDownload)
-				</td>
-			</tr>
-			<tr id="pnlSampleDownloadFile">
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SampleDownloadId)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.SampleDownloadId)
-					@Html.ValidationMessageFor(model => model.SampleDownloadId)
-				</td>
-			</tr>
-		</tbody>
-	</table>
-
 	<table class="adminContent" id="group-recurring">
 		<tr class="adminSeparator">
 			<td colspan="2">
@@ -655,7 +555,7 @@
 					@Html.SmartLabelFor(model => model.TaxCategoryId)
 				</td>
 				<td class="adminData">
-					@Html.DropDownListFor(model => model.TaxCategoryId, Model.AvailableTaxCategories, new { placeholder = T("Common.PleaseSelect").Text })
+					@Html.DropDownListFor(model => model.TaxCategoryId, Model.AvailableTaxCategories)
 					@Html.ValidationMessageFor(model => model.TaxCategoryId)
 				</td>
 			</tr>

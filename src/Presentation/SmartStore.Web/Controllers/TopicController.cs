@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Seo;
 using System.Web.Routing;
 using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Topics;
+using SmartStore.Services.Security;
 
 namespace SmartStore.Web.Controllers
 {
@@ -20,6 +21,7 @@ namespace SmartStore.Web.Controllers
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
 		private readonly IStoreMappingService _storeMappingService;
+		private readonly IAclService _aclService;
 		private readonly ILocalizationService _localizationService;
         private readonly ICacheManager _cacheManager;
 		private readonly SeoSettings _seoSettings;
@@ -30,6 +32,7 @@ namespace SmartStore.Web.Controllers
             IWorkContext workContext,
 			IStoreContext storeContext,
 			IStoreMappingService storeMappingService,
+			IAclService aclService,
 			ICacheManager cacheManager,
 			SeoSettings seoSettings)
         {
@@ -37,6 +40,7 @@ namespace SmartStore.Web.Controllers
             _workContext = workContext;
 			_storeContext = storeContext;
 			_storeMappingService = storeMappingService;
+			_aclService = aclService;
 			_localizationService = localizationService;
             _cacheManager = cacheManager;
 			_seoSettings = seoSettings;
@@ -61,9 +65,13 @@ namespace SmartStore.Web.Controllers
             {
                 Id = topic.Id,
                 SystemName = topic.SystemName,
+                HtmlId = topic.HtmlId,
+                BodyCssClass = topic.BodyCssClass,
                 IsPasswordProtected = topic.IsPasswordProtected,
-                Title = topic.IsPasswordProtected ? null : topic.GetLocalized(x => x.Title),
-                Body = topic.IsPasswordProtected ? null : topic.GetLocalized(x => x.Body, detectEmptyHtml: true),
+				ShortTitle = topic.IsPasswordProtected ? null : topic.GetLocalized(x => x.ShortTitle),
+				Title = topic.IsPasswordProtected ? null : topic.GetLocalized(x => x.Title),
+				Intro = topic.IsPasswordProtected ? null : topic.GetLocalized(x => x.Intro),
+				Body = topic.IsPasswordProtected ? null : topic.GetLocalized(x => x.Body, detectEmptyHtml: true),
                 MetaKeywords = topic.GetLocalized(x => x.MetaKeywords),
                 MetaDescription = topic.GetLocalized(x => x.MetaDescription),
                 MetaTitle = topic.GetLocalized(x => x.MetaTitle),
@@ -71,11 +79,6 @@ namespace SmartStore.Web.Controllers
                 TitleTag = titleTag,
 				RenderAsWidget = topic.RenderAsWidget
 			};
-
-			if (!topic.RenderAsWidget)
-			{
-				Services.DisplayControl.Announce(topic);
-			}
 
             return model;
         }
@@ -88,8 +91,8 @@ namespace SmartStore.Web.Controllers
 			if (!_seoSettings.RedirectLegacyTopicUrls)
 				return HttpNotFound();
 
-			var topic = _topicService.GetTopicBySystemName(systemName);
-			if (topic == null)
+			var topic = _topicService.GetTopicBySystemName(systemName, 0, false);
+			if (topic == null || !topic.IsPublished)
 				return HttpNotFound();
 
 			var routeValues = new RouteValueDictionary { ["SeName"] = topic.GetSeName() };
@@ -101,14 +104,17 @@ namespace SmartStore.Web.Controllers
 
 		public ActionResult TopicDetails(int topicId, bool popup = false)
 		{
-			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_BY_ID_KEY, topicId, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_BY_ID_KEY, topicId, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id, _workContext.CurrentCustomer.GetRolesIdent());
 			var cacheModel = _cacheManager.Get(cacheKey, () => 
 			{
 				var topic = _topicService.GetTopicById(topicId);
-				if (topic == null)
+				if (topic == null || !topic.IsPublished)
 					return null;
 
 				if (!_storeMappingService.Authorize(topic))
+					return null;
+
+				if (!_aclService.Authorize(topic))
 					return null;
 
 				return PrepareTopicModel(topic);
@@ -119,20 +125,22 @@ namespace SmartStore.Web.Controllers
 
 			ViewBag.IsPopup = popup;
 
+			if (!cacheModel.RenderAsWidget)
+			{
+				Services.DisplayControl.Announce(new Topic { Id = cacheModel.Id });
+			}
+
 			return View("TopicDetails", cacheModel);
 		}
 
         [ChildActionOnly]
         public ActionResult TopicBlock(string systemName, bool bodyOnly = false, bool isLead = false)
         {
-			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_BY_SYSTEMNAME_KEY, systemName.ToLower(), _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_BY_SYSTEMNAME_KEY, systemName.ToLower(), _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id, _workContext.CurrentCustomer.GetRolesIdent());
             var cacheModel = _cacheManager.Get(cacheKey, () => 
 			{
-				var topic = _topicService.GetTopicBySystemName(systemName);
-				if (topic == null)
-					return null;
-
-				if (!_storeMappingService.Authorize(topic))
+				var topic = _topicService.GetTopicBySystemName(systemName, _storeContext.CurrentStore.Id, true);
+				if (topic == null || !topic.IsPublished)
 					return null;
 
 				return PrepareTopicModel(topic);
@@ -144,6 +152,11 @@ namespace SmartStore.Web.Controllers
             ViewBag.BodyOnly = bodyOnly;
 			ViewBag.IsLead = isLead;
 
+			if (!cacheModel.RenderAsWidget)
+			{
+				Services.DisplayControl.Announce(new Topic { Id = cacheModel.Id });
+			}
+
 			return PartialView(cacheModel);
         }
 
@@ -153,7 +166,7 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        [HttpPost, ValidateInput(false)]
+        [HttpPost]
         public ActionResult Authenticate(int id, string password)
         {
             var authResult = false;
@@ -162,6 +175,11 @@ namespace SmartStore.Web.Controllers
             var error = string.Empty;
 
             var topic = _topicService.GetTopicById(id);
+
+			if (!_aclService.Authorize(topic))
+			{
+				topic = null;
+			}
 
             if (topic != null)
             {
@@ -176,6 +194,7 @@ namespace SmartStore.Web.Controllers
                     error = _localizationService.GetResource("Topic.WrongPassword");
                 }
             }
+
             return Json(new { Authenticated = authResult, Title = title, Body = body, Error = error });
         }
     }

@@ -71,7 +71,7 @@ namespace SmartStore.Services.Catalog
 			if (storeId > 0)
 				query = query.Where(biss => biss.StoreId == storeId);
             //product
-            query = query.Where(biss => !biss.Product.Deleted && !biss.Product.IsSystemProduct);
+            query = query.Where(biss => !biss.Product.Deleted);
             query = query.OrderByDescending(biss => biss.CreatedOnUtc);
 
             return new PagedList<BackInStockSubscription>(query, pageIndex, pageSize);

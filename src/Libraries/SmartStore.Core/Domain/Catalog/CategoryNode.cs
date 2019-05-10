@@ -8,7 +8,6 @@ namespace SmartStore.Core.Domain.Catalog
 {
 	public interface ICategoryNode : ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported
 	{
-		int Id { get; }
 		int ParentCategoryId { get; }
 		string Name { get; }
 		string Alias { get; }

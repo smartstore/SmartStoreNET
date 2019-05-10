@@ -4,6 +4,10 @@ using SmartStore.ComponentModel;
 using SmartStore.PayPal.Settings;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Validators;
+using SmartStore.Core.Localization;
+using System;
+using FluentValidation;
 
 namespace SmartStore.PayPal.Models
 {
@@ -104,8 +108,7 @@ namespace SmartStore.PayPal.Models
 			}
         }
     }
-
-
+    
 	public class PayPalPlusConfigurationModel : ApiConfigurationModel
 	{
 		public PayPalPlusConfigurationModel()
@@ -129,10 +132,12 @@ namespace SmartStore.PayPal.Models
 			if (fromSettings)
 			{
 				MiniMapper.Map(settings, this);
-			}
+            }
 			else
 			{
-				MiniMapper.Map(this, settings);
+                TransactMode = TransactMode.AuthorizeAndCapture;
+
+                MiniMapper.Map(this, settings);
 				settings.ApiAccountName = ApiAccountName.TrimSafe();
 				settings.ApiAccountPassword = ApiAccountPassword.TrimSafe();
 				settings.ClientId = ClientId.TrimSafe();
@@ -143,4 +148,20 @@ namespace SmartStore.PayPal.Models
 			}
 		}
 	}
+
+    public class PayPalPlusConfigValidator : SmartValidatorBase<PayPalPlusConfigurationModel>
+    {
+        public PayPalPlusConfigValidator(Localizer T, Func<string, bool> addRule)
+        {
+            if (addRule("ClientId"))
+            {
+                RuleFor(x => x.ClientId).NotEmpty();
+            }
+
+            if (addRule("Secret"))
+            {
+                RuleFor(x => x.Secret).NotEmpty();
+            }
+        }
+    }
 }

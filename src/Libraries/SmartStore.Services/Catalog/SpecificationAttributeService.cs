@@ -179,7 +179,7 @@ namespace SmartStore.Services.Catalog
 				// Note: Join or Expand of SpecificationAttribute, both provides the same SQL.
 				var joinedQuery =
 					from psa in _productSpecificationAttributeRepository.Table
-					join sao in _specificationAttributeOptionRepository.Table.Expand(x => x.SpecificationAttribute) on psa.SpecificationAttributeOptionId equals sao.Id
+					join sao in _specificationAttributeOptionRepository.Table on psa.SpecificationAttributeOptionId equals sao.Id
 					where psa.ProductId == productId
 					select new
 					{
@@ -220,8 +220,12 @@ namespace SmartStore.Services.Catalog
         {
             Guard.NotNull(productIds, nameof(productIds));
 
+            if (!productIds.Any())
+            {
+                return new Multimap<int, ProductSpecificationAttribute>();
+            }
+
             var query = _productSpecificationAttributeRepository.TableUntracked
-                .Expand(x => x.SpecificationAttributeOption)
                 .Expand(x => x.SpecificationAttributeOption.SpecificationAttribute)
                 .Where(x => productIds.Contains(x.ProductId));
 

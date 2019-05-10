@@ -57,12 +57,13 @@ namespace SmartStore.Admin.Controllers
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly CatalogSettings _catalogSettings;
 		private readonly IEventPublisher _eventPublisher;
+        private readonly Lazy<IGenericAttributeService> _genericAttributeService;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public CategoryController(ICategoryService categoryService, ICategoryTemplateService categoryTemplateService,
+        public CategoryController(ICategoryService categoryService, ICategoryTemplateService categoryTemplateService,
             IManufacturerService manufacturerService, IProductService productService, 
             ICustomerService customerService,
             IUrlRecordService urlRecordService, IPictureService pictureService, ILanguageService languageService,
@@ -74,7 +75,8 @@ namespace SmartStore.Admin.Controllers
 			IDateTimeHelper dateTimeHelper,
 			AdminAreaSettings adminAreaSettings,
             CatalogSettings catalogSettings,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            Lazy<IGenericAttributeService> genericAttributeService)
         {
             this._categoryService = categoryService;
             this._categoryTemplateService = categoryTemplateService;
@@ -97,6 +99,7 @@ namespace SmartStore.Admin.Controllers
             this._adminAreaSettings = adminAreaSettings;
             this._catalogSettings = catalogSettings;
 			this._eventPublisher = eventPublisher;
+            _genericAttributeService = genericAttributeService;
         }
 
         #endregion
@@ -109,19 +112,12 @@ namespace SmartStore.Admin.Controllers
             foreach (var localized in model.Locales)
             {
                 _localizedEntityService.SaveLocalizedValue(category, x => x.Name, localized.Name, localized.LanguageId);
-
 				_localizedEntityService.SaveLocalizedValue(category, x => x.FullName, localized.FullName, localized.LanguageId);
-
                 _localizedEntityService.SaveLocalizedValue(category, x => x.Description, localized.Description, localized.LanguageId);
-
 				_localizedEntityService.SaveLocalizedValue(category, x => x.BottomDescription, localized.BottomDescription, localized.LanguageId);
-
                 _localizedEntityService.SaveLocalizedValue(category, x => x.BadgeText, localized.BadgeText, localized.LanguageId);
-
                 _localizedEntityService.SaveLocalizedValue(category, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId);
-
                 _localizedEntityService.SaveLocalizedValue(category, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
-
                 _localizedEntityService.SaveLocalizedValue(category, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId);
 
                 //search engine name
@@ -133,9 +129,7 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected void UpdatePictureSeoNames(Category category)
         {
-            var picture = _pictureService.GetPictureById(category.PictureId.GetValueOrDefault());
-            if (picture != null)
-                _pictureService.SetSeoFilename(picture.Id, _pictureService.GetPictureSeName(category.Name));
+			_pictureService.SetSeoFilename(category.PictureId.GetValueOrDefault(), _pictureService.GetPictureSeName(category.Name));
         }
 
         [NonAction]
@@ -204,7 +198,7 @@ namespace SmartStore.Admin.Controllers
             {
                 if (category != null)
                 {
-                    model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccess(category);
+                    model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(category);
                 }
                 else
                 {
@@ -214,29 +208,6 @@ namespace SmartStore.Admin.Controllers
 
 			model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
 		}
-
-        [NonAction]
-        protected void SaveCategoryAcl(Category category, CategoryModel model)
-        {
-            var existingAclRecords = _aclService.GetAclRecords(category);
-            var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-            foreach (var customerRole in allCustomerRoles)
-            {
-                if (model.SelectedCustomerRoleIds != null && model.SelectedCustomerRoleIds.Contains(customerRole.Id))
-                {
-                    //new role
-                    if (existingAclRecords.Where(acl => acl.CustomerRoleId == customerRole.Id).Count() == 0)
-                        _aclService.InsertAclRecord(category, customerRole.Id);
-                }
-                else
-                {
-                    //removed role
-                    var aclRecordToDelete = existingAclRecords.Where(acl => acl.CustomerRoleId == customerRole.Id).FirstOrDefault();
-                    if (aclRecordToDelete != null)
-                        _aclService.DeleteAclRecord(aclRecordToDelete);
-                }
-            }
-        }
 
 		[NonAction]
 		private void PrepareStoresMappingModel(CategoryModel model, Category category, bool excludeProperties)
@@ -257,6 +228,11 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Index()
         {
+            var customerChoice = _genericAttributeService.Value.GetAttribute<string>("Customer", _workContext.CurrentCustomer.Id, "AdminCategoriesType");
+
+            if (customerChoice != null && customerChoice.Equals("Tree"))
+                return RedirectToAction("Tree");
+
             return RedirectToAction("List");
         }
 
@@ -265,7 +241,13 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-			var allStores = _storeService.GetAllStores();
+            var customerChoice = _genericAttributeService.Value.GetAttribute<string>("Customer", _workContext.CurrentCustomer.Id, "AdminCategoriesType");
+            if (customerChoice == null || customerChoice.Equals("Tree"))
+            {
+                _genericAttributeService.Value.SaveAttribute<string>(_workContext.CurrentCustomer, "AdminCategoriesType", "List");
+            }
+            
+            var allStores = _storeService.GetAllStores();
 			var model = new CategoryListModel
 			{
 				GridPageSize = _adminAreaSettings.GridPageSize
@@ -335,7 +317,7 @@ namespace SmartStore.Admin.Controllers
 
 			var mainList = query.ToList();
 
-			var mruList = new MostRecentlyUsedList<string>(
+			var mruList = new TrimmedBuffer<string>(
 				_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
 				_catalogSettings.MostRecentlyUsedCategoriesMaxSize)
 				.Reverse()
@@ -375,7 +357,13 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-			var allStores = _storeService.GetAllStores();
+            var customerChoice = _genericAttributeService.Value.GetAttribute<string>("Customer", _workContext.CurrentCustomer.Id, "AdminCategoriesType");
+            if (customerChoice == null || customerChoice.Equals("List"))
+            {
+                _genericAttributeService.Value.SaveAttribute<string>(_workContext.CurrentCustomer, "AdminCategoriesType", "Tree");
+            }
+            
+            var allStores = _storeService.GetAllStores();
 			var model = new CategoryTreeModel();
 
 			foreach (var store in allStores)
@@ -548,11 +536,11 @@ namespace SmartStore.Admin.Controllers
                 //update picture seo file name
                 UpdatePictureSeoNames(category);
 
-                //ACL (customer roles)
-                SaveCategoryAcl(category, model);
+                // ACL (customer roles)
+                SaveAclMappings(category, model);
 
-				//Stores
-				_storeMappingService.SaveStoreMappings<Category>(category, model.SelectedStoreIds);
+				// Stores
+				SaveStoreMappings(category, model);
 
 				_eventPublisher.Publish(new ModelBoundEvent(model, category, form));
 
@@ -560,7 +548,7 @@ namespace SmartStore.Admin.Controllers
                 _customerActivityService.InsertActivity("AddNewCategory", _localizationService.GetResource("ActivityLog.AddNewCategory"), category.Name);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.Categories.Added"));
-                return continueEditing ? RedirectToAction("Edit", new { id = category.Id }) : RedirectToAction("List");
+                return continueEditing ? RedirectToAction("Edit", new { id = category.Id }) : RedirectToAction("Index");
             }
 
             //If we got this far, something failed, redisplay form
@@ -591,7 +579,7 @@ namespace SmartStore.Admin.Controllers
 
             var category = _categoryService.GetCategoryById(id);
             if (category == null || category.Deleted)
-                return RedirectToAction("List");
+                return RedirectToAction("Index");
 
             var model = category.ToModel();
 
@@ -621,9 +609,7 @@ namespace SmartStore.Admin.Controllers
 
             PrepareTemplatesModel(model);
             PrepareCategoryModel(model, category, false);
-
             PrepareAclModel(model, category, false);
-
 			PrepareStoresMappingModel(model, category, false);
 
             return View(model);
@@ -638,7 +624,7 @@ namespace SmartStore.Admin.Controllers
 
             var category = _categoryService.GetCategoryById(model.Id);
             if (category == null || category.Deleted)
-                return RedirectToAction("List");
+                return RedirectToAction("Index");
 
             if (ModelState.IsValid)
             {
@@ -675,25 +661,25 @@ namespace SmartStore.Admin.Controllers
                 }
                 _categoryService.UpdateCategory(category);
 
-                //update "HasDiscountsApplied" property
+                // update "HasDiscountsApplied" property
                 _categoryService.UpdateHasDiscountsApplied(category);
 
-                //update picture seo file name
+                // update picture seo file name
                 UpdatePictureSeoNames(category);
 
-                //ACL
-                SaveCategoryAcl(category, model);
+                // ACL
+                SaveAclMappings(category, model);
 
-				//Stores
-				_storeMappingService.SaveStoreMappings<Category>(category, model.SelectedStoreIds);
+				// Stores
+				SaveStoreMappings(category, model);
 
 				_eventPublisher.Publish(new ModelBoundEvent(model, category, form));
 
                 //activity log
                 _customerActivityService.InsertActivity("EditCategory", _localizationService.GetResource("ActivityLog.EditCategory"), category.Name);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Catalog.Categories.Updated"));
-                return continueEditing ? RedirectToAction("Edit", category.Id) : RedirectToAction("List");
+                NotifySuccess(T("Admin.Catalog.Categories.Updated"));
+                return continueEditing ? RedirectToAction("Edit", category.Id) : RedirectToAction("Index");
             }
 
 
@@ -742,14 +728,14 @@ namespace SmartStore.Admin.Controllers
 			
             var category = _categoryService.GetCategoryById(id);
             if (category == null)
-                return RedirectToAction("List");
+                return RedirectToAction("Index");
 
 			_categoryService.DeleteCategory(category, deleteType.IsCaseInsensitiveEqual("deletechilds"));
 
             _customerActivityService.InsertActivity("DeleteCategory", _localizationService.GetResource("ActivityLog.DeleteCategory"), category.Name);
 
             NotifySuccess(_localizationService.GetResource("Admin.Catalog.Categories.Deleted"));
-            return RedirectToAction("List");
+            return RedirectToAction("Index");
         }
 
 

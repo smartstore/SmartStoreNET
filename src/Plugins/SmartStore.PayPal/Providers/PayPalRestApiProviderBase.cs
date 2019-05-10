@@ -11,15 +11,22 @@ using SmartStore.Core.Plugins;
 using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services;
+using SmartStore.Services.Common;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 
 namespace SmartStore.PayPal
 {
-	public abstract class PayPalRestApiProviderBase<TSetting> : PaymentMethodBase, IConfigurable where TSetting : PayPalApiSettingsBase, ISettings, new()
+    public abstract class PayPalRestApiProviderBase<TSetting> : PaymentMethodBase, IConfigurable where TSetting : PayPalApiSettingsBase, ISettings, new()
     {
-        protected PayPalRestApiProviderBase()
+        private readonly string _providerSystemName;
+
+        protected PayPalRestApiProviderBase(string providerSystemName)
 		{
+            Guard.NotEmpty(providerSystemName, nameof(providerSystemName));
+
+            _providerSystemName = providerSystemName;
+
 			Logger = NullLogger.Instance;
 		}
 
@@ -28,14 +35,15 @@ namespace SmartStore.PayPal
 		public ICommonServices Services { get; set; }
 		public IOrderService OrderService { get; set; }
         public IOrderTotalCalculationService OrderTotalCalculationService { get; set; }
-		public IPayPalService PayPalService { get; set; }
+        public IGenericAttributeService GenericAttributeService { get; set; }
+        public IPayPalService PayPalService { get; set; }
 
 		protected string GetControllerName()
 		{
 			return GetControllerType().Name.EmptyNull().Replace("Controller", "");
 		}
 
-		public static string CheckoutCompletedKey
+        public static string CheckoutCompletedKey
 		{
 			get { return "PayPalCheckoutCompleted"; }
 		}
@@ -75,7 +83,7 @@ namespace SmartStore.PayPal
 			return result;
         }
 
-		public override ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest)
+        public override ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest)
 		{
 			var result = new ProcessPaymentResult
 			{
@@ -84,31 +92,27 @@ namespace SmartStore.PayPal
 
 			HttpContext.Session.SafeRemove(CheckoutCompletedKey);
 
-			var settings = Services.Settings.LoadSetting<TSetting>(processPaymentRequest.StoreId);
-			var session = HttpContext.GetPayPalSessionData();
+            var storeId = processPaymentRequest.StoreId;
+            var customer = Services.WorkContext.CurrentCustomer;
+            var session = HttpContext.GetPayPalState(_providerSystemName, customer, storeId, GenericAttributeService);
 
 			if (session.AccessToken.IsEmpty() || session.PaymentId.IsEmpty())
 			{
-				session.SessionExpired = true;
+                // Do not place order because we cannot execute the payment.
+                session.SessionExpired = true;
+                result.AddError(T("Plugins.SmartStore.PayPal.SessionExpired"));
 
-				// Do not place order because we cannot execute the payment.
-				result.AddError(T("Plugins.SmartStore.PayPal.SessionExpired"));
+                // Redirect to payment wall and create new payment (we need the payment id).
+                var urlHelper = new UrlHelper(HttpContext.Request.RequestContext);
+                HttpContext.Response.Redirect(urlHelper.Action("PaymentMethod", "Checkout", new { area = "" }));
 
-				// Redirect to payment wall and create new payment (we need the payment id).
-				var response = HttpContext.Response;
-				var urlHelper = new UrlHelper(HttpContext.Request.RequestContext);
-				var isSecure = Services.WebHelper.IsCurrentConnectionSecured();
-
-				response.Status = "302 Found";
-				response.RedirectLocation = urlHelper.Action("PaymentMethod", "Checkout", new { area = "" }, isSecure ? "https" : "http");
-				response.End();
-
-				return result;
+                return result;
 			}
 
 			processPaymentRequest.OrderGuid = session.OrderGuid;
 
-			var apiResult = PayPalService.ExecutePayment(settings, session);
+            var settings = Services.Settings.LoadSetting<TSetting>(storeId);
+            var apiResult = PayPalService.ExecutePayment(settings, session);
 
 			if (apiResult.Success && apiResult.Json != null)
 			{
@@ -159,7 +163,7 @@ namespace SmartStore.PayPal
 						state = (string)relatedObject.state;
 						reasonCode = (string)relatedObject.reason_code;
 
-						// see PayPalService.Refund()
+						// See PayPalService.Refund().
 						result.AuthorizationTransactionResult = "{0} ({1})".FormatInvariant(state.NaIfEmpty(), intent.NaIfEmpty());
 						result.AuthorizationTransactionId = (string)relatedObject.id;
 
@@ -190,7 +194,10 @@ namespace SmartStore.PayPal
 
 		public override void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest)
 		{
-			var instruction = PayPalService.CreatePaymentInstruction(HttpContext.GetPayPalSessionData().PaymentInstruction);
+            var storeId = postProcessPaymentRequest.Order.StoreId;
+            var customer = Services.WorkContext.CurrentCustomer;
+            var session = HttpContext.GetPayPalState(_providerSystemName, customer, storeId, GenericAttributeService);
+            var instruction = PayPalService.CreatePaymentInstruction(session.PaymentInstruction);
 
 			if (instruction.HasValue())
 			{
@@ -198,7 +205,7 @@ namespace SmartStore.PayPal
 
 				OrderService.AddOrderNote(postProcessPaymentRequest.Order, instruction, true);
 			}
-		}
+        }
 
 		public override CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest)
         {

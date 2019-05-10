@@ -343,7 +343,7 @@ namespace SmartStore.Admin.Controllers
                 
                 UpdateLocales(currency, model);
 				
-				_storeMappingService.SaveStoreMappings(currency, model.SelectedStoreIds);
+				SaveStoreMappings(currency, model);
 
                 NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Currencies.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = currency.Id }) : RedirectToAction("List");
@@ -383,9 +383,12 @@ namespace SmartStore.Admin.Controllers
                 {
                     item.Selected = true;
                 }
-			}
+                
+            }
 
-			PrepareCurrencyModel(model, currency, false);
+            model.DomainEndingsArray = model.DomainEndings.SplitSafe(",").ToArray();
+
+            PrepareCurrencyModel(model, currency, false);
 
             return View(model);
         }
@@ -403,14 +406,15 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 currency = model.ToEntity(currency);
+                currency.DomainEndings = string.Join(",", model.DomainEndingsArray ?? new string[0]);
 
-				if (!IsAttachedToStore(currency, _services.StoreService.GetAllStores(), false))
+                if (!IsAttachedToStore(currency, _services.StoreService.GetAllStores(), false))
 				{
 					_currencyService.UpdateCurrency(currency);
                 
 					UpdateLocales(currency, model);
 				
-					_storeMappingService.SaveStoreMappings<Currency>(currency, model.SelectedStoreIds);
+					SaveStoreMappings(currency, model);
 
 					NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Currencies.Updated"));
 					return continueEditing ? RedirectToAction("Edit", new { id = currency.Id }) : RedirectToAction("List");

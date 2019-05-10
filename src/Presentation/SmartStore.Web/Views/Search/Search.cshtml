@@ -2,19 +2,23 @@
 @using SmartStore.Web.Framework.UI;
 
 @model SearchResultModel
+
 @{
-	if (Model.Term.HasValue())
+	var firstItemIndex = 0;
+	var lastItemIndex = 0;
+	var suggestions = new string[0];
+    var encodedTerm = Model.Term.EmptyNull().HtmlEncode();
+    var encodedAttemptedTerm = Model.AttemptedTerm.EmptyNull().HtmlEncode();
+
+	if (encodedTerm.HasValue())
 	{
-		Html.AddTitleParts(T("Search.PageTitle", "\"" + Model.Term + "\""));
+		Html.AddTitleParts(T("Search.PageTitle", "\"" + encodedTerm + "\""));
 	}
 	else
 	{
 		Html.AddTitleParts(T("Search.Title"));
 	}
 
-	int firstItemIndex = 0;
-	int lastItemIndex = 0;
-	var suggestions = new string[0];
 	if (Model.TotalProductsCount > 0)
 	{
 		firstItemIndex = Model.SearchResult.Hits.FirstItemIndex;
@@ -39,9 +43,9 @@
 <div class="page search-page">
 	<div class="page-title">
 		<h1 class="h3">
-			@if (Model.Term.HasValue())
+			@if (encodedTerm.HasValue())
 			{
-				@T("Search.PageTitle", "<small class='search-term'>" + Model.Term + "</small>")
+				@T("Search.PageTitle", "<small class='search-term'>" + encodedTerm + "</small>")
 			}
 			else
 			{
@@ -55,42 +59,47 @@
 	</div>
 
     <div class="page-body">
-		@if (Model.AttemptedTerm.HasValue())
-		{
-			<div class="alert alert-warning">
-				@T("Search.TermCorrectedHint", "<strong>\"" + Model.Term + "\"</strong>", "<strong>\"" + Model.AttemptedTerm + "\"</strong>")
-			</div>
-		}
+        @if (encodedAttemptedTerm.HasValue())
+        {
+            <div class="alert alert-warning">
+                @T("Search.TermCorrectedHint", "<strong>\"" + encodedTerm + "\"</strong>", "<strong>\"" + encodedAttemptedTerm + "\"</strong>")
+            </div>
+        }
 
-		@if (Model.Error.HasValue())
-		{
-			<div class="alert alert-danger">
-				@Model.Error
-			</div>
-		}
-		else if (Model.TotalProductsCount == 0)
-		{
-			<div class="alert alert-warning">
-				@T("Search.NoResultsText")
-			</div>
-		}
+        @if (Model.Error.HasValue())
+        {
+            <div class="alert alert-danger">
+                @Model.Error
+            </div>
+        }
+        else if (Model.TotalProductsCount == 0)
+        {
+            <div class="alert alert-warning">
+                @T("Search.NoResultsText")
+            </div>
+        }
 
-		@if (suggestions.Any() && (Model.AttemptedTerm.HasValue() || Model.TotalProductsCount == 0))
-		{
-			<p class="search-suggestions">
-				<strong>@T("Search.DidYouMean")</strong>
-				@{ 
-					var links = String.Join(", ", suggestions.Select(x => "<a href='" + Url.RouteUrl("Search", new { q = x }) + "'>{0}</a>".FormatCurrentUI(x)));
-				}
-				@Html.Raw(links)
-			</p>
-		}
+        @if (suggestions.Any())
+        {
+            <p class="search-suggestions">
+                <strong>@(T(encodedAttemptedTerm.HasValue() || Model.TotalProductsCount == 0 ? "Search.DidYouMean" : "Search.RelatedSearchTerms")):</strong>
+                @{
+                    var links = String.Join(", ", suggestions.Select(x => "<a href='" + Url.RouteUrl("Search", new { q = x }) + "'>{0}</a>".FormatCurrentUI(x)));
+                }
+                @Html.Raw(links)
+            </p>
+        }
+
+        @{ Html.RenderWidget("search_results_before");}
 
         <div class="search-results">
             @if (Model.TotalProductsCount > 0)
             {
-				Html.RenderPartial("Product.List", Model.TopProducts);
+                Html.RenderPartial("Product.List", Model.TopProducts);
             }
         </div>
+
+        @{ Html.RenderWidget("search_results_after");}
+
     </div>
 </div>

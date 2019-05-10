@@ -24,6 +24,7 @@ namespace SmartStore.Services.Security
         public static readonly PermissionRecord ManageBlog = new PermissionRecord { Name = "Admin area. Manage Blog", SystemName = "ManageBlog", Category = "Content Management" };
         public static readonly PermissionRecord ManageWidgets = new PermissionRecord { Name = "Admin area. Manage Widgets", SystemName = "ManageWidgets", Category = "Content Management" };
         public static readonly PermissionRecord ManageTopics = new PermissionRecord { Name = "Admin area. Manage Topics", SystemName = "ManageTopics", Category = "Content Management" };
+        public static readonly PermissionRecord ManageMenus = new PermissionRecord { Name = "Admin area. Manage Menus", SystemName = "ManageMenus", Category = "Content Management" };
         public static readonly PermissionRecord ManageForums = new PermissionRecord { Name = "Admin area. Manage Forums", SystemName = "ManageForums", Category = "Content Management" };
         public static readonly PermissionRecord ManageMessageTemplates = new PermissionRecord { Name = "Admin area. Manage Message Templates", SystemName = "ManageMessageTemplates", Category = "Content Management" };
         public static readonly PermissionRecord ManageCountries = new PermissionRecord { Name = "Admin area. Manage Countries", SystemName = "ManageCountries", Category = "Configuration" };
@@ -79,6 +80,7 @@ namespace SmartStore.Services.Security
                 ManageBlog,
                 ManageWidgets,
                 ManageTopics,
+                ManageMenus,
                 ManageForums,
                 ManageMessageTemplates,
                 ManageCountries,
@@ -138,6 +140,7 @@ namespace SmartStore.Services.Security
                         ManageBlog,
                         ManageWidgets,
                         ManageTopics,
+                        ManageMenus,
                         ManageForums,
                         ManageMessageTemplates,
                         ManageCountries,

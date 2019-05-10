@@ -200,21 +200,6 @@
     <LocaleResource Name="YesEnterIBAN">
       <Value>Ja</Value>
     </LocaleResource>
-    <LocaleResource Name="DirectDebitAccountHolderRequired">
-      <Value>Geben Sie bitte den Namen des Kontoinhabers ein.</Value>
-    </LocaleResource>
-    <LocaleResource Name="DirectDebitAccountNumberRequired">
-      <Value>Geben Sie bitte Ihre Kontonummer ein.</Value>
-    </LocaleResource>
-    <LocaleResource Name="DirectDebitBankCodeRequired">
-      <Value>Geben Sie bitte die Bankleitzahl (BLZ) ein.</Value>
-    </LocaleResource>
-    <LocaleResource Name="DirectDebitIbanRequired">
-      <Value>Geben Sie bitte die IBAN (International Bank Account Number) ein.</Value>
-    </LocaleResource>
-    <LocaleResource Name="DirectDebitBicRequired">
-      <Value>Geben Sie bitte die BIC (Bank Interchange Code) ein.</Value>
-    </LocaleResource>
     </Children>
   </LocaleResource>
 

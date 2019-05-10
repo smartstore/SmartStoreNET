@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Directory;
+using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Directory
 {
@@ -29,7 +31,7 @@ namespace SmartStore.Admin.Models.Directory
         [AllowHtml]
         public string ColorHexValue { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.DeliveryTimes.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.DeliveryTimes.Fields.IsDefault")]
@@ -45,5 +47,30 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.DeliveryTimes.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
+    }
+
+    public partial class DeliveryTimeValidator : AbstractValidator<DeliveryTimeModel>
+    {
+        public DeliveryTimeValidator(Localizer T)
+        {
+            RuleFor(x => x.Name).NotEmpty().Length(1, 50);
+            RuleFor(x => x.ColorHexValue).NotEmpty().Length(1, 50);
+            RuleFor(x => x.DisplayLocale)
+                .Must(x =>
+                {
+                    try
+                    {
+                        if (String.IsNullOrEmpty(x))
+                            return true;
+                        var culture = new CultureInfo(x);
+                        return culture != null;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                })
+                .WithMessage(T("Admin.Configuration.DeliveryTimes.Fields.DisplayLocale.Validation"));
+        }
     }
 }

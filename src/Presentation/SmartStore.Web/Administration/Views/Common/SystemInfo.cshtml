@@ -1,7 +1,23 @@
 ﻿@model SystemInfoModel
 
+@using SmartStore.Collections
+
 @{
-    ViewBag.Title = T("Admin.System.SystemInfo").Text;
+	ViewBag.Title = T("Admin.System.SystemInfo").Text;
+
+	var cacheStats = Model.MemoryCacheStats;
+	var cacheSize = cacheStats.Values.Sum(x => x);
+
+	var cacheSummary = new Multimap<string, long>(StringComparer.OrdinalIgnoreCase);
+	foreach (var kvp in cacheStats)
+	{
+		var lidx = kvp.Key.LastIndexOf(':');
+		if (lidx > - 1)
+		{
+			var subKey = kvp.Key.Substring(0, lidx);
+			cacheSummary.Add(subKey, kvp.Value);
+		}
+	}
 }
 
 <style>
@@ -46,112 +62,112 @@
 </div>
 
 <table class="adminContent">
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.AppVersion)
-        </td>
-        <td class="adminData">
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.AppVersion)
+		</td>
+		<td class="adminData">
 			<div class="form-control-plaintext">
 				@Html.DisplayFor(model => model.AppVersion)
 				<a href='@Url.Action("CheckUpdate", new { enforce = true })' class="ml-3">@T("Admin.CheckUpdate")</a>
 			</div>
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.AppDate)
-        </td>
-        <td class="adminData">
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.AppDate)
+		</td>
+		<td class="adminData">
 			<div class="form-control-plaintext">
 				@Model.AppDate.ToString("F")
 			</div>
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.OperatingSystem)
-        </td>
-        <td class="adminData">
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.OperatingSystem)
+		</td>
+		<td class="adminData">
 			<div class="form-control-plaintext">
 				@Html.DisplayFor(model => model.OperatingSystem)
 			</div>
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.AspNetInfo)
-        </td>
-        <td class="adminData">
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.AspNetInfo)
+		</td>
+		<td class="adminData">
 			<div class="form-control-plaintext">
 				@Html.DisplayFor(model => model.AspNetInfo)
 			</div>
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.IsFullTrust)
-        </td>
-        <td class="adminData">
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.IsFullTrust)
+		</td>
+		<td class="adminData">
 			<div class="form-control-plaintext">
 				@Html.DisplayFor(model => model.IsFullTrust)
 			</div>
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.ServerTimeZone)
-        </td>
-        <td class="adminData">
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.ServerTimeZone)
+		</td>
+		<td class="adminData">
 			<div class="form-control-plaintext">
 				@Html.DisplayFor(model => model.ServerTimeZone)
 			</div>
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.ServerLocalTime)
-        </td>
-        <td class="adminData">
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.ServerLocalTime)
+		</td>
+		<td class="adminData">
 			<div class="form-control-plaintext">
 				@Model.ServerLocalTime.ToNativeString("F")
 			</div>
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.UtcTime)
-        </td>
-        <td class="adminData">
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.UtcTime)
+		</td>
+		<td class="adminData">
 			<div class="form-control-plaintext">
 				@Model.UtcTime.ToNativeString("F")
 			</div>
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.HttpHost)
-        </td>
-        <td class="adminData">
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.HttpHost)
+		</td>
+		<td class="adminData">
 			<div class="form-control-plaintext">
 				@Model.HttpHost
 			</div>
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.DataProviderFriendlyName)
-        </td>
-        <td class="adminData">
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.DataProviderFriendlyName)
+		</td>
+		<td class="adminData">
 			<div class="form-control-plaintext">
 				@Model.DataProviderFriendlyName.NaIfEmpty()
 			</div>
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.DatabaseSize)
-        </td>
-        <td class="adminData">
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.DatabaseSize)
+		</td>
+		<td class="adminData">
 			<div class="form-control-plaintext">
 				@Model.DatabaseSizeString.NaIfEmpty()
 				@if (Model.ShrinkDatabaseEnabled)
@@ -159,8 +175,8 @@
 					<a href='@Url.Action("ShrinkDatabase")' class="ml-3">@T("Common.Shrink")</a>
 				}
 			</div>
-        </td>
-    </tr>
+		</td>
+	</tr>
 	<tr>
 		<td class="adminTitle">
 			@Html.SmartLabelFor(model => model.UsedMemorySize)
@@ -172,29 +188,77 @@
 			</div>
 		</td>
 	</tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.LoadedAssemblies)
-        </td>
-        <td class="adminData wide">
+	@if (cacheStats != null)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabel("", "Cache size")
+			</td>
+			<td class="adminData wide">
+				<div class="form-control-plaintext">
+					<span>@Prettifier.BytesToString(cacheSize) (@cacheStats.Count)</span>
+					<a class="toggle-panel pl-3" href="javascript:void(0);">@T("Admin.Common.Show")</a>
+				</div>
+				<div class="d-none mt-3">
+					<h5 class="text-muted mb-3">Summary</h5>
+					<div class="table-responsive">
+						<table class="table table-striped table-servervars">
+							<tbody>
+								@foreach (var kvp in cacheSummary.OrderByDescending(x => x.Value.Count))
+								{
+									<tr>
+										<td nowrap>@kvp.Key</td>
+										<td class="text-nowrap" style="width: 100%;">
+											<span style="font-weight: 600; width: 50px; display: inline-block;" class="pr-2 text-right">@kvp.Value.Count</span>
+											<span>@Prettifier.BytesToString(kvp.Value.Sum(x => x))</span>
+										</td>	
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+
+					<h5 class="text-muted mb-3">Top 100 entries</h5>
+					<div class="table-responsive">
+						<table class="table table-striped table-servervars">
+							<tbody>
+								@foreach (var kvp in cacheStats.OrderByDescending(x => x.Value).Take(100))
+								{
+									<tr>
+										<td class="sv-key text-nowrap" style="width: 100px; font-weight: 600">@Prettifier.BytesToString(kvp.Value)</td>
+										<td><div class="sv-value">@kvp.Key</div></td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</td>
+		</tr>
+	}
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.LoadedAssemblies)
+		</td>
+		<td class="adminData wide">
 			<div class="form-control-plaintext">
 				<a class="toggle-panel" href="javascript:void(0);">@T("Admin.Common.Show")</a>
 			</div>
-            <div class="d-none mt-3">
+			<div class="d-none mt-3">
 				<p>Directory: @AppDomain.CurrentDomain.DynamicDirectory</p>
-                @foreach (var assembly in Model.LoadedAssemblies)
-                {
-                    @assembly.FullName
-                    if (!String.IsNullOrEmpty(assembly.Location))
-                    {
-                        <br />
-                        <i>@assembly.Location</i>
-                    }
-                    <br />
-                }
-            </div>
-        </td>
-    </tr>
+				@foreach (var assembly in Model.LoadedAssemblies)
+				{
+					@assembly.FullName
+					if (!String.IsNullOrEmpty(assembly.Location))
+					{
+						<br />
+						<i>@assembly.Location</i>
+					}
+					<br />
+				}
+			</div>
+		</td>
+	</tr>
 	<tr>
 		<td class="adminTitle">
 			@Html.SmartLabel("", "HTTP Server Variables")

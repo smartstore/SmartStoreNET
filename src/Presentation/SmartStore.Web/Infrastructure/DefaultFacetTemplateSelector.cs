@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web.Routing;
+﻿using System.Web.Routing;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Search.Rendering;
 
 namespace SmartStore.Web.Infrastructure
 {
-	public class DefaultFacetTemplateSelector : IFacetTemplateSelector
+    public class DefaultFacetTemplateSelector : IFacetTemplateSelector
 	{
 		public RouteInfo GetTemplateRoute(FacetGroup facetGroup)
 		{
@@ -23,8 +19,8 @@ namespace SmartStore.Web.Infrastructure
 			var routeValues = new RouteValueDictionary(new
 			{
 				area = "",
-				facetGroup = facetGroup,
-				templateName = templateName
+				facetGroup,
+				templateName
 			});
 
 			return new RouteInfo(action, controller, routeValues);
@@ -41,12 +37,14 @@ namespace SmartStore.Web.Infrastructure
 				case FacetGroupKind.Brand:
 				case FacetGroupKind.Availability:
 				case FacetGroupKind.NewArrivals:
+                case FacetGroupKind.Forum:
+                case FacetGroupKind.Customer:
 					return prefix + (group.IsMultiSelect ? "MultiSelect" : "SingleSelect");
 				case FacetGroupKind.Price:
 					return prefix + "Price";
 				case FacetGroupKind.Rating:
 					return prefix + "Rating";
-			}
+            }
 
 			return null;
 		}

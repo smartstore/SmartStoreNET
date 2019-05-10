@@ -4,27 +4,37 @@ using System.Runtime.Caching;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Threading;
-using SmartStore.Core.Async;
-using System.Collections;
 using System.Collections.Generic;
 using SmartStore.Utilities;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
+using SmartStore.Utilities.Threading;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 
 namespace SmartStore.Core.Caching
 {
     public partial class MemoryCacheManager : DisposableObject, ICacheManager
     {
+		const string LockRecursionExceptionMessage = "Acquiring identical cache items recursively is not supported. Key: {0}";
+		
 		// Wwe put a special string into cache if value is null,
 		// otherwise our 'Contains()' would always return false,
 		// which is bad if we intentionally wanted to save NULL values.
 		public const string FakeNull = "__[NULL]__";
 
-		private readonly MemoryCache _cache;
+		private readonly Work<ICacheScopeAccessor> _scopeAccessor;
+		private MemoryCache _cache;
 		private readonly ConcurrentDictionary<string, SemaphoreSlim> _keyLocks = new ConcurrentDictionary<string, SemaphoreSlim>();
 
-		public MemoryCacheManager()
+		public MemoryCacheManager(Work<ICacheScopeAccessor> scopeAccessor)
 		{
-			_cache = new MemoryCache("SmartStore");
+			_scopeAccessor = scopeAccessor;
+			_cache = CreateCache();
+		}
+
+		private MemoryCache CreateCache()
+		{
+			return new MemoryCache("SmartStore");
 		}
 
 		public bool IsDistributedCache
@@ -32,7 +42,7 @@ namespace SmartStore.Core.Caching
 			get { return false; }
 		}
 
-		private bool TryGet<T>(string key, out T value)
+		private bool TryGet<T>(string key, bool independent, out T value)
 		{
 			value = default(T);
 
@@ -40,6 +50,12 @@ namespace SmartStore.Core.Caching
 
 			if (obj != null)
 			{
+				// Make the parent scope's entry depend on this
+				if (!independent)
+				{
+					_scopeAccessor.Value.PropagateKey(key);
+				}	
+
 				if (obj.Equals(FakeNull))
 				{
 					return true;
@@ -52,65 +68,74 @@ namespace SmartStore.Core.Caching
 			return false;
 		}
 
-		public T Get<T>(string key)
+		public T Get<T>(string key, bool independent = false)
 		{
-			T value;
-			TryGet(key, out value);
-			
+			TryGet(key, independent, out T value);
 			return value;
 		}
 
-        public T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null)
+        public T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null, bool independent = false)
         {
-			T value;
-
-			if (TryGet(key, out value))
+			if (TryGet(key, independent, out T value))
 			{
 				return value;
 			}
 
-			lock (String.Intern(key))
+			if (_scopeAccessor.Value.HasScope(key))
 			{
-				// atomic operation must be outer locked
-				if (!TryGet(key, out value))
+				throw new LockRecursionException(LockRecursionExceptionMessage.FormatInvariant(key));
+			}
+
+			// Get the (semaphore) locker specific to this key
+			using (KeyedLock.Lock("cache:" + key, TimeSpan.FromMinutes(1)))
+			{
+				// Atomic operation must be outer locked
+				if (!TryGet(key, independent, out value))
 				{
-					value = acquirer();
-					Put(key, value, duration);
-					return value;
+					using (_scopeAccessor.Value.BeginScope(key))
+					{
+						value = acquirer();
+						Put(key, value, duration, _scopeAccessor.Value.Current.Dependencies);
+						return value;
+					}
 				}
 			}
 
 			return value;
 		}
 
-		public async Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null)
+		public async Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null, bool independent = false)
 		{
-			T value;
-
-			if (TryGet(key, out value))
+			if (TryGet(key, independent, out T value))
 			{
 				return value;
 			}
 
-			// get the async (semaphore) locker specific to this key
-			var keyLock = AsyncLock.Acquire(key);
-
-			using (await keyLock.LockAsync())
+			if (_scopeAccessor.Value.HasScope(key))
 			{
-				if (!TryGet(key, out value))
+				throw new LockRecursionException(LockRecursionExceptionMessage.FormatInvariant(key));
+			}
+
+			// Get the async (semaphore) locker specific to this key
+			using (await KeyedLock.LockAsync("cache:" + key, TimeSpan.FromMinutes(1)))
+			{
+				if (!TryGet(key, independent, out value))
 				{
-					value = await acquirer().ConfigureAwait(false);
-					Put(key, value, duration);
-					return value;
+					using (_scopeAccessor.Value.BeginScope(key))
+					{
+						value = await acquirer();
+						Put(key, value, duration, _scopeAccessor.Value.Current.Dependencies);
+						return value;
+					}
 				}
 			}
 
 			return value;
 		}
 
-		public void Put(string key, object value, TimeSpan? duration = null)
+		public void Put(string key, object value, TimeSpan? duration = null, IEnumerable<string> dependencies = null)
 		{
-			_cache.Set(key, value ?? FakeNull, GetCacheItemPolicy(duration));
+			_cache.Set(key, value ?? FakeNull, GetCacheItemPolicy(duration, dependencies));
 		}
 
         public bool Contains(string key)
@@ -135,39 +160,53 @@ namespace SmartStore.Core.Caching
 			}
 
 			var wildcard = new Wildcard(pattern, RegexOptions.IgnoreCase);
-			return keys.Where(x => wildcard.IsMatch(x));
+			return keys.Where(x => wildcard.IsMatch(x)).ToArray();
 		}
 
 		public int RemoveByPattern(string pattern)
         {
-            var keysToRemove = Keys(pattern);
-			int count = 0;
-
 			lock (_cache)
 			{
+				var keysToRemove = Keys(pattern);
+				int count = 0;
+
 				// lock atomic operation
 				foreach (string key in keysToRemove)
 				{
 					_cache.Remove(key);
 					count++;
 				}
-			}
 
-			return count;
+				return count;
+			}	
 		}
 
         public void Clear()
         {
-			RemoveByPattern("*");
-        }
-
-		public virtual ISet GetHashSet(string key)
-		{
-			var set = Get(key, () => new MemorySet(this));
-			return set;
+			// Faster way of clearing cache: https://stackoverflow.com/questions/8043381/how-do-i-clear-a-system-runtime-caching-memorycache
+			var oldCache = Interlocked.Exchange(ref _cache, CreateCache());
+			oldCache.Dispose();
+			GC.Collect();
 		}
 
-		private CacheItemPolicy GetCacheItemPolicy(TimeSpan? duration)
+		public virtual ISet GetHashSet(string key, Func<IEnumerable<string>> acquirer = null)
+		{
+			var result = Get(key, () => 
+			{
+				var set = new MemorySet(this);
+				var items = acquirer?.Invoke();
+				if (items != null)
+				{
+					set.AddRange(items);
+				}
+
+				return set;
+			});
+
+			return result;
+		}
+
+		private CacheItemPolicy GetCacheItemPolicy(TimeSpan? duration, IEnumerable<string> dependencies)
 		{
 			var absoluteExpiration = ObjectCache.InfiniteAbsoluteExpiration;
 
@@ -175,16 +214,35 @@ namespace SmartStore.Core.Caching
 			{
 				absoluteExpiration = DateTime.UtcNow + duration.Value;
 			}
-
+			
 			var cacheItemPolicy = new CacheItemPolicy
 			{
 				AbsoluteExpiration = absoluteExpiration,
 				SlidingExpiration = ObjectCache.NoSlidingExpiration
 			};
+			
+			if (dependencies != null && dependencies.Any())
+			{
+				// INFO: we can only depend on existing items, otherwise this entry will be removed immediately.
+				dependencies = dependencies.Where(x => x != null && _cache.Contains(x));
+				if (dependencies.Any())
+				{
+					cacheItemPolicy.ChangeMonitors.Add(_cache.CreateCacheEntryChangeMonitor(dependencies));
+				}	
+			}
+
+			//cacheItemPolicy.RemovedCallback = OnRemoveEntry;
 
 			return cacheItemPolicy;
 		}
 
+		//private void OnRemoveEntry(CacheEntryRemovedArguments args)
+		//{
+		//	if (args.RemovedReason == CacheEntryRemovedReason.ChangeMonitorChanged)
+		//	{
+		//		Debug.WriteLine("MEMCACHE: remove depending entry '{0}'.".FormatInvariant(args.CacheItem.Key));
+		//	}
+		//}
 
 		protected override void OnDispose(bool disposing)
 		{

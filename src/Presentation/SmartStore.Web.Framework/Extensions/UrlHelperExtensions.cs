@@ -1,12 +1,9 @@
-﻿using System.Web.Mvc;
-using SmartStore.Core;
-using SmartStore.Core.Caching;
+﻿using System;
+using System.Web.Mvc;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Services.Cms;
 using SmartStore.Services.Media;
-using SmartStore.Services.Topics;
-using SmartStore.Services.Seo;
-using System.Web.Routing;
 
 namespace SmartStore.Web.Framework
 {
@@ -51,38 +48,92 @@ namespace SmartStore.Web.Framework
 			return pictureService.GetUrl(picture, targetSize, fallbackType, host);
 		}
 
-		public static string TopicUrl(this UrlHelper urlHelper, string systemName, bool popup = false)
+		/// <summary>
+		/// Resolves a link to a topic page.
+		/// </summary>
+		/// <param name="systemName">The system name of the topic.</param>
+		/// <returns>Link</returns>
+		/// <remarks>
+		/// This method returns an empty string in following cases:
+		/// - the requested page does not exist.
+		/// - the current user has no permission to acces the page.
+		/// </remarks>
+		public static string Topic(this UrlHelper urlHelper, string systemName, bool popup = false)
 		{
-			var seName = TopicSeName(urlHelper, systemName);
+			Guard.NotEmpty(systemName, nameof(systemName));
 
-			if (seName.Length == 0)
-			{
-				return string.Empty;
-			}		
-
-			var routeValues = new RouteValueDictionary { ["SeName"] = seName };
+			var expression = "topic:" + systemName;
 			if (popup)
-				routeValues["popup"] = true;
+			{
+				expression += "?popup=true";
+			}
 
-			return urlHelper.RouteUrl("Topic", routeValues);
+			return Entity(urlHelper, expression);
 		}
 
-		public static string TopicSeName(this UrlHelper urlHelper, string systemName)
+		/// <summary>
+		/// Resolves a link label for a topic page.
+		/// The label is either the page short title or title.
+		/// </summary>
+		/// <param name="systemName">The system name of the topic.</param>
+		/// <returns>Label</returns>
+		/// <remarks>
+		/// This method returns an empty string if the requested page does not exist.
+		/// </remarks>
+		public static string TopicLabel(this UrlHelper urlHelper, string systemName)
 		{
-			var workContext = EngineContext.Current.Resolve<IWorkContext>();
-			var storeId = EngineContext.Current.Resolve<IStoreContext>().CurrentStoreIdIfMultiStoreMode;
-			var cache = EngineContext.Current.Resolve<ICacheManager>();
+			Guard.NotEmpty(systemName, nameof(systemName));
 
-			var cacheKey = string.Format(FrameworkCacheConsumer.TOPIC_SENAME_BY_SYSTEMNAME, systemName.ToLower(), workContext.WorkingLanguage.Id, storeId);
-			var seName = cache.Get(cacheKey, () =>
+			return EntityLabel(urlHelper, "topic:" + systemName);
+		}
+
+		/// <summary>
+		/// Resolves a link to a system internal entity like product, topic, category or manufacturer.
+		/// </summary>
+		/// <param name="expression">A link expression as supported by the <see cref="ILinkResolver"/></param>
+		/// <returns>Link</returns>
+		/// <remarks>
+		/// This method returns an empty string in following cases:
+		/// - the requested entity does not exist.
+		/// - the current user has no permission to acces the entity.
+		/// </remarks>
+		public static string Entity(this UrlHelper urlHelper, string expression)
+		{
+			Guard.NotEmpty(expression, nameof(expression));
+
+			var linkResolver = EngineContext.Current.Resolve<ILinkResolver>();
+			var link = linkResolver.Resolve(expression);
+
+			if (link.Status == LinkStatus.Ok)
 			{
-				var topicService = EngineContext.Current.Resolve<ITopicService>();
-				var topic = topicService.GetTopicBySystemName(systemName, storeId);
+				return link.Link;
+			}
 
-				return topic?.GetSeName() ?? string.Empty;
-			});
+			return string.Empty;
+		}
 
-			return seName;
+		/// <summary>
+		/// Resolves a link label for a system internal entity like product, topic, category or manufacturer.
+		/// The label is either the entity short title, title or name, whichever is applicable.
+		/// </summary>
+		/// <param name="expression">A link expression as supported by the <see cref="ILinkResolver"/></param>
+		/// <returns>Label</returns>
+		/// <remarks>
+		/// This method returns an empty string if the requested entity does not exist.
+		/// </remarks>
+		public static string EntityLabel(this UrlHelper urlHelper, string expression)
+		{
+			Guard.NotEmpty(expression, nameof(expression));
+
+			var linkResolver = EngineContext.Current.Resolve<ILinkResolver>();
+			var link = linkResolver.Resolve(expression);
+
+			if (link.Status == LinkStatus.Ok || link.Status == LinkStatus.Forbidden)
+			{
+				return link.Label;
+			}
+
+			return string.Empty;
 		}
 	}
 }

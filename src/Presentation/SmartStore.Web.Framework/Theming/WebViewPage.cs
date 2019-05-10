@@ -10,6 +10,7 @@ using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
+using SmartStore.Services.Cms;
 
 namespace SmartStore.Web.Framework.Theming
 {
@@ -109,8 +110,16 @@ namespace SmartStore.Web.Framework.Theming
                 return _helper.Services.WorkContext;
             }
         }
-        
-        public override void InitHelpers()
+
+		public ILinkResolver LinkResolver
+		{
+			get
+			{
+				return _helper.LinkResolver;
+			}
+		}
+
+		public override void InitHelpers()
         {
             base.InitHelpers();
 
@@ -121,19 +130,19 @@ namespace SmartStore.Web.Framework.Theming
         public HelperResult RenderWrappedSection(string name, object wrapperHtmlAttributes)
         {
             Action<TextWriter> action = delegate(TextWriter tw)
-                                {
-                                    var htmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(wrapperHtmlAttributes);
-                                    var tagBuilder = new TagBuilder("div");
-                                    tagBuilder.MergeAttributes(htmlAttributes);
+            {
+                var htmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(wrapperHtmlAttributes);
+                var tagBuilder = new TagBuilder("div");
+                tagBuilder.MergeAttributes(htmlAttributes);
 
-                                    var section = this.RenderSection(name, false);
-                                    if (section != null)
-                                    {
-                                        tw.Write(tagBuilder.ToString(TagRenderMode.StartTag));
-                                        section.WriteTo(tw);
-                                        tw.Write(tagBuilder.ToString(TagRenderMode.EndTag));
-                                    }
-                                };
+                var section = this.RenderSection(name, false);
+                if (section != null)
+                {
+                    tw.Write(tagBuilder.ToString(TagRenderMode.StartTag));
+                    section.WriteTo(tw);
+                    tw.Write(tagBuilder.ToString(TagRenderMode.EndTag));
+                }
+            };
             return new HelperResult(action);
         }
 
@@ -303,6 +312,47 @@ namespace SmartStore.Web.Framework.Theming
 			string fallbackCulture = "en")
 		{
 			return _helper.LocalizationFileResolver.Resolve(culture, virtualPath, pattern, true, fallbackCulture);
+		}
+
+		public bool HasMetadata(string name)
+		{
+			return TryGetMetadata<object>(name, out _);
+		}
+
+		/// <summary>
+		/// Looks up an entry in ViewData dictionary first, then in ViewData.ModelMetadata.AdditionalValues dictionary
+		/// </summary>
+		/// <typeparam name="T">Actual type of value</typeparam>
+		/// <param name="name">Name of entry</param>
+		/// <returns>Result</returns>
+		public T GetMetadata<T>(string name)
+		{
+			TryGetMetadata<T>(name, out var value);
+			return value;
+		}
+
+		/// <summary>
+		/// Looks up an entry in ViewData dictionary first, then in ViewData.ModelMetadata.AdditionalValues dictionary
+		/// </summary>
+		/// <typeparam name="T">Actual type of value</typeparam>
+		/// <param name="name">Name of entry</param>
+		/// <returns><c>true</c> if the entry exists in any of the dictionaries, <c>false</c> otherwise</returns>
+		public bool TryGetMetadata<T>(string name, out T value)
+		{
+			value = default(T);
+
+			var exists = ViewData.TryGetValue(name, out var raw);
+			if (!exists)
+			{
+				exists = ViewData.ModelMetadata?.AdditionalValues?.TryGetValue(name, out raw) == true;
+			}
+
+			if (raw != null)
+			{
+				value = raw.Convert<T>();
+			}
+
+			return exists;
 		}
 	}
 

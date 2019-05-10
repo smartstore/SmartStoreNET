@@ -39,22 +39,15 @@
 
         _transition: function (node) {
             var dfd = $.Deferred();
-            if ($.support.transition && node.hasClass('fade')) {
-                node.on(
-                    $.support.transitionEnd,
-                    function (e) {
-                        // Make sure we don't respond to other transitions events
-                        // in the container element, e.g. from button elements:
-                        if (e.target === node[0]) {
-                        	node.off($.support.transitionEnd);
-                            dfd.resolveWith(node);
-                        }
-                    }
-                ).toggleClass('show in');
-            } else {
-                node.toggleClass('show in');
-                dfd.resolveWith(node);
-            }
+            node.on(Prefixer.event.transitionEnd, function (e) {
+                // Make sure we don't respond to other transitions events
+                // in the container element, e.g. from button elements:
+                if (e.target === node[0]) {
+                    node.off(Prefixer.event.transitionEnd);
+                    dfd.resolveWith(node);
+                }
+            }).addClass('success').removeClass("show");
+
             return dfd;
         },
 
@@ -128,7 +121,7 @@
             	    }
 
             	    toggleButtons(true);
-            	    el.find('.fileupload-progress').addClass("show in");
+            	    el.find('.fileupload-progress').addClass("show");
 
             	    if (data.dataType && data.dataType.substr(0, 6) === 'iframe') {
             	        // Iframe Transport does not support progress events.
@@ -143,36 +136,41 @@
             	    //console.log("fail");
             	})
 			    .on(pre + 'always.' + ns, function (e, data) {
-			        var elProgress = el.find('.fileupload-progress');
-			        if (!elProgress.hasClass("show in")) {
+                    var elProgress = el.find('.fileupload-progress');
+                    
+                    if (!elProgress.hasClass("show")) {
 			            return
-			        }
-			        self._transition(elProgress).done(
-		                function () {
-		                    toggleButtons(false);
-		                    elProgress
-			                	.find('.progress-bar').attr('aria-valuenow', 0)
-			                  	.css("width", "0%");
-		                    elProgress
-			                	.find('.progress-extended').html('&nbsp;');
-		                }
-	                );
+                    }
+
+                    self._transition(elProgress)
+                        .done(function () {
+                            toggleButtons(false);
+                            elProgress
+                                .removeClass('success')
+                                .find('.progress-bar')
+                                .attr('aria-valuenow', 0)
+                                .css("width", "0%")
+                                .find('.progress-extended').html('&nbsp;');
+                        });
 			    })
 			    .on(pre + 'progressall.' + ns, function (e, data) {
 			        var elProgress = el.find('.fileupload-progress'),
 	            		progress = parseInt(data.loaded / data.total * 100, 10),
 	                    extendedProgressNode = elProgress.find('.progress-extended');
 
-			        if (extendedProgressNode.length) {
-			            extendedProgressNode.html(self._getProgressInfo(data));
-			        }
+                    if (extendedProgressNode.length) {
+                        extendedProgressNode.html(self._getProgressInfo(data));
+                    }
+                    else {
+                        console.debug(self._getProgressInfo(data));
+                    }
 
 			        elProgress
 	                    .find('.progress-bar')
 	                    .attr('aria-valuenow', progress)
 	                    .css('width', progress + '%');
 			    })
-            // cancel button
+                // cancel button
                 .on('click.' + ns, 'button.cancel', eventData, function (e) {
                     e.preventDefault();
                     var data = el.data('data') || {};
@@ -203,10 +201,6 @@
                 .prop('disabled', true)
                 .parent().addClass('disabled');
         },
-
-        /*_create: function () {
-        parentWidget.prototype._create.call(this);
-        },*/
 
         enable: function () {
             var wasDisabled = false;
@@ -247,7 +241,7 @@
 				send: function (e, data) {
 					if (options.onUploading) options.onUploading.apply(this, [e, el, data]);
 				},
-				done: function (e, data) {
+                done: function (e, data) {
 					var result = data.result;
 					if (result.success) {
 
@@ -256,8 +250,8 @@
 						}
 
 						var cnt = el.closest('.fileupload-container');
-						cnt.find('.img-thumbnail').attr('src', data.result.imageUrl);
-						cnt.find('.hidden').val(data.result.pictureId);
+						cnt.find('.fileupload-thumb').css('background-image', 'url("' + data.result.imageUrl + '")');
+                        cnt.find('.hidden').val(data.result.pictureId).trigger('change');
 
 						elCancel.addClass("hide");
 						elFile.removeClass("hide");
@@ -273,7 +267,7 @@
 						if (options.onError) options.onError.apply(this, [el, textStatus, errorThrown]);
 					}
 				},
-				always: function (e, data) {
+                always: function (e, data) {
 					if (options.onCompleted) options.onCompleted.apply(this, [e, el, data]);
 				}
 			};
@@ -286,8 +280,8 @@
 				e.preventDefault();
 
 				var cnt = el.closest('.fileupload-container');
-				cnt.find('.img-thumbnail').attr('src', el.data('fallback-url'));
-				cnt.find('.hidden').val(0);
+				cnt.find('.fileupload-thumb').css('background-image', 'url("' + el.data('fallback-url') + '")');
+				cnt.find('.hidden').val(0).trigger('change');
 				$(this).addClass("hide");
 				if (options.onFileRemove) options.onFileRemove.apply(this, [e, el]);
 			});

@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Directory;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Directory
 {
@@ -28,7 +28,7 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.Countries.States.Fields.Published")]
         public bool Published { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Countries.States.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         //we don't name it "DisplayOrder" because Telerik has a small bug 
         //"if we have one more editor with the same name on a page, it doesn't allow editing"
         //in our case it's state.DisplayOrder
@@ -44,5 +44,13 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.Countries.States.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
+    }
+
+    public partial class StateProvinceValidator : AbstractValidator<StateProvinceModel>
+    {
+        public StateProvinceValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
     }
 }

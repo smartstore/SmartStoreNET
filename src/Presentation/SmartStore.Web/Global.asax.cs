@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
@@ -7,6 +8,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using System.Web.WebPages;
 using AutoMapper;
+using FluentValidation;
 using FluentValidation.Mvc;
 using JavaScriptEngineSwitcher.Core;
 using JavaScriptEngineSwitcher.Msie;
@@ -17,6 +19,7 @@ using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Themes;
 using SmartStore.Services.Tasks;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Bundling;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Localization;
@@ -25,7 +28,6 @@ using SmartStore.Web.Framework.Routing;
 using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.Theming.Assets;
 using SmartStore.Web.Framework.Validators;
-using System.Net;
 
 namespace SmartStore.Web
 {
@@ -80,7 +82,7 @@ namespace SmartStore.Web
 
 		public static void RegisterJsEngines()
 		{
-			JsEngineSwitcher engineSwitcher = JsEngineSwitcher.Instance;
+			var engineSwitcher = JsEngineSwitcher.Current;
 			engineSwitcher.EngineFactories
 				.AddV8()
 				.AddMsie(new MsieSettings
@@ -124,10 +126,7 @@ namespace SmartStore.Web
 			AreaRegistration.RegisterAllAreas();
 
 			// Fluent validation
-			FluentValidationModelValidatorProvider.Configure(x =>
-			{
-				x.ValidatorFactory = new SmartValidatorFactory();
-			});
+			InitializeFluentValidator();
 			
 			// Routes
 			RegisterRoutes(RouteTable.Routes, engine, installed);
@@ -165,8 +164,37 @@ namespace SmartStore.Web
 				// app not installed
 
 				// Install filter
-				GlobalFilters.Filters.Add(new HandleInstallFilter());
+				GlobalFilters.Filters.Add(new HandleInstallFilter(), -1000);
 			}
+		}
+
+		private static void InitializeFluentValidator()
+		{
+			FluentValidationModelValidatorProvider.Configure(x =>
+			{
+				x.ValidatorFactory = new SmartValidatorFactory();
+			});
+
+			// Setup custom resources
+			ValidatorOptions.LanguageManager = new ValidatorLanguageManager();
+
+			// Setup our custom DisplayName handling
+			var originalDisplayNameResolver = ValidatorOptions.DisplayNameResolver;
+			ValidatorOptions.DisplayNameResolver = (type, member, expression) =>
+			{
+				string name = null;
+
+				if (HostingEnvironment.IsHosted && member != null)
+				{
+					var attr = member.GetAttribute<SmartResourceDisplayName>(true);
+					if (attr != null)
+					{
+						name = attr.DisplayName;
+					}
+				}
+
+				return name ?? originalDisplayNameResolver.Invoke(type, member, expression);
+			};
 		}
 
 		private void RegisterVirtualPathProviders()

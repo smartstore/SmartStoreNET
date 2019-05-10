@@ -1,5 +1,8 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Stores;
 
@@ -114,6 +117,35 @@ namespace SmartStore.Core.Domain.Directory
         [DataMember]
         public CurrencyRoundingRule RoundOrderTotalRule { get; set; }
 
-        #endregion Rounding
+		#endregion Rounding
+
+		#region Utils
+
+		private NumberFormatInfo _numberFormat;
+
+		[NotMapped, JsonIgnore, IgnoreDataMember]
+		public NumberFormatInfo NumberFormat
+		{
+			get
+			{
+				if (_numberFormat == null && DisplayLocale.HasValue())
+				{
+					try
+					{
+						_numberFormat = CultureInfo.CreateSpecificCulture(DisplayLocale).NumberFormat;
+					}
+					catch { }
+				}
+
+				if (_numberFormat == null)
+				{
+					_numberFormat = NumberFormatInfo.CurrentInfo;
+				}
+
+				return _numberFormat;
+			}
+		}
+
+		#endregion
 	}
 }

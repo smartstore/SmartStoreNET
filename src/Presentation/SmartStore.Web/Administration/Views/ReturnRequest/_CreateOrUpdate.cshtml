@@ -1,5 +1,5 @@
-﻿@model ReturnRequestModel
-@using SmartStore.Core.Domain.Orders;
+﻿@using SmartStore.Core.Domain.Orders;
+@model ReturnRequestModel
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
@@ -12,6 +12,8 @@
 	</div>
 }
 
+@{ Html.RenderWidget("returnrequest_top"); }
+
 <table class="adminContent">
     <tr>
         <td class="adminTitle">
@@ -20,6 +22,29 @@
         <td class="adminData">
 			<div class="form-control-plaintext">
 				@Model.Id
+			</div>
+        </td>
+    </tr>
+	@if (Model.StoreName.HasValue())
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.StoreName)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Html.DisplayFor(model => model.StoreName)
+				</div>
+			</td>
+		</tr>
+	}
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.CustomerId)
+        </td>
+        <td class="adminData">
+			<div class="form-control-plaintext">
+				<a href="@Url.Action("Edit", "Customer", new { id = Model.CustomerId })">@Model.CustomerFullName</a> (@Model.CustomerId)
 			</div>
         </td>
     </tr>
@@ -35,34 +60,41 @@
     </tr>
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.StoreName)
-        </td>
-        <td class="adminData">
-			<div class="form-control-plaintext">
-				@Html.DisplayFor(model => model.StoreName)
-			</div>
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
             @Html.SmartLabelFor(model => model.ProductName)
         </td>
         <td class="adminData">
 			<div class="form-control-plaintext">
-				<a href="@Url.Action("Edit", "Product", new { id = Model.ProductId })">@Model.ProductName (@Model.ProductSku.NaIfEmpty())</a>
+				<div class="mb-1">
+					<a href="@Url.Action("Edit", "Product", new { id = Model.ProductId })">@Model.ProductName</a>
+				</div>
+				@if (Model.AttributeInfo.HasValue())
+				{
+					<div>
+						@Html.Raw(Model.AttributeInfo)
+					</div>
+				}
+				@if (Model.ProductSku.HasValue())
+				{
+					<div>
+						<span class="font-weight-medium">@T("Admin.Orders.Products.SKU")</span>: @Model.ProductSku
+					</div>
+				}
 			</div>
         </td>
     </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.CustomerId)
-        </td>
-        <td class="adminData">
-			<div class="form-control-plaintext">
-				<a href="@Url.Action("Edit", "Customer", new { id = Model.CustomerId })">@Model.CustomerFullName (@Model.CustomerId)</a>
-			</div>
-        </td>
-    </tr>
+	@if (Model.MaxRefundAmount.HasValue())
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.MaxRefundAmount)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Html.Raw(Model.MaxRefundAmount)
+				</div>
+			</td>
+		</tr>
+	}
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.Quantity)
@@ -158,3 +190,5 @@
 		</td>
 	</tr>
 </table>
+
+@{ Html.RenderWidget("returnrequest_bottom"); }

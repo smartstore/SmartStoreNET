@@ -10,7 +10,7 @@ namespace SmartStore.Core.Events
 			get { return s_instance; }
 		}
 
-		public void Publish<T>(T eventMessage)
+		public void Publish<T>(T eventMessage) where T : class
 		{
 			// Noop
 		}

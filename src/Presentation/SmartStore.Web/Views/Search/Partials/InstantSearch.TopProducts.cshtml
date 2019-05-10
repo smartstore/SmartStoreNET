@@ -1,7 +1,5 @@
 ﻿@using SmartStore.Web.Models.Search
-
 @model SearchResultModel
-
 @{ 
 	var hasThumbs = Model.TopProducts.Items.Any(x => x.Picture != null && x.Picture.ImageUrl.HasValue());
 }
@@ -20,7 +18,7 @@
 					}
 					<span class="d-block text-truncate">
 						<span class="d-block text-truncate" @Html.LanguageAttributes(hit.Name)>
-							@Html.Raw(Model.SearchResult.Highlight(hit.Name, "<span class='instasearch-match'>", "</span>", false))
+							@Html.Raw(Model.Highlight(hit.Name, "name", Model.Query, null, "<span class='instasearch-match'>", "</span>"))
 						</span>
 						@if (hasThumbs && hit.ShortDescription.Value.HasValue())
 						{

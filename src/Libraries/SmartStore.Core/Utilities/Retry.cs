@@ -86,11 +86,11 @@ namespace SmartStore.Utilities
 		{
 			Guard.NotNull(operation, nameof(operation));
 
-			Func<Task<bool>> wrapper = async () =>
+			async Task<bool> wrapper()
 			{
-				await operation().ConfigureAwait(false);
+				await operation();
 				return true;
-			};
+			}
 
 			await RunAsync(wrapper, attempts, wait, onFailed);
 		}
@@ -123,7 +123,7 @@ namespace SmartStore.Utilities
 				try
 				{
 					// Call the function passed in by the caller. 
-					return await operation().ConfigureAwait(false);
+					return await operation();
 				}
 				catch (Exception ex)
 				{

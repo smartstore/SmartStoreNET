@@ -1,16 +1,16 @@
-﻿using SmartStore.Services.Localization;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using SmartStore.Services.Localization;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Boards
 {
-    public partial  class ForumGroupModel
+    public partial class ForumGroupModel : EntityModelBase
     {
         public ForumGroupModel()
         {
-            this.Forums = new List<ForumRowModel>();
+            Forums = new List<ForumRowModel>();
         }
 
-        public int Id { get; set; }
         public LocalizedValue<string> Name { get; set; }
         public LocalizedValue<string> Description { get; set; }
 		public string SeName { get; set; }

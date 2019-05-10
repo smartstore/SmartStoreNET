@@ -1,11 +1,11 @@
-﻿using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Validators.PrivateMessages;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.PrivateMessages
 {
-    [Validator(typeof(SendPrivateMessageValidator))]
+	[Validator(typeof(SendPrivateMessageValidator))]
     public partial class SendPrivateMessageModel : EntityModelBase
     {
         public int ToCustomerId { get; set; }
@@ -14,10 +14,18 @@ namespace SmartStore.Web.Models.PrivateMessages
 
         public int ReplyToMessageId { get; set; }
 
-        [AllowHtml]
         public string Subject { get; set; }
 
-        [AllowHtml]
+        [SanitizeHtml]
         public string Message { get; set; }
+    }
+
+    public class SendPrivateMessageValidator : AbstractValidator<SendPrivateMessageModel>
+    {
+        public SendPrivateMessageValidator()
+        {
+            RuleFor(x => x.Subject).NotEmpty();
+            RuleFor(x => x.Message).NotEmpty();
+        }
     }
 }

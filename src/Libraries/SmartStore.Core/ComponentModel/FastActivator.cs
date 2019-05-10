@@ -44,6 +44,8 @@ namespace SmartStore.ComponentModel
 			return Invoker(parameters);
 		}
 
+		#region Static
+
 		/// <summary>
 		/// Creates a single fast constructor invoker. The result is not cached.
 		/// </summary>
@@ -78,8 +80,6 @@ namespace SmartStore.ComponentModel
 			return lambda.Compile();
 		}
 
-		#region Static
-
 		/// <summary>
 		/// Creates and caches fast constructor invokers 
 		/// </summary>
@@ -93,8 +93,7 @@ namespace SmartStore.ComponentModel
 
 		private static FastActivator[] GetActivatorsCore(Type type)
 		{
-			FastActivator[] activators;
-			if (!_activatorsCache.TryGetValue(type, out activators))
+			if (!_activatorsCache.TryGetValue(type, out FastActivator[] activators))
 			{
 				var candidates = GetCandidateConstructors(type);
 				activators = candidates.Select(c => new FastActivator(c)).ToArray();

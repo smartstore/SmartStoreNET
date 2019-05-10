@@ -1,23 +1,21 @@
-﻿using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Validators.ShoppingCart;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.ShoppingCart
 {
-    [Validator(typeof(WishlistEmailAFriendValidator))]
+	[Validator(typeof(WishlistEmailAFriendValidator))]
     public partial class WishlistEmailAFriendModel : ModelBase
     {
-        [AllowHtml]
         [SmartResourceDisplayName("Wishlist.EmailAFriend.FriendEmail")]
         public string FriendEmail { get; set; }
 
-        [AllowHtml]
         [SmartResourceDisplayName("Wishlist.EmailAFriend.YourEmailAddress")]
         public string YourEmailAddress { get; set; }
 
-        [AllowHtml]
+        [SanitizeHtml]
         [SmartResourceDisplayName("Wishlist.EmailAFriend.PersonalMessage")]
         public string PersonalMessage { get; set; }
 
@@ -25,5 +23,14 @@ namespace SmartStore.Web.Models.ShoppingCart
         public string Result { get; set; }
 
         public bool DisplayCaptcha { get; set; }
+    }
+
+    public class WishlistEmailAFriendValidator : AbstractValidator<WishlistEmailAFriendModel>
+    {
+        public WishlistEmailAFriendValidator()
+        {
+            RuleFor(x => x.FriendEmail).NotEmpty().EmailAddress();
+            RuleFor(x => x.YourEmailAddress).NotEmpty().EmailAddress();
+        }
     }
 }

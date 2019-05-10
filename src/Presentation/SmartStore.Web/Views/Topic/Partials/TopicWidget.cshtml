@@ -6,17 +6,26 @@
 
 @if (!Model.WrapContent)
 {
-	<div @Html.LanguageAttributes(Model.HtmlRtl, WorkContext.WorkingLanguage)>@Html.Raw(Model.Html)</div>
+	@Html.Raw(Model.Html)
 	return;
 }
 
 <div class="block @(Model.IsBordered ? "block-boxed" : "") topic-widget topic-widget-@Model.SystemName">
-    @if (Model.ShowTitle) {
+    @if (Model.ShowTitle && Model.Title.HasValue())
+	{
 		<div class="block-title">
 			@Html.Raw("<" + Model.TitleTag + " " + @Html.LanguageAttributes(Model.TitleRtl, WorkContext.WorkingLanguage) + ">" + Model.Title + "</" + Model.TitleTag + ">")
 		</div>
     }
+
     <div class="block-body @(Model.IsBordered ? "px-4" : "")" @Html.LanguageAttributes(Model.HtmlRtl, WorkContext.WorkingLanguage)>
-        @Html.Raw(Html.CollapsedText(Model.Html))
+        	@if (Model.Intro.HasValue())
+			{
+				<p class="lead">
+					@Html.Raw(Model.Intro)
+				</p>
+			}
+		
+		@Html.Raw(Html.CollapsedText(Model.Html))
     </div>
 </div>

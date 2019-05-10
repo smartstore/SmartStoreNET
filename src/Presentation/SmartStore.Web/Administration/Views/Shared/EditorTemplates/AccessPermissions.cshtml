@@ -1,0 +1,32 @@
+﻿@{
+    var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+    var name = ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
+    var value = ViewData.Model != null ? string.Join(",", ViewData.Model) : null;
+    var url = Url.Action("AllAccessPermissions", "Security", new { selected = value });
+}
+<select id="@id" name="@name" class="form-control" multiple="multiple" data-select-url="@url"></select>
+
+<script>
+    $(function () {
+        var ctrl = $('#@id');
+
+        if (!_.isEmpty('@value')) {
+            $.ajax({
+                url: '@url',
+                dataType: 'json',
+                success: function (data) {
+                    _.each(data, function (item) {
+                        var option = new Option(item.text, item.id, item.selected, item.selected);
+                        ctrl.append(option);
+                    });
+                },
+                complete: function () {
+                    ctrl.selectWrapper();
+                }
+            });
+        }
+        else {
+            ctrl.selectWrapper();
+        }
+    });
+</script>

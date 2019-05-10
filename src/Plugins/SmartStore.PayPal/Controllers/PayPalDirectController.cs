@@ -1,21 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using SmartStore.Core.Domain.Payments;
+﻿using SmartStore.Core.Domain.Payments;
 using SmartStore.PayPal.Models;
 using SmartStore.PayPal.Settings;
-using SmartStore.PayPal.Validators;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
 
 namespace SmartStore.PayPal.Controllers
 {
-	public class PayPalDirectController : PayPalControllerBase<PayPalDirectPaymentSettings>
+    public class PayPalDirectController : PayPalControllerBase<PayPalDirectPaymentSettings>
 	{
 		private readonly HttpContextBase _httpContext;
 
@@ -151,7 +150,7 @@ namespace SmartStore.PayPal.Controllers
 		public override IList<string> ValidatePaymentForm(FormCollection form)
 		{
 			var warnings = new List<string>();
-			var validator = new PaymentInfoValidator(Services.Localization);
+			var validator = new PaymentInfoValidator(T);
 
 			var model = new PayPalDirectPaymentInfoModel
 			{

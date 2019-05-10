@@ -1,7 +1,7 @@
-﻿@model ByRegionTaxRateListModel
-@using SmartStore.Web.Framework;
+﻿@using SmartStore.Web.Framework;
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Tax.Models;
+@model ByRegionTaxRateListModel
 @{
 	Layout = "";
 }
@@ -36,9 +36,9 @@
 		.DataBinding(dataBinding =>
 		{
 			dataBinding.Ajax()
-				.Select("RatesList", "TaxByRegion", new RouteValueDictionary() { { "area", "SmartStore.Tax" } })
-				.Update("RateUpdate", "TaxByRegion", new RouteValueDictionary() { { "area", "SmartStore.Tax" } })
-				.Delete("RateDelete", "TaxByRegion", new RouteValueDictionary() { { "area", "SmartStore.Tax" } });
+				.Select("RatesList", "TaxByRegion", new RouteValueDictionary { { "area", "SmartStore.Tax" } })
+				.Update("RateUpdate", "TaxByRegion", new RouteValueDictionary { { "area", "SmartStore.Tax" } })
+				.Delete("RateDelete", "TaxByRegion", new RouteValueDictionary { { "area", "SmartStore.Tax" } });
 		})
 		.Editable(x => { x.Mode(GridEditMode.InLine); })
 		.ToolBar(commands => commands.Template(TaxByRegionGridCommands))
@@ -97,12 +97,12 @@
 						@Html.SmartLabelFor(model => model.AddCountryId)
 					</td>
 					<td class="adminData">
-						@Html.DropDownList("CountryId", Model.AvailableCountries,
+						@Html.DropDownList("AddCountryId", Model.AvailableCountries,
 						new
 						{
 							@class = "form-control country-input country-selector",
 							data_region_control_selector = "#AddStateProvinceId",
-							data_states_ajax_url = Url.Action("GetStatesByCountryId", "Country", new RouteValueDictionary() { { "area", "Admin" } }),
+							data_states_ajax_url = Url.Action("GetStatesByCountryId", "Country", new RouteValueDictionary { { "area", "Admin" } }),
 							data_addAsterisk = "true",
 							data_addEmptyStateIfRequired = "false"
 						})

@@ -4,21 +4,26 @@
 @using SmartStore.Web.Models.Catalog;
 
 @{ 
-	var artDetailUrl = Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } });
-	var list = Model.Parent;
-	var picture = Model.Picture;
+    var artDetailUrl = Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } });
+    var list = Model.Parent;
+    var picture = Model.Picture;
 
-	var showButtons = list.ShowButtons && (!Model.Price.DisableWishlistButton || list.CompareEnabled || (!Model.Price.DisableBuyButton && list.BuyEnabled));
-	var showVariants = (Model.ColorAttributes != null && Model.ColorAttributes.Any()) || (Model.Attributes != null && Model.Attributes.Any());
-	var showDrop = showButtons || showVariants;
-	var showAttrs = list.ViewMode == ProductSummaryViewMode.List && (list.ShowSku || list.ShowWeight || list.ShowDimensions);
+    var showButtons = list.ShowButtons && (!Model.Price.DisableWishlistButton || list.CompareEnabled || (!Model.Price.DisableBuyButton && list.BuyEnabled));
+    var showVariants = (Model.ColorAttributes != null && Model.ColorAttributes.Any()) || (Model.Attributes != null && Model.Attributes.Any());
+    var showDrop = showButtons || showVariants;
+    var showAttrs = list.ViewMode == ProductSummaryViewMode.List && (list.ShowSku || list.ShowWeight || list.ShowDimensions);
+    var addPictureClass = picture.PictureId == 0 ? " no-picture" : "";
+    if (!picture.ImageUrl.HasValue())
+    {
+        addPictureClass += " no-default-picture";
+    }
 }
 
 <article class="art" data-id="@Model.Id">
 	<div class="art-picture-block">
 		@if (picture.Title.HasValue())
 		{
-			<a class='art-picture img-center-container@(picture.PictureId == 0 ? " no-picture" : "")' href="@artDetailUrl" title="@picture.Title" @Html.Attr("data-content", T("Common.NoImageAvail"), picture.PictureId == 0)>
+			<a class='art-picture img-center-container@(addPictureClass)' href="@artDetailUrl" title="@picture.Title" @Html.Attr("data-content", T("Common.NoImageAvail"), picture.PictureId == 0)>
 				<img src="@picture.ImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
 			</a>
 		}
@@ -36,101 +41,108 @@
 		</div>
 	}
 
-	<div class="art-data-block">
-		<div class="art-info-block">
-			@if (list.ShowRatings || list.ShowBrand)
-			{
-				if (list.ViewMode == ProductSummaryViewMode.List)
-				{
-					<div class="art-info-group@(list.ShowRatings && list.ShowBrand ? " floating" : "")">
-						@if (list.ShowBrand) { Html.RenderPartial("Product.List.Item.Brand", Model); }
-						@if (list.ShowRatings) { Html.RenderPartial("Product.List.Item.Rating", Model); }
-					</div>
-				}
-				else
-				{
-					if (list.ShowRatings) { Html.RenderPartial("Product.List.Item.Rating", Model); }
-					if (list.ShowBrand) { Html.RenderPartial("Product.List.Item.Brand", Model); }
-				}
-			}
+    @if (list.ViewMode == ProductSummaryViewMode.List)
+    {
+        @:<div class="art-data-block"><div class="art-info-block">
+    }
 
-			<h3 @Html.LanguageAttributes(Model.Name) class="art-name">
-				<a href="@artDetailUrl" title="@Model.Name.ToString()">
-					<span>@Model.Name</span>
-				</a>
-			</h3>
+    @if (list.ShowRatings || list.ShowBrand)
+    {
+        if (list.ViewMode == ProductSummaryViewMode.List)
+        {
+            <div class="art-info-group@(list.ShowRatings && list.ShowBrand ? " floating" : "")">
+                @if (list.ShowBrand) { Html.RenderPartial("Product.List.Item.Brand", Model); }
+                @if (list.ShowRatings) { Html.RenderPartial("Product.List.Item.Rating", Model); }
+            </div>
+        }
+        else
+        {
+            if (list.ShowRatings) { Html.RenderPartial("Product.List.Item.Rating", Model); }
+            if (list.ShowBrand) { Html.RenderPartial("Product.List.Item.Brand", Model); }
+        }
+    }
 
-			@if (list.ShowDescription)
-			{
-				<div class="art-description" @Html.LanguageAttributes(Model.ShortDescription) title="@Model.ShortDescription.ToString()">
-					@Html.Raw(Model.ShortDescription.Value.Truncate(160, "..."))
-				</div>
-			}
+    <h3 @Html.LanguageAttributes(Model.Name) class="art-name">
+        <a href="@artDetailUrl" title="@Model.Name.ToString()">
+            <span>@Model.Name</span>
+        </a>
+    </h3>
 
-			@if (showAttrs)
-			{
-				<table class="art-attrs">
-					@if (list.ShowSku && Model.Sku.HasValue())
-					{
-						<tr>
-							<td>@T("Products.Sku")</td>
-							<td>@Model.Sku</td>
-						</tr>
-					}
-					@if (list.ShowWeight && Model.Weight.HasValue())
-					{
-						<tr>
-							<td>@T("Products.Weight")</td>
-							<td>@Model.Weight</td>
-						</tr>
-					}
-					@if (list.ShowDimensions && Model.Dimensions.HasValue())
-					{
-						<tr>
-							<td>@T("Products.Dimensions") <span class="lrm">(@Model.DimensionMeasureUnit)</span></td>
-							<td>@Model.Dimensions</td>
-						</tr>
-					}
-				</table>
-			}
+    @if (list.ShowDescription)
+    {
+        <div class="art-description" @Html.LanguageAttributes(Model.ShortDescription) title="@Model.ShortDescription.ToString()">
+            @Html.Raw(Model.ShortDescription.Truncate(160, "..."))
+        </div>
+    }
 
-			@if (list.ViewMode != ProductSummaryViewMode.List)
-			{ 
-				Html.RenderPartial("Product.List.Item.Price", Model);
-			}
+    @if (showAttrs)
+    {
+        <table class="art-attrs">
+            @if (list.ShowSku && Model.Sku.HasValue())
+            {
+                <tr>
+                    <td>@T("Products.Sku")</td>
+                    <td>@Model.Sku</td>
+                </tr>
+            }
+            @if (list.ShowWeight && Model.Weight.HasValue())
+            {
+                <tr>
+                    <td>@T("Products.Weight")</td>
+                    <td>@Model.Weight</td>
+                </tr>
+            }
+            @if (list.ShowDimensions && Model.Dimensions.HasValue())
+            {
+                <tr>
+                    <td>@T("Products.Dimensions") <span class="lrm">(@Model.DimensionMeasureUnit)</span></td>
+                    <td>@Model.Dimensions</td>
+                </tr>
+            }
+        </table>
+    }
 
-			@if (list.ViewMode == ProductSummaryViewMode.List && showVariants)
-			{
-				Html.RenderPartial("Product.List.Item.Variants", Model);
-			}
+    @if (list.ViewMode != ProductSummaryViewMode.List)
+    {
+        Html.RenderPartial("Product.List.Item.Price", Model);
+    }
 
-			@if (list.ShowLegalInfo)
-			{
-				<div class="art-legalinfo">
-					<span>*</span> <span>@Html.Raw(Model.LegalInfo)</span>
-				</div>
-			}
-		</div>
+    @if (list.ViewMode == ProductSummaryViewMode.List && showVariants)
+    {
+        Html.RenderPartial("Product.List.Item.Variants", Model);
+    }
 
-		@if (list.ViewMode == ProductSummaryViewMode.List)
-		{
-			<div class="art-actions-block">
-				@{ 
-					Html.RenderPartial("Product.List.Item.Price", Model);
-					if (showButtons)
-					{
-						Html.RenderPartial("Product.List.Item.Buttons", Model);
-					}
-				}
-			</div>
-		}
-	</div>
+    @if (list.ShowLegalInfo)
+    {
+        <div class="art-legalinfo">
+            <span>*</span> <span>@Html.Raw(Model.LegalInfo)</span>
+        </div>
+    }
+
+    @if (list.ViewMode == ProductSummaryViewMode.List)
+    {
+        // close div.art-info-block
+        @:</div>
+
+        <div class="art-actions-block">
+            @{
+                Html.RenderPartial("Product.List.Item.Price", Model);
+                if (showButtons)
+                {
+                    Html.RenderPartial("Product.List.Item.Buttons", Model);
+                }
+            }
+        </div>
+
+        // close div.art-data-block
+        @:</div>
+    }
 
 	@{ 
-		if (list.ViewMode != ProductSummaryViewMode.List)
-		{
-			if (showDrop)
-			{
+        if (list.ViewMode != ProductSummaryViewMode.List)
+        {
+            if (showDrop)
+            {
 				<div class="art-drop">
 					@if (showVariants) 
 					{

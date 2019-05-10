@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -14,10 +15,10 @@ namespace SmartStore.Services.Catalog
 {
 	public partial class ManufacturerService : IManufacturerService
     {
-        private const string PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY = "SmartStore.productmanufacturer.allbymanufacturerid-{0}-{1}-{2}-{3}-{4}";
-        private const string PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY = "SmartStore.productmanufacturer.allbyproductid-{0}-{1}-{2}";
-        private const string MANUFACTURERS_PATTERN_KEY = "SmartStore.manufacturer.*";
-        private const string PRODUCTMANUFACTURERS_PATTERN_KEY = "SmartStore.productmanufacturer.*";
+        private const string PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY = "productmanufacturer:allbymanufacturerid-{0}-{1}-{2}-{3}-{4}";
+        private const string PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY = "productmanufacturer:allbyproductid-{0}-{1}-{2}";
+        private const string MANUFACTURERS_PATTERN_KEY = "manufacturer:*";
+        private const string PRODUCTMANUFACTURERS_PATTERN_KEY = "productmanufacturer:*";
 
         private readonly IRepository<Manufacturer> _manufacturerRepository;
         private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
@@ -120,6 +121,23 @@ namespace SmartStore.Services.Catalog
 			return _manufacturerRepository.GetByIdCached(manufacturerId, "db.manu.id-" + manufacturerId);
 		}
 
+        public virtual IList<Manufacturer> GetManufacturersByIds(int[] manufacturerIds)
+        {
+            if (manufacturerIds == null || !manufacturerIds.Any())
+            {
+                return new List<Manufacturer>();
+            }
+
+            var query = from m in _manufacturerRepository.Table
+                        where manufacturerIds.Contains(m.Id)
+                        select m;
+
+            var manufacturers = query.ToList();
+
+            // Sort by passed identifier sequence.
+            return manufacturers.OrderBySequence(manufacturerIds).ToList();
+        }
+
         public virtual void InsertManufacturer(Manufacturer manufacturer)
         {
             if (manufacturer == null)
@@ -173,9 +191,7 @@ namespace SmartStore.Services.Catalog
             {
                 var query = from pm in _productManufacturerRepository.Table
                             join p in _productRepository.Table on pm.ProductId equals p.Id
-                            where pm.ManufacturerId == manufacturerId &&
-                                  !p.Deleted && !p.IsSystemProduct &&
-								  (showHidden || p.Published)
+                            where pm.ManufacturerId == manufacturerId && !p.Deleted && (showHidden || p.Published)
                             orderby pm.DisplayOrder
                             select pm;
 
@@ -216,14 +232,13 @@ namespace SmartStore.Services.Catalog
 			string key = string.Format(PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY, showHidden, productId, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
             return _requestCache.Get(key, () =>
 				{
-					var query = from pm in _productManufacturerRepository.Table.Expand(x => x.Manufacturer.Picture)
-								join m in _manufacturerRepository.Table on
-									pm.ManufacturerId equals m.Id
-								where pm.ProductId == productId &&
-									!m.Deleted &&
-									(showHidden || m.Published)
+					var query = from pm in _productManufacturerRepository.Table
+								join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
+								where pm.ProductId == productId && !m.Deleted && (showHidden || m.Published)
 								orderby pm.DisplayOrder
 								select pm;
+
+					query = query.Include(x => x.Manufacturer.Picture);
 
 					if (!showHidden)
 					{
@@ -273,11 +288,18 @@ namespace SmartStore.Services.Catalog
 		{
 			Guard.NotNull(productIds, nameof(productIds));
 
+            if (!productIds.Any())
+            {
+                return new Multimap<int, ProductManufacturer>();
+            }
+
 			var query =
-				from pm in _productManufacturerRepository.TableUntracked.Expand(x => x.Manufacturer).Expand(x => x.Manufacturer.Picture)
+				from pm in _productManufacturerRepository.TableUntracked
 				//join m in _manufacturerRepository.TableUntracked on pm.ManufacturerId equals m.Id // Eager loading does not work with this join
 				where !pm.Manufacturer.Deleted && productIds.Contains(pm.ProductId)
 				select pm;
+
+			query = query.Include(x => x.Manufacturer.Picture);
 
 			var map = query
 				.OrderBy(x => x.ProductId)

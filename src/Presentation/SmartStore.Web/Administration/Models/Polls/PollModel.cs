@@ -1,20 +1,23 @@
-﻿using System;
+﻿using FluentValidation;
+using FluentValidation.Attributes;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
-using FluentValidation.Attributes;
-using SmartStore.Admin.Models.Stores;
-using SmartStore.Admin.Validators.Polls;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Polls
 {
     [Validator(typeof(PollValidator))]
     public class PollModel : EntityModelBase, IStoreSelector
     {
+        public bool UsernamesEnabled { get; set; }
+        public int GridPageSize { get; set; }
+
         [SmartResourceDisplayName("Admin.ContentManagement.Polls.Fields.Language")]
         public int LanguageId { get; set; }
+        public List<SelectListItem> AvailableLanguages { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Polls.Fields.Language")]
         [AllowHtml]
@@ -37,7 +40,7 @@ namespace SmartStore.Admin.Models.Polls
         [SmartResourceDisplayName("Admin.ContentManagement.Polls.Fields.AllowGuestsToVote")]
         public bool AllowGuestsToVote { get; set; } 	
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Polls.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Polls.Fields.StartDate")]
@@ -52,4 +55,12 @@ namespace SmartStore.Admin.Models.Polls
 		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 	}
+
+    public partial class PollValidator : AbstractValidator<PollModel>
+    {
+        public PollValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
+    }
 }

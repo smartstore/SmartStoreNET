@@ -15,7 +15,7 @@
 				foreach (var file in grp)
 				{
 					<div class="py-1">
-						<span class="badge badge-info">
+						<span class="badge @(file.RelatedType.HasValue ? "badge-secondary" : "badge-info")">
 							@Html.IconForFileExtension(file.FileExtension, false)
 							@(file.Label.HasValue() ? file.Label : file.FileExtension.EmptyNull().ToLower().TrimStart('.'))
 						</span>
@@ -41,7 +41,7 @@
 				{
 					<div class="py-1 d-flex copy-to-clipboard-container">
 						<div>
-							<span class="badge badge-success">
+							<span class="badge @(file.RelatedType.HasValue ? "badge-secondary" : "badge-success")">
 								@Html.IconForFileExtension(file.FileExtension, false)
 								@(file.Label.HasValue() ? file.Label : file.FileExtension.EmptyNull().ToLower().TrimStart('.'))
 							</span>
@@ -49,7 +49,7 @@
 						</div>
 						<div class="ml-auto">
 							<button type="button" class="btn btn-sm btn-secondary copy-to-clipboard">
-								<i class="fa fa-clipboard"></i>
+								<i class="far fa-clipboard"></i>
 							</button>
 						</div>
 					</div>

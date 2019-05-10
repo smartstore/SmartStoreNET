@@ -73,12 +73,13 @@ namespace SmartStore.Services.Orders
         private readonly LocalizationSettings _localizationSettings;
         private readonly CurrencySettings _currencySettings;
 		private readonly ShoppingCartSettings _shoppingCartSettings;
+        private readonly CatalogSettings _catalogSettings;
 
-		#endregion
+        #endregion
 
-		#region Ctor
+        #region Ctor
 
-		public OrderProcessingService(
+        public OrderProcessingService(
 			IOrderService orderService,
             IWebHelper webHelper,
             ILocalizationService localizationService,
@@ -114,7 +115,8 @@ namespace SmartStore.Services.Orders
             TaxSettings taxSettings,
             LocalizationSettings localizationSettings,
             CurrencySettings currencySettings,
-			ShoppingCartSettings shoppingCartSettings)
+			ShoppingCartSettings shoppingCartSettings,
+            CatalogSettings catalogSettings)
         {
             _orderService = orderService;
             _webHelper = webHelper;
@@ -152,6 +154,7 @@ namespace SmartStore.Services.Orders
             _localizationSettings = localizationSettings;
             _currencySettings = currencySettings;
 			_shoppingCartSettings = shoppingCartSettings;
+            _catalogSettings = catalogSettings;
 
 			T = NullLocalizer.Instance;
 			Logger = NullLogger.Instance;
@@ -1030,12 +1033,12 @@ namespace SmartStore.Services.Orders
 
                         if (!processPaymentRequest.IsRecurringPayment)
                         {
-                            // Move shopping cart items to order products
+                            // Move shopping cart items to order products.
                             foreach (var sc in cart)
                             {
 								sc.Item.Product.MergeWithCombination(sc.Item.AttributesXml);
 
-                                // Prices
+                                // Prices.
                                 decimal taxRate = decimal.Zero;
 								decimal unitPriceTaxRate = decimal.Zero;
                                 decimal scUnitPrice = _priceCalculationService.GetUnitPrice(sc, true);
@@ -1045,7 +1048,7 @@ namespace SmartStore.Services.Orders
                                 decimal scSubTotalInclTax = _taxService.GetProductPrice(sc.Item.Product, scSubTotal, true, customer, out taxRate);
                                 decimal scSubTotalExclTax = _taxService.GetProductPrice(sc.Item.Product, scSubTotal, false, customer, out taxRate);
 
-                                // Discounts
+                                // Discounts.
                                 Discount scDiscount = null;
                                 decimal discountAmount = _priceCalculationService.GetDiscountAmount(sc, out scDiscount);
                                 decimal discountAmountInclTax = _taxService.GetProductPrice(sc.Item.Product, discountAmount, true, customer, out taxRate);
@@ -1056,12 +1059,15 @@ namespace SmartStore.Services.Orders
 									appliedDiscounts.Add(scDiscount);
 								}
 
-                                // Attributes
                                 var attributeDescription = _productAttributeFormatter.FormatAttributes(sc.Item.Product, sc.Item.AttributesXml, customer);
-
                                 var itemWeight = _shippingService.GetShoppingCartItemWeight(sc);
+                                var displayDeliveryTime = 
+                                    _shoppingCartSettings.ShowDeliveryTimes &&
+                                    sc.Item.Product.DeliveryTimeId.HasValue &&
+                                    sc.Item.Product.IsShipEnabled &&
+                                    sc.Item.Product.DisplayDeliveryTimeAccordingToStock(_catalogSettings);
 
-                                // Dave order item
+                                // Save order item.
                                 var orderItem = new OrderItem
                                 {
                                     OrderItemGuid = Guid.NewGuid(),
@@ -1081,10 +1087,12 @@ namespace SmartStore.Services.Orders
                                     IsDownloadActivated = false,
                                     LicenseDownloadId = 0,
                                     ItemWeight = itemWeight,
-									ProductCost = _priceCalculationService.GetProductCost(sc.Item.Product, sc.Item.AttributesXml)
+									ProductCost = _priceCalculationService.GetProductCost(sc.Item.Product, sc.Item.AttributesXml),
+                                    DeliveryTimeId = sc.Item.Product.GetDeliveryTimeIdAccordingToStock(_catalogSettings),
+                                    DisplayDeliveryTime = displayDeliveryTime
                                 };
 
-								if (sc.Item.Product.ProductType == ProductType.BundledProduct && sc.ChildItems != null)
+                                if (sc.Item.Product.ProductType == ProductType.BundledProduct && sc.ChildItems != null)
 								{
 									var listBundleData = new List<ProductBundleItemOrderData>();
 
@@ -1107,10 +1115,13 @@ namespace SmartStore.Services.Orders
                                 // Gift cards
                                 if (sc.Item.Product.IsGiftCard)
                                 {
-                                    string giftCardRecipientName, giftCardRecipientEmail, giftCardSenderName, giftCardSenderEmail, giftCardMessage;
-
-                                    _productAttributeParser.GetGiftCardAttribute(sc.Item.AttributesXml,
-                                        out giftCardRecipientName, out giftCardRecipientEmail, out giftCardSenderName, out giftCardSenderEmail, out giftCardMessage);
+                                    _productAttributeParser.GetGiftCardAttribute(
+										sc.Item.AttributesXml,
+                                        out var giftCardRecipientName,
+										out var giftCardRecipientEmail, 
+										out var giftCardSenderName, 
+										out var giftCardSenderEmail, 
+										out var giftCardMessage);
 
                                     for (int i = 0; i < sc.Item.Quantity; i++)
                                     {
@@ -1169,7 +1180,9 @@ namespace SmartStore.Services.Orders
                                     LicenseDownloadId = 0,
                                     ItemWeight = orderItem.ItemWeight,
 									BundleData = orderItem.BundleData,
-									ProductCost = orderItem.ProductCost
+									ProductCost = orderItem.ProductCost,
+                                    DeliveryTimeId = orderItem.DeliveryTimeId,
+                                    DisplayDeliveryTime = orderItem.DisplayDeliveryTime
                                 };
                                 order.OrderItems.Add(newOrderItem);
                                 _orderService.UpdateOrder(order);
@@ -1177,10 +1190,13 @@ namespace SmartStore.Services.Orders
                                 // Gift cards
                                 if (orderItem.Product.IsGiftCard)
                                 {
-                                    string giftCardRecipientName, giftCardRecipientEmail, giftCardSenderName, giftCardSenderEmail, giftCardMessage;
-
-                                    _productAttributeParser.GetGiftCardAttribute(orderItem.AttributesXml,
-                                        out giftCardRecipientName, out giftCardRecipientEmail, out giftCardSenderName, out giftCardSenderEmail, out giftCardMessage);
+                                    _productAttributeParser.GetGiftCardAttribute(
+										orderItem.AttributesXml,
+										out var giftCardRecipientName,
+										out var giftCardRecipientEmail,
+										out var giftCardSenderName,
+										out var giftCardSenderEmail,
+										out var giftCardMessage);
 
                                     for (int i = 0; i < orderItem.Quantity; i++)
                                     {
@@ -1305,7 +1321,7 @@ namespace SmartStore.Services.Orders
 						// notes, messages
 						_orderService.AddOrderNote(order, T("Admin.OrderNotice.OrderPlaced"));
 						
-                        //send email notifications
+                        // send email notifications
                         var msg = _messageFactory.SendOrderPlacedStoreOwnerNotification(order, _localizationSettings.DefaultAdminLanguageId);
                         if (msg?.Email?.Id != null)
                         {

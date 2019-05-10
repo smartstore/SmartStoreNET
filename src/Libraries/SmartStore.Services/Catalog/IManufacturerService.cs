@@ -61,6 +61,13 @@ namespace SmartStore.Services.Catalog
         Manufacturer GetManufacturerById(int manufacturerId);
 
         /// <summary>
+        /// Gets manufacturers by Ids
+        /// </summary>
+        /// <param name="manufacturerIds">Array of manufacturer identifiers</param>
+        /// <returns>List of manufacturers</returns>
+        IList<Manufacturer> GetManufacturersByIds(int[] manufacturerIds);
+
+        /// <summary>
         /// Inserts a manufacturer
         /// </summary>
         /// <param name="manufacturer">Manufacturer</param>

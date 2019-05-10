@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Shipping;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Shipping
 {
-	[Validator(typeof(ShippingMethodValidator))]
+    [Validator(typeof(ShippingMethodValidator))]
     public class ShippingMethodModel : TabbableModel, ILocalizedModel<ShippingMethodLocalizedModel>, IStoreSelector
 	{
         public ShippingMethodModel()
@@ -27,7 +27,7 @@ namespace SmartStore.Admin.Models.Shipping
         [AllowHtml]
         public string Description { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Shipping.Methods.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Shipping.Methods.Fields.IgnoreCharges")]
@@ -53,5 +53,13 @@ namespace SmartStore.Admin.Models.Shipping
         [SmartResourceDisplayName("Admin.Configuration.Shipping.Methods.Fields.Description")]
         [AllowHtml]
         public string Description { get; set; }
+    }
+
+    public partial class ShippingMethodValidator : AbstractValidator<ShippingMethodModel>
+    {
+        public ShippingMethodValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
     }
 }

@@ -26,7 +26,7 @@ $forum-unobstrusive-link-color: #646464;
 .forum-group .forum .image,
 .active-discussionstopics .image,
 .topics-group .image {
-	vertical-align: middle;
+    vertical-align: top;
 	text-align: center;
 	i { font-size: 2rem; }
 }
@@ -44,7 +44,6 @@ $forum-unobstrusive-link-color: #646464;
 .topics-group .views {
 	text-align: center;
 }
-.forum-spacer,
 .active-discussionstopics .topic-name,
 .topics-group .topic-name {
 	width: 100%;
@@ -70,6 +69,11 @@ $forum-unobstrusive-link-color: #646464;
 	white-space: nowrap;
 }
 
+.topics-group .topic.disabled {
+    opacity: .5;
+}
+
+
 /* Forum Topic
 ================================================ */
 .forum-topic {
@@ -88,13 +92,6 @@ $forum-unobstrusive-link-color: #646464;
         }
     }
     .post-content {
-		/*
-	    .functions {
-	        right: 10px;
-	        bottom: 10px;
-	        .fa-quote-left { font-size: 10px;}
-        }
-		*/
         .signature {
 	        position: absolute;
 	        bottom: 10px;
@@ -106,7 +103,7 @@ $forum-unobstrusive-link-color: #646464;
     }
 }
 .post-info .user-info .user-stats, 
-.post-content .posttime {
+.post-content .post-stats {
     font-size: $font-size-xs;
 }
 .posttext .quotefrom {
@@ -117,9 +114,6 @@ $forum-unobstrusive-link-color: #646464;
 }
 .posttext blockquote {
 	margin-bottom: 0;
-}
-.post-content .posttime {
-	margin-bottom: 5px;
 }
 
 /* Forum Search

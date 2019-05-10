@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Email;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
@@ -13,59 +9,49 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Search;
-using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Common;
-using SmartStore.Web.Framework.Filters;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class HomeController : PublicControllerBase
+	public partial class HomeController : PublicControllerBase
 	{
-		private readonly ICommonServices _services;
 		private readonly Lazy<ICategoryService> _categoryService;
 		private readonly Lazy<IProductService> _productService;
 		private readonly Lazy<IManufacturerService> _manufacturerService;
 		private readonly Lazy<ICatalogSearchService> _catalogSearchService;
 		private readonly Lazy<CatalogHelper> _catalogHelper;
 		private readonly Lazy<ITopicService> _topicService;
-		private readonly Lazy<IXmlSitemapGenerator> _sitemapGenerator;
 		private readonly Lazy<CaptchaSettings> _captchaSettings;
 		private readonly Lazy<CommonSettings> _commonSettings;
-		private readonly Lazy<SeoSettings> _seoSettings;
 		private readonly Lazy<CustomerSettings> _customerSettings;
 		private readonly Lazy<PrivacySettings> _privacySettings;
 
 		public HomeController(
-			ICommonServices services,
 			Lazy<ICategoryService> categoryService,
 			Lazy<IProductService> productService,
 			Lazy<IManufacturerService> manufacturerService,
 			Lazy<ICatalogSearchService> catalogSearchService,
 			Lazy<CatalogHelper> catalogHelper,
 			Lazy<ITopicService> topicService,
-			Lazy<IXmlSitemapGenerator> sitemapGenerator,
 			Lazy<CaptchaSettings> captchaSettings,
 			Lazy<CommonSettings> commonSettings,
-			Lazy<SeoSettings> seoSettings,
 			Lazy<CustomerSettings> customerSettings,
 			Lazy<PrivacySettings> privacySettings)
         {
-			this._services = services;
-			this._categoryService = categoryService;
-			this._productService = productService;
-			this._manufacturerService = manufacturerService;
-			this._catalogSearchService = catalogSearchService;
-			this._catalogHelper = catalogHelper;
-			this._topicService = topicService;
-			this._sitemapGenerator = sitemapGenerator;
-			this._captchaSettings = captchaSettings;
-			this._commonSettings = commonSettings;
-			this._seoSettings = seoSettings;
-            this._customerSettings = customerSettings;
-			this._privacySettings = privacySettings;
+			_categoryService = categoryService;
+			_productService = productService;
+			_manufacturerService = manufacturerService;
+			_catalogSearchService = catalogSearchService;
+			_catalogHelper = catalogHelper;
+			_topicService = topicService;
+			_captchaSettings = captchaSettings;
+			_commonSettings = commonSettings;
+            _customerSettings = customerSettings;
+			_privacySettings = privacySettings;
 		}
 		
         [RequireHttpsByConfig(SslRequirement.No)]
@@ -83,12 +69,12 @@ namespace SmartStore.Web.Controllers
 		[GdprConsent]
 		public ActionResult ContactUs()
 		{
-            var topic = _topicService.Value.GetTopicBySystemName("ContactUs");
+			var topic = _topicService.Value.GetTopicBySystemName("ContactUs", 0, false);
 
             var model = new ContactUsModel
 			{
-				Email = _services.WorkContext.CurrentCustomer.Email,
-				FullName = _services.WorkContext.CurrentCustomer.GetFullName(),
+				Email = Services.WorkContext.CurrentCustomer.Email,
+				FullName = Services.WorkContext.CurrentCustomer.GetFullName(),
 				FullNameRequired = _privacySettings.Value.FullNameOnContactUsRequired,
 				DisplayCaptcha = _captchaSettings.Value.Enabled && _captchaSettings.Value.ShowOnContactUsPage,
                 MetaKeywords = topic?.GetLocalized(x => x.MetaKeywords),
@@ -112,11 +98,11 @@ namespace SmartStore.Web.Controllers
 
 			if (ModelState.IsValid)
 			{
-				var customer = _services.WorkContext.CurrentCustomer;
+				var customer = Services.WorkContext.CurrentCustomer;
 				var email = model.Email.Trim();
 				var fullName = model.FullName;
-				var subject = T("ContactUs.EmailSubject", _services.StoreContext.CurrentStore.Name);
-				var body = Core.Html.HtmlUtils.FormatText(model.Enquiry, false, true, false, false, false, false);
+				var subject = T("ContactUs.EmailSubject", Services.StoreContext.CurrentStore.Name);
+				var body = Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.Enquiry.HtmlEncode());
 
 				// Required for some SMTP servers
 				EmailAddress sender = null;
@@ -132,7 +118,7 @@ namespace SmartStore.Web.Controllers
 				{
 					model.SuccessfullySent = true;
 					model.Result = T("ContactUs.YourEnquiryHasBeenSent");
-					_services.CustomerActivity.InsertActivity("PublicStore.ContactUs", T("ActivityLog.PublicStore.ContactUs"));
+					Services.CustomerActivity.InsertActivity("PublicStore.ContactUs", T("ActivityLog.PublicStore.ContactUs"));
 				}
 				else
 				{
@@ -148,25 +134,9 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
-		public ActionResult SitemapSeo(int? index = null)
-		{
-			if (!_seoSettings.Value.XmlSitemapEnabled)
-				return HttpNotFound();
-			
-			string content = _sitemapGenerator.Value.GetSitemap(index);
-
-			if (content == null)
-			{
-				return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Sitemap index is out of range.");
-			}
-
-			return Content(content, "text/xml", Encoding.UTF8);
-		}
-
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
 		public ActionResult Sitemap()
 		{
-            return RedirectPermanent(_services.StoreContext.CurrentStore.Url);
+            return RedirectPermanent(Services.StoreContext.CurrentStore.Url);
 		}
     }
 }

@@ -29,8 +29,7 @@ namespace SmartStore.Core.Data.Hooks
 			{
 				ImplType = typeof(THook),
 				HookedType = hookedType,
-				Important = important,
-				IsLoadHook = typeof(IDbLoadHook).IsAssignableFrom(hookedType)
+				Important = important
 			};
 		}
 	}

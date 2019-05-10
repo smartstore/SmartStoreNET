@@ -9,7 +9,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.DataExchange.Export
 {
-	public class ExportExecuteContext
+    public class ExportExecuteContext
 	{
 		private DataExportResult _result;
 		private CancellationToken _cancellation;
@@ -117,10 +117,15 @@ namespace SmartStore.Services.DataExchange.Export
 		/// </summary>
 		public int MaxFileNameLength { get; internal set; }
 
-		/// <summary>
-		/// The name of the current export file
-		/// </summary>
-		public string FileName { get; internal set; }
+        /// <summary>
+        /// Index of current export file.
+        /// </summary>
+        public int FileIndex { get; internal set; }
+
+        /// <summary>
+        /// The name of the current export file
+        /// </summary>
+        public string FileName { get; internal set; }
 
 		/// <summary>
 		/// The path of the export content folder
@@ -216,20 +221,25 @@ namespace SmartStore.Services.DataExchange.Export
 
 	public class ExportDataUnit
 	{
-		/// <summary>
-		/// Your Id to identify this stream within a list of streams
-		/// </summary>
-		public string Id { get; set; }
+        /// <summary>
+        /// Your Id to identify this stream within a list of streams
+        /// </summary>
+        public string Id { get; set; }
 
 		/// <summary>
 		/// Stream used to write data to
 		/// </summary>
 		public Stream DataStream { get; internal set; }
 
-		/// <summary>
-		/// The name of the file to be created
-		/// </summary>
-		public string FileName { get; set; }
+        /// <summary>
+        /// The related entity type.
+        /// </summary>
+        public RelatedEntityType? RelatedType { get; set; }
+
+        /// <summary>
+        /// The name of the file to be created
+        /// </summary>
+        public string FileName { get; set; }
 
 		/// <summary>
 		/// Short optional text that describes the content of the file
@@ -240,5 +250,10 @@ namespace SmartStore.Services.DataExchange.Export
 		/// Whether to display the file in the profile file dialog
 		/// </summary>
 		public bool DisplayInFileDialog { get; set; }
-	}
+
+        /// <summary>
+        /// Number of successful processed records.
+        /// </summary>
+        public int RecordsSucceeded { get; set; }
+    }
 }

@@ -22,17 +22,26 @@
 
     @Html.ValidationSummary(false)
 
-	<table id="SearchSettingsTable" class="adminContent">
+    @(Html.SmartStore().TabStrip().Name("searchsettings-edit").Style(TabsStyle.Material).Items(x =>
+     {
+         x.Add().Text(T("Admin.Catalog").Text).Content(@TabCatalogSettings()).Selected(true);
+         x.Add().Text(T("Forum.Forum").Text).Content(@TabForumSettings());
+     }))
+}
+
+@helper TabCatalogSettings()
+{
+	<table class="adminContent">
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchMode)
+				@Html.SmartLabelFor(x => x.SearchMode)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.SearchMode, Html.DropDownListFor(model => model.SearchMode, Model.AvailableSearchModes))
-				@Html.ValidationMessageFor(model => model.SearchMode)
+				@Html.SettingEditorFor(x => x.SearchMode, Html.DropDownListFor(x => x.SearchMode, Model.AvailableSearchModes))
+				@Html.ValidationMessageFor(x => x.SearchMode)
 			</td>
 		</tr>
-		<tr id="WildcardNote" class="hide">
+		<tr class="wildcard-note hide">
 			<td class="adminTitle"></td>
 			<td class="adminData">
 				<div class="alert alert-warning">
@@ -62,6 +71,15 @@
 				</td>
 			</tr>
 		}
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(x => x.DefaultSortOrder)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(x => x.DefaultSortOrder, Html.DropDownListFor(x => x.DefaultSortOrder, Model.AvailableSortOrderModes))
+                @Html.ValidationMessageFor(x => x.DefaultSortOrder)
+            </td>
+        </tr>
 		<tr>
 			<td colspan="2">
 				<div class="admin-config-group">
@@ -71,51 +89,42 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.InstantSearchEnabled)
+				@Html.SmartLabelFor(x => x.InstantSearchEnabled)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.InstantSearchEnabled, Html.CheckBoxFor(model => model.InstantSearchEnabled, new { data_toggler_for = "#pnlInstantSearch" }))
-				@Html.ValidationMessageFor(model => model.InstantSearchEnabled)
+				@Html.SettingEditorFor(x => x.InstantSearchEnabled, Html.CheckBoxFor(x => x.InstantSearchEnabled, new { data_toggler_for = "#pnlInstantSearch" }))
+				@Html.ValidationMessageFor(x => x.InstantSearchEnabled)
 			</td>
 		</tr>
 		<tbody id="pnlInstantSearch">
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.ShowProductImagesInInstantSearch)
+					@Html.SmartLabelFor(x => x.ShowProductImagesInInstantSearch)
 				</td>
 				<td class="adminData">
-					@Html.SettingEditorFor(model => model.ShowProductImagesInInstantSearch)
-					@Html.ValidationMessageFor(model => model.ShowProductImagesInInstantSearch)
+					@Html.SettingEditorFor(x => x.ShowProductImagesInInstantSearch)
+					@Html.ValidationMessageFor(x => x.ShowProductImagesInInstantSearch)
 				</td>
 			</tr>
-			<tr class="instant-search-setting">
+			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.InstantSearchNumberOfProducts)
+					@Html.SmartLabelFor(x => x.InstantSearchNumberOfProducts)
 				</td>
 				<td class="adminData">
-					@Html.SettingEditorFor(model => model.InstantSearchNumberOfProducts)
-					@Html.ValidationMessageFor(model => model.InstantSearchNumberOfProducts)
+					@Html.SettingEditorFor(x => x.InstantSearchNumberOfProducts)
+					@Html.ValidationMessageFor(x => x.InstantSearchNumberOfProducts)
 				</td>
 			</tr>
-			<tr class="instant-search-setting">
+			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.InstantSearchTermMinLength)
+					@Html.SmartLabelFor(x => x.InstantSearchTermMinLength)
 				</td>
 				<td class="adminData">
-					@Html.SettingEditorFor(model => model.InstantSearchTermMinLength)
-					@Html.ValidationMessageFor(model => model.InstantSearchTermMinLength)
+					@Html.SettingEditorFor(x => x.InstantSearchTermMinLength)
+					@Html.ValidationMessageFor(x => x.InstantSearchTermMinLength)
 				</td>
 			</tr>
 		</tbody>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.DefaultSortOrder)
-            </td>
-            <td class="adminData">
-				@Html.SettingEditorFor(model => model.DefaultSortOrder, Html.DropDownListFor(model => model.DefaultSortOrder, Model.AvailableSortOrderModes))
-                @Html.ValidationMessageFor(model => model.DefaultSortOrder)
-            </td>
-        </tr>
 		<tr>
 			<td colspan="2">
 				<div class="admin-config-group">
@@ -123,34 +132,31 @@
 				</div>
 			</td>
 		</tr>
-	</table>
-
-	<table class="adminContent">
 		@if (Model.IsMegaSearchInstalled)
 		{
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.FilterMinHitCount)
+					@Html.SmartLabelFor(x => x.FilterMinHitCount)
 				</td>
 				<td class="adminData">
-					@Html.SettingEditorFor(model => model.FilterMinHitCount)
-					@Html.ValidationMessageFor(model => model.FilterMinHitCount)
+					@Html.SettingEditorFor(x => x.FilterMinHitCount)
+					@Html.ValidationMessageFor(x => x.FilterMinHitCount)
 				</td>
 			</tr>
 		}
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.FilterMaxChoicesCount)
+				@Html.SmartLabelFor(x => x.FilterMaxChoicesCount)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.FilterMaxChoicesCount)
-				@Html.ValidationMessageFor(model => model.FilterMaxChoicesCount)
+				@Html.SettingEditorFor(x => x.FilterMaxChoicesCount)
+				@Html.ValidationMessageFor(x => x.FilterMaxChoicesCount)
 			</td>
 		</tr>
 	</table>
 
 	<div class="mt-5">
-		@Html.SmartStore().TabStrip().Name("common-facets-settings").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
+		@Html.SmartStore().TabStrip().Name("common-catalog-facets-settings").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
 		{
 			x.Add()
 				.Text(T("Search.Facet.Category").Text)
@@ -184,6 +190,131 @@
 	</div>
 }
 
+@helper TabForumSettings()
+{
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ForumSearchSettings.SearchMode)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(x => x.ForumSearchSettings.SearchMode, Html.DropDownListFor(x => x.ForumSearchSettings.SearchMode, Model.ForumSearchSettings.AvailableSearchModes))
+				@Html.ValidationMessageFor(x => x.ForumSearchSettings.SearchMode)
+			</td>
+		</tr>
+		<tr class="wildcard-note hide">
+			<td class="adminTitle"></td>
+			<td class="adminData">
+				<div class="alert alert-warning">
+					@T("Admin.Configuration.Settings.Search.WildcardSearchNote")
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ForumSearchSettings.SearchFields)
+			</td>
+			<td class="adminData">
+				@Html.ListBoxFor(x => x.ForumSearchSettings.SearchFields,
+					 new MultiSelectList(Model.ForumSearchSettings.AvailableSearchFields, "Value", "Text"),
+					 new { multiple = "multiple" })
+				@Html.ValidationMessageFor(x => x.ForumSearchSettings.SearchFields)
+			</td>
+		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(x => x.ForumSearchSettings.DefaultSortOrder)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(x => x.ForumSearchSettings.DefaultSortOrder, Html.DropDownListFor(x => x.ForumSearchSettings.DefaultSortOrder, Model.ForumSearchSettings.AvailableDefaultSortOrders))
+                @Html.ValidationMessageFor(x => x.ForumSearchSettings.DefaultSortOrder)
+            </td>
+        </tr>
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">@T("Search.InstantSearch")</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ForumSearchSettings.InstantSearchEnabled)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(x => x.ForumSearchSettings.InstantSearchEnabled, Html.CheckBoxFor(x => x.ForumSearchSettings.InstantSearchEnabled, new { data_toggler_for = "#pnlForumInstantSearch" }))
+				@Html.ValidationMessageFor(x => x.ForumSearchSettings.InstantSearchEnabled)
+			</td>
+		</tr>
+		<tbody id="pnlForumInstantSearch">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ForumSearchSettings.InstantSearchNumberOfHits)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(x => x.ForumSearchSettings.InstantSearchNumberOfHits)
+					@Html.ValidationMessageFor(x => x.ForumSearchSettings.InstantSearchNumberOfHits)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ForumSearchSettings.InstantSearchTermMinLength)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(x => x.ForumSearchSettings.InstantSearchTermMinLength)
+					@Html.ValidationMessageFor(x => x.ForumSearchSettings.InstantSearchTermMinLength)
+				</td>
+			</tr>
+		</tbody>
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">@T("Search.ResultFiltering")</div>
+				</div>
+			</td>
+		</tr>
+		@if (Model.IsMegaSearchInstalled)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ForumSearchSettings.FilterMinHitCount)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(x => x.ForumSearchSettings.FilterMinHitCount)
+					@Html.ValidationMessageFor(x => x.ForumSearchSettings.FilterMinHitCount)
+				</td>
+			</tr>
+		}
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ForumSearchSettings.FilterMaxChoicesCount)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(x => x.ForumSearchSettings.FilterMaxChoicesCount)
+				@Html.ValidationMessageFor(x => x.ForumSearchSettings.FilterMaxChoicesCount)
+			</td>
+		</tr>
+    </table>
+
+	<div class="mt-5">
+		@Html.SmartStore().TabStrip().Name("common-forum-facets-settings").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
+		{
+			x.Add()
+				.Text(T("Search.Facet.Forum").Text)
+				.Content(Html.Partial("Partials/CommonFacet", Model.ForumSearchSettings.ForumFacet, CreateFacetViewData("ForumSearchSettings.ForumFacet")).ToHtmlString())
+				.Selected(true);
+
+			x.Add()
+				.Text(T("Search.Facet.Customer").Text)
+				.Content(Html.Partial("Partials/CommonFacet", Model.ForumSearchSettings.CustomerFacet, CreateFacetViewData("ForumSearchSettings.CustomerFacet")).ToHtmlString());
+
+			x.Add()
+				.Text(T("Search.Facet.Date").Text)
+				.Content(Html.Partial("Partials/CommonFacet", Model.ForumSearchSettings.DateFacet, CreateFacetViewData("ForumSearchSettings.DateFacet")).ToHtmlString());
+		})
+	</div>
+}
+
 @functions
 {
 	private ViewDataDictionary CreateFacetViewData(string fieldPrefix)
@@ -198,9 +329,12 @@
 }
 
 <script type="text/javascript">
-	jQuery(document).ready(function () {
-		$('#@(Html.FieldIdFor(x => x.SearchMode))').change(function () {
-			$('#WildcardNote').toggle($(this).val() === '@((int)SearchMode.Contains)');
-		}).trigger('change');		
+    jQuery(document).ready(function () {
+
+        // Toggle wildcard note.
+        $('#@(Html.FieldIdFor(x => x.SearchMode)), #@(Html.FieldIdFor(x => x.ForumSearchSettings.SearchMode))').change(function () {
+			$(this).closest('table').find('.wildcard-note').toggle($(this).val() === '@((int)SearchMode.Contains)');
+        }).trigger('change');
+
 	});
 </script>

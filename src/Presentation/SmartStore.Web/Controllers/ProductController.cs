@@ -10,12 +10,12 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Domain.Tax;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
-using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
@@ -32,21 +32,16 @@ using SmartStore.Web.Models.Catalog;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class ProductController : PublicControllerBase
+    public partial class ProductController : PublicControllerBase
 	{
 		private readonly ICommonServices _services;
 		private readonly IManufacturerService _manufacturerService;
 		private readonly IProductService _productService;
 		private readonly IProductAttributeService _productAttributeService;
-		private readonly IProductAttributeParser _productAttributeParser;
 		private readonly ITaxService _taxService;
-		private readonly ICurrencyService _currencyService;
 		private readonly IPictureService _pictureService;
-		private readonly IPriceCalculationService _priceCalculationService;
-		private readonly IPriceFormatter _priceFormatter;
 		private readonly ICustomerContentService _customerContentService;
 		private readonly ICustomerService _customerService;
-		private readonly IShoppingCartService _shoppingCartService;
 		private readonly IRecentlyViewedProductsService _recentlyViewedProductsService;
 		private readonly IProductTagService _productTagService;
 		private readonly IOrderReportService _orderReportService;
@@ -60,25 +55,19 @@ namespace SmartStore.Web.Controllers
 		private readonly LocalizationSettings _localizationSettings;
 		private readonly CaptchaSettings _captchaSettings;
 		private readonly CatalogHelper _helper;
-        private readonly IDownloadService _downloadService;
-        private readonly ILocalizationService _localizationService;
 		private readonly IBreadcrumb _breadcrumb;
 		private readonly Lazy<PrivacySettings> _privacySettings;
+		private readonly Lazy<TaxSettings> _taxSettings;
 
 		public ProductController(
 			ICommonServices services,
 			IManufacturerService manufacturerService,
 			IProductService productService,
 			IProductAttributeService productAttributeService,
-			IProductAttributeParser productAttributeParser,
 			ITaxService taxService,
-			ICurrencyService currencyService,
 			IPictureService pictureService,
-			IPriceCalculationService priceCalculationService, 
-			IPriceFormatter priceFormatter,
 			ICustomerContentService customerContentService, 
 			ICustomerService customerService,
-			IShoppingCartService shoppingCartService,
 			IRecentlyViewedProductsService recentlyViewedProductsService, 
 			IProductTagService productTagService,
 			IOrderReportService orderReportService,
@@ -92,24 +81,18 @@ namespace SmartStore.Web.Controllers
 			LocalizationSettings localizationSettings, 
 			CaptchaSettings captchaSettings,
 			CatalogHelper helper,
-            IDownloadService downloadService,
-            ILocalizationService localizationService,
 			IBreadcrumb breadcrumb,
-			Lazy<PrivacySettings> privacySettings)
+			Lazy<PrivacySettings> privacySettings,
+            Lazy<TaxSettings> taxSettings)
         {
 			_services = services;
 			_manufacturerService = manufacturerService;
 			_productService = productService;
 			_productAttributeService = productAttributeService;
-			_productAttributeParser = productAttributeParser;
 			_taxService = taxService;
-			_currencyService = currencyService;
 			_pictureService = pictureService;
-			_priceCalculationService = priceCalculationService;
-			_priceFormatter = priceFormatter;
 			_customerContentService = customerContentService;
 			_customerService = customerService;
-			_shoppingCartService = shoppingCartService;
 			_recentlyViewedProductsService = recentlyViewedProductsService;
 			_productTagService = productTagService;
 			_orderReportService = orderReportService;
@@ -123,10 +106,9 @@ namespace SmartStore.Web.Controllers
 			_localizationSettings = localizationSettings;
 			_captchaSettings = captchaSettings;
 			_helper = helper;
-			_downloadService = downloadService;
-			_localizationService = localizationService;
 			_breadcrumb = breadcrumb;
 			_privacySettings = privacySettings;
+			_taxSettings = taxSettings;
 		}
 
 		#region Products
@@ -143,11 +125,11 @@ namespace SmartStore.Web.Controllers
 			if (!product.Published && !_services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog))
 				return HttpNotFound();
 
-			//ACL (access control list)
+			// ACL (access control list)
 			if (!_aclService.Authorize(product))
 				return HttpNotFound();
 
-			//Store mapping
+			// Store mapping
 			if (!_storeMappingService.Authorize(product))
 				return HttpNotFound();
 
@@ -156,12 +138,15 @@ namespace SmartStore.Web.Controllers
 			{
 				// Find parent grouped product.
 				var parentGroupedProduct = _productService.GetProductById(product.ParentGroupedProductId);
-
 				if (parentGroupedProduct == null)
 					return HttpNotFound();
 
-				var routeValues = new RouteValueDictionary();
-				routeValues.Add("SeName", parentGroupedProduct.GetSeName());
+                var seName = parentGroupedProduct.GetSeName();
+                if (seName.IsEmpty())
+                    return HttpNotFound();
+
+                var routeValues = new RouteValueDictionary();
+				routeValues.Add("SeName", seName);
 
 				// Add query string parameters.
 				Request.QueryString.AllKeys.Each(x => routeValues.Add(x, Request.QueryString[x]));
@@ -185,13 +170,14 @@ namespace SmartStore.Web.Controllers
 			// Breadcrumb
 			if (_catalogSettings.CategoryBreadcrumbEnabled)
 			{
-				_helper.GetCategoryBreadCrumb(0, productId).Select(x => x.Value).Each(x => _breadcrumb.Track(x));
+                _helper.GetCategoryBreadcrumb(_breadcrumb, ControllerContext, product);
+
 				_breadcrumb.Track(new MenuItem
 				{
 					Text = model.Name,
 					Rtl = model.Name.CurrentLanguage.Rtl,
 					EntityId = product.Id,
-					Url = Url.RouteUrl("Product", new { productId = product.Id, SeName = model.SeName })
+					Url = Url.RouteUrl("Product", new { model.SeName })
 				});
 			}
 
@@ -558,7 +544,12 @@ namespace SmartStore.Web.Controllers
 				// Update image gallery.
 				var pictures = _pictureService.GetPicturesByProductId(productId);
 
-				if (pictures.Count <= _catalogSettings.DisplayAllImagesNumber)
+                if (product.HasPreviewPicture && pictures.Count > 1)
+                {
+                    pictures.RemoveAt(0);
+                }
+
+                if (pictures.Count <= _catalogSettings.DisplayAllImagesNumber)
 				{
 					// All pictures rendered... only index is required.
 					var picture = m.GetAssignedPicture(_pictureService, pictures);
@@ -580,7 +571,10 @@ namespace SmartStore.Web.Controllers
 					galleryStartIndex = pictureModel.GalleryStartIndex;
 					galleryHtml = this.RenderPartialViewToString("Product.Picture", pictureModel);
 				}
-			}
+
+                m.PriceDisplayStyle = _catalogSettings.PriceDisplayStyle;
+                m.DisplayTextForZeroPrices = _catalogSettings.DisplayTextForZeroPrices;
+            }
 
 			object partials = null;
 			
@@ -597,13 +591,30 @@ namespace SmartStore.Web.Controllers
 				var dataDictAddToCart = new ViewDataDictionary();
 				dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", m.Id);
 
+				decimal adjustment = decimal.Zero;
+				decimal taxRate = decimal.Zero;
+				var finalPriceWithDiscountBase = _taxService.GetProductPrice(product, product.Price, _services.WorkContext.CurrentCustomer, out taxRate);
+				
+				if (!_taxSettings.Value.PricesIncludeTax && _services.WorkContext.TaxDisplayType == TaxDisplayType.IncludingTax)
+				{
+					adjustment = (m.ProductPrice.PriceValue - finalPriceWithDiscountBase) / (taxRate / 100 + 1);
+				}
+				else if(_taxSettings.Value.PricesIncludeTax && _services.WorkContext.TaxDisplayType == TaxDisplayType.ExcludingTax)
+				{
+					adjustment = (m.ProductPrice.PriceValue - finalPriceWithDiscountBase) * (taxRate / 100 + 1);
+				}
+				else
+				{
+					adjustment = m.ProductPrice.PriceValue - finalPriceWithDiscountBase;
+				}
+
 				partials = new
 				{
 					Attrs = this.RenderPartialViewToString("Product.Attrs", m),
 					Price = this.RenderPartialViewToString("Product.Offer.Price", m),
 					Stock = this.RenderPartialViewToString("Product.StockInfo", m),
 					OfferActions = this.RenderPartialViewToString("Product.Offer.Actions", m, dataDictAddToCart),
-					TierPrices = this.RenderPartialViewToString("Product.TierPrices", _helper.CreateTierPriceModel(product, m.ProductPrice.PriceValue - product.Price)),
+					TierPrices = this.RenderPartialViewToString("Product.TierPrices", _helper.CreateTierPriceModel(product, adjustment)),
                     BundlePrice = product.ProductType == ProductType.BundledProduct ? this.RenderPartialViewToString("Product.Bundle.Price", m) : (string)null
 				};
 			}
@@ -861,7 +872,7 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[HttpPost, ActionName("AskQuestion")]
-		[ValidateCaptcha]
+		[ValidateCaptcha, ValidateHoneypot]
 		[GdprConsent]
 		public ActionResult AskQuestionSend(ProductAskQuestionModel model, bool captchaValid)
 		{
@@ -884,7 +895,7 @@ namespace SmartStore.Web.Controllers
 					model.SenderEmail,
 					model.SenderName,
 					model.SenderPhone,
-					Core.Html.HtmlUtils.FormatText(model.Question, false, true, false, false, false, false));
+					Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.Question.HtmlEncode()));
 
 				if (msg?.Email?.Id != null)
 				{
@@ -957,7 +968,7 @@ namespace SmartStore.Web.Controllers
 					product,
 					model.YourEmailAddress, 
 					model.FriendEmail,
-					Core.Html.HtmlUtils.FormatText(model.PersonalMessage, false, true, false, false, false, false));
+					Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.PersonalMessage.HtmlEncode()));
 
 				model.ProductId = product.Id;
 				model.ProductName = product.GetLocalized(x => x.Name);

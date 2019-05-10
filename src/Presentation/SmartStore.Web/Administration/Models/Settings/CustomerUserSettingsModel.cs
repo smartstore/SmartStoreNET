@@ -7,7 +7,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Settings
 {
-	public partial class CustomerUserSettingsModel : ModelBase, ILocalizedModel<CustomerUserSettingsLocalizedModel>
+    public partial class CustomerUserSettingsModel : ModelBase, ILocalizedModel<CustomerUserSettingsLocalizedModel>
 	{
         public CustomerUserSettingsModel()
         {
@@ -33,8 +33,8 @@ namespace SmartStore.Admin.Models.Settings
         {
 			public IList<SelectListItem> AvailableRegisterCustomerRoles { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.UsernamesEnabled")]
-            public bool UsernamesEnabled { get; set; }
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CustomerLoginType")]
+            public CustomerLoginType CustomerLoginType { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CustomerNumberMethod")]
             public CustomerNumberMethod CustomerNumberMethod { get; set; }
@@ -56,9 +56,6 @@ namespace SmartStore.Admin.Models.Settings
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AllowCustomersToUploadAvatars")]
             public bool AllowCustomersToUploadAvatars { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.DefaultAvatarEnabled")]
-            public bool DefaultAvatarEnabled { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.ShowCustomersLocation")]
             public bool ShowCustomersLocation { get; set; }

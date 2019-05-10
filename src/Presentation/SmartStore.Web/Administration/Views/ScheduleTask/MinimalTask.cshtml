@@ -6,16 +6,17 @@
     var hasPermission = ViewBag.HasPermission == true;
     var cancellable = ViewBag.Cancellable == true;
     var reloadPage = ViewBag.ReloadPage == true;
+    var isRunning = Model.LastHistoryEntry.IsRunning;
 }
 <div id="@widgetId" class="minimal-task-widget form-row">
-	<div class="task-info col@(Model.IsRunning ? " hide" : "")">
+	<div class="task-info col@(isRunning ? " hide" : "")">
 		@{ Html.RenderPartial("_MinimalTaskWidget", Model); }
 	</div>
-	<div class='task-progress text-muted col@(Model.IsRunning ? "" : " hide")' data-task-id='@Model.Id' data-running='@(Model.IsRunning ? "true" : "false")'></div>
+	<div class='task-progress text-muted col@(isRunning ? "" : " hide")' data-task-id='@Model.Id' data-running='@(isRunning ? "true" : "false")'></div>
 	@if (cancellable && hasPermission)
 	{
 		<div class="col-auto">
-			<a href='@Model.CancelUrl' data-task-id='@Model.Id' class='btn btn-sm btn-danger btn-cancel-task@(!Model.IsRunning ? " hide" : "")' onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>
+			<a href='@Model.CancelUrl' data-task-id='@Model.Id' class='btn btn-sm btn-danger btn-cancel-task@(!isRunning ? " hide" : "")' onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>
 				@T("Common.Cancel")
 			</a>
 		</div>

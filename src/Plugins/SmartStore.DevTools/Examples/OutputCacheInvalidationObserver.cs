@@ -7,7 +7,6 @@ using SmartStore.Services.Topics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace SmartStore.DevTools.Examples
 {
@@ -15,6 +14,15 @@ namespace SmartStore.DevTools.Examples
 	{
 		public static void Execute()
 		{
+			// Register a handler which returns unique string tags for your custom entity.
+			// This is required if you ever call IDisplayControl.Announce(entity) for your entity,
+			// otherwise the system is not able to generate tags.
+			// Tags can be obtained via IDisplayControl.GetCacheControlTagsFor(entity).
+			// Invalidation by tags is done via IOutputCacheProvider.InvalidateByTag(string[] tags).
+			// InvalidateByTag() will remove any page from the output cache storage in which your custom entity is somehow displayed.
+			DisplayControl.RegisterHandlerFor(typeof(MyRecord), (x, c) => new[] { "mr" + x.Id });
+
+			// Register an output cache observe handler
 			var observer = EngineContext.Current.Resolve<IOutputCacheInvalidationObserver>();
 			observer.ObserveEntity(Observe);
 		}
@@ -35,7 +43,6 @@ namespace SmartStore.DevTools.Examples
 				IEnumerable<string> tags = null;
 
 				var outputCacheProvider = ctx.OutputCacheProvider;
-				var displayControl = ctx.ServiceContainer.Resolve<ICommonServices>().DisplayControl;
 
 				// We assume the domain record from the plugin stores information about the type of the entity in EntityName and the corresponding Id in EntityId
 				var entityname = myRecord.EntityName;
@@ -45,15 +52,15 @@ namespace SmartStore.DevTools.Examples
 				{
 					case "product":
 						var product = ctx.ServiceContainer.Resolve<IProductService>().GetProductById(myRecord.EntityId);
-						if (product != null) tags = displayControl.GetCacheControlTagsFor(product);
+						if (product != null) tags = ctx.DisplayControl.GetCacheControlTagsFor(product);
 						break;
 					case "category":
 						var category = ctx.ServiceContainer.Resolve<ICategoryService>().GetCategoryById(myRecord.EntityId);
-						if (category != null) tags = displayControl.GetCacheControlTagsFor(category);
+						if (category != null) tags = ctx.DisplayControl.GetCacheControlTagsFor(category);
 						break;
 					case "topic":
 						var topic = ctx.ServiceContainer.Resolve<ITopicService>().GetTopicById(myRecord.EntityId);
-						if (topic != null) tags = displayControl.GetCacheControlTagsFor(topic);
+						if (topic != null) tags = ctx.DisplayControl.GetCacheControlTagsFor(topic);
 						break;
 				}
 

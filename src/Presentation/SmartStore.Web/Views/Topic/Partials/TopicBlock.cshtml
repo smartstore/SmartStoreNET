@@ -67,8 +67,8 @@
 }
 else
 {
-    <div class="block topic-html-content my-3" id="ph-topic-@Model.Id">
-        @if (!string.IsNullOrEmpty(Model.Title))
+    <div id="ph-topic-@Model.Id" class="block topic-html-content my-3">
+        @if (Model.Title.HasValue())
         {
             <div class="block-title" id="ph-title-@Model.Id">
 				@if (ViewBag.IsLead == true)
@@ -81,7 +81,15 @@ else
 				}
             </div>
         }
+
         <div class="block-body html-editor-content topic-html-content-body@(ViewBag.IsLead == true ? " lead" : "")" @Html.LanguageAttributes(Model.Body)>
+			@if (Model.Intro.HasValue() && (ViewBag.IsLead == null || ViewBag.IsLead == false))
+			{
+				<p class="topic-intro lead">
+					@Html.Raw(Model.Intro)
+				</p>
+			}
+
             @Html.Raw(Html.CollapsedText(Model.Body))
         </div>
     </div>

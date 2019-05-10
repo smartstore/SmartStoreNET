@@ -9,7 +9,10 @@ namespace SmartStore.Core.Domain.Common
 			UseStoredProceduresIfSupported = true;
 			AutoUpdateEnabled = true;
 			EntityPickerPageSize = 48;
-		}
+            MaxScheduleHistoryAgeInDays = 30;
+            MaxNumberOfScheduleHistoryEntries = 100;
+            MaxQueuedMessagesAgeInDays = 14;
+        }
 		
 		public bool UseSystemEmailForContactUsForm { get; set; }
 
@@ -28,5 +31,20 @@ namespace SmartStore.Core.Domain.Common
 		/// Gets or sets the page size for the entity picker
 		/// </summary>
 		public int EntityPickerPageSize { get; set; }
-	}
+
+        /// <summary>
+        /// Gets or sets the maximum age of schedule history entries (in days).
+        /// </summary>
+        public int MaxScheduleHistoryAgeInDays { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum number of schedule history entries per task.
+        /// </summary>
+        public int MaxNumberOfScheduleHistoryEntries { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum age of sent queued messages (in days).
+        /// </summary>
+        public int MaxQueuedMessagesAgeInDays { get; set; }
+    }
 }

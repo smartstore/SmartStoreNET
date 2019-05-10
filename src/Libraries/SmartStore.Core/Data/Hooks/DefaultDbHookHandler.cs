@@ -9,7 +9,6 @@ namespace SmartStore.Core.Data.Hooks
 	public class DefaultDbHookHandler : IDbHookHandler
 	{
 		private readonly IEnumerable<Lazy<IDbHook, HookMetadata>> _hooks;
-		private readonly IList<Lazy<IDbHook, HookMetadata>> _loadHooks;
 		private readonly IList<Lazy<IDbHook, HookMetadata>> _saveHooks;
 
 		private readonly Multimap<RequestHookKey, IDbHook> _hooksRequestCache = new Multimap<RequestHookKey, IDbHook>();
@@ -17,7 +16,6 @@ namespace SmartStore.Core.Data.Hooks
 		// Prevents repetitive hooking of the same entity/state/[pre|post] combination within a single request
 		private readonly HashSet<HookedEntityKey> _hookedEntities = new HashSet<HookedEntityKey>();
 
-		private static HashSet<Type> _importantLoadHookTypes;
 		private static HashSet<Type> _importantSaveHookTypes;
 		private readonly static object _lock = new object();
 
@@ -30,7 +28,6 @@ namespace SmartStore.Core.Data.Hooks
 		public DefaultDbHookHandler(IEnumerable<Lazy<IDbHook, HookMetadata>> hooks)
 		{
 			_hooks = hooks;
-			_loadHooks = hooks.Where(x => x.Metadata.IsLoadHook == true).ToList();
 			_saveHooks = hooks.Where(x => x.Metadata.IsLoadHook == false).ToList();
 		}
 
@@ -38,23 +35,6 @@ namespace SmartStore.Core.Data.Hooks
 		{
 			get;
 			set;
-		}
-
-		public bool HasImportantLoadHooks()
-		{
-			if (_importantLoadHookTypes == null)
-			{
-				lock (_lock)
-				{
-					if (_importantLoadHookTypes == null)
-					{
-						_importantLoadHookTypes = new HashSet<Type>();
-						_importantLoadHookTypes.AddRange(_loadHooks.Where(x => x.Metadata.Important).Select(x => x.Metadata.ImplType));
-					}
-				}
-			}
-
-			return _importantLoadHookTypes.Any();
 		}
 
 		public bool HasImportantSaveHooks()
@@ -72,41 +52,6 @@ namespace SmartStore.Core.Data.Hooks
 			}
 
 			return _importantSaveHookTypes.Any();
-		}
-
-		public IEnumerable<IDbLoadHook> TriggerLoadHooks(BaseEntity entity, bool importantHooksOnly)
-		{
-			Guard.NotNull(entity, nameof(entity));
-
-			var processedHooks = new HashSet<IDbLoadHook>();
-
-			if (!_loadHooks.Any() || (importantHooksOnly && !this.HasImportantLoadHooks()))
-			{
-				return processedHooks;
-			}
-
-			var entityType = entity.GetUnproxiedType();			
-
-			var hooks = GetLoadHookInstancesFor(entityType, importantHooksOnly);
-			foreach (var hook in hooks)
-			{
-				// call hook
-				try
-				{
-					hook.OnLoaded(entity);
-					processedHooks.Add(hook);
-				}
-				catch (Exception ex) when (ex is NotImplementedException || ex is NotSupportedException)
-				{
-					RegisterVoidHook(hook, entityType, EntityState.Unchanged, HookStage.Load);
-				}
-				catch (Exception ex)
-				{
-					Logger.ErrorFormat(ex, "LoadHook exception ({0})", hook.GetType().FullName);
-				}
-			}
-
-			return processedHooks;
 		}
 
 		public IEnumerable<IDbSaveHook> TriggerPreSaveHooks(IEnumerable<IHookedEntity> entries, bool importantHooksOnly, out bool anyStateChanged)
@@ -208,17 +153,6 @@ namespace SmartStore.Core.Data.Hooks
 			processedHooks.Each(x => x.OnAfterSaveCompleted());
 
 			return processedHooks;
-		}
-
-		private IEnumerable<IDbLoadHook> GetLoadHookInstancesFor(Type entityType, bool importantOnly)
-		{
-			return GetHookInstancesFor<IDbLoadHook>(
-				entityType,
-				EntityState.Unchanged,
-				HookStage.Load,
-				importantOnly, 
-				_loadHooks, 
-				_importantLoadHookTypes);
 		}
 
 		private IEnumerable<IDbSaveHook> GetSaveHookInstancesFor(IHookedEntity entry, HookStage stage, bool importantOnly)

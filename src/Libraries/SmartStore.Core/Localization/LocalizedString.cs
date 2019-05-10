@@ -26,6 +26,7 @@ namespace SmartStore.Core.Localization
         {
             if (string.IsNullOrEmpty(text))
                 return defaultValue;
+
             return new LocalizedString(text);
         }
 

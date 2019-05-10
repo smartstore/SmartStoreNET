@@ -1,19 +1,17 @@
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration;
 using System.Linq;
 using System.Reflection;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Cms;
 using SmartStore.Data.Migrations;
 using SmartStore.Data.Setup;
 
 namespace SmartStore.Data
-{	
-	public class SmartObjectContext : ObjectContextBase
+{
+    public class SmartObjectContext : ObjectContextBase
     {
 		static SmartObjectContext()
 		{
@@ -67,6 +65,9 @@ namespace SmartStore.Data
             }
             //...or do it manually below. For example,
             //modelBuilder.Configurations.Add(new LanguageMap());
+
+            modelBuilder.Entity<MenuRecord>();
+            modelBuilder.Entity<MenuItemRecord>();
 
             base.OnModelCreating(modelBuilder);
         }

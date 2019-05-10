@@ -1,21 +1,28 @@
 ﻿@model TopicModel
+
 @using Telerik.Web.Mvc.UI;
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
+
 @Html.SmartStore().TabStrip().Name("topic-edit").Style(TabsStyle.Material).Items(x =>
 {
-    x.Add().Text(T("Admin.ContentManagement.Topics.Info").Text).Content(TabInfo()).Selected(true);
-    x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
+	x.Add().Text(T("Admin.Common.General").Text).Content(TabInfo()).Selected(true);
+	x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
+	x.Add().Text(T("Admin.Catalog.Categories.Acl").Text).Content(TabAcl());
 	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
-    
-    //generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "topic-edit", this.Html, this.Model));
+
+	if (Model.Id > 0)
+	{
+		x.Add().Text(T("Admin.Common.GenericAttributes").Text).Content(TabGenericAttributes());
+	}
+	
+	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "topic-edit", this.Html, this.Model));
 })
 
 @helper TabInfo()
 { 
-    <table class="adminContent">
+    <table class="adminContent mb-3">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SystemName)
@@ -25,6 +32,24 @@
                 @Html.ValidationMessageFor(model => model.SystemName)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.IsPublished)
+            </td>
+            <td class="adminData">
+				@Html.CheckBoxFor(model => model.IsPublished, Model.IsSystemTopic ? new { @readonly = "readonly" } : null )
+                @Html.ValidationMessageFor(model => model.IsPublished)
+            </td>
+        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Priority)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Priority)
+				@Html.ValidationMessageFor(model => model.Priority)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.IsPasswordProtected)
@@ -75,11 +100,30 @@
                 @Html.SmartLabelFor(model => model.RenderAsWidget)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.RenderAsWidget, new { data_toggler_for = "#pnlRenderAsWidget" })
+				@Html.CheckBoxFor(model => model.RenderAsWidget, new { data_toggler_for = "#pnlRenderAsWidget, #pnlTopicAttrValues" })
                 @Html.ValidationMessageFor(model => model.RenderAsWidget)
             </td>
         </tr>
-
+        <tbody id="pnlTopicAttrValues" data-panel-reverse="true">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.HtmlId)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(x => x.HtmlId)
+                    @Html.ValidationMessageFor(model => model.HtmlId)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.BodyCssClass)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(x => x.BodyCssClass)
+                    @Html.ValidationMessageFor(model => model.BodyCssClass)
+                </td>
+            </tr>
+        </tbody>
 		<tbody id="pnlRenderAsWidget">
 			<tr>
 				<td class="adminTitle">
@@ -88,15 +132,6 @@
 				<td class="adminData">
 					@Html.EditorFor(model => model.WidgetZone, "WidgetZone")
 					@Html.ValidationMessageFor(model => model.WidgetZone)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Priority)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(x => x.Priority)
-					@Html.ValidationMessageFor(model => model.Priority)
 				</td>
 			</tr>
 			<tr>
@@ -144,14 +179,32 @@
             @<table class="adminContent">
                 <tr>
                     <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.Locales[item].Title)
+                        @Html.SmartLabelFor(model => model.Locales[item].ShortTitle)
                     </td>
-                    <td class="adminData">
+					<td class="adminData">
 						@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
 						@Html.HiddenFor(model => model.Locales[item].LanguageId, new { id = Html.FieldIdFor(model => model.Locales[item].LanguageId) + "_1" })
 
+						@Html.EditorFor(model => model.Locales[item].ShortTitle)
+						@Html.ValidationMessageFor(model => model.Locales[item].ShortTitle)
+					</td>
+                </tr>
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.Locales[item].Title)
+                    </td>
+                    <td class="adminData">
                         @Html.EditorFor(model => Model.Locales[item].Title)
                         @Html.ValidationMessageFor(model => model.Locales[item].Title)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.Locales[item].Intro)
+                    </td>
+                    <td class="adminData wide">
+                        @Html.TextAreaFor(model => Model.Locales[item].Intro, new { rows = 1 })
+                        @Html.ValidationMessageFor(model => model.Locales[item].Intro)
                     </td>
                 </tr>
                 <tr>
@@ -166,6 +219,15 @@
             </table>
             ,
             @<table class="adminContent">
+				<tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.ShortTitle)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.ShortTitle)
+                        @Html.ValidationMessageFor(model => model.ShortTitle)
+                    </td>
+                </tr>
                 <tr>
                     <td class="adminTitle">
                         @Html.SmartLabelFor(model => model.Title)
@@ -173,6 +235,15 @@
                     <td class="adminData">
                         @Html.EditorFor(model => model.Title)
                         @Html.ValidationMessageFor(model => model.Title)
+                    </td>
+                </tr>
+				<tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.Intro)
+                    </td>
+                    <td class="adminData wide">
+                        @Html.TextAreaFor(model => model.Intro, new { rows = 1 })
+                        @Html.ValidationMessageFor(model => model.Intro)
                     </td>
                 </tr>
                 <tr>
@@ -280,4 +351,14 @@
 @helper TabStores()
 {
 	@Html.Partial("StoreSelector", Model)
+}
+
+@helper TabAcl()
+{
+	@Html.Partial("AclSelector", Model)
+}
+
+@helper TabGenericAttributes()
+{
+    @Html.Action("GenericAttributes", "Common", new { entityName = "Topic", entityId = Model.Id })
 }

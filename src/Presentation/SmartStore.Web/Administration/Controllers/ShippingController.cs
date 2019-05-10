@@ -211,7 +211,7 @@ namespace SmartStore.Admin.Controllers
                 var sm = model.ToEntity();
                 _shippingService.InsertShippingMethod(sm);
 
-				_storeMappingService.SaveStoreMappings(sm, model.SelectedStoreIds);
+				SaveStoreMappings(sm, model);
 
 				UpdateLocales(sm, model);
 
@@ -259,7 +259,7 @@ namespace SmartStore.Admin.Controllers
                 sm = model.ToEntity(sm);
                 _shippingService.UpdateShippingMethod(sm);
 
-				_storeMappingService.SaveStoreMappings(sm, model.SelectedStoreIds);
+				SaveStoreMappings(sm, model);
 
 				UpdateLocales(sm, model);
 

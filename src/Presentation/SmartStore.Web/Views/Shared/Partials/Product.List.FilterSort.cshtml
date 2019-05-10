@@ -1,7 +1,6 @@
-﻿@model ProductSummaryModel
-
-@using SmartStore.Web.Models.Catalog;
+﻿@using SmartStore.Web.Models.Catalog;
 @using SmartStore.Core.Domain.Catalog;
+@model IListActions
 
 <!-- Filter -->
 @if (Model.AllowFiltering)
@@ -10,12 +9,11 @@
 		<div class="mf-dropdown">
 			<button class="btn btn-warning btn-labeled icon-right btn-no-border btn-block btn-toggle-filter-widget">
 				<span>@T("Products.ToFilter")</span>
-				<b><i class="fa fa-fw fa-sliders"></i></b>
+				<b><i class="fa fa-fw fa-sliders-h"></i></b>
 			</button>
 		</div>
 	</div>
 }
-
 
 <!-- Sort -->
 @if (Model.AllowSorting)
@@ -26,7 +24,7 @@
 				<i class="fa fa-sort d-xl-none"></i>
 				<span class="d-xl-none">@Model.CurrentSortOrderName</span>
 				<em class="d-none d-xl-inline">@T("Products.SortByX", "<span>" + Model.CurrentSortOrderName + "</span>")</em>
-				<i class="fa fa-caret-down"></i>
+				<i class="fas fa-caret-down"></i>
 			</button>
 			<button class="btn btn-light btn-no-border btn-labeled icon-right btn-block d-lg-none">
 				<span>@T("Products.ToSort")</span>
@@ -35,8 +33,8 @@
 			<select class="artlist-action-select form-control noskin" name="artlist-action-sort" id="artlist-action-sort" data-qname="o" title="@T("Products.SortByX", Model.CurrentSortOrderName)">
 				@foreach (var sort in Model.AvailableSortOptions)
 				{
-					var sortName = ((int)ProductSortingEnum.Relevance == sort.Key ? (Model.RelevanceSortOrderName ?? sort.Value) : sort.Value);
-					<option value="@sort.Key" @Html.Attr("selected", "selected", sort.Key == Model.CurrentSortOrder)>@sortName</option>
+					var sortName = (Model is ProductSummaryModel && sort.Key == (int)ProductSortingEnum.Relevance) ? Model.RelevanceSortOrderName : null;
+					<option value="@sort.Key" @Html.Attr("selected", "selected", sort.Key == Model.CurrentSortOrder)>@(sortName ?? sort.Value)</option>
 				}
 			</select>
 		</div>

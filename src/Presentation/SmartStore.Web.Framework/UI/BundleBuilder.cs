@@ -11,6 +11,7 @@ using SmartStore.Core;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.Theming.Assets;
 using SmartStore.Core.Themes;
+using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -31,13 +32,11 @@ namespace SmartStore.Web.Framework.UI
         private readonly IWorkContext _workContext;
 		private readonly IThemeContext _themeContext;
 
-        private static readonly object s_lock = new object();
-
         public BundleBuilder(IStoreContext storeContext, IWorkContext workContext, IThemeContext themeContext)
         {
-            this._storeContext = storeContext;
-            this._workContext = workContext;
-			this._themeContext = themeContext;
+            _storeContext = storeContext;
+            _workContext = workContext;
+			_themeContext = themeContext;
         }
 
         public string Build(BundleType type, IEnumerable<string> files)
@@ -45,11 +44,11 @@ namespace SmartStore.Web.Framework.UI
             if (files == null || !files.Any())
                 return string.Empty;
 
-            string bundleVirtualPath = this.GetBundleVirtualPath(type, files);
+            var bundleVirtualPath = this.GetBundleVirtualPath(type, files);
             var bundleFor = BundleTable.Bundles.GetBundleFor(bundleVirtualPath);
             if (bundleFor == null)
             {
-                lock (s_lock)
+                using (KeyedLock.Lock("BundleBuilder.Build." + bundleVirtualPath))
                 {
                     bundleFor = BundleTable.Bundles.GetBundleFor(bundleVirtualPath);
                     if (bundleFor == null)
@@ -101,7 +100,7 @@ namespace SmartStore.Web.Framework.UI
             using (SHA256 sha = new SHA256Managed())
             {
                 var hashInput = "";
-                foreach (var file in files.OrderBy(x => x))
+                foreach (var file in files)
                 {
                     hashInput += file;
                     hashInput += ",";

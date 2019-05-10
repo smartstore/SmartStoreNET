@@ -1,7 +1,6 @@
 ﻿using FluentValidation.TestHelper;
-using SmartStore.Web.Models.ShoppingCart;
-using SmartStore.Web.Validators.ShoppingCart;
 using NUnit.Framework;
+using SmartStore.Web.Models.ShoppingCart;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators.ShoppingCart
 {
@@ -13,7 +12,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.ShoppingCart
         [SetUp]
         public new void Setup()
         {
-            _validator = new WishlistEmailAFriendValidator(_localizationService);
+            _validator = new WishlistEmailAFriendValidator();
         }
         
         [Test]

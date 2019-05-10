@@ -78,7 +78,6 @@ $art-border-color:              #ddd;
 .artlist-action--filter,
 .artlist-action--sort {
 	flex-grow: 1;
-	flex-basis: 0;
 	max-width: 100%;
 }
 
@@ -216,11 +215,20 @@ $art-border-color:              #ddd;
         position: absolute;
         z-index: 1;
         left: 0;
-        top: 0;
+        top: 0rem;
         width: 100%;
         text-align: center;
         color: $gray-500;
     }
+}
+
+.art-picture.no-default-picture {
+    &:before {
+        top: 2rem;
+    }
+    img {
+		display: none;
+	}
 }
 
 .art-badges {
@@ -295,6 +303,9 @@ $art-border-color:              #ddd;
 
     &.art-price--offer {
         color: $art-price-offer-color;
+    }
+    &.badge {
+        color: $white;
     }
 }
 
@@ -554,6 +565,8 @@ $art-border-color:              #ddd;
     
     .art {
         border-bottom-color: $art-border-color;
+        display: flex;
+        flex-flow: column;
     }
 
     // Grid has always 2 cols per row at least, even on xs
@@ -573,6 +586,11 @@ $art-border-color:              #ddd;
     }
 
     .art-description {
+        // At least 2 lines height for description
+        height: ($art-font-size-sm * $art-line-height) * 2;
+    }
+    
+    &.artlist-boxed .art-price-block {
         // At least 2 lines height for description
         height: ($art-font-size-sm * $art-line-height) * 2;
     }
@@ -606,6 +624,13 @@ $art-border-color:              #ddd;
     .art-variant-info {
         padding-left: $grid-gutter-width / 2;
         padding-right: $grid-gutter-width / 2;
+    }
+
+    @include media-breakpoint-up(xs) {
+        &.artlist-1-col .art {
+            flex-basis: 100% !important;
+            max-width: initial !important;
+        }
     }
 
     @include media-breakpoint-up(sm) {

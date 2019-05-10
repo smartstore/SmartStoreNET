@@ -78,4 +78,6 @@
 	var selectedValues = zones.Where(x => x.Selected == true).Select(x => x.Value.ToString()).ToArray();
 }
 
-@Html.ListBox("", new MultiSelectList(zones, "Value", "Text", "Group.Name", selectedValues), new { multiple = "multiple", data_tags = "true", value = Value, name = name, id = id })
+@Html.ListBox("", 
+	new MultiSelectList(zones, "Value", "Text", "Group.Name", selectedValues), 
+	new { @class = "form-control x-select2-hidden-accessible", multiple = "multiple", size = 1, data_tags = "true", value = Value, name = name, id = id })

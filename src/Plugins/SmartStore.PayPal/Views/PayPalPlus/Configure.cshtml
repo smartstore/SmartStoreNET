@@ -95,7 +95,7 @@
 				<a class="btn @(Model.ExperienceProfileId.HasValue() ? "btn-warning" : "btn-primary") mt-1" 
 				   onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);' @(hasCredentials ? "" : "disabled='disabled'")
 				   href="@Url.Action("UpsertExperienceProfile", "PayPalPlus", new { area = Plugin.SystemName })">
-					<i class="fa fa-fw @(Model.ExperienceProfileId.HasValue() ? "fa-refresh" : "fa-list-alt")"></i>
+					<i class="fa-fw @(Model.ExperienceProfileId.HasValue() ? "fa fa-sync" : "far fa-list-alt")"></i>
 					<span>@T(Model.ExperienceProfileId.HasValue() ? "Common.Refresh" : "Common.AddNew")</span>
 				</a>
 
@@ -103,7 +103,7 @@
 				{
 					<a class="btn btn-danger mt-1" onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);' @(hasCredentials ? "" : "disabled='disabled'")
 					   href="@Url.Action("DeleteExperienceProfile", "PayPalPlus", new { area = Plugin.SystemName })">
-						<i class="fa fa-trash-o"></i>
+						<i class="far fa-trash-alt"></i>
 						<span>@T("Admin.Common.Delete")</span>
 					</a>
 				}
@@ -125,7 +125,7 @@
 						{
 							<a class="btn btn-danger" onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);' @(hasCredentials ? "" : "disabled='disabled'")
 							   href="@Url.Action("DeleteWebhook", "PayPalPlus", new { area = Plugin.SystemName })">
-								<i class="fa fa-trash-o"></i>
+								<i class="far fa-trash-alt"></i>
 								<span>@T("Admin.Common.Delete")</span>
 							</a>
 						}

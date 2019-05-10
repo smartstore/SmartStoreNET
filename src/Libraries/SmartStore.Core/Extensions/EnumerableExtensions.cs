@@ -241,9 +241,14 @@ namespace SmartStore
 			 Func<TSource, TElement> elementSelector,
 			 IEqualityComparer<TKey> comparer)
 		{
-			Guard.NotNull(source, nameof(source));
-			Guard.NotNull(keySelector, nameof(keySelector));
-			Guard.NotNull(elementSelector, nameof(elementSelector));
+			if (source == null)
+				throw new ArgumentNullException(nameof(source));
+
+			if (keySelector == null)
+				throw new ArgumentNullException(nameof(keySelector));
+
+			if (elementSelector == null)
+				throw new ArgumentNullException(nameof(elementSelector));
 
 			var dictionary = new Dictionary<TKey, TElement>(comparer);
 
@@ -276,14 +281,22 @@ namespace SmartStore
 		/// <returns>The sorted entity collection</returns>
 		public static IEnumerable<TEntity> OrderBySequence<TEntity>(this IEnumerable<TEntity> source, IEnumerable<int> ids) where TEntity : BaseEntity
 		{
-			Guard.NotNull(source, nameof(source));
-			Guard.NotNull(ids, nameof(ids));
+			if (source == null)
+				throw new ArgumentNullException(nameof(source));
+
+			if (ids == null)
+				throw new ArgumentNullException(nameof(ids));
 
 			var sorted = from id in ids
 						 join entity in source on id equals entity.Id
 						 select entity;
 
 			return sorted;
+		}
+
+		public static string StrJoin(this IEnumerable<string> source, string separator)
+		{
+			return string.Join(separator, source);
 		}
 
 		#endregion
@@ -304,9 +317,14 @@ namespace SmartStore
 												Func<TSource, TValue> valueSelector,
 												IEqualityComparer<TKey> comparer)
 		{
-			Guard.NotNull(source, nameof(source));
-			Guard.NotNull(keySelector, nameof(keySelector));
-			Guard.NotNull(valueSelector, nameof(valueSelector));
+			if (source == null)
+				throw new ArgumentNullException(nameof(source));
+
+			if (keySelector == null)
+				throw new ArgumentNullException(nameof(keySelector));
+
+			if (valueSelector == null)
+				throw new ArgumentNullException(nameof(valueSelector));
 
 			var map = new Multimap<TKey, TValue>(comparer);
 
@@ -324,9 +342,10 @@ namespace SmartStore
 
 		public static void AddRange(this NameValueCollection initial, NameValueCollection other)
         {
-            Guard.NotNull(initial, "initial");
+			if (initial == null)
+				throw new ArgumentNullException(nameof(initial));
 
-            if (other == null)
+			if (other == null)
                 return;
 
             foreach (var item in other.AllKeys)
@@ -375,5 +394,65 @@ namespace SmartStore
 		}
 
         #endregion
-    }
+
+        #region List
+
+        /// <summary>
+        /// Safe way to remove selected entries from a list.
+        /// </summary>
+        /// <remarks>To be used for materialized lists only, not IEnumerable or similar.</remarks>
+        /// <typeparam name="T">Object type.</typeparam>
+        /// <param name="list">List.</param>
+        /// <param name="selector">Selector for the entries to be removed.</param>
+        /// <returns>Number of removed entries.</returns>
+        public static int Remove<T>(this IList<T> list, Func<T, bool> selector)
+        {
+            Guard.NotNull(list, nameof(list));
+            Guard.NotNull(selector, nameof(selector));
+
+            var count = 0;
+            for (var i = list.Count - 1; i >= 0; i--)
+            {
+                if (selector(list[i]))
+                {
+                    list.RemoveAt(i);
+                    ++count;
+                }
+            }
+
+            return count;
+        }
+
+		#endregion
+
+		#region Stack
+
+		public static bool TryPeek<T>(this Stack<T> stack, out T value)
+		{
+			value = default(T);
+
+			if (stack.Count > 0)
+			{
+				value = stack.Peek();
+				return true;
+			}
+
+			return false;
+		}
+
+		public static bool TryPop<T>(this Stack<T> stack, out T value)
+		{
+			value = default(T);
+
+			if (stack.Count > 0)
+			{
+				value = stack.Pop();
+				return true;
+			}
+
+			return false;
+		}
+
+		#endregion
+	}
 }

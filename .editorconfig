@@ -1,6 +1,6 @@
-root = true
+# root = true
 
 # Unix-style newlines with a newline ending every file
-[*]
-indent_style = tab
-indent_size = 4
+# [*]
+# indent_style = tab
+# indent_size = 4

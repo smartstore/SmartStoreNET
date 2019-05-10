@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Search
 {
@@ -15,14 +16,19 @@ namespace SmartStore.Core.Search
 
 	public class IndexInfo
 	{
-		public IndexInfo()
+		public IndexInfo(string scope)
 		{
+            Guard.NotEmpty(scope, nameof(scope));
+
+            Scope = scope;
 			Fields = new string[0];
 		}
 
-		public string Scope { get; set; }
+		public string Scope { get; private set; }
 		public int DocumentCount { get; set; }
-		public IEnumerable<string> Fields { get; set; }
+        public long IndexSize { get; set; }
+        public int LastAddedDocumentId { get; set; }
+        public IEnumerable<string> Fields { get; set; }
 
 		// loaded from status file
 		public DateTime? LastIndexedUtc { get; set; }
@@ -48,13 +54,15 @@ namespace SmartStore.Core.Search
 						new XElement("error", Error),
 						new XElement("should-rebuild", ShouldRebuild ? "true" : "false"),
 						new XElement("document-count", DocumentCount),
-						new XElement("fields", string.Join(", ", Fields ?? Enumerable.Empty<string>()))
+                        new XElement("index-size", IndexSize),
+                        new XElement("last-added-document-id", LastAddedDocumentId),
+                        new XElement("fields", string.Join(", ", Fields ?? Enumerable.Empty<string>()))
 			)).ToString();
 		}
 
-		public static IndexInfo FromXml(string xml)
+		public static IndexInfo FromXml(string xml, string scope)
 		{
-			var info = new IndexInfo();
+            var info = new IndexInfo(scope);
 
 			try
 			{
@@ -96,7 +104,19 @@ namespace SmartStore.Core.Search
 					info.DocumentCount = documentCount.ToInt();
 				}
 
-				var fields = doc.Descendants("fields").FirstOrDefault()?.Value;
+                var indexSize = doc.Descendants("index-size").FirstOrDefault()?.Value;
+                if (indexSize.HasValue() && CommonHelper.TryConvert(indexSize, out long size))
+                {
+                    info.IndexSize = size;
+                }
+
+                var lastAddedDocumentId = doc.Descendants("last-added-document-id").FirstOrDefault()?.Value;
+                if (lastAddedDocumentId.HasValue())
+                {
+                    info.LastAddedDocumentId = lastAddedDocumentId.ToInt();
+                }
+
+                var fields = doc.Descendants("fields").FirstOrDefault()?.Value;
 				if (fields.HasValue())
 				{
 					info.Fields = fields.SplitSafe(", ");

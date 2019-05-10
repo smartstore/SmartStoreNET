@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Xml;
+using System.Data.Entity;
 using Autofac;
 using Newtonsoft.Json;
 using SmartStore.Admin.Models.Localization;
@@ -160,6 +161,7 @@ namespace SmartStore.Admin.Controllers
             Language language = null,
             LanguageDownloadState state = null)
         {
+            // Source Id (aka SetId), not entity Id!
             model.Id = resources.Id;
 			model.PreviousSetId = resources.PreviousSetId;
             model.IsInstalled = language != null;
@@ -333,6 +335,8 @@ namespace SmartStore.Admin.Controllers
 
 			var lastImportInfos = GetLastResourcesImportInfos();
 			var languages = _languageService.GetAllLanguages(true);
+            var defaultLanguageId = _languageService.GetDefaultLanguageId();
+
             var model = languages.Select(x =>
 			{
 				var langModel = x.ToModel();
@@ -343,6 +347,11 @@ namespace SmartStore.Admin.Controllers
 					langModel.LastResourcesImportOn = info.ImportedOn;
 					langModel.LastResourcesImportOnString = langModel.LastResourcesImportOn.Value.RelativeFormat(false, "f");
 				}
+
+                if (x.Id == defaultLanguageId)
+                {
+                    ViewBag.DefaultLanguageNote = T("Admin.Configuration.Languages.DefaultLanguage.Note", langModel.Name).Text;
+                }
 
 				return langModel;
 			})
@@ -407,7 +416,7 @@ namespace SmartStore.Admin.Controllers
                 var language = model.ToEntity();
                 _languageService.InsertLanguage(language);
 
-				_storeMappingService.SaveStoreMappings<Language>(language, model.SelectedStoreIds);
+				SaveStoreMappings(language, model);
 
 				var plugins = _pluginFinder.GetPluginDescriptors(true);
 				var filterLanguages = new List<Language>() { language };
@@ -511,7 +520,7 @@ namespace SmartStore.Admin.Controllers
                 language = model.ToEntity(language);
                 _languageService.UpdateLanguage(language);
 
-				_storeMappingService.SaveStoreMappings(language, model.SelectedStoreIds);
+				SaveStoreMappings(language, model);
 
                 NotifySuccess(T("Admin.Configuration.Languages.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = language.Id }) : RedirectToAction("List");
@@ -573,7 +582,7 @@ namespace SmartStore.Admin.Controllers
             var gridModel = new GridModel<LanguageResourceModel>
             {
                 Data = resourceQuery
-					.Take(_adminAreaSettings.GridPageSize)
+					.Take(() => _adminAreaSettings.GridPageSize)
 					.ToList()
                     .Select(x => new LanguageResourceModel
                     {
@@ -795,7 +804,7 @@ namespace SmartStore.Admin.Controllers
             }
             finally
             {
-                FileSystemHelper.Delete(tempFilePath);
+                FileSystemHelper.DeleteFile(tempFilePath);
             }
 
             return RedirectToAction("Edit", new { id = language.Id });
@@ -873,7 +882,7 @@ namespace SmartStore.Admin.Controllers
                     asyncState.Remove<LanguageDownloadState>();
                 }
 
-                FileSystemHelper.Delete(tempFilePath);
+                FileSystemHelper.DeleteFile(tempFilePath);
             }
         }
 
@@ -881,17 +890,14 @@ namespace SmartStore.Admin.Controllers
         {
             if (_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
             {
-                var ctx = new LanguageDownloadContext(setId);
-                ctx.AvailableResources = await CheckAvailableResources();
+				var ctx = new LanguageDownloadContext(setId)
+				{
+					AvailableResources = await CheckAvailableResources()
+				};
 
-                if (ctx.AvailableResources.Resources.Any())
+				if (ctx.AvailableResources.Resources.Any())
                 {
-                    var task = AsyncRunner.Run(
-                        (container, ct, obj) => DownloadCore(container, ct, obj as LanguageDownloadContext),
-                        ctx,
-                        CancellationToken.None,
-                        TaskCreationOptions.None,
-                        TaskScheduler.Default).ConfigureAwait(false);
+                    var task = AsyncRunner.Run((c, ct, obj) => DownloadCore(c, ct, obj as LanguageDownloadContext), ctx);
                 }
             }
 

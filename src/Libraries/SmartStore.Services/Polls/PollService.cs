@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -163,6 +164,28 @@ namespace SmartStore.Services.Polls
                           where pa.PollId == pollId && pvr.CustomerId == customerId
                           select pvr).Count() > 0;
             return result;
+        }
+
+        public virtual IPagedList<PollVotingRecord> GetVotingRecords(int pollId, int pageIndex, int pageSize)
+        {
+            if (pollId == 0)
+            {
+                return new PagedList<PollVotingRecord>(new List<PollVotingRecord>(), pageIndex, pageSize);
+            }
+
+            var query =
+                from pa in _pollAnswerRepository.TableUntracked
+                join pvr in _pollVotingRecords.TableUntracked on pa.Id equals pvr.PollAnswerId
+                where pa.PollId == pollId
+                orderby pa.DisplayOrder, pvr.CreatedOnUtc descending
+                select pvr;
+
+            query = query
+                .Expand(x => x.Customer)
+                .Expand(x => x.PollAnswer);
+
+            var votings = new PagedList<PollVotingRecord>(query, pageIndex, pageSize);
+            return votings;
         }
     }
 }

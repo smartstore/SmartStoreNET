@@ -1,0 +1,57 @@
+﻿@model ForumGroupModel
+@using SmartStore.Web.Models.Boards;
+
+<div class="forum-group table-responsive">
+    <div class="group-title">
+        <h3 class="fs-h3" @Html.LanguageAttributes(Model.Name)>
+            @Html.RouteLink(Model.Name.Value, "ForumGroupSlug", new { id = Model.Id, slug = Model.SeName })
+        </h3>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr class="group-header">
+                <th></th>
+                <th class="forum-name">
+                    @T("Forum.Forum")
+                </th>
+                <th class="topics d-none d-md-table-cell text-center">
+                    @T("Forum.Topics")
+                </th>
+                <th class="posts d-none d-md-table-cell text-center">
+                    @T("Forum.Posts")
+                </th>
+                <th class="last-post d-none d-md-table-cell">
+                    @T("Forum.LatestPost")
+                </th>
+            </tr>
+        </thead>
+
+        @foreach (var forum in Model.Forums)
+        {
+            <tr class="forum">
+                <td class="image">
+                    <i class="fa fa-folder-open"></i>
+                </td>
+                <td class="forum-name">
+                    <div class="forum-title">
+                        @Html.RouteLink(forum.Name, "ForumSlug", new { id = forum.Id, slug = forum.SeName })
+                    </div>
+                    <div class="forum-description" @Html.LanguageAttributes(forum.Description)>
+                        @forum.Description
+                    </div>
+                </td>
+                <td class="topics d-none d-md-table-cell text-center">
+                    @forum.NumTopics.ToString("N0")
+                </td>
+                <td class="posts d-none d-md-table-cell text-center">
+                    @forum.NumPosts.ToString("N0")
+                </td>
+                <td class="last-post d-none d-md-table-cell">
+                    @{ Html.RenderPartial("LastPost", forum.LastPost); }
+                </td>
+            </tr>            
+        }
+    </table>
+
+</div>

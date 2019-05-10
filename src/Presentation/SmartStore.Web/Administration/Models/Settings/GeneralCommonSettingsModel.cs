@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Settings;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Settings
 {
-	[Validator(typeof(GeneralCommonSettingsValidator))]
+    [Validator(typeof(GeneralCommonSettingsValidator))]
 	public partial class GeneralCommonSettingsModel : ModelBase
     {
         public GeneralCommonSettingsModel()
@@ -145,7 +145,10 @@ namespace SmartStore.Admin.Models.Settings
 			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnNewsCommentPage")]
 			public bool ShowOnNewsCommentPage { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnProductReviewPage")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnForumPage")]
+            public bool ShowOnForumPage { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnProductReviewPage")]
 			public bool ShowOnProductReviewPage { get; set; }
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.reCaptchaPublicKey")]
@@ -155,6 +158,9 @@ namespace SmartStore.Admin.Models.Settings
 			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.reCaptchaPrivateKey")]
 			[AllowHtml]
 			public string ReCaptchaPrivateKey { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.UseInvisibleReCaptcha")]
+			public bool UseInvisibleReCaptcha { get; set; }
 		}
 
 		public partial class PdfSettingsModel
@@ -317,9 +323,6 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SocialSettings.FacebookLink")]
             public string FacebookLink { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SocialSettings.GooglePlusLink")]
-            public string GooglePlusLink { get; set; }
-
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SocialSettings.TwitterLink")]
             public string TwitterLink { get; set; }
 
@@ -334,5 +337,16 @@ namespace SmartStore.Admin.Models.Settings
 		}
 
         #endregion
+    }
+
+    public partial class GeneralCommonSettingsValidator : AbstractValidator<GeneralCommonSettingsModel>
+    {
+        public GeneralCommonSettingsValidator()
+        {
+            RuleFor(x => x.ContactDataSettings.CompanyEmailAddress).EmailAddress();
+            RuleFor(x => x.ContactDataSettings.ContactEmailAddress).EmailAddress();
+            RuleFor(x => x.ContactDataSettings.SupportEmailAddress).EmailAddress();
+            RuleFor(x => x.ContactDataSettings.WebmasterEmailAddress).EmailAddress();
+        }
     }
 }

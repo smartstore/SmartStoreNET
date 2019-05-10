@@ -543,7 +543,7 @@ namespace SmartStore.ComponentModel
 			{
 				return result;
 			}
-
+			
 			// The simple and common case, this is normal POCO object - no need to allocate.
 			var allPropertiesDefinedOnType = true;
 			var allProperties = GetProperties(type, createPropertyHelper, allPropertiesCache);

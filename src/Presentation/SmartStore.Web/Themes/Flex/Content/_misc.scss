@@ -44,10 +44,9 @@
 	margin: 0;
 	padding: 10px 20px;
 	color: #fff;
-	text-shadow: 0px 1px 0px #666;
 	border-top: 1px solid #222;
 	text-align: center;
-	line-height: 2;
+	line-height: 1.5;
 }
 .cookie-consent-panel-message .close {
     color: #fff !important;
@@ -73,6 +72,57 @@
     display: block !important; 
 }
 
+//
+// Customer
+// -------------------------------------------------
+.customer-avatar,
+.customer-avatar-lg {
+    display: inline-block;
+
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    img, .letter {
+        display: inline-block;
+        border-radius: 50%;
+        border: 0;
+    }
+
+    .letter {
+        font-weight: bold;
+        text-align: center;
+    }
+}
+
+.customer-avatar {
+    width: 45px;
+    height: 45px;
+
+    img, .letter {
+        width: 45px;
+        height: 45px;
+    }
+
+    .letter {
+        font-size: 30px;
+    }
+}
+
+.customer-avatar-lg {
+    width: 120px;
+    height: 120px;
+
+    img, .letter {
+        width: 120px;
+        height: 120px;
+    }
+
+    .letter {
+        font-size: 80px;
+    }
+}
 
 //
 // Other stuff
@@ -107,4 +157,33 @@
 .edge .offcanvas-cart-footer-col.d-flex {
     display: -webkit-box !important;
     display: -ms-flexbox !important;
+}
+
+
+//
+// Vars
+// -------------------------------------------------
+
+:root {
+  $varnames: ();
+
+    @each $color, $value in $colors {
+        $varnames: $varnames + '--' + $color + ",";
+    }
+
+    @each $color, $value in $theme-colors {
+        $varnames: $varnames + '--' + $color + ",";
+    }
+
+    @each $color, $value in $grays {
+        $varnames: $varnames + '--gray-' + $color + ",";
+        --gray-#{$color}: #{$value};
+    }
+  
+    $varnames: $varnames + '--body,--muted,--black';
+
+    --varnames: #{$varnames};
+    --body: #{$body-color};
+    --muted: #{$text-muted};
+    --black: #000;
 }

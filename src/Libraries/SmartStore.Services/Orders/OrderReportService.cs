@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Data.Entity;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -248,7 +249,7 @@ namespace SmartStore.Services.Orders
             }
 
             if (recordsToReturn != 0 && recordsToReturn != int.MaxValue)
-                query2 = query2.Take(recordsToReturn);
+                query2 = query2.Take(() => recordsToReturn);
 
             var result = query2.ToList().Select(x =>
             {
@@ -264,7 +265,20 @@ namespace SmartStore.Services.Orders
             return result;
         }
 
-		public virtual int[] GetAlsoPurchasedProductsIds(int storeId, int productId, int recordsToReturn = 5, bool showHidden = false)
+        public virtual int GetPurchaseCount(int productId)
+        {
+            if (productId == 0)
+                throw new ArgumentException("Product ID is not specified");
+            
+            var query = from orderItem in _orderItemRepository.Table
+                        where orderItem.ProductId == productId
+                        group orderItem by orderItem.Id into g
+                        select new { ProductsPurchased = g.Sum(x => x.Quantity) };
+           
+            return query.Select(x => x.ProductsPurchased).FirstOrDefault();
+        }
+        
+        public virtual int[] GetAlsoPurchasedProductsIds(int storeId, int productId, int recordsToReturn = 5, bool showHidden = false)
         {
             if (productId == 0)
                 throw new ArgumentException("Product ID is not specified");
@@ -295,7 +309,7 @@ namespace SmartStore.Services.Orders
             query3 = query3.OrderByDescending(x => x.ProductsPurchased);
 
 			if (recordsToReturn > 0)
-				query3 = query3.Take(recordsToReturn);
+				query3 = query3.Take(() => recordsToReturn);
 
 			var report = query3.ToList();
 

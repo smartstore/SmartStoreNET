@@ -31,7 +31,7 @@ namespace SmartStore.Web.Framework.Theming
 			var result = GetResolveResult(virtualPath);
 			if (result != null)
 			{
-				if (!result.IsExplicit)
+				if (!result.IsBased)
 				{
 					return true;
 				}
@@ -63,7 +63,7 @@ namespace SmartStore.Web.Framework.Theming
 			{
 				// File is an inherited theme file. Set the result virtual path.
 				virtualPath = result.ResultVirtualPath ?? result.OriginalVirtualPath;
-				if (!result.IsExplicit)
+				if (!result.IsBased)
 				{
 					file = new InheritedVirtualThemeFile(result);
 				}

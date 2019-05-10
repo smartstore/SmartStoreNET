@@ -126,7 +126,7 @@ namespace SmartStore.Web.Framework.Theming
 					_context.Response.StatusCode = 500;
 					_context.Response.End();
 				}
-				
+
 				throw;
 			}
 		}

@@ -39,6 +39,11 @@
             </div>
         }
 
+		@if (Model.TitleEnabled)
+		{
+			@Html.ControlGroupFor(model => model.Title, required: false, breakpoint: "lg")
+		}
+
         @Html.ControlGroupFor(model => model.FirstName, required: true, breakpoint: "lg")
         @Html.ControlGroupFor(model => model.LastName, required: true, breakpoint: "lg")
 
@@ -246,7 +251,7 @@
 					<div class="form-check">
 						@Html.EditorFor(model => model.Newsletter, new { @class = "form-check-input" })
 						<label class="form-check-label" for="Newsletter">
-							@T("Account.Fields.Newsletter", Url.RouteUrl("Topic", new { SeName = Url.TopicSeName("PrivacyInfo") }))
+							@T("Account.Fields.Newsletter", Url.Topic("PrivacyInfo"))
 						</label>
 					</div>
 				</div>
@@ -280,6 +285,12 @@
             }
         </fieldset>
     }
+
+    <div class="form-group row">
+        <div class="col-12 text-muted">
+            @T("Common.FormFields.Required.Hint")
+        </div>
+    </div>
 
     <div class="form-group row">
         <div class="col">

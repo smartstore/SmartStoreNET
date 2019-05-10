@@ -1,21 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
-using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Services.Catalog
 {
-	public static class ProductExtensions
+    public static class ProductExtensions
     {
 		public static ProductVariantAttributeCombination MergeWithCombination(this Product product, string selectedAttributes)
         {
@@ -29,12 +26,16 @@ namespace SmartStore.Services.Catalog
 			if (selectedAttributes.IsEmpty())
 				return null;
 
-			// let's find appropriate record
+			// Let's find appropriate record.
 			var combination = productAttributeParser.FindProductVariantAttributeCombination(product.Id, selectedAttributes);
 
-			if (combination != null && combination.IsActive)
+            if (combination != null && combination.IsActive)
             {
-				product.MergeWithCombination(combination);
+                product.MergeWithCombination(combination);
+            }
+            else if (product.MergedDataValues != null)
+            {
+                product.MergedDataValues.Clear();
             }
 
 			return combination;
@@ -103,12 +104,11 @@ namespace SmartStore.Services.Catalog
 
 				if (data.Count > 0)
 				{
-					int id;
 					var ids = string.Join(",", data).SplitSafe(",").Distinct();
 
 					foreach (string str in ids)
 					{
-						if (int.TryParse(str, out id) && !pictureIds.Exists(i => i == id))
+						if (int.TryParse(str, out var id) && !pictureIds.Exists(i => i == id))
 							pictureIds.Add(id);
 					}
 				}
@@ -144,8 +144,11 @@ namespace SmartStore.Services.Catalog
             int productId1, int productId2)
         {
             foreach (CrossSellProduct crossSellProduct in source)
+            {
                 if (crossSellProduct.ProductId1 == productId1 && crossSellProduct.ProductId2 == productId2)
                     return crossSellProduct;
+            }
+
             return null;
         }
 
@@ -155,9 +158,12 @@ namespace SmartStore.Services.Catalog
 
 			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
 			{
-				if (product.StockQuantity <= 0 && product.BackorderMode == BackorderMode.NoBackorders)
-					return false;
+                if (product.StockQuantity <= 0 && product.BackorderMode == BackorderMode.NoBackorders)
+                {
+                    return false;
+                }
 			}
+
 			return true;
 		}
 
@@ -199,8 +205,9 @@ namespace SmartStore.Services.Catalog
         public static bool DisplayDeliveryTimeAccordingToStock(this Product product, CatalogSettings catalogSettings)
         {
 			Guard.NotNull(product, nameof(product));
+            Guard.NotNull(catalogSettings, nameof(catalogSettings));
 
-			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
+            if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
 			{
 				if (catalogSettings.DeliveryTimeIdForEmptyStock.HasValue && product.StockQuantity <= 0)
 					return true;
@@ -211,13 +218,32 @@ namespace SmartStore.Services.Catalog
             return true;
         }
 
-		/// <summary>
-		/// Indicates whether the product is labeled as NEW.
-		/// </summary>
-		/// <param name="product">Product entity</param>
-		/// <param name="catalogSettings">Catalog settings</param>
-		/// <returns>Whether the product is labeled as NEW</returns>
-		public static bool IsNew(this Product product, CatalogSettings catalogSettings)
+        public static int? GetDeliveryTimeIdAccordingToStock(this Product product, CatalogSettings catalogSettings)
+        {
+            Guard.NotNull(catalogSettings, nameof(catalogSettings));
+
+            if (product == null)
+            {
+                return null;
+            }
+
+            if ((product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
+                && catalogSettings.DeliveryTimeIdForEmptyStock.HasValue
+                && product.StockQuantity <= 0)
+            {
+                return catalogSettings.DeliveryTimeIdForEmptyStock.Value;
+            }
+
+            return product.DeliveryTimeId;
+        }
+
+        /// <summary>
+        /// Indicates whether the product is labeled as NEW.
+        /// </summary>
+        /// <param name="product">Product entity</param>
+        /// <param name="catalogSettings">Catalog settings</param>
+        /// <returns>Whether the product is labeled as NEW</returns>
+        public static bool IsNew(this Product product, CatalogSettings catalogSettings)
 		{
 			if (catalogSettings.LabelAsNewForMaxDays.HasValue)
 			{
@@ -253,8 +279,7 @@ namespace SmartStore.Services.Catalog
                     .ToList()
                     .ForEach(qtyStr =>
                     {
-                        int qty = 0;
-                        if (int.TryParse(qtyStr.Trim(), out qty))
+                        if (int.TryParse(qtyStr.Trim(), out var qty))
                         {
                             result.Add(qty);
                         }
@@ -277,8 +302,7 @@ namespace SmartStore.Services.Catalog
 				.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
 				.Select(x => x.Trim()))
 			{
-				int id = 0;
-				if (int.TryParse(idStr, out id))
+				if (int.TryParse(idStr, out var id))
 					ids.Add(id);
 			}
 
@@ -297,7 +321,6 @@ namespace SmartStore.Services.Catalog
 		/// <param name="customer">Customer</param>
 		/// <param name="currency">Target currency</param>
 		/// <param name="priceAdjustment">Price adjustment</param>
-		/// <param name="languageInsensitive">Whether the result string should be language insensitive</param>
         /// <returns>The base price info</returns>
         public static string GetBasePriceInfo(this Product product,
 			ILocalizationService localizationService,
@@ -307,8 +330,7 @@ namespace SmartStore.Services.Catalog
 			IPriceCalculationService priceCalculationService,
 			Customer customer,
             Currency currency,
-			decimal priceAdjustment = decimal.Zero,
-			bool languageInsensitive = false)
+			decimal priceAdjustment = decimal.Zero)
         {
 			Guard.NotNull(product, nameof(product));
 			Guard.NotNull(currencyService, nameof(currencyService));
@@ -319,16 +341,14 @@ namespace SmartStore.Services.Catalog
 
             if (product.BasePriceHasValue && product.BasePriceAmount != decimal.Zero)
             {
-                var taxrate = decimal.Zero;
                 var currentPrice = priceCalculationService.GetFinalPrice(product, customer, true);
-                var price = taxService.GetProductPrice(product, decimal.Add(currentPrice, priceAdjustment), customer, currency, out taxrate);
-                
+                var price = taxService.GetProductPrice(product, decimal.Add(currentPrice, priceAdjustment), customer, currency, out var taxrate);
                 price = currencyService.ConvertFromPrimaryStoreCurrency(price, currency);
 
-				return product.GetBasePriceInfo(price, localizationService, priceFormatter, currency, languageInsensitive);
+				return product.GetBasePriceInfo(price, localizationService, priceFormatter, currency);
 			}
 
-			return "";
+            return string.Empty;
         }
 
 		/// <summary>
@@ -339,14 +359,12 @@ namespace SmartStore.Services.Catalog
 		/// <param name="localizationService">Localization service</param>
 		/// <param name="priceFormatter">Price formatter</param>
 		/// <param name="currency">Target currency</param>
-		/// <param name="languageInsensitive">Whether the result string should be language insensitive</param>
 		/// <returns>The base price info</returns>
 		public static string GetBasePriceInfo(this Product product,
 			decimal productPrice,
 			ILocalizationService localizationService,
 			IPriceFormatter priceFormatter,
-			Currency currency,
-			bool languageInsensitive = false)
+			Currency currency)
 		{
 			Guard.NotNull(product, nameof(product));
 			Guard.NotNull(localizationService, nameof(localizationService));
@@ -358,8 +376,7 @@ namespace SmartStore.Services.Catalog
 				var value = Convert.ToDecimal((productPrice / product.BasePriceAmount) * product.BasePriceBaseAmount);
 				var valueFormatted = priceFormatter.FormatPrice(value, true, currency);
 				var amountFormatted = Math.Round(product.BasePriceAmount.Value, 2).ToString("G29");
-
-				var infoTemplate = localizationService.GetResource(languageInsensitive ? "Products.BasePriceInfo.LanguageInsensitive" : "Products.BasePriceInfo");
+				var infoTemplate = localizationService.GetResource("Products.BasePriceInfo");
 
 				var result = infoTemplate.FormatInvariant(
 					amountFormatted,
@@ -371,40 +388,38 @@ namespace SmartStore.Services.Catalog
 				return result;
 			}
 
-			return "";
+			return string.Empty;
 		}
 
 		public static string GetProductTypeLabel(this Product product, ILocalizationService localizationService)
 		{
 			if (product != null && product.ProductType != ProductType.SimpleProduct)
 			{
-				string key = "Admin.Catalog.Products.ProductType.{0}.Label".FormatWith(product.ProductType.ToString());
+				var key = "Admin.Catalog.Products.ProductType.{0}.Label".FormatInvariant(product.ProductType.ToString());
 				return localizationService.GetResource(key);
 			}
-			return "";
+
+			return string.Empty;
 		}
 
 		public static bool CanBeBundleItem(this Product product)
 		{
-			return (product != null && product.ProductType == ProductType.SimpleProduct && !product.IsRecurring && !product.IsDownload);
+			return product != null && product.ProductType == ProductType.SimpleProduct && !product.IsRecurring && !product.IsDownload;
 		}
 
-		public static bool IsValid(this ProductBundleItemData bundleItemData)
-		{
-			return (bundleItemData != null && bundleItemData.Item != null);
-		}
-		public static bool FilterOut(this ProductBundleItemData bundleItemData, ProductVariantAttributeValue value, out ProductBundleItemAttributeFilter filter)
-		{
-			if (bundleItemData.IsValid() && value != null && bundleItemData.Item.FilterAttributes)
-			{
-				filter = bundleItemData.Item.AttributeFilters.FirstOrDefault(x => x.AttributeId == value.ProductVariantAttributeId && x.AttributeValueId == value.Id);
+        public static bool FilterOut(this ProductBundleItem bundleItem, ProductVariantAttributeValue value, out ProductBundleItemAttributeFilter filter)
+        {
+            if (bundleItem != null && value != null && bundleItem.FilterAttributes)
+            {
+                filter = bundleItem.AttributeFilters.FirstOrDefault(x => x.AttributeId == value.ProductVariantAttributeId && x.AttributeValueId == value.Id);
+                return filter == null;
+            }
 
-				return (filter == null);
-			}
-			filter = null;
-			return false;
-		}
-		public static string GetLocalizedName(this ProductBundleItem bundleItem)
+            filter = null;
+            return false;
+        }
+
+        public static string GetLocalizedName(this ProductBundleItem bundleItem)
 		{
 			if (bundleItem != null)
 			{
@@ -426,8 +441,10 @@ namespace SmartStore.Services.Catalog
 		public static ProductBundleItemOrderData ToOrderData(this ProductBundleItemData bundleItemData, decimal priceWithDiscount = decimal.Zero, 
 			string attributesXml = null, string attributesInfo = null)
 		{
-			if (!bundleItemData.IsValid())
-				return null;
+            if (bundleItemData == null || bundleItemData.Item == null)
+            {
+                return null;
+            }
 
 			var item = bundleItemData.Item;
 			string bundleItemName = item.GetLocalized(x => x.Name);
@@ -437,7 +454,7 @@ namespace SmartStore.Services.Catalog
 				BundleItemId = item.Id,
 				ProductId = item.ProductId,
 				Sku = item.Product.Sku,
-				ProductName = (bundleItemName ?? item.Product.GetLocalized(x => x.Name)),
+				ProductName = bundleItemName ?? item.Product.GetLocalized(x => x.Name),
 				ProductSeName = item.Product.GetSeName(),
 				VisibleIndividually = item.Product.VisibleIndividually,
 				Quantity = item.Quantity,

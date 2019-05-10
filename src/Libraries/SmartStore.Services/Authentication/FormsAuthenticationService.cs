@@ -18,36 +18,41 @@ namespace SmartStore.Services.Authentication
 
         public FormsAuthenticationService(HttpContextBase httpContext, ICustomerService customerService, CustomerSettings customerSettings)
         {
-            this._httpContext = httpContext;
-            this._customerService = customerService;
-            this._customerSettings = customerSettings;
-            this._expirationTimeSpan = FormsAuthentication.Timeout;
+            _httpContext = httpContext;
+            _customerService = customerService;
+            _customerSettings = customerSettings;
+            _expirationTimeSpan = FormsAuthentication.Timeout;
         }
-
 
         public virtual void SignIn(Customer customer, bool createPersistentCookie)
         {
             var now = DateTime.UtcNow.ToLocalTime();
+			var name = _customerSettings.CustomerLoginType != CustomerLoginType.Email ? customer.Username : customer.Email;
 
-            var ticket = new FormsAuthenticationTicket(
+
+			var ticket = new FormsAuthenticationTicket(
                 1 /*version*/,
-                _customerSettings.UsernamesEnabled ? customer.Username : customer.Email,
+				name,
                 now,
                 now.Add(_expirationTimeSpan),
                 createPersistentCookie,
-                _customerSettings.UsernamesEnabled ? customer.Username : customer.Email,
+				name,
                 FormsAuthentication.FormsCookiePath);
 
             var encryptedTicket = FormsAuthentication.Encrypt(ticket);
 
-            var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
-            cookie.HttpOnly = true;
-            if (ticket.IsPersistent)
+			var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket)
+			{
+				HttpOnly = true,
+				Secure = FormsAuthentication.RequireSSL,
+				Path = FormsAuthentication.FormsCookiePath
+			};
+
+			if (ticket.IsPersistent)
             {
                 cookie.Expires = ticket.Expiration;
             }
-            cookie.Secure = FormsAuthentication.RequireSSL;
-            cookie.Path = FormsAuthentication.FormsCookiePath;
+
             if (FormsAuthentication.CookieDomain != null)
             {
                 cookie.Domain = FormsAuthentication.CookieDomain;
@@ -72,16 +77,15 @@ namespace SmartStore.Services.Authentication
 				return null;
 
 			Customer customer = null;
-			FormsIdentity formsIdentity = null;
-			SmartStoreIdentity smartNetIdentity = null;
+			SmartStoreIdentity ident = null;
 
-			if ((formsIdentity = _httpContext.User.Identity as FormsIdentity) != null)
+			if (_httpContext.User.Identity is FormsIdentity formsIdentity)
 			{
 				customer = GetAuthenticatedCustomerFromTicket(formsIdentity.Ticket);
 			}
-			else if ((smartNetIdentity = _httpContext.User.Identity as SmartStoreIdentity) != null)
+			else if ((ident = _httpContext.User.Identity as SmartStoreIdentity) != null)
 			{
-				customer = _customerService.GetCustomerById(smartNetIdentity.CustomerId);
+				customer = _customerService.GetCustomerById(ident.CustomerId);
 			}
 
 			if (customer != null && customer.Active && !customer.Deleted && customer.IsRegistered())
@@ -94,17 +98,27 @@ namespace SmartStore.Services.Authentication
 
         public virtual Customer GetAuthenticatedCustomerFromTicket(FormsAuthenticationTicket ticket)
         {
-            if (ticket == null)
-                throw new ArgumentNullException("ticket");
+			Guard.NotNull(ticket, nameof(ticket));
 
             var usernameOrEmail = ticket.UserData;
 
-            if (String.IsNullOrWhiteSpace(usernameOrEmail))
+            if (string.IsNullOrWhiteSpace(usernameOrEmail))
                 return null;
 
-            var customer = _customerSettings.UsernamesEnabled
-                ? _customerService.GetCustomerByUsername(usernameOrEmail)
-                : _customerService.GetCustomerByEmail(usernameOrEmail);
+            Customer customer = null;
+
+            if (_customerSettings.CustomerLoginType == CustomerLoginType.Email)
+            {
+                customer = _customerService.GetCustomerByEmail(usernameOrEmail);
+            }
+            else if (_customerSettings.CustomerLoginType == CustomerLoginType.Username)
+            {
+                customer = _customerService.GetCustomerByUsername(usernameOrEmail);
+            }
+            else
+            {
+                customer = _customerService.GetCustomerByEmail(usernameOrEmail) ?? _customerService.GetCustomerByUsername(usernameOrEmail);
+            }
 
             return customer;
         }

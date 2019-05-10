@@ -19,16 +19,16 @@
 			@if (Model.LogFileExists)
 			{
 				<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn btn-secondary" target="LogFile">
-					<i class="fa fa-file-text-o"></i>
+					<i class="far fa-file-alt"></i>
 					<span>@T("Admin.Configuration.ActivityLog")</span>
 				</a>
 			}
 			<button type="button" id="ExportSelected" class="btn btn-secondary">
-				<i class="fa fa-gears"></i>
+				<i class="fa fa-cogs"></i>
 				<span>@T("Admin.Common.ExportSelected")</span>
 			</button>
 			<button type="button" id="ExportAll" class="btn btn-secondary">
-				<i class="fa fa-gears"></i>
+				<i class="fa fa-cogs"></i>
 				<span>@T("Admin.Common.ExportAll")</span>
 			</button>
 		</form>
@@ -137,7 +137,7 @@
 					columns.Bound(x => x.AdminComment);
 				})
 				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id, totalRecords = Model.TotalRecords }))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id }))
 				.ClientEvents(events => events.OnDataBound("OnDataBound"))
 				.EnableCustomBinding(true))
 	}
@@ -172,7 +172,7 @@
 						.RightAlign();
 				})
 				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id, totalRecords = Model.TotalRecords }))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id }))
 				.ClientEvents(events => events.OnDataBound("OnDataBound"))
 				.EnableCustomBinding(true))
 	}
@@ -209,7 +209,7 @@
 						.Centered();
 				})
 				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id, totalRecords = Model.TotalRecords }))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id }))
 				.ClientEvents(events => events.OnDataBound("OnDataBound"))
 				.EnableCustomBinding(true))
 	}
@@ -244,7 +244,7 @@
 						.Centered();
 				})
 				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id, totalRecords = Model.TotalRecords }))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id }))
 				.ClientEvents(events => events.OnDataBound("OnDataBound"))
 				.EnableCustomBinding(true))
 	}
@@ -278,7 +278,7 @@
 					columns.Bound(x => x.LastActivityDate);
 				})
 				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id, totalRecords = Model.TotalRecords }))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id }))
 				.ClientEvents(events => events.OnDataBound("OnDataBound"))
 				.EnableCustomBinding(true))
 	}
@@ -308,7 +308,7 @@
 					columns.Bound(x => x.CreatedOn);
 				})
 				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id, totalRecords = Model.TotalRecords }))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id }))
 				.ClientEvents(events => events.OnDataBound("OnDataBound"))
 				.EnableCustomBinding(true))
 	}
@@ -344,7 +344,7 @@
 					columns.Bound(x => x.CreatedOn);
 				})
 				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id, totalRecords = Model.TotalRecords }))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id }))
 				.ClientEvents(events => events.OnDataBound("OnDataBound"))
 				.EnableCustomBinding(true))
 	}

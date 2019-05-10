@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Tasks;
 
 namespace SmartStore.Services.Tasks
@@ -40,26 +42,7 @@ namespace SmartStore.Services.Tasks
         /// Gets all pending tasks
         /// </summary>
         /// <returns>Tasks</returns>
-        IList<ScheduleTask> GetPendingTasks();
-
-		/// <summary>
-		/// Gets a value indicating whether at least one task is running currently.
-		/// </summary>
-		/// <returns></returns>
-		bool HasRunningTasks();
-
-		/// <summary>
-		/// Gets a value indicating whether a task is currently running
-		/// </summary>
-		/// <param name="taskId">A <see cref="ScheduleTask"/> identifier</param>
-		/// <returns><c>true</c> if the task is running, <c>false</c> otherwise</returns>
-		bool IsTaskRunning(int taskId);
-
-		/// <summary>
-		/// Gets a list of currently running <see cref="ScheduleTask"/> instances.
-		/// </summary>
-		/// <returns>Tasks</returns>
-		IList<ScheduleTask> GetRunningTasks();
+        Task<IList<ScheduleTask>> GetPendingTasksAsync();
 
         /// <summary>
         /// Inserts a task
@@ -97,9 +80,94 @@ namespace SmartStore.Services.Tasks
 		/// <param name="task">ScheduleTask</param>
 		/// <returns>The next schedule or <c>null</c> if the task is disabled</returns>
 		DateTime? GetNextSchedule(ScheduleTask task);
+
+        #region Schedule task history
+
+        /// <summary>
+        /// Gets a list of <see cref="ScheduleTaskHistory"/> entries.
+        /// </summary>
+        /// <param name="pageIndex">Page index.</param>
+        /// <param name="pageSize">Page size.</param>
+        /// <param name="taskId">Task identifier.</param>
+        /// <param name="forCurrentMachine">Filter by current machine.</param>
+        /// <param name="lastEntryOnly">Return the last history entry only.</param>
+        /// <param name="isRunning">Filter by running entries.</param>
+        /// <returns><see cref="ScheduleTaskHistory"/> entries.</returns>
+        IPagedList<ScheduleTaskHistory> GetHistoryEntries(
+            int pageIndex,
+            int pageSize,
+            int taskId = 0,
+            bool forCurrentMachine = false,
+            bool lastEntryOnly = false,
+            bool? isRunning = null);
+
+        /// <summary>
+        /// Gets a list of <see cref="ScheduleTaskHistory"/> entries.
+        /// </summary>
+        /// <param name="pageIndex">Page index.</param>
+        /// <param name="pageSize">Page size.</param>
+        /// <param name="task">Schedule task entity.</param>
+        /// <param name="forCurrentMachine">Filter by current machine.</param>
+        /// <param name="isRunning">Filter by running entries.</param>
+        /// <returns><see cref="ScheduleTaskHistory"/> entries.</returns>
+        IPagedList<ScheduleTaskHistory> GetHistoryEntries(
+            int pageIndex,
+            int pageSize,
+            ScheduleTask task,
+            bool forCurrentMachine = false,
+            bool? isRunning = null);
+
+        /// <summary>
+        /// Get last history entry by task identifier.
+        /// </summary>
+        /// <param name="taskId">Task identifier.</param>
+        /// <param name="isRunning">Filter by running entries.</param>
+        /// <returns><see cref="ScheduleTaskHistory"/> entry.</returns>
+        ScheduleTaskHistory GetLastHistoryEntryByTaskId(int taskId, bool? isRunning = null);
+
+        /// <summary>
+        /// Get last history entry for a task.
+        /// </summary>
+        /// <param name="task">Schedule task entity.</param>
+        /// <param name="isRunning">Filter by running entries.</param>
+        /// <returns><see cref="ScheduleTaskHistory"/> entry.</returns>
+        ScheduleTaskHistory GetLastHistoryEntryByTask(ScheduleTask task, bool? isRunning = null);
+
+        /// <summary>
+        /// Get a history entry by identifier.
+        /// </summary>
+        /// <param name="id">History entry identifier.</param>
+        /// <returns><see cref="ScheduleTaskHistory"/> entry.</returns>
+        ScheduleTaskHistory GetHistoryEntryById(int id);
+
+        /// <summary>
+        /// Inserts a <see cref="ScheduleTaskHistory"/> entry.
+        /// </summary>
+        /// <param name="historyEntry"><see cref="ScheduleTaskHistory"/> entry.</param>
+        void InsertHistoryEntry(ScheduleTaskHistory historyEntry);
+
+        /// <summary>
+        /// Updates a <see cref="ScheduleTaskHistory"/> entry.
+        /// </summary>
+        /// <param name="historyEntry"><see cref="ScheduleTaskHistory"/> entry.</param>
+        void UpdateHistoryEntry(ScheduleTaskHistory historyEntry);
+
+        /// <summary>
+        /// Delete a <see cref="ScheduleTaskHistory"/> entry.
+        /// </summary>
+        /// <param name="historyEntry"><see cref="ScheduleTaskHistory"/> entry.</param>
+        void DeleteHistoryEntry(ScheduleTaskHistory historyEntry);
+
+        /// <summary>
+        /// Deletes old <see cref="ScheduleTaskHistory"/> entries.
+        /// </summary>
+        /// <returns>Number of deleted entries.</returns>
+        int DeleteHistoryEntries();
+
+        #endregion
     }
 
-	public static class IScheduleTaskServiceExtensions
+    public static class IScheduleTaskServiceExtensions
 	{
 		public static ScheduleTask GetTaskByType<T>(this IScheduleTaskService service) where T : ITask
 		{

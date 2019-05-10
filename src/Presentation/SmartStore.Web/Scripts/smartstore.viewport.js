@@ -11,27 +11,21 @@
 	// Internal methods
 	var internal = {
 
-		/**
-         * Breakpoint detection divs
-         */
-		detectionDivs: {
-			'xs': $('<div class="device-xs d-sm-none"></div>'),
-			'sm': $('<div class="device-sm d-none d-sm-block d-md-none"></div>'),
-			'md': $('<div class="device-md d-none d-md-block d-lg-none"></div>'),
-			'lg': $('<div class="device-lg d-none d-lg-block d-xl-none"></div>'),
-			'xl': $('<div class="device-xl d-none d-xl-block"></div>')
-		},
+        breakpoints: {
+            xs: 0,
+            sm: 576,
+            md: 768,
+            lg: 992,
+            xl: 1200 
+        },
 
-		/**
-		* Append visibility divs after DOM laoded
-		*/
-		applyDetectionDivs: function () {
-			$(document).ready(function () {
-				$.each(self.breakpoints, function (alias) {
-					self.breakpoints[alias].appendTo('#device-detection');
-				});
-			});
-		},
+        resolveBreakpoints: function () {
+            $(document).ready(function () {
+                $.each(internal.breakpoints, function (alias) {
+                    internal.breakpoints[alias] = parseFloat($('html').css('--breakpoint-' + alias));
+                });
+            });
+        },
 
 		/**
          * Determines whether passed string is a parsable expression
@@ -72,21 +66,6 @@
 		},
 
 		/**
-         * Returns true if currently active breakpoint matches the expression
-         */
-		isAnyActive: function (breakpoints) {
-			var found = false;
-			$.each(breakpoints, function (index, alias) {
-				// Once first breakpoint matches, return true and break out of the loop
-				if (self.breakpoints[alias].is(':visible')) {
-					found = true;
-					return false;
-				}
-			});
-			return found;
-		},
-
-		/**
          * Determines whether current breakpoint matches the expression given
          */
 		isMatchingExpression: function (str) {
@@ -94,48 +73,31 @@
 			var expression = internal.splitExpression(str);
 
 			// Get names of all breakpoints
-			var breakpointList = Object.keys(self.breakpoints);
+			var breakpointList = Object.keys(internal.breakpoints);
 
 			// Get index of sought breakpoint in the list
-			var pos = breakpointList.indexOf(expression.breakpointName);
+            var alias = expression.breakpointName;
+            var pos = breakpointList.indexOf(alias);
 
 			// Breakpoint found
 			if (pos !== -1) {
+                var width = window.innerWidth;
+                var min, max;
 
-				var start = 0;
-				var end = 0;
+                if (expression.operator === '>') {
+                    min = expression.orEqual
+                        ? internal.breakpoints[alias]
+                        : internal.breakpoints[breakpointList[pos + 1] || 'xl'];
+                    max = 999999;
+                }
+                else {
+                    min = 0;
+                    max = (expression.orEqual
+                        ? internal.breakpoints[breakpointList[pos + 1] || 'xl']
+                        : internal.breakpoints[alias]) - 1;
+                }
 
-				/**
-                 * Parsing viewport.is('<=md') we interate from smallest breakpoint ('xs') and end
-                 * at 'md' breakpoint, indicated in the expression,
-                 * That makes: start = 0, end = 2 (index of 'md' breakpoint)
-                 *
-                 * Parsing viewport.is('<md') we start at index 'xs' breakpoint, and end at
-                 * 'sm' breakpoint, one before 'md'.
-                 * Which makes: start = 0, end = 1
-                 */
-				if (expression.operator == '<') {
-					start = 0;
-					end = expression.orEqual ? ++pos : pos;
-				}
-				/**
-                 * Parsing viewport.is('>=sm') we interate from breakpoint 'sm' and end at the end
-                 * of breakpoint list.
-                 * That makes: start = 1, end = undefined
-                 *
-                 * Parsing viewport.is('>sm') we start at breakpoint 'md' and end at the end of
-                 * breakpoint list.
-                 * Which makes: start = 2, end = undefined
-                 */
-				if (expression.operator == '>') {
-					start = expression.orEqual ? pos : ++pos;
-					end = undefined;
-				}
-
-				var acceptedBreakpoints = breakpointList.slice(start, end);
-
-				return internal.isAnyActive(acceptedBreakpoints);
-
+                return width >= min && width < max;
 			}
 		}
 
@@ -143,16 +105,10 @@
 
 	// Public methods and properties
 	var self = {
-
 		/**
          * Determines default debouncing interval of 'changed' method
          */
 		interval: 300,
-
-		/**
-         * Breakpoint aliases, listed from smallest to biggest
-         */
-		breakpoints: null,
 
 		/**
          * Returns true if current breakpoint matches passed alias
@@ -160,16 +116,53 @@
 		is: function (str) {
 			if (internal.isAnExpression(str)) {
 				return internal.isMatchingExpression(str);
-			}
-			return self.breakpoints[str] && self.breakpoints[str].is(':visible');
+            }
+
+            var match = false;
+            var breakpoints = Object.keys(internal.breakpoints)
+            $.each(breakpoints, function (pos, alias) {
+                if (alias == str) {
+                    var min = internal.breakpoints[alias];
+                    var max = internal.breakpoints[breakpoints[pos + 1]] || 999999;
+                    var width = window.innerWidth;
+
+                    if (width >= min && width < max) {
+                        match = true;
+                        return false;
+                    }
+                }
+            });
+
+            return match;
 		},
 
 		/**
          * Initialize breakpoint detection divs
          */
-		init: function () {
-			self.breakpoints = internal.detectionDivs;
-			internal.applyDetectionDivs();
+        init: function () {
+            internal.resolveBreakpoints();
+
+            // Notify subscribers about page/content width change
+            $(function () {
+                if (window.EventBroker) {
+                    var currentContentWidth = $('#content').width();
+                    var currentTier = self.current();
+                    $(window).on('resize', function () {
+                        var contentWidth = $('#content').width();
+                        if (contentWidth !== currentContentWidth) {
+                            currentContentWidth = contentWidth;
+                            EventBroker.publish("page.resized", self);
+
+                            var tier = self.current();
+                            if (tier != currentTier) {
+                                currentTier = tier;
+                                console.debug("Grid tier changed: " + tier);
+                                EventBroker.publish("page.gridtierchanged", tier);
+                            }
+                        }
+                    });
+                }
+            });
 		},
 
 		/**
@@ -177,7 +170,7 @@
          */
 		current: function () {
 			var name = 'unrecognized';
-			$.each(self.breakpoints, function (alias) {
+			$.each(internal.breakpoints, function (alias) {
 				if (self.is(alias)) {
 					name = alias;
 				}
@@ -199,11 +192,6 @@
 		}
 
 	};
-
-	// Create a placeholder
-	$(document).ready(function () {
-		$('<div id="device-detection"></div>').appendTo('body');
-	});
 
 	self.init();
 

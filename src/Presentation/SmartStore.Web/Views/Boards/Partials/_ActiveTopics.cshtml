@@ -1,14 +1,15 @@
-﻿@model ActiveDiscussionsModel
-@using SmartStore.Web.Models.Boards;
+﻿@using SmartStore.Web.Models.Boards;
 @using SmartStore.Web.Framework.UI;
-
+@model ActiveDiscussionsModel
 @{ 
     var isPartial = Model.ViewAllLinkEnabled;
 }
 
 @if (!isPartial)
 {
-    Html.RenderPartial("_SearchBox");
+    <div class="mt-2 w-75">
+        @{ Html.RenderAction("SearchBox", "Boards"); }
+    </div>
 }
 
 <div class="active-discussions mt-5">
@@ -29,10 +30,10 @@
             
             @if (isPartial)
             {        
-                <button class="btn btn-outline-info btn-flat" onclick="setLocation('@Url.Action("ActiveDiscussions")')">
+                <a class="btn btn-outline-info btn-flat" href="@Url.Action("ActiveDiscussions")">
                     <i class="fa fa-th-list"></i>
                     <span>@T("Forum.ActiveDiscussions.ViewAll")</span>
-                </button>
+                </a>
             }
         </div>
     </div>
@@ -64,7 +65,7 @@
             {
                 <tr class="topic">
                     <td class="image">
-                        <i class="fa fa-comments-o"></i>
+                        @{ Html.RenderPartial("Customer.Avatar", topic.Avatar); }
                     </td>
                     <td class="topic-name">
                         @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })
@@ -90,6 +91,7 @@
                             @if (@topic.NumPosts > Model.PostsPageSize)
                             {
                                 @(Html.SmartStore().Pager(topic.TotalPostPages)
+                                    .QueryParam("page")
                                     .HtmlAttributes(new { @class = "topics-pager" })
                                     .WithRenderer<ForumTopicPagerRenderer>()
                                     .ShowPrevious(false)
@@ -102,13 +104,13 @@
                         </div>
                     </td>
                     <td class="replies d-none d-md-table-cell">
-                        @topic.NumReplies
+                        @topic.NumReplies.ToString("N0")
                     </td>
                     <td class="views d-none d-md-table-cell">
-                        @topic.Views
+                        @topic.Views.ToString("N0")
                     </td>
                     <td class="last-post d-none d-md-table-cell">
-                        @{ Html.RenderAction("LastPost", new { forumPostId = topic.LastPostId, showTopic = false }); }
+                        @{ Html.RenderPartial("LastPost", topic.LastPost); }
                     </td>
                 </tr>
             }

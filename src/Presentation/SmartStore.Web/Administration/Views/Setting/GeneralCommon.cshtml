@@ -214,7 +214,7 @@
 				<div class="input-group">
 					@Html.EditorFor(model => model.SeoSettings.TestSeoNameCreation, new { @class = "form-control" })
 					<button id="TestSeoNameCreationButton" type="button" class="btn btn-outline-secondary">
-						<i class="fa fa-refresh"></i>
+						<i class="fa fa-sync"></i>
 						<span>@T("Admin.Common.Check")</span>
 					</button>
 				</div>
@@ -298,6 +298,15 @@
 		<tbody id="pnlCaptchaSettings">
 			<tr>
 				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CaptchaSettings.UseInvisibleReCaptcha)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CaptchaSettings.UseInvisibleReCaptcha)
+					@Html.ValidationMessageFor(model => model.CaptchaSettings.UseInvisibleReCaptcha)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnLoginPage)
 				</td>
 				<td class="adminData">
@@ -366,6 +375,15 @@
 				<td class="adminData">
 					@Html.SettingEditorFor(model => model.CaptchaSettings.ShowOnNewsCommentPage)
 					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnNewsCommentPage)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnForumPage)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CaptchaSettings.ShowOnForumPage)
+					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnForumPage)
 				</td>
 			</tr>
 			<tr>
@@ -533,7 +551,7 @@
             </td>
             <td class="adminData">
 				@Html.SettingEditorFor(model => model.CompanyInformationSettings.Salutation, 
-					Html.DropDownListFor(model => model.CompanyInformationSettings.Salutation, Model.CompanyInformationSettings.Salutations))
+					Html.DropDownListFor(model => model.CompanyInformationSettings.Salutation, Model.CompanyInformationSettings.Salutations, T("Common.Unspecified")))
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.Salutation)
             </td>
         </tr>
@@ -570,7 +588,7 @@
             </td>
             <td class="adminData">
 				@Html.SettingEditorFor(model => model.CompanyInformationSettings.CompanyManagementDescription, 
-					Html.DropDownListFor(model => model.CompanyInformationSettings.CompanyManagementDescription, Model.CompanyInformationSettings.ManagementDescriptions))
+					Html.DropDownListFor(model => model.CompanyInformationSettings.CompanyManagementDescription, Model.CompanyInformationSettings.ManagementDescriptions, T("Common.Unspecified")))
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.CompanyManagementDescription)
             </td>
         </tr>
@@ -627,7 +645,7 @@
             </td>
             <td class="adminData">
 				@Html.SettingEditorFor(model => model.CompanyInformationSettings.CountryId, 
-					Html.DropDownListFor(model => model.CompanyInformationSettings.CountryId, Model.CompanyInformationSettings.AvailableCountries))
+					Html.DropDownListFor(model => model.CompanyInformationSettings.CountryId, Model.CompanyInformationSettings.AvailableCountries, T("Common.Unspecified")))
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.CountryId)
             </td>
         </tr>
@@ -839,15 +857,6 @@
 				<td class="adminData">
 					@Html.SettingEditorFor(model => model.SocialSettings.FacebookLink)
 					@Html.ValidationMessageFor(model => model.SocialSettings.FacebookLink)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SocialSettings.GooglePlusLink)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.SocialSettings.GooglePlusLink)
-					@Html.ValidationMessageFor(model => model.SocialSettings.GooglePlusLink)
 				</td>
 			</tr>
 			<tr>

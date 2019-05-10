@@ -22,13 +22,13 @@
 					if (Model.Id != 0)
 					{
 						<button type="button" id="ProfileExportButton" class="btn btn-primary" data-url="@Url.Action("Execute", "Export", new { area = "Admin", id = Model.Id })">
-							<i class="fa fa-gears"></i>
+							<i class="fa fa-cogs"></i>
 							<span>@T("Common.Export")</span>
 						</button>
 					}
 
 					<a href="@Url.Action("Preview", new { id = Model.Id })" class="btn btn-secondary">
-						<i class="fa fa-eye"></i>
+						<i class="far fa-eye"></i>
 						<span>@T("Admin.Common.Preview")</span>
 					</a>
 				}
@@ -36,7 +36,7 @@
 				@if (Model.LogFileExists)
 				{
 					<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn btn-secondary" target="LogFile">
-						<i class="fa fa-file-text-o"></i>
+						<i class="far fa-file-alt"></i>
 						<span>@T("Admin.Configuration.ActivityLog")</span>
 					</a>
 				}
@@ -53,7 +53,7 @@
 				@if (!Model.IsSystemProfile)
 				{
 					<button type="submit" name="export-profile-delete" id="export-profile-delete" value="export-profile-delete" class="btn btn-danger">
-						<i class="fa fa-trash-o"></i>
+						<i class="far fa-trash-alt"></i>
 						<span>@T("Admin.Common.Delete")</span>
 					</button>
 				}
@@ -121,6 +121,18 @@
 				@Html.ValidationMessageFor(x => x.Enabled)
 			</td>
 		</tr>
+        @if (Model.Provider.IsFileBasedExport && Model.Provider.Feature.HasFlag(ExportFeatures.UsesRelatedDataUnits))
+        {
+		    <tr>
+			    <td class="adminTitle">
+				    @Html.SmartLabelFor(x => x.ExportRelatedData)
+			    </td>
+			    <td class="adminData">
+				    @Html.EditorFor(x => x.ExportRelatedData)
+				    @Html.ValidationMessageFor(x => x.ExportRelatedData)
+			    </td>
+		    </tr>
+        }
 		@if (Model.ScheduleTaskId > 0)
 		{
 			<tr class="mb-5">
@@ -337,13 +349,13 @@
 				try
 				{
 					@Html.Partial(Model.Provider.ConfigPartialViewName, Model.Provider.ConfigData, viewData)
-				}
-				catch (Exception exception)
-				{
+                }
+                catch (Exception ex)
+                {
 					<div class="alert alert-danger">
 						@T("Admin.Configuration.Plugins.UnknownError")
 					</div>
-					<pre>@exception.ToString()</pre>
+					<pre>@ex.ToString()</pre>
 				}
 			}
 			else

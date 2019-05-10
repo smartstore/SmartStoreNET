@@ -1,16 +1,9 @@
-﻿@model ProfileInfoModel
-
-@using SmartStore.Web.Models.Profile;
+﻿@using SmartStore.Web.Models.Profile;
+@model ProfileInfoModel
 
 <div class="profile-info-box row">
-
     <div class="user-details col-2 text-center">
-        @if (Model.AvatarEnabled && !String.IsNullOrEmpty(Model.AvatarUrl))
-        {
-            <div class="avatar">
-                <img src="@(Model.AvatarUrl)" class="avatar-img img-thumbnail" alt="Avatar" />
-            </div>         
-        }
+        @{ Html.RenderPartial("Customer.Avatar", Model.Avatar); }
         @if (Model.LocationEnabled)
         {
             <div class="profile-stat">
@@ -20,7 +13,7 @@
         }
         @if (Model.PMEnabled)
         {
-            <a class="btn btn btn-outline-info btn-flat button-pm mt-2" rel="nofollow" href='@Url.Action("Send", "PrivateMessages", new { id = Model.CustomerProfileId })'>
+            <a class="btn btn btn-outline-info btn-flat button-pm mt-2" rel="nofollow" href='@Url.Action("Send", "PrivateMessages", new { id = Model.Id })'>
                 <i class="fa fa-user"></i>
                 <span>@T("Forum.PrivateMessages.PM")</span>
             </a>

@@ -4,8 +4,6 @@ namespace SmartStore.Core.Data
 {
 	public class DbQuerySettings
 	{
-		private readonly static DbQuerySettings s_default = new DbQuerySettings(false, false);
-
 		public DbQuerySettings(bool ignoreAcl, bool ignoreMultiStore)
 		{
 			this.IgnoreAcl = ignoreAcl;
@@ -15,9 +13,6 @@ namespace SmartStore.Core.Data
 		public bool IgnoreAcl { get; private set; }
 		public bool IgnoreMultiStore { get; private set; }
 
-		public static DbQuerySettings Default
-		{
-			get { return s_default; }
-		}
+		public static DbQuerySettings Default { get; } = new DbQuerySettings(false, false);
 	}
 }

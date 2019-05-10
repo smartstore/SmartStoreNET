@@ -107,7 +107,7 @@ namespace SmartStore.Services.Tests.Orders
 			_storeContext = MockRepository.GenerateMock<IStoreContext>();
 			_storeContext.Expect(x => x.CurrentStore).Return(_store);
 
-            var pluginFinder = new PluginFinder();
+            var pluginFinder = PluginFinder.Current;
 
             _shoppingCartSettings = new ShoppingCartSettings();
             _catalogSettings = new CatalogSettings();
@@ -173,7 +173,7 @@ namespace SmartStore.Services.Tests.Orders
             _rewardPointsSettings = new RewardPointsSettings();
 
 			_priceCalcService = new PriceCalculationService(_discountService, _categoryService, _manufacturerService, _productAttributeParser, _productService,
-				_shoppingCartSettings, _catalogSettings, _productAttributeService, _downloadService, _services, _httpRequestBase, _taxService, _taxSettings);
+				_catalogSettings, _productAttributeService, _downloadService, _services, _httpRequestBase, _taxService, _taxSettings);
 
             _orderTotalCalcService = new OrderTotalCalculationService(_workContext, _storeContext,
                 _priceCalcService, _taxService, _shippingService, _providerManager,
@@ -226,7 +226,8 @@ namespace SmartStore.Services.Tests.Orders
 				_newsLetterSubscriptionService,
 				_paymentSettings, _rewardPointsSettings,
                 _orderSettings, _taxSettings, _localizationSettings,
-                _currencySettings, _shoppingCartSettings);
+                _currencySettings, _shoppingCartSettings,
+                _catalogSettings);
         }
         
         [Test]

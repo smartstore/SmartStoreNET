@@ -1,29 +1,38 @@
-﻿using System;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using Autofac.Integration.Mvc;
 using SmartStore.Services.Search;
 
 namespace SmartStore.Web.Models.Search
 {
-	public interface ISearchResultModel
+    public interface ISearchResultModel
 	{
 		CatalogSearchResult SearchResult { get; }
 	}
 
-	[ModelBinderType(typeof(ISearchResultModel))]
+    public interface IForumSearchResultModel
+    {
+        ForumSearchResult SearchResult { get; }
+    }
+
+	[ModelBinderType(typeof(ISearchResultModel), typeof(IForumSearchResultModel))]
 	public class SearchResultModelBinder : IModelBinder
 	{
 		public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
 		{
 			var modelType = bindingContext.ModelType;
 
-			if (!typeof(ISearchResultModel).IsAssignableFrom(modelType))
-			{
-				return null;
-			}
+            if (typeof(ISearchResultModel).IsAssignableFrom(modelType))
+            {
+                var model = controllerContext.GetRootControllerContext().Controller.ViewData.Model as ISearchResultModel;
+                return model;
+            }
+            else if (typeof(IForumSearchResultModel).IsAssignableFrom(modelType))
+            {
+                var model = controllerContext.GetRootControllerContext().Controller.ViewData.Model as IForumSearchResultModel;
+                return model;
+            }
 
-			var model = controllerContext.GetMasterControllerContext().Controller.ViewData.Model as ISearchResultModel;
-			return model;
-		}
+            return null;
+        }
 	}
 }

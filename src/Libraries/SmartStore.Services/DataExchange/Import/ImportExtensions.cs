@@ -7,7 +7,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.DataExchange.Import
 {
-	public static class ImportExtensions
+    public static class ImportExtensions
 	{
 		/// <summary>
 		/// Get folder for import files
@@ -39,31 +39,45 @@ namespace SmartStore.Services.DataExchange.Import
 			return path;
 		}
 
-		/// <summary>
-		/// Gets import files for an import profile
-		/// </summary>
-		/// <param name="profile">Import profile</param>
-		/// <returns>List of file paths</returns>
-		public static List<string> GetImportFiles(this ImportProfile profile)
-		{
-			var importFolder = profile.GetImportFolder(true);
+        /// <summary>
+        /// Gets import files for an import profile.
+        /// </summary>
+        /// <param name="profile">Import profile.</param>
+        /// <param name="includeRelatedFiles">Whether to include related data files.</param>
+        /// <returns>List of import files.</returns>
+        public static List<ImportFile> GetImportFiles(this ImportProfile profile, bool includeRelatedFiles = true)
+        {
+            var result = new List<ImportFile>();
+            var importFolder = profile.GetImportFolder(true);
 
-			if (System.IO.Directory.Exists(importFolder))
-			{
-				return System.IO.Directory.EnumerateFiles(importFolder, "*", SearchOption.TopDirectoryOnly)
-					.OrderBy(x => x)
-					.ToList();
-			}
+            if (System.IO.Directory.Exists(importFolder))
+            {
+                var paths = System.IO.Directory.EnumerateFiles(importFolder, "*", SearchOption.TopDirectoryOnly);
+                foreach (var path in paths)
+                {
+                    var file = new ImportFile(path);
+                    if (!includeRelatedFiles && file.RelatedType.HasValue)
+                    {
+                        continue;
+                    }
 
-			return new List<string>();
-		}
+                    result.Add(file);
+                }
 
-		/// <summary>
-		/// Get log file path for an import profile
-		/// </summary>
-		/// <param name="profile">Import profile</param>
-		/// <returns>Log file path</returns>
-		public static string GetImportLogPath(this ImportProfile profile)
+                // Always main data files first.
+                result = result.OrderBy(x => x.RelatedType).ThenBy(x => x.Path).ToList();
+                return result;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get log file path for an import profile
+        /// </summary>
+        /// <param name="profile">Import profile</param>
+        /// <returns>Log file path</returns>
+        public static string GetImportLogPath(this ImportProfile profile)
 		{
 			return Path.Combine(profile.GetImportFolder(), "log.txt");
 		}

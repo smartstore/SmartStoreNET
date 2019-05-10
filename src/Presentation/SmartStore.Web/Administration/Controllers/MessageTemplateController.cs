@@ -21,6 +21,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Email;
 using System.Threading.Tasks;
 using System.Web.Caching;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -197,7 +198,8 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		[FormValueRequired("save", "save-continue")]
-        public ActionResult Edit(MessageTemplateModel model, bool continueEditing)
+        [ValidateInput(false)]
+        public ActionResult Edit(MessageTemplateModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageTemplates))
                 return AccessDeniedView();
@@ -217,10 +219,12 @@ namespace SmartStore.Admin.Controllers
                 _messageTemplateService.UpdateMessageTemplate(messageTemplate);
 				
 				// Stores
-				_storeMappingService.SaveStoreMappings<MessageTemplate>(messageTemplate, model.SelectedStoreIds);
+				SaveStoreMappings(messageTemplate, model);
                 
 				// locales
                 UpdateLocales(messageTemplate, model);
+
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, messageTemplate, form));
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Updated"));
                 return continueEditing ? RedirectToAction("Edit", messageTemplate.Id) : RedirectToAction("List");
@@ -286,7 +290,7 @@ namespace SmartStore.Admin.Controllers
 					var template = _messageTemplateService.GetMessageTemplateById(id);
 					if (template == null)
 					{
-						model.Error = "The request message template does not exist.";
+						model.Error = "The requested message template does not exist.";
 						return View(model);
 					}
 

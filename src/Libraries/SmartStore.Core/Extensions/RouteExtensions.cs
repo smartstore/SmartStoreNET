@@ -9,11 +9,11 @@ namespace SmartStore
 	{
 		public static string GetAreaName(this RouteData routeData)
 		{
-			object area;
-			if (routeData.DataTokens.TryGetValue("area", out area))
+			if (routeData.DataTokens.TryGetValue("area", out object area))
 			{
 				return (area as string);
 			}
+
 			return routeData.Route.GetAreaName();
 		}
 
@@ -24,11 +24,13 @@ namespace SmartStore
 			{
 				return area.Area;
 			}
+
 			var route2 = route as Route;
 			if ((route2 != null) && (route2.DataTokens != null))
 			{
 				return (route2.DataTokens["area"] as string);
 			}
+
 			return null;
 		}
 

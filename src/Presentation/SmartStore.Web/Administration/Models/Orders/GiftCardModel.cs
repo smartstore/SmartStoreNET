@@ -53,7 +53,7 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.GiftCards.Fields.IsRecipientNotified")]
         public bool IsRecipientNotified { get; set; }
 
-        [SmartResourceDisplayName("Admin.GiftCards.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
         public string PrimaryStoreCurrencyCode { get; set; }
@@ -68,7 +68,7 @@ namespace SmartStore.Admin.Models.Orders
             [SmartResourceDisplayName("Admin.GiftCards.History.Order")]
             public int OrderId { get; set; }
 
-            [SmartResourceDisplayName("Admin.GiftCards.History.CreatedOn")]
+            [SmartResourceDisplayName("Common.CreatedOn")]
             public DateTime CreatedOn { get; set; }
         }
 

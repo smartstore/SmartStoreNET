@@ -43,7 +43,7 @@
                 <div class="menubar-section d-none d-lg-block @(GetThemeVariable<bool>("inverse-menubar") ? "menubar-inverse" : "menubar-light")">
                     <div class="container menubar-container">
                         @{ 
-							Html.RenderAction("Menu", "Common", new { area = "" });
+							Html.RenderAction("TopBar", "Common", new { area = "" });
 						}
                     </div>
                 </div>
@@ -57,29 +57,26 @@
                 <div class="megamenu-section d-none d-lg-block">
                     <nav class='navbar @(GetThemeVariable<bool>("inverse-navbar") ? "navbar-inverse" : "navbar-light")'>
                         <div class="container megamenu-container">
-                            @{ 
-								Html.RenderAction("CatalogMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" });
-							}
+                            @{ Html.SmartStore().Menu().Name("Main").Render(); }
 						</div>
 					</nav>
 				</div>
 			</header>
         }
 
-        @{ 
-			Html.RenderAction("JavaScriptDisabledWarning", "Common", new { area = "" });
-			Html.RenderWidget("content_before");
-		}
-
         <div id="content-wrapper">
-            <section id="content" class="container mt-3">
+			@{ 
+				Html.RenderAction("JavaScriptDisabledWarning", "Common", new { area = "" });
+				Html.RenderWidget("content_before");
+			}
+            <section id="content" class="container">
 				@{ 
 					@RenderSection("teaser", required: false);
 					Html.RenderAction("Breadcrumb", "Common", new { area = "" });
 					Html.RenderZone("teaser");
-					Html.RenderWidget("after_teaser");
+					Html.RenderWidget("teaser");
 				}
-                <div id="content-body" class="row mt-4">
+                <div id="content-body" class="row">
 
 					@if (hasLeftCol)
 					{
@@ -116,6 +113,8 @@
             </section>
         </div>
 
+		@{ Html.RenderWidget("footer_before"); }
+
         @if (IsSectionDefined("footer"))
 		{
             @RenderSection("footer")
@@ -130,8 +129,8 @@
 		@{ Html.RenderZone("page-end"); }
     </div>
 
-	<a href="#" id="scroll-top" class="d-flex align-items-center justify-content-center">
-		<i class="fa fa-2x fa-angle-up"></i>
+	<a href="#" id="scroll-top" class="d-flex align-items-center justify-content-center shadow-sm">
+		<i class="fa fa-lg fa-angle-up"></i>
 	</a>
 </div>
 

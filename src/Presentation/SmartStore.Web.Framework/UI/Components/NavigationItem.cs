@@ -93,8 +93,11 @@ namespace SmartStore.Web.Framework.UI
             }
             set
             {
-                _actionName = value;
-                _routeName = (string)(_url = null);
+				if (_actionName != value)
+				{
+					_actionName = value;
+					_routeName = (string)(_url = null);
+				}
             }
         }
 
@@ -107,8 +110,11 @@ namespace SmartStore.Web.Framework.UI
             }
             set
             {
-                _controllerName = value;
-                _routeName = (string)(_url = null);
+				if (_controllerName != value)
+				{
+					_controllerName = value;
+					_routeName = (string)(_url = null);
+				}
             }
         }
 
@@ -121,8 +127,11 @@ namespace SmartStore.Web.Framework.UI
             }
             set
             {
-                _routeName = value;
-                _controllerName = _actionName = (string)(_url = null);
+				if (_routeName != value)
+				{
+					_routeName = value;
+					_controllerName = _actionName = (string)(_url = null);
+				}
             }
         }
 
@@ -137,10 +146,12 @@ namespace SmartStore.Web.Framework.UI
             }
             set
             {
-                _url = value;
-                _routeName = _controllerName = (string)(_actionName = null);
-                this.RouteValues.Clear();
-
+				if (_url != value)
+				{
+					_url = value;
+					_routeName = _controllerName = (string)(_actionName = null);
+					this.RouteValues.Clear();
+				}
             }
         }
 

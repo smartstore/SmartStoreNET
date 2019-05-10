@@ -9,6 +9,9 @@
 		Attribute,
 		AttributeValue,
 		Variant,
-		VariantValue
+		VariantValue,
+        Customer,
+        Forum,
+        ForumPost
 	}
 }

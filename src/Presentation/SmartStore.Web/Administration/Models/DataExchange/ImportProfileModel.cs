@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Tasks;
-using SmartStore.Admin.Validators.DataExchange;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Localization;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.DataExchange
 {
-	[Validator(typeof(ImportProfileValidator))]
+    [Validator(typeof(ImportProfileValidator))]
 	public partial class ImportProfileModel : EntityModelBase
 	{
 		public ImportProfileModel()
@@ -22,9 +23,9 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string Name { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.ImportFiles")]
-		public List<string> ExistingFileNames { get; set; }
+        public List<ImportFile> ExistingFiles { get; set; }
 
-		[SmartResourceDisplayName("Admin.Common.Entity")]
+        [SmartResourceDisplayName("Admin.Common.Entity")]
 		public ImportEntityType EntityType { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.Entity")]
@@ -33,7 +34,10 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Common.Enabled")]
 		public bool Enabled { get; set; }
 
-		[SmartResourceDisplayName("Admin.Common.RecordsSkip")]
+        [SmartResourceDisplayName("Admin.DataExchange.Import.ImportRelatedData")]
+        public bool ImportRelatedData { get; set; }
+
+        [SmartResourceDisplayName("Admin.Common.RecordsSkip")]
 		public int? Skip { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.RecordsTake")]
@@ -79,8 +83,7 @@ namespace SmartStore.Admin.Models.DataExchange
 			public int? NumberOfPictures { get; set; }
 		}
 	}
-
-
+    
 	public class ColumnMappingItemModel
 	{
 		public int Index { get; set; }
@@ -95,4 +98,19 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string Default { get; set; }
 		public bool IsDefaultDisabled { get; set; }
 	}
+
+    public partial class ImportProfileValidator : AbstractValidator<ImportProfileModel>
+    {
+        public ImportProfileValidator(Localizer T)
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.Skip).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.Take).GreaterThanOrEqualTo(0);
+
+            RuleFor(x => x.KeyFieldNames)
+                .NotEmpty()
+                .When(x => x.Id != 0)
+                .WithMessage(T("Admin.DataExchange.Import.Validate.OneKeyFieldRequired"));
+        }
+    }
 }

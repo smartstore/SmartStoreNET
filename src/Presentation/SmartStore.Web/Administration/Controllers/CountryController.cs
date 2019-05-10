@@ -206,7 +206,7 @@ namespace SmartStore.Admin.Controllers
 
                 UpdateLocales(country, model);
 
-				_storeMappingService.SaveStoreMappings<Country>(country, model.SelectedStoreIds);
+				SaveStoreMappings(country, model);
 
                 NotifySuccess(T("Admin.Configuration.Countries.Added"));
 
@@ -256,7 +256,7 @@ namespace SmartStore.Admin.Controllers
 
                 UpdateLocales(country, model);
 
-				_storeMappingService.SaveStoreMappings<Country>(country, model.SelectedStoreIds);
+				SaveStoreMappings(country, model);
 
                 NotifySuccess(T("Admin.Configuration.Countries.Updated"));
 

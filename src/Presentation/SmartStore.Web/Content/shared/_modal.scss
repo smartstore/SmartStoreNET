@@ -2,44 +2,59 @@
 /// <reference path="_mixins.scss" />
 /// <reference path="../bs4/scss/bootstrap.scss" />
 
+//$modal-transition-timing: cubic-bezier(0.25, 0.46, 0.45, 0.94); // easeOutQuad
+$modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
+//$modal-transition-timing: cubic-bezier(0.19, 1, 0.22, 1); // easeOutExpo
+
+
 // FLEX MODAL
 // ------------------------------------
 
-.modal-backdrop.show {
-    opacity: 0.7;
+/*.modal-backdrop.show {
+    backdrop-filter: blur(3px);
+}*/
+
+.modal-backdrop.fade {
+    // fade out
+    transition: opacity 0.4s $modal-transition-timing;
+    // fade in
+    &.show {
+        transition: opacity 0.15s ease-out;
+    }
 }
 
-.modal-backdrop.fade,
 .modal.fade {
-    transition: opacity 0.2s linear, transform 0.2s ease-out;
+    .modal-dialog {
+        transition: opacity 0.4s $modal-transition-timing, transform 0.4s $modal-transition-timing;
+        transform: scale(1.1, 1.1);
+        will-change: transform, opacity;
+    }
+
+    &.show .modal-dialog {
+        transform: scale(1, 1);
+        opacity: 1;
+    }
 }
 
-.modal.fade .modal-dialog {
-    transition: opacity 0.2s linear, transform 0.2s ease-out;
-    transform: translate(0, -75px) scale(0.9, 0.9);
+.modal-open #page {
+    // fade in
+    filter: blur(2px);
+    transition: filter 0.4s $modal-transition-timing 0.15s;
 }
 
-.modal.show .modal-dialog {
-    transform: translate(0, 0);
+.modal-hiding #page {
+    // fade out
+    filter: blur(0);
+    transition: filter 0.4s $modal-transition-timing;
 }
 
 .modal-content {
-    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
-    border-radius: 0;
-    border: none;
-
 	iframe {
 		width: 100%;
 	}
 }
 
-.modal-header {
-    //background-color: $gray-100;
-    //border-bottom: none;
-}
-
 .modal-title {
-	//font-weight: $font-weight-medium;
 	color: $gray-600;
 }
 
@@ -47,7 +62,16 @@
 	min-height: 300px;
 }
 
+.modal-dialog-app > .modal-content {
+    border-radius: 0;
+
+    > .modal-body {
+        padding: 0;
+    }
+}
+
 .modal-closer {
+    $c: color-yiq($modal-backdrop-bg);
 	position: absolute;
 	display: none;
 	font-size: 2.5rem;
@@ -58,12 +82,11 @@
 	line-height: 1;
 	text-decoration: none !important;
 	z-index: $zindex-modal-backdrop + 1;
-	color: $gray-500;
-	transition: color 0.1s linear;
+    color: mix($c, $modal-backdrop-bg, 60%);
+	transition: color 0.1s;
 
 	&:hover {
-		opacity: 1;
-		color: #fff;
+        color: $c;
 	}
 }
 
@@ -130,4 +153,10 @@
 		min-height: 100%;
 		flex: 1;
 	}
+}
+
+
+.close {
+    // "Fix" font-size
+    font-size: 1.5rem;
 }

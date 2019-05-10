@@ -67,7 +67,7 @@
                                 </td>
                                 <td>
 									<a class="btn btn-secondary" href="@Url.Action("Details", "Order", new { id = item.InitialOrderId })" rel="nofollow">
-										<i class="fa fa-list-alt"></i>
+										<i class="far fa-list-alt"></i>
 										@string.Format(@T("Account.CustomerOrders.RecurringOrders.ViewInitialOrder").Text, item.InitialOrderId)
 									</a>
                                 </td>
@@ -75,7 +75,7 @@
                                     @if (item.CanCancel)
                                     {
                                         <button type="submit" name="cancelRecurringPayment@(item.Id)" class="btn btn-danger">
-											<i class="fa fa-trash-o"></i>
+											<i class="far fa-trash-alt"></i>
                                             @T("Account.CustomerOrders.RecurringOrders.Cancel")
                                         </button>
                                     }
@@ -110,7 +110,7 @@
 <div class="card-deck card-cols-sm-1 order-list">
     @foreach (var order in Model.Orders)
     {
-        <div class="card card-shadow order-item">
+        <div class="card shadow-sm order-item">
 			<div class="card-body">
 				<h4 class="card-title mb-4">@T("Order.Order#"): @order.OrderNumber</h4>
 				<dl class="row mb-0">
@@ -125,7 +125,7 @@
 
 			<div class="card-footer d-flex p-0">
 				<a class="btn btn-secondary btn-flat rounded-0" href="@Url.Action("Details", "Order", new { id = order.Id })" rel="nofollow">
-					<i class="fa fa-list-alt"></i>
+					<i class="far fa-list-alt"></i>
 					<span>@T("Order.OrderDetails")</span>
 				</a>
 				@if (order.IsReturnRequestAllowed)

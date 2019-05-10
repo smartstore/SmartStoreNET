@@ -7,13 +7,21 @@ namespace SmartStore.Web.Models.Topics
     {
         public string SystemName { get; set; }
 
+        public string HtmlId { get; set; }
+
+        public string BodyCssClass { get; set; }
+
         public bool IncludeInSitemap { get; set; }
 
         public bool IsPasswordProtected { get; set; }
 
-        public LocalizedValue<string> Title { get; set; }
+		public LocalizedValue<string> ShortTitle { get; set; }
 
-        public LocalizedValue<string> Body { get; set; }
+		public LocalizedValue<string> Title { get; set; }
+
+		public LocalizedValue<string> Intro { get; set; }
+
+		public LocalizedValue<string> Body { get; set; }
 
         public string MetaKeywords { get; set; }
 

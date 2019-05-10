@@ -10,42 +10,44 @@ namespace SmartStore.Services.Forums
     /// </summary>
     public partial interface IForumService
     {
-        /// <summary>
-        /// Deletes a forum group
-        /// </summary>
-        /// <param name="forumGroup">Forum group</param>
-        void DeleteForumGroup(ForumGroup forumGroup);
+        #region Group
 
         /// <summary>
         /// Gets a forum group
         /// </summary>
-        /// <param name="forumGroupId">The forum group identifier</param>
+        /// <param name="groupId">The forum group identifier</param>
         /// <returns>Forum group</returns>
-        ForumGroup GetForumGroupById(int forumGroupId);
+        ForumGroup GetForumGroupById(int groupId);
 
         /// <summary>
         /// Gets all forum groups
         /// </summary>
+        /// <param name="storeId">Store identifier</param>
+        /// <param name="showHidden">Whether to load hidden records</param>
         /// <returns>Forum groups</returns>
-		IList<ForumGroup> GetAllForumGroups(bool showHidden = false);
+		IList<ForumGroup> GetAllForumGroups(int storeId = 0, bool showHidden = false);
+
+        /// <summary>
+        /// Deletes a forum group
+        /// </summary>
+        /// <param name="group">Forum group</param>
+        void DeleteForumGroup(ForumGroup group);
 
         /// <summary>
         /// Inserts a forum group
         /// </summary>
-        /// <param name="forumGroup">Forum group</param>
-        void InsertForumGroup(ForumGroup forumGroup);
+        /// <param name="group">Forum group</param>
+        void InsertForumGroup(ForumGroup group);
 
         /// <summary>
         /// Updates the forum group
         /// </summary>
-        /// <param name="forumGroup">Forum group</param>
-        void UpdateForumGroup(ForumGroup forumGroup);
+        /// <param name="group">Forum group</param>
+        void UpdateForumGroup(ForumGroup group);
 
-        /// <summary>
-        /// Deletes a forum
-        /// </summary>
-        /// <param name="forum">Forum</param>
-        void DeleteForum(Forum forum);
+        #endregion
+
+        #region Forum
 
         /// <summary>
         /// Gets a forum
@@ -55,11 +57,10 @@ namespace SmartStore.Services.Forums
         Forum GetForumById(int forumId);
 
         /// <summary>
-        /// Gets forums by group identifier
+        /// Deletes a forum
         /// </summary>
-        /// <param name="forumGroupId">The forum group identifier</param>
-        /// <returns>Forums</returns>
-        IList<Forum> GetAllForumsByGroupId(int forumGroupId);
+        /// <param name="forum">Forum</param>
+        void DeleteForum(Forum forum);
 
         /// <summary>
         /// Inserts a forum
@@ -73,132 +74,140 @@ namespace SmartStore.Services.Forums
         /// <param name="forum">Forum</param>
         void UpdateForum(Forum forum);
 
-        /// <summary>
-        /// Deletes a forum topic
-        /// </summary>
-        /// <param name="forumTopic">Forum topic</param>
-        void DeleteTopic(ForumTopic forumTopic);
+        #endregion
+
+        #region Topic
 
         /// <summary>
         /// Gets a forum topic
         /// </summary>
-        /// <param name="forumTopicId">The forum topic identifier</param>
+        /// <param name="topicId">The forum topic identifier</param>
         /// <returns>Forum Topic</returns>
-        ForumTopic GetTopicById(int forumTopicId);
+        ForumTopic GetTopicById(int topicId);
 
         /// <summary>
-        /// Gets a forum topic
+        /// Gets forum topics by identifiers
         /// </summary>
-        /// <param name="forumTopicId">The forum topic identifier</param>
-        /// <param name="increaseViews">The value indicating whether to increase forum topic views</param>
-        /// <returns>Forum Topic</returns>
-        ForumTopic GetTopicById(int forumTopicId, bool increaseViews);
+        /// <param name="topicIds">Array of topic identifiers</param>
+        /// <returns>List of topics</returns>
+        IList<ForumTopic> GetTopicsByIds(int[] topicIds);
 
         /// <summary>
         /// Gets all forum topics
         /// </summary>
         /// <param name="forumId">The forum identifier</param>
-        /// <param name="customerId">The customer identifier</param>
-        /// <param name="keywords">Keywords</param>
-        /// <param name="searchType">Search type</param>
-        /// <param name="limitDays">Limit by the last number days; 0 to load all topics</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
+        /// <param name="showHidden">Whether to load hidden records</param>
         /// <returns>Forum Topics</returns>
-        IPagedList<ForumTopic> GetAllTopics(int forumId, int customerId, string keywords, ForumSearchType searchType, int limitDays, int pageIndex, int pageSize);
+        IPagedList<ForumTopic> GetAllTopics(int forumId, int pageIndex, int pageSize, bool showHidden = false);
 
         /// <summary>
         /// Gets active forum topics
         /// </summary>
         /// <param name="forumId">The forum identifier</param>
         /// <param name="topicCount">Count of forum topics to return</param>
+        /// <param name="showHidden">Whether to load hidden records</param>
         /// <returns>Forum Topics</returns>
-        IList<ForumTopic> GetActiveTopics(int forumId, int topicCount);
+        IList<ForumTopic> GetActiveTopics(int forumId, int topicCount, bool showHidden = false);
+
+        /// <summary>
+        /// Deletes a forum topic
+        /// </summary>
+        /// <param name="topic">Forum topic</param>
+        void DeleteTopic(ForumTopic topic);
 
         /// <summary>
         /// Inserts a forum topic
         /// </summary>
-        /// <param name="forumTopic">Forum topic</param>
+        /// <param name="topic">Forum topic</param>
         /// <param name="sendNotifications">A value indicating whether to send notifications to subscribed customers</param>
-        void InsertTopic(ForumTopic forumTopic, bool sendNotifications);
+        void InsertTopic(ForumTopic topic, bool sendNotifications);
 
         /// <summary>
         /// Updates the forum topic
         /// </summary>
-        /// <param name="forumTopic">Forum topic</param>
-        void UpdateTopic(ForumTopic forumTopic);
+        /// <param name="topic">Forum topic</param>
+        /// <param name="updateStatistics">A value indicating whether to update counter.</param>
+        void UpdateTopic(ForumTopic topic, bool updateStatistics);
 
         /// <summary>
         /// Moves the forum topic
         /// </summary>
-        /// <param name="forumTopicId">The forum topic identifier</param>
+        /// <param name="topicId">The forum topic identifier</param>
         /// <param name="newForumId">New forum identifier</param>
         /// <returns>Moved forum topic</returns>
-        ForumTopic MoveTopic(int forumTopicId, int newForumId);
+        ForumTopic MoveTopic(int topicId, int newForumId);
 
         /// <summary>
-        /// Deletes a forum post
+        /// Calculates topic page index by post identifier
         /// </summary>
-        /// <param name="forumPost">Forum post</param>
-        void DeletePost(ForumPost forumPost);
+        /// <param name="topicId">Topic identifier</param>
+        /// <param name="pageSize">Page size</param>
+        /// <param name="postId">Post identifier</param>
+        /// <returns>Page index</returns>
+        int CalculateTopicPageIndex(int topicId, int pageSize, int postId);
+
+        #endregion
+
+        #region Post
 
         /// <summary>
         /// Gets a forum post
         /// </summary>
-        /// <param name="forumPostId">The forum post identifier</param>
+        /// <param name="postId">The forum post identifier</param>
         /// <returns>Forum Post</returns>
-        ForumPost GetPostById(int forumPostId);
+        ForumPost GetPostById(int postId);
+
+        /// <summary>
+        /// Gets forum posts by identifiers.
+        /// </summary>
+        /// <param name="postIds">Forum post identfiers.</param>
+        /// <returns>Forum posts.</returns>
+        IList<ForumPost> GetPostsByIds(int[] postIds);
 
         /// <summary>
         /// Gets all forum posts
         /// </summary>
-        /// <param name="forumTopicId">The forum topic identifier</param>
+        /// <param name="topicId">The forum topic identifier</param>
         /// <param name="customerId">The customer identifier</param>
-        /// <param name="keywords">Keywords</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <returns>Posts</returns>
-        IPagedList<ForumPost> GetAllPosts(int forumTopicId,
-            int customerId, string keywords, int pageIndex, int pageSize);
-
-        /// <summary>
-        /// Gets all forum posts
-        /// </summary>
-        /// <param name="forumTopicId">The forum topic identifier</param>
-        /// <param name="customerId">The customer identifier</param>
-        /// <param name="keywords">Keywords</param>
         /// <param name="ascSort">Sort order</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
+        /// <param name="showHidden">Whether to load hidden records</param>
         /// <returns>Forum Posts</returns>
-        IPagedList<ForumPost> GetAllPosts(int forumTopicId, int customerId,
-            string keywords, bool ascSort, int pageIndex, int pageSize);
+        IPagedList<ForumPost> GetAllPosts(int topicId, int customerId, bool ascSort, int pageIndex, int pageSize, bool showHidden = false);
+
+        /// <summary>
+        /// Deletes a forum post
+        /// </summary>
+        /// <param name="post">Forum post</param>
+        void DeletePost(ForumPost post);
 
         /// <summary>
         /// Inserts a forum post
         /// </summary>
-        /// <param name="forumPost">The forum post</param>
+        /// <param name="post">The forum post</param>
         /// <param name="sendNotifications">A value indicating whether to send notifications to subscribed customers</param>
-        void InsertPost(ForumPost forumPost, bool sendNotifications);
+        void InsertPost(ForumPost post, bool sendNotifications);
 
         /// <summary>
         /// Updates the forum post
         /// </summary>
-        /// <param name="forumPost">Forum post</param>
-        void UpdatePost(ForumPost forumPost);
+        /// <param name="post">Forum post</param>
+        /// <param name="updateStatistics">A value indicating whether to update counter.</param>
+        void UpdatePost(ForumPost post, bool updateStatistics);
 
-        /// <summary>
-        /// Deletes a private message
-        /// </summary>
-        /// <param name="privateMessage">Private message</param>
-        void DeletePrivateMessage(PrivateMessage privateMessage);
+        #endregion
+
+        #region Private message
 
         /// <summary>
         /// Gets a private message
         /// </summary>
-        /// <param name="privateMessageId">The private message identifier</param>
+        /// <param name="messageId">The private message identifier</param>
         /// <returns>Private message</returns>
-        PrivateMessage GetPrivateMessageById(int privateMessageId);
+        PrivateMessage GetPrivateMessageById(int messageId);
 
         /// <summary>
         /// Gets private messages
@@ -209,31 +218,40 @@ namespace SmartStore.Services.Forums
         /// <param name="isRead">A value indicating whether loaded messages are read. false - to load not read messages only, 1 to load read messages only, null to load all messages</param>
         /// <param name="isDeletedByAuthor">A value indicating whether loaded messages are deleted by author. false - messages are not deleted by author, null to load all messages</param>
         /// <param name="isDeletedByRecipient">A value indicating whether loaded messages are deleted by recipient. false - messages are not deleted by recipient, null to load all messages</param>
-        /// <param name="keywords">Keywords</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Private messages</returns>
-		IPagedList<PrivateMessage> GetAllPrivateMessages(int storeId, int fromCustomerId,
-            int toCustomerId, bool? isRead, bool? isDeletedByAuthor, bool? isDeletedByRecipient,
-            string keywords, int pageIndex, int pageSize);
+		IPagedList<PrivateMessage> GetAllPrivateMessages(
+            int storeId,
+            int fromCustomerId,
+            int toCustomerId,
+            bool? isRead,
+            bool? isDeletedByAuthor,
+            bool? isDeletedByRecipient,
+            int pageIndex,
+            int pageSize);
+
+        /// <summary>
+        /// Deletes a private message
+        /// </summary>
+        /// <param name="message">Private message</param>
+        void DeletePrivateMessage(PrivateMessage message);
 
         /// <summary>
         /// Inserts a private message
         /// </summary>
-        /// <param name="privateMessage">Private message</param>
-        void InsertPrivateMessage(PrivateMessage privateMessage);
+        /// <param name="message">Private message</param>
+        void InsertPrivateMessage(PrivateMessage message);
 
         /// <summary>
         /// Updates the private message
         /// </summary>
-        /// <param name="privateMessage">Private message</param>
-        void UpdatePrivateMessage(PrivateMessage privateMessage);
+        /// <param name="message">Private message</param>
+        void UpdatePrivateMessage(PrivateMessage message);
 
-        /// <summary>
-        /// Deletes a forum subscription
-        /// </summary>
-        /// <param name="forumSubscription">Forum subscription</param>
-        void DeleteSubscription(ForumSubscription forumSubscription);
+        #endregion
+
+        #region Subscription
 
         /// <summary>
         /// Gets a forum subscription
@@ -255,6 +273,12 @@ namespace SmartStore.Services.Forums
             int topicId, int pageIndex, int pageSize);
 
         /// <summary>
+        /// Deletes a forum subscription
+        /// </summary>
+        /// <param name="forumSubscription">Forum subscription</param>
+        void DeleteSubscription(ForumSubscription forumSubscription);
+
+        /// <summary>
         /// Inserts a forum subscription
         /// </summary>
         /// <param name="forumSubscription">Forum subscription</param>
@@ -265,6 +289,10 @@ namespace SmartStore.Services.Forums
         /// </summary>
         /// <param name="forumSubscription">Forum subscription</param>
         void UpdateSubscription(ForumSubscription forumSubscription);
+
+        #endregion
+
+        #region Customer
 
         /// <summary>
         /// Check whether customer is allowed to create new topics
@@ -323,26 +351,12 @@ namespace SmartStore.Services.Forums
         bool IsCustomerAllowedToDeletePost(Customer customer, ForumPost post);
 
         /// <summary>
-        /// Check whether customer is allowed to set topic priority
-        /// </summary>
-        /// <param name="customer">Customer</param>
-        /// <returns>True if allowed, otherwise false</returns>
-        bool IsCustomerAllowedToSetTopicPriority(Customer customer);
-
-        /// <summary>
         /// Check whether customer is allowed to watch topics
         /// </summary>
         /// <param name="customer">Customer</param>
         /// <returns>True if allowed, otherwise false</returns>
         bool IsCustomerAllowedToSubscribe(Customer customer);
 
-        /// <summary>
-        /// Calculates topic page index by post identifier
-        /// </summary>
-        /// <param name="forumTopicId">Topic identifier</param>
-        /// <param name="pageSize">Page size</param>
-        /// <param name="postId">Post identifier</param>
-        /// <returns>Page index</returns>
-        int CalculateTopicPageIndex(int forumTopicId, int pageSize, int postId);
+        #endregion
     }
 }

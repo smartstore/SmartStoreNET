@@ -153,12 +153,20 @@ namespace SmartStore.Services.Catalog
 		/// <returns>Map of product tags</returns>
 		Multimap<int, ProductTag> GetProductTagsByProductIds(int[] productIds);
 
-		/// <summary>
-		/// Get applied discounts by product identifiers
-		/// </summary>
-		/// <param name="productIds">Product identifiers</param>
-		/// <returns>Map of applied discounts</returns>
-		Multimap<int, Discount> GetAppliedDiscountsByProductIds(int[] productIds);
+        /// <summary>
+        /// Gets products that are assigned to group products.
+        /// </summary>
+        /// <param name="productIds">Grouped product identifiers.</param>
+        /// <param name="showHidden">A value indicating whether to show hidden records.</param>
+        /// <returns>Map of associated products.</returns>
+        Multimap<int, Product> GetAssociatedProductsByProductIds(int[] productIds, bool showHidden = false);
+
+        /// <summary>
+        /// Get applied discounts by product identifiers
+        /// </summary>
+        /// <param name="productIds">Product identifiers</param>
+        /// <returns>Map of applied discounts</returns>
+        Multimap<int, Discount> GetAppliedDiscountsByProductIds(int[] productIds);
 
         #endregion
 
@@ -391,7 +399,14 @@ namespace SmartStore.Services.Catalog
 		/// <returns>Map of bundle items</returns>
 		Multimap<int, ProductBundleItem> GetBundleItemsByProductIds(int[] productIds, bool showHidden = false);
 
-		#endregion
+        /// <summary>
+        /// Checks whether a product is a bundle item.
+        /// </summary>
+        /// <param name="productId">Product identifier.</param>
+        /// <returns>True if the product is a bundle item.</returns>
+        bool IsBundleItem(int productId);
+
+        #endregion
     }
 
 	[Flags]

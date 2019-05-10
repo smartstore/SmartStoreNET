@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Orders;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Logging;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
-using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
-using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -27,67 +23,47 @@ namespace SmartStore.Admin.Controllers
 	[AdminAuthorize]
     public class ReturnRequestController : AdminControllerBase
     {
-        #region Fields
-
         private readonly IOrderService _orderService;
-        private readonly IDateTimeHelper _dateTimeHelper;
         private readonly ICustomerService _customerService;
-        private readonly ILocalizationService _localizationService;
-        private readonly IWorkContext _workContext;
         private readonly LocalizationSettings _localizationSettings;
-        private readonly ICustomerActivityService _customerActivityService;
-        private readonly IPermissionService _permissionService;
 		private readonly IOrderProcessingService _orderProcessingService;
+		private readonly IPriceFormatter _priceFormatter;
 		private readonly OrderSettings _orderSettings;
 		private readonly AdminAreaSettings _adminAreaSettings;
-		private readonly IStoreService _storeService;
-
-        #endregion Fields
-
-        #region Constructors
 
         public ReturnRequestController(
 			IOrderService orderService,
             ICustomerService customerService, 
-			IDateTimeHelper dateTimeHelper,
-            ILocalizationService localizationService, 
-			IWorkContext workContext,
             LocalizationSettings localizationSettings,
-            ICustomerActivityService customerActivityService, 
-			IPermissionService permissionService,
 			IOrderProcessingService orderProcessingService,
+			IPriceFormatter priceFormatter,
 			OrderSettings orderSettings,
-			AdminAreaSettings adminAreaSettings,
-			IStoreService storeService)
+			AdminAreaSettings adminAreaSettings)
         {
             _orderService = orderService;
             _customerService = customerService;
-            _dateTimeHelper = dateTimeHelper;
-            _localizationService = localizationService;
-            _workContext = workContext;
             _localizationSettings = localizationSettings;
-            _customerActivityService = customerActivityService;
-            _permissionService = permissionService;
 			_orderProcessingService = orderProcessingService;
+			_priceFormatter = priceFormatter;
 			_orderSettings = orderSettings;
 			_adminAreaSettings = adminAreaSettings;
-			_storeService = storeService;
         }
-
-        #endregion
 
         #region Utilities
 
 		private void PrepareReturnRequestListModel(ReturnRequestListModel model)
 		{
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
-
-			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems();
-
+			model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems();
 			model.AvailableReturnRequestStatus = ReturnRequestStatus.Pending.ToSelectList(false).ToList();
 		}
 
-        private bool PrepareReturnRequestModel(ReturnRequestModel model, ReturnRequest returnRequest, bool excludeProperties)
+        private bool PrepareReturnRequestModel(
+			ReturnRequestModel model,
+			ReturnRequest returnRequest,
+			Dictionary<int, Store> allStores,
+			bool excludeProperties = false,
+			bool forList = false)
         {
             if (model == null)
                 throw new ArgumentNullException("model");
@@ -99,24 +75,29 @@ namespace SmartStore.Admin.Controllers
             if (orderItem == null)
                 return false;
 
-			var store = _storeService.GetStoreById(returnRequest.StoreId);
+			allStores.TryGetValue(returnRequest.StoreId, out Store store);
 
-            model.Id = returnRequest.Id;
+			model.Id = returnRequest.Id;
             model.ProductId = orderItem.ProductId;
 			model.ProductSku = orderItem.Product.Sku;
 			model.ProductName = orderItem.Product.Name;
-			model.ProductTypeName = orderItem.Product.GetProductTypeLabel(_localizationService);
+			model.ProductTypeName = orderItem.Product.GetProductTypeLabel(Services.Localization);
 			model.ProductTypeLabelHint = orderItem.Product.ProductTypeLabelHint;
-			model.StoreName = (store != null ? store.Name : "".NaIfEmpty());
+			model.AttributeInfo = orderItem.AttributeDescription;
             model.OrderId = orderItem.OrderId;
 			model.OrderNumber = orderItem.Order.GetOrderNumber();
             model.CustomerId = returnRequest.CustomerId;
 			model.CustomerFullName = returnRequest.Customer.GetFullName().NaIfEmpty();
 			model.CanSendEmailToCustomer = returnRequest.Customer.FindEmail().HasValue();
             model.Quantity = returnRequest.Quantity;
-            model.ReturnRequestStatusStr = returnRequest.ReturnRequestStatus.GetLocalizedEnum(_localizationService, _workContext);
-            model.CreatedOn = _dateTimeHelper.ConvertToUserTime(returnRequest.CreatedOnUtc, DateTimeKind.Utc);
-			model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(returnRequest.UpdatedOnUtc, DateTimeKind.Utc);
+            model.ReturnRequestStatusStr = returnRequest.ReturnRequestStatus.GetLocalizedEnum(Services.Localization, Services.WorkContext);
+            model.CreatedOn = Services.DateTimeHelper.ConvertToUserTime(returnRequest.CreatedOnUtc, DateTimeKind.Utc);
+			model.UpdatedOn = Services.DateTimeHelper.ConvertToUserTime(returnRequest.UpdatedOnUtc, DateTimeKind.Utc);
+
+			if (allStores.Count > 1)
+			{
+				model.StoreName = store?.Name;
+			}
 
             if (!excludeProperties)
             {
@@ -124,7 +105,9 @@ namespace SmartStore.Admin.Controllers
                 model.RequestedAction = returnRequest.RequestedAction;
 
 				if (returnRequest.RequestedActionUpdatedOnUtc.HasValue)
-					model.RequestedActionUpdated = _dateTimeHelper.ConvertToUserTime(returnRequest.RequestedActionUpdatedOnUtc.Value, DateTimeKind.Utc);
+				{
+					model.RequestedActionUpdated = Services.DateTimeHelper.ConvertToUserTime(returnRequest.RequestedActionUpdatedOnUtc.Value, DateTimeKind.Utc);
+				}
 
                 model.CustomerComments = returnRequest.CustomerComments;
                 model.StaffNotes = returnRequest.StaffNotes;
@@ -132,37 +115,46 @@ namespace SmartStore.Admin.Controllers
                 model.ReturnRequestStatusId = returnRequest.ReturnRequestStatusId;
             }
 
-			string unspec = _localizationService.GetResource("Common.Unspecified");
-			model.AvailableReasonForReturn.Add(new SelectListItem() { Text = unspec, Value = "" });
-			model.AvailableRequestedAction.Add(new SelectListItem() { Text = unspec, Value = "" });
-
-			// that's what we also offer in frontend
-			string returnRequestReasons = _orderSettings.GetLocalized(x => x.ReturnRequestReasons, orderItem.Order.CustomerLanguageId, true, false);
-			string returnRequestActions = _orderSettings.GetLocalized(x => x.ReturnRequestActions, orderItem.Order.CustomerLanguageId, true, false);
-
-			foreach (var rrr in returnRequestReasons.SplitSafe(","))
+			if (!forList)
 			{
-				model.AvailableReasonForReturn.Add(new SelectListItem() { Text = rrr, Value = rrr, Selected = (rrr == returnRequest.ReasonForReturn) });
+				// That's what we also offer in frontend.
+				string returnRequestReasons = _orderSettings.GetLocalized(x => x.ReturnRequestReasons, orderItem.Order.CustomerLanguageId, true, false);
+				string returnRequestActions = _orderSettings.GetLocalized(x => x.ReturnRequestActions, orderItem.Order.CustomerLanguageId, true, false);
+				string unspec = T("Common.Unspecified");
+
+				model.AvailableReasonForReturn.Add(new SelectListItem { Text = unspec, Value = "" });
+				foreach (var rrr in returnRequestReasons.SplitSafe(","))
+				{
+					model.AvailableReasonForReturn.Add(new SelectListItem { Text = rrr, Value = rrr, Selected = (rrr == returnRequest.ReasonForReturn) });
+				}
+
+				model.AvailableRequestedAction.Add(new SelectListItem { Text = unspec, Value = "" });
+				foreach (var rra in returnRequestActions.SplitSafe(","))
+				{
+					model.AvailableRequestedAction.Add(new SelectListItem { Text = rra, Value = rra, Selected = (rra == returnRequest.RequestedAction) });
+				}
+
+				var urlHelper = new UrlHelper(Request.RequestContext);
+
+				model.AutoUpdateOrderItem.Id = returnRequest.Id;
+				model.AutoUpdateOrderItem.Caption = T("Admin.ReturnRequests.Accept.Caption");
+				model.AutoUpdateOrderItem.PostUrl = urlHelper.Action("Accept", "ReturnRequest");
+				model.AutoUpdateOrderItem.ShowUpdateTotals = (orderItem.Order.OrderStatusId <= (int)OrderStatus.Pending);
+				model.AutoUpdateOrderItem.ShowUpdateRewardPoints = (orderItem.Order.OrderStatusId > (int)OrderStatus.Pending && orderItem.Order.RewardPointsWereAdded);
+				model.AutoUpdateOrderItem.UpdateTotals = model.AutoUpdateOrderItem.ShowUpdateTotals;
+				model.AutoUpdateOrderItem.UpdateRewardPoints = orderItem.Order.RewardPointsWereAdded;
+
+				model.ReturnRequestInfo = TempData[AutoUpdateOrderItemContext.InfoKey] as string;
+
+				// The maximum amount that can be refunded for this return request.
+				var maxRefundAmount = Math.Max(orderItem.UnitPriceInclTax * returnRequest.Quantity, 0);
+				if (maxRefundAmount > decimal.Zero)
+				{
+					model.MaxRefundAmount = _priceFormatter.FormatPrice(maxRefundAmount, true, store.PrimaryStoreCurrency, Services.WorkContext.WorkingLanguage, true, true);
+				}
 			}
 
-			foreach (var rra in returnRequestActions.SplitSafe(","))
-			{
-				model.AvailableRequestedAction.Add(new SelectListItem() { Text = rra, Value = rra, Selected = (rra == returnRequest.RequestedAction) });
-			}
-
-			var urlHelper = new UrlHelper(Request.RequestContext);
-
-			model.AutoUpdateOrderItem.Id = returnRequest.Id;
-			model.AutoUpdateOrderItem.Caption = _localizationService.GetResource("Admin.ReturnRequests.Accept.Caption");
-			model.AutoUpdateOrderItem.PostUrl = urlHelper.Action("Accept", "ReturnRequest");
-			model.AutoUpdateOrderItem.ShowUpdateTotals = (orderItem.Order.OrderStatusId <= (int)OrderStatus.Pending);
-			model.AutoUpdateOrderItem.ShowUpdateRewardPoints = (orderItem.Order.OrderStatusId > (int)OrderStatus.Pending && orderItem.Order.RewardPointsWereAdded);
-			model.AutoUpdateOrderItem.UpdateTotals = model.AutoUpdateOrderItem.ShowUpdateTotals;
-			model.AutoUpdateOrderItem.UpdateRewardPoints = orderItem.Order.RewardPointsWereAdded;
-
-			model.ReturnRequestInfo = TempData[AutoUpdateOrderItemContext.InfoKey] as string;
-
-            return true;
+			return true;
         }
 
         #endregion
@@ -176,7 +168,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult List()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageReturnRequests))
                 return AccessDeniedView();
 
 			var model = new ReturnRequestListModel();
@@ -190,9 +182,10 @@ namespace SmartStore.Admin.Controllers
         {
 			var gridModel = new GridModel<ReturnRequestModel>();
 
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
+			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageReturnRequests))
 			{
 				var data = new List<ReturnRequestModel>();
+				var allStores = Services.StoreService.GetAllStores().ToDictionary(x => x.Id);
 
 				var returnRequests = _orderService.SearchReturnRequests(model.SearchStoreId, 0, 0, model.SearchReturnRequestStatus,
 					command.Page - 1, command.PageSize, model.SearchId ?? 0);
@@ -200,8 +193,10 @@ namespace SmartStore.Admin.Controllers
 				foreach (var rr in returnRequests)
 				{
 					var m = new ReturnRequestModel();
-					if (PrepareReturnRequestModel(m, rr, false))
+					if (PrepareReturnRequestModel(m, rr, allStores, false, true))
+					{
 						data.Add(m);
+					}
 				}
 
 				gridModel.Data = data;
@@ -222,7 +217,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Edit(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageReturnRequests))
                 return AccessDeniedView();
 
             var returnRequest = _orderService.GetReturnRequestById(id);
@@ -230,7 +225,9 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
             
             var model = new ReturnRequestModel();
-            PrepareReturnRequestModel(model, returnRequest, false);
+			var allStores = Services.StoreService.GetAllStores().ToDictionary(x => x.Id);
+			PrepareReturnRequestModel(model, returnRequest, allStores);
+
             return View(model);
         }
 
@@ -238,7 +235,7 @@ namespace SmartStore.Admin.Controllers
         [FormValueRequired("save", "save-continue")]
         public ActionResult Edit(ReturnRequestModel model, bool continueEditing)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageReturnRequests))
                 return AccessDeniedView();
 
             var returnRequest = _orderService.GetReturnRequestById(model.Id);
@@ -269,15 +266,16 @@ namespace SmartStore.Admin.Controllers
 
                 _customerService.UpdateCustomer(returnRequest.Customer);
 
-                //activity log
-                _customerActivityService.InsertActivity("EditReturnRequest", _localizationService.GetResource("ActivityLog.EditReturnRequest"), returnRequest.Id);
+				Services.CustomerActivity.InsertActivity("EditReturnRequest", T("ActivityLog.EditReturnRequest"), returnRequest.Id);
 
-                NotifySuccess(_localizationService.GetResource("Admin.ReturnRequests.Updated"));
+                NotifySuccess(T("Admin.ReturnRequests.Updated"));
                 return continueEditing ? RedirectToAction("Edit", returnRequest.Id) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
-            PrepareReturnRequestModel(model, returnRequest, true);
+			// If we got this far, something failed, redisplay form.
+			var allStores = Services.StoreService.GetAllStores().ToDictionary(x => x.Id);
+            PrepareReturnRequestModel(model, returnRequest, allStores, true);
+
             return View(model);
         }
 
@@ -285,7 +283,7 @@ namespace SmartStore.Admin.Controllers
         [FormValueRequired("notify-customer")]
         public ActionResult NotifyCustomer(ReturnRequestModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageReturnRequests))
                 return AccessDeniedView();
 
             var returnRequest = _orderService.GetReturnRequestById(model.Id);
@@ -296,7 +294,7 @@ namespace SmartStore.Admin.Controllers
             var msg = Services.MessageFactory.SendReturnRequestStatusChangedCustomerNotification(returnRequest, orderItem, _localizationSettings.DefaultAdminLanguageId);
 
             if (msg?.Email?.Id != null)
-                NotifySuccess(_localizationService.GetResource("Admin.ReturnRequests.Notified"));
+                NotifySuccess(T("Admin.ReturnRequests.Notified"));
 
             return RedirectToAction("Edit", returnRequest.Id);
         }
@@ -304,7 +302,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageReturnRequests))
                 return AccessDeniedView();
 
             var returnRequest = _orderService.GetReturnRequestById(id);
@@ -313,25 +311,23 @@ namespace SmartStore.Admin.Controllers
 
             _orderService.DeleteReturnRequest(returnRequest);
 
-            //activity log
-            _customerActivityService.InsertActivity("DeleteReturnRequest", _localizationService.GetResource("ActivityLog.DeleteReturnRequest"), returnRequest.Id);
+            Services.CustomerActivity.InsertActivity("DeleteReturnRequest", T("ActivityLog.DeleteReturnRequest"), returnRequest.Id);
 
-            NotifySuccess(_localizationService.GetResource("Admin.ReturnRequests.Deleted"));
+            NotifySuccess(T("Admin.ReturnRequests.Deleted"));
             return RedirectToAction("List");
         }
 
 		[HttpPost]
 		public ActionResult Accept(AutoUpdateOrderItemModel model)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageReturnRequests))
 				return AccessDeniedView();
 
 			var returnRequest = _orderService.GetReturnRequestById(model.Id);
 			var oi = _orderService.GetOrderItemById(returnRequest.OrderItemId);
+			var cancelQuantity = (returnRequest.Quantity > oi.Quantity ? oi.Quantity : returnRequest.Quantity);
 
-			int cancelQuantity = (returnRequest.Quantity > oi.Quantity ? oi.Quantity : returnRequest.Quantity);
-
-			var context = new AutoUpdateOrderItemContext()
+			var context = new AutoUpdateOrderItemContext
 			{
 				OrderItem = oi,
 				QuantityOld = oi.Quantity,
@@ -346,7 +342,7 @@ namespace SmartStore.Admin.Controllers
 
 			_orderProcessingService.AutoUpdateOrderDetails(context);
 
-			TempData[AutoUpdateOrderItemContext.InfoKey] = context.ToString(_localizationService);
+			TempData[AutoUpdateOrderItemContext.InfoKey] = context.ToString(Services.Localization);
 
 			return RedirectToAction("Edit", new { id = returnRequest.Id });
 		}

@@ -34,7 +34,11 @@
             if ($.fn.tooltip === undefined)
                 return;
             if (!Modernizr.touchevents) {
-                ctx.tooltip({ selector: '[data-toggle=tooltip], .tooltip-toggle', animation: false });
+                ctx.tooltip({
+                    selector: '[data-toggle=tooltip], .tooltip-toggle',
+                    animation: false,
+                    trigger: 'hover'
+                });
             }
         },
         // touch spin
@@ -64,7 +68,8 @@
                     var email = $("#newsletter-email").val();
                     var subscribe = 'true';
                     var resultDisplay = $("#newsletter-result-block");
-					var gdprConsent = $(".footer-newsletter #GdprConsent").is(':checked');
+					var elemGdprConsent = $(".footer-newsletter #GdprConsent")
+					var gdprConsent = elemGdprConsent.length == 0 ? null : elemGdprConsent.is(':checked');
 
                     if ($('#newsletter-unsubscribe').is(':checked')) {
                         subscribe = 'false';
@@ -157,17 +162,16 @@
     // on document ready
     // TODO: reorganize > public.globalinit.js
     $(function () {
-        // Notify subscribers about page/content width change
-        if (window.EventBroker) {
-        	var currentContentWidth = $('#content').width();
-        	$(window).on('resize', function () {
-        		var contentWidth = $('#content').width();
-        		if (contentWidth !== currentContentWidth) {
-        			currentContentWidth = contentWidth;
-        			console.debug("Grid tier changed: " + viewport.current());
-        			EventBroker.publish("page.resized", viewport);
-        		}
-        	});
+        // Init reveal on scroll with AOS library
+        if (typeof AOS !== 'undefined' && !$('body').hasClass('no-reveal')) {
+            AOS.init({ once: true, duration: 1000 });
+        }
+
+        if (SmartStore.parallax !== undefined && !$('body').hasClass('no-parallax')) {
+            SmartStore.parallax.init({
+                context: document.body,
+                selector: '.parallax'
+            });
         }
         
         applyCommonPlugins($("body"));

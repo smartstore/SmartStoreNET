@@ -59,11 +59,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
 		public static void SetLifetimeScopeProvider(ILifetimeScopeProvider lifetimeScopeProvider)
 		{
-			if (lifetimeScopeProvider == null)
-			{
-				throw new ArgumentNullException("lifetimeScopeProvider");
-			}
-			LifetimeScopeProvider = lifetimeScopeProvider;
+			LifetimeScopeProvider = lifetimeScopeProvider ?? throw new ArgumentNullException("lifetimeScopeProvider");
 		}
 
 

@@ -8,7 +8,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 
     var isInitialised = false;
     var viewport = ResponsiveBootstrapToolkit;
-    var selectedMenuItemId = 0;
+    var selectedEntityId = 0;
     var currentCategoryId = 0;
     var currentProductId = 0;
 	var currentManufacturerId = 0;
@@ -48,12 +48,14 @@ var AjaxMenu = (function ($, window, document, undefined) {
         });
 
         // menu click events
-        menu.on('click', '.ocm-item', function (e) {  
+		menu.on('click', '.ocm-item', function (e) {  
+			e.preventDefault();
+
             var item = $(this);
             var categoryId = item.data("id");
             var isAjaxNavigation = item.data("ajax");
 
-            if (isAjaxNavigation == false) {
+            if (!isAjaxNavigation) {
                 window.setLocation(item.find(".ocm-link").attr("href"));
                 return true;
             }
@@ -63,34 +65,28 @@ var AjaxMenu = (function ($, window, document, undefined) {
                 return false;
             }
 
-            item.addClass("animated");
+            item.addClass("animated");                    
+			
+            navigateToMenuItem(categoryId || 0, item.hasClass("navigate-back") ? "out" : "in");
             
-            e.preventDefault();
-
-            navigateToMenuItem(categoryId ? categoryId : 0, item.hasClass("navigate-back") ? "left" : "right");
-            
-            // for stopping event propagation
+            // stop event propagation
             return false;
         });
 	});
 
     function navigateToMenuItem(categoryId, direction) {
+		var cnt = menu.find(".category-container"),
+			firstCall = cnt.length == 0,
+			categoryTab = categoryId != 0 ? menu : menu.find("#ocm-categories"),
+			currentLayer = $(".layer.show", menu),
+			nextLayer = currentLayer.next(),
+			prevLayer = currentLayer.prev();
 
-        var categoryContainer = menu.find(".category-container");
-        var firstCall = categoryContainer.length == 0;
-        var categoryTab = categoryId != 0 ? menu : menu.find("#ocm-categories");
-
-        var currentLayer = $(".layer.show", menu);
-        var nextLayer = currentLayer.next();
-        var prevLayer = currentLayer.prev();
-
-        if (direction == "left") {
-
+		if (direction === "out") {
             // check whether a previous layer exists (if it exists, its always the right one to navigate to)
             if (prevLayer.length > 0) {
                 // special treatment when navigating back to home layer
                 var isHome = prevLayer.hasClass("ocm-home-layer");
-
                 if (isHome) {
                     prevLayer
                         .find(".ocm-nav-layer")
@@ -104,8 +100,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 
             // if no previous layer exists, make ajax call and prepend response
         }
-        else if (direction == "right") {
-            
+		else if (direction === "in") {
             // check whether a next layer exists and if it has the same id as the element to which the user is navigating to
             if (nextLayer.data("id") == categoryId) {
                 currentLayer.removeClass("show");
@@ -127,8 +122,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
                 "currentProductId": currentProductId
 	        },
 	        type: 'POST',
-	        success: function (response) {
-
+			success: function (response) {
 	            // replace current menu content with response 
 	            if (firstCall) {
 	                if (categoryId != 0)
@@ -138,47 +132,44 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	                }
 	            }
 	            else {
+	                var cntSlideIn;
+	                var cntSlideOut = currentLayer;
 
-	                var categoryContainerSlideIn;
-	                var categoryContainerSlideOut = currentLayer;
-
-	                if (direction == "left") {
-                        
-	                    if (categoryId == 0) {
+					if (direction === "out") {
+						if (categoryId == 0) {
 	                        navigateToHomeLayer(true);
 	                        return;
 	                    }
 	                    
-	                    categoryContainerSlideIn = $(wrapAjaxResponse(response, "", categoryId)).prependTo(categoryTab);
+						cntSlideIn = $(wrapAjaxResponse(response, "", categoryId)).prependTo(categoryTab);
 	                }
 	                else {
-	                    categoryContainerSlideIn = $(wrapAjaxResponse(response, "", categoryId)).appendTo(categoryTab);
+						cntSlideIn = $(wrapAjaxResponse(response, "", categoryId)).appendTo(categoryTab);
 	                }
-	                
+
 	                _.delay(function () {
-	                    categoryContainerSlideIn.addClass("show");
-                        
-	                    if (direction !== undefined)
-	                        categoryContainerSlideOut.removeClass("show");
-                            
+						cntSlideIn.addClass("show");
+					
+						if (direction)
+							cntSlideOut.removeClass("show");    
 	                }, 100);
 
-	                if (direction == undefined) {
-	                    categoryContainerSlideIn = $(".ocm-home-layer");
-	                    categoryContainerSlideOut = nextLayer;
+	                if (!direction) {
+						cntSlideIn = $(".ocm-home-layer");
+						cntSlideOut = nextLayer;
 
-	                    categoryContainerSlideIn
+						cntSlideIn
                             .addClass("show")
                             .find(".ocm-nav-layer")
                             .removeClass("offcanvas-scrollable ocm-nav-layer layer");
 
-	                    categoryContainerSlideOut.removeClass("show");
+						cntSlideOut.removeClass("show");
 	                }
 
-	                categoryContainerSlideIn.on(Prefixer.event.transitionEnd, function (e) {
-	                    categoryContainerSlideOut.find(".ocm-item").removeClass("animated");
-	                    categoryContainerSlideIn.find(".ocm-item").removeClass("animated");
-	                });
+					cntSlideIn.on(Prefixer.event.transitionEnd, function (e) {
+						cntSlideOut.find(".ocm-item").removeClass("animated");
+						cntSlideIn.find(".ocm-item").removeClass("animated");
+					});
 	            }
 	        },
 	        error: function (jqXHR, textStatus, errorThrown) {
@@ -205,7 +196,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	                response = response.replace("ocm-home-layer layer show", "ocm-home-layer layer");
 	            }
 
-		        menu.prepend(response);
+				menu.prepend(response);
 
 	            tabContent = menu.find("#category-tab");
 	            tabContent.tab('show');
@@ -314,17 +305,17 @@ var AjaxMenu = (function ($, window, document, undefined) {
 
 	    initMenu: function () {
 	        var nav = $(".megamenu .navbar-nav");
-	        selectedMenuItemId = nav.data("selected-menu-item");
+            selectedEntityId = nav.data("selected-entity-id");
 	        currentCategoryId = nav.data("current-category-id");
 	        currentProductId = nav.data("current-product-id");
 	        currentManufacturerId = nav.data("current-manufacturer-id");
 			publicStoreNavigationAllowed = menu.data("public-store-navigation-allowed");
 			
-			if (selectedMenuItemId == 0) {
+            if (selectedEntityId == 0) {
 				navigateToHomeLayer(false);
 			}
-			else {
-				navigateToMenuItem(selectedMenuItemId);
+            else {
+                navigateToMenuItem(selectedEntityId);
 			}
 	
 	        isInitialised = true;

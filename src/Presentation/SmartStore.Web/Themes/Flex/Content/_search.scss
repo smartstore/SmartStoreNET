@@ -63,7 +63,7 @@ $facet-selection-color:             darken($success, 15%);
     top: 0.12rem;
 }
 
-#instasearch-drop {
+.instasearch-drop {
     position: absolute;
     display: none;
     left: 0;
@@ -128,7 +128,7 @@ $facet-selection-color:             darken($success, 15%);
     }
 }
 @include media-breakpoint-up(lg) {
-    #instasearch-drop {
+    .instasearch-drop {
         max-width: none;
     }
     .instasearch-row {
@@ -218,12 +218,10 @@ $facet-selection-color:             darken($success, 15%);
     &:after {
 	    display: block;
 	    position: absolute;
-	    font-family: FontAwesome;
+        @include fontawesome-font("\f106", light); // angle-up
 	    font-size: 1.2rem;
 	    line-height: 1;
-	    content: "\f106";
         color: $body-color;
-	    //content: "\f077";
         right: 0;
 	    top: 50%;
 	    margin-top: -7px;

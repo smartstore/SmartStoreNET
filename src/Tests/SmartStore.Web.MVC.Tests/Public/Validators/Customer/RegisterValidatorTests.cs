@@ -1,9 +1,8 @@
 ﻿using FluentValidation.TestHelper;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Web.Models.Customer;
-using SmartStore.Web.Validators.Customer;
 using NUnit.Framework;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Web.Models.Customer;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
 {
@@ -13,13 +12,13 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
         private RegisterValidator _validator;
         private CustomerSettings _customerSettings;
         private TaxSettings _taxSettings = new TaxSettings();
-        
+
         [SetUp]
         public new void Setup()
         {
             _customerSettings = new CustomerSettings();
 			_taxSettings = new TaxSettings();
-            _validator = new RegisterValidator(_localizationService, _customerSettings, _taxSettings);
+            _validator = new RegisterValidator(T, _customerSettings, _taxSettings);
         }
         
         [Test]
@@ -152,7 +151,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
         public void Should_validate_password_is_length()
         {
             _customerSettings.PasswordMinLength = 5;
-            _validator = new RegisterValidator(_localizationService, _customerSettings, _taxSettings);
+            _validator = new RegisterValidator(T, _customerSettings, _taxSettings);
 
             var model = new RegisterModel();
             model.Password = "1234";

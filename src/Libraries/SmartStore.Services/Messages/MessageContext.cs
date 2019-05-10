@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
@@ -10,11 +9,11 @@ using SmartStore.Core.Localization;
 
 namespace SmartStore.Services.Messages
 {
-	/// <summary>
-	/// A context object which contains all required and optional information
-	/// for the creation of message templates.
-	/// </summary>
-	public class MessageContext
+    /// <summary>
+    /// A context object which contains all required and optional information
+    /// for the creation of message templates.
+    /// </summary>
+    public class MessageContext
 	{
 		private IFormatProvider _formatProvider;
 
@@ -86,18 +85,6 @@ namespace SmartStore.Services.Messages
 			{
 				_formatProvider = value;
 			}
-		}
-
-		private IFormatProvider GetFormatProvider(MessageContext messageContext)
-		{
-			var culture = messageContext.Language.LanguageCulture;
-
-			if (LocalizationHelper.IsValidCultureCode(culture))
-			{
-				return CultureInfo.GetCultureInfo(culture);
-			}
-
-			return CultureInfo.CurrentCulture;
 		}
 
 		public static MessageContext Create(string messageTemplateName, int languageId, int? storeId = null, Customer customer = null)

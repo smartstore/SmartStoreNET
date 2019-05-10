@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Validators.Catalog;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.Catalog
 {
-    public partial class ProductReviewOverviewModel : ModelBase
+	public partial class ProductReviewOverviewModel : ModelBase
     {
         public int ProductId { get; set; }
 
@@ -36,11 +36,10 @@ namespace SmartStore.Web.Models.Catalog
 
 		#region Add
 
-		[AllowHtml]
 		[SmartResourceDisplayName("Reviews.Fields.Title")]
 		public string Title { get; set; }
 
-		[AllowHtml]
+		[SanitizeHtml]
 		[SmartResourceDisplayName("Reviews.Fields.ReviewText")]
 		public string ReviewText { get; set; }
 
@@ -83,5 +82,15 @@ namespace SmartStore.Web.Models.Catalog
         public int HelpfulYesTotal { get; set; }
 
         public int HelpfulNoTotal { get; set; }
+    }
+
+    public class ProductReviewsValidator : AbstractValidator<ProductReviewsModel>
+    {
+        public ProductReviewsValidator()
+        {
+            RuleFor(x => x.Title).NotEmpty();
+            RuleFor(x => x.Title).Length(1, 200).When(x => !string.IsNullOrEmpty(x.Title));
+            RuleFor(x => x.ReviewText).NotEmpty();
+        }
     }
 }

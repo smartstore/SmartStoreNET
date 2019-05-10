@@ -30,9 +30,6 @@ namespace SmartStore.Core.Tests.Data.Hooks
 		{
 			_hooks = new[]
 			{
-				CreateHook<Hook_CategoryProductManufacturer_Load, BaseEntity>(),
-				CreateHook<Hook_Product_Load, Product>(),
-				CreateHook<Hook_Void_Load, BaseEntity>(),
 				CreateHook<Hook_Acl_Deleted, IAclSupported>(),
 				CreateHook<Hook_Auditable_Inserting_Updating_Important, IAuditable>(),
 				CreateHook<Hook_Category_Pre, BaseEntity>(),
@@ -43,38 +40,6 @@ namespace SmartStore.Core.Tests.Data.Hooks
 			};
 
 			_handler = new DefaultDbHookHandler(_hooks);
-		}
-
-
-		private ICollection<Type> GetExpectedLoadHooks(BaseEntity entity, bool importantOnly)
-		{
-			var hset = new HashSet<Type>();
-			var entityType = entity.GetType();
-
-			foreach (var hook in _hooks.Where(x => x.Metadata.IsLoadHook == true))
-			{
-				var hookType = hook.Metadata.ImplType;
-
-				if (hookType == typeof(Hook_CategoryProductManufacturer_Load))
-				{
-					if (typeof(Product).IsAssignableFrom(entityType) || typeof(Category).IsAssignableFrom(entityType) || typeof(Manufacturer).IsAssignableFrom(entityType))
-					{
-						hset.Add(hookType);
-					}
-				}
-				else if (hookType == typeof(Hook_Product_Load))
-				{
-					if (!importantOnly && typeof(Product).IsAssignableFrom(entityType))
-					{
-						hset.Add(hookType);
-					}
-				}
-				else if (hookType == typeof(Hook_Void_Load))
-				{
-				}
-			}
-
-			return hset;
 		}
 
 		private ICollection<Type> GetExpectedSaveHooks(IEnumerable<IHookedEntity> entries, bool isPost, bool importantOnly)
@@ -134,26 +99,6 @@ namespace SmartStore.Core.Tests.Data.Hooks
 		}
 
 		[Test]
-		public void Can_handle_load_hooks()
-		{
-			foreach (var e in new BaseEntity[] { new Product(), new Category(), new Manufacturer(), new GenericAttribute(), new ProductAttribute() })
-			{
-				var processedHooks = _handler.TriggerLoadHooks(e, false).ToArray();
-				var expected = GetExpectedLoadHooks(e, false);
-				Assert.AreEqual(expected.Count, processedHooks.Count());
-				Assert.IsTrue(processedHooks.All(x => expected.Contains(x.GetType())));
-			}
-
-			foreach (var e in new BaseEntity[] { new Product(), new Category(), new Manufacturer(), new GenericAttribute(), new ProductAttribute() })
-			{
-				var processedHooks = _handler.TriggerLoadHooks(e, true).ToArray();
-				var expected = GetExpectedLoadHooks(e, true);
-				Assert.AreEqual(expected.Count, processedHooks.Count());
-				Assert.IsTrue(processedHooks.All(x => expected.Contains(x.GetType())));
-			}
-		}
-
-		[Test]
 		public void Can_handle_voidness()
 		{
 			var entries = new[]
@@ -205,8 +150,7 @@ namespace SmartStore.Core.Tests.Data.Hooks
 			{
 				HookedType = typeof(TEntity),
 				ImplType = typeof(THook),
-				Important = typeof(THook).GetAttribute<ImportantAttribute>(false) != null,
-				IsLoadHook = typeof(IDbLoadHook).IsAssignableFrom(typeof(THook))
+				Important = typeof(THook).GetAttribute<ImportantAttribute>(false) != null
 			});
 
 			return hook;

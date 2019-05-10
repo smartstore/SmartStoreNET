@@ -5,6 +5,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.UI;
+using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
 
 namespace SmartStore.Web.Models.Catalog
@@ -19,9 +20,9 @@ namespace SmartStore.Web.Models.Catalog
 
 			Items = new List<SummaryItem>();
 			AvailableSortOptions = new Dictionary<int, string>();
-			AvailablePageSizes = new int[0];
-			PagedList = products;
-		}
+            AvailablePageSizes = new int[0];
+            PagedList = products;
+        }
 
 		public int? ThumbSize { get; set; }
 		public bool ShowSku { get; set; }
@@ -60,10 +61,10 @@ namespace SmartStore.Web.Models.Catalog
 		public string RelevanceSortOrderName { get; set; }
 		public IDictionary<int, string> AvailableSortOptions { get; set; }
 
-		public IEnumerable<int> AvailablePageSizes { get; set; }
-		public IPageable PagedList { get; set; }
+        public IPageable PagedList { get; private set; }
+        public IEnumerable<int> AvailablePageSizes { get; set; }
 
-		public void Dispose()
+        public void Dispose()
 		{
 			if (Items != null)
 			{
@@ -91,13 +92,11 @@ namespace SmartStore.Web.Models.Catalog
 				Badges = new List<Badge>();
 			}
 
-			//public ProductSummaryModel Parent { get; private set; }
 			public ProductSummaryModel Parent
 			{
 				get
 				{
-					ProductSummaryModel parent;
-					_parent.TryGetTarget(out parent);
+					_parent.TryGetTarget(out var parent);
 					return parent;
 				}
 			}
@@ -121,8 +120,10 @@ namespace SmartStore.Web.Models.Catalog
 			public bool DisplayDeliveryTimeAccordingToStock { get; set; }
 			public string StockAvailablity { get; set; }
 			public string BasePriceInfo { get; set; }
+            public PriceDisplayStyle PriceDisplayStyle { get; set; }
+            public bool DisplayTextForZeroPrices { get; set; }
 
-			public int MinPriceProductId { get; set; } // Internal
+            public int MinPriceProductId { get; set; } // Internal
 
 			public ManufacturerOverviewModel Manufacturer { get; set; }
 			public PriceModel Price { get; set; }

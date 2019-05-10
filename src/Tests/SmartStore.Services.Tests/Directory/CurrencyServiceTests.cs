@@ -96,7 +96,7 @@ namespace SmartStore.Services.Tests.Directory
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
             
-            var pluginFinder = new PluginFinder();
+            var pluginFinder = PluginFinder.Current;
             _currencyService = new CurrencyService(_currencyRepository, _storeMappingService,
 				_currencySettings, pluginFinder, _eventPublisher, this.ProviderManager, _storeContext);
         }

@@ -359,7 +359,7 @@ a.t-button.t-state-disabled:hover,
 	display: block;
 	position: relative;
 
-	.numerictextbox-postfix {
+	> .numerictextbox-postfix {
 		display: block;
 		position: absolute;
 		z-index: 2;
@@ -371,6 +371,36 @@ a.t-button.t-state-disabled:hover,
 		line-height: $input-btn-line-height;
 		cursor: default;
 		user-select: none;
+	}
+}
+
+.numerictextbox-group-sm {
+    > .t-numerictextbox {
+        &:after {
+            width: calc(#{$input-height-sm} - 1px);
+        }
+
+	    .t-input {
+            padding: $input-btn-padding-y-sm $input-btn-padding-x-sm;
+		    padding-right: $input-height-inner-sm + 1rem !important;
+            height: $input-height-sm;
+	    }
+
+        .t-formatted-value {
+		    padding: $input-btn-padding-y-sm $input-btn-padding-x-sm;
+		    font-size: $font-size-sm; // Match sm inputs
+		    line-height: $input-btn-line-height-sm;
+        }
+
+        .t-input ~ .t-icon {
+            width: calc(#{$input-height-sm});
+        }
+    }
+
+	> .numerictextbox-postfix {
+		padding: $input-btn-padding-y-sm $input-btn-padding-x-sm;
+		font-size: $font-size-sm; // Match sm inputs
+		line-height: $input-btn-line-height-sm;
 	}
 }
 

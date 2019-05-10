@@ -110,7 +110,7 @@ namespace SmartStore.Admin.Controllers
 
 				// applied to products
 				model.AppliedToProductModels = discount.AppliedToProducts
-					.Where(x => x != null && !x.Deleted && !x.IsSystemProduct)
+					.Where(x => x != null && !x.Deleted)
 					.Select(x => new DiscountModel.AppliedToProductModel { ProductId = x.Id, ProductName = x.GetLocalized(y => y.Name, language) })
 					.ToList();
 

@@ -15,9 +15,9 @@ namespace SmartStore.Web.Framework.Plugins
 
 		public ProviderManager(IComponentContext ctx, ICommonServices services, PluginMediator pluginMediator)
 		{
-			this._ctx = ctx;
-			this._services = services;
-			this._pluginMediator = pluginMediator;
+			_ctx = ctx;
+			_services = services;
+			_pluginMediator = pluginMediator;
 		}
 
 		public Provider<TProvider> GetProvider<TProvider>(string systemName, int storeId = 0) where TProvider : IProvider

@@ -1,5 +1,5 @@
-﻿@model BoardsIndexModel
-@using SmartStore.Web.Models.Boards;
+﻿@using SmartStore.Web.Models.Boards;
+@model BoardsIndexModel
 @{
     Layout = "_Layout";
 
@@ -10,14 +10,16 @@
         <div class="current-time">
             @Model.CurrentTime.ToNativeString("F")
         </div>
-        @{ Html.RenderPartial("_SearchBox"); }
+        <div class="mt-2 w-75">
+            @{ Html.RenderAction("SearchBox", "Boards"); }
+        </div>
     </div>
     
     @{ Html.RenderAction("TopicBlock", "Topic", new { systemName = "ForumWelcomeMessage" }); }
 
     @foreach (var forumGroup in Model.ForumGroups)
     {
-        Html.RenderPartial("_ForumGroupPartial", forumGroup);
+        Html.RenderPartial("ForumGroup", forumGroup);
     }
     
     @{ Html.RenderAction("ActiveDiscussionsSmall"); }

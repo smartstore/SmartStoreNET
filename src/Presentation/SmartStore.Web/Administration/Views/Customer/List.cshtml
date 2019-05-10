@@ -34,24 +34,20 @@
 	<div class="row mt-3 grid-filter" style="display: none">
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.SearchEmail)
-			@Html.TextBoxFor(model => Model.SearchEmail, new { @class = "form-control" })
+			@Html.TextBoxFor(model => Model.SearchEmail, new { @class = "form-control sf" })
 		</div>
 
 		@if (Model.UsernamesEnabled)
 		{
 			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 				@Html.SmartLabelFor(model => model.SearchUsername)
-				@Html.TextBoxFor(model => Model.SearchUsername, new { @class = "form-control" })
+				@Html.TextBoxFor(model => Model.SearchUsername, new { @class = "form-control sf" })
 			</div>
 		}
 
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.SearchFirstName)
-			@Html.TextBoxFor(model => Model.SearchFirstName, new { @class = "form-control" })
-		</div>
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.SearchLastName)
-			@Html.TextBoxFor(model => Model.SearchLastName, new { @class = "form-control" })
+			@Html.SmartLabelFor(model => model.SearchTerm)
+			@Html.TextBoxFor(model => Model.SearchTerm, new { @class = "form-control sf", placeholder = T("Admin.Customers.Customers.List.SearchTerm.Hint").Text })
 		</div>
 
 		@if (Model.DateOfBirthEnabled)
@@ -83,19 +79,11 @@
 			</div>
 		}
 
-		@if (Model.CompanyEnabled)
-		{
-			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-				@Html.SmartLabelFor(model => model.SearchCompany)
-				@Html.TextBoxFor(model => Model.SearchCompany, new { @class = "form-control" })
-			</div>
-		}
-
 		@if (Model.PhoneEnabled)
 		{
 			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 				@Html.SmartLabelFor(model => model.SearchPhone)
-				@Html.TextBoxFor(model => Model.SearchPhone, new { @class = "form-control" })
+				@Html.TextBoxFor(model => Model.SearchPhone, new { @class = "form-control sf" })
 			</div>
 		}
 
@@ -103,26 +91,21 @@
 		{
 			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 				@Html.SmartLabelFor(model => model.SearchZipPostalCode)
-				@Html.TextBoxFor(model => Model.SearchZipPostalCode, new { @class = "form-control" })
+				@Html.TextBoxFor(model => Model.SearchZipPostalCode, new { @class = "form-control sf" })
 			</div>
 		}
 
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.SearchCustomerRoleIds)
-			@*@Html.DropDownListFor(model => model.SearchCustomerRoleIds, Model.AvailableCustomerRoles, null, new { multiple = "multiple", @class = "form-control" })*@
 			@Html.DropDownList("SearchCustomerRoleIds", Model.AvailableCustomerRoles, null, new { multiple = "multiple", @class = "form-control" })
 		</div>
 
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			<label>&nbsp;</label>
-			<div class="form-check form-control-plaintext">
-				@Html.CheckBoxFor(model => model.SearchDeletedOnly, new { @class = "form-check-input" })
-				<label class="form-check-label" for="SearchDeletedOnly">@Html.DisplayNameFor(model => model.SearchDeletedOnly)</label>
-			</div>	
+			@Html.SmartLabelFor(model => model.SearchActiveOnly)
+			@Html.EditorFor(model => Model.SearchActiveOnly, new { @class = "form-control sf" })
 		</div>
 
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group ml-auto">
-			<label>&nbsp;</label>
 			<button type="submit" id="search-customers" name="search-customers" class="btn btn-warning btn-block">
 				<span>@T("Admin.Common.ApplyFilter")</span>
 			</button>
@@ -134,7 +117,8 @@
 		.Name("customers-grid")
 		.ClientEvents(events => events
 			.OnDataBinding("onDataBinding")
-			.OnDataBound("onDataBound"))
+			.OnDataBound("onDataBound")
+            .OnRowDataBound("onRowDataBound"))
 		.Columns(columns =>
 		{
 			columns.Bound(x => x.Id)
@@ -194,44 +178,8 @@
 				return false;
 			});
 
-			$("#@Html.FieldIdFor(model => model.SearchEmail)").keydown(function (event) {
-				if (event.keyCode == 13) {
-					$("#search-customers").click();
-					return false;
-				}
-			});
-			$("#@Html.FieldIdFor(model => model.SearchUsername)").keydown(function (event) {
-				if (event.keyCode == 13) {
-					$("#search-customers").click();
-					return false;
-				}
-			});
-			$("#@Html.FieldIdFor(model => model.SearchFirstName)").keydown(function (event) {
-				if (event.keyCode == 13) {
-					$("#search-customers").click();
-					return false;
-				}
-			});
-			$("#@Html.FieldIdFor(model => model.SearchLastName)").keydown(function (event) {
-				if (event.keyCode == 13) {
-					$("#search-customers").click();
-					return false;
-				}
-			});
-			$("#@Html.FieldIdFor(model => model.SearchCompany)").keydown(function (event) {
-				if (event.keyCode == 13) {
-					$("#search-customers").click();
-					return false;
-				}
-			});
-			$("#@Html.FieldIdFor(model => model.SearchPhone)").keydown(function (event) {
-				if (event.keyCode == 13) {
-					$("#search-customers").click();
-					return false;
-				}
-			});
-			$("#@Html.FieldIdFor(model => model.SearchZipPostalCode)").keydown(function (event) {
-				if (event.keyCode == 13) {
+			$(".form-control.sf").on("keydown", function (e) {
+				if (e.keyCode == 13) {
 					$("#search-customers").click();
 					return false;
 				}
@@ -264,8 +212,7 @@
 			});
 		});
 
-		function onDataBound(e) {
-
+		function onDataBound() {
 			$('#customers-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
 				var currentId = $(this).val();
 				var checked = jQuery.inArray(currentId, selectedIds);
@@ -274,7 +221,13 @@
 			});
 
 			updateMasterCheckbox();
-		}
+        }
+
+        function onRowDataBound(e) {
+		    if (!e.dataItem.Active) {
+			    $(e.row).find('td').wrapInner('<span class="muted" />');
+		    }
+        }
 
 		function updateMasterCheckbox() {
 			var numChkBoxes = $('#customers-grid input[type=checkbox][id!=mastercheckbox]').length;
@@ -287,14 +240,12 @@
 				SearchCustomerRoleIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.SearchCustomerRoleIds)').val()).join(),
 				SearchEmail: $('#@Html.FieldIdFor(model => model.SearchEmail)').val(),
 				SearchUsername: $('#@Html.FieldIdFor(model => model.SearchUsername)').val(),
-				SearchFirstName: $('#@Html.FieldIdFor(model => model.SearchFirstName)').val(),
-				SearchLastName: $('#@Html.FieldIdFor(model => model.SearchLastName)').val(),
+				SearchTerm: $('#@Html.FieldIdFor(model => model.SearchTerm)').val(),
 				SearchDayOfBirth: $('#@Html.FieldIdFor(model => model.SearchDayOfBirth)').val(),
 				SearchMonthOfBirth: $('#@Html.FieldIdFor(model => model.SearchMonthOfBirth)').val(),
-				SearchCompany: $('#@Html.FieldIdFor(model => model.SearchCompany)').val(),
 				SearchPhone: $('#@Html.FieldIdFor(model => model.SearchPhone)').val(),
 				SearchZipPostalCode: $('#@Html.FieldIdFor(model => model.SearchZipPostalCode)').val(),
-				SearchDeletedOnly: $('#@Html.FieldIdFor(model => model.SearchDeletedOnly)').prop('checked')
+				SearchActiveOnly: $('#@Html.FieldIdFor(model => model.SearchActiveOnly)').val()
 			};
 			e.data = searchModel;
 		}

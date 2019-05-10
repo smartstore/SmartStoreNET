@@ -100,8 +100,8 @@ namespace SmartStore.Core.Search.Facets
 			{
 				var combiner = HashCodeCombiner
 					.Start()
-					.Add(Value.GetHashCode())
-					.Add(UpperValue.GetHashCode());
+					.Add(Value)
+					.Add(UpperValue);
 
 				return combiner.CombinedHash;
 			}
@@ -155,20 +155,38 @@ namespace SmartStore.Core.Search.Facets
 			return this.Equals(obj as FacetValue);
 		}
 
+        protected virtual string ConvertToString(object value)
+        {
+            if (value != null)
+            {
+                if (TypeCode == IndexTypeCode.DateTime)
+                {
+                    // The default conversion is not pretty enough.
+                    var dt = (DateTime)value;
+                    if (dt.Hour == 0 && dt.Minute == 0 && dt.Second == 0)
+                    {
+                        return dt.ToString("yyyy-MM-dd");
+                    }
+                    else
+                    {
+                        return dt.ToString("yyyy-MM-dd HH:mm:ss");
+                    }
+                }
+
+                return Convert.ToString(value, CultureInfo.InvariantCulture);
+            }
+
+            return string.Empty;
+        }
+
 		public override string ToString()
 		{
 			var result = string.Empty;
-
-			var valueStr = Value != null
-				? Convert.ToString(Value, CultureInfo.InvariantCulture)
-				: string.Empty;
+            var valueStr = ConvertToString(Value);
 
 			if (IsRange)
 			{
-				var upperValueStr = UpperValue != null
-					? Convert.ToString(UpperValue, CultureInfo.InvariantCulture)
-					: string.Empty;
-
+                var upperValueStr = ConvertToString(UpperValue);
 				if (upperValueStr.HasValue())
 				{
 					result = string.Concat(valueStr, "~", upperValueStr);

@@ -40,7 +40,7 @@ $pswp__background-color:            #fff;
 /* <button> css reset */
 .pswp__button {
     display: inline-block;
-    font-family: FontAwesome;
+    @include fontawesome-font("", regular);
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     vertical-align: middle;

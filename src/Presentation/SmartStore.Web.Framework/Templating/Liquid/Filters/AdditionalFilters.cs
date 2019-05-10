@@ -157,7 +157,7 @@ namespace SmartStore.Templating.Liquid
 			}
 			else if (input is string s)
 			{
-				return s.Prettify(allowSpace);
+				return s.Slugify(allowSpace);
 			}
 
 			return null;

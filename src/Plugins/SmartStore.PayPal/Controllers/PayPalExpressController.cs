@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Web.Mvc;
-using SmartStore.Core.Domain.Customers;
+﻿using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
@@ -10,7 +6,6 @@ using SmartStore.Core.Logging;
 using SmartStore.PayPal.Models;
 using SmartStore.PayPal.PayPalSvc;
 using SmartStore.PayPal.Settings;
-using SmartStore.PayPal.Validators;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
@@ -19,10 +14,14 @@ using SmartStore.Services.Payments;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Web.Mvc;
 
 namespace SmartStore.PayPal.Controllers
 {
-	public class PayPalExpressController : PayPalControllerBase<PayPalExpressPaymentSettings>
+    public class PayPalExpressController : PayPalControllerBase<PayPalExpressPaymentSettings>
 	{
 		private readonly OrderSettings _orderSettings;
 		private readonly ICurrencyService _currencyService;
@@ -167,7 +166,7 @@ namespace SmartStore.PayPal.Controllers
 				var provider = PaymentService.LoadPaymentMethodBySystemName(PayPalExpressProvider.SystemName, true);
 				var processor = provider != null ? provider.Value as PayPalExpressProvider : null;
 				if (processor == null)
-					throw new SmartException("PayPal Express Checkout module cannot be loaded");
+					throw new SmartException(T("Plugins.CannotLoadModule", T("Plugins.FriendlyName.Payments.PayPalExpress")));
 
 				var processPaymentRequest = new PayPalProcessPaymentRequest();
 
@@ -266,9 +265,9 @@ namespace SmartStore.PayPal.Controllers
 			var provider = PaymentService.LoadPaymentMethodBySystemName("Payments.PayPalExpress", true);
 			var processor = provider != null ? provider.Value as PayPalExpressProvider : null;
 			if (processor == null)
-				throw new SmartException("PayPal Express module cannot be loaded");
+                throw new SmartException(T("Plugins.CannotLoadModule", T("Plugins.FriendlyName.Payments.PayPalExpress")));
 
-			var resp = processor.GetExpressCheckoutDetails(token);
+            var resp = processor.GetExpressCheckoutDetails(token);
 
 			if (resp.Ack == AckCodeType.Success)
 			{
@@ -323,20 +322,8 @@ namespace SmartStore.PayPal.Controllers
 		public override IList<string> ValidatePaymentForm(FormCollection form)
 		{
 			var warnings = new List<string>();
-
-			var validator = new PayPalExpressPaymentInfoValidator(Services.Localization);
 			var model = new PayPalExpressPaymentInfoModel();
-
-			var validationResult = validator.Validate(model);
-
-			if (!validationResult.IsValid)
-			{
-				foreach (var error in validationResult.Errors)
-				{
-					warnings.Add(error.ErrorMessage);
-				}
-			}
-
+            
 			return warnings;
 		}
 	}

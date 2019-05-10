@@ -7,6 +7,7 @@ using BundleTransformer.Core.Translators;
 using BundleTransformer.SassAndScss.Translators;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
+using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Web.Framework.Theming.Assets
 {
@@ -71,7 +72,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
 				if (validationMode || !TryGetCachedAsset(asset, out result))
 				{
-					lock (String.Intern("CachedAsset:" + asset.VirtualPath))
+					using (KeyedLock.Lock("CachedAsset:" + asset.VirtualPath))
 					{
 						if (validationMode || !TryGetCachedAsset(asset, out result))
 						{

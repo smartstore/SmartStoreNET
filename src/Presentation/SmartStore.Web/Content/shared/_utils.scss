@@ -59,19 +59,6 @@
 
 
 //
-// Some Flex utils
-// ------------------------------------------------------
-
-.flex-grow-0 {
-	flex-grow: 0 !important;
-}
-
-.flex-grow-1 {
-	flex-grow: 1 !important;
-}
-
-
-//
 // Count badge
 // --------------------------------------------------
 
@@ -106,6 +93,7 @@
 
 // Data binding 3d rotate
 // ------------------------------------------------------
+
 @keyframes data-binding {
 	0% {
 		transform: rotateY(0deg);
@@ -183,6 +171,11 @@
 	height: auto !important;
 }
 
+.fit-fill       { object-fit: fill; }
+.fit-contain    { object-fit: contain; }
+.fit-cover      { object-fit: cover; }
+.fit-scale-down { object-fit: scale-down; }
+.fit-none       { object-fit: none; }
 
 //
 // Bootstrap overrides and tweaks
@@ -221,6 +214,17 @@ table th {
 
 
 //
+// Bootstrap additions
+// --------------------------------------------------
+
+.embed-responsive-16by10 {
+    &::before {
+        padding-top: percentage(10 / 16);
+    }
+}
+
+
+//
 // Bootstrap List group tweaks
 // ------------------------------------------------------
 
@@ -249,6 +253,41 @@ table th {
 
 
 //
+// Extra border utils
+// ------------------------------------------------------
+
+.border-translucent {
+    border-color: rgba(#000, 0.12) !important;
+}
+
+.rounded-sm {
+    border-radius: $border-radius-sm !important;
+}
+
+.rounded-lg {
+    border-radius: $border-radius-lg !important;
+}
+
+.rounded-xl {
+    border-radius: $border-radius-lg * 2 !important;
+}
+
+
+// Extra color utils
+// ------------------------------------------------------
+
+@each $g, $value in $grays {
+    .bg-gray-#{$g} {
+        background-color: $value !important;
+    }
+
+    .text-gray-#{$g} {
+        color: $value !important;
+    }
+}
+
+
+//
 // Some shims
 // ------------------------------------------------------
 
@@ -259,6 +298,30 @@ table th {
 .muted {
 	@extend .text-muted;
 }
+
+.animated {
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+
+@keyframes fadeInDown {
+    from  { opacity: 0; transform: translate3d(0, -20px, 0); }
+    to    { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes fadeOutLeft {
+    from  { opacity: 1; }
+    to    { opacity: 0; transform: translate3d(-20px, 0, 0); }
+}
+
+@keyframes fadeOutRight {
+    from  { opacity: 1; }
+    to    { opacity: 0; transform: translate3d(20px, 0, 0); }
+}
+
+.fadeOutLeft    { animation-name: fadeOutLeft; }
+.fadeOutRight   { animation-name: fadeOutRight; }
+.fadeInDown     { animation-name: fadeInDown; }
 
 //
 // Profiler sucks on small screens
@@ -279,6 +342,55 @@ table th {
 	border: 2px dotted $gray-700 !important;
 	background: transparent;
 	z-index: 100000;
+}
+
+
+// Sizing
+// -------------------------
+
+.h-medium     { min-height: 400px; }
+.h-tall       { min-height: 700px; }
+
+@each $breakpoint in (sm, md, lg, xl) {
+    @include media-breakpoint-up($breakpoint) {
+        .h-#{$breakpoint}-medium     { min-height: 400px; }
+        .h-#{$breakpoint}-tall       { min-height: 700px; }
+    }
+}
+
+
+//
+// Flip
+// --------------------------------------------------
+
+.flip-h {
+    transform: scale(-1, 1) !important;
+}
+
+.flip-v {
+    transform: scale(1, -1) !important;
+}
+
+.flip-hv {
+    transform: scale(-1, -1) !important;
+}
+
+
+// Parallax stuff
+// ------------------------------------------------------
+
+.parallax[data-parallax-type=content] {
+    will-change: transform;
+}
+
+
+// Animations
+// ------------------------------------------------------
+
+body.no-anims * {
+    transition-property: none !important;
+    transform: none !important;
+    animation: none !important;
 }
 
 

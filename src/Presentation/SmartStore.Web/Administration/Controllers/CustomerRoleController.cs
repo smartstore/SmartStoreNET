@@ -182,7 +182,7 @@ namespace SmartStore.Admin.Controllers
             
             var customerRole = _customerService.GetCustomerRoleById(model.Id);
             if (customerRole == null)
-                //No customer role found with the specified id
+                // No customer role found with the specified id
                 return RedirectToAction("List");
 
             try
@@ -195,11 +195,9 @@ namespace SmartStore.Admin.Controllers
                     if (customerRole.IsSystemRole && !customerRole.SystemName.Equals(model.SystemName, StringComparison.InvariantCultureIgnoreCase))
                         throw new SmartException(_localizationService.GetResource("Admin.Customers.CustomerRoles.Fields.SystemName.CantEditSystem"));
 
-
                     customerRole = model.ToEntity(customerRole);
                     _customerService.UpdateCustomerRole(customerRole);
 
-                    //activity log
                     _customerActivityService.InsertActivity("EditCustomerRole", _localizationService.GetResource("ActivityLog.EditCustomerRole"), customerRole.Name);
 
                     NotifySuccess(_localizationService.GetResource("Admin.Customers.CustomerRoles.Updated"));

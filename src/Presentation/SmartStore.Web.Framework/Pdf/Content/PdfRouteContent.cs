@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Services.Pdf;

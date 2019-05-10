@@ -1,4 +1,7 @@
+using NuGet;
+using SmartStore.Core.Domain.Catalog;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
@@ -83,5 +86,33 @@ namespace SmartStore.Core.Domain.Media
 		/// Gets or sets the media storage
 		/// </summary>
 		public virtual MediaStorage MediaStorage { get; set; }
-	}
+        
+        /// <summary>
+        /// Gets or sets a value indicating the corresponding entity id
+        /// </summary>
+        [DataMember]
+        [Index("IX_EntityId_EntityName", 0)]
+        public int EntityId { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the corresponding entity name
+        /// </summary>
+        [DataMember]
+        [Index("IX_EntityId_EntityName", 1)]
+        [StringLength(100)]
+        public string EntityName { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value the verion info
+        /// </summary>
+        [DataMember]
+        [StringLength(30)]
+        public string FileVersion { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value which contains information about changes of the current download version
+        /// </summary>
+        [DataMember]
+        public string Changelog { get; set; }
+    }
 }

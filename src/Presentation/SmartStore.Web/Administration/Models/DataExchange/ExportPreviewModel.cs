@@ -10,7 +10,6 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string Name { get; set; }
 		public string ThumbnailUrl { get; set; }
 		public int GridPageSize { get; set; }
-		public int TotalRecords { get; set; }
 		public ExportEntityType EntityType { get; set; }
 		public bool LogFileExists { get; set; }
 		public bool UsernamesEnabled { get; set; }
@@ -65,7 +64,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Orders.Fields.OrderTotal")]
 		public decimal OrderTotal { get; set; }
 
-		[SmartResourceDisplayName("Admin.Orders.Fields.CreatedOn")]
+		[SmartResourceDisplayName("Common.CreatedOn")]
 		public DateTime CreatedOn { get; set; }
 
 		[SmartResourceDisplayName("Admin.Orders.Fields.Store")]
@@ -86,7 +85,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Published")]
 		public bool Published { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.DisplayOrder")]
+		[SmartResourceDisplayName("Common.DisplayOrder")]
 		public int DisplayOrder { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
@@ -101,7 +100,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.Published")]
 		public bool Published { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.DisplayOrder")]
+		[SmartResourceDisplayName("Common.DisplayOrder")]
 		public int DisplayOrder { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
@@ -127,7 +126,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Customers.Customers.Fields.Active")]
 		public bool Active { get; set; }
 
-		[SmartResourceDisplayName("Admin.Customers.Customers.Fields.CreatedOn")]
+		[SmartResourceDisplayName("Common.CreatedOn")]
 		public DateTime CreatedOn { get; set; }
 
 		[SmartResourceDisplayName("Admin.Customers.Customers.Fields.LastActivityDate")]
@@ -142,7 +141,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Promotions.NewsLetterSubscriptions.Fields.Active")]
 		public bool Active { get; set; }
 
-		[SmartResourceDisplayName("Admin.Promotions.NewsLetterSubscriptions.Fields.CreatedOn")]
+		[SmartResourceDisplayName("Common.CreatedOn")]
 		public DateTime CreatedOn { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.Store")]

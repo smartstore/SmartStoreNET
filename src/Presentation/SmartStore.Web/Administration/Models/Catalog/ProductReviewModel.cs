@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Catalog;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -39,7 +39,16 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.ProductReviews.Fields.IsApproved")]
         public bool IsApproved { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.ProductReviews.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
     }
+
+	public partial class ProductReviewValidator : AbstractValidator<ProductReviewModel>
+	{
+		public ProductReviewValidator()
+		{
+			RuleFor(x => x.Title).NotEmpty();
+			RuleFor(x => x.ReviewText).NotEmpty();
+		}
+	}
 }

@@ -14,7 +14,6 @@ using SmartStore.Services.Orders;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
-using SmartStore.Core.Localization;
 
 namespace SmartStore.GoogleAnalytics.Controllers
 {
@@ -38,11 +37,7 @@ namespace SmartStore.GoogleAnalytics.Controllers
             _settingService = settingService;
             _orderService = orderService;
             _categoryService = categoryService;
-
-			T = NullLocalizer.Instance;
 		}
-
-		public Localizer T { get; set; }
 
 		[AdminAuthorize, ChildActionOnly, LoadSetting]
         public ActionResult Configure(GoogleAnalyticsSettings settings)

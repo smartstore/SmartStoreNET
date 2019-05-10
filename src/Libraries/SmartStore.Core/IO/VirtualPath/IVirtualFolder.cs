@@ -33,6 +33,7 @@ namespace SmartStore.Core.IO
 
 		Stream OpenFile(string relativePath);
 		void CreateTextFile(string relativePath, string content);
+		Task CreateTextFileAsync(string relativePath, string content);
 		Stream CreateFile(string relativePath);
 		void CreateDirectory(string relativePath);
 
@@ -40,6 +41,7 @@ namespace SmartStore.Core.IO
 		void DeleteDirectory(string relativePath);
 
 		string ReadFile(string relativePath);
+		Task<string> ReadFileAsync(string relativePath);
 		void CopyFile(string relativePath, Stream destination);
 
 		DateTime GetFileLastWriteTimeUtc(string relativePath);

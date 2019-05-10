@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Blogs;
 using SmartStore.Core.Domain.Blogs;
+using SmartStore.Core.Html;
 using SmartStore.Services.Blogs;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
@@ -14,6 +15,7 @@ using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
@@ -119,7 +121,6 @@ namespace SmartStore.Admin.Controllers
 			else
 			{
 				model.Data = Enumerable.Empty<BlogPostModel>();
-
 				NotifyAccessDenied();
 			}
 
@@ -148,8 +149,8 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public ActionResult Create(BlogPostModel model, bool continueEditing)
+        [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+        public ActionResult Create(BlogPostModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageBlog))
                 return AccessDeniedView();
@@ -167,8 +168,10 @@ namespace SmartStore.Admin.Controllers
                 var seName = blogPost.ValidateSeName(model.SeName, model.Title, true);
                 _urlRecordService.SaveSlug(blogPost, seName, blogPost.LanguageId);
 
-				//Stores
-				_storeMappingService.SaveStoreMappings<BlogPost>(blogPost, model.SelectedStoreIds);
+				// Stores
+				SaveStoreMappings(blogPost, model);
+
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, blogPost, form));
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");
@@ -200,8 +203,8 @@ namespace SmartStore.Admin.Controllers
             return View(model);
 		}
 
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-		public ActionResult Edit(BlogPostModel model, bool continueEditing)
+        [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+		public ActionResult Edit(BlogPostModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageBlog))
                 return AccessDeniedView();
@@ -218,12 +221,14 @@ namespace SmartStore.Admin.Controllers
                 blogPost.EndDateUtc = model.EndDate;
                 _blogService.UpdateBlogPost(blogPost);
 
-                //search engine name
+                // search engine name
                 var seName = blogPost.ValidateSeName(model.SeName, model.Title, true);
                 _urlRecordService.SaveSlug(blogPost, seName, blogPost.LanguageId);
 
-				//Stores
-				_storeMappingService.SaveStoreMappings<BlogPost>(blogPost, model.SelectedStoreIds);
+				// Stores
+				SaveStoreMappings(blogPost, model);
+
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, blogPost, form));
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");
@@ -297,7 +302,7 @@ namespace SmartStore.Admin.Controllers
 					commentModel.CustomerId = blogComment.CustomerId;
 					commentModel.IpAddress = blogComment.IpAddress;
 					commentModel.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogComment.CreatedOnUtc, DateTimeKind.Utc);
-					commentModel.Comment = Core.Html.HtmlUtils.FormatText(blogComment.CommentText, false, true, false, false, false, false);
+					commentModel.Comment = HtmlUtils.ConvertPlainTextToHtml(blogComment.CommentText.HtmlEncode());
 
 					if (customer == null)
 						commentModel.CustomerName = "".NaIfEmpty();

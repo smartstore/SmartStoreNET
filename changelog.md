@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.2
 
@@ -47,7 +47,7 @@
 * **Santander**:
 	* Added payment method for instalment purchase.
 	* Added financing calculator.
-* #1542 Pages: Added options to set body CSS class and Html Id.
+* #1542 Topics: Added options to set body CSS class and Html Id.
 * Web-API: Added endpoints for ProductSpecificationAttribute.
 * Trusted Shops: Added new Trustbadge display for mobile devices
 
@@ -64,9 +64,9 @@
 	* #1540 Place company name in front of customer name (according to address format of the particular country).
 	* #1565 Add a button to manually create a draft invoice.
 * #1479 Show in messages the delivery time at the time of purchase
-* #1184 Sort Current shopping carts & Current wishlists by `ShoppingCartItem.CreatedOn`.
+* #1184 Sort current shopping carts & current wishlists by `ShoppingCartItem.CreatedOn`.
 * #1106 BMECat: import & export support for product keywords
-* #1499 Added hint to forms indicating that fields with an asterisk (*)
+* #1499 Added hint to forms indicating that fields with an asterisk (*) are required
 * Added filter for newsletter subscriber export by working language
 * Refactored download section  
 * Enhanced EntityPicker to pick from customers, manufacturers & categories
@@ -75,32 +75,32 @@
 * Do not filter cookie using resources if cookie usage has not yet been consented to.
 * #1563 QueuedMessagesClearTask: add a setting for the age of the mails to be deleted.
 * #1569 Added a setting to show login note if no prices are displayed due to customer group permissions.
-* PayPal PLUS: now up to 10 more third party payment methods are allowed by PayPal.
+* PayPal PLUS: Up to 10 more third party payment methods are allowed by PayPal now.
 * #1560 Tell-a-Friend and anonymous user: render alert box and tell guest to login to use this function
-* #1571 Compare products only shows one specification attribute option
-* #1539 Allow signing in with both e-mail and username 
+* #1571 Compare products now shows all specification attribute options
+* #1539 Signing in is now allowed with e-mail and username 
 * Trusted Shops: Trustbadge won't be displayed in Popups & Iframes anymore
 * #1461 Admin Grid: filter dialog will be displayed entirely even when grid has no data to display
 
 ### Bugfixes
-* In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.
+* In a multi-store environment, multiple topics with the same system name can now be resolved reliably.
 * **GMC**:
 	* Export the product images if no attribute images are defined
 	* Do not export the first image twice for additional images
 	* Export image URL of full size image (not default size) for additional images
-	* Custom labels were not exported
+	* Custom labels are now being exported
 * Media middleware: 0-byte files should be treated as missing.
-* Megamenu alpha/omega blends do not toggle correctly on touch devices
+* Megamenu alpha/omega blends do now toggle correctly on touch devices
 * Summernote HTML editor exceeds parent container width when CodeMirror is activated
 * Only display a zero search hits warning if at least one filter is activated
 * #1436 Do not display delivery time in customer order completed messages
 * "ArgumentNullException: The value must not be NULL" if a topic is password protected
 * Tax by region: Fixes after inserting a tax rate country column shows "Unavailable"
 * #1014 Switching to default language keeps specific URL alias of current page
-* Shipping by total: Fixes when inserting a record the country was not saved
-* #1460 Editing of the customer title is missing on customer and address pages in the backend
+* Shipping by total: When inserting a record the country now will be saved
+* #1460 Editing of the customer title was missing on customer and address pages in the backend
 * #1447 Checkout button payment methods (Amazon, PayPal Express) won't work in conjunction with mandatory checkout attributes
-* When creating a topic, the widget zone input shows System.String[]
+* When creating a topic, the widget zone input has shown System.String[]
 * Switching the language always redirected to the home page if SEO friendly URLs was deactivated.
 * File upload of a checkout attribute was not stored on cart page.
 * Redirecting within checkout may have displayed an incorrect URL in the browser.
@@ -109,25 +109,24 @@
 * In a multi-store, message templates may have loaded the wrong disclaimer and conditions-of-use text.
 * NullReferenceException in manufacturer list when there is no manufacturer.
 * Wrong order of featured products on category page.
-* #1504 Cart item price calculation wrong if attribute combinations with text types are involved.
-* #1485 Dropdown list for product sorting does not work with Internet Explorer 11.
-* #1468 Twitter authentication not working anymore.
+* #1504 Cart item price calculation was wrong if attribute combinations with text types were involved.
+* #1485 Dropdown list for product sorting didn't not work with Internet Explorer 11.
+* #1468 Twitter authentication wasn't working anymore.
 * Newsletter subscription didn't work when customer privacy setting DisplayGdprConsentOnForms was turned off
 * Fixed social media image detection
 * Fixed redirection of bots when several languages were active
 * Region cannot be selected in checkout when entering a billing or shipping address
 * Fixed invalid conversion of "System.Int32" to "SmartStore.Core.Domain.Tax.VatNumberStatus" when placing an order
 * MegaMenu: Improved item rendering for third tier elements
-* Product display order on category and manufacturer pages sometimes wrong when using linq search.
+* Product display order on category and manufacturer pages was sometimes wrong when using linq search.
 * Debitoor: Wrong invoice total if a subtotal discount has been applied.
 * Import: Fixes invalid conversion "System.Double" to "SmartStore.Core.Domain.Catalog.QuantityControlType".
 * Topics: Fixes "Cannot insert duplicate key row in object 'dbo.UrlRecord' with unique index 'IX_UrlRecord_Slug'".
 * #1566 Santander: eliminate the 1 cent rounding difference at amountTotalNet.
 * Fixed redirection to the homepage for pages which are loaded while the application is restarted.
 * #1570 Filter option "Only deactivated customers" filters deleted instead of deactivated customers.
-* UPS rates were way too high due to incorrect API request
 * #1475 select boxes must be wrapped on mobile devices if data-select-url is set  
-* Fixed the redirection to the homepage for pages which are loaded while the application is restarted
+* Fixed the redirection to the homepage for pages which were loaded while the application was restarted
 * Fixes product feeds expect a different base price formatting.
 * #1369 Shopping cart shows "Discount code applied", although it is not applied due to a lower tier price.
 

@@ -8909,7 +8909,7 @@ namespace SmartStore.Data.Setup
                 Name = "Apple",
                 Alias = "Apple",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_apple.png"), "image/jpeg", GetSeName("Apple")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_apple.png"), "image/png", GetSeName("Apple")),
                 Published = true,
                 DisplayOrder = 1,
                 MetaTitle = "Apple",
@@ -13213,7 +13213,7 @@ namespace SmartStore.Data.Setup
 				Language = defaultLanguage,
 				Title = "Customer Service - Client Service",
 				Body = "<p>Managing online business requires different skills and abilities than managing a business in the &lsquo;real world.&rsquo; Customers can easily detect the size and determine the prestige of a business when they have the ability to walk in and take a look around. Not only do &lsquo;real-world&rsquo; furnishings and location tell the customer what level of professionalism to expect, but &quot;real world&quot; personal encounters allow first impressions to be determined by how the business approaches its customer service. When a customer walks into a retail business just about anywhere in the world, that customer expects prompt and personal service, especially with regards to questions that they may have about products they wish to purchase.<br /><br />Customer service or the client service is the service provided to the customer for his satisfaction during and after the purchase. It is necessary to every business organization to understand the customer needs for value added service. So customer data collection is essential. For this, a good customer service is important. The easiest way to lose a client is because of the poor customer service. The importance of customer service changes by product, industry and customer. Client service is an important part of every business organization. Each organization is different in its attitude towards customer service. Customer service requires a superior quality service through a careful design and execution of a series of activities which include people, technology and processes. Good customer service starts with the design and communication between the company and the staff.<br /><br />In some ways, the lack of a physical business location allows the online business some leeway that their &lsquo;real world&rsquo; counterparts do not enjoy. Location is not important, furnishings are not an issue, and most of the visual first impression is made through the professional design of the business website.<br /><br />However, one thing still remains true. Customers will make their first impressions on the customer service they encounter. Unfortunately, in online business there is no opportunity for front- line staff to make a good impression. Every interaction the customer has with the website will be their primary means of making their first impression towards the business and its client service. Good customer service in any online business is a direct result of good website design and planning.</p><p>By Jayashree Pakhare (buzzle.com)</p>",
-				Tags = "e-commerce, SmartStore.NET, asp.net, sample tag, money",
+				Tags = "e-commerce, Smartstore.NET, asp.net, sample tag, money",
 				CreatedOnUtc = DateTime.UtcNow.AddSeconds(1),
 			};
 
@@ -13233,26 +13233,26 @@ namespace SmartStore.Data.Setup
 			{
 				AllowComments = true,
 				Language = defaultLanguage,
-				Title = "SmartStore.NET new release!",
-                Short = "SmartStore.NET includes everything you need to begin your e-commerce online store.",
-                Full = "<p>SmartStore.NET includes everything you need to begin your e-commerce online store.<br/>  We have thought of everything and it's all included!<br/><br/SmartStore.NET is a fully customizable shop-system. It's stable and highly usable.<br>  From downloads to documentation, www.smartstore.com offers a comprehensive base of information, resources, and support to the SmartStore.NET community.</p>",
+				Title = "Smartstore.NET 3.2 now with the new CMS Page Builder",
+                Short = "Create fascinating content with the new Page Builder",
+                Full = "<p>Create fascinating content from products, product groups, images, videos and texts. <br/>Transitions, animations, gradients, hover effects or overlays are easily applied in the WYSIWYG editor.<br/><br/>More information about Smartstore 3.2 and Page Builder can be found at <a href=\"http://www.smartstore.com/en/net\">www.smartstore.com</a></p>",
 				Published = true,
-                MetaTitle = "SmartStore.NET new release!",
+                MetaTitle = "Smartstore.NET 3.2",
 				CreatedOnUtc = DateTime.Now
 			};
 			var news2 = new NewsItem()
-			{
-				AllowComments = true,
-				Language = defaultLanguage,
-				Title = "New online store is open!",
-                Short = "The new SmartStore.NET store is open now!  We are very excited to offer our new range of products. We will be constantly adding to our range so please register on our site, this will enable you to keep up to date with any new products.",
-				Full = "<p>Our online store is officially up and running. Stock up for the holiday season!  We have a great selection of items. We will be constantly adding to our range so please register on our site,  this will enable you to keep up to date with any new products.</p><p>  All shipping is worldwide and will leave the same day an order is placed! Happy Shopping and spread the word!!</p>",
-				Published = true,
-				MetaTitle = "New online store is open!",
-				CreatedOnUtc = DateTime.Now
-			};
+            {
+                AllowComments = true,
+                Language = defaultLanguage,
+                Title = "Smartstore.NET new release!",
+                Short = "Smartstore.NET includes everything you need to begin your e-commerce online store.",
+                Full = "<p>Smartstore.NET includes everything you need to begin your e-commerce online store.<br/>  We have thought of everything and it's all included!<br/><br/Smartstore.NET is a fully customizable shop-system. It's stable and highly usable.<br>  From downloads to documentation, www.smartstore.com offers a comprehensive base of information, resources, and support to the Smartstore.NET community.</p>",
+                Published = true,
+                MetaTitle = "Smartstore.NET new release!",
+                CreatedOnUtc = DateTime.Now
+            };
 
-			var entities = new List<NewsItem>
+            var entities = new List<NewsItem>
 			{
 				news1, news2
 			};

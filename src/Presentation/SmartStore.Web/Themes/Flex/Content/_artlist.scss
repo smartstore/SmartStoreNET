@@ -589,6 +589,11 @@ $art-border-color:              #ddd;
         // At least 2 lines height for description
         height: ($art-font-size-sm * $art-line-height) * 2;
     }
+    
+    &.artlist-boxed .art-price-block {
+        // At least 2 lines height for description
+        height: ($art-font-size-sm * $art-line-height) * 2;
+    }
 
     .art-delivery-info,
     .art-pangv {

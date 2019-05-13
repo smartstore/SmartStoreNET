@@ -19,7 +19,9 @@ namespace SmartStore.AmazonPay.Services
 
 		void GetBillingAddress();
 
-		PreProcessPaymentResult PreProcessPayment(ProcessPaymentRequest request);
+        void ConfirmOrderReference(out string redirectUrl);
+
+        PreProcessPaymentResult PreProcessPayment(ProcessPaymentRequest request);
 
 		ProcessPaymentResult ProcessPayment(ProcessPaymentRequest request);
 

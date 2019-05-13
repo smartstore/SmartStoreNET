@@ -1,0 +1,42 @@
+﻿@using SmartStore.Web.Framework.UI;
+@using SmartStore.AmazonPay;
+@model SmartStore.AmazonPay.Models.ConfirmationFlowModel
+@{
+    Layout = "_Layout.Popup.cshtml";
+
+    Html.AppendScriptParts(ResourceLocation.Head, Model.WidgetUrl);
+}
+
+@*<script async="async" src="@Html.Raw(Model.WidgetUrl)"></script>*@
+<script>
+    $(function () {
+        function redirectParent() {
+            try {
+                window.parent.closePopup('amazon-confirmation-flow-modal');
+            }
+            catch (e) { }
+
+            var url = '@(Model.RedirectUrl.NullEmpty() ?? Url.RouteUrl("ShoppingCart", new { area = "" }))';
+            window.parent.location.href = url;
+        }
+
+        try {
+            var triggerPostOrderFlow = @(Model.TriggerPostOrderFlow.ToString().ToLower());
+
+            if (triggerPostOrderFlow) {
+                @*new OffAmazonPayments.initConfirmationFlow('@Model.SellerId', '@Model.OrderReferenceId', function (confirmationFlow) { 
+                    confirmationFlow.success();
+                });*@ 
+
+                OffAmazonPayments.triggerPostOrderFlow('@Model.SellerId', '@Model.OrderReferenceId');
+            }
+            else {
+                redirectParent();
+            }
+        }
+        catch (e) {
+            console.log(e);
+            //redirectParent();
+		}
+    });
+</script>

@@ -79,6 +79,16 @@
 
 @{ Html.RenderPartial("ScriptingReadWidgets", Model); }
 
+@using (Html.BeginZoneContent("end", key: "amazon-confirmation-flow-modal"))
+{
+	Html.SmartStore().Window()
+		.Name("amazon-confirmation-flow-modal")
+		.Size(WindowSize.FlexSmall)
+        .CloseOnEscapePress(false)
+        .CloseOnBackdropClick(false)
+		.Render();
+}
+
 @helper RenderAddress(AddressModel address)
 {
 	var cityStateZip = address.GetFormattedCityStateZip();

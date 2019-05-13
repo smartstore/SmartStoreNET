@@ -106,7 +106,7 @@ namespace SmartStore.Web.Framework
 
 			if (link.Status == LinkStatus.Ok)
 			{
-				return link.Link;
+				return link.Link.EmptyNull();
 			}
 
 			return string.Empty;

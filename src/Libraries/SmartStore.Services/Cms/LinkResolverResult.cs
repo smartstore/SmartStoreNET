@@ -72,7 +72,7 @@ namespace SmartStore.Services.Cms
 
         public override string ToString()
 		{
-			return this.Link;
+			return this.Link.EmptyNull();
 		}
 	}
 

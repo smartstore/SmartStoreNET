@@ -714,7 +714,7 @@ namespace SmartStore.Web.Framework
 
 		static bool IsRequestValid()
 		{
-			if (HttpContext.Current?.Handler == null)
+			if (HttpContext.Current == null)
 				return false;
 
 			try
@@ -1220,22 +1220,25 @@ namespace SmartStore.Web.Framework
 				.ForDelegate((c, p) =>
 				{
 					int currentStoreId = 0;
-					try
+					if (EngineContext.Current.IsFullyInitialized)
 					{
-						if (c.TryResolve(out IStoreContext storeContext))
+						try
 						{
-							currentStoreId = storeContext.CurrentStore.Id;
-							//uncomment the code below if you want load settings per store only when you have two stores installed.
-							//var currentStoreId = c.Resolve<IStoreService>().GetAllStores().Count > 1
-							//    c.Resolve<IStoreContext>().CurrentStore.Id : 0;
+							if (c.TryResolve(out IStoreContext storeContext))
+							{
+								currentStoreId = storeContext.CurrentStore.Id;
+								//uncomment the code below if you want load settings per store only when you have two stores installed.
+								//var currentStoreId = c.Resolve<IStoreService>().GetAllStores().Count > 1
+								//    c.Resolve<IStoreContext>().CurrentStore.Id : 0;
 
-							////although it's better to connect to your database and execute the following SQL:
-							//DELETE FROM [Setting] WHERE [StoreId] > 0
+								////although it's better to connect to your database and execute the following SQL:
+								//DELETE FROM [Setting] WHERE [StoreId] > 0
 
-							//return c.Resolve<ISettingService>().LoadSetting<TSettings>(currentStoreId);
+								//return c.Resolve<ISettingService>().LoadSetting<TSettings>(currentStoreId);
+							}
 						}
+						catch { }
 					}
-					catch { }
 
 					try
 					{

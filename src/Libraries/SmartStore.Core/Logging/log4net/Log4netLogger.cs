@@ -108,7 +108,6 @@ namespace SmartStore.Core.Logging
 					{
 						var container = EngineContext.Current.ContainerManager;
 
-
 						// CustomerId
 						if (container.TryResolve<IWorkContext>(null, out IWorkContext workContext))
 						{

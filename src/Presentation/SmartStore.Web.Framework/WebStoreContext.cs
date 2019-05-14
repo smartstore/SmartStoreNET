@@ -122,19 +122,17 @@ namespace SmartStore.Web.Framework
 					{
 						// ty to determine the current store by HTTP_HOST
 						var host = _webHelper.ServerVariables("HTTP_HOST");
+
 						var allStores = _storeService.Value.GetAllStores();
 						var store = allStores.FirstOrDefault(s => s.ContainsHostValue(host));
-
+						
 						if (store == null)
 						{
-							// load the first found store
+							// Load the first found store
 							store = allStores.FirstOrDefault();
 						}
 
-						if (store == null)
-							throw new Exception("No store could be loaded");
-
-						_currentStore = store;
+						_currentStore = store ?? throw new Exception("No store could be loaded");
 					}
 				}
 

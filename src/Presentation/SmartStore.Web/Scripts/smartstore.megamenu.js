@@ -382,7 +382,8 @@
 
                 function initRotator(containerId) {
                     var container = $(containerId);
-                    var catId = container.data("id");
+                    var containerId = container.data("id");
+                    var catId = container.data("entity-id");
                     var displayRotator = container.data("display-rotator");
 
                     // reinit slick product rotator
@@ -397,7 +398,7 @@
 
                     //if ($(".pl-slider", container).length == 0 && catId != null && displayRotator) {
                     if (catId != null && displayRotator) {
-                        var rotatorColumn = $(".rotator-" + catId);
+                        var rotatorColumn = $(".rotator-" + containerId);
 
                         // clear content & init throbber
                         rotatorColumn.find(".rotator-content")

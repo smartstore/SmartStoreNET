@@ -382,7 +382,7 @@
 
                 function initRotator(containerId) {
                     var container = $(containerId);
-                    var containerId = container.data("id");
+                    var dropdownId = container.data("id");
                     var catId = container.data("entity-id");
                     var displayRotator = container.data("display-rotator");
 
@@ -398,7 +398,7 @@
 
                     //if ($(".pl-slider", container).length == 0 && catId != null && displayRotator) {
                     if (catId != null && displayRotator) {
-                        var rotatorColumn = $(".rotator-" + containerId);
+                        var rotatorColumn = $(".rotator-" + dropdownId);
 
                         // clear content & init throbber
                         rotatorColumn.find(".rotator-content")

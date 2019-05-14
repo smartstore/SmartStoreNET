@@ -714,7 +714,7 @@ namespace SmartStore.Services.Seo
 			if (seoSettings.XmlSitemapIncludesProducts)
 			{
 				var searchQuery = new CatalogSearchQuery()
-					.VisibleOnly()
+					.VisibleOnly(_services.WorkContext.CurrentCustomer)
 					.VisibleIndividuallyOnly(true)
 					.HasStoreId(storeId);
 

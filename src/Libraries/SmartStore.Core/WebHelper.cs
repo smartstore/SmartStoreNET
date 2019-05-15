@@ -45,27 +45,15 @@ namespace SmartStore.Core
             _httpContext = httpContext;
         }
 
-		private HttpRequestBase GetHttpRequest()
-		{
-			try
-			{
-				return _httpContext.Request;
-			}
-			catch
-			{
-				return null;
-			}
-		}
-
         public virtual string GetUrlReferrer()
         {
-            return GetHttpRequest()?.UrlReferrer?.ToString() ?? string.Empty;
+            return _httpContext.SafeGetHttpRequest()?.UrlReferrer?.ToString() ?? string.Empty;
         }
 
 		public virtual string GetClientIdent()
  		{
  			var ipAddress = this.GetCurrentIpAddress();
- 			var userAgent = GetHttpRequest()?.UserAgent.EmptyNull();
+ 			var userAgent = _httpContext.SafeGetHttpRequest()?.UserAgent.EmptyNull();
  
  			if (ipAddress.HasValue() && userAgent.HasValue())
  			{
@@ -82,7 +70,7 @@ namespace SmartStore.Core
 				return _ipAddress;
 			}
 
-			var httpRequest = GetHttpRequest();
+			var httpRequest = _httpContext.SafeGetHttpRequest();
 			if (httpRequest == null)
 			{
 				return string.Empty;
@@ -139,7 +127,7 @@ namespace SmartStore.Core
         public virtual string GetThisPageUrl(bool includeQueryString, bool useSsl)
         {
             string url = string.Empty;
-			var httpRequest = GetHttpRequest();
+			var httpRequest = _httpContext.SafeGetHttpRequest();
 
 			if (httpRequest == null)
                 return url;
@@ -181,7 +169,7 @@ namespace SmartStore.Core
             if (!_isCurrentConnectionSecured.HasValue)
             {
                 _isCurrentConnectionSecured = false;
-				var httpRequest = GetHttpRequest();
+				var httpRequest = _httpContext.SafeGetHttpRequest();
 				if (httpRequest != null)
                 {
                     _isCurrentConnectionSecured = httpRequest.IsSecureConnection();
@@ -193,7 +181,7 @@ namespace SmartStore.Core
         
         public virtual string ServerVariables(string name)
         {
-			return GetHttpRequest()?.ServerVariables[name].EmptyNull();
+			return _httpContext.SafeGetHttpRequest()?.ServerVariables[name].EmptyNull();
         }
 
 	    [SuppressMessage("ReSharper", "UnusedMember.Local")]
@@ -328,7 +316,7 @@ namespace SmartStore.Core
                 result = result.Substring(0, result.Length - 1);
             }
 
-			var httpRequest = GetHttpRequest();
+			var httpRequest = _httpContext.SafeGetHttpRequest();
 
             if (httpRequest != null)
             {
@@ -421,7 +409,7 @@ namespace SmartStore.Core
         
         public virtual T QueryString<T>(string name)
         {
-			var queryParam = GetHttpRequest()?.QueryString[name];
+			var queryParam = _httpContext.SafeGetHttpRequest()?.QueryString[name];
 
 			if (!string.IsNullOrEmpty(queryParam))
 			{

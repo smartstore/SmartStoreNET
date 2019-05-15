@@ -11,6 +11,7 @@ using System.Web.Security;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core;
 using System.Web.Mvc;
+using SmartStore.Core.Fakes;
 
 namespace SmartStore
 {
@@ -27,6 +28,47 @@ namespace SmartStore
 			new Tuple<string, string>("X-Forwarded-Ssl", "on"),
 			new Tuple<string, string>("X-Url-Scheme", "https")
 		};
+
+		/// <summary>
+		/// Tries to get the <see cref="HttpRequestBase"/> instance without throwing exceptions
+		/// </summary>
+		/// <returns>The <see cref="HttpRequestBase"/> instance or <c>null</c>.</returns>
+		public static HttpRequestBase SafeGetHttpRequest(this HttpContext httpContext)
+		{
+			if (httpContext == null)
+			{
+				return null;
+			}
+
+			return SafeGetHttpRequest(new HttpContextWrapper(httpContext));
+		}
+
+		/// <summary>
+		/// Tries to get the <see cref="HttpRequestBase"/> instance without throwing exceptions
+		/// </summary>
+		/// <returns>The <see cref="HttpRequestBase"/> instance or <c>null</c>.</returns>
+		public static HttpRequestBase SafeGetHttpRequest(this HttpContextBase httpContext)
+		{
+			if (httpContext == null)
+			{
+				return null;
+			}
+
+			if (httpContext.Handler != null || httpContext is FakeHttpContext)
+			{
+				// Having a handler means we're most likely in the MVC routing pipeline.
+				return httpContext.Request;
+			}
+
+			try
+			{
+				return httpContext.Request;
+			}
+			catch
+			{
+				return null;
+			}
+		}
 
 		/// <summary>
 		/// Returns wether the specified url is local to the host or not

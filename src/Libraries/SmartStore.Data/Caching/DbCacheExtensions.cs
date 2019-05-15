@@ -115,7 +115,7 @@ namespace SmartStore.Data.Caching
 			{
 				return null;
 			}
-			
+
 			if (!cache.RequestTryGet(cacheKey.Key, out var entry))
 			{
 				entry = cache.RequestPut(cacheKey.Key, valueFactory(), cacheKey.AffectedEntitySets);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Web;
@@ -610,10 +611,10 @@ namespace SmartStore.Web.Framework
 		{
 			builder.RegisterType<DefaultMessageBus>().As<IMessageBus>().SingleInstance();
 
+			builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
 			builder.RegisterType<ConsumerRegistry>().As<IConsumerRegistry>().SingleInstance();
 			builder.RegisterType<ConsumerResolver>().As<IConsumerResolver>().SingleInstance();
 			builder.RegisterType<ConsumerInvoker>().As<IConsumerInvoker>().SingleInstance();
-			builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
 
 			var consumerTypes = _typeFinder.FindClassesOfType(typeof(IConsumer));
 			foreach (var type in consumerTypes)
@@ -706,8 +707,6 @@ namespace SmartStore.Web.Framework
 				return new HttpContextWrapper(HttpContext.Current);
 			}
 
-			// TODO: determine store url
-
 			// register FakeHttpContext when HttpContext is not available
 			return new FakeHttpContext("~/");
 		}
@@ -715,19 +714,11 @@ namespace SmartStore.Web.Framework
 		static bool IsRequestValid()
 		{
 			if (HttpContext.Current == null)
-				return false;
-
-			try
-			{
-				// The "Request" property throws at application startup on IIS integrated pipeline mode
-				var req = HttpContext.Current.Request;
-			}
-			catch
 			{
 				return false;
 			}
 
-			return true;
+			return HttpContext.Current.SafeGetHttpRequest() != null;
 		}
 	}
 

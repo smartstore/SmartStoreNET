@@ -126,7 +126,7 @@ namespace SmartStore.Web.Controllers
 			var query = CreateImageQuery(mime, extension);
 			var cachedImage = _imageCache.Get(id, nameWithoutExtension, extension, query);
 
-			return await HandleImage(
+			return await HandleImageAsync(
 				query, 
 				cachedImage,
 				nameWithoutExtension,
@@ -223,7 +223,7 @@ namespace SmartStore.Web.Controllers
 			if (isProcessableImage)
 			{
 				var cachedImage = _imageCache.Get(file, query);
-				return await HandleImage(
+				return await HandleImageAsync(
 					query,
 					cachedImage,
 					nameWithoutExtension,
@@ -282,7 +282,7 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[NonAction]
-		private async Task<ActionResult> HandleImage(
+		private async Task<ActionResult> HandleImageAsync(
 			ProcessImageQuery query,
 			CachedImageResult cachedImage,
 			string nameWithoutExtension,

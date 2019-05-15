@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using SmartStore.Collections;
 using SmartStore.Core.Events;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Logging;
 using SmartStore.Utilities;
 
@@ -29,10 +30,10 @@ namespace SmartStore.Core.Themes
 
 		public DefaultThemeRegistry(IEventPublisher eventPublisher, IApplicationEnvironment env, bool? enableMonitoring, string themesBasePath, bool autoLoadThemes)
         {
-			this._enableMonitoring = enableMonitoring ?? CommonHelper.GetAppSetting("sm:MonitorThemesFolder", true);
-			this._eventPublisher = eventPublisher;
-			this._env = env;
-			this._themesBasePath = themesBasePath.NullEmpty() ?? _env.ThemesFolder.RootPath;
+			_enableMonitoring = enableMonitoring ?? CommonHelper.GetAppSetting("sm:MonitorThemesFolder", true);
+			_eventPublisher = eventPublisher;
+			_env = env;
+			_themesBasePath = themesBasePath.NullEmpty() ?? _env.ThemesFolder.RootPath;
 
 			Logger = NullLogger.Instance;
 

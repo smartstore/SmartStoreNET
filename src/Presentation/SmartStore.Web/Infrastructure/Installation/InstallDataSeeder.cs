@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Configuration;
@@ -491,7 +492,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
 					var storeService = new StoreService(rsStore);
-					var storeContext = new WebStoreContext(rsStore, null, NullCache.Instance);
+					var storeContext = new WebStoreContext(new Lazy<IRepository<Store>>(() => rsStore), null, NullCache.Instance);
                     
 					var locSettings = new LocalizationSettings();
 

@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using SmartStore.Core.Data;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data.Hooks;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 
 namespace SmartStore.Web.Framework
 {
@@ -43,13 +44,13 @@ namespace SmartStore.Web.Framework
 		internal const string OverriddenStoreIdKey = "OverriddenStoreId";
 		const string CacheKey = "stores:all";
 		
-		private readonly IRepository<Store> _rs;
-		private readonly HttpContextBase _httpContext;
+		private readonly Lazy<IRepository<Store>> _rs;
+		private readonly Lazy<HttpContextBase> _httpContext;
 		private readonly ICacheManager _cache;
 
 		private Store _currentStore;
 
-		public WebStoreContext(IRepository<Store> rs, HttpContextBase httpContext, ICacheManager cache)
+		public WebStoreContext(Lazy<IRepository<Store>> rs, Lazy<HttpContextBase> httpContext, ICacheManager cache)
 		{
 			_rs = rs;
 			_httpContext = httpContext;
@@ -58,12 +59,12 @@ namespace SmartStore.Web.Framework
 
 		public int? GetRequestStore()
 		{
-			return _httpContext.SafeGetHttpRequest()?.RequestContext?.RouteData?.DataTokens?.Get(OverriddenStoreIdKey)?.Convert<int?>();
+			return _httpContext.Value.SafeGetHttpRequest()?.RequestContext?.RouteData?.DataTokens?.Get(OverriddenStoreIdKey)?.Convert<int?>();
 		}
 
 		public void SetRequestStore(int? storeId)
 		{
-			var dataTokens = _httpContext.SafeGetHttpRequest()?.RequestContext?.RouteData?.DataTokens;
+			var dataTokens = _httpContext.Value.SafeGetHttpRequest()?.RequestContext?.RouteData?.DataTokens;
 
 			if (dataTokens != null)
 			{
@@ -82,7 +83,7 @@ namespace SmartStore.Web.Framework
 
 		public int? GetPreviewStore()
 		{
-			var cookie = _httpContext.GetPreviewModeCookie(false);
+			var cookie = _httpContext.Value.GetPreviewModeCookie(false);
 			if (cookie != null)
 			{
 				var value = cookie.Values[OverriddenStoreIdKey];
@@ -97,7 +98,7 @@ namespace SmartStore.Web.Framework
 
 		public void SetPreviewStore(int? storeId)
 		{
-			_httpContext.SetPreviewModeValue(OverriddenStoreIdKey, storeId.HasValue ? storeId.Value.ToString() : null);
+			_httpContext.Value.SetPreviewModeValue(OverriddenStoreIdKey, storeId.HasValue ? storeId.Value.ToString() : null);
 			_currentStore = null;
 		}
 
@@ -122,7 +123,7 @@ namespace SmartStore.Web.Framework
 					if (_currentStore == null)
 					{
 						// Try to determine the current store by HTTP_HOST
-						var hostName = _httpContext.SafeGetHttpRequest()?.ServerVariables["HTTP_HOST"];
+						var hostName = _httpContext.Value.SafeGetHttpRequest()?.ServerVariables["HTTP_HOST"];
 
 						_currentStore =
 							// Try to resolve the current store by HTTP_HOST
@@ -156,7 +157,7 @@ namespace SmartStore.Web.Framework
 			{
 				var entry = new StoreEntityCache();
 
-				var allStores = _rs.TableUntracked
+				var allStores = _rs.Value.TableUntracked
 					.Expand(x => x.PrimaryStoreCurrency)
 					.Expand(x => x.PrimaryExchangeRateCurrency)
 					.OrderBy(x => x.DisplayOrder)
@@ -164,7 +165,7 @@ namespace SmartStore.Web.Framework
 					.ToList();
 
 				// Detach all entities... you never know.
-				allStores.Each(x => _rs.Context.DetachEntity(x));
+				allStores.Each(x => _rs.Value.Context.DetachEntity(x));
 
 				entry.Stores = allStores.ToDictionary(x => x.Id);
 				entry.HostMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);

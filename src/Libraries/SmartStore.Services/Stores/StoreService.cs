@@ -18,17 +18,6 @@ namespace SmartStore.Services.Stores
 			_storeRepository = storeRepository;
 		}
 
-		public virtual void DeleteStore(Store store)
-		{
-			Guard.NotNull(store, nameof(store));
-
-			var allStores = GetAllStores();
-			if (allStores.Count == 1)
-				throw new Exception("You cannot delete the only configured store.");
-
-			_storeRepository.Delete(store);
-		}
-
 		public virtual IList<Store> GetAllStores()
 		{
 			var query = _storeRepository.Table
@@ -61,6 +50,17 @@ namespace SmartStore.Services.Stores
 			Guard.NotNull(store, nameof(store));
 
 			_storeRepository.Update(store);
+		}
+
+		public virtual void DeleteStore(Store store)
+		{
+			Guard.NotNull(store, nameof(store));
+
+			var allStores = GetAllStores();
+			if (allStores.Count == 1)
+				throw new Exception("You cannot delete the only configured store.");
+
+			_storeRepository.Delete(store);
 		}
 
 		public virtual bool IsSingleStoreMode()

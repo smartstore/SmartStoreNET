@@ -1,39 +1,72 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Web;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Infrastructure.DependencyManagement;
-using SmartStore.Services.Stores;
-using SmartStore.Core.Fakes;
+using System.Collections.Concurrent;
+using SmartStore.Core.Data;
+using SmartStore.Core.Caching;
+using SmartStore.Core.Data.Hooks;
 
 namespace SmartStore.Web.Framework
 {
-	/// <summary>
-	/// Store context for web application
-	/// </summary>
-	public partial class WebStoreContext : IStoreContext
+	public partial class WebStoreContext : DbSaveHook<Store>, IStoreContext
 	{
+		public class StoreEntityCache
+		{
+			public IDictionary<int, Store> Stores { get; set; }
+			public IDictionary<string, int> HostMap { get; set; }
+			public int PrimaryStoreId { get; set; }
+
+			public Store GetPrimaryStore()
+			{
+				return Stores.Get(PrimaryStoreId);
+			}
+
+			public Store GetStoreById(int id)
+			{
+				return Stores.Get(id);
+			}
+
+			public Store GetStoreByHostName(string host)
+			{
+				if (!string.IsNullOrEmpty(host) && HostMap.TryGetValue(host, out var id))
+				{
+					return Stores.Get(id);
+				}
+
+				return null;
+			}
+		}
+
 		internal const string OverriddenStoreIdKey = "OverriddenStoreId";
+		const string CacheKey = "stores:all";
 		
-		private readonly Work<IStoreService> _storeService;
-		private readonly IWebHelper _webHelper;
+		private readonly IRepository<Store> _rs;
 		private readonly HttpContextBase _httpContext;
+		private readonly ICacheManager _cache;
 
 		private Store _currentStore;
 
-		public WebStoreContext(Work<IStoreService> storeService)
+		public WebStoreContext(IRepository<Store> rs, HttpContextBase httpContext, ICacheManager cache)
 		{
-			_storeService = storeService;
-            _httpContext = HttpContext.Current != null ? (HttpContextBase)new HttpContextWrapper(HttpContext.Current) : new FakeHttpContext("~/");
-            _webHelper = new WebHelper(_httpContext);
+			_rs = rs;
+			_httpContext = httpContext;
+			_cache = cache;
+		}
+
+		public int? GetRequestStore()
+		{
+			return _httpContext.SafeGetHttpRequest()?.RequestContext?.RouteData?.DataTokens?.Get(OverriddenStoreIdKey)?.Convert<int?>();
 		}
 
 		public void SetRequestStore(int? storeId)
 		{
-			try
+			var dataTokens = _httpContext.SafeGetHttpRequest()?.RequestContext?.RouteData?.DataTokens;
+
+			if (dataTokens != null)
 			{
-				var dataTokens = _httpContext.Request.RequestContext.RouteData.DataTokens;
 				if (storeId.GetValueOrDefault() > 0)
 				{
 					dataTokens[OverriddenStoreIdKey] = storeId.Value;
@@ -45,61 +78,27 @@ namespace SmartStore.Web.Framework
 
 				_currentStore = null;
 			}
-			catch { }
-		}
-
-		public int? GetRequestStore()
-		{
-			try
-			{
-				// Reduce thrown exceptions in console
-				if (_httpContext.Handler == null)
-					return null;
-
-				var value = _httpContext.Request?.RequestContext?.RouteData?.DataTokens?.Get(OverriddenStoreIdKey);
-				if (value != null)
-				{
-					return (int)value;
-				}
-
-				return null;
-			}
-			catch
-			{
-				return null;
-			}
-		}
-
-		public void SetPreviewStore(int? storeId)
-		{
-			try
-			{
-				_httpContext.SetPreviewModeValue(OverriddenStoreIdKey, storeId.HasValue ? storeId.Value.ToString() : null);
-				_currentStore = null;
-			}
-			catch { }
 		}
 
 		public int? GetPreviewStore()
 		{
-			try
+			var cookie = _httpContext.GetPreviewModeCookie(false);
+			if (cookie != null)
 			{
-				var cookie = _httpContext.GetPreviewModeCookie(false);
-				if (cookie != null)
+				var value = cookie.Values[OverriddenStoreIdKey];
+				if (value.HasValue())
 				{
-					var value = cookie.Values[OverriddenStoreIdKey];
-					if (value.HasValue())
-					{
-						return value.ToInt();
-					}
+					return value.ToInt();
 				}
+			}
 
-				return null;
-			}
-			catch
-			{
-				return null;
-			}
+			return null;
+		}
+
+		public void SetPreviewStore(int? storeId)
+		{
+			_httpContext.SetPreviewModeValue(OverriddenStoreIdKey, storeId.HasValue ? storeId.Value.ToString() : null);
+			_currentStore = null;
 		}
 
 		/// <summary>
@@ -111,28 +110,27 @@ namespace SmartStore.Web.Framework
 			{	
 				if (_currentStore == null)
 				{
+					var cachedStores = GetCachedStores();
+
 					int? storeOverride = GetRequestStore() ?? GetPreviewStore();
 					if (storeOverride.HasValue)
 					{
-						// the store to be used can be overwritten on request basis (e.g. for theme preview, editing etc.)
-						_currentStore = _storeService.Value.GetStoreById(storeOverride.Value);
+						// The store to be used can be overwritten on request basis (e.g. for theme preview, editing etc.)
+						_currentStore = cachedStores.GetStoreById(storeOverride.Value);
 					}
 
 					if (_currentStore == null)
 					{
-						// ty to determine the current store by HTTP_HOST
-						var host = _webHelper.ServerVariables("HTTP_HOST");
+						// Try to determine the current store by HTTP_HOST
+						var hostName = _httpContext.SafeGetHttpRequest()?.ServerVariables["HTTP_HOST"];
 
-						var allStores = _storeService.Value.GetAllStores();
-						var store = allStores.FirstOrDefault(s => s.ContainsHostValue(host));
-						
-						if (store == null)
-						{
-							// Load the first found store
-							store = allStores.FirstOrDefault();
-						}
-
-						_currentStore = store ?? throw new Exception("No store could be loaded");
+						_currentStore =
+							// Try to resolve the current store by HTTP_HOST
+							cachedStores.GetStoreByHostName(hostName) ?? 
+							// Then resolve primary store
+							cachedStores.GetPrimaryStore() ?? 
+							// No way
+							throw new Exception("No store could be loaded.");
 					}
 				}
 
@@ -144,16 +142,54 @@ namespace SmartStore.Web.Framework
 			}
 		}
 
-		/// <summary>
-		/// IsSingleStoreMode ? 0 : CurrentStore.Id
-		/// </summary>
 		public int CurrentStoreIdIfMultiStoreMode
 		{
 			get
 			{
-				return _storeService.Value.IsSingleStoreMode() ? 0 : CurrentStore.Id;
+				return GetCachedStores().Stores.Count <= 1 ? 0 : CurrentStore.Id;
 			}
 		}
 
+		protected StoreEntityCache GetCachedStores()
+		{
+			return _cache.Get(CacheKey, () => 
+			{
+				var entry = new StoreEntityCache();
+
+				var allStores = _rs.TableUntracked
+					.Expand(x => x.PrimaryStoreCurrency)
+					.Expand(x => x.PrimaryExchangeRateCurrency)
+					.OrderBy(x => x.DisplayOrder)
+					.ThenBy(x => x.Name)
+					.ToList();
+
+				// Detach all entities... you never know.
+				allStores.Each(x => _rs.Context.DetachEntity(x));
+
+				entry.Stores = allStores.ToDictionary(x => x.Id);
+				entry.HostMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+				foreach (var store in allStores)
+				{
+					var hostValues = store.ParseHostValues();
+					foreach (var host in hostValues)
+					{
+						entry.HostMap[host] = store.Id;
+					}
+				}
+
+				if (allStores.Count > 0)
+				{
+					entry.PrimaryStoreId = allStores.FirstOrDefault().Id;
+				}
+
+				return entry;
+			});
+		}
+
+		public override void OnAfterSave(IHookedEntity entry)
+		{
+			_cache.Remove(CacheKey);
+		}
 	}
 }

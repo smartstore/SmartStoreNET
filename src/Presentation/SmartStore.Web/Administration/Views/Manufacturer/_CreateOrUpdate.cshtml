@@ -336,10 +336,10 @@
 	{
 		foreach (var discount in Model.AvailableDiscounts)
 		{
-			<div class="form-check">
-				<input type="checkbox" class="form-check-input" name="SelectedDiscountIds" id="discount-@discount.Id" value="@discount.Id"
-					   @Html.Attr("checked", "checked", Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id)) />
-				<label class="form-check-label" for="discount-@discount.Id">@discount.Name</label>
+			<div class="custom-control custom-checkbox mb-1">
+				<input type="checkbox" name="SelectedDiscountIds" id="discount-@discount.Id"
+					   class="custom-control-input" value="@discount.Id" checked="@(Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id))">
+				<label class="custom-control-label" for="discount-@discount.Id">@discount.Name</label>	
 			</div>
 		}
 	}

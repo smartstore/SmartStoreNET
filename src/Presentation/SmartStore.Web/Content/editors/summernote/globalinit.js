@@ -29,7 +29,7 @@ var summernote_image_upload_url;
 		dialogsInBody: true,
 		dialogsFade: true,
 		height: 300,
-		prettifyHtml: false,
+		prettifyHtml: true,
 		onCreateLink: function (url) {
 			// Prevents that summernote prepends "http://" to our links (WTF!!!)
 			var c = url[0];
@@ -62,10 +62,10 @@ var summernote_image_upload_url;
 			onImageUpload: function (files) {
 				sendFile(files[0], this);
 			},
-			onBlurCodeview: function (code, e) {
+            onBlurCodeview: function (code, e) {
 				// Summernote does not update WYSIWYG content on codable blur,
 				// only when switched back to editor
-				$(this).val(code);
+                $(this).val(code);
 			}
 		},
 		toolbar: [

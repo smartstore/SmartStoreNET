@@ -910,7 +910,7 @@ namespace SmartStore.Web.Controllers
 
             ViewBag.SelectedNode = categoryId == 0
                 ? model.Root
-                : ViewBag.SelectedNode = model.Root.SelectNodeById(categoryId) ?? model.Root.SelectNode(x => x.Value.EntityId == categoryId);
+                : ViewBag.SelectedNode = model.Root.SelectNode(x => x.Value.EntityId == categoryId) ?? model.Root.SelectNodeById(categoryId);
 
             return PartialView(model);
         }

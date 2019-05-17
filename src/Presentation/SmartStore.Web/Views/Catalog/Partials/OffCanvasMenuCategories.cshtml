@@ -6,12 +6,12 @@
 @{
     Layout = "";
 
-    if (Model.Root == null)
+    var currentNode = ViewBag.SelectedNode as TreeNode<MenuItem>;
+
+    if (Model.Root == null || currentNode == null)
     {
         return;
     }
-
-    var currentNode = ViewBag.SelectedNode as TreeNode<MenuItem>;
 }
 
 @functions {

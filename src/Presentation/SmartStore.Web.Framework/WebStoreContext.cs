@@ -9,10 +9,11 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Infrastructure.DependencyManagement;
+using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Web.Framework
 {
-	public partial class WebStoreContext : DbSaveHook<Store>, IStoreContext
+	public partial class WebStoreContext : DbSaveHook<BaseEntity>, IStoreContext
 	{
 		public class StoreEntityCache
 		{
@@ -20,17 +21,17 @@ namespace SmartStore.Web.Framework
 			public IDictionary<string, int> HostMap { get; set; }
 			public int PrimaryStoreId { get; set; }
 
-			public Store GetPrimaryStore()
+			internal Store GetPrimaryStore()
 			{
 				return Stores.Get(PrimaryStoreId);
 			}
 
-			public Store GetStoreById(int id)
+			internal Store GetStoreById(int id)
 			{
 				return Stores.Get(id);
 			}
 
-			public Store GetStoreByHostName(string host)
+			internal Store GetStoreByHostName(string host)
 			{
 				if (!string.IsNullOrEmpty(host) && HostMap.TryGetValue(host, out var id))
 				{
@@ -190,7 +191,14 @@ namespace SmartStore.Web.Framework
 
 		public override void OnAfterSave(IHookedEntity entry)
 		{
-			_cache.Remove(CacheKey);
+			if (entry.Entity is Store || entry.Entity is Currency)
+			{
+				_cache.Remove(CacheKey);
+			}
+			else
+			{
+				throw new NotSupportedException();
+			}
 		}
 	}
 }

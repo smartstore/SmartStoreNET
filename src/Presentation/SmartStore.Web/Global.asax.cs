@@ -158,9 +158,6 @@ namespace SmartStore.Web
 
 				// register AutoMapper class maps
 				RegisterClassMaps(engine);
-
-				// Set app state to 'fully initialized'
-				EngineContext.Current.IsFullyInitialized = true;
 			}
 			else
 			{

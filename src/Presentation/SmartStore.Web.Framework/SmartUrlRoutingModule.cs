@@ -88,7 +88,7 @@ namespace SmartStore.Web.Framework
 					// Handle plugin static file in DevMode
 					application.PostAuthorizeRequest += (s, e) => PostAuthorizeRequest(new HttpContextWrapper(((HttpApplication)s).Context));
 					application.PreSendRequestHeaders += (s, e) => PreSendRequestHeaders(new HttpContextWrapper(((HttpApplication)s).Context));
-				}
+				}	
 
 				application.PostResolveRequestCache += (s, e) => PostResolveRequestCache(new HttpContextWrapper(((HttpApplication)s).Context));
 
@@ -97,6 +97,9 @@ namespace SmartStore.Web.Framework
 				{
 					action(application);
 				}
+
+				// Set app to fully initialized state on very first request
+				EngineContext.Current.IsFullyInitialized = true;
 			}
 		}
 

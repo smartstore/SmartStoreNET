@@ -30,15 +30,17 @@
 
 		public void SeedDatabase(SmartObjectContext context)
 		{
-			Seed(context);
+			using (var scope = new DbContextScope(context, hooksEnabled: false))
+			{
+				Seed(context);
+				scope.Commit();
+			}		
 		}
 
 		protected override void Seed(SmartObjectContext context)
 		{
 			context.MigrateLocaleResources(MigrateLocaleResources);
 			MigrateSettings(context);
-
-			context.SaveChanges();
         }
 
 		public void MigrateSettings(SmartObjectContext context)

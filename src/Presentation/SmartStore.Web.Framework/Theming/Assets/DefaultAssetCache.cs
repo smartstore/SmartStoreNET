@@ -81,10 +81,8 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
 			Guard.NotEmpty(virtualPath, nameof(virtualPath));
 
-			string themeName;
-			int storeId;
-			var cacheDirectoryName = ResolveCacheDirectoryName(virtualPath, out themeName, out storeId);
-			
+			var cacheDirectoryName = ResolveCacheDirectoryName(virtualPath, out string themeName, out int storeId);
+
 			if (CacheFolder.DirectoryExists(cacheDirectoryName))
 			{
 				try

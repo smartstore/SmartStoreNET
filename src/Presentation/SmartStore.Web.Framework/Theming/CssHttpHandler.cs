@@ -69,8 +69,7 @@ namespace SmartStore.Web.Framework.Theming
 
 			if (IsThemeableRequest())
 			{
-				var httpContext = HttpContext.Current;
-				if (httpContext != null && httpContext.Request != null)
+				if (HttpContext.Current?.Request != null)
 				{
 					var qs = QueryString.Current;
 					if (qs.Count > 0)

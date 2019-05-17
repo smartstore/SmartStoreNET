@@ -11,7 +11,7 @@
     }
 
     var cutOffItems = Model.Root.Children
-        .Where(x => x.Value.Id == null && x.GetMetadata<bool>("spare", false))
+        .Where(x => x.Value.Id != "brand" && x.GetMetadata<bool>("spare", false))
         .ToList();
 }
 

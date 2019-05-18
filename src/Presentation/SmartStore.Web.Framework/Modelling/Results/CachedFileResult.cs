@@ -28,24 +28,30 @@ namespace SmartStore.Web.Framework.Modelling
 		public CachedFileResult(string path, string contentType = null)
 			: base(contentType ?? MimeTypes.MapNameToMimeType(path))
 		{
-			_etag = CreateETag(path);
+			_etag = GenerateETag(path);
 			_path = path;
 		}
 
 		public CachedFileResult(FileInfo file, string contentType = null, Func<Stream> reader = null)
-			: this(CreateETag(file), contentType ?? MimeTypes.MapNameToMimeType(file.Name), reader ?? file.OpenRead)
+			: this(GenerateETag(file), contentType ?? MimeTypes.MapNameToMimeType(file.Name), reader ?? file.OpenRead)
 		{
 			LastModifiedUtc = file.LastWriteTimeUtc;
 		}
 
 		public CachedFileResult(IFile file, string contentType = null, Func<Stream> reader = null)
-			: this(CreateETag(file), contentType ?? MimeTypes.MapNameToMimeType(file.Name), reader ?? file.OpenRead)
+			: this(GenerateETag(file), contentType ?? MimeTypes.MapNameToMimeType(file.Name), reader ?? file.OpenRead)
+		{
+			LastModifiedUtc = file.LastUpdated;
+		}
+
+		public CachedFileResult(string etag, IFile file, string contentType = null, Func<Stream> reader = null)
+			: this(etag, contentType ?? MimeTypes.MapNameToMimeType(file.Name), reader ?? file.OpenRead)
 		{
 			LastModifiedUtc = file.LastUpdated;
 		}
 
 		public CachedFileResult(VirtualFile file, string contentType = null, Func<Stream> reader = null)
-			: this(CreateETag(file), contentType ?? MimeTypes.MapNameToMimeType(file.Name), reader ?? file.Open)
+			: this(GenerateETag(file), contentType ?? MimeTypes.MapNameToMimeType(file.Name), reader ?? file.Open)
 		{
 		}
 
@@ -85,8 +91,9 @@ namespace SmartStore.Web.Framework.Modelling
 
 		public TimeSpan MaxAge { get; set; } = TimeSpan.FromDays(7);
 
+		#region ETag generators
 
-		public static string CreateETag(string path)
+		public static string GenerateETag(string path)
 		{
 			Guard.NotEmpty(path, nameof(path));
 
@@ -95,18 +102,18 @@ namespace SmartStore.Web.Framework.Modelling
 				path = CommonHelper.MapPath(path);
 			}
 
-			return CreateETag(new FileInfo(path));
+			return GenerateETag(new FileInfo(path));
 		}
 
-		public static string CreateETag(VirtualFile file)
+		public static string GenerateETag(VirtualFile file)
 		{
 			Guard.NotNull(file, nameof(file));
 
 			var fi = new FileInfo(CommonHelper.MapPath(file.VirtualPath));
-			return CreateETag(fi);
+			return GenerateETag(fi);
 		}
 
-		public static string CreateETag(FileInfo file)
+		public static string GenerateETag(FileInfo file)
 		{
 			Guard.NotNull(file, nameof(file));
 
@@ -115,10 +122,10 @@ namespace SmartStore.Web.Framework.Modelling
 				throw new FileNotFoundException("File to create ETag for must exist.", file.FullName);
 			}
 
-			return CreateETag(file.FullName, file.Length.GetHashCode(), file.CreationTimeUtc, file.LastWriteTimeUtc);
+			return GenerateETag(file.FullName, file.Length.GetHashCode(), file.LastWriteTimeUtc);
 		}
 
-		public static string CreateETag(IFile file)
+		public static string GenerateETag(IFile file)
 		{
 			Guard.NotNull(file, nameof(file));
 
@@ -127,10 +134,10 @@ namespace SmartStore.Web.Framework.Modelling
 				throw new FileNotFoundException("File to create ETag for must exist.", file.Path);
 			}
 
-			return CreateETag(file.Path, file.Size.GetHashCode(), file.LastUpdated);
+			return GenerateETag(file.Path, file.Size.GetHashCode(), file.LastUpdated);
 		}
 
-		public static string CreateETag(params object[] tokens)
+		public static string GenerateETag(params object[] tokens)
 		{
 			var sb = new StringBuilder();
 			var tag = string.Empty;
@@ -139,7 +146,7 @@ namespace SmartStore.Web.Framework.Modelling
 			{
 				if (token is DateTime dt)
 				{
-					tag += dt.ToUnixTime().ToString();
+					tag += FixLastModifiedDate(dt).ToUnixTime().ToString();
 				}
 				else
 				{
@@ -149,6 +156,34 @@ namespace SmartStore.Web.Framework.Modelling
 
 			return "\"" + tag.Hash(Encoding.UTF8) + "\"";
 		}
+
+		private static DateTime FixLastModifiedDate(DateTime date)
+		{
+			var result = new DateTime(
+				date.Year,
+				date.Month,
+				date.Day,
+				date.Hour,
+				date.Minute,
+				date.Second,
+				0,
+				DateTimeKind.Utc);
+
+			// Because we can't set a "Last-Modified" header to any time
+			// in the future, check the last modified time and set it to
+			// DateTime.Now if it's in the future. 
+			// This is to fix VSWhidbey #402323
+			DateTime utcNow = DateTime.UtcNow;
+			if (result > utcNow)
+			{
+				// use 1 second resolution
+				result = new DateTime(utcNow.Ticks - (utcNow.Ticks % TimeSpan.TicksPerSecond), DateTimeKind.Utc);
+			}
+
+			return result;
+		}
+
+		#endregion
 
 		public override void ExecuteResult(ControllerContext context)
 		{
@@ -227,6 +262,9 @@ namespace SmartStore.Web.Framework.Modelling
 		{
 			var cache = response.Cache;
 
+			// We support byte ranges
+			response.AppendHeader("Accept-Ranges", "bytes");
+
 			cache.SetCacheability(System.Web.HttpCacheability.Public);
 			cache.VaryByHeaders["Accept-Encoding"] = true;
 			cache.SetExpires(Expiration);
@@ -235,7 +273,7 @@ namespace SmartStore.Web.Framework.Modelling
 
 			if (setLastModifiedDate && LastModifiedUtc.HasValue)
 			{
-				cache.SetLastModified(LastModifiedUtc.Value);
+				cache.SetLastModified(FixLastModifiedDate(LastModifiedUtc.Value));
 			}
 		}
 	}

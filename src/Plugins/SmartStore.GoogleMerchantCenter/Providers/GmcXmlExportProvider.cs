@@ -480,19 +480,19 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							}
 
 							var customLabel0 = GetAttributeValue(attributeValues, "custom_label_0", languageId, gmc?.CustomLabel0, null);
-                            WriteString(writer, "custom_label_0", gmc.CustomLabel0.NullEmpty());
+                            WriteString(writer, "custom_label_0", gmc?.CustomLabel0.NullEmpty());
 
                             var customLabel1 = GetAttributeValue(attributeValues, "custom_label_1", languageId, gmc?.CustomLabel1, null);
-                            WriteString(writer, "custom_label_1", gmc.CustomLabel1.NullEmpty());
+                            WriteString(writer, "custom_label_1", gmc?.CustomLabel1.NullEmpty());
 
                             var customLabel2 = GetAttributeValue(attributeValues, "custom_label_2", languageId, gmc?.CustomLabel2, null);
-                            WriteString(writer, "custom_label_2", gmc.CustomLabel2.NullEmpty());
+                            WriteString(writer, "custom_label_2", gmc?.CustomLabel2.NullEmpty());
 
                             var customLabel3 = GetAttributeValue(attributeValues, "custom_label_3", languageId, gmc?.CustomLabel3, null);
-                            WriteString(writer, "custom_label_3", gmc.CustomLabel3.NullEmpty());
+                            WriteString(writer, "custom_label_3", gmc?.CustomLabel3.NullEmpty());
 
                             var customLabel4 = GetAttributeValue(attributeValues, "custom_label_4", languageId, gmc?.CustomLabel4, null);
-                            WriteString(writer, "custom_label_4", gmc.CustomLabel4.NullEmpty());
+                            WriteString(writer, "custom_label_4", gmc?.CustomLabel4.NullEmpty());
 
                             ++context.RecordsSucceeded;
 						}

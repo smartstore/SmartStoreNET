@@ -1773,13 +1773,18 @@ namespace SmartStore.Web.Controllers
 
 				if (isDiscountValid)
 				{
-                    var oldCartTotal = ((decimal?)_orderTotalCalculationService.GetShoppingCartTotal(cart)) ?? decimal.Zero;
+                    var discountApplied = true;
+                    var oldCartTotal = (decimal?)_orderTotalCalculationService.GetShoppingCartTotal(cart);
 
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.DiscountCouponCode, discountcouponcode);
 
-                    var newCartTotal = ((decimal?)_orderTotalCalculationService.GetShoppingCartTotal(cart)) ?? decimal.Zero;
+                    if (oldCartTotal.HasValue)
+                    {
+                        var newCartTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart);
+                        discountApplied = oldCartTotal != newCartTotal;
+                    }
 
-                    if (oldCartTotal != newCartTotal)
+                    if (discountApplied)
                     {
                         model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.Applied");
                         model.DiscountBox.IsWarning = false;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -16,10 +17,15 @@ namespace SmartStore.Web.Framework.Modelling
 	public class CachedFileResult : FileResult
 	{
 		// Default buffer size as defined in BufferedStream type
-		private const int BufferSize = 0x1000;
+		const int DefaultWriteBufferSize = 81920;
+
+		private static char[] _commaSplitArray = new char[] { ',' };
+		private static char[] _dashSplitArray = new char[] { '-' };
+		private static string[] _httpDateFormats = new string[] { "r", "dddd, dd-MMM-yy HH':'mm':'ss 'GMT'", "ddd MMM d HH':'mm':'ss yyyy" };
 
 		private HttpContextBase _httpContext;
 		private string _etag;
+		private DateTime? _lastModifiedDateUtc;
 
 		private readonly string _path;
 		private readonly Func<Stream> _streamReader;
@@ -85,7 +91,23 @@ namespace SmartStore.Web.Framework.Modelling
 			_etag = etag;
 		}
 
-		public DateTime? LastModifiedUtc { get; set; }
+		public DateTime? LastModifiedUtc
+		{
+			get
+			{
+				return _lastModifiedDateUtc;
+			}
+			set
+			{
+				if (value == null)
+				{
+
+				}
+				_lastModifiedDateUtc = value == null
+					? (DateTime?)null
+					: FixLastModifiedDate(value.Value);
+			}
+		}
 
 		public DateTime Expiration { get; set; } = DateTime.UtcNow.AddDays(7);
 
@@ -134,7 +156,7 @@ namespace SmartStore.Web.Framework.Modelling
 				throw new FileNotFoundException("File to create ETag for must exist.", file.Path);
 			}
 
-			return GenerateETag(file.Path, file.Size.GetHashCode(), file.LastUpdated);
+			return GenerateETag(file.Path, file.Size.GetHashCode(), FixLastModifiedDate(file.LastUpdated));
 		}
 
 		public static string GenerateETag(params object[] tokens)
@@ -157,8 +179,9 @@ namespace SmartStore.Web.Framework.Modelling
 			return "\"" + tag.Hash(Encoding.UTF8) + "\"";
 		}
 
-		private static DateTime FixLastModifiedDate(DateTime date)
+		private static DateTime FixLastModifiedDate(DateTime input)
 		{
+			var date = input.ToUniversalTime();
 			var result = new DateTime(
 				date.Year,
 				date.Month,
@@ -220,24 +243,9 @@ namespace SmartStore.Web.Framework.Modelling
 						throw new NullReferenceException("File stream cannot be NULL.");
 					}
 
-					// Grab chunks of data and write to the output stream
-					var outputStream = response.OutputStream;
-					using (stream)
-					{
-						var buffer = new byte[BufferSize];
+					var rangeInfo = GetRanges(_httpContext.Request, stream.Length);
 
-						while (true)
-						{
-							int bytesRead = stream.Read(buffer, 0, BufferSize);
-							if (bytesRead == 0)
-							{
-								// no more data
-								break;
-							}
-
-							outputStream.Write(buffer, 0, bytesRead);
-						}
-					}
+					WriteFileStream(response, stream, 0, stream.Length);
 				}
 				else if (_bufferReader != null)
 				{
@@ -247,8 +255,10 @@ namespace SmartStore.Web.Framework.Modelling
 						throw new NullReferenceException("File buffer cannot be NULL.");
 					}
 
+					var rangeInfo = GetRanges(_httpContext.Request, buffer.Length);
+
 					// Write buffer to output stream
-					response.OutputStream.Write(buffer, 0, buffer.Length);
+					WriteFileContent(response, buffer, 0, buffer.Length);
 				}
 
 				ApplyResponseHeaders(response, true);
@@ -273,8 +283,154 @@ namespace SmartStore.Web.Framework.Modelling
 
 			if (setLastModifiedDate && LastModifiedUtc.HasValue)
 			{
-				cache.SetLastModified(FixLastModifiedDate(LastModifiedUtc.Value));
+				cache.SetLastModified(LastModifiedUtc.Value);
 			}
 		}
+
+		private void WriteFileContent(HttpResponseBase response, byte[] buffer, int rangeStart, int rangeEnd)
+		{
+			bool bufferOutput = response.BufferOutput;
+
+			response.BufferOutput = false;
+			response.OutputStream.Write(buffer, rangeStart, rangeEnd);
+
+			response.BufferOutput = bufferOutput;
+		}
+
+		private void WriteFileStream(HttpResponseBase response, Stream stream, long rangeStart, long rangeEnd)
+		{
+			using (stream)
+			{
+				int bufferSize = (int)Math.Min(DefaultWriteBufferSize, rangeEnd);
+				byte[] buffer = new byte[bufferSize];
+
+				int read;
+				long remaining = rangeEnd;
+
+				stream.Seek(rangeStart, SeekOrigin.Begin);
+				while ((remaining > 0) && (read = stream.Read(buffer, 0, buffer.Length)) != 0)
+				{
+					response.OutputStream.Write(buffer, 0, read);
+					response.Flush();
+
+					remaining -= read;
+				}
+			}
+		}
+
+		#region Ranges
+
+		private string GetHeader(HttpRequestBase request, string header, string defaultValue = "")
+		{
+			return string.IsNullOrEmpty(request.Headers[header]) ? defaultValue : request.Headers[header].Replace("\"", String.Empty);
+		}
+
+		private RangeRequestInfo GetRanges(HttpRequestBase request, long fileLength)
+		{
+			var rangeInfo = new RangeRequestInfo() { FileLength = fileLength };
+
+			string rangesHeader = GetHeader(request, "Range");
+			string ifRangeHeader = GetHeader(request, "If-Range", _etag);
+
+			bool isIfRangeHeaderDate = DateTime.TryParseExact(
+				ifRangeHeader, 
+				_httpDateFormats, 
+				null, 
+				DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, 
+				out var ifRangeHeaderDate);
+
+			if (string.IsNullOrEmpty(rangesHeader) || (!isIfRangeHeaderDate && ifRangeHeader != _etag) || (isIfRangeHeaderDate && LastModifiedUtc.HasValue && LastModifiedUtc.Value > ifRangeHeaderDate))
+			{
+				rangeInfo.RangesStartIndexes = new long[] { 0 };
+				rangeInfo.RangesEndIndexes = new long[] { fileLength - 1 };
+				rangeInfo.IsRangeRequest = false;
+				rangeInfo.IsMultipartRequest = false;
+			}
+			else
+			{
+				string[] ranges = rangesHeader.Replace("bytes=", String.Empty).Split(_commaSplitArray);
+
+				rangeInfo.RangesStartIndexes = new long[ranges.Length];
+				rangeInfo.RangesEndIndexes = new long[ranges.Length];
+				rangeInfo.IsRangeRequest = true;
+				rangeInfo.IsMultipartRequest = (ranges.Length > 1);
+
+				for (int i = 0; i < ranges.Length; i++)
+				{
+					string[] currentRange = ranges[i].Split(_dashSplitArray);
+
+					if (string.IsNullOrEmpty(currentRange[1]))
+						rangeInfo.RangesEndIndexes[i] = fileLength - 1;
+					else
+						rangeInfo.RangesEndIndexes[i] = Int64.Parse(currentRange[1]);
+
+					if (String.IsNullOrEmpty(currentRange[0]))
+					{
+						rangeInfo.RangesStartIndexes[i] = fileLength - rangeInfo.RangesEndIndexes[i];
+						rangeInfo.RangesEndIndexes[i] = fileLength - 1;
+					}
+					else
+						rangeInfo.RangesStartIndexes[i] = Int64.Parse(currentRange[0]);
+				}
+			}
+
+			return rangeInfo;
+		}
+
+		private long GetContentLength(RangeRequestInfo range, string boundary)
+		{
+			long contentLength = 0;
+
+			for (int i = 0; i < range.RangesStartIndexes.Length; i++)
+			{
+				contentLength += (range.RangesEndIndexes[i] - range.RangesStartIndexes[i]) + 1;
+
+				if (range.IsMultipartRequest)
+				{
+					contentLength += boundary.Length 
+						+ ContentType.Length 
+						+ range.RangesStartIndexes[i].ToString("D").Length 
+						+ range.RangesEndIndexes[i].ToString("D").Length 
+						+ range.FileLength.ToString("D").Length 
+						+ 49;
+				}	
+			}
+
+			if (range.IsMultipartRequest)
+			{
+				contentLength += boundary.Length + 4;
+			}		
+
+			return contentLength;
+		}
+
+		private bool ValidateRanges(RangeRequestInfo range, HttpResponseBase response)
+		{
+			for (int i = 0; i < range.RangesStartIndexes.Length; i++)
+			{
+				if (range.RangesStartIndexes[i] > range.FileLength - 1 
+					|| range.RangesEndIndexes[i] > range.FileLength - 1 
+					|| range.RangesStartIndexes[i] < 0 
+					|| range.RangesEndIndexes[i] < 0 
+					|| range.RangesEndIndexes[i] < range.RangesStartIndexes[i])
+				{
+					response.StatusCode = 400;
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		class RangeRequestInfo
+		{
+			public long[] RangesStartIndexes { get; set; }
+			public long[] RangesEndIndexes { get; set; }
+			public bool IsRangeRequest { get; set; }
+			public bool IsMultipartRequest { get; set; }
+			public long FileLength { get; set; }
+		}
+
+		#endregion
 	}
 }

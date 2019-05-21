@@ -4100,7 +4100,7 @@
 		<Value>Lokalisierte Ressourcen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Languages.NoAvailableLanguagesFound">
-		<Value>Es wurden keine weiteren verfügbaren Sprachen für Version {0} gefunden. Auf &lt;a href='http://translate.smartstore.com/ target='_blank''&gt;translate.smartstore.com&lt;/a&gt; finden Sie weitere Details zu verfügbaren Ressourcen.</Value>
+		<Value>Es wurden keine weiteren verfügbaren Sprachen für Version {0} gefunden. Auf &lt;a href="https://translate.smartstore.com/" target="_blank"&gt;translate.smartstore.com&lt;/a&gt; finden Sie weitere Details zu verfügbaren Ressourcen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Languages.NumberOfTranslatedResources">
 		<Value>{0} von {1}</Value>

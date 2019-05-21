@@ -20,7 +20,7 @@ using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Catalog
 {
-	public partial class CategoryService : ICategoryService, IConsumer
+	public partial class CategoryService : ICategoryService
     {
 		internal static TimeSpan CategoryTreeCacheDuration = TimeSpan.FromHours(6);
 
@@ -84,11 +84,6 @@ namespace SmartStore.Services.Catalog
 
 			QuerySettings = DbQuerySettings.Default;
         }
-
-		public void HandleEvent(CategoryTreeChangedEvent e)
-		{
-
-		}
 
 		public DbQuerySettings QuerySettings { get; set; }
 

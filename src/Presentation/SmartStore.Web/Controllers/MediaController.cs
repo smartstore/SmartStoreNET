@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Linq;
 using System.Web.SessionState;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
@@ -121,7 +122,7 @@ namespace SmartStore.Web.Controllers
 				extension = MimeTypes.MapMimeTypeToExtension(mime);
 				name = String.Concat(nameWithoutExtension, ".", extension);
 			}
-
+			
 			extension = extension.ToLower();
 
 			var query = CreateImageQuery(mime, extension);
@@ -357,7 +358,7 @@ namespace SmartStore.Web.Controllers
 				{
 					var outBuffer = result.OutputStream.GetBuffer();
 					await _imageCache.PutAsync(cachedImage, outBuffer);
-					
+
 					if (cachedImage.Extension != result.FileExtension)
 					{
 						cachedImage.Path = Path.ChangeExtension(cachedImage.Path, result.FileExtension);
@@ -380,7 +381,15 @@ namespace SmartStore.Web.Controllers
 
 		protected virtual ProcessImageQuery CreateImageQuery(string mimeType, string extension)
 		{
-			var query = new ProcessImageQuery(null, Request.QueryString);
+			var qs = Request.QueryString;
+
+			// TODO: (mc) implement "raw" image handling later
+			//if (qs.GetValues(null).Contains("raw", StringComparer.OrdinalIgnoreCase) || qs["raw"] != null)
+			//{
+			//	return null;
+			//}
+
+			var query = new ProcessImageQuery(null, qs);
 			
 			if (query.MaxWidth == null && query.MaxHeight == null && query.Contains("size"))
 			{

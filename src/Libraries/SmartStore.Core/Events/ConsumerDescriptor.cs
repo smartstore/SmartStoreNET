@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -40,5 +41,10 @@ namespace SmartStore.Core.Events
 		/// or empty array if <see cref="MessageParameter"/> is the only parameter.
 		/// </summary>
 		public ParameterInfo[] Parameters { get; set; }
+
+		public override string ToString()
+		{
+			return "MessageType: {0} - Consumer: {1}.{2}".FormatCurrent(MessageType.Name, ContainerType.FullName, Method.Name);
+		}
 	}
 }

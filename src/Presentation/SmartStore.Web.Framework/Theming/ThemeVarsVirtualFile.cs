@@ -6,10 +6,6 @@ namespace SmartStore.Web.Framework.Theming
 {
     public class ThemeVarsVirtualFile : VirtualFile
     {
-		private readonly string _extension;
-		private readonly string _themeName;
-        private readonly int _storeId;	
-
         public ThemeVarsVirtualFile(string virtualPath, string themeName, int storeId)
             : this(virtualPath, Path.GetExtension(virtualPath), themeName, storeId)
         {
@@ -18,24 +14,28 @@ namespace SmartStore.Web.Framework.Theming
 		internal ThemeVarsVirtualFile(string virtualPath, string extension, string themeName, int storeId)
 			: base(virtualPath)
 		{
-			_extension = extension;
-			_themeName = themeName;
-			_storeId = storeId;
+			Extension = extension;
+			ThemeName = themeName;
+			StoreId = storeId;
 		}
 
 		public override bool IsDirectory
         {
             get { return false; }
         }
-        
-        public override Stream Open()
+
+		public string Extension { get; private set; }
+		public string ThemeName { get; private set; }
+		public int StoreId { get; private set; }
+
+		public override Stream Open()
         {
             var repo = new ThemeVarsRepository();
 
-            if (_themeName.IsEmpty())
+            if (ThemeName.IsEmpty())
                 return GenerateStreamFromString(string.Empty);
 
-            var css = repo.GetPreprocessorCss(_extension, _themeName, _storeId);
+            var css = repo.GetPreprocessorCss(Extension, ThemeName, StoreId);
             return GenerateStreamFromString(css);
         }
 
@@ -51,6 +51,5 @@ namespace SmartStore.Web.Framework.Theming
 				return stream;
 			}
         }
-
     }
 }

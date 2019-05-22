@@ -90,10 +90,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 					var deps = CacheFolder.ReadFile(CacheFolder.Combine(cacheDirectoryName, "asset.dependencies"));
 					var hash = CacheFolder.ReadFile(CacheFolder.Combine(cacheDirectoryName, "asset.hash"));
 
-					IEnumerable<string> parsedDeps;
-					string currentHash;
-
-					if (!TryValidate(virtualPath, deps, hash, out parsedDeps, out currentHash))
+					if (!TryValidate(virtualPath, deps, hash, out IEnumerable<string> parsedDeps, out string currentHash))
 					{
 						Logger.DebugFormat("Invalidating cached asset for '{0}' because it is not valid anymore.", virtualPath);
 						InvalidateAssetInternal(cacheDirectoryName, themeName, storeId);

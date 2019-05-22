@@ -250,9 +250,9 @@ namespace SmartStore.Services.Media
 				throw new NotSupportedException($"Remote images cannot be processed: Path: {path}");
 			}
 
-			if (path[0] == '~' || (path[0] == '/' && path[1] != '/'))
+			if (!PathHelper.IsAbsolutePhysicalPath(path))
 			{
-				return CommonHelper.MapPath(path);
+				path = CommonHelper.MapPath(path);
 			}
 
 			return path;

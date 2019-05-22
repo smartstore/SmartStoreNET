@@ -361,6 +361,7 @@ namespace SmartStore.Web.Controllers
 
 					if (cachedImage.Extension != result.FileExtension)
 					{
+						// jpg <> jpeg
 						cachedImage.Path = Path.ChangeExtension(cachedImage.Path, result.FileExtension);
 						cachedImage.Extension = result.FileExtension;
 					}

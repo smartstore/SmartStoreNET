@@ -582,7 +582,7 @@ namespace SmartStore.Services.Customers.Importer
 				var currentPictures = new List<Picture>();
 				var seoName = _pictureService.GetPictureSeName(row.EntityDisplayName);
 
-				var image = CreateDownloadImage(urlOrPath, seoName, 1);
+				var image = CreateDownloadImage(context, urlOrPath, seoName, 1);
 				if (image == null)
 					continue;
 

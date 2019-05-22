@@ -243,8 +243,10 @@ namespace SmartStore.Web.Framework.Modelling
 						throw new NullReferenceException("File stream cannot be NULL.");
 					}
 
-					var rangeInfo = GetRanges(_httpContext.Request, stream.Length);
+					//var rangeInfo = GetRanges(_httpContext.Request, stream.Length);
 
+					ApplyResponseHeaders(response, true);
+					// Write stream to output
 					WriteFileStream(response, stream, 0, stream.Length);
 				}
 				else if (_bufferReader != null)
@@ -255,16 +257,12 @@ namespace SmartStore.Web.Framework.Modelling
 						throw new NullReferenceException("File buffer cannot be NULL.");
 					}
 
-					var rangeInfo = GetRanges(_httpContext.Request, buffer.Length);
+					//var rangeInfo = GetRanges(_httpContext.Request, buffer.Length);
 
+					ApplyResponseHeaders(response, true);
 					// Write buffer to output stream
 					WriteFileContent(response, buffer, 0, buffer.Length);
 				}
-
-				ApplyResponseHeaders(response, true);
-
-				// Set ETag for served file (revalidated on subsequent requests)
-				response.Cache.SetETag(_etag);
 			}
 		}
 
@@ -280,6 +278,9 @@ namespace SmartStore.Web.Framework.Modelling
 			cache.SetExpires(Expiration);
 			cache.SetMaxAge(MaxAge);
 			cache.SetRevalidation(HttpCacheRevalidation.AllCaches);
+
+			// Set ETag for served file (revalidated on subsequent requests)
+			cache.SetETag(_etag);
 
 			if (setLastModifiedDate && LastModifiedUtc.HasValue)
 			{
@@ -311,7 +312,7 @@ namespace SmartStore.Web.Framework.Modelling
 				while ((remaining > 0) && (read = stream.Read(buffer, 0, buffer.Length)) != 0)
 				{
 					response.OutputStream.Write(buffer, 0, read);
-					response.Flush();
+					//response.Flush();
 
 					remaining -= read;
 				}

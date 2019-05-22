@@ -213,16 +213,21 @@ namespace SmartStore
 			if (stream == null)
 				throw new ArgumentNullException(nameof(stream));
 
-			if (stream is MemoryStream)
+			if (stream is MemoryStream mem)
 			{
-				return ((MemoryStream)stream).ToArray();
+				if (mem.TryGetBuffer(out var buffer))
+				{
+					return buffer.Array;
+				}
+
+				return mem.ToArray();
 			}
 			else
 			{
 				using (var streamReader = new MemoryStream())
 				{
 					stream.CopyTo(streamReader);
-					return streamReader.ToArray();
+					return streamReader.GetBuffer();
 				}
 			}
 		}
@@ -232,9 +237,14 @@ namespace SmartStore
 			if (stream == null)
 				throw new ArgumentNullException(nameof(stream));
 
-			if (stream is MemoryStream)
+			if (stream is MemoryStream mem)
 			{
-				return ((MemoryStream)stream).ToArray();
+				if (mem.TryGetBuffer(out var buffer))
+				{
+					return buffer.Array;
+				}
+
+				return mem.ToArray();
 			}
 			else
 			{

@@ -116,7 +116,7 @@ namespace SmartStore.Web.Framework.Theming
 		/// <summary>
 		/// Maps virtual to physical paths. Used to compute cache dependecies and file hashes.
 		/// </summary>
-		protected virtual string[] MapDependencyPaths(IEnumerable<string> virtualPathDependencies, out string[] cacheKeys)
+		internal string[] MapDependencyPaths(IEnumerable<string> virtualPathDependencies, out string[] cacheKeys)
 		{
 			cacheKeys = null;
 
@@ -126,11 +126,14 @@ namespace SmartStore.Web.Framework.Theming
 			foreach (var dep in virtualPathDependencies)
 			{
 				var file = GetFile(dep);
-				MapVirtualFilePath(file, mappedPaths, out var cacheKey);
 
-				if (cacheKey.HasValue())
+				if (file is IFileDependencyProvider provider)
 				{
-					cacheKeySet.Add(cacheKey);
+					provider.AddFileDependencies(mappedPaths, cacheKeySet);
+				}
+				else if (file != null)
+				{
+					mappedPaths.Add(HostingEnvironment.MapPath(file.VirtualPath));
 				}
 			}
 
@@ -140,27 +143,6 @@ namespace SmartStore.Web.Framework.Theming
 			Array.Sort<string>(paths);
 
 			return paths;
-		}
-
-		/// <summary>
-		/// Maps a <see cref="VirtualFile"/> path to physical file location(s)
-		/// </summary>
-		protected virtual void MapVirtualFilePath(VirtualFile file, ICollection<string> mappedPaths, out string cacheKey)
-		{
-			cacheKey = null;
-
-			if (file is InheritedVirtualThemeFile file1)
-			{
-				mappedPaths.Add(file1.ResolveResult.ResultPhysicalPath);
-			}
-			else if (file is DebugVirtualFile file2)
-			{
-				mappedPaths.Add(file2.PhysicalPath);
-			}
-			else if (file != null)
-			{
-				mappedPaths.Add(HostingEnvironment.MapPath(file.VirtualPath));
-			}
 		}
 
 		private static InheritedThemeFileResult GetResolveResult(string virtualPath)

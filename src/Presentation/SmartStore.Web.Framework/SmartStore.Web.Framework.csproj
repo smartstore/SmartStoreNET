@@ -290,6 +290,7 @@
     <Compile Include="Theming\Assets\DefaultAssetCache.cs" />
     <Compile Include="Theming\Assets\IAssetCache.cs" />
     <Compile Include="Theming\CssHttpHandler.cs" />
+    <Compile Include="Theming\IFileDependencyProvider.cs" />
     <Compile Include="Theming\LocalizedDisplayMode.cs" />
     <Compile Include="Theming\Assets\ModuleImportsVirtualFile.cs" />
     <Compile Include="Theming\DefaultThemeFileResolver.cs" />

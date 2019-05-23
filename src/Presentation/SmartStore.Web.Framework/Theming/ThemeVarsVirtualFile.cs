@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Web.Hosting;
 
 namespace SmartStore.Web.Framework.Theming
 {
-    public class ThemeVarsVirtualFile : VirtualFile
+    public class ThemeVarsVirtualFile : VirtualFile, IFileDependencyProvider
     {
         public ThemeVarsVirtualFile(string virtualPath, string themeName, int storeId)
             : this(virtualPath, Path.GetExtension(virtualPath), themeName, storeId)
@@ -51,5 +52,10 @@ namespace SmartStore.Web.Framework.Theming
 				return stream;
 			}
         }
-    }
+
+		public void AddFileDependencies(ICollection<string> mappedPaths, ICollection<string> cacheKeys)
+		{
+			cacheKeys.Add(FrameworkCacheConsumer.BuildThemeVarsCacheKey(ThemeName, StoreId));
+		}
+	}
 }

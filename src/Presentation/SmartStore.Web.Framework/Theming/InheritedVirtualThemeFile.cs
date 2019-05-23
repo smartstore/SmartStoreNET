@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Web.Hosting;
 using SmartStore.Core.Themes;
 
 namespace SmartStore.Web.Framework.Theming
 {
-    internal class InheritedVirtualThemeFile : VirtualFile
+    internal class InheritedVirtualThemeFile : VirtualFile, IFileDependencyProvider
     {
 		public InheritedVirtualThemeFile(InheritedThemeFileResult resolveResult)
 			: base(DetermineVirtualPath(resolveResult))
@@ -39,5 +40,9 @@ namespace SmartStore.Web.Framework.Theming
 			}
 		}
 
-    }
+		public void AddFileDependencies(ICollection<string> mappedPaths, ICollection<string> cacheKeys)
+		{
+			mappedPaths.Add(ResolveResult.ResultPhysicalPath);
+		}
+	}
 }

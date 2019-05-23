@@ -36,7 +36,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 		}
 	}
 
-	public class ModuleImportsVirtualFile : VirtualFile
+	public class ModuleImportsVirtualFile : VirtualFile, IFileDependencyProvider
 	{
 		private static readonly HashSet<ModuleImport> _adminImports;
 		private static readonly HashSet<ModuleImport> _publicImports;
@@ -144,6 +144,15 @@ namespace SmartStore.Web.Framework.Theming.Assets
 				writer.Flush();
 				stream.Seek(0, SeekOrigin.Begin);
 				return stream;
+			}
+		}
+
+		public void AddFileDependencies(ICollection<string> mappedPaths, ICollection<string> cacheKeys)
+		{
+			var imports = IsAdmin ? _adminImports : _publicImports;
+			foreach (var imp in imports)
+			{
+				mappedPaths.Add(imp.PhysicalPath);
 			}
 		}
 	}

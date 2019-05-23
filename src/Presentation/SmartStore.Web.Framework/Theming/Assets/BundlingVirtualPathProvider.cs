@@ -90,29 +90,6 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
 			return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
         }
-
-		protected override void MapVirtualFilePath(VirtualFile file, ICollection<string> mappedPaths, out string cacheKey)
-		{
-			cacheKey = null;
-
-			if (file is ModuleImportsVirtualFile file1)
-			{
-				var imports = file1.IsAdmin ? ModuleImportsVirtualFile.AdminImports : ModuleImportsVirtualFile.PublicImports;
-				foreach (var imp in imports)
-				{
-					mappedPaths.Add(imp.PhysicalPath);
-				}
-			}
-			else if (file is ThemeVarsVirtualFile file2)
-			{
-				// Invalidate the cache when theme variables change
-				cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(file2.ThemeName, file2.StoreId);
-			}
-			else
-			{
-				base.MapVirtualFilePath(file, mappedPaths, out cacheKey);
-			}
-		}
 	}
 
 	internal class SassCheckedPathStack

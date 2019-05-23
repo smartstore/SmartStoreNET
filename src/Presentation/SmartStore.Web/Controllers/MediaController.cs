@@ -250,9 +250,8 @@ namespace SmartStore.Web.Controllers
 			}
 			else
 			{
-				var etag = CachedFileResult.GenerateETag(nameWithoutExtension, mime, file.LastUpdated);
 				// Open existing stream
-				return new CachedFileResult(etag, file, mime);
+				return new CachedFileResult(file, mime);
 			}
 
 			async Task<byte[]> getSourceBufferAsync(string prevMime)
@@ -301,9 +300,7 @@ namespace SmartStore.Web.Controllers
 							}
 
 							source = await ProcessAndPutToCacheAsync(cachedImage, source, query);
-
-							var etag = CachedFileResult.GenerateETag(nameWithoutExtension, mime, cachedImage.LastModifiedUtc.GetValueOrDefault());
-							return new CachedFileResult(etag, mime, () => source);
+							return new CachedFileResult(mime, cachedImage.LastModifiedUtc.GetValueOrDefault(), () => source);
 						}
 					}
 				}
@@ -322,8 +319,7 @@ namespace SmartStore.Web.Controllers
 				else
 				{
 					// Open existing stream
-					var etag = CachedFileResult.GenerateETag(nameWithoutExtension, mime, cachedImage.LastModifiedUtc.GetValueOrDefault());
-					return new CachedFileResult(etag, cachedImage.File, mime);
+					return new CachedFileResult(cachedImage.File, mime);
 				}
 			}
 			catch (Exception ex)

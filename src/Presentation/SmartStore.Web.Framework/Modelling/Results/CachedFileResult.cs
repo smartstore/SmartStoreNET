@@ -24,98 +24,71 @@ namespace SmartStore.Web.Framework.Modelling
 		private static string[] _httpDateFormats = new string[] { "r", "dddd, dd-MMM-yy HH':'mm':'ss 'GMT'", "ddd MMM d HH':'mm':'ss yyyy" };
 
 		private HttpContextBase _httpContext;
-		private string _etag;
-		private DateTime? _lastModifiedDateUtc;
 
-		private readonly string _path;
 		private readonly Func<Stream> _streamReader;
 		private readonly Func<byte[]> _bufferReader;
 
 		public CachedFileResult(string path, string contentType = null)
-			: base(contentType ?? MimeTypes.MapNameToMimeType(path))
+			: this(GetFileInfo(path), contentType)
 		{
-			_etag = GenerateETag(path);
-			_path = path;
 		}
 
-		public CachedFileResult(FileInfo file, string contentType = null, Func<Stream> reader = null)
-			: this(GenerateETag(file), contentType ?? MimeTypes.MapNameToMimeType(file.Name), reader ?? file.OpenRead)
+		public CachedFileResult(FileInfo file, string contentType = null)
+			: base(contentType ?? MimeTypes.MapNameToMimeType(file.Name))
 		{
+			Guard.NotNull(file, nameof(file));
+
+			if (!file.Exists)
+			{
+				throw new FileNotFoundException(file.FullName);
+			}
+
 			LastModifiedUtc = file.LastWriteTimeUtc;
+			_streamReader = file.OpenRead;
 		}
 
-		public CachedFileResult(IFile file, string contentType = null, Func<Stream> reader = null)
-			: this(GenerateETag(file), contentType ?? MimeTypes.MapNameToMimeType(file.Name), reader ?? file.OpenRead)
+		public CachedFileResult(IFile file, string contentType = null)
+			: base(contentType ?? MimeTypes.MapNameToMimeType(file.Name))
 		{
+			Guard.NotNull(file, nameof(file));
+
+			if (!file.Exists)
+			{
+				throw new FileNotFoundException(file.Path);
+			}
+
 			LastModifiedUtc = file.LastUpdated;
+			_streamReader = file.OpenRead;
 		}
 
-		public CachedFileResult(string etag, IFile file, string contentType = null, Func<Stream> reader = null)
-			: this(etag, contentType ?? MimeTypes.MapNameToMimeType(file.Name), reader ?? file.OpenRead)
+		public CachedFileResult(VirtualFile file, DateTime? lastModifiedUtc = null, string contentType = null)
+			: base(contentType ?? MimeTypes.MapNameToMimeType(file.Name))
 		{
-			LastModifiedUtc = file.LastUpdated;
+			Guard.NotNull(file, nameof(file));
+
+			LastModifiedUtc = lastModifiedUtc;
+			_streamReader = file.Open;
 		}
 
-		public CachedFileResult(VirtualFile file, string contentType = null, Func<Stream> reader = null)
-			: this(GenerateETag(file), contentType ?? MimeTypes.MapNameToMimeType(file.Name), reader ?? file.Open)
-		{
-		}
-
-		public CachedFileResult(string etag, string contentType, Func<Stream> reader)
+		public CachedFileResult(string contentType, DateTime lastModifiedUtc, Func<Stream> reader)
 			: base(contentType)
 		{
 			Guard.NotNull(reader, nameof(reader));
-			SanitizeETag(etag);
 
+			LastModifiedUtc = lastModifiedUtc;
 			_streamReader = reader;
 		}
 
-		public CachedFileResult(string etag, string contentType, Func<byte[]> reader)
+		public CachedFileResult(string contentType, DateTime lastModifiedUtc, Func<byte[]> reader)
 			: base(contentType)
 		{
 			Guard.NotNull(reader, nameof(reader));
-			SanitizeETag(etag);
 
+			LastModifiedUtc = lastModifiedUtc;
 			_bufferReader = reader;
 		}
 
-		private void SanitizeETag(string etag)
-		{
-			Guard.NotEmpty(etag, nameof(etag));
-
-			if (etag[0] != '"')
-			{
-				etag = string.Concat("\"", etag, "\"");
-			}
-
-			_etag = etag;
-		}
-
-		public DateTime? LastModifiedUtc
-		{
-			get
-			{
-				return _lastModifiedDateUtc;
-			}
-			set
-			{
-				if (value == null)
-				{
-
-				}
-				_lastModifiedDateUtc = value == null
-					? (DateTime?)null
-					: FixLastModifiedDate(value.Value);
-			}
-		}
-
-		public DateTime Expiration { get; set; } = DateTime.UtcNow.AddDays(7);
-
-		public TimeSpan MaxAge { get; set; } = TimeSpan.FromDays(7);
-
-		#region ETag generators
-
-		public static string GenerateETag(string path)
+		private static FileInfo GetFileInfo(string path)
 		{
 			Guard.NotEmpty(path, nameof(path));
 
@@ -124,89 +97,15 @@ namespace SmartStore.Web.Framework.Modelling
 				path = CommonHelper.MapPath(path);
 			}
 
-			return GenerateETag(new FileInfo(path));
+			return new FileInfo(path);
 		}
 
-		public static string GenerateETag(VirtualFile file)
-		{
-			Guard.NotNull(file, nameof(file));
+		public DateTime? LastModifiedUtc { get; set; }
 
-			var fi = new FileInfo(CommonHelper.MapPath(file.VirtualPath));
-			return GenerateETag(fi);
-		}
-
-		public static string GenerateETag(FileInfo file)
-		{
-			Guard.NotNull(file, nameof(file));
-
-			if (!file.Exists)
-			{
-				throw new FileNotFoundException("File to create ETag for must exist.", file.FullName);
-			}
-
-			return GenerateETag(file.FullName, file.Length.GetHashCode(), file.LastWriteTimeUtc);
-		}
-
-		public static string GenerateETag(IFile file)
-		{
-			Guard.NotNull(file, nameof(file));
-
-			if (!file.Exists)
-			{
-				throw new FileNotFoundException("File to create ETag for must exist.", file.Path);
-			}
-
-			return GenerateETag(file.Path, file.Size.GetHashCode(), FixLastModifiedDate(file.LastUpdated));
-		}
-
-		public static string GenerateETag(params object[] tokens)
-		{
-			var sb = new StringBuilder();
-			var tag = string.Empty;
-
-			foreach (var token in tokens)
-			{
-				if (token is DateTime dt)
-				{
-					tag += FixLastModifiedDate(dt).ToUnixTime().ToString();
-				}
-				else
-				{
-					tag += token.Convert<string>();
-				}
-			}
-
-			return "\"" + tag.Hash(Encoding.UTF8) + "\"";
-		}
-
-		private static DateTime FixLastModifiedDate(DateTime input)
-		{
-			var date = input.ToUniversalTime();
-			var result = new DateTime(
-				date.Year,
-				date.Month,
-				date.Day,
-				date.Hour,
-				date.Minute,
-				date.Second,
-				0,
-				DateTimeKind.Utc);
-
-			// Because we can't set a "Last-Modified" header to any time
-			// in the future, check the last modified time and set it to
-			// DateTime.Now if it's in the future. 
-			// This is to fix VSWhidbey #402323
-			DateTime utcNow = DateTime.UtcNow;
-			if (result > utcNow)
-			{
-				// use 1 second resolution
-				result = new DateTime(utcNow.Ticks - (utcNow.Ticks % TimeSpan.TicksPerSecond), DateTimeKind.Utc);
-			}
-
-			return result;
-		}
-
-		#endregion
+		/// <summary>
+		/// If not set, will be auto-generated based on <see cref="LastModifiedUtc"/> property.
+		/// </summary>
+		public string ETag { get; set; }
 
 		public override void ExecuteResult(ControllerContext context)
 		{
@@ -216,8 +115,18 @@ namespace SmartStore.Web.Framework.Modelling
 
 		protected override void WriteFile(HttpResponseBase response)
 		{
+			var now = DateTime.UtcNow;
+			var lastModified = LastModifiedUtc.HasValue
+				? FixLastModifiedDate(LastModifiedUtc.Value, now)
+				: (DateTime?)null;
+
+			if (ETag.IsEmpty() && lastModified.HasValue)
+			{
+				ETag = GenerateETag(lastModified.Value, now);
+			}
+
 			var ifNoneMatch = _httpContext.Request.Headers["If-None-Match"];
-			if (ifNoneMatch.HasValue() && _etag == ifNoneMatch)
+			if (ifNoneMatch.HasValue() && ETag == ifNoneMatch)
 			{
 				// File hasn't changed, so return HTTP 304 without retrieving the data
 				response.StatusCode = (int)HttpStatusCode.NotModified;
@@ -227,15 +136,13 @@ namespace SmartStore.Web.Framework.Modelling
 				// content but keeps the connection open for other requests
 				response.AddHeader("Content-Length", "0");
 
-				ApplyResponseHeaders(response, false);
+				ApplyResponseHeaders(response, null);
 			}
 			else
 			{
-				if (_path != null)
-				{
-					response.TransmitFile(_path);
-				}
-				else if (_streamReader != null)
+				ApplyResponseHeaders(response, lastModified);
+
+				if (_streamReader != null)
 				{
 					var stream = _streamReader();
 					if (stream == null)
@@ -245,7 +152,6 @@ namespace SmartStore.Web.Framework.Modelling
 
 					//var rangeInfo = GetRanges(_httpContext.Request, stream.Length);
 
-					ApplyResponseHeaders(response, true);
 					// Write stream to output
 					WriteFileStream(response, stream, 0, stream.Length);
 				}
@@ -259,32 +165,9 @@ namespace SmartStore.Web.Framework.Modelling
 
 					//var rangeInfo = GetRanges(_httpContext.Request, buffer.Length);
 
-					ApplyResponseHeaders(response, true);
 					// Write buffer to output stream
 					WriteFileContent(response, buffer, 0, buffer.Length);
 				}
-			}
-		}
-
-		private void ApplyResponseHeaders(HttpResponseBase response, bool setLastModifiedDate)
-		{
-			var cache = response.Cache;
-
-			// We support byte ranges
-			response.AppendHeader("Accept-Ranges", "bytes");
-
-			cache.SetCacheability(System.Web.HttpCacheability.Public);
-			cache.VaryByHeaders["Accept-Encoding"] = true;
-			cache.SetExpires(Expiration);
-			cache.SetMaxAge(MaxAge);
-			cache.SetRevalidation(HttpCacheRevalidation.AllCaches);
-
-			// Set ETag for served file (revalidated on subsequent requests)
-			cache.SetETag(_etag);
-
-			if (setLastModifiedDate && LastModifiedUtc.HasValue)
-			{
-				cache.SetLastModified(LastModifiedUtc.Value);
 			}
 		}
 
@@ -319,6 +202,81 @@ namespace SmartStore.Web.Framework.Modelling
 			}
 		}
 
+		private void ApplyResponseHeaders(HttpResponseBase response, DateTime? lastModifiedUtc)
+		{
+			var cache = response.Cache;
+
+			// We support byte ranges
+			response.AppendHeader("Accept-Ranges", "bytes");
+
+			cache.SetCacheability(System.Web.HttpCacheability.Public);
+
+			cache.VaryByHeaders["Accept-Encoding"] = true;
+
+			// INFO: Chrome will NOT revalidate for 24h, but that's ok.
+			cache.SetExpires(DateTime.UtcNow.AddDays(1));
+
+			// Chrome does not send If-None-Match header when max-age is set
+			//cache.SetMaxAge(MaxAge);
+
+			cache.SetRevalidation(HttpCacheRevalidation.AllCaches);
+
+			if (lastModifiedUtc.HasValue)
+			{
+				cache.SetLastModified(lastModifiedUtc.Value);
+			}
+
+			// Set ETag for served file (revalidated on subsequent requests)
+			if (ETag.HasValue())
+			{
+				cache.SetETag(ETag);
+			}
+		}
+
+		private static string GenerateETag(DateTime lastModified, DateTime now)
+		{
+			// Get 64-bit FILETIME stamp
+			var lastModFileTime = lastModified.ToFileTime();
+			var nowFileTime = now.ToFileTime();
+			var hexFileTime = lastModFileTime.ToString("X8", CultureInfo.InvariantCulture);
+
+			//// Do what IIS does to determine if this is a weak ETag.
+			//// Compare the last modified time to now and if the difference is
+			//// less than or equal to 3 seconds, then it is weak
+			//if ((nowFileTime - lastModFileTime) <= 30000000)
+			//{
+			//	return "W/\"" + hexFileTime + "\"";
+			//}
+
+			return "\"" + hexFileTime + "\"";
+		}
+
+		private static DateTime FixLastModifiedDate(DateTime utcInput, DateTime utcNow)
+		{
+			var date = utcInput.ToUniversalTime();
+			var result = new DateTime(
+				date.Year,
+				date.Month,
+				date.Day,
+				date.Hour,
+				date.Minute,
+				date.Second,
+				0,
+				DateTimeKind.Utc);
+
+			// Because we can't set a "Last-Modified" header to any time
+			// in the future, check the last modified time and set it to
+			// DateTime.Now if it's in the future. 
+			// This is to fix VSWhidbey #402323
+			if (result > utcNow)
+			{
+				// use 1 second resolution
+				result = new DateTime(utcNow.Ticks - (utcNow.Ticks % TimeSpan.TicksPerSecond), DateTimeKind.Utc);
+			}
+
+			return result;
+		}
+
 		#region Ranges
 
 		private string GetHeader(HttpRequestBase request, string header, string defaultValue = "")
@@ -331,7 +289,7 @@ namespace SmartStore.Web.Framework.Modelling
 			var rangeInfo = new RangeRequestInfo() { FileLength = fileLength };
 
 			string rangesHeader = GetHeader(request, "Range");
-			string ifRangeHeader = GetHeader(request, "If-Range", _etag);
+			string ifRangeHeader = GetHeader(request, "If-Range", ETag);
 
 			bool isIfRangeHeaderDate = DateTime.TryParseExact(
 				ifRangeHeader, 
@@ -340,7 +298,7 @@ namespace SmartStore.Web.Framework.Modelling
 				DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, 
 				out var ifRangeHeaderDate);
 
-			if (string.IsNullOrEmpty(rangesHeader) || (!isIfRangeHeaderDate && ifRangeHeader != _etag) || (isIfRangeHeaderDate && LastModifiedUtc.HasValue && LastModifiedUtc.Value > ifRangeHeaderDate))
+			if (string.IsNullOrEmpty(rangesHeader) || (!isIfRangeHeaderDate && ifRangeHeader != ETag) || (isIfRangeHeaderDate && LastModifiedUtc.HasValue && LastModifiedUtc.Value > ifRangeHeaderDate))
 			{
 				rangeInfo.RangesStartIndexes = new long[] { 0 };
 				rangeInfo.RangesEndIndexes = new long[] { fileLength - 1 };

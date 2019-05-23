@@ -13,6 +13,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
+using SmartStore.Services.Topics;
 
 namespace SmartStore.Services.Cms
 {
@@ -34,6 +35,7 @@ namespace SmartStore.Services.Cms
         protected readonly ILocalizedEntityService _localizedEntityService;
         protected readonly IAclService _aclService;
         protected readonly IStoreMappingService _storeMappingService;
+        protected readonly ITopicService _topicService;
         protected readonly UrlHelper _urlHelper;
 
         public LinkResolver(
@@ -42,6 +44,7 @@ namespace SmartStore.Services.Cms
             ILocalizedEntityService localizedEntityService,
             IAclService aclService,
             IStoreMappingService storeMappingService,
+            ITopicService topicService,
             UrlHelper urlHelper)
         {
             _services = services;
@@ -49,6 +52,7 @@ namespace SmartStore.Services.Cms
             _localizedEntityService = localizedEntityService;
             _aclService = aclService;
             _storeMappingService = storeMappingService;
+            _topicService = topicService;
             _urlHelper = urlHelper;
 
             QuerySettings = DbQuerySettings.Default;
@@ -109,7 +113,7 @@ namespace SmartStore.Services.Cms
 					switch (d2.Type)
 					{
 						case LinkType.Product:
-							GetEntityData<Product>(d2, languageId, x => new ResolverEntitySummary
+							GetEntityData<Product>(d2, storeId, languageId, x => new ResolverEntitySummary
 							{
 								Name = x.Name,
 								Published = x.Published,
@@ -120,7 +124,7 @@ namespace SmartStore.Services.Cms
 							});
 							break;
 						case LinkType.Category:
-							GetEntityData<Category>(d2, languageId, x => new ResolverEntitySummary
+							GetEntityData<Category>(d2, storeId, languageId, x => new ResolverEntitySummary
 							{
 								Name = x.Name,
 								Published = x.Published,
@@ -131,7 +135,7 @@ namespace SmartStore.Services.Cms
 							});
 							break;
 						case LinkType.Manufacturer:
-							GetEntityData<Manufacturer>(d2, languageId, x => new ResolverEntitySummary
+							GetEntityData<Manufacturer>(d2, storeId, languageId, x => new ResolverEntitySummary
 							{
 								Name = x.Name,
 								Published = x.Published,
@@ -141,7 +145,7 @@ namespace SmartStore.Services.Cms
 							});
 							break;
 						case LinkType.Topic:
-							GetEntityData<Topic>(d2, languageId, x => null);
+							GetEntityData<Topic>(d2, storeId, languageId, x => null);
 							break;
 						default:
 							throw new SmartException("Unknown link builder type.");
@@ -171,11 +175,19 @@ namespace SmartStore.Services.Cms
                 case LinkType.Manufacturer:
                 case LinkType.Topic:
                     var entityName = d.Type.ToString();
-                    if (d.LimitedToStores && d.Status == LinkStatus.Ok && !QuerySettings.IgnoreMultiStore && !_storeMappingService.Authorize(entityName, d.Id, storeId))
+
+                    if (d.CheckLimitedToStores && 
+                        d.LimitedToStores && 
+                        d.Status == LinkStatus.Ok && 
+                        !QuerySettings.IgnoreMultiStore && 
+                        !_storeMappingService.Authorize(entityName, d.Id, storeId))
                     {
                         result.Status = LinkStatus.NotFound;
                     }
-                    else if (d.SubjectToAcl && d.Status == LinkStatus.Ok && !QuerySettings.IgnoreAcl && !_aclService.Authorize(entityName, d.Id, roles))
+                    else if (d.SubjectToAcl && 
+                        d.Status == LinkStatus.Ok && 
+                        !QuerySettings.IgnoreAcl && 
+                        !_aclService.Authorize(entityName, d.Id, roles))
                     {
                         result.Status = LinkStatus.Forbidden;
                     }
@@ -268,7 +280,11 @@ namespace SmartStore.Services.Cms
 			return new LinkResolverData { Type = LinkType.Url, Value = linkExpression.EmptyNull() };
         }
 
-        internal void GetEntityData<T>(LinkResolverData data, int languageId, Expression<Func<T, ResolverEntitySummary>> selector) where T : BaseEntity
+        internal void GetEntityData<T>(
+            LinkResolverData data,
+            int storeId,
+            int languageId,
+            Expression<Func<T, ResolverEntitySummary>> selector) where T : BaseEntity
         {
             ResolverEntitySummary summary = null;
             string systemName = null;
@@ -285,25 +301,33 @@ namespace SmartStore.Services.Cms
 
             if (data.Type == LinkType.Topic)
             {
-                var query = _services.DbContext.Set<Topic>()
-                    .AsNoTracking()
-                    .AsQueryable();
+                Topic topic = null;
 
-                query = string.IsNullOrEmpty(systemName)
-                    ? query.Where(x => x.Id == data.Id)
-                    : query.Where(x => x.SystemName == systemName);
-
-                summary = query.Select(x => new ResolverEntitySummary
+                if (string.IsNullOrEmpty(systemName))
                 {
-                    Id = x.Id,
-                    Name = x.SystemName,
-                    Title = x.Title,
-                    ShortTitle = x.ShortTitle,
-                    Published = x.IsPublished,
-                    SubjectToAcl = x.SubjectToAcl,
-                    LimitedToStores = x.LimitedToStores
-                })
-                .FirstOrDefault();
+                    topic = _services.DbContext.Set<Topic>()
+                        .AsNoTracking()
+                        .FirstOrDefault(x => x.Id == data.Id);
+                }
+                else
+                {
+                    topic = _topicService.GetTopicBySystemName(systemName, storeId, false);
+                    data.CheckLimitedToStores = false;
+                }
+
+                if (topic != null)
+                {
+                    summary = new ResolverEntitySummary
+                    {
+                        Id = topic.Id,
+                        Name = topic.SystemName,
+                        Title = topic.Title,
+                        ShortTitle = topic.ShortTitle,
+                        Published = topic.IsPublished,
+                        SubjectToAcl = topic.SubjectToAcl,
+                        LimitedToStores = topic.LimitedToStores
+                    };
+                }
             }
             else
             {

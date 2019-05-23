@@ -39,6 +39,7 @@ namespace SmartStore.PayPal
 			_settingService.SaveSetting<PayPalDirectPaymentSettings>(new PayPalDirectPaymentSettings());
 			_settingService.SaveSetting<PayPalStandardPaymentSettings>(new PayPalStandardPaymentSettings());
 			_settingService.SaveSetting<PayPalPlusPaymentSettings>(new PayPalPlusPaymentSettings());
+            _settingService.SaveSetting(new PayPalInstalmentsSettings());
 
 			_localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
@@ -47,34 +48,44 @@ namespace SmartStore.PayPal
 
 		public override void Uninstall()
 		{
-			try
-			{
-				var settings = _settingService.LoadSetting<PayPalPlusPaymentSettings>();
-				if (settings.WebhookId.HasValue())
-				{
-					var session = new PayPalSessionData();
-					var result = _payPalService.Value.EnsureAccessToken(session, settings);
-
-					if (result.Success)
-						result = _payPalService.Value.DeleteWebhook(settings, session);
-
-					if (!result.Success)
-						Logger.Log(LogLevel.Error, null, result.ErrorMessage, null);
-				}
-			}
-			catch (Exception exception)
-			{
-				Logger.Log(LogLevel.Error, exception, null, null);
-			}
+            DeleteWebhook(_settingService.LoadSetting<PayPalPlusPaymentSettings>());
+            DeleteWebhook(_settingService.LoadSetting<PayPalInstalmentsSettings>());
 
             _settingService.DeleteSetting<PayPalExpressPaymentSettings>();
             _settingService.DeleteSetting<PayPalDirectPaymentSettings>();
             _settingService.DeleteSetting<PayPalStandardPaymentSettings>();
 			_settingService.DeleteSetting<PayPalPlusPaymentSettings>();
+            _settingService.DeleteSetting<PayPalInstalmentsSettings>();
 
-			_localizationService.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
+            _localizationService.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
 
 			base.Uninstall();
 		}
+
+        private void DeleteWebhook(PayPalApiSettingsBase settings)
+        {
+            try
+            {
+                if (settings?.WebhookId.HasValue() ?? false)
+                {
+                    var session = new PayPalSessionData();
+                    var result = _payPalService.Value.EnsureAccessToken(session, settings);
+
+                    if (result.Success)
+                    {
+                        result = _payPalService.Value.DeleteWebhook(settings, session);
+                    }
+
+                    if (!result.Success)
+                    {
+                        Logger.Log(LogLevel.Error, null, result.ErrorMessage, null);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogLevel.Error, ex, null, null);
+            }
+        }
 	}
 }

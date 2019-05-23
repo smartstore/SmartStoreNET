@@ -126,6 +126,7 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Controllers\PayPalInstalmentsController.cs" />
     <Compile Include="Controllers\PayPalRestApiControllerBase.cs" />
     <Compile Include="Controllers\PayPalControllerBase.cs" />
     <Compile Include="Controllers\PayPalPlusController.cs" />
@@ -144,6 +145,7 @@
     <Compile Include="Models\PayPalDirectPaymentInfoModel.cs" />
     <Compile Include="Models\PayPalExpressPaymentInfoModel.cs" />
     <Compile Include="Providers\PayPalExpressProvider.cs" />
+    <Compile Include="Providers\PayPalInstalmentsProvider.cs" />
     <Compile Include="Providers\PayPalPlusProvider.cs" />
     <Compile Include="Providers\PayPalRestApiProviderBase.cs" />
     <Compile Include="Providers\PayPalProviderBase.cs" />
@@ -152,6 +154,7 @@
     <Compile Include="Services\IPayPalService.cs" />
     <Compile Include="Services\PayPalEnums.cs" />
     <Compile Include="Services\PayPalService.cs" />
+    <Compile Include="Settings\PayPalInstalmentsSettings.cs" />
     <Compile Include="Settings\PayPalSettings.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -200,6 +203,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\checkout-button-en.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\instalments-sm.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\instalments.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\PayPalExpress\Configure.cshtml">

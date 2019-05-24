@@ -300,7 +300,7 @@ namespace SmartStore.Web.Controllers
 							}
 
 							source = await ProcessAndPutToCacheAsync(cachedImage, source, query);
-							return new CachedFileResult(mime, cachedImage.LastModifiedUtc.GetValueOrDefault(), () => source);
+							return new CachedFileResult(mime, cachedImage.LastModifiedUtc.GetValueOrDefault(), source.LongLength, () => source);
 						}
 					}
 				}

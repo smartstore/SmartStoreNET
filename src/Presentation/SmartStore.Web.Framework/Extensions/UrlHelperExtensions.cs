@@ -12,7 +12,9 @@ namespace SmartStore.Web.Framework
         public static string LogOn(this UrlHelper urlHelper, string returnUrl)
         {
             if (!string.IsNullOrEmpty(returnUrl))
-                return urlHelper.Action("Login", "Customer", new { ReturnUrl = returnUrl, area = "" });
+            {
+                return urlHelper.Action("Login", "Customer", new { returnUrl, area = "" });
+            }
 
 			return urlHelper.Action("Login", "Customer", new { area = "" });
         }
@@ -20,7 +22,9 @@ namespace SmartStore.Web.Framework
         public static string LogOff(this UrlHelper urlHelper, string returnUrl)
         {
             if (!string.IsNullOrEmpty(returnUrl))
-                return urlHelper.Action("Logout", "Customer", new { ReturnUrl = returnUrl, area = "" });
+            {
+                return urlHelper.Action("Logout", "Customer", new { returnUrl, area = "" });
+            }
 
 			return urlHelper.Action("Logout", "Customer", new { area = "" });
         }
@@ -106,7 +110,7 @@ namespace SmartStore.Web.Framework
 
 			if (link.Status == LinkStatus.Ok)
 			{
-				return link.Link;
+				return link.Link.EmptyNull();
 			}
 
 			return string.Empty;

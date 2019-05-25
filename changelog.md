@@ -3,8 +3,8 @@
 ## SmartStore.NET 3.2
 
 ### Highlights
-* (NEW) **Page Builder**: Create fascinating content that will boost your sales. No coding is required thanks to a powerful WYSIWYG editor which utilizes the revolutionary *CSS Grid* system (commercial plugin)
-* (NEW) **Menu Builder**: Visual manager for all sorts of menus. Change existing menus or create your own and place them anywhere you want.
+* (NEW) **CMS Page Builder**: Create fascinating content that will boost your sales. No coding is required thanks to a powerful WYSIWYG editor which utilizes the revolutionary *CSS Grid* system (commercial plugin)
+* (NEW) **CMS Menu Builder**: Visual manager for all sorts of menus. Change existing menus or create your own and place them anywhere you want.
 * (Perf) **Faster MegaSearch** thanks to Lucene.NET 4.8
 * (Perf) **Huge performance increase** in discount resolution and calculation.
 

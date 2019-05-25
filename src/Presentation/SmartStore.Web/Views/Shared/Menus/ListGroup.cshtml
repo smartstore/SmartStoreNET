@@ -29,9 +29,10 @@
                 var itemText = node.GetItemText(T);
                 var itemUrl = item.GenerateUrl(this.ViewContext.RequestContext);
 
-                item.LinkHtmlAttributes.PrependCssClass("list-group-item list-group-item-action menu-link" + ((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : ""));
+                var attributes = new Dictionary<string, object>(item.LinkHtmlAttributes);
+                attributes.PrependCssClass("list-group-item list-group-item-action menu-link" + ((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : ""));
 
-			    <a href="@item.Url" @Html.Attrs(item.LinkHtmlAttributes)>
+			    <a href="@item.Url" @Html.Attrs(attributes)>
 		            @if (hasIcons)
                     {
 			            <i class="fal fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "") list-group-item-icon"></i>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Configuration;
@@ -486,9 +487,12 @@ namespace SmartStore.Web.Infrastructure.Installation
 					var rsResources = new EfRepository<LocaleStringResource>(_ctx);
 					rsResources.AutoCommitEnabled = false;
 
+					var rsStore = new EfRepository<Store>(_ctx);
+					rsStore.AutoCommitEnabled = false;
+
 					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
-					var storeService = new StoreService(new EfRepository<Store>(_ctx));
-					var storeContext = new WebStoreContext(new Work<IStoreService>(x => storeService));
+					var storeService = new StoreService(rsStore);
+					var storeContext = new WebStoreContext(new Lazy<IRepository<Store>>(() => rsStore), null, NullCache.Instance);
                     
 					var locSettings = new LocalizationSettings();
 

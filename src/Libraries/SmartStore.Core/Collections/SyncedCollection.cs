@@ -26,6 +26,8 @@ namespace SmartStore.Collections
 
 		public object SyncRoot { get; }
 
+		public bool ReadLockFree { get; set; }
+
 		public void AddRange(IEnumerable<T> collection)
 		{
 			lock (SyncRoot)
@@ -112,9 +114,16 @@ namespace SmartStore.Collections
 		{
 			get
 			{
-				lock (SyncRoot)
+				if (ReadLockFree)
 				{
 					return _col.ElementAt(index);
+				}
+				else
+				{
+					lock (SyncRoot)
+					{
+						return _col.ElementAt(index);
+					}
 				}
 			}
 		}
@@ -125,9 +134,16 @@ namespace SmartStore.Collections
 		{
 			get
 			{
-				lock (SyncRoot)
+				if (ReadLockFree)
 				{
 					return _col.Count();
+				}
+				else
+				{
+					lock (SyncRoot)
+					{
+						return _col.Count();
+					}
 				}
 			}
 		}
@@ -152,9 +168,16 @@ namespace SmartStore.Collections
 
 		public bool Contains(T item)
 		{
-			lock (SyncRoot)
+			if (ReadLockFree)
 			{
 				return _col.Contains(item);
+			}
+			else
+			{
+				lock (SyncRoot)
+				{
+					return _col.Contains(item);
+				}
 			}
 		}
 
@@ -174,17 +197,24 @@ namespace SmartStore.Collections
 			}
 		}
 
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return this.GetEnumerator();
+		}
+
 		public IEnumerator<T> GetEnumerator()
 		{
-			lock (SyncRoot)
+			if (ReadLockFree)
 			{
 				return _col.GetEnumerator();
 			}
-		}
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return _col.GetEnumerator();
+			else
+			{
+				lock (SyncRoot)
+				{
+					return _col.GetEnumerator();
+				}
+			}
 		}
 
 		#endregion

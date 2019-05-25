@@ -872,7 +872,7 @@ namespace SmartStore.Services.Catalog.Importer
 				// Collect required image file infos.
 				foreach (var urlOrPath in imageUrls)
 				{
-					var image = CreateDownloadImage(urlOrPath, seoName, ++imageNumber);
+					var image = CreateDownloadImage(context, urlOrPath, seoName, ++imageNumber);
 
 					if (image != null)
 						imageFiles.Add(image);

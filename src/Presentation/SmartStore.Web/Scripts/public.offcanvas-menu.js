@@ -305,7 +305,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 
 	    initMenu: function () {
 	        var nav = $(".megamenu .navbar-nav");
-            selectedEntityId = nav.data("selected-entity-id");
+            selectedEntityId = nav.data("selected-entity-id") || 0;
 	        currentCategoryId = nav.data("current-category-id");
 	        currentProductId = nav.data("current-product-id");
 	        currentManufacturerId = nav.data("current-manufacturer-id");

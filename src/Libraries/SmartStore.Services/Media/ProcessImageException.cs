@@ -21,23 +21,25 @@ namespace SmartStore.Services.Media
 		}
 
 		public ProcessImageException(ProcessImageQuery query, Exception innerException)
-			: base(CreateMessage(query), innerException)
+			: base(CreateMessage(query, innerException), innerException)
 		{
 			Query = query;
 		}
 
-		private static string CreateMessage(ProcessImageQuery query)
+		private static string CreateMessage(ProcessImageQuery query, Exception innerException)
 		{
 			var fileName = query?.FileName;
 
-			if (fileName.HasValue())
+			var msg = fileName.HasValue()
+				? "Error while processing image '{0}'".FormatCurrent(fileName)
+				: "Error while processing image";
+
+			if (innerException != null)
 			{
-				return "Error while processing image '{0}'.".FormatCurrent(fileName);
+				msg += " (" + innerException.Message + ")";
 			}
-			else
-			{
-				return "Error while processing image.";
-			}
+
+			return msg;
 		}
 
 		public ProcessImageQuery Query { get; private set; }

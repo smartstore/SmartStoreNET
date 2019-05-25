@@ -55,8 +55,6 @@
 			var itemText = node.GetItemText(T);
 			var itemUrl = item.GenerateUrl(this.ViewContext.RequestContext);
 			
-			item.LinkHtmlAttributes.PrependCssClass("dropdown-item menu-link");
-
 			if (item.IsGroupHeader)
 			{
 				if (!isFirst)
@@ -71,7 +69,10 @@
 				continue;
 			}
 
-			<a href="@itemUrl" @Html.Attrs(item.LinkHtmlAttributes)>
+            var attributes = new Dictionary<string, object>(item.LinkHtmlAttributes);
+            attributes.PrependCssClass("dropdown-item menu-link");
+
+			<a href="@itemUrl" @Html.Attrs(attributes)>
 				@if (hasIcons)
 				{
 					<i class="fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "")"></i>

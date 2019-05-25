@@ -18,7 +18,7 @@
     @if (CommonServices.WorkContext.CurrentCustomer.IsGuest() && !Model.AllowChangedCustomerEmail)
     {
         <div class="alert alert-danger mb-4">
-            @T("Products.EmailAFriend.LoginNote", Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl }))
+            @T("Products.EmailAFriend.LoginNote", Url.RouteUrl("Login", new { returnUrl = Request.RawUrl }))
         </div>
     }
 

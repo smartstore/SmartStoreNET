@@ -898,14 +898,14 @@ namespace SmartStore.Admin.Controllers
             model.AvailablePaymentMethods = paymentMethods
                 .Select(x => new SelectListItem
                 {
-                    Text = _pluginMediator.GetLocalizedFriendlyName(x.Metadata).NullEmpty() ?? x.Metadata.FriendlyName.NullEmpty(),
+                    Text = _pluginMediator.GetLocalizedFriendlyName(x.Metadata).NullEmpty() ?? x.Metadata.FriendlyName.NullEmpty() ?? x.Metadata.SystemName,
                     Value = x.Metadata.SystemName
                 })
                 .ToList();
 
             var paymentMethodsCounts = model.AvailablePaymentMethods
                 .GroupBy(x => x.Text)
-                .Select(x => new { Name = x.Key, Count = x.Count() })
+                .Select(x => new { Name = x.Key.EmptyNull(), Count = x.Count() })
                 .ToDictionarySafe(x => x.Name, x => x.Count);                
 
             model.AvailablePaymentMethods = model.AvailablePaymentMethods

@@ -61,6 +61,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 				_state.SetState((scope = BeginLifetimeScope(configurationAction)));
 				//scope.CurrentScopeEnding += OnScopeEnding;
 			}
+
 			return scope;
 		}
 

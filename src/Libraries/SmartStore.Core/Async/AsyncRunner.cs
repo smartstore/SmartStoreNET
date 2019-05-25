@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,8 +9,112 @@ using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Core.Async
 {
-	public static class AsyncRunner
+	using EventQueue = ConcurrentQueue<Tuple<SendOrPostCallback, object>>;
+
+	public class AsyncRunner : IDisposable
 	{
+		#region Instance members
+
+		private ExclusiveSynchronizationContext CurrentContext;
+		private SynchronizationContext OldContext;
+		private int TaskCount;
+
+		private AsyncRunner()
+		{
+			OldContext = SynchronizationContext.Current;
+			CurrentContext = new ExclusiveSynchronizationContext(OldContext);
+			SynchronizationContext.SetSynchronizationContext(CurrentContext);
+		}
+
+		public void Dispose()
+		{
+			try
+			{
+				CurrentContext.BeginMessageLoop();
+			}
+			catch (Exception e)
+			{
+				throw e;
+			}
+			finally
+			{
+				SynchronizationContext.SetSynchronizationContext(OldContext);
+			}
+		}
+
+		private void Increment()
+		{
+			Interlocked.Increment(ref TaskCount);
+		}
+
+		private void Decrement()
+		{
+			Interlocked.Decrement(ref TaskCount);
+			if (TaskCount == 0)
+			{
+				CurrentContext.EndMessageLoop();
+			}
+		}
+
+		/// <summary>
+		/// Executes an async Task method which has a void return value synchronously
+		/// </summary>
+		/// <param name="task">Task execute</param>
+		public void Run(Task task, Action<Task> continuation = null)
+		{
+			CurrentContext.Post(async _ =>
+			{
+				try
+				{
+					Increment();
+					await task;
+
+					continuation?.Invoke(task);
+				}
+				catch (Exception e)
+				{
+					CurrentContext.InnerException = e;
+				}
+				finally
+				{
+					Decrement();
+				}
+			}, null);
+		}
+
+		/// <summary>
+		/// Executes an async Task method which has a TResult return type synchronously
+		/// </summary>
+		/// <typeparam name="TResult">Return Type</typeparam>
+		/// <param name="task">Task to execute</param>
+		public TResult Run<TResult>(Task<TResult> task, Action<Task<TResult>> continuation = null)
+		{
+			var result = default(TResult);
+
+			CurrentContext.Post(async _ =>
+			{
+				try
+				{
+					Increment();
+					result = await task;
+
+					continuation?.Invoke(task);
+				}
+				catch (Exception e)
+				{
+					CurrentContext.InnerException = e;
+				}
+				finally
+				{
+					Decrement();
+				}
+			}, null);
+
+			return result;
+		}
+
+		#endregion
+
 		private static readonly BackgroundWorkHost _host = new BackgroundWorkHost();
 
 		/// <summary>
@@ -20,34 +125,21 @@ namespace SmartStore.Core.Async
 			get { return _host.ShutdownCancellationTokenSource.Token; }
 		}
 
+		public static AsyncRunner Create()
+		{
+			return new AsyncRunner();
+		}
+
 		/// <summary>
 		/// Executes an async Task method which has a void return value synchronously
 		/// </summary>
 		/// <param name="func">Task method to execute</param>
-		public static void RunSync(Func<Task> func)
+		public static void RunSync(Func<Task> func, Action<Task> continuation = null)
 		{
-			var oldContext = SynchronizationContext.Current;
-			var synch = new ExclusiveSynchronizationContext();
-			SynchronizationContext.SetSynchronizationContext(synch);
-			synch.Post(async _ =>
+			using (var runner = new AsyncRunner())
 			{
-				try
-				{
-					await func();
-				}
-				catch (Exception e)
-				{
-					synch.InnerException = e;
-					throw;
-				}
-				finally
-				{
-					synch.EndMessageLoop();
-				}
-			}, null);
-			synch.BeginMessageLoop();
-
-			SynchronizationContext.SetSynchronizationContext(oldContext);
+				runner.Run(func(), continuation);
+			}
 		}
 
 		/// <summary>
@@ -56,37 +148,22 @@ namespace SmartStore.Core.Async
 		/// <typeparam name="TResult">Return Type</typeparam>
 		/// <param name="func">Task method to execute</param>
 		/// <returns></returns>
-		public static TResult RunSync<TResult>(Func<Task<TResult>> func)
+		public static TResult RunSync<TResult>(Func<Task<TResult>> func, Action<Task<TResult>> continuation = null)
 		{
-			var oldContext = SynchronizationContext.Current;
-			var synch = new ExclusiveSynchronizationContext();
-			SynchronizationContext.SetSynchronizationContext(synch);
-			TResult ret = default(TResult);
-			synch.Post(async _ =>
+			var result = default(TResult);
+
+			using (var runner = new AsyncRunner())
 			{
-				try
-				{
-					ret = await func();
-				}
-				catch (Exception e)
-				{
-					synch.InnerException = e;
-					throw;
-				}
-				finally
-				{
-					synch.EndMessageLoop();
-				}
-			}, null);
-			synch.BeginMessageLoop();
-			SynchronizationContext.SetSynchronizationContext(oldContext);
-			return ret;
+				result = runner.Run(func(), continuation);
+			}
+
+			return result;
 		}
 
 		public static Task Run(
-			Action<ILifetimeScope, CancellationToken> action, 
-			CancellationToken cancellationToken = default(CancellationToken), 
-			TaskCreationOptions options = TaskCreationOptions.LongRunning, 
+			Action<ILifetimeScope, CancellationToken> action,
+			CancellationToken cancellationToken = default(CancellationToken),
+			TaskCreationOptions options = TaskCreationOptions.LongRunning,
 			TaskScheduler scheduler = null)
 		{
 			Guard.NotNull(action, nameof(action));
@@ -107,10 +184,10 @@ namespace SmartStore.Core.Async
 		}
 
 		public static Task Run(
-			Action<ILifetimeScope, CancellationToken, object> action, 
-			object state, 
-			CancellationToken cancellationToken = default(CancellationToken), 
-			TaskCreationOptions options = TaskCreationOptions.LongRunning, 
+			Action<ILifetimeScope, CancellationToken, object> action,
+			object state,
+			CancellationToken cancellationToken = default(CancellationToken),
+			TaskCreationOptions options = TaskCreationOptions.LongRunning,
 			TaskScheduler scheduler = null)
 		{
 			Guard.NotNull(state, nameof(state));
@@ -133,9 +210,9 @@ namespace SmartStore.Core.Async
 		}
 
 		public static Task<TResult> Run<TResult>(
-			Func<ILifetimeScope, CancellationToken, TResult> function, 
-			CancellationToken cancellationToken = default(CancellationToken), 
-			TaskCreationOptions options = TaskCreationOptions.LongRunning, 
+			Func<ILifetimeScope, CancellationToken, TResult> function,
+			CancellationToken cancellationToken = default(CancellationToken),
+			TaskCreationOptions options = TaskCreationOptions.LongRunning,
 			TaskScheduler scheduler = null)
 		{
 			Guard.NotNull(function, nameof(function));
@@ -157,7 +234,7 @@ namespace SmartStore.Core.Async
 		}
 
 		public static Task<TResult> Run<TResult>(
-			Func<ILifetimeScope, CancellationToken, object, TResult> function, 
+			Func<ILifetimeScope, CancellationToken, object, TResult> function,
 			object state,
 			CancellationToken cancellationToken = default(CancellationToken),
 			TaskCreationOptions options = TaskCreationOptions.LongRunning,
@@ -199,7 +276,7 @@ namespace SmartStore.Core.Async
 
 			try
 			{
-				task = function(scope, ct).ContinueWith(x => 
+				task = function(scope, ct).ContinueWith(x =>
 				{
 					scope.Dispose();
 				});
@@ -213,12 +290,23 @@ namespace SmartStore.Core.Async
 			return task;
 		}
 
-
 		private class ExclusiveSynchronizationContext : SynchronizationContext
 		{
 			private bool _done;
-			readonly AutoResetEvent _workItemsWaiting = new AutoResetEvent(false);
-			readonly Queue<Tuple<SendOrPostCallback, object>> _items = new Queue<Tuple<SendOrPostCallback, object>>();
+			private readonly AutoResetEvent _workItemsWaiting = new AutoResetEvent(false);
+			private readonly EventQueue _items;
+
+			public ExclusiveSynchronizationContext(SynchronizationContext old)
+			{
+				if (old is ExclusiveSynchronizationContext oldEx)
+				{
+					this._items = oldEx._items;
+				}
+				else
+				{
+					this._items = new EventQueue();
+				}
+			}
 
 			public Exception InnerException { get; set; }
 
@@ -229,10 +317,7 @@ namespace SmartStore.Core.Async
 
 			public override void Post(SendOrPostCallback d, object state)
 			{
-				lock (_items)
-				{
-					_items.Enqueue(Tuple.Create(d, state));
-				}
+				_items.Enqueue(Tuple.Create(d, state));
 				_workItemsWaiting.Set();
 			}
 
@@ -245,25 +330,18 @@ namespace SmartStore.Core.Async
 			{
 				while (!_done)
 				{
-					Tuple<SendOrPostCallback, object> task = null;
-					lock (_items)
+					if (!_items.TryDequeue(out var task))
 					{
-						if (_items.Count > 0)
-						{
-							task = _items.Dequeue();
-						}
-					}
-					if (task != null)
-					{
-						task.Item1(task.Item2);
-						if (InnerException != null) // the method threw an exeption
-						{
-							throw new AggregateException("AsyncHelpers.Run method threw an exception.", InnerException);
-						}
+						_workItemsWaiting.WaitOne();
 					}
 					else
 					{
-						_workItemsWaiting.WaitOne();
+						task.Item1(task.Item2);
+
+						if (InnerException != null) // method threw an exeption
+						{
+							throw new AggregateException("AsyncHelpers.Run method threw an exception.", InnerException);
+						}
 					}
 				}
 			}
@@ -280,7 +358,7 @@ namespace SmartStore.Core.Async
 	{
 		private readonly CancellationTokenSource _shutdownCancellationTokenSource = new CancellationTokenSource();
 		private int _numRunningWorkItems;
-		
+
 		public BackgroundWorkHost()
 		{
 			HostingEnvironment.RegisterObject(this);
@@ -326,7 +404,7 @@ namespace SmartStore.Core.Async
 					}
 					_numRunningWorkItems++;
 				}
-				
+
 				work.ContinueWith(
 					WorkItemComplete,
 					CancellationToken.None,
@@ -342,7 +420,7 @@ namespace SmartStore.Core.Async
 			lock (this)
 			{
 				num = --_numRunningWorkItems;
-				isCancellationRequested = _shutdownCancellationTokenSource.IsCancellationRequested; 
+				isCancellationRequested = _shutdownCancellationTokenSource.IsCancellationRequested;
 			}
 			if (num == 0 && isCancellationRequested)
 			{

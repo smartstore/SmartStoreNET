@@ -41,8 +41,16 @@ namespace SmartStore.Web.Framework.UI
 			}
 
 			var first = true;
-			foreach (var pair in attrs.Where(x => x.Value != null))
+
+			foreach (var key in attrs.Keys)
 			{
+				var value = attrs[key];
+
+				if (value == null)
+				{
+					continue;
+				}
+
 				if (!first)
 				{
 					output.Write(" ");
@@ -50,8 +58,8 @@ namespace SmartStore.Web.Framework.UI
 
 				first = false;
 
-				output.Write(pair.Key + "=\"");
-				HttpUtility.HtmlAttributeEncode(pair.Value.ToString(), output);
+				output.Write(key + "=\"");
+				HttpUtility.HtmlAttributeEncode(value.ToString(), output);
 				output.Write("\"");
 			}
 		}

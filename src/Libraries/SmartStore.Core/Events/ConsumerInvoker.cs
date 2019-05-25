@@ -47,8 +47,22 @@ namespace SmartStore.Core.Events
 			}
 			else if (!d.FireForget && d.IsAsync)
 			{
-				// The awaitable Task case
-				BeginInvoke((Task)InvokeCore(cancelToken: AsyncRunner.AppShutdownCancellationToken), EndInvoke, d);
+				//// The awaitable Task case
+				//BeginInvoke((Task)InvokeCore(cancelToken: AsyncRunner.AppShutdownCancellationToken), EndInvoke, d);
+
+				// For now we must go with the AsyncRunner, the above call to BeginInvoke (APM > TPL) does not always
+				// guarantee that the task is awaited and throws exceptions especially when EF is involved.
+				using (var runner = AsyncRunner.Create())
+				{
+					try
+					{
+						runner.Run((Task)InvokeCore(cancelToken: AsyncRunner.AppShutdownCancellationToken));
+					}
+					catch (Exception ex)
+					{
+						HandleException(ex, d);
+					}
+				}
 			}
 			else if (d.FireForget && !d.IsAsync)
 			{
@@ -87,62 +101,6 @@ namespace SmartStore.Core.Events
 			}
 		}
 
-		/// <summary>
-		/// Wraps a <see cref="Task"/> into the Begin method of an APM pattern.
-		/// </summary>
-		/// <param name="task">The task to wrap.</param>
-		/// <param name="callback">The callback method passed into the Begin method of the APM pattern.</param>
-		/// <param name="descriptor">The state passed into the Begin method of the APM pattern.</param>
-		/// <returns>The asynchronous operation, to be returned by the Begin method of the APM pattern.</returns>
-		protected IAsyncResult BeginInvoke(Task task, AsyncCallback callback, ConsumerDescriptor descriptor)
-		{
-			var tcs = new TaskCompletionSource<object>(descriptor, TaskCreationOptions.RunContinuationsAsynchronously);
-
-			// "_ =" to discard 'async/await' compiler warning
-			_ = AwaitCompletionAsync(task, callback, tcs, descriptor);
-
-			return tcs.Task;
-		}
-
-		private async Task AwaitCompletionAsync(
-			Task task, 
-			AsyncCallback callback, 
-			TaskCompletionSource<object> tcs, 
-			ConsumerDescriptor descriptor)
-		{
-			try
-			{
-				await task;
-				tcs.TrySetResult(null);
-			}
-			catch (OperationCanceledException ex)
-			{
-				tcs.TrySetCanceled(ex.CancellationToken);
-			}
-			catch (Exception ex)
-			{
-				tcs.TrySetException(ex);
-			}
-			finally
-			{
-				callback?.Invoke(tcs.Task);
-			}
-		}
-
-		protected virtual void EndInvoke(IAsyncResult asyncResult)
-		{
-			var task = (Task)asyncResult;
-
-			if (task.IsFaulted && task.Exception != null)
-			{
-				HandleException(task.Exception, (ConsumerDescriptor)asyncResult.AsyncState);
-			}
-			if (HttpContext.Current != null)
-			{
-				var d = HttpContext.Current.Items["ConsumerInvoker"];
-			}
-		}
-
 		private void HandleException(Exception ex, ConsumerDescriptor descriptor)
 		{
 			if (ex is AggregateException ae)
@@ -178,19 +136,61 @@ namespace SmartStore.Core.Events
 			}
 		}
 
-		//private void NoContext(Action action)
-		//{
-		//	var synchContext = SynchronizationContext.Current;
-		//	SynchronizationContext.SetSynchronizationContext(null);
+		#region APM > TPL pattern (does not always work stable)
 
-		//	try
-		//	{
-		//		action();
-		//	}
-		//	finally
-		//	{
-		//		SynchronizationContext.SetSynchronizationContext(synchContext);
-		//	}
-		//}
+		/// <summary>
+		/// Wraps a <see cref="Task"/> into the Begin method of an APM pattern.
+		/// </summary>
+		/// <param name="task">The task to wrap.</param>
+		/// <param name="callback">The callback method passed into the Begin method of the APM pattern.</param>
+		/// <param name="descriptor">The state passed into the Begin method of the APM pattern.</param>
+		/// <returns>The asynchronous operation, to be returned by the Begin method of the APM pattern.</returns>
+		protected IAsyncResult BeginInvoke(Task task, AsyncCallback callback, ConsumerDescriptor descriptor)
+		{
+			var options = TaskCreationOptions.RunContinuationsAsynchronously;
+			var tcs = new TaskCompletionSource<object>(descriptor, options);
+
+			// "_ =" to discard 'async/await' compiler warning
+			_ = AwaitCompletionAsync(task, callback, tcs, descriptor);
+
+			return tcs.Task;
+		}
+
+		private async Task AwaitCompletionAsync(
+			Task task,
+			AsyncCallback callback,
+			TaskCompletionSource<object> tcs,
+			ConsumerDescriptor descriptor)
+		{
+			try
+			{
+				await task;
+				tcs.TrySetResult(null);
+			}
+			catch (OperationCanceledException ex)
+			{
+				tcs.TrySetCanceled(ex.CancellationToken);
+			}
+			catch (Exception ex)
+			{
+				tcs.TrySetException(ex);
+			}
+			finally
+			{
+				callback?.Invoke(tcs.Task);
+			}
+		}
+
+		protected virtual void EndInvoke(IAsyncResult asyncResult)
+		{
+			var task = (Task)asyncResult;
+
+			if (task.IsFaulted && task.Exception != null)
+			{
+				HandleException(task.Exception, (ConsumerDescriptor)asyncResult.AsyncState);
+			}
+		}
+
+		#endregion
 	}
 }

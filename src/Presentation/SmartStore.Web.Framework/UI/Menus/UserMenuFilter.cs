@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using SmartStore.Services.Cms;
 
 namespace SmartStore.Web.Framework.UI
@@ -14,15 +15,15 @@ namespace SmartStore.Web.Framework.UI
 			_menuStorage = menuStorage;
         }
 
-        public void OnResultExecuting(ResultExecutingContext filterContext)
+		public void OnResultExecuting(ResultExecutingContext filterContext)
         {
-            if (filterContext.IsChildAction || !filterContext.Result.IsHtmlViewResult())
-            {
-                return;
-            }
+			if (filterContext.IsChildAction || !filterContext.Result.IsHtmlViewResult())
+			{
+				return;
+			}
 
-            ProcessUserMenus();
-        }
+			ProcessUserMenus();
+		}
 
         public void OnResultExecuted(ResultExecutedContext filterContext)
         {

@@ -11,7 +11,7 @@
 	if (!String.IsNullOrEmpty(this.Context.Request.QueryString["returnUrl"]))
 	{
 		var webHelper = EngineContext.Current.Resolve<IWebHelper>();
-		registerUrl = webHelper.ModifyQueryString(registerUrl, "returnurl=" + HttpUtility.UrlEncode(this.Context.Request.QueryString["returnUrl"]), null);
+		registerUrl = webHelper.ModifyQueryString(registerUrl, "returnUrl=" + HttpUtility.UrlEncode(this.Context.Request.QueryString["returnUrl"]), null);
 	}
 
 	var isRtl = this.WorkContext.WorkingLanguage.Rtl;

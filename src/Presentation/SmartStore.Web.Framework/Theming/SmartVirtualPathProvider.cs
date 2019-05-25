@@ -146,7 +146,7 @@ namespace SmartStore.Web.Framework.Theming
 		}
 	}
 
-	internal class DebugVirtualFile : VirtualFile
+	internal class DebugVirtualFile : VirtualFile, IFileDependencyProvider
 	{
 		public DebugVirtualFile(string virtualPath, string debugPath)
 			: base(virtualPath)
@@ -160,11 +160,16 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			get { return false; }
 		}
-		
+
 		public override Stream Open()
 		{
 			var fileStream = new FileStream(PhysicalPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 			return fileStream;
+		}
+
+		public void AddFileDependencies(ICollection<string> mappedPaths, ICollection<string> cacheKeys)
+		{
+			mappedPaths.Add(PhysicalPath);
 		}
 	}
 }

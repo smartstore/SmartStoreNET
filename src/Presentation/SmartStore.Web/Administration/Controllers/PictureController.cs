@@ -38,8 +38,9 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			var picture = _pictureService.InsertPicture(postedFile.Buffer, postedFile.ContentType, null, true, isTransient, validate);
-            return Json(
-                new { 
+
+            return Json(new
+				{ 
                     success = true, 
                     pictureId = picture.Id,
                     imageUrl = _pictureService.GetUrl(picture, _mediaSettings.ProductThumbPictureSize, host: "") 

@@ -37,7 +37,7 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			Guard.NotNull(virtualPathDependencies, nameof(virtualPathDependencies));
 
-			// determine the virtual themevarsscss import reference
+			// determine the virtual themevars scss import reference
 			var themeVarsFile = virtualPathDependencies.Where(x => ThemeHelper.PathIsThemeVars(x)).FirstOrDefault();
 			var moduleImportsFile = virtualPathDependencies.Where(x => ThemeHelper.PathIsModuleImports(x)).FirstOrDefault();
 

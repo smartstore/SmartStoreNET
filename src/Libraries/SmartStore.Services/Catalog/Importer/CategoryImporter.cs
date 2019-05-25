@@ -199,7 +199,7 @@ namespace SmartStore.Services.Catalog.Importer
 						var currentPictures = new List<Picture>();
 						var category = _categoryRepository.GetById(srcToDestId[srcId].DestinationId);
 						var seoName = _pictureService.GetPictureSeName(row.EntityDisplayName);
-						var image = CreateDownloadImage(urlOrPath, seoName, 1);
+						var image = CreateDownloadImage(context, urlOrPath, seoName, 1);
 
 						if (category != null && image != null)
 						{

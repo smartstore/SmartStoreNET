@@ -6,7 +6,7 @@
 		return;
 	}
 
-	string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
+	string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { returnUrl = Request.RawUrl });
 	var labelStyle = GetThemeVariable<string>("shopbar-label", "warning");
 	var isRtl = this.WorkContext.WorkingLanguage.Rtl;
 }

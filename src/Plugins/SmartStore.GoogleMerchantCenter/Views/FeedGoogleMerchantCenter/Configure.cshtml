@@ -66,13 +66,13 @@
 				})
 		</div>
 		<div class="col-sm-6 col-xl-3 form-group">
-			<label>&nbsp;</label>
+			@Html.SmartLabel(string.Empty, string.Empty)
 			<button type="submit" id="search-products" value="search-product" class="btn btn-secondary btn-block">
 				<span>@T("Admin.Common.ApplyFilter")</span>
 			</button>
 		</div>
 		<div class="col-sm-6 col-xl-3 form-group text-right">
-			<label>&nbsp;</label>
+			@Html.SmartLabel(string.Empty, string.Empty)
 			<div class="dropdown dropdown-columns">
 				<button class="btn btn-secondary btn-flat dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					<i class="fa fa-columns"></i>

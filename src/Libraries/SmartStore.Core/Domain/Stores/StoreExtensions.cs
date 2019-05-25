@@ -7,26 +7,6 @@ namespace SmartStore.Core.Domain.Stores
 	public static class StoreExtensions
 	{
 		/// <summary>
-		/// Parse comma-separated Hosts
-		/// </summary>
-		/// <param name="store">Store</param>
-		/// <returns>Comma-separated hosts</returns>
-		public static string[] ParseHostValues(this Store store)
-		{
-			if (store == null)
-				throw new ArgumentNullException("store");
-
-			var parsedValues = new List<string>();
-			if (!string.IsNullOrEmpty(store.Hosts))
-			{
-				var hosts = store.Hosts.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-				parsedValues.AddRange(hosts.Select(host => host.Trim()).Where(tmp => !string.IsNullOrEmpty(tmp)));
-			}
-
-			return parsedValues.ToArray();
-		}
-
-		/// <summary>
 		/// Indicates whether a store contains a specified host
 		/// </summary>
 		/// <param name="store">Store</param>
@@ -34,15 +14,37 @@ namespace SmartStore.Core.Domain.Stores
 		/// <returns>true - contains, false - no</returns>
 		public static bool ContainsHostValue(this Store store, string host)
 		{
-			if (store == null)
-				throw new ArgumentNullException("store");
+			Guard.NotNull(store, nameof(store));
 
-			if (String.IsNullOrEmpty(host))
+			if (string.IsNullOrEmpty(host))
+			{
 				return false;
+			}		
 
 			var contains = store.ParseHostValues()
 								.FirstOrDefault(x => x.Equals(host, StringComparison.InvariantCultureIgnoreCase)) != null;
 			return contains;
+		}
+
+		/// <summary>
+		/// Parse comma-separated hosts
+		/// </summary>
+		/// <param name="store">Store</param>
+		/// <returns>Comma-separated hosts</returns>
+		public static string[] ParseHostValues(this Store store)
+		{
+			Guard.NotNull(store, nameof(store));
+
+			if (string.IsNullOrWhiteSpace(store.Hosts))
+			{
+				return Array.Empty<string>();
+			}
+
+			return store.Hosts
+				.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+				.Select(host => host.Trim())
+				.Where(host => !string.IsNullOrWhiteSpace(host))
+				.ToArray();
 		}
 	}
 }

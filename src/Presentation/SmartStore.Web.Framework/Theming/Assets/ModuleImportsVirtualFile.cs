@@ -5,18 +5,46 @@ using System.Linq;
 using System.Web.Hosting;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Data;
+using System;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.Theming.Assets
 {
-	public class ModuleImportsVirtualFile : VirtualFile
+	public sealed class ModuleImport
 	{
-		private static readonly HashSet<string> _adminImports;
-		private static readonly HashSet<string> _publicImports;
+		public string VirtualPath { get; internal set; }
+		public string PhysicalPath { get; internal set; }
+		public PluginDescriptor PluginDescriptor { get; internal set; }
+		public bool IsAdmin { get; internal set; }
+
+		public override string ToString()
+		{
+			return VirtualPath;
+		}
+
+		public override int GetHashCode()
+		{
+			return VirtualPath.GetHashCode();
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (!(obj is ModuleImport other))
+				return false;
+
+			return string.Equals(this.VirtualPath, other.VirtualPath, StringComparison.OrdinalIgnoreCase);
+		}
+	}
+
+	public class ModuleImportsVirtualFile : VirtualFile, IFileDependencyProvider
+	{
+		private static readonly HashSet<ModuleImport> _adminImports;
+		private static readonly HashSet<ModuleImport> _publicImports;
 
 		static ModuleImportsVirtualFile()
 		{
-			_adminImports = new HashSet<string>();
-			_publicImports = new HashSet<string>();
+			_adminImports = new HashSet<ModuleImport>();
+			_publicImports = new HashSet<ModuleImport>();
 
 			if (DataSettings.DatabaseIsInstalled())
 			{
@@ -35,24 +63,40 @@ namespace SmartStore.Web.Framework.Theming.Assets
 				if (!Directory.Exists(contentDir))
 					continue;
 
-				if (File.Exists(Path.Combine(contentDir, "public.scss")))
-				{
-					_publicImports.Add($"{root}/{plugin.FolderName}/Content/public.scss");
-				}
+				TryAddImport(plugin, _publicImports, "public.scss");
+				TryAddImport(plugin, _adminImports, "admin.scss");
+			}
 
-				if (File.Exists(Path.Combine(contentDir, "admin.scss")))
+			void TryAddImport(PluginDescriptor plugin, HashSet<ModuleImport> imports, string name)
+			{
+				var physicalPath = Path.Combine(plugin.PhysicalPath, "Content", name);
+				if (File.Exists(physicalPath))
 				{
-					_adminImports.Add($"{root}/{plugin.FolderName}/Content/admin.scss");
+					imports.Add(new ModuleImport
+					{
+						PhysicalPath = physicalPath,
+						VirtualPath = $"{root}/{plugin.FolderName}/Content/{name}",
+						PluginDescriptor = plugin,
+						IsAdmin = name.Contains("admin")
+					});
 				}
 			}
 		}
 
-		private readonly bool _isAdmin;
+		public static ModuleImport[] PublicImports
+		{
+			get => _publicImports.ToArray();
+		}
+
+		public static ModuleImport[] AdminImports
+		{
+			get => _adminImports.ToArray();
+		}
 
 		public ModuleImportsVirtualFile(string virtualPath, bool isAdmin)
 			: base(virtualPath)
 		{
-			_isAdmin = isAdmin;
+			IsAdmin = isAdmin;
 		}
 
 		public override bool IsDirectory
@@ -60,17 +104,34 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			get { return false; }
 		}
 
+		public bool IsAdmin
+		{
+			get;
+			private set;
+		}
+
 		public override Stream Open()
 		{
 			var sb = new StringBuilder();
 
-			var imports = _isAdmin ? _adminImports : _publicImports;
+			var imports = IsAdmin ? _adminImports : _publicImports;
 			foreach (var imp in imports)
 			{
-				sb.AppendLine($"@import '{imp}';");
+				sb.AppendLine($"@import '{imp.VirtualPath}';");
 			}
 
 			return GenerateStreamFromString(sb.ToString());
+		}
+
+		public void HashCombine(HashCodeCombiner combiner)
+		{
+			Guard.NotNull(combiner, nameof(combiner));
+
+			var imports = IsAdmin ? _adminImports : _publicImports;
+			foreach (var imp in imports)
+			{
+				combiner.Add(new FileInfo(imp.PhysicalPath));
+			}
 		}
 
 		private Stream GenerateStreamFromString(string value)
@@ -86,5 +147,13 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			}
 		}
 
+		public void AddFileDependencies(ICollection<string> mappedPaths, ICollection<string> cacheKeys)
+		{
+			var imports = IsAdmin ? _adminImports : _publicImports;
+			foreach (var imp in imports)
+			{
+				mappedPaths.Add(imp.PhysicalPath);
+			}
+		}
 	}
 }

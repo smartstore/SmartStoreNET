@@ -41,12 +41,10 @@ namespace SmartStore.Services.Events
 
 		private bool IsActiveForStore(PluginDescriptor plugin)
 		{
-			var storeContext = EngineContext.Current.Resolve<IStoreContext>();
-
 			int storeId = 0;
 			if (EngineContext.Current.IsFullyInitialized)
 			{
-				storeId = storeContext.CurrentStore.Id;
+				storeId = _container.Value.Resolve<IStoreContext>().CurrentStore.Id;
 			}
 
 			if (storeId == 0)

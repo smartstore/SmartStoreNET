@@ -2,6 +2,7 @@
 @model SmartStore.AmazonPay.Models.AmazonPayViewModel
 @{
 	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/SmartStore.AmazonPay.css"));
+    Html.AddScriptParts(true, "~/Plugins/SmartStore.AmazonPay/Scripts/jquery.deserialize.js");
 }
 
 <script>
@@ -54,35 +55,24 @@
         // Confirmation flow.
         var isConfirmed = @(Model.IsConfirmed.ToString().ToLower());
 
+        // Restore form data.
         if (isConfirmed) {
-            // Restore form data.
-            var submitForm = @(Model.SubmitForm.ToString().ToLower());
-
             try {
                 var formData = '@Html.Raw(Model.FormData)';
-
                 if (!_.isEmpty(formData)) {
                     var data = JSON.parse(formData);
-                    var form = $('#confirm-order-form');
-
-                    jQuery.each(data, function (i, item) {
-                        form.find('[name="' + item.name + '"]').val(item.value);
-                    });
+                    $('#confirm-order-form').deserialize(data);
                 }
             }
 		    catch (e) {
 			    console.log(e);
-		    }
-
-            // Submit form.
-            if (submitForm) {
-                $('.btn-buy').trigger('click');
             }
         }
 
         $(document).on('submitOrder', function (e) {
             e.isOrderValid = isConfirmed;
 
+            // Confirm order.
             if (!isConfirmed) {
                 var data = $('#confirm-order-form').serializeArray();
 
@@ -106,7 +96,18 @@
                     }
                 });
             }
-		});
+        });
+
+        jQuery(document).ready(function () {
+            var submitForm = @(Model.SubmitForm.ToString().ToLower());
+
+            if (submitForm) {
+                var clickBuyNowEvent = jQuery.Event('clickBuyNow');
+                clickBuyNowEvent.scrollTo = true;
+
+                $(document).trigger(clickBuyNowEvent);
+            }
+        });
     });
 </script>
 <script async="async" src="@Html.Raw(Model.WidgetUrl)"></script>

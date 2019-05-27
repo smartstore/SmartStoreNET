@@ -1,8 +1,8 @@
 ﻿FriendlyName: Google Analytics
 SystemName: SmartStore.GoogleAnalytics
 Group: Analytics
-Version: 3.2.0
-MinAppVersion: 3.2.0
+Version: 3.2.1
+MinAppVersion: 3.2.1
 DisplayOrder: 1
 FileName: SmartStore.GoogleAnalytics.dll
 ResourceRootKey: Plugins.Widgets.GoogleAnalytics

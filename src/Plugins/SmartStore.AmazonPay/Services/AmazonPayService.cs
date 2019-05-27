@@ -354,6 +354,9 @@ namespace SmartStore.AmazonPay.Services
 					model.AddressConsentToken = state.AccessToken;
                     model.IsConfirmed = state.IsConfirmed;
                     model.FormData = state.FormData;
+                    model.SubmitForm = state.SubmitForm;
+
+                    state.SubmitForm = false;
 
 					if (type == AmazonPayRequestType.ShippingMethod || type == AmazonPayRequestType.PaymentMethod)
 					{

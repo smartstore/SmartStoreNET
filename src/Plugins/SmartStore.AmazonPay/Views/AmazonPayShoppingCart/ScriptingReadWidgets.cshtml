@@ -56,15 +56,28 @@
 
         if (isConfirmed) {
             // Restore form data.
-            var data = JSON.parse('@Model.FormData');
-            var form = $('#confirm-order-form');
+            var submitForm = @(Model.SubmitForm.ToString().ToLower());
 
-            jQuery.each(data, function (i, item) {
-                form.find('[name="' + item.name + '"]').val(item.value);
-            });
+            try {
+                var formData = '@Html.Raw(Model.FormData)';
+
+                if (!_.isEmpty(formData)) {
+                    var data = JSON.parse(formData);
+                    var form = $('#confirm-order-form');
+
+                    jQuery.each(data, function (i, item) {
+                        form.find('[name="' + item.name + '"]').val(item.value);
+                    });
+                }
+            }
+		    catch (e) {
+			    console.log(e);
+		    }
 
             // Submit form.
-            $('.btn-buy').trigger('click');
+            if (submitForm) {
+                $('.btn-buy').trigger('click');
+            }
         }
 
         $(document).on('submitOrder', function (e) {

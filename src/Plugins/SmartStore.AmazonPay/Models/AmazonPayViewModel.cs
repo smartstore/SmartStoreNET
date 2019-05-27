@@ -51,5 +51,6 @@ namespace SmartStore.AmazonPay.Models
         // Confirmation flow.
         public bool IsConfirmed { get; set; }
         public string FormData { get; set; }
+        public bool SubmitForm { get; set; }
     }
 }

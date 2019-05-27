@@ -238,8 +238,6 @@ namespace SmartStore.Services.Catalog
 								orderby pm.DisplayOrder
 								select pm;
 
-					query = query.Include(x => x.Manufacturer.Picture);
-
 					if (!showHidden)
 					{
 						if (!QuerySettings.IgnoreMultiStore)
@@ -264,7 +262,9 @@ namespace SmartStore.Services.Catalog
 						query = query.OrderBy(pm => pm.DisplayOrder);
 					}
 
-					var productManufacturers = query.ToList();
+                    query = query.Include(x => x.Manufacturer.Picture);
+
+                    var productManufacturers = query.ToList();
 					return productManufacturers;
 				});
         }

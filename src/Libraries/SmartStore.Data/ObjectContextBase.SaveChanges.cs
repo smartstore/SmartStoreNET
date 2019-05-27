@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
 using System.Linq;
@@ -9,9 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SmartStore.Core;
-using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Utilities;
 using EfState = System.Data.Entity.EntityState;
 

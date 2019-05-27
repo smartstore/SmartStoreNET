@@ -177,7 +177,7 @@ namespace SmartStore.Admin.Controllers
 			model.TranslatedPercentage = resources.TranslatedPercentage;
             model.IsDownloadRunning = state != null && state.Id == resources.Id;
             model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(resources.UpdatedOn, DateTimeKind.Utc);
-            model.UpdatedOnString = model.UpdatedOn.RelativeFormat(false, "f");
+            model.UpdatedOnString = resources.UpdatedOn.RelativeFormat(true, "f");
             model.FlagImageFileName = GetFlagFileName(resources.Language.Culture);
 
             if (language != null && lastImportInfos.TryGetValue(language.Id, out LastResourcesImportInfo info))

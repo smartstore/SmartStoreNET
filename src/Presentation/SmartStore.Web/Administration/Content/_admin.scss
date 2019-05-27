@@ -262,7 +262,7 @@ body {
 
 	&.sticky {
 		position: fixed;
-		z-index: 600;
+		z-index: $zindex-sticky;
 		left: var(--content-padding-x);
 		right: var(--content-padding-x);
         padding: calc(var(--content-padding-y) / 2)  var(--content-padding-x);

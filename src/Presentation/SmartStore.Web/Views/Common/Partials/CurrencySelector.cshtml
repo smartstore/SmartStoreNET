@@ -20,7 +20,7 @@
         <div class="dropdown-menu">
             @foreach (var curr in Model.AvailableCurrencies)
             {
-                var href = webHelper.ModifyQueryString(Url.RouteUrl("ChangeCurrency", new { customercurrency = curr.Id }), "returnurl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.RawUrl), null);
+                var href = webHelper.ModifyQueryString(Url.RouteUrl("ChangeCurrency", new { customercurrency = curr.Id }), "returnUrl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.RawUrl), null);
 
                 <a href="@href" class="dropdown-item@(curr.Id == activeCurr.Id ? " disabled" : "")" title="@curr.Name" rel="nofollow" 
                    data-selected="@(curr.Equals(activeCurr) ? "true" : "false")" data-abbreviation="@("{0} ({1})".FormatWith(curr.ISOCode, curr.Symbol))">

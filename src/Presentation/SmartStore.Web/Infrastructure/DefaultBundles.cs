@@ -34,6 +34,9 @@ namespace SmartStore.Web.Infrastructure
 				"~/Content/editors/summernote/plugins/smartstore.link.js",
 				"~/Content/editors/summernote/plugins/smartstore.tablestyles.js",
 				"~/Content/editors/summernote/plugins/smartstore.cssclass.js",
+				"~/Content/vendors/beautify/beautify.min.js",
+				"~/Content/vendors/beautify/beautify-css.min.js",
+				"~/Content/vendors/beautify/beautify-html.min.js",
 				"~/Content/editors/summernote/globalinit.js"));
 
 			/* CodeMirror (V 5.3.3)

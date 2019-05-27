@@ -32,15 +32,7 @@ namespace SmartStore.Services.Tasks
 
 					var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
 					var logger = EngineContext.Current.Resolve<ILoggerFactory>().CreateLogger<InitializeSchedulerFilter>();
-
-					// The very first request must set app state to 'fully initialized'
-					if (!EngineContext.Current.IsFullyInitialized)
-					{
-						EngineContext.Current.IsFullyInitialized = true;
-						eventPublisher.Publish(new AppStartedEvent { HttpContext = filterContext.HttpContext });
-					}
-					
-					ITaskScheduler taskScheduler = EngineContext.Current.Resolve<ITaskScheduler>();
+					var taskScheduler = EngineContext.Current.Resolve<ITaskScheduler>();
 
 					try
 					{

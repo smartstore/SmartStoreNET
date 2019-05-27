@@ -170,10 +170,16 @@ namespace SmartStore.Services.Media
 		{
 			if (base.Count == 0)
 				return false;
-			
+
 			if (ignoreQualityFlag && base.Count == 1 && base["q"] != null)
 			{
 				// Return false if ignoreQualityFlag is true and "q" is the only flag.
+				return false;
+			}
+
+			if (base.Count == 1 && Quality == 100)
+			{
+				// If "q" is the only flag and its value is 100, we don't need to process
 				return false;
 			}
 

@@ -74,13 +74,6 @@
             var itemText = node.GetItemText(T);
             var itemUrl = item.GenerateUrl(this.Url);
 
-            item.LinkHtmlAttributes.PrependCssClass("nav-link menu-link" + (isDropDownActive ? " dropdown-toggle" : ""));
-            if (isDropDownActive)
-            {
-                item.LinkHtmlAttributes["aria-expanded"] = "false";
-                item.LinkHtmlAttributes["data-target"] = "#dropdown-menu-{0}".FormatInvariant(item.Id);
-            }
-
             if (item.IsGroupHeader)
             {
                 if (!isFirst)
@@ -95,8 +88,16 @@
                 continue;
             }
 
+            var attributes = new Dictionary<string, object>(item.LinkHtmlAttributes);
+            attributes.PrependCssClass("nav-link menu-link" + (isDropDownActive ? " dropdown-toggle" : ""));
+            if (isDropDownActive)
+            {
+                attributes["aria-expanded"] = "false";
+                attributes["data-target"] = "#dropdown-menu-{0}".FormatInvariant(item.Id);
+            }
+
             <li class="@(GetCssClassForNode(node, itemState))" id="main-nav-item-@item.Id" data-id="@item.Id">
-                <a href="@itemUrl" @Html.Attrs(item.LinkHtmlAttributes)>
+                <a href="@itemUrl" @Html.Attrs(attributes)>
                     @if (item.Icon.HasValue())
                     {
 	                    <i class="@item.Icon"></i>

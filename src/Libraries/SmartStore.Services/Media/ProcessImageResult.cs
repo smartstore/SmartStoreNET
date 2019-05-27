@@ -11,11 +11,18 @@ namespace SmartStore.Services.Media
 
 		public int? SourceWidth { get; set; }
 		public int? SourceHeight { get; set; }
+		public string SourceMimeType { get; set; }
 
 		public string FileExtension { get; set; }
 		public string MimeType { get; set; }
 		public int Width { get; set; }
 		public int Height { get; set; }
+
+		/// <summary>
+		/// Is <c>true</c> if any effect has been applied that changed the image visually (like background color, contrast, sharpness etc.).
+		/// Resize and compression quality does NOT count as FX.
+		/// </summary>
+		public bool HasAppliedVisualEffects { get; set; }
 
 		public long ProcessTimeMs { get; set; }
 

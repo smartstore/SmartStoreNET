@@ -115,7 +115,7 @@ namespace SmartStore.Services.Topics
 
 			if (joinApplied)
 			{
-				// Only distinct categories (group by ID)
+				// Only distinct topics (group by ID)
 				query = from t in query
 						group t by t.Id into tGroup
 						orderby tGroup.Key

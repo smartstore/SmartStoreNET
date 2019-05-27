@@ -25,7 +25,7 @@ namespace SmartStore.Web.Infrastructure
             }
             
             eventMessage.Root.Children
-                .Where(x => x.Value.Id == null)
+                .Where(x => x.Value.Id != "brand")
                 .Skip(_catalogSettings.MaxItemsToDisplayInCatalogMenu.Value)
                 .Each(x => x.SetMetadata("spare", true) );
         }

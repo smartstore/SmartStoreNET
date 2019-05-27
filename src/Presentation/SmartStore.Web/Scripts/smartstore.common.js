@@ -53,6 +53,8 @@
 			].join("");
 
             modal = $(html).appendTo('body').on('hidden.bs.modal', function (e) {
+                // Cleanup
+                $(modal.find('iframe').attr('src', 'about:blank')).remove();
 				modal.remove();
 			});
 

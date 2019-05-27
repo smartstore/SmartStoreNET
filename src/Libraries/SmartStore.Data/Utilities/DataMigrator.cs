@@ -506,13 +506,13 @@ namespace SmartStore.Data.Utilities
                     .Where(x => x.LanguageId == defaultLang.Id && resourceNames.Contains(x.ResourceName))
                     .Select(x => new { x.ResourceName, x.ResourceValue })
                     .ToList()
-                    .ToDictionarySafe(x => x.ResourceName, x => x.ResourceValue);
+                    .ToDictionarySafe(x => x.ResourceName, x => x.ResourceValue, StringComparer.OrdinalIgnoreCase);
 
                 settings = context.Set<Setting>().AsNoTracking()
                     .Where(x => x.StoreId == 0 && settingNames.Contains(x.Name))
                     .Select(x => new { x.Name, x.Value })
                     .ToList()
-                    .ToDictionarySafe(x => x.Name, x => x.Value);
+                    .ToDictionarySafe(x => x.Name, x => x.Value, StringComparer.OrdinalIgnoreCase);
 
                 #region System menus
 

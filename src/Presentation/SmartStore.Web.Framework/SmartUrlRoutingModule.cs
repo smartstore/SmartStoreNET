@@ -14,19 +14,10 @@ using SmartStore.Web.Framework.Theming;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Events;
 using SmartStore.Core.Data;
+using SmartStore.Collections;
 
 namespace SmartStore.Web.Framework
 {
-	public class HttpModuleInitializedEvent
-	{
-		public HttpModuleInitializedEvent(HttpApplication application)
-		{
-			Application = application;
-		}
-
-		public HttpApplication Application { get; private set; }
-	}
-	
 	/// <remarks>
 	/// Request event sequence:
 	/// - BeginRequest
@@ -55,7 +46,12 @@ namespace SmartStore.Web.Framework
 	public class SmartUrlRoutingModule : IHttpModule
 	{
 		private static readonly object _contextKey = new object();
-		private static readonly ConcurrentBag<RoutablePath> _routes = new ConcurrentBag<RoutablePath>();
+
+		private static readonly ICollection<Action<HttpApplication>> _actions = 
+			new SyncedCollection<Action<HttpApplication>>(new List<Action<HttpApplication>>()) { ReadLockFree = true };
+
+		private static readonly ICollection<RoutablePath> _routes = 
+			new SyncedCollection<RoutablePath>(new List<RoutablePath>()) { ReadLockFree = true };
 
 		static SmartUrlRoutingModule()
 		{
@@ -92,13 +88,30 @@ namespace SmartStore.Web.Framework
 					// Handle plugin static file in DevMode
 					application.PostAuthorizeRequest += (s, e) => PostAuthorizeRequest(new HttpContextWrapper(((HttpApplication)s).Context));
 					application.PreSendRequestHeaders += (s, e) => PreSendRequestHeaders(new HttpContextWrapper(((HttpApplication)s).Context));
-				}
-				
+				}	
+
 				application.PostResolveRequestCache += (s, e) => PostResolveRequestCache(new HttpContextWrapper(((HttpApplication)s).Context));
 
 				// Publish event to give plugins the chance to register custom event handlers for the request lifecycle.
-				EngineContext.Current.Resolve<IEventPublisher>().Publish(new HttpModuleInitializedEvent(application));
+				foreach (var action in _actions)
+				{
+					action(application);
+				}
+
+				// Set app to fully initialized state on very first request
+				EngineContext.Current.IsFullyInitialized = true;
 			}
+		}
+
+		/// <summary>
+		///  Registers an action that is called on application init. Call this to register HTTP request lifecycle callbacks / event handlers.
+		/// </summary>
+		/// <param name="action">Action</param>
+		public static void RegisterAction(Action<HttpApplication> action)
+		{
+			Guard.NotNull(action, nameof(action));
+
+			_actions.Add(action);
 		}
 
 		/// <summary>

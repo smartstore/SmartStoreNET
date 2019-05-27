@@ -13,6 +13,7 @@ namespace SmartStore.Services.Media
     public class CachedImageResult
     {
 		private bool? _exists;
+		private string _mimeType;
 
 		public CachedImageResult(IFile file)
 		{
@@ -59,11 +60,19 @@ namespace SmartStore.Services.Media
 		/// The file extension (without 'dot')
 		/// </summary>
 		public string Extension { get; set; }
-        
-        /// <summary>
-        /// The path relative to the cache root folder
-        /// </summary>
-        public string Path { get; set; }
+
+		/// <summary>
+		/// The filemime type
+		/// </summary>
+		public string MimeType
+		{
+			get => _mimeType ?? (_mimeType = MimeTypes.MapNameToMimeType(FileName));
+		}
+
+		/// <summary>
+		/// The path relative to the cache root folder
+		/// </summary>
+		public string Path { get; set; }
 
 		/// <summary>
 		/// The last modified date or <c>null</c> if the file does not exist

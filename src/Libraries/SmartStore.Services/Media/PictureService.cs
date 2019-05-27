@@ -154,8 +154,7 @@ namespace SmartStore.Services.Media
 
 		public virtual byte[] ValidatePicture(byte[] pictureBinary, string mimeType)
 		{
-			var size = Size.Empty;
-			return ValidatePicture(pictureBinary, mimeType, out size);
+			return ValidatePicture(pictureBinary, mimeType, out _);
 		}
 
 		public virtual byte[] ValidatePicture(byte[] pictureBinary, string mimeType, out Size size)

@@ -35,6 +35,8 @@ The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 
 
 ### Features
 
+* NEW: CMS Page Builder
+* NEW: CMS Menu Builder
 * Multi-Store support
 * Unlimited number of products and categories
 * Product Bundles
@@ -56,29 +58,12 @@ The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 
 * and many more...
 
 ## Project Status
-SmartStore.NET V3.1.5 has been released on 25 May, 2018. The highlights are:
+SmartStore.NET V3.2.0 has been released on 10 May, 2019. The highlights are:
 
-* **Wallet \***: Enables full or partial order payment via credit account. Includes REST-Api.
-* **[Liquid](https://github.com/Shopify/liquid/wiki/Liquid-for-Designers) template engine**: very flexible templating for e-mails and campaigns with autocompletion and syntax highlighting.
-* **Cash Rounding**: define money rounding rules on currency and payment method level.
-* **Modern, responsive backend**: migrated backend to Bootstrap 4, overhauled and improved the user interface.
-* **RTL**: comprehensive RTL (Right-to-left) and bidi(rectional) support.
-* Search engine friendly topic URLs
-* Compliance with **EU-GDPR** requirements
-* **Enhanced MegaMenu \***: virtual dropdowns for surplus top-level categories and brands.
-* **Honeypot** bot detection for registration and contact forms.
-* **Amazon Pay**:
-	* Supports merchants registered in the USA and Japan
-	* External authentication via *Login with Amazon* button in shop frontend
-	* Several improvements through the new *Login and pay with Amazon* services
-* **Image processing**: new processing and caching strategy! Thumbnails are not created synchronously during the main request anymore, instead a new middleware route defers processing until an image is requested by any client.
-* **TinyImage \***: scores ultra-high image compression rates (up to 80 %!) and enables WebP support.
-* **UrlRewriter \***: define URL redirection rules in the backend using *mod_rewrite* notation.
-* **Address formatting** templates by country
-* **Language packs**: downloader & auto-importer for packages available online.
-* ...and a lot more new features, enhancements and fixes
-
-\* Commercial plugin
+* (NEW) **Page Builder**: Create fascinating content that will boost your sales. No coding is required thanks to a powerful WYSIWYG editor which utilizes the revolutionary *CSS Grid* system (commercial plugin)
+* (NEW) **Menu Builder**: Visual manager for all sorts of menus. Change existing menus or create your own and place them anywhere you want.
+* (Perf) **Faster MegaSearch** thanks to Lucene.NET 4.8
+* (Perf) **Huge performance increase** in discount resolution and calculation.
 
 
 

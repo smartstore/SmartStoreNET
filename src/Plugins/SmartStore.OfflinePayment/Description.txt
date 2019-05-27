@@ -2,8 +2,8 @@
 Description: Contains common offline payment methods like Direct Debit, Invoice, Prepayment etc.
 Group: Payment
 SystemName: SmartStore.OfflinePayment
-Version: 3.2.0
-MinAppVersion: 3.2.0
+Version: 3.2.1
+MinAppVersion: 3.2.1
 DisplayOrder: 0
 FileName: SmartStore.OfflinePayment.dll
 ResourceRootKey: Plugins.SmartStore.OfflinePayment

@@ -86,7 +86,7 @@ namespace SmartStore.Services.DataExchange.Import
 			context.Result.TotalRecords = context.DataSegmenter.TotalRows;
 		}
 
-		public FileDownloadManagerItem CreateDownloadImage(string urlOrPath, string seoName, int displayOrder)
+		public FileDownloadManagerItem CreateDownloadImage(ImportExecuteContext context, string urlOrPath, string seoName, int displayOrder)
 		{
 			var item = new FileDownloadManagerItem
 			{
@@ -102,10 +102,10 @@ namespace SmartStore.Services.DataExchange.Import
 
 			if (urlOrPath.IsWebUrl())
 			{
-				item.Url = urlOrPath;
-				item.FileName = "{0}-{1}".FormatInvariant(seoName, item.Id).ToValidFileName();
+                item.Url = context.Services.WebHelper.ModifyQueryString(urlOrPath, "q=100", null);
+                item.FileName = "{0}-{1}".FormatInvariant(seoName, item.Id).ToValidFileName();
 
-				if (DownloadedItems.ContainsKey(urlOrPath))
+                if (DownloadedItems.ContainsKey(urlOrPath))
 				{
 					item.Path = Path.Combine(ImageDownloadFolder, DownloadedItems[urlOrPath]);
 					item.Success = true;

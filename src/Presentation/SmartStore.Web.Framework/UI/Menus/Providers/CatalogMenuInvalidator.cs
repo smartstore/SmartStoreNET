@@ -40,7 +40,11 @@ namespace SmartStore.Web.Framework.UI.Menus.Providers
 
 		public async Task HandleAsync(CategoryTreeChangedEvent eventMessage)
 		{
-			var affectedMenuNames = await GetAffectedMenuNamesAsync();
+			var affectedMenuNames = await _rs.TableUntracked
+				.Where(x => x.ProviderName == "catalog")
+				.Select(x => x.Menu.SystemName)
+				.Distinct()
+				.ToListAsync();
 
 			foreach (var menuName in affectedMenuNames)
 			{
@@ -55,15 +59,6 @@ namespace SmartStore.Web.Framework.UI.Menus.Providers
 					Invalidate(menuName);
 				}
 			}
-		}
-
-		private async Task<IEnumerable<string>> GetAffectedMenuNamesAsync()
-		{
-			return await _rs.TableUntracked
-				.Where(x => x.ProviderName == "catalog")
-				.Select(x => x.Menu.SystemName)
-				.Distinct()
-				.ToListAsync();
 		}
 
 		private void Invalidate(string menuName)

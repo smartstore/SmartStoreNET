@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Linq;
 using System.Web.SessionState;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
@@ -18,6 +19,7 @@ using SmartStore.Services.Seo;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Controllers
@@ -120,21 +122,21 @@ namespace SmartStore.Web.Controllers
 				extension = MimeTypes.MapMimeTypeToExtension(mime);
 				name = String.Concat(nameWithoutExtension, ".", extension);
 			}
-
+			
 			extension = extension.ToLower();
 
 			var query = CreateImageQuery(mime, extension);
 			var cachedImage = _imageCache.Get(id, nameWithoutExtension, extension, query);
 
-			return await HandleImage(
-				query, 
+			return await HandleImageAsync(
+				query,
 				cachedImage,
 				nameWithoutExtension,
 				mime,
 				extension,
-				getSourceBuffer);
+				getSourceBufferAsync);
 
-			async Task<byte[]> getSourceBuffer(string prevMime)
+			async Task<byte[]> getSourceBufferAsync(string prevMime)
 			{
 				byte[] source;
 
@@ -223,72 +225,49 @@ namespace SmartStore.Web.Controllers
 			if (isProcessableImage)
 			{
 				var cachedImage = _imageCache.Get(file, query);
-				return await HandleImage(
+				return await HandleImageAsync(
 					query,
 					cachedImage,
 					nameWithoutExtension,
 					mime,
 					extension,
-					getSourceBuffer);
+					getSourceBufferAsync);
 			}
 
 
 			// It's no image... proceed with standard stuff...
 
-			if (ETagMatches(nameWithoutExtension, mime, file.LastUpdated))
+			if (Request.HttpMethod == "HEAD")
 			{
-				return Content(null);
+				return new HttpStatusCodeResult(200);
 			}
 
-			var isFaulted = false;
-
-			try
+			if (_mediaFileSystem.IsCloudStorage && !_streamRemoteMedia)
 			{
-				if (Request.HttpMethod == "HEAD")
-				{
-					return new HttpStatusCodeResult(200);
-				}
-				
-				if (_mediaFileSystem.IsCloudStorage && !_streamRemoteMedia)
-				{
-					// Redirect to existing remote file
-					Response.ContentType = mime;
-					return Redirect(_mediaFileSystem.GetPublicUrl(path, true));
-				}
-				else
-				{
-					// Open existing stream
-					return File(file.OpenRead(), mime);
-				}
+				// Redirect to existing remote file
+				Response.ContentType = mime;
+				return Redirect(_mediaFileSystem.GetPublicUrl(path, true));
 			}
-			catch (Exception ex)
+			else
 			{
-				isFaulted = true;
-				Logger.ErrorFormat(ex, "Error processing media file '{0}'.", path);
-				return new HttpStatusCodeResult(500, ex.Message);
-			}
-			finally
-			{
-				if (!isFaulted)
-				{
-					FinalizeRequest(nameWithoutExtension, mime, file.LastUpdated);
-				}
+				// Open existing stream
+				return new CachedFileResult(file, mime);
 			}
 
-			async Task<byte[]> getSourceBuffer(string prevMime)
+			async Task<byte[]> getSourceBufferAsync(string prevMime)
 			{
 				return await file.OpenRead().ToByteArrayAsync();
 			}
 		}
 
 		[NonAction]
-		private async Task<ActionResult> HandleImage(
+		private async Task<ActionResult> HandleImageAsync(
 			ProcessImageQuery query,
 			CachedImageResult cachedImage,
 			string nameWithoutExtension,
 			string mime,
 			string extension,
-			Func<string, Task<byte[]>> getSourceBuffer)
+			Func<string, Task<byte[]>> getSourceBufferAsync)
 		{
 			string prevMime = null;
 
@@ -300,16 +279,6 @@ namespace SmartStore.Web.Controllers
 				prevMime = mime;
 				mime = MimeTypes.MapNameToMimeType(cachedImage.FileName);
 			}
-
-			if (cachedImage.Exists)
-			{
-				if (ETagMatches(nameWithoutExtension, mime, cachedImage.LastModifiedUtc.Value))
-				{
-					return Content(null);
-				}
-			}
-
-			var isFaulted = false;
 
 			try
 			{
@@ -324,15 +293,14 @@ namespace SmartStore.Web.Controllers
 						if (!cachedImage.Exists)
 						{
 							// Call inner function
-							byte[] source = await getSourceBuffer(prevMime);
+							byte[] source = await getSourceBufferAsync(prevMime);
 							if (source == null || source.Length == 0)
 							{
 								return NotFound(mime);
 							}
 
 							source = await ProcessAndPutToCacheAsync(cachedImage, source, query);
-
-							return File(source, mime);
+							return new CachedFileResult(mime, cachedImage.LastModifiedUtc.GetValueOrDefault(), source.LongLength, () => source);
 						}
 					}
 				}
@@ -351,12 +319,11 @@ namespace SmartStore.Web.Controllers
 				else
 				{
 					// Open existing stream
-					return File(cachedImage.File.OpenRead(), mime);
+					return new CachedFileResult(cachedImage.File, mime);
 				}
 			}
 			catch (Exception ex)
 			{
-				isFaulted = true;
 				if (!(ex is ProcessImageException))
 				{
 					// ProcessImageException is logged already in ImageProcessor
@@ -364,48 +331,6 @@ namespace SmartStore.Web.Controllers
 				}
 				return new HttpStatusCodeResult(500, ex.Message);
 			}
-			finally
-			{
-				if (!isFaulted)
-				{
-					FinalizeRequest(nameWithoutExtension, mime, cachedImage.LastModifiedUtc.GetValueOrDefault());
-				}
-			}
-		}
-
-		private bool ETagMatches(string nameWithoutExtension, string mime, DateTime lastModifiedUtc)
-		{
-			string etag;
-
-			var ifNoneMatch = Request.Headers["If-None-Match"];
-			if (ifNoneMatch.HasValue())
-			{
-				etag = GetFileETag(nameWithoutExtension, mime, lastModifiedUtc);
-
-				if (etag == ifNoneMatch)
-				{
-					// File hasn't changed, so return HTTP 304 without retrieving the data
-					Response.StatusCode = 304;
-					Response.StatusDescription = "Not Modified";
-
-					// Explicitly set the Content-Length header so the client doesn't wait for
-					// content but keeps the connection open for other requests
-					Response.AddHeader("Content-Length", "0");
-
-					ApplyResponseHeaders();
-
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		private void FinalizeRequest(string nameWithoutExtension, string mime, DateTime lastModifiedUtc)
-		{
-			var etag = GetFileETag(nameWithoutExtension, mime, lastModifiedUtc);
-			ApplyResponseHeaders(lastModifiedUtc);
-			ApplyETagHeader(etag);
 		}
 
 		private async Task<byte[]> ProcessAndPutToCacheAsync(CachedImageResult cachedImage, byte[] buffer, ProcessImageQuery query)
@@ -429,9 +354,10 @@ namespace SmartStore.Web.Controllers
 				{
 					var outBuffer = result.OutputStream.GetBuffer();
 					await _imageCache.PutAsync(cachedImage, outBuffer);
-					
+
 					if (cachedImage.Extension != result.FileExtension)
 					{
+						// jpg <> jpeg
 						cachedImage.Path = Path.ChangeExtension(cachedImage.Path, result.FileExtension);
 						cachedImage.Extension = result.FileExtension;
 					}
@@ -450,36 +376,17 @@ namespace SmartStore.Web.Controllers
 			return Content("404: Not Found");
 		}
 
-		private void ApplyResponseHeaders(DateTime? lastModifiedUtc = null)
-		{
-			var cache = this.Response.Cache;
-
-			cache.SetCacheability(System.Web.HttpCacheability.Public);
-			cache.VaryByHeaders["Accept-Encoding"] = true;
-			cache.SetExpires(DateTime.UtcNow.AddDays(7));
-			cache.SetMaxAge(TimeSpan.FromDays(7));
-			cache.SetRevalidation(HttpCacheRevalidation.AllCaches);
-
-			if (lastModifiedUtc.HasValue)
-			{
-				cache.SetLastModified(lastModifiedUtc.Value);
-			}
-		}
-
-		private void ApplyETagHeader(string etag)
-		{
-			this.Response.Cache.SetETag(etag);
-		}
-
-		private string GetFileETag(string seoName, string mime, DateTime lastModifiedUtc)
-		{
-			var timestamp = lastModifiedUtc.ToUnixTime().ToString();
-			return "\"" + String.Concat(seoName, mime, timestamp).Hash(Encoding.UTF8) + "\"";
-		}
-
 		protected virtual ProcessImageQuery CreateImageQuery(string mimeType, string extension)
 		{
-			var query = new ProcessImageQuery(null, Request.QueryString);
+			var qs = Request.QueryString;
+
+			// TODO: (mc) implement "raw" image handling later
+			//if (qs.GetValues(null).Contains("raw", StringComparer.OrdinalIgnoreCase) || qs["raw"] != null)
+			//{
+			//	return null;
+			//}
+
+			var query = new ProcessImageQuery(null, qs);
 			
 			if (query.MaxWidth == null && query.MaxHeight == null && query.Contains("size"))
 			{

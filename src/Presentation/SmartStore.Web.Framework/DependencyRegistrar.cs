@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Web;
@@ -610,10 +611,10 @@ namespace SmartStore.Web.Framework
 		{
 			builder.RegisterType<DefaultMessageBus>().As<IMessageBus>().SingleInstance();
 
+			builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
 			builder.RegisterType<ConsumerRegistry>().As<IConsumerRegistry>().SingleInstance();
 			builder.RegisterType<ConsumerResolver>().As<IConsumerResolver>().SingleInstance();
 			builder.RegisterType<ConsumerInvoker>().As<IConsumerInvoker>().SingleInstance();
-			builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
 
 			var consumerTypes = _typeFinder.FindClassesOfType(typeof(IConsumer));
 			foreach (var type in consumerTypes)
@@ -706,28 +707,18 @@ namespace SmartStore.Web.Framework
 				return new HttpContextWrapper(HttpContext.Current);
 			}
 
-			// TODO: determine store url
-
 			// register FakeHttpContext when HttpContext is not available
 			return new FakeHttpContext("~/");
 		}
 
 		static bool IsRequestValid()
 		{
-			if (HttpContext.Current?.Handler == null)
-				return false;
-
-			try
-			{
-				// The "Request" property throws at application startup on IIS integrated pipeline mode
-				var req = HttpContext.Current.Request;
-			}
-			catch
+			if (HttpContext.Current == null)
 			{
 				return false;
 			}
 
-			return true;
+			return HttpContext.Current.SafeGetHttpRequest() != null;
 		}
 	}
 
@@ -856,7 +847,7 @@ namespace SmartStore.Web.Framework
 
             if (DataSettings.DatabaseIsInstalled())
             {
-                builder.RegisterType<UserMenuFilter>().AsResultFilterFor<SmartController>();
+                builder.RegisterType<UserMenuFilter>().AsResultFilterFor<SmartController>(0);
             }
         }
 	}
@@ -1220,22 +1211,25 @@ namespace SmartStore.Web.Framework
 				.ForDelegate((c, p) =>
 				{
 					int currentStoreId = 0;
-					try
+					if (EngineContext.Current.IsFullyInitialized)
 					{
-						if (c.TryResolve(out IStoreContext storeContext))
+						try
 						{
-							currentStoreId = storeContext.CurrentStore.Id;
-							//uncomment the code below if you want load settings per store only when you have two stores installed.
-							//var currentStoreId = c.Resolve<IStoreService>().GetAllStores().Count > 1
-							//    c.Resolve<IStoreContext>().CurrentStore.Id : 0;
+							if (c.TryResolve(out IStoreContext storeContext))
+							{
+								currentStoreId = storeContext.CurrentStore.Id;
+								//uncomment the code below if you want load settings per store only when you have two stores installed.
+								//var currentStoreId = c.Resolve<IStoreService>().GetAllStores().Count > 1
+								//    c.Resolve<IStoreContext>().CurrentStore.Id : 0;
 
-							////although it's better to connect to your database and execute the following SQL:
-							//DELETE FROM [Setting] WHERE [StoreId] > 0
+								////although it's better to connect to your database and execute the following SQL:
+								//DELETE FROM [Setting] WHERE [StoreId] > 0
 
-							//return c.Resolve<ISettingService>().LoadSetting<TSettings>(currentStoreId);
+								//return c.Resolve<ISettingService>().LoadSetting<TSettings>(currentStoreId);
+							}
 						}
+						catch { }
 					}
-					catch { }
 
 					try
 					{

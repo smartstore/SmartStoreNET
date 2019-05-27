@@ -4,6 +4,7 @@
         html = document.documentElement;
         if (/Edge\/\d+/.test(navigator.userAgent)) { html.className += ' edge' }
         else if ('mozMatchesSelector' in html) { html.className += ' moz' }
+        else if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) { html.className += ' ios' }
         else if ('webkitMatchesSelector' in html) { html.className += ' wkit' };
         html.className += (this.top === this.window ? ' not-' : ' ') + 'framed';
     } catch (e) { }

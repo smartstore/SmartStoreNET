@@ -8,7 +8,6 @@ namespace SmartStore.Core.Data.Hooks
 {
 	public class DefaultDbHookHandler : IDbHookHandler
 	{
-		private readonly IEnumerable<Lazy<IDbHook, HookMetadata>> _hooks;
 		private readonly IList<Lazy<IDbHook, HookMetadata>> _saveHooks;
 
 		private readonly Multimap<RequestHookKey, IDbHook> _hooksRequestCache = new Multimap<RequestHookKey, IDbHook>();
@@ -27,7 +26,6 @@ namespace SmartStore.Core.Data.Hooks
 
 		public DefaultDbHookHandler(IEnumerable<Lazy<IDbHook, HookMetadata>> hooks)
 		{
-			_hooks = hooks;
 			_saveHooks = hooks.Where(x => x.Metadata.IsLoadHook == false).ToList();
 		}
 
@@ -35,7 +33,7 @@ namespace SmartStore.Core.Data.Hooks
 		{
 			get;
 			set;
-		}
+		} = NullLogger.Instance;
 
 		public bool HasImportantSaveHooks()
 		{

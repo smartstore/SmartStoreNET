@@ -7,6 +7,6 @@
 [assembly: AssemblyDescription("SmartStore.NET")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("SmartStore AG")]
-[assembly: AssemblyCopyright("Copyright © SmartStore AG 2016")]
+[assembly: AssemblyCopyright("Copyright © SmartStore AG 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -382,7 +382,8 @@
 
                 function initRotator(containerId) {
                     var container = $(containerId);
-                    var catId = container.data("id");
+                    var dropdownId = container.data("id") || 0;
+                    var catId = container.data("entity-id") || 0;
                     var displayRotator = container.data("display-rotator");
 
                     // reinit slick product rotator
@@ -396,8 +397,8 @@
                     });
 
                     //if ($(".pl-slider", container).length == 0 && catId != null && displayRotator) {
-                    if (catId != null && displayRotator) {
-                        var rotatorColumn = $(".rotator-" + catId);
+                    if (displayRotator && catId !== 0) {
+                        var rotatorColumn = $(".rotator-" + dropdownId);
 
                         // clear content & init throbber
                         rotatorColumn.find(".rotator-content")

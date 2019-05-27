@@ -352,7 +352,8 @@ namespace SmartStore.AmazonPay.Services
 					var state = _httpContext.GetAmazonPayState(_services.Localization);
 					model.OrderReferenceId = state.OrderReferenceId;
 					model.AddressConsentToken = state.AccessToken;
-					//model.IsOrderConfirmed = state.IsOrderConfirmed;
+                    model.IsConfirmed = state.IsConfirmed;
+                    model.FormData = state.FormData;
 
 					if (type == AmazonPayRequestType.ShippingMethod || type == AmazonPayRequestType.PaymentMethod)
 					{
@@ -497,6 +498,7 @@ namespace SmartStore.AmazonPay.Services
 					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, AmazonPayPlugin.SystemName, store.Id);
 
 					var failedPaymentReason = _httpContext.Session["AmazonPayFailedPaymentReason"] as string;
+
 					if (failedPaymentReason.IsCaseInsensitiveEqual("InvalidPaymentMethod"))
 					{
 						_services.Notifier.Warning(new LocalizedString(T("Payment.PayingFailed")));
@@ -505,7 +507,11 @@ namespace SmartStore.AmazonPay.Services
 					{
 						_services.Notifier.Warning(new LocalizedString(T("Plugins.Payments.AmazonPay.AuthorizationSoftDeclineMessage")));
 					}
-					else
+                    else if (failedPaymentReason.IsCaseInsensitiveEqual("PaymentMethodExhausted"))
+                    {
+                        _services.Notifier.Warning(new LocalizedString(T("Plugins.Payments.AmazonPay.PaymentMethodExhaustedMessage")));
+                    }
+                    else
 					{
 						decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart);
 						if (shoppingCartTotalBase.HasValue)
@@ -549,10 +555,10 @@ namespace SmartStore.AmazonPay.Services
 					}
 				}
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				Logger.Error(exception);
-				_services.Notifier.Error(new LocalizedString(exception.Message));
+				Logger.Error(ex);
+				_services.Notifier.Error(new LocalizedString(ex.Message));
 			}
 
 			return model;
@@ -923,105 +929,107 @@ namespace SmartStore.AmazonPay.Services
 			}
 		}
 
-        public void ConfirmOrderReference(out string redirectUrl)
+        public bool ConfirmOrderReference()
         {
-            redirectUrl = null;
+            var result = false;
 
             try
             {
                 // Fulfill the Amazon checkout.
-                var failedPaymentReason = _httpContext.Session["AmazonPayFailedPaymentReason"] as string;
-                if (failedPaymentReason.IsCaseInsensitiveEqual("InvalidPaymentMethod"))
+                var currentReason = _httpContext.Session["AmazonPayFailedPaymentReason"] as string;
+                if (currentReason.IsCaseInsensitiveEqual("InvalidPaymentMethod"))
                 {
-                    return;
+                    return false;
                 }
 
-                var store = _services.StoreContext.CurrentStore;
-                var customer = _services.WorkContext.CurrentCustomer;
-                var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
-                var state = _httpContext.GetAmazonPayState(_services.Localization);
-                var client = CreateClient(settings);
-
-                var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
-                decimal? cartTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart);
-
-                var setOrderRequest = new SetOrderReferenceDetailsRequest()
-                    .WithMerchantId(settings.SellerId)
-                    .WithAmazonOrderReferenceId(state.OrderReferenceId)
-                    .WithPlatformId(PlatformId)
-                    .WithAmount(cartTotal)
-                    .WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
-                    .WithStoreName(store.Name);
-
-                var paymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
-                if (paymentRequest != null)
+                if (!currentReason.IsCaseInsensitiveEqual("InvalidPaymentMethod"))
                 {
-                    setOrderRequest = setOrderRequest.WithSellerOrderId(paymentRequest.OrderGuid.ToString());
-                }
+                    var store = _services.StoreContext.CurrentStore;
+                    var customer = _services.WorkContext.CurrentCustomer;
+                    var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
+                    var state = _httpContext.GetAmazonPayState(_services.Localization);
+                    var client = CreateClient(settings);
 
-                // See https://pay.amazon.com/de/developer/documentation/lpwa/201956480
-                //{"SandboxSimulation":{"Constraint":"PaymentMethodNotAllowed"}}
-                //if (settings.UseSandbox)
-                //{
-                //	var orderReferenceNote = _services.Settings.GetSettingByKey<string>("SmartStore.AmazonPay.SellerOrderReferenceNote");
-                //	if (orderReferenceNote.HasValue())
-                //	{
-                //		setOrderRequest = setOrderRequest.WithSellerNote(orderReferenceNote);
-                //	}
-                //}
+                    var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
+                    decimal? cartTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart);
 
-                var setOrderResponse = client.SetOrderReferenceDetails(setOrderRequest);
-                if (setOrderResponse.GetSuccess())
-                {
-                    if (setOrderResponse.GetHasConstraint())
+                    var setOrderRequest = new SetOrderReferenceDetailsRequest()
+                        .WithMerchantId(settings.SellerId)
+                        .WithAmazonOrderReferenceId(state.OrderReferenceId)
+                        .WithPlatformId(PlatformId)
+                        .WithAmount(cartTotal)
+                        .WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
+                        .WithStoreName(store.Name);
+
+                    var paymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
+                    if (paymentRequest != null)
                     {
-                        var ids = setOrderResponse.GetConstraintIdList();
-                        var descriptions = setOrderResponse.GetDescriptionList();
-
-                        foreach (var id in ids)
-                        {
-                            var idx = ids.IndexOf(id);
-                            if (idx < descriptions.Count)
-                            {
-                                Logger.Error($"{descriptions[idx]} ({id})");
-                            }
-
-                            if (id.IsCaseInsensitiveEqual("PaymentMethodNotAllowed"))
-                            {
-                                // Must be redirected to checkout payment page.
-                                _httpContext.Session["AmazonPayFailedPaymentReason"] = id;
-
-                                var urlHelper = new UrlHelper(_httpContext.Request.RequestContext);
-                                redirectUrl = urlHelper.Action("PaymentMethod", "Checkout", new { area = "" });
-                            }
-                        }
+                        setOrderRequest = setOrderRequest.WithSellerOrderId(paymentRequest.OrderGuid.ToString());
                     }
 
-                    if (redirectUrl.IsEmpty())
+                    // See https://pay.amazon.com/de/developer/documentation/lpwa/201956480
+                    //{"SandboxSimulation":{"Constraint":"PaymentMethodNotAllowed"}}
+                    //if (settings.UseSandbox)
+                    //{
+                    //	var orderReferenceNote = _services.Settings.GetSettingByKey<string>("SmartStore.AmazonPay.SellerOrderReferenceNote");
+                    //	if (orderReferenceNote.HasValue())
+                    //	{
+                    //		setOrderRequest = setOrderRequest.WithSellerNote(orderReferenceNote);
+                    //	}
+                    //}
+
+                    var setOrderResponse = client.SetOrderReferenceDetails(setOrderRequest);
+                    if (setOrderResponse.GetSuccess())
                     {
-                        var storeLocation = _services.WebHelper.GetStoreLocation();
-                        var successUrl = storeLocation + "Plugins/SmartStore.AmazonPay/AmazonPayShoppingCart/ConfirmationSuccess";
-                        var failureUrl = storeLocation + "Plugins/SmartStore.AmazonPay/AmazonPayShoppingCart/ConfirmationFailure";
+                        if (setOrderResponse.GetHasConstraint())
+                        {
+                            var ids = setOrderResponse.GetConstraintIdList();
+                            var descriptions = setOrderResponse.GetDescriptionList();
+
+                            foreach (var id in ids)
+                            {
+                                var idx = ids.IndexOf(id);
+                                if (idx < descriptions.Count)
+                                {
+                                    Logger.Error($"{descriptions[idx]} ({id})");
+                                }
+
+                                if (id.IsCaseInsensitiveEqual("PaymentMethodNotAllowed"))
+                                {
+                                    // Must be redirected to checkout payment page.
+                                    return false;
+                                }
+                            }
+                        }
+
+                        var confirmationResultUrl = _services.WebHelper.GetStoreLocation() + "Plugins/SmartStore.AmazonPay/AmazonPayCheckout/ConfirmationResult";
 
                         // Confirm order. This already generates the payment object at Amazon.
                         var confirmRequest = new ConfirmOrderReferenceRequest()
                             .WithMerchantId(settings.SellerId)
                             .WithAmazonOrderReferenceId(state.OrderReferenceId)
-                            .WithSuccessUrl(successUrl)
-                            .WithFailureUrl(failureUrl);
+                            .WithSuccessUrl(confirmationResultUrl);
 
-                        client.ConfirmOrderReference(confirmRequest);
+                        var confirmResponse = client.ConfirmOrderReference(confirmRequest);
+                        result = confirmResponse.GetSuccess();
+
+                        if (!result)
+                        {
+                            LogError(confirmResponse);
+                        }
                     }
-                }
-                else
-                {
-                    LogError(setOrderResponse);
+                    else
+                    {
+                        LogError(setOrderResponse);
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
             }
+
+            return result;
         }
 
         public PreProcessPaymentResult PreProcessPayment(ProcessPaymentRequest request)

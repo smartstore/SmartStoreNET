@@ -10,7 +10,11 @@ namespace SmartStore.AmazonPay.Services
 	{
 		public string OrderReferenceId { get; set; }
 		public string AccessToken { get; set; }
-	}
+
+        // Confirmation flow.
+        public bool IsConfirmed { get; set; }
+        public string FormData { get; set; }
+    }
 
 
 	public class AmazonPayActionState

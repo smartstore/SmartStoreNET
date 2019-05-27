@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web;
 using System.Web.Mvc;
+using SmartStore.AmazonPay.Models;
 using SmartStore.AmazonPay.Services;
 using SmartStore.Services.Common;
 
@@ -107,5 +108,61 @@ namespace SmartStore.AmazonPay.Controllers
 
 			return new EmptyResult();
 		}
-	}
+
+        #region Confirmation flow
+
+        // Ajax.
+        public ActionResult ConfirmOrder(string formData)
+        {
+            // TODO: CheckPlaceOrder.
+            string redirectUrl = null;
+            var success = _apiService.ConfirmOrderReference();
+
+            if (success)
+            {
+                var settings = Services.Settings.LoadSetting<AmazonPaySettings>(Services.StoreContext.CurrentStore.Id);
+                var state = _httpContext.GetAmazonPayState(Services.Localization);
+
+                state.FormData = formData.EmptyNull();
+                state.IsConfirmed = success;
+            }
+            else
+            {
+                redirectUrl = Url.Action("PaymentMethod", "Checkout", new { area = "" });
+
+                _httpContext.Session["AmazonPayFailedPaymentReason"] = "PaymentMethodNotAllowed";
+            }            
+
+            return Json(new { success, redirectUrl });
+        }
+
+        public ActionResult ConfirmationResult(string authenticationStatus)
+        {
+            $"ConfirmationResult {authenticationStatus.NaIfEmpty()}".Dump();
+
+            if (authenticationStatus.IsCaseInsensitiveEqual("Failure"))
+            {
+                // "The buyer has exhausted their retry attempts and payment instrument selection on the Amazon Pay page.
+                // If this occurs, you should take the buyer back to a page (on your site) where they can choose a different payment method
+                // and advise the buyer to checkout using a payment method that is not Amazon Pay or contact their bank."
+
+                _httpContext.Session["AmazonPayFailedPaymentReason"] = "PaymentMethodExhausted";
+
+                return RedirectToAction("PaymentMethod", "Checkout", new { area = "" });
+            }
+
+            if (authenticationStatus.IsCaseInsensitiveEqual("Abandoned"))
+            {
+                // "The buyer took action to close/cancel the MFA challenge. If this occurs, take the buyer back to the page where they 
+                // can place the order and advise the buyer to retry placing their order using Amazon Pay and complete the MFA challenge presented."
+
+                return RedirectToAction("Confirm", "Checkout", new { area = "" });
+            }
+
+            // authenticationStatus == "Success"
+            return RedirectToAction("Confirm", "Checkout", new { area = "" });
+        }
+
+        #endregion
+    }
 }

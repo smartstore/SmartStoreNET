@@ -140,7 +140,15 @@ namespace SmartStore.AmazonPay.Controllers
         {
             $"ConfirmationResult {authenticationStatus.NaIfEmpty()}".Dump();
 
-            if (authenticationStatus.IsCaseInsensitiveEqual("Failure"))
+            var state = _httpContext.GetAmazonPayState(Services.Localization);
+            state.SubmitForm = false;
+
+            if (authenticationStatus.IsCaseInsensitiveEqual("Success"))
+            {
+                state.SubmitForm = true;
+                return RedirectToAction("Confirm", "Checkout", new { area = "" });
+            }
+            else if (authenticationStatus.IsCaseInsensitiveEqual("Failure"))
             {
                 // "The buyer has exhausted their retry attempts and payment instrument selection on the Amazon Pay page.
                 // If this occurs, you should take the buyer back to a page (on your site) where they can choose a different payment method
@@ -150,17 +158,14 @@ namespace SmartStore.AmazonPay.Controllers
 
                 return RedirectToAction("PaymentMethod", "Checkout", new { area = "" });
             }
-
-            if (authenticationStatus.IsCaseInsensitiveEqual("Abandoned"))
+            else
             {
+                // authenticationStatus == "Abandoned":
                 // "The buyer took action to close/cancel the MFA challenge. If this occurs, take the buyer back to the page where they 
                 // can place the order and advise the buyer to retry placing their order using Amazon Pay and complete the MFA challenge presented."
 
                 return RedirectToAction("Confirm", "Checkout", new { area = "" });
             }
-
-            // authenticationStatus == "Success"
-            return RedirectToAction("Confirm", "Checkout", new { area = "" });
         }
 
         #endregion

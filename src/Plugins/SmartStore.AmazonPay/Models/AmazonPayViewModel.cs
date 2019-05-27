@@ -15,10 +15,7 @@ namespace SmartStore.AmazonPay.Models
 			BillingAddress = new AddressModel();
 		}
 
-		public string SystemName
-		{
-			get { return AmazonPayPlugin.SystemName; }
-		}
+		public string SystemName => AmazonPayPlugin.SystemName;
 
 		public string SellerId { get; set; }
 		public string ClientId { get; set; }
@@ -50,5 +47,9 @@ namespace SmartStore.AmazonPay.Models
 
 		public string ShippingMethod { get; set; }
 		public AddressModel BillingAddress { get; set; }
-	}
+
+        // Confirmation flow.
+        public bool IsConfirmed { get; set; }
+        public string FormData { get; set; }
+    }
 }

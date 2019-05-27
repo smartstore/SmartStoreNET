@@ -4,7 +4,7 @@
 	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/SmartStore.AmazonPay.css"));
 }
 
-<script type="text/javascript">
+<script>
 	window.onAmazonLoginReady = function () {
 		try {
 			amazon.Login.setClientId('@Html.Raw(Model.ClientId)');
@@ -51,16 +51,48 @@
     };
 
     $(function () {
-        // Start confirmation flow.
+        // Confirmation flow.
+        var isConfirmed = @(Model.IsConfirmed.ToString().ToLower());
+
+        if (isConfirmed) {
+            // Restore form data.
+            var data = JSON.parse('@Model.FormData');
+            var form = $('#confirm-order-form');
+
+            jQuery.each(data, function (i, item) {
+                form.find('[name="' + item.name + '"]').val(item.value);
+            });
+
+            // Submit form.
+            $('.btn-buy').trigger('click');
+        }
+
         $(document).on('submitOrder', function (e) {
-            e.isOrderValid = false;
+            e.isOrderValid = isConfirmed;
 
-            //var url = '@Url.Action("ConfirmationFlow", "AmazonPayShoppingCart", new { area = AmazonPayPlugin.SystemName }, Request.Url.Scheme)';
-            var url = '@Url.Action("ConfirmationFlow", "AmazonPayShoppingCart", new { area = AmazonPayPlugin.SystemName })';
-            var dialog = $('#amazon-confirmation-flow-modal');
+            if (!isConfirmed) {
+                var data = $('#confirm-order-form').serializeArray();
 
-            dialog.find('.modal-body').html('<iframe id="amazon-confirmation-flow-iframe" src="' + url + '" frameBorder="0" class="h-100" />');
-            dialog.modal('show');
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("ConfirmOrder", "AmazonPayCheckout", new { area = AmazonPayPlugin.SystemName })',
+                    data: { "formData": JSON.stringify(data) },
+                    success: function (response) {
+                        if (response.success) {
+                            OffAmazonPayments.triggerPostOrderFlow('@Model.SellerId', '@Model.OrderReferenceId');
+                        }
+                        else if (!_.isEmpty(response.redirectUrl)) {
+                            // Handled server side. Reject AmazonPay and redirect to payment list.
+                            window.location = response.redirectUrl;
+                        }
+                    },
+                    error: function (objXml) {
+                        if (objXml != null && objXml.responseText != null && objXml.responseText !== '') {
+                            displayNotification(objXml.responseText, 'error');
+                        }
+                    }
+                });
+            }
 		});
     });
 </script>

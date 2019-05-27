@@ -155,7 +155,6 @@
     <Compile Include="Controllers\AmazonPayControllerBase.cs" />
     <Compile Include="Controllers\AmazonPayShoppingCartController.cs" />
     <Compile Include="Events\EventConsumer.cs" />
-    <Compile Include="Models\ConfirmationFlowModel.cs" />
     <Compile Include="Services\AmazonPayServiceHelper.cs" />
     <Compile Include="Services\Internal\AmazonPayExtensions.cs" />
     <Compile Include="Filters\AmazonPayCheckoutFilter.cs" />
@@ -218,9 +217,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\AmazonPay\AuthenticationPublicInfo.cshtml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Views\AmazonPayShoppingCart\ConfirmationFlow.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

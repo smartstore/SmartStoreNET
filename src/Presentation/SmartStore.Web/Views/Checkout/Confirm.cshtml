@@ -152,21 +152,28 @@
 {
 	<script>
         $(function () {
-        	$('#confirm-order-form').submit(function () {
-        		$('.btn-buy', this).attr('disabled', 'disabled');
-        	});
+            var buyButton = $(".btn-buy");
 
-        	var checkoutButton = $(".btn-buy");
-            checkoutButton.on("click", function () {
+            function disableBuyButton() {
+                buyButton.attr("disabled", "disabled")
+                    .find(".fa-angle-right").removeClass("fa-angle-right").addClass("fa-spinner fa-spin");
+            }
+
+            function processBuyButtonClick(copyOutsideFormValues) {
                 var termOfServiceOk = true,
                     userAgreementsOk = true,
-                    esdRevocationWaiverOk = true;
+                    esdRevocationWaiverOk = true,
+                    cartItems = $('#cart-items');
 
-                var cartItems = $('#cart-items');
-
-                $("#customercommenthidden").val($("#CustomerComment").val());
+                if (copyOutsideFormValues) {
+                    $("#customercommenthidden").val($("#CustomerComment").val());
+                }
+                else {
+                    // Reverse apply. We do that just to indicate no entered data is lost.
+                    $("#CustomerComment").val($("#customercommenthidden").val());
+                }
                 
-				// terms of services
+				// Terms of services.
                 @if (Model.TermsOfServiceEnabled)
                 {
 					<text>
@@ -181,7 +188,7 @@
 					</text>
                 }
 
-                // agree user agreement for downloadable products
+                // Agree user agreement for downloadable products.
                 cartItems.find('input[name^=AgreeUserAgreement]').each(function () {
                     if (!$(this).is(':checked')) {
                         userAgreementsOk = false;
@@ -193,7 +200,7 @@
                     }
                 });
 
-                // agree esd revocation waiver
+                // Agree ESD revocation waiver.
 				@if(Model.ShowEsdRevocationWaiverBox)
 				{
 					<text>
@@ -214,18 +221,30 @@
                     var submitOrderEvent = jQuery.Event('submitOrder');
                     submitOrderEvent.isOrderValid = true;
                     submitOrderEvent.isMobile = false;
+                    submitOrderEvent.disableBuyButton = false;
 
-                    $(this).trigger(submitOrderEvent);
+                    $(document).trigger(submitOrderEvent);
 
                     if (true === submitOrderEvent.isOrderValid) {
-                        checkoutButton.attr("disabled", "disabled");
-                        checkoutButton.find(".fa-angle-right")
-							.removeClass("fa-angle-right")
-							.addClass("fa-spinner fa-spin");
-
+                        disableBuyButton();
                         $('#confirm-order-form').submit();
                     }
+                    else if (true === submitOrderEvent.disableBuyButton) {
+                        disableBuyButton();
+                    }
                 }
+            }
+
+            buyButton.on("click", function () {
+                processBuyButtonClick(true);
+            });
+
+            $(document).on('clickBuyButton', function (e) {
+                if (e.scrollTo) {
+                    $.scrollTo(buyButton, 800, { offset: -20 });
+                }
+
+                processBuyButtonClick(true === e.copyOutsideFormValues);
             });
         });
 	</script>

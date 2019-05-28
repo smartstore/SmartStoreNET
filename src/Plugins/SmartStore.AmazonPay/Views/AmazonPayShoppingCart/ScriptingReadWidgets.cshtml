@@ -53,28 +53,15 @@
 
     $(function () {
         // Confirmation flow.
-        var isConfirmed = @(Model.IsConfirmed.ToString().ToLower());
-
-        // Restore form data.
-        if (isConfirmed) {
-            try {
-                var formData = '@Html.Raw(Model.FormData)';
-                if (!_.isEmpty(formData)) {
-                    var data = JSON.parse(formData);
-                    $('#confirm-order-form').deserialize(data);
-                }
-            }
-		    catch (e) {
-			    console.log(e);
-            }
-        }
-
         $(document).on('submitOrder', function (e) {
+            var isConfirmed = @(Model.IsConfirmed.ToString().ToLower());
             e.isOrderValid = isConfirmed;
 
             // Confirm order.
             if (!isConfirmed) {
                 var data = $('#confirm-order-form').serializeArray();
+
+                e.disableBuyButton = true;
 
                 $.ajax({
                     type: 'POST',
@@ -98,16 +85,34 @@
             }
         });
 
-        jQuery(document).ready(function () {
-            var submitForm = @(Model.SubmitForm.ToString().ToLower());
-
-            if (submitForm) {
-                var clickBuyNowEvent = jQuery.Event('clickBuyNow');
-                clickBuyNowEvent.scrollTo = true;
-
-                $(document).trigger(clickBuyNowEvent);
+        // Restore form data.
+        @if (Model.IsConfirmed && Model.FormData.HasValue())
+        {
+            <text>
+            try {
+                var data = @Html.Raw(Model.FormData);
+                $('#confirm-order-form').deserialize(data);
             }
-        });
+            catch (e) {
+                console.log('Failed to restore form data.');
+                console.log(e);
+            }
+            </text>
+        }
+
+        // Fire event to simulate buy button click.
+        @if (Model.SubmitForm)
+        {
+            <text>
+            jQuery(document).ready(function () {
+                var clickBuyButtonEvent = jQuery.Event('clickBuyButton');
+                clickBuyButtonEvent.scrollTo = true;
+                clickBuyButtonEvent.copyOutsideFormValues = false;
+
+                $(document).trigger(clickBuyButtonEvent);
+            });
+            </text>
+        }
     });
 </script>
 <script async="async" src="@Html.Raw(Model.WidgetUrl)"></script>

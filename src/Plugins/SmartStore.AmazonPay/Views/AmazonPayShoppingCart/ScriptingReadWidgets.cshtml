@@ -107,7 +107,7 @@
             jQuery(document).ready(function () {
                 var clickBuyButtonEvent = jQuery.Event('clickBuyButton');
                 clickBuyButtonEvent.scrollTo = true;
-                clickBuyButtonEvent.copyOutsideFormValues = false;
+                clickBuyButtonEvent.customerAgreed = true;
 
                 $(document).trigger(clickBuyButtonEvent);
             });

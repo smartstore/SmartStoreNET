@@ -116,7 +116,18 @@ namespace SmartStore.AmazonPay
 			return state;
 		}
 
-		internal static Order GetOrderByAmazonId(this IRepository<Order> orderRepository, string amazonId)
+        internal static void RemoveAmazonPayState(this HttpContextBase httpContext)
+        {
+			var checkoutState = httpContext.GetCheckoutState();
+			var checkoutStateKey = AmazonPayPlugin.SystemName + ".CheckoutState";
+
+            if (checkoutState != null && checkoutState.CustomProperties.ContainsKey(checkoutStateKey))
+            {
+                checkoutState.CustomProperties.Remove(checkoutStateKey);
+            }
+        }
+
+        internal static Order GetOrderByAmazonId(this IRepository<Order> orderRepository, string amazonId)
 		{
 			// S02-9777218-8608106				OrderReferenceId
 			// S02-9777218-8608106-A088344		Auth ID

@@ -154,7 +154,8 @@ namespace SmartStore.AmazonPay.Controllers
                 // If this occurs, you should take the buyer back to a page (on your site) where they can choose a different payment method
                 // and advise the buyer to checkout using a payment method that is not Amazon Pay or contact their bank."
 
-                _httpContext.Session["AmazonPayFailedPaymentReason"] = "PaymentMethodExhausted";
+                _httpContext.RemoveAmazonPayState();
+                NotifyWarning(T("Plugins.Payments.AmazonPay.PaymentMethodExhaustedMessage"));
 
                 return RedirectToAction("PaymentMethod", "Checkout", new { area = "" });
             }
@@ -164,7 +165,10 @@ namespace SmartStore.AmazonPay.Controllers
                 // "The buyer took action to close/cancel the MFA challenge. If this occurs, take the buyer back to the page where they 
                 // can place the order and advise the buyer to retry placing their order using Amazon Pay and complete the MFA challenge presented."
 
-                return RedirectToAction("Confirm", "Checkout", new { area = "" });
+                state.IsConfirmed = false;
+                _httpContext.Session["AmazonPayFailedPaymentReason"] = "PaymentMethodAbandoned";
+
+                return RedirectToAction("PaymentMethod", "Checkout", new { area = "" });
             }
         }
 

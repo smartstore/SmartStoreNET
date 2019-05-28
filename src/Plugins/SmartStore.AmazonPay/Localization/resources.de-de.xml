@@ -54,6 +54,9 @@ Textvorschläge:</div><ul>
     <LocaleResource Name="PaymentMethodExhaustedMessage">
         <Value>Eine Zahlung mit Amazon Pay ist leider nicht möglich. Bitte wählen Sie eine andere Zahlart.</Value>
     </LocaleResource>
+    <LocaleResource Name="PaymentMethodAbandonedMessage">
+        <Value>Bitte setzen Sie Ihre Bestellung fort.</Value>
+    </LocaleResource>
     <LocaleResource Name="AmazonPaymentsReports">
 		<Value>Amazon Pay meldet</Value>
 	</LocaleResource>

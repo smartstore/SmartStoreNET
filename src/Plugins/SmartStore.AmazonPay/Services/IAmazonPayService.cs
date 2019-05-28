@@ -21,8 +21,6 @@ namespace SmartStore.AmazonPay.Services
 
         bool ConfirmOrderReference();
 
-        PreProcessPaymentResult PreProcessPayment(ProcessPaymentRequest request);
-
 		ProcessPaymentResult ProcessPayment(ProcessPaymentRequest request);
 
 		void PostProcessPayment(PostProcessPaymentRequest request);

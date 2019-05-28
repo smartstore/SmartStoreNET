@@ -558,19 +558,21 @@ namespace SmartStore.Admin.Controllers
         public ActionResult Create(CustomerModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
+            {
                 return AccessDeniedView();
-
-            if (model.Email.HasValue())
-            {
-                var tempCust = _customerService.GetCustomerByEmail(model.Email);
-                if (tempCust != null)
-                    ModelState.AddModelError("", "Email is already registered");
             }
-            if (model.Username.HasValue() && _customerSettings.CustomerLoginType != CustomerLoginType.Email)
+
+            /// Validate unique user. <see cref="ICustomerRegistrationService.RegisterCustomer(CustomerRegistrationRequest)"/>
+            if (model.Email.HasValue() && _customerService.GetCustomerByEmail(model.Email) != null)
             {
-                var tempCust = _customerService.GetCustomerByEmail(model.Username);
-                if (tempCust != null)
-                    ModelState.AddModelError("", "Username is already registered");
+                ModelState.AddModelError("", T("Account.Register.Errors.EmailAlreadyExists"));
+            }
+
+            if (model.Username.HasValue() && 
+                _customerSettings.CustomerLoginType != CustomerLoginType.Email &&
+                _customerService.GetCustomerByUsername(model.Username) != null)
+            {
+                ModelState.AddModelError("", T("Account.Register.Errors.UsernameAlreadyExists"));
             }
 
             // Validate customer roles.
@@ -581,15 +583,19 @@ namespace SmartStore.Admin.Controllers
 			{
 				foreach (var customerRole in allCustomerRoles)
 				{
-					if (model.SelectedCustomerRoleIds.Contains(customerRole.Id))
-						newCustomerRoles.Add(customerRole);
+                    if (model.SelectedCustomerRoleIds.Contains(customerRole.Id))
+                    {
+                        newCustomerRoles.Add(customerRole);
+                    }
 				}
 			}
 
             var customerRolesError = ValidateCustomerRoles(newCustomerRoles);
 
             if (customerRolesError.HasValue())
+            {
                 ModelState.AddModelError("", customerRolesError);
+            }
 
             var allowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
             
@@ -660,7 +666,7 @@ namespace SmartStore.Admin.Controllers
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Fax, model.Fax);
 
                 // Password.
-                if (!String.IsNullOrWhiteSpace(model.Password))
+                if (model.Password.HasValue())
                 {
                     var changePassRequest = new ChangePasswordRequest(model.Email, false, _customerSettings.DefaultPasswordFormat, model.Password);
                     var changePassResult = _customerRegistrationService.ChangePassword(changePassRequest);

@@ -159,18 +159,18 @@
                     .find(".fa-angle-right").removeClass("fa-angle-right").addClass("fa-spinner fa-spin");
             }
 
-            function processBuyButtonClick(copyOutsideFormValues) {
+            function processBuyButtonClick(customerAgreed) {
                 var termOfServiceOk = true,
                     userAgreementsOk = true,
                     esdRevocationWaiverOk = true,
                     cartItems = $('#cart-items');
 
-                if (copyOutsideFormValues) {
-                    $("#customercommenthidden").val($("#CustomerComment").val());
+                if (customerAgreed) {
+                    // Reverse apply. We do that just to indicate that no entered data is lost.
+                    $("#CustomerComment").val($("#customercommenthidden").val());                    
                 }
                 else {
-                    // Reverse apply. We do that just to indicate no entered data is lost.
-                    $("#CustomerComment").val($("#customercommenthidden").val());
+                    $("#customercommenthidden").val($("#CustomerComment").val());
                 }
                 
 				// Terms of services.
@@ -190,7 +190,10 @@
 
                 // Agree user agreement for downloadable products.
                 cartItems.find('input[name^=AgreeUserAgreement]').each(function () {
-                    if (!$(this).is(':checked')) {
+                    if (customerAgreed) {
+                        $(this).prop('checked', true);
+                    }
+                    else if (!$(this).is(':checked')) {
                         userAgreementsOk = false;
                         displayNotification('@T("Checkout.DownloadUserAgreement.PleaseAgree").ToString().EncodeJsString('"', false)', 'error');
                         if (termOfServiceOk) {
@@ -205,7 +208,10 @@
 				{
 					<text>
                     cartItems.find('input[name^=AgreeEsdRevocationWaiver]').each(function () {
-                        if (!$(this).is(':checked')) {
+                        if (customerAgreed) {
+                            $(this).prop('checked', true);
+                        }
+                        else if (!$(this).is(':checked')) {
                             esdRevocationWaiverOk = false;
                             displayNotification('@T("Checkout.EsdRevocationWaiverConfirmation.PleaseAgree").ToString().EncodeJsString('"', false)', 'error');
                             if (termOfServiceOk) {
@@ -236,7 +242,7 @@
             }
 
             buyButton.on("click", function () {
-                processBuyButtonClick(true);
+                processBuyButtonClick(false);
             });
 
             $(document).on('clickBuyButton', function (e) {
@@ -244,7 +250,7 @@
                     $.scrollTo(buyButton, 800, { offset: -20 });
                 }
 
-                processBuyButtonClick(true === e.copyOutsideFormValues);
+                processBuyButtonClick(e.customerAgreed);
             });
         });
 	</script>

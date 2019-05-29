@@ -1,6 +1,6 @@
 <h1 align="center">
 	<a href="https://www.smartstore.net" target="_blank" rel="noopener noreferrer">
-		<img src="assets/logo-smartstore-250.png" alt="Smartstore.NET Demoshop" width="250" height="250">
+		<img src="assets/logo-smartstore.png" alt="Smartstore.NET Demoshop" width="300" xheight="250">
 	</a>
 </h1>
 

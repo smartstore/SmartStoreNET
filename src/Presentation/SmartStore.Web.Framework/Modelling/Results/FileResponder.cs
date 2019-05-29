@@ -314,6 +314,7 @@ namespace SmartStore.Web.Framework.Modelling
 					contentRange = String.Format(CultureInfo.InvariantCulture, CONTENT_RANGE_FORMAT, offset, offset + length - 1, fileLength);
 					response.Write(contentRange);
 					response.Write("\r\n\r\n");
+					// Transmit
 					FileResponse.Transmitter.TransmitFile(offset, length, fileLength, context);
 					response.Write("\r\n");
 				}

@@ -166,6 +166,8 @@ namespace SmartStore.AmazonPay.Controllers
                 // can place the order and advise the buyer to retry placing their order using Amazon Pay and complete the MFA challenge presented."
 
                 state.IsConfirmed = false;
+                state.FormData = null;
+
                 _httpContext.Session["AmazonPayFailedPaymentReason"] = "PaymentMethodAbandoned";
 
                 return RedirectToAction("PaymentMethod", "Checkout", new { area = "" });

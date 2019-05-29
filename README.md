@@ -1,10 +1,20 @@
-<h1 align="center">
+<p align="center">
 	<a href="https://www.smartstore.net" target="_blank" rel="noopener noreferrer">
-		<img src="assets/logo-smartstore.png" alt="Smartstore.NET Demoshop" width="300" xheight="250">
+		<img src="assets/smartstore-icon.png" alt="Smartstore.NET" width="200" xheight="250">
 	</a>
 </h1>
 
+<br/>
+<br/>
+
+<h1 align="center">
+	<img src="assets/smartstore-text.png" alt="Smartstore.NET" width="300" xheight="250">
+</h1>
+
 <p align="center"><strong>Ready. Sell. Grow.</strong></p>
+
+<br/>
+<br/>
 
 <p align="center">
 	<img alt="GitHub release" src="https://img.shields.io/github/release/smartstore/SmartStoreNET.svg?color=%2344b284">

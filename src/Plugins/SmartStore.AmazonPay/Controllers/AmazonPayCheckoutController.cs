@@ -1,26 +1,32 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using SmartStore.AmazonPay.Models;
 using SmartStore.AmazonPay.Services;
 using SmartStore.Services.Common;
+using SmartStore.Services.Orders;
+using SmartStore.Services.Payments;
 
 namespace SmartStore.AmazonPay.Controllers
 {
-	public class AmazonPayCheckoutController : AmazonPayControllerBase
+    public class AmazonPayCheckoutController : AmazonPayControllerBase
 	{
 		private readonly HttpContextBase _httpContext;
 		private readonly IAmazonPayService _apiService;
 		private readonly IGenericAttributeService _genericAttributeService;
+        private readonly IOrderProcessingService _orderProcessingService;
 
-		public AmazonPayCheckoutController(
+        public AmazonPayCheckoutController(
 			HttpContextBase httpContext,
 			IAmazonPayService apiService,
-			IGenericAttributeService genericAttributeService)
+			IGenericAttributeService genericAttributeService,
+            IOrderProcessingService orderProcessingService)
 		{
 			_httpContext = httpContext;
 			_apiService = apiService;
 			_genericAttributeService = genericAttributeService;
+            _orderProcessingService = orderProcessingService;
 		}
 
 		public ActionResult OrderReferenceCreated(string orderReferenceId/*, string accessToken*/)
@@ -50,9 +56,9 @@ namespace SmartStore.AmazonPay.Controllers
 					error = error.Grow(T("Plugins.Payments.AmazonPay.MissingAddressConsentToken"), " ");
 				}
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				error = exception.Message;
+				error = ex.Message;
 			}
 
 			return new JsonResult { Data = new { success = success, error = error } };
@@ -114,24 +120,58 @@ namespace SmartStore.AmazonPay.Controllers
         // Ajax.
         public ActionResult ConfirmOrder(string formData)
         {
-            // TODO: CheckPlaceOrder.
             string redirectUrl = null;
-            var success = _apiService.ConfirmOrderReference();
+            string message = null;
+            var success = false;
 
-            if (success)
+            try
             {
-                var settings = Services.Settings.LoadSetting<AmazonPaySettings>(Services.StoreContext.CurrentStore.Id);
-                var state = _httpContext.GetAmazonPayState(Services.Localization);
+                var store = Services.StoreContext.CurrentStore;
+                var customer = Services.WorkContext.CurrentCustomer;
+                var processPaymentRequest = (_httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest) ?? new ProcessPaymentRequest();
 
-                state.FormData = formData.EmptyNull();
-                state.IsConfirmed = success;
+                processPaymentRequest.StoreId = store.Id;
+                processPaymentRequest.CustomerId = customer.Id;
+                processPaymentRequest.PaymentMethodSystemName = AmazonPayPlugin.SystemName;
+
+                // We must check here if an order can be placed to avoid creating unauthorized Amazon payment objects.
+                // ConfirmOrderReference may also send a payment e-mail to the customer, which is irritating for him if the order has not been placed.
+                var warnings = _orderProcessingService.GetOrderPlacementWarnings(processPaymentRequest);
+
+                if (!warnings.Any())
+                {
+                    if (_orderProcessingService.IsMinimumOrderPlacementIntervalValid(customer, store))
+                    {
+                        success = _apiService.ConfirmOrderReference();
+                        if (success)
+                        {
+                            var settings = Services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
+                            var state = _httpContext.GetAmazonPayState(Services.Localization);
+
+                            state.FormData = formData.EmptyNull();
+                            state.IsConfirmed = true;
+                        }
+                        else
+                        {
+                            redirectUrl = Url.Action("PaymentMethod", "Checkout", new { area = "" });
+
+                            _httpContext.Session["AmazonPayFailedPaymentReason"] = "PaymentMethodNotAllowed";
+                        }
+                    }
+                    else
+                    {
+                        message = T("Checkout.MinOrderPlacementInterval");
+                    }
+                }
+                else
+                {
+                    message = string.Join(" ", warnings);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                redirectUrl = Url.Action("PaymentMethod", "Checkout", new { area = "" });
-
-                _httpContext.Session["AmazonPayFailedPaymentReason"] = "PaymentMethodNotAllowed";
-            }            
+                message = ex.Message;
+            }
 
             return Json(new { success, redirectUrl });
         }

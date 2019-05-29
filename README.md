@@ -5,6 +5,7 @@
 </h1>
 
 <br/>
+<br/>
 
 <h1 align="center">
 	<img src="assets/smartstore-text.png" alt="Smartstore.NET" width="300">

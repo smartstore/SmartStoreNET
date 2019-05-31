@@ -1002,7 +1002,7 @@ namespace SmartStore.AmazonPay.Services
             try
             {
                 var failureReason = _httpContext.Session["AmazonPayFailedPaymentReason"] as string;
-                if (failureReason.IsCaseInsensitiveEqual("InvalidPaymentMethod") || failureReason.IsCaseInsensitiveEqual("AuthenticationStatusAbandoned"))
+                if (failureReason.IsCaseInsensitiveEqual("InvalidPaymentMethod") || failureReason.IsCaseInsensitiveEqual("AuthenticationStatusFailure"))
                 {
                     return false;
                 }
@@ -1012,14 +1012,18 @@ namespace SmartStore.AmazonPay.Services
                 var state = _httpContext.GetAmazonPayState(_services.Localization);
                 var client = CreateClient(settings);
 
-                if (!SetOrderReferenceDetails(client, settings, state, null, out var _))
+                // Only call SetOrderReferenceDetailsRequest if it's in draft state, otherwise it returns InvalidOrderReferenceStatus error.
+                if (!state.DetailsSet && !SetOrderReferenceDetails(client, settings, state, null, out var _))
                 {
                     return false;
                 }
 
+                state.DetailsSet = true;
+
                 var confirmationResultUrl = _services.WebHelper.GetStoreLocation() + "Plugins/SmartStore.AmazonPay/AmazonPayCheckout/ConfirmationResult";
 
                 // Confirm order. This already generates the payment object at Amazon.
+                // Can be called multiple times, for example to move the order reference object from suspended to open state.
                 var confirmRequest = new ConfirmOrderReferenceRequest()
                     .WithMerchantId(settings.SellerId)
                     .WithAmazonOrderReferenceId(state.OrderReferenceId)
@@ -1028,6 +1032,7 @@ namespace SmartStore.AmazonPay.Services
                 var confirmResponse = client.ConfirmOrderReference(confirmRequest);
                 if (confirmResponse.GetSuccess())
                 {
+                    state.IsConfirmed = true;
                     return true;
                 }
                 else

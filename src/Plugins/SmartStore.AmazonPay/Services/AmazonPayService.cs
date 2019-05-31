@@ -485,7 +485,7 @@ namespace SmartStore.AmazonPay.Services
 						}
 						else
 						{
-							LogError(getOrderResponse);
+							LogError(getOrderRequest, getOrderResponse);
 						}
 					}
 				}
@@ -524,7 +524,7 @@ namespace SmartStore.AmazonPay.Services
 							var setOrderResponse = client.SetOrderReferenceDetails(setOrderRequest);
 							if (!setOrderResponse.GetSuccess())
 							{
-								LogError(setOrderResponse);
+								LogError(setOrderRequest, setOrderResponse);
 							}
 						}
 					}
@@ -633,7 +633,7 @@ namespace SmartStore.AmazonPay.Services
 				}
 				else
 				{
-					LogError(authDetailsResponse);
+					LogError(authDetailsRequest, authDetailsResponse);
 				}
 			}
 
@@ -795,7 +795,7 @@ namespace SmartStore.AmazonPay.Services
 				}
 				else
 				{
-					LogError(closeResponse, true);
+					LogError(closeRequest, closeResponse, true);
 				}
 			}
 		}
@@ -923,7 +923,7 @@ namespace SmartStore.AmazonPay.Services
 			}
 			else
 			{
-				LogError(getOrderResponse);
+				LogError(getOrderRequest, getOrderResponse);
 			}
 		}
 
@@ -968,7 +968,7 @@ namespace SmartStore.AmazonPay.Services
             var setOrderResponse = client.SetOrderReferenceDetails(setOrderRequest);
             if (!setOrderResponse.GetSuccess())
             {
-                errorMessage = LogError(setOrderResponse);
+                errorMessage = LogError(setOrderRequest, setOrderResponse);
                 return false;
             }
 
@@ -1032,7 +1032,7 @@ namespace SmartStore.AmazonPay.Services
                 }
                 else
                 {
-                    LogError(confirmResponse);
+                    LogError(confirmRequest, confirmResponse);
                     return false;
                 }
             }
@@ -1064,7 +1064,8 @@ namespace SmartStore.AmazonPay.Services
 				var captureNow = settings.TransactionType == AmazonPayTransactionType.AuthorizeAndCapture;
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
 				var client = CreateClient(settings);
-				AuthorizeResponse authResponse = null;
+                AuthorizeRequest authRequest = null;
+                AuthorizeResponse authResponse = null;
 
 				informCustomerAboutErrors = settings.InformCustomerAboutErrors;
 				informCustomerAddErrors = settings.InformCustomerAddErrors;
@@ -1073,14 +1074,14 @@ namespace SmartStore.AmazonPay.Services
 				if (settings.AuthorizeMethod == AmazonPayAuthorizeMethod.Omnichronous)
 				{
 					// First try synchronously.
-					authResponse = AuthorizePayment(settings, state, store, request, client, true);
+					authResponse = AuthorizePayment(settings, state, store, request, client, true, out authRequest);
 
 					if (authResponse.GetAuthorizationState().IsCaseInsensitiveEqual("Declined") &&
 						authResponse.GetReasonCode().IsCaseInsensitiveEqual("TransactionTimedOut"))
 					{
 						// Second try asynchronously.
 						// Transaction is always in pending state after return.
-						authResponse = AuthorizePayment(settings, state, store, request, client, false);
+						authResponse = AuthorizePayment(settings, state, store, request, client, false, out authRequest);
 					}
 					else
 					{
@@ -1090,7 +1091,7 @@ namespace SmartStore.AmazonPay.Services
 				else
 				{
 					isSynchronous = settings.AuthorizeMethod == AmazonPayAuthorizeMethod.Synchronous;
-					authResponse = AuthorizePayment(settings, state, store, request, client, isSynchronous);
+					authResponse = AuthorizePayment(settings, state, store, request, client, isSynchronous, out authRequest);
 				}
 
 				// Process authorization response.
@@ -1155,7 +1156,7 @@ namespace SmartStore.AmazonPay.Services
 				}
 				else
 				{
-					error = LogError(authResponse);
+					error = LogError(authRequest, authResponse);
 				}
 			}
 			catch (Exception ex)
@@ -1245,7 +1246,7 @@ namespace SmartStore.AmazonPay.Services
 					}
 					else
 					{
-						LogError(closeResponse, true);
+						LogError(closeRequest, closeResponse, true);
 					}
 				}
 
@@ -1292,7 +1293,7 @@ namespace SmartStore.AmazonPay.Services
 				}
 				else
 				{
-					var message = LogError(captureResponse);
+					var message = LogError(captureRequest, captureResponse);
 					result.AddError(message);
 				}
 			}
@@ -1345,7 +1346,7 @@ namespace SmartStore.AmazonPay.Services
 				}
 				else
 				{
-					var message = LogError(refundResponse);
+					var message = LogError(refundRequest, refundResponse);
 					result.AddError(message);
 				}
 			}
@@ -1400,7 +1401,7 @@ namespace SmartStore.AmazonPay.Services
 					}
 					else
 					{
-						var message = LogError(cancelResponse);
+						var message = LogError(cancelRequest, cancelResponse);
 						result.AddError(message);
 					}
 				}
@@ -1571,7 +1572,7 @@ namespace SmartStore.AmazonPay.Services
 								}
 								else
 								{
-									LogError(authDetailsResponse);
+									LogError(authDetailsRequest, authDetailsResponse);
 								}
 							}
 
@@ -1599,7 +1600,7 @@ namespace SmartStore.AmazonPay.Services
 									}
 									else
 									{
-										LogError(captureDetailsResponse);
+										LogError(captureDetailsRequest, captureDetailsResponse);
 									}
 								}
 							}

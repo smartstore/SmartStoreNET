@@ -51,11 +51,11 @@ Textvorschläge:</div><ul>
 			<![CDATA[<p>Leider wurde die Zahlung zu Ihrer Bestellung in unserem Onlineshop von Amazon Pay zurückgewiesen. Bitte kontaktieren Sie uns.</p>]]>
 		</Value>
 	</LocaleResource>
-    <LocaleResource Name="PaymentMethodExhaustedMessage">
-        <Value>Eine Zahlung mit Amazon Pay ist leider nicht möglich. Bitte wählen Sie eine andere Zahlart.</Value>
+    <LocaleResource Name="AuthenticationStatusFailureMessage">
+        <Value>Beim Zahlungsvorgang ist ein Problem aufgetreten. Ihre Bestellung wurde nicht aufgegeben und Ihr Konto nicht belastet.</Value>
     </LocaleResource>
-    <LocaleResource Name="PaymentMethodAbandonedMessage">
-        <Value>Bitte setzen Sie Ihre Bestellung fort.</Value>
+    <LocaleResource Name="AuthenticationStatusAbandonedMessage">
+        <Value>Mit dieser Zahlungsart ist ein Problem aufgetreten. Um Ihre Bestellung abzuschließen, wählen Sie bitte eine andere aus.</Value>
     </LocaleResource>
     <LocaleResource Name="AmazonPaymentsReports">
 		<Value>Amazon Pay meldet</Value>

@@ -97,14 +97,14 @@
 				</div>
 			}
 
-            <div class="confirm-order">
-                @if (Model.Warnings.Count > 0)
+            <div id="confirm-warnings" class="confirm-order">
+                @if (Model.Warnings.Any())
 				{
 					<div class="alert alert-danger mb-3">
 						<ul>
-							@for (int i = 0; i < Model.Warnings.Count; i++)
+							@foreach (var warning in Model.Warnings)
 							{
-								<li>@Html.Raw(Model.Warnings[i])</li>
+								<li>@Html.Raw(warning)</li>
 							}
 						</ul>
 					</div>
@@ -154,9 +154,11 @@
         $(function () {
             var buyButton = $(".btn-buy");
 
-            function disableBuyButton() {
-                buyButton.attr("disabled", "disabled")
-                    .find(".fa-angle-right").removeClass("fa-angle-right").addClass("fa-spinner fa-spin");
+            function setBuyButtonState(disable) {
+                buyButton.prop('disabled', disable);
+                buyButton.find('.fa')
+                    .removeClass('fa-angle-right fa-spinner fa-spin')
+                    .addClass(disable ? 'fa-spinner fa-spin' : 'fa-angle-right');
             }
 
             function processBuyButtonClick(customerAgreed) {
@@ -232,25 +234,48 @@
                     $(document).trigger(submitOrderEvent);
 
                     if (true === submitOrderEvent.isOrderValid) {
-                        disableBuyButton();
+                        setBuyButtonState(true);
                         $('#confirm-order-form').submit();
                     }
                     else if (true === submitOrderEvent.disableBuyButton) {
-                        disableBuyButton();
+                        setBuyButtonState(true);
                     }
                 }
             }
 
+            // Buy button has been clicked.
             buyButton.on("click", function () {
                 processBuyButtonClick(false);
             });
 
+            // Simulate buy button click.
             $(document).on('clickBuyButton', function (e) {
                 if (e.scrollTo) {
                     $.scrollTo(buyButton, 800, { offset: -20 });
                 }
 
                 processBuyButtonClick(e.customerAgreed);
+            });
+
+            // Report error.
+            $(document).on('reportError', function (e) {
+                if (!_.isEmpty(e.message)) {
+                    var str = '<div class="alert alert-danger mb-3"><ul>';
+                    if (_.isArray(e.message)) {
+                        $.each(e.message, function (index, value) {
+                            str += '<li>' + value + '</li>';  
+                        });
+                    }
+                    else {
+                        str += '<li>' + e.message + '</li>';
+                    }
+                    str += '</ul></div>';
+
+                    var warnings = $('#confirm-warnings');
+                    warnings.html(str);
+                    setBuyButtonState(false);
+                    $.scrollTo(warnings, 800, { offset: -20 });
+                }
             });
         });
 	</script>

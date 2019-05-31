@@ -706,20 +706,17 @@ namespace SmartStore.Services.Orders
             return warnings;
         }
 
-        /// <summary>
-        /// Places an order
-        /// </summary>
-        /// <param name="processPaymentRequest">Process payment request</param>
-        /// <returns>Place order result</returns>
         public virtual PlaceOrderResult PlaceOrder(
             ProcessPaymentRequest processPaymentRequest, 
             Dictionary<string, string> extraData)
         {
-            // think about moving functionality of processing recurring orders (after the initial order was placed) to ProcessNextRecurringPayment() method
+            // Think about moving functionality of processing recurring orders (after the initial order was placed) to ProcessNextRecurringPayment() method.
             Guard.NotNull(processPaymentRequest, nameof(processPaymentRequest));
 
             if (processPaymentRequest.OrderGuid == Guid.Empty)
+            {
                 processPaymentRequest.OrderGuid = Guid.NewGuid();
+            }
 
             var result = new PlaceOrderResult();
 			var utcNow = DateTime.UtcNow;
@@ -733,7 +730,7 @@ namespace SmartStore.Services.Orders
                 if (warnings.Any())
                 {
                     result.Errors.AddRange(warnings);
-                    Logger.Error(string.Join(" ", result.Errors));
+                    Logger.Warn(string.Join(" ", result.Errors));
                     return result;
                 }
 
@@ -956,7 +953,7 @@ namespace SmartStore.Services.Orders
 
                 #endregion
 
-				#region Addresses & pre payment workflow
+				#region Addresses & pre-payment workflow
 				
 				// Give payment processor the opportunity to fullfill billing address.
 				var preProcessPaymentResult = _paymentService.PreProcessPayment(processPaymentRequest);
@@ -968,27 +965,16 @@ namespace SmartStore.Services.Orders
 					return result;					
 				}
 
-				Address billingAddress = null;
-				if (!processPaymentRequest.IsRecurringPayment)
-				{
-					billingAddress = (Address)customer.BillingAddress.Clone();
-				}
-				else
-				{
-					billingAddress = (Address)initialOrder.BillingAddress.Clone();
-				}
+                var billingAddress = !processPaymentRequest.IsRecurringPayment
+                    ? (Address)customer.BillingAddress.Clone()
+                    : (Address)initialOrder.BillingAddress.Clone();
 
 				Address shippingAddress = null;
 				if (shoppingCartRequiresShipping)
 				{
-					if (!processPaymentRequest.IsRecurringPayment)
-					{
-						shippingAddress = (Address)customer.ShippingAddress.Clone();
-					}
-					else
-					{
-						shippingAddress = (Address)initialOrder.ShippingAddress.Clone();
-					}
+                    shippingAddress = !processPaymentRequest.IsRecurringPayment
+                        ? (Address)customer.ShippingAddress.Clone()
+                        : (Address)initialOrder.ShippingAddress.Clone();
 				}
 
 				#endregion

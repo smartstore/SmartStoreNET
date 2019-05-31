@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.AmazonPay.Services;
+using SmartStore.Core.Html;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Common;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
@@ -121,7 +123,7 @@ namespace SmartStore.AmazonPay.Controllers
         public ActionResult ConfirmOrder(string formData)
         {
             string redirectUrl = null;
-            string message = null;
+            var messages = new List<string>();
             var success = false;
 
             try
@@ -142,44 +144,42 @@ namespace SmartStore.AmazonPay.Controllers
                 {
                     if (_orderProcessingService.IsMinimumOrderPlacementIntervalValid(customer, store))
                     {
-                        success = _apiService.ConfirmOrderReference();
-                        if (success)
+                        if (_apiService.ConfirmOrderReference())
                         {
-                            var settings = Services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
-                            var state = _httpContext.GetAmazonPayState(Services.Localization);
+                            success = true;
 
+                            var state = _httpContext.GetAmazonPayState(Services.Localization);
                             state.FormData = formData.EmptyNull();
                             state.IsConfirmed = true;
                         }
                         else
                         {
-                            redirectUrl = Url.Action("PaymentMethod", "Checkout", new { area = "" });
-
                             _httpContext.Session["AmazonPayFailedPaymentReason"] = "PaymentMethodNotAllowed";
+
+                            redirectUrl = Url.Action("PaymentMethod", "Checkout", new { area = "" });
                         }
                     }
                     else
                     {
-                        message = T("Checkout.MinOrderPlacementInterval");
+                        messages.Add(T("Checkout.MinOrderPlacementInterval"));
                     }
                 }
                 else
                 {
-                    message = string.Join(" ", warnings);
+                    messages.AddRange(warnings.Select(x => HtmlUtils.ConvertPlainTextToHtml(x)));
                 }
             }
             catch (Exception ex)
             {
-                message = ex.Message;
+                messages.Add(ex.Message);
+                Logger.Error(ex);
             }
 
-            return Json(new { success, redirectUrl });
+            return Json(new { success, redirectUrl, messages });
         }
 
         public ActionResult ConfirmationResult(string authenticationStatus)
         {
-            $"ConfirmationResult {authenticationStatus.NaIfEmpty()}".Dump();
-
             var state = _httpContext.GetAmazonPayState(Services.Localization);
             state.SubmitForm = false;
 
@@ -190,25 +190,20 @@ namespace SmartStore.AmazonPay.Controllers
             }
             else if (authenticationStatus.IsCaseInsensitiveEqual("Failure"))
             {
-                // "The buyer has exhausted their retry attempts and payment instrument selection on the Amazon Pay page.
-                // If this occurs, you should take the buyer back to a page (on your site) where they can choose a different payment method
-                // and advise the buyer to checkout using a payment method that is not Amazon Pay or contact their bank."
+                // The buyer has exhausted their retry attempts and payment instrument selection on the Amazon Pay page.
+                // Review: redirect back to shopping cart (like AmazonRejected).
+                _httpContext.Session["AmazonPayFailedPaymentReason"] = "AuthenticationStatusFailure";
 
-                _httpContext.RemoveAmazonPayState();
-                NotifyWarning(T("Plugins.Payments.AmazonPay.PaymentMethodExhaustedMessage"));
-
-                return RedirectToAction("PaymentMethod", "Checkout", new { area = "" });
+                return RedirectToRoute("ShoppingCart");
             }
             else
             {
-                // authenticationStatus == "Abandoned":
-                // "The buyer took action to close/cancel the MFA challenge. If this occurs, take the buyer back to the page where they 
-                // can place the order and advise the buyer to retry placing their order using Amazon Pay and complete the MFA challenge presented."
-
+                // authenticationStatus == "Abandoned": The buyer took action to close/cancel the MFA challenge.
+                // Review: redirect back to wallet widget (like InvalidPaymentMethod).
                 state.IsConfirmed = false;
                 state.FormData = null;
 
-                _httpContext.Session["AmazonPayFailedPaymentReason"] = "PaymentMethodAbandoned";
+                _httpContext.Session["AmazonPayFailedPaymentReason"] = "AuthenticationStatusAbandoned";
 
                 return RedirectToAction("PaymentMethod", "Checkout", new { area = "" });
             }

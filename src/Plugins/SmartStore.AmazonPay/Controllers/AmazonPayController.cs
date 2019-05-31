@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Text;
+using System.Web;
 using System.Web.Mvc;
 using SmartStore.AmazonPay.Models;
 using SmartStore.AmazonPay.Services;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Services.Authentication.External;
+using SmartStore.Services.Customers;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework;
@@ -17,17 +21,20 @@ namespace SmartStore.AmazonPay.Controllers
 {
 	public class AmazonPayController : PaymentControllerBase
 	{
-		private readonly IAmazonPayService _apiService;
+        private readonly HttpContextBase _httpContext;
+        private readonly IAmazonPayService _apiService;
 		private readonly Lazy<IScheduleTaskService> _scheduleTaskService;
 		private readonly Lazy<IOpenAuthenticationService> _openAuthenticationService;
 		private readonly Lazy<ExternalAuthenticationSettings> _externalAuthenticationSettings;
 
 		public AmazonPayController(
-			IAmazonPayService apiService,
+            HttpContextBase httpContext,
+            IAmazonPayService apiService,
 			Lazy<IScheduleTaskService> scheduleTaskService,
 			Lazy<IOpenAuthenticationService> openAuthenticationService,
 			Lazy<ExternalAuthenticationSettings> externalAuthenticationSettings)
 		{
+            _httpContext = httpContext;
 			_apiService = apiService;
 			_scheduleTaskService = scheduleTaskService;
 			_openAuthenticationService = openAuthenticationService;
@@ -148,9 +155,57 @@ namespace SmartStore.AmazonPay.Controllers
 			return Content("OK");
 		}
 
-		// Authentication
+        // For payment simulation in sandbox mode. Admin and sandbox only.
+        public ActionResult SetSellerNote(string paymentState)
+        {
+            var customer = Services.WorkContext.CurrentCustomer;
+            if (!customer.IsAdmin())
+            {
+                return HttpNotFound();
+            }
 
-		[ChildActionOnly]
+            var store = Services.StoreContext.CurrentStore;
+            var settings = Services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
+
+            if (!settings.UseSandbox)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Endpoint is for testing purposes and only available in sandbox mode.");
+            }
+
+            var state = _httpContext.GetAmazonPayState(Services.Localization);
+            var sellerNote = string.Empty;  // Reset payment state.
+
+            // See https://pay.amazon.com/de/developer/documentation/lpwa/201956480
+            if (paymentState.IsCaseInsensitiveEqual("PaymentMethodNotAllowed"))
+            {
+                sellerNote = "{\"SandboxSimulation\":{\"Constraint\":\"PaymentMethodNotAllowed\"}}";
+            }
+            else if (paymentState.IsCaseInsensitiveEqual("Success"))
+            {
+                sellerNote = "{\"SandboxSimulation\":{\"PaymentAuthenticationStatus\":{\"State\":\"Success\"}}}";
+            }
+            else if (paymentState.IsCaseInsensitiveEqual("Failure"))
+            {
+                sellerNote = "{\"SandboxSimulation\":{\"PaymentAuthenticationStatus\":{\"State\":\"Failure\"}}}";
+            }
+            else if (paymentState.IsCaseInsensitiveEqual("Abandoned"))
+            {
+                sellerNote = "{\"SandboxSimulation\":{\"PaymentAuthenticationStatus\":{\"State\":\"Abandoned\"}}}";
+            }
+
+            var result = _apiService.SetOrderReferenceDetails(null, settings, state, sellerNote, out var errorMesage);
+            
+            var sb = new StringBuilder();
+            sb.Append(result ? "ok. " : "failure. ");
+            sb.AppendLine(sellerNote);
+            sb.AppendLine(errorMesage.EmptyNull());
+
+            return Content(sb.ToString());
+        }
+
+        #region Authentication
+
+        [ChildActionOnly]
 		public ActionResult AuthenticationPublicInfo()
 		{
 			var model = _apiService.CreateViewModel(AmazonPayRequestType.AuthenticationPublicInfo, TempData);
@@ -197,5 +252,7 @@ namespace SmartStore.AmazonPay.Controllers
 					return new RedirectResult(Url.LogOn(returnUrl));
 			}
 		}
-	}
+
+        #endregion
+    }
 }

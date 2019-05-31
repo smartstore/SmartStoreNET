@@ -137,7 +137,6 @@ namespace SmartStore.AmazonPay.Controllers
                 processPaymentRequest.PaymentMethodSystemName = AmazonPayPlugin.SystemName;
 
                 // We must check here if an order can be placed to avoid creating unauthorized Amazon payment objects.
-                // ConfirmOrderReference may also send a payment e-mail to the customer, which is irritating for him if the order has not been placed.
                 var warnings = _orderProcessingService.GetOrderPlacementWarnings(processPaymentRequest);
 
                 if (!warnings.Any())
@@ -150,7 +149,6 @@ namespace SmartStore.AmazonPay.Controllers
 
                             var state = _httpContext.GetAmazonPayState(Services.Localization);
                             state.FormData = formData.EmptyNull();
-                            state.IsConfirmed = true;
                         }
                         else
                         {

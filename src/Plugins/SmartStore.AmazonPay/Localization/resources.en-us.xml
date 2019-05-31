@@ -51,11 +51,11 @@ Text suggestions:</div><ul>
 			<![CDATA[<p>Unfortunately Amazon Pay declined the payment for your order in our online shop. Please contact us.</p>]]>
 		</Value>
 	</LocaleResource>
-    <LocaleResource Name="PaymentMethodExhaustedMessage">
-        <Value>Unfortunately a payment with Amazon Pay is not possible. Please choose another payment method.</Value>
+    <LocaleResource Name="AuthenticationStatusFailureMessage">
+        <Value>There was a problem with your payment. Your order hasn't been placed, and you haven't been charged.</Value>
     </LocaleResource>
-    <LocaleResource Name="PaymentMethodAbandonedMessage">
-        <Value>Please continue with your order.</Value>
+    <LocaleResource Name="AuthenticationStatusAbandonedMessage">
+        <Value>Something's wrong with your payment method. To place your order, try another.</Value>
     </LocaleResource>
     <LocaleResource Name="AmazonPaymentsReports">
 		<Value>Amazon Pay reports</Value>

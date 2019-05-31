@@ -75,6 +75,11 @@
                             // Handled server side. Reject AmazonPay and redirect to payment list.
                             window.location = response.redirectUrl;
                         }
+                        else if (!_.isEmpty(response.messages)) {
+                            var errorEvent = jQuery.Event('reportError');
+                            errorEvent.message = response.messages
+                            $(document).trigger(errorEvent);
+                        }
                     },
                     error: function (objXml) {
                         if (objXml != null && objXml.responseText != null && objXml.responseText !== '') {

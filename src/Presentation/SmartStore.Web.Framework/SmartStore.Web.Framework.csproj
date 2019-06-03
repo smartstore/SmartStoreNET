@@ -227,6 +227,9 @@
     <Compile Include="Modelling\IAclSelector.cs" />
     <Compile Include="Modelling\IStoreSelector.cs" />
     <Compile Include="Modelling\Results\CachedFileResult.cs" />
+    <Compile Include="Modelling\Results\FileResponder.cs" />
+    <Compile Include="Modelling\Results\FileTransmitter.cs" />
+    <Compile Include="Modelling\Results\IFileResponse.cs" />
     <Compile Include="Modelling\Results\JsonNetResult.cs" />
     <Compile Include="Modelling\Results\PermissiveRedirectResult.cs" />
     <Compile Include="Modelling\Results\RootActionViewResult.cs" />

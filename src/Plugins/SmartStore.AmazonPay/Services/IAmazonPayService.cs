@@ -1,5 +1,6 @@
 ﻿using System.Web;
 using System.Web.Mvc;
+using AmazonPay;
 using SmartStore.AmazonPay.Models;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Authentication.External;
@@ -7,7 +8,7 @@ using SmartStore.Services.Payments;
 
 namespace SmartStore.AmazonPay.Services
 {
-	public partial interface IAmazonPayService : IExternalProviderAuthorizer
+    public partial interface IAmazonPayService : IExternalProviderAuthorizer
 	{
 		void SetupConfiguration(ConfigurationModel model);
 
@@ -19,7 +20,14 @@ namespace SmartStore.AmazonPay.Services
 
 		void GetBillingAddress();
 
-		PreProcessPaymentResult PreProcessPayment(ProcessPaymentRequest request);
+        bool SetOrderReferenceDetails(
+            Client client,
+            AmazonPaySettings settings,
+            AmazonPayCheckoutState state,
+            string sellerNote,
+            out string errorMessage);
+
+        bool ConfirmOrderReference();
 
 		ProcessPaymentResult ProcessPayment(ProcessPaymentRequest request);
 

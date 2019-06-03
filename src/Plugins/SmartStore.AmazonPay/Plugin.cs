@@ -70,12 +70,6 @@ namespace SmartStore.AmazonPay
 			base.Uninstall();
 		}
 
-		public override PreProcessPaymentResult PreProcessPayment(ProcessPaymentRequest processPaymentRequest)
-		{
-			var result = _apiService.PreProcessPayment(processPaymentRequest);
-			return result;
-		}
-
 		public override ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest)
 		{
 			var result = _apiService.ProcessPayment(processPaymentRequest);

@@ -1,4 +1,41 @@
-# Release Notes
+﻿# Release Notes
+
+## SmartStore.NET 3.2.2
+
+### Improvements
+* Amazon Pay: PSD2. Strong customer authentication (SCA) upgrade.
+
+
+## SmartStore.NET 3.2.1
+
+### Improvements
+* Implemented file range support for CachedFileResult
+* Sitemap should only include products visible for current customer, which is the search engine system customer
+* Fixed uniform spelling for query string parameter "returnUrl"
+* Fixed search engine issue (itemtype, "offers" required) on product detail page
+* Summernote: solved html formatting issues thanks to "Beautifier" library
+* Media middleware: simplified ETag generation & handling
+
+### Bugfixes
+
+* Mega Menu: Product rotator wasn't working
+* Tiny Image: Fixed periodic IOException
+* URL Rewriter: performance optimization
+* Fixed more menu for main catalog navigation
+* Fixed DateTime nor expressed as UTC in AzureFile & LocalFile
+* Content Slider: Fixed slide display bug on surface and other touch devices
+* Content Slider: Randomize slides > Value was stored in database but toggle button has always shown "off"
+* Page Builder: Fixed slider bug for list blocks (brand, category, products) in Firefox
+* Page Builder: fixes blurry background images in IOS
+* Output Cache: action widgets didn't render when they were part of a widgetzone within a donut child action
+* Multishop resolution failed under certain circumstances
+* Fixed menu issue "collection was modified, enumeration operation may not execute"
+* Fixed "The parameters dictionary contains a null entry for parameter 'catId' of non-nullable type 'System.Int32'"
+* Fixed discount coupon sometimes wasn't applied
+* Fixed "Value cannot be null. Parameter name: key" in order list
+* Fixed topic link resolving by system name in multistore environment
+* Async event consumers were not guaranteed to be awaited
+
 
 ## SmartStore.NET 3.2
 

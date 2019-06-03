@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Payments;
 
 namespace SmartStore.Services.Orders
@@ -16,7 +17,35 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="order">Order to be validated</param>
         void CheckOrderStatus(Order order);
-        
+
+        /// <summary>
+        /// Checks whether orders are placed at too short intervals.
+        /// </summary>
+        /// <param name="customer">Customer.</param>
+        /// <param name="store">Store</param>
+        /// <returns><c>true</c> valid interval, <c>false</c> invalid interval.</returns>
+        bool IsMinimumOrderPlacementIntervalValid(Customer customer, Store store);
+
+        /// <summary>
+        /// Checks whether an order can be placed.
+        /// </summary>
+        /// <param name="processPaymentRequest">Process payment request.</param>
+        /// <returns>List of warning messages. Empty list if an order can be placed.</returns>
+        IList<string> GetOrderPlacementWarnings(ProcessPaymentRequest processPaymentRequest);
+
+        /// <summary>
+        /// Checks whether an order can be placed.
+        /// </summary>
+        /// <param name="processPaymentRequest">Process payment request.</param>
+        /// <param name="initialOrder">Initial order if any (recurring payment).</param>
+        /// <param name="customer">Customer placing the order.</param>
+        /// <returns>List of warning messages. Empty list if an order can be placed.</returns>
+        IList<string> GetOrderPlacementWarnings(
+            ProcessPaymentRequest processPaymentRequest,
+            Order initialOrder,
+            Customer customer,
+            out IList<OrganizedShoppingCartItem> cart);
+
         /// <summary>
         /// Places an order
         /// </summary>

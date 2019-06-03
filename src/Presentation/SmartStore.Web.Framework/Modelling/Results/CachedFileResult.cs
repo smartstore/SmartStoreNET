@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
@@ -14,19 +9,9 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.Modelling
 {
-	public class CachedFileResult : FileResult
+	public class CachedFileResult : ActionResult, IFileResponse
 	{
-		// Default buffer size as defined in BufferedStream type
-		const int DefaultWriteBufferSize = 81920;
-
-		private static char[] _commaSplitArray = new char[] { ',' };
-		private static char[] _dashSplitArray = new char[] { '-' };
-		private static string[] _httpDateFormats = new string[] { "r", "dddd, dd-MMM-yy HH':'mm':'ss 'GMT'", "ddd MMM d HH':'mm':'ss yyyy" };
-
-		private HttpContextBase _httpContext;
-
-		private readonly Func<Stream> _streamReader;
-		private readonly Func<byte[]> _bufferReader;
+		#region Ctor
 
 		public CachedFileResult(string path, string contentType = null)
 			: this(GetFileInfo(path), contentType)
@@ -34,7 +19,6 @@ namespace SmartStore.Web.Framework.Modelling
 		}
 
 		public CachedFileResult(FileInfo file, string contentType = null)
-			: base(contentType ?? MimeTypes.MapNameToMimeType(file.Name))
 		{
 			Guard.NotNull(file, nameof(file));
 
@@ -43,12 +27,13 @@ namespace SmartStore.Web.Framework.Modelling
 				throw new FileNotFoundException(file.FullName);
 			}
 
+			Transmitter = new FileStreamTransmitter(file.OpenRead);
+			ContentType = contentType.NullEmpty() ?? MimeTypes.MapNameToMimeType(file.Name);
+			FileLength = file.Length;
 			LastModifiedUtc = file.LastWriteTimeUtc;
-			_streamReader = file.OpenRead;
 		}
 
 		public CachedFileResult(IFile file, string contentType = null)
-			: base(contentType ?? MimeTypes.MapNameToMimeType(file.Name))
 		{
 			Guard.NotNull(file, nameof(file));
 
@@ -57,35 +42,67 @@ namespace SmartStore.Web.Framework.Modelling
 				throw new FileNotFoundException(file.Path);
 			}
 
+			Transmitter = new FileStreamTransmitter(file.OpenRead);
+			ContentType = contentType.NullEmpty() ?? MimeTypes.MapNameToMimeType(file.Name);
+			FileLength = file.Size;
 			LastModifiedUtc = file.LastUpdated;
-			_streamReader = file.OpenRead;
 		}
 
 		public CachedFileResult(VirtualFile file, DateTime? lastModifiedUtc = null, string contentType = null)
-			: base(contentType ?? MimeTypes.MapNameToMimeType(file.Name))
 		{
 			Guard.NotNull(file, nameof(file));
+			
+			try
+			{
+				var fi = GetFileInfo(file.VirtualPath);
+				if (fi.Exists)
+				{
+					ContentType = contentType.NullEmpty() ?? MimeTypes.MapNameToMimeType(fi.Name);
+					FileLength = fi.Length;
+					LastModifiedUtc = fi.LastWriteTimeUtc;
+				}
+			}
+			finally
+			{
+				if (lastModifiedUtc == null)
+				{
+					throw new ArgumentNullException(nameof(lastModifiedUtc), "A modification date must be provided if the VirtualFile cannot be mapped to a physical path.");
+				}
 
-			LastModifiedUtc = lastModifiedUtc;
-			_streamReader = file.Open;
+				if (FileLength == null)
+				{
+					ContentType = contentType.NullEmpty() ?? MimeTypes.MapNameToMimeType(file.Name);
+					using (var stream = file.Open())
+					{
+						FileLength = stream.Length;
+					}
+				}
+			}
+
+			Transmitter = new FileStreamTransmitter(file.Open);
+			LastModifiedUtc = lastModifiedUtc.Value;
 		}
 
-		public CachedFileResult(string contentType, DateTime lastModifiedUtc, Func<Stream> reader)
-			: base(contentType)
+		public CachedFileResult(string contentType, DateTime lastModifiedUtc, Func<Stream> factory, long? fileLength = null)
 		{
-			Guard.NotNull(reader, nameof(reader));
+			Guard.NotNull(factory, nameof(factory));
+			Guard.NotEmpty(contentType, nameof(contentType));
 
+			Transmitter = new FileStreamTransmitter(factory);
+			ContentType = contentType;
+			FileLength = fileLength;
 			LastModifiedUtc = lastModifiedUtc;
-			_streamReader = reader;
 		}
 
-		public CachedFileResult(string contentType, DateTime lastModifiedUtc, Func<byte[]> reader)
-			: base(contentType)
+		public CachedFileResult(string contentType, DateTime lastModifiedUtc, Func<byte[]> factory, long? fileLength = null)
 		{
-			Guard.NotNull(reader, nameof(reader));
+			Guard.NotNull(factory, nameof(factory));
+			Guard.NotEmpty(contentType, nameof(contentType));
 
+			Transmitter = new FileBufferTransmitter(factory);
+			ContentType = contentType;
+			FileLength = fileLength;
 			LastModifiedUtc = lastModifiedUtc;
-			_bufferReader = reader;
 		}
 
 		private static FileInfo GetFileInfo(string path)
@@ -100,140 +117,103 @@ namespace SmartStore.Web.Framework.Modelling
 			return new FileInfo(path);
 		}
 
-		public DateTime? LastModifiedUtc { get; set; }
+		#endregion
+
+		#region Properties
+
+		public string ContentType { get; private set; }
+
+		public long? FileLength { get; set; }
+
+		public DateTime LastModifiedUtc { get; set; }
+
+		public TimeSpan MaxAge { get; set; } = TimeSpan.FromDays(1);
 
 		/// <summary>
 		/// If not set, will be auto-generated based on <see cref="LastModifiedUtc"/> property.
 		/// </summary>
 		public string ETag { get; set; }
 
+		public FileTransmitter Transmitter { get; private set; }
+
+		/// <summary>
+		/// A callback that will be invoked on successful result execution
+		/// </summary>
+		public Action OnExecuted { get; set; }
+
+		#endregion
+
 		public override void ExecuteResult(ControllerContext context)
 		{
-			_httpContext = context.HttpContext;
-			base.ExecuteResult(context);
-		}
+			var httpContext = context.HttpContext;
+			var request = httpContext.Request;
+			var response = httpContext.Response;
 
-		protected override void WriteFile(HttpResponseBase response)
-		{
-			var now = DateTime.UtcNow;
-			var lastModified = LastModifiedUtc.HasValue
-				? FixLastModifiedDate(LastModifiedUtc.Value, now)
-				: (DateTime?)null;
+			// Fix Last Modified Time.  We might need it soon 
+			// if we encounter a Range: and If-Range header
+			// Using UTC time to avoid daylight savings time bug 83230
+			var lastModified = new DateTime(LastModifiedUtc.Year,
+				LastModifiedUtc.Month,
+				LastModifiedUtc.Day,
+				LastModifiedUtc.Hour,
+				LastModifiedUtc.Minute,
+				LastModifiedUtc.Second,
+				0,
+				DateTimeKind.Utc);
 
-			if (ETag.IsEmpty() && lastModified.HasValue)
+			// Because we can't set a "Last-Modified" header to any time
+			// in the future, check the last modified time and set it to
+			// DateTime.Now if it's in the future. 
+			// This is to fix VSWhidbey #402323
+			var utcNow = DateTime.UtcNow;
+			if (lastModified > utcNow)
 			{
-				ETag = GenerateETag(lastModified.Value, now);
+				// use 1 second resolution
+				lastModified = new DateTime(utcNow.Ticks - (utcNow.Ticks % TimeSpan.TicksPerSecond), DateTimeKind.Utc);
 			}
 
-			var ifNoneMatch = _httpContext.Request.Headers["If-None-Match"];
+			LastModifiedUtc = lastModified;
+
+			// Generate ETag if empty
+			if (ETag.IsEmpty())
+			{
+				ETag = GenerateETag(httpContext, lastModified, utcNow);
+			}
+
+			// Determine applicable file responder
+			var responder = ResolveResponder(request);
+
+			// Execute response (send file)
+			if (responder.TrySendHeaders(httpContext))
+			{
+				responder.SendFile(httpContext);
+			}
+
+			// Finish: invoke the optional callback
+			OnExecuted?.Invoke();
+		}
+
+		private FileResponder ResolveResponder(HttpRequestBase request)
+		{
+			// is this a request for an unmodified file?
+			var ifNoneMatch = request.Headers["If-None-Match"];
 			if (ifNoneMatch.HasValue() && ETag == ifNoneMatch)
 			{
-				// File hasn't changed, so return HTTP 304 without retrieving the data
-				response.StatusCode = (int)HttpStatusCode.NotModified;
-				response.StatusDescription = "Not Modified";
-
-				// Explicitly set the Content-Length header so the client doesn't wait for
-				// content but keeps the connection open for other requests
-				response.AddHeader("Content-Length", "0");
-
-				ApplyResponseHeaders(response, null);
+				return new UnmodifiedFileResponder(this);
 			}
-			else
+
+			// is this a Range request?
+			var rangeHeader = request.Headers["Range"];
+			if (rangeHeader.HasValue() && rangeHeader.StartsWith("bytes", StringComparison.OrdinalIgnoreCase))
 			{
-				ApplyResponseHeaders(response, lastModified);
-
-				if (_streamReader != null)
-				{
-					var stream = _streamReader();
-					if (stream == null)
-					{
-						throw new NullReferenceException("File stream cannot be NULL.");
-					}
-
-					//var rangeInfo = GetRanges(_httpContext.Request, stream.Length);
-
-					// Write stream to output
-					WriteFileStream(response, stream, 0, stream.Length);
-				}
-				else if (_bufferReader != null)
-				{
-					var buffer = _bufferReader();
-					if (buffer == null)
-					{
-						throw new NullReferenceException("File buffer cannot be NULL.");
-					}
-
-					//var rangeInfo = GetRanges(_httpContext.Request, buffer.Length);
-
-					// Write buffer to output stream
-					WriteFileContent(response, buffer, 0, buffer.Length);
-				}
+				return new RangeFileResponder(this, rangeHeader);
 			}
+
+			// Responder for sending the whole file
+			return new FullFileResponder(this);
 		}
 
-		private void WriteFileContent(HttpResponseBase response, byte[] buffer, int rangeStart, int rangeEnd)
-		{
-			bool bufferOutput = response.BufferOutput;
-
-			response.BufferOutput = false;
-			response.OutputStream.Write(buffer, rangeStart, rangeEnd);
-
-			response.BufferOutput = bufferOutput;
-		}
-
-		private void WriteFileStream(HttpResponseBase response, Stream stream, long rangeStart, long rangeEnd)
-		{
-			using (stream)
-			{
-				int bufferSize = (int)Math.Min(DefaultWriteBufferSize, rangeEnd);
-				byte[] buffer = new byte[bufferSize];
-
-				int read;
-				long remaining = rangeEnd;
-
-				stream.Seek(rangeStart, SeekOrigin.Begin);
-				while ((remaining > 0) && (read = stream.Read(buffer, 0, buffer.Length)) != 0)
-				{
-					response.OutputStream.Write(buffer, 0, read);
-					//response.Flush();
-
-					remaining -= read;
-				}
-			}
-		}
-
-		private void ApplyResponseHeaders(HttpResponseBase response, DateTime? lastModifiedUtc)
-		{
-			var cache = response.Cache;
-
-			// We support byte ranges
-			response.AppendHeader("Accept-Ranges", "bytes");
-
-			cache.SetCacheability(System.Web.HttpCacheability.Public);
-
-			cache.VaryByHeaders["Accept-Encoding"] = true;
-
-			// INFO: Chrome will NOT revalidate for 24h, but that's ok.
-			cache.SetExpires(DateTime.UtcNow.AddDays(1));
-
-			// Chrome does not send If-None-Match header when max-age is set
-			//cache.SetMaxAge(MaxAge);
-
-			cache.SetRevalidation(HttpCacheRevalidation.AllCaches);
-
-			if (lastModifiedUtc.HasValue)
-			{
-				cache.SetLastModified(lastModifiedUtc.Value);
-			}
-
-			// Set ETag for served file (revalidated on subsequent requests)
-			if (ETag.HasValue())
-			{
-				cache.SetETag(ETag);
-			}
-		}
-
-		private static string GenerateETag(DateTime lastModified, DateTime now)
+		private static string GenerateETag(HttpContextBase context, DateTime lastModified, DateTime now)
 		{
 			// Get 64-bit FILETIME stamp
 			var lastModFileTime = lastModified.ToFileTime();
@@ -250,146 +230,5 @@ namespace SmartStore.Web.Framework.Modelling
 
 			return "\"" + hexFileTime + "\"";
 		}
-
-		private static DateTime FixLastModifiedDate(DateTime utcInput, DateTime utcNow)
-		{
-			var date = utcInput.ToUniversalTime();
-			var result = new DateTime(
-				date.Year,
-				date.Month,
-				date.Day,
-				date.Hour,
-				date.Minute,
-				date.Second,
-				0,
-				DateTimeKind.Utc);
-
-			// Because we can't set a "Last-Modified" header to any time
-			// in the future, check the last modified time and set it to
-			// DateTime.Now if it's in the future. 
-			// This is to fix VSWhidbey #402323
-			if (result > utcNow)
-			{
-				// use 1 second resolution
-				result = new DateTime(utcNow.Ticks - (utcNow.Ticks % TimeSpan.TicksPerSecond), DateTimeKind.Utc);
-			}
-
-			return result;
-		}
-
-		#region Ranges
-
-		private string GetHeader(HttpRequestBase request, string header, string defaultValue = "")
-		{
-			return string.IsNullOrEmpty(request.Headers[header]) ? defaultValue : request.Headers[header].Replace("\"", String.Empty);
-		}
-
-		private RangeRequestInfo GetRanges(HttpRequestBase request, long fileLength)
-		{
-			var rangeInfo = new RangeRequestInfo() { FileLength = fileLength };
-
-			string rangesHeader = GetHeader(request, "Range");
-			string ifRangeHeader = GetHeader(request, "If-Range", ETag);
-
-			bool isIfRangeHeaderDate = DateTime.TryParseExact(
-				ifRangeHeader, 
-				_httpDateFormats, 
-				null, 
-				DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, 
-				out var ifRangeHeaderDate);
-
-			if (string.IsNullOrEmpty(rangesHeader) || (!isIfRangeHeaderDate && ifRangeHeader != ETag) || (isIfRangeHeaderDate && LastModifiedUtc.HasValue && LastModifiedUtc.Value > ifRangeHeaderDate))
-			{
-				rangeInfo.RangesStartIndexes = new long[] { 0 };
-				rangeInfo.RangesEndIndexes = new long[] { fileLength - 1 };
-				rangeInfo.IsRangeRequest = false;
-				rangeInfo.IsMultipartRequest = false;
-			}
-			else
-			{
-				string[] ranges = rangesHeader.Replace("bytes=", String.Empty).Split(_commaSplitArray);
-
-				rangeInfo.RangesStartIndexes = new long[ranges.Length];
-				rangeInfo.RangesEndIndexes = new long[ranges.Length];
-				rangeInfo.IsRangeRequest = true;
-				rangeInfo.IsMultipartRequest = (ranges.Length > 1);
-
-				for (int i = 0; i < ranges.Length; i++)
-				{
-					string[] currentRange = ranges[i].Split(_dashSplitArray);
-
-					if (string.IsNullOrEmpty(currentRange[1]))
-						rangeInfo.RangesEndIndexes[i] = fileLength - 1;
-					else
-						rangeInfo.RangesEndIndexes[i] = Int64.Parse(currentRange[1]);
-
-					if (String.IsNullOrEmpty(currentRange[0]))
-					{
-						rangeInfo.RangesStartIndexes[i] = fileLength - rangeInfo.RangesEndIndexes[i];
-						rangeInfo.RangesEndIndexes[i] = fileLength - 1;
-					}
-					else
-						rangeInfo.RangesStartIndexes[i] = Int64.Parse(currentRange[0]);
-				}
-			}
-
-			return rangeInfo;
-		}
-
-		private long GetContentLength(RangeRequestInfo range, string boundary)
-		{
-			long contentLength = 0;
-
-			for (int i = 0; i < range.RangesStartIndexes.Length; i++)
-			{
-				contentLength += (range.RangesEndIndexes[i] - range.RangesStartIndexes[i]) + 1;
-
-				if (range.IsMultipartRequest)
-				{
-					contentLength += boundary.Length 
-						+ ContentType.Length 
-						+ range.RangesStartIndexes[i].ToString("D").Length 
-						+ range.RangesEndIndexes[i].ToString("D").Length 
-						+ range.FileLength.ToString("D").Length 
-						+ 49;
-				}	
-			}
-
-			if (range.IsMultipartRequest)
-			{
-				contentLength += boundary.Length + 4;
-			}		
-
-			return contentLength;
-		}
-
-		private bool ValidateRanges(RangeRequestInfo range, HttpResponseBase response)
-		{
-			for (int i = 0; i < range.RangesStartIndexes.Length; i++)
-			{
-				if (range.RangesStartIndexes[i] > range.FileLength - 1 
-					|| range.RangesEndIndexes[i] > range.FileLength - 1 
-					|| range.RangesStartIndexes[i] < 0 
-					|| range.RangesEndIndexes[i] < 0 
-					|| range.RangesEndIndexes[i] < range.RangesStartIndexes[i])
-				{
-					response.StatusCode = 400;
-					return false;
-				}
-			}
-
-			return true;
-		}
-
-		class RangeRequestInfo
-		{
-			public long[] RangesStartIndexes { get; set; }
-			public long[] RangesEndIndexes { get; set; }
-			public bool IsRangeRequest { get; set; }
-			public bool IsMultipartRequest { get; set; }
-			public long FileLength { get; set; }
-		}
-
-		#endregion
 	}
 }

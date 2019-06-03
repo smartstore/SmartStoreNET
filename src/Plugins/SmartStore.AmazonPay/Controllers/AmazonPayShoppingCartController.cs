@@ -3,9 +3,9 @@ using SmartStore.AmazonPay.Services;
 
 namespace SmartStore.AmazonPay.Controllers
 {
-	public class AmazonPayShoppingCartController : AmazonPayControllerBase
+    public class AmazonPayShoppingCartController : AmazonPayControllerBase
 	{
-		private readonly IAmazonPayService _apiService;
+        private readonly IAmazonPayService _apiService;
 
 		public AmazonPayShoppingCartController(IAmazonPayService apiService)
 		{
@@ -27,6 +27,7 @@ namespace SmartStore.AmazonPay.Controllers
 
 				return GetActionResult(model);
 			}
+
 			return new EmptyResult();
 		}
 
@@ -53,5 +54,5 @@ namespace SmartStore.AmazonPay.Controllers
 			}
 			return new EmptyResult();
 		}
-	}
+    }
 }

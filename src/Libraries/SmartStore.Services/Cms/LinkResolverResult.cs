@@ -81,8 +81,9 @@ namespace SmartStore.Services.Cms
     {
         public bool SubjectToAcl { get; set; }
         public bool LimitedToStores { get; set; }
+        public bool CheckLimitedToStores { get; set; } = true;
 
-		public LinkResolverData Clone()
+        public LinkResolverData Clone()
 		{
 			return (LinkResolverData)this.MemberwiseClone();
 		}

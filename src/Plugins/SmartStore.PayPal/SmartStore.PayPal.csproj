@@ -140,6 +140,8 @@
     <Compile Include="Filters\PayPalPlusCheckoutFilter.cs" />
     <Compile Include="Filters\PayPalPlusWidgetZoneFilter.cs" />
     <Compile Include="Models\ApiConfigurationModels.cs" />
+    <Compile Include="Models\Congfiguration\PayPalInstalmentsConfigModel.cs" />
+    <Compile Include="Models\Congfiguration\PayPalPlusConfigurationModel.cs" />
     <Compile Include="Models\PayPalPlusCheckoutModel.cs" />
     <Compile Include="Models\PayPalStandardConfigurationModel.cs" />
     <Compile Include="Models\PayPalDirectPaymentInfoModel.cs" />

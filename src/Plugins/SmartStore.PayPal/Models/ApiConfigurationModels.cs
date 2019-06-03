@@ -1,17 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using FluentValidation;
 using SmartStore.ComponentModel;
+using SmartStore.Core.Localization;
 using SmartStore.PayPal.Settings;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Validators;
-using SmartStore.Core.Localization;
-using System;
-using FluentValidation;
 
 namespace SmartStore.PayPal.Models
 {
-	public abstract class ApiConfigurationModel : ModelBase
+    public abstract class ApiConfigurationModel : ModelBase
 	{
         public string[] ConfigGroups { get; set; }
 		public string PrimaryStoreCurrencyCode { get; set; }
@@ -107,61 +106,5 @@ namespace SmartStore.PayPal.Models
 				settings.Signature = Signature.TrimSafe();
 			}
         }
-    }
-    
-	public class PayPalPlusConfigurationModel : ApiConfigurationModel
-	{
-		public PayPalPlusConfigurationModel()
-		{
-			TransactMode = TransactMode.AuthorizeAndCapture;
-		}
-
-		[SmartResourceDisplayName("Plugins.Payments.PayPalPlus.ThirdPartyPaymentMethods")]
-		public List<string> ThirdPartyPaymentMethods { get; set; }
-		public IList<ExtendedSelectListItem> AvailableThirdPartyPaymentMethods { get; set; }
-
-		[SmartResourceDisplayName("Plugins.Payments.PayPalPlus.DisplayPaymentMethodLogo")]
-		public bool DisplayPaymentMethodLogo { get; set; }
-
-		[SmartResourceDisplayName("Plugins.Payments.PayPalPlus.DisplayPaymentMethodDescription")]
-		public bool DisplayPaymentMethodDescription { get; set; }
-
-
-		public void Copy(PayPalPlusPaymentSettings settings, bool fromSettings)
-		{
-			if (fromSettings)
-			{
-				MiniMapper.Map(settings, this);
-            }
-			else
-			{
-                TransactMode = TransactMode.AuthorizeAndCapture;
-
-                MiniMapper.Map(this, settings);
-				settings.ApiAccountName = ApiAccountName.TrimSafe();
-				settings.ApiAccountPassword = ApiAccountPassword.TrimSafe();
-				settings.ClientId = ClientId.TrimSafe();
-				settings.ExperienceProfileId = ExperienceProfileId.TrimSafe();
-				settings.Secret = Secret.TrimSafe();
-				settings.Signature = Signature.TrimSafe();
-				settings.WebhookId = WebhookId.TrimSafe();
-			}
-		}
-	}
-
-    public class PayPalPlusConfigValidator : SmartValidatorBase<PayPalPlusConfigurationModel>
-    {
-        public PayPalPlusConfigValidator(Localizer T, Func<string, bool> addRule)
-        {
-            if (addRule("ClientId"))
-            {
-                RuleFor(x => x.ClientId).NotEmpty();
-            }
-
-            if (addRule("Secret"))
-            {
-                RuleFor(x => x.Secret).NotEmpty();
-            }
-        }
-    }
+    }    
 }

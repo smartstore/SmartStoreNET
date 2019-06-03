@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Stores;
@@ -166,8 +167,8 @@ namespace SmartStore.PayPal.Controllers
 			// It's better to also offer inactive methods here but filter them out in frontend.
 			var paymentMethods = _paymentService.LoadAllPaymentMethods(storeScope);
 
-			model.Copy(settings, true);
-			PrepareConfigurationModel(model, storeScope);
+            MiniMapper.Map(settings, model);
+            PrepareConfigurationModel(model, storeScope);
 
 			model.AvailableThirdPartyPaymentMethods = paymentMethods
 				.Where(x =>
@@ -182,53 +183,16 @@ namespace SmartStore.PayPal.Controllers
 		[HttpPost, AdminAuthorize, ChildActionOnly, AdminThemed]
 		public ActionResult Configure(PayPalPlusConfigurationModel model, FormCollection form)
 		{
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(storeScope);
+            if (!SaveConfigurationModel<PayPalPlusPaymentSettings>(model, form))
+            {
+                var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+                var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(storeScope);
 
-			var oldClientId = settings.ClientId;
-			var oldSecret = settings.Secret;
-			var oldProfileId = settings.ExperienceProfileId;
+                return Configure(settings, storeScope);
+            }
 
-			var validator = new PayPalPlusConfigValidator(T, x =>
-			{
-				return storeScope == 0 || storeDependingSettingHelper.IsOverrideChecked(settings, x, form);
-			});
-
-			validator.Validate(model, ModelState);
-
-			if (!ModelState.IsValid)
-			{
-				return Configure(settings, storeScope);
-			}
-
-			ModelState.Clear();
-			model.Copy(settings, false);
-
-			// Credentials changed: reset profile and webhook id to avoid errors.
-			if (!oldClientId.IsCaseInsensitiveEqual(settings.ClientId) || !oldSecret.IsCaseInsensitiveEqual(settings.Secret))
-			{
-				if (oldProfileId.IsCaseInsensitiveEqual(settings.ExperienceProfileId))
-					settings.ExperienceProfileId = null;
-
-				settings.WebhookId = null;
-			}
-
-			using (Services.Settings.BeginScope())
-			{
-				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
-			}
-
-			using (Services.Settings.BeginScope())
-			{
-				// Multistore context not possible, see IPN handling.
-				Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
-			}
-
-			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
-
-			return RedirectToConfiguration(PayPalPlusProvider.SystemName, false);
-		}
+            return RedirectToConfiguration(PayPalPlusProvider.SystemName, false);
+        }
 
 		public ActionResult PaymentInfo()
 		{

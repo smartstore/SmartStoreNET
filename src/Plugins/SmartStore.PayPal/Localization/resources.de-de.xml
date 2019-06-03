@@ -4,7 +4,7 @@
     <Value>PayPal Zahlungsarten</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Description.SmartStore.PayPal" AppendRootKey="false">
-    <Value>Stellt die PayPal-Zahlungsarten PayPal Standard, PayPal Direct, PayPal Express und PayPal PLUS zur Verfügung.</Value>
+    <Value>Stellt die PayPal-Zahlungsarten zur Verfügung.</Value>
   </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">
@@ -444,4 +444,16 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
     </Children>
   </LocaleResource>
 
+    <LocaleResource Name="Plugins.FriendlyName.Payments.PayPalInstalments" AppendRootKey="false">
+        <Value>Ratenzahlung Powered by PayPal</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugins.Payments.PayPalInstalments" AppendRootKey="false">
+        <Children>
+            <LocaleResource Name="AdminInstruction">
+                <Value>
+                    <![CDATA[]]>
+                </Value>
+            </LocaleResource>
+        </Children>
+    </LocaleResource>
 </Language>

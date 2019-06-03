@@ -5,9 +5,8 @@
 @model PayPalPlusConfigurationModel
 @{
 	Layout = "";
-	Html.AddCssFileParts(true, "~/Plugins/SmartStore.PayPal/Content/smartstore.paypal.css");
 
-	var hasCredentials = (Model.ClientId.HasValue() && Model.Secret.HasValue());
+	var hasCredentials = Model.ClientId.HasValue() && Model.Secret.HasValue();
 }
 
 <div class="plugin-actions">

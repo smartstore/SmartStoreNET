@@ -1,4 +1,10 @@
-# Release Notes
+﻿# Release Notes
+
+## SmartStore.NET 3.2.2
+
+### Improvements
+* Amazon Pay: PSD2. Strong customer authentication (SCA) upgrade.
+
 
 ## SmartStore.NET 3.2.1
 

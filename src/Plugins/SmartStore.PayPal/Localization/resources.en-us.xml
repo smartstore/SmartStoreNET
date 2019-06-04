@@ -457,8 +457,27 @@ Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
         <Children>
             <LocaleResource Name="AdminInstruction">
                 <Value>
-                    <![CDATA[]]>
+                    <![CDATA[<p>How to set up Ratenzahlung Powered by PayPal:
+<ol>
+<li>Create a new REST API application under <a href="https://developer.paypal.com/developer/applications/" target="paypal">My Apps & Credentials</a>.
+Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/" target="paypal">Manage your applications</a> to get more information about PayPal applications.</li>
+<li>Click the name of the application and enter <b>Client-ID</b> and <b>Secret</b> below on this page. Save.</li>
+<li>Optional: Click <b>Add</b> next to <b>Experience profile ID</b> to create a new profile. Your shop data (name, logo etc.) can now be displayed to customers when paying on PayPal pages.</li>
+<li>Optional: Click <b>Add</b> next to <b>Webhook-ID</b> to create a webhook. Through a webhook the shop receives PayPal messages und possibly updates the payment state of your orders.</li>
+</ol>]]>
                 </Value>
+            </LocaleResource>
+            <LocaleResource Name="OrderAmountMin">
+                <Value>Minimum order amount</Value>
+            </LocaleResource>
+            <LocaleResource Name="OrderAmountMin.Hint">
+                <Value>Specifies the minimum order amount from which on the payment method should be offered.</Value>
+            </LocaleResource>
+            <LocaleResource Name="OrderAmountMax">
+                <Value>Maximum order amount</Value>
+            </LocaleResource>
+            <LocaleResource Name="OrderAmountMax.Hint">
+                <Value>Specifies the maximum order amount up to which the payment methods should be offered.</Value>
             </LocaleResource>
         </Children>
     </LocaleResource>

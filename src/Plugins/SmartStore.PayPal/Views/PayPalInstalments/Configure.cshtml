@@ -48,6 +48,24 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.OrderAmountMin)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(x => x.OrderAmountMin, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+				@Html.ValidationMessageFor(x => x.OrderAmountMin)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.OrderAmountMax)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(x => x.OrderAmountMax, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+				@Html.ValidationMessageFor(x => x.OrderAmountMax)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.AdditionalFee)
 			</td>
 			<td class="adminData">

@@ -451,8 +451,27 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
         <Children>
             <LocaleResource Name="AdminInstruction">
                 <Value>
-                    <![CDATA[]]>
+                    <![CDATA[<p>So richten Sie Ratenzahlung Powered by PayPal ein:
+<ol>
+<li>Legen Sie unter <a href="https://developer.paypal.com/developer/applications/" target="paypal">My Apps & Credentials</a> eine neue REST API Anwendung an.
+Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/" target="paypal">Manage your applications</a> finden Sie weitere Informationen zum Thema PayPal Anwendungen (Englisch).</li>
+<li>Klicken Sie auf den Namen der Anwendung und tragen Sie <b>Client-ID</b> und <b>Secret</b> weiter unten auf dieser Seite ein. Speichern.</li>
+<li>Optional: Klicken Sie unten bei <b>Experience Profil-ID</b> auf <b>Hinzufügen</b>, um ein Profil zu erstellen. Ihre Shop-Daten (Name, Logo etc.) werden Käufern dadurch beim Bezahlen auf den PayPal-Seiten angezeigt.</li>
+<li>Optional: Klicken Sie unten bei <b>Webhook-ID</b> auf <b>Hinzufügen</b>, um einen Webhook zu erstellen. Über einen Webhook empfängt der Shop PayPal-Mitteilungen und aktualisiert u.U. den Zahlungsstatus Ihrer Aufträge.</li>
+</ol>]]>
                 </Value>
+            </LocaleResource>
+            <LocaleResource Name="OrderAmountMin">
+                <Value>Mindestbestellwert</Value>
+            </LocaleResource>
+            <LocaleResource Name="OrderAmountMin.Hint">
+                <Value>Legt den Mindestbestellwert fest, ab dem die Zahlart angeboten werden soll.</Value>
+            </LocaleResource>
+            <LocaleResource Name="OrderAmountMax">
+                <Value>Maximalbestellwert</Value>
+            </LocaleResource>
+            <LocaleResource Name="OrderAmountMax.Hint">
+                <Value>Legt den Maximalestellwert fest, bis zu dem die Zahlart angeboten werden soll.</Value>
             </LocaleResource>
         </Children>
     </LocaleResource>

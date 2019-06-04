@@ -32,7 +32,7 @@ using SmartStore.Services.Tax;
 
 namespace SmartStore.PayPal.Services
 {
-	public class PayPalService : IPayPalService
+    public class PayPalService : IPayPalService
 	{
 		private readonly Lazy<IRepository<Order>> _orderRepository;
 		private readonly ICommonServices _services;
@@ -535,17 +535,17 @@ namespace SmartStore.PayPal.Services
 				webResponse = request.GetResponse() as HttpWebResponse;
 				result.Success = ((int)webResponse.StatusCode < 400);
 			}
-			catch (WebException wexc)
+			catch (WebException wex)
 			{
 				result.Success = false;
-				result.ErrorMessage = wexc.ToString();
-				webResponse = wexc.Response as HttpWebResponse;
+				result.ErrorMessage = wex.ToString();
+				webResponse = wex.Response as HttpWebResponse;
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
 				result.Success = false;
-				result.ErrorMessage = exception.ToString();
-				Logger.Log(LogLevel.Error, exception, null, null);
+				result.ErrorMessage = ex.ToString();
+				Logger.Log(LogLevel.Error, ex, null, null);
 			}
 
 			try
@@ -646,18 +646,18 @@ namespace SmartStore.PayPal.Services
 								sb.AppendLine(rawResponse);
 							}
 						}
-						catch (Exception exception)
+						catch (Exception ex)
 						{
-							exception.Dump();
+							ex.Dump();
 						}
 
 						Logger.Log(LogLevel.Error, new Exception(sb.ToString()), result.ErrorMessage, null);
 					}
 				}
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				Logger.Log(LogLevel.Error, exception, null, null);
+				Logger.Log(LogLevel.Error, ex, null, null);
 			}
 			finally
 			{
@@ -1112,24 +1112,34 @@ namespace SmartStore.PayPal.Services
 				case PaymentStatus.Pending:
 					break;
 				case PaymentStatus.Authorized:
-					if (_orderProcessingService.CanMarkOrderAsAuthorized(order))
-						_orderProcessingService.MarkAsAuthorized(order);
+                    if (_orderProcessingService.CanMarkOrderAsAuthorized(order))
+                    {
+                        _orderProcessingService.MarkAsAuthorized(order);
+                    }
 					break;
 				case PaymentStatus.Paid:
-					if (_orderProcessingService.CanMarkOrderAsPaid(order))
-						_orderProcessingService.MarkOrderAsPaid(order);
+                    if (_orderProcessingService.CanMarkOrderAsPaid(order))
+                    {
+                        _orderProcessingService.MarkOrderAsPaid(order);
+                    }
 					break;
 				case PaymentStatus.Refunded:
-					if (_orderProcessingService.CanRefundOffline(order))
-						_orderProcessingService.RefundOffline(order);
+                    if (_orderProcessingService.CanRefundOffline(order))
+                    {
+                        _orderProcessingService.RefundOffline(order);
+                    }
 					break;
 				case PaymentStatus.PartiallyRefunded:
-					if (_orderProcessingService.CanPartiallyRefundOffline(order, Math.Abs(total)))
-						_orderProcessingService.PartiallyRefundOffline(order, Math.Abs(total));
+                    if (_orderProcessingService.CanPartiallyRefundOffline(order, Math.Abs(total)))
+                    {
+                        _orderProcessingService.PartiallyRefundOffline(order, Math.Abs(total));
+                    }
 					break;
 				case PaymentStatus.Voided:
-					if (_orderProcessingService.CanVoidOffline(order))
-						_orderProcessingService.VoidOffline(order);
+                    if (_orderProcessingService.CanVoidOffline(order))
+                    {
+                        _orderProcessingService.VoidOffline(order);
+                    }
 					break;
 			}
 

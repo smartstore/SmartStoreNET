@@ -11,7 +11,7 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.PayPal.Controllers
 {
-	public abstract class PayPalRestApiControllerBase<TSetting> : PayPalPaymentControllerBase where TSetting : PayPalApiSettingsBase, ISettings, new()
+    public abstract class PayPalRestApiControllerBase<TSetting> : PayPalPaymentControllerBase where TSetting : PayPalApiSettingsBase, ISettings, new()
 	{
 		public PayPalRestApiControllerBase(
 			string systemName,
@@ -162,11 +162,11 @@ namespace SmartStore.PayPal.Controllers
 
 				var settings = Services.Settings.LoadSetting<TSetting>();
 
-				result = PayPalService.ProcessWebhook(settings, Request.Headers, json, PayPalPlusProvider.SystemName);
+				result = PayPalService.ProcessWebhook(settings, Request.Headers, json, SystemName);
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				Logger.Log(LogLevel.Warning, exception, null, null);
+				Logger.Log(LogLevel.Warning, ex, null, null);
 			}
 
 			return new HttpStatusCodeResult(result);

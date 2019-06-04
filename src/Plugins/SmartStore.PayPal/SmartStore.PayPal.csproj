@@ -155,6 +155,7 @@
     <Compile Include="Providers\PayPalStandardProvider.cs" />
     <Compile Include="Services\IPayPalService.cs" />
     <Compile Include="Services\PayPalEnums.cs" />
+    <Compile Include="Services\PayPalPaymentFilter.cs" />
     <Compile Include="Services\PayPalService.cs" />
     <Compile Include="Settings\PayPalInstalmentsSettings.cs" />
     <Compile Include="Settings\PayPalSettings.cs" />

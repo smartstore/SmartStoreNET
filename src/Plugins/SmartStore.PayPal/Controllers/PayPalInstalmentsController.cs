@@ -36,11 +36,7 @@ namespace SmartStore.PayPal.Controllers
         [ChildActionOnly, AdminAuthorize, LoadSetting, AdminThemed]
         public ActionResult Configure(PayPalInstalmentsSettings settings, int storeScope)
         {
-            var model = new PayPalInstalmentsConfigModel
-            {
-                ConfigGroups = T("Plugins.SmartStore.PayPal.ConfigGroups").Text.SplitSafe(";")
-            };
-
+            var model = new PayPalInstalmentsConfigModel();
             MiniMapper.Map(settings, model);
             PrepareConfigurationModel(model, storeScope);
 

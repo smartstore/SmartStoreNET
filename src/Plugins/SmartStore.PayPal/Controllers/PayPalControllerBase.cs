@@ -30,7 +30,7 @@ namespace SmartStore.PayPal.Controllers
 				: Services.StoreService.GetStoreById(storeScope);
 
 			model.PrimaryStoreCurrencyCode = store.PrimaryStoreCurrency.CurrencyCode;
-		}
+        }
 
         protected bool SaveConfigurationModel<TSetting>(ApiConfigurationModel model, FormCollection form) where TSetting : PayPalApiSettingsBase, ISettings, new()
         {

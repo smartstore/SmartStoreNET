@@ -159,14 +159,10 @@ namespace SmartStore.PayPal.Controllers
 		[LoadSetting, AdminAuthorize, ChildActionOnly, AdminThemed]
 		public ActionResult Configure(PayPalPlusPaymentSettings settings, int storeScope)
 		{
-			var model = new PayPalPlusConfigurationModel
-			{
-				ConfigGroups = T("Plugins.SmartStore.PayPal.ConfigGroups").Text.SplitSafe(";")
-			};
-
 			// It's better to also offer inactive methods here but filter them out in frontend.
 			var paymentMethods = _paymentService.LoadAllPaymentMethods(storeScope);
 
+            var model = new PayPalPlusConfigurationModel();
             MiniMapper.Map(settings, model);
             PrepareConfigurationModel(model, storeScope);
 

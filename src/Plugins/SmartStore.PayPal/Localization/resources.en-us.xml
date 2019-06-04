@@ -7,10 +7,10 @@
     <Value>Provides the PayPal payment methods.</Value>
   </LocaleResource>
 
-  <LocaleResource Name="ConfigGroups">
-    <Value>API access;Data exchange;Miscellaneous</Value>
-  </LocaleResource>
-  <LocaleResource Name="OrderNoteStrings">
+    <LocaleResource Name="AccessData">
+        <Value>Access data</Value>
+    </LocaleResource>
+    <LocaleResource Name="OrderNoteStrings">
     <Value><![CDATA[Status notification from PayPal:<br />{0}]]></Value>
   </LocaleResource>
   <LocaleResource Name="MessageStrings">

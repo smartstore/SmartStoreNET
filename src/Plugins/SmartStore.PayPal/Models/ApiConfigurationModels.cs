@@ -1,18 +1,13 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using FluentValidation;
+﻿using System.ComponentModel.DataAnnotations;
 using SmartStore.ComponentModel;
-using SmartStore.Core.Localization;
 using SmartStore.PayPal.Settings;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Framework.Validators;
 
 namespace SmartStore.PayPal.Models
 {
     public abstract class ApiConfigurationModel : ModelBase
 	{
-        public string[] ConfigGroups { get; set; }
 		public string PrimaryStoreCurrencyCode { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.UseSandbox")]

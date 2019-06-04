@@ -461,6 +461,9 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
 </ol>]]>
                 </Value>
             </LocaleResource>
+            <LocaleResource Name="PaymentInfo">
+                <Value>Wir ermöglichen Ihnen die Finanzierung Ihres Einkaufs mithilfe der Ratenzahlung Powered by PayPal. In Sekundenschnelle, vollständig online, vorbehaltlich Bonitätsprüfung.</Value>
+            </LocaleResource>
             <LocaleResource Name="OrderAmountMin">
                 <Value>Mindestbestellwert</Value>
             </LocaleResource>

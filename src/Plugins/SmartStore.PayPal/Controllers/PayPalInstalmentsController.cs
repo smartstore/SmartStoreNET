@@ -23,14 +23,24 @@ namespace SmartStore.PayPal.Controllers
         {
         }
 
-        public override ProcessPaymentRequest GetPaymentInfo(FormCollection form)
-        {
-            throw new NotImplementedException();
-        }
-
         public override IList<string> ValidatePaymentForm(FormCollection form)
         {
-            throw new NotImplementedException();
+            return new List<string>();
+        }
+
+        public override ProcessPaymentRequest GetPaymentInfo(FormCollection form)
+        {
+            var paymentInfo = new ProcessPaymentRequest
+            {
+                OrderGuid = Guid.NewGuid()
+            };
+
+            return paymentInfo;
+        }
+
+        public ActionResult PaymentInfo()
+        {
+            return PartialView();
         }
 
         [ChildActionOnly, AdminAuthorize, LoadSetting, AdminThemed]

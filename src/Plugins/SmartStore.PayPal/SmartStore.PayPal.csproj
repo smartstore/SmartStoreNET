@@ -319,6 +319,9 @@
     <Content Include="Views\Shared\Partials\ApiConfiguration.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\PayPalInstalments\PaymentInfo.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Web References\PayPalSvc\CoreComponentTypes.xsd">
       <SubType>Designer</SubType>
     </None>

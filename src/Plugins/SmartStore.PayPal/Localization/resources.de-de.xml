@@ -1,11 +1,14 @@
 ﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
-
   <LocaleResource Name="Plugins.FriendlyName.SmartStore.PayPal" AppendRootKey="false">
     <Value>PayPal Zahlungsarten</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Description.SmartStore.PayPal" AppendRootKey="false">
     <Value>Stellt die PayPal-Zahlungsarten zur Verfügung.</Value>
   </LocaleResource>
+    <LocaleResource Name="Plugins.FriendlyName.Widgets.PayPal" AppendRootKey="false">
+        <Value>PayPal</Value>
+    </LocaleResource>
+
 
     <LocaleResource Name="AccessData">
         <Value>Zugangsdaten</Value>
@@ -463,6 +466,12 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
             </LocaleResource>
             <LocaleResource Name="PaymentInfo">
                 <Value>Wir ermöglichen Ihnen die Finanzierung Ihres Einkaufs mithilfe der Ratenzahlung Powered by PayPal. In Sekundenschnelle, vollständig online, vorbehaltlich Bonitätsprüfung.</Value>
+            </LocaleResource>
+            <LocaleResource Name="FinancingCosts">
+                <Value>Finanzierungskosten</Value>
+            </LocaleResource>
+            <LocaleResource Name="TotalInclFinancingCosts">
+                <Value>Gesamt inkl. Finanzierungskosten</Value>
             </LocaleResource>
             <LocaleResource Name="OrderAmountMin">
                 <Value>Mindestbestellwert</Value>

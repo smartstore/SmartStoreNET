@@ -1,11 +1,13 @@
 ﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
-
   <LocaleResource Name="Plugins.FriendlyName.SmartStore.PayPal" AppendRootKey="false">
     <Value>PayPal Payment Methods</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Description.SmartStore.PayPal" AppendRootKey="false">
     <Value>Provides the PayPal payment methods.</Value>
   </LocaleResource>
+    <LocaleResource Name="Plugins.FriendlyName.Widgets.PayPal" AppendRootKey="false">
+        <Value>PayPal</Value>
+    </LocaleResource>
 
     <LocaleResource Name="AccessData">
         <Value>Access data</Value>
@@ -469,6 +471,12 @@ Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
             </LocaleResource>
             <LocaleResource Name="PaymentInfo">
                 <Value>We enable you to finance your purchase with the installment payment Powered by PayPal. In seconds, fully online, subject to credit check.</Value>
+            </LocaleResource>
+            <LocaleResource Name="FinancingCosts">
+                <Value>Financing costs</Value>
+            </LocaleResource>
+            <LocaleResource Name="TotalInclFinancingCosts">
+                <Value>Total incl. financing costs</Value>
             </LocaleResource>
             <LocaleResource Name="OrderAmountMin">
                 <Value>Minimum order amount</Value>

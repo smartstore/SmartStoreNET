@@ -10,10 +10,11 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
+using SmartStore.Data.Caching;
 
 namespace SmartStore.Services.Orders
 {
-	public partial class OrderService : IOrderService
+    public partial class OrderService : IOrderService
     {
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<OrderItem> _orderItemRepository;
@@ -48,7 +49,7 @@ namespace SmartStore.Services.Orders
             if (orderId == 0)
                 return null;
 
-            return _orderRepository.GetById(orderId);
+            return _orderRepository.GetByIdCached(orderId, "db.order.id-" + orderId);
         }
 
         public virtual IList<Order> GetOrdersByIds(int[] orderIds)

@@ -215,19 +215,23 @@ namespace SmartStore.PayPal
 			};
 
 			var settings = Services.Settings.LoadSetting<TSetting>(capturePaymentRequest.Order.StoreId);
-			var session = new PayPalSessionData();
+            var session = new PayPalSessionData { ProviderSystemName = _providerSystemName };
 
-			var apiResult = PayPalService.EnsureAccessToken(session, settings);
+            var apiResult = PayPalService.EnsureAccessToken(session, settings);
 			if (apiResult.Success)
 			{
 				apiResult = PayPalService.Capture(settings, session, capturePaymentRequest);
 
-				if (apiResult.Success)
-					result.NewPaymentStatus = PaymentStatus.Paid;
+                if (apiResult.Success)
+                {
+                    result.NewPaymentStatus = PaymentStatus.Paid;
+                }
 			}
 
-			if (!apiResult.Success)
-				result.Errors.Add(apiResult.ErrorMessage);
+            if (!apiResult.Success)
+            {
+                result.Errors.Add(apiResult.ErrorMessage);
+            }
 
 			return result;
         }
@@ -240,23 +244,24 @@ namespace SmartStore.PayPal
 			};
 
 			var settings = Services.Settings.LoadSetting<TSetting>(refundPaymentRequest.Order.StoreId);
-			var session = new PayPalSessionData();
+            var session = new PayPalSessionData { ProviderSystemName = _providerSystemName };
 
-			var apiResult = PayPalService.EnsureAccessToken(session, settings);
+            var apiResult = PayPalService.EnsureAccessToken(session, settings);
 			if (apiResult.Success)
 			{
 				apiResult = PayPalService.Refund(settings, session, refundPaymentRequest);
 				if (apiResult.Success)
 				{
-					if (refundPaymentRequest.IsPartialRefund)
-						result.NewPaymentStatus = PaymentStatus.PartiallyRefunded;
-					else
-						result.NewPaymentStatus = PaymentStatus.Refunded;
+                    result.NewPaymentStatus = refundPaymentRequest.IsPartialRefund
+                        ? PaymentStatus.PartiallyRefunded
+                        : PaymentStatus.Refunded;
 				}
 			}
 
-			if (!apiResult.Success)
-				result.Errors.Add(apiResult.ErrorMessage);
+            if (!apiResult.Success)
+            {
+                result.Errors.Add(apiResult.ErrorMessage);
+            }
 
 			return result;
         }
@@ -269,9 +274,9 @@ namespace SmartStore.PayPal
 			};
 
 			var settings = Services.Settings.LoadSetting<TSetting>(voidPaymentRequest.Order.StoreId);
-			var session = new PayPalSessionData();
+            var session = new PayPalSessionData { ProviderSystemName = _providerSystemName };
 
-			var apiResult = PayPalService.EnsureAccessToken(session, settings);
+            var apiResult = PayPalService.EnsureAccessToken(session, settings);
 			if (apiResult.Success)
 			{
 				apiResult = PayPalService.Void(settings, session, voidPaymentRequest);
@@ -281,8 +286,10 @@ namespace SmartStore.PayPal
 				}
 			}
 
-			if (!apiResult.Success)
-				result.Errors.Add(apiResult.ErrorMessage);
+            if (!apiResult.Success)
+            {
+                result.Errors.Add(apiResult.ErrorMessage);
+            }
 
 			return result;
         }

@@ -18,6 +18,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.PayPal.Providers;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
@@ -112,12 +113,14 @@ namespace SmartStore.PayPal.Services
 		}
 
 		private Dictionary<string, object> CreateAmount(
-			Store store,
+            PayPalSessionData session,
+            Store store,
 			Customer customer,
 			List<OrganizedShoppingCartItem> cart,
-			string providerSystemName,
 			List<Dictionary<string, object>> items)
 		{
+            Guard.NotEmpty(session.ProviderSystemName, nameof(session.ProviderSystemName));
+
 			var amount = new Dictionary<string, object>();
 			var amountDetails = new Dictionary<string, object>();
 			var language = _services.WorkContext.WorkingLanguage;
@@ -137,7 +140,7 @@ namespace SmartStore.PayPal.Services
 
 			var shipping = Math.Round(_orderTotalCalculationService.GetShoppingCartShippingTotal(cart) ?? decimal.Zero, 2);
 
-			var additionalHandlingFee = _paymentService.GetAdditionalHandlingFee(cart, providerSystemName);
+			var additionalHandlingFee = _paymentService.GetAdditionalHandlingFee(cart, session.ProviderSystemName);
 			var paymentFeeBase = _taxService.GetPaymentMethodAdditionalFee(additionalHandlingFee, customer);
 			var paymentFee = Math.Round(_currencyService.ConvertFromPrimaryStoreCurrency(paymentFeeBase, currency), 2);
 
@@ -708,10 +711,9 @@ namespace SmartStore.PayPal.Services
 		}
 
 		public PayPalResponse CreatePayment(
-			PayPalApiSettingsBase settings,
-			PayPalSessionData session,
+            PayPalApiSettingsBase settings,
+            PayPalSessionData session,
 			List<OrganizedShoppingCartItem> cart,
-			string providerSystemName,
 			string returnUrl,
 			string cancelUrl)
 		{
@@ -723,46 +725,71 @@ namespace SmartStore.PayPal.Services
 			var data = new Dictionary<string, object>();
 			var redirectUrls = new Dictionary<string, object>();
 			var payer = new Dictionary<string, object>();
-			//var payerInfo = new Dictionary<string, object>();
 			var transaction = new Dictionary<string, object>();
 			var items = new List<Dictionary<string, object>>();
 			var itemList = new Dictionary<string, object>();
 
-			// "PayPal PLUS only supports transaction type “Sale” (instant settlement)"
-			if (providerSystemName == PayPalPlusProvider.SystemName)
-				data.Add("intent", "sale");
-			else
-				data.Add("intent", settings.TransactMode == TransactMode.AuthorizeAndCapture ? "sale" : "authorize");
+            // "PayPal PLUS only supports transaction type “Sale” (instant settlement)"
+            if (session.ProviderSystemName == PayPalPlusProvider.SystemName)
+            {
+                data.Add("intent", "sale");
+            }
+            else
+            {
+                data.Add("intent", settings.TransactMode == TransactMode.AuthorizeAndCapture ? "sale" : "authorize");
+            }
 
-			if (settings.ExperienceProfileId.HasValue())
-				data.Add("experience_profile_id", settings.ExperienceProfileId);
+            if (settings.ExperienceProfileId.HasValue())
+            {
+                data.Add("experience_profile_id", settings.ExperienceProfileId);
+            }
 
-			// redirect urls
-			if (returnUrl.HasValue())
-				redirectUrls.Add("return_url", returnUrl);
+            // Redirect URLs.
+            if (returnUrl.HasValue())
+            {
+                redirectUrls.Add("return_url", returnUrl);
+            }
+            if (cancelUrl.HasValue())
+            {
+                redirectUrls.Add("cancel_url", cancelUrl);
+            }
+            if (redirectUrls.Any())
+            {
+                data.Add("redirect_urls", redirectUrls);
+            }
 
-			if (cancelUrl.HasValue())
-				redirectUrls.Add("cancel_url", cancelUrl);
+            // payer, payer_info
+            // PayPal review: do not transmit payer_info for PP PLUS.
+            if (session.ProviderSystemName == PayPalInstalmentsProvider.SystemName)
+            {
+                var payerInfo = new Dictionary<string, object>();
+                payerInfo.Add("email", customer.FindEmail().EmptyNull());
+                payerInfo.Add("first_name", customer.FirstName.EmptyNull());
+                payerInfo.Add("last_name", customer.LastName.EmptyNull());
 
-			if (redirectUrls.Any())
-				data.Add("redirect_urls", redirectUrls);
+                //if (dateOfBirth.HasValue)
+                //{
+                //	payerInfo.Add("birth_date", dateOfBirth.Value.ToString("yyyy-MM-dd"));
+                //}
 
-			// payer, payer_info
-			// paypal review: do not transmit
-			//if (dateOfBirth.HasValue)
-			//{
-			//	payerInfo.Add("birth_date", dateOfBirth.Value.ToString("yyyy-MM-dd"));
-			//}
-			//if (customer.BillingAddress != null)
-			//{
-			//	payerInfo.Add("billing_address", CreateAddress(customer.BillingAddress, false));
-			//}
+                if (customer.BillingAddress != null)
+                {
+                    payerInfo.Add("billing_address", CreateAddress(customer.BillingAddress, false));
+                }
 
-			payer.Add("payment_method", "paypal");
-			//payer.Add("payer_info", payerInfo);
+                payer.Add("external_selected_funding_instrument_type", "Credit");
+                payer.Add("payer_info", payerInfo);
+
+                if (customer.ShippingAddress != null)
+                {
+                    itemList.Add("shipping_address", CreateAddress(customer.ShippingAddress, false));
+                }
+            }
+
+            payer.Add("payment_method", "paypal");
 			data.Add("payer", payer);
 
-			var amount = CreateAmount(store, customer, cart, providerSystemName, items);
+			var amount = CreateAmount(session, store, customer, cart, items);
 			if (!amount.Any())
 			{
 				return null;
@@ -770,7 +797,7 @@ namespace SmartStore.PayPal.Services
 
 			itemList.Add("items", items);
 
-			transaction.Add("amount", amount);
+            transaction.Add("amount", amount);
 			transaction.Add("item_list", itemList);
 			transaction.Add("invoice_number", session.OrderGuid.ToString());
 
@@ -789,10 +816,9 @@ namespace SmartStore.PayPal.Services
 		}
 
 		public PayPalResponse PatchShipping(
-			PayPalApiSettingsBase settings,
-			PayPalSessionData session,
-			List<OrganizedShoppingCartItem> cart,
-			string providerSystemName)
+            PayPalApiSettingsBase settings,
+            PayPalSessionData session,
+			List<OrganizedShoppingCartItem> cart)
 		{
 			var data = new List<Dictionary<string, object>>();
 			var amountTotal = new Dictionary<string, object>();
@@ -810,7 +836,7 @@ namespace SmartStore.PayPal.Services
 			}
 
 			// update of whole amount object required. patching single amount values not possible (MALFORMED_REQUEST).
-			var amount = CreateAmount(store, customer, cart, providerSystemName, null);
+			var amount = CreateAmount(session, store, customer, cart, null);
 
 			amountTotal.Add("op", "replace");
 			amountTotal.Add("path", "/transactions/0/amount");
@@ -881,6 +907,7 @@ namespace SmartStore.PayPal.Services
 			amount.Add("currency", store.PrimaryStoreCurrency.CurrencyCode);
 
 			data.Add("amount", amount);
+            data.Add("is_final_capture", "true");
 
 			var result = CallApi("POST", path, session.AccessToken, settings, JsonConvert.SerializeObject(data));
 
@@ -1167,7 +1194,8 @@ namespace SmartStore.PayPal.Services
 			OrderGuid = Guid.NewGuid();
 		}
 
-		public bool SessionExpired { get; set; }
+        public string ProviderSystemName { get; set; }
+        public bool SessionExpired { get; set; }
 		public string AccessToken { get; set; }
 		public DateTime TokenExpiration { get; set; }
 		public string PaymentId { get; set; }

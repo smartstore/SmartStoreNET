@@ -9,7 +9,7 @@ using SmartStore.Services.Payments;
 
 namespace SmartStore.PayPal.Services
 {
-	public interface IPayPalService
+    public interface IPayPalService
 	{
 		void AddOrderNote(PayPalSettingsBase settings, Order order, string anyString, bool isIpn = false);
 
@@ -29,15 +29,13 @@ namespace SmartStore.PayPal.Services
 			PayPalApiSettingsBase settings,
 			PayPalSessionData session,
 			List<OrganizedShoppingCartItem> cart,
-			string providerSystemName,
 			string returnUrl,
 			string cancelUrl);
 
 		PayPalResponse PatchShipping(
 			PayPalApiSettingsBase settings,
 			PayPalSessionData session,
-			List<OrganizedShoppingCartItem> cart,
-			string providerSystemName);
+			List<OrganizedShoppingCartItem> cart);
 
 		PayPalResponse ExecutePayment(PayPalApiSettingsBase settings, PayPalSessionData session);
 

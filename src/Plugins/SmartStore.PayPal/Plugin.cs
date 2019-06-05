@@ -1,6 +1,7 @@
 ﻿using System;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
+using SmartStore.PayPal.Providers;
 using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services.Configuration;
@@ -48,8 +49,8 @@ namespace SmartStore.PayPal
 
 		public override void Uninstall()
 		{
-            DeleteWebhook(_settingService.LoadSetting<PayPalPlusPaymentSettings>());
-            DeleteWebhook(_settingService.LoadSetting<PayPalInstalmentsSettings>());
+            DeleteWebhook(_settingService.LoadSetting<PayPalPlusPaymentSettings>(), PayPalPlusProvider.SystemName);
+            DeleteWebhook(_settingService.LoadSetting<PayPalInstalmentsSettings>(), PayPalInstalmentsProvider.SystemName);
 
             _settingService.DeleteSetting<PayPalExpressPaymentSettings>();
             _settingService.DeleteSetting<PayPalDirectPaymentSettings>();
@@ -62,13 +63,13 @@ namespace SmartStore.PayPal
 			base.Uninstall();
 		}
 
-        private void DeleteWebhook(PayPalApiSettingsBase settings)
+        private void DeleteWebhook(PayPalApiSettingsBase settings, string providerSystemName)
         {
             try
             {
                 if (settings?.WebhookId.HasValue() ?? false)
                 {
-                    var session = new PayPalSessionData();
+                    var session = new PayPalSessionData { ProviderSystemName = providerSystemName };
                     var result = _payPalService.Value.EnsureAccessToken(session, settings);
 
                     if (result.Success)

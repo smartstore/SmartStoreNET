@@ -260,7 +260,7 @@ namespace SmartStore.PayPal.Controllers
 				var returnUrl = Url.Action("CheckoutReturn", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
 				var cancelUrl = Url.Action("CheckoutCancel", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
 
-				result = PayPalService.CreatePayment(settings, session, cart, PayPalPlusProvider.SystemName, returnUrl, cancelUrl);
+				result = PayPalService.CreatePayment(settings, session, cart, returnUrl, cancelUrl);
 				if (result == null)
 				{
                     // No payment required.
@@ -329,7 +329,7 @@ namespace SmartStore.PayPal.Controllers
 			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(store.Id);
 			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
-			var result = PayPalService.PatchShipping(settings, session, cart, PayPalPlusProvider.SystemName);
+			var result = PayPalService.PatchShipping(settings, session, cart);
 			var errorMessage = result.ErrorMessage;
 
 			if (!result.Success && result.IsValidationError)

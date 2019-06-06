@@ -1,0 +1,15 @@
+﻿@model SampleBlock
+
+@using SmartStore.DevTools.Blocks
+
+<div class="adminContent">
+	<div class="adminRow">
+		<div class="adminTitle">
+			@Html.SmartLabelFor(model => model.Property)
+		</div>
+		<div class="adminData">
+			@Html.EditorFor(model => model.Property)
+			@Html.ValidationMessageFor(model => model.Property)
+		</div>
+	</div>
+</div>

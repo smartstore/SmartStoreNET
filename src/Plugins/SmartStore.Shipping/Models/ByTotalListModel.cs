@@ -63,6 +63,9 @@ namespace SmartStore.Shipping.Models
         [SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.SmallQuantitySurcharge")]
         public decimal SmallQuantitySurcharge { get; set; }
 
+        [SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.CalculateTotalIncludingTax")]
+        public bool CalculateTotalIncludingTax { get; set; }
+
         public string PrimaryStoreCurrencyCode { get; set; }
 
 		public int GridPageSize { get; set; }

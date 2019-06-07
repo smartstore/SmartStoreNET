@@ -7,6 +7,7 @@
 
 ### New Features
 * Page Builder: multistore support for stories.
+* #1639 Shipping.ByTotal: Add option to calculate the shipping rate based on the net total instead of the gross total.
 
 
 ## SmartStore.NET 3.2.1

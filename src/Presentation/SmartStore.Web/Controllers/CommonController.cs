@@ -852,9 +852,9 @@ namespace SmartStore.Web.Controllers
 			{
 				return RedirectToReferrer();
 			}
-			
-			return new EmptyResult();
-		}
+
+            return Json(new { Success = true });
+        }
 
 		[ChildActionOnly]
 		public ActionResult GdprConsent(bool isSmall)

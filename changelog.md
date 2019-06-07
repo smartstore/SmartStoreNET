@@ -5,6 +5,9 @@
 ### Improvements
 * Amazon Pay: PSD2. Strong customer authentication (SCA) upgrade.
 
+### New Features
+* Page Builder: multistore support for stories.
+
 
 ## SmartStore.NET 3.2.1
 

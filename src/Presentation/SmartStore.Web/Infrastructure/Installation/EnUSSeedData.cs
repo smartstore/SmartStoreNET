@@ -8,10 +8,8 @@ using SmartStore.Data.Setup;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
-
     public class EnUSSeedData : InvariantSeedData
     {
-
 		public EnUSSeedData()
         {
         }

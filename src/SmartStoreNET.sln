@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2047
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A340B280-C12B-47E7-90B7-89C650F8AAFC}"
 EndProject
@@ -612,6 +612,9 @@ Global
 		{ACC1E122-B2C8-4441-BDED-D4A77763331A} = {7881B112-7843-4542-B1F7-F99553FB9BB7}
 		{611E4AC2-CA21-5C81-6B4B-3ABA87B91A25} = {7881B112-7843-4542-B1F7-F99553FB9BB7}
 		{542B9C12-E2A1-49BB-9134-0E3484F9D669} = {7881B112-7843-4542-B1F7-F99553FB9BB7}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {59B852CE-9608-479C-A92B-7EE2DE161049}
 	EndGlobalSection
 	GlobalSection(NDepend) = preSolution
 		Project = ".\SmartStoreNET.ndproj"

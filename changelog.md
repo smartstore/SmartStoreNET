@@ -9,6 +9,10 @@
 * Page Builder: multistore support for stories.
 * #1639 Shipping.ByTotal: Add option to calculate the shipping rate based on the net total instead of the gross total.
 
+### Bugfixes
+* #1646 Setting ManufacturerItemsToDisplayOnHomepage to 1 will not show any manufacturer.
+* #1647 All manufacturers page: link of last character missing in alphabetical letter list.
+
 
 ## SmartStore.NET 3.2.1
 

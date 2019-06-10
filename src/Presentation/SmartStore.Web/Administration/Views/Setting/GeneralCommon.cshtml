@@ -241,7 +241,7 @@
 			<td class="adminData">
 				<div class="input-group">
 					@Html.EditorFor(model => model.SecuritySettings.EncryptionKey, new { @class = "form-control" })
-					<button type="submit" name="changeencryptionkey" id="changeencryptionkey" class="btn btn-outline-secondary">
+					<button type="submit" name="changeencryptionkey" id="changeencryptionkey" value="changeencryptionkey" class="btn btn-outline-secondary" onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'>
 						<span>@T("Admin.Common.Change")</span>
 					</button>
 				</div>

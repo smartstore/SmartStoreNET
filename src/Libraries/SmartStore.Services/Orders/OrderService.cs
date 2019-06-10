@@ -219,11 +219,6 @@ namespace SmartStore.Services.Orders
             return orders;
         }
 
-        public virtual IList<Order> LoadAllOrders()
-        {
-            return SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue);
-        }
-
         public virtual IList<Order> GetOrdersByAffiliateId(int affiliateId)
         {
             var query = from o in _orderRepository.Table

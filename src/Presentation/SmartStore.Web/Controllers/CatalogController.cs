@@ -435,15 +435,16 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult HomepageManufacturers()
         {
-            if (_catalogSettings.ManufacturerItemsToDisplayOnHomepage == 0 || _catalogSettings.ShowManufacturersOnHomepage == false)
-                return Content("");
+            if (_catalogSettings.ManufacturerItemsToDisplayOnHomepage > 0 && _catalogSettings.ShowManufacturersOnHomepage)
+            {
+                var model = _helper.PrepareManufacturerNavigationModel(_catalogSettings.ManufacturerItemsToDisplayOnHomepage);
+                if (model.Manufacturers.Any())
+                {
+                    return PartialView(model);
+                }
+            }
 
-            var model = _helper.PrepareManufacturerNavigationModel(_catalogSettings.ManufacturerItemsToDisplayOnHomepage - 1);
-
-            if (model.Manufacturers.Count == 0)
-                return Content("");
-
-            return PartialView(model);
+            return new EmptyResult();
         }
 
         #endregion

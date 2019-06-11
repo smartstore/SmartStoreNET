@@ -1202,7 +1202,7 @@ namespace SmartStore.Web.Controllers
 			#region 'Add to cart' model
 
 			model.AddToCart.ProductId = product.Id;
-			model.AddToCart.EnteredQuantity = product.OrderMinimumQuantity;
+			model.AddToCart.EnteredQuantity = product.OrderMinimumQuantity > selectedQuantity ? product.OrderMinimumQuantity : selectedQuantity;
             model.AddToCart.MinOrderAmount = product.OrderMinimumQuantity;
             model.AddToCart.MaxOrderAmount = product.OrderMaximumQuantity;
 			model.AddToCart.QuantityUnitName = model.QuantityUnitName; // TODO: (mc) remove 'QuantityUnitName' from parent model later

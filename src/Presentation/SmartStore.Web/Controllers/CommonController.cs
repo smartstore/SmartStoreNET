@@ -638,8 +638,10 @@ namespace SmartStore.Web.Controllers
 				"/Config$",
 				"/Settings$",
 				"/Login$",
-				"/Register$"
-            };
+				"/Login?*",
+				"/Register$",
+				"/Register?*"
+			};
 
 
             const string newLine = "\r\n"; //Environment.NewLine

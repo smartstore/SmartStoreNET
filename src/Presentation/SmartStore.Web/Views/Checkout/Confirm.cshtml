@@ -161,13 +161,13 @@
                     .addClass(disable ? 'fa-spinner fa-spin' : 'fa-angle-right');
             }
 
-            function processBuyButtonClick(customerAgreed) {
+            function processBuyButtonClick(customerAgreed, showThrobber) {
                 var termOfServiceOk = true,
                     userAgreementsOk = true,
                     esdRevocationWaiverOk = true,
                     cartItems = $('#cart-items');
 
-                if (customerAgreed) {
+                if (_.isTrue(customerAgreed)) {
                     // Reverse apply. We do that just to indicate that no entered data is lost.
                     $("#CustomerComment").val($("#customercommenthidden").val());                    
                 }
@@ -192,7 +192,7 @@
 
                 // Agree user agreement for downloadable products.
                 cartItems.find('input[name^=AgreeUserAgreement]').each(function () {
-                    if (customerAgreed) {
+                    if (_.isTrue(customerAgreed)) {
                         $(this).prop('checked', true);
                     }
                     else if (!$(this).is(':checked')) {
@@ -210,7 +210,7 @@
 				{
 					<text>
                     cartItems.find('input[name^=AgreeEsdRevocationWaiver]').each(function () {
-                        if (customerAgreed) {
+                        if (_.isTrue(customerAgreed)) {
                             $(this).prop('checked', true);
                         }
                         else if (!$(this).is(':checked')) {
@@ -234,7 +234,15 @@
                     $(document).trigger(submitOrderEvent);
 
                     if (true === submitOrderEvent.isOrderValid) {
-                        setBuyButtonState(true);
+                        try {
+                            setBuyButtonState(true);
+
+                            if (_.isTrue(showThrobber)) {
+                                $.throbber.show({ white: true, small: false, speed: 0, message: '@T("Checkout.OrderCompletes").ToString().EncodeJsString('"', false)' });
+                            }
+                        }
+                        catch (e) { }
+
                         $('#confirm-order-form').submit();
                     }
                     else if (true === submitOrderEvent.disableBuyButton) {
@@ -250,11 +258,7 @@
 
             // Simulate buy button click.
             $(document).on('clickBuyButton', function (e) {
-                if (e.scrollTo) {
-                    $.scrollTo(buyButton, 800, { offset: -20 });
-                }
-
-                processBuyButtonClick(e.customerAgreed);
+                processBuyButtonClick(e.customerAgreed, e.showThrobber);
             });
 
             // Report error.

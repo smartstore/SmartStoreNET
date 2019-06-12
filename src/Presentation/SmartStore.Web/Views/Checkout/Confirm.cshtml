@@ -277,8 +277,13 @@
 
                     var warnings = $('#confirm-warnings');
                     warnings.html(str);
-                    setBuyButtonState(false);
-                    $.scrollTo(warnings, 800, { offset: -20 });
+
+                    try {
+                        setBuyButtonState(false);
+                        $.throbber.hide(true);
+                        $.scrollTo(warnings, 800, { offset: -20 });
+                    }
+                    catch (e) { }
                 }
             });
         });

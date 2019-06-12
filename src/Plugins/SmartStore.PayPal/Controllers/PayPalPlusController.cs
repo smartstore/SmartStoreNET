@@ -356,7 +356,6 @@ namespace SmartStore.PayPal.Controllers
 			return new EmptyResult();
 		}
 
-		[ValidateInput(false)]
 		public ActionResult CheckoutReturn(string systemName, string paymentId, string PayerID)
 		{
             // Request.QueryString:
@@ -364,7 +363,6 @@ namespace SmartStore.PayPal.Controllers
 
             var store = Services.StoreContext.CurrentStore;
             var customer = Services.WorkContext.CurrentCustomer;
-			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(store.Id);
 			var session = _httpContext.GetPayPalState(PayPalPlusProvider.SystemName);
 
 			if (systemName.IsEmpty())
@@ -389,7 +387,6 @@ namespace SmartStore.PayPal.Controllers
 			return RedirectToAction("Confirm", "Checkout", new { area = "" });
 		}
 
-		[ValidateInput(false)]
 		public ActionResult CheckoutCancel()
 		{
 			// Request.QueryString:

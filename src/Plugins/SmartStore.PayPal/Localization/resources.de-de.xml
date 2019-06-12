@@ -454,14 +454,14 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
         <Children>
             <LocaleResource Name="AdminInstruction">
                 <Value>
-                    <![CDATA[<p>So richten Sie Ratenzahlung Powered by PayPal ein:
+                    <![CDATA[<p>So richten Sie Ratenzahlung Powered by PayPal ein:</p>
 <ol>
 <li>Legen Sie unter <a href="https://developer.paypal.com/developer/applications/" target="paypal">My Apps & Credentials</a> eine neue REST API Anwendung an.
 Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/" target="paypal">Manage your applications</a> finden Sie weitere Informationen zum Thema PayPal Anwendungen (Englisch).</li>
 <li>Klicken Sie auf den Namen der Anwendung und tragen Sie <b>Client-ID</b> und <b>Secret</b> weiter unten auf dieser Seite ein. Speichern.</li>
 <li>Optional: Klicken Sie unten bei <b>Experience Profil-ID</b> auf <b>Hinzufügen</b>, um ein Profil zu erstellen. Ihre Shop-Daten (Name, Logo etc.) werden Käufern dadurch beim Bezahlen auf den PayPal-Seiten angezeigt.</li>
 <li>Optional: Klicken Sie unten bei <b>Webhook-ID</b> auf <b>Hinzufügen</b>, um einen Webhook zu erstellen. Über einen Webhook empfängt der Shop PayPal-Mitteilungen und aktualisiert u.U. den Zahlungsstatus Ihrer Aufträge.</li>
-</ol>]]>
+</ol><p>Once an order has been placed, the order total and order items may no longer be changed!</p>]]>
                 </Value>
             </LocaleResource>
             <LocaleResource Name="PaymentInfo">

@@ -27,7 +27,9 @@ namespace SmartStore.PayPal
 				builder.RegisterType<PayPalPlusWidgetZoneFilter>()
 					.AsActionFilterFor<CheckoutController>(x => x.Completed())
 					.InstancePerRequest();
-			}
+
+                builder.RegisterType<PayPalInstalmentsCheckoutFilter>().AsActionFilterFor<CheckoutController>().InstancePerRequest();
+            }
 		}
 
 		public int Order

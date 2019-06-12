@@ -729,8 +729,8 @@ namespace SmartStore.PayPal.Services
 			var items = new List<Dictionary<string, object>>();
 			var itemList = new Dictionary<string, object>();
 
-            // "PayPal PLUS only supports transaction type “Sale” (instant settlement)"
-            if (session.ProviderSystemName == PayPalPlusProvider.SystemName)
+            // "PayPal PLUS only supports transaction type “Sale” (instant settlement)".
+            if (session.ProviderSystemName == PayPalPlusProvider.SystemName || session.ProviderSystemName == PayPalInstalmentsProvider.SystemName)
             {
                 data.Add("intent", "sale");
             }
@@ -944,7 +944,7 @@ namespace SmartStore.PayPal.Services
 			var presentation = new Dictionary<string, object>();
 			var inpuFields = new Dictionary<string, object>();
 
-			// find existing profile id, only one profile per profile name possible
+			// Find existing profile id, only one profile per profile name possible.
 			if (settings.ExperienceProfileId.IsEmpty())
 			{
 				result = CallApi("GET", path, session.AccessToken, settings, null);
@@ -964,9 +964,11 @@ namespace SmartStore.PayPal.Services
 
 			presentation.Add("brand_name", name);
 			presentation.Add("locale_code", _services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToUpper());
-			
-			if (logo != null)
-				presentation.Add("logo_image", _pictureService.Value.GetUrl(logo, 0, false, _services.StoreService.GetHost(store)));
+
+            if (logo != null)
+            {
+                presentation.Add("logo_image", _pictureService.Value.GetUrl(logo, 0, false, _services.StoreService.GetHost(store)));
+            }
 
 			inpuFields.Add("allow_note", false);
 			inpuFields.Add("no_shipping", 0);
@@ -976,17 +978,23 @@ namespace SmartStore.PayPal.Services
 			data.Add("presentation", presentation);
 			data.Add("input_fields", inpuFields);
 
-			if (settings.ExperienceProfileId.HasValue())
-				path = string.Concat(path, "/", HttpUtility.UrlPathEncode(settings.ExperienceProfileId));
+            if (settings.ExperienceProfileId.HasValue())
+            {
+                path = string.Concat(path, "/", HttpUtility.UrlPathEncode(settings.ExperienceProfileId));
+            }
 
 			result = CallApi(settings.ExperienceProfileId.HasValue() ? "PUT" : "POST", path, session.AccessToken, settings, JsonConvert.SerializeObject(data));
 
 			if (result.Success)
 			{
-				if (result.Json != null)
-					result.Id = (string)result.Json.id;
-				else
-					result.Id = settings.ExperienceProfileId;
+                if (result.Json != null)
+                {
+                    result.Id = (string)result.Json.id;
+                }
+                else
+                {
+                    result.Id = settings.ExperienceProfileId;
+                }
 			}
 
 			return result;

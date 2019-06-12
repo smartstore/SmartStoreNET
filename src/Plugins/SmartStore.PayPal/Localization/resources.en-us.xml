@@ -459,14 +459,14 @@ Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
         <Children>
             <LocaleResource Name="AdminInstruction">
                 <Value>
-                    <![CDATA[<p>How to set up Ratenzahlung Powered by PayPal:
+                    <![CDATA[<p>How to set up Ratenzahlung Powered by PayPal:</p>
 <ol>
 <li>Create a new REST API application under <a href="https://developer.paypal.com/developer/applications/" target="paypal">My Apps & Credentials</a>.
 Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/" target="paypal">Manage your applications</a> to get more information about PayPal applications.</li>
 <li>Click the name of the application and enter <b>Client-ID</b> and <b>Secret</b> below on this page. Save.</li>
 <li>Optional: Click <b>Add</b> next to <b>Experience profile ID</b> to create a new profile. Your shop data (name, logo etc.) can now be displayed to customers when paying on PayPal pages.</li>
 <li>Optional: Click <b>Add</b> next to <b>Webhook-ID</b> to create a webhook. Through a webhook the shop receives PayPal messages und possibly updates the payment state of your orders.</li>
-</ol>]]>
+</ol><p></p>]]>
                 </Value>
             </LocaleResource>
             <LocaleResource Name="PaymentInfo">

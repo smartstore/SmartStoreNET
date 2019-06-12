@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using SmartStore.ComponentModel;
@@ -22,12 +23,14 @@ namespace SmartStore.PayPal.Controllers
 {
     public class PayPalInstalmentsController : PayPalRestApiControllerBase<PayPalInstalmentsSettings>
     {
+        private readonly HttpContextBase _httpContext;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly IOrderService _orderService;
         private readonly ICurrencyService _currencyService;
         private readonly IPriceFormatter _priceFormatter;
 
         public PayPalInstalmentsController(
+            HttpContextBase httpContext,
             IPayPalService payPalService,
             IGenericAttributeService genericAttributeService,
             IOrderService orderService,
@@ -35,6 +38,7 @@ namespace SmartStore.PayPal.Controllers
             IPriceFormatter priceFormatter) 
             : base(PayPalInstalmentsProvider.SystemName, payPalService)
         {
+            _httpContext = httpContext;
             _genericAttributeService = genericAttributeService;
             _orderService = orderService;
             _currencyService = currencyService;
@@ -102,6 +106,32 @@ namespace SmartStore.PayPal.Controllers
             }
 
             return new EmptyResult();
+        }
+
+        // Redirect from PayPal.
+        public ActionResult CheckoutReturn(string systemName, string paymentId, string PayerID)
+        {
+            // Request.QueryString:
+            // paymentId: PAY-0TC88803RP094490KK4KM6AI, token (not the access token): EC-5P379249AL999154U, PayerID: 5L9K773HHJLPN
+
+            var store = Services.StoreContext.CurrentStore;
+            var customer = Services.WorkContext.CurrentCustomer;
+            var session = _httpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
+
+            if (paymentId.HasValue() && session.PaymentId.IsEmpty())
+            {
+                session.PaymentId = paymentId;
+            }
+
+            session.PayerId = PayerID;
+
+            return RedirectToAction("Confirm", "Checkout", new { area = "" });
+        }
+
+        // Redirect from PayPal.
+        public ActionResult CheckoutCancel()
+        {
+            return RedirectToAction("PaymentMethod", "Checkout", new { area = "" });
         }
 
         #region Admin

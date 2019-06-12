@@ -137,6 +137,7 @@
     <Compile Include="Extensions\MiscExtensions.cs" />
     <Compile Include="Filters\PayPalExpressCheckoutFilter.cs" />
     <Compile Include="Filters\PayPalExpressWidgetZoneFilter.cs" />
+    <Compile Include="Filters\PayPalInstalmentsCheckoutFilter.cs" />
     <Compile Include="Filters\PayPalPlusCheckoutFilter.cs" />
     <Compile Include="Filters\PayPalPlusWidgetZoneFilter.cs" />
     <Compile Include="Models\ApiConfigurationModels.cs" />

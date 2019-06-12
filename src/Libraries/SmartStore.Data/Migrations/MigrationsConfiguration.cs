@@ -57,6 +57,16 @@
             builder.AddOrUpdate("Checkout.OrderCompletes",
                 "Your order will be completed.",
                 "Ihre Bestellung wird abgeschlossen.");
+
+            builder.AddOrUpdate("Admin.Catalog.Attributes.CheckoutAttributes.Fields.TextPrompt",
+                "Text prompt",
+                "Text Eingabeaufforderung",
+                "Specifies the prompt text.",
+                "Legt den Text zur Eingabeaufforderung fest.");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.TextPrompt",
+                "Text prompt",
+                "Text Eingabeaufforderung");
         }
     }
 }

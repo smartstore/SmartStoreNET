@@ -109,13 +109,11 @@ namespace SmartStore.PayPal.Controllers
         }
 
         // Redirect from PayPal.
-        public ActionResult CheckoutReturn(string systemName, string paymentId, string PayerID)
+        public ActionResult CheckoutReturn(string paymentId, string PayerID)
         {
             // Request.QueryString:
             // paymentId: PAY-0TC88803RP094490KK4KM6AI, token (not the access token): EC-5P379249AL999154U, PayerID: 5L9K773HHJLPN
 
-            var store = Services.StoreContext.CurrentStore;
-            var customer = Services.WorkContext.CurrentCustomer;
             var session = _httpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
 
             if (paymentId.HasValue() && session.PaymentId.IsEmpty())

@@ -38,7 +38,7 @@ namespace SmartStore.PayPal.Filters
             var action = filterContext.ActionDescriptor.ActionName;
             if (action.IsCaseInsensitiveEqual("Confirm"))
             {
-                var store = _services.StoreContext.CurrentStore;
+                CreatePayment(filterContext);
             }
         }
 
@@ -49,17 +49,16 @@ namespace SmartStore.PayPal.Filters
         private void CreatePayment(ActionExecutingContext context)
         {
             var store = _services.StoreContext.CurrentStore;
-            var customer = _services.WorkContext.CurrentCustomer;
             var settings = _services.Settings.LoadSetting<PayPalInstalmentsSettings>(store.Id);
 
             var session = context.HttpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
             session.PaymentId = null;
-            session.ApprovalUrl = null;
 
             var result = _payPalService.Value.EnsureAccessToken(session, settings);
             if (result.Success)
             {
                 var urlHelper = new UrlHelper(context.HttpContext.Request.RequestContext);
+                var customer = _services.WorkContext.CurrentCustomer;
                 var protocol = store.SslEnabled ? "https" : "http";
                 var returnUrl = urlHelper.Action("CheckoutReturn", "PayPalInstalments", new { area = Plugin.SystemName }, protocol);
                 var cancelUrl = urlHelper.Action("CheckoutCancel", "PayPalInstalments", new { area = Plugin.SystemName }, protocol);
@@ -77,7 +76,6 @@ namespace SmartStore.PayPal.Filters
                         if (((string)link.rel).IsCaseInsensitiveEqual("approval_url"))
                         {
                             session.PaymentId = result.Id;
-                            session.ApprovalUrl = link.href;
 
                             context.Result = new RedirectResult(link.href, false);
                             break;

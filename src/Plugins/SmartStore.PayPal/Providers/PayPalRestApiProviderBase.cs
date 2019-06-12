@@ -43,10 +43,7 @@ namespace SmartStore.PayPal
 			return GetControllerType().Name.EmptyNull().Replace("Controller", "");
 		}
 
-        public static string CheckoutCompletedKey
-		{
-			get { return "PayPalCheckoutCompleted"; }
-		}
+        public static string CheckoutCompletedKey => "PayPalCheckoutCompleted";
 
 		public override bool SupportCapture
 		{
@@ -102,7 +99,7 @@ namespace SmartStore.PayPal
                 session.SessionExpired = true;
                 result.AddError(T("Plugins.SmartStore.PayPal.SessionExpired"));
 
-                // Redirect to payment wall and create new payment (we need the payment id).
+                // Redirect to payment page and create new payment (we need the payment id).
                 var urlHelper = new UrlHelper(HttpContext.Request.RequestContext);
                 HttpContext.Response.Redirect(urlHelper.Action("PaymentMethod", "Checkout", new { area = "" }));
 
@@ -298,14 +295,14 @@ namespace SmartStore.PayPal
         {
 			actionName = "Configure";
             controllerName = GetControllerName();
-            routeValues = new RouteValueDictionary { { "area", "SmartStore.PayPal" } };
+            routeValues = new RouteValueDictionary { { "area", Plugin.SystemName } };
         }
 
         public override void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
             actionName = "PaymentInfo";
             controllerName = GetControllerName();
-            routeValues = new RouteValueDictionary { { "area", "SmartStore.PayPal" } };
+            routeValues = new RouteValueDictionary { { "area", Plugin.SystemName } };
         }
     }
 }

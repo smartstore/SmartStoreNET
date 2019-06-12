@@ -3,13 +3,12 @@
 	Layout = "";
 }
 
-@using (Ajax.BeginForm("SetCookieConsentBadge", "Common", null, new AjaxOptions()
+@using (Ajax.BeginForm("SetCookieConsentBadge", "Common", null, new AjaxOptions
 {
 	HttpMethod = "POST",
 	OnComplete = "OnConsented"
 }))
 {
-
 	<div class="cookie-consent-panel-message fade show">
 		<div class="d-flex">
 			<div class="align-self-center pr-3">
@@ -23,7 +22,7 @@
 }
 
 <script>
-    function OnConsented(context) {
+    function OnConsented() {
 		$('.cookie-consent-panel-message').hide();
     };
 </script>

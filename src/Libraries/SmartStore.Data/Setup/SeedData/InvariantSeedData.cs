@@ -202,42 +202,42 @@ namespace SmartStore.Data.Setup
 
 		protected virtual string TaxNameBooks
 		{
-			get { return "Books"; }
+			get => "Books";
 		}
 
 		protected virtual string TaxNameDigitalGoods
 		{
-			get { return "Downloadable Products"; }
+			get => "Downloadable Products";
 		}
 
 		protected virtual string TaxNameJewelry
 		{
-			get { return "Jewelry"; }
+			get => "Jewelry";
 		}
 
 		protected virtual string TaxNameApparel
 		{
-			get { return "Apparel & Shoes"; }
+			get => "Apparel & Shoes";
 		}
 
 		protected virtual string TaxNameFood
 		{
-			get { return "Food"; }
+			get => "Food";
 		}
 
 		protected virtual string TaxNameElectronics
 		{
-			get { return "Electronics & Software"; }
+			get => "Electronics & Software";
 		}
 
 		protected virtual string TaxNameTaxFree
 		{
-			get { return "Tax free"; }
+			get => "Tax free";
 		}
 
 		public virtual decimal[] FixedTaxRates
 		{
-			get { return new decimal[] { 0, 0, 0, 0, 0 }; }
+			get => new decimal[] { 0, 0, 0, 0, 0 };
 		}
 
 		public IList<TaxCategory> TaxCategories()

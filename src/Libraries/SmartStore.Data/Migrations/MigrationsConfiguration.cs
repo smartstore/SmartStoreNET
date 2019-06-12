@@ -53,6 +53,20 @@
             builder.AddOrUpdate("Admin.Configuration.Languages.NoAvailableLanguagesFound",
                 "There were no other available languages found for version {0}. On <a href=\"https://translate.smartstore.com/\" target=\"_blank\">translate.smartstore.com</a> you will find more details about available resources.",
                 "Es wurden keine weiteren verfügbaren Sprachen für Version {0} gefunden. Auf <a href=\"https://translate.smartstore.com/\" target=\"_blank\">translate.smartstore.com</a> finden Sie weitere Details zu verfügbaren Ressourcen.");
+
+            builder.AddOrUpdate("Checkout.OrderCompletes",
+                "Your order will be completed.",
+                "Ihre Bestellung wird abgeschlossen.");
+
+            builder.AddOrUpdate("Admin.Catalog.Attributes.CheckoutAttributes.Fields.TextPrompt",
+                "Text prompt",
+                "Text Eingabeaufforderung",
+                "Specifies the prompt text.",
+                "Legt den Text zur Eingabeaufforderung fest.");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.TextPrompt",
+                "Text prompt",
+                "Text Eingabeaufforderung");
         }
     }
 }

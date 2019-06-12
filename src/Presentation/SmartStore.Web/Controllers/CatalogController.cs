@@ -420,14 +420,14 @@ namespace SmartStore.Web.Controllers
             var manufacturers = _manufacturerService.GetAllManufacturers(null, _services.StoreContext.CurrentStore.Id);
             foreach (var manufacturer in manufacturers)
             {
-                var modelMan = manufacturer.ToModel();
-
-                // prepare picture model
-                modelMan.PictureModel = _helper.PrepareManufacturerPictureModel(manufacturer, modelMan.Name);
-                model.Add(modelMan);
+                var manuModel = manufacturer.ToModel();
+                manuModel.PictureModel = _helper.PrepareManufacturerPictureModel(manufacturer, manuModel.Name);
+                model.Add(manuModel);
             }
 
 			_services.DisplayControl.AnnounceRange(manufacturers);
+
+            ViewBag.SortManufacturersAlphabetically = _catalogSettings.SortManufacturersAlphabetically;
 
             return View(model);
         }
@@ -435,15 +435,16 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult HomepageManufacturers()
         {
-            if (_catalogSettings.ManufacturerItemsToDisplayOnHomepage == 0 || _catalogSettings.ShowManufacturersOnHomepage == false)
-                return Content("");
+            if (_catalogSettings.ManufacturerItemsToDisplayOnHomepage > 0 && _catalogSettings.ShowManufacturersOnHomepage)
+            {
+                var model = _helper.PrepareManufacturerNavigationModel(_catalogSettings.ManufacturerItemsToDisplayOnHomepage);
+                if (model.Manufacturers.Any())
+                {
+                    return PartialView(model);
+                }
+            }
 
-            var model = _helper.PrepareManufacturerNavigationModel(_catalogSettings.ManufacturerItemsToDisplayOnHomepage - 1);
-
-            if (model.Manufacturers.Count == 0)
-                return Content("");
-
-            return PartialView(model);
+            return new EmptyResult();
         }
 
         #endregion

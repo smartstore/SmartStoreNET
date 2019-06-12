@@ -131,12 +131,6 @@ namespace SmartStore.Services.Orders
         IPagedList<Order> GetAllOrders(int affiliateId, int pageIndex, int pageSize);
 
         /// <summary>
-        /// Load all orders
-        /// </summary>
-        /// <returns>Order collection</returns>
-        IList<Order> LoadAllOrders();
-
-        /// <summary>
         /// Gets all orders by affiliate identifier
         /// </summary>
         /// <param name="affiliateId">Affiliate identifier</param>

@@ -197,7 +197,7 @@ namespace SmartStore.AmazonPay.Controllers
             else
             {
                 // authenticationStatus == "Abandoned": The buyer took action to close/cancel the MFA challenge.
-                // Review: redirect back to wallet widget (like InvalidPaymentMethod).
+                // Review: redirect to checkout payment page (like InvalidPaymentMethod).
                 state.IsConfirmed = false;
                 state.FormData = null;
 

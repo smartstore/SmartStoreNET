@@ -1,7 +1,4 @@
-﻿@using SmartStore.Core.Infrastructure;
-@using SmartStore.Web.Models.Catalog;
-@using SmartStore.Core.Domain.Catalog;
-
+﻿@using SmartStore.Web.Models.Catalog;
 @model IList<ManufacturerModel>
 @{
 	Layout = "_Layout";
@@ -9,10 +6,8 @@
 	Html.AddTitleParts(T("PageTitle.Manufacturers").Text);
 
 	var numericList = Model.Where(x => Char.IsNumber(x.Name.Value[0])).OrderBy(x => x.Name);
-	var alphabeticalList = Model.Except(numericList).OrderBy(x => x.Name);
-	var currentLetter = String.Empty;
-	var areaLetter = alphabeticalList.FirstOrDefault()?.Name?.Value.EmptyNull().Substring(0, 1).ToUpper();
-	var catalogSettings = EngineContext.Current.Resolve<CatalogSettings>();
+	var alphabeticalList = Model.Except(numericList).Where(x => x.Name.HasValue()).OrderBy(x => x.Name);
+    var sortManufacturersAlphabetically = (bool)ViewBag.SortManufacturersAlphabetically;
 }
 
 <div class="page manufacturer-list-page">
@@ -22,30 +17,20 @@
     <div class="page-body">
         @{ Html.RenderWidget("manufacturers_all_top"); }
 
-        @if (catalogSettings.SortManufacturersAlphabetically)
+        @if (sortManufacturersAlphabetically)
         {
+            var groupedManus = alphabeticalList.GroupBy(x => char.ToUpper(x.Name.Value[0]));
+
             <div class="manufacturer-nav">
-                <ul class="navbar justify-content-start list-unstyled">
-                    
+                <ul class="navbar justify-content-start list-unstyled">                    
                     @if (numericList.Any())
                     {
                         <li class="nav-item"><a class="nav-link" href="#number">@T("Catalog.ManufacturerAll.Numbers")</a></li>
                     }
-                    
-                    @foreach (var item in alphabeticalList)
-                    {
-                        currentLetter = item.Name.Value.Substring(0, 1).ToUpper();
-                        if (!currentLetter.Equals(areaLetter))
-                        {
-                            <li class="nav-item"><a class="nav-link" href="#@areaLetter">@areaLetter</a></li>
-                            areaLetter = currentLetter;
-                        }
-                    }
 
-                    @{ 
-                        // reset 
-                        currentLetter = String.Empty;
-                        areaLetter = alphabeticalList.FirstOrDefault()?.Name?.Value.Substring(0, 1).ToUpper();
+                    @foreach (var manu in groupedManus)
+                    {
+                        <li class="nav-item"><a class="nav-link" href="#@manu.Key">@manu.Key</a></li>
                     }
                 </ul>
             </div>
@@ -60,32 +45,20 @@
                     }
                 </div>
             }
-            
-            <h4 id="@areaLetter" class="manufacturer-list-title">@areaLetter</h4>
 
-            <div class="artlist artlist-grid artlist-6-cols artlist-boxed manufacturer-grid">
-                @foreach (var item in alphabeticalList)
-                {
-                    currentLetter = item.Name.Value.Substring(0, 1).ToUpper();
-
-                    if (!currentLetter.Equals(areaLetter))
+            foreach (var manu in groupedManus)
+            {
+                <h4 id="@manu.Key" class="manufacturer-list-title">@manu.Key</h4>
+                <div class="artlist artlist-grid artlist-6-cols artlist-boxed manufacturer-grid">
+                    @foreach (var item in manu)
                     {
-                        @:</div>
-
-                        <h4 id="@currentLetter" class="manufacturer-list-title">@currentLetter</h4>
-
-                        @:<div class="artlist artlist-grid artlist-6-cols artlist-boxed manufacturer-grid">
-
-                        areaLetter = currentLetter;
+                        @RenderManufacturer(item);
                     }
-
-                    @RenderManufacturer(item);
-                }
-            </div>
+                </div>
+            }
         }
         else
         {
-
 		    <div class="artlist artlist-grid artlist-6-cols artlist-boxed manufacturer-grid">
 			    @foreach (var item in Model)
 			    {

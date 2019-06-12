@@ -111,8 +111,8 @@
             <text>
             jQuery(document).ready(function () {
                 var clickBuyButtonEvent = jQuery.Event('clickBuyButton');
-                clickBuyButtonEvent.scrollTo = true;
                 clickBuyButtonEvent.customerAgreed = true;
+                clickBuyButtonEvent.showThrobber = true;
 
                 $(document).trigger(clickBuyButtonEvent);
             });

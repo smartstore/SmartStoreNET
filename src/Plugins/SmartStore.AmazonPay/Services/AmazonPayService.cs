@@ -1001,12 +1001,6 @@ namespace SmartStore.AmazonPay.Services
         {
             try
             {
-                var failureReason = _httpContext.Session["AmazonPayFailedPaymentReason"] as string;
-                if (failureReason.IsCaseInsensitiveEqual("InvalidPaymentMethod") || failureReason.IsCaseInsensitiveEqual("AuthenticationStatusFailure"))
-                {
-                    return false;
-                }
-
                 var store = _services.StoreContext.CurrentStore;
                 var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
                 var state = _httpContext.GetAmazonPayState(_services.Localization);
@@ -1153,6 +1147,10 @@ namespace SmartStore.AmazonPay.Services
 						{
 							// Must be redirected to checkout payment page.
 							_httpContext.Session["AmazonPayFailedPaymentReason"] = reason;
+
+                            // Review: confirmation required to get order reference object from suspended to open state again.
+                            state.IsConfirmed = false;
+                            state.FormData = null;
 
                             var urlHelper = new UrlHelper(_httpContext.Request.RequestContext);
                             _httpContext.Response.Redirect(urlHelper.Action("PaymentMethod", "Checkout", new { area = "" }));

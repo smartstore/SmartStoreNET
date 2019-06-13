@@ -27,7 +27,7 @@ namespace SmartStore.Web.Framework.Controllers
 	}
 
 	[AdminValidateIpAddress(Order = 100)]
-	[RequireHttpsByConfig(SslRequirement.Yes, Order = 110)]
+	[RewriteUrl(SslRequirement.Yes, Order = 110)]
     [CustomerLastActivity(Order = 100)]
     [StoreIpAddress(Order = 100)]
 	[AdminThemed(Order = -1)]

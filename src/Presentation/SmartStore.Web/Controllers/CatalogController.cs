@@ -98,7 +98,7 @@ namespace SmartStore.Web.Controllers
 
         #region Categories
 
-        [RequireHttpsByConfigAttribute(SslRequirement.No)]
+        [RewriteUrl(SslRequirement.No)]
         public ActionResult Category(int categoryId, CatalogSearchQuery query)
         {
 			var category = _categoryService.GetCategoryById(categoryId);
@@ -307,7 +307,7 @@ namespace SmartStore.Web.Controllers
 
         #region Manufacturers
 
-        [RequireHttpsByConfigAttribute(SslRequirement.No)]
+        [RewriteUrl(SslRequirement.No)]
         public ActionResult Manufacturer(int manufacturerId, CatalogSearchQuery query)
         {
             var manufacturer = _manufacturerService.GetManufacturerById(manufacturerId);
@@ -411,7 +411,7 @@ namespace SmartStore.Web.Controllers
             return View(templateViewPath, model);
         }
 
-        [RequireHttpsByConfigAttribute(SslRequirement.No)]
+        [RewriteUrl(SslRequirement.No)]
         public ActionResult ManufacturerAll()
         {
             var model = new List<ManufacturerModel>();
@@ -552,7 +552,7 @@ namespace SmartStore.Web.Controllers
 			return PartialView(cacheModel);
 		}
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		public ActionResult ProductsByTag(int productTagId, CatalogSearchQuery query)
 		{
 			var productTag = _productTagService.GetProductTagById(productTagId);
@@ -580,7 +580,7 @@ namespace SmartStore.Web.Controllers
 			return View(model);
 		}
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		public ActionResult ProductTagsAll()
 		{
 			var model = new PopularProductTagsModel();
@@ -609,7 +609,7 @@ namespace SmartStore.Web.Controllers
 
 		#region Recently[...]Products
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		public ActionResult RecentlyViewedProducts(CatalogSearchQuery query)
 		{
 			if (!_catalogSettings.RecentlyViewedProductsEnabled || _catalogSettings.RecentlyViewedProductsNumber <= 0)
@@ -648,7 +648,7 @@ namespace SmartStore.Web.Controllers
 			return PartialView(model);
 		}
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		public ActionResult RecentlyAddedProducts(CatalogSearchQuery query)
 		{
 			if (!_catalogSettings.RecentlyAddedProductsEnabled || _catalogSettings.RecentlyAddedProductsNumber <= 0)
@@ -830,7 +830,7 @@ namespace SmartStore.Web.Controllers
 			});
 		}
 
-        [RequireHttpsByConfigAttribute(SslRequirement.No)]
+        [RewriteUrl(SslRequirement.No)]
 		public ActionResult CompareProducts()
 		{
 			if (!_catalogSettings.CompareProductsEnabled)

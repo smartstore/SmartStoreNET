@@ -33,7 +33,7 @@ using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Web.Controllers
 {
-    [RequireHttpsByConfigAttribute(SslRequirement.No)]
+    [RewriteUrl(SslRequirement.No)]
     public partial class BlogController : PublicControllerBase
     {
         #region Fields

@@ -6,8 +6,7 @@ using SmartStore.Web.Framework.Seo;
 
 namespace SmartStore.Web.Framework.Controllers
 {
-	[CanonicalHostName(Order = 100)]
-	[RequireHttpsByConfigAttribute(SslRequirement.Retain, Order = 110)]
+	[RewriteUrl(SslRequirement.Retain)]
 	[StoreClosed(Order = -1)]
 	[PublicStoreAllowNavigation(Order = -1)]
 	[LanguageSeoCode(Order = -1)]

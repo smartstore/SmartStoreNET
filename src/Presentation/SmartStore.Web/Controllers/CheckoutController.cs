@@ -30,7 +30,7 @@ using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Controllers
 {
-    [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+    [RewriteUrl(SslRequirement.Yes)]
     public partial class CheckoutController : PublicControllerBase
     {
 		#region Fields

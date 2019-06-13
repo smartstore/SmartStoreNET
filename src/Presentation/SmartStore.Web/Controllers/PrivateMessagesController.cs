@@ -16,7 +16,7 @@ using SmartStore.Web.Models.PrivateMessages;
 
 namespace SmartStore.Web.Controllers
 {
-	[RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+	[RewriteUrl(SslRequirement.Yes)]
     public partial class PrivateMessagesController : PublicControllerBase
     {
         #region Fields

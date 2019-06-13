@@ -30,7 +30,7 @@ using SmartStore.Web.Models.News;
 
 namespace SmartStore.Web.Controllers
 {
-    [RequireHttpsByConfigAttribute(SslRequirement.No)]
+    [RewriteUrl(SslRequirement.No)]
     public partial class NewsController : PublicControllerBase
     {
         #region Fields

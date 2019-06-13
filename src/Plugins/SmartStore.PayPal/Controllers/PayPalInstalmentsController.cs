@@ -4,6 +4,7 @@ using System.Web;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Logging;
 using SmartStore.PayPal.Models;
 using SmartStore.PayPal.Providers;
@@ -63,6 +64,46 @@ namespace SmartStore.PayPal.Controllers
         public ActionResult PaymentInfo()
         {
             return PartialView();
+        }
+
+        // Widget zone on checkout confirm page.
+        [ChildActionOnly]
+        public ActionResult FinancingDetails()
+        {
+            try
+            {
+                var store = Services.StoreContext.CurrentStore;
+                var language = Services.WorkContext.WorkingLanguage;
+                var currency = Services.WorkContext.WorkingCurrency;
+                var session = _httpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
+
+                if (session.FinancingCosts == decimal.Zero || session.TotalInclFinancingCosts == decimal.Zero)
+                {
+                    var settings = Services.Settings.LoadSetting<PayPalInstalmentsSettings>(store.Id);
+                    var result = PayPalService.GetPayment(settings, session);
+                    if (result.Success)
+                    {
+                        // TODO: get details.
+                        //var total = (string)result.Json.....;
+                        //session.FinancingCosts = ;
+                        //session.TotalInclFinancingCosts = total.Convert<decimal>(CultureInfo.InvariantCulture);
+                    }
+                }
+
+                var financingCosts = _currencyService.ConvertFromPrimaryStoreCurrency(session.FinancingCosts, currency, store);
+                var totalInclFinancingCosts = _currencyService.ConvertFromPrimaryStoreCurrency(session.TotalInclFinancingCosts, currency, store);
+
+                ViewBag.FinancingCosts = _priceFormatter.FormatPrice(financingCosts, true, currency, language, false, false);
+                ViewBag.TotalInclFinancingCosts = _priceFormatter.FormatPrice(totalInclFinancingCosts, true, currency, language, false, false);
+
+                return PartialView();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+
+            return new EmptyResult();
         }
 
         // Widget zone on order details (page and print).

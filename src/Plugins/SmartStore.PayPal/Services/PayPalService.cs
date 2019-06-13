@@ -1212,6 +1212,9 @@ namespace SmartStore.PayPal.Services
 		public Guid OrderGuid { get; private set; }
 		public PayPalPaymentInstruction PaymentInstruction { get; set; }
 
+        public decimal FinancingCosts { get; set; }
+        public decimal TotalInclFinancingCosts { get; set; }
+
         public override string ToString()
         {
             var sb = new StringBuilder();

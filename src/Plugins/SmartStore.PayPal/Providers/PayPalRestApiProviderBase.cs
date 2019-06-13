@@ -191,9 +191,9 @@ namespace SmartStore.PayPal
 
 		public override void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest)
 		{
-            var storeId = postProcessPaymentRequest.Order.StoreId;
-            var customer = Services.WorkContext.CurrentCustomer;
-            var session = HttpContext.GetPayPalState(_providerSystemName, customer, storeId, GenericAttributeService);
+            var order = postProcessPaymentRequest.Order;
+            var customer = order.Customer ?? Services.WorkContext.CurrentCustomer;
+            var session = HttpContext.GetPayPalState(_providerSystemName, customer, order.StoreId, GenericAttributeService);
             var instruction = PayPalService.CreatePaymentInstruction(session.PaymentInstruction);
 
 			if (instruction.HasValue())

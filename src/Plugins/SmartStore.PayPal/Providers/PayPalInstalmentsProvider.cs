@@ -26,6 +26,23 @@ namespace SmartStore.PayPal.Providers
         {
             return typeof(PayPalInstalmentsController);
         }
+
+        public override void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest)
+        {
+            var order = postProcessPaymentRequest.Order;
+            var customer = order.Customer ?? Services.WorkContext.CurrentCustomer;
+            var session = HttpContext.GetPayPalState(SystemName, customer, order.StoreId, GenericAttributeService);
+
+            var orderAttribute = new PayPalInstalmentsOrderAttribute
+            {
+                FinancingCosts = session.FinancingCosts,
+                TotalInclFinancingCosts = session.TotalInclFinancingCosts
+            };
+
+            GenericAttributeService.SaveAttribute(order, PayPalInstalmentsOrderAttribute.Key, JsonConvert.SerializeObject(orderAttribute), order.StoreId);
+
+            base.PostProcessPayment(postProcessPaymentRequest);
+        }
     }
 
 

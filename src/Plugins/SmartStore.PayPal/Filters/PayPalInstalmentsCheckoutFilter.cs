@@ -9,6 +9,7 @@ using SmartStore.PayPal.Settings;
 using SmartStore.Services;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.PayPal.Filters
 {
@@ -17,15 +18,18 @@ namespace SmartStore.PayPal.Filters
         private readonly ICommonServices _services;
         private readonly Lazy<IPayPalService> _payPalService;
         private readonly Lazy<IGenericAttributeService> _genericAttributeService;
+        private readonly Lazy<IWidgetProvider> _widgetProvider;
 
         public PayPalInstalmentsCheckoutFilter(
             ICommonServices services,
             Lazy<IPayPalService> payPalService,
-            Lazy<IGenericAttributeService> genericAttributeService)
+            Lazy<IGenericAttributeService> genericAttributeService,
+            Lazy<IWidgetProvider> widgetProvider)
         {
             _services = services;
             _payPalService = payPalService;
             _genericAttributeService = genericAttributeService;
+            _widgetProvider = widgetProvider;
         }
 
         public void OnActionExecuting(ActionExecutingContext filterContext)
@@ -38,7 +42,16 @@ namespace SmartStore.PayPal.Filters
             var action = filterContext.ActionDescriptor.ActionName;
             if (action.IsCaseInsensitiveEqual("Confirm"))
             {
-                CreatePayment(filterContext);
+                var store = _services.StoreContext.CurrentStore;
+                var customer = _services.WorkContext.CurrentCustomer;
+                var selectedMethod = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, store.Id);
+
+                if (selectedMethod.IsCaseInsensitiveEqual(PayPalInstalmentsProvider.SystemName))
+                {
+                    _widgetProvider.Value.RegisterAction("order_summary_totals_after", "FinancingDetails", "PayPalInstalments", new { area = Plugin.SystemName });
+
+                    CreatePayment(filterContext);
+                }
             }
         }
 

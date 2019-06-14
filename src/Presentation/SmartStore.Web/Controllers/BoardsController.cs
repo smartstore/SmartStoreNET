@@ -426,7 +426,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-		[Compress]
         public ActionResult ForumRss(int id = 0)
         {
             if (!_forumSettings.ForumsEnabled)
@@ -587,7 +586,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [Compress]
         public ActionResult ActiveDiscussionsRss(int forumId = 0)
         {
             if (!_forumSettings.ForumsEnabled)

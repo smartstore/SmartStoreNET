@@ -226,7 +226,7 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-		[ActionName("rss"), Compress]
+		[ActionName("rss")]
         public ActionResult ListRss(int? languageId)
         {
 			languageId = languageId ?? _workContext.WorkingLanguage.Id;

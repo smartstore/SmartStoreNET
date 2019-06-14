@@ -1063,7 +1063,7 @@ namespace SmartStore.Admin.Controllers
 
 		#region Export / Import
 
-		[HttpPost, Compress]
+		[HttpPost]
 		public ActionResult ExportPdf(bool all, string selectedIds = null)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))

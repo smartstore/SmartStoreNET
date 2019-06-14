@@ -671,7 +671,6 @@ namespace SmartStore.Web.Controllers
 			return View(model);
 		}
 
-		[Compress]
 		public ActionResult RecentlyAddedProductsRss(CatalogSearchQuery query)
 		{
 			// TODO: (mc) find a more prominent place for the "NewProducts" link (may be in main menu?)

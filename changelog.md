@@ -2,12 +2,11 @@
 
 ## SmartStore.NET 3.2.2
 
-### Improvements
-* Amazon Pay: PSD2. Strong customer authentication (SCA) upgrade.
-
 ### New Features
 * Page Builder: multistore support for stories.
 * #1639 Shipping.ByTotal: Add option to calculate the shipping rate based on the net total instead of the gross total.
+### Improvements
+* Amazon Pay: PSD2. Strong customer authentication (SCA) upgrade.
 
 ### Bugfixes
 * #1646 Setting ManufacturerItemsToDisplayOnHomepage to 1 will not show any manufacturer.
@@ -446,7 +445,7 @@
 * Added config setting *sm:PdfEngineBaseUrl*. There are cases where the PDF converter exits with a network error, when it is unable to load automatically resolved URLs.
 * (Dev) Added *Retry* utility class
 * #1176 Admin > Product Search: It ain't possible to search for parts of a product name
- 
+
 ### Bugfixes
 * #1145: Fixed HTTP 404 after switching language
 * Fixed null reference exception in product lists if sorting is not allowed
@@ -1355,7 +1354,7 @@
     * [SMNET-202] - SmartTabSelection mit verschachtelten Tabs fehlerhaft nach Reload einer Seite
 
 ### Improvement
-    
+
     * [SMNET-13] - Attributwerte: der Text "Aufpreis" muss um "Minderpreis" erweitert werden.
     * [SMNET-15] - Umgestaltung der Darstellung der Staffelpreise (Popover ab dem fünften Element)
     * [SMNET-30] - MessageTemplates teilweise auf Englisch

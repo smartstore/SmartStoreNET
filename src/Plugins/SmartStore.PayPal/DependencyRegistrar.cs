@@ -5,6 +5,7 @@ using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.PayPal.Filters;
 using SmartStore.PayPal.Services;
 using SmartStore.Web.Controllers;
+using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.PayPal
 {
@@ -29,6 +30,8 @@ namespace SmartStore.PayPal
 					.InstancePerRequest();
 
                 builder.RegisterType<PayPalInstalmentsCheckoutFilter>().AsActionFilterFor<CheckoutController>().InstancePerRequest();
+
+                //builder.RegisterType<PayPalFilter>().AsActionFilterFor<PublicControllerBase>();
             }
 		}
 

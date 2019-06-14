@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SmartStore.ComponentModel;
-using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Plugins;
 using SmartStore.PayPal.Models;
 using SmartStore.PayPal.Providers;
 using SmartStore.PayPal.Services;
@@ -15,10 +18,12 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 using SmartStore.Web.Framework.Theming;
+using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.PayPal.Controllers
 {
@@ -28,7 +33,10 @@ namespace SmartStore.PayPal.Controllers
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly IOrderService _orderService;
         private readonly ICurrencyService _currencyService;
+        private readonly Lazy<IPaymentService> _paymentService;
+        private readonly IWidgetProvider _widgetProvider;
         private readonly IPriceFormatter _priceFormatter;
+        private readonly Lazy<IPluginFinder> _pluginFinder;
 
         public PayPalInstalmentsController(
             HttpContextBase httpContext,
@@ -36,14 +44,20 @@ namespace SmartStore.PayPal.Controllers
             IGenericAttributeService genericAttributeService,
             IOrderService orderService,
             ICurrencyService currencyService,
-            IPriceFormatter priceFormatter) 
+            Lazy<IPaymentService> paymentService,
+            IWidgetProvider widgetProvider,
+            IPriceFormatter priceFormatter,
+            Lazy<IPluginFinder> pluginFinder) 
             : base(PayPalInstalmentsProvider.SystemName, payPalService)
         {
             _httpContext = httpContext;
             _genericAttributeService = genericAttributeService;
             _orderService = orderService;
             _currencyService = currencyService;
+            _paymentService = paymentService;
+            _widgetProvider = widgetProvider;
             _priceFormatter = priceFormatter;
+            _pluginFinder = pluginFinder;
         }
 
         public override IList<string> ValidatePaymentForm(FormCollection form)
@@ -83,6 +97,7 @@ namespace SmartStore.PayPal.Controllers
                     var result = PayPalService.GetPayment(settings, session);
                     if (result.Success)
                     {
+                        result.Json.ToString().Dump();
                         // TODO: get details.
                         //var total = (string)result.Json.....;
                         //session.FinancingCosts = ;
@@ -105,6 +120,46 @@ namespace SmartStore.PayPal.Controllers
 
             return new EmptyResult();
         }
+
+        // Widget zone on product detail page.
+        [ChildActionOnly]
+        public ActionResult ProductPagePromotion(decimal price)
+        {
+            try
+            {
+                var store = Services.StoreContext.CurrentStore;
+                var settings = Services.Settings.LoadSetting<PayPalInstalmentsSettings>(store.Id);
+
+                if (settings.ProductPagePromotion.HasValue && settings.ClientId.HasValue() && settings.Secret.HasValue() && settings.IsAmountFinanceable(price))
+                {
+                    if (_pluginFinder.Value.IsPluginReady(Services.Settings, Plugin.SystemName, store.Id))
+                    {
+                        if (_paymentService.Value.IsPaymentMethodActive(PayPalInstalmentsProvider.SystemName, store.Id))
+                        {
+                            var model = new PromotionModel
+                            {
+                                Promotion = settings.ProductPagePromotion.Value
+                            };
+
+                            return PartialView("Promotion", model);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+
+            return new EmptyResult();
+        }
+
+        // Widget zones for promotion.
+        //[ChildActionOnly]
+        //public ActionResult Promote()
+        //{
+        //    return new EmptyResult();
+        //}
 
         // Widget zone on order details (page and print).
         [ChildActionOnly]
@@ -180,6 +235,16 @@ namespace SmartStore.PayPal.Controllers
         {
             var model = new PayPalInstalmentsConfigModel();
             MiniMapper.Map(settings, model);
+            //model.PromotionWidgetZones = settings.PromotionWidgetZones.SplitSafe(",");
+
+            model.ProductPagePromotions = settings.ProductPagePromotion.HasValue
+                ? settings.ProductPagePromotion.Value.ToSelectList(true).ToList()
+                : PayPalPromotion.FinancingExample.ToSelectList(false).ToList();
+
+            model.CartPagePromotions = settings.CartPagePromotion.HasValue
+                ? settings.CartPagePromotion.Value.ToSelectList(true).ToList()
+                : PayPalPromotion.FinancingExample.ToSelectList(false).ToList();
+
             PrepareConfigurationModel(model, storeScope);
 
             return View(model);
@@ -188,7 +253,12 @@ namespace SmartStore.PayPal.Controllers
         [HttpPost, ChildActionOnly, AdminAuthorize, AdminThemed]
         public ActionResult Configure(PayPalInstalmentsConfigModel model, FormCollection form)
         {
-            if (!SaveConfigurationModel<PayPalInstalmentsSettings>(model, form))
+            Action<PayPalInstalmentsSettings> additionalMapping = (x) =>
+            {
+                //x.PromotionWidgetZones = string.Join(",", model.PromotionWidgetZones ?? new string[0]).NullEmpty();
+            };
+
+            if (!SaveConfigurationModel(model, form, additionalMapping))
             {
                 var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
                 var settings = Services.Settings.LoadSetting<PayPalInstalmentsSettings>(storeScope);

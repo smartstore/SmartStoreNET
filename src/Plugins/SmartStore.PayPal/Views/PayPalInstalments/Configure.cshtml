@@ -32,11 +32,71 @@
 
 @using (Html.BeginForm())
 {
-	@Html.HiddenFor(model => model.TransactMode)
+	@Html.HiddenFor(x => x.TransactMode)
 
     @Html.Partial("ApiConfiguration")
 
     <table class="adminContent">
+		<tr class="adminSeparator">
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">
+						@T("Plugins.SmartStore.PayPal.Promotion")
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductPagePromotion)
+			</td>
+			<td class="adminData">
+                @Html.SettingEditorFor(x => x.ProductPagePromotion, 
+                    @Html.DropDownListFor(x => x.ProductPagePromotion, Model.ProductPagePromotions, T("Common.Unspecified")))
+				@Html.ValidationMessageFor(x => x.ProductPagePromotion)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.CartPagePromotion)
+			</td>
+			<td class="adminData">
+                @Html.SettingEditorFor(x => x.CartPagePromotion, 
+                    @Html.DropDownListFor(x => x.CartPagePromotion, Model.CartPagePromotions, T("Common.Unspecified")))
+				@Html.ValidationMessageFor(x => x.CartPagePromotion)
+			</td>
+		</tr>
+
+		@*<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Promote)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(x => x.Promote, Html.CheckBoxFor(x => x.Promote, new { data_toggler_for = "#pnlPromote" }))
+				@Html.ValidationMessageFor(x => x.Promote)
+			</td>
+		</tr>
+        <tbody id="pnlPromote">
+		    <tr>
+			    <td class="adminTitle">
+				    @Html.SmartLabelFor(x => x.PromotionWidgetZones)
+			    </td>
+			    <td class="adminData">
+                    @Html.SettingEditorFor(x => x.PromotionWidgetZones, @Html.EditorFor(x => x.PromotionWidgetZones))
+				    @Html.ValidationMessageFor(x => x.PromotionWidgetZones)
+			    </td>
+		    </tr>
+		    <tr>
+			    <td class="adminTitle">
+				    @Html.SmartLabelFor(x => x.PromotionDisplayOrder)
+			    </td>
+			    <td class="adminData">
+				    @Html.SettingEditorFor(x => x.PromotionDisplayOrder)
+				    @Html.ValidationMessageFor(x => x.PromotionDisplayOrder)
+			    </td>
+		    </tr>
+        </tbody>*@
+
 		<tr class="adminSeparator">
 			<td colspan="2">
 				<div class="admin-config-group">
@@ -48,38 +108,38 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.OrderAmountMin)
+				@Html.SmartLabelFor(x => x.FinancingMin)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(x => x.OrderAmountMin, null, new { postfix = Model.PrimaryStoreCurrencyCode })
-				@Html.ValidationMessageFor(x => x.OrderAmountMin)
+				@Html.SettingEditorFor(x => x.FinancingMin, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+				@Html.ValidationMessageFor(x => x.FinancingMin)
 			</td>
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.OrderAmountMax)
+				@Html.SmartLabelFor(x => x.FinancingMax)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(x => x.OrderAmountMax, null, new { postfix = Model.PrimaryStoreCurrencyCode })
-				@Html.ValidationMessageFor(x => x.OrderAmountMax)
+				@Html.SettingEditorFor(x => x.FinancingMax, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+				@Html.ValidationMessageFor(x => x.FinancingMax)
 			</td>
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AdditionalFee)
+				@Html.SmartLabelFor(x => x.AdditionalFee)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.AdditionalFee, null, new { postfix = Model.PrimaryStoreCurrencyCode })
-				@Html.ValidationMessageFor(model => model.AdditionalFee)
+				@Html.SettingEditorFor(x => x.AdditionalFee, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+				@Html.ValidationMessageFor(x => x.AdditionalFee)
 			</td>
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AdditionalFeePercentage)
+				@Html.SmartLabelFor(x => x.AdditionalFeePercentage)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.AdditionalFeePercentage)
-				@Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
+				@Html.SettingEditorFor(x => x.AdditionalFeePercentage)
+				@Html.ValidationMessageFor(x => x.AdditionalFeePercentage)
 			</td>
 		</tr>
     </table>

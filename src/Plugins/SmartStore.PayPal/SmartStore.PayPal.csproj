@@ -137,6 +137,7 @@
     <Compile Include="Extensions\MiscExtensions.cs" />
     <Compile Include="Filters\PayPalExpressCheckoutFilter.cs" />
     <Compile Include="Filters\PayPalExpressWidgetZoneFilter.cs" />
+    <Compile Include="Filters\PayPalFilter.cs" />
     <Compile Include="Filters\PayPalInstalmentsCheckoutFilter.cs" />
     <Compile Include="Filters\PayPalPlusCheckoutFilter.cs" />
     <Compile Include="Filters\PayPalPlusWidgetZoneFilter.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="Models\PayPalStandardConfigurationModel.cs" />
     <Compile Include="Models\PayPalDirectPaymentInfoModel.cs" />
     <Compile Include="Models\PayPalExpressPaymentInfoModel.cs" />
+    <Compile Include="Models\PromotionModel.cs" />
     <Compile Include="Providers\PayPalExpressProvider.cs" />
     <Compile Include="Providers\PayPalInstalmentsProvider.cs" />
     <Compile Include="Providers\PayPalPlusProvider.cs" />
@@ -157,6 +159,7 @@
     <Compile Include="Services\IPayPalService.cs" />
     <Compile Include="Services\PayPalEnums.cs" />
     <Compile Include="Services\PayPalPaymentFilter.cs" />
+    <Compile Include="Services\PayPalService.Credit.cs" />
     <Compile Include="Services\PayPalService.cs" />
     <Compile Include="Settings\PayPalInstalmentsSettings.cs" />
     <Compile Include="Settings\PayPalSettings.cs" />
@@ -330,6 +333,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\PayPalInstalments\FinancingDetails.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PayPalInstalments\Promotion.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Web References\PayPalSvc\CoreComponentTypes.xsd">

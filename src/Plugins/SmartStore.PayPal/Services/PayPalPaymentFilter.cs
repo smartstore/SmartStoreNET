@@ -48,7 +48,7 @@ namespace SmartStore.PayPal.Services
                 return false;
             }
 
-            return cartTotal >= settings.OrderAmountMin && cartTotal <= settings.OrderAmountMax;
+            return cartTotal >= settings.FinancingMin && cartTotal <= settings.FinancingMax;
         }
 
         protected bool IsPaymentExcluded(PaymentFilterRequest request)

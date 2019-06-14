@@ -32,7 +32,7 @@ namespace SmartStore.PayPal.Controllers
 			model.PrimaryStoreCurrencyCode = store.PrimaryStoreCurrency.CurrencyCode;
         }
 
-        protected bool SaveConfigurationModel<TSetting>(ApiConfigurationModel model, FormCollection form) where TSetting : PayPalApiSettingsBase, ISettings, new()
+        protected bool SaveConfigurationModel<TSetting>(ApiConfigurationModel model, FormCollection form, Action<TSetting> map = null) where TSetting : PayPalApiSettingsBase, ISettings, new()
         {
             var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
             var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
@@ -65,6 +65,9 @@ namespace SmartStore.PayPal.Controllers
             settings.Secret = model.Secret.TrimSafe();
             settings.Signature = model.Signature.TrimSafe();
             settings.WebhookId = model.WebhookId.TrimSafe();
+
+            // Additional mapping.
+            map?.Invoke(settings);
 
             // Credentials changed: reset profile and webhook id to avoid errors.
             if (!oldClientId.IsCaseInsensitiveEqual(settings.ClientId) || !oldSecret.IsCaseInsensitiveEqual(settings.Secret))

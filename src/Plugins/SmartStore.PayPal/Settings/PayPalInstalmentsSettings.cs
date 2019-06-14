@@ -1,4 +1,5 @@
 ﻿using SmartStore.Core.Configuration;
+using SmartStore.PayPal.Services;
 
 namespace SmartStore.PayPal.Settings
 {
@@ -7,11 +8,30 @@ namespace SmartStore.PayPal.Settings
         public PayPalInstalmentsSettings()
         {
             TransactMode = TransactMode.Authorize;
-            OrderAmountMin = 99.0M;
-            OrderAmountMax = 5000.0M;
+            FinancingMin = 99.0M;
+            FinancingMax = 5000.0M;
+            ProductPagePromotion = PayPalPromotion.FinancingExample;
+            CartPagePromotion = PayPalPromotion.FinancingExample;
         }
 
-        public decimal OrderAmountMin { get; set; }
-        public decimal OrderAmountMax { get; set; }
+        public decimal FinancingMin { get; set; }
+        public decimal FinancingMax { get; set; }
+
+        //public bool Promote { get; set; }
+        //public string PromotionWidgetZones { get; set; }
+        //public int PromotionDisplayOrder { get; set; }
+
+        public PayPalPromotion? ProductPagePromotion { get; set; }
+        public PayPalPromotion? CartPagePromotion { get; set; }
+
+        public bool IsAmountFinanceable(decimal amount)
+        {
+            if (amount == decimal.Zero)
+            {
+                return false;
+            }
+
+            return amount >= FinancingMin && amount <= FinancingMax;
+        }
     }
 }

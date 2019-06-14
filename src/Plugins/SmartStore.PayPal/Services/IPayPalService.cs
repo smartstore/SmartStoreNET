@@ -58,5 +58,11 @@ namespace SmartStore.PayPal.Services
 			NameValueCollection headers,
 			string rawJson,
 			string providerSystemName);
-	}
+
+        #region Credit
+
+        PayPalResponse GetFinancingOptions(PayPalApiSettingsBase settings, PayPalSessionData session, decimal amount);
+
+        #endregion
+    }
 }

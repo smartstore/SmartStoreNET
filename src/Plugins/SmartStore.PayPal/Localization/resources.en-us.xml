@@ -9,6 +9,13 @@
         <Value>PayPal</Value>
     </LocaleResource>
 
+    <LocaleResource Name="Enums.SmartStore.PayPal.Services.PayPalPromotion.FinancingExample" AppendRootKey="false">
+        <Value>Including financing example</Value>
+    </LocaleResource>
+    <LocaleResource Name="Enums.SmartStore.PayPal.Services.PayPalPromotion.TextOnly" AppendRootKey="false">
+        <Value>Only text</Value>
+    </LocaleResource>
+
     <LocaleResource Name="AccessData">
         <Value>Access data</Value>
     </LocaleResource>
@@ -51,8 +58,11 @@
   <LocaleResource Name="PayPalValidationFailure">
     <Value>PayPal was unable to verify the transmitted data.</Value>
   </LocaleResource>
+    <LocaleResource Name="Promotion">
+        <Value>Promotion</Value>
+    </LocaleResource>
 
-  <LocaleResource Name="ClientId">
+    <LocaleResource Name="ClientId">
     <Value>Client ID</Value>
   </LocaleResource>
   <LocaleResource Name="ClientId.Hint">
@@ -466,11 +476,11 @@ Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
 <li>Click the name of the application and enter <b>Client-ID</b> and <b>Secret</b> below on this page. Save.</li>
 <li>Optional: Click <b>Add</b> next to <b>Experience profile ID</b> to create a new profile. Your shop data (name, logo etc.) can now be displayed to customers when paying on PayPal pages.</li>
 <li>Optional: Click <b>Add</b> next to <b>Webhook-ID</b> to create a webhook. Through a webhook the shop receives PayPal messages und possibly updates the payment state of your orders.</li>
-</ol><p></p>]]>
+</ol><p>Once an order has been placed, the order total and order items may no longer be changed!</p>]]>
                 </Value>
             </LocaleResource>
             <LocaleResource Name="PaymentInfo">
-                <Value>We enable you to finance your purchase with the installment payment Powered by PayPal. In seconds, fully online, subject to credit check.</Value>
+                <Value>We enable you to finance your purchase with the instalment payment Powered by PayPal. In seconds, fully online, subject to credit check.</Value>
             </LocaleResource>
             <LocaleResource Name="FinancingCosts">
                 <Value>Financing costs</Value>
@@ -478,18 +488,48 @@ Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
             <LocaleResource Name="TotalInclFinancingCosts">
                 <Value>Total incl. financing costs</Value>
             </LocaleResource>
-            <LocaleResource Name="OrderAmountMin">
-                <Value>Minimum order amount</Value>
+            <LocaleResource Name="FinancingMin">
+                <Value>Minimum financing amount</Value>
             </LocaleResource>
-            <LocaleResource Name="OrderAmountMin.Hint">
-                <Value>Specifies the minimum order amount from which on the payment method should be offered.</Value>
+            <LocaleResource Name="FinancingMin.Hint">
+                <Value>Specifies the minimum anount from which to offer a payment by instalments.</Value>
             </LocaleResource>
-            <LocaleResource Name="OrderAmountMax">
-                <Value>Maximum order amount</Value>
+            <LocaleResource Name="FinancingMax">
+                <Value>Maximum financing amount</Value>
             </LocaleResource>
-            <LocaleResource Name="OrderAmountMax.Hint">
-                <Value>Specifies the maximum order amount up to which the payment methods should be offered.</Value>
+            <LocaleResource Name="FinancingMax.Hint">
+                <Value>Specifies the maximum amount up to which to offer a payment by instalments.</Value>
             </LocaleResource>
+            <LocaleResource Name="ProductPagePromotion">
+                <Value>On product pages</Value>
+            </LocaleResource>
+            <LocaleResource Name="ProductPagePromotion.Hint">
+                <Value>Specifies whether and how to promote payment by instalments on product pages.</Value>
+            </LocaleResource>
+            <LocaleResource Name="CartPagePromotion">
+                <Value>On cart page</Value>
+            </LocaleResource>
+            <LocaleResource Name="CartPagePromotion.Hint">
+                <Value>Specifies whether and how to promote payment by instalments on the cart page.</Value>
+            </LocaleResource>
+            <!--<LocaleResource Name="Promote">
+                <Value>Promote payment method</Value>
+            </LocaleResource>
+            <LocaleResource Name="Promote.Hint">
+                <Value>Specifies whether to promote the instalments payment.</Value>
+            </LocaleResource>
+            <LocaleResource Name="PromotionWidgetZones">
+                <Value>Widget zones</Value>
+            </LocaleResource>
+            <LocaleResource Name="PromotionWidgetZones.Hint">
+                <Value>Specifies the widget zones where to display the promotion.</Value>
+            </LocaleResource>
+            <LocaleResource Name="PromotionDisplayOrder">
+                <Value>Display order</Value>
+            </LocaleResource>
+            <LocaleResource Name="PromotionDisplayOrder.Hint">
+                <Value>Specifies the display order within the widget zones.</Value>
+            </LocaleResource>-->
         </Children>
     </LocaleResource>
 </Language>

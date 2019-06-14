@@ -33,7 +33,7 @@ using SmartStore.Services.Tax;
 
 namespace SmartStore.PayPal.Services
 {
-    public class PayPalService : IPayPalService
+    public partial class PayPalService : IPayPalService
 	{
 		private readonly Lazy<IRepository<Order>> _orderRepository;
 		private readonly ICommonServices _services;
@@ -45,7 +45,8 @@ namespace SmartStore.PayPal.Services
 		private readonly ITaxService _taxService;
 		private readonly ICurrencyService _currencyService;
 		private readonly Lazy<IPictureService> _pictureService;
-		private readonly Lazy<CompanyInformationSettings> _companyInfoSettings;
+        private readonly Lazy<ICountryService> _countryService;
+        private readonly Lazy<CompanyInformationSettings> _companyInfoSettings;
 
 		public PayPalService(
 			Lazy<IRepository<Order>> orderRepository,
@@ -58,7 +59,8 @@ namespace SmartStore.PayPal.Services
 			ITaxService taxService,
 			ICurrencyService currencyService,
 			Lazy<IPictureService> pictureService,
-			Lazy<CompanyInformationSettings> companyInfoSettings)
+            Lazy<ICountryService> countryService,
+            Lazy<CompanyInformationSettings> companyInfoSettings)
 		{
 			_orderRepository = orderRepository;
 			_services = services;
@@ -70,6 +72,7 @@ namespace SmartStore.PayPal.Services
 			_taxService = taxService;
 			_currencyService = currencyService;
 			_pictureService = pictureService;
+            _countryService = countryService;
 			_companyInfoSettings = companyInfoSettings;
 
 			T = NullLocalizer.Instance;

@@ -295,7 +295,7 @@ namespace SmartStore.Services.Seo
 
 					using (new DbContextScope(autoDetectChanges: false, forceNoTracking: true, proxyCreation: false, lazyLoading: false))
 					{
-						var entities = await EnumerateEntitiesAsync(queries);
+						var entities = EnumerateEntities(queries);
 
 						foreach (var batch in entities.Slice(MaximumSiteMapNodeCount))
 						{
@@ -474,24 +474,33 @@ namespace SmartStore.Services.Seo
 			}
 		}
 
-		private async Task<IEnumerable<NamedEntity>> EnumerateEntitiesAsync(QueryHolder queries)
+		private IEnumerable<NamedEntity> EnumerateEntities(QueryHolder queries)
 		{
 			if (queries.Categories != null)
 			{
-				var categories = await queries.Categories.Select(x => new { x.Id, x.UpdatedOnUtc }).ToListAsync();
-				return categories.Select(x => new NamedEntity { EntityName = "Category", Id = x.Id, LastMod = x.UpdatedOnUtc });
+				var categories = queries.Categories.Select(x => new { x.Id, x.UpdatedOnUtc }).ToList();
+				foreach (var x in categories)
+				{
+					yield return new NamedEntity { EntityName = "Category", Id = x.Id, LastMod = x.UpdatedOnUtc };
+				}
 			}
 
 			if (queries.Manufacturers != null)
 			{
-				var manufacturers = await queries.Manufacturers.Select(x => new { x.Id, x.UpdatedOnUtc }).ToListAsync();
-				return manufacturers.Select(x => new NamedEntity { EntityName = "Manufacturer", Id = x.Id, LastMod = x.UpdatedOnUtc });
+				var manufacturers = queries.Manufacturers.Select(x => new { x.Id, x.UpdatedOnUtc }).ToList();
+				foreach (var x in manufacturers)
+				{
+					yield return new NamedEntity { EntityName = "Manufacturer", Id = x.Id, LastMod = x.UpdatedOnUtc };
+				}
 			}
 
 			if (queries.Topics != null)
 			{
-				var topics = await queries.Topics.Select(x => new { x.Id }).ToListAsync();
-				return topics.Select(x => new NamedEntity { EntityName = "Topic", Id = x.Id, LastMod = DateTime.UtcNow });
+				var topics = queries.Topics.Select(x => new { x.Id }).ToList();
+				foreach (var x in topics)
+				{
+					yield return new NamedEntity { EntityName = "Topic", Id = x.Id, LastMod = DateTime.UtcNow };
+				}
 			}
 
 			if (queries.Products != null)
@@ -502,12 +511,12 @@ namespace SmartStore.Services.Seo
 				//var limit = 0;
 				while (maxId > 1)
 				{
-					var products = await query
+					var products = query
 						.Where(x => x.Id < maxId)
 						.OrderByDescending(x => x.Id)
 						.Take(() => MaximumSiteMapNodeCount)
 						.Select(x => new { x.Id, x.UpdatedOnUtc })
-						.ToListAsync();
+						.ToList();
 
 					//limit++;
 					//if (limit >= 100)
@@ -522,11 +531,12 @@ namespace SmartStore.Services.Seo
 
 					maxId = products.Last().Id;
 
-					return products.Select(x => new NamedEntity { EntityName = "Product", Id = x.Id, LastMod = x.UpdatedOnUtc });
+					foreach (var x in products)
+					{
+						yield return new NamedEntity { EntityName = "Product", Id = x.Id, LastMod = x.UpdatedOnUtc };
+					}
 				}
 			}
-
-			return Enumerable.Empty<NamedEntity>();
 		}
 
 		private IDictionary<string, UrlRecordCollection> GetUrlRecordCollectionsForBatch(IEnumerable<NamedEntity> batch, int[] languageIds)

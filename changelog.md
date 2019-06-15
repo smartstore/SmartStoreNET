@@ -7,10 +7,18 @@
 * #1639 Shipping.ByTotal: Add option to calculate the shipping rate based on the net total instead of the gross total.
 ### Improvements
 * Amazon Pay: PSD2. Strong customer authentication (SCA) upgrade.
+* Removed HTML encoding for meta tags and document title.
+* (SEO) combined SSL and canonical host 301 redirections to prevent successive redirects.
+* (SEO) Activated GZIP compression for all dynamic and static responses.
+* Set max. file upload size to 2 GB (globally)
+* (Dev) Added a sample block for the *Page Builder* in DevTools plugin.
+* Various other minor improvements
 
 ### Bugfixes
+* Fixed wrong XML sitemap index numbering.
 * #1646 Setting ManufacturerItemsToDisplayOnHomepage to 1 will not show any manufacturer.
 * #1647 All manufacturers page: link of last character missing in alphabetical letter list.
+* Various other minor fixes
 
 
 ## SmartStore.NET 3.2.1

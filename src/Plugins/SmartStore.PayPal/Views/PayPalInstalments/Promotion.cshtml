@@ -1,4 +1,51 @@
-﻿@using SmartStore.PayPal.Models;
-@model PromotionModel
+﻿@using SmartStore.PayPal.Services;
+@model FinancingOptions
 @{
+    var option = Model.Qualified
+        .Where(x => x.MonthlyPayment != null)
+        .OrderByDescending(x => x.AnnualPercentageRate)
+        .ThenBy(x => x.MonthlyPayment).FirstOrDefault();
 }
+<div class="paypal-promotion card flex-row flex-wrap mt-3 p-2">
+    @if (Model.Promotion == PayPalPromotion.FinancingExample && option != null && option.AnnualPercentageRate > decimal.Zero)
+    {
+        <div class="card-block">
+            <div><strong>@T("Plugins.Payments.PayPalInstalments.FinancingPerXMonth", option.MonthlyPayment.ToString(), option.Term)</strong></div>
+            <div>@T("Plugins.Payments.PayPalInstalments.FinancingExampleIntro"):</div>
+
+            <div>@T("Plugins.Payments.PayPalInstalments.Lender"): @Html.Raw(Model.Lender)</div>
+        </div>
+    }
+    else
+    {
+        <div class="card-header border-0 bg-transparent p-0">
+	        <img class="pr-2" src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/instalments-sm.png")" 
+		            alt="@T("Plugins.FriendlyName.Payments.PayPalInstalments")" title="@T("Plugins.FriendlyName.Payments.PayPalInstalments")" />
+        </div>
+	    <div class="card-block pl-1" style="margin-top: -3px;">
+            <div>
+            @if (option != null)
+            {
+                @T("Plugins.Payments.PayPalInstalments.FinancingPerMonth", option.MonthlyPayment.ToString())
+            }
+            else
+            {
+                @T("Plugins.Payments.PayPalInstalments.FinancingWanted")
+            }
+            </div>
+		    <div>
+			    <a id="paypal-promotion-link" href="javascript:void(0)" rel="nofollow">@T("Plugins.Payments.PayPalInstalments.RatesInformation")</a>
+		    </div>
+	    </div>
+    }
+</div>
+
+<script>
+	$(function () {
+		$('#paypal-promotion-link').on('click', function (e) {
+			e.preventDefault();
+			var dialog = $('#paypal-promotion-modal');
+
+		});
+	});
+</script>

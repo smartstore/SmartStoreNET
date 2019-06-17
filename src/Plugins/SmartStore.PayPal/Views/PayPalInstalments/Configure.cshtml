@@ -66,6 +66,15 @@
 				@Html.ValidationMessageFor(x => x.CartPagePromotion)
 			</td>
 		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Lender)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(x => x.Lender)
+				@Html.ValidationMessageFor(x => x.Lender)
+			</td>
+		</tr>
 
 		@*<tr>
 			<td class="adminTitle">

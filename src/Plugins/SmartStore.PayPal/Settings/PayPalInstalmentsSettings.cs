@@ -23,6 +23,7 @@ namespace SmartStore.PayPal.Settings
 
         public PayPalPromotion? ProductPagePromotion { get; set; }
         public PayPalPromotion? CartPagePromotion { get; set; }
+        public string Lender { get; set; }
 
         public bool IsAmountFinanceable(decimal amount)
         {

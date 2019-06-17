@@ -4,9 +4,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using SmartStore.ComponentModel;
-using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.PayPal.Models;
@@ -82,7 +82,7 @@ namespace SmartStore.PayPal.Controllers
 
         // Widget zone on checkout confirm page.
         [ChildActionOnly]
-        public ActionResult FinancingDetails()
+        public ActionResult OrderSummaryTotals()
         {
             try
             {
@@ -121,49 +121,9 @@ namespace SmartStore.PayPal.Controllers
             return new EmptyResult();
         }
 
-        // Widget zone on product detail page.
-        [ChildActionOnly]
-        public ActionResult ProductPagePromotion(decimal price)
-        {
-            try
-            {
-                var store = Services.StoreContext.CurrentStore;
-                var settings = Services.Settings.LoadSetting<PayPalInstalmentsSettings>(store.Id);
-
-                if (settings.ProductPagePromotion.HasValue && settings.ClientId.HasValue() && settings.Secret.HasValue() && settings.IsAmountFinanceable(price))
-                {
-                    if (_pluginFinder.Value.IsPluginReady(Services.Settings, Plugin.SystemName, store.Id))
-                    {
-                        if (_paymentService.Value.IsPaymentMethodActive(PayPalInstalmentsProvider.SystemName, store.Id))
-                        {
-                            var model = new PromotionModel
-                            {
-                                Promotion = settings.ProductPagePromotion.Value
-                            };
-
-                            return PartialView("Promotion", model);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-
-            return new EmptyResult();
-        }
-
-        // Widget zones for promotion.
-        //[ChildActionOnly]
-        //public ActionResult Promote()
-        //{
-        //    return new EmptyResult();
-        //}
-
         // Widget zone on order details (page and print).
         [ChildActionOnly]
-        public ActionResult OrderDetails(int orderId, bool print)
+        public ActionResult OrderDetailsTotal(int orderId, bool print)
         {
             try
             {
@@ -204,7 +164,7 @@ namespace SmartStore.PayPal.Controllers
             return new EmptyResult();
         }
 
-        // Redirect from PayPal.
+        // Redirect from PayPal to the shop.
         public ActionResult CheckoutReturn(string paymentId, string PayerID)
         {
             // Request.QueryString:
@@ -222,11 +182,71 @@ namespace SmartStore.PayPal.Controllers
             return RedirectToAction("Confirm", "Checkout", new { area = "" });
         }
 
-        // Redirect from PayPal.
+        // Redirect from PayPal to the shop.
         public ActionResult CheckoutCancel()
         {
+            var store = Services.StoreContext.CurrentStore;
+            var customer = Services.WorkContext.CurrentCustomer;
+
+            _genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, null, store.Id);
+
             return RedirectToAction("PaymentMethod", "Checkout", new { area = "" });
         }
+
+        #region Promotion
+
+        // Widget zone on product detail or cart page.
+        [ChildActionOnly]
+        public ActionResult Promotion(bool isProductPage, decimal amount)
+        {
+            try
+            {
+                var store = Services.StoreContext.CurrentStore;
+                var settings = Services.Settings.LoadSetting<PayPalInstalmentsSettings>(store.Id);
+                var promotion = isProductPage ? settings.ProductPagePromotion : settings.CartPagePromotion;
+
+                if (promotion.HasValue && settings.ClientId.HasValue() && settings.Secret.HasValue() && settings.IsAmountFinanceable(amount))
+                {
+                    if (_pluginFinder.Value.IsPluginReady(Services.Settings, Plugin.SystemName, store.Id))
+                    {
+                        if (_paymentService.Value.IsPaymentMethodActive(PayPalInstalmentsProvider.SystemName, store.Id))
+                        {
+                            var options = new FinancingOptions();
+
+                            //if (settings.ProductPagePromotion == PayPalPromotion.FinancingExample)
+                            //{
+                            //    var session = _httpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
+                            //    var result = PayPalService.EnsureAccessToken(session, settings);
+                            //    if (result.Success)
+                            //    {
+                            //        options = PayPalService.GetFinancingOptions(settings, session, amount);
+                            //    }
+                            //}
+
+                            options.Promotion = promotion.Value;
+                            options.Lender = settings.Lender;
+
+                            return PartialView(options);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+
+            return new EmptyResult();
+        }
+
+        // Widget zones for promotion.
+        //[ChildActionOnly]
+        //public ActionResult Promote()
+        //{
+        //    return new EmptyResult();
+        //}
+
+        #endregion
 
         #region Admin
 
@@ -246,6 +266,12 @@ namespace SmartStore.PayPal.Controllers
                 : PayPalPromotion.FinancingExample.ToSelectList(false).ToList();
 
             PrepareConfigurationModel(model, storeScope);
+
+            if (model.Lender == null)
+            {
+                var cs = Services.Settings.LoadSetting<CompanyInformationSettings>();
+                model.Lender = $"{cs.CompanyName.EmptyNull()}, {cs.Street.EmptyNull()}, {cs.ZipCode.EmptyNull()} {cs.City.EmptyNull()}";
+            }
 
             return View(model);
         }

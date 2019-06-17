@@ -148,7 +148,6 @@
     <Compile Include="Models\PayPalStandardConfigurationModel.cs" />
     <Compile Include="Models\PayPalDirectPaymentInfoModel.cs" />
     <Compile Include="Models\PayPalExpressPaymentInfoModel.cs" />
-    <Compile Include="Models\PromotionModel.cs" />
     <Compile Include="Providers\PayPalExpressProvider.cs" />
     <Compile Include="Providers\PayPalInstalmentsProvider.cs" />
     <Compile Include="Providers\PayPalPlusProvider.cs" />

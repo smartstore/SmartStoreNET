@@ -61,7 +61,7 @@ namespace SmartStore.PayPal.Services
 
         #region Credit
 
-        PayPalResponse GetFinancingOptions(PayPalApiSettingsBase settings, PayPalSessionData session, decimal amount);
+        FinancingOptions GetFinancingOptions(PayPalApiSettingsBase settings, PayPalSessionData session, decimal amount);
 
         #endregion
     }

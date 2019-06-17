@@ -48,7 +48,7 @@ namespace SmartStore.PayPal.Filters
 
                 if (selectedMethod.IsCaseInsensitiveEqual(PayPalInstalmentsProvider.SystemName))
                 {
-                    _widgetProvider.Value.RegisterAction("order_summary_totals_after", "FinancingDetails", "PayPalInstalments", new { area = Plugin.SystemName });
+                    _widgetProvider.Value.RegisterAction("order_summary_totals_after", "OrderSummaryTotals", "PayPalInstalments", new { area = Plugin.SystemName });
 
                     CreatePayment(filterContext);
                 }
@@ -66,6 +66,7 @@ namespace SmartStore.PayPal.Filters
 
             var session = context.HttpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
             session.PaymentId = null;
+            session.FinancingCosts = session.TotalInclFinancingCosts = decimal.Zero;
 
             var result = _payPalService.Value.EnsureAccessToken(session, settings);
             if (result.Success)

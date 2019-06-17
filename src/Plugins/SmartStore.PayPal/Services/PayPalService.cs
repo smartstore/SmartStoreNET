@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Stores;
@@ -1185,10 +1186,27 @@ namespace SmartStore.PayPal.Services
 
 			return HttpStatusCode.OK;
 		}
-	}
+
+        #region Utilities
+
+        public Money Parse(string amount, string currencyCode, Dictionary<string, Currency> currencyLookup)
+        {
+            if (amount.HasValue() && currencyCode.HasValue() && currencyLookup.TryGetValue(currencyCode, out var currency))
+            {
+                if (decimal.TryParse(amount, NumberStyles.Currency, CultureInfo.InvariantCulture, out var value))
+                {
+                    return new Money(value, currency);
+                }
+            }
+
+            return null;
+        }
+
+        #endregion
+    }
 
 
-	public class PayPalResponse
+    public class PayPalResponse
 	{
 		public bool Success { get; set; }
 		public dynamic Json { get; set; }

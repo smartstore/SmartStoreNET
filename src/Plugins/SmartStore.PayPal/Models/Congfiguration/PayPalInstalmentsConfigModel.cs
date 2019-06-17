@@ -27,6 +27,9 @@ namespace SmartStore.PayPal.Models
         public PayPalPromotion? CartPagePromotion { get; set; }
         public IList<SelectListItem> CartPagePromotions { get; set; }
 
+        [SmartResourceDisplayName("Plugins.Payments.PayPalInstalments.Lender")]
+        public string Lender { get; set; }
+
         //[SmartResourceDisplayName("Plugins.Payments.PayPalInstalments.Promote")]
         //public bool Promote { get; set; }
 

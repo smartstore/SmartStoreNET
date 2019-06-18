@@ -503,6 +503,21 @@ Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
             <LocaleResource Name="FinancingExampleIntro">
                 <Value>Representative example according to § 6a PAngV</Value>
             </LocaleResource>
+            <LocaleResource Name="NetLoanAmount">
+                <Value>Net loan amount</Value>
+            </LocaleResource>
+            <LocaleResource Name="FixedBorrowingRate">
+                <Value>Fixed borrowing rate</Value>
+            </LocaleResource>
+            <LocaleResource Name="AnnualPercentageRate">
+                <Value>Annual percentage rate</Value>
+            </LocaleResource>
+            <LocaleResource Name="TotalPayableAmount">
+                <Value>Total payable amount</Value>
+            </LocaleResource>
+            <LocaleResource Name="XMonthlyInstalmentsAmount">
+                <Value>{0} monthly installments in the amount of</Value>
+            </LocaleResource>
             <LocaleResource Name="FinancingMin">
                 <Value>Minimum financing amount</Value>
             </LocaleResource>

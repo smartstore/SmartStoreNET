@@ -19,7 +19,12 @@ namespace SmartStore.PayPal.Services
 
 		PaymentStatus GetPaymentStatus(string state, string reasonCode, PaymentStatus defaultStatus);
 
-		PayPalResponse CallApi(string method, string path, string accessToken, PayPalApiSettingsBase settings, string data);
+		PayPalResponse CallApi(
+            string method,
+            string path,
+            PayPalApiSettingsBase settings,
+            PayPalSessionData session,
+            string data);
 
 		PayPalResponse EnsureAccessToken(PayPalSessionData session, PayPalApiSettingsBase settings);
 
@@ -61,7 +66,7 @@ namespace SmartStore.PayPal.Services
 
         #region Credit
 
-        FinancingOptions GetFinancingOptions(PayPalApiSettingsBase settings, PayPalSessionData session, decimal amount);
+        FinancingOptions GetFinancingOptions(PayPalInstalmentsSettings settings, PayPalSessionData session, PayPalPromotion promotion, decimal amount);
 
         #endregion
     }

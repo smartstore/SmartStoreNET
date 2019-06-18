@@ -497,6 +497,21 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
             <LocaleResource Name="FinancingExampleIntro">
                 <Value>Repräsentatives Beispiel gem. § 6a PAngV</Value>
             </LocaleResource>
+            <LocaleResource Name="NetLoanAmount">
+                <Value>Nettodarlehensbetrag</Value>
+            </LocaleResource>
+            <LocaleResource Name="FixedBorrowingRate">
+                <Value>Fester Sollzinssatz</Value>
+            </LocaleResource>
+            <LocaleResource Name="AnnualPercentageRate">
+                <Value>Effektiver Jahreszins</Value>
+            </LocaleResource>
+            <LocaleResource Name="TotalPayableAmount">
+                <Value>Zu zahlender Gesamtbetrag</Value>
+            </LocaleResource>
+            <LocaleResource Name="XMonthlyInstalmentsAmount">
+                <Value>{0} monatliche Raten in Höhe von</Value>
+            </LocaleResource>
             <LocaleResource Name="FinancingMin">
                 <Value>Minimaler Finanzierungsbetrag</Value>
             </LocaleResource>

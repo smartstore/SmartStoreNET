@@ -49,7 +49,7 @@ namespace SmartStore.PayPal.Services
         private readonly Lazy<ICountryService> _countryService;
         private readonly Lazy<CompanyInformationSettings> _companyInfoSettings;
 
-		public PayPalService(
+        public PayPalService(
 			Lazy<IRepository<Order>> orderRepository,
 			ICommonServices services,
 			IOrderService orderService,
@@ -476,29 +476,35 @@ namespace SmartStore.PayPal.Services
 			return result;
 		}
 
-		public PayPalResponse CallApi(string method, string path, string accessToken, PayPalApiSettingsBase settings, string data)
+		public PayPalResponse CallApi(
+            string method,
+            string path,
+            PayPalApiSettingsBase settings,
+            PayPalSessionData session,
+            string data)
 		{
-			var isJson = (data.HasValue() && (data.StartsWith("{") || data.StartsWith("[")));
-			var encoding = (isJson ? Encoding.UTF8 : Encoding.ASCII);
+			var isJson = data.HasValue() && (data.StartsWith("{") || data.StartsWith("["));
+			var encoding = isJson ? Encoding.UTF8 : Encoding.ASCII;
 			var result = new PayPalResponse();
 			HttpWebResponse webResponse = null;
 
 			var url = GetApiUrl(settings.UseSandbox) + path.EnsureStartsWith("/");
 
-			if (method.IsCaseInsensitiveEqual("GET") && data.HasValue())
-				url = url.EnsureEndsWith("?") + data;
+            if (method.IsCaseInsensitiveEqual("GET") && data.HasValue())
+            {
+                url = url.EnsureEndsWith("?") + data;
+            }
 
 			var request = (HttpWebRequest)WebRequest.Create(url);
 			request.Method = method;
 			request.Accept = "application/json";
-			request.ContentType = (isJson ? "application/json" : "application/x-www-form-urlencoded");
+			request.ContentType = isJson ? "application/json" : "application/x-www-form-urlencoded";
 
 			try
 			{
-				if (HttpContext.Current != null && HttpContext.Current.Request != null)
-					request.UserAgent = HttpContext.Current.Request.UserAgent;
-				else
-					request.UserAgent = Plugin.SystemName;
+                request.UserAgent = HttpContext.Current != null && HttpContext.Current.Request != null
+                    ? HttpContext.Current.Request.UserAgent
+                    : Plugin.SystemName;
 			}
 			catch { }
 
@@ -509,17 +515,23 @@ namespace SmartStore.PayPal.Services
 
 				request.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(credentials));
 			}
-			else
+			else if (session != null)
 			{
-				request.Headers["Authorization"] = "Bearer " + accessToken.EmptyNull();
+				request.Headers["Authorization"] = "Bearer " + session.AccessToken.EmptyNull();
 
-				if (accessToken.IsEmpty())
+				if (session.AccessToken.IsEmpty())
 				{
 					Logger.Error(T("Plugins.SmartStore.PayPal.MissingAccessToken", method.NaIfEmpty(), path.NaIfEmpty()));
 				}
 			}
 
-			request.Headers["PayPal-Partner-Attribution-Id"] = "SmartStoreAG_Cart_PayPalPlus";
+            if (session != null)
+            {
+                if (session.ProviderSystemName.IsCaseInsensitiveEqual(PayPalPlusProvider.SystemName))
+                {
+                    request.Headers["PayPal-Partner-Attribution-Id"] = "SmartStoreAG_Cart_PayPalPlus";
+                }
+            }
 
 			if (data.HasValue() && (method.IsCaseInsensitiveEqual("POST") || method.IsCaseInsensitiveEqual("PUT") || method.IsCaseInsensitiveEqual("PATCH")))
 			{
@@ -682,7 +694,7 @@ namespace SmartStore.PayPal.Services
 		{
 			if (session.AccessToken.IsEmpty() || DateTime.UtcNow >= session.TokenExpiration)
 			{
-				var result = CallApi("POST", "/v1/oauth2/token", null, settings, "grant_type=client_credentials");
+				var result = CallApi("POST", "/v1/oauth2/token", settings, null, "grant_type=client_credentials");
 				if (result.Success)
 				{
 					session.AccessToken = (string)result.Json.access_token;
@@ -704,7 +716,7 @@ namespace SmartStore.PayPal.Services
 
 		public PayPalResponse GetPayment(PayPalApiSettingsBase settings, PayPalSessionData session)
 		{
-			var result = CallApi("GET", "/v1/payments/payment/" + session.PaymentId, session.AccessToken, settings, null);
+			var result = CallApi("GET", "/v1/payments/payment/" + session.PaymentId, settings, session, null);
 
 			if (result.Success && result.Json != null)
 			{
@@ -807,7 +819,7 @@ namespace SmartStore.PayPal.Services
 
 			data.Add("transactions", new List<Dictionary<string, object>> { transaction });
 
-			var result = CallApi("POST", "/v1/payments/payment", session.AccessToken, settings, JsonConvert.SerializeObject(data));
+			var result = CallApi("POST", "/v1/payments/payment", settings, session, JsonConvert.SerializeObject(data));
 
 			if (result.Success && result.Json != null)
 			{
@@ -847,7 +859,7 @@ namespace SmartStore.PayPal.Services
 			amountTotal.Add("value", amount);
 			data.Add(amountTotal);
 
-			var result = CallApi("PATCH", "/v1/payments/payment/{0}".FormatInvariant(session.PaymentId), session.AccessToken, settings, JsonConvert.SerializeObject(data));
+			var result = CallApi("PATCH", "/v1/payments/payment/{0}".FormatInvariant(session.PaymentId), settings, session, JsonConvert.SerializeObject(data));
 
 			//Logger.InsertLog(LogLevel.Information, "PayPal PLUS", JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + (result.Json != null ? result.Json.ToString() : ""));
 
@@ -859,7 +871,7 @@ namespace SmartStore.PayPal.Services
 			var data = new Dictionary<string, object>();
 			data.Add("payer_id", session.PayerId);
 
-			var result = CallApi("POST", "/v1/payments/payment/{0}/execute".FormatInvariant(session.PaymentId), session.AccessToken, settings, JsonConvert.SerializeObject(data));
+			var result = CallApi("POST", "/v1/payments/payment/{0}/execute".FormatInvariant(session.PaymentId), settings, session, JsonConvert.SerializeObject(data));
 
 			if (result.Success && result.Json != null)
 			{
@@ -885,7 +897,7 @@ namespace SmartStore.PayPal.Services
 
 			data.Add("amount", amount);
 
-			var result = CallApi("POST", path, session.AccessToken, settings, data.Any() ? JsonConvert.SerializeObject(data) : null);
+			var result = CallApi("POST", path, settings, session, data.Any() ? JsonConvert.SerializeObject(data) : null);
 
 			if (result.Success && result.Json != null)
 			{
@@ -913,7 +925,7 @@ namespace SmartStore.PayPal.Services
 			data.Add("amount", amount);
             data.Add("is_final_capture", "true");
 
-			var result = CallApi("POST", path, session.AccessToken, settings, JsonConvert.SerializeObject(data));
+			var result = CallApi("POST", path, settings, session, JsonConvert.SerializeObject(data));
 
 			if (result.Success && result.Json != null)
 			{
@@ -927,7 +939,7 @@ namespace SmartStore.PayPal.Services
 		{
 			var path = "/v1/payments/authorization/{0}/void".FormatInvariant(request.Order.AuthorizationTransactionId);
 
-			var result = CallApi("POST", path, session.AccessToken, settings, null);
+			var result = CallApi("POST", path, settings, session, null);
 
 			if (result.Success && result.Json != null)
 			{
@@ -951,7 +963,7 @@ namespace SmartStore.PayPal.Services
 			// Find existing profile id, only one profile per profile name possible.
 			if (settings.ExperienceProfileId.IsEmpty())
 			{
-				result = CallApi("GET", path, session.AccessToken, settings, null);
+				result = CallApi("GET", path, settings, session, null);
 				if (result.Success && result.Json != null)
 				{
 					foreach (var profile in result.Json)
@@ -987,7 +999,7 @@ namespace SmartStore.PayPal.Services
                 path = string.Concat(path, "/", HttpUtility.UrlPathEncode(settings.ExperienceProfileId));
             }
 
-			result = CallApi(settings.ExperienceProfileId.HasValue() ? "PUT" : "POST", path, session.AccessToken, settings, JsonConvert.SerializeObject(data));
+			result = CallApi(settings.ExperienceProfileId.HasValue() ? "PUT" : "POST", path, settings, session, JsonConvert.SerializeObject(data));
 
 			if (result.Success)
 			{
@@ -1006,7 +1018,7 @@ namespace SmartStore.PayPal.Services
 
 		public PayPalResponse DeleteCheckoutExperience(PayPalApiSettingsBase settings, PayPalSessionData session)
 		{
-			var result = CallApi("DELETE", "/v1/payment-experience/web-profiles/" + settings.ExperienceProfileId, session.AccessToken, settings, null);
+			var result = CallApi("DELETE", "/v1/payment-experience/web-profiles/" + settings.ExperienceProfileId, settings, session, null);
 
 			if (result.Success && result.Json != null)
 			{
@@ -1036,7 +1048,7 @@ namespace SmartStore.PayPal.Services
 			data.Add("url", url);
 			data.Add("event_types", events);
 
-			var result = CallApi("POST", "/v1/notifications/webhooks", session.AccessToken, settings, JsonConvert.SerializeObject(data));
+			var result = CallApi("POST", "/v1/notifications/webhooks", settings, session, JsonConvert.SerializeObject(data));
 
 			if (result.Success && result.Json != null)
 			{
@@ -1048,7 +1060,7 @@ namespace SmartStore.PayPal.Services
 
 		public PayPalResponse DeleteWebhook(PayPalApiSettingsBase settings, PayPalSessionData session)
 		{
-			var result = CallApi("DELETE", "/v1/notifications/webhooks/" + settings.WebhookId, session.AccessToken, settings, null);
+			var result = CallApi("DELETE", "/v1/notifications/webhooks/" + settings.WebhookId, settings, session, null);
 
 			if (result.Success && result.Json != null)
 			{
@@ -1189,17 +1201,18 @@ namespace SmartStore.PayPal.Services
 
         #region Utilities
 
-        public Money Parse(string amount, string currencyCode, Dictionary<string, Currency> currencyLookup)
+        private Money Parse(string amount, Currency sourceCurrency, Currency targetCurrency, Store store)
         {
-            if (amount.HasValue() && currencyCode.HasValue() && currencyLookup.TryGetValue(currencyCode, out var currency))
+            Guard.NotNull(sourceCurrency, nameof(sourceCurrency));
+            Guard.NotNull(targetCurrency, nameof(targetCurrency));
+
+            if (amount.HasValue() && decimal.TryParse(amount, NumberStyles.Currency, CultureInfo.InvariantCulture, out var value))
             {
-                if (decimal.TryParse(amount, NumberStyles.Currency, CultureInfo.InvariantCulture, out var value))
-                {
-                    return new Money(value, currency);
-                }
+                value = _currencyService.ConvertCurrency(value, sourceCurrency, targetCurrency, store);
+                return new Money(value, targetCurrency);
             }
 
-            return null;
+            return new Money(decimal.Zero, targetCurrency);
         }
 
         #endregion

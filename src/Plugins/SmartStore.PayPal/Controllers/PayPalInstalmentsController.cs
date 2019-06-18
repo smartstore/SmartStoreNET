@@ -211,22 +211,10 @@ namespace SmartStore.PayPal.Controllers
                     {
                         if (_paymentService.Value.IsPaymentMethodActive(PayPalInstalmentsProvider.SystemName, store.Id))
                         {
-                            var options = new FinancingOptions();
+                            var session = _httpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
+                            var model = PayPalService.GetFinancingOptions(settings, session, promotion.Value, amount);
 
-                            //if (settings.ProductPagePromotion == PayPalPromotion.FinancingExample)
-                            //{
-                            //    var session = _httpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
-                            //    var result = PayPalService.EnsureAccessToken(session, settings);
-                            //    if (result.Success)
-                            //    {
-                            //        options = PayPalService.GetFinancingOptions(settings, session, amount);
-                            //    }
-                            //}
-
-                            options.Promotion = promotion.Value;
-                            options.Lender = settings.Lender;
-
-                            return PartialView(options);
+                            return PartialView(model);
                         }
                     }
                 }

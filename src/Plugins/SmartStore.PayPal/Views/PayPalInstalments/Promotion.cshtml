@@ -2,18 +2,42 @@
 @model FinancingOptions
 @{
     var option = Model.Qualified
-        .Where(x => x.MonthlyPayment != null)
+        .Where(x => x.MonthlyPayment.Amount > decimal.Zero)
         .OrderByDescending(x => x.AnnualPercentageRate)
-        .ThenBy(x => x.MonthlyPayment).FirstOrDefault();
+        .ThenBy(x => x.MonthlyPayment.Amount).FirstOrDefault();
 }
 <div class="paypal-promotion card flex-row flex-wrap mt-3 p-2">
     @if (Model.Promotion == PayPalPromotion.FinancingExample && option != null && option.AnnualPercentageRate > decimal.Zero)
     {
         <div class="card-block">
-            <div><strong>@T("Plugins.Payments.PayPalInstalments.FinancingPerXMonth", option.MonthlyPayment.ToString(), option.Term)</strong></div>
+            <div class="font-weight-bold">@T("Plugins.Payments.PayPalInstalments.FinancingPerXMonth", option.MonthlyPayment.ToString(), option.Term)</div>
             <div>@T("Plugins.Payments.PayPalInstalments.FinancingExampleIntro"):</div>
-
-            <div>@T("Plugins.Payments.PayPalInstalments.Lender"): @Html.Raw(Model.Lender)</div>
+            <div class="m-1 pl-3 pr-3">
+                <table class="w-100">
+                    <tr>
+                        <td>@T("Plugins.Payments.PayPalInstalments.NetLoanAmount"):</td>
+                        <td class="text-right font-weight-bold">@(Model.NetLoanAmount.ToString())</td>
+                    </tr>
+                    <tr>
+                        <td>@T("Plugins.Payments.PayPalInstalments.FixedBorrowingRate"):</td>
+                        <td class="text-right font-weight-bold">@(option.BorrowingRate.ToString()) %</td>
+                    </tr>
+                    <tr>
+                        <td>@T("Plugins.Payments.PayPalInstalments.AnnualPercentageRate"):</td>
+                        <td class="text-right font-weight-bold">@(option.AnnualPercentageRate.ToString()) %</td>
+                    </tr>
+                    <tr>
+                        <td>@T("Plugins.Payments.PayPalInstalments.TotalPayableAmount"):</td>
+                        <td class="text-right font-weight-bold">@(option.TotalCost.ToString())</td>
+                    </tr>
+                    <tr>
+                        <td>@T("Plugins.Payments.PayPalInstalments.XMonthlyInstalmentsAmount", option.Term):</td>
+                        <td class="text-right font-weight-bold">@(option.MonthlyPayment.ToString())</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="small">@T("Plugins.Payments.PayPalInstalments.Lender"): @Html.Raw(Model.Lender)</div>
+		    <div class="font-weight-bold mt-1"><a id="paypal-promotion-link" href="javascript:void(0)" rel="nofollow">@T("Plugins.Payments.PayPalInstalments.RatesInformation")</a></div>
         </div>
     }
     else
@@ -24,14 +48,14 @@
         </div>
 	    <div class="card-block pl-1" style="margin-top: -3px;">
             <div>
-            @if (option != null)
-            {
-                @T("Plugins.Payments.PayPalInstalments.FinancingPerMonth", option.MonthlyPayment.ToString())
-            }
-            else
-            {
-                @T("Plugins.Payments.PayPalInstalments.FinancingWanted")
-            }
+                @if (option != null)
+                {
+                    @T("Plugins.Payments.PayPalInstalments.FinancingPerMonth", option.MonthlyPayment.ToString())
+                }
+                else
+                {
+                    @T("Plugins.Payments.PayPalInstalments.FinancingWanted")
+                }
             </div>
 		    <div>
 			    <a id="paypal-promotion-link" href="javascript:void(0)" rel="nofollow">@T("Plugins.Payments.PayPalInstalments.RatesInformation")</a>

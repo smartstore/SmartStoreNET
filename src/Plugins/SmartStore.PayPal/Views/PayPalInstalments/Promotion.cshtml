@@ -1,10 +1,15 @@
 ﻿@using SmartStore.PayPal.Services;
 @model FinancingOptions
 @{
-    var option = Model.Qualified
-        .Where(x => x.MonthlyPayment.Amount > decimal.Zero)
-        .OrderByDescending(x => x.AnnualPercentageRate)
-        .ThenBy(x => x.MonthlyPayment.Amount).FirstOrDefault();
+    var option = Model.Qualified.FirstOrDefault(x => x.MonthlyPayment.Amount > decimal.Zero && x.AnnualPercentageRate == decimal.Zero);
+
+    if (option == null)
+    {
+        option = Model.Qualified
+            .Where(x => x.MonthlyPayment.Amount > decimal.Zero)
+            .OrderByDescending(x => x.AnnualPercentageRate)
+            .ThenBy(x => x.MonthlyPayment.Amount).FirstOrDefault();
+    }
 }
 <div class="paypal-promotion card flex-row flex-wrap mt-3 p-2">
     @if (Model.Promotion == PayPalPromotion.FinancingExample && option != null && option.AnnualPercentageRate > decimal.Zero)
@@ -15,24 +20,28 @@
             <div class="m-1 pl-3 pr-3">
                 <table class="w-100">
                     <tr>
+                        @*German: Darlehehnsbetrag.*@
                         <td>@T("Plugins.Payments.PayPalInstalments.NetLoanAmount"):</td>
-                        <td class="text-right font-weight-bold">@(Model.NetLoanAmount.ToString())</td>
+                        <td class="text-right font-weight-bold text-nowrap">@(Model.NetLoanAmount.ToString())</td>
                     </tr>
                     <tr>
-                        <td>@T("Plugins.Payments.PayPalInstalments.FixedBorrowingRate"):</td>
-                        <td class="text-right font-weight-bold">@(option.BorrowingRate.ToString()) %</td>
+                        @*German: Nominalzins. Is the same as Sollzins.*@
+                        <td>@T("Plugins.Payments.PayPalInstalments.FixedNominalRate"):</td>
+                        <td class="text-right font-weight-bold text-nowrap">@(Math.Round(option.NominalRate, 2).ToString("0.00")) %</td>
                     </tr>
                     <tr>
+                        @*German: Effektivzins.*@
                         <td>@T("Plugins.Payments.PayPalInstalments.AnnualPercentageRate"):</td>
-                        <td class="text-right font-weight-bold">@(option.AnnualPercentageRate.ToString()) %</td>
+                        <td class="text-right font-weight-bold text-nowrap">@(Math.Round(option.AnnualPercentageRate, 2).ToString("0.00")) %</td>
                     </tr>
                     <tr>
+                        @*MonthlyPayment * Term != TotalCost --> last monthly payment is different\lower.*@
                         <td>@T("Plugins.Payments.PayPalInstalments.TotalPayableAmount"):</td>
-                        <td class="text-right font-weight-bold">@(option.TotalCost.ToString())</td>
+                        <td class="text-right font-weight-bold text-nowrap">@(option.TotalCost.ToString())</td>
                     </tr>
                     <tr>
                         <td>@T("Plugins.Payments.PayPalInstalments.XMonthlyInstalmentsAmount", option.Term):</td>
-                        <td class="text-right font-weight-bold">@(option.MonthlyPayment.ToString())</td>
+                        <td class="text-right font-weight-bold text-nowrap">@(option.MonthlyPayment.ToString())</td>
                     </tr>
                 </table>
             </div>

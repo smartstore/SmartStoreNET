@@ -531,6 +531,10 @@ namespace SmartStore.PayPal.Services
                 {
                     request.Headers["PayPal-Partner-Attribution-Id"] = "SmartStoreAG_Cart_PayPalPlus";
                 }
+                else if (session.ProviderSystemName.IsCaseInsensitiveEqual(PayPalInstalmentsProvider.SystemName))
+                {
+                    request.Headers["PayPal-Partner-Attribution-Id"] = "SmartStoreAG_Cart_PayPalRatenzahlung";
+                }
             }
 
 			if (data.HasValue() && (method.IsCaseInsensitiveEqual("POST") || method.IsCaseInsensitiveEqual("PUT") || method.IsCaseInsensitiveEqual("PATCH")))

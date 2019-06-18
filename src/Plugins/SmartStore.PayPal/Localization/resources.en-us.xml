@@ -495,7 +495,7 @@ Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
                 <Value>Financing wanted?</Value>
             </LocaleResource>
             <LocaleResource Name="FinancingPerMonth">
-                <Value>Financing from {0} per month</Value>
+                <Value>Financing from {0} per month.</Value>
             </LocaleResource>
             <LocaleResource Name="FinancingPerXMonth">
                 <Value>Financing from {0} in {1} monthly installments with payment in installments powered by PayPal.</Value>
@@ -506,8 +506,8 @@ Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
             <LocaleResource Name="NetLoanAmount">
                 <Value>Net loan amount</Value>
             </LocaleResource>
-            <LocaleResource Name="FixedBorrowingRate">
-                <Value>Fixed borrowing rate</Value>
+            <LocaleResource Name="FixedNominalRate">
+                <Value>Fixed nominal rate</Value>
             </LocaleResource>
             <LocaleResource Name="AnnualPercentageRate">
                 <Value>Annual percentage rate</Value>

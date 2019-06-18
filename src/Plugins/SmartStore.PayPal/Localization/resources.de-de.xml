@@ -489,7 +489,7 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
                 <Value>Finanzierung gewünscht?</Value>
             </LocaleResource>
             <LocaleResource Name="FinancingPerMonth">
-                <Value>Finanzierung ab {0} im Monat</Value>
+                <Value>Finanzierung ab {0} im Monat.</Value>
             </LocaleResource>
             <LocaleResource Name="FinancingPerXMonth">
                 <Value>Finanzierung ab {0} in {1} monatlichen Raten mit Ratenzahlung Powered by PayPal.</Value>
@@ -500,7 +500,7 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
             <LocaleResource Name="NetLoanAmount">
                 <Value>Nettodarlehensbetrag</Value>
             </LocaleResource>
-            <LocaleResource Name="FixedBorrowingRate">
+            <LocaleResource Name="FixedNominalRate">
                 <Value>Fester Sollzinssatz</Value>
             </LocaleResource>
             <LocaleResource Name="AnnualPercentageRate">

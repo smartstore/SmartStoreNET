@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.Linq;
 using Newtonsoft.Json;
-using SmartStore.PayPal.Providers;
 using SmartStore.PayPal.Settings;
 
 namespace SmartStore.PayPal.Services
@@ -25,17 +24,6 @@ namespace SmartStore.PayPal.Services
 
             if (promotion == PayPalPromotion.FinancingExample)
             {
-                //result.Qualified.Add(new FinancingOptions.Option
-                //{
-                //    AnnualPercentageRate = 9.87M,
-                //    NominalRate = 9.75M,
-                //    Term = 24,
-                //    MinAmount = new Money(_currencyService.ConvertCurrency(65.5M, sourceCurrency, targetCurrency, store), targetCurrency),
-                //    MonthlyPayment = new Money(_currencyService.ConvertCurrency(24.5M, sourceCurrency, targetCurrency, store), targetCurrency),
-                //    TotalInterest = new Money(_currencyService.ConvertCurrency(8.5M, sourceCurrency, targetCurrency, store), targetCurrency),
-                //    TotalCost = new Money(_currencyService.ConvertCurrency(324.0M, sourceCurrency, targetCurrency, store), targetCurrency),
-                //});
-
                 var response = EnsureAccessToken(session, settings);
                 if (response.Success)
                 {
@@ -50,6 +38,8 @@ namespace SmartStore.PayPal.Services
                     data.Add("transaction_amount", transactionAmount);
 
                     response = CallApi("POST", "/v1/credit/calculated-financing-options", settings, session, JsonConvert.SerializeObject(data));
+
+                    ((string)response.Json.ToString()).Dump();
 
                     if (response.Success && response.Json.financing_options != null)
                     {
@@ -99,12 +89,16 @@ namespace SmartStore.PayPal.Services
         {
             public decimal AnnualPercentageRate { get; set; }
             public decimal NominalRate { get; set; }
-            public decimal BorrowingRate { get; set; }
             public int Term { get; set; }
             public Money MinAmount { get; set; }
             public Money MonthlyPayment { get; set; }
             public Money TotalInterest { get; set; }
             public Money TotalCost { get; set; }
+
+            public override string ToString()
+            {
+                return $"{Term} months (effective {AnnualPercentageRate}, nominal {NominalRate}): monthly {MonthlyPayment.ToString()}, total {TotalCost.ToString()}, interest {TotalInterest.ToString()}";
+            }
         }
     }
 }

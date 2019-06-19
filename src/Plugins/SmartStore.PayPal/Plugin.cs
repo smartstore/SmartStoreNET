@@ -94,7 +94,7 @@ namespace SmartStore.PayPal
                 { "area", SystemName }
             };
 
-            if (widgetZone.IsCaseInsensitiveEqual("productdetails_add_info"))
+            if (widgetZone == "productdetails_add_info")
             {
                 var viewModel = model as ProductDetailsModel;
                 if (viewModel != null)
@@ -113,7 +113,7 @@ namespace SmartStore.PayPal
                     routeValues.Add("amount", price);
                 }
             }
-            else if (widgetZone.IsCaseInsensitiveEqual("order_summary_totals_after"))
+            else if (widgetZone == "order_summary_totals_after")
             {
                 var viewModel = model as ShoppingCartModel;
                 if (viewModel != null && viewModel.IsEditable)
@@ -129,7 +129,7 @@ namespace SmartStore.PayPal
                     routeValues.Add("amount", subTotalWithDiscountBase);
                 }
             }
-            else if (widgetZone.IsCaseInsensitiveEqual("orderdetails_page_aftertotal") || widgetZone.IsCaseInsensitiveEqual("invoice_aftertotal"))
+            else if (widgetZone == "orderdetails_page_aftertotal" || widgetZone == "invoice_aftertotal")
             {
                 var viewModel = model as OrderDetailsModel;
                 if (viewModel != null)

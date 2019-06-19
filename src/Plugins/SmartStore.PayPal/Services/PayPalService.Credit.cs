@@ -27,6 +27,7 @@ namespace SmartStore.PayPal.Services
                 var response = EnsureAccessToken(session, settings);
                 if (response.Success)
                 {
+                    var index = 0;
                     var dc = decimal.Zero;
                     var data = new Dictionary<string, object>();
                     var transactionAmount = new Dictionary<string, object>();
@@ -64,6 +65,13 @@ namespace SmartStore.PayPal.Services
 
                             result.Qualified.Add(option);
                         }
+
+                        result.Qualified = result.Qualified
+                            .OrderBy(x => x.Term)
+                            .ThenBy(x => x.MonthlyPayment.Amount)
+                            .ToList();
+                        
+                        result.Qualified.Each(x => x.Index = ++index);
                     }
                 }
             }
@@ -87,6 +95,7 @@ namespace SmartStore.PayPal.Services
 
         public class Option
         {
+            public int Index { get; set; }
             public decimal AnnualPercentageRate { get; set; }
             public decimal NominalRate { get; set; }
             public int Term { get; set; }

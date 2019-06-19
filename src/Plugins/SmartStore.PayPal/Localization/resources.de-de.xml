@@ -497,6 +497,9 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
             <LocaleResource Name="FinancingExampleIntro">
                 <Value>Repräsentatives Beispiel gem. § 6a PAngV</Value>
             </LocaleResource>
+            <LocaleResource Name="PlanX">
+                <Value>Plan {0}</Value>
+            </LocaleResource>
             <LocaleResource Name="NetLoanAmount">
                 <Value>Nettodarlehensbetrag</Value>
             </LocaleResource>
@@ -511,6 +514,18 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
             </LocaleResource>
             <LocaleResource Name="XMonthlyInstalmentsAmount">
                 <Value>{0} monatliche Raten in Höhe von</Value>
+            </LocaleResource>
+            <LocaleResource Name="InterestAmount">
+                <Value>Zinsbetrag</Value>
+            </LocaleResource>
+            <LocaleResource Name="NoFinancingDetails">
+                <Value>Es liegen keine Finanzierungsdetails vor.</Value>
+            </LocaleResource>
+            <LocaleResource Name="FinancingDetailsTitle">
+                <Value>Zahlen Sie bequem und einfach in monatlichen Raten.</Value>
+            </LocaleResource>
+            <LocaleResource Name="FinancingDetailsIntro">
+                <Value>Ihre Ratenzahlung und den passenden Finanzierungsplan können Sie im Rahmen des Bestellprozesses auswählen. Ihr Antrag erfolgt komplett online und wird in wenigen Schritten hier im Shop abgeschlossen.</Value>
             </LocaleResource>
             <LocaleResource Name="FinancingMin">
                 <Value>Minimaler Finanzierungsbetrag</Value>

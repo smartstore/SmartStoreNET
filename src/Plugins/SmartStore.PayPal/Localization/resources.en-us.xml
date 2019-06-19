@@ -503,6 +503,9 @@ Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
             <LocaleResource Name="FinancingExampleIntro">
                 <Value>Representative example according to § 6a PAngV</Value>
             </LocaleResource>
+            <LocaleResource Name="PlanX">
+                <Value>Plan {0}</Value>
+            </LocaleResource>
             <LocaleResource Name="NetLoanAmount">
                 <Value>Net loan amount</Value>
             </LocaleResource>
@@ -517,6 +520,18 @@ Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
             </LocaleResource>
             <LocaleResource Name="XMonthlyInstalmentsAmount">
                 <Value>{0} monthly installments in the amount of</Value>
+            </LocaleResource>
+            <LocaleResource Name="InterestAmount">
+                <Value>Interest amount</Value>
+            </LocaleResource>
+            <LocaleResource Name="NoFinancingDetails">
+                <Value>No financing details are available.</Value>
+            </LocaleResource>
+            <LocaleResource Name="FinancingDetailsTitle">
+                <Value>Pay conveniently and easily in monthly installments.</Value>
+            </LocaleResource>
+            <LocaleResource Name="FinancingDetailsIntro">
+                <Value>You can select your installment payment and the appropriate financing plan during the ordering process. Your application is processed online and can be completed here in the shop in just a few steps.</Value>
             </LocaleResource>
             <LocaleResource Name="FinancingMin">
                 <Value>Minimum financing amount</Value>

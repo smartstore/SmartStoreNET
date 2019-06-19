@@ -23,7 +23,6 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 using SmartStore.Web.Framework.Theming;
-using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.PayPal.Controllers
 {
@@ -34,7 +33,6 @@ namespace SmartStore.PayPal.Controllers
         private readonly IOrderService _orderService;
         private readonly ICurrencyService _currencyService;
         private readonly Lazy<IPaymentService> _paymentService;
-        private readonly IWidgetProvider _widgetProvider;
         private readonly IPriceFormatter _priceFormatter;
         private readonly Lazy<IPluginFinder> _pluginFinder;
 
@@ -45,7 +43,6 @@ namespace SmartStore.PayPal.Controllers
             IOrderService orderService,
             ICurrencyService currencyService,
             Lazy<IPaymentService> paymentService,
-            IWidgetProvider widgetProvider,
             IPriceFormatter priceFormatter,
             Lazy<IPluginFinder> pluginFinder) 
             : base(PayPalInstalmentsProvider.SystemName, payPalService)
@@ -55,7 +52,6 @@ namespace SmartStore.PayPal.Controllers
             _orderService = orderService;
             _currencyService = currencyService;
             _paymentService = paymentService;
-            _widgetProvider = widgetProvider;
             _priceFormatter = priceFormatter;
             _pluginFinder = pluginFinder;
         }
@@ -202,14 +198,15 @@ namespace SmartStore.PayPal.Controllers
             try
             {
                 var store = Services.StoreContext.CurrentStore;
-                var settings = Services.Settings.LoadSetting<PayPalInstalmentsSettings>(store.Id);
-                var promotion = isProductPage ? settings.ProductPagePromotion : settings.CartPagePromotion;
 
-                if (promotion.HasValue && settings.ClientId.HasValue() && settings.Secret.HasValue() && settings.IsAmountFinanceable(amount))
+                if (_pluginFinder.Value.IsPluginReady(Services.Settings, Plugin.SystemName, store.Id))
                 {
-                    if (_pluginFinder.Value.IsPluginReady(Services.Settings, Plugin.SystemName, store.Id))
+                    if (_paymentService.Value.IsPaymentMethodActive(PayPalInstalmentsProvider.SystemName, store.Id))
                     {
-                        if (_paymentService.Value.IsPaymentMethodActive(PayPalInstalmentsProvider.SystemName, store.Id))
+                        var settings = Services.Settings.LoadSetting<PayPalInstalmentsSettings>(store.Id);
+                        var promotion = isProductPage ? settings.ProductPagePromotion : settings.CartPagePromotion;
+
+                        if (promotion.HasValue && settings.ClientId.HasValue() && settings.Secret.HasValue() && settings.IsAmountFinanceable(amount))
                         {
                             var session = _httpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
                             var model = PayPalService.GetFinancingOptions(settings, session, promotion.Value, amount);
@@ -225,6 +222,40 @@ namespace SmartStore.PayPal.Controllers
             }
 
             return new EmptyResult();
+        }
+
+        // Ajax.
+        public ActionResult PromotionDetails(decimal amount)
+        {
+            try
+            {
+                var store = Services.StoreContext.CurrentStore;
+
+                if (!_pluginFinder.Value.IsPluginReady(Services.Settings, Plugin.SystemName, store.Id) ||
+                    !_paymentService.Value.IsPaymentMethodActive(PayPalInstalmentsProvider.SystemName, store.Id))
+                {
+                    return HttpNotFound();
+                }
+
+                var settings = Services.Settings.LoadSetting<PayPalInstalmentsSettings>(store.Id);
+
+                if (settings.ClientId.HasValue() && settings.Secret.HasValue() && settings.IsAmountFinanceable(amount))
+                {
+                    var session = _httpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
+                    var model = PayPalService.GetFinancingOptions(settings, session, PayPalPromotion.FinancingExample, amount);
+
+                    return PartialView(model);
+                }
+                else
+                {
+                    return Content("<div class='alert alert-info'>{0}</div>".FormatInvariant(T("Plugins.Payments.PayPalInstalments.NoFinancingDetails")));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return Content("<div class='alert alert-error'>{0}</div>".FormatInvariant(ex.ToAllMessages().HtmlEncode()));
+            }
         }
 
         // Widget zones for promotion.

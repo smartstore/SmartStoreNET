@@ -611,30 +611,29 @@ namespace SmartStore
 			if (string.IsNullOrEmpty(value))
 				return new string[0];
 
-			// do not use separator.IsEmpty() here because whitespace like " " is a valid separator.
+			// Do not use separator.IsEmpty() here because whitespace like " " is a valid separator.
 			// an empty separator "" returns array with value.
 			if (separator == null)
 			{
-				separator = "|";
-
-				if (value.IndexOf(separator) < 0)
+				for (var i = 0; i < value.Length; i++)
 				{
-					if (value.IndexOf(';') > -1)
+					var c = value[i];
+					if (c == ';' || c == ',' || c == '|')
 					{
-						separator = ";";
+						return value.Split(new char[] { c }, StringSplitOptions.RemoveEmptyEntries);
 					}
-					else if (value.IndexOf(',') > -1)
+					if (c == '\r' && (i + 1) < value.Length & value[i + 1] == '\n')
 					{
-						separator = ",";
-					}
-					else if (value.IndexOf(Environment.NewLine) > -1)
-					{
-						separator = Environment.NewLine;
+						return value.GetLines(false, true).ToArray();
 					}
 				}
-			}
 
-			return value.Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries);
+				return new string[] { value };
+			}
+			else
+			{
+				return value.Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries);
+			}
 		}
 
 		/// <summary>Splits a string into two strings</summary>

@@ -521,6 +521,9 @@ Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
             <LocaleResource Name="XMonthlyInstalmentsAmount">
                 <Value>{0} monthly installments in the amount of</Value>
             </LocaleResource>
+            <LocaleResource Name="LastInstalment">
+                <Value>last installment of</Value>
+            </LocaleResource>
             <LocaleResource Name="InterestAmount">
                 <Value>Interest amount</Value>
             </LocaleResource>

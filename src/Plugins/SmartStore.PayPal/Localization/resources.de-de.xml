@@ -513,7 +513,10 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
                 <Value>Zu zahlender Gesamtbetrag</Value>
             </LocaleResource>
             <LocaleResource Name="XMonthlyInstalmentsAmount">
-                <Value>{0} monatliche Raten in Höhe von</Value>
+                <Value>{0} monatliche Raten zu je</Value>
+            </LocaleResource>
+            <LocaleResource Name="LastInstalment">
+                <Value>letzte Rate zu</Value>
             </LocaleResource>
             <LocaleResource Name="InterestAmount">
                 <Value>Zinsbetrag</Value>

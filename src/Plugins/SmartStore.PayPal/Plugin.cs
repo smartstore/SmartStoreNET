@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Routing;
-using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.PayPal.Providers;
@@ -9,9 +8,7 @@ using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services;
 using SmartStore.Services.Cms;
-using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
-using SmartStore.Services.Orders;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Order;
 using SmartStore.Web.Models.ShoppingCart;
@@ -24,18 +21,15 @@ namespace SmartStore.PayPal
     {
         private readonly ICommonServices _services;
 		private readonly Lazy<IPayPalService> _payPalService;
-        private readonly Lazy<IOrderTotalCalculationService> _orderTotalCalculationService;
         private readonly Lazy<ICurrencyService> _currencyService;
 
         public Plugin(
             ICommonServices services,
 			Lazy<IPayPalService> payPalService,
-            Lazy<IOrderTotalCalculationService> orderTotalCalculationService,
             Lazy<ICurrencyService> currencyService)
 		{
             _services = services;
 			_payPalService = payPalService;
-            _orderTotalCalculationService = orderTotalCalculationService;
             _currencyService = currencyService;
 
 			Logger = NullLogger.Instance;
@@ -99,18 +93,21 @@ namespace SmartStore.PayPal
                 var viewModel = model as ProductDetailsModel;
                 if (viewModel != null)
                 {
-                    actionName = "Promotion";
-                    controllerName = "PayPalInstalments";
-
                     var price = viewModel.ProductPrice.PriceWithDiscountValue > decimal.Zero
                         ? viewModel.ProductPrice.PriceWithDiscountValue
                         : viewModel.ProductPrice.PriceValue;
 
-                    // Convert price because it is in working currency.
-                    price = _currencyService.Value.ConvertToPrimaryStoreCurrency(price, _services.WorkContext.WorkingCurrency);
+                    if (price > decimal.Zero)
+                    {
+                        actionName = "Promotion";
+                        controllerName = "PayPalInstalments";
 
-                    routeValues.Add("isProductPage", true);
-                    routeValues.Add("amount", price);
+                        // Convert price because it is in working currency.
+                        price = _currencyService.Value.ConvertToPrimaryStoreCurrency(price, _services.WorkContext.WorkingCurrency);
+
+                        routeValues.Add("origin", "productpage");
+                        routeValues.Add("amount", price);
+                    }
                 }
             }
             else if (widgetZone == "order_summary_totals_after")
@@ -121,12 +118,8 @@ namespace SmartStore.PayPal
                     actionName = "Promotion";
                     controllerName = "PayPalInstalments";
 
-                    var cart = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
-
-                    _orderTotalCalculationService.Value.GetShoppingCartSubTotal(cart, out _, out _, out _, out var subTotalWithDiscountBase);
-
-                    routeValues.Add("isProductPage", false);
-                    routeValues.Add("amount", subTotalWithDiscountBase);
+                    routeValues.Add("origin", "cart");
+                    routeValues.Add("amount", decimal.Zero);
                 }
             }
             else if (widgetZone == "orderdetails_page_aftertotal" || widgetZone == "invoice_aftertotal")

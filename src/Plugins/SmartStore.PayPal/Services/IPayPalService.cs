@@ -66,7 +66,12 @@ namespace SmartStore.PayPal.Services
 
         #region Credit
 
-        FinancingOptions GetFinancingOptions(PayPalInstalmentsSettings settings, PayPalSessionData session, PayPalPromotion promotion, decimal amount);
+        FinancingOptions GetFinancingOptions(
+            PayPalInstalmentsSettings settings,
+            PayPalSessionData session,
+            string origin,
+            decimal amount,
+            PayPalPromotion? promotion = null);
 
         #endregion
     }

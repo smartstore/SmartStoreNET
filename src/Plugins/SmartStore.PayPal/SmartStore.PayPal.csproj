@@ -337,7 +337,10 @@
     <Content Include="Views\PayPalInstalments\Promotion.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\PayPalInstalments\PromotionDetails.cshtml">
+    <Content Include="Views\PayPalInstalments\PromotionPopup.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PayPalInstalments\Promotion.Content.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Web References\PayPalSvc\CoreComponentTypes.xsd">

@@ -498,9 +498,9 @@ Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
                 <Value>Financing from {0} per month.</Value>
             </LocaleResource>
             <LocaleResource Name="FinancingPerXMonth">
-                <Value>Financing from {0} in {1} monthly installments with payment in installments powered by PayPal.</Value>
+                <Value>Financing from {0} in {1} monthly installments.</Value>
             </LocaleResource>
-            <LocaleResource Name="FinancingExampleIntro">
+            <LocaleResource Name="RepresentativeExample">
                 <Value>Representative example according to § 6a PAngV</Value>
             </LocaleResource>
             <LocaleResource Name="PlanX">
@@ -527,11 +527,11 @@ Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
             <LocaleResource Name="NoFinancingDetails">
                 <Value>No financing details are available.</Value>
             </LocaleResource>
-            <LocaleResource Name="FinancingDetailsTitle">
+            <LocaleResource Name="PromotionDetailsTitle">
                 <Value>Pay conveniently and easily in monthly installments.</Value>
             </LocaleResource>
-            <LocaleResource Name="FinancingDetailsIntro">
-                <Value>You can select your installment payment and the appropriate financing plan during the ordering process. Your application is processed online and can be completed here in the shop in just a few steps.</Value>
+            <LocaleResource Name="PromotionDetailsIntro">
+                <Value>You can select your installment payment and the appropriate financing plan during the ordering process. Your application is processed online via Ratenzahlung Powered by PayPal and can be completed here in the shop in just a few steps.</Value>
             </LocaleResource>
             <LocaleResource Name="FinancingMin">
                 <Value>Minimum financing amount</Value>
@@ -556,6 +556,12 @@ Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
             </LocaleResource>
             <LocaleResource Name="CartPagePromotion.Hint">
                 <Value>Specifies whether and how to promote payment in installments on the cart page.</Value>
+            </LocaleResource>
+            <LocaleResource Name="PaymentListPromotion">
+                <Value>When selecting payment methods</Value>
+            </LocaleResource>
+            <LocaleResource Name="PaymentListPromotion.Hint">
+                <Value>Specifies whether and how to promote when selecting payment methods.</Value>
             </LocaleResource>
             <LocaleResource Name="Lender">
                 <Value>Lender</Value>

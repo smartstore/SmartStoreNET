@@ -1,0 +1,101 @@
+﻿@using SmartStore.PayPal;
+@using SmartStore.PayPal.Services;
+@model FinancingOptions
+@{
+    var defaultOption = Model.GetDefaultOption();
+}
+<div class="float-left">
+<img class="pt-1 pl-0 pr-2" src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/instalments-sm.png")" 
+		alt="@T("Plugins.FriendlyName.Payments.PayPalInstalments")" title="@T("Plugins.FriendlyName.Payments.PayPalInstalments")" />
+</div>
+@if (Model.Promotion == PayPalPromotion.FinancingExample && defaultOption != null && defaultOption.AnnualPercentageRate > decimal.Zero)
+{
+    <div>
+        @T("Plugins.Payments.PayPalInstalments.FinancingPerXMonth", defaultOption.MonthlyPayment.ToString(), defaultOption.Term)
+    </div>
+    <div>
+        @T("Plugins.Payments.PayPalInstalments.RepresentativeExample"):
+    </div>
+    <div class="m-1 pl-3 pr-3">
+        <table class="w-100" style="max-width: 400px;">
+            <tr>
+                @*German: Darlehehnsbetrag.*@
+                <td>@T("Plugins.Payments.PayPalInstalments.NetLoanAmount"):</td>
+                <td class="text-right text-nowrap">@(Model.NetLoanAmount.ToString())</td>
+            </tr>
+            <tr>
+                @*German: Nominalzins. Is the same as Sollzins.*@
+                <td>@T("Plugins.Payments.PayPalInstalments.FixedNominalRate"):</td>
+                <td class="text-right text-nowrap">@(Math.Round(defaultOption.NominalRate, 2).ToString("0.00")) %</td>
+            </tr>
+            <tr>
+                @*German: Effektivzins.*@
+                <td>@T("Plugins.Payments.PayPalInstalments.AnnualPercentageRate"):</td>
+                <td class="text-right text-nowrap">@(Math.Round(defaultOption.AnnualPercentageRate, 2).ToString("0.00")) %</td>
+            </tr>
+            <tr>
+                @*MonthlyPayment * Term != TotalCost --> last monthly payment is different\lower.*@
+                <td>@T("Plugins.Payments.PayPalInstalments.TotalPayableAmount"):</td>
+                <td class="text-right font-weight-medium text-nowrap">@(defaultOption.TotalCost.ToString())</td>
+            </tr>
+            <tr>
+                <td>@T("Plugins.Payments.PayPalInstalments.XMonthlyInstalmentsAmount", defaultOption.Term):</td>
+                <td class="text-right font-weight-medium text-nowrap">@(defaultOption.MonthlyPayment.ToString())</td>
+            </tr>
+        </table>
+    </div>
+    <div class="small">@T("Plugins.Payments.PayPalInstalments.Lender"): @Html.Raw(Model.Lender)</div>
+}
+else
+{
+    <div>
+        @if (defaultOption != null)
+        {
+            @T("Plugins.Payments.PayPalInstalments.FinancingPerMonth", defaultOption.MonthlyPayment.ToString())
+        }
+        else
+        {
+            @T("Plugins.Payments.PayPalInstalments.FinancingWanted")
+        }
+    </div>
+}
+<div><a class="paypal-promotion-link" href="javascript:void(0)" rel="nofollow">@T("Plugins.Payments.PayPalInstalments.RatesInformation")</a></div>
+
+@{
+    using (Html.BeginZoneContent("end", key: "pp-instalments-promotion-modal"))
+    {
+        Html.SmartStore().Window()
+            .Name("paypal-promotion-modal")
+            .Size(WindowSize.FlexSmall)
+            .RenderAtPageEnd(true)
+            .FooterContent(@<text><button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button></text>)
+            .Render();
+    }
+}
+
+<script>
+	$(function () {
+		$('a.paypal-promotion-link').on('click', function (e) {
+			e.preventDefault();
+            var dialog = $('#paypal-promotion-modal');
+            dialog.find('.modal-body').html(window.createCircularSpinner(50, true));
+
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("PromotionPopup", "PayPalInstalments", new { area = Plugin.SystemName })',
+                data: { origin: '@Model.Origin', amount: @Model.NetLoanAmount.Amount.FormatInvariant() },
+				success: function (response) {
+					dialog.find('.modal-body').html(response);
+				},
+				error: function (objXml) {
+					if (objXml != null && objXml.responseText != null && objXml.responseText !== '') {
+						displayNotification(objXml.responseText, 'error');
+					}
+				}
+			});
+
+            dialog.modal('show');
+            return false;
+		});
+	});
+</script>

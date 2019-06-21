@@ -1,27 +1,22 @@
 ﻿@using SmartStore.PayPal.Services;
 @model FinancingOptions
 @{
-    var defaultOptionIndex = Model.Qualified
-        .Where(x => x.MonthlyPayment.Amount > decimal.Zero)
-        .OrderByDescending(x => x.AnnualPercentageRate)
-        .ThenBy(x => x.MonthlyPayment.Amount)
-        .Select(x => x.Index)
-        .FirstOrDefault();
+    var defaultOption = Model.GetDefaultOption(false);
 }
 <div class="paypal-promotion-details">
     <div>
         <img src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/instalments.png")" class="float-right m-1 ml-3"
              alt="@T("Plugins.FriendlyName.Payments.PayPalInstalments")" title="@T("Plugins.FriendlyName.Payments.PayPalInstalments")" />
         <div>
-            <div class="h4">@T("Plugins.Payments.PayPalInstalments.FinancingDetailsTitle")</div>
-            <div>@Html.Raw(T("Plugins.Payments.PayPalInstalments.FinancingDetailsIntro"))</div>
+            <div class="h4">@T("Plugins.Payments.PayPalInstalments.PromotionDetailsTitle")</div>
+            <div>@Html.Raw(T("Plugins.Payments.PayPalInstalments.PromotionDetailsIntro"))</div>
             <div class="font-weight-medium mt-1">@T("Plugins.Payments.PayPalInstalments.NetLoanAmount"): @Model.NetLoanAmount.ToString()</div>
             <div class="card-deck card-cols-sm-1 card-cols-lg-2 mt-3">
                 @foreach (var option in Model.Qualified)
                 {
                     <div class="card card-sm">
                         <div class="card-header font-weight-medium">
-                            @(T("Plugins.Payments.PayPalInstalments.PlanX", option.Index)) @(option.Index == defaultOptionIndex ? " *" : "")
+                            @(T("Plugins.Payments.PayPalInstalments.PlanX", option.Index)) @(defaultOption != null && defaultOption.Index == option.Index ? " *" : "")
                         </div>
                         <div class="card-body">
                             <table class="w-100">
@@ -51,7 +46,10 @@
                 }
             </div>
             <div class="small">
-                <div>* @T("Plugins.Payments.PayPalInstalments.FinancingExampleIntro").</div>
+                @if (defaultOption != null)
+                {
+                    <div>* @T("Plugins.Payments.PayPalInstalments.RepresentativeExample").</div>
+                }
                 <div>@T("Plugins.Payments.PayPalInstalments.Lender"): @Html.Raw(Model.Lender)</div>
             </div>
         </div>

@@ -68,6 +68,16 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.PaymentListPromotion)
+			</td>
+			<td class="adminData">
+                @Html.SettingEditorFor(x => x.PaymentListPromotion, 
+                    @Html.DropDownListFor(x => x.PaymentListPromotion, Model.PaymentListPromotions, T("Common.Unspecified")))
+				@Html.ValidationMessageFor(x => x.PaymentListPromotion)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Lender)
 			</td>
 			<td class="adminData">

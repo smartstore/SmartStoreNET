@@ -492,9 +492,9 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
                 <Value>Finanzierung ab {0} im Monat.</Value>
             </LocaleResource>
             <LocaleResource Name="FinancingPerXMonth">
-                <Value>Finanzierung ab {0} in {1} monatlichen Raten mit Ratenzahlung Powered by PayPal.</Value>
+                <Value>Finanzierung ab {0} in {1} monatlichen Raten.</Value>
             </LocaleResource>
-            <LocaleResource Name="FinancingExampleIntro">
+            <LocaleResource Name="RepresentativeExample">
                 <Value>Repräsentatives Beispiel gem. § 6a PAngV</Value>
             </LocaleResource>
             <LocaleResource Name="PlanX">
@@ -521,11 +521,11 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
             <LocaleResource Name="NoFinancingDetails">
                 <Value>Es liegen keine Finanzierungsdetails vor.</Value>
             </LocaleResource>
-            <LocaleResource Name="FinancingDetailsTitle">
+            <LocaleResource Name="PromotionDetailsTitle">
                 <Value>Zahlen Sie bequem und einfach in monatlichen Raten.</Value>
             </LocaleResource>
-            <LocaleResource Name="FinancingDetailsIntro">
-                <Value>Ihre Ratenzahlung und den passenden Finanzierungsplan können Sie im Rahmen des Bestellprozesses auswählen. Ihr Antrag erfolgt komplett online und wird in wenigen Schritten hier im Shop abgeschlossen.</Value>
+            <LocaleResource Name="PromotionDetailsIntro">
+                <Value>Ihre Ratenzahlung und den passenden Finanzierungsplan können Sie im Rahmen des Bestellprozesses auswählen. Ihr Antrag erfolgt komplett online über Ratenzahlung Powered by PayPal und wird in wenigen Schritten hier im Shop abgeschlossen.</Value>
             </LocaleResource>
             <LocaleResource Name="FinancingMin">
                 <Value>Minimaler Finanzierungsbetrag</Value>
@@ -550,6 +550,12 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
             </LocaleResource>
             <LocaleResource Name="CartPagePromotion.Hint">
                 <Value>Legt fest, ob und wie die Ratenzahlung auf der Warenkorbseite beworben werden soll.</Value>
+            </LocaleResource>
+            <LocaleResource Name="PaymentListPromotion">
+                <Value>Bei der Zahlartenauswahl</Value>
+            </LocaleResource>
+            <LocaleResource Name="PaymentListPromotion.Hint">
+                <Value>Legt fest, ob und wie die Ratenzahlung bei der Zahlartenauswahl beworben werden soll.</Value>
             </LocaleResource>
             <LocaleResource Name="Lender">
                 <Value>Darlehensgeber</Value>

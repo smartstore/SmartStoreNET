@@ -73,7 +73,21 @@ namespace SmartStore.PayPal.Controllers
 
         public ActionResult PaymentInfo()
         {
-            return PartialView();
+            FinancingOptions model = null;
+
+            try
+            {
+                var store = Services.StoreContext.CurrentStore;
+                var settings = Services.Settings.LoadSetting<PayPalInstalmentsSettings>(store.Id);
+                var session = _httpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
+                model = PayPalService.GetFinancingOptions(settings, session, "paymentinfo", decimal.Zero);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+
+            return PartialView(model ?? new FinancingOptions("paymentinfo"));
         }
 
         // Widget zone on checkout confirm page.
@@ -193,7 +207,7 @@ namespace SmartStore.PayPal.Controllers
 
         // Widget zone on product detail or cart page.
         [ChildActionOnly]
-        public ActionResult Promotion(bool isProductPage, decimal amount)
+        public ActionResult Promotion(string origin, decimal amount)
         {
             try
             {
@@ -204,13 +218,11 @@ namespace SmartStore.PayPal.Controllers
                     if (_paymentService.Value.IsPaymentMethodActive(PayPalInstalmentsProvider.SystemName, store.Id))
                     {
                         var settings = Services.Settings.LoadSetting<PayPalInstalmentsSettings>(store.Id);
-                        var promotion = isProductPage ? settings.ProductPagePromotion : settings.CartPagePromotion;
+                        var session = _httpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
+                        var model = PayPalService.GetFinancingOptions(settings, session, origin, amount);
 
-                        if (promotion.HasValue && settings.ClientId.HasValue() && settings.Secret.HasValue() && settings.IsAmountFinanceable(amount))
+                        if (model != null)
                         {
-                            var session = _httpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
-                            var model = PayPalService.GetFinancingOptions(settings, session, promotion.Value, amount);
-
                             return PartialView(model);
                         }
                     }
@@ -225,7 +237,7 @@ namespace SmartStore.PayPal.Controllers
         }
 
         // Ajax.
-        public ActionResult PromotionDetails(decimal amount)
+        public ActionResult PromotionPopup(string origin, decimal amount)
         {
             try
             {
@@ -238,12 +250,11 @@ namespace SmartStore.PayPal.Controllers
                 }
 
                 var settings = Services.Settings.LoadSetting<PayPalInstalmentsSettings>(store.Id);
+                var session = _httpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
+                var model = PayPalService.GetFinancingOptions(settings, session, origin, amount, PayPalPromotion.FinancingExample);
 
-                if (settings.ClientId.HasValue() && settings.Secret.HasValue() && settings.IsAmountFinanceable(amount))
+                if (model != null)
                 {
-                    var session = _httpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
-                    var model = PayPalService.GetFinancingOptions(settings, session, PayPalPromotion.FinancingExample, amount);
-
                     return PartialView(model);
                 }
                 else
@@ -283,6 +294,8 @@ namespace SmartStore.PayPal.Controllers
             model.CartPagePromotions = settings.CartPagePromotion.HasValue
                 ? settings.CartPagePromotion.Value.ToSelectList(true).ToList()
                 : PayPalPromotion.FinancingExample.ToSelectList(false).ToList();
+
+            model.PaymentListPromotions = PayPalPromotion.FinancingExample.ToSelectList(false).ToList();
 
             PrepareConfigurationModel(model, storeScope);
 

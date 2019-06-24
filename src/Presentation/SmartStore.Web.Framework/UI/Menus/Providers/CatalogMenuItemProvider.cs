@@ -8,6 +8,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -47,6 +48,7 @@ namespace SmartStore.Web.Framework.UI
                 var tree = _categoryService.GetCategoryTree(0, false, _services.StoreContext.CurrentStore.Id);
                 var allPictureIds = tree.Flatten().Select(x => x.PictureId.GetValueOrDefault());
                 var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
+                var randomId = CommonHelper.GenerateRandomInteger(0, 1000000);
 
                 if (request.Entity.BeginGroup)
                 {
@@ -60,7 +62,7 @@ namespace SmartStore.Web.Framework.UI
                 // Do not append the root itself.
                 foreach (var child in tree.Children)
                 {
-                    AppendToParent(request, ConvertNode(request, child, allPictureInfos));
+                    AppendToParent(request, ConvertNode(request, child, allPictureInfos, ref randomId));
                 }
             }
 
@@ -80,13 +82,15 @@ namespace SmartStore.Web.Framework.UI
         private TreeNode<MenuItem> ConvertNode(
             MenuItemProviderRequest request,
             TreeNode<ICategoryNode> categoryNode,
-            IDictionary<int, PictureInfo> allPictureInfos)
+            IDictionary<int, PictureInfo> allPictureInfos,
+            ref int randomId)
         {
             var node = categoryNode.Value;
             var name = node.Id > 0 ? node.GetLocalized(x => x.Name) : null;
 
             var menuItem = new MenuItem
             {
+                Id = randomId++.ToString(),
                 EntityId = node.Id,
                 EntityName = nameof(Category),
                 Text = name?.Value ?? node.Name,
@@ -129,7 +133,7 @@ namespace SmartStore.Web.Framework.UI
             {
                 foreach (var childNode in categoryNode.Children)
                 {
-                    convertedNode.Append(ConvertNode(request, childNode, allPictureInfos));
+                    convertedNode.Append(ConvertNode(request, childNode, allPictureInfos, ref randomId));
                 }
             }
 

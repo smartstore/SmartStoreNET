@@ -1,6 +1,6 @@
 SETLOCAL ENABLEDELAYEDEXPANSION
 
-for /f "usebackq tokens=1* delims=: " %%i in (`lib\vswhere\vswhere -version "[15.0,16.0)" -requires Microsoft.Component.MSBuild`) do (
+for /f "usebackq tokens=1* delims=: " %%i in (`lib\vswhere\vswhere -latest -requires Microsoft.Component.MSBuild`) do (
 	if /i "%%i"=="installationPath" (
 		set InstallDir=%%j
 		echo !InstallDir!
@@ -9,10 +9,16 @@ for /f "usebackq tokens=1* delims=: " %%i in (`lib\vswhere\vswhere -version "[15
 			set msbuild="!InstallDir!\MSBuild\15.0\Bin\MSBuild.exe"
 			goto build
 		)
+		if exist "!InstallDir!\MSBuild\Current\Bin\MSBuild.exe" (
+			echo "Using MSBuild from Visual Studio 2019"
+			set msbuild="!InstallDir!\MSBuild\Current\Bin\MSBuild.exe"
+			goto build
+		)
 	)
 )
 
 FOR %%b in (
+	   "%VS150COMNTOOLS%\vsvars32.bat"
        "%VS140COMNTOOLS%\vsvars32.bat"
        "%VS120COMNTOOLS%\vsvars32.bat"
        "%VS110COMNTOOLS%\vsvars32.bat"
@@ -37,5 +43,3 @@ lib\nuget\nuget.exe restore "src\SmartStoreNET.sln"
 %msbuild% SmartStoreNET.proj /p:SlnName=SmartStoreNET /m /p:DebugSymbols=false /p:DebugType=None /maxcpucount %*
 
 :end
-
-pause

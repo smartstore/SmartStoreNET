@@ -34,7 +34,7 @@ namespace SmartStore.Data.Migrations
 
             var quPluralDe = new Dictionary<string, string>
             {
-                { "Stück", "Stücke" },
+                { "Stück", "Stück" },
                 { "Schachtel", "Schachteln" },
                 { "Paket", "Pakete" },
                 { "Palette", "Paletten" },

@@ -3890,7 +3890,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter(0, x =>
                 {
                     x.Name = "Stück";
-                    x.NamePlural = "Stücke";
+                    x.NamePlural = "Stück";
                     x.Description = "Stück";
                 })
                 .Alter(1, x =>

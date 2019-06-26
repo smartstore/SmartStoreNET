@@ -1561,30 +1561,28 @@ namespace SmartStore.Services.Orders
         /// <param name="order">The order</param>
         public virtual void DeleteOrder(Order order)
         {
-            if (order == null)
-                throw new ArgumentNullException("order");
+            Guard.NotNull(order, nameof(order));
 
-            //reward points
-            ReduceRewardPoints(order);
-
-            //cancel recurring payments
-            var recurringPayments = _orderService.SearchRecurringPayments(0, 0, order.Id, null);
-            foreach (var rp in recurringPayments)
+            if (order.OrderStatus != OrderStatus.Cancelled)
             {
-                //use errors?
-                var errors = CancelRecurringPayment(rp);
+                ReduceRewardPoints(order);
+
+                // Cancel recurring payments.
+                var recurringPayments = _orderService.SearchRecurringPayments(0, 0, order.Id, null);
+                foreach (var rp in recurringPayments)
+                {
+                    CancelRecurringPayment(rp);
+                }
+
+                // Adjust inventory.
+                foreach (var orderItem in order.OrderItems)
+                {
+                    _productService.AdjustInventory(orderItem, false, orderItem.Quantity);
+                }
             }
 
-            //Adjust inventory
-			foreach (var orderItem in order.OrderItems)
-			{
-				_productService.AdjustInventory(orderItem, false, orderItem.Quantity);
-			}
+            _orderService.AddOrderNote(order, T("Admin.OrderNotice.OrderDeleted"));
 
-			//add a note
-			_orderService.AddOrderNote(order, T("Admin.OrderNotice.OrderDeleted"));
-            
-            //now delete an order
             _orderService.DeleteOrder(order);
         }
 
@@ -1857,26 +1855,26 @@ namespace SmartStore.Services.Orders
         /// <param name="notifyCustomer">True to notify customer</param>
         public virtual void CancelOrder(Order order, bool notifyCustomer)
         {
-            if (order == null)
-                throw new ArgumentNullException("order");
+            Guard.NotNull(order, nameof(order));
 
             if (!CanCancelOrder(order))
+            {
                 throw new SmartException(T("Order.CannotCancel"));
+            }
 
-            //Cancel order
+            // Cancel order.
             SetOrderStatus(order, OrderStatus.Cancelled, notifyCustomer);
 
 			_orderService.AddOrderNote(order, T("Admin.OrderNotice.OrderCancelled"));
 
-            //cancel recurring payments
+            // Cancel recurring payments.
             var recurringPayments = _orderService.SearchRecurringPayments(0, 0, order.Id, null);
             foreach (var rp in recurringPayments)
             {
-                //use errors?
-                var errors = CancelRecurringPayment(rp);
+                CancelRecurringPayment(rp);
             }
 
-            //Adjust inventory
+            // Adjust inventory.
 			foreach (var orderItem in order.OrderItems)
 			{
 				_productService.AdjustInventory(orderItem, false, orderItem.Quantity);

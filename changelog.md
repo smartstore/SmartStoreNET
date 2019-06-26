@@ -21,6 +21,7 @@
 * Fixed wrong XML sitemap index numbering.
 * #1646 Setting ManufacturerItemsToDisplayOnHomepage to 1 will not show any manufacturer.
 * #1647 All manufacturers page: link of last character missing in alphabetical letter list.
+* #1664 RTL: CMS menu issues in backend.
 * Various other minor fixes
 
 

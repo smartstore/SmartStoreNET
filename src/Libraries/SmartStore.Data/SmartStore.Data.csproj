@@ -674,6 +674,10 @@
     <Compile Include="Migrations\201905271110370_V321Resources.Designer.cs">
       <DependentUpon>201905271110370_V321Resources.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201906252008551_QuantityUnitNamePlural.cs" />
+    <Compile Include="Migrations\201906252008551_QuantityUnitNamePlural.Designer.cs">
+      <DependentUpon>201906252008551_QuantityUnitNamePlural.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -1206,6 +1210,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905271110370_V321Resources.resx">
       <DependentUpon>201905271110370_V321Resources.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906252008551_QuantityUnitNamePlural.resx">
+      <DependentUpon>201906252008551_QuantityUnitNamePlural.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

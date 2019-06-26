@@ -553,7 +553,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Populate("PopulateCountriesAndStates", PopulateCountriesAndStates);
 			Populate("PopulateShippingMethods", PopulateShippingMethods);
 			Populate("PopulateDeliveryTimes", _data.DeliveryTimes());
-			Populate("PopulateCustomersAndUsers", () => PopulateCustomersAndUsers(_config.DefaultUserName, _config.DefaultUserPassword));
+            Populate("PopulateQuantityUnits", _data.QuantityUnits());
+            Populate("PopulateCustomersAndUsers", () => PopulateCustomersAndUsers(_config.DefaultUserName, _config.DefaultUserPassword));
 			Populate("PopulateEmailAccounts", _data.EmailAccounts());
 			Populate("PopulateMessageTemplates", PopulateMessageTemplates);
 			Populate("PopulateTopics", PopulateTopics);

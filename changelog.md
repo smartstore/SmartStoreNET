@@ -14,6 +14,9 @@
 * (Dev) Added a sample block for the *Page Builder* in DevTools plugin.
 * Various other minor improvements
 
+### Improvements
+* #1662 Quantity Units: add field for plural.
+
 ### Bugfixes
 * Fixed wrong XML sitemap index numbering.
 * #1646 Setting ManufacturerItemsToDisplayOnHomepage to 1 will not show any manufacturer.

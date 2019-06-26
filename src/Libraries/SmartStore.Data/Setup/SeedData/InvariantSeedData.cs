@@ -13163,34 +13163,44 @@ namespace SmartStore.Data.Setup
 
         public IList<QuantityUnit> QuantityUnits()
         {
-            var entities = new List<QuantityUnit>()
-			{
-				new QuantityUnit
-					{
-						Name = "Piece",        
-                        Description = "Piece",
-                        IsDefault = true,
-						DisplayOrder = 0,
-					},
-				new QuantityUnit
-					{
-						Name = "Box",           
-                        Description = "Box",
-						DisplayOrder = 1,
-					},
-				new QuantityUnit
-					{
-						Name = "Parcel",        
-                        Description = "Parcel",
-						DisplayOrder = 2,
-					},
-                new QuantityUnit
-					{
-						Name = "Palette",       
-                        Description = "Palette",
-						DisplayOrder = 3,
-					},
-			};
+            var count = 0;
+            var entities = new List<QuantityUnit>();
+
+            var quPluralEn = new Dictionary<string, string>
+            {
+                { "Piece", "Pieces" },
+                { "Box", "Boxes" },
+                { "Parcel", "Parcels" },
+                { "Palette", "Pallets" },
+                { "Unit", "Units" },
+                { "Sack", "Sacks" },
+                { "Bag", "Bags" },
+                { "Can", "Cans" },
+                { "Packet", "Packets" },
+                { "Bar", "Bars" },
+                { "Bottle", "Bottles" },
+                { "Glass", "Glasses" },
+                { "Bunch", "Bunches" },
+                { "Roll", "Rolls" },
+                { "Cup", "Cups" },
+                { "Bundle", "Bundles" },
+                { "Barrel", "Barrels" },
+                { "Set", "Sets" },
+                { "Bucket", "Buckets" }
+            };
+
+            foreach (var qu in quPluralEn)
+            {
+                entities.Add(new QuantityUnit
+                {
+                    Name = qu.Key,
+                    NamePlural = qu.Value,
+                    Description = qu.Key,
+                    IsDefault = qu.Key == "Piece",
+                    DisplayOrder = count++
+                });
+            }
+            
             this.Alter(entities);
             return entities;
         }

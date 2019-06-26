@@ -3890,22 +3890,116 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter(0, x =>
                 {
                     x.Name = "Stück";
+                    x.NamePlural = "Stücke";
                     x.Description = "Stück";
                 })
                 .Alter(1, x =>
                 {
                     x.Name = "Schachtel";
+                    x.NamePlural = "Schachteln";
                     x.Description = "Schachtel";
                 })
                 .Alter(2, x =>
                 {
                     x.Name = "Paket";
+                    x.NamePlural = "Pakete";
                     x.Description = "Paket";
                 })
                 .Alter(3, x =>
                 {
                     x.Name = "Palette";
+                    x.NamePlural = "Paletten";
                     x.Description = "Palette";
+                })
+                .Alter(4, x =>
+                {
+                    x.Name = "Einheit";
+                    x.NamePlural = "Einheiten";
+                    x.Description = "Einheit";
+                })
+                .Alter(5, x =>
+                {
+                    x.Name = "Sack";
+                    x.NamePlural = "Säcke";
+                    x.Description = "Sack";
+                })
+                .Alter(6, x =>
+                {
+                    x.Name = "Tüte";
+                    x.NamePlural = "Tüten";
+                    x.Description = "Tüte";
+                })
+                .Alter(7, x =>
+                {
+                    x.Name = "Dose";
+                    x.NamePlural = "Dosen";
+                    x.Description = "Dose";
+                })
+                .Alter(8, x =>
+                {
+                    x.Name = "Packung";
+                    x.NamePlural = "Packungen";
+                    x.Description = "Packung";
+                })
+                .Alter(9, x =>
+                {
+                    x.Name = "Stange";
+                    x.NamePlural = "Stangen";
+                    x.Description = "Stange";
+                })
+                .Alter(10, x =>
+                {
+                    x.Name = "Flasche";
+                    x.NamePlural = "Flaschen";
+                    x.Description = "Flasche";
+                })
+                .Alter(11, x =>
+                {
+                    x.Name = "Glas";
+                    x.NamePlural = "Gläser";
+                    x.Description = "Glas";
+                })
+                .Alter(12, x =>
+                {
+                    x.Name = "Bund";
+                    x.NamePlural = "Bünde";
+                    x.Description = "Bund";
+                })
+                .Alter(13, x =>
+                {
+                    x.Name = "Rolle";
+                    x.NamePlural = "Rollen";
+                    x.Description = "Rolle";
+                })
+                .Alter(14, x =>
+                {
+                    x.Name = "Becher";
+                    x.NamePlural = "Becher";
+                    x.Description = "Becher";
+                })
+                .Alter(15, x =>
+                {
+                    x.Name = "Bündel";
+                    x.NamePlural = "Bündel";
+                    x.Description = "Bündel";
+                })
+                .Alter(16, x =>
+                {
+                    x.Name = "Fass";
+                    x.NamePlural = "Fässer";
+                    x.Description = "Fass";
+                })
+                .Alter(17, x =>
+                {
+                    x.Name = "Set";
+                    x.NamePlural = "Sets";
+                    x.Description = "Set";
+                })
+                .Alter(18, x =>
+                {
+                    x.Name = "Eimer";
+                    x.NamePlural = "Eimer";
+                    x.Description = "Eimer";
                 });
         }
 

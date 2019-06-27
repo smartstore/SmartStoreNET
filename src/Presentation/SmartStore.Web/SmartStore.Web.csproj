@@ -1055,8 +1055,8 @@
     <Content Include="Refresh.html" />
     <Content Include="Config\ConnectionStrings.config" />
     <Content Include="Config\SessionState.config" />
-    <Content Include="Content\vendors\jquery\jquery-3.2.1.js" />
-    <Content Include="Content\vendors\jquery\jquery-3.2.1.min.js" />
+    <Content Include="Content\vendors\jquery\jquery-3.4.1.js" />
+    <Content Include="Content\vendors\jquery\jquery-3.4.1.min.js" />
     <Content Include="Content\vendors\jquery\jquery-migrate-3.0.0.js" />
     <Content Include="Content\vendors\jquery\jquery-migrate-3.0.0.min.js" />
     <Content Include="Content\vendors\jquery-ui\core.js" />

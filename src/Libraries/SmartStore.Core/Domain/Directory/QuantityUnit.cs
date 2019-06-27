@@ -1,6 +1,5 @@
-using System;
-using SmartStore.Core.Domain.Localization;
 using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Domain.Directory
 {
@@ -15,6 +14,12 @@ namespace SmartStore.Core.Domain.Directory
         /// </summary>
 		[DataMember]
 		public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name plural.
+        /// </summary>
+		[DataMember]
+        public string NamePlural { get; set; }
 
         /// <summary>
         /// Gets or sets the description
@@ -38,7 +43,6 @@ namespace SmartStore.Core.Domain.Directory
         /// Gets or sets the default quantity unit
         /// </summary>
 		[DataMember]
-        public bool IsDefault { get; set; }
-        
+        public bool IsDefault { get; set; }        
     }
 }

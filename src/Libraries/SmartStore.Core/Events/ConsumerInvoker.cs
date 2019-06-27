@@ -30,9 +30,6 @@ namespace SmartStore.Core.Events
 			var p = descriptor.WithEnvelope ? (object)envelope : envelope.Message;
 			var fastInvoker = FastInvoker.GetInvoker(d.Method);
 
-			var items = HttpContext.Current.GetItem("ConsumerInvoker", () => new List<ConsumerDescriptor>());
-			items.Add(d);
-
 			if (!d.FireForget && !d.IsAsync)
 			{
 				// The all synch case

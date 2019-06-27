@@ -73,8 +73,7 @@ namespace SmartStore.Web.Controllers
 
 		#region XML sitemap
 
-		[Compress]
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		public async Task<ActionResult> XmlSitemap(int? index = null)
 		{
 			if (!_seoSettings.Value.XmlSitemapEnabled)

@@ -54,7 +54,7 @@ namespace SmartStore.Web.Controllers
 			_privacySettings = privacySettings;
 		}
 		
-        [RequireHttpsByConfig(SslRequirement.No)]
+        [RewriteUrl(SslRequirement.No)]
         public ActionResult Index()
         {
 			return View();
@@ -65,7 +65,7 @@ namespace SmartStore.Web.Controllers
 			return View();
 		}
 
-		[RequireHttpsByConfig(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		[GdprConsent]
 		public ActionResult ContactUs()
 		{
@@ -133,7 +133,7 @@ namespace SmartStore.Web.Controllers
 			return View(model);
 		}
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		public ActionResult Sitemap()
 		{
             return RedirectPermanent(Services.StoreContext.CurrentStore.Url);

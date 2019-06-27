@@ -97,7 +97,7 @@ namespace SmartStore.Core.Domain.Stores
 		/// <summary>
 		/// Gets the security mode for the store
 		/// </summary>
-		public HttpSecurityMode GetSecurityMode(bool? useSsl = null)
+		public virtual HttpSecurityMode GetSecurityMode(bool? useSsl = null)
 		{
 			if (useSsl ?? SslEnabled)
 			{

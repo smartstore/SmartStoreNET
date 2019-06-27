@@ -130,7 +130,7 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
 		}
 
-		[RequireHttpsByConfig(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		public ActionResult Search(CatalogSearchQuery query)
 		{
 			var model = new SearchResultModel(query);

@@ -1056,6 +1056,8 @@ namespace SmartStore.Admin.Controllers
 			// SEO.
 			var seoSettings = _services.Settings.LoadSetting<SeoSettings>(storeScope);
 			MiniMapper.Map(seoSettings, model.SeoSettings);
+			// Fix Disallows joined with comma in MiniMapper (we need NewLine).
+			model.SeoSettings.ExtraRobotsDisallows = string.Join(Environment.NewLine, seoSettings.ExtraRobotsDisallows);
 
 			StoreDependingSettings.GetOverrideKeys(seoSettings, model.SeoSettings, storeScope, _services.Settings, false);
 

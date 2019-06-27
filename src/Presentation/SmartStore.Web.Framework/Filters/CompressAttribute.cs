@@ -26,7 +26,7 @@ namespace SmartStore.Web.Framework.Filters
 				response.AppendHeader("Content-Encoding", "deflate");
 			}
 
-			//response.AppendHeader("Vary", "Content-Encoding");
+			response.AppendHeader("Vary", "Content-Encoding");
 		}
 	}
 }

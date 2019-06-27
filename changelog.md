@@ -2,16 +2,28 @@
 
 ## SmartStore.NET 3.2.2
 
-### Improvements
-* Amazon Pay: PSD2. Strong customer authentication (SCA) upgrade.
-
 ### New Features
 * Page Builder: multistore support for stories.
 * #1639 Shipping.ByTotal: Add option to calculate the shipping rate based on the net total instead of the gross total.
+### Improvements
+* Amazon Pay: PSD2. Strong customer authentication (SCA) upgrade.
+* Removed HTML encoding for meta tags and document title.
+* (SEO) combined SSL and canonical host 301 redirections to prevent successive redirects.
+* (SEO) Activated GZIP compression for all dynamic and static responses.
+* Set max. file upload size to 2 GB (globally)
+* (Dev) Added a sample block for the *Page Builder* in DevTools plugin.
+* Various other minor improvements
+
+### Improvements
+* #1662 Quantity Units: add field for plural.
 
 ### Bugfixes
+* Fixed wrong XML sitemap index numbering.
 * #1646 Setting ManufacturerItemsToDisplayOnHomepage to 1 will not show any manufacturer.
 * #1647 All manufacturers page: link of last character missing in alphabetical letter list.
+* #1664 RTL: CMS menu issues in backend.
+* Do not adjust inventory twice when an order is cancelled and deleted.
+* Various other minor fixes
 
 
 ## SmartStore.NET 3.2.1
@@ -446,7 +458,7 @@
 * Added config setting *sm:PdfEngineBaseUrl*. There are cases where the PDF converter exits with a network error, when it is unable to load automatically resolved URLs.
 * (Dev) Added *Retry* utility class
 * #1176 Admin > Product Search: It ain't possible to search for parts of a product name
- 
+
 ### Bugfixes
 * #1145: Fixed HTTP 404 after switching language
 * Fixed null reference exception in product lists if sorting is not allowed
@@ -1355,7 +1367,7 @@
     * [SMNET-202] - SmartTabSelection mit verschachtelten Tabs fehlerhaft nach Reload einer Seite
 
 ### Improvement
-    
+
     * [SMNET-13] - Attributwerte: der Text "Aufpreis" muss um "Minderpreis" erweitert werden.
     * [SMNET-15] - Umgestaltung der Darstellung der Staffelpreise (Popover ab dem fünften Element)
     * [SMNET-30] - MessageTemplates teilweise auf Englisch

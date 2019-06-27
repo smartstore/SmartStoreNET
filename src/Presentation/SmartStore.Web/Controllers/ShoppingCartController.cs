@@ -1599,7 +1599,7 @@ namespace SmartStore.Web.Controllers
         }
 
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult Cart(ProductVariantQuery query)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
@@ -2345,7 +2345,7 @@ namespace SmartStore.Web.Controllers
 
 		#region Wishlist
 
-		[RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+		[RewriteUrl(SslRequirement.Yes)]
         public ActionResult Wishlist(Guid? customerGuid)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist))
@@ -2507,7 +2507,7 @@ namespace SmartStore.Web.Controllers
             });
         }
 
-        [RequireHttpsByConfig(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
 		[GdprConsent]
 		public ActionResult EmailWishlist()
         {

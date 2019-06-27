@@ -33,7 +33,7 @@ using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Web.Controllers
 {
-    [RequireHttpsByConfigAttribute(SslRequirement.No)]
+    [RewriteUrl(SslRequirement.No)]
     public partial class BlogController : PublicControllerBase
     {
         #region Fields
@@ -247,7 +247,6 @@ namespace SmartStore.Web.Controllers
             return View("List", model);
         }
 
-		[Compress]
         public ActionResult ListRss(int? languageId)
         {
 			languageId = languageId ?? _workContext.WorkingLanguage.Id;

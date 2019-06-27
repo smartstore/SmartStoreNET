@@ -68,7 +68,7 @@ namespace SmartStore.Admin.Controllers
                         Id = x.Id,
                         CustomerInfo = x.IsRegistered() ? x.Email : T("Admin.Customers.Guest").Text,
                         LastIpAddress = x.LastIpAddress,
-                        Location = _geoCountryLookup.LookupCountryName(x.LastIpAddress),
+                        Location = _geoCountryLookup.LookupCountry(x.LastIpAddress)?.Name.EmptyNull(),
                         LastActivityDate = _dateTimeHelper.ConvertToUserTime(x.LastActivityDateUtc, DateTimeKind.Utc),
                         LastVisitedPage = x.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage)
                     };
@@ -95,7 +95,7 @@ namespace SmartStore.Admin.Controllers
 						Id = x.Id,
 						CustomerInfo = x.IsRegistered() ? x.Email : T("Admin.Customers.Guest").Text,
 						LastIpAddress = x.LastIpAddress,
-						Location = _geoCountryLookup.LookupCountryName(x.LastIpAddress),
+						Location = _geoCountryLookup.LookupCountry(x.LastIpAddress)?.Name.EmptyNull(),
 						LastActivityDate = _dateTimeHelper.ConvertToUserTime(x.LastActivityDateUtc, DateTimeKind.Utc),
 						LastVisitedPage = x.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage)
 					};

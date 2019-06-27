@@ -108,6 +108,7 @@
     <Compile Include="DataExchange\ImportDataSegmenterTests.cs" />
     <Compile Include="DataExchange\SyncMappingServiceTests.cs" />
     <Compile Include="Directory\CurrencyServiceTests.cs" />
+    <Compile Include="Directory\GeoCountryLookupTests.cs" />
     <Compile Include="Directory\TestExchangeRateProvider.cs" />
     <Compile Include="Directory\MeasureServiceTests.cs" />
     <Compile Include="Discounts\DiscountExtensionsTests.cs" />

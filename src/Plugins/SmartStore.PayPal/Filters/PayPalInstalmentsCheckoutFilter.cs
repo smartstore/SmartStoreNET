@@ -48,64 +48,67 @@ namespace SmartStore.PayPal.Filters
 
                 if (selectedMethod.IsCaseInsensitiveEqual(PayPalInstalmentsProvider.SystemName))
                 {
-                    _widgetProvider.Value.RegisterAction("order_summary_totals_after", "OrderSummaryTotals", "PayPalInstalments", new { area = Plugin.SystemName });
+                    var session = filterContext.HttpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
 
-                    CreatePayment(filterContext);
+                    if (session.ApprovalUrl.HasValue())
+                    {
+                        // Redirect by CheckoutReturn.
+                        session.ApprovalUrl = null;
+
+                        _widgetProvider.Value.RegisterAction("order_summary_totals_after", "OrderSummaryTotals", "PayPalInstalments", new { area = Plugin.SystemName });
+                    }
+                    else
+                    {
+                        session.PaymentId = null;
+                        session.FinancingCosts = session.TotalInclFinancingCosts = decimal.Zero;
+
+                        var settings = _services.Settings.LoadSetting<PayPalInstalmentsSettings>(store.Id);
+
+                        var result = _payPalService.Value.EnsureAccessToken(session, settings);
+                        if (result.Success)
+                        {
+                            var urlHelper = new UrlHelper(filterContext.HttpContext.Request.RequestContext);
+                            var protocol = store.SslEnabled ? "https" : "http";
+                            var returnUrl = urlHelper.Action("CheckoutReturn", "PayPalInstalments", new { area = Plugin.SystemName }, protocol);
+                            var cancelUrl = urlHelper.Action("CheckoutCancel", "PayPalInstalments", new { area = Plugin.SystemName }, protocol);
+                            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
+                            "CreatePayment".Dump();
+                            result = _payPalService.Value.CreatePayment(settings, session, cart, returnUrl, cancelUrl);
+                            if (result == null)
+                            {
+                                // No payment required.
+                            }
+                            else if (result.Success && result.Json != null)
+                            {
+                                foreach (var link in result.Json.links)
+                                {
+                                    if (((string)link.rel).IsCaseInsensitiveEqual("approval_url"))
+                                    {
+                                        session.PaymentId = result.Id;
+                                        session.ApprovalUrl = link.href;
+
+                                        filterContext.Result = new RedirectResult(session.ApprovalUrl, false);
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                _genericAttributeService.Value.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, null, store.Id);
+
+                                var url = urlHelper.Action("PaymentMethod", "Checkout", new { area = "" });
+                                filterContext.Result = new RedirectResult(url, false);
+
+                                _services.Notifier.Error(result.ErrorMessage);
+                            }
+                        }
+                    }
                 }
             }
         }
 
         public void OnActionExecuted(ActionExecutedContext filterContext)
         {
-        }
-
-        private void CreatePayment(ActionExecutingContext context)
-        {
-            var store = _services.StoreContext.CurrentStore;
-            var settings = _services.Settings.LoadSetting<PayPalInstalmentsSettings>(store.Id);
-
-            var session = context.HttpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
-            session.PaymentId = null;
-            session.FinancingCosts = session.TotalInclFinancingCosts = decimal.Zero;
-
-            var result = _payPalService.Value.EnsureAccessToken(session, settings);
-            if (result.Success)
-            {
-                var urlHelper = new UrlHelper(context.HttpContext.Request.RequestContext);
-                var customer = _services.WorkContext.CurrentCustomer;
-                var protocol = store.SslEnabled ? "https" : "http";
-                var returnUrl = urlHelper.Action("CheckoutReturn", "PayPalInstalments", new { area = Plugin.SystemName }, protocol);
-                var cancelUrl = urlHelper.Action("CheckoutCancel", "PayPalInstalments", new { area = Plugin.SystemName }, protocol);
-                var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
-
-                result = _payPalService.Value.CreatePayment(settings, session, cart, returnUrl, cancelUrl);
-                if (result == null)
-                {
-                    // No payment required.
-                }
-                else if (result.Success && result.Json != null)
-                {
-                    foreach (var link in result.Json.links)
-                    {
-                        if (((string)link.rel).IsCaseInsensitiveEqual("approval_url"))
-                        {
-                            session.PaymentId = result.Id;
-
-                            context.Result = new RedirectResult(link.href, false);
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    _genericAttributeService.Value.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, null, store.Id);
-
-                    var url = urlHelper.Action("PaymentMethod", "Checkout", new { area = "" });
-                    context.Result = new RedirectResult(url, false);
-
-                    _services.Notifier.Error(result.ErrorMessage);
-                }
-            }
         }
     }
 }

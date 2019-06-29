@@ -531,10 +531,10 @@ namespace SmartStore.PayPal.Services
                 {
                     request.Headers["PayPal-Partner-Attribution-Id"] = "SmartStoreAG_Cart_PayPalPlus";
                 }
-                else if (session.ProviderSystemName.IsCaseInsensitiveEqual(PayPalInstalmentsProvider.SystemName))
-                {
-                    request.Headers["PayPal-Partner-Attribution-Id"] = "SmartStoreAG_Cart_PayPalRatenzahlung";
-                }
+                //else if (session.ProviderSystemName.IsCaseInsensitiveEqual(PayPalInstalmentsProvider.SystemName))
+                //{
+                //    request.Headers["PayPal-Partner-Attribution-Id"] = "SmartStoreAG_Cart_PayPalRatenzahlung";
+                //}
             }
 
 			if (data.HasValue() && (method.IsCaseInsensitiveEqual("POST") || method.IsCaseInsensitiveEqual("PUT") || method.IsCaseInsensitiveEqual("PATCH")))
@@ -797,7 +797,7 @@ namespace SmartStore.PayPal.Services
                     payerInfo.Add("billing_address", CreateAddress(customer.BillingAddress, false));
                 }
 
-                payer.Add("external_selected_funding_instrument_type", "Credit");
+                payer.Add("external_selected_funding_instrument_type", "CREDIT");
                 payer.Add("payer_info", payerInfo);
 
                 if (customer.ShippingAddress != null)
@@ -830,9 +830,9 @@ namespace SmartStore.PayPal.Services
 				result.Id = (string)result.Json.id;
 			}
 
-			//Logger.InsertLog(LogLevel.Information, "PayPal PLUS", JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + (result.Json != null ? result.Json.ToString() : ""));
+            Logger.Log(LogLevel.Information, new Exception(JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + (result.Json != null ? result.Json.ToString() : "")), "PayPal API", null);
 
-			return result;
+            return result;
 		}
 
 		public PayPalResponse PatchShipping(
@@ -881,8 +881,8 @@ namespace SmartStore.PayPal.Services
 			{
 				result.Id = (string)result.Json.id;
 
-				//Logger.InsertLog(LogLevel.Information, "PayPal PLUS", JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + result.Json.ToString());
-			}
+                Logger.Log(LogLevel.Information, new Exception(JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + (result.Json != null ? result.Json.ToString() : "")), "PayPal API", null);
+            }
 
 			return result;
 		}

@@ -188,18 +188,14 @@ namespace SmartStore.PayPal.Controllers
             }
 
             session.PayerId = PayerID;
-
+            $"return {paymentId}".Dump();
             return RedirectToAction("Confirm", "Checkout", new { area = "" });
         }
 
         // Redirect from PayPal to the shop.
         public ActionResult CheckoutCancel()
         {
-            var store = Services.StoreContext.CurrentStore;
-            var customer = Services.WorkContext.CurrentCustomer;
-
-            _genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, null, store.Id);
-
+            "cancel".Dump();
             return RedirectToAction("PaymentMethod", "Checkout", new { area = "" });
         }
 

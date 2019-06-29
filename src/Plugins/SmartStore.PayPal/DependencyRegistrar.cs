@@ -5,11 +5,10 @@ using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.PayPal.Filters;
 using SmartStore.PayPal.Services;
 using SmartStore.Web.Controllers;
-using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.PayPal
 {
-	public class DependencyRegistrar : IDependencyRegistrar
+    public class DependencyRegistrar : IDependencyRegistrar
 	{
 		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
 		{
@@ -29,7 +28,9 @@ namespace SmartStore.PayPal
 					.AsActionFilterFor<CheckoutController>(x => x.Completed())
 					.InstancePerRequest();
 
-                builder.RegisterType<PayPalInstalmentsCheckoutFilter>().AsActionFilterFor<CheckoutController>().InstancePerRequest();
+                builder.RegisterType<PayPalInstalmentsCheckoutFilter>()
+                    .AsActionFilterFor<CheckoutController>()
+                    .InstancePerRequest();
 
                 //builder.RegisterType<PayPalFilter>().AsActionFilterFor<PublicControllerBase>();
             }

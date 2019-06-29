@@ -7,15 +7,14 @@
 * #1639 Shipping.ByTotal: Add option to calculate the shipping rate based on the net total instead of the gross total.
 ### Improvements
 * Amazon Pay: PSD2. Strong customer authentication (SCA) upgrade.
+* Updated *MaxMind.GeoIP* library and country database
 * Removed HTML encoding for meta tags and document title.
+* #1662 Quantity Units: added field for name pluralization.
 * (SEO) combined SSL and canonical host 301 redirections to prevent successive redirects.
 * (SEO) Activated GZIP compression for all dynamic and static responses.
 * Set max. file upload size to 2 GB (globally)
 * (Dev) Added a sample block for the *Page Builder* in DevTools plugin.
 * Various other minor improvements
-
-### Improvements
-* #1662 Quantity Units: add field for plural.
 
 ### Bugfixes
 * Fixed wrong XML sitemap index numbering.

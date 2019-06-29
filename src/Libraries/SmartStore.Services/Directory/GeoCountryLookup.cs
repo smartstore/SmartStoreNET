@@ -1,123 +1,58 @@
 using System;
 using System.Net;
+using MaxMind.GeoIP2;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
+using SmartStore.Utilities;
 using SmDir = SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Services.Directory
 {
-    public partial class GeoCountryLookup : IGeoCountryLookup
+    public partial class GeoCountryLookup : DisposableObject, IGeoCountryLookup
     {
-        private readonly IWebHelper _webHelper;
-		private readonly ICountryService _countryService;
-		private readonly IRequestCache _requestCache;
-		private readonly ICacheManager _cache;
+        private readonly DatabaseReader _reader;
+        private readonly object _lock = new object();
 
-		public GeoCountryLookup(IWebHelper webHelper, IRequestCache requestCache, ICacheManager cache, ICountryService countryService)
+        public GeoCountryLookup()
         {
-            this._webHelper = webHelper;
-			this._requestCache = requestCache;
-			this._cache = cache;
-			this._countryService = countryService;
+            _reader = new DatabaseReader(CommonHelper.MapPath("~/App_Data/GeoLite2/GeoLite2-Country.mmdb"));
         }
 
-		private MaxMind.GeoIP.LookupService GetLookupService() 
-		{
-			return _cache.Get("GeoCountryLookup", () => 
-			{
-				var lookupService = new MaxMind.GeoIP.LookupService(_webHelper.MapPath("~/App_Data/GeoIP.dat"));
-				return lookupService;
-			});
-		}
-
-        public virtual string LookupCountryCode(string str)
+        public LookupCountryResponse LookupCountry(string addr)
         {
-            if (String.IsNullOrEmpty(str))
-                return string.Empty;
-
-            IPAddress addr;
-            try
+            if (addr.HasValue() && IPAddress.TryParse(addr, out var ipAddress))
             {
-                addr = IPAddress.Parse(str);
+                return LookupCountry(ipAddress);
             }
-            catch
-            {
-                return string.Empty;
-            }
-            return LookupCountryCode(addr);
+
+            return null;
         }
 
-        public virtual string LookupCountryCode(IPAddress addr)
+        public LookupCountryResponse LookupCountry(IPAddress addr)
         {
-			try
-			{
-				var lookupService = GetLookupService();
-				var country = lookupService.getCountry(addr);
-				var code = country.getCode();
-				if (code == "--")
-					return string.Empty;
+            Guard.NotNull(addr, nameof(addr));
 
-				return code;
-			}
-			catch 
-			{
-				return string.Empty;
-			}
-        }
-
-        public virtual string LookupCountryName(string str)
-        {
-            if (String.IsNullOrEmpty(str))
-                return string.Empty;
-
-            IPAddress addr;
-            try
+            if (_reader.TryCountry(addr, out var response) && response.Country != null)
             {
-                addr = IPAddress.Parse(str);
+                var country = response.Country;
+                return new LookupCountryResponse
+                {
+                    GeoNameId = country.GeoNameId,
+                    IsoCode = country.IsoCode,
+                    Name = country.Name,
+                    IsInEu = country.IsInEuropeanUnion
+                };
             }
-            catch
-            {
-                return string.Empty;
-            }
-            return LookupCountryName(addr);
+
+            return null;
         }
 
-        public virtual string LookupCountryName(IPAddress addr)
+        protected override void OnDispose(bool disposing)
         {
-			try
-			{
-				var lookupService = GetLookupService();
-				var country = lookupService.getCountry(addr);
-				return country.getName();
-			}
-			catch
-			{
-				return string.Empty;
-			}
+            if (disposing && _reader != null)
+            {
+                _reader.Dispose();
+            }
         }
-
-		public virtual bool IsEuIpAddress(string ipAddress, out SmDir.Country euCountry)
-		{
-			euCountry = null;
-
-			if (ipAddress.IsEmpty())
-				return false;
-
-			euCountry = _requestCache.Get("GeoCountryLookup.EuCountry.{0}".FormatInvariant(ipAddress), () => 
-			{
-				var countryCode = LookupCountryCode(ipAddress);
-				if (countryCode.IsEmpty())
-					return (SmDir.Country)null;
-
-				var country = _countryService.GetCountryByTwoLetterIsoCode(countryCode);
-				return country;
-			});
-
-			if (euCountry == null)
-				return false;
-
-			return euCountry.SubjectToVat;
-		}
-
     }
 }

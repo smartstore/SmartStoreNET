@@ -3,27 +3,36 @@ using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Services.Directory
 {
+    public sealed class LookupCountryResponse
+    {
+        /// <summary>
+        /// The GeoName ID for the country. 
+        /// </summary>
+        public int? GeoNameId { get; set; }
+
+        /// <summary>
+        /// The english name of the country.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// The two-letter ISO 3166-1 alpha code for the country
+        /// </summary>
+        public string IsoCode { get; set; }
+
+        /// <summary>
+        /// This is true if the country is a member state of the European Union.
+        /// </summary>
+        public bool IsInEu { get; set; }
+    }
+
     /// <summary>
-    /// Country lookup helper
+    /// Country lookup helper for IPv4/6 addresses
     /// </summary>
     public partial interface IGeoCountryLookup
     {
-        string LookupCountryCode(string str);
+        LookupCountryResponse LookupCountry(string addr);
 
-        string LookupCountryCode(IPAddress addr);
-
-        string LookupCountryName(string str);
-
-        string LookupCountryName(IPAddress addr);
-
-		/// <summary>
-		/// Gets a value indicating whether the given IP address originates from an EU country
-		/// </summary>
-		/// <param name="ipAddress">IP address</param>
-		/// <param name="euCountry">An instance of <see cref="Country"/> if the IP originates from a EU country</param>
-		/// <returns>
-		/// <c>true</c> if the IP address originates from an EU country, <c>false</c> if not
-		/// </returns>
-		bool IsEuIpAddress(string ipAddress, out Country euCountry);
+        LookupCountryResponse LookupCountry(IPAddress addr);
     }
 }

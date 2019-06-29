@@ -1048,14 +1048,15 @@
     <Content Include="Content\vendors\fa5\webfonts\fa-solid-900.woff2" />
     <Content Include="Content\shared\_fa.scss" />
     <Content Include="App_Data\icons.json" />
+    <Content Include="App_Data\GeoLite2\GeoLite2-Country.mmdb" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />
     <Content Include="Refresh.html" />
     <Content Include="Config\ConnectionStrings.config" />
     <Content Include="Config\SessionState.config" />
-    <Content Include="Content\vendors\jquery\jquery-3.2.1.js" />
-    <Content Include="Content\vendors\jquery\jquery-3.2.1.min.js" />
+    <Content Include="Content\vendors\jquery\jquery-3.4.1.js" />
+    <Content Include="Content\vendors\jquery\jquery-3.4.1.min.js" />
     <Content Include="Content\vendors\jquery\jquery-migrate-3.0.0.js" />
     <Content Include="Content\vendors\jquery\jquery-migrate-3.0.0.min.js" />
     <Content Include="Content\vendors\jquery-ui\core.js" />
@@ -1859,9 +1860,6 @@
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_Data\GeoIP.dat" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_GlobalResources\EditorLocalization.de.resx">

@@ -148,7 +148,7 @@ namespace SmartStore.Services.DataExchange.Export
 				.Replace("/", "")
 				.Replace("-", "");
 
-			var folderName = SeoHelper.GetSeName(cleanedSystemName, true, false)
+			var folderName = SeoHelper.GetSeName(cleanedSystemName, true, false, false)
 				.ToValidPath()
 				.Truncate(_dataExchangeSettings.MaxFileNameLength);
 

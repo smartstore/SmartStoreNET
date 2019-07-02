@@ -134,6 +134,7 @@ namespace SmartStore.Web.Controllers
                 SeName = SeoHelper.GetSeName(x,
                 _seoSettings.ConvertNonWesternChars,
                 _seoSettings.AllowUnicodeCharsInUrls,
+                true,
                 _seoSettings.SeoNameCharConversion)
             }).ToList();
 

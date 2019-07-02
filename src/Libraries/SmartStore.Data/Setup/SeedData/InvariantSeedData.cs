@@ -13648,7 +13648,7 @@ namespace SmartStore.Data.Setup
 					languageId = x.LanguageId;
 					break;
 				case Topic x:
-					name = SeoHelper.GetSeName(x.SystemName, true, false).Truncate(400);
+					name = SeoHelper.GetSeName(x.SystemName, true, false, true).Truncate(400);
 					break;
 			}
 

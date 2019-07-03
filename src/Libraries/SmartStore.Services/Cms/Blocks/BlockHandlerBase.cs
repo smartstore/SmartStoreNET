@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Mvc.Async;
 using System.Web.Mvc.Html;
 using System.Web.Routing;
 using Newtonsoft.Json;
@@ -264,7 +265,7 @@ namespace SmartStore.Services.Cms.Blocks
 			=> throw new NotImplementedException();
 
 
-        class ActionInvokerWithResultValidator : ControllerActionInvoker
+        class ActionInvokerWithResultValidator : AsyncControllerActionInvoker
         {
             protected override void InvokeActionResult(ControllerContext controllerContext, ActionResult actionResult)
             {

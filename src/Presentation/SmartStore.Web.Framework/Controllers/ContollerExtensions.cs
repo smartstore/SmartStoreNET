@@ -126,7 +126,7 @@ namespace SmartStore.Web.Framework.Controllers
             {
                 ViewEngineResult viewResult = System.Web.Mvc.ViewEngines.Engines.FindPartialView(controller.ControllerContext, viewName.EmptyNull());
 
-				ThrowIfViewNotFound(viewResult, viewName);
+                ThrowIfViewNotFound(viewResult, viewName);
 
                 var viewContext = new ViewContext(controller.ControllerContext, viewResult.View, controller.ViewData, controller.TempData, sw);
                 viewResult.View.Render(viewContext, sw);

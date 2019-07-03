@@ -170,7 +170,7 @@ namespace SmartStore.Services.Cms.Blocks
 			return null;
 		}
 
-		protected void RenderByChildAction(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper, TextWriter textWriter)
+        protected void RenderByChildAction(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper, TextWriter textWriter)
         {
             Guard.NotNull(element, nameof(element));
             Guard.NotNull(templates, nameof(templates));
@@ -183,18 +183,220 @@ namespace SmartStore.Services.Cms.Blocks
                 throw new InvalidOperationException("The return value of the 'GetRoute()' method cannot be NULL.");
             }
 
-            //routeInfo.RouteValues["model"] = element.Block;
+            var routeValues = routeInfo.RouteValues;
+
+            routeValues["action"] = routeInfo.Action;
+            routeValues["controller"] = routeInfo.Controller;
+
+            VirtualPathData vpd = GetVirtualPathForArea(htmlHelper.RouteCollection, htmlHelper.ViewContext.RequestContext, null /* name */, routeValues, out var usingAreas);
+            if (vpd == null)
+            {
+                throw new InvalidOperationException("Could not find any matching route.");
+            }
+
+            if (usingAreas)
+            {
+                routeValues.Remove("area");
+            }
+
+            var routeData = CreateRouteData(vpd.Route, routeValues, vpd.DataTokens, htmlHelper.ViewContext);
+            var httpContext = htmlHelper.ViewContext.HttpContext;
+            var requestContext = new RequestContext(httpContext, routeData);
+
+            // Create the controller instance
+            var controller = ControllerBuilder.Current.GetControllerFactory().CreateController(requestContext, routeInfo.Controller) as Controller;
+            if (controller == null)
+            {
+                throw new InvalidOperationException($"Could not activate controller '{routeInfo.Controller}'. Please ensure that the controller class exists and inherits from '{typeof(Controller).FullName}'.");
+            }
 
             var originalWriter = htmlHelper.ViewContext.Writer;
             htmlHelper.ViewContext.Writer = textWriter;
 
-            using (new ActionDisposable(() => htmlHelper.ViewContext.Writer = originalWriter))
+            var originalOutput = httpContext.Response.Output;
+            httpContext.Response.Output = textWriter;
+
+            var originalActionInvoker = controller.ActionInvoker;
+            controller.ActionInvoker = new ActionInvokerWithResultValidator();
+
+            void endRender()
             {
-                htmlHelper.RenderAction(routeInfo.Action, routeInfo.Controller, routeInfo.RouteValues);
+                htmlHelper.ViewContext.Writer = originalWriter;
+                httpContext.Response.Output = originalOutput;
+                controller.ActionInvoker = originalActionInvoker;
+            }
+
+            using (new ActionDisposable((Action)endRender))
+            {
+                ((IController)controller).Execute(requestContext);
             }
         }
 
+        #region Legacy 'RenderByChildAction'
+
+        //protected void RenderByChildAction(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper, TextWriter textWriter)
+        //      {
+        //          Guard.NotNull(element, nameof(element));
+        //          Guard.NotNull(templates, nameof(templates));
+        //          Guard.NotNull(htmlHelper, nameof(htmlHelper));
+        //          Guard.NotNull(textWriter, nameof(textWriter));
+
+        //          var routeInfo = templates.Select(x => GetRoute(element, x)).FirstOrDefault();
+        //          if (routeInfo == null)
+        //          {
+        //              throw new InvalidOperationException("The return value of the 'GetRoute()' method cannot be NULL.");
+        //          }
+
+        //          //routeInfo.RouteValues["model"] = element.Block;
+
+        //          var originalWriter = htmlHelper.ViewContext.Writer;
+        //          htmlHelper.ViewContext.Writer = textWriter;
+
+        //          using (new ActionDisposable(() => htmlHelper.ViewContext.Writer = originalWriter))
+        //          {
+        //              htmlHelper.RenderAction(routeInfo.Action, routeInfo.Controller, routeInfo.RouteValues);
+        //          }
+        //      }
+
+        #endregion
+
         protected virtual RouteInfo GetRoute(IBlockContainer element, string template) 
 			=> throw new NotImplementedException();
-	}
+
+
+        class ActionInvokerWithResultValidator : ControllerActionInvoker
+        {
+            protected override void InvokeActionResult(ControllerContext controllerContext, ActionResult actionResult)
+            {
+                switch (actionResult)
+                {
+                    case PartialViewResult _:
+                    case ContentResult _:
+                        base.InvokeActionResult(controllerContext, actionResult);
+                        break;
+                    default:
+                        throw new InvalidOperationException($"The action result type of an MVC route block must either be '{nameof(PartialViewResult)}' or '{nameof(ContentResult)}'");
+                }
+            }
+        }
+
+        #region Copied from ASP.NET MVC
+
+        private VirtualPathData GetVirtualPathForArea(RouteCollection routes, RequestContext requestContext, string name, RouteValueDictionary values, out bool usingAreas)
+        {
+            // Copied over from https://github.com/aspnet/AspNetWebStack/blob/master/src/System.Web.Mvc/RouteCollectionExtensions.cs#L53
+
+            Guard.NotNull(routes, nameof(routes));
+
+            if (!String.IsNullOrEmpty(name))
+            {
+                // the route name is a stronger qualifier than the area name, so just pipe it through
+                usingAreas = false;
+                return routes.GetVirtualPath(requestContext, name, values);
+            }
+
+            string targetArea = null;
+            if (values != null)
+            {
+                if (values.TryGetValue("area", out var targetAreaRawValue))
+                {
+                    targetArea = targetAreaRawValue as string;
+                }
+                else
+                {
+                    // set target area to current area
+                    if (requestContext != null)
+                    {
+                        targetArea = requestContext.RouteData.GetAreaName();
+                    }
+                }
+            }
+
+            // need to apply a correction to the RVD if areas are in use
+            RouteValueDictionary correctedValues = values;
+            RouteCollection filteredRoutes = FilterRouteCollectionByArea(routes, targetArea, out usingAreas);
+            if (usingAreas)
+            {
+                correctedValues = new RouteValueDictionary(values);
+                correctedValues.Remove("area");
+            }
+
+            VirtualPathData vpd = filteredRoutes.GetVirtualPath(requestContext, correctedValues);
+            return vpd;
+        }
+
+        // This method returns a new RouteCollection containing only routes that matched a particular area.
+        // The Boolean out parameter is just a flag specifying whether any registered routes were area-aware.
+        private RouteCollection FilterRouteCollectionByArea(RouteCollection routes, string areaName, out bool usingAreas)
+        {
+            // Copied over from https://github.com/aspnet/AspNetWebStack/blob/master/src/System.Web.Mvc/RouteCollectionExtensions.cs#L18
+
+            if (areaName == null)
+            {
+                areaName = String.Empty;
+            }
+
+            usingAreas = false;
+
+            // Ensure that we continue using the same settings as the previous route collection
+            // if we are using areas and the route collection is exchanged
+            RouteCollection filteredRoutes = new RouteCollection
+            {
+                AppendTrailingSlash = routes.AppendTrailingSlash,
+                LowercaseUrls = routes.LowercaseUrls,
+                RouteExistingFiles = routes.RouteExistingFiles
+            };
+
+            using (routes.GetReadLock())
+            {
+                foreach (RouteBase route in routes)
+                {
+                    string thisAreaName = route.GetAreaName() ?? String.Empty;
+                    usingAreas |= (thisAreaName.Length > 0);
+                    if (String.Equals(thisAreaName, areaName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        filteredRoutes.Add(route);
+                    }
+                }
+            }
+
+            // if areas are not in use, the filtered route collection might be incorrect
+            return (usingAreas) ? filteredRoutes : routes;
+        }
+
+        private RouteData CreateRouteData(RouteBase route, RouteValueDictionary routeValues, RouteValueDictionary dataTokens, ViewContext parentViewContext)
+        {
+            var routeData = new RouteData();
+
+            foreach (var kvp in routeValues)
+            {
+                routeData.Values.Add(kvp.Key, kvp.Value);
+            }
+
+            foreach (var kvp in dataTokens)
+            {
+                routeData.DataTokens.Add(kvp.Key, kvp.Value);
+            }
+
+            routeData.Route = route;
+            routeData.DataTokens["ParentActionViewContext"] = parentViewContext;
+
+            return routeData;
+        }
+
+        class ChildActionMvcHandler : MvcHandler
+        {
+            public ChildActionMvcHandler(RequestContext context)
+                : base(context)
+            {
+            }
+
+            protected override void AddVersionHeader(HttpContextBase httpContext)
+            {
+                // No version header for child actions
+            }
+        }
+
+        #endregion
+    }
 }

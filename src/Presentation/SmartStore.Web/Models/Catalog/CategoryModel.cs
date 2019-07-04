@@ -31,13 +31,13 @@ namespace SmartStore.Web.Models.Catalog
         public LocalizedValue<string> MetaDescription { get; set; }
         public LocalizedValue<string> MetaTitle { get; set; }
         public string SeName { get; set; }
-        
+        public string ExternalLink { get; set; }
+
         public PictureModel PictureModel { get; set; }
 
         public bool DisplayCategoryBreadcrumb { get; set; }
 
 		public SubCategoryDisplayType SubCategoryDisplayType { get; set; }
-        
         public IList<SubCategoryModel> SubCategories { get; set; }
 
         public ProductSummaryModel FeaturedProducts { get; set; }
@@ -55,6 +55,7 @@ namespace SmartStore.Web.Models.Catalog
 
             public LocalizedValue<string> Name { get; set; }
             public string SeName { get; set; }
+            public string ExternalLink { get; set; }
             public PictureModel PictureModel { get; set; }
         }
 

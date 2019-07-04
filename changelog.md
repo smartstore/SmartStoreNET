@@ -3,6 +3,7 @@
 ## SmartStore.NET 3.2.2
 
 ### New Features
+* External category links: alternative links for categories in the main menu and in category listings.
 * Page Builder: multistore support for stories.
 * #1639 Shipping.ByTotal: Add option to calculate the shipping rate based on the net total instead of the gross total.
 ### Improvements

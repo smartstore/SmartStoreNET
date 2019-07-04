@@ -182,6 +182,7 @@ namespace SmartStore.Web.Controllers
 							Id = x.Id,
 							Name = subCatName,
 							SeName = x.GetSeName(),
+                            ExternalLink = x.ExternalLink
 						};
 
 						_services.DisplayControl.Announce(x);

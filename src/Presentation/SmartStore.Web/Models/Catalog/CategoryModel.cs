@@ -9,12 +9,21 @@ using SmartStore.Web.Models.Search;
 
 namespace SmartStore.Web.Models.Catalog
 {
+    public partial class CategorySummaryModel : EntityModelBase
+    {
+        public LocalizedValue<string> Name { get; set; }
+        public string Url { get; set; }
+        public PictureModel PictureModel { get; set; } = new PictureModel();
+
+        // TODO: Badges
+    }
+
     public partial class CategoryModel : EntityModelBase, ISearchResultModel
     {
         public CategoryModel()
         {
 			PictureModel = new PictureModel();
-            SubCategories = new List<SubCategoryModel>();
+            SubCategories = new List<CategorySummaryModel>();
         }
 
 		public CatalogSearchResult SearchResult
@@ -31,34 +40,15 @@ namespace SmartStore.Web.Models.Catalog
         public LocalizedValue<string> MetaDescription { get; set; }
         public LocalizedValue<string> MetaTitle { get; set; }
         public string SeName { get; set; }
-        public string ExternalLink { get; set; }
 
         public PictureModel PictureModel { get; set; }
 
         public bool DisplayCategoryBreadcrumb { get; set; }
 
 		public SubCategoryDisplayType SubCategoryDisplayType { get; set; }
-        public IList<SubCategoryModel> SubCategories { get; set; }
+        public IList<CategorySummaryModel> SubCategories { get; set; }
 
         public ProductSummaryModel FeaturedProducts { get; set; }
         public ProductSummaryModel Products { get; set; }
-        
-
-		#region Nested Classes
-
-        public partial class SubCategoryModel : EntityModelBase
-        {
-            public SubCategoryModel()
-            {
-                PictureModel = new PictureModel();
-            }
-
-            public LocalizedValue<string> Name { get; set; }
-            public string SeName { get; set; }
-            public string ExternalLink { get; set; }
-            public PictureModel PictureModel { get; set; }
-        }
-
-		#endregion
     }
 }

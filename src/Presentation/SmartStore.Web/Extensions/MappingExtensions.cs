@@ -24,7 +24,6 @@ namespace SmartStore.Web
     {
         public static CategoryModel ToModel(this Category entity)
         {
-			// TODO: (mc) delete later
 			if (entity == null)
                 return null;
 
@@ -38,8 +37,7 @@ namespace SmartStore.Web
                 MetaKeywords = entity.GetLocalized(x => x.MetaKeywords),
                 MetaDescription = entity.GetLocalized(x => x.MetaDescription),
                 MetaTitle = entity.GetLocalized(x => x.MetaTitle),
-                SeName = entity.GetSeName(),
-                ExternalLink = entity.ExternalLink
+                SeName = entity.GetSeName()
             };
 
             return model;

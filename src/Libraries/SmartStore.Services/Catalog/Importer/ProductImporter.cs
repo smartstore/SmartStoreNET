@@ -613,6 +613,7 @@ namespace SmartStore.Services.Catalog.Importer
 			_productRepository.AutoCommitEnabled = false;
 
 			var defaultTemplateId = templateViewPaths["Product"];
+            var hasNameColumn = context.DataSegmenter.HasColumn("Name");
             
             foreach (var row in batch)
 			{
@@ -672,7 +673,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 				row.Initialize(product, name ?? product.Name);
 
-				if (!row.IsNew)
+				if (!row.IsNew && hasNameColumn)
 				{
 					if (!product.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
 					{

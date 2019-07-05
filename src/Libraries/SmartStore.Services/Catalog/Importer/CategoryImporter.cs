@@ -342,8 +342,9 @@ namespace SmartStore.Services.Catalog.Importer
 			_categoryRepository.AutoCommitEnabled = true;
 
 			var defaultTemplateId = templateViewPaths["CategoryTemplate.ProductsInGridOrLines"];
+            var hasNameColumn = context.DataSegmenter.HasColumn("Name");
 
-			foreach (var row in batch)
+            foreach (var row in batch)
 			{
 				Category category = null;
 				var id = row.GetDataValue<int>("Id");
@@ -375,9 +376,9 @@ namespace SmartStore.Services.Catalog.Importer
 						continue;
 					}
 
-					// a Name is required with new categories
-					if (!row.Segmenter.HasColumn("Name"))
-					{
+                    // A name is required for new categories.
+                    if (!row.HasDataValue("Name"))
+                    {
 						++context.Result.SkippedRecords;
 						context.Result.AddError("The 'Name' field is required for new categories. Skipping row.", row.GetRowInfo(), "Name");
 						continue;
@@ -388,7 +389,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 				row.Initialize(category, name ?? category.Name);
 
-				if (!row.IsNew && !category.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+				if (!row.IsNew && hasNameColumn && !category.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
 				{
 					// Perf: use this later for SeName updates.
 					row.NameChanged = true;

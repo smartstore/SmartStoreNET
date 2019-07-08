@@ -3,8 +3,8 @@
 
 @if (Model.Id > 0)
 {
-	<script type="text/javascript">
-		$(document).ready(function () {
+	<script>
+        $(function () {
             $('#add-product-picture').on('click', function () {
                 var pictureId = $("#@Html.FieldIdFor(model => model.AddPictureModel.PictureId)").val();
                 var displayOrder = $("#@Html.FieldIdFor(model => model.AddPictureModel.DisplayOrder)").val();

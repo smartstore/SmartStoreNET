@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Rules.Impl
 {
@@ -13,6 +14,17 @@ namespace SmartStore.Rules.Impl
         {
             // TODO: Allow many values
             return context.Customer.CustomerRoles.FirstOrDefault()?.Id ?? 0;
+        }
+
+        public override void ApplyToQuery(QueryRuleContext context)
+        {
+            if (context.Query is IQueryable<Customer> query)
+            {
+                var arr = Expression.Comparand.Convert<IEnumerable<int>>();
+
+                // TODO
+                query = query.Where(c => c.CustomerRoles.Any(r => r.Id == arr.First()));
+            }
         }
 
         protected override RuleMetadata GetRuleMetadata()

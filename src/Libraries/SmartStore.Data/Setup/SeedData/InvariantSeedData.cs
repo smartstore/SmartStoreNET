@@ -3975,6 +3975,11 @@ namespace SmartStore.Data.Setup
 
 		public IList<ISettings> Settings()
 		{
+            var defaultDimensionId = _ctx.Set<MeasureDimension>().FirstOrDefault(x => x.SystemKeyword == "inch")?.Id ?? 0;
+            var defaultWeightId = _ctx.Set<MeasureWeight>().FirstOrDefault(x => x.SystemKeyword == "lb")?.Id ?? 0;
+            var defaultLanguageId = _ctx.Set<Language>().FirstOrDefault()?.Id ?? 0;
+            var defaultEmailAccountId = _ctx.Set<EmailAccount>().FirstOrDefault()?.Id ?? 0;
+
 			var entities = new List<ISettings>
 			{
 				new PdfSettings
@@ -3983,60 +3988,60 @@ namespace SmartStore.Data.Setup
 				new CommonSettings
 				{
 				},
-				new SeoSettings()
+				new SeoSettings
 				{
 				},
-				new SocialSettings()
+				new SocialSettings
 				{
 				},
-				new AdminAreaSettings()
+				new AdminAreaSettings
 				{
 				},
-				new CatalogSettings()
+				new CatalogSettings
 				{
 				},
-				new LocalizationSettings()
+				new LocalizationSettings
 				{
-					DefaultAdminLanguageId = _ctx.Set<Language>().First().Id
+					DefaultAdminLanguageId = defaultLanguageId
 				},
-				new CustomerSettings()
-				{
-				},
-				new AddressSettings()
+				new CustomerSettings
 				{
 				},
-				new MediaSettings()
+				new AddressSettings
 				{
 				},
-				new StoreInformationSettings()
+				new MediaSettings
 				{
 				},
-				new RewardPointsSettings()
+				new StoreInformationSettings
 				{
 				},
-				new CurrencySettings()
+				new RewardPointsSettings
 				{
 				},
-				new MeasureSettings()
-				{
-					BaseDimensionId = _ctx.Set<MeasureDimension>().Where(m => m.SystemKeyword == "inch").Single().Id,
-					BaseWeightId = _ctx.Set<MeasureWeight>().Where(m => m.SystemKeyword == "lb").Single().Id,
-				},
-				new ShoppingCartSettings()
+				new CurrencySettings
 				{
 				},
-				new OrderSettings()
+				new MeasureSettings
+				{
+					BaseDimensionId = defaultDimensionId,
+					BaseWeightId = defaultWeightId,
+				},
+				new ShoppingCartSettings
 				{
 				},
-				new SecuritySettings()
+				new OrderSettings
 				{
 				},
-				new ShippingSettings()
+				new SecuritySettings
 				{
 				},
-				new PaymentSettings()
+				new ShippingSettings
 				{
-					ActivePaymentMethodSystemNames = new List<string>()
+				},
+				new PaymentSettings
+				{
+					ActivePaymentMethodSystemNames = new List<string>
 					{
 						"Payments.CashOnDelivery",
 						"Payments.Manual",
@@ -4044,23 +4049,23 @@ namespace SmartStore.Data.Setup
 						"Payments.Prepayment"
 					}
 				},
-				new TaxSettings()
+				new TaxSettings
 				{
 				},
-				new BlogSettings()
+				new BlogSettings
 				{
 				},
-				new NewsSettings()
+				new NewsSettings
 				{
 				},
-				new ForumSettings()
+				new ForumSettings
 				{
 				},
-				new EmailAccountSettings()
+				new EmailAccountSettings
 				{
-					DefaultEmailAccountId = _ctx.Set<EmailAccount>().First().Id
+					DefaultEmailAccountId = defaultEmailAccountId
 				},
-				new ThemeSettings()
+				new ThemeSettings
 				{
 				}
 			};

@@ -127,7 +127,7 @@ namespace SmartStore.PayPal
                 var viewModel = model as OrderDetailsModel;
                 if (viewModel != null)
                 {
-                    actionName = "OrderDetailsTotal";
+                    actionName = "OrderDetails";
                     controllerName = "PayPalInstalments";
 
                     routeValues.Add("orderId", viewModel.Id);

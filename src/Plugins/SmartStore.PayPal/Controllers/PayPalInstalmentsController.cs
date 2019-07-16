@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -98,7 +99,7 @@ namespace SmartStore.PayPal.Controllers
             {
                 var store = Services.StoreContext.CurrentStore;
                 var language = Services.WorkContext.WorkingLanguage;
-                var currency = Services.WorkContext.WorkingCurrency;
+                var targetCurrency = Services.WorkContext.WorkingCurrency;
                 var session = _httpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
 
                 if (session.FinancingCosts == decimal.Zero || session.TotalInclFinancingCosts == decimal.Zero)
@@ -107,19 +108,19 @@ namespace SmartStore.PayPal.Controllers
                     var result = PayPalService.GetPayment(settings, session);
                     if (result.Success)
                     {
-                        result.Json.ToString().Dump();
-                        // TODO: get details.
-                        //var total = (string)result.Json.....;
-                        //session.FinancingCosts = ;
-                        //session.TotalInclFinancingCosts = total.Convert<decimal>(CultureInfo.InvariantCulture);
+                        var rawCosts = (string)result.Json.credit_financing_offered.total_interest.value;
+                        var rawTotal = (string)result.Json.credit_financing_offered.total_cost.value;
+
+                        session.FinancingCosts = rawCosts.Convert<decimal>(CultureInfo.InvariantCulture);
+                        session.TotalInclFinancingCosts = rawTotal.Convert<decimal>(CultureInfo.InvariantCulture);
                     }
                 }
 
-                var financingCosts = _currencyService.ConvertFromPrimaryStoreCurrency(session.FinancingCosts, currency, store);
-                var totalInclFinancingCosts = _currencyService.ConvertFromPrimaryStoreCurrency(session.TotalInclFinancingCosts, currency, store);
+                var financingCosts = _currencyService.ConvertFromPrimaryStoreCurrency(session.FinancingCosts, targetCurrency, store);
+                var totalInclFinancingCosts = _currencyService.ConvertFromPrimaryStoreCurrency(session.TotalInclFinancingCosts, targetCurrency, store);
 
-                ViewBag.FinancingCosts = _priceFormatter.FormatPrice(financingCosts, true, currency, language, false, false);
-                ViewBag.TotalInclFinancingCosts = _priceFormatter.FormatPrice(totalInclFinancingCosts, true, currency, language, false, false);
+                ViewBag.FinancingCosts = _priceFormatter.FormatPrice(financingCosts, true, targetCurrency, language, false, false);
+                ViewBag.TotalInclFinancingCosts = _priceFormatter.FormatPrice(totalInclFinancingCosts, true, targetCurrency, language, false, false);
 
                 return PartialView();
             }
@@ -133,7 +134,7 @@ namespace SmartStore.PayPal.Controllers
 
         // Widget zone on order details (page and print).
         [ChildActionOnly]
-        public ActionResult OrderDetailsTotal(int orderId, bool print)
+        public ActionResult OrderDetails(int orderId, bool print)
         {
             try
             {
@@ -149,13 +150,13 @@ namespace SmartStore.PayPal.Controllers
                         // Convert into order currency.
                         var language = Services.WorkContext.WorkingLanguage;
                         var store = Services.StoreService.GetStoreById(order.StoreId) ?? Services.StoreContext.CurrentStore;
-                        var currency = _currencyService.GetCurrencyByCode(order.CustomerCurrencyCode) ?? store.PrimaryStoreCurrency;
+                        var targetCurrency = _currencyService.GetCurrencyByCode(order.CustomerCurrencyCode) ?? store.PrimaryStoreCurrency;
 
-                        var financingCosts = _currencyService.ConvertFromPrimaryStoreCurrency(orderAttribute.FinancingCosts, currency, store);
-                        var totalInclFinancingCosts = _currencyService.ConvertFromPrimaryStoreCurrency(orderAttribute.TotalInclFinancingCosts, currency, store);
+                        var financingCosts = _currencyService.ConvertFromPrimaryStoreCurrency(orderAttribute.FinancingCosts, targetCurrency, store);
+                        var totalInclFinancingCosts = _currencyService.ConvertFromPrimaryStoreCurrency(orderAttribute.TotalInclFinancingCosts, targetCurrency, store);
 
-                        ViewBag.FinancingCosts = _priceFormatter.FormatPrice(financingCosts, true, currency, language, false, false);
-                        ViewBag.TotalInclFinancingCosts = _priceFormatter.FormatPrice(totalInclFinancingCosts, true, currency, language, false, false);
+                        ViewBag.FinancingCosts = _priceFormatter.FormatPrice(financingCosts, true, targetCurrency, language, false, false);
+                        ViewBag.TotalInclFinancingCosts = _priceFormatter.FormatPrice(totalInclFinancingCosts, true, targetCurrency, language, false, false);
 
                         if (print)
                         {
@@ -188,14 +189,22 @@ namespace SmartStore.PayPal.Controllers
             }
 
             session.PayerId = PayerID;
-            $"return {paymentId}".Dump();
+
             return RedirectToAction("Confirm", "Checkout", new { area = "" });
         }
 
         // Redirect from PayPal to the shop.
         public ActionResult CheckoutCancel()
         {
-            "cancel".Dump();
+            var store = Services.StoreContext.CurrentStore;
+            var customer = Services.WorkContext.CurrentCustomer;
+            var session = _httpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
+
+            session.PayerId = session.PaymentId = session.ApprovalUrl = null;
+            session.FinancingCosts = session.TotalInclFinancingCosts = decimal.Zero;
+
+            _genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, null, store.Id);
+
             return RedirectToAction("PaymentMethod", "Checkout", new { area = "" });
         }
 

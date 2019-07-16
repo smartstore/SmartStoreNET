@@ -58,6 +58,9 @@
     <LocaleResource Name="Promotion">
         <Value>Promotion</Value>
     </LocaleResource>
+    <LocaleResource Name="PaymentImpossible">
+        <Value>Die von Ihnen gewählte Zahlungsart kann Ihnen leider nicht angeboten werden. Bitte wählen Sie eine andere Zahlungsart aus.</Value>
+    </LocaleResource>
     
     <LocaleResource Name="ClientId">
     <Value>Client-ID</Value>

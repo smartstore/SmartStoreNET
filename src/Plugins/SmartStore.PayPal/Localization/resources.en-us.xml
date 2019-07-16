@@ -61,6 +61,9 @@
     <LocaleResource Name="Promotion">
         <Value>Promotion</Value>
     </LocaleResource>
+    <LocaleResource Name="PaymentImpossible">
+        <Value>Unfortunately, the payment method you have chosen cannot be offered to you. Please select another payment method.</Value>
+    </LocaleResource>
 
     <LocaleResource Name="ClientId">
     <Value>Client ID</Value>

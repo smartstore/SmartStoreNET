@@ -50,29 +50,23 @@ namespace SmartStore.PayPal.Filters
                 {
                     var session = filterContext.HttpContext.GetPayPalState(PayPalInstalmentsProvider.SystemName);
 
-                    if (session.ApprovalUrl.HasValue())
+                    if (session.ApprovalUrl.IsEmpty())
                     {
-                        // Redirect by CheckoutReturn.
-                        session.ApprovalUrl = null;
-
-                        _widgetProvider.Value.RegisterAction("order_summary_totals_after", "OrderSummaryTotals", "PayPalInstalments", new { area = Plugin.SystemName });
-                    }
-                    else
-                    {
-                        session.PaymentId = null;
+                        // Create payment and redirect to PayPal.
+                        session.PayerId = session.PaymentId = null;
                         session.FinancingCosts = session.TotalInclFinancingCosts = decimal.Zero;
 
+                        var urlHelper = new UrlHelper(filterContext.HttpContext.Request.RequestContext);
                         var settings = _services.Settings.LoadSetting<PayPalInstalmentsSettings>(store.Id);
 
                         var result = _payPalService.Value.EnsureAccessToken(session, settings);
                         if (result.Success)
                         {
-                            var urlHelper = new UrlHelper(filterContext.HttpContext.Request.RequestContext);
                             var protocol = store.SslEnabled ? "https" : "http";
                             var returnUrl = urlHelper.Action("CheckoutReturn", "PayPalInstalments", new { area = Plugin.SystemName }, protocol);
                             var cancelUrl = urlHelper.Action("CheckoutCancel", "PayPalInstalments", new { area = Plugin.SystemName }, protocol);
                             var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
-                            "CreatePayment".Dump();
+
                             result = _payPalService.Value.CreatePayment(settings, session, cart, returnUrl, cancelUrl);
                             if (result == null)
                             {
@@ -86,22 +80,33 @@ namespace SmartStore.PayPal.Filters
                                     {
                                         session.PaymentId = result.Id;
                                         session.ApprovalUrl = link.href;
-
-                                        filterContext.Result = new RedirectResult(session.ApprovalUrl, false);
                                         break;
                                     }
                                 }
                             }
                             else
                             {
-                                _genericAttributeService.Value.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, null, store.Id);
-
-                                var url = urlHelper.Action("PaymentMethod", "Checkout", new { area = "" });
-                                filterContext.Result = new RedirectResult(url, false);
-
                                 _services.Notifier.Error(result.ErrorMessage);
                             }
                         }
+
+                        if (session.ApprovalUrl.HasValue())
+                        {
+                            filterContext.Result = new RedirectResult(session.ApprovalUrl, false);
+                        }
+                        else
+                        {
+                            _genericAttributeService.Value.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, null, store.Id);
+
+                            _services.Notifier.Error(_services.Localization.GetResource("Plugins.SmartStore.PayPal.PaymentImpossible"));
+
+                            filterContext.Result = new RedirectResult(urlHelper.Action("PaymentMethod", "Checkout", new { area = "" }), false);
+                        }
+                    }
+                    else
+                    {
+                        // Show instalments total and fees.
+                        _widgetProvider.Value.RegisterAction("order_summary_totals_after", "OrderSummaryTotals", "PayPalInstalments", new { area = Plugin.SystemName });
                     }
                 }
             }

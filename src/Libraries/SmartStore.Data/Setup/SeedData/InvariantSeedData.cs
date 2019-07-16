@@ -9731,14 +9731,9 @@ namespace SmartStore.Data.Setup
 			var result = new List<Product>();
 			var productTemplateSimple = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "Product");
 			var firstDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 0);
-<<<<<<< Updated upstream
 			var fashionCategory = _ctx.Set<Category>().First(x => x.Alias == "Fashion");
 			var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);
-=======
-            var fashionCategory = _ctx.Set<Category>().First(x => x.Alias == "Fashion");
-            var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);
 			var specOptionCotton = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 9);
->>>>>>> Stashed changes
 
 			// Converse All Star
 			var converseAllStar = new Product
@@ -9961,12 +9956,7 @@ namespace SmartStore.Data.Setup
 
 			result.Add(clarkJeans);
 
-<<<<<<< Updated upstream
-			return result;
-=======
-
-            return result;
->>>>>>> Stashed changes
+		return result;
 		}
 
 		private List<Product> GetFurnitureProducts(Dictionary<int, SpecificationAttribute> specAttributes)
@@ -10267,11 +10257,10 @@ namespace SmartStore.Data.Setup
             var secondDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 1);
             var thirdDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 2);
 
-<<<<<<< Updated upstream
             var manufacturers = _ctx.Set<Manufacturer>().ToList().ToDictionarySafe(x => x.Name, x => x);
             var categories = _ctx.Set<Category>().ToList().ToDictionarySafe(x => x.Alias, x => x);
             var specAttributes = _ctx.Set<SpecificationAttribute>().ToList().ToDictionarySafe(x => x.DisplayOrder, x => x);
-=======
+
 
             //#region category shoes
 
@@ -10397,10 +10386,6 @@ namespace SmartStore.Data.Setup
             #endregion product Jack Wolfskin KANUKA POINT
             #endregion category jackets
 
-
-
-            #region category golf
->>>>>>> Stashed changes
 
             #region category golf
 
@@ -12537,8 +12522,6 @@ namespace SmartStore.Data.Setup
 
             #region gaming
 
-<<<<<<< Updated upstream
-=======
             var manuSony = _ctx.Set<Manufacturer>().First(c => c.Name == "Sony");
             var manuMicrosoft = _ctx.Set<Manufacturer>().First(c => c.Name == "Microsoft");
             var manuEASports = _ctx.Set<Manufacturer>().First(c => c.Name == "EA Sports");
@@ -12548,7 +12531,6 @@ namespace SmartStore.Data.Setup
 			var categoryGamingGames = _ctx.Set<Category>().First(c => c.Alias == "Games");
             var manuWarnerHomme = _ctx.Set<Manufacturer>().First(c => c.Name == "Warner Home Video Games");
             
->>>>>>> Stashed changes
             #region bundlePs3AssassinCreed
 
             var productPs3 = new Product

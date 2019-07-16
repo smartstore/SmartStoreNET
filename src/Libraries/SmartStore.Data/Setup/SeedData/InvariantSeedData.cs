@@ -9050,6 +9050,77 @@ namespace SmartStore.Data.Setup
 
             #region category definitions
 
+            #region new
+
+            var categoryFashionJackets = new Category
+            {
+                Name = "Jackets",
+                Alias = "Jackets",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_jackets.jpg"), "image/png", GetSeName("Jackets")),
+                Published = true,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
+                DisplayOrder = 1,
+                MetaTitle = "Jackets",
+                ShowOnHomePage = true
+            };
+            
+            var categoryFashionLeatherJackets = new Category
+            {
+                Name = "Leather jackets",
+                Alias = "Leather jackets",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_leather_jackets.jpg"), "image/png", GetSeName("Leather jackets")),
+                Published = true,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Jackets").First().Id,
+                DisplayOrder = 1,
+                MetaTitle = "Leather jackets",
+                ShowOnHomePage = true
+            };
+
+            var categoryFashionShoes = new Category
+            {
+                Name = "Shoes",
+                Alias = "Shoes",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_shoes.png"), "image/png", GetSeName("Shoes")),
+                Published = true,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
+                DisplayOrder = 1,
+                MetaTitle = "Shoes",
+                ShowOnHomePage = true
+            };
+
+            var categoryFashionTrousers = new Category
+            {
+                Name = "Trousers",
+                Alias = "Pants",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_trousers.jpg"), "image/png", GetSeName("Trousers")),
+                Published = true,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
+                DisplayOrder = 1,
+                MetaTitle = "Trousers",
+                ShowOnHomePage = true
+            };
+
+            var categoryFashionTracksuits = new Category
+            {
+                Name = "Tracksuits",
+                Alias = "Tracksuits",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_tracksuit.png"), "image/png", GetSeName("Tracksuits")),
+                Published = true,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
+                DisplayOrder = 1,
+                MetaTitle = "Tracksuits",
+                ShowOnHomePage = true
+            };
+
+            #endregion
+
+
+
             var categorySportsGolf = new Category
             {
                 Name = "Golf",
@@ -9179,7 +9250,8 @@ namespace SmartStore.Data.Setup
 			var entities = new List<Category>
 			{
                 categorySportsSunglasses,categorySportsSoccer, categorySportsBasketball,categorySportsGolf, categoryBooksSpiegel, categoryBooksCookAndEnjoy,
-				categoryGamingAccessories, categoryGamingGames
+				categoryGamingAccessories, categoryGamingGames, categoryFashionJackets, categoryFashionLeatherJackets, categoryFashionShoes, categoryFashionTrousers,
+                categoryFashionTracksuits
 			};
 
 			this.Alter(entities);
@@ -9197,11 +9269,37 @@ namespace SmartStore.Data.Setup
             //var categoryTemplateInGridAndLines =
             //    this.CategoryTemplates().Where(pt => pt.Name == "Products in Grid or Lines").FirstOrDefault();
 
-            //categories
+            //
+            
+            #region Jack Wolfskin
 
+            var manufacturerJackWolfskin = new Manufacturer
+            {
+                Name = "Jack-Wolfskin",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_Jack_Wolfskin.png"), "image/png", GetSeName("Jack Wolfskin")),
+                Published = true,
+                DisplayOrder = 1
+            };
+
+            #endregion
+
+            #region Mey & Edlich
+
+            var manufacturerMeyAndEdlich = new Manufacturer
+            {
+                Name = "Mey-And-Edlich",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_MeyAndEdlich.jpg"), "image/png", GetSeName("Mey Edlich")),
+                Published = true,
+                DisplayOrder = 1
+            };
+
+            #endregion
+                      
             #region EA Sports
 
-            var manufacturerWarnerHome = new Manufacturer
+            var manufacturerEASports = new Manufacturer
             {
                 Name = "EA Sports",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
@@ -9214,7 +9312,7 @@ namespace SmartStore.Data.Setup
 
             #region Warner Home Video Games
 
-            var manufacturerEASports = new Manufacturer
+            var manufacturerWarnerHome = new Manufacturer
             {
                 Name = "Warner Home Video Games",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
@@ -9616,10 +9714,12 @@ namespace SmartStore.Data.Setup
 			#endregion Ubisoft
 
 			var entities = new List<Manufacturer>
-			{
-              manufacturerEASports,manufacturerWarnerHome,manufacturerBreitling,manufacturerTissot,manufacturerSeiko, manufacturerTitleist,manufacturerApple,manufacturerSamsung,manufacturerLG,manufacturerTrekStor, manufacturerWesternDigital,manufacturerDell, manufacturerMSI,
+			{                
+              manufacturerEASports,manufacturerWarnerHome,manufacturerBreitling,manufacturerTissot,manufacturerSeiko, manufacturerTitleist, manufacturerApple,
+              manufacturerSamsung,manufacturerLG,manufacturerTrekStor, manufacturerWesternDigital,manufacturerDell, manufacturerMSI,
 			  manufacturerCanon, manufacturerCasio, manufacturerPanasonic, manufacturerBlackBerry, manufacturerHTC, manufacturerFestina, manufacturerCertina, 
-			  manufacturerHP, manufacturerAcer, manufacturerSony, manufacturerUbisoft,manufacturerOakley,manufacturerRayban,manufacturerAdidas, manufacturerWilson,manufacturerPuma,manufacturerNike
+			  manufacturerHP, manufacturerAcer, manufacturerSony, manufacturerUbisoft, manufacturerOakley, manufacturerRayban, manufacturerAdidas, manufacturerWilson,
+              manufacturerPuma,manufacturerNike, manufacturerMeyAndEdlich, manufacturerJackWolfskin, manufacturerMicrosoft
             };
 
 			this.Alter(entities);
@@ -9631,8 +9731,14 @@ namespace SmartStore.Data.Setup
 			var result = new List<Product>();
 			var productTemplateSimple = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "Product");
 			var firstDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 0);
+<<<<<<< Updated upstream
 			var fashionCategory = _ctx.Set<Category>().First(x => x.Alias == "Fashion");
 			var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);
+=======
+            var fashionCategory = _ctx.Set<Category>().First(x => x.Alias == "Fashion");
+            var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);
+			var specOptionCotton = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 9);
+>>>>>>> Stashed changes
 
 			// Converse All Star
 			var converseAllStar = new Product
@@ -9730,8 +9836,8 @@ namespace SmartStore.Data.Setup
 				Price = 29.00M
 			});
 
-			var shirtMeccanicaImages = new string[] { "product_shirt_meccanica_red_1.jpg", "product_shirt_meccanica_red_2.jpg", "product_shirt_meccanica_red_3.jpg",
-				"product_shirt_meccanica_red_4.jpg", "product_shirt_meccanica_black_1.jpg", "product_shirt_meccanica_black_2.jpg", "product_shirt_meccanica_black_3.jpg" };
+			var shirtMeccanicaImages = new string[] { "product_shirt_meccanica_black_1.jpg", "product_shirt_meccanica_black_2.jpg", "product_shirt_meccanica_black_3.jpg",
+                "product_shirt_meccanica_red_1.jpg", "product_shirt_meccanica_red_2.jpg", "product_shirt_meccanica_red_3.jpg", "product_shirt_meccanica_red_4.jpg"  };
 
 			for (var i = 0; i < shirtMeccanicaImages.Length; ++i)
 			{
@@ -9787,8 +9893,8 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 1
 			});
 
-			var ladiesJacketImages = new string[] { "product_ladies_jacket_red.jpg", "product_ladies_jacket_orange.jpg", "product_ladies_jacket_green.jpg",
-				"product_ladies_jacket_blue.jpg", "product_ladies_jacket_navy.jpg", "product_ladies_jacket_silver.jpg", "product_ladies_jacket_black.jpg" };
+			var ladiesJacketImages = new string[] { "product_ladies_jacket_silver.jpg", "product_ladies_jacket_black.jpg", "product_ladies_jacket_red.jpg",
+                "product_ladies_jacket_orange.jpg", "product_ladies_jacket_green.jpg", "product_ladies_jacket_blue.jpg", "product_ladies_jacket_navy.jpg",  };
 
 			for (var i = 0; i < ladiesJacketImages.Length; ++i)
 			{
@@ -9855,7 +9961,12 @@ namespace SmartStore.Data.Setup
 
 			result.Add(clarkJeans);
 
+<<<<<<< Updated upstream
 			return result;
+=======
+
+            return result;
+>>>>>>> Stashed changes
 		}
 
 		private List<Product> GetFurnitureProducts(Dictionary<int, SpecificationAttribute> specAttributes)
@@ -10156,9 +10267,140 @@ namespace SmartStore.Data.Setup
             var secondDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 1);
             var thirdDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 2);
 
+<<<<<<< Updated upstream
             var manufacturers = _ctx.Set<Manufacturer>().ToList().ToDictionarySafe(x => x.Name, x => x);
             var categories = _ctx.Set<Category>().ToList().ToDictionarySafe(x => x.Alias, x => x);
             var specAttributes = _ctx.Set<SpecificationAttribute>().ToList().ToDictionarySafe(x => x.DisplayOrder, x => x);
+=======
+
+            //#region category shoes
+
+            //var categoryShoes = _ctx.Set<Category>().First(x => x.Alias == "Shoes");
+
+            //#region product Jack Wolfskin COOGEE LOW M
+
+            //var productJackWolfskinCooGeeLowM = new Product
+            //{
+            //    ProductType = ProductType.SimpleProduct,
+            //    VisibleIndividually = true,
+            //    Name = "COOGEE LOW M",
+            //    MetaTitle = "COOGEE LOW M",
+            //    ShortDescription = "MÄNNER FREIZEITSCHUHE",
+            //    FullDescription = "<p>Du bist immer auf dem Sprung: zum Kino, zur neueröffneten Bar oder zum nächsten Stadtfest. Der stylische COOGEE LOW ist DER Schuh für dein Leben in der Stadt. Denn er verbindet Funktion mit Style. Die sportliche EVA - Zwischensohle ist nicht nur leicht und flexibel, sondern dämpft deine Ferse mit ihrer Erhöhung im hinteren Bereich auch besonders gut und ist sehr komfortabel.So sind deine Füße auch nach vielen Stunden noch fit – du wirst es merken, wenn nach einem langen Tag z.B.noch eine spontane Party ansteht. Die Passform haben wir nach dem Vorbild einer Socke gestaltet, sie ist locker und komfortabel.Dennoch bleibt der Schuh in seiner schmalen Form. Dank des atmungsaktiven Obermaterials bleibt das Fußklima angenehm, egal, wie warm es draussen ist.Gleichzeitig ist der Schuh sehr pflegeleicht.Worauf wartest du also noch ? Ab in die City!</p>",
+            //    Sku = "Wolfskin-4032541",
+            //    ProductTemplateId = productTemplate.Id,
+            //    AllowCustomerReviews = true,
+            //    Published = true,
+            //    Price = 69.90M,
+            //    OldPrice = 99.95M,
+            //    ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+            //    OrderMinimumQuantity = 1,
+            //    OrderMaximumQuantity = 10000,
+            //    StockQuantity = 10000,
+            //    NotifyAdminForQuantityBelow = 1,
+            //    IsShipEnabled = true,
+            //    DeliveryTime = firstDeliveryTime,
+            //    DisplayOrder = 5
+            //};
+
+            //AddProductPicture(productJackWolfskinCooGeeLowM, "product_wolfskin_shoes_coogee_1.jpg", "jack-wolfskin-shoes-coogee-low-m-1");
+
+            //productJackWolfskinCooGeeLowM.ProductCategories.Add(new ProductCategory { Category = categoryShoes, DisplayOrder = 1 });
+
+            //productJackWolfskinCooGeeLowM.ProductManufacturers.Add(new ProductManufacturer
+            //{
+            //    Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Jack-Wolfskin").Single(),
+            //    DisplayOrder = 1,
+            //});
+
+            //#endregion product Jack Wolfskin COOGEE LOW M
+
+            //#region product Adidas SUPERSTAR SCHUH
+
+            //var productAdidasSuperstarSchuh = new Product
+            //{
+            //    ProductType = ProductType.SimpleProduct,
+            //    VisibleIndividually = true,
+            //    Name = "SUPERSTAR SCHUH",
+            //    MetaTitle = "SUPERSTAR SCHUH",
+            //    ShortDescription = "DER STREETWEAR-KLASSIKER MIT DER SHELL TOE.",
+            //    FullDescription = "<p>Der adidas Superstar wurde erstmals 1969 herausgebracht und machte seinem Namen schon bald alle Ehre. Heute gilt er als Streetstyle-Legende. In dieser Version kommt der Schuh mit einem bequemen Obermaterial aus Full-Grain-Leder. Perfekt wird der Look durch die klassische Shell Toe aus Gummi für mehr Strapazierfähigkeit.</p>",
+            //    Sku = "Adidas-C77124",
+            //    ProductTemplateId = productTemplate.Id,
+            //    AllowCustomerReviews = true,
+            //    Published = true,
+            //    Price = 99.95M,
+            //    ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+            //    OrderMinimumQuantity = 1,
+            //    OrderMaximumQuantity = 10000,
+            //    StockQuantity = 10000,
+            //    NotifyAdminForQuantityBelow = 1,
+            //    IsShipEnabled = true,
+            //    DeliveryTime = firstDeliveryTime,
+            //    DisplayOrder = 5
+            //};
+
+            //AddProductPicture(productAdidasSuperstarSchuh, "product_adidas_superstar_schuh_1.jpg", "adidas-superstar-schuh-1");
+
+            //productJackWolfskinCooGeeLowM.ProductCategories.Add(new ProductCategory { Category = categoryShoes, DisplayOrder = 1 });
+
+            //productJackWolfskinCooGeeLowM.ProductManufacturers.Add(new ProductManufacturer
+            //{
+            //    Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Adidas").Single(),
+            //    DisplayOrder = 1,
+            //});
+
+
+            //#endregion product Adidas SUPERSTAR SCHUH
+            //#endregion category shoes
+
+            #region category jackets
+
+            var categoryJackets = _ctx.Set<Category>().First(x => x.Alias == "Jackets");
+
+            #region product Jack Wolfskin KANUKA POINT
+
+            var productJackWolfsKinKanukaPoint = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "KANUKA POINT JACKET M",
+                MetaTitle = "KANUKA POINT JACKET M",
+                ShortDescription = "SOFTSHELLJACKE MÄNNER",
+                FullDescription = "<p>Sportliches Design für sportliche Touren: Die KANUKA POINT ist so gern in Bewegung wie du. Die Softshelljacke besteht aus superelastischem und sehr atmungsaktivem Material, das sich unterwegs jeder deiner Bewegungen anpasst. Deswegen nimmst du mit der KANUKA POINT jeden Pass mit Leichtigkeit.Und musst dir auch bei Kraxeleien zum Gipfel keine Gedanken um deine Jacke machen, denn ihr Material hält einiges aus.Auch bei Wind und leichten Schauern bleibst du gelassen.</p>",
+                Sku = "jack-1305851",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                Price = 83.90M,
+                OldPrice = 119.95M,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                IsShipEnabled = true,
+                DeliveryTime = firstDeliveryTime,
+                DisplayOrder = 5
+            };
+
+            AddProductPicture(productJackWolfsKinKanukaPoint, "product_jack_wolfskin_kanuka_point_1.png", "jack-wolfskin-kanuka-point-1");
+
+            productJackWolfsKinKanukaPoint.ProductCategories.Add(new ProductCategory { Category = categoryJackets, DisplayOrder = 1 });
+
+            productJackWolfsKinKanukaPoint.ProductManufacturers.Add(new ProductManufacturer
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Jack-Wolfskin").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion product Jack Wolfskin KANUKA POINT
+            #endregion category jackets
+
+
+
+            #region category golf
+>>>>>>> Stashed changes
 
             #region category golf
 
@@ -12291,10 +12533,22 @@ namespace SmartStore.Data.Setup
 
             #endregion productWatchesCertinaDSPodiumBigSize
 
-            #endregion watches
+            #endregion watches                      
 
             #region gaming
 
+<<<<<<< Updated upstream
+=======
+            var manuSony = _ctx.Set<Manufacturer>().First(c => c.Name == "Sony");
+            var manuMicrosoft = _ctx.Set<Manufacturer>().First(c => c.Name == "Microsoft");
+            var manuEASports = _ctx.Set<Manufacturer>().First(c => c.Name == "EA Sports");
+            var manuUbisoft = _ctx.Set<Manufacturer>().First(c => c.Name == "Ubisoft");
+			var categoryGaming = _ctx.Set<Category>().First(c => c.Alias == "Gaming");
+			var categoryGamingAccessories = _ctx.Set<Category>().First(c => c.Alias == "Gaming Accessories");
+			var categoryGamingGames = _ctx.Set<Category>().First(c => c.Alias == "Games");
+            var manuWarnerHomme = _ctx.Set<Manufacturer>().First(c => c.Name == "Warner Home Video Games");
+            
+>>>>>>> Stashed changes
             #region bundlePs3AssassinCreed
 
             var productPs3 = new Product
@@ -12676,6 +12930,38 @@ namespace SmartStore.Data.Setup
 
             #endregion Lego Worlds
 
+            //#region XBox One S
+
+            //var productXBoxOneS = new Product
+            //{
+            //    ProductType = ProductType.SimpleProduct,
+            //    VisibleIndividually = true,
+            //    Sku = "Microsoft-xbox1s",
+            //    Name = "Xbox One S 500 GB Konsole",
+            //    ShortDescription = "Genieße über 100 Spiele, die es nur für die Konsole gibt, sowie eine ständig größer werdende Bibliothek an Xbox 360-Spielen auf der Xbox One S im neuen Design – der einzigen Konsole mit 4K Ultra HD Blu-ray, 4K-Videostreaming und HDR. Streame deine Lieblingsfilme und -sendungen in atemberaubendem 4K Ultra HD. Spiele Blockbuster wie Gears of War 4 und Battlefield 1 mit Freunden auf Xbox Live, dem schnellsten und zuverlässigsten Gaming-Netzwerk.",
+            //    FullDescription = "<ul><li>Die ultimativen Spiele und 4K-Entertainment-System.</li> <li><b>40 % kompaktere Konsole<b> <br/> Lasse dich nicht von der Größe täuschen. Mit integriertem Netzteil und bis zu 2 TB Speicherplatz ist die Xbox One S die fortschrittlichste Xbox überhaupt.</li><li><b>Der beste Controller - jetzt noch besser</b> <br/> Der neue Xbox Wireless Controller bietet ein schlankes, optimiertes Design, texturierte Grip - Fläche und Bluetooth zum Spielen auf Windows 10 Geräten. Genieße individuelle Tastenbelegung und verbesserte drahtlose Reichweite und stecke jeden kompatiblen Kopfhörer mit der 3, 5 mm Stereo - Headset - Buchse ein.</li></ul>",
+            //    ProductTemplateId = productTemplate.Id,
+            //    AllowCustomerReviews = true,
+            //    Published = true,
+            //    MetaTitle = "Xbox One S",
+            //    Price = 279.99M,
+            //    OldPrice = 279.99M,
+            //    ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+            //    OrderMinimumQuantity = 1,
+            //    OrderMaximumQuantity = 10000,
+            //    StockQuantity = 10000,
+            //    NotifyAdminForQuantityBelow = 1,
+            //    AllowBackInStockSubscriptions = false,
+            //    IsShipEnabled = true,
+            //    DeliveryTimeId = firstDeliveryTime.Id
+            //};
+
+            //AddProductPicture(productXBoxOneS, "product_xbox_one_s_1.png", "microsoft-xbox-one-s-1");
+            //productXBoxOneS.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuMicrosoft, DisplayOrder = 1 });
+            //productXBoxOneS.ProductCategories.Add(new ProductCategory { Category = categoryGaming, DisplayOrder = 1 });
+
+            //#endregion
+
             #endregion gaming
 
             var entities = new List<Product>
@@ -12691,8 +12977,7 @@ namespace SmartStore.Data.Setup
 				productInstantDownloadVivaldi, productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize,
 				productPs3, productMinecraft, productBundlePs3AssassinCreed,
 				productPs4, productDualshock4Controller, productPs4Camera, productBundlePs4,
-				productGroupAccessories,
-				productPrinceOfPersia, productLegoWorlds, productHorizonZeroDown, productFifa17
+				productGroupAccessories, productPrinceOfPersia, productLegoWorlds, productHorizonZeroDown, productFifa17, productJackWolfsKinKanukaPoint
             };
 
             entities.AddRange(GetFashionProducts(specAttributes));

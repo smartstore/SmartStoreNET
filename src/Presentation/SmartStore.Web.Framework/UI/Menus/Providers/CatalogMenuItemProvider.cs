@@ -5,6 +5,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Localization;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Cms;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
@@ -18,15 +19,18 @@ namespace SmartStore.Web.Framework.UI
         private readonly ICommonServices _services;
         private readonly ICategoryService _categoryService;
         private readonly IPictureService _pictureService;
+        private readonly ILinkResolver _linkResolver;
 
         public CatalogMenuItemProvider(
             ICommonServices services,
             ICategoryService categoryService,
-            IPictureService pictureService)
+            IPictureService pictureService,
+            ILinkResolver linkResolver)
         {
             _services = services;
             _categoryService = categoryService;
             _pictureService = pictureService;
+            _linkResolver = linkResolver;
 
             T = NullLocalizer.Instance;
         }
@@ -97,17 +101,36 @@ namespace SmartStore.Web.Framework.UI
                 Rtl = name?.CurrentLanguage?.Rtl ?? false,
                 BadgeText = node.Id > 0 ? node.GetLocalized(x => x.BadgeText) : null,
                 BadgeStyle = (BadgeStyle)node.BadgeStyle,
-                RouteName = node.Id > 0 ? "Category" : "HomePage"
+                RouteName = node.Id > 0 ? "Category" : "HomePage",
             };
 
-            if (node.Id > 0)
+            // Handle external link
+            if (node.ExternalLink.HasValue())
             {
-                menuItem.RouteValues.Add("SeName", node.GetSeName());
-
-                if (node.ParentCategoryId == 0 && node.Published && node.PictureId != null)
+                var link = _linkResolver.Resolve(node.ExternalLink);
+                if (link.Status == LinkStatus.Ok)
                 {
-                    menuItem.ImageId = node.PictureId;
+                    menuItem.Url = link.Link;
                 }
+            }
+
+            if (menuItem.Url.IsEmpty())
+            {
+                if (node.Id > 0)
+                {
+                    menuItem.RouteName = "Category";
+                    menuItem.RouteValues.Add("SeName", node.GetSeName());
+                }
+                else
+                {
+                    menuItem.RouteName = "HomePage";
+                }
+            }
+            
+            // Picture
+            if (node.Id > 0 && node.ParentCategoryId == 0 && node.Published && node.PictureId != null)
+            {
+                menuItem.ImageId = node.PictureId;
             }
 
             // Apply inheritable properties.

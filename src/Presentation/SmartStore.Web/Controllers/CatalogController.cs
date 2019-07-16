@@ -171,39 +171,7 @@ namespace SmartStore.Web.Controllers
 			if (!hideSubCategories)
 			{
 				var subCategories = _categoryService.GetAllCategoriesByParentCategoryId(categoryId);
-				var allPictureInfos = _pictureService.GetPictureInfos(subCategories.Select(x => x.PictureId.GetValueOrDefault()));
-
-				model.SubCategories = subCategories
-					.Select(x =>
-					{
-						var subCatName = x.GetLocalized(y => y.Name);
-						var subCatModel = new CategoryModel.SubCategoryModel
-						{
-							Id = x.Id,
-							Name = subCatName,
-							SeName = x.GetSeName(),
-						};
-
-						_services.DisplayControl.Announce(x);
-
-					    // Prepare picture model.
-					    var pictureInfo = allPictureInfos.Get(x.PictureId.GetValueOrDefault());
-
-						subCatModel.PictureModel = new PictureModel
-						{
-							PictureId = pictureInfo?.Id ?? 0,
-							Size = pictureSize,
-							ImageUrl = _pictureService.GetUrl(pictureInfo, pictureSize, fallbackType),
-							FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback),
-							FullSizeImageWidth = pictureInfo?.Width,
-							FullSizeImageHeight = pictureInfo?.Height,
-							Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), subCatName),
-							AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), subCatName)
-						};
-
-						return subCatModel;
-					})
-					.ToList();
+                model.SubCategories = _helper.MapCategorySummaryModel(subCategories, pictureSize);
 			}
 
 			// Featured Products.
@@ -267,40 +235,14 @@ namespace SmartStore.Web.Controllers
 				.Where(c => _aclService.Authorize(c) && _storeMappingService.Authorize(c))
 				.ToList();
 
-			int pictureSize = _mediaSettings.CategoryThumbPictureSize;
-			var allPictureInfos = _pictureService.GetPictureInfos(categories.Select(x => x.PictureId.GetValueOrDefault()));
-			var fallbackType = _catalogSettings.HideCategoryDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
+            var model = _helper.MapCategorySummaryModel(categories, _mediaSettings.CategoryThumbPictureSize);
 
-			var listModel = categories
-                .Select(x =>
-                {
-                    var catModel = x.ToModel();
+			if (model.Count == 0)
+            {
+                return new EmptyResult();
+            }			
 
-                    // Prepare picture model
-					var pictureInfo = allPictureInfos.Get(x.PictureId.GetValueOrDefault());
-
-					catModel.PictureModel = new PictureModel
-					{
-						PictureId = pictureInfo?.Id ?? 0,
-						Size = pictureSize,
-						ImageUrl = _pictureService.GetUrl(pictureInfo, pictureSize, fallbackType),
-						FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback),
-						FullSizeImageWidth = pictureInfo?.Width,
-						FullSizeImageHeight = pictureInfo?.Height,
-						Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), catModel.Name),
-						AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), catModel.Name)
-					};
-
-                    return catModel;
-                })
-                .ToList();
-
-			if (listModel.Count == 0)
-				return Content("");
-
-			_services.DisplayControl.AnnounceRange(categories);
-
-            return PartialView(listModel);
+            return PartialView(model);
         }
 
         #endregion

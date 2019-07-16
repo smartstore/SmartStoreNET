@@ -67,6 +67,12 @@
             builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.TextPrompt",
                 "Text prompt",
                 "Text Eingabeaufforderung");
+
+            builder.AddOrUpdate("Admin.Catalog.Categories.Fields.ExternalLink",
+                "External link",
+                "Externer Link",
+                "Alternative external link for this category in the main menu and in category listings. For example, to a landing page that contains a back link to the category.",
+                "Abweichender, externer Verweis für diese Warengruppe im Hauptmenü und in Warengruppen-Listings. Z.B. auf eine Landingpage, die einen Rückverweis auf die Warengruppe enthält.");
         }
     }
 }

@@ -487,7 +487,8 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult UpdateProductDetails(int productId, string itemType, int bundleItemId, ProductVariantQuery query, FormCollection form)
+        [ValidateInput(false)]
+        public ActionResult UpdateProductDetails(int productId, string itemType, int bundleItemId, ProductVariantQuery query, FormCollection form)
 		{
 			int quantity = 1;
 			int galleryStartIndex = -1;

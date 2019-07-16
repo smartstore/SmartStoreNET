@@ -149,12 +149,13 @@
                     var currentTier = self.current();
                     $(window).on('resize', function () {
                         var contentWidth = $('#content').width();
+                        //console.log(contentWidth, currentContentWidth);
                         if (contentWidth !== currentContentWidth) {
                             currentContentWidth = contentWidth;
                             EventBroker.publish("page.resized", self);
 
                             var tier = self.current();
-                            if (tier != currentTier) {
+                            if (tier !== currentTier) {
                                 currentTier = tier;
                                 console.debug("Grid tier changed: " + tier);
                                 EventBroker.publish("page.gridtierchanged", tier);

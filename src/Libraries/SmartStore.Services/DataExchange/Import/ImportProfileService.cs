@@ -223,7 +223,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 			profile.KeyFieldNames = string.Join(",", keyFieldNames);
 
-			profile.FolderName = SeoHelper.GetSeName(name, true, false)
+			profile.FolderName = SeoHelper.GetSeName(name, true, false, false)
 				.ToValidPath()
 				.Truncate(_dataExchangeSettings.MaxFileNameLength);
 

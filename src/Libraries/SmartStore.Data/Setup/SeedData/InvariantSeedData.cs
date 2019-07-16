@@ -3975,6 +3975,11 @@ namespace SmartStore.Data.Setup
 
 		public IList<ISettings> Settings()
 		{
+            var defaultDimensionId = _ctx.Set<MeasureDimension>().FirstOrDefault(x => x.SystemKeyword == "inch")?.Id ?? 0;
+            var defaultWeightId = _ctx.Set<MeasureWeight>().FirstOrDefault(x => x.SystemKeyword == "lb")?.Id ?? 0;
+            var defaultLanguageId = _ctx.Set<Language>().FirstOrDefault()?.Id ?? 0;
+            var defaultEmailAccountId = _ctx.Set<EmailAccount>().FirstOrDefault()?.Id ?? 0;
+
 			var entities = new List<ISettings>
 			{
 				new PdfSettings
@@ -3983,60 +3988,60 @@ namespace SmartStore.Data.Setup
 				new CommonSettings
 				{
 				},
-				new SeoSettings()
+				new SeoSettings
 				{
 				},
-				new SocialSettings()
+				new SocialSettings
 				{
 				},
-				new AdminAreaSettings()
+				new AdminAreaSettings
 				{
 				},
-				new CatalogSettings()
+				new CatalogSettings
 				{
 				},
-				new LocalizationSettings()
+				new LocalizationSettings
 				{
-					DefaultAdminLanguageId = _ctx.Set<Language>().First().Id
+					DefaultAdminLanguageId = defaultLanguageId
 				},
-				new CustomerSettings()
-				{
-				},
-				new AddressSettings()
+				new CustomerSettings
 				{
 				},
-				new MediaSettings()
+				new AddressSettings
 				{
 				},
-				new StoreInformationSettings()
+				new MediaSettings
 				{
 				},
-				new RewardPointsSettings()
+				new StoreInformationSettings
 				{
 				},
-				new CurrencySettings()
+				new RewardPointsSettings
 				{
 				},
-				new MeasureSettings()
-				{
-					BaseDimensionId = _ctx.Set<MeasureDimension>().Where(m => m.SystemKeyword == "inch").Single().Id,
-					BaseWeightId = _ctx.Set<MeasureWeight>().Where(m => m.SystemKeyword == "lb").Single().Id,
-				},
-				new ShoppingCartSettings()
+				new CurrencySettings
 				{
 				},
-				new OrderSettings()
+				new MeasureSettings
+				{
+					BaseDimensionId = defaultDimensionId,
+					BaseWeightId = defaultWeightId,
+				},
+				new ShoppingCartSettings
 				{
 				},
-				new SecuritySettings()
+				new OrderSettings
 				{
 				},
-				new ShippingSettings()
+				new SecuritySettings
 				{
 				},
-				new PaymentSettings()
+				new ShippingSettings
 				{
-					ActivePaymentMethodSystemNames = new List<string>()
+				},
+				new PaymentSettings
+				{
+					ActivePaymentMethodSystemNames = new List<string>
 					{
 						"Payments.CashOnDelivery",
 						"Payments.Manual",
@@ -4044,23 +4049,23 @@ namespace SmartStore.Data.Setup
 						"Payments.Prepayment"
 					}
 				},
-				new TaxSettings()
+				new TaxSettings
 				{
 				},
-				new BlogSettings()
+				new BlogSettings
 				{
 				},
-				new NewsSettings()
+				new NewsSettings
 				{
 				},
-				new ForumSettings()
+				new ForumSettings
 				{
 				},
-				new EmailAccountSettings()
+				new EmailAccountSettings
 				{
-					DefaultEmailAccountId = _ctx.Set<EmailAccount>().First().Id
+					DefaultEmailAccountId = defaultEmailAccountId
 				},
-				new ThemeSettings()
+				new ThemeSettings
 				{
 				}
 			};
@@ -9621,14 +9626,13 @@ namespace SmartStore.Data.Setup
 			return entities;
 		}
 
-		private List<Product> GetFashionProducts()
+		private List<Product> GetFashionProducts(Dictionary<int, SpecificationAttribute> specAttributes)
 		{
 			var result = new List<Product>();
 			var productTemplateSimple = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "Product");
 			var firstDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 0);
 			var fashionCategory = _ctx.Set<Category>().First(x => x.Alias == "Fashion");
 			var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);
-			var specOptionCotton = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 9);
 
 			// Converse All Star
 			var converseAllStar = new Product
@@ -9678,7 +9682,7 @@ namespace SmartStore.Data.Setup
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 1,
-				SpecificationAttributeOption = specOptionCotton
+				SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 9)
 			});
 
 			result.Add(converseAllStar);
@@ -9743,8 +9747,8 @@ namespace SmartStore.Data.Setup
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 1,
-				SpecificationAttributeOption = specOptionCotton
-			});
+				SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 9)
+            });
 
 			result.Add(shirtMeccanica);
 
@@ -9800,7 +9804,7 @@ namespace SmartStore.Data.Setup
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 1,
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 11)
+				SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 11)
 			});
 
 			result.Add(ladiesJacket);
@@ -9846,30 +9850,23 @@ namespace SmartStore.Data.Setup
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 1,
-				SpecificationAttributeOption = specOptionCotton
-			});
+				SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 9)
+            });
 
 			result.Add(clarkJeans);
-
 
 			return result;
 		}
 
-		private List<Product> GetFurnitureProducts()
+		private List<Product> GetFurnitureProducts(Dictionary<int, SpecificationAttribute> specAttributes)
 		{
 			var result = new List<Product>();
 			var productTemplateSimple = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "Product");
 			var thirdDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 2);
 			var furnitureCategory = _ctx.Set<Category>().First(x => x.MetaTitle == "Furniture");
-			var specOptionLeather = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 5);
-			var specOptionWood = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 13);
-			var specOptionPlastic = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 3);
-			var specOptionGlass = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 14);
-			var specOptionSteel = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 1);
-			var specOptionAluminium = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 4);
 
-			// Le Corbusier LC 6 table
-			var corbusierTable = new Product
+            // Le Corbusier LC 6 table
+            var corbusierTable = new Product
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
@@ -9926,15 +9923,15 @@ namespace SmartStore.Data.Setup
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 1,
-				SpecificationAttributeOption = specOptionSteel
-			});
+				SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
 			corbusierTable.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
 			{
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 2,
-				SpecificationAttributeOption = specOptionGlass
-			});
+				SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 14)
+            });
 
 			result.Add(corbusierTable);
 
@@ -9994,15 +9991,15 @@ namespace SmartStore.Data.Setup
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 1,
-				SpecificationAttributeOption = specOptionPlastic
-			});
+				SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 3)
+            });
 			ballChair.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
 			{
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 2,
-				SpecificationAttributeOption = specOptionLeather
-			});
+				SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
+            });
 
 			result.Add(ballChair);
 
@@ -10070,21 +10067,21 @@ namespace SmartStore.Data.Setup
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 1,
-				SpecificationAttributeOption = specOptionWood
-			});
+				SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 13)
+            });
 			loungeChair.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
 			{
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 2,
-				SpecificationAttributeOption = specOptionLeather
-			});
+				SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
+            });
 			loungeChair.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
 			{
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 3,
-				SpecificationAttributeOption = specOptionAluminium
+				SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 4)
 			});
 
 			result.Add(loungeChair);
@@ -10142,29 +10139,28 @@ namespace SmartStore.Data.Setup
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 1,
-				SpecificationAttributeOption = specOptionLeather
-			});
+				SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
+            });
 
 			result.Add(cubeChair);
 
 			return result;
 		}
 
-		public IList<Product> Products()
-		{
-			#region definitions
-
-			var productTemplate = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "Product");
-			var firstDeliveryTime = _ctx.Set<DeliveryTime>().First(sa => sa.DisplayOrder == 0);
-            var secondDeliveryTime = _ctx.Set<DeliveryTime>().First(sa => sa.DisplayOrder == 1);
-            var thirdDeliveryTime = _ctx.Set<DeliveryTime>().First(sa => sa.DisplayOrder == 2);
+        public IList<Product> Products()
+        {
             var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);
 
-            #endregion definitions
+            var productTemplate = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "Product");
+            var firstDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 0);
+            var secondDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 1);
+            var thirdDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 2);
+
+            var manufacturers = _ctx.Set<Manufacturer>().ToList().ToDictionarySafe(x => x.Name, x => x);
+            var categories = _ctx.Set<Category>().ToList().ToDictionarySafe(x => x.Alias, x => x);
+            var specAttributes = _ctx.Set<SpecificationAttribute>().ToList().ToDictionarySafe(x => x.DisplayOrder, x => x);
 
             #region category golf
-
-            var categoryGolf = _ctx.Set<Category>().First(c => c.Alias == "Golf");
 
             #region product Titleist SM6 Tour Chrome
 
@@ -10182,7 +10178,7 @@ namespace SmartStore.Data.Setup
                 Published = true,
                 MetaTitle = "Titleist SM6 Tour Chrome",
                 Price = 164.95M,
-                OldPrice= 199.95M,
+                OldPrice = 199.95M,
                 IsGiftCard = false,
                 ManageInventoryMethod = ManageInventoryMethod.ManageStock,
                 OrderMinimumQuantity = 1,
@@ -10196,13 +10192,9 @@ namespace SmartStore.Data.Setup
 
             AddProductPicture(productTitleistSM6TourChrome, "product_titleist_sm6_tour_chrome.jpg");
 
-            productTitleistSM6TourChrome.ProductCategories.Add(new ProductCategory { Category = categoryGolf, DisplayOrder = 1 });
+            productTitleistSM6TourChrome.ProductCategories.Add(new ProductCategory { Category = categories["Golf"], DisplayOrder = 1 });
 
-            productTitleistSM6TourChrome.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Titleist").Single(),
-                DisplayOrder = 1,
-            });
+            productTitleistSM6TourChrome.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Titleist"], DisplayOrder = 1 });
 
             #endregion product Titleist SM6 Tour Chrome
 
@@ -10235,13 +10227,9 @@ namespace SmartStore.Data.Setup
 
             AddProductPicture(productTitleistProV1x, "product_titleist-pro-v1x.jpg");
 
-            productTitleistProV1x.ProductCategories.Add(new ProductCategory { Category = categoryGolf, DisplayOrder = 1 });
+            productTitleistProV1x.ProductCategories.Add(new ProductCategory { Category = categories["Golf"], DisplayOrder = 1 });
 
-            productTitleistProV1x.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Titleist").Single(),
-                DisplayOrder = 1,
-            });
+            productTitleistProV1x.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Titleist"], DisplayOrder = 1 });
 
             #endregion product Titleist Pro V1x
 
@@ -10275,13 +10263,9 @@ namespace SmartStore.Data.Setup
             AddProductPicture(productSupremeGolfball, "product_supremeGolfball_1.jpg", "golfball-1");
             AddProductPicture(productSupremeGolfball, "product_supremeGolfball_2.jpg", "golfball-2");
 
-            productSupremeGolfball.ProductCategories.Add(new ProductCategory { Category = categoryGolf, DisplayOrder = 1 });
+            productSupremeGolfball.ProductCategories.Add(new ProductCategory { Category = categories["Golf"], DisplayOrder = 1 });
 
-            productSupremeGolfball.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Titleist").Single(),
-                DisplayOrder = 1,
-            });
+            productSupremeGolfball.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Titleist"], DisplayOrder = 1 });
 
             #endregion product Supreme Golfball
 
@@ -10314,21 +10298,15 @@ namespace SmartStore.Data.Setup
 
             AddProductPicture(productGBBEpicSubZeroDriver, "product_gbb-epic-sub-zero-driver.jpg");
 
-            productGBBEpicSubZeroDriver.ProductCategories.Add(new ProductCategory { Category = categoryGolf, DisplayOrder = 1 });
+            productGBBEpicSubZeroDriver.ProductCategories.Add(new ProductCategory { Category = categories["Golf"], DisplayOrder = 1 });
 
-            productGBBEpicSubZeroDriver.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Titleist").Single(),
-                DisplayOrder = 1,
-            });
+            productGBBEpicSubZeroDriver.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Titleist"], DisplayOrder = 1 });
 
             #endregion product GBB Epic Sub Zero Driver
 
             #endregion category golf
 
             #region category Soccer
-
-            var categorySoccer = _ctx.Set<Category>().First(c => c.Alias == "Soccer");
 
             #region product Nike Strike Football
 
@@ -10339,7 +10317,7 @@ namespace SmartStore.Data.Setup
                 Name = "Nike Strike Football",
                 IsEsd = false,
                 ShortDescription = "GREAT TOUCH. HIGH VISIBILITY.",
-                FullDescription = "<p><strong>Enhance play everyday, with the Nike Strike Football. </strong> </p> <p>Reinforced rubber retains its shape for confident and consistent control. A stand out Visual Power graphic in black, green and orange is best for ball tracking, despite dark or inclement conditions. </p> <ul>   <li>Visual Power graphic helps give a true read on flight trajectory.</li>   <li>Textured casing offers superior touch.</li>   <li>Reinforced rubber bladder supports air and shape retention.</li>   <li>66% rubber/ 15% polyurethane/ 13% polyester/ 7% EVA.</li> </ul> ",  
+                FullDescription = "<p><strong>Enhance play everyday, with the Nike Strike Football. </strong> </p> <p>Reinforced rubber retains its shape for confident and consistent control. A stand out Visual Power graphic in black, green and orange is best for ball tracking, despite dark or inclement conditions. </p> <ul>   <li>Visual Power graphic helps give a true read on flight trajectory.</li>   <li>Textured casing offers superior touch.</li>   <li>Reinforced rubber bladder supports air and shape retention.</li>   <li>66% rubber/ 15% polyurethane/ 13% polyester/ 7% EVA.</li> </ul> ",
                 Sku = "P-5004",
                 ProductTemplateId = productTemplate.Id,
                 AllowCustomerReviews = true,
@@ -10361,13 +10339,9 @@ namespace SmartStore.Data.Setup
 
             AddProductPicture(productNikeStrikeFootball, "products_nike-strike-football.jpg");
 
-            productNikeStrikeFootball.ProductCategories.Add(new ProductCategory { Category = categorySoccer, DisplayOrder = 1 });
+            productNikeStrikeFootball.ProductCategories.Add(new ProductCategory { Category = categories["Soccer"], DisplayOrder = 1 });
 
-            productNikeStrikeFootball.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Nike").Single(),
-                DisplayOrder = 1,
-            });
+            productNikeStrikeFootball.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Nike"], DisplayOrder = 1 });
 
             productNikeStrikeFootball.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -10375,7 +10349,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 3,
                 // Manufacturer -> Nike
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder ==20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 20).Single()
+                SpecificationAttributeOption = specAttributes[20].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 20)
             });
             productNikeStrikeFootball.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -10383,7 +10357,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 3,
                 // Material -> rubber
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 12).Single()
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 12)
             });
 
             productNikeStrikeFootball.TierPrices.Add(new TierPrice { Quantity = 6, Price = 26.90M });
@@ -10421,13 +10395,9 @@ namespace SmartStore.Data.Setup
 
             AddProductPicture(productNikeEvoPowerBall, "product_nike-vopower-53-trainer-hs-ball.jpg");
 
-            productNikeEvoPowerBall.ProductCategories.Add(new ProductCategory { Category = categorySoccer, DisplayOrder = 1 });
+            productNikeEvoPowerBall.ProductCategories.Add(new ProductCategory { Category = categories["Soccer"], DisplayOrder = 1 });
 
-            productNikeEvoPowerBall.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Nike").Single(),
-                DisplayOrder = 1,
-            });
+            productNikeEvoPowerBall.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Nike"], DisplayOrder = 1 });
 
             productNikeEvoPowerBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -10435,7 +10405,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 3,
                 // Manufacturer -> Nike
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 20).Single()
+                SpecificationAttributeOption = specAttributes[20].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 20)
             });
             productNikeEvoPowerBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -10443,7 +10413,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 3,
                 // Material -> leather
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 5).Single()
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
             });
 
             #endregion Evopower 5.3 Trainer HS Ball
@@ -10481,13 +10451,9 @@ namespace SmartStore.Data.Setup
             AddProductPicture(productTorfabrikOfficialGameBall, "product_torfabrik-offizieller-spielball_blue.png", "official-game-ball-blue");
             AddProductPicture(productTorfabrikOfficialGameBall, "product_torfabrik-offizieller-spielball_green.png", "official-game-ball-green");
 
-            productTorfabrikOfficialGameBall.ProductCategories.Add(new ProductCategory { Category = categorySoccer, DisplayOrder = 1 });
+            productTorfabrikOfficialGameBall.ProductCategories.Add(new ProductCategory { Category = categories["Soccer"], DisplayOrder = 1 });
 
-            productTorfabrikOfficialGameBall.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Adidas").Single(),
-                DisplayOrder = 1,
-            });
+            productTorfabrikOfficialGameBall.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Adidas"], DisplayOrder = 1 });
 
             productTorfabrikOfficialGameBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -10495,7 +10461,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 3,
                 // Manufacturer -> Adidas
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 19).Single()
+                SpecificationAttributeOption = specAttributes[20].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 19)
             });
             productTorfabrikOfficialGameBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -10503,7 +10469,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 3,
                 // Material -> leather
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 5).Single()
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
             });
 
             #endregion Torfabrik official game ball
@@ -10543,13 +10509,9 @@ namespace SmartStore.Data.Setup
             AddProductPicture(productAdidasTangoSalaBall, "product_adidas-tango-pasadena-ball-brown.jpg", "adidas-tango-pasadena-ball-brown");
             AddProductPicture(productAdidasTangoSalaBall, "product_adidas-tango-pasadena-ball-blue.jpg", "adidas-tango-pasadena-ball-blue");
 
-            productAdidasTangoSalaBall.ProductCategories.Add(new ProductCategory { Category = categorySoccer, DisplayOrder = 1 });
+            productAdidasTangoSalaBall.ProductCategories.Add(new ProductCategory { Category = categories["Soccer"], DisplayOrder = 1 });
 
-            productAdidasTangoSalaBall.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Adidas").Single(),
-                DisplayOrder = 1,
-            });
+            productAdidasTangoSalaBall.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Adidas"], DisplayOrder = 1 });
 
             productAdidasTangoSalaBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -10557,7 +10519,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 3,
                 // Manufacturer -> Adidas
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 19).Single()
+                SpecificationAttributeOption = specAttributes[20].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 19)
             });
             productAdidasTangoSalaBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -10565,7 +10527,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 3,
                 // Material -> leather
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 5).Single()
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
             });
 
             #endregion Adidas TANGO SALA BALL
@@ -10573,8 +10535,6 @@ namespace SmartStore.Data.Setup
             #endregion category Soccer
 
             #region category Basketball
-
-            var categoryBasketball = _ctx.Set<Category>().First(c => c.Alias == "Basketball");
 
             #region Wilson Evolution High School Game Basketball
 
@@ -10607,13 +10567,9 @@ namespace SmartStore.Data.Setup
 
             AddProductPicture(productEvolutionHighSchoolGameBasketball, "product_evolution-high-school-game-basketball.jpg");
 
-            productEvolutionHighSchoolGameBasketball.ProductCategories.Add(new ProductCategory { Category = categoryBasketball, DisplayOrder = 1 });
+            productEvolutionHighSchoolGameBasketball.ProductCategories.Add(new ProductCategory { Category = categories["Basketball"], DisplayOrder = 1 });
 
-            productEvolutionHighSchoolGameBasketball.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Adidas").Single(),
-                DisplayOrder = 1,
-            });
+            productEvolutionHighSchoolGameBasketball.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Adidas"], DisplayOrder = 1 });
 
             productEvolutionHighSchoolGameBasketball.TierPrices.Add(new TierPrice { Quantity = 6, Price = 24.90M });
             productEvolutionHighSchoolGameBasketball.TierPrices.Add(new TierPrice { Quantity = 12, Price = 22.90M });
@@ -10650,21 +10606,15 @@ namespace SmartStore.Data.Setup
 
             AddProductPicture(productAllCourtBasketball, "product_all-court-basketball.png");
 
-            productAllCourtBasketball.ProductCategories.Add(new ProductCategory { Category = categoryBasketball, DisplayOrder = 1 });
+            productAllCourtBasketball.ProductCategories.Add(new ProductCategory { Category = categories["Basketball"], DisplayOrder = 1 });
 
-            productAllCourtBasketball.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Adidas").Single(),
-                DisplayOrder = 1,
-            });
+            productAllCourtBasketball.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Adidas"], DisplayOrder = 1 });
 
             #endregion All Court Basketball
 
             #endregion category Basketball
 
             #region category sunglasses
-
-            var categorySunglasses = _ctx.Set<Category>().First(c => c.Alias == "Sunglasses");
 
             #region product Top bar
 
@@ -10697,13 +10647,9 @@ namespace SmartStore.Data.Setup
             AddProductPicture(productRayBanTopBar, "product_RayBanTopBar_2.jpg", "rayban-top-bar-2");
             AddProductPicture(productRayBanTopBar, "product_RayBanTopBar_3.jpg", "rayban-top-bar-3");
 
-            productRayBanTopBar.ProductCategories.Add(new ProductCategory { Category = categorySunglasses, DisplayOrder = 1 });
+            productRayBanTopBar.ProductCategories.Add(new ProductCategory { Category = categories["Sunglasses"], DisplayOrder = 1 });
 
-            productRayBanTopBar.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Ray-Ban").Single(),
-                DisplayOrder = 1,
-            });
+            productRayBanTopBar.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Ray-Ban"], DisplayOrder = 1 });
 
             #endregion product Top bar
 
@@ -10741,13 +10687,9 @@ namespace SmartStore.Data.Setup
             AddProductPicture(productOriginalWayfarer, "product_productOriginalWayfarer_5.jpg", "wayfarer-green-classic-havana-black");
             AddProductPicture(productOriginalWayfarer, "product_productOriginalWayfarer_6.jpg", "wayfarer-blue-gray-classic-black-3");
 
-            productOriginalWayfarer.ProductCategories.Add(new ProductCategory { Category = categorySunglasses, DisplayOrder = 1 });
+            productOriginalWayfarer.ProductCategories.Add(new ProductCategory { Category = categories["Sunglasses"], DisplayOrder = 1 });
 
-            productOriginalWayfarer.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Ray-Ban").Single(),
-                DisplayOrder = 1,
-            });
+            productOriginalWayfarer.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Ray-Ban"], DisplayOrder = 1 });
 
             #endregion product ORIGINAL WAYFARER AT COLLECTION
 
@@ -10780,13 +10722,9 @@ namespace SmartStore.Data.Setup
 
             AddProductPicture(productRadarEVPrizmSportsSunglasses, "product_radar_ev_prizm.jpg");
 
-            productRadarEVPrizmSportsSunglasses.ProductCategories.Add(new ProductCategory { Category = categorySunglasses, DisplayOrder = 1 });
+            productRadarEVPrizmSportsSunglasses.ProductCategories.Add(new ProductCategory { Category = categories["Sunglasses"], DisplayOrder = 1 });
 
-            productRadarEVPrizmSportsSunglasses.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Oakley").Single(),
-                DisplayOrder = 1,
-            });
+            productRadarEVPrizmSportsSunglasses.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Oakley"], DisplayOrder = 1 });
 
             #endregion product Radar EV Prizm Sports Sunglasses
 
@@ -10865,13 +10803,9 @@ namespace SmartStore.Data.Setup
             AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_sapphireiridium.jpg", "custom_flak_skyblue_sapphireiridium");
             AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_violetiridium.jpg", "custom_flak_skyblue_violetiridium");
 
-            productCustomFlakSunglasses.ProductCategories.Add(new ProductCategory { Category = categorySunglasses, DisplayOrder = 1 });
+            productCustomFlakSunglasses.ProductCategories.Add(new ProductCategory { Category = categories["Sunglasses"], DisplayOrder = 1 });
 
-            productCustomFlakSunglasses.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Oakley").Single(),
-                DisplayOrder = 1,
-            });
+            productCustomFlakSunglasses.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Oakley"], DisplayOrder = 1 });
 
             #endregion product Custom Flak Sunglasses
 
@@ -10879,8 +10813,6 @@ namespace SmartStore.Data.Setup
             #endregion category sunglasses
 
             #region category apple
-
-            var categoryApple = _ctx.Set<Category>().First(c => c.Alias == "Apple");
 
             #region product iphone plus
 
@@ -10919,7 +10851,7 @@ namespace SmartStore.Data.Setup
             AddProductPicture(productIphoneplus, "product_iphone-plus_rose.jpg", "iphone-plus-rose");
             AddProductPicture(productIphoneplus, "product_iphone-plus_gold.jpg", "iphone-plus-gold");
 
-            productIphoneplus.ProductCategories.Add(new ProductCategory { Category = categoryApple, DisplayOrder = 1 });
+            productIphoneplus.ProductCategories.Add(new ProductCategory { Category = categories["Apple"], DisplayOrder = 1 });
 
             productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -10927,7 +10859,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // offer type -> Permanent low price
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 22).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+                SpecificationAttributeOption = specAttributes[22].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 2)
             });
 
             productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
@@ -10936,7 +10868,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // storage capacity -> 64gb
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 27).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+                SpecificationAttributeOption = specAttributes[27].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 2)
             });
             productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -10944,7 +10876,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // storage capacity -> 128gb
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 27).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+                SpecificationAttributeOption = specAttributes[27].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 3)
             });
             productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -10952,7 +10884,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // operating system -> ios
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 5).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 9).Single()
+                SpecificationAttributeOption = specAttributes[5].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 9)
             });
 
             #endregion product iphone plus
@@ -10988,22 +10920,17 @@ namespace SmartStore.Data.Setup
             AddProductPicture(productWatchSeries2, "product_watchseries2_1.jpg", "watchseries-1");
             AddProductPicture(productWatchSeries2, "product_watchseries2_2.jpg", "watchseries-2");
 
-            productWatchSeries2.ProductCategories.Add(new ProductCategory { Category = categoryApple, DisplayOrder = 1 });
+            productWatchSeries2.ProductCategories.Add(new ProductCategory { Category = categories["Apple"], DisplayOrder = 1 });
 
-            productWatchSeries2.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Apple").Single(),
-                DisplayOrder = 1,
-            });
+            productWatchSeries2.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Apple"], DisplayOrder = 1 });
 
-            //attributes
             productWatchSeries2.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // offer type -> offer of the day
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 22).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
+                SpecificationAttributeOption = specAttributes[22].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 6)
             });
 
             productWatchSeries2.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
@@ -11012,7 +10939,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // storage capacity -> 32gb
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 27).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+                SpecificationAttributeOption = specAttributes[27].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
 
             productWatchSeries2.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
@@ -11021,7 +10948,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // operating system -> ios
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 5).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 9).Single()
+                SpecificationAttributeOption = specAttributes[5].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 9)
             });
 
             #endregion product Watch Series 2
@@ -11060,13 +10987,9 @@ namespace SmartStore.Data.Setup
             AddProductPicture(productAirpods, "products_airpods_gold.jpg", "airpods-gold");
             AddProductPicture(productAirpods, "products_airpods_mint.jpg", "airpods-mint");
 
-            productAirpods.ProductCategories.Add(new ProductCategory { Category = categoryApple, DisplayOrder = 1 });
+            productAirpods.ProductCategories.Add(new ProductCategory { Category = categories["Apple"], DisplayOrder = 1 });
 
-            productAirpods.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Apple").Single(),
-                DisplayOrder = 7,
-            });
+            productAirpods.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Apple"], DisplayOrder = 7 });
 
             #endregion product Airpods
 
@@ -11107,16 +11030,12 @@ namespace SmartStore.Data.Setup
             AddProductPicture(productAppleProHipsterBundle, "product_iphoneplus_2.jpg", "bundle-iphoneplus");
             AddProductPicture(productAppleProHipsterBundle, "category_apple.png", "bundle-apple");
 
-            productAppleProHipsterBundle.ProductCategories.Add(new ProductCategory { Category = categoryApple, DisplayOrder = 1 });
+            productAppleProHipsterBundle.ProductCategories.Add(new ProductCategory { Category = categories["Apple"], DisplayOrder = 1 });
 
-            productAppleProHipsterBundle.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Apple").Single(),
-                DisplayOrder = 1,
-            });
+            productAppleProHipsterBundle.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Apple"], DisplayOrder = 1 });
 
             #endregion product Ultimate Apple Pro Hipster Bundle
-            
+
             #region product 9,7 iPad
 
             var product97ipad = new Product
@@ -11161,14 +11080,9 @@ namespace SmartStore.Data.Setup
             AddProductPicture(product97ipad, "product_97-ipad-gold.jpg", "ipad-gold");
             AddProductPicture(product97ipad, "product_97-ipad-silver.jpg", "ipad-silver");
 
-            product97ipad.ProductCategories.Add(new ProductCategory { Category = categoryApple, DisplayOrder = 1 });
+            product97ipad.ProductCategories.Add(new ProductCategory { Category = categories["Apple"], DisplayOrder = 1 });
 
-            product97ipad.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Apple").Single(),
-                DisplayOrder = 1,
-            });
-
+            product97ipad.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Apple"], DisplayOrder = 1 });
 
             product97ipad.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -11176,16 +11090,16 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // offer type -> promotion
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 22).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+                SpecificationAttributeOption = specAttributes[22].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 3)
             });
-            
+
             product97ipad.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // storage capacity -> 64gb
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 27).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+                SpecificationAttributeOption = specAttributes[27].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 2)
             });
             product97ipad.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -11193,7 +11107,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // storage capacity -> 128gb
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 27).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+                SpecificationAttributeOption = specAttributes[27].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 3)
             });
             product97ipad.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -11201,7 +11115,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // operating system -> ios
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 5).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 9).Single()
+                SpecificationAttributeOption = specAttributes[5].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 9)
             });
 
             #endregion product 9,7 iPad
@@ -11210,100 +11124,98 @@ namespace SmartStore.Data.Setup
 
             #region category Gift Cards
 
-            var categoryGiftCards = _ctx.Set<Category>().First(c => c.Alias == "Gift Cards");
+            #region product10GiftCard
 
-			#region product10GiftCard
-
-			var product10GiftCard = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "$10 Virtual Gift Card",
-				IsEsd = true,
-				ShortDescription = "$10 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
-				FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
+            var product10GiftCard = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "$10 Virtual Gift Card",
+                IsEsd = true,
+                ShortDescription = "$10 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
+                FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
                 Sku = "P-1000",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "$10 Virtual Gift Card",
-				Price = 10M,
-				IsGiftCard = true,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-                DisplayOrder = 1                
-			};
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "$10 Virtual Gift Card",
+                Price = 10M,
+                IsGiftCard = true,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                DisplayOrder = 1
+            };
 
             AddProductPicture(product10GiftCard, "product_gift_card_10.png");
-            product10GiftCard.ProductCategories.Add(new ProductCategory { Category = categoryGiftCards, DisplayOrder = 1 });
+            product10GiftCard.ProductCategories.Add(new ProductCategory { Category = categories["Gift Cards"], DisplayOrder = 1 });
 
             #endregion product10GiftCard
 
             #region product25GiftCard
 
             var product25GiftCard = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "$25 Virtual Gift Card",
-				IsEsd = true,
-				ShortDescription = "$25 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
-				FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "$25 Virtual Gift Card",
+                IsEsd = true,
+                ShortDescription = "$25 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
+                FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
                 Sku = "P-1001",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "$25 Virtual Gift Card",
-				Price = 25M,
-				IsGiftCard = true,
-				GiftCardType = GiftCardType.Virtual,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "$25 Virtual Gift Card",
+                Price = 25M,
+                IsGiftCard = true,
+                GiftCardType = GiftCardType.Virtual,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
                 DisplayOrder = 2
             };
 
             AddProductPicture(product25GiftCard, "product_gift_card_25.png");
-            product25GiftCard.ProductCategories.Add(new ProductCategory { Category = categoryGiftCards, DisplayOrder = 1 });
+            product25GiftCard.ProductCategories.Add(new ProductCategory { Category = categories["Gift Cards"], DisplayOrder = 1 });
 
-			#endregion product25GiftCard
+            #endregion product25GiftCard
 
-			#region product50GiftCard
+            #region product50GiftCard
 
-			var product50GiftCard = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "$50 Virtual Gift Card",
-				IsEsd = true,
-				ShortDescription = "$50 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
-				FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
+            var product50GiftCard = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "$50 Virtual Gift Card",
+                IsEsd = true,
+                ShortDescription = "$50 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
+                FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
                 Sku = "P-1002",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "$50 Virtual Gift Card",
-				Price = 50M,
-				IsGiftCard = true,
-				GiftCardType = GiftCardType.Virtual,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "$50 Virtual Gift Card",
+                Price = 50M,
+                IsGiftCard = true,
+                GiftCardType = GiftCardType.Virtual,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
                 DisplayOrder = 3
             };
 
             AddProductPicture(product50GiftCard, "product_gift_card_50.png");
-            product50GiftCard.ProductCategories.Add(new ProductCategory { Category = categoryGiftCards, DisplayOrder = 1 });
+            product50GiftCard.ProductCategories.Add(new ProductCategory { Category = categories["Gift Cards"], DisplayOrder = 1 });
 
             #endregion product50GiftCard
 
@@ -11335,7 +11247,7 @@ namespace SmartStore.Data.Setup
             };
 
             AddProductPicture(product100GiftCard, "product_gift_card_100.png");
-            product100GiftCard.ProductCategories.Add(new ProductCategory { Category = categoryGiftCards, DisplayOrder = 1 });
+            product100GiftCard.ProductCategories.Add(new ProductCategory { Category = categories["Gift Cards"], DisplayOrder = 1 });
 
             #endregion product100GiftCard
 
@@ -11343,507 +11255,501 @@ namespace SmartStore.Data.Setup
 
             #region category books
 
-            var categorySpiegelBestseller = _ctx.Set<Category>().First(c => c.Alias == "SPIEGEL-Bestseller");
-            var categoryCookAndEnjoy = _ctx.Set<Category>().First(c => c.Alias == "Cook and enjoy");
-            var categoryBooks = _ctx.Set<Category>().First(c => c.Alias == "Books");
+            #region productBooksUberMan
 
-			#region productBooksUberMan
-
-			var productBooksUberMan = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "Überman: The novel",
-				ShortDescription = "(Hardcover)",
-				FullDescription = "<p>From idiots to riches - and back ... Ever since it with my Greek financial advisors were no more delicious cookies to meetings, I should have known something. Was the last cookie it when I bought a Romanian forest funds and leveraged discount certificates on lean hogs - which is sort of a more stringent bet that the price of lean hogs will remain stable, and that's nothing special because it is also available for cattle and cotton and fat pig. Again and again and I joked Kosmas Nikiforos Sarantakos. About all the part-time seer who tremblingly put for fear the euro crisis gold coins under the salami slices of their frozen pizzas And then came the day that revealed to me in almost Sarantakos fraudulent casualness that my plan had not worked out really. 'Why all of a sudden> my plan', 'I heard myself asking yet, but it was in the garage I realized what that really meant minus 211.2 percent in my portfolio report: personal bankruptcy, gutter and Drug Addiction with subsequent loss of the incisors . Not even the study of my friend, I would still be able to finance. The only way out was to me as quickly as secretly again to draw from this unspeakable Greek shit - I had to be Überman! By far the bekloppteste story about 'idiot' Simon Peter! »Tommy Jaud – Deutschlands witzigste Seite.« Alex Dengler, Bild am Sonntag</p>",
+            var productBooksUberMan = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Überman: The novel",
+                ShortDescription = "(Hardcover)",
+                FullDescription = "<p>From idiots to riches - and back ... Ever since it with my Greek financial advisors were no more delicious cookies to meetings, I should have known something. Was the last cookie it when I bought a Romanian forest funds and leveraged discount certificates on lean hogs - which is sort of a more stringent bet that the price of lean hogs will remain stable, and that's nothing special because it is also available for cattle and cotton and fat pig. Again and again and I joked Kosmas Nikiforos Sarantakos. About all the part-time seer who tremblingly put for fear the euro crisis gold coins under the salami slices of their frozen pizzas And then came the day that revealed to me in almost Sarantakos fraudulent casualness that my plan had not worked out really. 'Why all of a sudden> my plan', 'I heard myself asking yet, but it was in the garage I realized what that really meant minus 211.2 percent in my portfolio report: personal bankruptcy, gutter and Drug Addiction with subsequent loss of the incisors . Not even the study of my friend, I would still be able to finance. The only way out was to me as quickly as secretly again to draw from this unspeakable Greek shit - I had to be Überman! By far the bekloppteste story about 'idiot' Simon Peter! »Tommy Jaud – Deutschlands witzigste Seite.« Alex Dengler, Bild am Sonntag</p>",
                 Sku = "P-1003",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "Überman: The novel",
-				Price = 16.99M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true
-			};
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Überman: The novel",
+                Price = 16.99M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true
+            };
 
             AddProductPicture(productBooksUberMan, "0000932_uberman-der-roman.jpeg");
-            productBooksUberMan.ProductCategories.Add(new ProductCategory { Category = categorySpiegelBestseller, DisplayOrder = 1 });
+            productBooksUberMan.ProductCategories.Add(new ProductCategory { Category = categories["SPIEGEL-Bestseller"], DisplayOrder = 1 });
 
-			productBooksUberMan.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 13).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
-			productBooksUberMan.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 14).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 7).Single()
-			});
-			productBooksUberMan.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 12).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
+            productBooksUberMan.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                SpecificationAttributeOption = specAttributes[13].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
+            productBooksUberMan.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                SpecificationAttributeOption = specAttributes[14].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 7)
+            });
+            productBooksUberMan.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
 
-			#endregion productBooksUberMan
+            #endregion productBooksUberMan
 
-			#region productBooksGefangeneDesHimmels
+            #region productBooksGefangeneDesHimmels
 
-			var productBooksGefangeneDesHimmels = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "The Prisoner of Heaven: A Novel",
-				ShortDescription = "(Hardcover)",
-				FullDescription = "<p>By Shadow of the Wind and The Angel's Game, the new large-Barcelona novel by Carlos Ruiz Zafón. - Barcelona, Christmas 1957th The bookseller Daniel Sempere and his friend Fermín be drawn again into a great adventure. In the continuation of his international success with Carlos Ruiz Zafón takes the reader on a fascinating journey into his Barcelona. Creepy and fascinating, with incredible suction power and humor, the novel, the story of Fermin, who 'rose from the dead, and the key to the future is.' Fermin's life story linking the threads of The Shadow of the Wind with those from The Angel's Game. A masterful puzzle that keeps the reader around the world in thrall. </p> <p> Product Hardcover: 416 pages Publisher: S. Fischer Verlag; 1 edition (October 25, 2012) Language: German ISBN-10: 3,100,954,025 ISBN-13: 978-3100954022 Original title: El prisionero del cielo Size and / or weight: 21.4 x 13.6 cm x 4.4 </p>",
-				ProductTemplateId = productTemplate.Id,
+            var productBooksGefangeneDesHimmels = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "The Prisoner of Heaven: A Novel",
+                ShortDescription = "(Hardcover)",
+                FullDescription = "<p>By Shadow of the Wind and The Angel's Game, the new large-Barcelona novel by Carlos Ruiz Zafón. - Barcelona, Christmas 1957th The bookseller Daniel Sempere and his friend Fermín be drawn again into a great adventure. In the continuation of his international success with Carlos Ruiz Zafón takes the reader on a fascinating journey into his Barcelona. Creepy and fascinating, with incredible suction power and humor, the novel, the story of Fermin, who 'rose from the dead, and the key to the future is.' Fermin's life story linking the threads of The Shadow of the Wind with those from The Angel's Game. A masterful puzzle that keeps the reader around the world in thrall. </p> <p> Product Hardcover: 416 pages Publisher: S. Fischer Verlag; 1 edition (October 25, 2012) Language: German ISBN-10: 3,100,954,025 ISBN-13: 978-3100954022 Original title: El prisionero del cielo Size and / or weight: 21.4 x 13.6 cm x 4.4 </p>",
+                ProductTemplateId = productTemplate.Id,
                 Sku = "P-1004",
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "The Prisoner of Heaven: A Novel",
-				Price = 22.99M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "The Prisoner of Heaven: A Novel",
+                Price = 22.99M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
             AddProductPicture(productBooksGefangeneDesHimmels, "0000935_der-gefangene-des-himmels-roman_300.jpeg");
-            productBooksGefangeneDesHimmels.ProductCategories.Add(new ProductCategory { Category = categorySpiegelBestseller, DisplayOrder = 1 });
+            productBooksGefangeneDesHimmels.ProductCategories.Add(new ProductCategory { Category = categories["SPIEGEL-Bestseller"], DisplayOrder = 1 });
 
-			productBooksGefangeneDesHimmels.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Edition -> bound
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 13).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
+            productBooksGefangeneDesHimmels.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Edition -> bound
+                SpecificationAttributeOption = specAttributes[13].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
 
-			productBooksGefangeneDesHimmels.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Category -> bound
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 14).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 7).Single()
-			});
-			productBooksGefangeneDesHimmels.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Language -> German
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 12).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
+            productBooksGefangeneDesHimmels.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Category -> bound
+                SpecificationAttributeOption = specAttributes[14].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 7)
+            });
+            productBooksGefangeneDesHimmels.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Language -> German
+                SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
 
-			#endregion productBooksGefangeneDesHimmels
+            #endregion productBooksGefangeneDesHimmels
 
-			#region productBooksBestGrillingRecipes
+            #region productBooksBestGrillingRecipes
 
-			var productBooksBestGrillingRecipes = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "Best Grilling Recipes",
-				ShortDescription = "More Than 100 Regional Favorites Tested and Perfected for the Outdoor Cook (Hardcover)",
-				FullDescription = "<p> Take a winding cross-country trip and you'll discover barbecue shacks with offerings like tender-smoky Baltimore pit beef and saucy St. Louis pork steaks. To bring you the best of these hidden gems, along with all the classics, the editors of Cook's Country magazine scoured the country, then tested and perfected their favorites. HEre traditions large and small are brought into the backyard, from Hawaii's rotisserie favorite, the golden-hued Huli Huli Chicken, to fall-off-the-bone Chicago Barbecued Ribs. In Kansas City, they're all about the sauce, and for our saucy Kansas City Sticky Ribs, we found a surprise ingredient-root beer. We also tackle all the best sides. </p> <p> Not sure where or how to start? This cookbook kicks off with an easy-to-follow primer that will get newcomers all fired up. Whether you want to entertain a crowd or just want to learn to make perfect burgers, Best Grilling Recipes shows you the way. </p>",
-				ProductTemplateId = productTemplate.Id,
+            var productBooksBestGrillingRecipes = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Best Grilling Recipes",
+                ShortDescription = "More Than 100 Regional Favorites Tested and Perfected for the Outdoor Cook (Hardcover)",
+                FullDescription = "<p> Take a winding cross-country trip and you'll discover barbecue shacks with offerings like tender-smoky Baltimore pit beef and saucy St. Louis pork steaks. To bring you the best of these hidden gems, along with all the classics, the editors of Cook's Country magazine scoured the country, then tested and perfected their favorites. HEre traditions large and small are brought into the backyard, from Hawaii's rotisserie favorite, the golden-hued Huli Huli Chicken, to fall-off-the-bone Chicago Barbecued Ribs. In Kansas City, they're all about the sauce, and for our saucy Kansas City Sticky Ribs, we found a surprise ingredient-root beer. We also tackle all the best sides. </p> <p> Not sure where or how to start? This cookbook kicks off with an easy-to-follow primer that will get newcomers all fired up. Whether you want to entertain a crowd or just want to learn to make perfect burgers, Best Grilling Recipes shows you the way. </p>",
+                ProductTemplateId = productTemplate.Id,
                 Sku = "P-1005",
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "Best Grilling Recipes",
-				Price = 27.00M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Best Grilling Recipes",
+                Price = 27.00M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
             AddProductPicture(productBooksBestGrillingRecipes, "product_bestgrillingrecipes.jpg");
-            productBooksBestGrillingRecipes.ProductCategories.Add(new ProductCategory { Category = categoryCookAndEnjoy, DisplayOrder = 1 });
-            
-			productBooksBestGrillingRecipes.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Edition -> bound
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 13).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
-			productBooksBestGrillingRecipes.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Category -> cook & bake
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 14).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 8).Single()
-			});
-			productBooksBestGrillingRecipes.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Language -> German
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 12).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
-			});
+            productBooksBestGrillingRecipes.ProductCategories.Add(new ProductCategory { Category = categories["Cook and enjoy"], DisplayOrder = 1 });
 
-			#endregion productBooksBestGrillingRecipes
+            productBooksBestGrillingRecipes.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Edition -> bound
+                SpecificationAttributeOption = specAttributes[13].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
+            productBooksBestGrillingRecipes.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Category -> cook & bake
+                SpecificationAttributeOption = specAttributes[14].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 8)
+            });
+            productBooksBestGrillingRecipes.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Language -> German
+                SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 2)
+            });
 
-			#region productBooksCookingForTwo
+            #endregion productBooksBestGrillingRecipes
 
-			var productBooksCookingForTwo = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "Cooking for Two",
-				ShortDescription = "More Than 200 Foolproof Recipes for Weeknights and Special Occasions (Hardcover)",
-				FullDescription = "<p>In Cooking for Two, the test kitchen's goal was to take traditional recipes and cut them down to size to serve just twowith tailored cooking techniques and smart shopping tips that will cut down on wasted food and wasted money. Great lasagna starts to lose its luster when you're eating the leftovers for the fourth day in a row. While it may seem obvious that a recipe for four can simply be halved to work, our testing has proved that this is not always the case; cooking with smaller amounts of ingredients often requires different preparation techniques, cooking time, temperature, and the proportion of ingredients. This was especially true as we worked on scaled-down desserts; baking is an unforgiving science in which any changes in recipe amounts often called for changes in baking times and temperatures. </p> <p> Hardcover: 352 pages<br> Publisher: America's Test Kitchen (May 2009)<br> Language: English<br> ISBN-10: 1933615435<br> ISBN-13: 978-1933615431<br> </p>",
-				ProductTemplateId = productTemplate.Id,
+            #region productBooksCookingForTwo
+
+            var productBooksCookingForTwo = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Cooking for Two",
+                ShortDescription = "More Than 200 Foolproof Recipes for Weeknights and Special Occasions (Hardcover)",
+                FullDescription = "<p>In Cooking for Two, the test kitchen's goal was to take traditional recipes and cut them down to size to serve just twowith tailored cooking techniques and smart shopping tips that will cut down on wasted food and wasted money. Great lasagna starts to lose its luster when you're eating the leftovers for the fourth day in a row. While it may seem obvious that a recipe for four can simply be halved to work, our testing has proved that this is not always the case; cooking with smaller amounts of ingredients often requires different preparation techniques, cooking time, temperature, and the proportion of ingredients. This was especially true as we worked on scaled-down desserts; baking is an unforgiving science in which any changes in recipe amounts often called for changes in baking times and temperatures. </p> <p> Hardcover: 352 pages<br> Publisher: America's Test Kitchen (May 2009)<br> Language: English<br> ISBN-10: 1933615435<br> ISBN-13: 978-1933615431<br> </p>",
+                ProductTemplateId = productTemplate.Id,
                 Sku = "P-1006",
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "Cooking for Two",
-				Price = 27.00M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Cooking for Two",
+                Price = 27.00M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
                 DeliveryTimeId = secondDeliveryTime.Id
             };
 
             AddProductPicture(productBooksCookingForTwo, "product_cookingfortwo.jpg");
-            productBooksCookingForTwo.ProductCategories.Add(new ProductCategory { Category = categoryCookAndEnjoy, DisplayOrder = 1 });
+            productBooksCookingForTwo.ProductCategories.Add(new ProductCategory { Category = categories["Cook and enjoy"], DisplayOrder = 1 });
 
-			productBooksCookingForTwo.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Edition -> bound
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 13).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
-			productBooksCookingForTwo.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Category -> cook & bake
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 14).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 8).Single()
-			});
-			productBooksCookingForTwo.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Language -> German
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 12).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
-			});
+            productBooksCookingForTwo.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Edition -> bound
+                SpecificationAttributeOption = specAttributes[13].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
+            productBooksCookingForTwo.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Category -> cook & bake
+                SpecificationAttributeOption = specAttributes[14].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 8)
+            });
+            productBooksCookingForTwo.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Language -> German
+                SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 2)
+            });
 
-			#endregion productBooksCookingForTwo
+            #endregion productBooksCookingForTwo
 
-			#region productBooksAutosDerSuperlative
+            #region productBooksAutosDerSuperlative
 
-			var productBooksAutosDerSuperlative = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "Car of superlatives: the strongest, the first, the most beautiful, the fastest",
-				ShortDescription = "Hardcover",
-				FullDescription = "<p> For some, the car is only a useful means of transportation. For everyone else, there are 'cars - The Ultimate Guide' of art-connoisseur Michael Doerflinger. With authentic images, all important data and a lot of information can be presented to the fastest, most innovative, the strongest, the most unusual and the most successful examples of automotive history. A comprehensive manual for the specific reference and extensive browsing. </p>",
+            var productBooksAutosDerSuperlative = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Car of superlatives: the strongest, the first, the most beautiful, the fastest",
+                ShortDescription = "Hardcover",
+                FullDescription = "<p> For some, the car is only a useful means of transportation. For everyone else, there are 'cars - The Ultimate Guide' of art-connoisseur Michael Doerflinger. With authentic images, all important data and a lot of information can be presented to the fastest, most innovative, the strongest, the most unusual and the most successful examples of automotive history. A comprehensive manual for the specific reference and extensive browsing. </p>",
                 Sku = "P-1007",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "Car of superlatives",
-				Price = 14.95M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Car of superlatives",
+                Price = 14.95M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
             AddProductPicture(productBooksAutosDerSuperlative, "0000944_autos-der-superlative-die-starksten-die-ersten-die-schonsten-die-schnellsten.jpeg");
-            productBooksAutosDerSuperlative.ProductCategories.Add(new ProductCategory { Category = categoryBooks, DisplayOrder = 1 });
-            
-			productBooksAutosDerSuperlative.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Edition -> bound
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 13).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
-			productBooksAutosDerSuperlative.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Category -> cars
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 14).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
-			});
-			productBooksAutosDerSuperlative.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Language -> German
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 12).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
+            productBooksAutosDerSuperlative.ProductCategories.Add(new ProductCategory { Category = categories["Books"], DisplayOrder = 1 });
 
-			#endregion productBooksAutosDerSuperlative
+            productBooksAutosDerSuperlative.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Edition -> bound
+                SpecificationAttributeOption = specAttributes[13].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
+            productBooksAutosDerSuperlative.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Category -> cars
+                SpecificationAttributeOption = specAttributes[14].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 6)
+            });
+            productBooksAutosDerSuperlative.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Language -> German
+                SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
 
-			#region productBooksBildatlasMotorraeder
+            #endregion productBooksAutosDerSuperlative
 
-			var productBooksBildatlasMotorraeder = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "Picture Atlas Motorcycles: With more than 350 brilliant images",
-				ShortDescription = "Hardcover",
-				FullDescription = "<p> Motorcycles are like no other means of transportation for the great dream of freedom and adventure. This richly illustrated atlas image portrayed in brilliant color photographs and informative text, the most famous bikes of the world's motorcycle history. From the primitive steam engine under the saddle of the late 19th Century up to the hugely powerful, equipped with the latest electronics and computer technology superbikes of today he is an impressive picture of the development and fabrication of noble and fast-paced motorcycles. The myth of the motorcycle is just as much investigated as a motorcycle as a modern lifestyle product of our time. Country-specific, company-historical background information and interesting stories and History about the people who preceded drove one of the seminal inventions of recent centuries and evolved, make this comprehensive illustrated book an incomparable reference for any motorcycle enthusiast and technology enthusiasts. </p> <p> • Extensive history of the legendary models of all major motorcycle manufacturers worldwide<br> • With more than 350 brilliant color photographs and fascinating background information relating<br> • With informative drawings, stunning detail shots and explanatory info-boxes<br> </p> <p> content • 1817 1913: The beginning of a success story<br> • 1914 1945: mass mobility<br> • 1946 1990: Battle for the World Market<br> • In 1991: The modern motorcycle<br> • motorcycle cult object: From Transportation to Lifestyle<br> </p>",
+            #region productBooksBildatlasMotorraeder
+
+            var productBooksBildatlasMotorraeder = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Picture Atlas Motorcycles: With more than 350 brilliant images",
+                ShortDescription = "Hardcover",
+                FullDescription = "<p> Motorcycles are like no other means of transportation for the great dream of freedom and adventure. This richly illustrated atlas image portrayed in brilliant color photographs and informative text, the most famous bikes of the world's motorcycle history. From the primitive steam engine under the saddle of the late 19th Century up to the hugely powerful, equipped with the latest electronics and computer technology superbikes of today he is an impressive picture of the development and fabrication of noble and fast-paced motorcycles. The myth of the motorcycle is just as much investigated as a motorcycle as a modern lifestyle product of our time. Country-specific, company-historical background information and interesting stories and History about the people who preceded drove one of the seminal inventions of recent centuries and evolved, make this comprehensive illustrated book an incomparable reference for any motorcycle enthusiast and technology enthusiasts. </p> <p> • Extensive history of the legendary models of all major motorcycle manufacturers worldwide<br> • With more than 350 brilliant color photographs and fascinating background information relating<br> • With informative drawings, stunning detail shots and explanatory info-boxes<br> </p> <p> content • 1817 1913: The beginning of a success story<br> • 1914 1945: mass mobility<br> • 1946 1990: Battle for the World Market<br> • In 1991: The modern motorcycle<br> • motorcycle cult object: From Transportation to Lifestyle<br> </p>",
                 Sku = "P-1008",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "Picture Atlas Motorcycles",
-				Price = 14.99M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Picture Atlas Motorcycles",
+                Price = 14.99M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
             AddProductPicture(productBooksBildatlasMotorraeder, "0000942_bildatlas-motorrader-mit-mehr-als-350-brillanten-abbildungen.jpeg");
-            productBooksBildatlasMotorraeder.ProductCategories.Add(new ProductCategory { Category = categoryBooks, DisplayOrder = 1 });
+            productBooksBildatlasMotorraeder.ProductCategories.Add(new ProductCategory { Category = categories["Books"], DisplayOrder = 1 });
 
-			productBooksBildatlasMotorraeder.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Edition -> bound
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 13).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
-			productBooksBildatlasMotorraeder.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Category -> non-fiction
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 14).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 9).Single()
-			});
-			productBooksBildatlasMotorraeder.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Language -> German
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 12).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
+            productBooksBildatlasMotorraeder.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Edition -> bound
+                SpecificationAttributeOption = specAttributes[13].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
+            productBooksBildatlasMotorraeder.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Category -> non-fiction
+                SpecificationAttributeOption = specAttributes[14].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 9)
+            });
+            productBooksBildatlasMotorraeder.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Language -> German
+                SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
 
-			#endregion productBooksBildatlasMotorraeder
+            #endregion productBooksBildatlasMotorraeder
 
-			#region productBooksAutoBuch
+            #region productBooksAutoBuch
 
-			var productBooksAutoBuch = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "The Car Book. The great history with over 1200 models",
-				ShortDescription = "Hardcover",
-				FullDescription = "<p> Makes, models, milestones<br> The car - for some, a utensil for other expression of lifestyle, cult object and passion. Few inventions have changed their lives as well as the good of the automobile 125 years ago - one more reason for this extensive chronicle. The car-book brings the history of the automobile to life. It presents more than 1200 important models - Karl Benz 'Motorwagen about legendary cult car to advanced hybrid vehicles. It explains the milestones in engine technology and portrays the big brands and their designers. Characteristics from small cars to limousines and send racing each era invite you to browse and discover. The most comprehensive and bestbebildert illustrated book on the market - it would be any car lover! </p> <p> Hardcover: 360 pages<br> Publisher: Dorling Kindersley Publishing (September 27, 2012)<br> Language: German<br> ISBN-10: 3,831,022,062<br> ISBN-13: 978-3831022069<br> Size and / or weight: 30.6 x 25.8 x 2.8 cm<br> </p>",
+            var productBooksAutoBuch = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "The Car Book. The great history with over 1200 models",
+                ShortDescription = "Hardcover",
+                FullDescription = "<p> Makes, models, milestones<br> The car - for some, a utensil for other expression of lifestyle, cult object and passion. Few inventions have changed their lives as well as the good of the automobile 125 years ago - one more reason for this extensive chronicle. The car-book brings the history of the automobile to life. It presents more than 1200 important models - Karl Benz 'Motorwagen about legendary cult car to advanced hybrid vehicles. It explains the milestones in engine technology and portrays the big brands and their designers. Characteristics from small cars to limousines and send racing each era invite you to browse and discover. The most comprehensive and bestbebildert illustrated book on the market - it would be any car lover! </p> <p> Hardcover: 360 pages<br> Publisher: Dorling Kindersley Publishing (September 27, 2012)<br> Language: German<br> ISBN-10: 3,831,022,062<br> ISBN-13: 978-3831022069<br> Size and / or weight: 30.6 x 25.8 x 2.8 cm<br> </p>",
                 Sku = "P-1009",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "The Car Book",
-				Price = 29.95M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "The Car Book",
+                Price = 29.95M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
             AddProductPicture(productBooksAutoBuch, "0000947_das-auto-buch-die-grose-chronik-mit-uber-1200-modellen_300.jpeg");
-            productBooksAutoBuch.ProductCategories.Add(new ProductCategory { Category = categoryBooks, DisplayOrder = 1 });
+            productBooksAutoBuch.ProductCategories.Add(new ProductCategory { Category = categories["Books"], DisplayOrder = 1 });
 
-			productBooksAutoBuch.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Edition -> bound
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 13).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
-			productBooksAutoBuch.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Category -> non-fiction
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 14).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 9).Single()
-			});
-			productBooksAutoBuch.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Language -> German
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 12).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
+            productBooksAutoBuch.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Edition -> bound
+                SpecificationAttributeOption = specAttributes[13].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
+            productBooksAutoBuch.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Category -> non-fiction
+                SpecificationAttributeOption = specAttributes[14].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 9)
+            });
+            productBooksAutoBuch.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Language -> German
+                SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
 
-			#endregion productBooksAutoBuch
+            #endregion productBooksAutoBuch
 
-			#region productBooksFastCars
+            #region productBooksFastCars
 
-			var productBooksFastCars = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "Fast Cars, Image Calendar 2013",
-				ShortDescription = "spiral bound",
-				FullDescription = "<p> Large Size: 48.5 x 34 cm.<br> This impressive picture calendar with silver ring binding thrilled with impressive photographs of exclusive sports cars. Who understands cars not only as a pure commercial vehicles, will find the most sought-after status symbols at all: fast cars are effectively set to the razor sharp and vivid photos in scene and convey freedom, speed, strength and the highest technical perfection. Starting with the 450-horsepower Maserati GranTurismo MC Stradale on the stylish, luxurious Aston Martin Virage Volante accompany up to the produced only in small numbers Mosler Photon MT900S the fast racer with style and elegance through the months. </p> <p> Besides the calendar draws another picture to look at interesting details. There are the essential information on any sports car in the English language. After this year, the high-quality photos are framed an eye-catcher on the wall of every lover of fast cars. Even as a gift this beautiful years companion is wonderfully suited. 12 calendar pages, neutral and discreet held calendar. Printed on paper from sustainable forests. For lovers of luxury vintage cars also available in ALPHA EDITION: the large format image Classic Cars Calendar 2013: ISBN 9,783,840,733,376th </p> <p> Spiral-bound: 14 pages<br> Publisher: Alpha Edition (June 1, 2012)<br> Language: German<br> ISBN-10: 3,840,733,383<br> ISBN-13: 978-3840733383<br> Size and / or weight: 48.8 x 34.2 x 0.6 cm<br> </p>",
+            var productBooksFastCars = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Fast Cars, Image Calendar 2013",
+                ShortDescription = "spiral bound",
+                FullDescription = "<p> Large Size: 48.5 x 34 cm.<br> This impressive picture calendar with silver ring binding thrilled with impressive photographs of exclusive sports cars. Who understands cars not only as a pure commercial vehicles, will find the most sought-after status symbols at all: fast cars are effectively set to the razor sharp and vivid photos in scene and convey freedom, speed, strength and the highest technical perfection. Starting with the 450-horsepower Maserati GranTurismo MC Stradale on the stylish, luxurious Aston Martin Virage Volante accompany up to the produced only in small numbers Mosler Photon MT900S the fast racer with style and elegance through the months. </p> <p> Besides the calendar draws another picture to look at interesting details. There are the essential information on any sports car in the English language. After this year, the high-quality photos are framed an eye-catcher on the wall of every lover of fast cars. Even as a gift this beautiful years companion is wonderfully suited. 12 calendar pages, neutral and discreet held calendar. Printed on paper from sustainable forests. For lovers of luxury vintage cars also available in ALPHA EDITION: the large format image Classic Cars Calendar 2013: ISBN 9,783,840,733,376th </p> <p> Spiral-bound: 14 pages<br> Publisher: Alpha Edition (June 1, 2012)<br> Language: German<br> ISBN-10: 3,840,733,383<br> ISBN-13: 978-3840733383<br> Size and / or weight: 48.8 x 34.2 x 0.6 cm<br> </p>",
                 Sku = "P-1010",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "Fast Cars",
-				Price = 16.95M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Fast Cars",
+                Price = 16.95M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
             AddProductPicture(productBooksFastCars, "0000946_fast-cars-bildkalender-2013_300.jpeg");
-            productBooksFastCars.ProductCategories.Add(new ProductCategory { Category = categoryBooks, DisplayOrder = 1 });
+            productBooksFastCars.ProductCategories.Add(new ProductCategory { Category = categories["Books"], DisplayOrder = 1 });
 
-			productBooksFastCars.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Edition -> bound
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 13).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
-			productBooksFastCars.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Category -> cars
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 14).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
-			});
-			productBooksFastCars.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Language -> German
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 12).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
+            productBooksFastCars.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Edition -> bound
+                SpecificationAttributeOption = specAttributes[13].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
+            productBooksFastCars.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Category -> cars
+                SpecificationAttributeOption = specAttributes[14].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 6)
+            });
+            productBooksFastCars.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Language -> German
+                SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
 
-			#endregion productBooksFastCars
+            #endregion productBooksFastCars
 
-			#region productBooksMotorradAbenteuer
+            #region productBooksMotorradAbenteuer
 
-			var productBooksMotorradAbenteuer = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "Motorcycle Adventures: Riding for travel enduros",
-				ShortDescription = "Hardcover",
-				FullDescription = "<p> Modern travel enduro bikes are ideal for adventure travel. Their technique is complex, their weight considerably. The driving behavior changes depending on the load and distance. </p> <p> Before the tour starts, you should definitely attend a training course. This superbly illustrated book presents practical means of many informative series photos the right off-road driving in mud and sand, gravel and rock with and without luggage. In addition to the driving course full of information and tips on choosing the right motorcycle for travel planning and practical issues may be on the way. </p>",
+            var productBooksMotorradAbenteuer = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Motorcycle Adventures: Riding for travel enduros",
+                ShortDescription = "Hardcover",
+                FullDescription = "<p> Modern travel enduro bikes are ideal for adventure travel. Their technique is complex, their weight considerably. The driving behavior changes depending on the load and distance. </p> <p> Before the tour starts, you should definitely attend a training course. This superbly illustrated book presents practical means of many informative series photos the right off-road driving in mud and sand, gravel and rock with and without luggage. In addition to the driving course full of information and tips on choosing the right motorcycle for travel planning and practical issues may be on the way. </p>",
                 Sku = "P-1011",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "Motorcycle Adventures",
-				Price = 24.90M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Motorcycle Adventures",
+                Price = 24.90M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
                 DeliveryTimeId = secondDeliveryTime.Id
             };
 
             AddProductPicture(productBooksMotorradAbenteuer, "0000943_motorrad-abenteuer-fahrtechnik-fur-reise-enduros.jpeg");
-            productBooksMotorradAbenteuer.ProductCategories.Add(new ProductCategory { Category = categoryBooks, DisplayOrder = 1 });
+            productBooksMotorradAbenteuer.ProductCategories.Add(new ProductCategory { Category = categories["Books"], DisplayOrder = 1 });
 
-			productBooksMotorradAbenteuer.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Edition -> bound
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 13).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
-			productBooksMotorradAbenteuer.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Category -> cars
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 14).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 9).Single()
-			});
-			productBooksMotorradAbenteuer.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Language -> German
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 12).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
+            productBooksMotorradAbenteuer.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Edition -> bound
+                SpecificationAttributeOption = specAttributes[13].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
+            productBooksMotorradAbenteuer.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Category -> cars
+                SpecificationAttributeOption = specAttributes[14].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 9)
+            });
+            productBooksMotorradAbenteuer.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Language -> German
+                SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
 
-			#endregion productBooksMotorradAbenteuer
+            #endregion productBooksMotorradAbenteuer
 
-			#endregion category books
+            #endregion category books
 
             #region Instant Download Music / Digital Products
-
-            var categoryDigitalProducts = _ctx.Set<Category>().First(c => c.Alias == "Digital Products");
 
             #region product Books Stone of the Wise
 
@@ -11872,7 +11778,7 @@ namespace SmartStore.Data.Setup
             };
 
             AddProductPicture(productBooksStoneOfTheWise, "stone_of_wisdom.jpg");
-            productBooksStoneOfTheWise.ProductCategories.Add(new ProductCategory { Category = categoryDigitalProducts, DisplayOrder = 1 });
+            productBooksStoneOfTheWise.ProductCategories.Add(new ProductCategory { Category = categories["Digital Products"], DisplayOrder = 1 });
 
             productBooksStoneOfTheWise.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -11880,7 +11786,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 3,
                 // Edition -> bound
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 13).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+                SpecificationAttributeOption = specAttributes[13].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
             productBooksStoneOfTheWise.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -11888,7 +11794,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 3,
                 // Category -> cars
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 14).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
+                SpecificationAttributeOption = specAttributes[14].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 6)
             });
             productBooksStoneOfTheWise.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -11896,7 +11802,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 3,
                 // Language -> German
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 12).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+                SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
 
             #endregion product Books Stone of the Wise
@@ -11929,7 +11835,7 @@ namespace SmartStore.Data.Setup
             };
 
             AddProductPicture(productInstantDownloadVivaldi, "vivaldi.jpg");
-            productInstantDownloadVivaldi.ProductCategories.Add(new ProductCategory { Category = categoryDigitalProducts, DisplayOrder = 1 });
+            productInstantDownloadVivaldi.ProductCategories.Add(new ProductCategory { Category = categories["Digital Products"], DisplayOrder = 1 });
 
             productInstantDownloadVivaldi.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -11937,7 +11843,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // mp3 quality > 320 kbit/S
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 18).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+                SpecificationAttributeOption = specAttributes[18].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 3)
             });
             productInstantDownloadVivaldi.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -11945,7 +11851,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 2,
                 // genre > classic
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 19).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
+                SpecificationAttributeOption = specAttributes[19].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 6)
             });
 
             #endregion Antonio Vivildi: then spring
@@ -11978,7 +11884,7 @@ namespace SmartStore.Data.Setup
             };
 
             AddProductPicture(productInstantDownloadBeethoven, "Beethoven.jpg");
-            productInstantDownloadBeethoven.ProductCategories.Add(new ProductCategory { Category = categoryDigitalProducts, DisplayOrder = 1 });
+            productInstantDownloadBeethoven.ProductCategories.Add(new ProductCategory { Category = categories["Digital Products"], DisplayOrder = 1 });
 
             productInstantDownloadBeethoven.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -11986,7 +11892,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // mp3 quality > 320 kbit/S
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 18).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+                SpecificationAttributeOption = specAttributes[18].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 3)
             });
             productInstantDownloadBeethoven.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -11994,7 +11900,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 2,
                 // genre > classic
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 19).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
+                SpecificationAttributeOption = specAttributes[19].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 6)
             });
 
             #endregion Beethoven für Elise
@@ -12002,8 +11908,6 @@ namespace SmartStore.Data.Setup
             #endregion Instant Download Music
 
             #region watches
-
-            var categoryWatches = _ctx.Set<Category>().First(c => c.Alias == "Watches");
 
             #region productTRANSOCEANCHRONOGRAPH
 
@@ -12033,13 +11937,9 @@ namespace SmartStore.Data.Setup
             };
 
             AddProductPicture(productTRANSOCEANCHRONOGRAPH, "product_transocean-chronograph.jpg");
-            productTRANSOCEANCHRONOGRAPH.ProductCategories.Add(new ProductCategory { Category = categoryWatches, DisplayOrder = 1 });
+            productTRANSOCEANCHRONOGRAPH.ProductCategories.Add(new ProductCategory { Category = categories["Watches"], DisplayOrder = 1 });
 
-            productTRANSOCEANCHRONOGRAPH.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Breitling").Single(),
-                DisplayOrder = 1,
-            });
+            productTRANSOCEANCHRONOGRAPH.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Breitling"], DisplayOrder = 1 });
 
             productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12047,7 +11947,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // offer > promotion
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 22).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+                SpecificationAttributeOption = specAttributes[22].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 3)
             });
             productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12055,7 +11955,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 2,
                 // manufacturer > Breitling
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 18).Single()
+                SpecificationAttributeOption = specAttributes[20].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 18)
             });
             productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12063,7 +11963,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // housing > steel
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
             productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12071,7 +11971,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // material -> leather
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 5).Single()
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
             });
             productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12079,7 +11979,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // Gender -> gentlemen
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 7).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+                SpecificationAttributeOption = specAttributes[7].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
             productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12087,7 +11987,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // movement -> mechanical, self winding
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 9).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+                SpecificationAttributeOption = specAttributes[9].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
             productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12095,7 +11995,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // diameter -> 44mm
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 24).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+                SpecificationAttributeOption = specAttributes[24].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 3)
             });
             productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12103,7 +12003,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // closure -> folding clasp
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 25).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+                SpecificationAttributeOption = specAttributes[25].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 2)
             });
 
             #endregion productTRANSOCEANCHRONOGRAPH
@@ -12138,13 +12038,9 @@ namespace SmartStore.Data.Setup
             AddProductPicture(productTissotTTouchExpertSolar, "product_tissot-t-touch-expert-solar.jpg", "tissot-1");
             AddProductPicture(productTissotTTouchExpertSolar, "product_tissot-t-touch-expert-solar-t091_2.jpg", "tissot-2");
 
-            productTissotTTouchExpertSolar.ProductCategories.Add(new ProductCategory { Category = categoryWatches, DisplayOrder = 1 });
+            productTissotTTouchExpertSolar.ProductCategories.Add(new ProductCategory { Category = categories["Watches"], DisplayOrder = 1 });
 
-            productTissotTTouchExpertSolar.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Tissot").Single(),
-                DisplayOrder = 1,
-            });
+            productTissotTTouchExpertSolar.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Tissot"], DisplayOrder = 1 });
 
             productTissotTTouchExpertSolar.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12152,7 +12048,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // offer > best price
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 22).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 8).Single()
+                SpecificationAttributeOption = specAttributes[22].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 8)
             });
             productTissotTTouchExpertSolar.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12160,7 +12056,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 2,
                 // manufacturer > Tissot
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 17).Single()
+                SpecificationAttributeOption = specAttributes[20].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 17)
             });
             productTissotTTouchExpertSolar.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12168,7 +12064,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // housing > steel
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
             productTissotTTouchExpertSolar.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12176,7 +12072,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // material -> silicone
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 7).Single()
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 7)
             });
             productTissotTTouchExpertSolar.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12184,7 +12080,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // Gender -> gentlemen
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 7).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+                SpecificationAttributeOption = specAttributes[7].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
             productTissotTTouchExpertSolar.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12192,7 +12088,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // movement -> Automatic, self-winding
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 9).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+                SpecificationAttributeOption = specAttributes[9].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
             productTissotTTouchExpertSolar.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12200,7 +12096,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // diameter -> 44mm
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 24).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+                SpecificationAttributeOption = specAttributes[24].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 3)
             });
             productTissotTTouchExpertSolar.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12208,7 +12104,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // closure -> thorn close
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 25).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+                SpecificationAttributeOption = specAttributes[25].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 3)
             });
 
             #endregion productTissotT-TouchExpertSolar
@@ -12241,13 +12137,9 @@ namespace SmartStore.Data.Setup
             };
 
             AddProductPicture(productSeikoSRPA49K1, "product_SeikoSRPA49K1.jpg");
-            productSeikoSRPA49K1.ProductCategories.Add(new ProductCategory { Category = categoryWatches, DisplayOrder = 1 });
+            productSeikoSRPA49K1.ProductCategories.Add(new ProductCategory { Category = categories["Watches"], DisplayOrder = 1 });
 
-            productSeikoSRPA49K1.ProductManufacturers.Add(new ProductManufacturer
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Seiko").Single(),
-                DisplayOrder = 1,
-            });
+            productSeikoSRPA49K1.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Seiko"], DisplayOrder = 1 });
 
             productSeikoSRPA49K1.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12255,7 +12147,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 1,
                 // housing > steel
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
             productSeikoSRPA49K1.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12263,7 +12155,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // material -> stainless steel
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
             productSeikoSRPA49K1.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12271,7 +12163,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 2,
                 // manufacturer > Seiko
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 16).Single()
+                SpecificationAttributeOption = specAttributes[20].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 16)
             });
             productSeikoSRPA49K1.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12279,7 +12171,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // Gender -> gentlemen
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 7).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+                SpecificationAttributeOption = specAttributes[7].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
             productSeikoSRPA49K1.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12287,7 +12179,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // movement -> quarz
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 9).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+                SpecificationAttributeOption = specAttributes[9].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
             productSeikoSRPA49K1.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12295,7 +12187,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // closure -> folding clasp
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 25).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+                SpecificationAttributeOption = specAttributes[25].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 2)
             });
             productSeikoSRPA49K1.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12303,7 +12195,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // diameter -> 44mm
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 24).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+                SpecificationAttributeOption = specAttributes[24].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 3)
             });
 
             #endregion productSeikoSRPA49K1 
@@ -12312,77 +12204,73 @@ namespace SmartStore.Data.Setup
             #region productWatchesCertinaDSPodiumBigSize
 
             var productWatchesCertinaDSPodiumBigSize = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "Certina DS Podium Big Size",
-				ShortDescription = "C001.617.26.037.00",
-				FullDescription = "<p>Since 1888, Certina has maintained an enviable reputation for its excellent watches and reliable movements. From the time of its integration into the SMH (today's Swatch Group) in the early 1980s, every Certina has been equipped with a high-quality ETA movement.</p><p>In a quartz watch movement, high-frequency oscillations are generated in a tiny synthetic crystal, then divided down electronically to provide the extreme accuracy of the Certina internal clock. A battery supplies the necessary energy.</p><p>The quartz movement is sometimes equipped with an end-of-life (EOL) indicator. When the seconds hand begins moving in four-second increments, the battery should be replaced within two weeks.</p><p>An automatic watch movement is driven by a rotor. Arm and wrist movements spin the rotor, which in turn winds the main spring. Energy is continuously produced, eliminating the need for a battery. The rate precision therefore depends on a rigorous manufacturing process and the original calibration, as well as the lifestyle of the user.</p><p>Most automatic movements are driven by an offset rotor. To earn the title of chronometer, a watch must be equipped with a movement that has obtained an official rate certificate from the COSC (Contrôle Officiel Suisse des Chronomètres). To obtain this, precision tests in different positions and at different temperatures must be carried out. These tests take place over a 15-day period. Thermocompensated means that the effective temperature inside the watch is measured and taken into account when improving precision. This allows fluctuations in the rate precision of a normal quartz watch due to temperature variations to be reduced by several seconds a week. The precision is 20 times more accurate than on a normal quartz watch, i.e. +/- 10 seconds per year (0.07 seconds/day).</p>",
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Certina DS Podium Big Size",
+                ShortDescription = "C001.617.26.037.00",
+                FullDescription = "<p>Since 1888, Certina has maintained an enviable reputation for its excellent watches and reliable movements. From the time of its integration into the SMH (today's Swatch Group) in the early 1980s, every Certina has been equipped with a high-quality ETA movement.</p><p>In a quartz watch movement, high-frequency oscillations are generated in a tiny synthetic crystal, then divided down electronically to provide the extreme accuracy of the Certina internal clock. A battery supplies the necessary energy.</p><p>The quartz movement is sometimes equipped with an end-of-life (EOL) indicator. When the seconds hand begins moving in four-second increments, the battery should be replaced within two weeks.</p><p>An automatic watch movement is driven by a rotor. Arm and wrist movements spin the rotor, which in turn winds the main spring. Energy is continuously produced, eliminating the need for a battery. The rate precision therefore depends on a rigorous manufacturing process and the original calibration, as well as the lifestyle of the user.</p><p>Most automatic movements are driven by an offset rotor. To earn the title of chronometer, a watch must be equipped with a movement that has obtained an official rate certificate from the COSC (Contrôle Officiel Suisse des Chronomètres). To obtain this, precision tests in different positions and at different temperatures must be carried out. These tests take place over a 15-day period. Thermocompensated means that the effective temperature inside the watch is measured and taken into account when improving precision. This allows fluctuations in the rate precision of a normal quartz watch due to temperature variations to be reduced by several seconds a week. The precision is 20 times more accurate than on a normal quartz watch, i.e. +/- 10 seconds per year (0.07 seconds/day).</p>",
                 Sku = "P-9004",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "Certina DS Podium Big Size",
-				ShowOnHomePage = true,
-				Price = 479.00M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Certina DS Podium Big Size",
+                ShowOnHomePage = true,
+                Price = 479.00M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
             AddProductPicture(productWatchesCertinaDSPodiumBigSize, "product_certina_ds_podium_big.png");
-            productWatchesCertinaDSPodiumBigSize.ProductCategories.Add(new ProductCategory { Category = categoryWatches, DisplayOrder = 1 });
+            productWatchesCertinaDSPodiumBigSize.ProductCategories.Add(new ProductCategory { Category = categories["Watches"], DisplayOrder = 1 });
 
-			productWatchesCertinaDSPodiumBigSize.ProductManufacturers.Add(new ProductManufacturer
-			{
-				Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Certina").Single(),
-				DisplayOrder = 1,
-			});
+            productWatchesCertinaDSPodiumBigSize.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Certina"], DisplayOrder = 1 });
 
-			productWatchesCertinaDSPodiumBigSize.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 1,
-				// housing > steel
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
+            productWatchesCertinaDSPodiumBigSize.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // housing > steel
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
             productWatchesCertinaDSPodiumBigSize.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // material -> leather
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 5).Single()
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
             });
             productWatchesCertinaDSPodiumBigSize.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 2,
-				// manufacturer > Certina
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 14).Single()
-			});
-			productWatchesCertinaDSPodiumBigSize.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 5,
-				// Gender -> gentlemen
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 7).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 2,
+                // manufacturer > Certina
+                SpecificationAttributeOption = specAttributes[20].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 14)
+            });
+            productWatchesCertinaDSPodiumBigSize.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // Gender -> gentlemen
+                SpecificationAttributeOption = specAttributes[7].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
             productWatchesCertinaDSPodiumBigSize.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // movement -> quarz
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 9).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+                SpecificationAttributeOption = specAttributes[9].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 3)
             });
             productWatchesCertinaDSPodiumBigSize.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12390,7 +12278,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // closure -> folding clasp
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 25).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+                SpecificationAttributeOption = specAttributes[25].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 2)
             });
             productWatchesCertinaDSPodiumBigSize.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12398,7 +12286,7 @@ namespace SmartStore.Data.Setup
                 ShowOnProductPage = true,
                 DisplayOrder = 5,
                 // diameter -> 40mm
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 24).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+                SpecificationAttributeOption = specAttributes[24].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 2)
             });
 
             #endregion productWatchesCertinaDSPodiumBigSize
@@ -12407,294 +12295,286 @@ namespace SmartStore.Data.Setup
 
             #region gaming
 
-            var manuSony = _ctx.Set<Manufacturer>().First(c => c.Name == "Sony");
-            var manuEASports = _ctx.Set<Manufacturer>().First(c => c.Name == "EA Sports");
-            var manuUbisoft = _ctx.Set<Manufacturer>().First(c => c.Name == "Ubisoft");
-			var categoryGaming = _ctx.Set<Category>().First(c => c.Alias == "Gaming");
-			var categoryGamingAccessories = _ctx.Set<Category>().First(c => c.Alias == "Gaming Accessories");
-			var categoryGamingGames = _ctx.Set<Category>().First(c => c.Alias == "Games");
-            var manuWarnerHomme = _ctx.Set<Manufacturer>().First(c => c.Name == "Warner Home Video Games");
-            
             #region bundlePs3AssassinCreed
 
             var productPs3 = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Sku = "Sony-PS399000",
-				Name = "Playstation 4 Pro",
-				ShortDescription = "The Sony PlayStation 4 Pro is the multi media console for next-generation digital home entertainment. It offers the Blu-ray technology, which enables you to enjoy movies in high definition.",
-				FullDescription = "<ul><li>PowerPC-base Core @5.2GHz</li><li>1 VMX vector unit per core</li><li>512KB L2 cache</li><li>7 x SPE @5.2GHz</li><li>7 x 128b 128 SIMD GPRs</li><li>7 x 256MB SRAM for SPE</li><li>* 1 of 8 SPEs reserved for redundancy total floating point performance: 218 GFLOPS</li><li> 1.8 TFLOPS floating point performance</li><li>Full HD (up to 1080p) x 2 channels</li><li>Multi-way programmable parallel floating point shader pipelines</li><li>GPU: RSX @550MHz</li><li>256MB XDR Main RAM @3.2GHz</li><li>256MB GDDR3 VRAM @700MHz</li><li>Sound: Dolby 5.1ch, DTS, LPCM, etc. (Cell-base processing)</li><li>Wi-Fi: IEEE 802.11 b/g</li><li>USB: Front x 4, Rear x 2 (USB2.0)</li><li>Memory Stick: standard/Duo, PRO x 1</li></ul>",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Sku = "Sony-PS399000",
+                Name = "Playstation 4 Pro",
+                ShortDescription = "The Sony PlayStation 4 Pro is the multi media console for next-generation digital home entertainment. It offers the Blu-ray technology, which enables you to enjoy movies in high definition.",
+                FullDescription = "<ul><li>PowerPC-base Core @5.2GHz</li><li>1 VMX vector unit per core</li><li>512KB L2 cache</li><li>7 x SPE @5.2GHz</li><li>7 x 128b 128 SIMD GPRs</li><li>7 x 256MB SRAM for SPE</li><li>* 1 of 8 SPEs reserved for redundancy total floating point performance: 218 GFLOPS</li><li> 1.8 TFLOPS floating point performance</li><li>Full HD (up to 1080p) x 2 channels</li><li>Multi-way programmable parallel floating point shader pipelines</li><li>GPU: RSX @550MHz</li><li>256MB XDR Main RAM @3.2GHz</li><li>256MB GDDR3 VRAM @700MHz</li><li>Sound: Dolby 5.1ch, DTS, LPCM, etc. (Cell-base processing)</li><li>Wi-Fi: IEEE 802.11 b/g</li><li>USB: Front x 4, Rear x 2 (USB2.0)</li><li>Memory Stick: standard/Duo, PRO x 1</li></ul>",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
                 //MetaTitle = "Playstation 4 Super Slim",
                 MetaTitle = "Playstation 4 Pro",
                 Price = 189.00M,
-				OldPrice = 199.99M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
-				DeliveryTimeId = firstDeliveryTime.Id
-			};
+                OldPrice = 199.99M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTimeId = firstDeliveryTime.Id
+            };
 
             AddProductPicture(productPs3, "product_ps4_w_controller.jpg", "ps4-w-controller");
             AddProductPicture(productPs3, "product_ps4_wo_controller.jpg", "ps4-wo-single");
 
-            productPs3.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
-			productPs3.ProductCategories.Add(new ProductCategory { Category = categoryGaming, DisplayOrder = 4 });
+            productPs3.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
+            productPs3.ProductCategories.Add(new ProductCategory { Category = categories["Gaming"], DisplayOrder = 4 });
 
             var productDualshock4Controller = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Sku = "Sony-PS399004",
-				Name = "DUALSHOCK 4 Wireless Controller",
-				ShortDescription = "Revolutionary. Intuitive. Precise. A revolutionary controller for a new era of gaming, the DualShock 4 Wireless Controller features familiar PlayStation controls and innovative new additions, such as a touch pad, light bar, and more.",
-				FullDescription = "<ul>  <li>Precision Controller for PlayStation 4: The feel, shape, and sensitivity of the DualShock 4’s analog sticks and trigger buttons have been enhanced to offer players absolute control for all games</li>  <li>Sharing at your Fingertips: The addition of the Share button makes sharing your greatest gaming moments as easy as a push of a button. Upload gameplay videos and screenshots directly from your system or live-stream your gameplay, all without disturbing the game in progress.</li>  <li>New ways to Play: Revolutionary features like the touch pad, integrated light bar, and built-in speaker offer exciting new ways to experience and interact with your games and its 3.5mm audio jack offers a practical personal audio solution for gamers who want to listen to their games in private.</li>  <li>Charge Efficiently: The DualShock 4 Wireless Controller can easily be recharged by plugging it into your PlayStation 4 system, even when on standby, or with any standard charger with a micro-USB port.</li></ul>",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "DUALSHOCK 4 Wireless Controller",
-				Price = 54.90M,
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Sku = "Sony-PS399004",
+                Name = "DUALSHOCK 4 Wireless Controller",
+                ShortDescription = "Revolutionary. Intuitive. Precise. A revolutionary controller for a new era of gaming, the DualShock 4 Wireless Controller features familiar PlayStation controls and innovative new additions, such as a touch pad, light bar, and more.",
+                FullDescription = "<ul>  <li>Precision Controller for PlayStation 4: The feel, shape, and sensitivity of the DualShock 4’s analog sticks and trigger buttons have been enhanced to offer players absolute control for all games</li>  <li>Sharing at your Fingertips: The addition of the Share button makes sharing your greatest gaming moments as easy as a push of a button. Upload gameplay videos and screenshots directly from your system or live-stream your gameplay, all without disturbing the game in progress.</li>  <li>New ways to Play: Revolutionary features like the touch pad, integrated light bar, and built-in speaker offer exciting new ways to experience and interact with your games and its 3.5mm audio jack offers a practical personal audio solution for gamers who want to listen to their games in private.</li>  <li>Charge Efficiently: The DualShock 4 Wireless Controller can easily be recharged by plugging it into your PlayStation 4 system, even when on standby, or with any standard charger with a micro-USB port.</li></ul>",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "DUALSHOCK 4 Wireless Controller",
+                Price = 54.90M,
                 OldPrice = 59.90M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
             AddProductPicture(productDualshock4Controller, "product_dualshock4.jpg");
-            productDualshock4Controller.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
-            productDualshock4Controller.ProductCategories.Add(new ProductCategory { Category = categoryGamingAccessories, DisplayOrder = 1 });
+            productDualshock4Controller.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
+            productDualshock4Controller.ProductCategories.Add(new ProductCategory { Category = categories["Gaming Accessories"], DisplayOrder = 1 });
 
 
-			var productMinecraft = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
+            var productMinecraft = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
                 //Sku = "Ubi-acreed3",
                 Sku = "PD-Minecraft4ps4",
                 Name = "Minecraft - Playstation 4 Edition",
-				ShortDescription = "Third-person action-adventure title set.",
-				FullDescription = "<p><strong>Build! Craft! Explore! </strong></p><p>The critically acclaimed Minecraft comes to PlayStation 4, offering bigger worlds and greater draw distance than the PS3 and PS Vita editions.</p><p>Create your own world, then, build, explore and conquer. When night falls the monsters appear, so be sure to build a shelter before they arrive.</p><p>The world is only limited by your imagination! Bigger worlds and greater draw distance than PS3 and PS Vita Editions Includes all features from the PS3 version Import your PS3 and PS Vita worlds to the PS4 Editition.</p>",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				//MetaTitle = "Assassin's Creed III",
+                ShortDescription = "Third-person action-adventure title set.",
+                FullDescription = "<p><strong>Build! Craft! Explore! </strong></p><p>The critically acclaimed Minecraft comes to PlayStation 4, offering bigger worlds and greater draw distance than the PS3 and PS Vita editions.</p><p>Create your own world, then, build, explore and conquer. When night falls the monsters appear, so be sure to build a shelter before they arrive.</p><p>The world is only limited by your imagination! Bigger worlds and greater draw distance than PS3 and PS Vita Editions Includes all features from the PS3 version Import your PS3 and PS Vita worlds to the PS4 Editition.</p>",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                //MetaTitle = "Assassin's Creed III",
                 MetaTitle = "Minecraft - Playstation 4 Edition",
 
                 Price = 49.90M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
             AddProductPicture(productMinecraft, "product_minecraft.jpg");
-            productMinecraft.ProductManufacturers.Add(new ProductManufacturer {	Manufacturer = manuSony,	DisplayOrder = 1 });
-            productMinecraft.ProductCategories.Add(new ProductCategory { Category = categoryGamingGames, DisplayOrder = 4 });
+            productMinecraft.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
+            productMinecraft.ProductCategories.Add(new ProductCategory { Category = categories["Games"], DisplayOrder = 4 });
 
 
-			var productBundlePs3AssassinCreed = new Product
-			{
-				ProductType = ProductType.BundledProduct,
-				VisibleIndividually = true,
-				Sku = "Sony-PS399105",
-				Name = "PlayStation 4 Minecraft Bundle",
-				ShortDescription = "100GB PlayStation®4 system, 2 × DUALSHOCK®4 wireless controller and Minecraft for PS4 Edition.",
-				FullDescription = 
-					"<ul><li><h4>Processor</h4><ul><li>Processor Technology : Cell Broadband Engine™</li></ul></li><li><h4>General</h4><ul><li>Communication : Ethernet (10BASE-T, 100BASE-TX, 1000BASE-T IEEE 802.11 b/g Wi-Fi<br tabindex=\"0\">Bluetooth 2.0 (EDR)</li><li>Inputs and Outputs : USB 2.0 X 2</li></ul></li><li><h4>Graphics</h4><ul><li>Graphics Processor : RSX</li></ul></li><li><h4>Memory</h4><ul><li>Internal Memory : 256MB XDR Main RAM<br>256MB GDDR3 VRAM</li></ul></li><li><h4>Power</h4><ul><li>Power Consumption (in Operation) : Approximately 250 watts</li></ul></li><li><h4>Storage</h4><ul><li>Storage Capacity : 2.5' Serial ATA (500GB)</li></ul></li><li><h4>Video</h4><ul><li>Resolution : 480i, 480p, 720p, 1080i, 1080p (24p/60p)</li></ul></li><li><h4>Weights and Measurements</h4><ul><li>Dimensions (Approx.) : Approximately 11.42\" (W) x 2.56\" (H) x 11.42\" (D) (290mm x 65mm x 290mm)</li><li>Weight (Approx.) : Approximately 7.055 lbs (3.2 kg)</li></ul></li></ul>",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
+            var productBundlePs3AssassinCreed = new Product
+            {
+                ProductType = ProductType.BundledProduct,
+                VisibleIndividually = true,
+                Sku = "Sony-PS399105",
+                Name = "PlayStation 4 Minecraft Bundle",
+                ShortDescription = "100GB PlayStation®4 system, 2 × DUALSHOCK®4 wireless controller and Minecraft for PS4 Edition.",
+                FullDescription =
+                    "<ul><li><h4>Processor</h4><ul><li>Processor Technology : Cell Broadband Engine™</li></ul></li><li><h4>General</h4><ul><li>Communication : Ethernet (10BASE-T, 100BASE-TX, 1000BASE-T IEEE 802.11 b/g Wi-Fi<br tabindex=\"0\">Bluetooth 2.0 (EDR)</li><li>Inputs and Outputs : USB 2.0 X 2</li></ul></li><li><h4>Graphics</h4><ul><li>Graphics Processor : RSX</li></ul></li><li><h4>Memory</h4><ul><li>Internal Memory : 256MB XDR Main RAM<br>256MB GDDR3 VRAM</li></ul></li><li><h4>Power</h4><ul><li>Power Consumption (in Operation) : Approximately 250 watts</li></ul></li><li><h4>Storage</h4><ul><li>Storage Capacity : 2.5' Serial ATA (500GB)</li></ul></li><li><h4>Video</h4><ul><li>Resolution : 480i, 480p, 720p, 1080i, 1080p (24p/60p)</li></ul></li><li><h4>Weights and Measurements</h4><ul><li>Dimensions (Approx.) : Approximately 11.42\" (W) x 2.56\" (H) x 11.42\" (D) (290mm x 65mm x 290mm)</li><li>Weight (Approx.) : Approximately 7.055 lbs (3.2 kg)</li></ul></li></ul>",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
                 MetaTitle = "PlayStation 4 Minecraft Bundle",
                 Price = 269.97M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
                 DeliveryTimeId = firstDeliveryTime.Id,
                 ShowOnHomePage = true,
-				BundleTitleText = "Bundle includes",
-				BundlePerItemPricing = true,
-				BundlePerItemShoppingCart = true
-			};
+                BundleTitleText = "Bundle includes",
+                BundlePerItemPricing = true,
+                BundlePerItemShoppingCart = true
+            };
 
             AddProductPicture(productBundlePs3AssassinCreed, "ps4_bundle_minecraft.jpg");
-			productBundlePs3AssassinCreed.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
-			productBundlePs3AssassinCreed.ProductCategories.Add(new ProductCategory { Category = categoryGaming, DisplayOrder = 1 });
+            productBundlePs3AssassinCreed.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
+            productBundlePs3AssassinCreed.ProductCategories.Add(new ProductCategory { Category = categories["Gaming"], DisplayOrder = 1 });
 
-			#endregion bundlePs3AssassinCreed
+            #endregion bundlePs3AssassinCreed
 
-			#region bundlePs4
+            #region bundlePs4
 
-			var productPs4 = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Sku = "Sony-PS410034",
+            var productPs4 = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Sku = "Sony-PS410034",
                 //Sku = "PS410037",
 
                 Name = "PlayStation 4",
-				ShortDescription = "The best place to play. Working with some of the most creative minds in the industry, PlayStation®4 delivers breathtaking and unique gaming experiences.",
-				FullDescription = "<p><h4>The power to perform.</h4><div>PlayStation®4 was designed from the ground up to ensure that game creators can unleash their imaginations to develop the very best games and deliver new play experiences never before possible. With ultra-fast customized processors and 8GB of high-performance unified system memory, PS4™ is the home to games with rich, high-fidelity graphics and deeply immersive experiences that shatter expectations.</div></p><p><ul><li><h4>Processor</h4><ul><li>Processor Technology : Low power x86-64 AMD 'Jaguar', 8 cores</li></ul></li><li><h4>Software</h4><ul><li>Processor : Single-chip custom processor</li></ul></li><li><h4>Display</h4><ul><li>Display Technology : HDMI<br />Digital Output (optical)</li></ul></li><li><h4>General</h4><ul><li>Ethernet ports x speed : Ethernet (10BASE-T, 100BASE-TX, 1000BASE-T); IEEE 802.11 b/g/n; Bluetooth® 2.1 (EDR)</li><li>Hard disk : Built-in</li></ul></li><li><h4>General Specifications</h4><ul><li>Video : BD 6xCAV<br />DVD 8xCAV</li></ul></li><li><h4>Graphics</h4><ul><li>Graphics Processor : 1.84 TFLOPS, AMD Radeon™ Graphics Core Next engine</li></ul></li><li><h4>Interface</h4><ul><li>I/O Port : Super-Speed USB (USB 3.0), AUX</li></ul></li><li><h4>Memory</h4><ul><li>Internal Memory : GDDR5 8GB</li></ul></li></ul></p>",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "PlayStation 4",
-				Price = 399.99M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 3,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
+                ShortDescription = "The best place to play. Working with some of the most creative minds in the industry, PlayStation®4 delivers breathtaking and unique gaming experiences.",
+                FullDescription = "<p><h4>The power to perform.</h4><div>PlayStation®4 was designed from the ground up to ensure that game creators can unleash their imaginations to develop the very best games and deliver new play experiences never before possible. With ultra-fast customized processors and 8GB of high-performance unified system memory, PS4™ is the home to games with rich, high-fidelity graphics and deeply immersive experiences that shatter expectations.</div></p><p><ul><li><h4>Processor</h4><ul><li>Processor Technology : Low power x86-64 AMD 'Jaguar', 8 cores</li></ul></li><li><h4>Software</h4><ul><li>Processor : Single-chip custom processor</li></ul></li><li><h4>Display</h4><ul><li>Display Technology : HDMI<br />Digital Output (optical)</li></ul></li><li><h4>General</h4><ul><li>Ethernet ports x speed : Ethernet (10BASE-T, 100BASE-TX, 1000BASE-T); IEEE 802.11 b/g/n; Bluetooth® 2.1 (EDR)</li><li>Hard disk : Built-in</li></ul></li><li><h4>General Specifications</h4><ul><li>Video : BD 6xCAV<br />DVD 8xCAV</li></ul></li><li><h4>Graphics</h4><ul><li>Graphics Processor : 1.84 TFLOPS, AMD Radeon™ Graphics Core Next engine</li></ul></li><li><h4>Interface</h4><ul><li>I/O Port : Super-Speed USB (USB 3.0), AUX</li></ul></li><li><h4>Memory</h4><ul><li>Internal Memory : GDDR5 8GB</li></ul></li></ul></p>",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "PlayStation 4",
+                Price = 399.99M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 3,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
             AddProductPicture(productPs4, "product_sony_ps4.png", "sony-ps4");
             AddProductPicture(productPs4, "product_sony_dualshock4_wirelesscontroller.png", "sony-ps4-dualshock");
 
-            productPs4.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
-			productPs4.ProductCategories.Add(new ProductCategory { Category = categoryGaming, DisplayOrder = 5 });
+            productPs4.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
+            productPs4.ProductCategories.Add(new ProductCategory { Category = categories["Gaming"], DisplayOrder = 5 });
 
 
             var productPs4Camera = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Sku = "Sony-PS410040",
-				Name = "PlayStation 4 Camera",
-				ShortDescription = "Play, challenge and share your epic gaming moments with PlayStation®Camera and your PS4™. Multiplayer is enhanced through immediate, crystal clear audio and picture-in-picture video sharing.",
-				FullDescription = "<ul><li>When combined with the DualShock 4 Wireless Controller's light bar, the evolutionary 3D depth-sensing technology in the PlayStation Camera allows it to precisely track a player's position in the room.</li><li>From navigational voice commands to facial recognition, the PlayStation Camera adds incredible innovation to your gaming.</li><li>Automatically integrate a picture-in-picture video of yourself during gameplay broadcasts, and challenge your friends during play.</li><li>Never leave a friend hanging or miss a chance to taunt your opponents with voice chat that keeps the conversation going, whether it's between rounds, between games, or just while kicking back.</li></ul>",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "PlayStation 4 Camera",
-				Price = 59.99M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Sku = "Sony-PS410040",
+                Name = "PlayStation 4 Camera",
+                ShortDescription = "Play, challenge and share your epic gaming moments with PlayStation®Camera and your PS4™. Multiplayer is enhanced through immediate, crystal clear audio and picture-in-picture video sharing.",
+                FullDescription = "<ul><li>When combined with the DualShock 4 Wireless Controller's light bar, the evolutionary 3D depth-sensing technology in the PlayStation Camera allows it to precisely track a player's position in the room.</li><li>From navigational voice commands to facial recognition, the PlayStation Camera adds incredible innovation to your gaming.</li><li>Automatically integrate a picture-in-picture video of yourself during gameplay broadcasts, and challenge your friends during play.</li><li>Never leave a friend hanging or miss a chance to taunt your opponents with voice chat that keeps the conversation going, whether it's between rounds, between games, or just while kicking back.</li></ul>",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "PlayStation 4 Camera",
+                Price = 59.99M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
             AddProductPicture(productPs4Camera, "product_sony_ps4_camera.png");
-			productPs4Camera.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
-			productPs4Camera.ProductCategories.Add(new ProductCategory { Category = categoryGamingAccessories, DisplayOrder = 3 });
+            productPs4Camera.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
+            productPs4Camera.ProductCategories.Add(new ProductCategory { Category = categories["Gaming Accessories"], DisplayOrder = 3 });
 
 
-			var productBundlePs4 = new Product
-			{
-				ProductType = ProductType.BundledProduct,
-				VisibleIndividually = true,
-				Sku = "Sony-PS410099",
-				Name = "PlayStation 4 Bundle",
-				ShortDescription = "PlayStation®4 system, DUALSHOCK®4 wireless controller and PS4 camera.",
-				FullDescription =
-					"<p><h4>The best place to play</h4><div>PlayStation 4 is the best place to play with dynamic, connected gaming, powerful graphics and speed, intelligent personalization, deeply integrated social capabilities, and innovative second-screen features. Combining unparalleled content, immersive gaming experiences, all of your favorite digital entertainment apps, and PlayStation exclusives, PS4 centers on gamers, enabling them to play when, where and how they want. PS4 enables the greatest game developers in the world to unlock their creativity and push the boundaries of play through a system that is tuned specifically to their needs.</div></p><p><h4>Gamer focused, developer inspired</h4><div>The PS4 system focuses on the gamer, ensuring that the very best games and the most immersive experiences are possible on the platform. The PS4 system enables the greatest game developers in the world to unlock their creativity and push the boundaries of play through a system that is tuned specifically to their needs. The PS4 system is centered around a powerful custom chip that contains eight x86-64 cores and a state of the art 1.84 TFLOPS graphics processor with 8 GB of ultra-fast GDDR5 unified system memory, easing game creation and increasing the richness of content achievable on the platform. The end result is new games with rich, high-fidelity graphics and deeply immersive experiences.</div></p><p><h4>Personalized, curated content</h4><div>The PS4 system has the ability to learn about your preferences. It will learn your likes and dislikes, allowing you to discover content pre-loaded and ready to go on your console in your favorite game genres or by your favorite creators. Players also can look over game-related information shared by friends, view friends’ gameplay with ease, or obtain information about recommended content, including games, TV shows and movies.</div></p><p><h4>New DUALSHOCK controller</h4><div>DUALSHOCK 4 features new innovations to deliver more immersive gaming experiences, including a highly sensitive six-axis sensor as well as a touch pad located on the top of the controller, which offers gamers completely new ways to play and interact with games.</div></p><p><h4>Shared game experiences</h4><div>Engage in endless personal challenges with your community and share your epic triumphs with the press of a button. Simply hit the SHARE button on the controller, scan through the last few minutes of gameplay, tag it and return to the game—the video uploads as you play. The PS4 system also enhances social spectating by enabling you to broadcast your gameplay in real-time.</div></p><p><h4>Remote play</h4><div>Remote Play on the PS4 system fully unlocks the PlayStation Vita system’s potential, making it the ultimate companion device. With the PS Vita system, gamers will be able to seamlessly play a range of PS4 titles on the beautiful 5-inch display over Wi-Fi access points in a local area network.</div></p><p><h4>PlayStation app</h4><div>The PlayStation App will enable iPhone, iPad, and Android-based smartphones and tablets to become second screens for the PS4 system. Once installed on these devices, players can view in-game items, purchase PS4 games and download them directly to the console at home, or remotely watch the gameplay of other gamers playing on their devices.</div></p><p><h4>PlayStation Plus</h4><div>Built to bring games and gamers together and fuel the next generation of gaming, PlayStation Plus helps you discover a world of exceptional gaming experiences. PlayStation Plus is a membership service that takes your gaming experience to the next level. Each month members receive an Instant Game Collection of top rated blockbuster and innovative Indie games, which they can download direct to their console.</div></p>",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "PlayStation 4 Bundle",
-				Price = 429.99M,
-				OldPrice = 449.99M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
+            var productBundlePs4 = new Product
+            {
+                ProductType = ProductType.BundledProduct,
+                VisibleIndividually = true,
+                Sku = "Sony-PS410099",
+                Name = "PlayStation 4 Bundle",
+                ShortDescription = "PlayStation®4 system, DUALSHOCK®4 wireless controller and PS4 camera.",
+                FullDescription =
+                    "<p><h4>The best place to play</h4><div>PlayStation 4 is the best place to play with dynamic, connected gaming, powerful graphics and speed, intelligent personalization, deeply integrated social capabilities, and innovative second-screen features. Combining unparalleled content, immersive gaming experiences, all of your favorite digital entertainment apps, and PlayStation exclusives, PS4 centers on gamers, enabling them to play when, where and how they want. PS4 enables the greatest game developers in the world to unlock their creativity and push the boundaries of play through a system that is tuned specifically to their needs.</div></p><p><h4>Gamer focused, developer inspired</h4><div>The PS4 system focuses on the gamer, ensuring that the very best games and the most immersive experiences are possible on the platform. The PS4 system enables the greatest game developers in the world to unlock their creativity and push the boundaries of play through a system that is tuned specifically to their needs. The PS4 system is centered around a powerful custom chip that contains eight x86-64 cores and a state of the art 1.84 TFLOPS graphics processor with 8 GB of ultra-fast GDDR5 unified system memory, easing game creation and increasing the richness of content achievable on the platform. The end result is new games with rich, high-fidelity graphics and deeply immersive experiences.</div></p><p><h4>Personalized, curated content</h4><div>The PS4 system has the ability to learn about your preferences. It will learn your likes and dislikes, allowing you to discover content pre-loaded and ready to go on your console in your favorite game genres or by your favorite creators. Players also can look over game-related information shared by friends, view friends’ gameplay with ease, or obtain information about recommended content, including games, TV shows and movies.</div></p><p><h4>New DUALSHOCK controller</h4><div>DUALSHOCK 4 features new innovations to deliver more immersive gaming experiences, including a highly sensitive six-axis sensor as well as a touch pad located on the top of the controller, which offers gamers completely new ways to play and interact with games.</div></p><p><h4>Shared game experiences</h4><div>Engage in endless personal challenges with your community and share your epic triumphs with the press of a button. Simply hit the SHARE button on the controller, scan through the last few minutes of gameplay, tag it and return to the game—the video uploads as you play. The PS4 system also enhances social spectating by enabling you to broadcast your gameplay in real-time.</div></p><p><h4>Remote play</h4><div>Remote Play on the PS4 system fully unlocks the PlayStation Vita system’s potential, making it the ultimate companion device. With the PS Vita system, gamers will be able to seamlessly play a range of PS4 titles on the beautiful 5-inch display over Wi-Fi access points in a local area network.</div></p><p><h4>PlayStation app</h4><div>The PlayStation App will enable iPhone, iPad, and Android-based smartphones and tablets to become second screens for the PS4 system. Once installed on these devices, players can view in-game items, purchase PS4 games and download them directly to the console at home, or remotely watch the gameplay of other gamers playing on their devices.</div></p><p><h4>PlayStation Plus</h4><div>Built to bring games and gamers together and fuel the next generation of gaming, PlayStation Plus helps you discover a world of exceptional gaming experiences. PlayStation Plus is a membership service that takes your gaming experience to the next level. Each month members receive an Instant Game Collection of top rated blockbuster and innovative Indie games, which they can download direct to their console.</div></p>",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "PlayStation 4 Bundle",
+                Price = 429.99M,
+                OldPrice = 449.99M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
                 DeliveryTimeId = firstDeliveryTime.Id,
                 BundleTitleText = "Bundle includes"
-			};
+            };
 
             AddProductPicture(productBundlePs4, "product_sony_ps4_bundle.png");
-			productBundlePs4.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
-			productBundlePs4.ProductCategories.Add(new ProductCategory { Category = categoryGaming, DisplayOrder = 2 });
+            productBundlePs4.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
+            productBundlePs4.ProductCategories.Add(new ProductCategory { Category = categories["Gaming"], DisplayOrder = 2 });
 
-			#endregion bundlePs4
+            #endregion bundlePs4
 
-			#region groupAccessories
+            #region groupAccessories
 
-			var productGroupAccessories = new Product
-			{
-				ProductType = ProductType.GroupedProduct,
-				VisibleIndividually = true,
-				Sku = "Sony-GroupAccessories",
-				Name = "Accessories for unlimited gaming experience",
-				ShortDescription = "The future of gaming is now with dynamic, connected gaming, powerful graphics and speed, intelligent personalization, deeply integrated social capabilities, and innovative second-screen features. The brilliant culmination of the most creative minds in the industry, PlayStation®4 delivers a unique gaming environment that will take your breath away.",
-				FullDescription = "<ul><li>Immerse yourself in a new world of gameplay with powerful graphics and speed.</li><li>Eliminate lengthy load times of saved games with Suspend mode.</li><li>Immediately play digital titles without waiting for them to finish downloading thanks to background downloading and updating capability.</li><li>Instantly share images and videos of your favorite gameplay moments on Facebook with the SHARE button on the DUALSHOCK®4 controller.</li><li>Broadcast while you play in real-time through Ustream.</li></ul>",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "Accessories for unlimited gaming experience",
-				Price = 0.0M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 3,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
-				ShowOnHomePage = true
-			};
+            var productGroupAccessories = new Product
+            {
+                ProductType = ProductType.GroupedProduct,
+                VisibleIndividually = true,
+                Sku = "Sony-GroupAccessories",
+                Name = "Accessories for unlimited gaming experience",
+                ShortDescription = "The future of gaming is now with dynamic, connected gaming, powerful graphics and speed, intelligent personalization, deeply integrated social capabilities, and innovative second-screen features. The brilliant culmination of the most creative minds in the industry, PlayStation®4 delivers a unique gaming environment that will take your breath away.",
+                FullDescription = "<ul><li>Immerse yourself in a new world of gameplay with powerful graphics and speed.</li><li>Eliminate lengthy load times of saved games with Suspend mode.</li><li>Immediately play digital titles without waiting for them to finish downloading thanks to background downloading and updating capability.</li><li>Instantly share images and videos of your favorite gameplay moments on Facebook with the SHARE button on the DUALSHOCK®4 controller.</li><li>Broadcast while you play in real-time through Ustream.</li></ul>",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Accessories for unlimited gaming experience",
+                Price = 0.0M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 3,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                ShowOnHomePage = true
+            };
 
             AddProductPicture(productGroupAccessories, "category_gaming_accessories.png");
-			productGroupAccessories.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
-			productGroupAccessories.ProductCategories.Add(new ProductCategory { Category = categoryGaming, DisplayOrder = 3 });
+            productGroupAccessories.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
+            productGroupAccessories.ProductCategories.Add(new ProductCategory { Category = categories["Gaming"], DisplayOrder = 3 });
 
-			#endregion groupAccessories
+            #endregion groupAccessories
 
-			#region Ps3PlusOneGame
+            #region Ps3PlusOneGame
 
-			var productPrinceOfPersia = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Sku = "Ubi-princepersia",
-				Name = "Prince of Persia \"The Forgotten Sands\"",
-				ShortDescription = "Play the epic story of the heroic Prince as he fights and outwits his enemies in order to save his kingdom.",
-				FullDescription = "<p>This game marks the return to the Prince of Persia® Sands of Time storyline. Prince of Persia: The Forgotten Sands™ will feature many of the fan-favorite elements from the original series as well as new gameplay innovations that gamers have come to expect from Prince of Persia.</p><p>Experience the story, setting, and gameplay in this return to the Sands of Time universe as we follow the original Prince of Persia through a new untold chapter.</p><p>Created by Ubisoft Montreal, the team that brought you various Prince of Persia® and Assassin’s Creed® games, Prince of Persia The Forgotten Sands™ has been over 2 years in the making.</p>",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "Prince of Persia",
-				Price = 39.90M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
+            var productPrinceOfPersia = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Sku = "Ubi-princepersia",
+                Name = "Prince of Persia \"The Forgotten Sands\"",
+                ShortDescription = "Play the epic story of the heroic Prince as he fights and outwits his enemies in order to save his kingdom.",
+                FullDescription = "<p>This game marks the return to the Prince of Persia® Sands of Time storyline. Prince of Persia: The Forgotten Sands™ will feature many of the fan-favorite elements from the original series as well as new gameplay innovations that gamers have come to expect from Prince of Persia.</p><p>Experience the story, setting, and gameplay in this return to the Sands of Time universe as we follow the original Prince of Persia through a new untold chapter.</p><p>Created by Ubisoft Montreal, the team that brought you various Prince of Persia® and Assassin’s Creed® games, Prince of Persia The Forgotten Sands™ has been over 2 years in the making.</p>",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Prince of Persia",
+                Price = 39.90M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
             AddProductPicture(productPrinceOfPersia, "products_princeofpersia.jpg");
-			productPrinceOfPersia.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuUbisoft, DisplayOrder = 1 });
-			productPrinceOfPersia.ProductCategories.Add(new ProductCategory { Category = categoryGamingGames, DisplayOrder = 2 });
+            productPrinceOfPersia.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Ubisoft"], DisplayOrder = 1 });
+            productPrinceOfPersia.ProductCategories.Add(new ProductCategory { Category = categories["Games"], DisplayOrder = 2 });
 
             #endregion Ps3PlusOneGame
 
@@ -12726,8 +12606,8 @@ namespace SmartStore.Data.Setup
             };
 
             AddProductPicture(productHorizonZeroDown, "product_horizon.jpg");
-            productHorizonZeroDown.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
-            productHorizonZeroDown.ProductCategories.Add(new ProductCategory { Category = categoryGamingGames, DisplayOrder = 2 });
+            productHorizonZeroDown.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
+            productHorizonZeroDown.ProductCategories.Add(new ProductCategory { Category = categories["Games"], DisplayOrder = 2 });
 
             #endregion Horizon Zero Down
 
@@ -12759,8 +12639,8 @@ namespace SmartStore.Data.Setup
             };
 
             AddProductPicture(productFifa17, "product_fifa17.jpg");
-            productFifa17.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuEASports, DisplayOrder = 1 });
-            productFifa17.ProductCategories.Add(new ProductCategory { Category = categoryGamingGames, DisplayOrder = 2 });
+            productFifa17.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["EA Sports"], DisplayOrder = 1 });
+            productFifa17.ProductCategories.Add(new ProductCategory { Category = categories["Games"], DisplayOrder = 2 });
 
             #endregion Fifa 17
 
@@ -12791,8 +12671,8 @@ namespace SmartStore.Data.Setup
             };
 
             AddProductPicture(productLegoWorlds, "product_legoworlds.jpg");
-            productLegoWorlds.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuWarnerHomme, DisplayOrder = 1 });
-            productLegoWorlds.ProductCategories.Add(new ProductCategory { Category = categoryGamingGames, DisplayOrder = 3 });
+            productLegoWorlds.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Warner Home Video Games"], DisplayOrder = 1 });
+            productLegoWorlds.ProductCategories.Add(new ProductCategory { Category = categories["Games"], DisplayOrder = 3 });
 
             #endregion Lego Worlds
 
@@ -12815,8 +12695,8 @@ namespace SmartStore.Data.Setup
 				productPrinceOfPersia, productLegoWorlds, productHorizonZeroDown, productFifa17
             };
 
-            entities.AddRange(GetFashionProducts());
-			entities.AddRange(GetFurnitureProducts());
+            entities.AddRange(GetFashionProducts(specAttributes));
+			entities.AddRange(GetFurnitureProducts(specAttributes));
 
 			this.Alter(entities);
 			return entities;
@@ -13067,9 +12947,11 @@ namespace SmartStore.Data.Setup
 
 		public IList<Forum> Forums()
 		{
-			var newProductsForum = new Forum
+            var group = _ctx.Set<ForumGroup>().FirstOrDefault(c => c.DisplayOrder == 1);
+
+            var newProductsForum = new Forum
 			{
-				ForumGroup = _ctx.Set<ForumGroup>().Where(c => c.DisplayOrder == 1).Single(),
+				ForumGroup = group,
 				Name = "New Products",
 				Description = "Discuss new products and industry trends",
 				NumTopics = 0,
@@ -13081,7 +12963,7 @@ namespace SmartStore.Data.Setup
 
 			var packagingShippingForum = new Forum
 			{
-				ForumGroup = _ctx.Set<ForumGroup>().Where(c => c.DisplayOrder == 1).Single(),
+				ForumGroup = group,
 				Name = "Packaging & Shipping",
 				Description = "Discuss packaging & shipping",
 				NumTopics = 0,
@@ -13648,7 +13530,7 @@ namespace SmartStore.Data.Setup
 					languageId = x.LanguageId;
 					break;
 				case Topic x:
-					name = SeoHelper.GetSeName(x.SystemName, true, false).Truncate(400);
+					name = SeoHelper.GetSeName(x.SystemName, true, false, true).Truncate(400);
 					break;
 			}
 

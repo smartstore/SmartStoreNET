@@ -1084,6 +1084,7 @@ namespace SmartStore.Web.Controllers
                             item.AttributesXml, 
                             null,
                             serapator: ", ", 
+                            //htmlEncode: false,
                             renderPrices: false, 
                             renderGiftCardAttributes: false, 
                             allowHyperlinks: false)
@@ -1407,6 +1408,7 @@ namespace SmartStore.Web.Controllers
         //add product to cart using AJAX
 		//currently we use this method on the product details pages
         [HttpPost]
+        [ValidateInput(false)]
         public ActionResult AddProduct(int productId, int shoppingCartTypeId, ProductVariantQuery query, FormCollection form)
         {
             var product = _productService.GetProductById(productId);
@@ -1442,9 +1444,13 @@ namespace SmartStore.Web.Controllers
 			string key2 = "addtocart_{0}.AddToCart.EnteredQuantity".FormatWith(productId);
 
 			if (form.AllKeys.Contains(key1))
-				int.TryParse(form[key1], out quantity);
+            {
+                int.TryParse(form[key1], out quantity);
+            }
 			else if (form.AllKeys.Contains(key2))
-				int.TryParse(form[key2], out quantity);
+            {
+                int.TryParse(form[key2], out quantity);
+            }	
 
             #endregion
 

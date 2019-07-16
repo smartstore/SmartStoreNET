@@ -20,6 +20,7 @@ using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Catalog.Modelling;
+using SmartStore.Services.Cms;
 using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Directory;
@@ -79,8 +80,9 @@ namespace SmartStore.Web.Controllers
 		private readonly ProductUrlHelper _productUrlHelper;
 		private readonly ILocalizedEntityService _localizedEntityService;
 		private readonly IUrlRecordService _urlRecordService;
+        private readonly ILinkResolver _linkResolver;
 
-		public CatalogHelper(
+        public CatalogHelper(
 			ICommonServices services,
             IMenuService menuService,
 			IManufacturerService manufacturerService,
@@ -117,7 +119,8 @@ namespace SmartStore.Web.Controllers
 			UrlHelper urlHelper,
 			ProductUrlHelper productUrlHelper,
 			ILocalizedEntityService localizedEntityService,
-			IUrlRecordService urlRecordService)
+			IUrlRecordService urlRecordService,
+            ILinkResolver linkResolver)
 		{
 			_services = services;
             _menuService = menuService;
@@ -156,6 +159,7 @@ namespace SmartStore.Web.Controllers
 			_productUrlHelper = productUrlHelper;
 			_localizedEntityService = localizedEntityService;
 			_urlRecordService = urlRecordService;
+            _linkResolver = linkResolver;
 
 			T = NullLocalizer.Instance;
 		}
@@ -164,7 +168,119 @@ namespace SmartStore.Web.Controllers
 
 		public ILogger Logger { get; set; }
 
-		public ProductDetailsModel PrepareProductDetailsPageModel(
+        #region Category
+
+        public IList<CategorySummaryModel> MapCategorySummaryModel(IEnumerable<Category> categories, int pictureSize)
+        {
+            Guard.NotNull(categories, nameof(categories));
+
+            var pictureFallbackType = _catalogSettings.HideCategoryDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
+            var allPictureInfos = _pictureService.GetPictureInfos(categories.Select(x => x.PictureId.GetValueOrDefault()));
+
+            return categories
+                .Select(c => 
+                {
+                    var name = c.GetLocalized(y => y.Name);
+                    var model = new CategorySummaryModel
+                    {
+                        Id = c.Id,
+                        Name = name
+                    };
+
+                    _services.DisplayControl.Announce(c);
+
+                    // Generate URL
+                    if (c.ExternalLink.HasValue())
+                    {
+                        var link = _linkResolver.Resolve(c.ExternalLink);
+                        if (link.Status == LinkStatus.Ok)
+                        {
+                            model.Url = link.Link;
+                        }
+                    }
+
+                    if (model.Url.IsEmpty())
+                    {
+                        model.Url = _urlHelper.RouteUrl("Category", new { SeName = c.GetSeName() });
+                    }          
+
+                    // Prepare picture model.
+                    var pictureInfo = allPictureInfos.Get(c.PictureId.GetValueOrDefault());
+
+                    model.PictureModel = new PictureModel
+                    {
+                        PictureId = pictureInfo?.Id ?? 0,
+                        Size = pictureSize,
+                        ImageUrl = _pictureService.GetUrl(pictureInfo, pictureSize, pictureFallbackType),
+                        FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback),
+                        FullSizeImageWidth = pictureInfo?.Width,
+                        FullSizeImageHeight = pictureInfo?.Height,
+                        Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), name),
+                        AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), name)
+                    };
+
+                    return model;
+                })
+                .ToList();
+        }
+
+        public IEnumerable<int> GetChildCategoryIds(int parentCategoryId, bool deep = true)
+        {
+            var root = _menuService.GetRootNode("Main");
+            var node = root.SelectNodeById(parentCategoryId) ?? root.SelectNode(x => x.Value.EntityId == parentCategoryId);
+            if (node != null)
+            {
+                var children = deep ? node.Flatten(false) : node.Children.Select(x => x.Value);
+                var ids = children.Select(x => x.EntityId);
+                return ids;
+            }
+
+            return Enumerable.Empty<int>();
+        }
+
+        public void GetCategoryBreadcrumb(IBreadcrumb breadcrumb, ControllerContext context, Product product = null)
+        {
+            var menu = _menuService.GetMenu("Main");
+            var currentNode = menu.ResolveCurrentNode(context);
+
+            if (currentNode != null)
+            {
+                currentNode.Trail.Where(x => !x.IsRoot).Each(x => breadcrumb.Track(x.Value));
+            }
+
+            // Add trail of parent product if product has no category assigned.
+            if (product != null && !(breadcrumb.Trail?.Any() ?? false))
+            {
+                var parentProduct = _productService.GetProductById(product.ParentGroupedProductId);
+                if (parentProduct != null)
+                {
+                    var fc = new FakeController();
+                    var rd = new RouteData();
+                    rd.Values.Add("currentProductId", parentProduct.Id);
+                    var fcc = new ControllerContext(new RequestContext(context.HttpContext, rd), fc);
+                    fc.ControllerContext = fcc;
+
+                    currentNode = menu.ResolveCurrentNode(fcc);
+                    if (currentNode != null)
+                    {
+                        currentNode.Trail.Where(x => !x.IsRoot).Each(x => breadcrumb.Track(x.Value));
+                        var parentName = parentProduct.GetLocalized(x => x.Name);
+
+                        breadcrumb.Track(new MenuItem
+                        {
+                            Text = parentName,
+                            Rtl = parentName.CurrentLanguage.Rtl,
+                            EntityId = parentProduct.Id,
+                            Url = _urlHelper.RouteUrl("Product", new { SeName = parentProduct.GetSeName() })
+                        });
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        public ProductDetailsModel PrepareProductDetailsPageModel(
 			Product product,
 			ProductVariantQuery query,
 			bool isAssociatedProduct = false,
@@ -1261,60 +1377,6 @@ namespace SmartStore.Web.Controllers
 			return model;
 		}
 
-		public IEnumerable<int> GetChildCategoryIds(int parentCategoryId, bool deep = true)
-		{
-            var root = _menuService.GetRootNode("Main");
-            var node = root.SelectNodeById(parentCategoryId) ?? root.SelectNode(x => x.Value.EntityId == parentCategoryId);
-			if (node != null)
-			{
-				var children = deep ? node.Flatten(false) : node.Children.Select(x => x.Value);
-				var ids = children.Select(x => x.EntityId);
-				return ids;
-			}
-
-			return Enumerable.Empty<int>();
-		}
-
-        public void GetCategoryBreadcrumb(IBreadcrumb breadcrumb, ControllerContext context, Product product = null)
-        {
-            var menu = _menuService.GetMenu("Main");
-            var currentNode = menu.ResolveCurrentNode(context);
-
-            if (currentNode != null)
-            {
-                currentNode.Trail.Where(x => !x.IsRoot).Each(x => breadcrumb.Track(x.Value));
-            }
-
-            // Add trail of parent product if product has no category assigned.
-            if (product != null && !(breadcrumb.Trail?.Any() ?? false))
-            {
-                var parentProduct = _productService.GetProductById(product.ParentGroupedProductId);
-                if (parentProduct != null)
-                {
-                    var fc = new FakeController();
-                    var rd = new RouteData();
-                    rd.Values.Add("currentProductId", parentProduct.Id);
-                    var fcc = new ControllerContext(new RequestContext(context.HttpContext, rd), fc);
-                    fc.ControllerContext = fcc;
-
-                    currentNode = menu.ResolveCurrentNode(fcc);
-                    if (currentNode != null)
-                    {
-                        currentNode.Trail.Where(x => !x.IsRoot).Each(x => breadcrumb.Track(x.Value));
-                        var parentName = parentProduct.GetLocalized(x => x.Name);
-
-                        breadcrumb.Track(new MenuItem
-                        {
-                            Text = parentName,
-                            Rtl = parentName.CurrentLanguage.Rtl,
-                            EntityId = parentProduct.Id,
-                            Url = _urlHelper.RouteUrl("Product", new { SeName = parentProduct.GetSeName() })
-                        });
-                    }
-                }
-            }
-        }
-
 		public IList<ProductSpecificationModel> PrepareProductSpecificationModel(Product product)
 		{
 			Guard.NotNull(product, nameof(product));
@@ -1365,28 +1427,27 @@ namespace SmartStore.Web.Controllers
 			foreach (var pm in manufacturers)
 			{
 				var manufacturer = pm.Manufacturer;
-				ManufacturerOverviewModel item;
 
-				if (!cachedModels.TryGetValue(manufacturer.Id, out item))
-				{
-					item = new ManufacturerOverviewModel
-					{
-						Id = manufacturer.Id,
-						Name = manufacturer.GetLocalized(x => x.Name),
-						Description = manufacturer.GetLocalized(x => x.Description, true),
-						SeName = manufacturer.GetSeName()
+                if (!cachedModels.TryGetValue(manufacturer.Id, out ManufacturerOverviewModel item))
+                {
+                    item = new ManufacturerOverviewModel
+                    {
+                        Id = manufacturer.Id,
+                        Name = manufacturer.GetLocalized(x => x.Name),
+                        Description = manufacturer.GetLocalized(x => x.Description, true),
+                        SeName = manufacturer.GetSeName()
 
-					};
+                    };
 
-					if (withPicture)
-					{
-						item.Picture = PrepareManufacturerPictureModel(manufacturer, manufacturer.GetLocalized(x => x.Name));
-					}
+                    if (withPicture)
+                    {
+                        item.Picture = PrepareManufacturerPictureModel(manufacturer, manufacturer.GetLocalized(x => x.Name));
+                    }
 
-					cachedModels.Add(item.Id, item);
-				}
+                    cachedModels.Add(item.Id, item);
+                }
 
-				model.Add(item);
+                model.Add(item);
 			}
 
 			return model;

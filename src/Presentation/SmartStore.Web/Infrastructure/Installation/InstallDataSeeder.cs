@@ -107,10 +107,10 @@ namespace SmartStore.Web.Infrastructure.Installation
         private void PopulateLocaleResources() 
         {
             // Default primary language
-            var language = _ctx.Set<Language>().Single();
+            var language = _ctx.Set<Language>().First();
 
             var locPath = CommonHelper.MapPath("~/App_Data/Localization/App/" + language.LanguageCulture);
-            if (!System.IO.Directory.Exists(locPath))
+            if (!Directory.Exists(locPath))
             {
                 // Fallback to neutral language folder (de, en etc.)
 				locPath = CommonHelper.MapPath("~/App_Data/Localization/App/" + language.UniqueSeoCode);
@@ -122,7 +122,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			_ctx.DetachAll(false);
 
 			// save resources
-			foreach (var filePath in System.IO.Directory.EnumerateFiles(locPath, "*.smres.xml", SearchOption.TopDirectoryOnly))
+			foreach (var filePath in Directory.EnumerateFiles(locPath, "*.smres.xml", SearchOption.TopDirectoryOnly))
 			{
 				var doc = new XmlDocument();
 				doc.Load(filePath);

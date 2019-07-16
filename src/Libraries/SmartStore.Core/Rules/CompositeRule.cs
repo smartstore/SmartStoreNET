@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Rules
 {
-    public enum CompositeRuleOperator
+    public enum LogicalRuleOperator
     {
         And,
         Or
@@ -16,7 +16,7 @@ namespace SmartStore.Rules
     {
         private readonly List<IRule> _rules = new List<IRule>();
 
-        public CompositeRuleOperator LogicalOperator { get; set; }
+        public LogicalRuleOperator LogicalOperator { get; set; }
         public IReadOnlyCollection<IRule> Rules
         {
             get => _rules;
@@ -36,10 +36,10 @@ namespace SmartStore.Rules
             {
                 match = rule.Match(context);
 
-                if (!match && LogicalOperator == CompositeRuleOperator.And)
+                if (!match && LogicalOperator == LogicalRuleOperator.And)
                     break;
 
-                if (match && LogicalOperator == CompositeRuleOperator.Or)
+                if (match && LogicalOperator == LogicalRuleOperator.Or)
                     break;
             }
 
@@ -54,7 +54,7 @@ namespace SmartStore.Rules
             }
         }
 
-        protected override RuleMetadata GetRuleMetadata()
+        protected override RuleDescriptor GetRuleMetadata()
         {
             throw new NotSupportedException();
         }

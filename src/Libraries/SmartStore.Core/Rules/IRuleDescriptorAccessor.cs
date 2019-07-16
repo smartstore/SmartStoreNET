@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Rules
 {
-    public interface IRuleMetadataAccessor
+    public interface IRuleDescriptorAccessor
     {
-        RuleMetadata Metadata { get; }
+        RuleDescriptor Descriptor { get; }
     }
 }

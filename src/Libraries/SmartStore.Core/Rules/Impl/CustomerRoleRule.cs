@@ -20,19 +20,18 @@ namespace SmartStore.Rules.Impl
         {
             if (context.Query is IQueryable<Customer> query)
             {
-                var arr = Expression.Comparand.Convert<IEnumerable<int>>();
+                var arr = Expression.Value.Convert<IEnumerable<int>>();
 
                 // TODO
                 query = query.Where(c => c.CustomerRoles.Any(r => r.Id == arr.First()));
             }
         }
 
-        protected override RuleMetadata GetRuleMetadata()
+        protected override RuleDescriptor GetRuleMetadata()
         {
-            return new RuleMetadata
+            return new RuleDescriptor
             {
-                TypeCode = RuleTypeCode.IntArray,
-                Operators = RuleOperators.ArrayOperators,
+                Type = RuleType.IntArray,
                 Editor = "CustomerRole",
                 Constraints = new IRuleConstraint[0]
             };

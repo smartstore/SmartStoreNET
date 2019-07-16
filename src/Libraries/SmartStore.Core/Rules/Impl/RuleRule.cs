@@ -10,7 +10,7 @@ namespace SmartStore.Rules.Impl
     {
         protected IRule GetOtherRule()
         {
-            var ruleId = Expression.Comparand.Convert<int>();
+            var ruleId = Expression.Value.Convert<int>();
 
             // TODO: get other rule from service
             IRule rule = null;
@@ -24,11 +24,11 @@ namespace SmartStore.Rules.Impl
             if (rule == null)
                 return false; // TBD: really?!
 
-            if (Expression.Operator == RuleOperators.Equal)
+            if (Expression.Operator == RuleOperation.EqualTo)
             {
                 return rule.Match(context);
             }
-            if (Expression.Operator == RuleOperators.NotEqual)
+            if (Expression.Operator == RuleOperation.NotEqualTo)
             {
                 return !rule.Match(context);
             }
@@ -41,12 +41,11 @@ namespace SmartStore.Rules.Impl
             throw new NotSupportedException();
         }
 
-        protected override RuleMetadata GetRuleMetadata()
+        protected override RuleDescriptor GetRuleMetadata()
         {
-            return new RuleMetadata
+            return new RuleDescriptor
             {
-                TypeCode = RuleTypeCode.Int,
-                Operators = new string[] { RuleOperators.Equal, RuleOperators.NotEqual },
+                Type = RuleType.Int,
                 Editor = "Rules",
                 Constraints = new IRuleConstraint[0]
             };

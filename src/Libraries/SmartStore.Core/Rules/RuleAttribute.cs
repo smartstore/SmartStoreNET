@@ -41,12 +41,12 @@ namespace SmartStore.Rules
     /// <summary>
     /// Represents rule registration metadata
     /// </summary>
-    public interface IRuleDescription : IProviderMetadata
+    public interface IRuleMetadata : IProviderMetadata
     {
         RuleScope Scope { get; }
     }
 
-    public class RuleDescription : IRuleDescription, ICloneable<RuleDescription>
+    public class RuleMetadata : IRuleMetadata, ICloneable<RuleMetadata>
     {
         public string SystemName { get; set; }
         public string FriendlyName { get; set; }
@@ -56,7 +56,7 @@ namespace SmartStore.Rules
 
         public RuleScope Scope { get; set; }
 
-        public RuleDescription Clone() => (RuleDescription)this.MemberwiseClone();
+        public RuleMetadata Clone() => (RuleMetadata)this.MemberwiseClone();
         object ICloneable.Clone() => this.MemberwiseClone();
     }
 }

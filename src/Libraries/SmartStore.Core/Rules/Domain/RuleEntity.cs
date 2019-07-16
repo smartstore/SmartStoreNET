@@ -10,7 +10,7 @@ using SmartStore.Core;
 
 namespace SmartStore.Rules.Domain
 {
-    public partial class Rule // : BaseEntity
+    public partial class RuleEntity // : BaseEntity
     {
         [Required]
         public int RuleSetId { get; set; }
@@ -24,16 +24,20 @@ namespace SmartStore.Rules.Domain
         public string RuleType { get; set; }
 
         [DataMember]
+        [StringLength(400)]
+        public string Member { get; set; }
+
+        [DataMember]
         [Required, StringLength(10)]
         public string Operator { get; set; }
 
         [DataMember]
         [StringLength(400)]
-        public string Comparand { get; set; }
+        public string Value { get; set; }
 
         [DataMember]
         [StringLength(400)]
-        public string UpperComparand { get; set; }
+        public string UpperValue { get; set; }
 
         [DataMember]
         [Index("IX_PageBuilder_DisplayOrder")]

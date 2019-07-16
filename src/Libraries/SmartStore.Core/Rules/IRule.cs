@@ -16,7 +16,7 @@ namespace SmartStore.Rules
         Product = 8,
     }
 
-    public interface IRule : IRuleMetadataAccessor
+    public interface IRule : IRuleDescriptorAccessor
     {
         RuleExpression Expression { get; set; }
 

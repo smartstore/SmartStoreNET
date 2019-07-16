@@ -28,6 +28,6 @@ namespace SmartStore.Rules.Domain
         /// <summary>
         /// Only applicable if <see cref="IsComposite"/> is true.
         /// </summary>
-        public CompositeRuleOperator LogicalOperator { get; set; }
+        public LogicalRuleOperator LogicalOperator { get; set; }
     }
 }

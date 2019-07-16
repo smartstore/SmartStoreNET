@@ -14,12 +14,11 @@ namespace SmartStore.Rules.Impl
             return context.WorkContext.WorkingCurrency.Id;
         }
 
-        protected override RuleMetadata GetRuleMetadata()
+        protected override RuleDescriptor GetRuleMetadata()
         {
-            return new RuleMetadata
+            return new RuleDescriptor
             {
-                TypeCode = RuleTypeCode.IntArray,
-                Operators = RuleOperators.ArrayOperators,
+                Type = RuleType.IntArray,
                 Editor = "Currency",
                 Constraints = new IRuleConstraint[0]
             };

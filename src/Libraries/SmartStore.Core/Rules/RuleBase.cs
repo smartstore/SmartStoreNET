@@ -8,7 +8,7 @@ namespace SmartStore.Rules
 {
     public abstract class RuleBase : IRule
     {
-        private RuleMetadata _metadata;
+        private RuleDescriptor _metadata;
 
         public RuleExpression Expression { get; set; }
 
@@ -16,7 +16,7 @@ namespace SmartStore.Rules
 
         public abstract void ApplyToQuery(QueryRuleContext context);
 
-        public RuleMetadata Metadata
+        public RuleDescriptor Descriptor
         {
             get
             {
@@ -24,6 +24,6 @@ namespace SmartStore.Rules
             }
         }
 
-        protected abstract RuleMetadata GetRuleMetadata();
+        protected abstract RuleDescriptor GetRuleMetadata();
     }
 }

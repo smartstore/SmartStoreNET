@@ -12,7 +12,7 @@ namespace SmartStore.Rules
 
         public override bool Match(RuleContext context)
         {
-            var arr = Expression.Comparand.Convert<IEnumerable<T>>();
+            var arr = Expression.Value.Convert<IEnumerable<T>>();
             if (arr == null || !arr.Any())
             {
                 return true;
@@ -24,11 +24,11 @@ namespace SmartStore.Rules
             {
                 return false;
             }
-            if (Expression.Operator == RuleOperators.In)
+            if (Expression.Operator == RuleOperation.In)
             {
                 return arr.Contains(value);
             }
-            if (Expression.Operator == RuleOperators.NotIn)
+            if (Expression.Operator == RuleOperation.NotIn)
             {
                 return !arr.Contains(value);
             }

@@ -24,15 +24,15 @@ namespace SmartStore.Rules
                 return null;
 
             // TODO: get rule set from db
-            var ruleSet = new RuleSet { LogicalOperator = CompositeRuleOperator.And };
+            var ruleSet = new RuleSet { LogicalOperator = LogicalRuleOperator.And };
 
             // TODO: Get all rules for requested set from db
-            var ruleEntities = new List<Rule>
+            var ruleEntities = new List<RuleEntity>
             {
-                new Rule { RuleSetId = ruleSetId, RuleType = "Store", Operator = RuleOperators.In, Comparand = "1,2,3,4,5" },
-                new Rule { RuleSetId = ruleSetId, RuleType = "Language", Operator = RuleOperators.NotIn, Comparand = "3" },
-                new Rule { RuleSetId = ruleSetId, RuleType = "Currency", Operator = RuleOperators.In, Comparand = "1,2,3" },
-                new Rule { RuleSetId = ruleSetId, RuleType = "Composite", Operator = RuleOperators.Equal, Comparand = "1,2,3" }, // This one is composite and contains other rules
+                new RuleEntity { RuleSetId = ruleSetId, RuleType = "Store", Operator = RuleOperation.In, Value = "1,2,3,4,5" },
+                new RuleEntity { RuleSetId = ruleSetId, RuleType = "Language", Operator = RuleOperation.NotIn, Value = "3" },
+                new RuleEntity { RuleSetId = ruleSetId, RuleType = "Currency", Operator = RuleOperation.In, Value = "1,2,3" },
+                new RuleEntity { RuleSetId = ruleSetId, RuleType = "Composite", Operator = RuleOperation.EqualTo, Value = "1,2,3" }, // This one is composite and contains other rules
             };
 
             var compositeRule = new CompositeRule { LogicalOperator = ruleSet.LogicalOperator };
@@ -40,14 +40,14 @@ namespace SmartStore.Rules
             foreach (var entity in ruleEntities)
             {
                 var rule = ActivateRuleInstance(entity);
-                rule.Expression = new RuleExpression { Operator = entity.Operator, Comparand = entity.Comparand, TypeCode = rule.Metadata.TypeCode };
+                rule.Expression = new RuleExpression { Operator = entity.Operator, Value = entity.Value, Descriptor = rule.Descriptor };
                 compositeRule.AddRule(rule);
             }
 
             return compositeRule;
         }
 
-        private IRule ActivateRuleInstance(Rule entity)
+        private IRule ActivateRuleInstance(RuleEntity entity)
         {
             switch (entity.RuleType.ToLowerInvariant())
             {
@@ -62,7 +62,7 @@ namespace SmartStore.Rules
                 case "rule":
                     return new RuleRule();
                 case "composite":
-                    return GetRuleSet(entity.Comparand.Convert<int>());
+                    return GetRuleSet(entity.Value.Convert<int>());
             }
 
             throw new InvalidOperationException();

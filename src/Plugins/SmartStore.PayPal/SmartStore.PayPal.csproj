@@ -134,6 +134,7 @@
     <Compile Include="Controllers\PayPalDirectController.cs" />
     <Compile Include="Controllers\PayPalExpressController.cs" />
     <Compile Include="DependencyRegistrar.cs" />
+    <Compile Include="Events\InstalmentsMessageZoneEventConsumer.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
     <Compile Include="Filters\PayPalExpressCheckoutFilter.cs" />
     <Compile Include="Filters\PayPalExpressWidgetZoneFilter.cs" />
@@ -343,6 +344,9 @@
     <Content Include="Views\PayPalInstalments\Promotion.Content.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Views\PayPalInstalments\OrderDetails.liquid">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Web References\PayPalSvc\CoreComponentTypes.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -517,6 +521,7 @@
       <CachedSettingsPropName>SmartStore_Plugin_Payments_PayPalExpress_PayPalSvc_PayPalAPIInterfaceService</CachedSettingsPropName>
     </WebReferenceUrl>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

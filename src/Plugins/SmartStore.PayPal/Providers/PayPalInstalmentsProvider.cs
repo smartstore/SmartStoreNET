@@ -30,8 +30,7 @@ namespace SmartStore.PayPal.Providers
         public override void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest)
         {
             var order = postProcessPaymentRequest.Order;
-            var customer = order.Customer ?? Services.WorkContext.CurrentCustomer;
-            var session = HttpContext.GetPayPalState(SystemName, customer, order.StoreId, GenericAttributeService);
+            var session = HttpContext.GetPayPalState(SystemName);
 
             var orderAttribute = new PayPalInstalmentsOrderAttribute
             {

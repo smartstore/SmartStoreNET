@@ -43,8 +43,6 @@ namespace SmartStore.PayPal
 			return GetControllerType().Name.EmptyNull().Replace("Controller", "");
 		}
 
-        public static string CheckoutCompletedKey => "PayPalCheckoutCompleted";
-
 		public override bool SupportCapture
 		{
 			get { return true; }
@@ -87,7 +85,7 @@ namespace SmartStore.PayPal
 				NewPaymentStatus = PaymentStatus.Pending
 			};
 
-			HttpContext.Session.SafeRemove(CheckoutCompletedKey);
+			HttpContext.Session.SafeRemove("PayPalCheckoutCompleted");
 
             var storeId = processPaymentRequest.StoreId;
             var customer = Services.WorkContext.CurrentCustomer;
@@ -198,7 +196,7 @@ namespace SmartStore.PayPal
 
 			if (instruction.HasValue())
 			{
-				HttpContext.Session[CheckoutCompletedKey] = instruction;
+				HttpContext.Session["PayPalCheckoutCompleted"] = instruction;
 
 				OrderService.AddOrderNote(postProcessPaymentRequest.Order, instruction, true);
 			}

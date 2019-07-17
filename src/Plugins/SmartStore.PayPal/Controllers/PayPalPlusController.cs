@@ -347,7 +347,7 @@ namespace SmartStore.PayPal.Controllers
 
             _genericAttributeService.SaveAttribute(customer, PayPalPlusProvider.SystemName + ".SessionData", (string)null, store.Id);
 
-            var instruct = _httpContext.Session[PayPalPlusProvider.CheckoutCompletedKey] as string;
+            var instruct = _httpContext.Session["PayPalCheckoutCompleted"] as string;
             if (instruct.HasValue())
 			{
 				return Content(instruct);

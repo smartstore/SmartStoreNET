@@ -1,16 +1,25 @@
 ﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
-
   <LocaleResource Name="Plugins.FriendlyName.SmartStore.PayPal" AppendRootKey="false">
     <Value>PayPal Zahlungsarten</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Description.SmartStore.PayPal" AppendRootKey="false">
-    <Value>Stellt die PayPal-Zahlungsarten PayPal Standard, PayPal Direct, PayPal Express und PayPal PLUS zur Verfügung.</Value>
+    <Value>Stellt die PayPal-Zahlungsarten zur Verfügung.</Value>
   </LocaleResource>
+    <LocaleResource Name="Plugins.FriendlyName.Widgets.PayPal" AppendRootKey="false">
+        <Value>PayPal</Value>
+    </LocaleResource>
 
-  <LocaleResource Name="ConfigGroups">
-    <Value>API Zugang;Datenaustausch;Sonstiges</Value>
-  </LocaleResource>
-  <LocaleResource Name="OrderNoteStrings">
+    <LocaleResource Name="Enums.SmartStore.PayPal.Services.PayPalPromotion.FinancingExample" AppendRootKey="false">
+        <Value>Inklusive Finanzierungsbeispiel</Value>
+    </LocaleResource>
+    <LocaleResource Name="Enums.SmartStore.PayPal.Services.PayPalPromotion.TextOnly" AppendRootKey="false">
+        <Value>Nur Text</Value>
+    </LocaleResource>
+
+    <LocaleResource Name="AccessData">
+        <Value>Zugangsdaten</Value>
+    </LocaleResource>
+    <LocaleResource Name="OrderNoteStrings">
     <Value><![CDATA[Statusmeldung von PayPal:<br />{0}]]></Value>
   </LocaleResource>
   <LocaleResource Name="MessageStrings">
@@ -46,8 +55,14 @@
   <LocaleResource Name="PayPalValidationFailure">
     <Value>PayPal konnte die übermittelten Daten nicht verifizieren.</Value>
   </LocaleResource>
-
-  <LocaleResource Name="ClientId">
+    <LocaleResource Name="Promotion">
+        <Value>Promotion</Value>
+    </LocaleResource>
+    <LocaleResource Name="PaymentImpossible">
+        <Value>Die von Ihnen gewählte Zahlungsart kann Ihnen leider nicht angeboten werden. Bitte wählen Sie eine andere Zahlungsart aus.</Value>
+    </LocaleResource>
+    
+    <LocaleResource Name="ClientId">
     <Value>Client-ID</Value>
   </LocaleResource>
   <LocaleResource Name="ClientId.Hint">
@@ -74,8 +89,8 @@
   <LocaleResource Name="WebhookId.Hint">
     <Value>Legt die Webhook-ID fest. Über einen Webhook sendet PayPal Statusänderungen von Zahlungen an Ihren Shop, wodurch der Zahlungsstatus Ihrer Aufträge automatisch aktualisert werden kann.</Value>
   </LocaleResource>
-  
-  <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">
+    
+    <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">
     <Children>
       <LocaleResource Name="UseSandbox">
         <Value>Sandbox benutzen</Value>
@@ -162,21 +177,21 @@
 			    <![CDATA[<p>Stellen Sie bitte sicher, dass PayPal die Primärwährung Ihres Shops unterstützt, falls Sie dieses Gateway benutzen!</p>
             <ol>
             <li>Loggen Sie sich in Ihr PayPal-Konto ein.</li>
-            <li>Klicken Sie auf den Register <b>Mein Profil</b>.</li>
-            <li>Klicken Sie unter <b>Verkäufer/Händler</b> auf <b>API-Zugriff</b>.</li>
-            <li>Klicken Sie auf <b>API-Berechtigung anfordern</b>.</li>
-            <li>Wählen Sie die Option <b>Fordern Sie eine API-Signature an</b>.</li>
-            <li>Klicken Sie auf <b>Zustimmen und senden</b>.</li>
+            <li>Klicken Sie auf den Register <b class="font-weight-medium">Mein Profil</b>.</li>
+            <li>Klicken Sie unter <b class="font-weight-medium">Verkäufer/Händler</b> auf <b class="font-weight-medium">API-Zugriff</b>.</li>
+            <li>Klicken Sie auf <b class="font-weight-medium">API-Berechtigung anfordern</b>.</li>
+            <li>Wählen Sie die Option <b class="font-weight-medium">Fordern Sie eine API-Signature an</b>.</li>
+            <li>Klicken Sie auf <b class="font-weight-medium">Zustimmen und senden</b>.</li>
             </ol>
             <p>Aktivieren Sie optional den PayPal-Service zum Empfang von IPN-Nachrichten (Instant Payment Notification):</p>
             <ol>
             <li>In Ihr Premier- oder Business-Konto einloggen.</li>
-            <li>Auf den Register <b>Mein Profil</b> klicken.</li>
-            <li>Unter <b>Sprach-Kodierung &gt; Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
-            <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
-            <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
-            <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalExpress/IPNHandler</b>) eingeben.</li>
-            <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
+            <li>Auf den Register <b class="font-weight-medium">Mein Profil</b> klicken.</li>
+            <li>Unter <b class="font-weight-medium">Sprach-Kodierung &gt; Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
+            <li><b class="font-weight-medium">Sofortige Zahlungsbestätigung</b> klicken.</li>
+            <li><b class="font-weight-medium">Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
+            <li>Bei <b class="font-weight-medium">Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b class="font-weight-medium">https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalExpress/IPNHandler</b>) eingeben.</li>
+            <li><b class="font-weight-medium">Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
             </ol>]]>
 		    </Value>
 	    </LocaleResource>  
@@ -236,21 +251,21 @@
 			    <![CDATA[<p>Stellen Sie bitte sicher, dass PayPal die Primärwährung Ihres Shops unterstützt, falls Sie dieses Gateway benutzen!</p>
           <ol>
           <li>Loggen Sie sich in Ihr PayPal-Konto ein.</li>
-          <li>Klicken Sie auf den Register <b>Mein Profil</b>.</li>
-          <li>Klicken Sie unter <b>Verkäufer/Händler</b> auf <b>API-Zugriff</b>.</li>
-          <li>Klicken Sie auf <b>API-Berechtigung anfordern</b>.</li>
-          <li>Wählen Sie die Option <b>Fordern Sie eine API-Signature an</b>.</li>
-          <li>Klicken Sie auf <b>Zustimmen und senden</b>.</li>
+          <li>Klicken Sie auf den Register <b class="font-weight-medium">Mein Profil</b>.</li>
+          <li>Klicken Sie unter <b class="font-weight-medium">Verkäufer/Händler</b> auf <b class="font-weight-medium">API-Zugriff</b>.</li>
+          <li>Klicken Sie auf <b class="font-weight-medium">API-Berechtigung anfordern</b>.</li>
+          <li>Wählen Sie die Option <b class="font-weight-medium">Fordern Sie eine API-Signature an</b>.</li>
+          <li>Klicken Sie auf <b class="font-weight-medium">Zustimmen und senden</b>.</li>
           </ol>
           <p>Aktivieren Sie optional den PayPal-Service zum Empfang von IPN-Nachrichten (Instant Payment Notification):</p>
           <ol>
           <li>In Ihr Premier- oder Business-Konto einloggen.</li>
-          <li>Auf den Register <b>Mein Profil</b> klicken.</li>
-          <li>Unter <b>Sprach-Kodierung &gt; Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
-          <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
-          <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
-          <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalDirect/IPNHandler</b>) eingeben.</li>
-          <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
+          <li>Auf den Register <b class="font-weight-medium">Mein Profil</b> klicken.</li>
+          <li>Unter <b class="font-weight-medium">Sprach-Kodierung &gt; Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
+          <li><b class="font-weight-medium">Sofortige Zahlungsbestätigung</b> klicken.</li>
+          <li><b class="font-weight-medium">Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
+          <li>Bei <b class="font-weight-medium">Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b class="font-weight-medium">https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalDirect/IPNHandler</b>) eingeben.</li>
+          <li><b class="font-weight-medium">Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
           </ol>]]>
 		    </Value>
 	    </LocaleResource>
@@ -282,28 +297,28 @@
           Folgen Sie den Schritten, um Ihr Konto für PDT zu konfigurieren:</p>
           <ol>
           <li>Loggen Sie sich in Ihr PayPal-Konto ein.</li>
-          <li>Klicken Sie auf den Register <b>Mein Profil</b>.</li>
-          <li>Klicken Sie unter <b>Verkäufer/Händler</b> auf <b>Website-Einstellungen</b>.</li>
-          <li>Aktivieren Sie <b>Automatische Rückleitung</b>.</li>
-          <li>Als Rückleitungs-URL geben Sie bitte die Seite Ihres Shops ein, die die Transaktions-ID von PayPal nach einer Kundenzahlung empfängt (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/PDTHandler</b>).</li>
-          <li>Aktivieren Sie <b>Übertragung der Zahlungsdaten</b>.</li>
-          <li>Klicken Sie auf <b>Speichern</b>.</li>
-          <li>Klicken Sie unter <b>Verkäufer/Händler</b> auf <b>Website-Einstellungen</b>.</li>
-          <li>Scrollen Sie runter zu <b>Übertragung der Zahlungsdaten</b>, um den PDT-Identitäts-Token einzusehen.</li>
+          <li>Klicken Sie auf den Register <b class="font-weight-medium">Mein Profil</b>.</li>
+          <li>Klicken Sie unter <b class="font-weight-medium">Verkäufer/Händler</b> auf <b class="font-weight-medium">Website-Einstellungen</b>.</li>
+          <li>Aktivieren Sie <b class="font-weight-medium">Automatische Rückleitung</b>.</li>
+          <li>Als Rückleitungs-URL geben Sie bitte die Seite Ihres Shops ein, die die Transaktions-ID von PayPal nach einer Kundenzahlung empfängt (<b class="font-weight-medium">https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/PDTHandler</b>).</li>
+          <li>Aktivieren Sie <b class="font-weight-medium">Übertragung der Zahlungsdaten</b>.</li>
+          <li>Klicken Sie auf <b class="font-weight-medium">Speichern</b>.</li>
+          <li>Klicken Sie unter <b class="font-weight-medium">Verkäufer/Händler</b> auf <b class="font-weight-medium">Website-Einstellungen</b>.</li>
+          <li>Scrollen Sie runter zu <b class="font-weight-medium">Übertragung der Zahlungsdaten</b>, um den PDT-Identitäts-Token einzusehen.</li>
           </ol>
           <p>Es gibt zwei Wege, um IPN-Nachrichten (Instant Payment Notification) zu empfangen (optional):</p>
           <ol type="a">
-          <li>Unten <b>IPN aktivieren</b> abhaken. Die URL zu Ihrem IPN-Handler wird dann über die Anfrage übermittelt.</li>
+          <li>Unten <b class="font-weight-medium">IPN aktivieren</b> abhaken. Die URL zu Ihrem IPN-Handler wird dann über die Anfrage übermittelt.</li>
           <li>
 	          Ihr PayPal-Konto für diesen Service konfigurieren. Schritte hierzu:
 	          <ol>
 	          <li>In Ihr Premier- oder Business-Konto einloggen.</li>
-	          <li>Auf den Register <b>Mein Profil</b> klicken.</li>
-            <li>Unter <b>Sprach-Kodierung &gt; Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
-	          <li>Zurück zu <b>Mein Profil</b> und auf <b>Sofortige Zahlungsbestätigung</b> klicken.</li>
-	          <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
-	          <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/IPNHandler</b>) eingeben.</li>
-	          <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
+	          <li>Auf den Register <b class="font-weight-medium">Mein Profil</b> klicken.</li>
+            <li>Unter <b class="font-weight-medium">Sprach-Kodierung &gt; Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
+	          <li>Zurück zu <b class="font-weight-medium">Mein Profil</b> und auf <b class="font-weight-medium">Sofortige Zahlungsbestätigung</b> klicken.</li>
+	          <li><b class="font-weight-medium">Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
+	          <li>Bei <b class="font-weight-medium">Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b class="font-weight-medium">https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/IPNHandler</b>) eingeben.</li>
+	          <li><b class="font-weight-medium">Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
 	          </ol>
           </li>
           </ol>]]>
@@ -406,12 +421,12 @@ Die Bezahlung auf Rechnung steht möglicherweise nicht allen Händlern zur Verf�
 <p>PayPal PLUS ersetzt die Zahlartenliste im Kassenbereich durch die PayPal Payment Wall. Sie können der Payment Wall jedoch bis zu 10 weitere Offline- bzw. Weiterleitungszahlarten hinzufügen.</p>
 <p>So richten Sie PayPal PLUS ein:
 <ol>
-<li>Legen Sie unter <a href="https://developer.paypal.com/developer/applications/" target="paypal">My Apps & Credentials</a> eine neue REST API Anwendung an.
-Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/" target="paypal">Manage your applications</a> finden Sie weitere Informationen zum Thema PayPal Anwendungen (Englisch).</li>
-<li>Klicken Sie auf den Namen der Anwendung und tragen Sie <b>Client-ID</b> und <b>Secret</b> weiter unten auf dieser Seite ein. Speichern.</li>
-<li>Optional: Klicken Sie unten bei <b>Experience Profil-ID</b> auf <b>Hinzufügen</b>, um ein Profil zu erstellen. Ihre Shop-Daten (Name, Logo etc.) werden Käufern dadurch beim Bezahlen auf den PayPal-Seiten angezeigt.</li>
-<li>Optional: Klicken Sie unten bei <b>Webhook-ID</b> auf <b>Hinzufügen</b>, um einen Webhook zu erstellen. Über einen Webhook empfängt der Shop PayPal-Mitteilungen und aktualisiert u.U. den Zahlungsstatus Ihrer Aufträge.</li>
-</ol><p>Um Bilder zu weiteren Zahlarten festzulegen sind im Content-Ordner des betreffenden Plugins Dateien mit folgendem Namensmuster zu hinterlegen: <b>branding.&lt;Plugin-Systemname|Provider-Systemname&gt;.&lt;jpg|jpeg|png|gif&gt;</b><br />Für Vorkasse lautet der Pfad z.B. <b>\Plugins\SmartStore.OfflinePayment\Content\branding.Payments.Prepayment.jpg</b>. Wichtig: Der Shop muss hierfür SSL unterstützen.</p></p>]]>
+<li>Legen Sie unter <a href="https://developer.paypal.com/developer/applications/" target="paypal" class="alert-link">My Apps & Credentials</a> eine neue REST API Anwendung an.
+Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/" target="paypal" class="alert-link">Manage your applications</a> finden Sie weitere Informationen zum Thema PayPal Anwendungen (Englisch).</li>
+<li>Klicken Sie auf den Namen der Anwendung und tragen Sie <b class="font-weight-medium">Client-ID</b> und <b class="font-weight-medium">Secret</b> weiter unten auf dieser Seite ein. Speichern.</li>
+<li>Optional: Klicken Sie unten bei <b class="font-weight-medium">Experience Profil-ID</b> auf <b class="font-weight-medium">Hinzufügen</b>, um ein Profil zu erstellen. Ihre Shop-Daten (Name, Logo etc.) werden Käufern dadurch beim Bezahlen auf den PayPal-Seiten angezeigt.</li>
+<li>Optional: Klicken Sie unten bei <b class="font-weight-medium">Webhook-ID</b> auf <b class="font-weight-medium">Hinzufügen</b>, um einen Webhook zu erstellen. Über einen Webhook empfängt der Shop PayPal-Mitteilungen und aktualisiert u.U. den Zahlungsstatus Ihrer Aufträge.</li>
+</ol><p>Um Bilder zu weiteren Zahlarten festzulegen sind im Content-Ordner des betreffenden Plugins Dateien mit folgendem Namensmuster zu hinterlegen: <b class="font-weight-medium">branding.&lt;Plugin-Systemname|Provider-Systemname&gt;.&lt;jpg|jpeg|png|gif&gt;</b><br />Für Vorkasse lautet der Pfad z.B. <b class="font-weight-medium">\Plugins\SmartStore.OfflinePayment\Content\branding.Payments.Prepayment.jpg</b>. Wichtig: Der Shop muss hierfür SSL unterstützen.</p></p>]]>
         </Value>
       </LocaleResource>
       <LocaleResource Name="MethodUnavailable">
@@ -444,4 +459,134 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
     </Children>
   </LocaleResource>
 
+    <LocaleResource Name="Plugins.FriendlyName.Payments.PayPalInstalments" AppendRootKey="false">
+        <Value>Ratenzahlung Powered by PayPal</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugins.Payments.PayPalInstalments" AppendRootKey="false">
+        <Children>
+            <LocaleResource Name="AdminInstruction">
+                <Value>
+                    <![CDATA[<p>So richten Sie Ratenzahlung Powered by PayPal ein:</p>
+<ol>
+<li>Legen Sie unter <a href="https://developer.paypal.com/developer/applications/" target="paypal" class="alert-link">My Apps & Credentials</a> eine neue REST API Anwendung an.
+Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/" target="paypal" class="alert-link">Manage your applications</a> finden Sie weitere Informationen zum Thema PayPal Anwendungen (Englisch).</li>
+<li>Klicken Sie auf den Namen der Anwendung und tragen Sie <b class="font-weight-medium">Client-ID</b> und <b class="font-weight-medium">Secret</b> weiter unten auf dieser Seite ein. Speichern.</li>
+<li>Optional: Klicken Sie unten bei <b class="font-weight-medium">Experience Profil-ID</b> auf <b class="font-weight-medium">Hinzufügen</b>, um ein Profil zu erstellen. Ihre Shop-Daten (Name, Logo etc.) werden Käufern dadurch beim Bezahlen auf den PayPal-Seiten angezeigt.</li>
+<li>Optional: Klicken Sie unten bei <b class="font-weight-medium">Webhook-ID</b> auf <b class="font-weight-medium">Hinzufügen</b>, um einen Webhook zu erstellen. Über einen Webhook empfängt der Shop PayPal-Mitteilungen und aktualisiert u.U. den Zahlungsstatus Ihrer Aufträge.</li>
+</ol><p>Nach Auftragserteilung dürfen die Auftragssumme und die Auftragspositionen nicht mehr geändert werden!</p>]]>
+                </Value>
+            </LocaleResource>
+            <LocaleResource Name="PaymentInfo">
+                <Value>Wir ermöglichen Ihnen die Finanzierung Ihres Einkaufs mithilfe der Ratenzahlung Powered by PayPal. In Sekundenschnelle, vollständig online, vorbehaltlich Bonitätsprüfung.</Value>
+            </LocaleResource>
+            <LocaleResource Name="FinancingCosts">
+                <Value>Finanzierungskosten</Value>
+            </LocaleResource>
+            <LocaleResource Name="TotalInclFinancingCosts">
+                <Value>Gesamt inkl. Finanzierungskosten</Value>
+            </LocaleResource>
+            <LocaleResource Name="RatesInformation">
+                <Value>Information zu möglichen Raten.</Value>
+            </LocaleResource>
+            <LocaleResource Name="FinancingWanted">
+                <Value>Finanzierung gewünscht?</Value>
+            </LocaleResource>
+            <LocaleResource Name="FinancingPerMonth">
+                <Value>Finanzierung ab {0} im Monat.</Value>
+            </LocaleResource>
+            <LocaleResource Name="FinancingPerXMonth">
+                <Value>Finanzierung ab {0} in {1} monatlichen Raten.</Value>
+            </LocaleResource>
+            <LocaleResource Name="RepresentativeExample">
+                <Value>Repräsentatives Beispiel gem. § 6a PAngV</Value>
+            </LocaleResource>
+            <LocaleResource Name="PlanX">
+                <Value>Plan {0}</Value>
+            </LocaleResource>
+            <LocaleResource Name="NetLoanAmount">
+                <Value>Nettodarlehensbetrag</Value>
+            </LocaleResource>
+            <LocaleResource Name="FixedNominalRate">
+                <Value>Fester Sollzinssatz</Value>
+            </LocaleResource>
+            <LocaleResource Name="AnnualPercentageRate">
+                <Value>Effektiver Jahreszins</Value>
+            </LocaleResource>
+            <LocaleResource Name="TotalPayableAmount">
+                <Value>Zu zahlender Gesamtbetrag</Value>
+            </LocaleResource>
+            <LocaleResource Name="XMonthlyInstalmentsAmount">
+                <Value>{0} monatliche Raten zu je</Value>
+            </LocaleResource>
+            <LocaleResource Name="LastInstalment">
+                <Value>letzte Rate zu</Value>
+            </LocaleResource>
+            <LocaleResource Name="InterestAmount">
+                <Value>Zinsbetrag</Value>
+            </LocaleResource>
+            <LocaleResource Name="NoFinancingDetails">
+                <Value>Es liegen keine Finanzierungsdetails vor.</Value>
+            </LocaleResource>
+            <LocaleResource Name="PromotionDetailsTitle">
+                <Value>Zahlen Sie bequem und einfach in monatlichen Raten.</Value>
+            </LocaleResource>
+            <LocaleResource Name="PromotionDetailsIntro">
+                <Value>Ihre Ratenzahlung und den passenden Finanzierungsplan können Sie im Rahmen des Bestellprozesses auswählen. Ihr Antrag erfolgt komplett online über Ratenzahlung Powered by PayPal und wird in wenigen Schritten hier im Shop abgeschlossen.</Value>
+            </LocaleResource>
+            <LocaleResource Name="FinancingMin">
+                <Value>Minimaler Finanzierungsbetrag</Value>
+            </LocaleResource>
+            <LocaleResource Name="FinancingMin.Hint">
+                <Value>Legt den minimalen Betrag fest, ab dem eine Ratenzahlung angeboten werden soll.</Value>
+            </LocaleResource>
+            <LocaleResource Name="FinancingMax">
+                <Value>Maximaler Finanzierungsbetrag</Value>
+            </LocaleResource>
+            <LocaleResource Name="FinancingMax.Hint">
+                <Value>Legt den maximalen Betrag fest, bis zu dem eine Ratenzahlung angeboten werden soll.</Value>
+            </LocaleResource>
+            <LocaleResource Name="ProductPagePromotion">
+                <Value>Auf Produktseiten</Value>
+            </LocaleResource>
+            <LocaleResource Name="ProductPagePromotion.Hint">
+                <Value>Legt fest, ob und wie die Ratenzahlung auf Produktseiten beworben werden soll.</Value>
+            </LocaleResource>
+            <LocaleResource Name="CartPagePromotion">
+                <Value>Auf der Warenkorbseite</Value>
+            </LocaleResource>
+            <LocaleResource Name="CartPagePromotion.Hint">
+                <Value>Legt fest, ob und wie die Ratenzahlung auf der Warenkorbseite beworben werden soll.</Value>
+            </LocaleResource>
+            <LocaleResource Name="PaymentListPromotion">
+                <Value>Bei der Zahlartenauswahl</Value>
+            </LocaleResource>
+            <LocaleResource Name="PaymentListPromotion.Hint">
+                <Value>Legt fest, ob und wie die Ratenzahlung bei der Zahlartenauswahl beworben werden soll.</Value>
+            </LocaleResource>
+            <LocaleResource Name="Lender">
+                <Value>Darlehensgeber</Value>
+            </LocaleResource>
+            <LocaleResource Name="Lender.Hint">
+                <Value>Firmenname und -anschrift</Value>
+            </LocaleResource>
+            <!--<LocaleResource Name="Promote">
+                <Value>Zahlart bewerben</Value>
+            </LocaleResource>
+            <LocaleResource Name="Promote.Hint">
+                <Value>Legt fest, ob die Ratenzahlung beworben werden soll.</Value>
+            </LocaleResource>
+            <LocaleResource Name="PromotionWidgetZones">
+                <Value>Widget Zones</Value>
+            </LocaleResource>
+            <LocaleResource Name="PromotionWidgetZones.Hint">
+                <Value>Legt die Widget Zones für die Bewerbung der Ratenzahlung fest.</Value>
+            </LocaleResource>
+            <LocaleResource Name="PromotionDisplayOrder">
+                <Value>Reihenfolge</Value>
+            </LocaleResource>
+            <LocaleResource Name="PromotionDisplayOrder.Hint">
+                <Value>Legt die Darstellungsreihenfolge innnerhalb der Widget Zones fest.</Value>
+            </LocaleResource>-->
+        </Children>
+    </LocaleResource>
 </Language>

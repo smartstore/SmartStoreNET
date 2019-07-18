@@ -1,5 +1,4 @@
-﻿
-namespace SmartStore.PayPal.Services
+﻿namespace SmartStore.PayPal.Services
 {
 	public enum PayPalPaymentInstructionItem
 	{
@@ -24,4 +23,10 @@ namespace SmartStore.PayPal.Services
 		Amount,
 		PaymentId
 	}
+
+    public enum PayPalPromotion
+    {
+        FinancingExample = 0,
+        TextOnly
+    }
 }

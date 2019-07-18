@@ -1,0 +1,15 @@
+﻿@{
+	var financingCosts = ViewBag.FinancingCosts as string;
+	var totalInclFinancingCosts = ViewBag.TotalInclFinancingCosts as string;
+}
+
+<table class="table order-totals mt-2">
+	<tr class="order-totals-interest">
+		<td class="label">@T("Plugins.Payments.PayPalInstalments.FinancingCosts"):</td>
+		<td class="value" nowrap>@financingCosts</td>
+	</tr>
+	<tr class="order-totals-incl-interest">
+		<td class="label">@T("Plugins.Payments.PayPalInstalments.TotalInclFinancingCosts"):</td>
+		<td class="value" nowrap>@totalInclFinancingCosts</td>
+	</tr>
+</table>

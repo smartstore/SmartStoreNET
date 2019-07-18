@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
@@ -16,10 +17,11 @@ using SmartStore.PayPal.Settings;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.PayPal.Controllers
 {
-	public abstract class PayPalPaymentControllerBase : PaymentControllerBase
+    public abstract class PayPalPaymentControllerBase : PaymentControllerBase
 	{
 		protected void PrepareConfigurationModel(ApiConfigurationModel model, int storeScope)
 		{
@@ -28,8 +30,73 @@ namespace SmartStore.PayPal.Controllers
 				: Services.StoreService.GetStoreById(storeScope);
 
 			model.PrimaryStoreCurrencyCode = store.PrimaryStoreCurrency.CurrencyCode;
-		}
-	}
+        }
+
+        protected bool SaveConfigurationModel<TSetting>(ApiConfigurationModel model, FormCollection form, Action<TSetting> map = null) where TSetting : PayPalApiSettingsBase, ISettings, new()
+        {
+            var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+            var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+            var settings = Services.Settings.LoadSetting<TSetting>(storeScope);
+
+            var oldClientId = settings.ClientId;
+            var oldSecret = settings.Secret;
+            var oldProfileId = settings.ExperienceProfileId;
+
+            var validator = new PayPalApiConfigValidator(T, x =>
+            {
+                return storeScope == 0 || storeDependingSettingHelper.IsOverrideChecked(settings, x, form);
+            });
+
+            validator.Validate(model, ModelState);
+
+            if (!ModelState.IsValid)
+            {
+                return false;
+            }
+
+            ModelState.Clear();
+            model.TransactMode = TransactMode.AuthorizeAndCapture;
+
+            MiniMapper.Map(model, settings);
+            settings.ApiAccountName = model.ApiAccountName.TrimSafe();
+            settings.ApiAccountPassword = model.ApiAccountPassword.TrimSafe();
+            settings.ClientId = model.ClientId.TrimSafe();
+            settings.ExperienceProfileId = model.ExperienceProfileId.TrimSafe();
+            settings.Secret = model.Secret.TrimSafe();
+            settings.Signature = model.Signature.TrimSafe();
+            settings.WebhookId = model.WebhookId.TrimSafe();
+
+            // Additional mapping.
+            map?.Invoke(settings);
+
+            // Credentials changed: reset profile and webhook id to avoid errors.
+            if (!oldClientId.IsCaseInsensitiveEqual(settings.ClientId) || !oldSecret.IsCaseInsensitiveEqual(settings.Secret))
+            {
+                if (oldProfileId.IsCaseInsensitiveEqual(settings.ExperienceProfileId))
+                {
+                    settings.ExperienceProfileId = null;
+                }
+
+                settings.WebhookId = null;
+            }
+
+            using (Services.Settings.BeginScope())
+            {
+                storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
+            }
+
+            using (Services.Settings.BeginScope())
+            {
+                // Multistore context not possible, see IPN handling.
+                Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
+            }
+
+            NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+
+            return true;
+        }
+    }
+
 
 	public abstract class PayPalControllerBase<TSetting> : PayPalPaymentControllerBase where TSetting : PayPalSettingsBase, ISettings, new()
 	{

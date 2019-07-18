@@ -11,7 +11,7 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.PayPal.Controllers
 {
-	public abstract class PayPalRestApiControllerBase<TSetting> : PayPalPaymentControllerBase where TSetting : PayPalApiSettingsBase, ISettings, new()
+    public abstract class PayPalRestApiControllerBase<TSetting> : PayPalPaymentControllerBase where TSetting : PayPalApiSettingsBase, ISettings, new()
 	{
 		public PayPalRestApiControllerBase(
 			string systemName,
@@ -36,9 +36,9 @@ namespace SmartStore.PayPal.Controllers
 			var settings = Services.Settings.LoadSetting<TSetting>(storeScope);
 
 			var store = Services.StoreService.GetStoreById(storeScope == 0 ? Services.StoreContext.CurrentStore.Id : storeScope);
-			var session = new PayPalSessionData();
+            var session = new PayPalSessionData { ProviderSystemName = SystemName };
 
-			var result = PayPalService.EnsureAccessToken(session, settings);
+            var result = PayPalService.EnsureAccessToken(session, settings);
 			if (result.Success)
 			{
 				result = PayPalService.UpsertCheckoutExperience(settings, session, store);
@@ -49,10 +49,14 @@ namespace SmartStore.PayPal.Controllers
 				}
 			}
 
-			if (result.Success)
-				NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
-			else
-				NotifyError(result.ErrorMessage);
+            if (result.Success)
+            {
+                NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+            }
+            else
+            {
+                NotifyError(result.ErrorMessage);
+            }
 
 			return RedirectToAction("ConfigureProvider", "Plugin", new { area = "admin", systemName = SystemName });
 		}
@@ -62,9 +66,9 @@ namespace SmartStore.PayPal.Controllers
 		{
 			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 			var settings = Services.Settings.LoadSetting<TSetting>(storeScope);
-			var session = new PayPalSessionData();
+            var session = new PayPalSessionData { ProviderSystemName = SystemName };
 
-			var result = PayPalService.EnsureAccessToken(session, settings);
+            var result = PayPalService.EnsureAccessToken(session, settings);
 			if (result.Success)
 			{
 				result = PayPalService.DeleteCheckoutExperience(settings, session);
@@ -75,10 +79,14 @@ namespace SmartStore.PayPal.Controllers
 				}
 			}
 
-			if (result.Success)
-				NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
-			else
-				NotifyError(result.ErrorMessage);
+            if (result.Success)
+            {
+                NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+            }
+            else
+            {
+                NotifyError(result.ErrorMessage);
+            }
 
 			return RedirectToAction("ConfigureProvider", "Plugin", new { area = "admin", systemName = SystemName });
 		}
@@ -87,9 +95,9 @@ namespace SmartStore.PayPal.Controllers
 		public ActionResult CreateWebhook()
 		{
 			var settings = Services.Settings.LoadSetting<TSetting>();
-			var session = new PayPalSessionData();
+            var session = new PayPalSessionData { ProviderSystemName = SystemName };
 
-			using (Services.Settings.BeginScope())
+            using (Services.Settings.BeginScope())
 			{
 				if (settings.WebhookId.HasValue())
 				{
@@ -110,10 +118,14 @@ namespace SmartStore.PayPal.Controllers
 					}
 				}
 
-				if (result.Success)
-					NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
-				else
-					NotifyError(result.ErrorMessage);
+                if (result.Success)
+                {
+                    NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+                }
+                else
+                {
+                    NotifyError(result.ErrorMessage);
+                }
 			}
 
 			return RedirectToAction("ConfigureProvider", "Plugin", new { area = "admin", systemName = SystemName });
@@ -123,9 +135,9 @@ namespace SmartStore.PayPal.Controllers
 		public ActionResult DeleteWebhook()
 		{
 			var settings = Services.Settings.LoadSetting<TSetting>();
-			var session = new PayPalSessionData();
+            var session = new PayPalSessionData { ProviderSystemName = SystemName };
 
-			if (settings.WebhookId.HasValue())
+            if (settings.WebhookId.HasValue())
 			{
 				var result = PayPalService.EnsureAccessToken(session, settings);
 				if (result.Success)
@@ -138,10 +150,14 @@ namespace SmartStore.PayPal.Controllers
 					}
 				}
 
-				if (result.Success)
-					NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
-				else
-					NotifyError(result.ErrorMessage);
+                if (result.Success)
+                {
+                    NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+                }
+                else
+                {
+                    NotifyError(result.ErrorMessage);
+                }
 			}
 
 			return RedirectToAction("ConfigureProvider", "Plugin", new { area = "admin", systemName = SystemName });
@@ -162,11 +178,11 @@ namespace SmartStore.PayPal.Controllers
 
 				var settings = Services.Settings.LoadSetting<TSetting>();
 
-				result = PayPalService.ProcessWebhook(settings, Request.Headers, json, PayPalPlusProvider.SystemName);
+				result = PayPalService.ProcessWebhook(settings, Request.Headers, json, SystemName);
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				Logger.Log(LogLevel.Warning, exception, null, null);
+				Logger.Log(LogLevel.Warning, ex, null, null);
 			}
 
 			return new HttpStatusCodeResult(result);

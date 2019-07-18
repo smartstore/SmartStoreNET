@@ -1,0 +1,18 @@
+﻿@using SmartStore.PayPal.Services;
+@model FinancingOptions
+@if (Model.Promotion.HasValue)
+{
+    <div>
+        @{ Html.RenderPartial("Promotion.Content"); }
+    </div>
+}
+else
+{
+    <div class="media">
+	    <img class="mt-1 mr-3" src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/instalments-sm.png")" 
+		        alt="@T("Plugins.FriendlyName.Payments.PayPalInstalments")" title="@T("Plugins.FriendlyName.Payments.PayPalInstalments")" />
+	    <div class="media-body">
+            @Html.Raw(T("Plugins.Payments.PayPalInstalments.PaymentInfo"))
+	    </div>
+    </div>
+}

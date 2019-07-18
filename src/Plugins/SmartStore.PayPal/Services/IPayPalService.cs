@@ -9,7 +9,7 @@ using SmartStore.Services.Payments;
 
 namespace SmartStore.PayPal.Services
 {
-	public interface IPayPalService
+    public interface IPayPalService
 	{
 		void AddOrderNote(PayPalSettingsBase settings, Order order, string anyString, bool isIpn = false);
 
@@ -19,7 +19,12 @@ namespace SmartStore.PayPal.Services
 
 		PaymentStatus GetPaymentStatus(string state, string reasonCode, PaymentStatus defaultStatus);
 
-		PayPalResponse CallApi(string method, string path, string accessToken, PayPalApiSettingsBase settings, string data);
+		PayPalResponse CallApi(
+            string method,
+            string path,
+            PayPalApiSettingsBase settings,
+            PayPalSessionData session,
+            string data);
 
 		PayPalResponse EnsureAccessToken(PayPalSessionData session, PayPalApiSettingsBase settings);
 
@@ -29,15 +34,13 @@ namespace SmartStore.PayPal.Services
 			PayPalApiSettingsBase settings,
 			PayPalSessionData session,
 			List<OrganizedShoppingCartItem> cart,
-			string providerSystemName,
 			string returnUrl,
 			string cancelUrl);
 
 		PayPalResponse PatchShipping(
 			PayPalApiSettingsBase settings,
 			PayPalSessionData session,
-			List<OrganizedShoppingCartItem> cart,
-			string providerSystemName);
+			List<OrganizedShoppingCartItem> cart);
 
 		PayPalResponse ExecutePayment(PayPalApiSettingsBase settings, PayPalSessionData session);
 
@@ -60,5 +63,16 @@ namespace SmartStore.PayPal.Services
 			NameValueCollection headers,
 			string rawJson,
 			string providerSystemName);
-	}
+
+        #region Credit
+
+        FinancingOptions GetFinancingOptions(
+            PayPalInstalmentsSettings settings,
+            PayPalSessionData session,
+            string origin,
+            decimal amount,
+            PayPalPromotion? promotion = null);
+
+        #endregion
+    }
 }

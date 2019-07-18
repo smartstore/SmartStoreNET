@@ -16,24 +16,24 @@ namespace SmartStore.PayPal
 				"https://www.paypal.com/cgi-bin/webscr";
 		}
 
-		public static PayPalSessionData GetPayPalState(this HttpContextBase httpContext, string key)
+		public static PayPalSessionData GetPayPalState(this HttpContextBase httpContext, string providerSystemName)
 		{
-            Guard.NotEmpty(key, nameof(key));
+            Guard.NotEmpty(providerSystemName, nameof(providerSystemName));
 
 			var state = httpContext.GetCheckoutState();
 
-            if (!state.CustomProperties.ContainsKey(key))
+            if (!state.CustomProperties.ContainsKey(providerSystemName))
             {
-                state.CustomProperties.Add(key, new PayPalSessionData());
+                state.CustomProperties.Add(providerSystemName, new PayPalSessionData { ProviderSystemName = providerSystemName });
             }
 
-			var session = state.CustomProperties.Get(key) as PayPalSessionData;
+			var session = state.CustomProperties.Get(providerSystemName) as PayPalSessionData;
             return session;
 		}
 
         public static PayPalSessionData GetPayPalState(
             this HttpContextBase httpContext,
-            string key,
+            string providerSystemName,
             Customer customer,
             int storeId,
             IGenericAttributeService genericAttributeService)
@@ -42,13 +42,13 @@ namespace SmartStore.PayPal
             Guard.NotNull(customer, nameof(customer));
             Guard.NotNull(genericAttributeService, nameof(genericAttributeService));
 
-            var session = httpContext.GetPayPalState(key);
+            var session = httpContext.GetPayPalState(providerSystemName);
 
             if (session.AccessToken.IsEmpty() || session.PaymentId.IsEmpty())
             {
                 try
                 {
-                    var str = customer.GetAttribute<string>(key + ".SessionData", genericAttributeService, storeId);
+                    var str = customer.GetAttribute<string>(providerSystemName + ".SessionData", genericAttributeService, storeId);
                     if (str.HasValue())
                     {
                         var storedSessionData = JsonConvert.DeserializeObject<PayPalSessionData>(str);

@@ -11,12 +11,17 @@ namespace SmartStore.Rules
         public readonly static RuleType Boolean = new RuleType("bool", typeof(bool));
         public readonly static RuleType Int = new RuleType("int", typeof(int));
         public readonly static RuleType Float = new RuleType("float", typeof(float));
-        public readonly static RuleType Guid = new RuleType("guid", typeof(Guid));
-        public readonly static RuleType DateTime = new RuleType("guid", typeof(DateTime));
-        public readonly static RuleType String = new RuleType("guid", typeof(string));
-        public readonly static RuleType IntArray = new RuleType("guid", typeof(int[]));
-        public readonly static RuleType FloatArray = new RuleType("guid", typeof(float[]));
-        public readonly static RuleType StringArray = new RuleType("guid", typeof(string[]));
+        public readonly static RuleType Guid = new RuleType("Guid", typeof(Guid));
+        public readonly static RuleType DateTime = new RuleType("Date", typeof(DateTime));
+        public readonly static RuleType NullableBoolean = new RuleType("bool?", typeof(bool?));
+        public readonly static RuleType NullableInt = new RuleType("int?", typeof(int?));
+        public readonly static RuleType NullableFloat = new RuleType("float?", typeof(float?));
+        public readonly static RuleType NullableGuid = new RuleType("Guid?", typeof(Guid?));
+        public readonly static RuleType NullableDateTime = new RuleType("Date?", typeof(DateTime?));
+        public readonly static RuleType String = new RuleType("String", typeof(string));
+        public readonly static RuleType IntArray = new RuleType("IntArray", typeof(int[]));
+        public readonly static RuleType FloatArray = new RuleType("FloatArray", typeof(float[]));
+        public readonly static RuleType StringArray = new RuleType("StringArray", typeof(string[]));
 
         private RuleType(string name, Type clrType)
         {
@@ -25,43 +30,50 @@ namespace SmartStore.Rules
 
             Name = name;
             ClrType = clrType;
-
         }
 
         public string Name { get; set; }
         public Type ClrType { get; set; }
 
-        public IEnumerable<RuleOperation> GetValidOperators()
+        public IEnumerable<RuleOperator> GetValidOperators()
         {
             bool isComparable = typeof(IComparable).IsAssignableFrom(ClrType);
+            var isNullable = ClrType.IsNullable(out var nonNullableType);
+
+            if (isNullable)
+            {
+                yield return RuleOperator.IsNull;
+                yield return RuleOperator.IsNotNull;
+            }
 
             if (isComparable)
             {
-                yield return RuleOperation.EqualTo;
-                yield return RuleOperation.NotEqualTo;
+                yield return RuleOperator.EqualTo;
+                yield return RuleOperator.NotEqualTo;
             }
 
-            if (ClrType == typeof(int) || ClrType == typeof(float) || ClrType == typeof(DateTime))
+            if (nonNullableType == typeof(int) || nonNullableType == typeof(float) || nonNullableType == typeof(DateTime))
             {
-                yield return RuleOperation.GreaterThanOrEqualTo;
-                yield return RuleOperation.GreaterThan;
-                yield return RuleOperation.LessThanOrEqualTo;
-                yield return RuleOperation.LessThan;
-                yield return RuleOperation.Between;
+                yield return RuleOperator.GreaterThanOrEqualTo;
+                yield return RuleOperator.GreaterThan;
+                yield return RuleOperator.LessThanOrEqualTo;
+                yield return RuleOperator.LessThan;
             }
 
-            if (ClrType == typeof(string))
+            if (nonNullableType == typeof(string))
             {
-                yield return RuleOperation.StartsWith;
-                yield return RuleOperation.EndsWith;
-                yield return RuleOperation.Contains;
-                yield return RuleOperation.NotContains;
+                yield return RuleOperator.IsEmpty;
+                yield return RuleOperator.IsNotEmpty;
+                yield return RuleOperator.StartsWith;
+                yield return RuleOperator.EndsWith;
+                yield return RuleOperator.Contains;
+                yield return RuleOperator.NotContains;
             }
 
-            if (ClrType == typeof(int[]) || ClrType == typeof(float[]) || ClrType == typeof(string[]))
+            if (nonNullableType == typeof(int[]) || nonNullableType == typeof(float[]) || nonNullableType == typeof(string[]))
             {
-                yield return RuleOperation.In;
-                yield return RuleOperation.NotIn;
+                yield return RuleOperator.In;
+                yield return RuleOperator.NotIn;
             }
         }
     }

@@ -545,7 +545,7 @@ namespace SmartStore.Core.Domain.Orders
 		public virtual ICollection<OrderItem> OrderItems
         {
 			get { return _orderItems ?? (_orderItems = new HashSet<OrderItem>()); }
-            protected set { _orderItems = value; }
+            protected internal set { _orderItems = value; }
         }
 
         /// <summary>

@@ -134,16 +134,34 @@ namespace SmartStore
             }
         }
 
+        /// <summary>
+        /// Gets the underlying type of a <see cref="Nullable{T}" /> type.
+        /// </summary>
+        public static Type GetNonNullableType(this Type type)
+        {
+            if (!IsNullable(type, out var wrappedType))
+            {
+                return type;
+            }
+
+            return wrappedType;
+        }
+
         public static bool IsNullable(this Type type, out Type wrappedType)
         {
 			wrappedType = null;
 
 			if (type != null && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
-			{
 				wrappedType = type.GetGenericArguments()[0];
-			}
+            else
+                wrappedType = type;
 
-			return false;
+			return wrappedType != type;
+        }
+
+        public static bool IsEnumType(this Type type)
+        {
+            return type.GetNonNullableType().IsEnum;
         }
 
         public static bool IsConstructable(this Type type)
@@ -195,7 +213,7 @@ namespace SmartStore
 
         public static bool IsSubClass(this Type type, Type check)
         {
-			return IsSubClass(type, check, out Type implementingType);
+			return IsSubClass(type, check, out Type _);
 		}
 
         public static bool IsSubClass(this Type type, Type check, out Type implementingType)
@@ -251,28 +269,160 @@ namespace SmartStore
             return IsSubClassInternal(initialType, currentType.BaseType, check, out implementingType);
         }
 
-        /// <summary>
-        /// Gets the underlying type of a <see cref="Nullable{T}" /> type.
-        /// </summary>
-        public static Type GetNonNullableType(this Type type)
+        public static bool IsCompatibleWith(this Type source, Type target)
         {
-            if (!IsNullable(type, out var wrappedType))
-            {
-                return type;
-            }
+            if (source == target)
+                return true;
 
-            return wrappedType;
+            if (!target.IsValueType)
+                return target.IsAssignableFrom(source);
+
+            var nonNullableType = source.GetNonNullableType();
+            var type = target.GetNonNullableType();
+
+            if ((nonNullableType == source) || (type != target))
+            {
+                var code = nonNullableType.IsEnum ? TypeCode.Object : Type.GetTypeCode(nonNullableType);
+                var code2 = type.IsEnum ? TypeCode.Object : Type.GetTypeCode(type);
+
+                switch (code)
+                {
+                    case TypeCode.SByte:
+                        switch (code2)
+                        {
+                            case TypeCode.SByte:
+                            case TypeCode.Int16:
+                            case TypeCode.Int32:
+                            case TypeCode.Int64:
+                            case TypeCode.Single:
+                            case TypeCode.Double:
+                            case TypeCode.Decimal:
+                                return true;
+                        }
+                        break;
+                    case TypeCode.Byte:
+                        switch (code2)
+                        {
+                            case TypeCode.Byte:
+                            case TypeCode.Int16:
+                            case TypeCode.UInt16:
+                            case TypeCode.Int32:
+                            case TypeCode.UInt32:
+                            case TypeCode.Int64:
+                            case TypeCode.UInt64:
+                            case TypeCode.Single:
+                            case TypeCode.Double:
+                            case TypeCode.Decimal:
+                                return true;
+                        }
+                        break;
+                    case TypeCode.Int16:
+                        switch (code2)
+                        {
+                            case TypeCode.Int16:
+                            case TypeCode.Int32:
+                            case TypeCode.Int64:
+                            case TypeCode.Single:
+                            case TypeCode.Double:
+                            case TypeCode.Decimal:
+                                return true;
+                        }
+                        break;
+                    case TypeCode.UInt16:
+                        switch (code2)
+                        {
+                            case TypeCode.UInt16:
+                            case TypeCode.Int32:
+                            case TypeCode.UInt32:
+                            case TypeCode.Int64:
+                            case TypeCode.UInt64:
+                            case TypeCode.Single:
+                            case TypeCode.Double:
+                            case TypeCode.Decimal:
+                                return true;
+                        }
+                        break;
+                    case TypeCode.Int32:
+                        switch (code2)
+                        {
+                            case TypeCode.Int32:
+                            case TypeCode.Int64:
+                            case TypeCode.Single:
+                            case TypeCode.Double:
+                            case TypeCode.Decimal:
+                                return true;
+                        }
+                        break;
+                    case TypeCode.UInt32:
+                        switch (code2)
+                        {
+                            case TypeCode.UInt32:
+                            case TypeCode.Int64:
+                            case TypeCode.UInt64:
+                            case TypeCode.Single:
+                            case TypeCode.Double:
+                            case TypeCode.Decimal:
+                                return true;
+                        }
+                        break;
+                    case TypeCode.Int64:
+                        switch (code2)
+                        {
+                            case TypeCode.Int64:
+                            case TypeCode.Single:
+                            case TypeCode.Double:
+                            case TypeCode.Decimal:
+                                return true;
+                        }
+                        break;
+                    case TypeCode.UInt64:
+                        switch (code2)
+                        {
+                            case TypeCode.UInt64:
+                            case TypeCode.Single:
+                            case TypeCode.Double:
+                            case TypeCode.Decimal:
+                                return true;
+                        }
+                        break;
+                    case TypeCode.Single:
+                        switch (code2)
+                        {
+                            case TypeCode.Single:
+                            case TypeCode.Double:
+                                return true;
+                        }
+                        break;
+                    default:
+                        if (nonNullableType == type)
+                        {
+                            return true;
+                        }
+                        break;
+                }
+            }
+            return false;
         }
 
-		/// <summary>
-		/// Returns single attribute from the type
-		/// </summary>
-		/// <typeparam name="TAttribute">Attribute to use</typeparam>
-		/// <param name="target">Attribute provider</param>
-		///<param name="inherits"><see cref="MemberInfo.GetCustomAttributes(Type,bool)"/></param>
-		/// <returns><em>Null</em> if the attribute is not found</returns>
-		/// <exception cref="InvalidOperationException">If there are 2 or more attributes</exception>
-		public static TAttribute GetAttribute<TAttribute>(this ICustomAttributeProvider target, bool inherits) where TAttribute : Attribute
+        public static string GetTypeName(this Type type)
+        {
+            if (type.IsNullable(out var wrappedType))
+            {
+                return wrappedType.Name + "?";
+            }
+
+            return type.Name;
+        }
+
+        /// <summary>
+        /// Returns single attribute from the type
+        /// </summary>
+        /// <typeparam name="TAttribute">Attribute to use</typeparam>
+        /// <param name="target">Attribute provider</param>
+        ///<param name="inherits"><see cref="MemberInfo.GetCustomAttributes(Type,bool)"/></param>
+        /// <returns><em>Null</em> if the attribute is not found</returns>
+        /// <exception cref="InvalidOperationException">If there are 2 or more attributes</exception>
+        public static TAttribute GetAttribute<TAttribute>(this ICustomAttributeProvider target, bool inherits) where TAttribute : Attribute
         {
             if (target.IsDefined(typeof(TAttribute), inherits))
             {

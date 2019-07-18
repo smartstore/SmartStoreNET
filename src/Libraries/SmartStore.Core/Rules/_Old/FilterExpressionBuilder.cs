@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using SmartStore.Core.Utilities;
 
 namespace SmartStore.Rules.Filters
 {
@@ -19,12 +20,16 @@ namespace SmartStore.Rules.Filters
             _filter = filter;
         }
 
-        public Expression CreateBodyExpression()
+        public LambdaExpression CreateFilterExpression()
+        {
+            return Expression.Lambda(CreateBodyExpression(), new[] { _parameterExpression });
+        }
+
+        private Expression CreateBodyExpression()
         {
             var descriptor = _filter.Descriptor;
-
-            var memberExpression = this.CreateMemberExpression();
-            Type targetType = memberExpression.Type;
+            var memberExpression = descriptor.MemberExpression;
+            var targetType = memberExpression.Body.Type;
 
             var valueExpression = CreateValueExpression(targetType, _filter.Value, CultureInfo.InvariantCulture);
             bool flag = true;
@@ -36,43 +41,42 @@ namespace SmartStore.Rules.Filters
                     flag = false;
                 }
             }
-            //else if (memberExpression.Type.IsEnumType() || valueExpression.Type.IsEnumType()) // TODO: Implement IsEnumType()
-            //{
-            //    if (!TryPromoteNullableEnums(ref memberExpression, ref valueExpression))
-            //    {
-            //        flag = false;
-            //    }
-            //}
-            else if ((targetType.IsNullable(out _) && (memberExpression.Type != valueExpression.Type)) && !TryConvertNullableValue(memberExpression, ref valueExpression))
+            else if (targetType.IsEnumType() || valueExpression.Type.IsEnumType())
+            {
+                if (!TryPromoteNullableEnums(ref memberExpression, ref valueExpression))
+                {
+                    flag = false;
+                }
+            }
+            else if ((targetType.IsNullable(out _) && (targetType != valueExpression.Type)) && !TryConvertNullableValue(memberExpression, ref valueExpression))
             {
                 flag = false;
             }
 
             if (!flag)
             {
-                // TODO: ErrMessage
                 throw new ArgumentException("Operator '{0}' is incompatible with operand types '{1}' and '{2}'.".FormatInvariant(
-                    _filter.Operator.Operator, 
-                    "" /*memberExpression.Type.GetTypeName()*/, 
-                    "" /*valueExpression.Type.GetTypeName()*/)); // TODO: Implement GetTypeName()
+                    _filter.Operator.Operator,
+                    targetType.GetTypeName(), 
+                    valueExpression.Type.GetTypeName()));
             }
 
-            return _filter.Operator.GenerateExpression(memberExpression, valueExpression);
+            return descriptor.GetExpression(_filter.Operator, valueExpression);
         }
 
-        public Expression CreateMemberExpression()
-        {
-            Type memberType = _filter.Descriptor.Type.ClrType;
-            var memberName = _filter.Descriptor.Member;
+        //public Expression CreateMemberExpression()
+        //{
+        //    Type memberType = _filter.Descriptor.Type.ClrType;
+        //    var memberName = _filter.Descriptor.Member;
 
-            var expression = CreateMemberAccessExpression(_parameterExpression, memberType, memberName);
-            if ((memberType != null) && (expression.Type.GetNonNullableType() != memberType.GetNonNullableType()))
-            {
-                expression = Expression.Convert(expression, memberType);
-            }
+        //    var expression = CreateMemberAccessExpression(_parameterExpression, memberType, memberName);
+        //    if ((memberType != null) && (expression.Type.GetNonNullableType() != memberType.GetNonNullableType()))
+        //    {
+        //        expression = Expression.Convert(expression, memberType);
+        //    }
 
-            return expression;
-        }
+        //    return expression;
+        //}
 
         private Expression CreateValueExpression(Type targetType, object value, CultureInfo culture)
         {
@@ -100,15 +104,15 @@ namespace SmartStore.Rules.Filters
             return CreateConstantExpression(value);
         }
 
-        private Expression CreateMemberAccessExpression(Expression instance, Type memberType, string memberName)
-        {
-            foreach (var token in MemberAccessTokenizer.GetTokens(memberName))
-            {
-                instance = token.CreateMemberAccessExpression(_parameterExpression);
-            }
+        //private Expression CreateMemberAccessExpression(Expression instance, Type memberType, string memberName)
+        //{
+        //    foreach (var token in MemberAccessTokenizer.GetTokens(memberName))
+        //    {
+        //        instance = token.CreateMemberAccessExpression(_parameterExpression);
+        //    }
 
-            return instance;
-        }
+        //    return instance;
+        //}
 
         private Expression CreateConstantExpression(object value)
         {
@@ -130,11 +134,10 @@ namespace SmartStore.Rules.Filters
             {
                 return Expression.Constant(null, type);
             }
-            //// TODO: Implement 'IsCompatibleWith'
-            //if (!expr.Type.IsCompatibleWith(type))
-            //{
-            //    return null;
-            //}
+            if (!expr.Type.IsCompatibleWith(type))
+            {
+                return null;
+            }
             if (!type.IsValueType && !exact)
             {
                 return expr;
@@ -143,17 +146,19 @@ namespace SmartStore.Rules.Filters
             return Expression.Convert(expr, type);
         }
 
-        private static bool TryConvertExpressionTypes(ref Expression memberExpression, ref Expression valueExpression)
+        private static bool TryConvertExpressionTypes(ref LambdaExpression memberExpression, ref Expression valueExpression)
         {
-            if (memberExpression.Type != valueExpression.Type)
+            var targetType = memberExpression.Body.Type;
+
+            if (targetType != valueExpression.Type)
             {
-                if (!memberExpression.Type.IsAssignableFrom(valueExpression.Type))
+                if (!targetType.IsAssignableFrom(valueExpression.Type))
                 {
-                    if (!valueExpression.Type.IsAssignableFrom(memberExpression.Type))
+                    if (!valueExpression.Type.IsAssignableFrom(targetType))
                     {
                         return false;
                     }
-                    memberExpression = Expression.Convert(memberExpression, valueExpression.Type);
+                    //memberExpression = Expression.Convert(memberExpression, valueExpression.Type); // TODO > UnaryExpression <> LambdaExpression ??
                 }
                 else
                 {
@@ -164,14 +169,14 @@ namespace SmartStore.Rules.Filters
             return true;
         }
 
-        private bool TryConvertNullableValue(Expression memberExpression, ref Expression valueExpression)
+        private bool TryConvertNullableValue(LambdaExpression memberExpression, ref Expression valueExpression)
         {
             var expression = valueExpression as ConstantExpression;
             if (expression != null)
             {
                 try
                 {
-                    valueExpression = Expression.Constant(expression.Value, memberExpression.Type);
+                    valueExpression = Expression.Constant(expression.Value, memberExpression.Body.Type);
                 }
                 catch (ArgumentException)
                 {
@@ -182,11 +187,13 @@ namespace SmartStore.Rules.Filters
             return true;
         }
 
-        private bool TryPromoteNullableEnums(ref Expression memberExpression, ref Expression valueExpression)
+        private bool TryPromoteNullableEnums(ref LambdaExpression memberExpression, ref Expression valueExpression)
         {
-            if (memberExpression.Type != valueExpression.Type)
+            var targetType = memberExpression.Body.Type;
+
+            if (targetType != valueExpression.Type)
             {
-                var expression = PromoteExpression(valueExpression, memberExpression.Type, true);
+                var expression = PromoteExpression(valueExpression, targetType, true);
                 if (expression == null)
                 {
                     expression = PromoteExpression(memberExpression, valueExpression.Type, true);
@@ -194,7 +201,7 @@ namespace SmartStore.Rules.Filters
                     {
                         return false;
                     }
-                    memberExpression = expression;
+                    //memberExpression = expression; // TODO > Expression <> LambdaExpression ??
                 }
                 else
                 {
@@ -205,13 +212,12 @@ namespace SmartStore.Rules.Filters
             return true;
         }
 
-        private bool TypesAreDifferent(Expression memberExpression, Expression valueExpression)
+        private bool TypesAreDifferent(LambdaExpression memberExpression, Expression valueExpression)
         {
             //return ((((descriptor.Operator == FilterOperator.IsEqualTo) || (descriptor.Operator == FilterOperator.IsNotEqualTo)) && !memberExpression.Type.IsValueType) && !valueExpression.Type.IsValueType);
 
             //// TODO: Implement
             return false;
         }
-
     }
 }

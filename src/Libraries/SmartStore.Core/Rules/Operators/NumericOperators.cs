@@ -5,7 +5,9 @@ namespace SmartStore.Rules.Operators
 {
     internal sealed class LessThanOperator : RuleOperator
     {
-        internal LessThanOperator() : base("<") { }
+        internal LessThanOperator() 
+            : base("<") { }
+
         public override Expression GenerateExpression(Expression left, Expression right)
         {
             return Expression.LessThan(left, right);
@@ -14,7 +16,9 @@ namespace SmartStore.Rules.Operators
 
     internal sealed class LessThanOrEqualOperator : RuleOperator
     {
-        internal LessThanOrEqualOperator() : base("<=") { }
+        internal LessThanOrEqualOperator() 
+            : base("<=") { }
+
         public override Expression GenerateExpression(Expression left, Expression right)
         {
             return Expression.LessThanOrEqual(left, right);
@@ -23,7 +27,9 @@ namespace SmartStore.Rules.Operators
 
     internal sealed class GreaterThanOperator : RuleOperator
     {
-        internal GreaterThanOperator() : base(">") { }
+        internal GreaterThanOperator() 
+            : base(">") { }
+
         public override Expression GenerateExpression(Expression left, Expression right)
         {
             return Expression.GreaterThan(left, right);
@@ -32,7 +38,9 @@ namespace SmartStore.Rules.Operators
 
     internal sealed class GreaterThanOrEqualOperator : RuleOperator
     {
-        internal GreaterThanOrEqualOperator() : base(">=") { }
+        internal GreaterThanOrEqualOperator() 
+            : base(">=") { }
+
         public override Expression GenerateExpression(Expression left, Expression right)
         {
             return Expression.GreaterThanOrEqual(left, right);

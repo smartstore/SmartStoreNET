@@ -23,9 +23,9 @@ namespace SmartStore.Rules.Domain
         [Index("IX_PageBuilder_RuleType")]
         public string RuleType { get; set; }
 
-        [DataMember]
-        [StringLength(400)]
-        public string Member { get; set; }
+        //[DataMember]
+        //[StringLength(400)]
+        //public string Member { get; set; }
 
         [DataMember]
         [Required, StringLength(10)]
@@ -35,9 +35,9 @@ namespace SmartStore.Rules.Domain
         [StringLength(400)]
         public string Value { get; set; }
 
-        [DataMember]
-        [StringLength(400)]
-        public string UpperValue { get; set; }
+        //[DataMember]
+        //[StringLength(400)]
+        //public string UpperValue { get; set; }
 
         [DataMember]
         [Index("IX_PageBuilder_DisplayOrder")]

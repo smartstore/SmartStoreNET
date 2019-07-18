@@ -24,11 +24,11 @@ namespace SmartStore.Rules
             {
                 return false;
             }
-            if (Expression.Operator == RuleOperation.In)
+            if (Expression.Operator == RuleOperator.In)
             {
                 return arr.Contains(value);
             }
-            if (Expression.Operator == RuleOperation.NotIn)
+            if (Expression.Operator == RuleOperator.NotIn)
             {
                 return !arr.Contains(value);
             }

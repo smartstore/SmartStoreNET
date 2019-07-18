@@ -462,8 +462,12 @@
     <Compile Include="Rules\Filters\ExpressionHelper.cs" />
     <Compile Include="Rules\Filters\FilterDescriptor.cs" />
     <Compile Include="Rules\Filters\FilterExpression.cs" />
-    <Compile Include="Rules\Filters\FilterExpressionBuilder.cs" />
-    <Compile Include="Rules\Filters\MemberAccessTokenizer.cs" />
+    <Compile Include="Rules\_Old\FilterExpressionBuilder.cs" />
+    <Compile Include="Rules\Filters\FilterExpressionVisitor.cs" />
+    <Compile Include="Rules\Filters\QueryableExtensions.cs" />
+    <Compile Include="Rules\Operators\ListOperators.cs" />
+    <Compile Include="Rules\Operators\StringOperators.cs" />
+    <Compile Include="Rules\_Old\MemberAccessTokenizer.cs" />
     <Compile Include="Rules\Impl\LanguageRule.cs" />
     <Compile Include="Rules\Impl\CustomerRoleRule.cs" />
     <Compile Include="Rules\Impl\CurrencyRule.cs" />
@@ -481,7 +485,6 @@
     <Compile Include="Rules\RuleDescriptor.cs" />
     <Compile Include="Rules\InvalidRuleOperatorException.cs" />
     <Compile Include="Rules\RuleOperator.cs" />
-    <Compile Include="Rules\RuleOperation.cs" />
     <Compile Include="Rules\RuleService.cs" />
     <Compile Include="Rules\RuleType.cs" />
     <Compile Include="Search\AcquireWriterContext.cs" />

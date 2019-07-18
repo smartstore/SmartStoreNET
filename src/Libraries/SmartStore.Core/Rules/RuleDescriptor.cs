@@ -8,15 +8,18 @@ namespace SmartStore.Rules
 {
     public class RuleDescriptor
     {
-        private RuleOperation[] _operators;
+        private RuleOperator[] _operators;
+
+        public string Name { get; set; }
+        public string DisplayName { get; set; }
+        public string Description { get; set; }
 
         public RuleType Type { get; set; }
-        public bool IsOptional { get; set; }
         public IEnumerable<IRuleConstraint> Constraints { get; set; }
         public string Editor { get; set; }
         public IDictionary<string, object> Metadata { get; }
 
-        public RuleOperation[] Operators
+        public RuleOperator[] Operators
         {
             get => _operators ?? (_operators = Type.GetValidOperators().ToArray());
             set => _operators = value;

@@ -198,7 +198,7 @@ namespace SmartStore.Core.Domain.Customers
 		public virtual ICollection<CustomerRole> CustomerRoles
         {
 			get { return _customerRoles ?? (_customerRoles = new HashSet<CustomerRole>()); }
-            protected set { _customerRoles = value; }
+            protected internal set { _customerRoles = value; }
         }
 
         /// <summary>
@@ -217,7 +217,7 @@ namespace SmartStore.Core.Domain.Customers
 		public virtual ICollection<Order> Orders
         {
 			get { return _orders ?? (_orders = new HashSet<Order>()); }
-            protected set { _orders = value; }            
+            protected internal set { _orders = value; }            
         }
 
         /// <summary>

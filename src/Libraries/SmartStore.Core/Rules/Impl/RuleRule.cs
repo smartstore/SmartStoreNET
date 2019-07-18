@@ -24,11 +24,11 @@ namespace SmartStore.Rules.Impl
             if (rule == null)
                 return false; // TBD: really?!
 
-            if (Expression.Operator == RuleOperation.EqualTo)
+            if (Expression.Operator == RuleOperator.EqualTo)
             {
                 return rule.Match(context);
             }
-            if (Expression.Operator == RuleOperation.NotEqualTo)
+            if (Expression.Operator == RuleOperator.NotEqualTo)
             {
                 return !rule.Match(context);
             }

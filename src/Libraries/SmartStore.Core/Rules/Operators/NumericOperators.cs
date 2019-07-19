@@ -8,7 +8,7 @@ namespace SmartStore.Rules.Operators
         internal LessThanOperator() 
             : base("<") { }
 
-        public override Expression GenerateExpression(Expression left, Expression right)
+        protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             return Expression.LessThan(left, right);
         }
@@ -19,7 +19,7 @@ namespace SmartStore.Rules.Operators
         internal LessThanOrEqualOperator() 
             : base("<=") { }
 
-        public override Expression GenerateExpression(Expression left, Expression right)
+        protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             return Expression.LessThanOrEqual(left, right);
         }
@@ -30,7 +30,7 @@ namespace SmartStore.Rules.Operators
         internal GreaterThanOperator() 
             : base(">") { }
 
-        public override Expression GenerateExpression(Expression left, Expression right)
+        protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             return Expression.GreaterThan(left, right);
         }
@@ -41,7 +41,7 @@ namespace SmartStore.Rules.Operators
         internal GreaterThanOrEqualOperator() 
             : base(">=") { }
 
-        public override Expression GenerateExpression(Expression left, Expression right)
+        protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             return Expression.GreaterThanOrEqual(left, right);
         }

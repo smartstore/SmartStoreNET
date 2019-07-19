@@ -104,6 +104,7 @@
     <Compile Include="Domain\Directory\CurrencyTests.cs" />
     <Compile Include="FastPropertyTests.cs" />
     <Compile Include="PerformanceTests.cs" />
+    <Compile Include="Rules\Filters\FilterTestsBase.cs" />
     <Compile Include="Rules\Filters\FilterTests.cs" />
     <Compile Include="TopologicSortTests.cs" />
     <Compile Include="WildcardTests.cs" />

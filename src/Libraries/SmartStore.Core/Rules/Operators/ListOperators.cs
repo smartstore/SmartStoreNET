@@ -26,7 +26,7 @@ namespace SmartStore.Rules.Operators
 
         private bool Negate { get; set; }
 
-        public override Expression GenerateExpression(Expression left /* member expression */, Expression right /* collection instance */)
+        protected override Expression GenerateExpression(Expression left /* member expression */, Expression right /* collection instance */, bool liftToNull)
         {
             var constantExpr = right as ConstantExpression;
             if (constantExpr == null)

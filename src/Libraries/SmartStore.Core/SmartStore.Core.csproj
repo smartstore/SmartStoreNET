@@ -462,6 +462,7 @@
     <Compile Include="Rules\Filters\ExpressionHelper.cs" />
     <Compile Include="Rules\Filters\FilterDescriptor.cs" />
     <Compile Include="Rules\Filters\FilterExpression.cs" />
+    <Compile Include="Rules\RuleValueSelectList.cs" />
     <Compile Include="Rules\_Old\FilterExpressionBuilder.cs" />
     <Compile Include="Rules\Filters\FilterExpressionVisitor.cs" />
     <Compile Include="Rules\Filters\QueryableExtensions.cs" />

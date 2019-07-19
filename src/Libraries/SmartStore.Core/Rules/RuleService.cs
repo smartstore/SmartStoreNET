@@ -32,7 +32,7 @@ namespace SmartStore.Rules
                 new RuleEntity { RuleSetId = ruleSetId, RuleType = "Store", Operator = RuleOperator.In, Value = "1,2,3,4,5" },
                 new RuleEntity { RuleSetId = ruleSetId, RuleType = "Language", Operator = RuleOperator.NotIn, Value = "3" },
                 new RuleEntity { RuleSetId = ruleSetId, RuleType = "Currency", Operator = RuleOperator.In, Value = "1,2,3" },
-                new RuleEntity { RuleSetId = ruleSetId, RuleType = "Composite", Operator = RuleOperator.EqualTo, Value = "1,2,3" }, // This one is composite and contains other rules
+                new RuleEntity { RuleSetId = ruleSetId, RuleType = "Composite", Operator = RuleOperator.IsEqualTo, Value = "1,2,3" }, // This one is composite and contains other rules
             };
 
             var compositeRule = new CompositeRule { LogicalOperator = ruleSet.LogicalOperator };

@@ -24,11 +24,11 @@ namespace SmartStore.Rules.Impl
             if (rule == null)
                 return false; // TBD: really?!
 
-            if (Expression.Operator == RuleOperator.EqualTo)
+            if (Expression.Operator == RuleOperator.IsEqualTo)
             {
                 return rule.Match(context);
             }
-            if (Expression.Operator == RuleOperator.NotEqualTo)
+            if (Expression.Operator == RuleOperator.IsNotEqualTo)
             {
                 return !rule.Match(context);
             }
@@ -45,7 +45,7 @@ namespace SmartStore.Rules.Impl
         {
             return new RuleDescriptor
             {
-                Type = RuleType.Int,
+                RuleType = RuleType.Int,
                 Editor = "Rules",
                 Constraints = new IRuleConstraint[0]
             };

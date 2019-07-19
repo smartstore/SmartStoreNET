@@ -18,7 +18,7 @@ namespace SmartStore.Rules.Impl
         {
             return new RuleDescriptor
             {
-                Type = RuleType.IntArray,
+                RuleType = RuleType.IntArray,
                 Editor = "Language",
                 Constraints = new IRuleConstraint[0]
             };

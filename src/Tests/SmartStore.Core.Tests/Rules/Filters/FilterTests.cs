@@ -16,170 +16,294 @@ using SmartStore.Rules.Filters;
 namespace SmartStore.Core.Tests.Rules.Filters
 {
     [TestFixture]
-    public class FilterTests
+    public class FilterTests : FilterTestsBase
     {
-        private List<Customer> _customers;
-        private List<FilterDescriptor> _descriptors;
-
-        private CustomerRole _role1 = new CustomerRole { Id = 1, Active = true, TaxExempt = false, TaxDisplayType = 1 };
-        private CustomerRole _role2 = new CustomerRole { Id = 2, Active = true, TaxExempt = true, TaxDisplayType = 1 };
-        private CustomerRole _role3 = new CustomerRole { Id = 3, Active = false, TaxExempt = false, TaxDisplayType = 1 };
-        private CustomerRole _role4 = new CustomerRole { Id = 4, Active = true, TaxExempt = false, TaxDisplayType = 2 };
-
-        private Store _store1 = new Store { Id = 1 };
-        private Store _store2 = new Store { Id = 2 };
-        private Store _store3 = new Store { Id = 3 };
-
-        private string _pay1 = "Payment1";
-        private string _pay2 = "Payment2";
-        private string _pay3 = "Payment3";
-
-        private string _ship1 = "Ship1";
-        private string _ship2 = "Ship2";
-        private string _ship3 = "Ship3";
-
-        private List<Product> _products = new List<Product>();
-
-        [SetUp]
-        public virtual void SetUp()
+        [Test]
+        public void OperatorIsNull()
         {
-            SetUpEntities();
-            SetUpFilterDescriptors();
-        }
+            var op = RuleOperator.IsNull;
 
-        private void SetUpEntities()
-        {
+            var expectedResult = Customers.Where(x => x.Username == null).ToList();
+            var result = ExecuteQuery(op, x => x.Username, null);
 
-            for (int i = 1; i <= 10; i++)
-            {
-                _products.Add(new Product { Id = i });
-            }
-
-            _customers = new List<Customer>
-            {
-                new Customer
-                {
-                    Id = 1,
-                    BillingAddress = new Address { CountryId = 1 }, ShippingAddress = new Address { CountryId = 1 },
-                    BirthDate = new DateTime(1980, 1, 1),
-                    CustomerRoles = new List<CustomerRole> { _role1, _role2 },
-                    IsTaxExempt = false,
-                    LastActivityDateUtc = DateTime.Now.AddDays(-5),
-                    Orders = new List<Order>
-                    {
-                        new Order
-                        {
-                            StoreId = _store1.Id,
-                            OrderStatus = OrderStatus.Complete,
-                            PaymentMethodSystemName = _pay1,
-                            ShippingMethod = _ship1,
-                            OrderTotal = 200,
-                            OrderItems = new List<OrderItem>
-                            {
-                                new OrderItem { ProductId = 1 }, new OrderItem { ProductId = 2 }, new OrderItem { ProductId = 3 }, new OrderItem { ProductId = 4 }
-                            }
-                        }
-                    }
-                },
-                new Customer
-                {
-                    Id = 2,
-                    BillingAddress = new Address { CountryId = 2 }, ShippingAddress = new Address { CountryId = 1 },
-                    BirthDate = new DateTime(1999, 12, 24),
-                    CustomerRoles = new List<CustomerRole> { _role2, _role3, _role4 },
-                    IsTaxExempt = true,
-                    LastActivityDateUtc = DateTime.Now.AddDays(-1),
-                    Orders = new List<Order>
-                    {
-                        new Order
-                        {
-                            StoreId = _store2.Id,
-                            OrderStatus = OrderStatus.Processing,
-                            PaymentMethodSystemName = _pay2,
-                            ShippingMethod = _ship2,
-                            OrderTotal = 999,
-                            OrderItems = new List<OrderItem>
-                            {
-                                new OrderItem { ProductId = 1 }, new OrderItem { ProductId = 2 }, new OrderItem { ProductId = 5 }, new OrderItem { ProductId = 6 }, new OrderItem { ProductId = 7 }, new OrderItem { ProductId = 8 }
-                            }
-                        }
-                    }
-                }
-            };
-        }
-
-        private void SetUpFilterDescriptors()
-        {
-            _descriptors = new List<FilterDescriptor>
-            {
-                new FilterDescriptor<Customer, bool>(x => x.IsTaxExempt)
-                {
-                    Type = RuleType.Boolean,
-                    Name = "TaxExempt"
-                },
-                new FilterDescriptor<Customer, int?>(x => x.BillingAddress.CountryId)
-                {
-                    Type = RuleType.NullableInt,
-                    Name = "BillingCountry"
-                },
-                new FilterDescriptor<Customer, int?>(x => x.ShippingAddress.CountryId)
-                {
-                    Type = RuleType.NullableInt,
-                    Name = "ShippingCountry"
-                },
-                new FilterDescriptor<Customer, double>(x => (DateTime.UtcNow - x.LastActivityDateUtc).TotalDays /* DbFunctions.DiffDays(x.LastActivityDateUtc, DateTime.UtcNow)*/)
-                {
-                    Type = RuleType.Int,
-                    Name = "LastActivityDays"
-                },
-                new FilterDescriptor<Customer, int>(x => x.Orders.Count(y => y.OrderStatusId == 30))
-                {
-                    Type = RuleType.Int,
-                    Name = "CompletedOrderCount"
-                },
-                new FilterDescriptor<Customer, int>(x => x.Orders.Count(y => y.OrderStatusId == 40))
-                {
-                    Type = RuleType.Int,
-                    Name = "CancelledOrderCount"
-                },
-                new FilterDescriptor<Customer, int>(x => x.Orders.Count(y => y.OrderStatusId >= 20))
-                {
-                    Type = RuleType.Int,
-                    Name = "NewOrderCount"
-                },
-                new FilterDescriptor<Customer, double>(x => DateTime.Now.Year - x.BirthDate.Value.Year)
-                {
-                    Type = RuleType.Int,
-                    Name = "Age"
-                },
-            };
+            AssertEquality(expectedResult, result);
         }
 
         [Test]
-        public void IsTaxExemptAndCountryIs()
+        public void OperatorIsNotNull()
+        {
+            var op = RuleOperator.IsNotNull;
+
+            var expectedResult = Customers.Where(x => x.Username != null).ToList();
+            var result = ExecuteQuery(op, x => x.Username, null);
+
+            AssertEquality(expectedResult, result);
+        }
+
+        [Test]
+        public void OperatorIsEmpty()
+        {
+            var op = RuleOperator.IsEmpty;
+
+            var expectedResult = Customers.Where(x => string.IsNullOrEmpty(x.Username)).ToList();
+            var result = ExecuteQuery(op, x => x.Username, null);
+
+            AssertEquality(expectedResult, result);
+        }
+
+        [Test]
+        public void OperatorIsNotEmpty()
+        {
+            var op = RuleOperator.IsNotEmpty;
+
+            var expectedResult = Customers.Where(x => !string.IsNullOrEmpty(x.Username)).ToList();
+            var result = ExecuteQuery(op, x => x.Username, null);
+
+            AssertEquality(expectedResult, result);
+        }
+
+        [Test]
+        public void OperatorEqualTo()
+        {
+            var op = RuleOperator.IsEqualTo;
+
+            var expectedResult = Customers.Where(x => x.IsTaxExempt == true).ToList();
+            var result = ExecuteQuery(op, x => x.IsTaxExempt, true);
+
+            AssertEquality(expectedResult, result); 
+        }
+
+        [Test]
+        public void OperatorNotEqualTo()
+        {
+            var op = RuleOperator.IsEqualTo;
+
+            var expectedResult = Customers.Where(x => x.IsTaxExempt == false).ToList();
+            var result = ExecuteQuery(op, x => x.IsTaxExempt, false);
+
+            AssertEquality(expectedResult, result);
+        }
+
+        [Test]
+        public void OperatorStartsWith()
+        {
+            var op = RuleOperator.StartsWith;
+
+            var expectedResult = Customers.Where(x => x.Username.EmptyNull().StartsWith("s")).ToList();
+            var result = ExecuteQuery(op, x => x.Username, "s");
+
+            AssertEquality(expectedResult, result);
+        }
+
+        [Test]
+        public void OperatorEndsWith()
+        {
+            var op = RuleOperator.EndsWith;
+
+            var expectedResult = Customers.Where(x => x.Username.EmptyNull().EndsWith("y")).ToList();
+            var result = ExecuteQuery(op, x => x.Username, "y");
+
+            AssertEquality(expectedResult, result);
+        }
+
+        [Test]
+        public void OperatorContains()
+        {
+            var op = RuleOperator.Contains;
+
+            var expectedResult = Customers.Where(x => x.Username.EmptyNull().Contains("now")).ToList();
+            var result = ExecuteQuery(op, x => x.Username, "now");
+
+            AssertEquality(expectedResult, result);
+        }
+
+        [Test]
+        public void OperatorNotContains()
+        {
+            var op = RuleOperator.NotContains;
+
+            var expectedResult = Customers.Where(x => !x.Username.EmptyNull().Contains("a")).ToList();
+            var result = ExecuteQuery(op, x => x.Username, "a");
+
+            AssertEquality(expectedResult, result);
+        }
+
+        [Test]
+        public void OperatorGreatherThan() 
+        {
+            var op = RuleOperator.GreaterThan;
+
+            var expectedResult = Customers.Where(x => x.BirthDate.HasValue && x.BirthDate > DateTime.Now.AddYears(-30)).ToList();
+            var result = ExecuteQuery(op, x => x.BirthDate, DateTime.Now.AddYears(-30));
+
+            AssertEquality(expectedResult, result);
+        }
+
+        [Test]
+        public void OperatorGreatherThanOrEqualTo()
+        {
+            var op = RuleOperator.GreaterThanOrEqualTo;
+
+            var expectedResult = Customers.Where(x => x.Id >= 2).ToList();
+            var result = ExecuteQuery(op, x => x.Id, 2);
+
+            AssertEquality(expectedResult, result);
+        }
+
+        [Test]
+        public void OperatorLessThan()
+        {
+            var op = RuleOperator.LessThan;
+
+            var expectedResult = Customers.Where(x => x.BirthDate.HasValue && x.BirthDate < DateTime.Now.AddYears(-10)).ToList();
+            var result = ExecuteQuery(op, x => x.BirthDate, DateTime.Now.AddYears(-10));
+
+            AssertEquality(expectedResult, result);
+        }
+
+        [Test]
+        public void OperatorLessThanOrEqualTo()
+        {
+            var op = RuleOperator.LessThanOrEqualTo;
+
+            var expectedResult = Customers.Where(x => x.Id <= 4).ToList();
+            var result = ExecuteQuery(op, x => x.Id, 4);
+
+            AssertEquality(expectedResult, result);
+        }
+
+        [Test]
+        public void OperatorIn()
+        {
+            var op = RuleOperator.In;
+
+            var orderIds = new List<int> { 1, 2, 5, 8 };
+            var expectedResult = Customers.Where(x => orderIds.Contains(x.Id)).ToList();
+            var result = ExecuteQuery(op, x => x.Id, orderIds);
+
+            AssertEquality(expectedResult, result);
+        }
+
+        [Test]
+        public void OperatorNotIn()
+        {
+            var op = RuleOperator.NotIn;
+
+            var orderIds = new List<int> { 1, 2, 3, 5 };
+            var expectedResult = Customers.Where(x => !orderIds.Contains(x.Id)).ToList();
+            var result = ExecuteQuery(op, x => x.Id, orderIds);
+
+            AssertEquality(expectedResult, result);
+        }
+
+
+        [Test]
+        public void SimpleMemberFiltersMatchAnd()
         {
             var taxExemptFilter = new FilterExpression
             {
-                Descriptor = _descriptors.FirstOrDefault(x => x.Name == "TaxExempt"),
-                Operator = RuleOperator.EqualTo,
+                Descriptor = FilterDescriptors.TaxExempt,
+                Operator = RuleOperator.IsEqualTo,
                 Value = true
             };
 
             var countryFilter = new FilterExpression
             {
-                Descriptor = _descriptors.FirstOrDefault(x => x.Name == "BillingCountry"),
-                Operator = RuleOperator.EqualTo,
+                Descriptor = FilterDescriptors.BillingCountry,
+                Operator = RuleOperator.IsEqualTo,
                 Value = 2
             };
 
-            var compositeFilter = new CompositeFilterExpression(typeof(Customer));
-            compositeFilter.AddExpressions(taxExemptFilter, countryFilter);
+            var expectedResult = Customers
+                .Where(x => x.IsTaxExempt && x.BillingAddress != null && x.BillingAddress.CountryId == 2)
+                .ToList();
+            var result = ExecuteQuery(LogicalRuleOperator.And, taxExemptFilter, countryFilter);
 
-            var predicate = compositeFilter.GetFilterExpression();
-            var result = _customers.AsQueryable().Where(predicate).Cast<Customer>().ToList();
+            AssertEquality(expectedResult, result);
+        }
 
-            Assert.AreEqual(1, result.Count, "ResultCount");
-            Assert.AreEqual(2, result.First().Id, "FirstId");
+        [Test]
+        public void SimpleMemberFiltersMatchOr()
+        {
+            var taxExemptFilter = new FilterExpression
+            {
+                Descriptor = FilterDescriptors.TaxExempt,
+                Operator = RuleOperator.IsEqualTo,
+                Value = true
+            };
+
+            var countryFilter = new FilterExpression
+            {
+                Descriptor = FilterDescriptors.BillingCountry,
+                Operator = RuleOperator.IsEqualTo,
+                Value = 2
+            };
+
+            var shippingCountryFilter = new FilterExpression
+            {
+                Descriptor = FilterDescriptors.ShippingCountry,
+                Operator = RuleOperator.IsEqualTo,
+                Value = 2
+            };
+
+            var expectedResult = Customers
+                .Where(x => x.IsTaxExempt || x.BillingAddress?.CountryId == 2 || x.ShippingAddress?.CountryId == 2)
+                .ToList();
+            var result = ExecuteQuery(LogicalRuleOperator.Or, taxExemptFilter, countryFilter, shippingCountryFilter);
+
+            AssertEquality(expectedResult, result);
+        }
+
+        [Test]
+        public void CompletedOrderCount()
+        {
+            var filter = new FilterExpression
+            {
+                Descriptor = FilterDescriptors.CompletedOrderCount,
+                Operator = RuleOperator.GreaterThanOrEqualTo,
+                Value = 1
+            };
+
+            var expectedResult = Customers.Where(x => x.Orders.Count(y => y.OrderStatusId == 30) >= 1).ToList();
+            var result = ExecuteQuery(LogicalRuleOperator.And, filter);
+
+            AssertEquality(expectedResult, result);
+        }
+
+        [Test]
+        public void HasAnyCustomerRole()
+        {
+            var filter = new FilterExpression
+            {
+                Descriptor = FilterDescriptors.IsInRole,
+                Operator = RuleOperator.In,
+                Value = new List<int> { 2, 3 }
+            };
+
+            var roleIdsToCheck = filter.Value as List<int>;
+
+            var expectedResult = Customers.Where(x => x.CustomerRoles.Any(r => r.Active && roleIdsToCheck.Contains(r.Id))).ToList();
+            var result = ExecuteQuery(LogicalRuleOperator.And, filter);
+
+            AssertEquality(expectedResult, result);
+        }
+
+        [Test]
+        public void HasPurchasedProduct()
+        {
+            var filter = new FilterExpression
+            {
+                Descriptor = FilterDescriptors.HasPurchasedProduct,
+                Operator = RuleOperator.In,
+                Value = new List<int> { 7, 8, 9, 10 }
+            };
+
+            var productIdsToCheck = filter.Value as List<int>;
+
+            var expectedResult = Customers.Where(x => x.Orders.SelectMany(o => o.OrderItems).Any(p => productIdsToCheck.Contains(p.ProductId))).ToList();
+            var result = ExecuteQuery(LogicalRuleOperator.And, filter);
+
+            AssertEquality(expectedResult, result);
         }
     }
 }

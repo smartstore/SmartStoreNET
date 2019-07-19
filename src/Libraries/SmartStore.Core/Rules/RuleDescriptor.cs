@@ -14,14 +14,14 @@ namespace SmartStore.Rules
         public string DisplayName { get; set; }
         public string Description { get; set; }
 
-        public RuleType Type { get; set; }
+        public RuleType RuleType { get; set; }
+        public RuleValueSelectList SelectList { get; set; }
         public IEnumerable<IRuleConstraint> Constraints { get; set; }
-        public string Editor { get; set; }
         public IDictionary<string, object> Metadata { get; }
 
         public RuleOperator[] Operators
         {
-            get => _operators ?? (_operators = Type.GetValidOperators().ToArray());
+            get => _operators ?? (_operators = RuleType.GetValidOperators().ToArray());
             set => _operators = value;
         }
     }

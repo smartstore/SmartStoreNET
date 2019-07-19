@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using SmartStore.Core.Domain.Customers;
@@ -14,24 +16,15 @@ namespace SmartStore.Rules.Filters
         public FilterDescriptor(LambdaExpression memberExpression)
         {
             Guard.NotNull(memberExpression, nameof(memberExpression));
-
             MemberExpression = memberExpression;
-
-            //var d = new FilterDescriptor<Customer>(x => x.Orders.Average(y => y.OrderTotal));
-            //var e = new FilterDescriptor<Customer>(x => x.Orders.SelectMany(y => y.OrderItems).Where(z => z.Any(a => a.ProductId == 1)));
         }
 
         public LambdaExpression MemberExpression { get; private set; }
 
-        public virtual Expression GetExpression(RuleOperator op, Expression valueExpression)
+        public virtual Expression GetExpression(RuleOperator op, Expression valueExpression, bool liftToNull)
         {
-            return op.GenerateExpression(MemberExpression.Body, valueExpression);
+            return op.GetExpression(MemberExpression.Body, valueExpression, liftToNull);
         }
-
-        //public static FilterDescriptor<T, TValue> Create<T, TValue>(Expression<Func<T, TValue>> expression) where T : class
-        //{
-        //    return new FilterDescriptor<T, TValue>(expression);
-        //}
     }
 
     public class FilterDescriptor<T, TValue> : FilterDescriptor where T : class 
@@ -44,50 +37,43 @@ namespace SmartStore.Rules.Filters
         }
 
         public new Expression<Func<T, TValue>> MemberExpression { get; private set; }
-
-        //protected virtual Expression<Func<T, bool>> GenerateMemberExpression(RuleOperator op, Expression valueExpression)
-        //{
-        //    var expression = op.GenerateExpression(MemberExpression, valueExpression);
-        //    return Expression.Lambda<Func<T, bool>>(expression);
-        //}
     }
 
-    //public class FilterDescriptor<T, TPredicate>
-    //{
-    //    private readonly Expression<Func<TPredicate, object>> _member;
-    //    private readonly Func<Expression<Func<TPredicate, object>>, Expression<Func<T, bool>>> _expression;
+    public class AnyFilterDescriptor<T, TAny, TAnyValue> : FilterDescriptor<T, IEnumerable<TAny>> 
+        where T : class 
+        where TAny : class
+    {
+        public AnyFilterDescriptor(
+            Expression<Func<T, IEnumerable<TAny>>> path, 
+            Expression<Func<TAny, TAnyValue>> anyPredicate)
+            : base(path)
+        {
+            AnyExpression = anyPredicate;
+        }
 
-    //    public FilterDescriptor(
-    //        Expression<Func<TPredicate, object>> member, 
-    //        Func<Expression<Func<TPredicate, object>>, Expression<Func<T, bool>>> expression)
-    //    {
-    //        //MemberExpression = expression;
-    //        _member = member;
-    //        _expression = expression;
+        public Expression<Func<TAny, TAnyValue>> AnyExpression { get; private set; }
 
-    //        Expression<Func<Customer, bool>> expr = x => x.
+        public override Expression GetExpression(RuleOperator op, Expression valueExpression, bool liftToNull)
+        {
+            // Create the .Any() lambda predicate (the part within parentheses)
+            var anyPredicate = ExpressionHelper.CreateLambdaExpression(
+                Expression.Parameter(typeof(TAny), "it2"),
+                op.GetExpression(AnyExpression.Body, valueExpression, liftToNull));
 
-    //        var d = new FilterDescriptor<Customer, OrderItem>(
-    //            oi => oi.ProductId,
-    //            a => a);
-    //    }
+            var body = Expression.Call(
+                typeof(Enumerable),
+                "Any",
+                // .Any<TAny>()
+                new[] { typeof(TAny) },
+                // 0 = left collection path: x.Orders.selectMany(o => o.OrderItems)
+                // 1 = right Any predicate: y => y.ProductId = 1
+                new Expression[]
+                {
+                    MemberExpression.Body,
+                    anyPredicate
+                });
 
-    //    public Expression<Func<T, bool>> Expression { get; private set; }
-
-    //    //protected virtual Expression<Func<T, bool>> GenerateMemberExpression(RuleOperator op, Expression valueExpression)
-    //    //{
-    //    //    var expression = op.GenerateExpression(MemberExpression, valueExpression);
-    //    //    return Expression.Lambda<Func<T, bool>>(expression);
-    //    //}
-    //}
-
-    //internal class HasBoughtProductFilter : FilterDescriptor<Customer>
-    //{
-    //    public override Expression GetExpression(RuleOperator op, Expression valueExpression)
-    //    {
-    //        Expression<Func<Customer, bool>> path = c => c.Orders.SelectMany(o => o.OrderItems).Any(oi => (new int[] { 100, 102, 340, 489, 549, 698 }).Contains(oi.ProductId));
-
-    //        return base.GetExpression(op, valueExpression);
-    //    }
-    //}
+            return body;
+        }
+    }
 }

@@ -11,7 +11,7 @@ namespace SmartStore.Rules.Filters
     {
         public static IQueryable Where(this IQueryable source, FilterExpression filter)
         {
-            Expression predicate = filter.GetFilterExpression(null);
+            Expression predicate = filter.ToPredicate(null, IsLinqToObjectsProvider(source.Provider));
             return source.Where(predicate);
         }
 
@@ -22,6 +22,11 @@ namespace SmartStore.Rules.Filters
 
             return source.Provider.CreateQuery(
                 Expression.Call(typeof(Queryable), "Where", typeArgs, exprArgs));
+        }
+
+        internal static bool IsLinqToObjectsProvider(IQueryProvider provider)
+        {
+            return provider.GetType().FullName.Contains("EnumerableQuery");
         }
     }
 }

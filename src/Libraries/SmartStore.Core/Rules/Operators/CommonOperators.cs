@@ -9,12 +9,12 @@ namespace SmartStore.Rules.Operators
         internal EqualOperator() 
             : base("=") { }
 
-        public override Expression GenerateExpression(Expression left, Expression right)
+        protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             if (left.Type == typeof(string))
             {
-                left = left.ToLowerCall();
-                right = right.ToLowerCall();
+                left = left.ToLowerCall(liftToNull);
+                right = right.ToLowerCall(liftToNull);
             }
 
             return Expression.Equal(left, right);
@@ -26,12 +26,12 @@ namespace SmartStore.Rules.Operators
         internal NotEqualOperator() 
             : base("!=") { }
 
-        public override Expression GenerateExpression(Expression left, Expression right)
+        protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             if (left.Type == typeof(string))
             {
-                left = left.ToLowerCall();
-                right = right.ToLowerCall();
+                left = left.ToLowerCall(liftToNull);
+                right = right.ToLowerCall(liftToNull);
             }
 
             return Expression.NotEqual(left, right);
@@ -43,7 +43,7 @@ namespace SmartStore.Rules.Operators
         internal IsNullOperator() 
             : base("IsNull") { }
 
-        public override Expression GenerateExpression(Expression left, Expression right)
+        protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             return Expression.Equal(left, ExpressionHelper.NullLiteral);
         }
@@ -54,7 +54,7 @@ namespace SmartStore.Rules.Operators
         internal IsNotNullOperator() 
             : base("IsNotNull") { }
 
-        public override Expression GenerateExpression(Expression left, Expression right)
+        protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             return Expression.NotEqual(left, ExpressionHelper.NullLiteral);
         }

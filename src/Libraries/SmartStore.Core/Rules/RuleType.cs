@@ -48,8 +48,8 @@ namespace SmartStore.Rules
 
             if (isComparable)
             {
-                yield return RuleOperator.EqualTo;
-                yield return RuleOperator.NotEqualTo;
+                yield return RuleOperator.IsEqualTo;
+                yield return RuleOperator.IsNotEqualTo;
             }
 
             if (nonNullableType == typeof(int) || nonNullableType == typeof(float) || nonNullableType == typeof(DateTime))

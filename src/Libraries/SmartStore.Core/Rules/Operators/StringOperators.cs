@@ -9,7 +9,7 @@ namespace SmartStore.Rules.Operators
         internal IsEmptyOperator() 
             : base("IsEmpty") { }
 
-        public override Expression GenerateExpression(Expression left, Expression right)
+        protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             return Expression.OrElse(
                 Expression.Equal(left, ExpressionHelper.NullLiteral),
@@ -24,7 +24,7 @@ namespace SmartStore.Rules.Operators
         internal IsNotEmptyOperator() 
             : base("IsNotEmpty") { }
 
-        public override Expression GenerateExpression(Expression left, Expression right)
+        protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             return Expression.AndAlso(
                 Expression.NotEqual(left, ExpressionHelper.NullLiteral),
@@ -37,10 +37,10 @@ namespace SmartStore.Rules.Operators
         internal StartsWithOperator() 
             : base("StartsWith") { }
 
-        public override Expression GenerateExpression(Expression left, Expression right)
+        protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             var methodInfo = ExpressionHelper.StringStartsWithMethodInfo;
-            return Expression.Equal(methodInfo.ToCaseInsensitiveStringMethodCall(left, right), ExpressionHelper.TrueLiteral);
+            return Expression.Equal(methodInfo.ToCaseInsensitiveStringMethodCall(left, right, liftToNull), ExpressionHelper.TrueLiteral);
         }
     }
 
@@ -49,10 +49,10 @@ namespace SmartStore.Rules.Operators
         internal EndsWithOperator() 
             : base("EndsWith") { }
 
-        public override Expression GenerateExpression(Expression left, Expression right)
+        protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             var methodInfo = ExpressionHelper.StringEndsWithMethodInfo;
-            return Expression.Equal(methodInfo.ToCaseInsensitiveStringMethodCall(left, right), ExpressionHelper.TrueLiteral);
+            return Expression.Equal(methodInfo.ToCaseInsensitiveStringMethodCall(left, right, liftToNull), ExpressionHelper.TrueLiteral);
         }
     }
 
@@ -75,10 +75,10 @@ namespace SmartStore.Rules.Operators
 
         private bool Negate { get; set; }
 
-        public override Expression GenerateExpression(Expression left, Expression right)
+        protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             return Expression.Equal(
-                ExpressionHelper.StringContainsMethodInfo.ToCaseInsensitiveStringMethodCall(left, right), 
+                ExpressionHelper.StringContainsMethodInfo.ToCaseInsensitiveStringMethodCall(left, right, liftToNull), 
                 Negate ? ExpressionHelper.FalseLiteral : ExpressionHelper.TrueLiteral);
         }
     }

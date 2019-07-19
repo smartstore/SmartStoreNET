@@ -17,7 +17,7 @@ namespace SmartStore.Rules.Filters
 
             EntityType = entityType;
             LogicalOperator = LogicalRuleOperator.And;
-            Operator = RuleOperator.EqualTo;
+            Operator = RuleOperator.IsEqualTo;
             Value = true;
         }
 
@@ -34,12 +34,12 @@ namespace SmartStore.Rules.Filters
             _expressions.AddRange(expressions);
         }
 
-        public Expression GetFilterExpression()
+        public Expression ToPredicate(bool liftToNull)
         {
-            return GetFilterExpression(null);
+            return ToPredicate(null, liftToNull);
         }
 
-        public override Expression GetFilterExpression(ParameterExpression node)
+        public override Expression ToPredicate(ParameterExpression node, bool liftToNull)
         {
             if (node == null)
             {
@@ -47,16 +47,16 @@ namespace SmartStore.Rules.Filters
                 node = Expression.Parameter(EntityType, "it"); // TODO: was base.Descriptor.EntityType, check if MemberExpression is the same
             }
 
-            return Expression.Lambda(base.GetFilterExpression(node), new[] { node });
+            return ExpressionHelper.CreateLambdaExpression(node, base.ToPredicate(node, liftToNull));
         }
 
-        protected override Expression CreateBodyExpression(ParameterExpression node)
+        protected override Expression CreateBodyExpression(ParameterExpression node, bool liftToNull)
         {
             Expression left = null;
 
             foreach (var ruleExpression in Expressions)
             {
-                var right = ruleExpression.GetFilterExpression(node);
+                var right = ruleExpression.ToPredicate(node, liftToNull);
 
                 if (left == null)
                     left = right;

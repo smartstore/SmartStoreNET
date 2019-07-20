@@ -19,8 +19,6 @@ namespace SmartStore.Rules
     public interface IRule : IRuleDescriptorAccessor
     {
         RuleExpression Expression { get; set; }
-
         bool Match(RuleContext context);
-        void ApplyToQuery(QueryRuleContext context);
     }
 }

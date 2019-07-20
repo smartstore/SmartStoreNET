@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using SmartStore.Core.Utilities;
 using SmartStore.Rules.Filters;
 using SmartStore.Rules.Operators;
 
@@ -86,6 +87,23 @@ namespace SmartStore.Rules
             return Operator?.GetHashCode() ?? 0;
         }
 
+        public bool Match(object left, object right)
+        {
+            return Match<object>(left, right);
+        }
+
+        public virtual bool Match<TLeft>(TLeft left, object right)
+        {
+            var body = GetExpression(
+                ExpressionHelper.CreateConstantExpression(left, typeof(TLeft)), 
+                ExpressionHelper.CreateConstantExpression(right), 
+                true);
+
+            var lambda = Expression.Lambda<Func<bool>>(body);
+
+            return lambda.Compile().Invoke();
+        }
+
         public Expression GetExpression(Expression left, Expression right, bool liftToNull)
         {
             var targetType = GetBodyType(left);
@@ -105,7 +123,7 @@ namespace SmartStore.Rules
                     valid = false;
                 }
             }
-            else if ((targetType.IsNullable(out _) && (targetType != right.Type)) && !TryConvertNullableValue(left, ref right))
+            else if (targetType.IsValueType && !TryConvertNullableValue(left, ref right))
             {
                 valid = false;
             }
@@ -125,15 +143,41 @@ namespace SmartStore.Rules
 
         #region Expression/Lambda stuff
 
+        protected virtual bool TypesAreDifferent(Expression left, Expression right)
+        {
+            bool isEqualityCheck = this == RuleOperator.IsEqualTo || this == RuleOperator.IsNotEqualTo;
+            return isEqualityCheck && GetBodyType(left) != GetBodyType(right);
+            //return (isEqualityCheck && !GetBodyType(left).IsValueType) && !GetBodyType(right).IsValueType;
+        }
+
         private bool TryConvertNullableValue(Expression left, ref Expression right)
         {
-            if (right is ConstantExpression expression)
+            var c = right as ConstantExpression;
+            if (c == null)
+                return true;
+
+            var targetType = GetBodyType(left);
+            if (targetType == right.Type)
+                return true;
+
+            var leftIsNullable = targetType.IsNullable(out var leftType);
+            var rightIsNullObj = ExpressionHelper.IsNullObjectConstantExpression(right);
+
+            if ((leftIsNullable || rightIsNullObj))
             {
                 try
                 {
-                    right = Expression.Constant(expression.Value, GetBodyType(left));
+                    var value = c.Value;
+
+                    if (!leftIsNullable && rightIsNullObj)
+                    {
+                        // Right is null, but left is NOT nullable: (int)null does not work, we need to create the default value (e.g. default(int))
+                        value = Activator.CreateInstance(targetType);
+                    }
+
+                    right = Expression.Constant(value, targetType);
                 }
-                catch (ArgumentException)
+                catch
                 {
                     return false;
                 }
@@ -178,7 +222,7 @@ namespace SmartStore.Rules
 
             var expression = expr as ConstantExpression;
 
-            if (((expression != null) && (expression == ExpressionHelper.NullLiteral)) && (!type.IsValueType || type.IsNullable(out _)))
+            if (expression != null && expression.Value == null && (!type.IsValueType || type.IsNullable(out _)))
             {
                 return Expression.Constant(null, type);
             }
@@ -206,8 +250,6 @@ namespace SmartStore.Rules
                     {
                         return false;
                     }
-                    //Core.Utilities.ObjectDumper.ToConsole(memberExpression);
-                    //Core.Utilities.ObjectDumper.ToConsole(valueExpression);
 
                     left = Expression.Convert(left, right.Type); // TODO > UnaryExpression <> LambdaExpression ??
                 }
@@ -220,13 +262,7 @@ namespace SmartStore.Rules
             return true;
         }
 
-        protected virtual bool TypesAreDifferent(Expression left, Expression right)
-        {
-            bool isEqualityCheck = this == RuleOperator.IsEqualTo || this == RuleOperator.IsNotEqualTo;
-            return (isEqualityCheck && !GetBodyType(left).IsValueType) && !GetBodyType(right).IsValueType;
-        }
-
-        private Type GetBodyType(Expression expr)
+        protected Type GetBodyType(Expression expr)
         {
             if (expr is LambdaExpression lambda)
                 return lambda.Body.Type;

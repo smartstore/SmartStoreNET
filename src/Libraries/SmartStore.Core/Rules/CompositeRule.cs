@@ -46,15 +46,7 @@ namespace SmartStore.Rules
             return match;
         }
 
-        public override void ApplyToQuery(QueryRuleContext context)
-        {
-            foreach (var rule in Rules)
-            {
-                rule.ApplyToQuery(context); // TODO: Apply LINQ expression AND/OR
-            }
-        }
-
-        protected override RuleDescriptor GetRuleMetadata()
+        protected override RuleDescriptor GetRuleDescriptor()
         {
             throw new NotSupportedException();
         }

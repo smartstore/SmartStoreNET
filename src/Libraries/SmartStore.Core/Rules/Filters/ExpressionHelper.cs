@@ -17,26 +17,43 @@ namespace SmartStore.Rules.Filters
         public readonly static Expression ZeroLiteral = Expression.Constant(0);
         public readonly static Expression EmptyStringLiteral = Expression.Constant(string.Empty);
 
-        public readonly static MethodInfo StringToLowerMethodInfo = typeof(string).GetMethod("ToLower", new Type[0]);
-        public readonly static MethodInfo StringStartsWithMethodInfo = typeof(string).GetMethod("StartsWith", new Type[] { typeof(string) });
-        public readonly static MethodInfo StringEndsWithMethodInfo = typeof(string).GetMethod("EndsWith", new Type[] { typeof(string) });
-        public readonly static MethodInfo StringCompareMethodInfo = typeof(string).GetMethod("Compare", new Type[] { typeof(string), typeof(string) });
-        public readonly static MethodInfo StringContainsMethodInfo = typeof(string).GetMethod("Contains", new Type[] { typeof(string) });
+        public readonly static MethodInfo StringToLowerMethod = typeof(string).GetMethod(nameof(string.ToLower), new Type[0]);
+        public readonly static MethodInfo StringTrimMethod = typeof(string).GetMethod(nameof(string.Trim), new Type[0]);
+        public readonly static MethodInfo StringIsNullOrEmptyMethod = typeof(string).GetMethod("IsNullOrEmpty", new Type[] { typeof(string) });
+        public readonly static MethodInfo StringStartsWithMethod = typeof(string).GetMethod(nameof(string.StartsWith), new Type[] { typeof(string) });
+        public readonly static MethodInfo StringEndsWithMethod = typeof(string).GetMethod(nameof(string.EndsWith), new Type[] { typeof(string) });
+        //public readonly static MethodInfo StringCompareMethod = typeof(string).GetMethod("Compare", new Type[] { typeof(string), typeof(string) });
+        public readonly static MethodInfo StringContainsMethod = typeof(string).GetMethod(nameof(string.Contains), new Type[] { typeof(string) });
 
-        public static Expression ToLowerCall(this Expression stringExpression, bool liftToNull)
+        public static Expression CallToLower(this Expression stringExpression, bool liftToNull)
         {
             if (liftToNull)
             {
                 stringExpression = LiftStringExpressionToEmpty(stringExpression);
             }
 
-            return Expression.Call(stringExpression, StringToLowerMethodInfo);
+            return Expression.Call(stringExpression, StringToLowerMethod);
+        }
+
+        public static Expression CallIsNullOrEmpty(this Expression stringExpression)
+        {
+            return Expression.Call(StringIsNullOrEmptyMethod, stringExpression);
+        }
+
+        public static Expression CallTrim(this Expression stringExpression, bool liftToNull)
+        {
+            if (liftToNull)
+            {
+                stringExpression = LiftStringExpressionToEmpty(stringExpression);
+            }
+
+            return Expression.Call(stringExpression, StringTrimMethod);
         }
 
         public static Expression ToCaseInsensitiveStringMethodCall(this MethodInfo methodInfo, Expression left, Expression right, bool liftToNull)
         {
-            var leftCall = ToLowerCall(left, liftToNull);
-            var rightCall = ToLowerCall(right, liftToNull);
+            var leftCall = CallToLower(left, liftToNull);
+            var rightCall = CallToLower(right, liftToNull);
 
             if (methodInfo.IsStatic)
             {
@@ -63,9 +80,19 @@ namespace SmartStore.Rules.Filters
 
         public static bool IsNotNullConstantExpression(Expression expression)
         {
-            if (expression is ConstantExpression constantExpr)
+            if (expression is ConstantExpression c)
             {
-                return constantExpr.Value != null;
+                return c.Value != null;
+            }
+
+            return false;
+        }
+
+        public static bool IsNullObjectConstantExpression(Expression expression)
+        {
+            if (expression is ConstantExpression c)
+            {
+                return c.Value == null && c.Type == typeof(object);
             }
 
             return false;
@@ -103,9 +130,19 @@ namespace SmartStore.Rules.Filters
             return CreateConstantExpression(value);
         }
 
-        public static Expression CreateConstantExpression(object value)
+        public static Expression CreateConstantExpression(object value, Type type = null)
         {
-            return value == null ? NullLiteral : Expression.Constant(value);
+            if (type != null && type != typeof(object))
+            {
+                return Expression.Constant(value, type);
+            }
+
+            if (value != null)
+            {
+                return Expression.Constant(value);
+            }
+
+            return NullLiteral;
         }
 
         public static LambdaExpression CreateLambdaExpression(ParameterExpression p, Expression body)

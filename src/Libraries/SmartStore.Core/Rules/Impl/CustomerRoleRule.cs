@@ -8,31 +8,26 @@ using SmartStore.Core.Domain.Customers;
 namespace SmartStore.Rules.Impl
 {
     [Rule("CustomerRole", FriendlyName = "Customer role", Scope = RuleScope.Cart | RuleScope.Customer, DisplayOrder = 0)]
-    public class CustomerRoleRule : ArrayRuleBase<int>
+    public class CustomerRoleRule : RuleBase
     {
-        protected override int GetValue(RuleContext context)
+        public override bool Match(RuleContext context)
         {
-            // TODO: Allow many values
-            return context.Customer.CustomerRoles.FirstOrDefault()?.Id ?? 0;
-        }
-
-        public override void ApplyToQuery(QueryRuleContext context)
-        {
-            if (context.Query is IQueryable<Customer> query)
+            var list = Expression.Value.Convert<List<int>>();
+            if (list == null || list.Count == 0)
             {
-                var arr = Expression.Value.Convert<IEnumerable<int>>();
-
-                // TODO
-                query = query.Where(c => c.CustomerRoles.Any(r => r.Id == arr.First()));
+                return true;
             }
+
+            var currentRoleIds = context.Customer.CustomerRoles.Select(x => x.Id);
+            return currentRoleIds.All(x => Expression.Operator.Match(x, list));
         }
 
-        protected override RuleDescriptor GetRuleMetadata()
+        protected override RuleDescriptor GetRuleDescriptor()
         {
             return new RuleDescriptor
             {
                 RuleType = RuleType.IntArray,
-                Editor = "CustomerRole",
+                SelectList = new RemoteRuleValueSelectList("CustomerRole") { Multiple = true },
                 Constraints = new IRuleConstraint[0]
             };
         }

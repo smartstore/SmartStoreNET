@@ -36,17 +36,13 @@ namespace SmartStore.Rules.Impl
             throw new InvalidRuleOperatorException(this);
         }
 
-        public override void ApplyToQuery(QueryRuleContext context)
-        {
-            throw new NotSupportedException();
-        }
-
-        protected override RuleDescriptor GetRuleMetadata()
+        protected override RuleDescriptor GetRuleDescriptor()
         {
             return new RuleDescriptor
             {
                 RuleType = RuleType.Int,
-                Editor = "Rules",
+                Operators = new[] { RuleOperator.IsEqualTo, RuleOperator.IsNotEqualTo },
+                SelectList = new RemoteRuleValueSelectList("Rule"),
                 Constraints = new IRuleConstraint[0]
             };
         }

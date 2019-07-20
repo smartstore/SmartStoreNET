@@ -82,10 +82,15 @@ namespace SmartStore.Core.Tests.Rules.Filters
                 RuleType = RuleType.Int,
                 Name = "Age"
             };
-            public static FilterDescriptor IsInRole = new AnyFilterDescriptor<Customer, CustomerRole, int>(x => x.CustomerRoles.Where(y => y.Active), r => r.Id)
+            public static FilterDescriptor IsInAnyRole = new AnyFilterDescriptor<Customer, CustomerRole, int>(x => x.CustomerRoles.Where(y => y.Active), r => r.Id)
             {
                 RuleType = RuleType.IntArray,
-                Name = "IsInRole"
+                Name = "IsInAnyRole"
+            };
+            public static FilterDescriptor HasAllRoles = new AllFilterDescriptor<Customer, CustomerRole, int>(x => x.CustomerRoles.Where(y => y.Active), r => r.Id)
+            {
+                RuleType = RuleType.IntArray,
+                Name = "HasAllRoles"
             };
             public static FilterDescriptor HasPurchasedProduct = new AnyFilterDescriptor<Customer, OrderItem, int>(x => x.Orders.SelectMany(o => o.OrderItems), oi => oi.ProductId)
             {

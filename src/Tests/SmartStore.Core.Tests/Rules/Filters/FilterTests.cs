@@ -23,6 +23,10 @@ namespace SmartStore.Core.Tests.Rules.Filters
         {
             var op = RuleOperator.IsNull;
 
+            Assert.AreEqual(true, op.Match(null, null));
+            Assert.AreEqual(false, op.Match("no", null));
+            Assert.AreEqual(true, op.Match((int?)null, null));
+
             var expectedResult = Customers.Where(x => x.Username == null).ToList();
             var result = ExecuteQuery(op, x => x.Username, null);
 
@@ -33,6 +37,10 @@ namespace SmartStore.Core.Tests.Rules.Filters
         public void OperatorIsNotNull()
         {
             var op = RuleOperator.IsNotNull;
+
+            Assert.AreEqual(false, op.Match(null, null));
+            Assert.AreEqual(true, op.Match("no", null));
+            Assert.AreEqual(false, op.Match((int?)null, null));
 
             var expectedResult = Customers.Where(x => x.Username != null).ToList();
             var result = ExecuteQuery(op, x => x.Username, null);
@@ -45,9 +53,12 @@ namespace SmartStore.Core.Tests.Rules.Filters
         {
             var op = RuleOperator.IsEmpty;
 
-            var expectedResult = Customers.Where(x => string.IsNullOrEmpty(x.Username)).ToList();
-            var result = ExecuteQuery(op, x => x.Username, null);
+            Assert.AreEqual(true, op.Match((string)null, null));
+            Assert.AreEqual(true, op.Match(string.Empty, null)); 
+            Assert.AreEqual(false, op.Match(" ab", null));
 
+            var expectedResult = Customers.Where(x => string.IsNullOrWhiteSpace(x.Username)).ToList();
+            var result = ExecuteQuery(op, x => x.Username, null);
             AssertEquality(expectedResult, result);
         }
 
@@ -56,9 +67,12 @@ namespace SmartStore.Core.Tests.Rules.Filters
         {
             var op = RuleOperator.IsNotEmpty;
 
+            Assert.AreEqual(false, op.Match((string)null, null));
+            Assert.AreEqual(false, op.Match(string.Empty, null));
+            Assert.AreEqual(true, op.Match(" ab", null));
+
             var expectedResult = Customers.Where(x => !string.IsNullOrEmpty(x.Username)).ToList();
             var result = ExecuteQuery(op, x => x.Username, null);
-
             AssertEquality(expectedResult, result);
         }
 
@@ -66,6 +80,25 @@ namespace SmartStore.Core.Tests.Rules.Filters
         public void OperatorEqualTo()
         {
             var op = RuleOperator.IsEqualTo;
+
+            var d1 = (DateTime?)DateTime.Now.Date;
+            var d2 = DateTime.Now.Date;
+            var d3 = (DateTime?)null;
+            var e1 = DateTimeKind.Utc;
+            var e2 = (DateTimeKind?)DateTimeKind.Utc;
+            var e3 = (DateTimeKind?)null;
+
+            Assert.AreEqual(true, op.Match(null, null));
+            Assert.AreEqual(true, op.Match(string.Empty, string.Empty));
+            Assert.AreEqual(true, op.Match("abc", "abc"));
+            Assert.AreEqual(true, op.Match(d1, d2));
+            Assert.AreEqual(true, op.Match(d2, d1));
+            Assert.AreEqual(false, op.Match(d3, d1));
+            Assert.AreEqual(false, op.Match(d2, d3));
+            Assert.AreEqual(true, op.Match(e1, e2));
+            Assert.AreEqual(true, op.Match(e2, e1));
+            Assert.AreEqual(false, op.Match(e3, e1));
+            Assert.AreEqual(false, op.Match(e2, e3));
 
             var expectedResult = Customers.Where(x => x.IsTaxExempt == true).ToList();
             var result = ExecuteQuery(op, x => x.IsTaxExempt, true);
@@ -76,10 +109,29 @@ namespace SmartStore.Core.Tests.Rules.Filters
         [Test]
         public void OperatorNotEqualTo()
         {
-            var op = RuleOperator.IsEqualTo;
+            var op = RuleOperator.IsNotEqualTo;
+
+            var d1 = (DateTime?)DateTime.Now.Date;
+            var d2 = DateTime.Now.Date;
+            var d3 = (DateTime?)null;
+            var e1 = DateTimeKind.Utc;
+            var e2 = (DateTimeKind?)DateTimeKind.Utc;
+            var e3 = (DateTimeKind?)null;
+
+            Assert.AreEqual(false, op.Match(null, null));
+            Assert.AreEqual(false, op.Match(string.Empty, string.Empty));
+            Assert.AreEqual(false, op.Match("abc", "abc"));
+            Assert.AreEqual(false, op.Match(d1, d2));
+            Assert.AreEqual(false, op.Match(d2, d1));
+            Assert.AreEqual(true, op.Match(d3, d1));
+            Assert.AreEqual(true, op.Match(d2, d3));
+            Assert.AreEqual(false, op.Match(e1, e2));
+            Assert.AreEqual(false, op.Match(e2, e1));
+            Assert.AreEqual(true, op.Match(e3, e1));
+            Assert.AreEqual(true, op.Match(e2, e3));
 
             var expectedResult = Customers.Where(x => x.IsTaxExempt == false).ToList();
-            var result = ExecuteQuery(op, x => x.IsTaxExempt, false);
+            var result = ExecuteQuery(op, x => x.IsTaxExempt, true);
 
             AssertEquality(expectedResult, result);
         }
@@ -88,6 +140,8 @@ namespace SmartStore.Core.Tests.Rules.Filters
         public void OperatorStartsWith()
         {
             var op = RuleOperator.StartsWith;
+
+            Assert.AreEqual(true, op.Match("hello", "he"));
 
             var expectedResult = Customers.Where(x => x.Username.EmptyNull().StartsWith("s")).ToList();
             var result = ExecuteQuery(op, x => x.Username, "s");
@@ -100,6 +154,8 @@ namespace SmartStore.Core.Tests.Rules.Filters
         {
             var op = RuleOperator.EndsWith;
 
+            Assert.AreEqual(true, op.Match("hello", "lo"));
+
             var expectedResult = Customers.Where(x => x.Username.EmptyNull().EndsWith("y")).ToList();
             var result = ExecuteQuery(op, x => x.Username, "y");
 
@@ -110,6 +166,8 @@ namespace SmartStore.Core.Tests.Rules.Filters
         public void OperatorContains()
         {
             var op = RuleOperator.Contains;
+
+            Assert.AreEqual(true, op.Match("hello", "el"));
 
             var expectedResult = Customers.Where(x => x.Username.EmptyNull().Contains("now")).ToList();
             var result = ExecuteQuery(op, x => x.Username, "now");
@@ -122,6 +180,8 @@ namespace SmartStore.Core.Tests.Rules.Filters
         {
             var op = RuleOperator.NotContains;
 
+            Assert.AreEqual(true, op.Match("hello", "al"));
+
             var expectedResult = Customers.Where(x => !x.Username.EmptyNull().Contains("a")).ToList();
             var result = ExecuteQuery(op, x => x.Username, "a");
 
@@ -132,6 +192,9 @@ namespace SmartStore.Core.Tests.Rules.Filters
         public void OperatorGreatherThan() 
         {
             var op = RuleOperator.GreaterThan;
+
+            Assert.AreEqual(true, op.Match(10, 5));
+            Assert.AreEqual(false, op.Match(5, 10));
 
             var expectedResult = Customers.Where(x => x.BirthDate.HasValue && x.BirthDate > DateTime.Now.AddYears(-30)).ToList();
             var result = ExecuteQuery(op, x => x.BirthDate, DateTime.Now.AddYears(-30));
@@ -144,6 +207,9 @@ namespace SmartStore.Core.Tests.Rules.Filters
         {
             var op = RuleOperator.GreaterThanOrEqualTo;
 
+            Assert.AreEqual(true, op.Match(5, 5));
+            Assert.AreEqual(false, op.Match(4, 5));
+
             var expectedResult = Customers.Where(x => x.Id >= 2).ToList();
             var result = ExecuteQuery(op, x => x.Id, 2);
 
@@ -154,6 +220,9 @@ namespace SmartStore.Core.Tests.Rules.Filters
         public void OperatorLessThan()
         {
             var op = RuleOperator.LessThan;
+
+            Assert.AreEqual(true, op.Match(5, 10));
+            Assert.AreEqual(false, op.Match(10, 5));
 
             var expectedResult = Customers.Where(x => x.BirthDate.HasValue && x.BirthDate < DateTime.Now.AddYears(-10)).ToList();
             var result = ExecuteQuery(op, x => x.BirthDate, DateTime.Now.AddYears(-10));
@@ -166,6 +235,9 @@ namespace SmartStore.Core.Tests.Rules.Filters
         {
             var op = RuleOperator.LessThanOrEqualTo;
 
+            Assert.AreEqual(true, op.Match(5, 5));
+            Assert.AreEqual(false, op.Match(5, 4));
+
             var expectedResult = Customers.Where(x => x.Id <= 4).ToList();
             var result = ExecuteQuery(op, x => x.Id, 4);
 
@@ -177,7 +249,10 @@ namespace SmartStore.Core.Tests.Rules.Filters
         {
             var op = RuleOperator.In;
 
-            var orderIds = new List<int> { 1, 2, 5, 8 };
+            var orderIds = new List<int> { 1, 2, 5, 8 }; 
+            Assert.AreEqual(true, op.Match(2, orderIds));
+            Assert.AreEqual(false, op.Match(3, orderIds));
+
             var expectedResult = Customers.Where(x => orderIds.Contains(x.Id)).ToList();
             var result = ExecuteQuery(op, x => x.Id, orderIds);
 
@@ -190,6 +265,9 @@ namespace SmartStore.Core.Tests.Rules.Filters
             var op = RuleOperator.NotIn;
 
             var orderIds = new List<int> { 1, 2, 3, 5 };
+            Assert.AreEqual(true, op.Match(4, orderIds));
+            Assert.AreEqual(false, op.Match(2, orderIds));
+
             var expectedResult = Customers.Where(x => !orderIds.Contains(x.Id)).ToList();
             var result = ExecuteQuery(op, x => x.Id, orderIds);
 
@@ -275,7 +353,7 @@ namespace SmartStore.Core.Tests.Rules.Filters
         {
             var filter = new FilterExpression
             {
-                Descriptor = FilterDescriptors.IsInRole,
+                Descriptor = FilterDescriptors.IsInAnyRole,
                 Operator = RuleOperator.In,
                 Value = new List<int> { 2, 3 }
             };
@@ -283,6 +361,24 @@ namespace SmartStore.Core.Tests.Rules.Filters
             var roleIdsToCheck = filter.Value as List<int>;
 
             var expectedResult = Customers.Where(x => x.CustomerRoles.Any(r => r.Active && roleIdsToCheck.Contains(r.Id))).ToList();
+            var result = ExecuteQuery(LogicalRuleOperator.And, filter);
+
+            AssertEquality(expectedResult, result);
+        }
+
+        [Test]
+        public void HasAllCustomerRoles()
+        {
+            var filter = new FilterExpression
+            {
+                Descriptor = FilterDescriptors.HasAllRoles,
+                Operator = RuleOperator.In,
+                Value = new List<int> { 2, 3 }
+            };
+
+            var roleIdsToCheck = filter.Value as List<int>;
+
+            var expectedResult = Customers.Where(x => x.CustomerRoles.Where(r => r.Active).All(r => roleIdsToCheck.Contains(r.Id))).ToList();
             var result = ExecuteQuery(LogicalRuleOperator.And, filter);
 
             AssertEquality(expectedResult, result);

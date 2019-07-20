@@ -6,20 +6,21 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Rules.Impl
 {
-    [Rule("Store", FriendlyName = "Store", Scope = RuleScope.Cart, DisplayOrder = 0)]
-    public class StoreRule : ListRuleBase<int>
+    public class CartTotalRule : RuleBase
     {
-        protected override int GetValue(RuleContext context)
+        public override bool Match(RuleContext context)
         {
-            return context.Store.Id;
+            // INFO/TODO: get cart total from somewhere
+            var cartTotal = 1000d;
+
+            return Expression.Operator.Match(cartTotal, Expression.Value);
         }
 
         protected override RuleDescriptor GetRuleDescriptor()
         {
             return new RuleDescriptor
             {
-                RuleType = RuleType.IntArray,
-                SelectList = new RemoteRuleValueSelectList("Store") { Multiple = true },
+                RuleType = RuleType.Float,
                 Constraints = new IRuleConstraint[0]
             };
         }

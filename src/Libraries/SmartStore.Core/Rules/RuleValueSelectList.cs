@@ -15,6 +15,13 @@ namespace SmartStore.Rules
     {
         public object Value { get; set; }
         public string Text { get; set; }
+        public RuleValueSelectListGroup Group { get; set; }
+    }
+
+    public class RuleValueSelectListGroup
+    {
+        public string Name { get; set; }
+        public int Order { get; set; }
     }
 
     public class LocalRuleValueSelectList : RuleValueSelectList
@@ -23,9 +30,9 @@ namespace SmartStore.Rules
         {
         }
 
-        public LocalRuleValueSelectList(IEnumerable<RuleValueSelectListOption> options)
+        public LocalRuleValueSelectList(params RuleValueSelectListOption[] options)
         {
-            Options = options ?? new List<RuleValueSelectListOption>();
+            Options = new List<RuleValueSelectListOption>(options ?? Enumerable.Empty<RuleValueSelectListOption>());
         }
 
         public IEnumerable<RuleValueSelectListOption> Options { get; protected set; }

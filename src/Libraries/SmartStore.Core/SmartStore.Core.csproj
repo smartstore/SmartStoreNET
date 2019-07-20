@@ -454,7 +454,8 @@
     <Compile Include="Caching\ICacheManager.cs" />
     <Compile Include="Caching\NullCache.cs" />
     <Compile Include="Plugins\LoadPluginResult.cs" />
-    <Compile Include="Rules\ArrayRuleBase.cs" />
+    <Compile Include="Rules\Impl\CartTotalRule.cs" />
+    <Compile Include="Rules\ListRuleBase.cs" />
     <Compile Include="Rules\CompositeRule.cs" />
     <Compile Include="Rules\Domain\RuleEntity.cs" />
     <Compile Include="Rules\Domain\RuleSet.cs" />

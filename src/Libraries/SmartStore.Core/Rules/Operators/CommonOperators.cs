@@ -11,10 +11,10 @@ namespace SmartStore.Rules.Operators
 
         protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
-            if (left.Type == typeof(string))
+            if (GetBodyType(left) == typeof(string))
             {
-                left = left.ToLowerCall(liftToNull);
-                right = right.ToLowerCall(liftToNull);
+                left = left.CallToLower(liftToNull);
+                right = right.CallToLower(liftToNull);
             }
 
             return Expression.Equal(left, right);
@@ -28,10 +28,10 @@ namespace SmartStore.Rules.Operators
 
         protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
-            if (left.Type == typeof(string))
+            if (GetBodyType(left) == typeof(string))
             {
-                left = left.ToLowerCall(liftToNull);
-                right = right.ToLowerCall(liftToNull);
+                left = left.CallToLower(liftToNull);
+                right = right.CallToLower(liftToNull);
             }
 
             return Expression.NotEqual(left, right);
@@ -45,7 +45,9 @@ namespace SmartStore.Rules.Operators
 
         protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
-            return Expression.Equal(left, ExpressionHelper.NullLiteral);
+            return Expression.Equal(
+                left, 
+                ExpressionHelper.CreateConstantExpression(null, GetBodyType(left)));
         }
     }
 
@@ -56,7 +58,9 @@ namespace SmartStore.Rules.Operators
 
         protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
-            return Expression.NotEqual(left, ExpressionHelper.NullLiteral);
+            return Expression.NotEqual(
+                left, 
+                ExpressionHelper.CreateConstantExpression(null, GetBodyType(left)));
         }
     }
 }

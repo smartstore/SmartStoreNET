@@ -863,7 +863,7 @@ namespace SmartStore.Data.Utilities
                 AddPermissions("catalog.attribute", crud);
 
                 var customer = AddPermissions("customer", crud);
-                var impersonate = Add("impersonate");
+                var impersonate = Add("customer.impersonate");
                 var customerRole = AddPermissions("customer.role", crud);
 
                 var order = AddPermissions("order", crud);

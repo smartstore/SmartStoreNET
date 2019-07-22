@@ -248,6 +248,7 @@
     <Compile Include="Domain\Orders\CheckoutEnums.cs" />
     <Compile Include="Domain\Payments\CapturePaymentReason.cs" />
     <Compile Include="Domain\Payments\PaymentMethod.cs" />
+    <Compile Include="Domain\Security\PermissionNode.cs" />
     <Compile Include="Domain\Security\PermissionRoleMapping.cs" />
     <Compile Include="Domain\Seo\CanonicalHostNameRule.cs" />
     <Compile Include="Domain\Seo\UrlRecordCollection.cs" />

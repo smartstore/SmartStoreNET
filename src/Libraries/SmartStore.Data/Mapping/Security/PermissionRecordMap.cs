@@ -13,6 +13,7 @@ namespace SmartStore.Data.Mapping.Security
             this.Property(pr => pr.SystemName).IsRequired().HasMaxLength(255);
             this.Property(pr => pr.Category).IsRequired().HasMaxLength(255);
 
+            //GP: remove.
             this.HasMany(pr => pr.CustomerRoles)
                 .WithMany(cr => cr.PermissionRecords)
                 .Map(m => m.ToTable("PermissionRecord_Role_Mapping"));

@@ -25,7 +25,8 @@ namespace SmartStore.Core.Domain.Security
         /// Gets or sets the permission category.
         /// </summary>
         public string Category { get; set; }
-        
+
+        //GP: remove.
         /// <summary>
         /// Gets or sets customer roles.
         /// </summary>

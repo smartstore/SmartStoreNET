@@ -682,9 +682,9 @@
     <Compile Include="Migrations\201907032251575_CategoryExternalLink.Designer.cs">
       <DependentUpon>201907032251575_CategoryExternalLink.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201907220924134_GranularPermissions.cs" />
-    <Compile Include="Migrations\201907220924134_GranularPermissions.Designer.cs">
-      <DependentUpon>201907220924134_GranularPermissions.cs</DependentUpon>
+    <Compile Include="Migrations\201907221803421_GranularPermissions.cs" />
+    <Compile Include="Migrations\201907221803421_GranularPermissions.Designer.cs">
+      <DependentUpon>201907221803421_GranularPermissions.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -1225,8 +1225,8 @@
     <EmbeddedResource Include="Migrations\201907032251575_CategoryExternalLink.resx">
       <DependentUpon>201907032251575_CategoryExternalLink.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201907220924134_GranularPermissions.resx">
-      <DependentUpon>201907220924134_GranularPermissions.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201907221803421_GranularPermissions.resx">
+      <DependentUpon>201907221803421_GranularPermissions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

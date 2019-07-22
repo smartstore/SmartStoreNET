@@ -383,7 +383,8 @@
                 function initRotator(containerId) {
                     var container = $(containerId);
                     var dropdownId = container.data("id") || 0;
-                    var catId = container.data("entity-id") || 0;
+                    var entityId = container.data("entity-id") || 0;
+                    var entityName = container.data("entity-name") || 0;
                     var displayRotator = container.data("display-rotator");
 
                     // reinit slick product rotator
@@ -393,11 +394,13 @@
 							$(this).attr('data-slick', '{"dots": false, "autoplay": true}');
                             applyCommonPlugins($(this).closest('.rotator-content'));
                         }
-						catch (err) { }
+                        catch (err) {
+                            console.log(err);
+                        }
                     });
 
                     //if ($(".pl-slider", container).length == 0 && catId != null && displayRotator) {
-                    if (displayRotator && catId !== 0) {
+                    if (displayRotator && entityId !== 0) {
                         var rotatorColumn = $(".rotator-" + dropdownId);
 
                         // clear content & init throbber
@@ -411,7 +414,7 @@
                                 cache: false,
                                 type: "POST",
                                 url: settings.productRotatorAjaxUrl,
-                                data: { "catId": catId },
+                                data: { "entityId": entityId, "entityName": entityName },
                                 success: function (data) {
                                     // add html view
                                     rotatorColumn.find(".rotator-content").html(data);

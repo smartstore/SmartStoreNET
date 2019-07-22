@@ -97,6 +97,7 @@ namespace SmartStore.Web.Framework.UI
                 Id = randomId++.ToString(),
                 EntityId = node.Id,
                 EntityName = nameof(Category),
+                MenuItemId = request.Entity.Id,
                 Text = name?.Value ?? node.Name,
                 Rtl = name?.CurrentLanguage?.Rtl ?? false,
                 BadgeText = node.Id > 0 ? node.GetLocalized(x => x.BadgeText) : null,

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -820,6 +821,239 @@ namespace SmartStore.Data.Utilities
             }
 
             #endregion
+        }
+
+        #endregion
+
+        #region GranularPermissions (V4.0)
+
+        public static void AddGranularPermissions(IDbContext context)
+        {
+            var ctx = context as SmartObjectContext;
+            if (ctx == null)
+            {
+                throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+            }
+
+            const string crud = "crud";
+            var permissionSet = ctx.Set<PermissionRecord>();
+            var mappingSet = ctx.Set<PermissionRoleMapping>();
+            var allRoles = ctx.Set<CustomerRole>().ToList();
+            var allPermissions = permissionSet.Expand(x => x.CustomerRoles).ToList();
+
+            var permissionToRoles = new Multimap<string, int>(StringComparer.OrdinalIgnoreCase);
+            foreach (var permission in allPermissions)
+            {
+                permissionToRoles.AddRange(permission.SystemName, permission.CustomerRoles.Select(x => x.Id));
+            }
+
+            using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
+            {
+                var pluginPermissions = new Dictionary<string, PermissionRecord>(StringComparer.OrdinalIgnoreCase);
+                var pluginPermissionNames = new string[] { "ManageDebitoor", "AccessImportBiz", "ManageShopConnector", "ManageNewsImporter", "ManageWebApi", "ManageMegaSearch", "ManageErpConnector",
+                    "ManagePowerBi", "ManageWallet", "ManageStories", "ManageDlm" };
+
+                // Insert new permissions.
+                var catalog = Add("catalog");
+                var displayPrice = Add("catalog.display-price");
+                AddPermissions("catalog.product", crud);
+                AddPermissions("catalog.category", crud);
+                AddPermissions("catalog.manufacturer", crud);
+                AddPermissions("catalog.variant", crud);
+                AddPermissions("catalog.attribute", crud);
+
+                var customer = AddPermissions("customer", crud);
+                var impersonate = Add("impersonate");
+                var customerRole = AddPermissions("customer.role", crud);
+
+                var order = AddPermissions("order", crud);
+                var giftCard = AddPermissions("order.gift-card", crud, "notify");
+                var returnRequest = AddPermissions("order.return-request", crud, "accept");
+
+                Add("promotion");
+                var affiliate = AddPermissions("promotion.affiliate", crud);
+                var campaign = AddPermissions("promotion.campaign", crud);
+                var discount = AddPermissions("promotion.discount", crud);
+                var newsletter = AddPermissions("promotion.newsletter", crud);
+
+                var cms = Add("cms");
+                var poll = AddPermissions("cms.poll", crud);
+                var news = AddPermissions("cms.news", crud);
+                var blog = AddPermissions("cms.blog", crud);
+                var widget = AddPermissions("cms.widget", "read", "update", "activate");
+                var topic = AddPermissions("cms.topic", crud);
+                var menu = AddPermissions("cms.menu", crud);
+                var forum = AddPermissions("cms.forum", crud);
+                var messageTemplate = AddPermissions("cms.message-template", crud);
+
+                var configuration = Add("configuration");
+                var country = AddPermissions("configuration.country", crud);
+                var language = AddPermissions("configuration.language", crud);
+                var setting = AddPermissions("configuration.setting", crud);
+                var paymentMethod = AddPermissions("configuration.payment-method", "read", "update", "activate");
+                var authentication = AddPermissions("configuration.authentication", "read", "update", "activate");
+                var currency = AddPermissions("configuration.currency", crud);
+                var deliveryTime = AddPermissions("configuration.delivery-times", crud);
+                var theme = AddPermissions("configuration.themes", "read", "update", "upload");
+                var measure = AddPermissions("configuration.measure", crud);
+                var activityLog = AddPermissions("configuration.activity-log", "read", "update");
+                var acl = AddPermissions("configuration.acl", "read", "update");
+                var emailAccount = AddPermissions("configuration.email-account", crud);
+                var store = AddPermissions("configuration.store", crud);
+                var shipping = AddPermissions("configuration.shipping", crud, "activate");
+                var tax = AddPermissions("configuration.tax", crud, "activate");
+                var plugin = AddPermissions("configuration.plugin", "read", "update", "upload", "install", "license");
+                var export = AddPermissions("configuration.export", crud, "execute");
+                var import = AddPermissions("configuration.import", crud, "execute");
+
+                var system = Add("system");
+                var administrate = Add("system.administrate");
+                var accessShop = Add("system.access-shop");
+                var log = AddPermissions("system.log", "read", "delete");
+                var message = AddPermissions("system.message", "read", "update", "delete", "send");
+                var maintenance = AddPermissions("system.maintenance", "execute");
+                var task = AddPermissions("system.schedule-task", "read", "update", "delete", "execute");
+                var urlRecord = AddPermissions("system.url-record", "read", "update", "delete");
+
+                Add("cart");
+                var shoppingCart = Add("cart.access-shopping-cart");
+                var wishlist = Add("cart.access-wishlist");
+                var checkoutAttribute = AddPermissions("cart.checkout-attribute", crud);
+
+                var media = AddPermissions("media", "upload");
+
+                scope.Commit();
+
+                // Migrate mappings of standard permissions (whether the new permission is granted or denied).
+                Allow("AccessAdminPanel", administrate);
+                Allow("AllowCustomerImpersonation", impersonate);
+                Allow("ManageCatalog", catalog, checkoutAttribute);
+                Allow("ManageCustomers", customer);
+                Allow("ManageCustomerRoles", customerRole);
+                Allow("ManageOrders", order);
+                Allow("ManageGiftCards", giftCard);
+                Allow("ManageReturnRequests", returnRequest);
+                Allow("ManageAffiliates", affiliate);
+                Allow("ManageCampaigns", campaign);
+                Allow("ManageDiscounts", discount);
+                Allow("ManageNewsletterSubscribers", newsletter);
+                Allow("ManagePolls", poll);
+                Allow("ManageNews", news);
+                Allow("ManageBlog", blog);
+                Allow("ManageWidgets", widget);
+                Allow("ManageTopics", topic);
+                Allow("ManageMenus", menu);
+                Allow("ManageForums", forum);
+                Allow("ManageMessageTemplates", messageTemplate);
+                Allow("ManageCountries", country);
+                Allow("ManageLanguages", language);
+                Allow("ManageSettings", setting);
+                Allow("ManagePaymentMethods", paymentMethod);
+                Allow("ManageExternalAuthenticationMethods", authentication);
+                Allow("ManageTaxSettings", tax);
+                Allow("ManageShippingSettings", shipping);
+                Allow("ManageCurrencies", currency);
+                Allow("ManageDeliveryTimes", deliveryTime);
+                Allow("ManageThemes", theme);
+                Allow("ManageMeasures", measure);
+                Allow("ManageActivityLog", activityLog);
+                Allow("ManageACL", acl);
+                Allow("ManageEmailAccounts", emailAccount);
+                Allow("ManageStores", store);
+                Allow("ManagePlugins", plugin);
+                Allow("ManageSystemLog", log);
+                Allow("ManageMessageQueue", message);
+                Allow("ManageMaintenance", maintenance);
+                Allow("UploadPictures", media);
+                Allow("ManageScheduleTasks", task);
+                Allow("ManageExports", export);
+                Allow("ManageImports", import);
+                Allow("ManageUrlRecords", urlRecord);
+                Allow("DisplayPrices", displayPrice);
+                Allow("EnableShoppingCart", shoppingCart);
+                Allow("EnableWishlist", wishlist);
+                Allow("PublicStoreAllowNavigation", accessShop);
+
+                scope.Commit();
+
+                // Migrate plugin permissions.
+                foreach (var oldSystemName in pluginPermissionNames)
+                {
+                    if (permissionToRoles.ContainsKey(oldSystemName))
+                    {
+                        var newSystemName = oldSystemName.ToLower();
+                        if (newSystemName.StartsWith("manage"))
+                        {
+                            newSystemName = newSystemName.Substring(6);
+                        }
+
+                        var pluginPermission = Add(newSystemName + ".manage");
+                        pluginPermissions.Add(oldSystemName, pluginPermission);
+                    }
+                    else
+                    {
+                        // Ignore unknown permissions. Will be deleted later.
+                    }
+                }
+
+                scope.Commit();
+
+                // Migrate mappings of plugin permissions.
+                pluginPermissions.Each(x => Allow(x.Key, x.Value));
+
+                scope.Commit();
+            }
+
+            PermissionRecord Add(string systemName)
+            {
+                var entity = permissionSet.Add(new PermissionRecord { SystemName = systemName, Name = string.Empty, Category = string.Empty });
+                return entity;
+            }
+
+            PermissionRecord AddPermissions(string parent, params string[] childs)
+            {
+                var parentPermission = Add(parent);
+                parent = parent.EnsureEndsWith(".");
+
+                foreach (var child in childs)
+                {
+                    if (child.IsCaseInsensitiveEqual("crud"))
+                    {
+                        Add(parent + "read");
+                        Add(parent + "update");
+                        Add(parent + "create");
+                        Add(parent + "delete");
+                    }
+                    else
+                    {
+                        Add(parent + child);
+                    }
+                }
+
+                return parentPermission;
+            }
+
+            void Allow(string oldSystemName, params PermissionRecord[] permissions)
+            {
+                var appliedRoleIds = permissionToRoles.ContainsKey(oldSystemName)
+                    ? permissionToRoles[oldSystemName]
+                    : Enumerable.Empty<int>();
+
+                foreach (var permission in permissions)
+                {
+                    Guard.NotZero(permission.Id, nameof(permission.Id));
+
+                    foreach (var roleId in allRoles.Select(x => x.Id))
+                    {
+                        mappingSet.Add(new PermissionRoleMapping
+                        {
+                            Allow = appliedRoleIds.Contains(roleId),
+                            PermissionRecordId = permission.Id,
+                            CustomerRoleId = roleId
+                        });
+                    }
+                }
+            }
         }
 
         #endregion

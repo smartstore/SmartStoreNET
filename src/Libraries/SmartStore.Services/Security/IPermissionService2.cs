@@ -80,17 +80,17 @@ namespace SmartStore.Services.Security
         /// <summary>
         /// Authorize permission.
         /// </summary>
-        /// <param name="permissionRecordSystemName">Permission record system name.</param>
+        /// <param name="permissionSystemName">Permission record system name.</param>
         /// <returns><c>true</c> authorized otherwise <c>false</c>.</returns>
-        bool Authorize(string permissionRecordSystemName);
+        bool Authorize(string permissionSystemName);
 
         /// <summary>
         /// Authorize permission.
         /// </summary>
-        /// <param name="permissionRecordSystemName">Permission record system name.</param>
+        /// <param name="permissionSystemName">Permission record system name.</param>
         /// <param name="customer">Customer.</param>
         /// <returns><c>true</c> authorized otherwise <c>false</c>.</returns>
-        bool Authorize(string permissionRecordSystemName, Customer customer);
+        bool Authorize(string permissionSystemName, Customer customer);
 
 
         /// <summary>

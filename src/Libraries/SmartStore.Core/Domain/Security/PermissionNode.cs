@@ -4,6 +4,7 @@ namespace SmartStore.Core.Domain.Security
 {
     public interface IPermissionNode/* : ILocalizedEntity*/
     {
+        int PermissionRecordId { get; }
         bool? Allow { get; }
         string SystemName { get; }
     }
@@ -11,7 +12,7 @@ namespace SmartStore.Core.Domain.Security
     [Serializable]
     public class PermissionNode : IPermissionNode
     {
-        //public int Id { get; set; }
+        public int PermissionRecordId { get; set; }
         public bool? Allow { get; set; }
         public string SystemName { get; set; }
     }

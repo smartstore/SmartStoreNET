@@ -15,7 +15,8 @@ namespace SmartStore.Services.Security
     {
         // {0} = roleId
         private const string PERMISSION_TREE_KEY = "permission:tree-{0}";
-        private const string PERMISSION_TREE_PATTERN_KEY = "permission:tree-*";
+        private const string PERMISSIONS_ALLOW_KEY = "permission:allow-{0}-{1}";
+        internal const string PERMISSION_TREE_PATTERN_KEY = "permission:tree-*";
 
         private readonly IRepository<PermissionRecord> _permissionRecordRepository;
         private readonly Lazy<ICustomerService> _customerService;
@@ -173,21 +174,21 @@ namespace SmartStore.Services.Security
             return Authorize(permission.SystemName, customer);
         }
 
-        public virtual bool Authorize(string permissionRecordSystemName)
+        public virtual bool Authorize(string permissionSystemName)
         {
-            return Authorize(permissionRecordSystemName, _workContext.CurrentCustomer);
+            return Authorize(permissionSystemName, _workContext.CurrentCustomer);
         }
 
-        public virtual bool Authorize(string permissionRecordSystemName, Customer customer)
+        public virtual bool Authorize(string permissionSystemName, Customer customer)
         {
-            if (string.IsNullOrEmpty(permissionRecordSystemName))
+            if (string.IsNullOrEmpty(permissionSystemName))
             {
                 return false;
             }
 
             foreach (var role in customer.CustomerRoles.Where(x => x.Active))
             {
-                if (Authorize(permissionRecordSystemName, role))
+                if (Authorize(permissionSystemName, role))
                 {
                     return true;
                 }
@@ -196,9 +197,27 @@ namespace SmartStore.Services.Security
             return false;
         }
 
-        protected virtual bool Authorize(string permissionRecordSystemName, CustomerRole role)
+        protected virtual bool Authorize(string permissionSystemName, CustomerRole role)
         {
-            throw new NotImplementedException();
+            var result = _cacheManager.Get(PERMISSIONS_ALLOW_KEY.FormatInvariant(role.Id, permissionSystemName), () =>
+            {
+                var tree = GetPermissionTree(role);
+                var node = tree.SelectNode(x => x.Value.SystemName == permissionSystemName);
+
+                while (node != null && !node.Value.Allow.HasValue)
+                {
+                    node = node.Parent;
+                }
+
+                if (node == null || !node.Value.Allow.HasValue)
+                {
+                    throw new SmartException($"Unknown permission \"{permissionSystemName}\".");
+                }
+
+                return node.Value.Allow.Value;
+            });
+
+            return result;
         }
 
 
@@ -206,15 +225,13 @@ namespace SmartStore.Services.Security
         {
             Guard.NotNull(role, nameof(role));
 
-            // TODO: invalidate cache.
             var result = _cacheManager.Get(PERMISSION_TREE_KEY.FormatInvariant(role.Id), () =>
             {
                 var root = new TreeNode<IPermissionNode>(new PermissionNode())
                 {
-                    Id = role.Name,
+                    Id = role.SystemName
                 };
 
-                // TODO: caching
                 var permissions = _permissionRecordRepository.TableUntracked
                     .Expand(x => x.PermissionRoleMappings)
                     .Where(x => x.Name == null)//GP: TODO, remove clause later
@@ -252,6 +269,7 @@ namespace SmartStore.Services.Security
 
                     var newNode = parentNode.Append(new PermissionNode
                     {
+                        PermissionRecordId = entity.Id,
                         Allow = mapping?.Allow ?? null,     // null = inherit
                         SystemName = entity.SystemName
                     });

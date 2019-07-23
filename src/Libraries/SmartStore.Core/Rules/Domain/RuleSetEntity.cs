@@ -10,9 +10,13 @@ using SmartStore.Core;
 
 namespace SmartStore.Rules.Domain
 {
-    public partial class RuleSet // : BaseEntity
+    [Table("RuleSet")]
+    public partial class RuleSetEntity // : BaseEntity
     {
         private ICollection<RuleEntity> _rules;
+
+        // TODO: remove late
+        public int Id { get; set; }
 
         [DataMember]
         [StringLength(200)]
@@ -22,7 +26,13 @@ namespace SmartStore.Rules.Domain
         [StringLength(400)]
         public string Description { get; set; }
 
+        [Index("IX_RuleSetEntity_Scope", Order = 0)]
         public bool IsActive { get; set; } = true;
+
+        [Required]
+        [Index("IX_RuleSetEntity_Scope", Order = 1)]
+        public RuleScope Scope { get; set; }
+        
 
         /// <summary>
         /// True when this set is an internal composite container for rules within another ruleset.
@@ -37,7 +47,7 @@ namespace SmartStore.Rules.Domain
         public virtual ICollection<RuleEntity> Rules
         {
             get { return _rules ?? (_rules = new HashSet<RuleEntity>()); }
-            protected set { _rules = value; }
+            protected internal set { _rules = value; }
         }
     }
 }

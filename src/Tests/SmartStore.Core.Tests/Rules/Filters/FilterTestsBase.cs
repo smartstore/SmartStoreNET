@@ -299,7 +299,7 @@ namespace SmartStore.Core.Tests.Rules.Filters
 
         protected virtual List<Customer> ExecuteQuery(LogicalRuleOperator logicalOperator, params FilterExpression[] expressions)
         {
-            var compositeFilter = new CompositeFilterExpression(typeof(Customer)) { LogicalOperator = logicalOperator };
+            var compositeFilter = new FilterExpressionGroup(typeof(Customer)) { LogicalOperator = logicalOperator };
             compositeFilter.AddExpressions(expressions);
 
             var predicate = compositeFilter.ToPredicate(true);

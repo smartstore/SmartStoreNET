@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Rules.Filters
 {
-    public class CompositeFilterExpression : FilterExpression
+    public class FilterExpressionGroup : FilterExpression, IRuleExpressionGroup
     {
-        private readonly List<FilterExpression> _expressions = new List<FilterExpression>();
+        private readonly List<IRuleExpression> _expressions = new List<IRuleExpression>();
 
-        public CompositeFilterExpression(Type entityType)
+        public FilterExpressionGroup(Type entityType)
         {
             Guard.NotNull(entityType, nameof(entityType));
 
@@ -22,16 +22,18 @@ namespace SmartStore.Rules.Filters
         }
 
         public Type EntityType { get; private set; }
+
         public LogicalRuleOperator LogicalOperator { get; set; }
-        public IReadOnlyCollection<FilterExpression> Expressions
+
+        public IEnumerable<IRuleExpression> Expressions
         {
             get => _expressions;
         }
 
-        public void AddExpressions(params FilterExpression[] expressions)
+        public void AddExpressions(params IRuleExpression[] expressions)
         {
             Guard.NotNull(expressions, nameof(expressions));
-            _expressions.AddRange(expressions);
+            _expressions.AddRange(expressions.OfType<FilterExpression>());
         }
 
         public Expression ToPredicate(bool liftToNull)
@@ -54,7 +56,7 @@ namespace SmartStore.Rules.Filters
         {
             Expression left = null;
 
-            foreach (var ruleExpression in Expressions)
+            foreach (var ruleExpression in Expressions.Cast<FilterExpression>())
             {
                 var right = ruleExpression.ToPredicate(node, liftToNull);
 

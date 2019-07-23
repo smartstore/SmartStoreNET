@@ -6,7 +6,15 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Rules
 {
-    public class RuleExpression
+    public interface IRuleExpression
+    {
+        RuleDescriptor Descriptor { get; }
+        RuleOperator Operator { get; }
+        object Value { get; }
+        string RawValue { get; }
+    }
+
+    public class RuleExpression : IRuleExpression
     {
         public RuleDescriptor Descriptor { get; set; }
         public RuleOperator Operator { get; set; }

@@ -14,6 +14,7 @@ namespace SmartStore.Rules.Filters
     public class FilterDescriptor : RuleDescriptor
     {
         public FilterDescriptor(LambdaExpression memberExpression)
+            : base(RuleScope.Customer)
         {
             Guard.NotNull(memberExpression, nameof(memberExpression));
             MemberExpression = memberExpression;

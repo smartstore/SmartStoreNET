@@ -10,13 +10,14 @@ using SmartStore.Core;
 
 namespace SmartStore.Rules.Domain
 {
+    [Table("Rule")]
     public partial class RuleEntity // : BaseEntity
     {
         [Required]
         public int RuleSetId { get; set; }
 
         [ForeignKey("RuleSetId")]
-        public virtual RuleSet RuleSet { get; set; }
+        public virtual RuleSetEntity RuleSet { get; set; }
 
         [DataMember]
         [Required, StringLength(100)]
@@ -42,5 +43,11 @@ namespace SmartStore.Rules.Domain
         [DataMember]
         [Index("IX_PageBuilder_DisplayOrder")]
         public int DisplayOrder { get; set; }
+
+        [NotMapped]
+        public bool IsGroup
+        {
+            get => RuleType.IsCaseInsensitiveEqual("Group");
+        }
     }
 }

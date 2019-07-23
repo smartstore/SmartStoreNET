@@ -5,15 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartStore.Rules
+namespace SmartStore.Rules.Cart
 {
-    public abstract class ListRuleBase<T> : RuleBase
+    public abstract class ListRuleBase<T> : IRule
     {
-        protected abstract T GetValue(RuleContext context);
+        protected abstract T GetValue(CartRuleContext context);
 
-        public override bool Match(RuleContext context)
+        public bool Match(CartRuleContext context, RuleExpression expression)
         {
-            var list = Expression.Value.Convert<List<T>>();
+            var list = expression.Value as List<T>;
             if (list == null || list.Count == 0)
             {
                 return true;
@@ -25,16 +25,16 @@ namespace SmartStore.Rules
             {
                 return false;
             }
-            if (Expression.Operator == RuleOperator.In)
+            if (expression.Operator == RuleOperator.In)
             {
                 return list.Contains(value);
             }
-            if (Expression.Operator == RuleOperator.NotIn)
+            if (expression.Operator == RuleOperator.NotIn)
             {
                 return !list.Contains(value);
             }
 
-            throw new InvalidRuleOperatorException(this);
+            throw new InvalidRuleOperatorException(expression);
         }
     }
 }

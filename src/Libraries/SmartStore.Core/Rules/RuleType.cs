@@ -11,6 +11,7 @@ namespace SmartStore.Rules
         public readonly static RuleType Boolean = new RuleType("bool", typeof(bool));
         public readonly static RuleType Int = new RuleType("int", typeof(int));
         public readonly static RuleType Float = new RuleType("float", typeof(float));
+        public readonly static RuleType Money = new RuleType("money", typeof(decimal));
         public readonly static RuleType Guid = new RuleType("Guid", typeof(Guid));
         public readonly static RuleType DateTime = new RuleType("Date", typeof(DateTime));
         public readonly static RuleType NullableBoolean = new RuleType("bool?", typeof(bool?));

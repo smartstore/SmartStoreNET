@@ -11,12 +11,9 @@ using SmartStore.Core;
 namespace SmartStore.Rules.Domain
 {
     [Table("RuleSet")]
-    public partial class RuleSetEntity // : BaseEntity
+    public partial class RuleSetEntity : BaseEntity, IAuditable
     {
         private ICollection<RuleEntity> _rules;
-
-        // TODO: remove late
-        public int Id { get; set; }
 
         [DataMember]
         [StringLength(200)]
@@ -37,12 +34,15 @@ namespace SmartStore.Rules.Domain
         /// <summary>
         /// True when this set is an internal composite container for rules within another ruleset.
         /// </summary>
-        public bool IsComposite { get; set; }
+        public bool IsSubGroup { get; set; }
 
-        /// <summary>
-        /// Only applicable if <see cref="IsComposite"/> is true (???)
-        /// </summary>
         public LogicalRuleOperator LogicalOperator { get; set; }
+
+        public DateTime CreatedOnUtc { get; set; }
+
+        public DateTime UpdatedOnUtc { get; set; }
+
+        public DateTime? LastProcessedOnUtc { get; set; }
 
         public virtual ICollection<RuleEntity> Rules
         {

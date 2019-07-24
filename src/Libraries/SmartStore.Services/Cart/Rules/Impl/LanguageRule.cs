@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartStore.Rules.Cart.Impl
+namespace SmartStore.Services.Cart.Rules.Impl
 {
-    public class CurrencyRule : ListRuleBase<int>
+    public class LanguageRule : ListRuleBase<int>
     {
         protected override int GetValue(CartRuleContext context)
         {
-            return context.WorkContext.WorkingCurrency.Id;
+            return context.WorkContext.WorkingLanguage.Id;
         }
     }
 }

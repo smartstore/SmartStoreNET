@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartStore.Rules;
 
-namespace SmartStore.Rules.Cart
+namespace SmartStore.Services.Cart.Rules
 {
     public abstract class ListRuleBase<T> : IRule
     {

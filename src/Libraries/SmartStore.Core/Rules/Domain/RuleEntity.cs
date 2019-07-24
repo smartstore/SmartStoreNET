@@ -6,17 +6,19 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using SmartStore.Core;
 
 namespace SmartStore.Rules.Domain
 {
     [Table("Rule")]
-    public partial class RuleEntity // : BaseEntity
+    public partial class RuleEntity : BaseEntity
     {
         [Required]
         public int RuleSetId { get; set; }
 
         [ForeignKey("RuleSetId")]
+        [JsonIgnore]
         public virtual RuleSetEntity RuleSet { get; set; }
 
         [DataMember]

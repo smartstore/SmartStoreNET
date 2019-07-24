@@ -7,7 +7,7 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Stores;
 
-namespace SmartStore.Rules.Cart
+namespace SmartStore.Services.Cart.Rules
 {
     public class CartRuleContext
     {

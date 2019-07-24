@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartStore.Rules;
 
-namespace SmartStore.Rules.Cart.Impl
+namespace SmartStore.Services.Cart.Rules
 {
     public class CompositeRule : IRule
     {
         private readonly RuleExpressionGroup _group;
-        private readonly CartRuleService _cartRuleService;
+        private readonly CartRuleProvider _cartRuleService;
 
-        public CompositeRule(RuleExpressionGroup group, CartRuleService cartRuleService)
+        public CompositeRule(RuleExpressionGroup group, CartRuleProvider cartRuleService)
         {
             _group = group;
             _cartRuleService = cartRuleService;

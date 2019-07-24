@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Rules;
 
-namespace SmartStore.Rules.Cart.Impl
+namespace SmartStore.Services.Cart.Rules.Impl
 {
     public class CustomerRoleRule : IRule
     {

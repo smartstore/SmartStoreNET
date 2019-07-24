@@ -7,23 +7,29 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Rules
 {
-    public class RuleDescriptorCollection : Collection<RuleDescriptor>
+    public class RuleDescriptorCollection : KeyedCollection<string, RuleDescriptor>
     {
         public RuleDescriptorCollection()
+            : base(StringComparer.OrdinalIgnoreCase)
         {
         }
 
-        public RuleDescriptorCollection(IList<RuleDescriptor> descriptors)
-            : base(descriptors)
+        public RuleDescriptorCollection(IEnumerable<RuleDescriptor> descriptors)
+            : base(StringComparer.OrdinalIgnoreCase)
         {
+            Guard.NotNull(descriptors, nameof(descriptors));
+
+            descriptors.Each(x => Add(x));
+        }
+
+        protected override string GetKeyForItem(RuleDescriptor item)
+        {
+            return item.Name;
         }
 
         public RuleDescriptor FindDescriptor(string name)
         {
-            Guard.NotEmpty(name, nameof(name));
-            
-            // TODO: Impl
-            return null;
+            return this[name];
         }
     }
 }

@@ -7,11 +7,16 @@ using SmartStore.Rules.Domain;
 
 namespace SmartStore.Rules
 {
-    public abstract class RuleServiceBase : IRuleVisitor
+    public interface IRuleProvider : IRuleVisitor
+    {
+        RuleDescriptorCollection RuleDescriptors { get; }
+    }
+
+    public abstract class RuleProviderBase : IRuleProvider
     {
         private RuleDescriptorCollection _descriptors;
 
-        protected RuleServiceBase(RuleScope scope)
+        protected RuleProviderBase(RuleScope scope)
         {
             Scope = scope;
         }
@@ -45,7 +50,7 @@ namespace SmartStore.Rules
             {
                 if (_descriptors == null)
                 {
-                    var descriptors = LoadDescriptors().Cast<RuleDescriptor>().ToList();
+                    var descriptors = LoadDescriptors().Cast<RuleDescriptor>();
                     _descriptors = new RuleDescriptorCollection(descriptors);
                 }
 

@@ -4,19 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
-using SmartStore.Rules.Cart.Impl;
+using SmartStore.Rules;
 using SmartStore.Rules.Domain;
+using SmartStore.Services.Cart.Rules.Impl;
 
-namespace SmartStore.Rules.Cart
+namespace SmartStore.Services.Cart.Rules
 {
-    public class CartRuleService : RuleServiceBase
+    public interface ICartRuleProvider : IRuleProvider
+    {
+        bool RuleMatches(RuleExpression expression);
+        IRule GetProcessor(RuleExpression expression);
+    }
+
+    public class CartRuleProvider : RuleProviderBase, ICartRuleProvider
     {
         private readonly IComponentContext _componentContext;
+        private readonly ICommonServices _services;
 
-        public CartRuleService(IComponentContext componentContext)
+        public CartRuleProvider(IComponentContext componentContext, ICommonServices services)
             : base(RuleScope.Cart)
         {
             _componentContext = componentContext;
+            _services = services;
         }
 
         public override IRuleExpression VisitRule(RuleEntity rule)
@@ -49,9 +58,9 @@ namespace SmartStore.Rules.Cart
 
             var context = new CartRuleContext
             {
-                Customer = null, // TODO
-                Store = null, // TODO
-                WorkContext = null // TODO
+                Customer = _services.WorkContext.CurrentCustomer,
+                Store = _services.StoreContext.CurrentStore,
+                WorkContext = _services.WorkContext
             };
 
             var processor = GetProcessor(expression);
@@ -68,23 +77,19 @@ namespace SmartStore.Rules.Cart
                 throw new InvalidOperationException();
             }
 
-            if (descriptor.ProcessorInstance == null)
-            {
-                var group = expression as RuleExpressionGroup;
+            IRule instance;
+            var group = expression as RuleExpressionGroup;
 
-                if (group == null && descriptor.ProcessorType != typeof(CompositeRule))
-                {
-                    // TODO: Autofac
-                    descriptor.ProcessorInstance = (IRule)Activator.CreateInstance(descriptor.ProcessorType);
-                }
-                else
-                {
-                    var compositeRule = new CompositeRule(group, this);
-                    descriptor.ProcessorInstance = compositeRule;
-                }
+            if (group == null && descriptor.ProcessorType != typeof(CompositeRule))
+            {
+                instance = _componentContext.ResolveKeyed<IRule>(descriptor.ProcessorType);
+            }
+            else
+            {
+                instance = new CompositeRule(group, this);
             }
 
-            return descriptor.ProcessorInstance;
+            return instance;
         }
 
         protected override IEnumerable<RuleDescriptor> LoadDescriptors()
@@ -130,15 +135,15 @@ namespace SmartStore.Rules.Cart
                     Constraints = new IRuleConstraint[0],
                     SelectList = new RemoteRuleValueSelectList("Store") { Multiple = true }
                 },
-                //new CartRuleDescriptor
-                //{
-                //    Name = "Rule",
-                //    RuleType = RuleType.Int,
-                //    ProcessorType = typeof(RuleRule),
-                //    Operators = new[] { RuleOperator.IsEqualTo, RuleOperator.IsNotEqualTo },
-                //    Constraints = new IRuleConstraint[0],
-                //    SelectList = new RemoteRuleValueSelectList("CartRule"),
-                //}
+                new CartRuleDescriptor
+                {
+                    Name = "Rule",
+                    RuleType = RuleType.Int,
+                    ProcessorType = typeof(RuleRule),
+                    Operators = new[] { RuleOperator.IsEqualTo, RuleOperator.IsNotEqualTo },
+                    Constraints = new IRuleConstraint[0],
+                    SelectList = new RemoteRuleValueSelectList("CartRule"),
+                }
             };
         }
     }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SmartStore.Rules.Cart.Impl;
+using SmartStore.Rules;
 
-namespace SmartStore.Rules.Cart
+namespace SmartStore.Services.Cart.Rules
 {
     public class CartRuleDescriptor : RuleDescriptor
     {
@@ -14,6 +14,6 @@ namespace SmartStore.Rules.Cart
         }
 
         public Type ProcessorType { get; set; }
-        public IRule ProcessorInstance { get; set; }
+        //public IRule ProcessorInstance { get; set; }
     }
 }

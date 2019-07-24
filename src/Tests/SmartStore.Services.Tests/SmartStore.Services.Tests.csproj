@@ -130,6 +130,7 @@
     <Compile Include="Payments\TestPaymentMethod.cs" />
     <Compile Include="Payments\PaymentServiceTests.cs" />
     <Compile Include="Search\LinqCatalogSearchServiceTests.cs" />
+    <Compile Include="Security\PermissionServiceTests.cs" />
     <Compile Include="Seo\SeoExtensionsTests.cs" />
     <Compile Include="ServiceTest.cs" />
     <Compile Include="Security\EncryptionServiceTests.cs" />

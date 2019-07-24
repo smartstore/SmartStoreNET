@@ -6,53 +6,6 @@ namespace SmartStore.Services.Security
 {
     public partial class StandardPermissionProvider : IPermissionProvider
     {
-        // GP: benefit? less error-proneness?
-        public static class Customer
-        {
-            public new static string ToString() => "customer";
-            public static readonly string Read = "customer.role.read";
-            public static readonly string Update = "customer.role.update";
-            public static readonly string Create = "customer.role.create";
-            public static readonly string Delete = "customer.role.delete";
-            public static readonly string Impersonate = "customer.impersonate";
-            public static class Role
-            {
-                public new static string ToString() => "customer.role";
-                public static readonly string Read = "customer.role.read";
-                public static readonly string Update = "customer.role.update";
-                public static readonly string Create = "customer.role.create";
-                public static readonly string Delete = "customer.role.delete";
-            }
-        }
-
-        public static class Order
-        {
-            public new static string ToString() => "order";
-            public static readonly string Read = "order.read";
-            public static readonly string Update = "order.update";
-            public static readonly string Create = "order.create";
-            public static readonly string Delete = "order.delete";
-            public static class GiftCard
-            {
-                public new static string ToString() => "order.gift-card";
-                public static readonly string Read = "order.gift-card.read";
-                public static readonly string Update = "order.gift-card.update";
-                public static readonly string Create = "order.gift-card.create";
-                public static readonly string Delete = "order.gift-card.delete";
-                public static readonly string Notify = "order.gift-card.notify";
-            }
-            public static class ReturnRequest
-            {
-                public new static string ToString() => "order.return-request";
-                public static readonly string Read = "order.return-request.read";
-                public static readonly string Update = "order.return-request.update";
-                public static readonly string Create = "order.return-request.create";
-                public static readonly string Delete = "order.return-request.delete";
-                public static readonly string Accept = "order.return-request.accept";
-            }
-        }
-        //......
-
         //admin area permissions
         public static readonly PermissionRecord AccessAdminPanel = new PermissionRecord { Name = "Access admin area", SystemName = "AccessAdminPanel", Category = "Standard" };
         public static readonly PermissionRecord AllowCustomerImpersonation = new PermissionRecord { Name = "Admin area. Allow Customer Impersonation", SystemName = "AllowCustomerImpersonation", Category = "Customers" };

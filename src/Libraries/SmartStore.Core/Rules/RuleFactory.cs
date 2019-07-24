@@ -22,10 +22,12 @@ namespace SmartStore.Rules
 
         private readonly IRuleStorage _storage;
         private readonly ICacheManager _cache;
+        private readonly IDbContext _dbContext;
 
-        public RuleFactory(IRuleStorage storage, ICacheManager cache)
+        public RuleFactory(IRuleStorage storage, IDbContext dbContext, ICacheManager cache)
         {
             _storage = storage;
+            _dbContext = dbContext;
             _cache = cache;
         }
 
@@ -98,6 +100,10 @@ namespace SmartStore.Rules
                 using (new DbContextScope(forceNoTracking: true, proxyCreation: false, lazyLoading: false))
                 {
                     var allRuleSets = _storage.GetAllRuleSets(false, true, includeSubGroups: true).Load();
+                    _dbContext.DetachEntities(allRuleSets);
+                    // TODO: check if the above detach call already detached navigation prop instances
+                    _dbContext.DetachEntities(allRuleSets.SelectMany(x => x.Rules));
+
                     return allRuleSets.ToDictionary(k => k.Id);
                 }
             });

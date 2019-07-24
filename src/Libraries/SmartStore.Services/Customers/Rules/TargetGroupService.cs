@@ -45,15 +45,15 @@ namespace SmartStore.Services.Customers
             Guard.NotNull(filter, nameof(filter));
 
             return ProcessFilter(
+                new[] { filter },
                 LogicalRuleOperator.And, 
-                new[] { filter }, 
                 pageIndex, 
                 pageSize);
         }
 
         public IPagedList<Customer> ProcessFilter(
-            LogicalRuleOperator logicalOperator,
             FilterExpression[] filters,
+            LogicalRuleOperator logicalOperator,
             int pageIndex = 0,
             int pageSize = int.MaxValue)
         {

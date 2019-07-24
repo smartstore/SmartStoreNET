@@ -14,6 +14,7 @@ namespace SmartStore.Rules
     public interface IRuleFactory
     {
         IRuleExpressionGroup CreateExpressionGroup(int ruleSetId, IRuleVisitor visitor);
+        IRuleExpressionGroup CreateExpressionGroup(RuleSetEntity ruleSet, IRuleVisitor visitor);
     }
 
     public partial class RuleFactory : IRuleFactory
@@ -31,7 +32,7 @@ namespace SmartStore.Rules
             _cache = cache;
         }
 
-        public virtual IRuleExpressionGroup CreateExpressionGroup(int ruleSetId, IRuleVisitor visitor)
+        public IRuleExpressionGroup CreateExpressionGroup(int ruleSetId, IRuleVisitor visitor)
         {
             if (ruleSetId <= 0)
                 return null;
@@ -46,7 +47,7 @@ namespace SmartStore.Rules
             return CreateExpressionGroup(ruleSet, visitor);
         }
 
-        protected internal IRuleExpressionGroup CreateExpressionGroup(RuleSetEntity ruleSet, IRuleVisitor visitor)
+        public virtual IRuleExpressionGroup CreateExpressionGroup(RuleSetEntity ruleSet, IRuleVisitor visitor)
         {
             if (ruleSet.Scope != visitor.Scope)
             {
@@ -100,8 +101,10 @@ namespace SmartStore.Rules
                 using (new DbContextScope(forceNoTracking: true, proxyCreation: false, lazyLoading: false))
                 {
                     var allRuleSets = _storage.GetAllRuleSets(false, true, includeSubGroups: true).Load();
+
                     _dbContext.DetachEntities(allRuleSets);
                     // TODO: check if the above detach call already detached navigation prop instances
+                    // TODO: Sort rules (?)
                     _dbContext.DetachEntities(allRuleSets.SelectMany(x => x.Rules));
 
                     return allRuleSets.ToDictionary(k => k.Id);

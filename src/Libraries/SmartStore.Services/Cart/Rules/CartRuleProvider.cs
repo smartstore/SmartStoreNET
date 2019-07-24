@@ -13,17 +13,20 @@ namespace SmartStore.Services.Cart.Rules
     public interface ICartRuleProvider : IRuleProvider
     {
         bool RuleMatches(RuleExpression expression);
+        bool RuleMatches(RuleExpression[] expressions, LogicalRuleOperator logicalOperator);
         IRule GetProcessor(RuleExpression expression);
     }
 
     public class CartRuleProvider : RuleProviderBase, ICartRuleProvider
     {
+        private readonly IRuleFactory _ruleFactory;
         private readonly IComponentContext _componentContext;
         private readonly ICommonServices _services;
 
-        public CartRuleProvider(IComponentContext componentContext, ICommonServices services)
+        public CartRuleProvider(IRuleFactory ruleFactory, IComponentContext componentContext, ICommonServices services)
             : base(RuleScope.Cart)
         {
+            _ruleFactory = ruleFactory;
             _componentContext = componentContext;
             _services = services;
         }
@@ -52,9 +55,41 @@ namespace SmartStore.Services.Cart.Rules
             return group;
         }
 
+        public bool RuleMatches(params int[] ruleSetIds)
+        {
+            //_ruleFactory.CreateExpressionGroup()
+
+
+            return false;
+        }
+
         public bool RuleMatches(RuleExpression expression)
         {
             Guard.NotNull(expression, nameof(expression));
+
+            return RuleMatches(new[] { expression }, LogicalRuleOperator.And);
+        }
+
+        public bool RuleMatches(RuleExpression[] expressions, LogicalRuleOperator logicalOperator)
+        {
+            Guard.NotNull(expressions, nameof(expressions));
+
+            if (expressions.Length == 0)
+            {
+                return true;
+            }
+
+            RuleExpressionGroup group = null;
+
+            if (expressions.Length == 1 && expressions[0] is RuleExpressionGroup group2)
+            {
+                group = group2;
+            }
+            else
+            {
+                group = new RuleExpressionGroup() { LogicalOperator = logicalOperator };
+                group.AddExpressions(expressions);
+            }
 
             var context = new CartRuleContext
             {
@@ -63,9 +98,9 @@ namespace SmartStore.Services.Cart.Rules
                 WorkContext = _services.WorkContext
             };
 
-            var processor = GetProcessor(expression);
+            var processor = GetProcessor(group);
 
-            return processor.Match(context, expression);
+            return processor.Match(context, group);
         }
 
         public IRule GetProcessor(RuleExpression expression)

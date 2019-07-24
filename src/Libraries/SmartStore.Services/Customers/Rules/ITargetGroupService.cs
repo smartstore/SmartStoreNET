@@ -15,8 +15,8 @@ namespace SmartStore.Services.Customers
         IPagedList<Customer> ProcessFilter(FilterExpression filter, int pageIndex = 0, int pageSize = int.MaxValue);
 
         IPagedList<Customer> ProcessFilter(
-            LogicalRuleOperator logicalOperator,
             FilterExpression[] filters,
+            LogicalRuleOperator logicalOperator,
             int pageIndex = 0,
             int pageSize = int.MaxValue);
     }

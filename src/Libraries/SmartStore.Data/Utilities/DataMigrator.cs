@@ -893,8 +893,8 @@ namespace SmartStore.Data.Utilities
                 var paymentMethod = AddPermissions("configuration.payment-method", "read", "update", "activate");
                 var authentication = AddPermissions("configuration.authentication", "read", "update", "activate");
                 var currency = AddPermissions("configuration.currency", crud);
-                var deliveryTime = AddPermissions("configuration.delivery-times", crud);
-                var theme = AddPermissions("configuration.themes", "read", "update", "upload");
+                var deliveryTime = AddPermissions("configuration.delivery-time", crud);
+                var theme = AddPermissions("configuration.theme", "read", "update", "upload");
                 var measure = AddPermissions("configuration.measure", crud);
                 var activityLog = AddPermissions("configuration.activity-log", "read", "update");
                 var acl = AddPermissions("configuration.acl", "read", "update");

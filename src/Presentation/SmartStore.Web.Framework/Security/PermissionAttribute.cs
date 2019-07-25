@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Web.Mvc;
 using SmartStore.Core;
@@ -51,14 +52,7 @@ namespace SmartStore.Web.Framework.Security
             }
             catch
             {
-                try
-                {
-                    filterContext.Result = new HttpUnauthorizedResult();
-                }
-                catch
-                {
-                    filterContext.Result = new HttpStatusCodeResult(401);
-                }
+                filterContext.Result = new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
             }
         }
 

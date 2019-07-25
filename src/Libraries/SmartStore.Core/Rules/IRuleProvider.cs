@@ -38,6 +38,7 @@ namespace SmartStore.Rules
                 // TODO: ErrHandling and EmptynessCheck
             }
 
+            expression.Id = entity.Id;
             expression.Descriptor = descriptor;
             expression.Operator = entity.Operator;
             expression.RawValue = entity.Value;

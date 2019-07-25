@@ -12,9 +12,12 @@ namespace SmartStore.Services.Cart.Rules
 {
     public interface ICartRuleProvider : IRuleProvider
     {
-        bool RuleMatches(RuleExpression expression);
-        bool RuleMatches(RuleExpression[] expressions, LogicalRuleOperator logicalOperator);
         IRule GetProcessor(RuleExpression expression);
+        RuleExpressionGroup CreateExpressionGroup(int ruleSetId);
+
+        bool RuleMatches(RuleExpression expression);
+        bool RuleMatches(int[] ruleSetIds, LogicalRuleOperator logicalOperator);
+        bool RuleMatches(RuleExpression[] expressions, LogicalRuleOperator logicalOperator);
     }
 
     public class CartRuleProvider : RuleProviderBase, ICartRuleProvider
@@ -31,6 +34,11 @@ namespace SmartStore.Services.Cart.Rules
             _services = services;
         }
 
+        public RuleExpressionGroup CreateExpressionGroup(int ruleSetId)
+        {
+            return _ruleFactory.CreateExpressionGroup(ruleSetId, this) as RuleExpressionGroup;
+        }
+
         public override IRuleExpression VisitRule(RuleEntity rule)
         {
             var expression = new RuleExpression();
@@ -42,6 +50,7 @@ namespace SmartStore.Services.Cart.Rules
         {
             var group = new RuleExpressionGroup
             {
+                Id = ruleSet.Id,
                 LogicalOperator = ruleSet.LogicalOperator,
                 Value = ruleSet.Id,
                 RawValue = ruleSet.Id.ToString(),
@@ -55,19 +64,26 @@ namespace SmartStore.Services.Cart.Rules
             return group;
         }
 
-        public bool RuleMatches(params int[] ruleSetIds)
-        {
-            //_ruleFactory.CreateExpressionGroup()
-
-
-            return false;
-        }
-
         public bool RuleMatches(RuleExpression expression)
         {
             Guard.NotNull(expression, nameof(expression));
 
             return RuleMatches(new[] { expression }, LogicalRuleOperator.And);
+        }
+
+        public bool RuleMatches(int[] ruleSetIds, LogicalRuleOperator logicalOperator)
+        {
+            Guard.NotNull(ruleSetIds, nameof(ruleSetIds));
+
+            if (ruleSetIds.Length == 0)
+                return true;
+
+            var expressions = ruleSetIds
+                .Select(id => _ruleFactory.CreateExpressionGroup(id, this))
+                .Cast<RuleExpression>()
+                .ToArray();
+
+            return RuleMatches(expressions, logicalOperator);
         }
 
         public bool RuleMatches(RuleExpression[] expressions, LogicalRuleOperator logicalOperator)
@@ -172,9 +188,9 @@ namespace SmartStore.Services.Cart.Rules
                 },
                 new CartRuleDescriptor
                 {
-                    Name = "Rule",
+                    Name = "RuleSet",
                     RuleType = RuleType.Int,
-                    ProcessorType = typeof(RuleRule),
+                    ProcessorType = typeof(RuleSetRule),
                     Operators = new[] { RuleOperator.IsEqualTo, RuleOperator.IsNotEqualTo },
                     Constraints = new IRuleConstraint[0],
                     SelectList = new RemoteRuleValueSelectList("CartRule"),

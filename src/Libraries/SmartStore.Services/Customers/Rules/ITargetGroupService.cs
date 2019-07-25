@@ -12,7 +12,18 @@ namespace SmartStore.Services.Customers
 {
     public interface ITargetGroupService : IRuleProvider
     {
-        IPagedList<Customer> ProcessFilter(FilterExpression filter, int pageIndex = 0, int pageSize = int.MaxValue);
+        FilterExpressionGroup CreateExpressionGroup(int ruleSetId);
+
+        IPagedList<Customer> ProcessFilter(
+            FilterExpression filter, 
+            int pageIndex = 0, 
+            int pageSize = int.MaxValue);
+
+        IPagedList<Customer> ProcessFilter(
+            int[] ruleSetIds,
+            LogicalRuleOperator logicalOperator,
+            int pageIndex = 0,
+            int pageSize = int.MaxValue);
 
         IPagedList<Customer> ProcessFilter(
             FilterExpression[] filters,

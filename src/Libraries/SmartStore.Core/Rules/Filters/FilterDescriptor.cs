@@ -37,7 +37,7 @@ namespace SmartStore.Rules.Filters
             MemberExpression = expression;
         }
 
-        public new Expression<Func<T, TValue>> MemberExpression { get; private set; }
+        public new Expression<Func<T, TValue>> MemberExpression { get; protected set; }
     }
 
     public abstract class PredicateFilterDescriptor<T, TPredicate, TPredicateValue> : FilterDescriptor<T, IEnumerable<TPredicate>>

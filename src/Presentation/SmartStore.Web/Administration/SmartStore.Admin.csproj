@@ -218,6 +218,7 @@
     <Compile Include="Controllers\RecurringPaymentController.cs" />
     <Compile Include="Controllers\ReturnRequestController.cs" />
     <Compile Include="Controllers\RoxyFileManagerController.cs" />
+    <Compile Include="Controllers\RuleController.cs" />
     <Compile Include="Controllers\ScheduleTaskController.cs" />
     <Compile Include="Controllers\AdminModelHelper.cs" />
     <Compile Include="Controllers\SecurityController.cs" />
@@ -602,6 +603,12 @@
     <Content Include="Views\Shared\EditorTemplates\AccessPermissions.cshtml" />
     <Content Include="Views\Shared\Menus\Admin.cshtml" />
     <Content Include="Views\Shared\Partials\FontAwesomeIcon.cshtml" />
+    <Content Include="Views\Rule\_CreateOrUpdate.cshtml" />
+    <Content Include="Views\Rule\Create.cshtml" />
+    <Content Include="Views\Rule\Edit.cshtml" />
+    <Content Include="Views\Rule\List.cshtml" />
+    <Content Include="Views\Rule\_RuleSet.cshtml" />
+    <Content Include="Views\Rule\_Rule.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

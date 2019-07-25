@@ -10,7 +10,6 @@ using SmartStore.Core;
 
 namespace SmartStore.Rules.Domain
 {
-    [Table("RuleSet")]
     public partial class RuleSetEntity : BaseEntity, IAuditable
     {
         private ICollection<RuleEntity> _rules;

@@ -15,12 +15,19 @@ namespace SmartStore.Services.Customers
 {
     public class TargetGroupService : RuleProviderBase, ITargetGroupService
     {
+        private readonly IRuleFactory _ruleFactory;
         private readonly IRepository<Customer> _rsCustomer;
 
-        public TargetGroupService(IRepository<Customer> rsCustomer)
+        public TargetGroupService(IRuleFactory ruleFactory, IRepository<Customer> rsCustomer)
             : base(RuleScope.Customer)
         {
+            _ruleFactory = ruleFactory;
             _rsCustomer = rsCustomer;
+        }
+
+        public FilterExpressionGroup CreateExpressionGroup(int ruleSetId)
+        {
+            return _ruleFactory.CreateExpressionGroup(ruleSetId, this) as FilterExpressionGroup;
         }
 
         public override IRuleExpression VisitRule(RuleEntity rule)
@@ -32,15 +39,22 @@ namespace SmartStore.Services.Customers
 
         public override IRuleExpressionGroup VisitRuleSet(RuleSetEntity ruleSet)
         {
-            var expression = new RuleExpressionGroup
+            var group = new FilterExpressionGroup(typeof(Customer))
             {
-                LogicalOperator = ruleSet.LogicalOperator
+                Id = ruleSet.Id,
+                LogicalOperator = ruleSet.LogicalOperator,
+                Value = ruleSet.Id,
+                RawValue = ruleSet.Id.ToString(),
+                // INFO: filter group does NOT access any descriptor
             };
 
-            return expression;
+            return group;
         }
 
-        public IPagedList<Customer> ProcessFilter(FilterExpression filter, int pageIndex = 0, int pageSize = int.MaxValue)
+        public IPagedList<Customer> ProcessFilter(
+            FilterExpression filter, 
+            int pageIndex = 0, 
+            int pageSize = int.MaxValue)
         {
             Guard.NotNull(filter, nameof(filter));
 
@@ -49,6 +63,23 @@ namespace SmartStore.Services.Customers
                 LogicalRuleOperator.And, 
                 pageIndex, 
                 pageSize);
+        }
+
+
+        public IPagedList<Customer> ProcessFilter(
+            int[] ruleSetIds, 
+            LogicalRuleOperator logicalOperator,
+            int pageIndex = 0,
+            int pageSize = int.MaxValue)
+        {
+            Guard.NotNull(ruleSetIds, nameof(ruleSetIds));
+
+            var filters = ruleSetIds
+                .Select(id => _ruleFactory.CreateExpressionGroup(id, this))
+                .Cast<FilterExpression>()
+                .ToArray();
+
+            return ProcessFilter(filters, logicalOperator, pageIndex, pageSize);
         }
 
         public IPagedList<Customer> ProcessFilter(
@@ -94,33 +125,49 @@ namespace SmartStore.Services.Customers
             {
                 new FilterDescriptor<Customer, bool>(x => x.IsTaxExempt)
                 {
+                    Name = "TaxExempt",
                     RuleType = RuleType.Boolean,
-                    Name = "TaxExempt"
+                    Constraints = new IRuleConstraint[0]
                 },
                 new FilterDescriptor<Customer, int?>(x => x.BillingAddress.CountryId)
                 {
-                    RuleType = RuleType.NullableInt,
-                    Name = "BillingCountry"
+                    Name = "BillingCountry",
+                    RuleType = RuleType.IntArray,
+                    Constraints = new IRuleConstraint[0],
+                    SelectList = new RemoteRuleValueSelectList("Country") { Multiple = true }
                 },
                 new FilterDescriptor<Customer, int?>(x => x.ShippingAddress.CountryId)
                 {
-                    RuleType = RuleType.NullableInt,
-                    Name = "ShippingCountry"
+                    Name = "ShippingCountry",
+                    RuleType = RuleType.IntArray,
+                    Constraints = new IRuleConstraint[0],
+                    SelectList = new RemoteRuleValueSelectList("Country") { Multiple = true }
                 },
                 new FilterDescriptor<Customer, int?>(x => DbFunctions.DiffDays(x.LastActivityDateUtc, DateTime.UtcNow))
                 {
+                    Name = "LastActivityDays",
                     RuleType = RuleType.NullableInt,
-                    Name = "LastActivityDays"
+                    Constraints = new IRuleConstraint[0]
                 },
                 new FilterDescriptor<Customer, int>(x => x.Orders.Count(y => y.OrderStatusId == 30))
                 {
+                    Name = "CompletedOrderCount",
                     RuleType = RuleType.Int,
-                    Name = "CompletedOrderCount"
+                    Constraints = new IRuleConstraint[0]
                 },
                 new FilterDescriptor<Customer, int>(x => x.Orders.Count(y => y.OrderStatusId == 40))
                 {
+                    Name = "CancelledOrderCount",
                     RuleType = RuleType.Int,
-                    Name = "CancelledOrderCount"
+                    Constraints = new IRuleConstraint[0]
+                },
+                new TargetGroupFilterDescriptor(_ruleFactory, this)
+                {
+                    Name = "RuleSet",
+                    RuleType = RuleType.Int,
+                    Operators = new[] { RuleOperator.IsEqualTo, RuleOperator.IsNotEqualTo },
+                    Constraints = new IRuleConstraint[0],
+                    SelectList = new RemoteRuleValueSelectList("TargetGroup")
                 },
                 // TODO: more ...
             };

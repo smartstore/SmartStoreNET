@@ -150,6 +150,7 @@
     <Compile Include="Mapping\Directory\QuantityUnitMap.cs" />
     <Compile Include="Mapping\DataExchange\ExportProfileMap.cs" />
     <Compile Include="Mapping\Forums\ForumPostVoteMap.cs" />
+    <Compile Include="Mapping\Rules\RuleEntityMap.cs" />
     <Compile Include="Mapping\Media\MediaStorageMap.cs" />
     <Compile Include="Mapping\Messages\QueuedEmailAttachmentMap.cs" />
     <Compile Include="Mapping\Payments\PaymentMethodMap.cs" />
@@ -681,6 +682,10 @@
     <Compile Include="Migrations\201907032251575_CategoryExternalLink.cs" />
     <Compile Include="Migrations\201907032251575_CategoryExternalLink.Designer.cs">
       <DependentUpon>201907032251575_CategoryExternalLink.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201907250103367_RuleSystem.cs" />
+    <Compile Include="Migrations\201907250103367_RuleSystem.Designer.cs">
+      <DependentUpon>201907250103367_RuleSystem.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -1220,6 +1225,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201907032251575_CategoryExternalLink.resx">
       <DependentUpon>201907032251575_CategoryExternalLink.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907250103367_RuleSystem.resx">
+      <DependentUpon>201907250103367_RuleSystem.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

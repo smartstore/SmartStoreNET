@@ -8,6 +8,7 @@ namespace SmartStore.Rules
 {
     public interface IRuleExpression
     {
+        int Id { get; }
         RuleDescriptor Descriptor { get; }
         RuleOperator Operator { get; }
         object Value { get; }
@@ -16,6 +17,7 @@ namespace SmartStore.Rules
 
     public class RuleExpression : IRuleExpression
     {
+        public int Id { get; set; }
         public RuleDescriptor Descriptor { get; set; }
         public RuleOperator Operator { get; set; }
         public object Value { get; set; }

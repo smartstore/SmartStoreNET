@@ -45,7 +45,6 @@ namespace SmartStore.Rules.Filters
         {
             if (node == null)
             {
-                //instance = Expression.Parameter(base.Descriptor.MemberExpression.Type, "it"); // TODO: was base.Descriptor.EntityType, check if MemberExpression is the same
                 node = Expression.Parameter(EntityType, "it"); // TODO: was base.Descriptor.EntityType, check if MemberExpression is the same
             }
 

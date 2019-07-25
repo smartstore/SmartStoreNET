@@ -1,0 +1,16 @@
+﻿@model IRuleExpressionGroup
+
+@using SmartStore.Rules
+
+<style>
+    .ruleset > .ruleset {
+        padding: 1rem;
+        background-color: rgba(0,0,0, 0.06);
+    }
+</style>
+
+@*@Html.HiddenFor(model => model.Id)*@
+
+<div class="ruleset-root container mt-4">
+    @{ Html.RenderPartial("_RuleSet", Model); }
+</div>

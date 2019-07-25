@@ -11,7 +11,6 @@ using SmartStore.Core;
 
 namespace SmartStore.Rules.Domain
 {
-    [Table("Rule")]
     public partial class RuleEntity : BaseEntity
     {
         [Required]
@@ -37,10 +36,6 @@ namespace SmartStore.Rules.Domain
         [DataMember]
         [StringLength(400)]
         public string Value { get; set; }
-
-        //[DataMember]
-        //[StringLength(400)]
-        //public string UpperValue { get; set; }
 
         [DataMember]
         [Index("IX_PageBuilder_DisplayOrder")]

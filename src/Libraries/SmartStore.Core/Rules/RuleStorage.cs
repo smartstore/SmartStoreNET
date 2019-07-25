@@ -7,12 +7,15 @@ using System.Threading.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Rules.Domain;
+using SmartStore.Core.Caching;
 
 namespace SmartStore.Rules
 {
     public interface IRuleStorage
     {
-        RuleSetEntity GetRuleSetById(int id, bool withRules, bool forEdit);
+        RuleSetEntity GetCachedRuleSet(int id);
+
+        RuleSetEntity GetRuleSetById(int id, bool forEdit, bool withRules);
         IList<RuleSetEntity> GetRuleSetsByIds(int[] ids, bool withRules);
         IPagedList<RuleSetEntity> GetAllRuleSets(
             bool forEdit,
@@ -34,18 +37,53 @@ namespace SmartStore.Rules
 
     public partial class RuleStorage : IRuleStorage
     {
+        internal const string RULESET_BY_ID_KEY = "ruleset:id-{0}";
+
+        private readonly ICacheManager _cache;
         private readonly IRepository<RuleSetEntity> _rsRuleSets;
         private readonly IRepository<RuleEntity> _rsRules;
 
-        public RuleStorage(IRepository<RuleSetEntity> rsRuleSets, IRepository<RuleEntity> rsRules)
+        public RuleStorage(ICacheManager cache, IRepository<RuleSetEntity> rsRuleSets, IRepository<RuleEntity> rsRules)
         {
+            _cache = cache;
             _rsRuleSets = rsRuleSets;
             _rsRules = rsRules;
         }
 
-        #region RuleSets
+        #region Read RuleSets
 
-        public RuleSetEntity GetRuleSetById(int id, bool withRules, bool forEdit)
+        public RuleSetEntity GetCachedRuleSet(int id)
+        {
+            if (id <= 0)
+                return null;
+
+            var cacheKey = RULESET_BY_ID_KEY.FormatInvariant(id);
+            return _cache.Get(cacheKey, () =>
+            {
+                using (new DbContextScope(forceNoTracking: true, proxyCreation: false, lazyLoading: false))
+                {
+                    var ruleSet = this.GetRuleSetById(id, false, true);
+
+                    if (ruleSet != null)
+                    {
+                        _rsRuleSets.Context.DetachEntity(ruleSet);
+                        // TODO: check if the above detach call already detached navigation prop instances
+                        // TODO: Sort rules (?)
+                        _rsRuleSets.Context.DetachEntities(ruleSet.Rules);
+                    }
+
+                    return ruleSet;
+                }
+            }, TimeSpan.FromHours(8));
+        }
+
+        protected void InvalidateRuleSet(int id)
+        {
+            if (id > 0)
+                _cache.Remove(RULESET_BY_ID_KEY.FormatInvariant(id));
+        }
+
+        public RuleSetEntity GetRuleSetById(int id, bool forEdit, bool withRules)
         {
             if (id <= 0)
                 return null;
@@ -80,10 +118,10 @@ namespace SmartStore.Rules
         }
 
         public IPagedList<RuleSetEntity> GetAllRuleSets(
-            bool forEdit, 
+            bool forEdit,
             bool withRules,
             RuleScope? scope = null,
-            int pageIndex = 0, 
+            int pageIndex = 0,
             int pageSize = int.MaxValue,
             bool includeSubGroups = false,
             bool includeHidden = false)
@@ -115,6 +153,10 @@ namespace SmartStore.Rules
             return new PagedList<RuleSetEntity>(query, pageIndex, pageSize);
         }
 
+        #endregion
+
+        #region Modify RuleSets
+
         public void InsertRuleSet(RuleSetEntity ruleSet)
         {
             Guard.NotNull(ruleSet, nameof(ruleSet));
@@ -127,6 +169,7 @@ namespace SmartStore.Rules
             Guard.NotNull(ruleSet, nameof(ruleSet));
 
             _rsRuleSets.Update(ruleSet);
+            InvalidateRuleSet(ruleSet.Id);
         }
 
         public void DeleteRuleSet(RuleSetEntity ruleSet)
@@ -134,11 +177,12 @@ namespace SmartStore.Rules
             Guard.NotNull(ruleSet, nameof(ruleSet));
 
             _rsRuleSets.Delete(ruleSet);
+            InvalidateRuleSet(ruleSet.Id);
         }
 
         #endregion
 
-        #region Rules
+        #region Modify Rules
 
         public void InsertRule(RuleEntity rule)
         {
@@ -146,6 +190,7 @@ namespace SmartStore.Rules
 
             // TODO: Update parent set > hooking
             _rsRules.Insert(rule);
+            InvalidateRuleSet(rule.RuleSetId);
         }
 
         public void UpdateRule(RuleEntity rule)
@@ -154,6 +199,7 @@ namespace SmartStore.Rules
 
             // TODO: Update parent set > hooking
             _rsRules.Update(rule);
+            InvalidateRuleSet(rule.RuleSetId);
         }
 
         public void DeleteRule(RuleEntity rule)
@@ -162,28 +208,29 @@ namespace SmartStore.Rules
 
             // TODO: Update parent set > hooking
             _rsRules.Delete(rule);
+            InvalidateRuleSet(rule.RuleSetId);
         }
 
         #endregion
 
-        private RuleSetEntity CreateTestRuleSet()
-        {
-            // TODO: remove later
-            // TODO: get rule set from db
-            var ruleSet = new RuleSetEntity { Id = 1, LogicalOperator = LogicalRuleOperator.And };
+        //private RuleSetEntity CreateTestRuleSet()
+        //{
+        //    // TODO: remove later
+        //    // TODO: get rule set from db
+        //    var ruleSet = new RuleSetEntity { Id = 1, LogicalOperator = LogicalRuleOperator.And };
 
-            // TODO: Get all rules for requested set from db
-            ruleSet.Rules = new List<RuleEntity>
-            {
-                new RuleEntity { RuleSetId = 1, RuleType = "CartTotal", Operator = RuleOperator.GreaterThanOrEqualTo, Value = "1000" },
-                new RuleEntity { RuleSetId = 1, RuleType = "Store", Operator = RuleOperator.In, Value = "1,2,3,4,5" },
-                new RuleEntity { RuleSetId = 1, RuleType = "Language", Operator = RuleOperator.NotIn, Value = "3" },
-                new RuleEntity { RuleSetId = 1, RuleType = "Currency", Operator = RuleOperator.In, Value = "1,2,3" },
-                // This one is composite and contains other rules. "Value" refers to RuleSetEntity.Id in this case.
-                new RuleEntity { RuleSetId = 1, RuleType = "Group", Operator = RuleOperator.IsEqualTo, Value = "2" },
-            };
+        //    // TODO: Get all rules for requested set from db
+        //    ruleSet.Rules = new List<RuleEntity>
+        //    {
+        //        new RuleEntity { RuleSetId = 1, RuleType = "CartTotal", Operator = RuleOperator.GreaterThanOrEqualTo, Value = "1000" },
+        //        new RuleEntity { RuleSetId = 1, RuleType = "Store", Operator = RuleOperator.In, Value = "1,2,3,4,5" },
+        //        new RuleEntity { RuleSetId = 1, RuleType = "Language", Operator = RuleOperator.NotIn, Value = "3" },
+        //        new RuleEntity { RuleSetId = 1, RuleType = "Currency", Operator = RuleOperator.In, Value = "1,2,3" },
+        //        // This one is composite and contains other rules. "Value" refers to RuleSetEntity.Id in this case.
+        //        new RuleEntity { RuleSetId = 1, RuleType = "Group", Operator = RuleOperator.IsEqualTo, Value = "2" },
+        //    };
 
-            return ruleSet;
-        }
+        //    return ruleSet;
+        //}
     }
 }

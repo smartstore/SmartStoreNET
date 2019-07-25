@@ -1,0 +1,17 @@
+﻿@model IRuleExpressionGroup
+
+@using SmartStore.Rules
+
+<div class="ruleset">
+    @foreach (var expression in Model.Expressions)
+    {
+        if (expression is IRuleExpressionGroup)
+        {
+            Html.RenderPartial("_RuleSet", expression);
+        }
+        else
+        {
+            Html.RenderPartial("_Rule", expression);
+        }
+    }
+</div>

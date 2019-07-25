@@ -7,12 +7,12 @@ using SmartStore.Rules;
 
 namespace SmartStore.Services.Cart.Rules.Impl
 {
-    public class RuleRule : IRule
+    public class RuleSetRule : IRule
     {
         private readonly IRuleFactory _ruleFactory;
         private readonly ICartRuleProvider _cartRuleProvider;
 
-        public RuleRule(IRuleFactory ruleFactory, ICartRuleProvider cartRuleProvider)
+        public RuleSetRule(IRuleFactory ruleFactory, ICartRuleProvider cartRuleProvider)
         {
             _ruleFactory = ruleFactory;
             _cartRuleProvider = cartRuleProvider;

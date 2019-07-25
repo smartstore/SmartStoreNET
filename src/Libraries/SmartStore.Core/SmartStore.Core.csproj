@@ -526,6 +526,7 @@
     <Compile Include="Search\Settings\ForumSearchSettings.cs" />
     <Compile Include="Search\Settings\SearchSettings.cs" />
     <Compile Include="Search\SearchSort.cs" />
+    <Compile Include="Security\PermissionSystemNames.cs" />
     <Compile Include="Security\SmartStorePrincipal.cs" />
     <Compile Include="Templating\DefaultTemplateManager.cs" />
     <Compile Include="Templating\ITemplate.cs" />

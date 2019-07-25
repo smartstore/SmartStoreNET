@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Security;
 
 namespace SmartStore.Services.Security
 {
@@ -11,8 +10,8 @@ namespace SmartStore.Services.Security
     {
         public virtual IEnumerable<PermissionRecord> GetPermissions()
         {
-            var permissions = new List<PermissionRecord>();
-            GetPermissionsFor(typeof(PermissionSystemNames), permissions);
+            var permissionSystemNames = PermissionSystemNames.GetAll();
+            var permissions = permissionSystemNames.Select(x => new PermissionRecord { SystemName = x });            
 
             return permissions;
         }
@@ -71,19 +70,6 @@ namespace SmartStore.Services.Security
                     }
                 }
             };
-        }
-
-        private void GetPermissionsFor(Type type, List<PermissionRecord> result)
-        {
-            var permissions = type
-                .GetFields(BindingFlags.Public | BindingFlags.Static)
-                .Where(fi => fi.IsLiteral && !fi.IsInitOnly && fi.FieldType == typeof(string))
-                .Select(x => new PermissionRecord { SystemName = (string)x.GetRawConstantValue() });
-
-            result.AddRange(permissions);
-
-            var nestedTypes = type.GetNestedTypes(BindingFlags.Public | BindingFlags.Static);
-            nestedTypes.Each(x => GetPermissionsFor(x, result));
         }
     }
 }

@@ -19,6 +19,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.IO;
+using SmartStore.Core.Security;
 using SmartStore.Data.Setup;
 using SmartStore.Utilities;
 using EfState = System.Data.Entity.EntityState;
@@ -835,11 +836,11 @@ namespace SmartStore.Data.Utilities
                 throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
             }
 
-            const string crud = "crud";
             var permissionSet = ctx.Set<PermissionRecord>();
             var mappingSet = ctx.Set<PermissionRoleMapping>();
             var allRoles = ctx.Set<CustomerRole>().ToList();
             var allPermissions = permissionSet.Expand(x => x.CustomerRoles).ToList();
+            var newPermissions = new Dictionary<string, PermissionRecord>();
 
             var permissionToRoles = new Multimap<string, int>(StringComparer.OrdinalIgnoreCase);
             foreach (var permission in allPermissions)
@@ -849,134 +850,73 @@ namespace SmartStore.Data.Utilities
 
             using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
             {
-                var pluginPermissions = new Dictionary<string, PermissionRecord>(StringComparer.OrdinalIgnoreCase);
-                var pluginPermissionNames = new string[] { "ManageDebitoor", "AccessImportBiz", "ManageShopConnector", "ManageNewsImporter", "ManageWebApi", "ManageMegaSearch", "ManageErpConnector",
-                    "ManagePowerBi", "ManageWallet", "ManageStories", "ManageDlm" };
-
-                // Insert new permissions.
-                var catalog = Add("catalog");
-                var displayPrice = Add("catalog.display-price");
-                AddPermissions("catalog.product", crud);
-                AddPermissions("catalog.category", crud);
-                AddPermissions("catalog.manufacturer", crud);
-                AddPermissions("catalog.variant", crud);
-                AddPermissions("catalog.attribute", crud);
-
-                var customer = AddPermissions("customer", crud);
-                var impersonate = Add("customer.impersonate");
-                var customerRole = AddPermissions("customer.role", crud);
-
-                var order = AddPermissions("order", crud);
-                var giftCard = AddPermissions("order.gift-card", crud, "notify");
-                var returnRequest = AddPermissions("order.return-request", crud, "accept");
-
-                Add("promotion");
-                var affiliate = AddPermissions("promotion.affiliate", crud);
-                var campaign = AddPermissions("promotion.campaign", crud);
-                var discount = AddPermissions("promotion.discount", crud);
-                var newsletter = AddPermissions("promotion.newsletter", crud);
-
-                var cms = Add("cms");
-                var poll = AddPermissions("cms.poll", crud);
-                var news = AddPermissions("cms.news", crud);
-                var blog = AddPermissions("cms.blog", crud);
-                var widget = AddPermissions("cms.widget", "read", "update", "activate");
-                var topic = AddPermissions("cms.topic", crud);
-                var menu = AddPermissions("cms.menu", crud);
-                var forum = AddPermissions("cms.forum", crud);
-                var messageTemplate = AddPermissions("cms.message-template", crud);
-
-                var configuration = Add("configuration");
-                var country = AddPermissions("configuration.country", crud);
-                var language = AddPermissions("configuration.language", crud);
-                var setting = AddPermissions("configuration.setting", crud);
-                var paymentMethod = AddPermissions("configuration.payment-method", "read", "update", "activate");
-                var authentication = AddPermissions("configuration.authentication", "read", "update", "activate");
-                var currency = AddPermissions("configuration.currency", crud);
-                var deliveryTime = AddPermissions("configuration.delivery-time", crud);
-                var theme = AddPermissions("configuration.theme", "read", "update", "upload");
-                var measure = AddPermissions("configuration.measure", crud);
-                var activityLog = AddPermissions("configuration.activity-log", "read", "update");
-                var acl = AddPermissions("configuration.acl", "read", "update");
-                var emailAccount = AddPermissions("configuration.email-account", crud);
-                var store = AddPermissions("configuration.store", crud);
-                var shipping = AddPermissions("configuration.shipping", crud, "activate");
-                var tax = AddPermissions("configuration.tax", crud, "activate");
-                var plugin = AddPermissions("configuration.plugin", "read", "update", "upload", "install", "license");
-                var export = AddPermissions("configuration.export", crud, "execute");
-                var import = AddPermissions("configuration.import", crud, "execute");
-
-                var system = Add("system");
-                var administrate = Add("system.administrate");
-                var accessShop = Add("system.access-shop");
-                var log = AddPermissions("system.log", "read", "delete");
-                var message = AddPermissions("system.message", "read", "update", "delete", "send");
-                var maintenance = AddPermissions("system.maintenance", "execute");
-                var task = AddPermissions("system.schedule-task", "read", "update", "delete", "execute");
-                var urlRecord = AddPermissions("system.url-record", "read", "update", "delete");
-
-                Add("cart");
-                var shoppingCart = Add("cart.access-shopping-cart");
-                var wishlist = Add("cart.access-wishlist");
-                var checkoutAttribute = AddPermissions("cart.checkout-attribute", crud);
-
-                var media = AddPermissions("media", "upload");
+                // Insert new granular permissions.
+                var permissionSystemNames = PermissionSystemNames.GetAll();
+                foreach (var systemName in permissionSystemNames)
+                {
+                    var entity = permissionSet.Add(new PermissionRecord { SystemName = systemName, Name = string.Empty, Category = string.Empty });
+                    newPermissions[systemName] = entity;
+                }
 
                 scope.Commit();
 
                 // Migrate mappings of standard permissions (whether the new permission is granted or denied).
-                Allow("AccessAdminPanel", administrate);
-                Allow("AllowCustomerImpersonation", impersonate);
-                Allow("ManageCatalog", catalog, checkoutAttribute);
-                Allow("ManageCustomers", customer);
-                Allow("ManageCustomerRoles", customerRole);
-                Allow("ManageOrders", order);
-                Allow("ManageGiftCards", giftCard);
-                Allow("ManageReturnRequests", returnRequest);
-                Allow("ManageAffiliates", affiliate);
-                Allow("ManageCampaigns", campaign);
-                Allow("ManageDiscounts", discount);
-                Allow("ManageNewsletterSubscribers", newsletter);
-                Allow("ManagePolls", poll);
-                Allow("ManageNews", news);
-                Allow("ManageBlog", blog);
-                Allow("ManageWidgets", widget);
-                Allow("ManageTopics", topic);
-                Allow("ManageMenus", menu);
-                Allow("ManageForums", forum);
-                Allow("ManageMessageTemplates", messageTemplate);
-                Allow("ManageCountries", country);
-                Allow("ManageLanguages", language);
-                Allow("ManageSettings", setting);
-                Allow("ManagePaymentMethods", paymentMethod);
-                Allow("ManageExternalAuthenticationMethods", authentication);
-                Allow("ManageTaxSettings", tax);
-                Allow("ManageShippingSettings", shipping);
-                Allow("ManageCurrencies", currency);
-                Allow("ManageDeliveryTimes", deliveryTime);
-                Allow("ManageThemes", theme);
-                Allow("ManageMeasures", measure);
-                Allow("ManageActivityLog", activityLog);
-                Allow("ManageACL", acl);
-                Allow("ManageEmailAccounts", emailAccount);
-                Allow("ManageStores", store);
-                Allow("ManagePlugins", plugin);
-                Allow("ManageSystemLog", log);
-                Allow("ManageMessageQueue", message);
-                Allow("ManageMaintenance", maintenance);
-                Allow("UploadPictures", media);
-                Allow("ManageScheduleTasks", task);
-                Allow("ManageExports", export);
-                Allow("ManageImports", import);
-                Allow("ManageUrlRecords", urlRecord);
-                Allow("DisplayPrices", displayPrice);
-                Allow("EnableShoppingCart", shoppingCart);
-                Allow("EnableWishlist", wishlist);
-                Allow("PublicStoreAllowNavigation", accessShop);
+                Allow("AccessAdminPanel", newPermissions[PermissionSystemNames.System.Administrate]);
+                Allow("AllowCustomerImpersonation", newPermissions[PermissionSystemNames.Customer.Impersonate]);
+                Allow("ManageCatalog", newPermissions[PermissionSystemNames.Catalog.Self], newPermissions[PermissionSystemNames.Cart.CheckoutAttribute.Self]);
+                Allow("ManageCustomers", newPermissions[PermissionSystemNames.Customer.Self]);
+                Allow("ManageCustomerRoles", newPermissions[PermissionSystemNames.Customer.Role.Self]);
+                Allow("ManageOrders", newPermissions[PermissionSystemNames.Order.Self]);
+                Allow("ManageGiftCards", newPermissions[PermissionSystemNames.Order.GiftCard.Self]);
+                Allow("ManageReturnRequests", newPermissions[PermissionSystemNames.Order.ReturnRequest.Self]);
+                Allow("ManageAffiliates", newPermissions[PermissionSystemNames.Promotion.Affiliate.Self]);
+                Allow("ManageCampaigns", newPermissions[PermissionSystemNames.Promotion.Campaign.Self]);
+                Allow("ManageDiscounts", newPermissions[PermissionSystemNames.Promotion.Discount.Self]);
+                Allow("ManageNewsletterSubscribers", newPermissions[PermissionSystemNames.Promotion.Newsletter.Self]);
+                Allow("ManagePolls", newPermissions[PermissionSystemNames.Cms.Poll.Self]);
+                Allow("ManageNews", newPermissions[PermissionSystemNames.Cms.News.Self]);
+                Allow("ManageBlog", newPermissions[PermissionSystemNames.Cms.Blog.Self]);
+                Allow("ManageWidgets", newPermissions[PermissionSystemNames.Cms.Widget.Self]);
+                Allow("ManageTopics", newPermissions[PermissionSystemNames.Cms.Topic.Self]);
+                Allow("ManageMenus", newPermissions[PermissionSystemNames.Cms.Menu.Self]);
+                Allow("ManageForums", newPermissions[PermissionSystemNames.Cms.Forum.Self]);
+                Allow("ManageMessageTemplates", newPermissions[PermissionSystemNames.Cms.MessageTemplate.Self]);
+                Allow("ManageCountries", newPermissions[PermissionSystemNames.Configuration.Country.Self]);
+                Allow("ManageLanguages", newPermissions[PermissionSystemNames.Configuration.Language.Self]);
+                Allow("ManageSettings", newPermissions[PermissionSystemNames.Configuration.Setting.Self]);
+                Allow("ManagePaymentMethods", newPermissions[PermissionSystemNames.Configuration.PaymentMethod.Self]);
+                Allow("ManageExternalAuthenticationMethods", newPermissions[PermissionSystemNames.Configuration.Authentication.Self]);
+                Allow("ManageTaxSettings", newPermissions[PermissionSystemNames.Configuration.Tax.Self]);
+                Allow("ManageShippingSettings", newPermissions[PermissionSystemNames.Configuration.Shipping.Self]);
+                Allow("ManageCurrencies", newPermissions[PermissionSystemNames.Configuration.Currency.Self]);
+                Allow("ManageDeliveryTimes", newPermissions[PermissionSystemNames.Configuration.DeliveryTime.Self]);
+                Allow("ManageThemes", newPermissions[PermissionSystemNames.Configuration.Theme.Self]);
+                Allow("ManageMeasures", newPermissions[PermissionSystemNames.Configuration.Measure.Self]);
+                Allow("ManageActivityLog", newPermissions[PermissionSystemNames.Configuration.ActivityLog.Self]);
+                Allow("ManageACL", newPermissions[PermissionSystemNames.Configuration.Acl.Self]);
+                Allow("ManageEmailAccounts", newPermissions[PermissionSystemNames.Configuration.EmailAccount.Self]);
+                Allow("ManageStores", newPermissions[PermissionSystemNames.Configuration.Store.Self]);
+                Allow("ManagePlugins", newPermissions[PermissionSystemNames.Configuration.Plugin.Self]);
+                Allow("ManageSystemLog", newPermissions[PermissionSystemNames.System.Log.Self]);
+                Allow("ManageMessageQueue", newPermissions[PermissionSystemNames.System.Message.Self]);
+                Allow("ManageMaintenance", newPermissions[PermissionSystemNames.System.Maintenance.Self]);
+                Allow("UploadPictures", newPermissions[PermissionSystemNames.Media.Self]);
+                Allow("ManageScheduleTasks", newPermissions[PermissionSystemNames.System.ScheduleTask.Self]);
+                Allow("ManageExports", newPermissions[PermissionSystemNames.Configuration.Export.Self]);
+                Allow("ManageImports", newPermissions[PermissionSystemNames.Configuration.Import.Self]);
+                Allow("ManageUrlRecords", newPermissions[PermissionSystemNames.System.UrlRecord.Self]);
+                Allow("DisplayPrices", newPermissions[PermissionSystemNames.Catalog.DisplayPrice]);
+                Allow("EnableShoppingCart", newPermissions[PermissionSystemNames.Cart.AccessShoppingCart]);
+                Allow("EnableWishlist", newPermissions[PermissionSystemNames.Cart.AccessWishlist]);
+                Allow("PublicStoreAllowNavigation", newPermissions[PermissionSystemNames.System.AccessShop]);
 
                 scope.Commit();
 
                 // Migrate plugin permissions.
+                var pluginPermissions = new Dictionary<string, PermissionRecord>(StringComparer.OrdinalIgnoreCase);
+                var pluginPermissionNames = new string[] { "ManageDebitoor", "AccessImportBiz", "ManageShopConnector", "ManageNewsImporter", "ManageWebApi", "ManageMegaSearch", "ManageErpConnector",
+                    "ManagePowerBi", "ManageWallet", "ManageStories", "ManageDlm" };
+
                 foreach (var oldSystemName in pluginPermissionNames)
                 {
                     if (permissionToRoles.ContainsKey(oldSystemName))
@@ -987,8 +927,8 @@ namespace SmartStore.Data.Utilities
                             newSystemName = newSystemName.Substring(6);
                         }
 
-                        var pluginPermission = Add(newSystemName + ".manage");
-                        pluginPermissions.Add(oldSystemName, pluginPermission);
+                        var entity = permissionSet.Add(new PermissionRecord { SystemName = newSystemName + ".manage", Name = string.Empty, Category = string.Empty });
+                        pluginPermissions.Add(oldSystemName, entity);
                     }
                     else
                     {
@@ -1002,35 +942,6 @@ namespace SmartStore.Data.Utilities
                 pluginPermissions.Each(x => Allow(x.Key, x.Value));
 
                 scope.Commit();
-            }
-
-            PermissionRecord Add(string systemName)
-            {
-                var entity = permissionSet.Add(new PermissionRecord { SystemName = systemName, Name = string.Empty, Category = string.Empty });
-                return entity;
-            }
-
-            PermissionRecord AddPermissions(string parent, params string[] childs)
-            {
-                var parentPermission = Add(parent);
-                parent = parent.EnsureEndsWith(".");
-
-                foreach (var child in childs)
-                {
-                    if (child.IsCaseInsensitiveEqual("crud"))
-                    {
-                        Add(parent + "read");
-                        Add(parent + "update");
-                        Add(parent + "create");
-                        Add(parent + "delete");
-                    }
-                    else
-                    {
-                        Add(parent + child);
-                    }
-                }
-
-                return parentPermission;
             }
 
             void Allow(string oldSystemName, params PermissionRecord[] permissions)

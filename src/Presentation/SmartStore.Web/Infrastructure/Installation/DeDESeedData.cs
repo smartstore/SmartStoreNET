@@ -1993,7 +1993,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.TaxDisplayType = TaxDisplayType.IncludingTax;
                     x.DisplayTaxSuffix = true;
                     x.ShippingIsTaxable = true;
-                    x.ShippingPriceIncludesTax = false;
+                    x.ShippingPriceIncludesTax = true;
                     x.ShippingTaxClassId = _taxCategories["Normal"].Id;
                     x.EuVatEnabled = true;
                     x.EuVatShopCountryId = defaultCountryId ?? x.EuVatShopCountryId;

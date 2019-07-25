@@ -12,7 +12,8 @@ namespace SmartStore.Core.Domain.Tax
 			DisplayTaxSuffix = true;
 			PricesIncludeTax = true;
 			EuVatAllowVatExemption = true;
-			ShowLegalHintsInFooter = true; 
+            ShippingPriceIncludesTax = true;
+            ShowLegalHintsInFooter = true; 
 			ShowLegalHintsInProductDetails = true;
 			ShowLegalHintsInProductList = true;
 			AuxiliaryServicesTaxingType = AuxiliaryServicesTaxType.SpecifiedTaxCategory;

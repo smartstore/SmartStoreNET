@@ -288,6 +288,7 @@
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Plugins\ProviderModelList.cs" />
     <Compile Include="Models\Polls\PollVotingRecordModel.cs" />
+    <Compile Include="Models\Rules\RuleSetModel.cs" />
     <Compile Include="Models\Settings\ForumSearchSettingsModel.cs" />
     <Compile Include="Models\Settings\PaymentSettingsModel.cs" />
     <Compile Include="Models\Settings\SearchSettingsModel.cs" />
@@ -609,6 +610,9 @@
     <Content Include="Views\Rule\List.cshtml" />
     <Content Include="Views\Rule\_RuleSet.cshtml" />
     <Content Include="Views\Rule\_Rule.cshtml" />
+    <Content Include="Views\Rule\_Rule.Descriptor.cshtml" />
+    <Content Include="Views\Rule\_Rule.Operator.cshtml" />
+    <Content Include="Views\Rule\_Rule.Value.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

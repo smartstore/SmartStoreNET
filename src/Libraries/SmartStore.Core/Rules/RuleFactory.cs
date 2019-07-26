@@ -31,6 +31,8 @@ namespace SmartStore.Rules
             if (ruleSetId <= 0)
                 return null;
 
+            // TODO: prevent stack overflow > check if nested groups reference each other.
+
             var ruleSet = _storage.GetCachedRuleSet(ruleSetId);
             if (ruleSet == null)
             {

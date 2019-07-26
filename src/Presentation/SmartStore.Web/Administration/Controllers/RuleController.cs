@@ -10,6 +10,8 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Cart.Rules;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Admin.Models.Rules;
+using SmartStore.ComponentModel;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -45,15 +47,20 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Edit(int id /* ruleSetId */)
         {
-            var group = _targetGroupService.CreateExpressionGroup(id);
-            if (group == null)
+            var entity = _ruleStorage.GetRuleSetById(id, false, true);
+            if (entity == null || entity.IsSubGroup)
             {
                 return HttpNotFound();
             }
 
-            ViewBag.AvailableDescriptors = _targetGroupService.RuleDescriptors;
+            var model = new RuleSetModel();
+            MiniMapper.Map(entity, model);
 
-            return View(group);
+            model.ExpressionGroup = _ruleFactory.CreateExpressionGroup(entity, _targetGroupService);
+            model.AvailableDescriptors = _targetGroupService.RuleDescriptors;
+            ViewBag.RootModel = model;
+
+            return View(model);
         }
     }
 }

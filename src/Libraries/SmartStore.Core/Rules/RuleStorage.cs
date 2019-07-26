@@ -57,24 +57,27 @@ namespace SmartStore.Rules
             if (id <= 0)
                 return null;
 
-            var cacheKey = RULESET_BY_ID_KEY.FormatInvariant(id);
-            return _cache.Get(cacheKey, () =>
-            {
-                using (new DbContextScope(forceNoTracking: true, proxyCreation: false, lazyLoading: false))
-                {
-                    var ruleSet = this.GetRuleSetById(id, false, true);
+            return this.GetRuleSetById(id, false, true);
 
-                    if (ruleSet != null)
-                    {
-                        _rsRuleSets.Context.DetachEntity(ruleSet);
-                        // TODO: check if the above detach call already detached navigation prop instances
-                        // TODO: Sort rules (?)
-                        _rsRuleSets.Context.DetachEntities(ruleSet.Rules);
-                    }
+            //// TODO: uncomment later
+            //var cacheKey = RULESET_BY_ID_KEY.FormatInvariant(id);
+            //return _cache.Get(cacheKey, () =>
+            //{
+            //    using (new DbContextScope(forceNoTracking: true, proxyCreation: false, lazyLoading: false))
+            //    {
+            //        var ruleSet = this.GetRuleSetById(id, false, true);
 
-                    return ruleSet;
-                }
-            }, TimeSpan.FromHours(8));
+            //        if (ruleSet != null)
+            //        {
+            //            _rsRuleSets.Context.DetachEntity(ruleSet);
+            //            // TODO: check if the above detach call already detached navigation prop instances
+            //            // TODO: Sort rules (?)
+            //            _rsRuleSets.Context.DetachEntities(ruleSet.Rules);
+            //        }
+
+            //        return ruleSet;
+            //    }
+            //}, TimeSpan.FromHours(8));
         }
 
         protected void InvalidateRuleSet(int id)

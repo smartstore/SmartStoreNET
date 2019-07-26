@@ -1,17 +1,69 @@
 ﻿@model IRuleExpressionGroup
 
 @using SmartStore.Rules
+@using SmartStore.Admin.Models.Rules
+
+@{
+    var rootModel = ViewBag.RootModel as RuleSetModel;
+}
 
 <div class="ruleset">
-    @foreach (var expression in Model.Expressions)
-    {
-        if (expression is IRuleExpressionGroup)
+    <div class="ruleset-header">
+        @*Wenn
+        <select class="form-control form-control-sm d-inline-block noskin w-auto mx-1 px-1">
+            <option value="And">Alle</option>
+            <option value="Or" selected>Mindestens eine</option>
+        </select>
+        der folgenden Bedingungen zutrifft*@
+
+        <div class="ruleset-operator d-flex align-items-center justify-content-stretch">
+            <span>Wenn mindestens</span>
+            <div class="btn-group" role="group">
+                <button type="button" 
+                        class="btn btn-secondary btn-sm btn-flat font-weight-medium dropdown-toggle mx-1 px-1 no-chevron"
+                        data-toggle="dropdown">
+                    EINE
+                </button>
+                <div class="dropdown-menu">
+                    <a href="#" class="dropdown-item" data-value="And">ALLE</a>
+                    <a href="#" class="dropdown-item" data-value="Or">EINE</a>
+                </div>
+            </div>
+            <span>der folgenden Bedingungen zutrifft</span>
+        </div>
+    </div>
+    <div class="ruleset-body">
+        @foreach (var expression in Model.Expressions)
         {
-            Html.RenderPartial("_RuleSet", expression);
+            if (expression is IRuleExpressionGroup)
+            {
+                Html.RenderPartial("_RuleSet", expression);
+            }
+            else
+            {
+                Html.RenderPartial("_Rule", expression);
+            }
         }
-        else
-        {
-            Html.RenderPartial("_Rule", expression);
-        }
-    }
+
+        <div class="row xs-gutters mt-3">
+            <div class="col-2">
+                <select class="form-control">
+                    <option>+ Bedingung hinzufügen</option>
+                    @foreach (var d in rootModel.AvailableDescriptors)
+                    {
+                        <option value="@d.Name" )>@Inflector.Titleize(d.Name)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-10">
+                <button type="button" class="btn btn-secondary btn-to-primary">
+                    <span>Gruppe hinzufügen</span>
+                </button>
+                <button type="button" class="btn btn-secondary btn-to-danger" style="float:right">
+                    <span>Gruppe löschen</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
 </div>

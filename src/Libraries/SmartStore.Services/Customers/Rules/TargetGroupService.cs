@@ -161,6 +161,12 @@ namespace SmartStore.Services.Customers
                     RuleType = RuleType.Int,
                     Constraints = new IRuleConstraint[0]
                 },
+                new FilterDescriptor<Customer, int>(x => x.Orders.Count(y => y.OrderStatusId == 30))
+                {
+                    Name = "NewOrderCount",
+                    RuleType = RuleType.Int,
+                    Constraints = new IRuleConstraint[0]
+                },
                 new TargetGroupFilterDescriptor(_ruleFactory, this)
                 {
                     Name = "RuleSet",

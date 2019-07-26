@@ -1,29 +1,20 @@
 ﻿@model IRuleExpression
 
 @using SmartStore.Rules
+@using SmartStore.Admin.Models.Rules
 
 @{
-    var allDescriptors = ViewBag.AvailableDescriptors as IEnumerable<RuleDescriptor>;
+    var rootModel = ViewBag.RootModel as RuleSetModel;
 }
 
 <div class="rule row xs-gutters my-2">
-    <div class="col-4">
-        <select class="form-control">
-            @foreach (var d in allDescriptors)
-            {
-                <option value="@d.Name"@(d.Name == Model.Descriptor.Name ? " selected" : "")>@d.Name</option>
-            }
-        </select>
+    <div class="col-2">
+        @{ Html.RenderPartial("_Rule.Descriptor", Model); }
     </div>
     <div class="col-2">
-        <select class="form-control">
-            @foreach (var op in Model.Descriptor.Operators)
-            {
-                <option value="@op.Operator" @(op == Model.Operator ? " selected" : "")>@op.Operator</option>
-            }
-        </select>
+        @{ Html.RenderPartial("_Rule.Operator", Model); }
     </div>
-    <div class="col-6">
-        <input type="text" class="form-control" value="@Model.RawValue" />
+    <div class="col-8">
+        @{ Html.RenderPartial("_Rule.Value", Model); }
     </div>
 </div>

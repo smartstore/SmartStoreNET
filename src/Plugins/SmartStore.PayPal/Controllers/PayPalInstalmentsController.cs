@@ -46,7 +46,7 @@ namespace SmartStore.PayPal.Controllers
             Lazy<IPaymentService> paymentService,
             IPriceFormatter priceFormatter,
             Lazy<IPluginFinder> pluginFinder) 
-            : base(PayPalInstalmentsProvider.SystemName, payPalService)
+            : base(payPalService)
         {
             _httpContext = httpContext;
             _genericAttributeService = genericAttributeService;
@@ -56,6 +56,8 @@ namespace SmartStore.PayPal.Controllers
             _priceFormatter = priceFormatter;
             _pluginFinder = pluginFinder;
         }
+
+        protected override string ProviderSystemName => PayPalInstalmentsProvider.SystemName;
 
         public override IList<string> ValidatePaymentForm(FormCollection form)
         {
@@ -315,7 +317,7 @@ namespace SmartStore.PayPal.Controllers
 
         [HttpPost, ChildActionOnly, AdminAuthorize, AdminThemed]
         public ActionResult Configure(PayPalInstalmentsConfigModel model, FormCollection form)
-        {
+        {           
             Action<PayPalInstalmentsSettings> additionalMapping = (x) =>
             {
                 //x.PromotionWidgetZones = string.Join(",", model.PromotionWidgetZones ?? new string[0]).NullEmpty();

@@ -48,9 +48,7 @@ namespace SmartStore.PayPal.Controllers
 			IPaymentService paymentService,
 			ITaxService taxService,
 			ICurrencyService currencyService,
-			IPriceFormatter priceFormatter) : base(
-				PayPalPlusProvider.SystemName,
-				payPalService)
+			IPriceFormatter priceFormatter) : base(payPalService)
 		{
 			_httpContext = httpContext;
 			_pluginMediator = pluginMediator;
@@ -61,7 +59,9 @@ namespace SmartStore.PayPal.Controllers
 			_priceFormatter = priceFormatter;
 		}
 
-		private string GetPaymentMethodName(Provider<IPaymentMethod> provider)
+        protected override string ProviderSystemName => PayPalPlusProvider.SystemName;
+
+        private string GetPaymentMethodName(Provider<IPaymentMethod> provider)
 		{
 			if (provider != null)
 			{
@@ -179,7 +179,7 @@ namespace SmartStore.PayPal.Controllers
 		[HttpPost, AdminAuthorize, ChildActionOnly, AdminThemed]
 		public ActionResult Configure(PayPalPlusConfigurationModel model, FormCollection form)
 		{
-            if (!SaveConfigurationModel<PayPalPlusPaymentSettings>(model, form))
+            if (!SaveConfigurationModel(model, form))
             {
                 var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
                 var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(storeScope);

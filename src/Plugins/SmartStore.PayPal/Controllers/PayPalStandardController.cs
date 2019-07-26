@@ -21,14 +21,15 @@ namespace SmartStore.PayPal.Controllers
 			IPaymentService paymentService,
 			IOrderService orderService,
 			IOrderProcessingService orderProcessingService) : base(
-				PayPalStandardProvider.SystemName,
 				paymentService,
 				orderService,
 				orderProcessingService)
 		{
 		}
 
-		[AdminAuthorize, ChildActionOnly, LoadSetting]
+        protected override string ProviderSystemName => PayPalStandardProvider.SystemName;
+
+        [AdminAuthorize, ChildActionOnly, LoadSetting]
 		public ActionResult Configure(PayPalStandardPaymentSettings settings, int storeScope)
 		{
             var model = new PayPalStandardConfigurationModel();
@@ -100,8 +101,8 @@ namespace SmartStore.PayPal.Controllers
 			var total = decimal.Zero;
 			string response;
 
-			var provider = PaymentService.LoadPaymentMethodBySystemName(SystemName, true);
-            var processor = (provider != null ? provider.Value as PayPalStandardProvider : null);
+			var provider = PaymentService.LoadPaymentMethodBySystemName(PayPalStandardProvider.SystemName, true);
+            var processor = provider != null ? provider.Value as PayPalStandardProvider : null;
 			if (processor == null)
 			{
 				Logger.Warn(null, T("Plugins.Payments.PayPal.NoModuleLoading", "PDTHandler"));

@@ -30,6 +30,7 @@ namespace SmartStore.Rules
         void UpdateRuleSet(RuleSetEntity ruleSet);
         void DeleteRuleSet(RuleSetEntity ruleSet);
 
+        RuleEntity GetRuleById(int id, bool forEdit);
         void InsertRule(RuleEntity rule);
         void UpdateRule(RuleEntity rule);
         void DeleteRule(RuleEntity rule);
@@ -50,7 +51,7 @@ namespace SmartStore.Rules
             _rsRules = rsRules;
         }
 
-        #region Read RuleSets
+        #region Read Rule(Set)s
 
         public RuleSetEntity GetCachedRuleSet(int id)
         {
@@ -154,6 +155,18 @@ namespace SmartStore.Rules
             }
 
             return new PagedList<RuleSetEntity>(query, pageIndex, pageSize);
+        }
+
+        public RuleEntity GetRuleById(int id, bool forEdit)
+        {
+            if (id <= 0)
+                return null;
+
+            var table = forEdit
+                ? _rsRules.Table
+                : _rsRules.TableUntracked;
+
+            return table.FirstOrDefault(x => x.Id == id);
         }
 
         #endregion

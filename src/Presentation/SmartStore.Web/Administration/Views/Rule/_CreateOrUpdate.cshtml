@@ -4,19 +4,28 @@
 @using SmartStore.Admin.Models.Rules
 
 <style>
-    .rule:first-child {
+    /*.rule:first-child {
         margin-top: 0 !important;
     }
 
     .rule:last-child {
         margin-bottom: 0 !important;
-    }
+    }*/
     
+    .rule,
+    .ruleset {
+        margin: 1rem;
+    }
+
+    .ruleset-root > .ruleset {
+        margin: 0;
+        margin-top: 1rem;
+    }
+
     .ruleset {
         border: 1px solid rgba(0,0,0, 0.15);
         border-radius: 6px;
         border-left: 3px solid var(--warning);
-        margin-top: 1rem;
         background-color: #fff;
     }
 
@@ -57,10 +66,102 @@
         border-bottom: 1px solid rgba(0,0,0, 0.15);
     }
 
-    .ruleset-body {
-        padding: 1rem;
+    .ruleset-footer {
+        margin: 1rem;
     }
 </style>
+
+<script>
+    $(function () {
+        function appendToRuleSetBody(ruleSet, html) {
+            var target = ruleSet.find('.ruleset-body');
+            if (target.length === 0) {
+                target = $('<div class="ruleset-body"></div>').appendTo(ruleSet);
+            }
+            target.append(html);
+        }
+
+        $(document).on('click', '.r-add-group', function (e) {
+            var parentSet = $(this).closest('.ruleset');
+            var parentSetId = parentSet.data('ruleset-id');
+            var scope = parentSet.closest('.ruleset-root').data('scope');
+
+            $.ajax({
+                cache: false,
+                url: "@Url.Action("AddGroup")",
+                data: { ruleSetId: parentSetId, scope: scope },
+			    type: "POST",
+                success: function (html) {
+                    appendToRuleSetBody(parentSet, html);
+			    }
+            });
+
+            return false;
+        });
+
+        $(document).on('click', '.r-delete-group', function (e) {
+            var parentSet = $(this).closest('.ruleset');
+            var refRuleId = parentSet.data('refrule-id');
+
+            $.ajax({
+                cache: false,
+                url: "@Url.Action("DeleteGroup")",
+                data: { refRuleId: refRuleId },
+			    type: "POST",
+			    success: function (result) {
+                    if (result.Success) {
+                        parentSet.remove();
+                    }
+			    }
+            });
+
+            return false;
+        });
+
+        $(document).on('change', '.r-add-rule', function (e) {
+            var select = $(this);
+            var ruleType = select.val();
+            if (!ruleType)
+                return;
+
+            var parentSet = select.closest('.ruleset');
+            var parentSetId = parentSet.data('ruleset-id');
+            var scope = parentSet.closest('.ruleset-root').data('scope');
+
+            $.ajax({
+                cache: false,
+                url: "@Url.Action("AddRule")",
+                data: { ruleSetId: parentSetId, scope: scope, ruleType: ruleType },
+			    type: "POST",
+			    success: function (html) {
+                    appendToRuleSetBody(parentSet, html);
+                    select.val('').trigger('change');
+			    }
+            });
+
+            return false;
+        });
+
+        $(document).on('click', '.r-delete-rule', function (e) {
+            var rule = $(this).closest('.rule');
+            var ruleId = rule.data('rule-id');
+
+            $.ajax({
+                cache: false,
+                url: "@Url.Action("DeleteRule")",
+                data: { ruleId: ruleId },
+			    type: "POST",
+			    success: function (result) {
+                    if (result.Success) {
+                        rule.remove();
+                    }
+			    }
+            });
+
+            return false;
+        });
+    });
+</script>
 
 <div class="adminContent">
     <div class="adminRow">
@@ -98,8 +199,8 @@
 @Html.HiddenFor(model => model.UpdatedOnUtc)
 @Html.HiddenFor(model => model.LastProcessedOnUtc)
 
-<h4 class="my-4">Bedingungen</h4>
+<h4 class="my-4">Bedingungen <a class="btn btn-primary" href="@Url.Action("Execute", new { ruleSetId = Model.Id })">Ausführen</a></h4>
 
-<div class="ruleset-root">
+<div class="ruleset-root" data-scope="@((int)Model.Scope)">
     @{ Html.RenderPartial("_RuleSet", Model.ExpressionGroup); }
 </div>

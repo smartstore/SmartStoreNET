@@ -1,13 +1,8 @@
 ﻿@model IRuleExpression
 
 @using SmartStore.Rules
-@using SmartStore.Admin.Models.Rules
 @using SmartStore.Utilities;
 
-@{
-    var rootModel = ViewBag.RootModel as RuleSetModel;
-}
-
 <div class="rule-descrptor font-weight-medium form-control-plaintext text-truncate text-gray" title="@Model.Descriptor.Name">
-    @Inflector.Titleize(Model.Descriptor.Name)
+    @Model.Descriptor.DisplayName
 </div>

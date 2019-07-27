@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -162,25 +163,71 @@ namespace SmartStore.Rules
 
             var leftIsNullable = targetType.IsNullable(out var leftType);
             var rightIsNullObj = ExpressionHelper.IsNullObjectConstantExpression(right);
+            var rightIsList = false;
+            if (!rightIsNullObj)
+            {
+                rightIsList = right.Type.GetGenericTypeDefinition() == typeof(List<>);
+            }
 
-            if ((leftIsNullable || rightIsNullObj))
+            if (leftIsNullable || rightIsNullObj)
             {
                 try
                 {
                     var value = c.Value;
+                    var handled = false;
 
                     if (!leftIsNullable && rightIsNullObj)
                     {
                         // Right is null, but left is NOT nullable: (int)null does not work, we need to create the default value (e.g. default(int))
                         value = Activator.CreateInstance(targetType);
                     }
+                    else if (leftIsNullable && rightIsList)
+                    {
+                        handled = TryConvertList(targetType, ref right);
+                    }
 
-                    right = Expression.Constant(value, targetType);
+                    if (!handled)
+                    {
+                        right = Expression.Constant(value, targetType);
+                    }   
                 }
                 catch
                 {
                     return false;
                 }
+            }
+
+            return true;
+        }
+
+        private bool TryConvertList(Type targetType, ref Expression right)
+        {
+            // If left is int?, but right is List<int>: make right List<int?>
+            try
+            {
+                var value = ((ConstantExpression)right).Value;
+                var listElemType = right.Type.GetGenericArguments()[0];
+                if (!listElemType.IsNullable(out _))
+                {
+                    // List<T> > List<T?>
+                    var nullableListType = typeof(List<>).MakeGenericType(targetType);
+                    var nullableList = Activator.CreateInstance(nullableListType);
+                    var addMethod = nullableListType.GetMethod("Add");
+                    foreach (var item in (IEnumerable)value)
+                    {
+                        addMethod.Invoke(nullableList, new object[] { item.Convert(targetType) });
+                    }
+
+                    right = Expression.Constant(nullableList, nullableListType);
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
             }
 
             return true;

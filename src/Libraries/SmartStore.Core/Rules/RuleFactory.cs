@@ -63,6 +63,30 @@ namespace SmartStore.Rules
             return group;
         }
 
+        private IRuleExpressionGroup CreateExpressionGroup(RuleSetEntity ruleSet, RuleEntity refRule, IRuleVisitor visitor)
+        {
+            if (ruleSet.Scope != visitor.Scope)
+            {
+                // TODO: ErrHandling (ruleSet is for a different scope)
+                return null;
+            }
+
+            var group = visitor.VisitRuleSet(ruleSet);
+            if (refRule != null)
+            {
+                group.RefRuleId = refRule.Id;
+            }
+
+            var expressions = ruleSet.Rules
+                .Select(x => CreateExpression(x, visitor))
+                .Where(x => x != null)
+                .ToArray();
+
+            group.AddExpressions(expressions);
+
+            return group;
+        }
+
         private IRuleExpression CreateExpression(RuleEntity ruleEntity, IRuleVisitor visitor)
         {
             if (!ruleEntity.IsGroup)
@@ -71,7 +95,10 @@ namespace SmartStore.Rules
             }
 
             // It's a group, do recursive call
-            return CreateExpressionGroup(ruleEntity.Value.Convert<int>(), visitor);
+            var group = CreateExpressionGroup(ruleEntity.Value.Convert<int>(), visitor);
+            group.RefRuleId = ruleEntity.Id;
+
+            return group;
         }
     }
 }

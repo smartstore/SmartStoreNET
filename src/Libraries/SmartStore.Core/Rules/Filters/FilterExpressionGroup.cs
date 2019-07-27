@@ -21,9 +21,11 @@ namespace SmartStore.Rules.Filters
             Value = true;
         }
 
+        public int RefRuleId { get; set; }
         public Type EntityType { get; private set; }
-
         public LogicalRuleOperator LogicalOperator { get; set; }
+        public bool IsSubGroup { get; set; }
+        public IRuleProvider Provider { get; set; }
 
         public IEnumerable<IRuleExpression> Expressions
         {
@@ -48,7 +50,8 @@ namespace SmartStore.Rules.Filters
                 node = Expression.Parameter(EntityType, "it"); // TODO: was base.Descriptor.EntityType, check if MemberExpression is the same
             }
 
-            return ExpressionHelper.CreateLambdaExpression(node, base.ToPredicate(node, liftToNull));
+            //return ExpressionHelper.CreateLambdaExpression(node, base.ToPredicate(node, liftToNull));
+            return ExpressionHelper.CreateLambdaExpression(node, CreateBodyExpression(node, liftToNull));
         }
 
         protected override Expression CreateBodyExpression(ParameterExpression node, bool liftToNull)

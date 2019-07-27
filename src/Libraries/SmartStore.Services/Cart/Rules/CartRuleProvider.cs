@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,8 +53,10 @@ namespace SmartStore.Services.Cart.Rules
             {
                 Id = ruleSet.Id,
                 LogicalOperator = ruleSet.LogicalOperator,
+                IsSubGroup = ruleSet.IsSubGroup,
                 Value = ruleSet.Id,
                 RawValue = ruleSet.Id.ToString(),
+                Provider = this,
                 Descriptor = new CartRuleDescriptor
                 {
                     RuleType = RuleType.Boolean,

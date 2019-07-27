@@ -10,6 +10,8 @@ using SmartStore.Rules;
 using SmartStore.Rules.Filters;
 using SmartStore.Rules.Domain;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Customers
 {
@@ -34,6 +36,7 @@ namespace SmartStore.Services.Customers
         {
             var expression = new FilterExpression();
             base.ConvertRule(rule, expression);
+            expression.Descriptor = ((RuleExpression)expression).Descriptor as FilterDescriptor;
             return expression;
         }
 
@@ -43,8 +46,10 @@ namespace SmartStore.Services.Customers
             {
                 Id = ruleSet.Id,
                 LogicalOperator = ruleSet.LogicalOperator,
+                IsSubGroup = ruleSet.IsSubGroup,
                 Value = ruleSet.Id,
                 RawValue = ruleSet.Id.ToString(),
+                Provider = this
                 // INFO: filter group does NOT access any descriptor
             };
 
@@ -126,12 +131,14 @@ namespace SmartStore.Services.Customers
                 new FilterDescriptor<Customer, bool>(x => x.IsTaxExempt)
                 {
                     Name = "TaxExempt",
+                    DisplayName = "Steuerbefreit",
                     RuleType = RuleType.Boolean,
                     Constraints = new IRuleConstraint[0]
                 },
                 new FilterDescriptor<Customer, int?>(x => x.BillingAddress.CountryId)
                 {
                     Name = "BillingCountry",
+                    DisplayName = "Rechnungsland",
                     RuleType = RuleType.IntArray,
                     Constraints = new IRuleConstraint[0],
                     SelectList = new RemoteRuleValueSelectList("Country") { Multiple = true }
@@ -139,6 +146,7 @@ namespace SmartStore.Services.Customers
                 new FilterDescriptor<Customer, int?>(x => x.ShippingAddress.CountryId)
                 {
                     Name = "ShippingCountry",
+                    DisplayName = "Lieferland",
                     RuleType = RuleType.IntArray,
                     Constraints = new IRuleConstraint[0],
                     SelectList = new RemoteRuleValueSelectList("Country") { Multiple = true }
@@ -146,30 +154,50 @@ namespace SmartStore.Services.Customers
                 new FilterDescriptor<Customer, int?>(x => DbFunctions.DiffDays(x.LastActivityDateUtc, DateTime.UtcNow))
                 {
                     Name = "LastActivityDays",
+                    DisplayName = "Tage seit letztem Besuch",
                     RuleType = RuleType.NullableInt,
                     Constraints = new IRuleConstraint[0]
                 },
                 new FilterDescriptor<Customer, int>(x => x.Orders.Count(y => y.OrderStatusId == 30))
                 {
                     Name = "CompletedOrderCount",
+                    DisplayName = "Anzahl abgeschlossener Bestellungen",
                     RuleType = RuleType.Int,
                     Constraints = new IRuleConstraint[0]
                 },
                 new FilterDescriptor<Customer, int>(x => x.Orders.Count(y => y.OrderStatusId == 40))
                 {
                     Name = "CancelledOrderCount",
+                    DisplayName = "Anzahl stornierter Bestellungen",
                     RuleType = RuleType.Int,
                     Constraints = new IRuleConstraint[0]
                 },
                 new FilterDescriptor<Customer, int>(x => x.Orders.Count(y => y.OrderStatusId == 30))
                 {
                     Name = "NewOrderCount",
+                    DisplayName = "Anzahl neuer Bestellungen",
                     RuleType = RuleType.Int,
                     Constraints = new IRuleConstraint[0]
                 },
+                new AnyFilterDescriptor<Customer, OrderItem, int>(x => x.Orders.SelectMany(o => o.OrderItems), oi => oi.ProductId)
+                {
+                    Name = "HasPurchasedProduct",
+                    DisplayName = "Hat eines der folgenden Produkt gekauft",
+                    RuleType = RuleType.IntArray,
+                    Constraints = new IRuleConstraint[0]
+                },
+                new AllFilterDescriptor<Customer, OrderItem, int>(x => x.Orders.SelectMany(o => o.OrderItems), oi => oi.ProductId)
+                {
+                    Name = "HasPurchasedAllProducts",
+                    DisplayName = "Hat alle folgenden Produkte gekauft",
+                    RuleType = RuleType.IntArray,
+                    Constraints = new IRuleConstraint[0]
+                },
+
                 new TargetGroupFilterDescriptor(_ruleFactory, this)
                 {
                     Name = "RuleSet",
+                    DisplayName = "Anderer Regelsatz",
                     RuleType = RuleType.Int,
                     Operators = new[] { RuleOperator.IsEqualTo, RuleOperator.IsNotEqualTo },
                     Constraints = new IRuleConstraint[0],

@@ -489,7 +489,7 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
                 <Value>Gesamt inkl. Finanzierungskosten</Value>
             </LocaleResource>
             <LocaleResource Name="RatesInformation">
-                <Value>Information zu möglichen Raten.</Value>
+                <Value>Informationen zu möglichen Raten.</Value>
             </LocaleResource>
             <LocaleResource Name="FinancingWanted">
                 <Value>Finanzierung gewünscht?</Value>
@@ -519,7 +519,7 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
                 <Value>Zu zahlender Gesamtbetrag</Value>
             </LocaleResource>
             <LocaleResource Name="XMonthlyInstalmentsAmount">
-                <Value>{0} monatliche Raten zu je</Value>
+                <Value>{0} monatliche Raten in Höhe von je</Value>
             </LocaleResource>
             <LocaleResource Name="LastInstalment">
                 <Value>letzte Rate zu</Value>

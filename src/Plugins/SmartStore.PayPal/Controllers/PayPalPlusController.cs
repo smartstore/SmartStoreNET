@@ -256,11 +256,13 @@ namespace SmartStore.PayPal.Controllers
 			var result = PayPalService.EnsureAccessToken(session, settings);
 			if (result.Success)
 			{
-				var protocol = (store.SslEnabled ? "https" : "http");
+				var protocol = store.SslEnabled ? "https" : "http";
 				var returnUrl = Url.Action("CheckoutReturn", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
 				var cancelUrl = Url.Action("CheckoutCancel", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
+                
+                var paymentData = PayPalService.CreatePaymentData(settings, session, cart, returnUrl, cancelUrl);
 
-				result = PayPalService.CreatePayment(settings, session, cart, returnUrl, cancelUrl);
+                result = PayPalService.CreatePayment(settings, session, paymentData);
 				if (result == null)
 				{
                     // No payment required.

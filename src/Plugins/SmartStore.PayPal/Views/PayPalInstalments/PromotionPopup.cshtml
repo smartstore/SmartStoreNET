@@ -24,13 +24,14 @@
                                     <td>@T("Plugins.Payments.PayPalInstalments.XMonthlyInstalmentsAmount", option.Term)</td>
                                     <td class="text-right font-weight-medium text-nowrap">@(option.MonthlyPayment.ToString())</td>
                                 </tr>
-                                @if (option.MonthlyPayment.Amount != option.LastInstalment.Amount)
+                                @*PayPal review: do not display last instalment.*@
+                                @*@if (option.MonthlyPayment.Amount != option.LastInstalment.Amount)
                                 {
                                     <tr>
                                         <td>@T("Plugins.Payments.PayPalInstalments.LastInstalment")</td>
                                         <td class="text-right text-nowrap">@(option.LastInstalment.ToString())</td>
                                     </tr>
-                                }
+                                }*@
                                 <tr>
                                     <td>@T("Plugins.Payments.PayPalInstalments.FixedNominalRate"):</td>
                                     <td class="text-right text-nowrap">@(Math.Round(option.NominalRate, 2).ToString("0.00")) %</td>

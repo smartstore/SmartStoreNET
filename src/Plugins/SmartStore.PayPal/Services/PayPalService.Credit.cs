@@ -121,14 +121,15 @@ namespace SmartStore.PayPal.Services
                                 option.TotalInterest = Parse((string)fo.total_interest.value, sourceCurrency, targetCurrency, store);
                                 option.TotalCost = Parse((string)fo.total_cost.value, sourceCurrency, targetCurrency, store);
 
-                                var instalments = fo.estimated_installments as JArray;
-                                var lastInstalment = instalments?.LastOrDefault()?.SelectToken("total_payment.value")?.ToString();
-                                option.LastInstalment = Parse(lastInstalment, sourceCurrency, targetCurrency, store);
+                                // PayPal review: do not display last instalment.
+                                //var instalments = fo.estimated_installments as JArray;
+                                //var lastInstalment = instalments?.LastOrDefault()?.SelectToken("total_payment.value")?.ToString();
+                                //option.LastInstalment = Parse(lastInstalment, sourceCurrency, targetCurrency, store);
 
-                                if (option.LastInstalment.Amount == decimal.Zero)
-                                {
-                                    option.LastInstalment = new Money(option.MonthlyPayment.Amount, targetCurrency);
-                                }
+                                //if (option.LastInstalment.Amount == decimal.Zero)
+                                //{
+                                //    option.LastInstalment = new Money(option.MonthlyPayment.Amount, targetCurrency);
+                                //}
 
                                 result.Qualified.Add(option);
                             }
@@ -201,7 +202,7 @@ namespace SmartStore.PayPal.Services
             public int Term { get; set; }
             public Money MinAmount { get; set; }
             public Money MonthlyPayment { get; set; }
-            public Money LastInstalment { get; set; }
+            //public Money LastInstalment { get; set; }
             public Money TotalInterest { get; set; }
             public Money TotalCost { get; set; }
 

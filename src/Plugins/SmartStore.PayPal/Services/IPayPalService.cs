@@ -30,12 +30,17 @@ namespace SmartStore.PayPal.Services
 
 		PayPalResponse GetPayment(PayPalApiSettingsBase settings, PayPalSessionData session);
 
-		PayPalResponse CreatePayment(
-			PayPalApiSettingsBase settings,
-			PayPalSessionData session,
-			List<OrganizedShoppingCartItem> cart,
-			string returnUrl,
-			string cancelUrl);
+        Dictionary<string, object> CreatePaymentData(
+            PayPalApiSettingsBase settings,
+            PayPalSessionData session,
+            List<OrganizedShoppingCartItem> cart,
+            string returnUrl,
+            string cancelUrl);
+
+        PayPalResponse CreatePayment(
+            PayPalApiSettingsBase settings,
+            PayPalSessionData session,
+            Dictionary<string, object> data);
 
 		PayPalResponse PatchShipping(
 			PayPalApiSettingsBase settings,

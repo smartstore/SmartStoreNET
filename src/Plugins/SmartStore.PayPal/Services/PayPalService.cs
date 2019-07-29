@@ -110,7 +110,7 @@ namespace SmartStore.PayPal.Services
 
 			if (addRecipientName)
 			{
-				dic.Add("recipient_name", addr.GetFullName().Truncate(50));
+				dic.Add("recipient_name", addr.GetFullName().Truncate(127));
 			}
 
 			return dic;
@@ -730,24 +730,22 @@ namespace SmartStore.PayPal.Services
 			return result;
 		}
 
-		public PayPalResponse CreatePayment(
+        public Dictionary<string, object> CreatePaymentData(
             PayPalApiSettingsBase settings,
             PayPalSessionData session,
-			List<OrganizedShoppingCartItem> cart,
-			string returnUrl,
-			string cancelUrl)
-		{
-			var store = _services.StoreContext.CurrentStore;
-			var customer = _services.WorkContext.CurrentCustomer;
+            List<OrganizedShoppingCartItem> cart,
+            string returnUrl,
+            string cancelUrl)
+        {
+            var store = _services.StoreContext.CurrentStore;
+            var customer = _services.WorkContext.CurrentCustomer;
 
-			//var dateOfBirth = customer.GetAttribute<DateTime?>(SystemCustomerAttributeNames.DateOfBirth);
-
-			var data = new Dictionary<string, object>();
-			var redirectUrls = new Dictionary<string, object>();
-			var payer = new Dictionary<string, object>();
-			var transaction = new Dictionary<string, object>();
-			var items = new List<Dictionary<string, object>>();
-			var itemList = new Dictionary<string, object>();
+            var data = new Dictionary<string, object>();
+            var redirectUrls = new Dictionary<string, object>();
+            var payer = new Dictionary<string, object>();
+            var transaction = new Dictionary<string, object>();
+            var items = new List<Dictionary<string, object>>();
+            var itemList = new Dictionary<string, object>();
 
             // "PayPal PLUS only supports transaction type “Sale” (instant settlement)".
             if (session.ProviderSystemName == PayPalPlusProvider.SystemName || session.ProviderSystemName == PayPalInstalmentsProvider.SystemName)
@@ -787,6 +785,7 @@ namespace SmartStore.PayPal.Services
                 payerInfo.Add("first_name", customer.FirstName.EmptyNull());
                 payerInfo.Add("last_name", customer.LastName.EmptyNull());
 
+                //var dateOfBirth = customer.GetAttribute<DateTime?>(SystemCustomerAttributeNames.DateOfBirth);
                 //if (dateOfBirth.HasValue)
                 //{
                 //	payerInfo.Add("birth_date", dateOfBirth.Value.ToString("yyyy-MM-dd"));
@@ -802,40 +801,50 @@ namespace SmartStore.PayPal.Services
 
                 if (customer.ShippingAddress != null)
                 {
-                    itemList.Add("shipping_address", CreateAddress(customer.ShippingAddress, false));
+                    // PayPal review: always pass recipient_name.
+                    itemList.Add("shipping_address", CreateAddress(customer.ShippingAddress, true));
                 }
             }
 
             payer.Add("payment_method", "paypal");
-			data.Add("payer", payer);
+            data.Add("payer", payer);
 
-			var amount = CreateAmount(session, store, customer, cart, items);
-			if (!amount.Any())
-			{
-				return null;
-			}
+            var amount = CreateAmount(session, store, customer, cart, items);
+            if (!amount.Any())
+            {
+                return null;
+            }
 
-			itemList.Add("items", items);
+            itemList.Add("items", items);
 
             transaction.Add("amount", amount);
-			transaction.Add("item_list", itemList);
-			transaction.Add("invoice_number", session.OrderGuid.ToString());
+            transaction.Add("item_list", itemList);
+            transaction.Add("invoice_number", session.OrderGuid.ToString());
 
-			data.Add("transactions", new List<Dictionary<string, object>> { transaction });
+            data.Add("transactions", new List<Dictionary<string, object>> { transaction });
 
-			var result = CallApi("POST", "/v1/payments/payment", settings, session, JsonConvert.SerializeObject(data));
+            return data;
+        }
 
-			if (result.Success && result.Json != null)
-			{
-				result.Id = (string)result.Json.id;
-			}
+        public PayPalResponse CreatePayment(
+            PayPalApiSettingsBase settings,
+            PayPalSessionData session,
+            Dictionary<string, object> data)
+        {
+            var serializeData = JsonConvert.SerializeObject(data);
+            var result = CallApi("POST", "/v1/payments/payment", settings, session, serializeData);
+
+            if (result.Success && result.Json != null)
+            {
+                result.Id = (string)result.Json.id;
+            }
 
             //Logger.Log(LogLevel.Information, new Exception(JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + (result.Json != null ? result.Json.ToString() : "")), "PayPal API", null);
 
             return result;
-		}
+        }
 
-		public PayPalResponse PatchShipping(
+        public PayPalResponse PatchShipping(
             PayPalApiSettingsBase settings,
             PayPalSessionData session,
 			List<OrganizedShoppingCartItem> cart)
@@ -1245,7 +1254,8 @@ namespace SmartStore.PayPal.Services
 		public string AccessToken { get; set; }
 		public DateTime TokenExpiration { get; set; }
 		public string PaymentId { get; set; }
-		public string PayerId { get; set; }
+        public string PaymentDataHash { get; set; }
+        public string PayerId { get; set; }
 		public string ApprovalUrl { get; set; }
 		public Guid OrderGuid { get; private set; }
 		public PayPalPaymentInstruction PaymentInstruction { get; set; }

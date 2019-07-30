@@ -8,6 +8,7 @@
 * #1639 Shipping.ByTotal: Add option to calculate the shipping rate based on the net total instead of the gross total.
 * #1537 Implement "Ratenzahlung powered by PayPal" provider.
 * New Heidelpay payment plugin.
+* Shop-Connector: mapping of product SKUs that differ between client shops.
 
 ### Improvements
 * Amazon Pay: PSD2. Strong customer authentication (SCA) upgrade.

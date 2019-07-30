@@ -781,9 +781,18 @@ namespace SmartStore.PayPal.Services
             if (session.ProviderSystemName == PayPalInstalmentsProvider.SystemName)
             {
                 var payerInfo = new Dictionary<string, object>();
+                var firstName = customer.FirstName;
+                var lastName = customer.LastName;
+
+                if (lastName.IsEmpty() && customer.BillingAddress != null)
+                {
+                    firstName = customer.BillingAddress.FirstName;
+                    lastName = customer.BillingAddress.LastName;
+                }                    
+
                 payerInfo.Add("email", customer.FindEmail().EmptyNull());
-                payerInfo.Add("first_name", customer.FirstName.EmptyNull());
-                payerInfo.Add("last_name", customer.LastName.EmptyNull());
+                payerInfo.Add("first_name", firstName.EmptyNull());
+                payerInfo.Add("last_name", lastName.EmptyNull());
 
                 //var dateOfBirth = customer.GetAttribute<DateTime?>(SystemCustomerAttributeNames.DateOfBirth);
                 //if (dateOfBirth.HasValue)

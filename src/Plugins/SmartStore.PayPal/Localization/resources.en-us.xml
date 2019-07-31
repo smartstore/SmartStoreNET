@@ -472,6 +472,9 @@ Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
         <Value>Ratenzahlung Powered by PayPal</Value>
     </LocaleResource>
     <LocaleResource Name="Plugins.Payments.PayPalInstalments" AppendRootKey="false">
+        <LocaleResource Name="ShortMethodName">
+            <Value>Installment</Value>
+        </LocaleResource>
         <Children>
             <LocaleResource Name="AdminInstruction">
                 <Value>

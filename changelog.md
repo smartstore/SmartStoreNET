@@ -19,7 +19,8 @@
 * (SEO) Activated GZIP compression for all dynamic and static responses.
 * Set max. file upload size to 2 GB (globally)
 * (Dev) Added a sample block for the *Page Builder* in DevTools plugin.
-* Various other minor improvements
+* Various other minor improvements.
+* PayPal PLUS: paying by instalments can be selected in payment wall.
 
 ### Bugfixes
 * Fixed wrong XML sitemap index numbering.

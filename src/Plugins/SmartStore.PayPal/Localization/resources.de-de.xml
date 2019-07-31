@@ -467,6 +467,9 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
     </LocaleResource>
     <LocaleResource Name="Plugins.Payments.PayPalInstalments" AppendRootKey="false">
         <Children>
+            <LocaleResource Name="ShortMethodName">
+                <Value>Ratenzahlung</Value>
+            </LocaleResource>
             <LocaleResource Name="AdminInstruction">
                 <Value>
                     <![CDATA[<p>So richten Sie Ratenzahlung Powered by PayPal ein:</p>

@@ -21,6 +21,7 @@
 * (Dev) Added a sample block for the *Page Builder* in DevTools plugin.
 * Various other minor improvements.
 * PayPal PLUS: paying by instalments can be selected in payment wall.
+* Payone: send more information to API (e.g. shipping address) to stay as frictionless as possible for PSD2.
 
 ### Bugfixes
 * Fixed wrong XML sitemap index numbering.
@@ -28,7 +29,7 @@
 * #1647 All manufacturers page: link of last character missing in alphabetical letter list.
 * #1664 RTL: CMS menu issues in backend.
 * Do not adjust inventory twice when an order is cancelled and deleted.
-* Various other minor fixes
+* Various other minor fixes.
 
 
 ## SmartStore.NET 3.2.1

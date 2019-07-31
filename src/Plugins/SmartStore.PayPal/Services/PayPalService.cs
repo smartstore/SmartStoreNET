@@ -531,10 +531,10 @@ namespace SmartStore.PayPal.Services
                 {
                     request.Headers["PayPal-Partner-Attribution-Id"] = "SmartStoreAG_Cart_PayPalPlus";
                 }
-                //else if (session.ProviderSystemName.IsCaseInsensitiveEqual(PayPalInstalmentsProvider.SystemName))
-                //{
-                //    request.Headers["PayPal-Partner-Attribution-Id"] = "SmartStoreAG_Cart_PayPalRatenzahlung";
-                //}
+                else if (session.ProviderSystemName.IsCaseInsensitiveEqual(PayPalInstalmentsProvider.SystemName))
+                {
+                    request.Headers["PayPal-Partner-Attribution-Id"] = "SmartStoreAG_Cart_Ratenzahlung";
+                }
             }
 
 			if (data.HasValue() && (method.IsCaseInsensitiveEqual("POST") || method.IsCaseInsensitiveEqual("PUT") || method.IsCaseInsensitiveEqual("PATCH")))
@@ -781,16 +781,29 @@ namespace SmartStore.PayPal.Services
             if (session.ProviderSystemName == PayPalInstalmentsProvider.SystemName)
             {
                 var payerInfo = new Dictionary<string, object>();
-                var firstName = customer.FirstName;
-                var lastName = customer.LastName;
+                var email = string.Empty;
+                var firstName = string.Empty;
+                var lastName = string.Empty;
 
+                // PayPal review: do take name and email from account data.
+                if (customer.ShippingAddress != null)
+                {
+                    email = customer.ShippingAddress.Email;
+                    firstName = customer.ShippingAddress.FirstName;
+                    lastName = customer.ShippingAddress.LastName;
+                }
                 if (lastName.IsEmpty() && customer.BillingAddress != null)
                 {
+                    email = customer.BillingAddress.Email;
                     firstName = customer.BillingAddress.FirstName;
                     lastName = customer.BillingAddress.LastName;
-                }                    
+                }
+                if (email.IsEmpty())
+                {
+                    email = customer.Email;
+                }
 
-                payerInfo.Add("email", customer.FindEmail().EmptyNull());
+                payerInfo.Add("email", email.EmptyNull());
                 payerInfo.Add("first_name", firstName.EmptyNull());
                 payerInfo.Add("last_name", lastName.EmptyNull());
 

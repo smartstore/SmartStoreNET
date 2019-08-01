@@ -220,6 +220,7 @@
     <Compile Include="Controllers\RoxyFileManagerController.cs" />
     <Compile Include="Controllers\ScheduleTaskController.cs" />
     <Compile Include="Controllers\AdminModelHelper.cs" />
+    <Compile Include="Controllers\PermissionController.cs" />
     <Compile Include="Controllers\SecurityController.cs" />
     <Compile Include="Controllers\UrlRecordController.cs" />
     <Compile Include="Controllers\SettingController.cs" />
@@ -287,6 +288,7 @@
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Plugins\ProviderModelList.cs" />
     <Compile Include="Models\Polls\PollVotingRecordModel.cs" />
+    <Compile Include="Models\Security\PermissionListModel.cs" />
     <Compile Include="Models\Settings\ForumSearchSettingsModel.cs" />
     <Compile Include="Models\Settings\PaymentSettingsModel.cs" />
     <Compile Include="Models\Settings\SearchSettingsModel.cs" />
@@ -602,6 +604,8 @@
     <Content Include="Views\Shared\EditorTemplates\AccessPermissions.cshtml" />
     <Content Include="Views\Shared\Menus\Admin.cshtml" />
     <Content Include="Views\Shared\Partials\FontAwesomeIcon.cshtml" />
+    <Content Include="Views\Permission\AccessDenied.cshtml" />
+    <Content Include="Views\Permission\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

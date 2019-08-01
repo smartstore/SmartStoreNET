@@ -1,0 +1,26 @@
+﻿@model PermissionListModel
+@{               
+    ViewBag.Title = T("Admin.Configuration.ACL").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="fa fa-lock"></i>
+            @T("Admin.Configuration.ACL")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
+        </div>
+    </div>
+    
+
+}
+
+<script>
+
+
+</script>

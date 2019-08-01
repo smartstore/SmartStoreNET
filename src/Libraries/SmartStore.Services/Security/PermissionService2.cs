@@ -225,7 +225,7 @@ namespace SmartStore.Services.Security
 
                 var permissions = _permissionRecordRepository.TableUntracked
                     .Expand(x => x.PermissionRoleMappings)
-                    .Where(x => x.Name == null)//GP: TODO, remove clause later
+                    .Where(x => string.IsNullOrEmpty(x.Name))//GP: TODO, remove clause later
                     .ToList();
 
                 AddChildItems(permissions, root, null);

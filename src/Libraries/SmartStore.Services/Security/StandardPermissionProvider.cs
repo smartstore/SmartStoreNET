@@ -4,6 +4,7 @@ using SmartStore.Core.Domain.Security;
 
 namespace SmartStore.Services.Security
 {
+    //GP: remove. Update permissionNames in ~/Administration/sitemap.config.
     public partial class StandardPermissionProvider : IPermissionProvider
     {
         //admin area permissions

@@ -137,6 +137,7 @@ namespace SmartStore.Services.Security
         {
             var query = 
 				from pr in _permissionRecordRepository.Table
+                where !string.IsNullOrEmpty(pr.Name)
 				orderby pr.Category, pr.Name
 				select pr;
 

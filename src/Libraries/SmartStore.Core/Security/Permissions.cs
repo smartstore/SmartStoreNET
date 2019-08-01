@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace SmartStore.Core.Security
+namespace SmartStore.Core
 {
     /// <summary>
     /// Provides system names of standard permissions.
     /// Usage: [Permission(PermissionSystemNames.Customer.Read)]
     /// </summary>
-    public static class PermissionSystemNames
+    public static class Permissions
     {
         /// <summary>
         /// Gets a list of all standard permission system names.
@@ -18,7 +18,7 @@ namespace SmartStore.Core.Security
         public static IList<string> GetAll()
         {
             var result = new List<string>();
-            GetPermissions(typeof(PermissionSystemNames));
+            GetPermissions(typeof(Permissions));
 
             return result;
 

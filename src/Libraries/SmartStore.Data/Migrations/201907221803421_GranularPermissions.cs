@@ -5,7 +5,7 @@ namespace SmartStore.Data.Migrations
     using SmartStore.Data.Setup;
     using SmartStore.Data.Utilities;
 
-    public partial class GranularPermissions : DbMigration, IDataSeeder<SmartObjectContext>
+    public partial class GranularPermissions : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {
@@ -39,10 +39,20 @@ namespace SmartStore.Data.Migrations
 
         public void Seed(SmartObjectContext context)
         {
+            context.MigrateLocaleResources(MigrateLocaleResources);
+            context.SaveChanges();
+
             if (DataSettings.DatabaseIsInstalled())
             {
                 DataMigrator.AddGranularPermissions(context);
             }
+        }
+
+        public void MigrateLocaleResources(LocaleResourcesBuilder builder)
+        {
+            builder.AddOrUpdate("Admin.Customers.Customers.CustomerRole",
+                "Customer role",
+                "Kundengruppe");
         }
     }
 }

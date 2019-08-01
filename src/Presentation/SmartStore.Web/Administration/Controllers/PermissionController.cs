@@ -1,7 +1,9 @@
 ﻿using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Security;
+using SmartStore.Collections;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Security;
@@ -14,10 +16,14 @@ namespace SmartStore.Admin.Controllers
     public class PermissionController : AdminControllerBase
     {
         private readonly IPermissionService2 _permissionService;
+        private readonly ICustomerService _customerService;
 
-        public PermissionController(IPermissionService2 permissionService)
+        public PermissionController(
+            IPermissionService2 permissionService,
+            ICustomerService customerService)
         {
             _permissionService = permissionService;
+            _customerService = customerService;
         }
 
         // Ajax.
@@ -61,15 +67,30 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Acl.Read)]
-        public ActionResult List()
+        public ActionResult List(int? roleId)
         {
-            var model = new PermissionListModel();
+            var roles = _customerService.GetAllCustomerRoles(true);
+
+            var model = new PermissionListModel
+            {
+                RoleId = roleId ?? roles.FirstOrDefault()?.Id ?? 0
+            };
+
+            model.Roles = roles
+                .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString(), Selected = x.Id == model.RoleId })
+                .ToList();
+
+            var role = _customerService.GetCustomerRoleById(model.RoleId);
+            if (role != null)
+            {
+                model.PermissionTree = _permissionService.GetPermissionTree(role);
+            }
 
             return View(model);
         }
 
         [HttpPost, Permission(Permissions.Configuration.Acl.Update)]
-        public ActionResult Edit(FormCollection form)
+        public ActionResult List(int roleId, FormCollection form)
         {
 
             NotifySuccess(T("Admin.Configuration.ACL.Updated"));

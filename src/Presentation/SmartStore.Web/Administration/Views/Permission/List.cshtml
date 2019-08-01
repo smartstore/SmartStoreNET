@@ -1,26 +1,70 @@
-﻿@model PermissionListModel
+﻿@using SmartStore.Collections
+@using SmartStore.Core.Domain.Security
+@model PermissionListModel
 @{               
     ViewBag.Title = T("Admin.Configuration.ACL").Text;
 }
+<div class="section-header">
+    <div class="title">
+        <i class="fa fa-lock"></i>
+        @T("Admin.Configuration.ACL")
+    </div>
+    <div class="options">
+        <button type="submit" name="save" value="save" class="btn btn-warning">
+			<i class="fa fa-check"></i>
+			<span>@T("Admin.Common.Save")</span>
+		</button>
+    </div>
+</div>
+    
+<div class="row mt-3 grid-filter">
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.RoleId)
+		@Html.DropDownListFor(model => model.RoleId, Model.Roles)
+	</div>
+</div>
+
 @using (Html.BeginForm())
 {
-    <div class="section-header">
-        <div class="title">
-            <i class="fa fa-lock"></i>
-            @T("Admin.Configuration.ACL")
-        </div>
-        <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-warning">
-				<i class="fa fa-check"></i>
-				<span>@T("Admin.Common.Save")</span>
-			</button>
-        </div>
+    <input type="hidden" name="roleId" value="@Model.RoleId" />
+    <div id="permission-tree" class="smtree mt-3">
+        @if (Model.PermissionTree != null && Model.PermissionTree.HasChildren)
+        {
+            @PermissionNode(Model.PermissionTree, 0)
+        }
+        else
+        {
+	        <div class="alert alert-warning">
+		        @T("Admin.System.Warnings.NoPermissionsDefined")
+	        </div>
+        }
     </div>
-    
-
 }
 
+@helper PermissionNode(TreeNode<IPermissionNode> node, int level)
+{
+    <ul>
+        @foreach (var child in node.Children)
+        {
+            <li data-id="@child.Value.PermissionRecordId" data-level="@level" data-label="@child.Value.SystemName">
+                @if (child.HasChildren)
+                {
+                    @PermissionNode(child, level + 1)
+                }
+            </li>
+        }
+    </ul>
+}
+
+
 <script>
+    $(function () {
+        // Init tree.
+        $('#permission-tree').smTree();
 
-
+        // Load permission tree for selected role.
+		$('#@Html.FieldIdFor(x => x.RoleId)').change(function () {
+            location.href = '@Url.Action("List")?roleId=' + $(this).val();			
+		});
+	});
 </script>

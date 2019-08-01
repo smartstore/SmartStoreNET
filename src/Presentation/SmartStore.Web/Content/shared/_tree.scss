@@ -1,0 +1,27 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+// Tree
+// ------------------------------
+
+.smtree {
+    :first-child {
+        padding-left: 0;
+    }
+
+    ul {
+        list-style: none;
+        margin-bottom: 4px;
+    }
+
+    il {
+        padding: 3px 0;
+    }
+
+    .smtree-expander {
+        cursor: pointer;
+        margin-right: 4px;
+    }
+}
+

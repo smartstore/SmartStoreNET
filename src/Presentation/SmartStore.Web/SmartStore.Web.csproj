@@ -1049,6 +1049,7 @@
     <Content Include="Content\shared\_fa.scss" />
     <Content Include="App_Data\icons.json" />
     <Content Include="App_Data\GeoLite2\GeoLite2-Country.mmdb" />
+    <Content Include="Content\shared\_tree.scss" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />
@@ -1191,6 +1192,7 @@
     <Content Include="Content\vendors\jquery\jquery.validate.unobtrusive.js" />
     <Content Include="Content\vendors\jquery\jquery.validate.unobtrusive.min.js" />
     <Content Include="Content\vendors\modernizr\modernizr.js" />
+    <Content Include="Scripts\smartstore.tree.js" />
     <Content Include="Scripts\smartstore.linkbuilder.js" />
     <Content Include="Scripts\smartstore.rangeslider.js" />
     <Content Include="Scripts\smartstore.keynav.js" />

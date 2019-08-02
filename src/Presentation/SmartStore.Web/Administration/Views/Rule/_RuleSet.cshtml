@@ -18,9 +18,9 @@
                 <button type="button" 
                         class="btn btn-secondary btn-sm btn-flat font-weight-medium dropdown-toggle mx-1 px-1 no-chevron"
                         data-toggle="dropdown">
-                    EINE
+                    <span class="logical-operator">@(Model.LogicalOperator == LogicalRuleOperator.And ? "ALLE" : "EINE")</span>
                 </button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu logical-operator-chooser">
                     <a href="#" class="dropdown-item" data-value="And">ALLE</a>
                     <a href="#" class="dropdown-item" data-value="Or">EINE</a>
                 </div>

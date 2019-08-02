@@ -99,6 +99,25 @@
             return false;
         });
 
+        $(document).on('click', '.ruleset-operator .dropdown-item', function (e) {
+            var parentSet = $(this).closest('.ruleset');
+            var parentSetId = parentSet.data('ruleset-id');
+            var operator = $(this).data('value');
+
+            $.ajax({
+                cache: false,
+                url: "@Url.Action("ChangeOperator")",
+                data: { ruleSetId: parentSetId, op: operator },
+			    type: "POST",
+                success: function (html) {
+                    parentSet.find(".logical-operator").text(operator == "And" ? "ALLE" : "EINE");
+                    parentSet.find(".logical-operator-chooser").removeClass("show");
+			    }
+            });
+
+            return false;
+        });
+
         $(document).on('click', '.r-delete-group', function (e) {
             var parentSet = $(this).closest('.ruleset');
             var refRuleId = parentSet.data('refrule-id');
@@ -111,6 +130,28 @@
 			    success: function (result) {
                     if (result.Success) {
                         parentSet.remove();
+                    }
+			    }
+            });
+
+            return false;
+        });
+
+        $(document).on('click', '.r-save-rule', function (e) {
+            var rule = $(this).closest('.rule');
+            var ruleId = rule.data('rule-id');
+
+            var value = rule.find(".rule-value").val();
+            var op = rule.find(".rule-operator").data("value");
+
+            $.ajax({
+                cache: false,
+                url: "@Url.Action("UpdateRule")",
+                data: { ruleId: ruleId, op: op, value: value },
+			    type: "POST",
+			    success: function (result) {
+                    if (result.Success) {
+                        location.reload();
                     }
 			    }
             });
@@ -160,7 +201,86 @@
 
             return false;
         });
+
+        $(document).on('click', '#execute-rules', function (e) {
+
+            var ruleSet = $(".ruleset-root > .ruleset")
+            var ruleSetId = ruleSet.data('ruleset-id');
+
+            $.ajax({
+                cache: false,
+                url: "@Url.Action("Execute")",
+                data: { ruleSetId: ruleSetId },
+			    type: "POST",
+			    success: function (result) {
+                    if (result.Success) {
+                        $("#excute-result").text(result.Message).removeClass("hide");
+                    }
+			    }
+            });
+
+            return false;
+        });
+
     });
+
+    function GetOperatorLabel(op) {
+        switch (op) {
+            case "@Html.Raw(RuleOperator.Contains)":
+                return @T("Admin.Rules.RuleOperator.Contains").JsText;
+                break;
+            case "@Html.Raw(RuleOperator.EndsWith)":
+                return @T("Admin.Rules.RuleOperator.EndsWith").JsText;
+                break;
+            case "@Html.Raw(RuleOperator.GreaterThan)":
+                return @T("Admin.Rules.RuleOperator.GreaterThan").JsText;
+                break;
+            case "@Html.Raw(RuleOperator.GreaterThanOrEqualTo)":
+                return @T("Admin.Rules.RuleOperator.GreaterThanOrEqualTo").JsText;
+                break;
+            case "@Html.Raw(RuleOperator.In)":
+                return @T("Admin.Rules.RuleOperator.In").JsText;
+                break;
+            case "@Html.Raw(RuleOperator.IsEmpty)":
+                return @T("Admin.Rules.RuleOperator.IsEmpty").JsText;
+                break;
+            case "@Html.Raw(RuleOperator.IsEqualTo)":
+                return @T("Admin.Rules.RuleOperator.IsEqualTo").JsText;
+                break;
+            case "@Html.Raw(RuleOperator.IsNotEmpty)":
+                return @T("Admin.Rules.RuleOperator.IsNotEmpty").JsText;
+                break;
+            case "@Html.Raw(RuleOperator.IsNotEqualTo)":
+                return @T("Admin.Rules.RuleOperator.IsNotEqualTo").JsText;
+                break;
+            case "@Html.Raw(RuleOperator.IsNotNull)":
+                return @T("Admin.Rules.RuleOperator.IsNotNull").JsText;
+                break;
+            case "@Html.Raw(RuleOperator.IsNull)":
+                return @T("Admin.Rules.RuleOperator.IsNull").JsText;
+                break;
+            case "@Html.Raw(RuleOperator.LessThan)":
+                return @T("Admin.Rules.RuleOperator.LessThan").JsText;
+                break;
+            case "@Html.Raw(RuleOperator.LessThanOrEqualTo)":
+                return @T("Admin.Rules.RuleOperator.LessThanOrEqualTo").JsText;
+                break;
+            case "@Html.Raw(RuleOperator.NotContains)":
+                return @T("Admin.Rules.RuleOperator.NotContains").JsText;
+                break;
+            case "@Html.Raw(RuleOperator.NotIn)":
+                return @T("Admin.Rules.RuleOperator.NotIn").JsText;
+                break;
+            case "@Html.Raw(RuleOperator.StartsWith)":
+                return @T("Admin.Rules.RuleOperator.StartsWith").JsText;
+                break;
+
+            default:
+                return "ERROR";
+                break;
+        }
+    }
+
 </script>
 
 <div class="adminContent">
@@ -190,6 +310,21 @@
             @Html.CheckBoxFor(model => model.IsActive)
         </div>
     </div>
+    <div class="adminRow">
+        <div class="adminTitle">
+            @Html.SmartLabelFor(model => model.Scope)
+        </div>
+        <div class="adminData">
+            @if (Model.Id == 0)
+            {
+                @Html.DropDownListForEnum(model => model.Scope)
+            }
+            else
+            {
+                @Html.TextBoxFor(model => model.Scope, new { @readonly = "readonly" })
+            }
+        </div>
+    </div>
 </div>
 
 @Html.HiddenFor(model => model.Id)
@@ -199,7 +334,9 @@
 @Html.HiddenFor(model => model.UpdatedOnUtc)
 @Html.HiddenFor(model => model.LastProcessedOnUtc)
 
-<h4 class="my-4">Bedingungen <a class="btn btn-primary" href="@Url.Action("Execute", new { ruleSetId = Model.Id })">Ausführen</a></h4>
+<h4 class="my-4">@T("Admin.Rules.Execute", "<a id=\"execute-rules\" class=\"btn btn-primary\" href=\"" + Url.Action("Execute", new { ruleSetId = Model.Id }) + "\">", "</a>")</h4>
+
+<div id="excute-result" class="alert alert-warning hide"></div>
 
 <div class="ruleset-root" data-scope="@((int)Model.Scope)">
     @{ Html.RenderPartial("_RuleSet", Model.ExpressionGroup); }

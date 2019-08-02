@@ -6,22 +6,46 @@
 // ------------------------------
 
 .smtree {
+    position: relative;
+
     :first-child {
         padding-left: 0;
     }
 
     ul {
+        position: relative;
         list-style: none;
-        margin-bottom: 4px;
+        padding-left: 32px;
     }
 
-    il {
-        padding: 3px 0;
+    li {
+        padding: 2px 0;
     }
 
     .smtree-expander {
         cursor: pointer;
         margin-right: 4px;
+    }
+
+    .smtree-vline {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 6px;
+        width: 0;
+        border-left: 1px solid $gray-300;
+        height: calc(100% - 12px);
+    }
+
+    .smtree-hline li::before {
+        content: "";
+        position: absolute;
+        left: 6px;
+        width: 18px;
+        height: 0;
+        margin-top: 10px;
+        border-top: 1px solid $gray-300;
     }
 }
 

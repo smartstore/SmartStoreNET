@@ -18,13 +18,9 @@
 
         init: function (opt) {
             var self = this;
-            var noLeafHtml = '<div class="smtree-inner">'
-                + '<span class="smtree-expander"></span>'
-                + '<span class="smtree-label"><span class="smtree-state"></span><span class="smtree-text"></span></span>'
-                + '</div>';
-            var leafHtml = '<div class="smtree-inner">'
-                + '<span class="smtree-label"><span class="smtree-state"></span><span class="smtree-text"></span></span>'
-                + '</div>';
+            var labelHtml = '<span class="smtree-label">' + (opt.nodeState ? '<span class="smtree-state"></span>' : '') + '<span class="smtree-text"></span></span>';
+            var noLeafHtml = '<div class="smtree-inner"><span class="smtree-expander"></span>' + labelHtml + '</div>';
+            var leafHtml = '<div class="smtree-inner">' + labelHtml + '</div>';
 
             // Set item HTML.
             $(self.element).find('li').each(function () {
@@ -34,14 +30,23 @@
                 li.addClass('smtree-node ' + (isLeaf ? 'smtree-leaf' : 'smtree-noleaf'))
                     .prepend(isLeaf ? leafHtml : noLeafHtml)
                     .find('.smtree-text').html(li.data('label'));
-            });                
+            });
 
             // Initially expand or reduce nodes.
             $(self.element).find('.smtree-noleaf').each(function () {
-                self._expand($(this), opt.isExpanded, opt);
+                self._expand($(this), opt.expanded, opt);
             });
 
-            // Expand/reduce.
+            // Auxiliary lines.
+            if (opt.auxiliaryLines) {
+                $(self.element).find('ul:first').find('ul')
+                    .addClass('smtree-hline')
+                    .prepend('<span class="smtree-vline"></span>');
+            }
+
+            // Node state.
+
+            // Expander click handler.
             $(self.element).on('click', '.smtree-expander', function () {
                 var li = $(this).closest('.smtree-node');
                 self._expand(li, li.hasClass('smtree-reduced'), opt);
@@ -58,7 +63,9 @@
 
     // The global, default plugin options.
     var defaults = {
-        isExpanded: false,
+        expanded: false,
+        auxiliaryLines: true,
+        nodeState: null,  // 'tri'
         expandedClass: 'fas fa-chevron-down',
         reducedClass: 'fas fa-chevron-right',
     };

@@ -18,7 +18,7 @@
 
         init: function (opt) {
             var self = this;
-            var labelHtml = '<span class="smtree-label">' + (opt.nodeState ? '<span class="smtree-state"></span>' : '') + '<span class="smtree-text"></span></span>';
+            var labelHtml = '<label class="smtree-label"><span class="smtree-text"></span></label>';
             var noLeafHtml = '<div class="smtree-inner"><span class="smtree-expander"></span>' + labelHtml + '</div>';
             var leafHtml = '<div class="smtree-inner">' + labelHtml + '</div>';
 
@@ -37,14 +37,23 @@
                 self._expand($(this), opt.expanded, opt);
             });
 
-            // Auxiliary lines.
-            if (opt.auxiliaryLines) {
+            // Helper lines.
+            if (opt.showLines) {
                 $(self.element).find('ul:first').find('ul')
                     .addClass('smtree-hline')
                     .prepend('<span class="smtree-vline"></span>');
             }
 
-            // Node state.
+            // Node state checkbox.
+            if (opt.nodeState) {
+                var namePrefix = (opt.checkboxName.length > 0 ? opt.checkboxName : 'smtree') + '-';
+
+                $(self.element).find('.smtree-label').each(function (i, el) {
+                    var name = namePrefix + i;
+                    $(this).attr('for', name)
+                        .prepend('<input type="checkbox" name="' + name + '" id="' + name + '" /><span class="smtree-state"></span>');
+                });
+            }
 
             // Expander click handler.
             $(self.element).on('click', '.smtree-expander', function () {
@@ -64,8 +73,9 @@
     // The global, default plugin options.
     var defaults = {
         expanded: false,
-        auxiliaryLines: true,
+        showLines: true,
         nodeState: null,  // 'tri'
+        checkboxName: '',
         expandedClass: 'fas fa-chevron-down',
         reducedClass: 'fas fa-chevron-right',
     };

@@ -4,29 +4,31 @@
 @{               
     ViewBag.Title = T("Admin.Configuration.ACL").Text;
 }
-<div class="section-header">
-    <div class="title">
-        <i class="fa fa-lock"></i>
-        @T("Admin.Configuration.ACL")
-    </div>
-    <div class="options">
-        <button type="submit" name="save" value="save" class="btn btn-warning">
-			<i class="fa fa-check"></i>
-			<span>@T("Admin.Common.Save")</span>
-		</button>
-    </div>
-</div>
-    
-<div class="row mt-3 grid-filter">
-	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-		@Html.SmartLabelFor(model => model.RoleId)
-		@Html.DropDownListFor(model => model.RoleId, Model.Roles)
-	</div>
-</div>
 
 @using (Html.BeginForm())
 {
     <input type="hidden" name="roleId" value="@Model.RoleId" />
+
+    <div class="section-header">
+        <div class="title">
+            <i class="fa fa-lock"></i>
+            @T("Admin.Configuration.ACL")
+        </div>
+        <div class="options">
+            <button type="submit" class="btn btn-warning">
+			    <i class="fa fa-check"></i>
+			    <span>@T("Admin.Common.Save")</span>
+		    </button>
+        </div>
+    </div>
+    
+    <div class="row mt-3 grid-filter">
+	    <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		    @Html.SmartLabelFor(model => model.RoleId)
+		    @Html.DropDownListFor(model => model.RoleId, Model.Roles)
+	    </div>
+    </div>
+
     <div id="permission-tree" class="smtree mt-3">
         @if (Model.PermissionTree != null && Model.PermissionTree.HasChildren)
         {
@@ -46,7 +48,8 @@
     <ul>
         @foreach (var child in node.Children)
         {
-            <li data-id="@child.Value.PermissionRecordId" data-level="@level" data-label="@child.Value.SystemName">
+            var val = child.Value.Allow.HasValue ? child.Value.Allow.Value.ToString().ToLower() : "";
+            <li data-id="@child.Value.PermissionRecordId" data-level="@level" data-label="@child.Value.SystemName" data-value="@val">
                 @if (child.HasChildren)
                 {
                     @PermissionNode(child, level + 1)
@@ -60,7 +63,10 @@
 <script>
     $(function () {
         // Init tree.
-        $('#permission-tree').smTree();
+        $('#permission-tree').smTree({
+            nodeState: 'tri',
+            checkboxName: 'permission'
+        });
 
         // Load permission tree for selected role.
 		$('#@Html.FieldIdFor(x => x.RoleId)').change(function () {

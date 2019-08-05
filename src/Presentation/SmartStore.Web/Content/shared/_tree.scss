@@ -22,6 +22,10 @@
         padding: 2px 0;
     }
 
+    label {
+        margin: 0;
+    }
+
     .smtree-expander {
         cursor: pointer;
         margin-right: 4px;
@@ -46,6 +50,69 @@
         height: 0;
         margin-top: 10px;
         border-top: 1px solid $gray-300;
+    }
+
+    .smtree-label {
+        position: relative;
+        cursor: pointer;
+        user-select: none;
+
+        input[type=checkbox] {
+            position: absolute;
+            opacity: 0;
+            height: 0;
+            width: 0;
+            margin: 0;
+        }
+        // State box.
+        .smtree-state::before {
+            content: "";
+            float: left;
+            height: 18px;
+            width: 18px;
+            border-radius: 5px;
+            border: 2px solid $gray-400;
+            background-color: #fff;
+            margin: 2px 4px 0 0;
+        }
+        // State indicators.
+        .smtree-state:after {
+            display: none;
+        }
+        input:checked {
+            ~ .smtree-state:before {
+                border: 2px solid $success;
+            }
+
+            ~ .smtree-state:after {
+                content: "";
+                position: absolute;
+                display: block;
+                top: 5px;
+                left: 6px;
+                width: 6px;
+                height: 10px;
+                border: 2px solid $success;
+                border-width: 0 3px 3px 0;
+                transform: rotate(45deg);
+            }
+        }
+        /*input:checked {
+            ~ .smtree-state:before {
+                border: 2px solid $danger;
+            }
+
+            ~ .smtree-state:after {
+                content: '\d7';
+                position: absolute;
+                display: block;
+                top: 11px;
+                left: 9px;
+                font: normal 20px helvetica, arial, sans-serif;
+                color: $danger;
+                transform: translate(-50%,-50%) scaleX(1.2);
+            }
+        }*/
     }
 }
 

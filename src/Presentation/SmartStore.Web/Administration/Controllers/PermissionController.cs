@@ -1,9 +1,8 @@
 ﻿using System.Linq;
+using System.Text;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Security;
-using SmartStore.Collections;
 using SmartStore.Core;
-using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Security;
@@ -92,10 +91,9 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, Permission(Permissions.Configuration.Acl.Update)]
         public ActionResult List(int roleId, FormCollection form)
         {
-
             NotifySuccess(T("Admin.Configuration.ACL.Updated"));
 
-            return RedirectToAction("Permissions");
+            return RedirectToAction("List");
         }
     }
 }

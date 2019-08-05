@@ -176,7 +176,7 @@ namespace SmartStore.Services.Customers
                     RuleType = RuleType.Int,
                     Constraints = new IRuleConstraint[0]
                 },
-                new FilterDescriptor<Customer, int>(x => x.Orders.Count(y => y.OrderStatusId == 30))
+                new FilterDescriptor<Customer, int>(x => x.Orders.Count(y => y.OrderStatusId == 10 || y.OrderStatusId == 20))
                 {
                     Name = "NewOrderCount",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.NewOrderCount"),
@@ -266,12 +266,152 @@ namespace SmartStore.Services.Customers
                     Constraints = new IRuleConstraint[0]
                 },
 
-                // TODO Customer attrs > Gender, ZipPostalCode, VatNumberStatusId, TimeZoneId, TaxDisplayTypeId
+                // Moved from Customer attrs > Gender, ZipPostalCode, VatNumberStatusId, TimeZoneId, TaxDisplayTypeId
+                new FilterDescriptor<Customer, string>(x => x.Gender)
+                {
+                    Name = "Gender",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.Gender"),
+                    RuleType = RuleType.String,
+                    Constraints = new IRuleConstraint[0]
+                },
+                new FilterDescriptor<Customer, string>(x => x.ZipPostalCode)
+                {
+                    Name = "ZipPostalCode",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.ZipPostalCode"),
+                    RuleType = RuleType.String,
+                    Constraints = new IRuleConstraint[0]
+                },
+                // TODO: handle status
+                new FilterDescriptor<Customer, int>(x => x.VatNumberStatusId)
+                {
+                    Name = "VatNumberStatusId",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.VatNumberStatusId"),
+                    RuleType = RuleType.Int,
+                    Constraints = new IRuleConstraint[0]
+                },
+                new FilterDescriptor<Customer, string>(x => x.TimeZoneId)
+                {
+                    Name = "TimeZoneId",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.TimeZoneId"),
+                    RuleType = RuleType.String,
+                    Constraints = new IRuleConstraint[0]
+                },
+                new FilterDescriptor<Customer, int>(x => x.TaxDisplayTypeId)
+                {
+                    Name = "TaxDisplayTypeId",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.TaxDisplayTypeId"),
+                    RuleType = RuleType.Int,
+                    Constraints = new IRuleConstraint[0]
+                },
+
+                // from order or customer or both??? (next three descriptors)
+                new FilterDescriptor<Customer, int>(x => x.CountryId)
+                {
+                    Name = "CountryId",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.CountryId"),
+                    RuleType = RuleType.Int,
+                    Constraints = new IRuleConstraint[0]
+                },
+                new FilterDescriptor<Customer, int?>(x => x.CurrencyId)
+                {
+                    Name = "CurrencyId",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.CurrencyId"),
+                    RuleType = RuleType.NullableInt,
+                    Constraints = new IRuleConstraint[0]
+                },
+                new FilterDescriptor<Customer, int?>(x => x.LanguageId)
+                {
+                    Name = "LanguageId",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.LanguageId"),
+                    RuleType = RuleType.NullableInt,
+                    Constraints = new IRuleConstraint[0]
+                },
+
+                new FilterDescriptor<Customer, int?>(x => DbFunctions.DiffDays(x.LastForumVisit, DateTime.UtcNow))
+                {
+                    Name = "LastForumVisit",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.LastForumVisit"),
+                    RuleType = RuleType.NullableInt,
+                    Constraints = new IRuleConstraint[0]
+                },
+                new FilterDescriptor<Customer, string>(x => x.LastUserAgent)
+                {
+                    Name = "LastUserAgent",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.LastUserAgent"),
+                    RuleType = RuleType.String,
+                    Constraints = new IRuleConstraint[0]
+                },
 
                 // customer roles
+                new AllFilterDescriptor<Customer, CustomerRole, int>(x => x.CustomerRoles, cr => cr.Id)
+                {
+                    Name = "IsInCustomerRole",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.IsInCustomerRole"),
+                    RuleType = RuleType.IntArray,
+                    Constraints = new IRuleConstraint[0]
+                },
 
-                // Orders > LastOrderDate (CreatedOnUtc), AcceptThirdPartyEmailHandOver, CustomerCurrencyCode, CustomerLanguageId, OrderTotal, PaymentStatusId?, 
+                // Orders > StoreId, LastOrderDate (CreatedOnUtc), AcceptThirdPartyEmailHandOver, OrderTotal, OrderSubtotalInclTax, OrderSubtotalExclTax
+                //          ShippingStatusId, PaymentStatusId, (TODO ???)
+                //          PaymentMethodSystemName, ShippingRateComputationMethodSystemName
+                //          CustomerCurrencyCode, CustomerLanguageId, CustomerTaxDisplayTypeId (TODO: Really??? from customer, order or both?)
 
+                new FilterDescriptor<Order, int>(x => x.StoreId)
+                {
+                    Name = "StoreId",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.StoreId"),
+                    RuleType = RuleType.Int,
+                    Constraints = new IRuleConstraint[0]
+                },
+                new FilterDescriptor<Customer, int?>(x => DbFunctions.DiffDays(x.Orders.Select(y => y.CreatedOnUtc).FirstOrDefault(), DateTime.UtcNow))
+                {
+                    Name = "LastOrderDateDays",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.LastOrderDateDays"),
+                    RuleType = RuleType.NullableInt,
+                    Constraints = new IRuleConstraint[0]
+                },
+                new FilterDescriptor<Order, bool>(x => x.AcceptThirdPartyEmailHandOver)
+                {
+                    Name = "AcceptThirdPartyEmailHandOver",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.AcceptThirdPartyEmailHandOver"),
+                    RuleType = RuleType.Boolean,
+                    Constraints = new IRuleConstraint[0]
+                },
+                new FilterDescriptor<Order, decimal>(x => x.OrderTotal)
+                {
+                    Name = "OrderTotal",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.OrderTotal"),
+                    RuleType = RuleType.Money,
+                    Constraints = new IRuleConstraint[0]
+                },
+                new FilterDescriptor<Order, decimal>(x => x.OrderSubtotalInclTax)
+                {
+                    Name = "OrderSubtotalInclTax",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.OrderSubtotalInclTax"),
+                    RuleType = RuleType.Money,
+                    Constraints = new IRuleConstraint[0]
+                },
+                new FilterDescriptor<Order, decimal>(x => x.OrderSubtotalExclTax)
+                {
+                    Name = "OrderSubtotalExclTax",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.OrderSubtotalExclTax"),
+                    RuleType = RuleType.Money,
+                    Constraints = new IRuleConstraint[0]
+                },
+                new FilterDescriptor<Order, string>(x => x.PaymentMethodSystemName)
+                {
+                    Name = "PaymentMethodSystemName",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.PaymentMethodSystemName"),
+                    RuleType = RuleType.String,
+                    Constraints = new IRuleConstraint[0]
+                },
+                new FilterDescriptor<Order, string>(x => x.ShippingRateComputationMethodSystemName)
+                {
+                    Name = "ShippingRateComputationMethodSystemName",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.ShippingRateComputationMethodSystemName"),
+                    RuleType = RuleType.String,
+                    Constraints = new IRuleConstraint[0]
+                },
             };
         }
     }

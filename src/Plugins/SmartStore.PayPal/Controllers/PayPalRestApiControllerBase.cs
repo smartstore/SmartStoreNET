@@ -100,8 +100,12 @@ namespace SmartStore.PayPal.Controllers
 			{
 				if (settings.WebhookId.HasValue())
 				{
-					var unused = PayPalService.DeleteWebhook(settings, session);
-					Services.Settings.SaveSetting(settings, x => x.WebhookId, 0, false);
+					var result1 = PayPalService.DeleteWebhook(settings, session);
+                    if (result1.Success)
+                    {
+                        settings.WebhookId = null;
+                        Services.Settings.SaveSetting(settings, x => x.WebhookId, 0, false);
+                    }
 				}
 
 				var url = Url.Action("Webhook", GetControllerName(), new { area = Plugin.SystemName }, "https");

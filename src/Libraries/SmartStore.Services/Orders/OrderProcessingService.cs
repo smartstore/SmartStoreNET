@@ -754,7 +754,7 @@ namespace SmartStore.Services.Orders
                 var customerCurrencyRate = decimal.Zero;
                 if (!processPaymentRequest.IsRecurringPayment)
                 {
-					var currencyTmp = _currencyService.GetCurrencyById(customer.GetAttribute<int>(SystemCustomerAttributeNames.CurrencyId, processPaymentRequest.StoreId));
+					var currencyTmp = _currencyService.GetCurrencyById((int)customer.CurrencyId);
 					var customerCurrency = (currencyTmp != null && currencyTmp.Published) ? currencyTmp : _workContext.WorkingCurrency;
                     customerCurrencyCode = customerCurrency.CurrencyCode;
 
@@ -771,7 +771,7 @@ namespace SmartStore.Services.Orders
                 Language customerLanguage = null;
                 if (!processPaymentRequest.IsRecurringPayment)
 				{
-					customerLanguage = _languageService.GetLanguageById(customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId, processPaymentRequest.StoreId));
+					customerLanguage = _languageService.GetLanguageById(customer.LanguageId);
 				}
 				else
 				{
@@ -914,7 +914,7 @@ namespace SmartStore.Services.Orders
                     orderTaxTotal = _orderTotalCalculationService.GetTaxTotal(cart, out var taxRatesDictionary);
 
                     // VAT number.
-					var customerVatStatus = (VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId);
+					var customerVatStatus = (VatNumberStatus)customer.VatNumberStatusId;
 					if (_taxSettings.EuVatEnabled && customerVatStatus == VatNumberStatus.Valid)
 					{
 						vatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);

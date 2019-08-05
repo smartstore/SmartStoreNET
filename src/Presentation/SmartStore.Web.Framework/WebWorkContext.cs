@@ -247,10 +247,7 @@ namespace SmartStore.Web.Framework
 					}
 					else
 					{
-						customerLangId = customer.GetAttribute<int>(
-							SystemCustomerAttributeNames.LanguageId,
-							_attrService,
-							_storeContext.CurrentStore.Id);
+						customerLangId = customer.LanguageId;
 					}
 				}
 
@@ -343,11 +340,8 @@ namespace SmartStore.Web.Framework
             if (this.CurrentCustomer.IsSystemAccount)
                 return;
 
-            _attrService.SaveAttribute(
-                this.CurrentCustomer,
-                SystemCustomerAttributeNames.LanguageId,
-                languageId,
-                storeId);
+            this.CurrentCustomer.LanguageId = languageId;
+            _customerService.UpdateCustomer(this.CurrentCustomer);
         }
 
         /// <summary>
@@ -377,15 +371,16 @@ namespace SmartStore.Web.Framework
                     if (customer != null && !customer.IsSearchEngineAccount())
                     {
                         // search engines should always crawl by primary store currency
-                        var customerCurrencyId = customer.GetAttribute<int?>(SystemCustomerAttributeNames.CurrencyId, _attrService, _storeContext.CurrentStore.Id);
-                        if (customerCurrencyId.GetValueOrDefault() > 0)
+                        var customerCurrencyId = customer.CurrencyId;
+                        if (customerCurrencyId > 0)
                         {
-							if (storeCurrenciesMap.TryGetValue(customerCurrencyId.Value, out currency))
+							if (storeCurrenciesMap.TryGetValue((int)customerCurrencyId, out currency))
 							{
 								currency = VerifyCurrency(currency);
 								if (currency == null)
 								{
-									_attrService.SaveAttribute<int?>(customer, SystemCustomerAttributeNames.CurrencyId, null, _storeContext.CurrentStore.Id);
+                                    customer.CurrencyId = null;
+                                    _customerService.UpdateCustomer(customer);
 								}
 							}
                         }
@@ -439,7 +434,8 @@ namespace SmartStore.Web.Framework
             set
             {
                 int? id = value != null ? value.Id : (int?)null;
-				_attrService.SaveAttribute<int?>(this.CurrentCustomer, SystemCustomerAttributeNames.CurrencyId, id, _storeContext.CurrentStore.Id);
+                this.CurrentCustomer.CurrencyId = id;
+                _customerService.UpdateCustomer(this.CurrentCustomer);
                 _cachedCurrency = null;
 			}
         }
@@ -467,9 +463,8 @@ namespace SmartStore.Web.Framework
                 if (!_taxSettings.AllowCustomersToSelectTaxDisplayType)
                     return;
 
-				_attrService.SaveAttribute(this.CurrentCustomer,
-					 SystemCustomerAttributeNames.TaxDisplayTypeId,
-					 (int)value, _storeContext.CurrentStore.Id);
+                this.CurrentCustomer.TaxDisplayTypeId = (int)value;
+                _customerService.UpdateCustomer(this.CurrentCustomer);
             }
         }
 
@@ -484,7 +479,7 @@ namespace SmartStore.Web.Framework
 
             if (_taxSettings.AllowCustomersToSelectTaxDisplayType && customer != null)
             {
-		        taxDisplayType = customer.GetAttribute<int?>(SystemCustomerAttributeNames.TaxDisplayTypeId, storeId);
+		        taxDisplayType = customer.TaxDisplayTypeId;
             }
 
             if (!taxDisplayType.HasValue && _taxSettings.EuVatEnabled)

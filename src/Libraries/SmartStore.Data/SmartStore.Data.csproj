@@ -687,6 +687,10 @@
     <Compile Include="Migrations\201907250103367_RuleSystem.Designer.cs">
       <DependentUpon>201907250103367_RuleSystem.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201908050758298_MoveFurtherCustomerFields.cs" />
+    <Compile Include="Migrations\201908050758298_MoveFurtherCustomerFields.Designer.cs">
+      <DependentUpon>201908050758298_MoveFurtherCustomerFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -1228,6 +1232,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201907250103367_RuleSystem.resx">
       <DependentUpon>201907250103367_RuleSystem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908050758298_MoveFurtherCustomerFields.resx">
+      <DependentUpon>201908050758298_MoveFurtherCustomerFields.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

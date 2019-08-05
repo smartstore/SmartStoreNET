@@ -277,11 +277,7 @@ namespace SmartStore.Web.Controllers
             {
                 if (!customer.Deleted && customer.Active && !customer.IsSystemAccount)
                 {
-                    _genericAttributeService.SaveAttribute(
-                        customer,
-                        SystemCustomerAttributeNames.LastForumVisit,
-                        DateTime.UtcNow,
-                        Services.StoreContext.CurrentStore.Id);
+                    customer.LastForumVisit = DateTime.UtcNow;
                 }
             }
             catch (Exception ex)
@@ -744,7 +740,7 @@ namespace SmartStore.Web.Controllers
                 postModel.ShowCustomersLocation = _customerSettings.ShowCustomersLocation;
                 if (_customerSettings.ShowCustomersLocation)
                 {
-                    var countryId = post.Customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId);
+                    var countryId = post.Customer.CountryId;
                     var country = _countryService.GetCountryById(countryId);
                     postModel.CustomerLocation = country != null ? country.GetLocalized(x => x.Name) : string.Empty;
                 }

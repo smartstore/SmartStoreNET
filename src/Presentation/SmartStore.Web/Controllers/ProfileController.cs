@@ -98,7 +98,7 @@ namespace SmartStore.Web.Controllers
             {
                 model.LocationEnabled = true;
 
-                var country = _countryService.GetCountryById(customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId, _genericAttributeService));
+                var country = _countryService.GetCountryById(customer.CountryId);
                 if (country != null)
                 {
                     model.Location = country.GetLocalized(x => x.Name);

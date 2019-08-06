@@ -238,7 +238,7 @@ namespace SmartStore.Admin.Controllers
                 FullName = customer.GetFullName(),
                 Company = customer.Company,
                 CustomerNumber = customer.CustomerNumber,
-                ZipPostalCode = customer.ZipPostalCode,
+                ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode),
                 Active = customer.Active,
                 Phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone),
                 CustomerRoleNames = GetCustomerRolesNames(customer.CustomerRoles.ToList()),
@@ -651,11 +651,11 @@ namespace SmartStore.Admin.Controllers
                 if (_customerSettings.StreetAddress2Enabled)
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StreetAddress2, model.StreetAddress2);
                 if (_customerSettings.ZipPostalCodeEnabled)
-                    customer.ZipPostalCode = model.ZipPostalCode;
+                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.ZipPostalCode, model.ZipPostalCode);
                 if (_customerSettings.CityEnabled)
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.City, model.City);
                 if (_customerSettings.CountryEnabled)
-                    customer.CountryId = model.CountryId;
+                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CountryId, model.CountryId);
                 if (_customerSettings.CountryEnabled && _customerSettings.StateProvinceEnabled)
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StateProvinceId, model.StateProvinceId);
                 if (_customerSettings.PhoneEnabled)
@@ -734,8 +734,8 @@ namespace SmartStore.Admin.Controllers
             model.Company = customer.Company;
             model.CustomerNumber = customer.CustomerNumber;
 			model.Gender = customer.Gender;
-            model.ZipPostalCode = customer.ZipPostalCode;
-            model.CountryId = customer.CountryId;
+            model.ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode);
+            model.CountryId = customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId);
             model.StreetAddress = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress);
             model.StreetAddress2 = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress2);
             model.City = customer.GetAttribute<string>(SystemCustomerAttributeNames.City);
@@ -863,10 +863,9 @@ namespace SmartStore.Admin.Controllers
                     if (_customerSettings.GenderEnabled)
                         customer.Gender = model.Gender;
                     if (_customerSettings.CountryEnabled)
-                        customer.CountryId = model.CountryId;
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CountryId, model.CountryId);
                     if (_customerSettings.ZipPostalCodeEnabled)
-                        customer.ZipPostalCode = model.ZipPostalCode;
-
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.ZipPostalCode, model.ZipPostalCode);
                     if (_customerSettings.StreetAddressEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StreetAddress, model.StreetAddress);
                     if (_customerSettings.StreetAddress2Enabled)

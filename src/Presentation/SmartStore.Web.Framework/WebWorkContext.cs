@@ -247,8 +247,8 @@ namespace SmartStore.Web.Framework
 					}
 					else
 					{
-						customerLangId = customer.LanguageId;
-					}
+                        customerLangId = customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId, _attrService, _storeContext.CurrentStore.Id);
+                    }
 				}
 
 				if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled && _httpContext.Request != null)
@@ -340,7 +340,7 @@ namespace SmartStore.Web.Framework
             if (this.CurrentCustomer.IsSystemAccount)
                 return;
 
-            this.CurrentCustomer.LanguageId = languageId;
+            _attrService.SaveAttribute(this.CurrentCustomer, SystemCustomerAttributeNames.LanguageId, languageId, storeId);
             _customerService.UpdateCustomer(this.CurrentCustomer);
         }
 
@@ -371,17 +371,16 @@ namespace SmartStore.Web.Framework
                     if (customer != null && !customer.IsSearchEngineAccount())
                     {
                         // search engines should always crawl by primary store currency
-                        var customerCurrencyId = customer.CurrencyId;
-                        if (customerCurrencyId > 0)
+                        var customerCurrencyId = customer.GetAttribute<int?>(SystemCustomerAttributeNames.CurrencyId, _attrService, _storeContext.CurrentStore.Id);
+                        if (customerCurrencyId.GetValueOrDefault() > 0)
                         {
 							if (storeCurrenciesMap.TryGetValue((int)customerCurrencyId, out currency))
 							{
 								currency = VerifyCurrency(currency);
 								if (currency == null)
 								{
-                                    customer.CurrencyId = null;
-                                    _customerService.UpdateCustomer(customer);
-								}
+                                    _attrService.SaveAttribute<int?>(customer, SystemCustomerAttributeNames.CurrencyId, null, _storeContext.CurrentStore.Id);
+                                }
 							}
                         }
                     }
@@ -434,7 +433,7 @@ namespace SmartStore.Web.Framework
             set
             {
                 int? id = value != null ? value.Id : (int?)null;
-                this.CurrentCustomer.CurrencyId = id;
+                _attrService.SaveAttribute<int?>(this.CurrentCustomer, SystemCustomerAttributeNames.CurrencyId, id, _storeContext.CurrentStore.Id);
                 _customerService.UpdateCustomer(this.CurrentCustomer);
                 _cachedCurrency = null;
 			}

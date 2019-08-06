@@ -209,7 +209,7 @@ namespace SmartStore.Services.Customers
                 },
                 // TODO: more ...
 
-                new FilterDescriptor<Customer, bool>(x => x.Active && !x.Deleted)
+                new FilterDescriptor<Customer, bool>(x => x.Active)
                 {
                     Name = "Active",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.Active"),
@@ -258,15 +258,17 @@ namespace SmartStore.Services.Customers
                     RuleType = RuleType.String,
                     Constraints = new IRuleConstraint[0]
                 },
-                new FilterDescriptor<Customer, int?>(x => DbFunctions.DiffDays(x.BirthDate, DateTime.UtcNow))
-                {
-                    Name = "BirthDate",
-                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.BirthDate"),
-                    RuleType = RuleType.NullableInt,
-                    Constraints = new IRuleConstraint[0]
-                },
 
-                // Moved from Customer attrs > Gender, ZipPostalCode, VatNumberStatusId, TimeZoneId, TaxDisplayTypeId
+                // TODO
+                //new FilterDescriptor<Customer, int?>(x => DbFunctions.DiffDays(x.BirthDate, DateTime.UtcNow))
+                //{
+                //    Name = "BirthDate",
+                //    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.BirthDate"),
+                //    RuleType = RuleType.NullableInt,
+                //    Constraints = new IRuleConstraint[0]
+                //},
+
+                // Moved from Customer attrs > Gender, VatNumberStatusId, TimeZoneId, TaxDisplayTypeId
                 new FilterDescriptor<Customer, string>(x => x.Gender)
                 {
                     Name = "Gender",
@@ -274,13 +276,7 @@ namespace SmartStore.Services.Customers
                     RuleType = RuleType.String,
                     Constraints = new IRuleConstraint[0]
                 },
-                new FilterDescriptor<Customer, string>(x => x.ZipPostalCode)
-                {
-                    Name = "ZipPostalCode",
-                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.ZipPostalCode"),
-                    RuleType = RuleType.String,
-                    Constraints = new IRuleConstraint[0]
-                },
+
                 // TODO: handle status
                 new FilterDescriptor<Customer, int>(x => x.VatNumberStatusId)
                 {
@@ -304,43 +300,23 @@ namespace SmartStore.Services.Customers
                     Constraints = new IRuleConstraint[0]
                 },
 
-                // from order or customer or both??? (next three descriptors)
-                new FilterDescriptor<Customer, int>(x => x.CountryId)
-                {
-                    Name = "CountryId",
-                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.CountryId"),
-                    RuleType = RuleType.Int,
-                    Constraints = new IRuleConstraint[0]
-                },
-                new FilterDescriptor<Customer, int?>(x => x.CurrencyId)
-                {
-                    Name = "CurrencyId",
-                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.CurrencyId"),
-                    RuleType = RuleType.NullableInt,
-                    Constraints = new IRuleConstraint[0]
-                },
-                new FilterDescriptor<Customer, int?>(x => x.LanguageId)
-                {
-                    Name = "LanguageId",
-                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.LanguageId"),
-                    RuleType = RuleType.NullableInt,
-                    Constraints = new IRuleConstraint[0]
-                },
+                // TODO: later
+                //new FilterDescriptor<Customer, int?>(x => DbFunctions.DiffDays(x.LastForumVisit, DateTime.UtcNow))
+                //{
+                //    Name = "LastForumVisit",
+                //    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.LastForumVisit"),
+                //    RuleType = RuleType.NullableInt,
+                //    Constraints = new IRuleConstraint[0]
+                //},
 
-                new FilterDescriptor<Customer, int?>(x => DbFunctions.DiffDays(x.LastForumVisit, DateTime.UtcNow))
-                {
-                    Name = "LastForumVisit",
-                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.LastForumVisit"),
-                    RuleType = RuleType.NullableInt,
-                    Constraints = new IRuleConstraint[0]
-                },
-                new FilterDescriptor<Customer, string>(x => x.LastUserAgent)
-                {
-                    Name = "LastUserAgent",
-                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.LastUserAgent"),
-                    RuleType = RuleType.String,
-                    Constraints = new IRuleConstraint[0]
-                },
+                // TODO: must be in order table
+                //new FilterDescriptor<Customer, string>(x => x.LastUserAgent)
+                //{
+                //    Name = "LastUserAgent",
+                //    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.LastUserAgent"),
+                //    RuleType = RuleType.String,
+                //    Constraints = new IRuleConstraint[0]
+                //},
 
                 // customer roles
                 new AllFilterDescriptor<Customer, CustomerRole, int>(x => x.CustomerRoles, cr => cr.Id)
@@ -356,27 +332,29 @@ namespace SmartStore.Services.Customers
                 //          PaymentMethodSystemName, ShippingRateComputationMethodSystemName
                 //          CustomerCurrencyCode, CustomerLanguageId, CustomerTaxDisplayTypeId (TODO: Really??? from customer, order or both?)
 
-                new FilterDescriptor<Order, int>(x => x.StoreId)
+                new AnyFilterDescriptor<Customer, Order, int>(x => x.Orders, o => o.StoreId)
                 {
-                    Name = "StoreId",
-                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.StoreId"),
-                    RuleType = RuleType.Int,
+                    Name = "OrderCountInStore",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.OrderCountInStore"),
+                    RuleType = RuleType.IntArray,
                     Constraints = new IRuleConstraint[0]
                 },
-                new FilterDescriptor<Customer, int?>(x => DbFunctions.DiffDays(x.Orders.Select(y => y.CreatedOnUtc).FirstOrDefault(), DateTime.UtcNow))
+                new FilterDescriptor<Customer, int?>(x => DbFunctions.DiffDays(x.Orders.Max(y => y.CreatedOnUtc), DateTime.UtcNow))
                 {
                     Name = "LastOrderDateDays",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.LastOrderDateDays"),
                     RuleType = RuleType.NullableInt,
                     Constraints = new IRuleConstraint[0]
                 },
-                new FilterDescriptor<Order, bool>(x => x.AcceptThirdPartyEmailHandOver)
+                new AnyFilterDescriptor<Customer, Order, bool>(x => x.Orders, o => o.AcceptThirdPartyEmailHandOver)
                 {
                     Name = "AcceptThirdPartyEmailHandOver",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.AcceptThirdPartyEmailHandOver"),
                     RuleType = RuleType.Boolean,
                     Constraints = new IRuleConstraint[0]
                 },
+
+                // TODO: customer
                 new FilterDescriptor<Order, decimal>(x => x.OrderTotal)
                 {
                     Name = "OrderTotal",

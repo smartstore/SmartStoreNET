@@ -218,14 +218,11 @@ namespace SmartStore.Web.Controllers
 				var dateOfBirth = customer.BirthDate;
 				var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email, _storeContext.CurrentStore.Id);
 
-                // TODO: Use MiniMapper
                 model.Company = customer.Company;
                 model.Title = customer.Title;
                 model.FirstName = customer.FirstName;
                 model.LastName = customer.LastName;
                 model.Gender = customer.Gender;
-                model.ZipPostalCode = customer.ZipPostalCode;
-                model.CountryId = customer.CountryId;
                 model.CustomerNumber = customer.CustomerNumber;
                 model.Email = customer.Email;
                 model.Username = customer.Username;
@@ -241,6 +238,8 @@ namespace SmartStore.Web.Controllers
                 model.StreetAddress = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress);
                 model.StreetAddress2 = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress2);
                 model.City = customer.GetAttribute<string>(SystemCustomerAttributeNames.City);
+                model.ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode);
+                model.CountryId = customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId);
                 model.StateProvinceId = customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId);
                 model.Phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone);
                 model.Fax = customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax);
@@ -651,14 +650,12 @@ namespace SmartStore.Web.Controllers
 
 					if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.AutomaticallySet && customer.CustomerNumber.IsEmpty())
 						customer.CustomerNumber = customer.Id.Convert<string>();
-
 					if (_customerSettings.GenderEnabled)
                         customer.Gender = customer.Gender;
                     if (_customerSettings.ZipPostalCodeEnabled)
-                        customer.ZipPostalCode = customer.ZipPostalCode;
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.ZipPostalCode, model.ZipPostalCode);
                     if (_customerSettings.CountryEnabled)
-                        customer.CountryId = customer.CountryId;
-
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CountryId, model.CountryId);
                     if (_customerSettings.StreetAddressEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StreetAddress, model.StreetAddress);
                     if (_customerSettings.StreetAddress2Enabled)
@@ -722,8 +719,8 @@ namespace SmartStore.Web.Controllers
                         LastName = customer.LastName,
                         Email = customer.Email,
                         Company = customer.Company,
-                        CountryId = customer.CountryId > 0 ? (int?)customer.CountryId : null,
-                        ZipPostalCode = customer.ZipPostalCode,
+                        CountryId = customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId) > 0 ? (int?)customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId) : null,
+                        ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode),
                         StateProvinceId = customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId) > 0 ? (int?)customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId) : null,
                         City = customer.GetAttribute<string>(SystemCustomerAttributeNames.City),
                         Address1 = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress),
@@ -1102,7 +1099,7 @@ namespace SmartStore.Web.Controllers
                     }
                     if (_customerSettings.ZipPostalCodeEnabled)
                     {
-                        customer.ZipPostalCode = model.ZipPostalCode;
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.ZipPostalCode, model.ZipPostalCode);
                     }
                     if (_customerSettings.CityEnabled)
                     {
@@ -1110,7 +1107,7 @@ namespace SmartStore.Web.Controllers
                     }
                     if (_customerSettings.CountryEnabled)
                     {
-                        customer.CountryId = model.CountryId;
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CountryId, model.CountryId);
                     }
                     if (_customerSettings.CountryEnabled && _customerSettings.StateProvinceEnabled)
                     {

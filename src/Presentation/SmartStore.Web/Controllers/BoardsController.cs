@@ -740,7 +740,7 @@ namespace SmartStore.Web.Controllers
                 postModel.ShowCustomersLocation = _customerSettings.ShowCustomersLocation;
                 if (_customerSettings.ShowCustomersLocation)
                 {
-                    var countryId = post.Customer.CountryId;
+                    var countryId = post.Customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId);
                     var country = _countryService.GetCountryById(countryId);
                     postModel.CustomerLocation = country != null ? country.GetLocalized(x => x.Name) : string.Empty;
                 }

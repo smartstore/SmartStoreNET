@@ -457,10 +457,7 @@ namespace SmartStore.Data.Utilities
             // We delete attrs only if the WHOLE migration succeeded
             var attrIdsToDelete = new List<int>(1000);
             var gaTable = context.Set<GenericAttribute>();
-            var candidates = new[] {
-                "Gender", "ZipPostalCode", "VatNumberStatusId", "TimeZoneId", "TaxDisplayTypeId", "CountryId",
-                "CurrencyId", "LanguageId", "LastForumVisit", "LastUserAgent", "LastUserDeviceType"
-            };
+            var candidates = new[] { "Gender", "VatNumberStatusId", "TimeZoneId", "TaxDisplayTypeId", "LastForumVisit", "LastUserAgent", "LastUserDeviceType" };
 
             var query = gaTable
                 .AsNoTracking()
@@ -492,9 +489,6 @@ namespace SmartStore.Data.Utilities
                             case "Gender":
                                 customer.Gender = attr.Value?.Truncate(100);
                                 break;
-                            case "ZipPostalCode":
-                                customer.FirstName = attr.Value?.Truncate(20);
-                                break;
                             case "VatNumberStatusId":
                                 customer.VatNumberStatusId = attr.Value.Convert<int>();
                                 break;
@@ -503,15 +497,6 @@ namespace SmartStore.Data.Utilities
                                 break;
                             case "TaxDisplayTypeId":
                                 customer.TaxDisplayTypeId = attr.Value.Convert<int>();
-                                break;
-                            case "CountryId":
-                                customer.CountryId = attr.Value.Convert<int>();
-                                break;
-                            case "CurrencyId":
-                                customer.CurrencyId = attr.Value.Convert<int>();
-                                break;
-                            case "LanguageId":
-                                customer.LanguageId = attr.Value.Convert<int>();
                                 break;
                             case "LastForumVisit":
                                 customer.LastForumVisit = attr.Value.Convert<DateTime>();

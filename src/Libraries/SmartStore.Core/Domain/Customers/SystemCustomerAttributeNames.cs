@@ -6,8 +6,10 @@ namespace SmartStore.Core.Domain.Customers
         // Form fields
         public static string StreetAddress { get { return "StreetAddress"; } }
         public static string StreetAddress2 { get { return "StreetAddress2"; } }
+        public static string ZipPostalCode { get { return "ZipPostalCode"; } }
         public static string City { get { return "City"; } }
         public static string StateProvinceId { get { return "StateProvinceId"; } }
+        public static string CountryId { get { return "CountryId"; } }
         public static string Phone { get { return "Phone"; } }
         public static string Fax { get { return "Fax"; } }
 		public static string VatNumber { get { return "VatNumber"; } }
@@ -30,8 +32,10 @@ namespace SmartStore.Core.Domain.Customers
 		public static string WalletEnabled { get { return "WalletEnabled"; } }
 		public static string HasConsentedToGdpr { get { return "HasConsentedToGdpr"; } }
 
-		// Depends on store
-		public static string SelectedPaymentMethod { get { return "SelectedPaymentMethod"; } }
+        // Depends on store
+        public static string CurrencyId { get { return "CurrencyId"; } }
+        public static string LanguageId { get { return "LanguageId"; } }
+        public static string SelectedPaymentMethod { get { return "SelectedPaymentMethod"; } }
 		public static string SelectedShippingOption { get { return "SelectedShippingOption"; } }
 		public static string OfferedShippingOptions { get { return "OfferedShippingOptions"; } }
 		public static string LastContinueShoppingPage { get { return "LastContinueShoppingPage"; } }

@@ -754,8 +754,8 @@ namespace SmartStore.Services.Orders
                 var customerCurrencyRate = decimal.Zero;
                 if (!processPaymentRequest.IsRecurringPayment)
                 {
-					var currencyTmp = _currencyService.GetCurrencyById((int)customer.CurrencyId);
-					var customerCurrency = (currencyTmp != null && currencyTmp.Published) ? currencyTmp : _workContext.WorkingCurrency;
+                    var currencyTmp = _currencyService.GetCurrencyById(customer.GetAttribute<int>(SystemCustomerAttributeNames.CurrencyId, processPaymentRequest.StoreId));
+                    var customerCurrency = (currencyTmp != null && currencyTmp.Published) ? currencyTmp : _workContext.WorkingCurrency;
                     customerCurrencyCode = customerCurrency.CurrencyCode;
 
                     var primaryStoreCurrency = _storeContext.CurrentStore.PrimaryStoreCurrency;
@@ -771,8 +771,8 @@ namespace SmartStore.Services.Orders
                 Language customerLanguage = null;
                 if (!processPaymentRequest.IsRecurringPayment)
 				{
-					customerLanguage = _languageService.GetLanguageById(customer.LanguageId);
-				}
+                    customerLanguage = _languageService.GetLanguageById(customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId, processPaymentRequest.StoreId));
+                }
 				else
 				{
 					customerLanguage = _languageService.GetLanguageById(initialOrder.CustomerLanguageId);

@@ -175,9 +175,6 @@ namespace SmartStore.Core.Domain.Customers
         public string Gender { get; set; }
 
         [DataMember]
-        public string ZipPostalCode { get; set; }
-
-        [DataMember]
         public int VatNumberStatusId { get; set; }
 
         [DataMember]
@@ -185,15 +182,6 @@ namespace SmartStore.Core.Domain.Customers
 
         [DataMember]
         public int TaxDisplayTypeId { get; set; }
-
-        [DataMember]
-        public int CountryId { get; set; }
-
-        [DataMember]
-        public int? CurrencyId { get; set; }
-
-        [DataMember]
-        public int LanguageId { get; set; }
 
         [DataMember]
         public DateTime? LastForumVisit { get; set; }

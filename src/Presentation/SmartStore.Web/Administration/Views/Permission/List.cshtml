@@ -48,8 +48,7 @@
     <ul>
         @foreach (var child in node.Children)
         {
-            var val = child.Value.Allow.HasValue ? child.Value.Allow.Value.ToString().ToLower() : "";
-            <li data-id="@child.Value.PermissionRecordId" data-level="@level" data-label="@child.Value.SystemName" data-value="@val">
+            <li data-id="@child.Value.PermissionRecordId" data-level="@level" data-label="@child.Value.SystemName" data-value="@child.Value.Value">
                 @if (child.HasChildren)
                 {
                     @PermissionNode(child, level + 1)

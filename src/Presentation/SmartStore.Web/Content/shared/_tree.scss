@@ -27,8 +27,9 @@
     }
 
     .smtree-expander {
+        display: inline-block;
         cursor: pointer;
-        margin-right: 4px;
+        min-width: 16px;
     }
 
     .smtree-vline {
@@ -64,7 +65,7 @@
             width: 0;
             margin: 0;
         }
-        // State box.
+        // State box default style.
         .smtree-state::before {
             content: "";
             float: left;
@@ -75,11 +76,8 @@
             background-color: #fff;
             margin: 2px 4px 0 0;
         }
-        // State indicators.
-        .smtree-state:after {
-            display: none;
-        }
-        input:checked {
+        // State indicator 'allow'.
+        input[type=checkbox]:checked {
             ~ .smtree-state:before {
                 border: 2px solid $success;
             }
@@ -97,7 +95,8 @@
                 transform: rotate(45deg);
             }
         }
-        /*input:checked {
+        // State indicator 'deny'.
+        input[type=checkbox]:not(:checked):not(:indeterminate) {
             ~ .smtree-state:before {
                 border: 2px solid $danger;
             }
@@ -112,7 +111,13 @@
                 color: $danger;
                 transform: translate(-50%,-50%) scaleX(1.2);
             }
-        }*/
+        }
+        // State indicator 'indeterminate'.
+        input[type=checkbox]:indeterminate {
+            ~ .smtree-state:after {
+                display: none;
+            }
+        }
     }
 }
 

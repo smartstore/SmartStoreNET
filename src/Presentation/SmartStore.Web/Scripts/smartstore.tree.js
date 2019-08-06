@@ -48,17 +48,55 @@
             if (opt.nodeState) {
                 var namePrefix = (opt.checkboxName.length > 0 ? opt.checkboxName : 'smtree') + '-';
 
+                // Add HTML.
                 $(self.element).find('.smtree-label').each(function (i, el) {
+                    var label = $(this);
+                    var value = parseInt(label.closest('.smtree-node').data('value')) || 0;
                     var name = namePrefix + i;
-                    $(this).attr('for', name)
-                        .prepend('<input type="checkbox" name="' + name + '" id="' + name + '" /><span class="smtree-state"></span>');
+                    var html = '';
+
+                    if (opt.nodeState === 'tri') {
+                        html += '<input type="checkbox" name="' + name + '" id="' + name + '" value="' + value + '"' + (value === 1 ? 'checked="checked"' : '') + ' />';
+                        html += '<input type="hidden" name="' + name + '" value="" />';
+                    }
+
+                    label.attr('for', name).prepend(html + '<span class="smtree-state"></span>');
                 });
+
+                // Set indeterminate property.
+                if (opt.nodeState === 'tri') {
+                    $(self.element).find('input[type=checkbox][value=-1]').prop('indeterminate', true);
+                }
             }
 
             // Expander click handler.
             $(self.element).on('click', '.smtree-expander', function () {
                 var li = $(this).closest('.smtree-node');
                 self._expand(li, li.hasClass('smtree-reduced'), opt);
+            });
+
+            // State click handler.
+            $(self.element).on('click', 'input[type=checkbox]', function () {
+                var el = $(this);
+
+                if (opt.nodeState === 'tri') {
+                    var hIn = el.next();
+                    switch (parseInt(el.val()) || 0) {
+                        case -1:
+                            // Indeterminate > checked.
+                            el.prop({ checked: true, indeterminate: false, value: 1 });
+                            break;
+                        case 1:
+                            // Checked > unchecked.
+                            el.prop({ checked: false, indeterminate: false, value: 0 });
+                            break;
+                        case 0:
+                        default:
+                            // Unchecked > indeterminate.
+                            el.prop({ indeterminate: true, value: -1 });
+                            break;
+                    }
+                }
             });
         },
 

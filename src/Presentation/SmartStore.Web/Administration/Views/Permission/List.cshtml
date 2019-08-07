@@ -32,7 +32,7 @@
     <div id="permission-tree" class="smtree mt-3">
         @if (Model.PermissionTree != null && Model.PermissionTree.HasChildren)
         {
-            @PermissionNode(Model.PermissionTree, 0)
+            @PermissionNode(Model.PermissionTree)
         }
         else
         {
@@ -43,15 +43,16 @@
     </div>
 }
 
-@helper PermissionNode(TreeNode<IPermissionNode> node, int level)
+@helper PermissionNode(TreeNode<IPermissionNode> node)
 {
     <ul>
         @foreach (var child in node.Children)
         {
-            <li data-id="@child.Value.PermissionRecordId" data-level="@level" data-label="@child.Value.SystemName" data-value="@child.Value.Value">
+            var value = child.Value.Allow.HasValue ? (child.Value.Allow.Value ? 2 : 1) : 0;
+            <li data-name="permission-@child.Value.PermissionRecordId" data-value="@value" data-label="@child.Value.SystemName">
                 @if (child.HasChildren)
                 {
-                    @PermissionNode(child, level + 1)
+                    @PermissionNode(child)
                 }
             </li>
         }
@@ -63,8 +64,7 @@
     $(function () {
         // Init tree.
         $('#permission-tree').smTree({
-            nodeState: 'tri',
-            checkboxName: 'permission'
+            nodeState: 'tri'
         });
 
         // Load permission tree for selected role.

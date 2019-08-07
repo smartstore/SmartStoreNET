@@ -1934,7 +1934,11 @@
 
 
         if (_.options.vertical === false && _.options.variableWidth === false) {
-            _.slideWidth = Math.ceil(_.listWidth / _.options.slidesToShow);
+
+            // SM codehint: we changed the next line to fix a rounding issue which cut off the right border of the last element to slide 
+
+            //_.slideWidth = Math.ceil(_.listWidth / _.options.slidesToShow);
+            _.slideWidth = Math.floor(_.listWidth / _.options.slidesToShow);
             _.$slideTrack.width(Math.ceil((_.slideWidth * _.$slideTrack.children('.slick-slide').length)));
 
         } else if (_.options.variableWidth === true) {

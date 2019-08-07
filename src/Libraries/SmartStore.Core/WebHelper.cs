@@ -101,8 +101,7 @@ namespace SmartStore.Core
 					// Take the last entry
 					ipString = arrStrings[arrStrings.Length - 1].Trim();
 
-					IPAddress address;
-					if (IPAddress.TryParse(ipString, out address))
+					if (IPAddress.TryParse(ipString, out var address))
 					{
 						result = ipString;
 						break;

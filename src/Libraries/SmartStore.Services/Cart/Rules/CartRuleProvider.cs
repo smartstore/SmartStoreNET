@@ -191,6 +191,14 @@ namespace SmartStore.Services.Cart.Rules
                 },
                 new CartRuleDescriptor
                 {
+                    Name = "IPCountry",
+                    RuleType = RuleType.StringArray,
+                    ProcessorType = typeof(IPCountryRule),
+                    Constraints = new IRuleConstraint[0],
+                    SelectList = new RemoteRuleValueSelectList("Country") { Multiple = true }
+                },
+                new CartRuleDescriptor
+                {
                     Name = "RuleSet",
                     RuleType = RuleType.Int,
                     ProcessorType = typeof(RuleSetRule),

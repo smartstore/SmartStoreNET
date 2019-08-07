@@ -392,7 +392,7 @@ namespace SmartStore.Web.Framework
 					}
 
 					// find currency by domain ending
-					if (currency == null && _httpContext != null && _httpContext.Request != null && _httpContext.Request.Url != null)
+					if (currency == null && _httpContext?.Request?.Url != null)
 					{
 						currency = storeCurrenciesMap.Values.GetByDomainEnding(_httpContext.Request.Url.Authority);
 					}
@@ -432,8 +432,7 @@ namespace SmartStore.Web.Framework
             }
             set
             {
-                int? id = value != null ? value.Id : (int?)null;
-                _attrService.SaveAttribute<int?>(this.CurrentCustomer, SystemCustomerAttributeNames.CurrencyId, id, _storeContext.CurrentStore.Id);
+                _attrService.SaveAttribute<int?>(this.CurrentCustomer, SystemCustomerAttributeNames.CurrencyId, value?.Id, _storeContext.CurrentStore.Id);
                 _customerService.UpdateCustomer(this.CurrentCustomer);
                 _cachedCurrency = null;
 			}

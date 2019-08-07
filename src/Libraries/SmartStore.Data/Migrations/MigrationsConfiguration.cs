@@ -73,6 +73,12 @@
                 "Externer Link",
                 "Alternative external link for this category in the main menu and in category listings. For example, to a landing page that contains a back link to the category.",
                 "Abweichender, externer Verweis für diese Warengruppe im Hauptmenü und in Warengruppen-Listings. Z.B. auf eine Landingpage, die einen Rückverweis auf die Warengruppe enthält.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Title",
+                "Title",
+                "Titel",
+                "Specifies the title. Please keep in mind that this title is not displayed in all design templates.",
+                "Legt den Titel fest. Bitte beachten Sie, dass dieser Titel nicht bei allen Design-Vorlagen ausgegeben wird.");
         }
     }
 }

@@ -55,8 +55,8 @@
                     var html = '';
 
                     if (opt.nodeState === 'tri') {
-                        html += '<input type="checkbox" name="' + name + '" id="' + name + '" value="' + value + '"' + (value === 2 ? 'checked="checked"' : '') + ' />';
-                        html += '<input type="hidden" name="' + name + '" value="" />';
+                        html += '<input type="checkbox" name="' + name + '" id="' + name + '" value="' + value + '"' + (value === 2 ? ' checked="checked"' : '') + ' />';
+                        html += '<input type="hidden" name="' + name + '" value="' + (value == 0 ? 0 : 1) + '" />';
                     }
 
                     label.attr('for', name).prepend(html + '<span class="smtree-state"></span>');
@@ -84,15 +84,18 @@
                         case 0:
                             // Indeterminate > checked.
                             el.prop({ checked: true, indeterminate: false, value: 2 });
+                            hIn.val(1);
                             break;
                         case 2:
                             // Checked > unchecked.
                             el.prop({ checked: false, indeterminate: false, value: 1 });
+                            hIn.val(1);
                             break;
                         case 1:
                         default:
                             // Unchecked > indeterminate.
-                            el.prop({ indeterminate: true, value: 0 });
+                            el.prop({ checked: false, indeterminate: true, value: 0 });
+                            hIn.val(0);
                             break;
                     }
                 }

@@ -192,9 +192,6 @@ namespace SmartStore.Admin.Controllers
                     _customerService.UpdateCustomerRole(customerRole);
 
                     // TODO: update permissions.
-                    var sb = new System.Text.StringBuilder();
-                    form.AllKeys.Each(key => sb.AppendLine($"{key}: {form[key]}"));
-                    System.IO.File.WriteAllText(@"C:\Downloads\dump.txt", sb.ToString());
 
                     _customerActivityService.InsertActivity("EditCustomerRole", T("ActivityLog.EditCustomerRole"), customerRole.Name);
 

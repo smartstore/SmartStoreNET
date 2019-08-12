@@ -505,7 +505,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             // This action method gets called via an ajax request
-            if (string.IsNullOrEmpty(attributeId))
+            if (attributeId.HasValue())
                 throw new ArgumentNullException("attributeId");
 
             var options = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(Convert.ToInt32(attributeId));

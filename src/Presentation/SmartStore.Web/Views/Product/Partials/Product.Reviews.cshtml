@@ -1,6 +1,7 @@
 ﻿@model ProductReviewsModel
 
 @using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Html;
 
 @{
 	Html.AddScriptParts("~/Scripts/public.reviews.js");
@@ -18,31 +19,37 @@ else
 			var review = Model.Items[i];
 			int ratingPercent = review.Rating * 20;
 			var helpfulness = review.Helpfulness;
-			<div class="review-item" id="review-item-@(i + 1)">
+
+			<div class="review-item" id="review-item-@(i + 1)" itemprop="review" itemscope itemtype="http://schema.org/Review">
 				<div class="review-title">
-					<div class="rating">
-						<div style="width: @(ratingPercent)%"></div>
-					</div>
-					<h4>@review.Title</h4>
+                    <div class="rating" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+                        <div style="width: @(ratingPercent)%"></div>
+                        <meta itemprop="ratingValue" content="@review.Rating" />
+                    </div>
+					<h4 itemprop="name">@review.Title</h4>
 				</div>
 
-				<div class="review-meta">
-					<span class="review-meta-label pr-1">@T("Reviews.From"):</span>
-					@if (review.AllowViewingProfiles)
-					{
-						<a class="review-meta-value" href="@Url.RouteUrl("CustomerProfile", new { id = review.CustomerId })" rel="nofollow" dir="auto">@(review.CustomerName)</a>
-					}
-					else
-					{
-						<span class="review-meta-value">@review.CustomerName</span>
-					}
+                <div class="review-meta">
+                    <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+                        <span class="review-meta-label pr-1">@T("Reviews.From"):</span>
+                        @if (review.AllowViewingProfiles)
+                        {
+                            <a class="review-meta-value" href="@Url.RouteUrl("CustomerProfile", new { id = review.CustomerId })" rel="nofollow" dir="auto" itemprop="name">
+                                @(review.CustomerName)
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="review-meta-value" itemprop="name">@review.CustomerName</span>
+                        }
+                    </span>
 
-					<span class="review-meta-label pr-1">@T("Common.Date"):</span>
-					<span class="review-meta-value">@review.WrittenOnStr</span>
-				</div>
+                    <span class="review-meta-label pr-1">@T("Common.Date"):</span>
+                    <span class="review-meta-value" itemprop="datePublished" content="@review.WrittenOn.ToString("yyyy-MM-DD")">@review.WrittenOnStr</span>
+                </div>
 
-				<p class="review-text" dir="auto">
-					@Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(review.ReviewText, false, true, false, false, false, false))
+				<p class="review-text" dir="auto" itemprop="reviewBody">
+					@Html.Raw(HtmlUtils.SanitizeHtml(review.ReviewText, true))
 				</p>
 
 				<div class="review-vote d-flex" data-review-id="@(helpfulness.ProductReviewId)" data-href='@(Url.Action("SetReviewHelpfulness"))'>

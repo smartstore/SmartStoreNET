@@ -30,6 +30,7 @@
 * #1664 RTL: CMS menu issues in backend.
 * #1677 Page Builder: moving and resizing blocks via drag & drop didn't work correctly in RTL.
 * Do not adjust inventory twice when an order is cancelled and deleted.
+* #1500 Fallback to fixed VAT rate instead of rate by region for countries that are not subject to vat.
 * Various other minor fixes.
 
 

@@ -28,6 +28,7 @@
 * #1646 Setting ManufacturerItemsToDisplayOnHomepage to 1 will not show any manufacturer.
 * #1647 All manufacturers page: link of last character missing in alphabetical letter list.
 * #1664 RTL: CMS menu issues in backend.
+* #1677 Page Builder: moving and resizing blocks via drag & drop didn't work correctly in RTL.
 * Do not adjust inventory twice when an order is cancelled and deleted.
 * Various other minor fixes.
 

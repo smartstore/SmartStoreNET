@@ -88,12 +88,25 @@ namespace SmartStore.Core.Domain.Tasks
 
         public ScheduleTask Clone()
 		{
-			return (ScheduleTask)this.MemberwiseClone();
+            var task = new ScheduleTask
+            {
+                Name = Name,
+                Alias = Alias,
+                CronExpression = CronExpression,
+                Type = Type,
+                Enabled = Enabled,
+                StopOnError = StopOnError,
+                NextRunUtc = NextRunUtc,
+                IsHidden = IsHidden,
+                RunPerMachine = RunPerMachine
+            };
+
+            return task;
 		}
 
 		object ICloneable.Clone()
 		{
-			return this.MemberwiseClone();
+			return this.Clone();
 		}
 	}
 }

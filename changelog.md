@@ -31,6 +31,7 @@
 * #1677 Page Builder: moving and resizing blocks via drag & drop didn't work correctly in RTL.
 * Do not adjust inventory twice when an order is cancelled and deleted.
 * #1500 Fallback to fixed VAT rate instead of rate by region for countries that are not subject to vat.
+* Fixed "The entity wrapper stored in the proxy does not reference the same proxy" when copying an export profile.
 * Various other minor fixes.
 
 

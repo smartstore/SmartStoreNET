@@ -12,7 +12,6 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
-    //GP: SecurityController -> PermissionController
     [AdminAuthorize]
     public class SecurityController : AdminControllerBase
 	{

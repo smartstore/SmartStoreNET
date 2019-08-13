@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Customers;
+using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Customers;
@@ -183,15 +185,71 @@ namespace SmartStore.Admin.Controllers
                 if (ModelState.IsValid)
                 {
                     if (customerRole.IsSystemRole && !model.Active)
+                    {
                         throw new SmartException(T("Admin.Customers.CustomerRoles.Fields.Active.CantEditSystem"));
+                    }
 
                     if (customerRole.IsSystemRole && !customerRole.SystemName.Equals(model.SystemName, StringComparison.InvariantCultureIgnoreCase))
+                    {
                         throw new SmartException(T("Admin.Customers.CustomerRoles.Fields.SystemName.CantEditSystem"));
+                    }
 
                     customerRole = model.ToEntity(customerRole);
                     _customerService.UpdateCustomerRole(customerRole);
 
-                    // TODO: update permissions.
+                    // Update permissions.
+                    var permissionKey = "permission-";
+                    var existingMappings = customerRole.PermissionRoleMappings.ToDictionarySafe(x => x.PermissionRecordId, x => x);
+
+                    var mappings = form.AllKeys.Where(x => x.StartsWith(permissionKey))
+                        .Select(x =>
+                        {
+                            var id = x.Substring(permissionKey.Length).ToInt();
+                            bool? allow = null;
+                            var value = form[x].EmptyNull();
+                            if (value.StartsWith("2"))
+                            {
+                                allow = true;
+                            }
+                            else if (value.StartsWith("1"))
+                            {
+                                allow = false;
+                            }
+
+                            return new { id, allow };
+                        })
+                        .ToDictionary(x => x.id, x => x.allow);
+
+                    using (var scope = new DbContextScope(ctx: Services.DbContext, validateOnSave: false, autoCommit: false))
+                    {
+                        foreach (var item in mappings)
+                        {
+                            if (existingMappings.TryGetValue(item.Key, out var mapping))
+                            {
+                                if (item.Value.HasValue)
+                                {
+                                    mapping.Allow = item.Value.Value;
+
+                                    _permissionService2.UpdatePermissionRoleMapping(mapping);
+                                }
+                                else
+                                {
+                                    _permissionService2.DeletePermissionRoleMapping(mapping);
+                                }
+                            }
+                            else if (item.Value.HasValue)
+                            {
+                                _permissionService2.InsertPermissionRoleMapping(new PermissionRoleMapping
+                                {
+                                    Allow = item.Value.Value,
+                                    PermissionRecordId = item.Key,
+                                    CustomerRoleId = customerRole.Id
+                                });
+                            }
+                        }
+
+                        scope.Commit();
+                    }
 
                     _customerActivityService.InsertActivity("EditCustomerRole", T("ActivityLog.EditCustomerRole"), customerRole.Name);
 

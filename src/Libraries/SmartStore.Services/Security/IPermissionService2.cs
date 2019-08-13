@@ -15,38 +15,64 @@ namespace SmartStore.Services.Security
         /// </summary>
         /// <param name="permissionId">Permission identifier.</param>
         /// <returns>Permission.</returns>
-        PermissionRecord GetPermissionRecordById(int permissionId);
+        PermissionRecord GetPermissionById(int permissionId);
 
         /// <summary>
         /// Gets a permission.
         /// </summary>
         /// <param name="systemName">Permission system name.</param>
         /// <returns>Permission.</returns>
-        PermissionRecord GetPermissionRecordBySystemName(string systemName);
+        PermissionRecord GetPermissionBySystemName(string systemName);
 
         /// <summary>
         /// Gets all permissions.
         /// </summary>
         /// <returns>Permissions.</returns>
-        IList<PermissionRecord> GetAllPermissionRecords();
+        IList<PermissionRecord> GetAllPermissions();
 
         /// <summary>
         /// Inserts a permission.
         /// </summary>
         /// <param name="permission">Permission.</param>
-        void InsertPermissionRecord(PermissionRecord permission);
+        void InsertPermission(PermissionRecord permission);
 
         /// <summary>
         /// Updates a permission.
         /// </summary>
         /// <param name="permission">Permission.</param>
-        void UpdatePermissionRecord(PermissionRecord permission);
+        void UpdatePermission(PermissionRecord permission);
 
         /// <summary>
         /// Deletes a permission.
         /// </summary>
         /// <param name="permission">Permission.</param>
-        void DeletePermissionRecord(PermissionRecord permission);
+        void DeletePermission(PermissionRecord permission);
+
+
+        /// <summary>
+        /// Gets a permission role mapping.
+        /// </summary>
+        /// <param name="mappingId">Permission role mapping identifier.</param>
+        /// <returns>Permission role mapping.</returns>
+        PermissionRoleMapping GetPermissionRoleMappingById(int mappingId);
+
+        /// <summary>
+        /// Inserts a permission role mapping.
+        /// </summary>
+        /// <param name="mapping">Permission role mapping.</param>
+        void InsertPermissionRoleMapping(PermissionRoleMapping mapping);
+
+        /// <summary>
+        /// Updates a permission role mapping.
+        /// </summary>
+        /// <param name="mapping">Permission role mapping.</param>
+        void UpdatePermissionRoleMapping(PermissionRoleMapping mapping);
+
+        /// <summary>
+        /// Deletes a permission role mapping.
+        /// </summary>
+        /// <param name="mapping">Permission role mapping.</param>
+        void DeletePermissionRoleMapping(PermissionRoleMapping mapping);
 
 
         /// <summary>

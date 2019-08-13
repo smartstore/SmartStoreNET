@@ -17,41 +17,44 @@ namespace SmartStore.Services.Security
         internal const string PERMISSION_TREE_KEY = "permission:tree-{0}";
         private const string PERMISSION_TREE_PATTERN_KEY = "permission:tree-*";
 
-        private readonly IRepository<PermissionRecord> _permissionRecordRepository;
+        private readonly IRepository<PermissionRecord> _permissionRepository;
+        private readonly IRepository<PermissionRoleMapping> _permissionMappingRepository;
         private readonly Lazy<ICustomerService> _customerService;
         private readonly IWorkContext _workContext;
         private readonly ICacheManager _cacheManager;
 
         public PermissionService2(
-            IRepository<PermissionRecord> permissionRecordRepository,
+            IRepository<PermissionRecord> permissionRepository,
+            IRepository<PermissionRoleMapping> permissionMappingRepository,
             Lazy<ICustomerService> customerService,
             IWorkContext workContext,
             ICacheManager cacheManager)
         {
-            _permissionRecordRepository = permissionRecordRepository;
+            _permissionRepository = permissionRepository;
+            _permissionMappingRepository = permissionMappingRepository;
             _customerService = customerService;
             _workContext = workContext;
             _cacheManager = cacheManager;
         }
 
-        public virtual PermissionRecord GetPermissionRecordById(int permissionId)
+        public virtual PermissionRecord GetPermissionById(int permissionId)
         {
             if (permissionId == 0)
             {
                 return null;
             }
 
-            return _permissionRecordRepository.GetById(permissionId);
+            return _permissionRepository.GetById(permissionId);
         }
 
-        public virtual PermissionRecord GetPermissionRecordBySystemName(string systemName)
+        public virtual PermissionRecord GetPermissionBySystemName(string systemName)
         {
             if (systemName.IsEmpty())
             {
                 return null;
             }
 
-            var permission = _permissionRecordRepository.Table
+            var permission = _permissionRepository.Table
                 .Where(x => x.SystemName == systemName)
                 .OrderBy(x => x.Id)
                 .FirstOrDefault();
@@ -59,51 +62,90 @@ namespace SmartStore.Services.Security
             return permission;
         }
 
-        public virtual IList<PermissionRecord> GetAllPermissionRecords()
+        public virtual IList<PermissionRecord> GetAllPermissions()
         {
-            var permissions = _permissionRecordRepository.Table.ToList();
+            var permissions = _permissionRepository.Table.ToList();
             return permissions;
         }
 
-        public virtual void InsertPermissionRecord(PermissionRecord permission)
+        public virtual void InsertPermission(PermissionRecord permission)
         {
             Guard.NotNull(permission, nameof(permission));
 
-            _permissionRecordRepository.Insert(permission);
+            _permissionRepository.Insert(permission);
 
             _cacheManager.RemoveByPattern(PERMISSION_TREE_PATTERN_KEY);
         }
 
-        public virtual void UpdatePermissionRecord(PermissionRecord permission)
+        public virtual void UpdatePermission(PermissionRecord permission)
         {
             Guard.NotNull(permission, nameof(permission));
 
-            _permissionRecordRepository.Update(permission);
+            _permissionRepository.Update(permission);
 
             _cacheManager.RemoveByPattern(PERMISSION_TREE_PATTERN_KEY);
         }
 
-        public virtual void DeletePermissionRecord(PermissionRecord permission)
+        public virtual void DeletePermission(PermissionRecord permission)
         {
             if (permission != null)
             {
-                _permissionRecordRepository.Delete(permission);
+                _permissionRepository.Delete(permission);
 
                 _cacheManager.RemoveByPattern(PERMISSION_TREE_PATTERN_KEY);
             }
         }
 
-        
+
+        public virtual PermissionRoleMapping GetPermissionRoleMappingById(int mappingId)
+        {
+            if (mappingId == 0)
+            {
+                return null;
+            }
+
+            return _permissionMappingRepository.GetById(mappingId);
+        }
+
+        public virtual void InsertPermissionRoleMapping(PermissionRoleMapping mapping)
+        {
+            Guard.NotNull(mapping, nameof(mapping));
+
+            _permissionMappingRepository.Insert(mapping);
+
+            _cacheManager.RemoveByPattern(PERMISSION_TREE_PATTERN_KEY);
+        }
+
+        public virtual void UpdatePermissionRoleMapping(PermissionRoleMapping mapping)
+        {
+            Guard.NotNull(mapping, nameof(mapping));
+
+            _permissionMappingRepository.Update(mapping);
+
+            _cacheManager.RemoveByPattern(PERMISSION_TREE_PATTERN_KEY);
+        }
+
+        public virtual void DeletePermissionRoleMapping(PermissionRoleMapping mapping)
+        {
+            if (mapping != null)
+            {
+                _permissionMappingRepository.Delete(mapping);
+
+                _cacheManager.RemoveByPattern(PERMISSION_TREE_PATTERN_KEY);
+            }
+        }
+
+
         public virtual void InstallPermissions(IPermissionProvider permissionProvider)
         {
             Guard.NotNull(permissionProvider, nameof(permissionProvider));
 
-            using (var scope = new DbContextScope(_permissionRecordRepository.Context, autoDetectChanges: false, autoCommit: false))
+            using (var scope = new DbContextScope(_permissionRepository.Context, autoDetectChanges: false, autoCommit: false))
             {
                 var permissions = permissionProvider.GetPermissions();
                 foreach (var permission in permissions)
                 {
-                    var permission1 = GetPermissionRecordBySystemName(permission.SystemName);
+                    var permission1 = GetPermissionBySystemName(permission.SystemName);
                     if (permission1 == null)
                     {
                         permission1 = new PermissionRecord { SystemName = permission.SystemName };
@@ -137,7 +179,7 @@ namespace SmartStore.Services.Security
                             }
                         }
 
-                        InsertPermissionRecord(permission1);
+                        InsertPermission(permission1);
                     }
                 }
 
@@ -150,11 +192,11 @@ namespace SmartStore.Services.Security
             var permissions = permissionProvider.GetPermissions();
             var systemNames = new HashSet<string>(permissions.Select(x => x.SystemName));
 
-            var toDelete = _permissionRecordRepository.Table
+            var toDelete = _permissionRepository.Table
                 .Where(x => systemNames.Contains(x.SystemName))
                 .ToList();
 
-            toDelete.Each(x => DeletePermissionRecord(x));
+            toDelete.Each(x => DeletePermission(x));
         }
 
 
@@ -223,7 +265,7 @@ namespace SmartStore.Services.Security
             {
                 var root = new TreeNode<IPermissionNode>(new PermissionNode());
 
-                var permissions = _permissionRecordRepository.TableUntracked
+                var permissions = _permissionRepository.TableUntracked
                     .Expand(x => x.PermissionRoleMappings)
                     .Where(x => string.IsNullOrEmpty(x.Name))//GP: TODO, remove clause later
                     .ToList();

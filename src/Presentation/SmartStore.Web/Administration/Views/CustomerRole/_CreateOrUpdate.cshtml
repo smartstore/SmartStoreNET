@@ -126,7 +126,7 @@
         @foreach (var child in node.Children)
         {
             var value = child.Value.Allow.HasValue ? (child.Value.Allow.Value ? 2 : 1) : 0;
-            <li data-name="permission-@child.Value.PermissionRecordId" data-value="@value" data-label="@child.Value.SystemName">
+            <li data-name="permission-@child.Value.PermissionRecordId" data-value="@value" data-label="@child.Value.DisplayName">
                 @if (child.HasChildren)
                 {
                     @PermissionNode(child)

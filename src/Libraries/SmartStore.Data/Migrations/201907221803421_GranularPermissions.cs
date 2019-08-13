@@ -50,9 +50,12 @@ namespace SmartStore.Data.Migrations
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
         {
-            builder.AddOrUpdate("Admin.Customers.Customers.CustomerRole",
-                "Customer role",
-                "Kundengruppe");
+            builder.AddOrUpdate("Admin.Customers.Customers.CustomerRole", "Customer role", "Kundengruppe");
+
+            builder.AddOrUpdate("Common.Read", "Read", "Lesen");
+            builder.AddOrUpdate("Common.Create", "Create", "Erstellen");
+
+            builder.AddOrUpdate("Permissions.DisplayName.DisplayPrice", "Display prices", "Preise anzeigen");
         }
     }
 }

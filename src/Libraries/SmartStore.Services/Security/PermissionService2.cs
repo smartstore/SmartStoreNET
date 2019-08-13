@@ -140,15 +140,20 @@ namespace SmartStore.Services.Security
         {
             Guard.NotNull(permissionProvider, nameof(permissionProvider));
 
+            var permissions = permissionProvider.GetPermissions();
+            if (!permissions.Any())
+            {
+                return;
+            }
+
             using (var scope = new DbContextScope(_permissionRepository.Context, autoDetectChanges: false, autoCommit: false))
             {
-                var permissions = permissionProvider.GetPermissions();
                 foreach (var permission in permissions)
                 {
-                    var permission1 = GetPermissionBySystemName(permission.SystemName);
-                    if (permission1 == null)
+                    var newPermission = GetPermissionBySystemName(permission.SystemName);
+                    if (newPermission == null)
                     {
-                        permission1 = new PermissionRecord { SystemName = permission.SystemName };
+                        newPermission = new PermissionRecord { SystemName = permission.SystemName };
 
                         // Default customer role mappings.
                         var defaultPermissions = permissionProvider.GetDefaultPermissions();
@@ -166,11 +171,11 @@ namespace SmartStore.Services.Security
                                 _customerService.Value.InsertCustomerRole(customerRole);
                             }
 
-                            if (defaultPermission.PermissionRecords.Any(x => x.SystemName == permission1.SystemName))
+                            if (defaultPermission.PermissionRecords.Any(x => x.SystemName == newPermission.SystemName))
                             {
-                                if (!customerRole.PermissionRoleMappings.Where(x => x.PermissionRecord.SystemName == permission1.SystemName).Select(x => x.PermissionRecord).Any())
+                                if (!customerRole.PermissionRoleMappings.Where(x => x.PermissionRecord.SystemName == newPermission.SystemName).Select(x => x.PermissionRecord).Any())
                                 {
-                                    permission1.PermissionRoleMappings.Add(new PermissionRoleMapping
+                                    newPermission.PermissionRoleMappings.Add(new PermissionRoleMapping
                                     {
                                         Allow = true,
                                         CustomerRoleId = customerRole.Id
@@ -179,11 +184,12 @@ namespace SmartStore.Services.Security
                             }
                         }
 
-                        InsertPermission(permission1);
+                        InsertPermission(newPermission);
                     }
                 }
 
                 scope.Commit();
+                _cacheManager.RemoveByPattern(PERMISSION_TREE_PATTERN_KEY);
             }
         }
 
@@ -192,11 +198,16 @@ namespace SmartStore.Services.Security
             var permissions = permissionProvider.GetPermissions();
             var systemNames = new HashSet<string>(permissions.Select(x => x.SystemName));
 
-            var toDelete = _permissionRepository.Table
-                .Where(x => systemNames.Contains(x.SystemName))
-                .ToList();
+            if (systemNames.Any())
+            {
+                var toDelete = _permissionRepository.Table
+                    .Where(x => systemNames.Contains(x.SystemName))
+                    .ToList();
 
-            toDelete.Each(x => DeletePermission(x));
+                toDelete.Each(x => DeletePermission(x));
+
+                _cacheManager.RemoveByPattern(PERMISSION_TREE_PATTERN_KEY);
+            }
         }
 
 

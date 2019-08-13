@@ -220,7 +220,7 @@ namespace SmartStore.Admin.Controllers
                         })
                         .ToDictionary(x => x.id, x => x.allow);
 
-                    using (var scope = new DbContextScope(ctx: Services.DbContext, validateOnSave: false, autoCommit: false))
+                    using (var scope = new DbContextScope(ctx: Services.DbContext, validateOnSave: false, autoDetectChanges: false, autoCommit: false))
                     {
                         foreach (var item in mappings)
                         {

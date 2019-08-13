@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.2.2
 
@@ -9,6 +9,8 @@
 * #1537 Implement "Ratenzahlung powered by PayPal" provider.
 * New Heidelpay payment plugin.
 * Shop-Connector: mapping of product SKUs that differ between client shops.
+* MegaMenu supports configuration of menu items
+ 
 
 ### Improvements
 * Amazon Pay: PSD2. Strong customer authentication (SCA) upgrade.
@@ -22,6 +24,9 @@
 * Various other minor improvements.
 * PayPal PLUS: paying by instalments can be selected in payment wall.
 * Payone: send more information to API (e.g. shipping address) to stay as frictionless as possible for PSD2.
+* PageBuilder: Added keyboard shortcuts
+* #1582 Added structured data to reviews 
+* BMEcat: added support for import of specification attributes
 
 ### Bugfixes
 * Fixed wrong XML sitemap index numbering.
@@ -33,6 +38,8 @@
 * #1500 Fallback to fixed VAT rate instead of rate by region for countries that are not subject to vat.
 * Fixed "The entity wrapper stored in the proxy does not reference the same proxy" when copying an export profile.
 * Various other minor fixes.
+* BMEcat: set TaxCategoryId & MainPictureId for newly imported products
+  
 
 
 ## SmartStore.NET 3.2.1

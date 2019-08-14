@@ -42,7 +42,7 @@ namespace SmartStore.Web.Framework.UI
             var root = request.Parent.Root;
             var providers = root.GetMetadata<List<string>>("Providers");
             var provider = request.Entity.ProviderName;
-
+            
             node.SetMetadata("Provider", provider);
 
             if (providers == null)
@@ -52,6 +52,11 @@ namespace SmartStore.Web.Framework.UI
             else if (!providers.Contains(provider))
             {
                 providers.Add(provider);
+            }
+
+            if (node.Id == null && node.Value.Id.HasValue())
+            {
+                node.Id = node.Value.Id;
             }
 
             return request.Parent.Append(node);
@@ -102,6 +107,7 @@ namespace SmartStore.Web.Framework.UI
             if (entity.HtmlId.HasValue())
             {
                 menuItem.LinkHtmlAttributes.Add("id", entity.HtmlId);
+                menuItem.Id = entity.HtmlId;
             }
 
             if (entity.Icon.HasValue() && !request.IsEditMode)

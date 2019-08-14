@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -148,6 +149,7 @@ namespace SmartStore.Core.Infrastructure
 			set;
 		}
 
+        [DebuggerStepThrough]
 		public T Resolve<T>(string name = null) where T : class
 		{
             if (name.HasValue())
@@ -157,6 +159,7 @@ namespace SmartStore.Core.Infrastructure
             return ContainerManager.Resolve<T>();
 		}
 
+        [DebuggerStepThrough]
         public object Resolve(Type type, string name = null)
         {
             if (name.HasValue())
@@ -166,7 +169,7 @@ namespace SmartStore.Core.Infrastructure
             return ContainerManager.Resolve(type);
         }
 
-
+        [DebuggerStepThrough]
         public T[] ResolveAll<T>()
         {
             return ContainerManager.ResolveAll<T>();

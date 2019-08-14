@@ -80,6 +80,10 @@
                 "Specifies the title. Please keep in mind that this title is not displayed in all design templates.",
                 "Legt den Titel fest. Bitte beachten Sie, dass dieser Titel nicht bei allen Design-Vorlagen ausgegeben wird.");
 
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.InvalidRouteValues",
+                "Please check the link data. No link can be created on the basis of your input.",
+                "Bitte überprüfen Sie die Link-Daten. Auf Basis Ihrer Eingabe kann kein Link erzeugt werden.");
+
             builder.AddOrUpdate("Admin.Packaging.IsIncompatible",
                 "The package is not compatible the current app version {0}. Please update Smartstore.NET or install another version of this package.",
                 "Das Paket ist nicht kompatibel mit der aktuellen Programmversion {0}. Bitte aktualisieren Sie Smartstore.NET oder nutzen Sie eine andere, kompatible Paket-Version.");

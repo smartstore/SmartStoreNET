@@ -54,6 +54,9 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("Common.Read", "Read", "Lesen");
             builder.AddOrUpdate("Common.Create", "Create", "Erstellen");
+            builder.AddOrUpdate("Common.Notify", "Notify", "Benachrichtigen");
+            builder.AddOrUpdate("Common.Export", "Export", "Export");
+            builder.AddOrUpdate("Common.Import", "Import", "Import");
 
             builder.AddOrUpdate("Permissions.DisplayName.DisplayPrice", "Display prices", "Preise anzeigen");
         }

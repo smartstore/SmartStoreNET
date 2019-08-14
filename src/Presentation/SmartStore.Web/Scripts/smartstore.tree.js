@@ -113,7 +113,7 @@
     // The global, default plugin options.
     var defaults = {
         expanded: false,
-        showLines: true,
+        showLines: false,
         nodeState: null,  // 'tri'
         expandedClass: 'fas fa-chevron-down',
         reducedClass: 'fas fa-chevron-right',

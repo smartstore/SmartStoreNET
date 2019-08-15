@@ -1063,7 +1063,7 @@ namespace SmartStore.Admin.Controllers
 
 		#region Export / Import
 
-		[HttpPost, Compress]
+		[HttpPost]
 		public ActionResult ExportPdf(bool all, string selectedIds = null)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
@@ -1868,6 +1868,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         public ActionResult AddProductToOrderDetails(int orderId, int productId, bool adjustInventory, bool? updateTotals, ProductVariantQuery query, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))

@@ -1,6 +1,4 @@
-﻿using System.Web.Routing;
-using Newtonsoft.Json;
-using SmartStore.Collections;
+﻿using SmartStore.Collections;
 using SmartStore.Core.Localization;
 
 namespace SmartStore.Web.Framework.UI
@@ -19,26 +17,7 @@ namespace SmartStore.Web.Framework.UI
 		{
             try
             {
-                if (request.Entity.Model.HasValue())
-                {
-                    var routeValues = JsonConvert.DeserializeObject<RouteValueDictionary>(request.Entity.Model);
-                    var routeName = string.Empty;
-
-                    if (routeValues.TryGetValue("routename", out var val))
-                    {
-                        routeName = val as string;
-                        routeValues.Remove("routename");
-                    }
-
-                    if (routeName.HasValue())
-                    {
-                        node.Value.Route(routeName, routeValues);
-                    }
-                    else
-                    {
-                        node.Value.Action(routeValues);
-                    }
-                }
+                node.ApplyRouteData(request.Entity.Model);
             }
             catch { }
 

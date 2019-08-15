@@ -113,7 +113,7 @@ namespace SmartStore.Web.Controllers
 
 		#region Products
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		public ActionResult ProductDetails(int productId, string attributes, ProductVariantQuery query)
 		{
 			var product = _productService.GetProductById(productId);
@@ -487,7 +487,8 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult UpdateProductDetails(int productId, string itemType, int bundleItemId, ProductVariantQuery query, FormCollection form)
+        [ValidateInput(false)]
+        public ActionResult UpdateProductDetails(int productId, string itemType, int bundleItemId, ProductVariantQuery query, FormCollection form)
 		{
 			int quantity = 1;
 			int galleryStartIndex = -1;
@@ -674,7 +675,7 @@ namespace SmartStore.Web.Controllers
 		#region Product reviews
 
 		[ActionName("Reviews")]
-		[RequireHttpsByConfig(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		[GdprConsent]
 		public ActionResult Reviews(int id)
 		{
@@ -847,7 +848,7 @@ namespace SmartStore.Web.Controllers
 
 		#region Ask product question
 
-		[RequireHttpsByConfig(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		[GdprConsent]
 		public ActionResult AskQuestion(int id)
 		{
@@ -921,7 +922,7 @@ namespace SmartStore.Web.Controllers
 
 		#region Email a friend
 
-		[RequireHttpsByConfig(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		[GdprConsent]
 		public ActionResult EmailAFriend(int id)
 		{

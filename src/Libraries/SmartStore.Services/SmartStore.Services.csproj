@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -97,8 +98,11 @@
     <Reference Include="LumenWorks.Framework.IO, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5ad3ea2f85776344, processorArchitecture=MSIL">
       <HintPath>..\..\packages\LumenWorksCsvReader.4.0.0\lib\net461\LumenWorks.Framework.IO.dll</HintPath>
     </Reference>
-    <Reference Include="MaxMind.GeoIP">
-      <HintPath>..\..\packages\MaxMind.GeoIP.2.1.17\lib\net35\MaxMind.GeoIP.dll</HintPath>
+    <Reference Include="MaxMind.Db, Version=2.0.0.0, Culture=neutral, PublicKeyToken=66afa4cc5ae853ac, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MaxMind.Db.2.4.0\lib\net45\MaxMind.Db.dll</HintPath>
+    </Reference>
+    <Reference Include="MaxMind.GeoIP2, Version=3.0.0.0, Culture=neutral, PublicKeyToken=66afa4cc5ae853ac, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MaxMind.GeoIP2.3.0.0\lib\net45\MaxMind.GeoIP2.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -279,6 +283,7 @@
     <Compile Include="DataExchange\Export\ExportFeaturesAttribute.cs" />
     <Compile Include="DataExchange\Export\ExportDataSegmenter.cs" />
     <Compile Include="DataExchange\Export\DataExportTask.cs" />
+    <Compile Include="Directory\GeoCountryLookup.cs" />
     <Compile Include="Directory\QuantityUnitService.cs" />
     <Compile Include="Directory\IQuantityUnitService.cs" />
     <Compile Include="DataExchange\Export\ExportProfileService.cs" />
@@ -421,7 +426,6 @@
     <Compile Include="Customers\DeleteGuestsTask.cs" />
     <Compile Include="Directory\CurrencyExtensions.cs" />
     <Compile Include="Directory\IGeoCountryLookup.cs" />
-    <Compile Include="Directory\GeoCountryLookup.cs" />
     <Compile Include="Directory\IDeliveryTimeService.cs" />
     <Compile Include="Directory\DeliveryTimeService.cs" />
     <Compile Include="Forums\ForumExtensions.cs" />

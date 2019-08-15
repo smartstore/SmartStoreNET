@@ -498,11 +498,15 @@ legend {
 	left: 0;
 	right: 0;
 	top: 0;
-	width: 100%;
 	height: 3px;
-	z-index: 999;
+	z-index: $zindex-sticky + 1;
 	background-color: #ffab40;
 	transition: opacity .05s ease-in;
+
+    .sticky-header & {
+        left: var(--content-padding-x);
+        right: var(--content-padding-x);
+    }
 
 	&.busy {
 		opacity: 1;

@@ -81,7 +81,7 @@ namespace SmartStore.Core.Domain.Seo
 		public string SeoNameCharConversion { get; set; }
 
 		public bool CanonicalUrlsEnabled { get; set; }
-		public CanonicalHostNameRule CanonicalHostNameRule { get; set; }
+        public CanonicalHostNameRule CanonicalHostNameRule { get; set; }
 
         /// <summary>
         /// Slugs (sename) reserved for some other needs

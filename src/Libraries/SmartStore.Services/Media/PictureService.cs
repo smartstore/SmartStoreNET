@@ -512,7 +512,7 @@ namespace SmartStore.Services.Media
 
 		public virtual string GetPictureSeName(string name)
 		{
-			return SeoHelper.GetSeName(name, true, false);
+			return SeoHelper.GetSeName(name, true, false, false);
 		}
 
 		public virtual Picture SetSeoFilename(int pictureId, string seoFilename)

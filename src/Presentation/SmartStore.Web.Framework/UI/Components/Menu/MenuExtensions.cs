@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.Routing;
+using Newtonsoft.Json;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Localization;
@@ -91,6 +93,35 @@ namespace SmartStore.Web.Framework.UI
 
 			return state;
 		}
+
+        /// <summary>
+        /// Applies serialized route informations to a tree node.
+        /// </summary>
+        /// <param name="node">Tree node.</param>
+        /// <param name="data">JSON serialized route data.</param>
+        public static void ApplyRouteData(this TreeNode<MenuItem> node, string data)
+        {
+            if (data.HasValue())
+            {
+                var routeValues = JsonConvert.DeserializeObject<RouteValueDictionary>(data);
+                var routeName = string.Empty;
+
+                if (routeValues.TryGetValue("routename", out var val))
+                {
+                    routeName = val as string;
+                    routeValues.Remove("routename");
+                }
+
+                if (routeName.HasValue())
+                {
+                    node.Value.Route(routeName, routeValues);
+                }
+                else
+                {
+                    node.Value.Action(routeValues);
+                }
+            }
+        }
 
         /// <summary>
         /// Creates a menu model.

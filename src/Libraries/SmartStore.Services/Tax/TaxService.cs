@@ -140,15 +140,9 @@ namespace SmartStore.Services.Tax
 				return true;
 			}
 
-			var country = address == null ? null : address.Country;
-
-			if (country == null)
-			{
-				// No Country or BillingAddress set: try to resolve country from IP address
-				_geoCountryLookup.IsEuIpAddress(customer.LastIpAddress, out country);
-			}
-
-			if (country == null || !country.SubjectToVat)
+            // No Country or BillingAddress set: try to resolve country from IP address
+            var subjectToVat = _geoCountryLookup.LookupCountry(customer.LastIpAddress)?.IsInEu == true;
+			if (!subjectToVat)
 			{
 				return false;
 			}

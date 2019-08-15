@@ -10,7 +10,8 @@ namespace SmartStore.Core.Domain.Catalog
 	{
 		int ParentCategoryId { get; }
 		string Name { get; }
-		string Alias { get; }
+        string ExternalLink { get; }
+        string Alias { get; }
 		int? PictureId { get; }
 		bool Published { get; }
 		int DisplayOrder { get; }
@@ -25,7 +26,8 @@ namespace SmartStore.Core.Domain.Catalog
 		public int Id { get; set; }
 		public int ParentCategoryId { get; set; }
 		public string Name { get; set; }
-		public string Alias { get; set; }
+        public string ExternalLink { get; set; }
+        public string Alias { get; set; }
 		public int? PictureId { get; set; }
 		public bool Published { get; set; }
 		public int DisplayOrder { get; set; }

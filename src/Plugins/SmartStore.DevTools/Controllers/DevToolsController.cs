@@ -1,6 +1,8 @@
 ﻿using System.Web.Mvc;
+using SmartStore.DevTools.Blocks;
 using SmartStore.DevTools.Models;
 using SmartStore.Services;
+using SmartStore.Services.Cms.Blocks;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
@@ -55,6 +57,13 @@ namespace SmartStore.DevTools.Controllers
 
             return new EmptyResult();
         }
+
+		[ChildActionOnly]
+		public ActionResult SampleBlock(SampleBlock block)
+		{
+			// Do something here with your block instance and return a result that should be rendered by the Page Builder.
+			return View(block);
+		}
 
 		[AdminAuthorize, AdminThemed]
 		public ActionResult BackendExtension()

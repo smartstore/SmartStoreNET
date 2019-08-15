@@ -24,13 +24,14 @@ else
 	var item = node.Value;
     var parentId = node.Parent != null ? node.Parent.Value.EntityId : 0;
 	var indentStyle = " style=\"padding-left: {0}px;\"".FormatInvariant(padding);
+    var rtl = WorkContext.WorkingLanguage.Rtl;
 
 	<div class="list-group-item menu-item d-flex align-items-center py-2@(level == 0 ? "" : " sub-item")" data-id="@item.EntityId" data-parentid="@parentId">
 		<div class="item-commands btn-group">
 			<button type="button" class="btn btn-light btn-flat btn-no-border rounded-0 btn-item-menu dropdown-toggle no-chevron" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				<i class="fa fa-ellipsis-v"></i>
 			</button>
-			<div class="dropdown-menu">
+			<div class="dropdown-menu @(rtl ? "dropdown-menu-right" : "dropdown-menu-left")">
 				<div class="dropdown-header h6 text-uppercase">
 					@T("Admin.ContentManagement.AddMenuItem")
 				</div>

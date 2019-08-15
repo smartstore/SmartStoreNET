@@ -35,7 +35,7 @@ using SmartStore.Web.Models.Search;
 
 namespace SmartStore.Web.Controllers
 {
-    [RequireHttpsByConfig(SslRequirement.No)]
+    [RewriteUrl(SslRequirement.No)]
     public partial class BoardsController : PublicControllerBase
     {
         private readonly IForumService _forumService;
@@ -426,7 +426,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-		[Compress]
         public ActionResult ForumRss(int id = 0)
         {
             if (!_forumSettings.ForumsEnabled)
@@ -587,7 +586,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [Compress]
         public ActionResult ActiveDiscussionsRss(int forumId = 0)
         {
             if (!_forumSettings.ForumsEnabled)
@@ -1780,7 +1778,7 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        [RequireHttpsByConfig(SslRequirement.No)]
+        [RewriteUrl(SslRequirement.No)]
         public ActionResult Search(ForumSearchQuery query)
         {
             if (!_forumSettings.ForumsEnabled)

@@ -113,7 +113,7 @@
 					<i class="fa fa-plus"></i>
 					<span>@T("Admin.ContentManagement.AddMenuItem")</span>
 				</button>
-				<div class="dropdown-menu">
+				<div class="dropdown-menu @(WorkContext.WorkingLanguage.Rtl ? "dropdown-menu-right" : "dropdown-menu-left")">
 					@foreach (var provider in Model.AllProviders)
 					{
 						<a class="dropdown-item" href="@Url.Action("CreateItem", new { providerName = provider.Value, menuId = Model.Id, parentItemId = 0, area = "Admin" })">

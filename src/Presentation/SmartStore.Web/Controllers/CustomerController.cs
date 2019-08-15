@@ -406,7 +406,7 @@ namespace SmartStore.Web.Controllers
 
         #region Login / logout / register
         
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult Login(bool? checkoutAsGuest)
         {
             var model = new LoginModel();
@@ -501,7 +501,7 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
 		[GdprConsent]
 		public ActionResult Register()
         {
@@ -935,7 +935,7 @@ namespace SmartStore.Web.Controllers
 
         }
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult AccountActivation(string token, string email)
         {
             var customer = _customerService.GetCustomerByEmail(email);
@@ -968,7 +968,7 @@ namespace SmartStore.Web.Controllers
 
         #endregion
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult Info()
         {
             if (!IsCurrentUserRegistered())
@@ -1156,7 +1156,7 @@ namespace SmartStore.Web.Controllers
     
         #region Addresses
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult Addresses()
         {
             if (!IsCurrentUserRegistered())
@@ -1175,7 +1175,7 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult AddressDelete(int id)
         {
 			if (id < 1)
@@ -1199,7 +1199,7 @@ namespace SmartStore.Web.Controllers
 			return RedirectToAction("Addresses");
         }
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult AddressAdd()
         {
             if (!IsCurrentUserRegistered())
@@ -1245,7 +1245,7 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult AddressEdit(int id)
         {
 			if (id < 1)
@@ -1296,7 +1296,7 @@ namespace SmartStore.Web.Controllers
 
         #region Orders
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult Orders(int? page)
         {
             if (!IsCurrentUserRegistered())
@@ -1348,7 +1348,7 @@ namespace SmartStore.Web.Controllers
 
         #region Return request
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult ReturnRequests()
         {
             if (!IsCurrentUserRegistered())
@@ -1390,7 +1390,7 @@ namespace SmartStore.Web.Controllers
 
         #region Downloable products
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult DownloadableProducts()
         {
             if (!IsCurrentUserRegistered())
@@ -1473,7 +1473,7 @@ namespace SmartStore.Web.Controllers
 
         #region Reward points
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult RewardPoints()
         {
             if (!IsCurrentUserRegistered())
@@ -1507,7 +1507,7 @@ namespace SmartStore.Web.Controllers
 
         #region Change password
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult ChangePassword()
         {
             if (!IsCurrentUserRegistered())
@@ -1552,7 +1552,7 @@ namespace SmartStore.Web.Controllers
 
         #region Avatar
 
-        [RequireHttpsByConfig(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult Avatar()
         {
             if (!IsCurrentUserRegistered())
@@ -1633,7 +1633,7 @@ namespace SmartStore.Web.Controllers
 
         #region Password recovery
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult PasswordRecovery()
         {
             var model = new PasswordRecoveryModel();
@@ -1670,7 +1670,7 @@ namespace SmartStore.Web.Controllers
         }
 
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult PasswordRecoveryConfirm(string token, string email)
         {
             var customer = _customerService.GetCustomerByEmail(email);

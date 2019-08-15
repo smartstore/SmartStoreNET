@@ -16,7 +16,7 @@ namespace SmartStore.Web.Framework.Validators
 
 			if (!result.IsValid)
 			{
-				foreach (var error in result.Errors)
+                foreach (var error in result.Errors.DistinctBy(x => x.ErrorMessage))
 				{
 					try
 					{
@@ -33,11 +33,14 @@ namespace SmartStore.Web.Framework.Validators
 
 			if (!result.IsValid)
 			{
-				foreach (var error in result.Errors)
-					warnings.Add(error.ErrorMessage);
+                foreach (var error in result.Errors.DistinctBy(x => x.ErrorMessage))
+                {
+                    warnings.Add(error.ErrorMessage);
+                }
 
 				return false;
 			}
+
 			return true;
 		}
 	}

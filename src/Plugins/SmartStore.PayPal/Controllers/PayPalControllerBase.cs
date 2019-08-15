@@ -19,27 +19,28 @@ using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.PayPal.Controllers
 {
-	public abstract class PayPalPaymentControllerBase : PaymentControllerBase
+    public abstract class PayPalPaymentControllerBase : PaymentControllerBase
 	{
-		protected void PrepareConfigurationModel(ApiConfigurationModel model, int storeScope)
+        protected abstract string ProviderSystemName { get; }
+
+        protected void PrepareConfigurationModel(ApiConfigurationModel model, int storeScope)
 		{
 			var store = storeScope == 0
 				? Services.StoreContext.CurrentStore
 				: Services.StoreService.GetStoreById(storeScope);
 
 			model.PrimaryStoreCurrencyCode = store.PrimaryStoreCurrency.CurrencyCode;
-		}
-	}
+        }
+    }
+
 
 	public abstract class PayPalControllerBase<TSetting> : PayPalPaymentControllerBase where TSetting : PayPalSettingsBase, ISettings, new()
 	{
 		public PayPalControllerBase(
-			string systemName,
 			IPaymentService paymentService,
 			IOrderService orderService,
 			IOrderProcessingService orderProcessingService)
 		{
-			SystemName = systemName;
 			PaymentService = paymentService;
 			OrderService = orderService;
 			OrderProcessingService = orderProcessingService;
@@ -143,7 +144,7 @@ namespace SmartStore.PayPal.Controllers
 			byte[] param = Request.BinaryRead(Request.ContentLength);
 			var strRequest = Encoding.UTF8.GetString(param);
 
-			if (!PaymentService.IsPaymentMethodActive(SystemName, Services.StoreContext.CurrentStore.Id))
+			if (!PaymentService.IsPaymentMethodActive(ProviderSystemName, Services.StoreContext.CurrentStore.Id))
 			{
 				Logger.Warn(new SmartException(strRequest), T("Plugins.Payments.PayPal.NoModuleLoading", "IPNHandler"));
 				return Content(string.Empty);

@@ -172,7 +172,6 @@ namespace SmartStore.Shipping
             int countryId = 0;
             int stateProvinceId = 0;
             string zip = null;
-			var taxRate = decimal.Zero;
             decimal subTotal = decimal.Zero;
 			int storeId = _storeContext.CurrentStore.Id;
 
@@ -190,13 +189,19 @@ namespace SmartStore.Shipping
                     continue;
                 }
 
-				var itemSubTotal = _priceCalculationService.GetSubTotal(shoppingCartItem, true);
-				var itemSubTotalInclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, itemSubTotal, true, getShippingOptionRequest.Customer, out taxRate);
-				subTotal += itemSubTotalInclTax;
+				var itemSubTotalBase = _priceCalculationService.GetSubTotal(shoppingCartItem, true);
+				var itemSubTotal = _taxService.GetProductPrice(
+                    shoppingCartItem.Item.Product,
+                    itemSubTotalBase,
+                    _shippingByTotalSettings.CalculateTotalIncludingTax,
+                    getShippingOptionRequest.Customer,
+                    out var _);
+
+				subTotal += itemSubTotal;
 			}
 
-			decimal sqThreshold = _shippingByTotalSettings.SmallQuantityThreshold;
-            decimal sqSurcharge = _shippingByTotalSettings.SmallQuantitySurcharge;
+			var sqThreshold = _shippingByTotalSettings.SmallQuantityThreshold;
+            var sqSurcharge = _shippingByTotalSettings.SmallQuantitySurcharge;
 
             var shippingMethods = _shippingService.GetAllShippingMethods(getShippingOptionRequest, storeId);
             foreach (var shippingMethod in shippingMethods)
@@ -206,7 +211,7 @@ namespace SmartStore.Shipping
                 {
                     if (rate > 0 && sqThreshold > 0 && subTotal <= sqThreshold)
                     {
-                        // Add small quantity surcharge (Mindermengenzuschlag)
+                        // Add small quantity surcharge (Mindermengenzuschlag).
                         rate += sqSurcharge;
                     }
                     

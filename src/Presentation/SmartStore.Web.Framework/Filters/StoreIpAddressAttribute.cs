@@ -19,7 +19,7 @@ namespace SmartStore.Web.Framework.Filters
             if (!DataSettings.DatabaseIsInstalled())
                 return;
 
-            if (filterContext == null || filterContext.HttpContext == null || filterContext.HttpContext.Request == null)
+            if (filterContext?.HttpContext?.Request == null)
                 return;
 
             // Don't apply filter to child methods.

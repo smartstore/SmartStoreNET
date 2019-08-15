@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using SmartStore.Collections;
+using SmartStore.Core.Html;
 using SmartStore.Services.Search.Modelling;
 
 namespace SmartStore.Services.Catalog.Modelling
@@ -38,11 +39,10 @@ namespace SmartStore.Services.Catalog.Modelling
 				{
 					_queryItems = new Multimap<string, string>();
 
-					if (_httpContext.Request != null)
+					if (_httpContext.Request?.Unvalidated != null)
 					{
-						var form = _httpContext.Request.Form;
-						var query = _httpContext.Request.QueryString;
-
+						var form = _httpContext.Request.Unvalidated.Form;
+						
 						if (form != null)
 						{
 							foreach (var key in form.AllKeys)
@@ -54,7 +54,9 @@ namespace SmartStore.Services.Catalog.Modelling
 							}
 						}
 
-						if (query != null)
+                        var query = _httpContext.Request.Unvalidated.QueryString;
+
+                        if (query != null)
 						{
 							foreach (var key in query.AllKeys)
 							{
@@ -71,7 +73,51 @@ namespace SmartStore.Services.Catalog.Modelling
 			}
 		}
 
-		private DateTime? ConvertToDate(string key, string value)
+        public ProductVariantQuery Current { get; private set; }
+
+        public ProductVariantQuery CreateFromQuery()
+        {
+            var query = new ProductVariantQuery();
+            Current = query;
+
+            if (_httpContext.Request == null)
+                return query;
+
+            var languageId = _services.WorkContext.WorkingLanguage.Id;
+
+            foreach (var item in QueryItems)
+            {
+                if (!item.Value.Any() || item.Key.EndsWith("-day") || item.Key.EndsWith("-month"))
+                {
+                    continue;
+                }
+
+                if (IsVariantKey.IsMatch(item.Key))
+                {
+                    ConvertVariant(query, item.Key, item.Value);
+                }
+                else if (IsGiftCardKey.IsMatch(item.Key))
+                {
+                    item.Value.Each(value => ConvertGiftCard(query, item.Key, value));
+                }
+                else if (IsCheckoutAttributeKey.IsMatch(item.Key))
+                {
+                    ConvertCheckoutAttribute(query, item.Key, item.Value);
+                }
+                else if (IsVariantAliasKey.IsMatch(item.Key))
+                {
+                    ConvertVariantAlias(query, item.Key, item.Value, languageId);
+                }
+                else
+                {
+                    ConvertItems(_httpContext.Request, query, item.Key, item.Value);
+                }
+            }
+
+            return query;
+        }
+
+        private DateTime? ConvertToDate(string key, string value)
 		{
 			var year = 0;
 			var month = 0;
@@ -119,15 +165,17 @@ namespace SmartStore.Services.Catalog.Modelling
 			if (isDate || isFile || isText)
 			{
 				var value = isText ? string.Join(",", values) : values.First();
-				var variant = new ProductVariantQueryItem(value);
-				variant.ProductId = ids[0].ToInt();
-				variant.BundleItemId = ids[1].ToInt();
-				variant.AttributeId = ids[2].ToInt();
-				variant.VariantAttributeId = ids[3].ToInt();
-				variant.IsFile = isFile;
-				variant.IsText = isText;
+                var variant = new ProductVariantQueryItem(value)
+                {
+                    ProductId = ids[0].ToInt(),
+                    BundleItemId = ids[1].ToInt(),
+                    AttributeId = ids[2].ToInt(),
+                    VariantAttributeId = ids[3].ToInt(),
+                    IsFile = isFile,
+                    IsText = isText
+                };
 
-				if (isDate)
+                if (isDate)
 				{
 					variant.Date = ConvertToDate(key, value);
 				}
@@ -138,13 +186,15 @@ namespace SmartStore.Services.Catalog.Modelling
 			{
 				foreach (var value in values)
 				{
-					var variant = new ProductVariantQueryItem(value);
-					variant.ProductId = ids[0].ToInt();
-					variant.BundleItemId = ids[1].ToInt();
-					variant.AttributeId = ids[2].ToInt();
-					variant.VariantAttributeId = ids[3].ToInt();
+                    var variant = new ProductVariantQueryItem(value)
+                    {
+                        ProductId = ids[0].ToInt(),
+                        BundleItemId = ids[1].ToInt(),
+                        AttributeId = ids[2].ToInt(),
+                        VariantAttributeId = ids[3].ToInt()
+                    };
 
-					query.AddVariant(variant);
+                    query.AddVariant(variant);
 				}
 			}
 		}
@@ -181,16 +231,18 @@ namespace SmartStore.Services.Catalog.Modelling
 			if (isDate || isFile || isText)
 			{
 				var value = isText ? string.Join(",", values) : values.First();
-				var variant = new ProductVariantQueryItem(value);
-				variant.ProductId = productId;
-				variant.BundleItemId = bundleItemId;
-				variant.AttributeId = attributeId;
-				variant.VariantAttributeId = variantAttributeId;
-				variant.Alias = alias;
-				variant.IsFile = isFile;
-				variant.IsText = isText;
+                var variant = new ProductVariantQueryItem(value)
+                {
+                    ProductId = productId,
+                    BundleItemId = bundleItemId,
+                    AttributeId = attributeId,
+                    VariantAttributeId = variantAttributeId,
+                    Alias = alias,
+                    IsFile = isFile,
+                    IsText = isText
+                };
 
-				if (isDate)
+                if (isDate)
 				{
 					variant.Date = ConvertToDate(key, value);
 				}
@@ -213,14 +265,16 @@ namespace SmartStore.Services.Catalog.Modelling
 						valueAlias = string.Join("-", valueIds.Take(valueIds.Length - 1));
 					}
 
-					var variant = new ProductVariantQueryItem(optionId == 0 ? value : optionId.ToString());
-					variant.ProductId = productId;
-					variant.BundleItemId = bundleItemId;
-					variant.AttributeId = attributeId;
-					variant.VariantAttributeId = variantAttributeId;
-					variant.Alias = alias;
+                    var variant = new ProductVariantQueryItem(optionId == 0 ? value : optionId.ToString())
+                    {
+                        ProductId = productId,
+                        BundleItemId = bundleItemId,
+                        AttributeId = attributeId,
+                        VariantAttributeId = variantAttributeId,
+                        Alias = alias
+                    };
 
-					if (optionId != 0)
+                    if (optionId != 0)
 					{
 						variant.ValueAlias = valueAlias;
 					}
@@ -257,11 +311,13 @@ namespace SmartStore.Services.Catalog.Modelling
 			if (isDate || isFile || isText)
 			{
 				var value = isText ? string.Join(",", values) : values.First();
-				var attribute = new CheckoutAttributeQueryItem(attributeId, value);
-				attribute.IsFile = isFile;
-				attribute.IsText = isText;
+                var attribute = new CheckoutAttributeQueryItem(attributeId, value)
+                {
+                    IsFile = isFile,
+                    IsText = isText
+                };
 
-				if (isDate)
+                if (isDate)
 				{
 					attribute.Date = ConvertToDate(key, value);
 				}
@@ -279,50 +335,6 @@ namespace SmartStore.Services.Catalog.Modelling
 
 		protected virtual void ConvertItems(HttpRequestBase request, ProductVariantQuery query, string key, ICollection<string> values)
 		{
-		}
-
-		public ProductVariantQuery Current { get; private set; }
-
-		public ProductVariantQuery CreateFromQuery()
-		{
-			var query = new ProductVariantQuery();
-			Current = query;
-
-			if (_httpContext.Request == null)
-				return query;
-
-			var languageId = _services.WorkContext.WorkingLanguage.Id;
-
-			foreach (var item in QueryItems)
-			{
-				if (!item.Value.Any() || item.Key.EndsWith("-day") || item.Key.EndsWith("-month"))
-				{
-					continue;
-				}
-
-				if (IsVariantKey.IsMatch(item.Key))
-				{
-					ConvertVariant(query, item.Key, item.Value);
-				}
-				else if (IsGiftCardKey.IsMatch(item.Key))
-				{
-					item.Value.Each(value => ConvertGiftCard(query, item.Key, value));
-				}
-				else if (IsCheckoutAttributeKey.IsMatch(item.Key))
-				{
-					ConvertCheckoutAttribute(query, item.Key, item.Value);
-				}
-				else if (IsVariantAliasKey.IsMatch(item.Key))
-				{
-					ConvertVariantAlias(query, item.Key, item.Value, languageId);
-				}
-				else
-				{
-					ConvertItems(_httpContext.Request, query, item.Key, item.Value);
-				}
-			}
-
-			return query;
 		}
 	}
 }

@@ -7,12 +7,13 @@ namespace SmartStore.Data.Mapping.Directory
     {
         public QuantityUnitMap()
         {
-            this.ToTable("QuantityUnit");
-            this.HasKey(c => c.Id);
-            this.Property(c => c.Name).IsRequired().HasMaxLength(50);
-            this.Property(c => c.Description).HasMaxLength(50);
-            this.Property(c => c.DisplayLocale).HasMaxLength(50);
-            this.Property(c => c.DisplayOrder);
+            ToTable("QuantityUnit");
+            HasKey(c => c.Id);
+            Property(c => c.Name).IsRequired().HasMaxLength(50);
+            Property(c => c.NamePlural).IsRequired().HasMaxLength(50);
+            Property(c => c.Description).HasMaxLength(50);
+            Property(c => c.DisplayLocale).HasMaxLength(50);
+            Property(c => c.DisplayOrder);
         }
     }
 }

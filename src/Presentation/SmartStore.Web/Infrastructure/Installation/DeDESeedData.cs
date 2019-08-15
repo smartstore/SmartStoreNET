@@ -27,15 +27,12 @@ using SmartStore.Data.Setup;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
-
-    public class DeDESeedData : InvariantSeedData
+	public class DeDESeedData : InvariantSeedData
     {
+		private readonly IDictionary<string, TaxCategory> _taxCategories = new Dictionary<string, TaxCategory>();
+		private DeliveryTime _defaultDeliveryTime;
 
-		public DeDESeedData()
-        {
-        }
-
-        protected override void Alter(Customer entity)
+		protected override void Alter(Customer entity)
         {
             base.Alter(entity);
 
@@ -217,35 +214,35 @@ namespace SmartStore.Web.Infrastructure.Installation
 
         protected override string TaxNameBooks
         {
-            get { return "Ermäßigt"; }
+            get => "Ermäßigt";
         }
         protected override string TaxNameDigitalGoods
         {
-            get { return "Normal"; }
+            get => "Normal";
         }
         protected override string TaxNameJewelry
         {
-            get { return "Normal"; }
+            get => "Normal";
         }
         protected override string TaxNameApparel
         {
-            get { return "Normal"; }
+            get => "Normal";
         }
         protected override string TaxNameFood
         {
-            get { return "Ermäßigt"; }
+            get => "Ermäßigt";
         }
         protected override string TaxNameElectronics
         {
-            get { return "Normal"; }
+            get => "Normal";
         }
         protected override string TaxNameTaxFree
         {
-            get { return "Befreit"; }
+            get => "Befreit";
         }
         public override decimal[] FixedTaxRates
         {
-            get { return new decimal[] { 19, 7, 0 }; }
+            get => new decimal[] { 19, 7, 0 };
         }
 
         protected override void Alter(IList<TaxCategory> entities)
@@ -255,22 +252,16 @@ namespace SmartStore.Web.Infrastructure.Installation
             // clear all tax categories
             entities.Clear();
 
-            // add de-DE specific ones
-            entities.Add(new TaxCategory
-            {
-                Name = "Normal",
-                DisplayOrder = 0,
-            });
-            entities.Add(new TaxCategory
-            {
-                Name = "Ermäßigt",
-                DisplayOrder = 1,
-            });
-            entities.Add(new TaxCategory
-            {
-                Name = TaxNameTaxFree,
-                DisplayOrder = 2,
-            });
+			// add de-DE specific ones
+
+			_taxCategories.Add("Normal", new TaxCategory { DisplayOrder = 0, Name = "Normal" });
+			_taxCategories.Add("Ermäßigt", new TaxCategory { DisplayOrder = 1, Name = "Ermäßigt" });
+			_taxCategories.Add(TaxNameTaxFree, new TaxCategory { DisplayOrder = 2, Name = TaxNameTaxFree });
+
+			foreach (var taxCategory in _taxCategories.Values)
+			{
+				entities.Add(taxCategory);
+			}
         }
 
         protected override void Alter(IList<Country> entities)
@@ -1972,25 +1963,26 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(settings);
 
+            var defaultDimensionId = DbContext.Set<MeasureDimension>().FirstOrDefault(x => x.SystemKeyword == "m")?.Id;
+            var defaultWeightId = DbContext.Set<MeasureWeight>().FirstOrDefault(x => x.SystemKeyword == "kg")?.Id;
+            var defaultCountryId = DbContext.Set<Country>().FirstOrDefault(x => x.TwoLetterIsoCode == "DE")?.Id;
+
             settings
                 .Alter<MeasureSettings>(x =>
                 {
-                    x.BaseDimensionId = base.DbContext.Set<MeasureDimension>().Where(m => m.SystemKeyword == "m").Single().Id;
-                    x.BaseWeightId = base.DbContext.Set<MeasureWeight>().Where(m => m.SystemKeyword == "kg").Single().Id;
+                    x.BaseDimensionId = defaultDimensionId ?? x.BaseDimensionId;
+                    x.BaseWeightId = defaultWeightId ?? x.BaseWeightId;
                 })
-
                 .Alter<SeoSettings>(x =>
                 {
                     x.DefaultTitle = "Mein Shop";
                 })
-
                 .Alter<OrderSettings>(x =>
                 {
                     x.ReturnRequestActions = "Reparatur,Ersatz,Gutschein";
                     x.ReturnRequestReasons = "Falschen Artikel erhalten,Falsch bestellt,Ware fehlerhaft bzw. defekt";
                     x.NumberOfDaysReturnRequestAvailable = 14;
                 })
-
                 .Alter<ShippingSettings>(x =>
                 {
                     x.EstimateShippingEnabled = false;
@@ -2001,10 +1993,10 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.TaxDisplayType = TaxDisplayType.IncludingTax;
                     x.DisplayTaxSuffix = true;
                     x.ShippingIsTaxable = true;
-                    x.ShippingPriceIncludesTax = false;
-                    x.ShippingTaxClassId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ShippingPriceIncludesTax = true;
+                    x.ShippingTaxClassId = _taxCategories["Normal"].Id;
                     x.EuVatEnabled = true;
-                    x.EuVatShopCountryId = base.DbContext.Set<Country>().Where(c => c.TwoLetterIsoCode == "DE").Single().Id;
+                    x.EuVatShopCountryId = defaultCountryId ?? x.EuVatShopCountryId;
                     x.EuVatAllowVatExemption = true;
                     x.EuVatUseWebService = false;
                     x.EuVatEmailAdminWhenNewVatSubmitted = true;
@@ -2916,8 +2908,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.FullDescription = "<p><strong>Inspiriert von den besten Eisenspielern der Welt</strong></p><p>Die neuen 'Spin Milled 6'-Wedges etablieren eine neue Leistungsklasse in drei Schlüsselbereichen des Wedge-Spiels: Präzise Längenschritte, Schlagvielfalt und maximaler Spin.&nbsp;</p><p>  <br />  Für jeden Loft wird der Schwerpunkt des Wedges einzeln bestimmt. Daher bieten die SM6 eine besonders präzise Längen- und Flugkurvenkontrolle in Verbindung mit großartigem Schlaggefühl.&nbsp;  <br />  Bob Vokeys tourerpobte Sohlenschliffe erlauben allen Golfern mehr Schlagvielfalt, angepasst auf deren persönliches Schwungprofil und die jeweiligen Bodenverhältnissen.</p><p>  <br />  Zu den absolut exakt und mit 100%iger Qualitätskontrolle gefrästen Rillen wurde eine neue, parallele Schlagflächen-Textur entwickelt. Das Ergebnis ist eine beständig höhere Kantenschärfe für mehr Spin.</p><p></p><ul>  <li>Präzise Längen und Flugkurvenkontrolle dank progressiv platziertem Schwerpunkt.</li>  <li>Verbesserte Schlagvielfalt aufgrund der erprobten Sohlenschliffe von Bob Vokey.</li>  <li>TX4-Rillen erzeugen mehr Spin durch eine neue Oberfläche und Kantenschärfe.</li>  <li>Vielfältige Personalisierungsmöglichkeiten.</li></ul><p></p><p></p><p></p>";
                     x.Price = 164.95M;
                     x.OldPrice = 199.95M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -2938,8 +2930,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "Golfball mit hohem Ballflug";
                     x.FullDescription = "<p>Auf den neuen Titleist Pro V1x vertrauen die Spitzenspieler. Hoher Ballflug, weiches Schlaggefühl und mehr Spin im kurzen Spiel sind die Vorteile der V1x-Ausführung.Perfekte Gesamtleistung vom führenden Hersteller. Der neue Titleist Pro V1-Golfball ist exakt definiert und verspricht durchdringenden Ballflug bei sehr weichem Schlaggefühl.</p>";
                     x.Price = 1.89M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -2960,8 +2952,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "Trainingsbälle mit perfekten Flugeigenschaften";
                     x.FullDescription = "<p>Perfekter Golf-Übungsball mit den Eigenschaften wie das 'Original', aber in glasbruchsicherer Ausführng. Massiver Kern, ein idealer Trainingsball für Hof und Garten. Farben: weiß, gelb, orange.</p>";
                     x.Price = 1.99M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -2982,8 +2974,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "Geringer Spin für gutes Golfen!";
                     x.FullDescription = "<p>Ihr Spiel gewinnt mit dem GBB Epic Sub Zero Driver. Ein Golfschläger mit extrem wenig Spin und das bei phänomenaler Hochgeschwindigkeits-Charakteristik.&nbsp;</p>";
                     x.Price = 489.00M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3009,8 +3001,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "HERVORRAGENDES BALLGEFÜHL. GUTE SICHTBARKEIT.";
                     x.FullDescription = "<p>Verbessert das Spiel jeden Tag mit dem Nike Strike Football. Verstärkter Gummi behält seine Form für zuversichtliche und konsequente Kontrolle. Eine herausragende Visual Power Grafik in schwarz, grün und orange ist am besten für Ball Tracking, trotz dunkler oder schlechter Bedingungen.</p><p></p><ul>  <li>Visual Power Grafik hilft, eine echte Lesung auf Flugtrajektorie zu geben.</li>  <li>Strukturiertes Gehäuse bietet überlegene Note.</li>  <li>Verstärkte Gummiblase unterstützt Luft- und Formbeibehaltung.</li>  <li>66% Gummi / 15% Polyurethan / 13% Polyester / 7% EVA.</li></ul>";
                     x.Price = 29.90M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3030,8 +3022,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "Einsteiger Trainingsball.";
                     x.FullDescription = "<p>Einsteiger Trainingsball.  <br />  Konstruiert aus 32 Platten mit gleichen Flächen für reduzierte Naht und eine vollkommen runde Form.  <br />  Handgestickte Platten mit mehrschichtigem gewebtem Rücken für mehr Stabilität und Aerodynamik.</p>";
                     x.Price = 35.90M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3051,8 +3043,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "Einsteiger Trainingsball.";
                     x.FullDescription = "<p>Einsteiger Trainingsball.  <br />  Konstruiert aus 32 Platten mit gleichen Flächen für reduzierte Naht und eine vollkommen runde Form.  <br />  Handgestickte Platten mit mehrschichtigem gewebtem Rücken für mehr Stabilität und Aerodynamik.</p>";
                     x.Price = 35.90M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3072,8 +3064,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "Farbe White/Black/Solar Red";
                     x.FullDescription = "<h2 style='box-sizing: border-box; outline: 0px; margin-right: 0px; margin-bottom: 32px; margin-left: 0px; padding: 0px; border: 0px; font-variant-numeric: inherit; font-weight: inherit; font-stretch: inherit; font-size: 32px; line-height: 30.4px; font-family: adilight, Arial, Helvetica, Verdana, sans-serif; vertical-align: baseline; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; max-height: 999999px; text-transform: uppercase; letter-spacing: 6px; text-align: center; color: rgb(0, 0, 0);'>TANGO PASADENA BALL</h2><div class='product-details-description clearfix' style='box-sizing: border-box; outline: 0px; margin: 0px; padding: 0px; border: 0px; font-variant-numeric: inherit; font-stretch: inherit; font-size: 14px; line-height: inherit; font-family: adihausregular, Arial, Helvetica, Verdana, sans-serif; vertical-align: baseline; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; max-height: 999999px; zoom: 1; color: rgb(0, 0, 0);'>  <div class='prod-details para-small' itemprop='description' style='box-sizing: border-box; outline: 0px; margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: 24px; vertical-align: baseline; background: transparent; max-height: 999999px; color: rgb(54, 55, 56); width: 441.594px; float: left;'>Der adidas Tango Pasadena Ball wurde speziell für harte Trainingseinheiten und hitzige Kämpfe auf dem Fußballplatz gemacht. Er hat die bestmögliche FIFA-Bewertung bekommen und verfügt über einen handgenähten Körper, dem kein Training und kein Spiel etwas anhaben können.  </div>  <div class='prod-details para-small' itemprop='description' style='box-sizing: border-box; outline: 0px; margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: 24px; vertical-align: baseline; background: transparent; max-height: 999999px; color: rgb(54, 55, 56); width: 441.594px; float: left;'>  </div>  <ul class='bullets_list para-small' style='box-sizing: border-box; outline: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 16px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: 20px; vertical-align: baseline; background: transparent; max-height: 999999px; list-style-position: initial; list-style-image: initial; color: rgb(54, 55, 56); width: 441.594px; float: right;'>    <li style='box-sizing: border-box; outline: 0px; margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; font-size: inherit; line-height: 24px; font-family: inherit; vertical-align: baseline; background: transparent; max-height: 999999px;'>Handgenäht für hohe Strapazierfähigkeit und gutes Ballgefühl</li>    <li style='box-sizing: border-box; outline: 0px; margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; font-size: inherit; line-height: 24px; font-family: inherit; vertical-align: baseline; background: transparent; max-height: 999999px;'>FIFA-Höchstwertung: Der Ball hat Tests in den Kategorien Gewicht, Wasseraufnahme, Form- und Größenbeständigkeit erfolgreich bestanden</li>    <li style='box-sizing: border-box; outline: 0px; margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; font-size: inherit; line-height: 24px; font-family: inherit; vertical-align: baseline; background: transparent; max-height: 999999px;'>Latex-Blase für optimales Rücksprungverhalten</li>    <li style='box-sizing: border-box; outline: 0px; margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; font-size: inherit; line-height: 24px; font-family: inherit; vertical-align: baseline; background: transparent; max-height: 999999px;'>100 % Polyurethan</li>  </ul></div>";
                     x.Price = 59.90M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3098,8 +3090,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "";
                     x.FullDescription = "<p><strong>RADAR&nbsp;EV PATH&nbsp;PRIZM&nbsp;ROAD</strong></p><p>Ein neuer Meilenstein in der Geschichte des Performance-Designs: Die Radar® EV setzt den Innovationen eines ohnehin schon revolutionären Designs mit einem größeren Glas für ein erweitertes Blickfeld nach oben noch eins drauf. Vom Komfort und Schutz des Rahmens aus O Matter® bis zum griffigen Halt der Unobtainium®-Komponenten ist dieses Premium-Design im innovativen und stilvollen Erbe der Radar verwurzelt.</p><p><strong>EIGENSCHAFTEN</strong></p><ul>  <li>PRIZM™ ist eine neue Glastechnologie von Oakley, die die Sicht für spezielle Sportarten und Umgebungsbedingungen optimiert.</li>  <li>Path-Gläser für eine bessere Performance gegenüber traditionellen Gläsern, die Ihre Wangen berühren, und ein erweitertes Blickfeld</li>  <li>Speziell konstruiert für maximalen Luftstrom zur kühlenden Belüftung</li>  <li>Ohrbügel und Nasenpads aus Unobtainium® für einen sicheren Sitz der Gläser, der sich bei Schweiß sogar verstärkt</li>  <li>Wechselglassystem für sekundenschnelles Auswechseln der Gläser zur optimalen Sichtanpassung an jedes Sportumfeld</li></ul>";
                     //x.Price = 29.90M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3120,8 +3112,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "";
                     x.FullDescription = "Jede Brille wird  in Handarbeit für Sie zusammengesetzt.";
                     //x.Price = 29.90M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3142,8 +3134,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "";
                     x.FullDescription = "<p>Die Sonnenbrille Ray-Ban ® RB3183 mir ihrer aerodynamischen Form eine reminiszenzist an Geschwindigkeit. Eine rechteckige Form und das auf den</p><p>Bügeln aufgedruckte klassische Ray-Ban Logo zeichnet dieses leichte Halbrand-Modell aus.</p>";
                     //x.Price = 29.90M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3164,8 +3156,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "Die Ray-Ban Original Wayfarer ist der bekannteste Style in der Geschichte der Sonnenbrillen. Mit dem original Design von 1952 ist die Wayfarer bei Prominenten, Musikern, Künstlern und Mode Experten beliebt. ";
                     x.FullDescription = "";
                     //x.Price = 29.90M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3190,8 +3182,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "Für alle Positionen auf allen Spielstufen, Spieltag und jeden Tag";
                     x.FullDescription = "<p>Die Wilson Evolution High School Spiel Basketball hat exklusive Mikrofaser-Composite-Leder-Konstruktion mit tiefen geprägten Kieselsteinen, um Ihnen die ultimative in Gefühl und Kontrolle.</p><p>Die patentierte Cushion Core Technologie erhöht die Haltbarkeit für längeres Spiel.</p><p>Diese Mikrofaser-Composite Evolution High School Basketball ist mit Composite-Kanäle für besseren Griff kieselig, hilft Spieler heben ihr Spiel auf die nächste Ebene.</p><p>Für alle Positionen auf allen Spielstufen, Spieltag und jeden Tag, liefert Wilson die Skill-Building-Performance, die Spieler verlangen. Diese Registern-Größe 29,5 'Wilson Basketball ist ein idealer Basketball für High-School - Spieler, und ist entweder für Freizeit - Nutzung oder für Liga - Spiele konzipiert.</ p >< p > Es ist NCAA und NFHS genehmigt, so dass Sie wissen, es ist ein qualitativ hochwertiger Basketball, der Ihnen helfen wird hone Ihr Shooting, Passing und Ball - Handling - Fähigkeiten.</ p >< p > Nehmen Sie Ihr Team den ganzen Weg zur Meisterschaft mit dem Wilson Evolution High School Game Basketball.</ p > ";
                     //x.Price = 29.90M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3212,8 +3204,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "Ein langlebiger Basketball für alle Oberflächen";
                     x.FullDescription = "<p></p><div>  <h2>All-Court Prep Ball  </h2>  <h4>Ein langlebiger Basketball für alle Oberflächen  </h4>  <div class='product-details-description clearfix'>    <div class='prod-details para-small' itemprop='description'>    </div>    <div class='prod-details para-small' itemprop='description'>Ob auf Parkett oder auf Asphalt – der adidas All-Court Prep Ball hat nur ein Ziel: den Korb. Dieser Basketball besteht aus langlebigem Kunstleder, was ihn sowohl für Hallenplätze als auch für Spiele im Freien prädestiniert.    </div>    <div class='prod-details para-small' itemprop='description'>    </div>    <ul class='bullets_list para-small'>      <li>Verbundüberzug aus Kunstleder</li>      <li>Für drinnen und draußen geeignet</li>      <li>Wird unaufgepumpt geliefert</li>    </ul>  </div></div>";
                     //x.Price = 29.90M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3268,8 +3260,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Gebundene Ausgabe";
 					x.FullDescription = "<p> Nach Der Schatten des Windes und Das Spiel des Engels der neue große Barcelona-Roman von Carlos Ruiz Zafón. - Barcelona, Weihnachten 1957. Der Buchhändler Daniel Sempere und sein Freund Fermín werden erneut in ein großes Abenteuer hineingezogen. In der Fortführung seiner Welterfolge nimmt Carlos Ruiz Zafón den Leser mit auf eine fesselnde Reise in sein Barcelona. Unheimlich und spannend, mit unglaublicher Sogkraft und viel Humor schildert der Roman die Geschichte von Fermín, der 'von den Toten auferstanden ist und den Schlüssel zur Zukunft hat'. Fermíns Lebensgeschichte verknüpft die Fäden von Der Schatten des Windes mit denen aus Das Spiel des Engels. Ein meisterliches Vexierspiel, das die Leser rund um die Welt in Bann hält. </p> <p> Produktinformation<br> Gebundene Ausgabe: 416 Seiten<br> Verlag: S. Fischer Verlag; Auflage: 1 (25. Oktober 2012)<br> Sprache: Deutsch<br> ISBN-10: 3100954025<br> ISBN-13: 978-3100954022<br> Originaltitel: El prisionero del cielo<br> Größe und/oder Gewicht: 21,4 x 13,6 x 4,4 cm<br> </p>";
 					x.Price = 16.99M;
-					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == TaxNameBooks).Single().Id;
+					x.DeliveryTime = _defaultDeliveryTime;
+					x.TaxCategoryId = _taxCategories[TaxNameBooks].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3288,8 +3280,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 				{
 					x.ShortDescription = "Mehr als 100 regionale Favoriten Grill-Rezepte getestet und und für den Freiluft-Koch perfektioniert";
 					x.Price = 16.99M;
-					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == TaxNameBooks).Single().Id;
+					x.DeliveryTime = _defaultDeliveryTime;
+					x.TaxCategoryId = _taxCategories[TaxNameBooks].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3307,8 +3299,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					//x.FullDescription = "<p> Nach Der Schatten des Windes und Das Spiel des Engels der neue große Barcelona-Roman von Carlos Ruiz Zafón. - Barcelona, Weihnachten 1957. Der Buchhändler Daniel Sempere und sein Freund Fermín werden erneut in ein großes Abenteuer hineingezogen. In der Fortführung seiner Welterfolge nimmt Carlos Ruiz Zafón den Leser mit auf eine fesselnde Reise in sein Barcelona. Unheimlich und spannend, mit unglaublicher Sogkraft und viel Humor schildert der Roman die Geschichte von Fermín, der 'von den Toten auferstanden ist und den Schlüssel zur Zukunft hat'. Fermíns Lebensgeschichte verknüpft die Fäden von Der Schatten des Windes mit denen aus Das Spiel des Engels. Ein meisterliches Vexierspiel, das die Leser rund um die Welt in Bann hält. </p> <p> Produktinformation<br> Gebundene Ausgabe: 416 Seiten<br> Verlag: S. Fischer Verlag; Auflage: 1 (25. Oktober 2012)<br> Sprache: Deutsch<br> ISBN-10: 3100954025<br> ISBN-13: 978-3100954022<br> Originaltitel: El prisionero del cielo<br> Größe und/oder Gewicht: 21,4 x 13,6 x 4,4 cm<br> </p>";
 
 					x.Price = 27.00M;
-					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == TaxNameBooks).Single().Id;
+					x.DeliveryTime = _defaultDeliveryTime;
+					x.TaxCategoryId = _taxCategories[TaxNameBooks].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3328,8 +3320,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Gebundene Ausgabe";
 					x.FullDescription = "<p> Für manche ist das Auto nur ein nützliches Fortbewegungsmittel.<br> Für alle anderen gibt es 'Autos - Das ultimative Handbuch' des Technik-Kenners Michael Dörflinger. Mit authentischen Bildern, allen wichtigen Daten und jeder Menge Infos präsentiert es die schnellsten, die innovativsten, die stärksten, die ungewöhnlichsten und die erfolgreichsten Exemplare der Automobilgeschichte. Ein umfassendes Handbuch zum gezielten Nachschlagen und ausgiebigen Schmökern. </p>";
 					x.Price = 14.95M;
-					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == TaxNameBooks).Single().Id;
+					x.DeliveryTime = _defaultDeliveryTime;
+					x.TaxCategoryId = _taxCategories[TaxNameBooks].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3346,8 +3338,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Gebundene Ausgabe";
 					x.FullDescription = "<p> Motorräder stehen wie kein anderes Fortbewegungsmittel für den großen Traum von Freiheit und Abenteuer. Dieser reich illustrierte Bildatlas porträtiert in brillanten Farbfotografien und informativen Texten die berühmtesten Zweiräder der Motorradgeschichte weltweit. Von der urtümlichen Dampfmaschine unter dem Fahrradsattel des ausgehenden 19. Jahrhunderts bis hin zu den kraftstrotzenden, mit modernster Elektronik und Computertechnik ausgestatteten Superbikes unserer Tage zeichnet er ein eindrucksvolles Bild der Entwicklung und Fabrikation edler und rasanter Motorräder. Dem Mythos des motorisierten Zweirads wird dabei ebenso nachgegangen wie dem Motorrad als modernem Lifestyle-Produkt unserer Zeit. Länderspezifische Besonderheiten, firmenhistorische Hintergrundinformationen sowie spannende Geschichten und Geschichtliches über die Menschen, die eine der wegweisendsten Erfindungen der letzten Jahrhunderte vorantrieben und weiterentwickelten, machen diesen umfangreichen Bildband zu einem unvergleichlichen Nachschlagewerk für jeden Motorradliebhaber und Technikbegeisterten. </p> <p> • Umfassende Geschichte der legendärsten Modelle aller bedeutenden Motorradhersteller weltweit<br> • Mit mehr als 350 brillanten Farbaufnahmen und fesselnden Hintergrundtexten<br> • Mit informativen Zeichnungen, beeindruckenden Detailaufnahmen und erläuternden Info-Kästen<br> </p> <p> Inhalt • 1817 1913: Die Anfänge einer Erfolgsgeschichte<br> • 1914 1945: Massenmobilität<br> • 1946 1990: Kampf um den Weltmarkt<br> • Ab 1991: Das moderne Motorrad<br> • Kultobjekt Motorrad: Von der Fortbewegung zum Lifestyle<br> </p>";
 					x.Price = 14.99M;
-					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == TaxNameBooks).Single().Id;
+					x.DeliveryTime = _defaultDeliveryTime;
+					x.TaxCategoryId = _taxCategories[TaxNameBooks].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3364,8 +3356,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Gebundene Ausgabe";
 					x.FullDescription = "<p> Marken, Modelle, Meilensteine<br> Das Auto - für manche ein Gebrauchsgegenstand, für andere Ausdruck des Lebensstils, Kultobjekt und große Leidenschaft. Nur wenige Erfindungen haben das Leben so verändert wie die des Automobils vor gut 125 Jahren - ein Grund mehr für diese umfangreiche Chronik. Das Auto-Buch lässt die Geschichte des Automobils lebendig werden. Es stellt über 1200 wichtige Modelle vor - von Karl Benz' Motorwagen über legendäre Kultautos bis zu modernsten Hybridfahrzeugen. Es erklärt die Meilensteine der Motortechnik und porträtiert die großen Marken und ihre Konstrukteure. Steckbriefe vom Kleinwagen bis zur Limousine und schicken Rennwagen jeder Epoche laden zum Stöbern und Entdecken ein. Der umfassendste und bestbebildert Bildband auf dem Markt - darüber freut sich jeder Autoliebhaber! </p> <p> Gebundene Ausgabe: 360 Seiten<br> Verlag: Dorling Kindersley Verlag (27. September 2012)<br> Sprache: Deutsch<br> ISBN-10: 3831022062<br> ISBN-13: 978-3831022069<br> Größe und/oder Gewicht: 30,6 x 25,8 x 2,8 cm<br> </p>";
 					x.Price = 29.95M;
-					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Ermäßigt").Single().Id;
+					x.DeliveryTime = _defaultDeliveryTime;
+					x.TaxCategoryId = _taxCategories["Ermäßigt"].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3382,8 +3374,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Spiralbindung";
 					x.FullDescription = "<p> Großformat: 48,5 x 34 cm.<br> Dieser imposante Bildkalender mit silberner Ringbindung begeistert mit eindrucksvollen Aufnahmen von exklusiven Sportwagen. Wer Autos nicht nur als reine Nutzfahrzeuge begreift, findet hier die begehrtesten Statussymbole überhaupt: Die schnellen Fahrzeuge sind wirkungsvoll auf den gestochen scharfen, farbintensiven Fotos in Szene gesetzt und vermitteln Freiheit, Geschwindigkeit, Stärke und höchste technische Vollkommenheit. </p> <p> Angefangen vom 450 PS-starken Maserati GranTurismo MC Stradale über den stilvoll-luxuriösen Aston Martin Virage Volante bis zu dem nur in geringen Stückzahlen produzierten Mosler MT900S Photon begleiten die schnellen Flitzer mit Stil und Eleganz durch die Monate. Neben dem Kalendarium lenkt ein weiteres Foto den Blick auf sehenswerte Details. Dazu gibt es die wesentlichen Informationen zu jedem Sportwagen in englischer Sprache. Nach Ablauf des Jahres sind die hochwertigen Fotos eingerahmt ein absoluter Blickfang an der Wand eines jeden Liebhabers schneller Autos. Auch als Geschenk ist dieser schöne Jahresbegleiter wunderbar geeignet. 12 Kalenderblätter, neutrales und dezent gehaltenes Kalendarium. Gedruckt auf Papier aus nachhaltiger Forstwirtschaft. </p> <p> Für Freunde von luxuriösen Oldtimern ebenfalls bei ALPHA EDITION erhältlich: der großformatige Classic Cars Bildkalender 2013: ISBN 9783840733376. </p> <p> Produktinformation<br> Spiralbindung: 14 Seiten<br> Verlag: Alpha Edition (1. Juni 2012)<br> Sprache: Deutsch<br> ISBN-10: 3840733383<br> ISBN-13: 978-3840733383<br> Größe und/oder Gewicht: 48,8 x 34,2 x 0,6 cm<br> </p>";
 					x.Price = 16.95M;
-					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Ermäßigt").Single().Id;
+					x.DeliveryTime = _defaultDeliveryTime;
+					x.TaxCategoryId = _taxCategories["Ermäßigt"].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3400,8 +3392,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Gebundene Ausgabe";
 					x.FullDescription = "<p> Moderne Reise-Enduros sind ideale Motorräder für eine Abenteuerreise. Ihre Technik ist jedoch komplex, ihr Gewicht beträchtlich. Das Fahrverhalten verändert sich je nach Zuladung und Strecke. Bevor die Reise losgeht, sollte man unbedingt ein Fahrtraining absolvieren. <br> Dieses hervorragend illustrierte Praxisbuch zeigt anhand vieler aussagekräftiger Serienfotos das richtige Fahren im Gelände in Sand und Schlamm, auf Schotter und Fels mit Gepäck und ohne. Neben dem Fahrtraining werden zahlreiche Informationen und Tipps zur Auswahl des richtigen Motorrades, zur Reiseplanung und zu praktischen Fragen unterwegs gegeben. </p>";
 					//x.Price = 44.90M;
-					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Ermäßigt").Single().Id;
+					x.DeliveryTime = _defaultDeliveryTime;
+					x.TaxCategoryId = _taxCategories["Ermäßigt"].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3420,8 +3412,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "Gebundene Ausgabe";
                     x.FullDescription = "<p>Der Gefangene des Himmels ist ein Roman des spanischen Autors Carlos Ruiz Zafón. </p><p>Er erschien 2011 bei Planeta S.A. in Barcelona unter dem Titel El prisionero del cielo.</p><p> Die deutsche Übersetzung stammt von Peter Schwaar und erschien 2012 im S. Fischer Verlag Frankfurt/Main. Der Roman ist der dritte Teil der Romantetralogie Friedhof der vergessenen Bücher, die noch die Bände Der Schatten des Windes, Das Spiel des Engels und Das Labyrinth der Lichter umfasst. Die wichtigsten Personen sind aus den beiden vorangegangenen Bänden bereits vertraut. Der dritte Roman beschreibt ihr Leben in den Jahren 1957–60 sowie in Rückblenden in den Jahren 1939–41./<p>";
                     //x.Price = 22.99M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Ermäßigt").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Ermäßigt"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3444,8 +3436,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Dieser 58 cm (23'')-All-in-One-PC mit Full HD, Windows 8 und leistungsstarken Intel® Core™ Prozessoren der dritten Generation ermöglicht eine praktische Interaktion mit einem Touchscreen.";
 					x.FullDescription = "<p>Extrem leistungsstarker All-in-One PC mit Windows 8, Intel® Core™ i7 Prozessor, riesiger 2TB Festplatte und Blu-Ray Laufwerk.  </p>  <p>  Intel® Core™ i7-3770S Prozessor ( 3,1 GHz, 6 MB Cache) Windows 8 64bit , Deutsch<br> 8 GB1 DDR3 SDRAM bei 1600 MHz<br> 2 TB-Serial ATA-Festplatte (7.200 U/min)<br> 1GB AMD Radeon HD 7650<br> </p>";
 					x.Price = 589.00M;
-					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+					x.DeliveryTime = _defaultDeliveryTime;
+					x.TaxCategoryId = _taxCategories["Normal"].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3463,8 +3455,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "SONDERANGEBOT: Zusätzliche 50 € Rabatt auf alle Dell OptiPlex Desktops ab einem Wert von 549 €. Online-Coupon: W8DWQ0ZRKTM1, gültig bis 4.12.2013";
 					x.FullDescription = "<p>Ebenfalls im Lieferumfang dieses Systems enthalten</p> <p> 1 Jahr Basis-Service - Vor-Ort-Service am nächsten Arbeitstag - kein Upgrade ausgewählt Keine Asset-Tag erforderlich</p> <p> Die folgenden Optionen sind in Ihren Auftrag aufgenommene Standardauswahlen.<br> German (QWERTZ) Dell KB212-B QuietKey USB Keyboard Black<br> X11301001<br> WINDOWS LIVE<br> OptiPlex™ Bestellung - Deutschland<br> OptiPlex™ Intel® Core™ i3 Aufkleber<br> Optische Software nicht erforderlich, Betriebssystemsoftware ausreichend<br> </p>";
 					x.Price = 419.00M;
-					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+					x.DeliveryTime = _defaultDeliveryTime;
+					x.TaxCategoryId = _taxCategories["Normal"].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3486,8 +3478,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Acer definiert mit dem Aspire One mobile Konnektivität neu, dem revolutionären Spaß und Power Netbook in der zierlichen 8.9\" Größe. ";
 					x.FullDescription = "<p> Von der Betätigung des Powerknopfes an, ist das Aspire One in nur wenigen Sekunden betriebsbereit. Sobald an, ist die Arbeit sehr einfach: ein Heimarbeitsplatz der die heute benötigten vier Bereiche abdeckt, verbunden bleiben, arbeiten, spielen und Ihr Leben unterwegs organisieren. Und der Aspire One ist etwas Besonderes, Sie können alles so individualisieren das es für Sie das Richtige ist. Schnell, einfach und unbeschreiblich schick. Ihr Style ist Ihre Unterschrift. Es ist Ihre Identität, Ihre Persönlichkeit und Ihre Visitenkarte. Ihr Style zeigt Ihrer Umwelt wie Sie sind und wie Sie Ihr Leben leben, online und offline. Das alles benötigen Sie, um Sie selbst zu sein. Ihr Style kommt in verschiedenen Farben, jede mit einem individuellen Charakter. Kleiner als ein durchschnittliches Tagebuch, das Aspire One bringt Freiheit in Ihre Hände. </p> <p> Allgemein<br> Betriebssystem: Microsoft Windows XP Home Edition, Linux Linpus Lite <br> Herstellergarantie: 1 Jahr Garantie<br> Systemtyp: Netbook<br> MPN: LU.S080B.069, LU.S050B.081, LU.S040B.079, LU.S090B.079, LU.S040B.198, LU.S040A.048, LU.S050A.050, LU.S050B.080, LU.S040B.078, 099915639, LU.S050A.074, LU.S360A.203, LU.S450B.030, LU.S050B.159<br> Speicher<br> RAM: 1 GB ( 1 x 512 MB + 512 MB (integriert) ), 1 GB<br> Max. unterstützter RAM-Speicher: 1.5 GB<br> Technologie: DDR2 SDRAM<br> Geschwindigkeit: 533 MHz   <br> Formfaktor: SO DIMM 200-polig  <br> Anz. Steckplätze: 1<br> Leere Steckplätze: 0, 1<br> Display<br> Typ: 22.6 cm ( 8.9\" )<br> Auflösung: 1024 x 600 ( WSVGA )<br> Breitwand: Ja<br> LCD-Hintergrundbeleuchtung: LED-Hintergrundbeleuchtung     <br> Farbunterstützung: 262.144 Farben, 24 Bit (16,7 Millionen Farben)<br> Besonderheiten: CrystalBrite<br> Batterie<br> Betriebszeit: Bis zu 7 Stunden, Bis zu 3 Stunden<br> Kapazität: 2600 mAh, 2200 mAh<br> Technologie: 6 Zellen Lithium-Ionen, 3 Zellen Lithium-Ionen, Lithium-Ionen<br> Herstellergarantie<br> Service & Support:<br> Reisegarantie - 1 Jahr, Begrenzte Garantie - 1 Jahr, Internationale Garantie - 1 Jahr<br> Begrenzte Garantie - 1 Jahr, Reisegarantie - 1 Jahr<br> Begrenzte Garantie - 1 Jahr, Begrenzte Garantie - 1 Jahr<br> Reisegarantie - 1 Jahr<br> Navigation<br>Empfänger: GPS<br></p>";
 					x.Price = 210.60M;
-					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+					x.DeliveryTime = _defaultDeliveryTime;
+					x.TaxCategoryId = _taxCategories["Normal"].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3512,8 +3504,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Das ist iPhone. Das iPhone macht vieles von dem, was das iPhone zum iPhone macht, noch einmal viel besser. Es hat fortschrittliche neue Kamerasysteme. Die beste Leistung und Batterielaufzeit, die ein iPhone je hatte. Beeindruckende Stereo-Lautsprecher. Das hellste iPhone Display. Mit noch mehr Farben. Schutz vor Spritzwasser. Und es sieht so großartig aus, wie es ist. Das ist das iPhone.";
 					x.FullDescription = "";
 					x.Price = 799.00M;
-					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+					x.DeliveryTime = _defaultDeliveryTime;
+					x.TaxCategoryId = _taxCategories["Normal"].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3533,8 +3525,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "Einfach. Kabellos. Magisch.Du nimmst sie aus dem Case und sie sind bereit für all deine Geräte. Du steckst sie in die Ohren und sie verbinden sich sofort. Du sprichst hinein und deine Stimme ist klar zu verstehen. Die neuen AirPods. Einfachheit und Technologie, verbunden wie nie zuvor. Für ein Ergebnis, das einfach magisch ist.";
                     x.FullDescription = "<p>  <br />  Die AirPods verändern für immer, wie du Kopfhörer verwendest. Wenn du deine AirPods aus dem Ladecase nimmst, schalten sie sich ein und verbinden sich mit deinem iPhone, iPad, Mac oder deiner Apple Watch.(1) Audio wird automatisch wiedergegeben, sobald du sie im Ohr hast, und pausiert, wenn du sie herausnimmst. Um die Lautstärke anzupassen, den Song zu wechseln, jemanden anzurufen oder dir den Weg sagen zu lassen, aktiviere einfach Siri mit einem Doppeltipp.  <br />  Die AirPods werden vom speziell entwickelten Apple W1 Chip gesteuert und erkennen durch optische Sensoren und einen Beschleunigungssensor, ob sie in deinem Ohr sind. Der W1 Chip leitet die Audiosignale automatisch weiter und aktiviert das Mikrofon – egal, ob du beide oder nur einen verwendest. Und wenn du gerade telefonierst oder mit Siri sprichst, filtert ein weiterer Beschleunigungsmesser mit wellenbündelnden Mikrofonen Hintergrundgeräusche heraus und hebt deine Stimme hervor. Da der extrem energieeffiziente W1 Chip die Batterieleistung so gut steuert, bieten die AirPods eine einzigartige Wiedergabedauer von bis zu 5 Std. pro Aufladung.(2) Und dank des Ladecase, das mehrere zusätzliche Aufladungen für insgesamt über 24 Std. Wiedergabe bietet, halten sie locker bei allem mit, was du so machst.(3) Schnell mal aufladen? Nach nur 15 Minuten im Ladecase kannst du 3 Stunden Musik hören.(4)</p><p><strong>Technische Daten</strong>  <br />  Bluetooth  <br />  Drahtlose Technologien  <br />  <strong>Gewicht</strong>  <br />  AirPods (jeweils): 4 g  <br />  Ladecase: 38 g  <br />  <strong>Abmessungen</strong>  <br />  AirPods (jeweils): 16,5 x 18,0 x 40,5 mm  <br />  Ladecase: 44,3 x 21,3 x 53,5 mm  <br />  <strong>Anschlüsse</strong>  <br />  AirPods: Bluetooth  <br />  Ladecase: Lightning Connector  <br />  <strong>AirPods Sensoren (jeweils):</strong>  <br />  Zwei Beamforming Mikrofone  <br />  Zwei optische Sensoren  <br />  Bewegungsbeschleunigungsmesser  <br />  Stimmbeschleunigungsmesser  <br />  <strong>Stromversorgung und Batterie</strong>  <br />  AirPods mit Ladecase: Mehr als 24 Stunden Wiedergabe, (3) bis zu 11 Stunden Sprechdauer(6)  <br />  AirPods (einzelne Ladung): Bis zu 5 Stunden Wiedergabe,(2) bis zu 2 Stunden Sprechdauer(5)  <br />  15 Minuten im Case entspricht 3 Stunden Wiedergabe(4) oder mehr als 1 Stunde Sprechdauer(7)</p><p></p>";
                     //x.Price = 799.00M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3554,8 +3546,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "Sparen Sie mit diesem Set 5%!";
                     x.FullDescription = "<p>Als Apple-Fan und Hipster ist es Ihr Grundbedürfnis immer die neusten Apple-Produkte zu haben.&nbsp;  <br />  Damit Sie nicht vier Mal im Jahr vor dem Apple-Store nächtigen müssen, abonnieren Sie einfach das <strong>Ultimate Apple Pro Hipster Set im Jahres Abo</strong>!</p><p></p>";
                     //x.Price = 799.00M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3575,8 +3567,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "Macht einfach Spaß. Lernen, spielen, surfen, kreativ werden. Mit dem iPad hast du ein unglaubliches Display, großartige Leistung und Apps für alles, was du gerne machst. Überall. Einfach. Magisch.";
                     x.FullDescription = "<ul>  <li>9,7'' Retina Display mit True Tone und Antireflex-Beschichtung (24,63 cm Diagonale)</li>  <li>A9X Chip der dritten Generation mit 64-Bit Desktoparchitektur</li>  <li>Touch ID Fingerabdrucksensor</li></ul>";
                     //x.Price = 799.00M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3627,8 +3619,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Die Transocean Chronograph interpretiert die sachliche Ästhetik klassischer Chronografen der 1950er- und 1960er-Jahre in einem entschieden zeitgenössischen Stil neu. ";
 					x.FullDescription = "<p><strong>Produktbeschreibung</strong></p> <ul> <li>Artikelnr.: 3528 C001.617.26.037.00</li> <li>Certina DS Podium Big Size Herrenchronograph</li> <li>Schweizer ETA Werk</li> <li>Silberfarbenes Edelstahlgeh&auml;use mit schwarzer L&uuml;nette</li> <li>Wei&szlig;es Zifferblatt mit silberfarbenen Ziffern und Indizes</li> <li>Schwarzes Lederarmband mit Faltschliesse</li> <li>Kratzfestes Saphirglas</li> <li>Datumsanzeige</li> <li>Tachymeterskala</li> <li>Chronograph mit Stoppfunktion</li> <li>Durchmesser: 42 mm</li> <li>Wasserdichtigkeits -Klassifizierung 10 Bar (nach ISO 2281): Perfekt zum Schwimmen und Schnorcheln</li> <li>100 Tage Niedrigpreisgarantie, bei uhrzeit.org kaufen Sie ohne Preisrisiko!</li> </ul>";
 					x.Price = 479.00M;
-					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+					x.DeliveryTime = _defaultDeliveryTime;
+					x.TaxCategoryId = _taxCategories["Normal"].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3649,8 +3641,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "Die Transocean Chronograph interpretiert die sachliche Ästhetik klassischer Chronografen der 1950er- und 1960er-Jahre in einem entschieden zeitgenössischen Stil neu. ";
                     x.FullDescription = "<p>Die Transocean Chronograph interpretiert die sachliche Ästhetik klassischer Chronografen der 1950er- und 1960er-Jahre in einem entschieden zeitgenössischen Stil neu. In ihrem auf das Wesentliche reduzierten, formschönen Gehäuse arbeitet das vollständig in den Breitling-Ateliers konzipierte und hergestellte Hochleistungskaliber 01.</p><p></p><table>  <tbody>    <tr>      <td style='width: 162px;'>Kaliber      </td>      <td style='width: 205px;'>Breitling 01 (Manufakturkaliber)      </td>    </tr>    <tr>      <td style='width: 162px;'>Werk      </td>      <td style='width: 205px;'>Mechanisch, Automatikaufzug      </td>    </tr>    <tr>      <td style='width: 162px;'>Gangreserve      </td>      <td style='width: 205px;'>Min. 70 Stunden      </td>    </tr>    <tr>      <td style='width: 162px;'>Chronograf      </td>      <td style='width: 205px;'>1/4-Sekunde, 30 Minuten, 12 Stunden      </td>    </tr>    <tr>      <td style='width: 162px;'>Halbschwingungen      </td>      <td style='width: 205px;'>28 800 a/h      </td>    </tr>    <tr>      <td style='width: 162px;'>Rubine      </td>      <td style='width: 205px;'>47 Rubine      </td>    </tr>    <tr>      <td style='width: 162px;'>Kalender      </td>      <td style='width: 205px;'>Fenster      </td>    </tr>  </tbody></table>";
                     //x.Price = 479.00M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3671,8 +3663,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "Der Strahlenkranz der Tissot T-Touch Expert Solar auf dem Zifferblatt sorgt einerseits dafür, dass die mit Super-LumiNova® beschichteten Indexe und Zeiger im Dunkeln leuchten und lädt andererseits den Akku der Uhr. Dieses Modell ist in jeder Beziehung ein Kraftpaket.";
                     x.FullDescription = "<p>Der T-Touch Expert Solar ist ein wichtiges neues Modell im Tissot Sortiment.</p><p>Tissots Pioniergeist ist das, was 1999 zur Schaffung von taktilen Uhren geführt hat.</p><p>Heute ist es der erste, der eine Touchscreen-Uhr mit Sonnenenergie präsentiert und seine Position als Marktführer in der taktilen Technologie in der Uhrmacherei bestätigt.</p><p>Extrem gut entworfen, zeigt es saubere Linien in Sport und zeitlose Stücke.</p><p>Angetrieben von Solarenergie mit 25 Features wie Wettervorhersage, Höhenmesser, zweite Zeitzone und Kompass ist es der perfekte Reisebegleiter.</p>";
                     //x.Price = 479.00M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3693,8 +3685,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.ShortDescription = "Der perfekte Begleiter für den Alltag! Die formschöne Automatikuhr besticht durch ansprechendes Design und ergänzt stilvoll nahezu jedes Outfit.";
                     x.FullDescription = "<p><strong>Seiko 5 Sport Automatikuhr SRPA49K1 SRPA49</strong></p><p></p><ul>  <li>Unidirektionale drehbare Lünette</li>  <li>Tages- und Datumsanzeige</li>  <li>Siehe durch Fall zurück</li>  <li>100M Wasserresistenz</li>  <li>Edelstahlgehäuse</li>  <li>Automatische Bewegung</li>  <li>24 Juwelen</li>  <li>Kaliber: 4R36</li></ul>";
                     //x.Price = 479.00M;
-                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
-                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.DeliveryTime = _defaultDeliveryTime;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                     x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
                     x.OrderMinimumQuantity = 1;
                     x.OrderMaximumQuantity = 10000;
@@ -3887,7 +3879,9 @@ namespace SmartStore.Web.Infrastructure.Installation
                 {
                     x.Name = "7 Werktage";
                 });
-        }
+
+			_defaultDeliveryTime = entities.First();
+		}
 
         protected override void Alter(IList<QuantityUnit> entities)
         {
@@ -3897,22 +3891,116 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter(0, x =>
                 {
                     x.Name = "Stück";
+                    x.NamePlural = "Stück";
                     x.Description = "Stück";
                 })
                 .Alter(1, x =>
                 {
                     x.Name = "Schachtel";
+                    x.NamePlural = "Schachteln";
                     x.Description = "Schachtel";
                 })
                 .Alter(2, x =>
                 {
                     x.Name = "Paket";
+                    x.NamePlural = "Pakete";
                     x.Description = "Paket";
                 })
                 .Alter(3, x =>
                 {
                     x.Name = "Palette";
+                    x.NamePlural = "Paletten";
                     x.Description = "Palette";
+                })
+                .Alter(4, x =>
+                {
+                    x.Name = "Einheit";
+                    x.NamePlural = "Einheiten";
+                    x.Description = "Einheit";
+                })
+                .Alter(5, x =>
+                {
+                    x.Name = "Sack";
+                    x.NamePlural = "Säcke";
+                    x.Description = "Sack";
+                })
+                .Alter(6, x =>
+                {
+                    x.Name = "Tüte";
+                    x.NamePlural = "Tüten";
+                    x.Description = "Tüte";
+                })
+                .Alter(7, x =>
+                {
+                    x.Name = "Dose";
+                    x.NamePlural = "Dosen";
+                    x.Description = "Dose";
+                })
+                .Alter(8, x =>
+                {
+                    x.Name = "Packung";
+                    x.NamePlural = "Packungen";
+                    x.Description = "Packung";
+                })
+                .Alter(9, x =>
+                {
+                    x.Name = "Stange";
+                    x.NamePlural = "Stangen";
+                    x.Description = "Stange";
+                })
+                .Alter(10, x =>
+                {
+                    x.Name = "Flasche";
+                    x.NamePlural = "Flaschen";
+                    x.Description = "Flasche";
+                })
+                .Alter(11, x =>
+                {
+                    x.Name = "Glas";
+                    x.NamePlural = "Gläser";
+                    x.Description = "Glas";
+                })
+                .Alter(12, x =>
+                {
+                    x.Name = "Bund";
+                    x.NamePlural = "Bünde";
+                    x.Description = "Bund";
+                })
+                .Alter(13, x =>
+                {
+                    x.Name = "Rolle";
+                    x.NamePlural = "Rollen";
+                    x.Description = "Rolle";
+                })
+                .Alter(14, x =>
+                {
+                    x.Name = "Becher";
+                    x.NamePlural = "Becher";
+                    x.Description = "Becher";
+                })
+                .Alter(15, x =>
+                {
+                    x.Name = "Bündel";
+                    x.NamePlural = "Bündel";
+                    x.Description = "Bündel";
+                })
+                .Alter(16, x =>
+                {
+                    x.Name = "Fass";
+                    x.NamePlural = "Fässer";
+                    x.Description = "Fass";
+                })
+                .Alter(17, x =>
+                {
+                    x.Name = "Set";
+                    x.NamePlural = "Sets";
+                    x.Description = "Set";
+                })
+                .Alter(18, x =>
+                {
+                    x.Name = "Eimer";
+                    x.NamePlural = "Eimer";
+                    x.Description = "Eimer";
                 });
         }
 
@@ -4101,7 +4189,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 
         protected override void Alter(IList<PollAnswer> entities)
         {
-            var defaultLanguage = base.DbContext.Set<DeliveryTime>().FirstOrDefault();
             base.Alter(entities);
 
             entities.WithKey(x => x.DisplayOrder)

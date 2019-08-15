@@ -348,6 +348,7 @@ namespace SmartStore.Services.Seo
 				name,
 				seoSettings == null ? false : seoSettings.ConvertNonWesternChars,
 				seoSettings == null ? false : seoSettings.AllowUnicodeCharsInUrls,
+                true,
 				seoSettings?.SeoNameCharConversion);
 		}
 

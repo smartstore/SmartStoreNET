@@ -19,6 +19,8 @@ namespace SmartStore.Web.Framework.UI
 		public int EntityId { get; set; }
         public string EntityName { get; set; }
 
+        public int MenuItemId { get; set; }
+
         /// <summary>
         /// The total count of contained elements (like the count of products within a category)
         /// </summary>

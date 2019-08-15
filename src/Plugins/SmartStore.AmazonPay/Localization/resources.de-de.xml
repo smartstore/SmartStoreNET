@@ -45,13 +45,19 @@ Textvorschläge:</div><ul>
 	</LocaleResource>
 	<LocaleResource Name="AuthorizationSoftDeclineMessage">
 		<Value>Leider wurde die Zahlung zu Ihrer Bestellung in unserem Onlineshop von Amazon Pay zurückgewiesen. Bitte wählen Sie eine andere Zahlart.</Value>
-	</LocaleResource>
+	</LocaleResource>    
 	<LocaleResource Name="AuthorizationHardDeclineMessage">
 		<Value>
 			<![CDATA[<p>Leider wurde die Zahlung zu Ihrer Bestellung in unserem Onlineshop von Amazon Pay zurückgewiesen. Bitte kontaktieren Sie uns.</p>]]>
 		</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonPaymentsReports">
+    <LocaleResource Name="AuthenticationStatusFailureMessage">
+        <Value>Beim Zahlungsvorgang ist ein Problem aufgetreten. Ihre Bestellung wurde nicht aufgegeben und Ihr Konto nicht belastet.</Value>
+    </LocaleResource>
+    <LocaleResource Name="AuthenticationStatusAbandonedMessage">
+        <Value>Mit dieser Zahlungsart ist ein Problem aufgetreten. Um Ihre Bestellung abzuschließen, wählen Sie bitte eine andere aus.</Value>
+    </LocaleResource>
+    <LocaleResource Name="AmazonPaymentsReports">
 		<Value>Amazon Pay meldet</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShippingToCountryNotAllowed">
@@ -111,7 +117,7 @@ Textvorschläge:</div><ul>
 		<Value>Mitteilungstyp;Mitteilungs ID;Autorisierungs ID;Buchungs ID;Rückerstatattungs ID;Referenz ID;Status;Statusaktualisierung;Gebühr;Autorisierungsbetrag;Buchungsbetrag;Erstattungsbetrag;Sofort buchen;Erstellt am;Verfällt am</Value>
 	</LocaleResource>
 
-	<LocaleResource Name="UseSandbox">
+    <LocaleResource Name="UseSandbox">
 		<Value>Sandbox benutzen</Value>
 	</LocaleResource>
 	<LocaleResource Name="UseSandbox.Hint">

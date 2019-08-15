@@ -1039,7 +1039,7 @@
 		<Value>Text prompt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes.CheckoutAttributes.Fields.TextPrompt.Hint">
-		<Value>Enter text prompt.</Value>
+		<Value>Specifies the prompt text.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes.CheckoutAttributes.Info">
 		<Value>Attribute info</Value>
@@ -1430,6 +1430,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.DisplayOrder.Hint">
 		<Value>Set the category's display order. 1 represents the top of the list.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Categories.Fields.ExternalLink">
+		<Value>External link</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Categories.Fields.ExternalLink.Hint">
+		<Value>Alternative external link for this category in the main menu and in category listings. For example, to a landing page that contains a back link to the category.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.FullName">
 		<Value>Complete name</Value>
@@ -7937,6 +7943,9 @@
 	<LocaleResource Name="Admin.ContentManagement.Menus.Item.Icon.Hint">
 		<Value>Specifies an optional icon.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Menus.Item.InvalidRouteValues">
+		<Value>Please check the link data. No link can be created on the basis of your input.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Menus.Item.LinkTarget">
 		<Value>Target</Value>
 	</LocaleResource>
@@ -8016,7 +8025,7 @@
 		<Value>Title</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Menus.Title.Hint">
-		<Value>Specifies the title.</Value>
+		<Value>Specifies the title. Please keep in mind that this title is not displayed in all design templates.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Menus.WidgetZone">
 		<Value>Widget zone</Value>
@@ -11241,7 +11250,7 @@
 		<Value>Package was uploaded and installed successfully.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Packaging.IsIncompatible">
-		<Value>The package is not compatible the current app version {0}. Please update SmartStore.NET or install another version of this package.</Value>
+		<Value>The package is not compatible the current app version {0}. Please update Smartstore.NET or install another version of this package.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Packaging.NotAPackage">
 		<Value>Package file is invalid. Please upload a 'SmartStore.*.nupkg' file.</Value>
@@ -13265,6 +13274,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Checkout.NoPaymentMethods">
 		<Value>No payment methods available</Value>
+	</LocaleResource>
+	<LocaleResource Name="Checkout.OrderCompletes">
+		<Value>Your order will be completed.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.OrderHasBeenReceived">
 		<Value>Your order has been received</Value>

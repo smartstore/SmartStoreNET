@@ -35,7 +35,10 @@ namespace SmartStore.Core.Plugins
 			foreach (var plugin in plugins)
 			{
 				_nameMap[plugin.SystemName] = plugin;
-				_assemblyMap[plugin.Assembly.Assembly] = plugin;
+				if (plugin.Assembly.Assembly != null)
+				{
+					_assemblyMap[plugin.Assembly.Assembly] = plugin;
+				}
 			}
 		}
 

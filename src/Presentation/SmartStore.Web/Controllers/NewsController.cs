@@ -30,7 +30,7 @@ using SmartStore.Web.Models.News;
 
 namespace SmartStore.Web.Controllers
 {
-    [RequireHttpsByConfigAttribute(SslRequirement.No)]
+    [RewriteUrl(SslRequirement.No)]
     public partial class NewsController : PublicControllerBase
     {
         #region Fields
@@ -226,7 +226,7 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-		[ActionName("rss"), Compress]
+		[ActionName("rss")]
         public ActionResult ListRss(int? languageId)
         {
 			languageId = languageId ?? _workContext.WorkingLanguage.Id;

@@ -136,6 +136,7 @@
                 if (sectionHeaderHasButtons === true) {
                     var y = $(this).scrollTop();
                     sectionHeader.toggleClass("sticky", y >= navbarHeight);
+                    $(document.body).toggleClass("sticky-header", y >= navbarHeight);
                 }
             }).trigger('resize');
         }

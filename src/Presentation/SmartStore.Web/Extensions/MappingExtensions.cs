@@ -22,10 +22,8 @@ namespace SmartStore.Web
 {
     public static class MappingExtensions
     {
-        // Category
         public static CategoryModel ToModel(this Category entity)
         {
-			// TODO: (mc) delete later
 			if (entity == null)
                 return null;
 
@@ -39,12 +37,12 @@ namespace SmartStore.Web
                 MetaKeywords = entity.GetLocalized(x => x.MetaKeywords),
                 MetaDescription = entity.GetLocalized(x => x.MetaDescription),
                 MetaTitle = entity.GetLocalized(x => x.MetaTitle),
-                SeName = entity.GetSeName(),
+                SeName = entity.GetSeName()
             };
+
             return model;
         }
 
-		// Manufacturer
 		public static ManufacturerModel ToModel(this Manufacturer entity)
         {
             if (entity == null)

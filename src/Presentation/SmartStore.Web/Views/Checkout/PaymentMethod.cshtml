@@ -127,7 +127,15 @@
 						el.remove();
 					}
 				});
-			}
+            }
+
+            function disableNextStepButton (disable) {
+                var btn = $('button.payment-method-next-step-button');
+                btn.prop('disabled', disable);
+                btn.find('.fa')
+                    .removeClass('fa-angle-right fa-spinner fa-spin')
+                    .addClass(disable ? 'fa-spinner fa-spin' : 'fa-angle-right');
+            };
 			
 			$('.checkout-data .opt-list-item').removeClass('active');
 
@@ -137,7 +145,9 @@
 			if (!radio.data("has-info") || !radio.data("lazy-info")) {
 				removeInfoPanels();
 				return;
-			}
+            }
+
+            disableNextStepButton(true);
 
 			$.ajax({
 				type: 'POST',
@@ -147,8 +157,7 @@
 				url: '@Url.Action("PaymentInfoAjax")',
 				data: { paymentMethodSystemName: systemName },
 				success: function (html) {
-					if (!html)
-						return;
+					if (!html) return;
 
 					var panel = item.find('.opt-info');
 
@@ -165,9 +174,10 @@
 				error: function (xhr, ajaxOptions, thrownError) {
 					console.error(thrownError);
 				},
-				complete: function () {
-					// remove all other info containers
-					removeInfoPanels();
+                complete: function () {
+                    disableNextStepButton(false);
+					// Remove all other info containers.
+                    removeInfoPanels();
 				}
 			});
 		});

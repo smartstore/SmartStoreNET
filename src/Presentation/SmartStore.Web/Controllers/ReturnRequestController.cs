@@ -121,7 +121,7 @@ namespace SmartStore.Web.Controllers
         
         #region Return requests
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
 		public ActionResult ReturnRequest(int id /* orderId */)
         {
 			var order = _orderService.GetOrderById(id);

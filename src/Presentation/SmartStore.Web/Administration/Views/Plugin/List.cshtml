@@ -51,20 +51,20 @@
 								</button>
 								<div class="dropdown-menu">
 									<a class="dropdown-item plugin-update-resources" href="@Url.Action("UpdateStringResources", new { systemName = plugin.SystemName })">
-										<i class="fa fa-language"></i>
+										<i class="fa fa-fw fa-language"></i>
 										<span>@T("Admin.Configuration.Plugins.Resources.Update")</span>
 									</a>
 									@if (plugin.LicenseLabel.LicenseUrl.HasValue())
 									{
 										<a class="dropdown-item plugin-licence" href="@plugin.LicenseLabel.LicenseUrl">
-											<i class="fa fa-key"></i>
+											<i class="fa fa-fw fa-key"></i>
 											<span>@T("Admin.Common.License")</span>
 										</a>
 									}
 									@if (plugin.ConfigurationUrl.HasValue())
 									{
 										<a class="dropdown-item plugin-configure" href="@plugin.ConfigurationUrl">
-											<i class="fa fa-cog"></i>
+											<i class="fa fa-fw fa-cog"></i>
 											<span>@T("Admin.Configuration.Plugins.Fields.Configure")</span>
 										</a>
 									}

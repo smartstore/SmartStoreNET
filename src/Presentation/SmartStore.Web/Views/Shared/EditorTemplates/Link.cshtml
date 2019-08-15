@@ -6,6 +6,7 @@
 }
 
 @{
+    var rtl = WorkContext.WorkingLanguage.Rtl;
     var rnd = CommonHelper.GenerateRandomInteger();
     var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
     var link = this.CommonServices.Resolve<ILinkResolver>().Resolve(Value);
@@ -29,7 +30,7 @@
 		    <button type="button" class="btn btn-secondary btn-icon dropdown-toggle" data-toggle="dropdown" title="">
 			    <i class="fa fa-link"></i>
 		    </button>
-            <div class="dropdown-menu">
+            <div class="dropdown-menu @(rtl ? "dropdown-menu-right" : "dropdown-menu-left")">
                 @foreach (var type in allowedTypes)
                 {
                     var info = type.GetLinkTypeInfo();

@@ -638,8 +638,10 @@ namespace SmartStore.Web.Controllers
 				"/Config$",
 				"/Settings$",
 				"/Login$",
-				"/Register$"
-            };
+				"/Login?*",
+				"/Register$",
+				"/Register?*"
+			};
 
 
             const string newLine = "\r\n"; //Environment.NewLine
@@ -852,9 +854,9 @@ namespace SmartStore.Web.Controllers
 			{
 				return RedirectToReferrer();
 			}
-			
-			return new EmptyResult();
-		}
+
+            return Json(new { Success = true });
+        }
 
 		[ChildActionOnly]
 		public ActionResult GdprConsent(bool isSmall)

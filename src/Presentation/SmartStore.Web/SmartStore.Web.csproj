@@ -546,10 +546,25 @@
     <Content Include="App_Data\Samples\category_giftcards.png" />
     <Content Include="App_Data\Samples\category_glasses.png" />
     <Content Include="App_Data\Samples\category_golf.jpg" />
+    <Content Include="App_Data\Samples\category_jackets.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Data\Samples\category_leather_jackets.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="App_Data\Samples\category_notebooks.png" />
+    <Content Include="App_Data\Samples\category_shoes.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="App_Data\Samples\category_soccer.png" />
     <Content Include="App_Data\Samples\category_sports.jpg" />
     <Content Include="App_Data\Samples\category_sunglasses.jpg" />
+    <Content Include="App_Data\Samples\category_tracksuit.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Data\Samples\category_trousers.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="App_Data\Samples\category_watches.png" />
     <Content Include="App_Data\Samples\company_logo.png" />
     <Content Include="App_Data\Samples\emblem_library.png" />
@@ -574,6 +589,15 @@
     <Content Include="App_Data\Samples\manufacturer_breitling.png" />
     <Content Include="App_Data\Samples\manufacturer_EA_Sports.png" />
     <Content Include="App_Data\Samples\manufacturer_festina.png" />
+    <Content Include="App_Data\Samples\manufacturer_Jack_Wolfskin.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Data\Samples\manufacturer_MeyAndEdlich.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Data\Samples\manufacturer_microsoft.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="App_Data\Samples\manufacturer_nike.png" />
     <Content Include="App_Data\Samples\manufacturer_oakley.png" />
     <Content Include="App_Data\Samples\manufacturer_puma.jpg" />
@@ -613,6 +637,9 @@
     <Content Include="App_Data\Samples\product_adidas-tango-pasadena-ball-red.jpg" />
     <Content Include="App_Data\Samples\product_adidas-tango-pasadena-ball-white.png" />
     <Content Include="App_Data\Samples\product_adidas-tango-pasadena-ball-yellow.jpg" />
+    <Content Include="App_Data\Samples\product_adidas_superstar_schuh_1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="App_Data\Samples\product_all-court-basketball.png" />
     <Content Include="App_Data\Samples\product_allstar_charcoal.jpg" />
     <Content Include="App_Data\Samples\product_allstar_converse.jpg" />
@@ -705,6 +732,9 @@
     <Content Include="App_Data\Samples\product_iphone-plus_silver.jpg" />
     <Content Include="App_Data\Samples\product_iphoneplus_1.jpg" />
     <Content Include="App_Data\Samples\product_iphoneplus_2.jpg" />
+    <Content Include="App_Data\Samples\product_jack_wolfskin_kanuka_point_1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="App_Data\Samples\product_ladies_jacket_black.jpg" />
     <Content Include="App_Data\Samples\product_ladies_jacket_blue.jpg" />
     <Content Include="App_Data\Samples\product_ladies_jacket_green.jpg" />
@@ -757,6 +787,12 @@
     <Content Include="App_Data\Samples\product_ultimate-apple-pro-hipster-bundle.jpg" />
     <Content Include="App_Data\Samples\product_watchseries2_1.jpg" />
     <Content Include="App_Data\Samples\product_watchseries2_2.jpg" />
+    <Content Include="App_Data\Samples\product_wolfskin_shoes_coogee_1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Data\Samples\product_xbox_one_s_1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="App_Data\Samples\ps4_bundle_minecraft.jpg" />
     <Content Include="App_Data\Samples\sony-ps3-white.jpg" />
     <Content Include="App_Data\Samples\sony-PS3AssassinsCreedBundle.jpg" />

@@ -19,8 +19,8 @@
         init: function (opt) {
             var self = this;
             var labelHtml = '<label class="smtree-label"><span class="smtree-text"></span></label>';
-            var noLeafHtml = '<div class="smtree-inner"><span class="smtree-expander"></span>' + labelHtml + '</div>';
-            var leafHtml = '<div class="smtree-inner">' + labelHtml + '</div>';
+            var noLeafHtml = '<div class="smtree-inner"><span class="smtree-expander-container smtree-expander"></span>' + labelHtml + '</div>';
+            var leafHtml = '<div class="smtree-inner"><span class="smtree-expander-container"></span>' + labelHtml + '</div>';
 
             // Set item HTML.
             $(self.element).find('li').each(function () {

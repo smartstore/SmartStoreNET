@@ -15,7 +15,7 @@
     ul {
         position: relative;
         list-style: none;
-        padding-left: 32px;
+        padding-left: 24px;
     }
 
     li {
@@ -26,10 +26,13 @@
         margin: 0;
     }
 
-    .smtree-expander {
+    .smtree-expander-container {
         display: inline-block;
-        cursor: pointer;
         min-width: 16px;
+    }
+
+    .smtree-expander {
+        cursor: pointer;
     }
 
     .smtree-vline {
@@ -102,14 +105,14 @@
             }
 
             ~ .smtree-state:after {
-                content: '\d7';
+                content: '\002D';
                 position: absolute;
                 display: block;
-                top: 11px;
-                left: 9px;
-                font: normal 20px helvetica, arial, sans-serif;
+                top: 10px;
+                left: 8px;
+                font: bold 20px helvetica, arial, sans-serif;
                 color: $danger;
-                transform: translate(-50%,-50%) scaleX(1.2);
+                transform: translate(-50%,-50%) scaleX(1.9);
             }
         }
         // State indicator 'indeterminate'.

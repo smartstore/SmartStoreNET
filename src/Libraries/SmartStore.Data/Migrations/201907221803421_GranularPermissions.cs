@@ -59,6 +59,9 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Common.Import", "Import", "Import");
 
             builder.AddOrUpdate("Permissions.DisplayName.DisplayPrice", "Display prices", "Preise anzeigen");
+            builder.AddOrUpdate("Permissions.DisplayName.AccessShop", "Access shop", "Zugang zum Shop");
+            builder.AddOrUpdate("Permissions.DisplayName.AccessShoppingCart", "Access shoppping cart", "Zugriff auf Warenkorb");
+            builder.AddOrUpdate("Permissions.DisplayName.AccessWishlist", "Access wishlist", "Zugriff auf Wunschliste");
         }
     }
 }

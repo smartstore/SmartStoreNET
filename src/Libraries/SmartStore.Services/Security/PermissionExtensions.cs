@@ -81,6 +81,17 @@ namespace SmartStore.Services.Security
                 { "export", "Common.Export" },
                 { "execute", "Admin.Common.Go" },
                 { "import", "Common.Import" },
+                { "system", "Admin.System" },
+                { "administrate", "Admin.Plugins.KnownGroup.Admin" },
+                { "log", "Admin.System.Log" },
+                { "message", "Admin.System.QueuedEmails" },
+                { "send", "Common.Send" },
+                { "maintenance", "Admin.System.Maintenance" },
+                { "schedule-task", "Admin.System.ScheduleTasks" },
+                { "url-record", "Admin.System.SeNames" },
+                { "cart", "ShoppingCart" },
+                { "checkout-attribute", "Admin.Catalog.Attributes.CheckoutAttributes" },
+                { "media", "Admin.Plugins.KnownGroup.Media" }
             };
 
             var tokenSeparator = new char[] { '.' };

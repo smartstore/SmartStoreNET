@@ -682,6 +682,10 @@
     <Compile Include="Migrations\201907032251575_CategoryExternalLink.Designer.cs">
       <DependentUpon>201907032251575_CategoryExternalLink.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201908150749388_V322Resources.cs" />
+    <Compile Include="Migrations\201908150749388_V322Resources.Designer.cs">
+      <DependentUpon>201908150749388_V322Resources.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -1220,6 +1224,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201907032251575_CategoryExternalLink.resx">
       <DependentUpon>201907032251575_CategoryExternalLink.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908150749388_V322Resources.resx">
+      <DependentUpon>201908150749388_V322Resources.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

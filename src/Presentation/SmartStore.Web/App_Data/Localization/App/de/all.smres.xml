@@ -1021,10 +1021,10 @@
 		<Value>Bestimmt die Steuerklasse des Attributes. Steuerklassen können zentral über Setup &gt; Steuern &gt; Steuerklassen verwaltet werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes.CheckoutAttributes.Fields.TextPrompt">
-		<Value>Anzeigename</Value>
+		<Value>Text Eingabeaufforderung</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes.CheckoutAttributes.Fields.TextPrompt.Hint">
-		<Value>Anzeigename</Value>
+		<Value>Legt den Text zur Eingabeaufforderung fest.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes.CheckoutAttributes.Info">
 		<Value>Allgemein</Value>
@@ -1391,6 +1391,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.DisplayOrder.Hint">
 		<Value>Legt die Anzeige-Priorität fest (1 steht bspw. für das erste Element in der Liste)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Categories.Fields.ExternalLink">
+		<Value>Externer Link</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Categories.Fields.ExternalLink.Hint">
+		<Value>Abweichender, externer Verweis für diese Warengruppe im Hauptmenü und in Warengruppen-Listings. Z.B. auf eine Landingpage, die einen Rückverweis auf die Warengruppe enthält.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.FullName">
 		<Value>Vollständiger Name</Value>
@@ -2741,7 +2747,7 @@
 		<Value>Ist erforderlich</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.TextPrompt">
-		<Value>Anzeigetext</Value>
+		<Value>Text Eingabeaufforderung</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values">
 		<Value>Optionen</Value>
@@ -7745,6 +7751,9 @@
 	<LocaleResource Name="Admin.ContentManagement.Menus.Item.Icon.Hint">
 		<Value>Legt ein optionales Icon fest.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Menus.Item.InvalidRouteValues">
+		<Value>Bitte überprüfen Sie die Link-Daten. Auf Basis Ihrer Eingabe kann kein Link erzeugt werden.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Menus.Item.LinkTarget">
 		<Value>Ziel</Value>
 	</LocaleResource>
@@ -7824,7 +7833,7 @@
 		<Value>Titel</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Menus.Title.Hint">
-		<Value>Legt den Titel fest.</Value>
+		<Value>Legt den Titel fest. Bitte beachten Sie, dass dieser Titel nicht bei allen Design-Vorlagen ausgegeben wird.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Menus.WidgetZone">
 		<Value>Widget Zone</Value>
@@ -10968,7 +10977,7 @@
 		<Value>Paket wurde hochgeladen und erfolgreich installiert.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Packaging.IsIncompatible">
-		<Value>Das Paket ist nicht kompatibel mit der aktuallen Programmversion {0}. Bitte aktualisieren Sie SmartStore.NET oder nutzen Sie eine andere, kompatible Paket-Version.</Value>
+		<Value>Das Paket ist nicht kompatibel mit der aktuellen Programmversion {0}. Bitte aktualisieren Sie Smartstore.NET oder nutzen Sie eine andere, kompatible Paket-Version.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Packaging.NotAPackage">
 		<Value>Paket-Datei ist ungültig. Bitte laden Sie eine 'SmartStore.*.nupkg' Datei hoch.</Value>
@@ -12911,6 +12920,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Checkout.NoPaymentMethods">
 		<Value>Es sind keine Zahlungsarten verfügbar.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Checkout.OrderCompletes">
+		<Value>Ihre Bestellung wird abgeschlossen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.OrderHasBeenReceived">
 		<Value>Ihre Bestellung ist angekommen</Value>

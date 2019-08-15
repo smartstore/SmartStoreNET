@@ -5,9 +5,11 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Localization;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Cms;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -17,15 +19,18 @@ namespace SmartStore.Web.Framework.UI
         private readonly ICommonServices _services;
         private readonly ICategoryService _categoryService;
         private readonly IPictureService _pictureService;
+        private readonly ILinkResolver _linkResolver;
 
         public CatalogMenuItemProvider(
             ICommonServices services,
             ICategoryService categoryService,
-            IPictureService pictureService)
+            IPictureService pictureService,
+            ILinkResolver linkResolver)
         {
             _services = services;
             _categoryService = categoryService;
             _pictureService = pictureService;
+            _linkResolver = linkResolver;
 
             T = NullLocalizer.Instance;
         }
@@ -47,6 +52,7 @@ namespace SmartStore.Web.Framework.UI
                 var tree = _categoryService.GetCategoryTree(0, false, _services.StoreContext.CurrentStore.Id);
                 var allPictureIds = tree.Flatten().Select(x => x.PictureId.GetValueOrDefault());
                 var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
+                var randomId = CommonHelper.GenerateRandomInteger(0, 1000000);
 
                 if (request.Entity.BeginGroup)
                 {
@@ -60,7 +66,7 @@ namespace SmartStore.Web.Framework.UI
                 // Do not append the root itself.
                 foreach (var child in tree.Children)
                 {
-                    AppendToParent(request, ConvertNode(request, child, allPictureInfos));
+                    AppendToParent(request, ConvertNode(request, child, allPictureInfos, ref randomId));
                 }
             }
 
@@ -80,30 +86,52 @@ namespace SmartStore.Web.Framework.UI
         private TreeNode<MenuItem> ConvertNode(
             MenuItemProviderRequest request,
             TreeNode<ICategoryNode> categoryNode,
-            IDictionary<int, PictureInfo> allPictureInfos)
+            IDictionary<int, PictureInfo> allPictureInfos,
+            ref int randomId)
         {
             var node = categoryNode.Value;
             var name = node.Id > 0 ? node.GetLocalized(x => x.Name) : null;
 
             var menuItem = new MenuItem
             {
+                Id = randomId++.ToString(),
                 EntityId = node.Id,
                 EntityName = nameof(Category),
+                MenuItemId = request.Entity.Id,
                 Text = name?.Value ?? node.Name,
                 Rtl = name?.CurrentLanguage?.Rtl ?? false,
                 BadgeText = node.Id > 0 ? node.GetLocalized(x => x.BadgeText) : null,
                 BadgeStyle = (BadgeStyle)node.BadgeStyle,
-                RouteName = node.Id > 0 ? "Category" : "HomePage"
+                RouteName = node.Id > 0 ? "Category" : "HomePage",
             };
 
-            if (node.Id > 0)
+            // Handle external link
+            if (node.ExternalLink.HasValue())
             {
-                menuItem.RouteValues.Add("SeName", node.GetSeName());
-
-                if (node.ParentCategoryId == 0 && node.Published && node.PictureId != null)
+                var link = _linkResolver.Resolve(node.ExternalLink);
+                if (link.Status == LinkStatus.Ok)
                 {
-                    menuItem.ImageId = node.PictureId;
+                    menuItem.Url = link.Link;
                 }
+            }
+
+            if (menuItem.Url.IsEmpty())
+            {
+                if (node.Id > 0)
+                {
+                    menuItem.RouteName = "Category";
+                    menuItem.RouteValues.Add("SeName", node.GetSeName());
+                }
+                else
+                {
+                    menuItem.RouteName = "HomePage";
+                }
+            }
+            
+            // Picture
+            if (node.Id > 0 && node.ParentCategoryId == 0 && node.Published && node.PictureId != null)
+            {
+                menuItem.ImageId = node.PictureId;
             }
 
             // Apply inheritable properties.
@@ -129,7 +157,7 @@ namespace SmartStore.Web.Framework.UI
             {
                 foreach (var childNode in categoryNode.Children)
                 {
-                    convertedNode.Append(ConvertNode(request, childNode, allPictureInfos));
+                    convertedNode.Append(ConvertNode(request, childNode, allPictureInfos, ref randomId));
                 }
             }
 

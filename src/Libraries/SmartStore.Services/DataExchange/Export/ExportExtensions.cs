@@ -140,11 +140,11 @@ namespace SmartStore.Services.DataExchange.Export
 
             if (profile.FileNamePattern.Contains("%Profile.SeoName%"))
             {
-                sb.Replace("%Profile.SeoName%", SeoHelper.GetSeName(profile.Name, true, false).Replace("/", "").Replace("-", ""));
+                sb.Replace("%Profile.SeoName%", SeoHelper.GetSeName(profile.Name, true, false, false).Replace("-", ""));
             }
             if (profile.FileNamePattern.Contains("%Store.SeoName%"))
             {
-                sb.Replace("%Store.SeoName%", profile.PerStore ? SeoHelper.GetSeName(store.Name, true, false) : "allstores");
+                sb.Replace("%Store.SeoName%", profile.PerStore ? SeoHelper.GetSeName(store.Name, true, false, true) : "allstores");
             }
             if (profile.FileNamePattern.Contains("%Random.Number%"))
             {

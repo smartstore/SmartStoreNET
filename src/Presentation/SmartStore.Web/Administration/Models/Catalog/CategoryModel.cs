@@ -39,6 +39,10 @@ namespace SmartStore.Admin.Models.Catalog
 		[AllowHtml]
 		public string BottomDescription { get; set; }
 
+        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.ExternalLink")]
+        [AllowHtml, UIHint("Link")]
+        public string ExternalLink { get; set; }
+
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.BadgeText")]
         [AllowHtml]
         public string BadgeText { get; set; }

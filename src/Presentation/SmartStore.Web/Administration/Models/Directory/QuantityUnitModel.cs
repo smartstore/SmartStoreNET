@@ -16,7 +16,10 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.QuantityUnit.Fields.Name")]
         public string Name { get; set; }
 
-		[SmartResourceDisplayName("Common.Description")]
+        [SmartResourceDisplayName("Admin.Configuration.QuantityUnit.Fields.NamePlural")]
+        public string NamePlural { get; set; }
+
+        [SmartResourceDisplayName("Common.Description")]
         [AllowHtml]
         public string Description { get; set; }
 
@@ -36,7 +39,10 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.QuantityUnit.Fields.Name")]
         public string Name { get; set; }
 
-		[SmartResourceDisplayName("Common.Description")]
+        [SmartResourceDisplayName("Admin.Configuration.QuantityUnit.Fields.NamePlural")]
+        public string NamePlural { get; set; }
+
+        [SmartResourceDisplayName("Common.Description")]
         public string Description { get; set; }
     }
 }

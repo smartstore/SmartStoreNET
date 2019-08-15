@@ -12,8 +12,7 @@ namespace SmartStore.Tests
 	{
 		public static void Measure(int cycles, string text, Action<int> action)
 		{
-			var watch = new Stopwatch();
-			watch.Start();
+			var watch = Stopwatch.StartNew();
 			for (int i = 0; i < cycles; i++)
 			{
 				action(i);

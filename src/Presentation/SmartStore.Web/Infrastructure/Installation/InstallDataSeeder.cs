@@ -107,10 +107,10 @@ namespace SmartStore.Web.Infrastructure.Installation
         private void PopulateLocaleResources() 
         {
             // Default primary language
-            var language = _ctx.Set<Language>().Single();
+            var language = _ctx.Set<Language>().First();
 
             var locPath = CommonHelper.MapPath("~/App_Data/Localization/App/" + language.LanguageCulture);
-            if (!System.IO.Directory.Exists(locPath))
+            if (!Directory.Exists(locPath))
             {
                 // Fallback to neutral language folder (de, en etc.)
 				locPath = CommonHelper.MapPath("~/App_Data/Localization/App/" + language.UniqueSeoCode);
@@ -122,7 +122,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			_ctx.DetachAll(false);
 
 			// save resources
-			foreach (var filePath in System.IO.Directory.EnumerateFiles(locPath, "*.smres.xml", SearchOption.TopDirectoryOnly))
+			foreach (var filePath in Directory.EnumerateFiles(locPath, "*.smres.xml", SearchOption.TopDirectoryOnly))
 			{
 				var doc = new XmlDocument();
 				doc.Load(filePath);
@@ -226,12 +226,11 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 		private void HashDefaultCustomerPassword(string defaultUserEmail, string defaultUserPassword)
         {
-			var adminUser = _ctx.Set<Customer>().Where(x => x.Email == _config.DefaultUserName).Single();
+            var encryptionService = new EncryptionService(new SecuritySettings());
+			var saltKey = encryptionService.CreateSaltKey(5);
+            var adminUser = _ctx.Set<Customer>().FirstOrDefault(x => x.Email == _config.DefaultUserName);
 
-			var encryptionService = new EncryptionService(new SecuritySettings());
-
-			string saltKey = encryptionService.CreateSaltKey(5);
-			adminUser.PasswordSalt = saltKey;
+            adminUser.PasswordSalt = saltKey;
 			adminUser.PasswordFormat = PasswordFormat.Hashed;
 			adminUser.Password = encryptionService.CreatePasswordHash(defaultUserPassword, saltKey, new CustomerSettings().HashedPasswordFormat);
 
@@ -260,7 +259,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				if (settingService != null)
 				{
 					var genericMethod = method.MakeGenericMethod(settingType);
-					int storeId = (settingType.Equals(typeof(ThemeSettings)) ? _defaultStoreId : 0);
+					int storeId = settingType.Equals(typeof(ThemeSettings)) ? _defaultStoreId : 0;
 
 					genericMethod.Invoke(settingService, new object[] { setting, storeId });
 				}
@@ -553,7 +552,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Populate("PopulateCountriesAndStates", PopulateCountriesAndStates);
 			Populate("PopulateShippingMethods", PopulateShippingMethods);
 			Populate("PopulateDeliveryTimes", _data.DeliveryTimes());
-			Populate("PopulateCustomersAndUsers", () => PopulateCustomersAndUsers(_config.DefaultUserName, _config.DefaultUserPassword));
+            Populate("PopulateQuantityUnits", _data.QuantityUnits());
+            Populate("PopulateCustomersAndUsers", () => PopulateCustomersAndUsers(_config.DefaultUserName, _config.DefaultUserPassword));
 			Populate("PopulateEmailAccounts", _data.EmailAccounts());
 			Populate("PopulateMessageTemplates", PopulateMessageTemplates);
 			Populate("PopulateTopics", PopulateTopics);

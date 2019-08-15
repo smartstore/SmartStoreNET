@@ -31,7 +31,7 @@ namespace SmartStore.Collections
 
 		public TrimmedBuffer(IEnumerable<T> collection, T newItem, int maxSize)
 		{
-			Guard.IsPositive(maxSize, nameof(maxSize));
+            Guard.IsTrue(maxSize >= 0, nameof(maxSize));
 
 			_maxSize = maxSize;
 			_list = new List<T>(collection ?? Enumerable.Empty<T>());

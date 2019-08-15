@@ -168,7 +168,7 @@ namespace SmartStore.Web.Controllers
 
 		#region Order details
 
-		[RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+		[RewriteUrl(SslRequirement.Yes)]
         public ActionResult Details(int id)
         {
 			var order = _orderService.GetOrderById(id);
@@ -183,7 +183,7 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-		[RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+		[RewriteUrl(SslRequirement.Yes)]
 		public ActionResult Print(int id, bool pdf = false)
 		{
 			var order = _orderService.GetOrderById(id);
@@ -330,7 +330,7 @@ namespace SmartStore.Web.Controllers
 			return RedirectToAction("Details", "Order", new { id = order.Id });
         }
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult ShipmentDetails(int id /* shipmentId */)
         {
             var shipment = _shipmentService.GetShipmentById(id);

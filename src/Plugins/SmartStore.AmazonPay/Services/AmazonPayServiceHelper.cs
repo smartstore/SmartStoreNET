@@ -441,11 +441,18 @@ namespace SmartStore.AmazonPay.Services
 			return str.Truncate(32);
 		}
 
-		private string LogError(IResponse response, bool isWarning = false)
+		private string LogError<T>(DelegateRequest<T> request, IResponse response, bool isWarning = false)
 		{
-			var message = $"{response.GetErrorMessage().NaIfEmpty()} ({response.GetErrorCode().NaIfEmpty()})";
+            var message = string.Empty;
 
-			Logger.Log(isWarning ? LogLevel.Warning : LogLevel.Error, new Exception(response.GetJson()), message, null);
+            if (response != null)
+            {
+                var requestMethod = request != null ? request.GetAction() : null;
+
+                message = $"{requestMethod.NaIfEmpty()} --> {response.GetErrorCode().NaIfEmpty()}. {response.GetErrorMessage().NaIfEmpty()}";
+
+                Logger.Log(isWarning ? LogLevel.Warning : LogLevel.Error, new Exception(response.GetJson()), message, null);
+            }
 
 			return message;
 		}
@@ -563,9 +570,10 @@ namespace SmartStore.AmazonPay.Services
 			Store store,
 			ProcessPaymentRequest request,
 			Client client,
-			bool synchronously)
+			bool synchronously,
+            out AuthorizeRequest authRequest)
 		{
-			var authRequest = new AuthorizeRequest()
+			authRequest = new AuthorizeRequest()
 				.WithMerchantId(settings.SellerId)
 				.WithAmazonOrderReferenceId(state.OrderReferenceId)
 				.WithAuthorizationReferenceId(GetRandomId("Authorize"))
@@ -578,19 +586,16 @@ namespace SmartStore.AmazonPay.Services
 				authRequest = authRequest.WithTransactionTimeout(0);
 			}
 
-			// See https://pay.amazon.com/de/developer/documentation/lpwa/201956480
-			//{"SandboxSimulation": {"State":"Declined", "ReasonCode":"InvalidPaymentMethod", "PaymentMethodUpdateTimeInMins":5}}
-			//{"SandboxSimulation": {"State":"Declined", "ReasonCode":"AmazonRejected"}}
-			//if (settings.UseSandbox)
-			//{
-			//	var authNote = _services.Settings.GetSettingByKey<string>("SmartStore.AmazonPay.SellerAuthorizationNote");
-			//	if (authNote.HasValue())
-			//	{
-			//		authRequest = authRequest.WithSellerAuthorizationNote(authNote);
-			//	}
-			//}
+            // See https://pay.amazon.com/de/developer/documentation/lpwa/201956480
+            //{"SandboxSimulation": {"State":"Declined", "ReasonCode":"InvalidPaymentMethod", "PaymentMethodUpdateTimeInMins":5}}
+            //{"SandboxSimulation": {"State":"Declined", "ReasonCode":"AmazonRejected"}}
+            //if (settings.UseSandbox)
+            //{
+            //	var authNote = _services.Settings.GetSettingByKey<string>("SmartStore.AmazonPay.SellerAuthorizationNote");
+            //  authRequest = authRequest.WithSellerAuthorizationNote(authNote);
+            //}
 
-			var authResponse = client.Authorize(authRequest);
+            var authResponse = client.Authorize(authRequest);
 			return authResponse;
 		}
 	}

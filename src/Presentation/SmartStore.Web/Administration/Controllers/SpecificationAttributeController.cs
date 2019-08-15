@@ -497,18 +497,14 @@ namespace SmartStore.Admin.Controllers
             return OptionList(specificationAttributeId, command);
         }
 
-        //ajax
+        // Ajax.
         [AcceptVerbs(HttpVerbs.Get)]
-        public ActionResult GetOptionsByAttributeId(string attributeId)
+        public ActionResult GetOptionsByAttributeId(int attributeId)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            // This action method gets called via an ajax request
-            if (string.IsNullOrEmpty(attributeId))
-                throw new ArgumentNullException("attributeId");
-
-            var options = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(Convert.ToInt32(attributeId));
+            var options = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(attributeId);
             var result = 
 				from o in options
 				select new { id = o.Id, name = o.Name, text = o.Name };

@@ -595,7 +595,7 @@ namespace SmartStore.Services.Search.Modelling
 
 		protected virtual bool GetValueFor<T>(CatalogSearchQuery query, string key, FacetGroupKind kind, out T value)
 		{
-			return GetValueFor(_catalogSearchQueryAliasMapper.GetCommonFacetAliasByGroupKind(kind, query.LanguageId ?? 0) ?? key, out value);
+			return TryGetValueFor(_catalogSearchQueryAliasMapper.GetCommonFacetAliasByGroupKind(kind, query.LanguageId ?? 0) ?? key, out value);
 		}
 	}
 }

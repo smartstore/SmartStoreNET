@@ -91,29 +91,43 @@ namespace SmartStore.Core
 			};
 
 			string result = null;
+            IPAddress ipv6 = null;
 
 			foreach (var key in keysToCheck)
 			{
 				var ipString = vars[key];
-				if (ipString.HasValue())
+
+				if (!string.IsNullOrEmpty(ipString))
 				{
 					var arrStrings = ipString.Split(',');
-					// Take the last entry
-					ipString = arrStrings[arrStrings.Length - 1].Trim();
 
-					IPAddress address;
-					if (IPAddress.TryParse(ipString, out address))
-					{
-						result = ipString;
-						break;
-					}
+                    // Iterate list from end to start (IPv6 addresses usually have precedence)
+                    for (int i = arrStrings.Length - 1; i >= 0; i--)
+                    {
+                        ipString = arrStrings[i].Trim();
+
+                        if (IPAddress.TryParse(ipString, out var address))
+                        {
+                            if (address.AddressFamily == AddressFamily.InterNetworkV6)
+                            {
+                                ipv6 = address;
+                            }
+                            else
+                            {
+                                result = ipString;
+                                break;
+                            }
+                        }
+                    }
 				}
 			}
 
-			if (result == "::1")
-			{
-				result = "127.0.0.1";
-			}
+            if (string.IsNullOrEmpty(result) && ipv6 != null)
+            {
+                result = ipv6.ToString() == "::1" 
+                    ? "127.0.0.1"
+                    : ipv6.MapToIPv4().ToString();
+            }
 
 			return (_ipAddress = result.EmptyNull());
 		}

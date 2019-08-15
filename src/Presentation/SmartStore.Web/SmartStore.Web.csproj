@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.3.0.5\build\JavaScriptEngineSwitcher.V8.Native.win-x86.props" Condition="Exists('..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.3.0.5\build\JavaScriptEngineSwitcher.V8.Native.win-x86.props')" />
   <Import Project="..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x64.3.0.5\build\JavaScriptEngineSwitcher.V8.Native.win-x64.props" Condition="Exists('..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x64.3.0.5\build\JavaScriptEngineSwitcher.V8.Native.win-x64.props')" />
   <Import Project="..\..\packages\LibSassHost.Native.win-x86.1.2.0\build\LibSassHost.Native.win-x86.props" Condition="Exists('..\..\packages\LibSassHost.Native.win-x86.1.2.0\build\LibSassHost.Native.win-x86.props')" />
   <Import Project="..\..\packages\LibSassHost.Native.win-x64.1.2.0\build\LibSassHost.Native.win-x64.props" Condition="Exists('..\..\packages\LibSassHost.Native.win-x64.1.2.0\build\LibSassHost.Native.win-x64.props')" />
   <Import Project="..\..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props')" />
-  <Import Project="..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -985,7 +985,6 @@
     <Content Include="Content\vendors\select2\js\select2.js" />
     <Content Include="Content\vendors\select2\js\select2.min.js" />
     <Content Include="Content\vendors\slick\slick.js" />
-    <Content Include="Content\vendors\slick\slick.min.js" />
     <Content Include="Content\vendors\x-editable\bootstrap-editable.css" />
     <Content Include="Content\vendors\x-editable\bootstrap-editable.js" />
     <Content Include="Content\vendors\drift\LICENSE" />
@@ -1048,14 +1047,15 @@
     <Content Include="Content\vendors\fa5\webfonts\fa-solid-900.woff2" />
     <Content Include="Content\shared\_fa.scss" />
     <Content Include="App_Data\icons.json" />
+    <Content Include="App_Data\GeoLite2\GeoLite2-Country.mmdb" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />
     <Content Include="Refresh.html" />
     <Content Include="Config\ConnectionStrings.config" />
     <Content Include="Config\SessionState.config" />
-    <Content Include="Content\vendors\jquery\jquery-3.2.1.js" />
-    <Content Include="Content\vendors\jquery\jquery-3.2.1.min.js" />
+    <Content Include="Content\vendors\jquery\jquery-3.4.1.js" />
+    <Content Include="Content\vendors\jquery\jquery-3.4.1.min.js" />
     <Content Include="Content\vendors\jquery\jquery-migrate-3.0.0.js" />
     <Content Include="Content\vendors\jquery\jquery-migrate-3.0.0.min.js" />
     <Content Include="Content\vendors\jquery-ui\core.js" />
@@ -1859,9 +1859,6 @@
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_Data\GeoIP.dat" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_GlobalResources\EditorLocalization.de.resx">

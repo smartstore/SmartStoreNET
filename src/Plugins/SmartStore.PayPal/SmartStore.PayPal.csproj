@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props')" />
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <ItemDefinitionGroup>
     <Reference>
@@ -126,6 +126,7 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Controllers\PayPalInstalmentsController.cs" />
     <Compile Include="Controllers\PayPalRestApiControllerBase.cs" />
     <Compile Include="Controllers\PayPalControllerBase.cs" />
     <Compile Include="Controllers\PayPalPlusController.cs" />
@@ -133,17 +134,23 @@
     <Compile Include="Controllers\PayPalDirectController.cs" />
     <Compile Include="Controllers\PayPalExpressController.cs" />
     <Compile Include="DependencyRegistrar.cs" />
+    <Compile Include="Events\InstalmentsMessageZoneEventConsumer.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
     <Compile Include="Filters\PayPalExpressCheckoutFilter.cs" />
     <Compile Include="Filters\PayPalExpressWidgetZoneFilter.cs" />
+    <Compile Include="Filters\PayPalFilter.cs" />
+    <Compile Include="Filters\PayPalInstalmentsCheckoutFilter.cs" />
     <Compile Include="Filters\PayPalPlusCheckoutFilter.cs" />
     <Compile Include="Filters\PayPalPlusWidgetZoneFilter.cs" />
     <Compile Include="Models\ApiConfigurationModels.cs" />
+    <Compile Include="Models\Congfiguration\PayPalInstalmentsConfigModel.cs" />
+    <Compile Include="Models\Congfiguration\PayPalPlusConfigurationModel.cs" />
     <Compile Include="Models\PayPalPlusCheckoutModel.cs" />
     <Compile Include="Models\PayPalStandardConfigurationModel.cs" />
     <Compile Include="Models\PayPalDirectPaymentInfoModel.cs" />
     <Compile Include="Models\PayPalExpressPaymentInfoModel.cs" />
     <Compile Include="Providers\PayPalExpressProvider.cs" />
+    <Compile Include="Providers\PayPalInstalmentsProvider.cs" />
     <Compile Include="Providers\PayPalPlusProvider.cs" />
     <Compile Include="Providers\PayPalRestApiProviderBase.cs" />
     <Compile Include="Providers\PayPalProviderBase.cs" />
@@ -151,7 +158,10 @@
     <Compile Include="Providers\PayPalStandardProvider.cs" />
     <Compile Include="Services\IPayPalService.cs" />
     <Compile Include="Services\PayPalEnums.cs" />
+    <Compile Include="Services\PayPalPaymentFilter.cs" />
+    <Compile Include="Services\PayPalService.Credit.cs" />
     <Compile Include="Services\PayPalService.cs" />
+    <Compile Include="Settings\PayPalInstalmentsSettings.cs" />
     <Compile Include="Settings\PayPalSettings.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -200,6 +210,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\checkout-button-en.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\instalments-sm.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\instalments.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\PayPalExpress\Configure.cshtml">
@@ -301,6 +317,36 @@
     <Content Include="Views\PayPalPlus\PaymentWallScripting.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\PayPalInstalments\Configure.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\Partials\ApiConfiguration.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PayPalInstalments\PaymentInfo.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PayPalInstalments\OrderDetails.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PayPalInstalments\OrderDetails.Print.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PayPalInstalments\OrderSummaryTotals.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PayPalInstalments\Promotion.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PayPalInstalments\PromotionPopup.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PayPalInstalments\Promotion.Content.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Views\PayPalInstalments\OrderDetails.liquid">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Web References\PayPalSvc\CoreComponentTypes.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -475,6 +521,7 @@
       <CachedSettingsPropName>SmartStore_Plugin_Payments_PayPalExpress_PayPalSvc_PayPalAPIInterfaceService</CachedSettingsPropName>
     </WebReferenceUrl>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

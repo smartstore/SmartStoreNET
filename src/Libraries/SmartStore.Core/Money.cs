@@ -135,8 +135,14 @@ namespace SmartStore
 
 		public override bool Equals(object obj)
 		{
-			return Equals(obj as Money);
-		}
+            // Prevent stack overflow.
+            if (obj != null)
+            {
+                return Equals(obj as Money);
+            }
+
+            return false;
+        }
 
 		bool IEquatable<Money>.Equals(Money other)
 		{

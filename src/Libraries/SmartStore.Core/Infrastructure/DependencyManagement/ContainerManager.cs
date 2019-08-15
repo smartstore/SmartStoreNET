@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Autofac;
@@ -26,7 +27,8 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
             get { return _container; }
         }
 
-		public T Resolve<T>(object key = null, ILifetimeScope scope = null) where T : class
+        [DebuggerStepThrough]
+        public T Resolve<T>(object key = null, ILifetimeScope scope = null) where T : class
         {
             if (key == null)
             {
@@ -36,22 +38,26 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 			return (scope ?? Scope()).ResolveKeyed<T>(key);
         }
 
-		public T ResolveNamed<T>(string name, ILifetimeScope scope = null) where T : class
+        [DebuggerStepThrough]
+        public T ResolveNamed<T>(string name, ILifetimeScope scope = null) where T : class
         {
 			return (scope ?? Scope()).ResolveNamed<T>(name);
         }
 
-		public object Resolve(Type type, ILifetimeScope scope = null)
+        [DebuggerStepThrough]
+        public object Resolve(Type type, ILifetimeScope scope = null)
         {
 			return (scope ?? Scope()).Resolve(type);
         }
 
-		public object ResolveNamed(string name, Type type, ILifetimeScope scope = null)
+        [DebuggerStepThrough]
+        public object ResolveNamed(string name, Type type, ILifetimeScope scope = null)
         {
 			return (scope ?? Scope()).ResolveNamed(name, type);
         }
 
-		public T[] ResolveAll<T>(object key = null, ILifetimeScope scope = null)
+        [DebuggerStepThrough]
+        public T[] ResolveAll<T>(object key = null, ILifetimeScope scope = null)
         {
             if (key == null)
             {
@@ -130,7 +136,8 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 			}
 		}
 
-		public bool TryResolve(Type serviceType, ILifetimeScope scope, out object instance)
+        [DebuggerStepThrough]
+        public bool TryResolve(Type serviceType, ILifetimeScope scope, out object instance)
         {
 			instance = null;
 
@@ -144,7 +151,8 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 			}	
         }
 
-		public bool TryResolve<T>(ILifetimeScope scope, out T instance)
+        [DebuggerStepThrough]
+        public bool TryResolve<T>(ILifetimeScope scope, out T instance)
 		{
 			instance = default(T);
 
@@ -178,6 +186,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 			return (scope ?? Scope()).InjectUnsetProperties(instance);
 		}
 
+        [DebuggerStepThrough]
         public ILifetimeScope Scope()
         {
 			var scope = _container.Resolve<ILifetimeScopeAccessor>().GetLifetimeScope(null);

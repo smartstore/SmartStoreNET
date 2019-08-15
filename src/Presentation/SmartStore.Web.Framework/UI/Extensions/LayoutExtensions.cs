@@ -13,13 +13,13 @@ namespace SmartStore.Web.Framework.UI
 
         public static void AddTitleParts(this HtmlHelper html, params string[] parts)
         {
-            var pageAssetsBuilder  = EngineContext.Current.Resolve<IPageAssetsBuilder>();
+            var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             pageAssetsBuilder.AddTitleParts(parts);
         }
 
         public static void AppendTitleParts(this HtmlHelper html, params string[] parts)
         {
-            var pageAssetsBuilder  = EngineContext.Current.Resolve<IPageAssetsBuilder>();
+            var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             pageAssetsBuilder.AppendTitleParts(parts);
         }
 
@@ -27,7 +27,7 @@ namespace SmartStore.Web.Framework.UI
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             html.AppendTitleParts(parts);
-            return MvcHtmlString.Create(html.Encode(pageAssetsBuilder.GenerateTitle(addDefaultTitle)));
+            return MvcHtmlString.Create(pageAssetsBuilder.GenerateTitle(addDefaultTitle));
         }
 
         #endregion
@@ -50,7 +50,7 @@ namespace SmartStore.Web.Framework.UI
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             html.AppendMetaDescriptionParts(parts);
-            return MvcHtmlString.Create(html.Encode(pageAssetsBuilder.GenerateMetaDescription()));
+            return MvcHtmlString.Create(pageAssetsBuilder.GenerateMetaDescription());
         }
 
         #endregion
@@ -73,7 +73,7 @@ namespace SmartStore.Web.Framework.UI
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             html.AppendMetaKeywordParts(parts);
-            return MvcHtmlString.Create(html.Encode(pageAssetsBuilder.GenerateMetaKeywords()));
+            return MvcHtmlString.Create(pageAssetsBuilder.GenerateMetaKeywords());
         }
 
 		#endregion
@@ -309,7 +309,7 @@ namespace SmartStore.Web.Framework.UI
         public static MvcHtmlString BodyCssClass(this HtmlHelper html)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
-            return MvcHtmlString.Create(html.Encode(pageAssetsBuilder.GenerateBodyCssClasses()));
+            return MvcHtmlString.Create(pageAssetsBuilder.GenerateBodyCssClasses());
         }
 
         public static void SetHtmlId(this HtmlHelper html, string htmlId)
@@ -321,7 +321,7 @@ namespace SmartStore.Web.Framework.UI
         public static MvcHtmlString HtmlId(this HtmlHelper html)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
-            var result = html.Encode(pageAssetsBuilder.GenerateHtmlId());
+            var result = pageAssetsBuilder.GenerateHtmlId();
 
             try
             {

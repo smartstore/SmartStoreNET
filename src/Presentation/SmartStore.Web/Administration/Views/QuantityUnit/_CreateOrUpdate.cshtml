@@ -1,8 +1,4 @@
 ﻿@model QuantityUnitModel
-@using Telerik.Web.Mvc.UI;
-@{
-    var cultures = System.Globalization.CultureInfo.GetCultures(System.Globalization.CultureTypes.SpecificCultures).ToList();
-}
 
 @Html.HiddenFor(model => model.Id)
 @(Html.LocalizedEditor<QuantityUnitModel, QuantityUnitLocalizedModel>("measure-unit-info-localized",
@@ -19,6 +15,15 @@
                 @Html.ValidationMessageFor(model => model.Locales[item].Name)
             </td>
         </tr>
+         <tr>
+             <td class="adminTitle">
+                 @Html.SmartLabelFor(model => Model.Locales[item].NamePlural)
+             </td>
+             <td class="adminData">
+                 @Html.EditorFor(model => Model.Locales[item].NamePlural)
+                 @Html.ValidationMessageFor(model => Model.Locales[item].NamePlural)
+             </td>
+         </tr>
          <tr>
              <td class="adminTitle">
                  @Html.SmartLabelFor(model => Model.Locales[item].Description)
@@ -38,6 +43,15 @@
             <td class="adminData">
                 @Html.EditorFor(model => model.Name)
                 @Html.ValidationMessageFor(model => model.Name)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.NamePlural)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.NamePlural)
+                @Html.ValidationMessageFor(model => model.NamePlural)
             </td>
         </tr>
          <tr>

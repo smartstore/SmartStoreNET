@@ -71,6 +71,7 @@ namespace SmartStore.Shipping.Controllers
             model.LimitMethodsToCreated = _shippingByTotalSettings.LimitMethodsToCreated;
             model.SmallQuantityThreshold = _shippingByTotalSettings.SmallQuantityThreshold;
             model.SmallQuantitySurcharge = _shippingByTotalSettings.SmallQuantitySurcharge;
+            model.CalculateTotalIncludingTax = _shippingByTotalSettings.CalculateTotalIncludingTax;
             model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
@@ -162,6 +163,7 @@ namespace SmartStore.Shipping.Controllers
             _shippingByTotalSettings.LimitMethodsToCreated = model.LimitMethodsToCreated;
             _shippingByTotalSettings.SmallQuantityThreshold = model.SmallQuantityThreshold;
             _shippingByTotalSettings.SmallQuantitySurcharge = model.SmallQuantitySurcharge;
+            _shippingByTotalSettings.CalculateTotalIncludingTax = model.CalculateTotalIncludingTax;
 
             _services.Settings.SaveSetting(_shippingByTotalSettings);
 

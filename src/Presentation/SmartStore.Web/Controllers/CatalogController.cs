@@ -98,7 +98,7 @@ namespace SmartStore.Web.Controllers
 
         #region Categories
 
-        [RequireHttpsByConfigAttribute(SslRequirement.No)]
+        [RewriteUrl(SslRequirement.No)]
         public ActionResult Category(int categoryId, CatalogSearchQuery query)
         {
 			var category = _categoryService.GetCategoryById(categoryId);
@@ -171,39 +171,7 @@ namespace SmartStore.Web.Controllers
 			if (!hideSubCategories)
 			{
 				var subCategories = _categoryService.GetAllCategoriesByParentCategoryId(categoryId);
-				var allPictureInfos = _pictureService.GetPictureInfos(subCategories.Select(x => x.PictureId.GetValueOrDefault()));
-
-				model.SubCategories = subCategories
-					.Select(x =>
-					{
-						var subCatName = x.GetLocalized(y => y.Name);
-						var subCatModel = new CategoryModel.SubCategoryModel
-						{
-							Id = x.Id,
-							Name = subCatName,
-							SeName = x.GetSeName(),
-						};
-
-						_services.DisplayControl.Announce(x);
-
-					    // Prepare picture model.
-					    var pictureInfo = allPictureInfos.Get(x.PictureId.GetValueOrDefault());
-
-						subCatModel.PictureModel = new PictureModel
-						{
-							PictureId = pictureInfo?.Id ?? 0,
-							Size = pictureSize,
-							ImageUrl = _pictureService.GetUrl(pictureInfo, pictureSize, fallbackType),
-							FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback),
-							FullSizeImageWidth = pictureInfo?.Width,
-							FullSizeImageHeight = pictureInfo?.Height,
-							Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), subCatName),
-							AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), subCatName)
-						};
-
-						return subCatModel;
-					})
-					.ToList();
+                model.SubCategories = _helper.MapCategorySummaryModel(subCategories, pictureSize);
 			}
 
 			// Featured Products.
@@ -267,47 +235,21 @@ namespace SmartStore.Web.Controllers
 				.Where(c => _aclService.Authorize(c) && _storeMappingService.Authorize(c))
 				.ToList();
 
-			int pictureSize = _mediaSettings.CategoryThumbPictureSize;
-			var allPictureInfos = _pictureService.GetPictureInfos(categories.Select(x => x.PictureId.GetValueOrDefault()));
-			var fallbackType = _catalogSettings.HideCategoryDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
+            var model = _helper.MapCategorySummaryModel(categories, _mediaSettings.CategoryThumbPictureSize);
 
-			var listModel = categories
-                .Select(x =>
-                {
-                    var catModel = x.ToModel();
+			if (model.Count == 0)
+            {
+                return new EmptyResult();
+            }			
 
-                    // Prepare picture model
-					var pictureInfo = allPictureInfos.Get(x.PictureId.GetValueOrDefault());
-
-					catModel.PictureModel = new PictureModel
-					{
-						PictureId = pictureInfo?.Id ?? 0,
-						Size = pictureSize,
-						ImageUrl = _pictureService.GetUrl(pictureInfo, pictureSize, fallbackType),
-						FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback),
-						FullSizeImageWidth = pictureInfo?.Width,
-						FullSizeImageHeight = pictureInfo?.Height,
-						Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), catModel.Name),
-						AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), catModel.Name)
-					};
-
-                    return catModel;
-                })
-                .ToList();
-
-			if (listModel.Count == 0)
-				return Content("");
-
-			_services.DisplayControl.AnnounceRange(categories);
-
-            return PartialView(listModel);
+            return PartialView(model);
         }
 
         #endregion
 
         #region Manufacturers
 
-        [RequireHttpsByConfigAttribute(SslRequirement.No)]
+        [RewriteUrl(SslRequirement.No)]
         public ActionResult Manufacturer(int manufacturerId, CatalogSearchQuery query)
         {
             var manufacturer = _manufacturerService.GetManufacturerById(manufacturerId);
@@ -411,7 +353,7 @@ namespace SmartStore.Web.Controllers
             return View(templateViewPath, model);
         }
 
-        [RequireHttpsByConfigAttribute(SslRequirement.No)]
+        [RewriteUrl(SslRequirement.No)]
         public ActionResult ManufacturerAll()
         {
             var model = new List<ManufacturerModel>();
@@ -420,14 +362,14 @@ namespace SmartStore.Web.Controllers
             var manufacturers = _manufacturerService.GetAllManufacturers(null, _services.StoreContext.CurrentStore.Id);
             foreach (var manufacturer in manufacturers)
             {
-                var modelMan = manufacturer.ToModel();
-
-                // prepare picture model
-                modelMan.PictureModel = _helper.PrepareManufacturerPictureModel(manufacturer, modelMan.Name);
-                model.Add(modelMan);
+                var manuModel = manufacturer.ToModel();
+                manuModel.PictureModel = _helper.PrepareManufacturerPictureModel(manufacturer, manuModel.Name);
+                model.Add(manuModel);
             }
 
 			_services.DisplayControl.AnnounceRange(manufacturers);
+
+            ViewBag.SortManufacturersAlphabetically = _catalogSettings.SortManufacturersAlphabetically;
 
             return View(model);
         }
@@ -435,15 +377,16 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult HomepageManufacturers()
         {
-            if (_catalogSettings.ManufacturerItemsToDisplayOnHomepage == 0 || _catalogSettings.ShowManufacturersOnHomepage == false)
-                return Content("");
+            if (_catalogSettings.ManufacturerItemsToDisplayOnHomepage > 0 && _catalogSettings.ShowManufacturersOnHomepage)
+            {
+                var model = _helper.PrepareManufacturerNavigationModel(_catalogSettings.ManufacturerItemsToDisplayOnHomepage);
+                if (model.Manufacturers.Any())
+                {
+                    return PartialView(model);
+                }
+            }
 
-            var model = _helper.PrepareManufacturerNavigationModel(_catalogSettings.ManufacturerItemsToDisplayOnHomepage - 1);
-
-            if (model.Manufacturers.Count == 0)
-                return Content("");
-
-            return PartialView(model);
+            return new EmptyResult();
         }
 
         #endregion
@@ -551,7 +494,7 @@ namespace SmartStore.Web.Controllers
 			return PartialView(cacheModel);
 		}
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		public ActionResult ProductsByTag(int productTagId, CatalogSearchQuery query)
 		{
 			var productTag = _productTagService.GetProductTagById(productTagId);
@@ -579,7 +522,7 @@ namespace SmartStore.Web.Controllers
 			return View(model);
 		}
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		public ActionResult ProductTagsAll()
 		{
 			var model = new PopularProductTagsModel();
@@ -608,7 +551,7 @@ namespace SmartStore.Web.Controllers
 
 		#region Recently[...]Products
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		public ActionResult RecentlyViewedProducts(CatalogSearchQuery query)
 		{
 			if (!_catalogSettings.RecentlyViewedProductsEnabled || _catalogSettings.RecentlyViewedProductsNumber <= 0)
@@ -647,7 +590,7 @@ namespace SmartStore.Web.Controllers
 			return PartialView(model);
 		}
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		public ActionResult RecentlyAddedProducts(CatalogSearchQuery query)
 		{
 			if (!_catalogSettings.RecentlyAddedProductsEnabled || _catalogSettings.RecentlyAddedProductsNumber <= 0)
@@ -670,7 +613,6 @@ namespace SmartStore.Web.Controllers
 			return View(model);
 		}
 
-		[Compress]
 		public ActionResult RecentlyAddedProductsRss(CatalogSearchQuery query)
 		{
 			// TODO: (mc) find a more prominent place for the "NewProducts" link (may be in main menu?)
@@ -829,7 +771,7 @@ namespace SmartStore.Web.Controllers
 			});
 		}
 
-        [RequireHttpsByConfigAttribute(SslRequirement.No)]
+        [RewriteUrl(SslRequirement.No)]
 		public ActionResult CompareProducts()
 		{
 			if (!_catalogSettings.CompareProductsEnabled)

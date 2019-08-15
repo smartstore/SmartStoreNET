@@ -114,7 +114,7 @@
             	.on(pre + 'send.' + ns, function (e, data) {
             	    var err = self._validate(data.files[0]);
             	    if (err) {
-            	        if (err == "acceptFileTypes") {
+            	        if (err === "acceptFileTypes") {
             	            alert("Wrong filetype: expected " + self.options.acceptFileTypes.source);
             	        }
             	        return false;
@@ -139,7 +139,7 @@
                     var elProgress = el.find('.fileupload-progress');
                     
                     if (!elProgress.hasClass("show")) {
-			            return
+                        return;
                     }
 
                     self._transition(elProgress)
@@ -226,10 +226,10 @@
 
 	// Wrapper & global init
 	$.fn.fileUploadWrapper = function (options) {
-		return this.each(function () {
+        return this.each(function () {
 			var el = $(this),
 				elRemove = el.find('.remove'),
-				elCancel = el.find('.cancel')
+				elCancel = el.find('.cancel'),
 				elFile = el.find('.fileinput-button'),
 				accept = _.isString(el.data('accept')) ? new RegExp('(\.|\/)(' + el.data('accept') + ')$', 'i') : undefined;
 
@@ -244,17 +244,16 @@
                 done: function (e, data) {
 					var result = data.result;
 					if (result.success) {
-
 						if (el.data('show-remove-after-upload')) {
-							elRemove.removeClass("hide");
+							elRemove.show();
 						}
 
 						var cnt = el.closest('.fileupload-container');
 						cnt.find('.fileupload-thumb').css('background-image', 'url("' + data.result.imageUrl + '")');
                         cnt.find('.hidden').val(data.result.pictureId).trigger('change');
 
-						elCancel.addClass("hide");
-						elFile.removeClass("hide");
+						elCancel.hide();
+						elFile.show();
 
 						if (options.onUploadCompleted) options.onUploadCompleted.apply(this, [e, el, data]);
 					}
@@ -272,7 +271,7 @@
 				}
 			};
 
-			options = $.extend({}, opts, options)
+            options = $.extend({}, opts, options);
 
 			el.fileupload(options);
 
@@ -282,7 +281,7 @@
 				var cnt = el.closest('.fileupload-container');
 				cnt.find('.fileupload-thumb').css('background-image', 'url("' + el.data('fallback-url') + '")');
 				cnt.find('.hidden').val(0).trigger('change');
-				$(this).addClass("hide");
+				$(this).hide();
 				if (options.onFileRemove) options.onFileRemove.apply(this, [e, el]);
 			});
 

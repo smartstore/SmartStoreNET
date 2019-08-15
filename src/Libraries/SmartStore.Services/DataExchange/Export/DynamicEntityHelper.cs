@@ -461,10 +461,12 @@ namespace SmartStore.Services.DataExchange.Export
             var translations = ctx.Translations[nameof(QuantityUnit)];
 
             result.Name = translations.GetValue(ctx.LanguageId, quantityUnit.Id, nameof(quantityUnit.Name)) ?? quantityUnit.Name;
-			result.Description = translations.GetValue(ctx.LanguageId, quantityUnit.Id, nameof(quantityUnit.Description)) ?? quantityUnit.Description;
+            result.NamePlural = translations.GetValue(ctx.LanguageId, quantityUnit.Id, nameof(quantityUnit.NamePlural)) ?? quantityUnit.NamePlural;
+            result.Description = translations.GetValue(ctx.LanguageId, quantityUnit.Id, nameof(quantityUnit.Description)) ?? quantityUnit.Description;
 
 			result._Localized = GetLocalized(ctx, translations, null, quantityUnit,
 				x => x.Name,
+                x => x.NamePlural,
 				x => x.Description);
 
 			return result;

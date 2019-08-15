@@ -1,0 +1,165 @@
+﻿@using SmartStore.PayPal.Models;
+@using SmartStore.Web.Framework;
+@model PayPalInstalmentsConfigModel
+@{
+	Layout = "";
+}
+
+<div class="plugin-actions">
+	<button type="submit" name="save" class="btn btn-warning" value="save">
+		<i class="fa fa-check"></i>
+		<span>@T("Admin.Common.Save")</span>
+	</button>
+</div>
+
+<div class="plugin-configuration">
+	<div>
+		<div class="alert alert-info alert-dismissible">
+			@Html.Raw(T("Plugins.Payments.PayPalInstalments.AdminInstruction"))
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+		</div>
+	</div>
+	<div>
+		<a href="https://www.paypal.com/de/webapps/mpp/installments" target="_blank">
+			<img src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/branding.png")" alt="PayPal" />
+		</a>
+	</div>
+</div>
+
+@{ Html.RenderAction("StoreScopeConfiguration", "Setting", new { area = "Admin" }); }
+
+@Html.ValidationSummary(false)
+
+@using (Html.BeginForm())
+{
+	@Html.HiddenFor(x => x.TransactMode)
+
+    @Html.Partial("ApiConfiguration")
+
+    <table class="adminContent">
+		<tr class="adminSeparator">
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">
+						@T("Plugins.SmartStore.PayPal.Promotion")
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductPagePromotion)
+			</td>
+			<td class="adminData">
+                @Html.SettingEditorFor(x => x.ProductPagePromotion, 
+                    @Html.DropDownListFor(x => x.ProductPagePromotion, Model.ProductPagePromotions, T("Common.Unspecified")))
+				@Html.ValidationMessageFor(x => x.ProductPagePromotion)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.CartPagePromotion)
+			</td>
+			<td class="adminData">
+                @Html.SettingEditorFor(x => x.CartPagePromotion, 
+                    @Html.DropDownListFor(x => x.CartPagePromotion, Model.CartPagePromotions, T("Common.Unspecified")))
+				@Html.ValidationMessageFor(x => x.CartPagePromotion)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.PaymentListPromotion)
+			</td>
+			<td class="adminData">
+                @Html.SettingEditorFor(x => x.PaymentListPromotion, 
+                    @Html.DropDownListFor(x => x.PaymentListPromotion, Model.PaymentListPromotions, T("Common.Unspecified")))
+				@Html.ValidationMessageFor(x => x.PaymentListPromotion)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Lender)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(x => x.Lender)
+				@Html.ValidationMessageFor(x => x.Lender)
+			</td>
+		</tr>
+
+		@*<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Promote)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(x => x.Promote, Html.CheckBoxFor(x => x.Promote, new { data_toggler_for = "#pnlPromote" }))
+				@Html.ValidationMessageFor(x => x.Promote)
+			</td>
+		</tr>
+        <tbody id="pnlPromote">
+		    <tr>
+			    <td class="adminTitle">
+				    @Html.SmartLabelFor(x => x.PromotionWidgetZones)
+			    </td>
+			    <td class="adminData">
+                    @Html.SettingEditorFor(x => x.PromotionWidgetZones, @Html.EditorFor(x => x.PromotionWidgetZones))
+				    @Html.ValidationMessageFor(x => x.PromotionWidgetZones)
+			    </td>
+		    </tr>
+		    <tr>
+			    <td class="adminTitle">
+				    @Html.SmartLabelFor(x => x.PromotionDisplayOrder)
+			    </td>
+			    <td class="adminData">
+				    @Html.SettingEditorFor(x => x.PromotionDisplayOrder)
+				    @Html.ValidationMessageFor(x => x.PromotionDisplayOrder)
+			    </td>
+		    </tr>
+        </tbody>*@
+
+		<tr class="adminSeparator">
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">
+						@T("Common.Misc")
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.FinancingMin)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(x => x.FinancingMin, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+				@Html.ValidationMessageFor(x => x.FinancingMin)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.FinancingMax)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(x => x.FinancingMax, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+				@Html.ValidationMessageFor(x => x.FinancingMax)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.AdditionalFee)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(x => x.AdditionalFee, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+				@Html.ValidationMessageFor(x => x.AdditionalFee)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.AdditionalFeePercentage)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(x => x.AdditionalFeePercentage)
+				@Html.ValidationMessageFor(x => x.AdditionalFeePercentage)
+			</td>
+		</tr>
+    </table>
+}

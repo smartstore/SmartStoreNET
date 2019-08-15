@@ -20,7 +20,7 @@ using SmartStore.Web.Models.Profile;
 
 namespace SmartStore.Web.Controllers
 {
-    [RequireHttpsByConfig(SslRequirement.No)]
+    [RewriteUrl(SslRequirement.No)]
     public partial class ProfileController : PublicControllerBase
     {
         private readonly IForumService _forumService;

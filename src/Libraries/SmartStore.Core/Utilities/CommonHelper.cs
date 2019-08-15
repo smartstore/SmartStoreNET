@@ -19,8 +19,20 @@ namespace SmartStore.Utilities
     public static partial class CommonHelper
     {
 		private static bool? _isDevEnvironment;
-		private readonly static Random _random = new Random();
+
+		[ThreadStatic]
+		private static Random _random;
 		
+		private static Random GetRandomizer()
+		{
+			if (_random == null)
+			{
+				_random = new Random();
+			}
+
+			return _random;
+		}
+
 		/// <summary>
         /// Generate random digit code
         /// </summary>
@@ -31,7 +43,7 @@ namespace SmartStore.Utilities
 			var buffer = new int[length];
 			for (int i = 0; i < length; ++i)
 			{
-				buffer[i] = _random.Next(10);
+				buffer[i] = GetRandomizer().Next(10);
 			}
 
 			return string.Join("", buffer);

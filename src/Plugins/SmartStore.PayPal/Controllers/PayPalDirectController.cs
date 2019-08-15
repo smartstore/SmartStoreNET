@@ -24,7 +24,6 @@ namespace SmartStore.PayPal.Controllers
 			IOrderProcessingService orderProcessingService,
 			PaymentSettings paymentSettings, 
 			HttpContextBase httpContext) : base(
-				PayPalDirectProvider.SystemName,
 				paymentService,
 				orderService,
 				orderProcessingService)
@@ -32,7 +31,9 @@ namespace SmartStore.PayPal.Controllers
 			_httpContext = httpContext;
 		}
 
-		[LoadSetting, AdminAuthorize, ChildActionOnly]
+        protected override string ProviderSystemName => PayPalDirectProvider.SystemName;
+
+        [LoadSetting, AdminAuthorize, ChildActionOnly]
 		public ActionResult Configure(PayPalDirectPaymentSettings settings, int storeScope)
 		{
             var model = new PayPalDirectConfigurationModel();

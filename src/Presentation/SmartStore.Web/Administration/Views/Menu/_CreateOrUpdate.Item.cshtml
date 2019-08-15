@@ -23,6 +23,7 @@
                 </div>
                 <div class="adminData">
                     @Html.Editor("Model", "MenuItem." + Model.ProviderName, "Model")
+                    @Html.ValidationMessageFor(model => model.Model)
                 </div>
             </div>
             <div class="adminRow">

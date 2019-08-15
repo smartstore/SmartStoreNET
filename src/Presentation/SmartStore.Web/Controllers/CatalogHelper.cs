@@ -563,7 +563,8 @@ namespace SmartStore.Web.Controllers
 						HelpfulNoTotal = review.HelpfulNoTotal,
 					},
 					WrittenOnStr = _dateTimeHelper.ConvertToUserTime(review.CreatedOnUtc, DateTimeKind.Utc).ToString("D"),
-				});
+                    WrittenOn = review.CreatedOnUtc
+                });
 			}
 
 			model.CanCurrentCustomerLeaveReview = _catalogSettings.AllowAnonymousUsersToReviewProduct || !_services.WorkContext.CurrentCustomer.IsGuest();

@@ -1,8 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 using FluentValidation;
 using FluentValidation.Attributes;
+using Newtonsoft.Json;
+using SmartStore.Collections;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -86,6 +90,29 @@ namespace SmartStore.Admin.Models.Menus
         public MenuItemRecordValidator(Localizer T)
         {
             RuleFor(x => x.ProviderName).NotEmpty();
+
+            RuleFor(x => x.Model)
+                .Must(x =>
+                {
+                    try
+                    {
+                        if (x.HasValue())
+                        {
+                            var node = new TreeNode<MenuItem>(new MenuItem());
+                            node.ApplyRouteData(x);
+
+                            var urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
+                            var result = node.Value.GenerateUrl(urlHelper);
+
+                            return result.HasValue();
+                        }
+                    }
+                    catch { }
+
+                    return true;
+                })
+                .When(x => x.ProviderName.IsCaseInsensitiveEqual("route"))
+                .WithMessage(T("Admin.ContentManagement.Menus.Item.InvalidRouteValues"));
         }
     }
 }

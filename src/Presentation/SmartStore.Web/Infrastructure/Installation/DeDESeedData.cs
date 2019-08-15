@@ -1963,25 +1963,26 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(settings);
 
+            var defaultDimensionId = DbContext.Set<MeasureDimension>().FirstOrDefault(x => x.SystemKeyword == "m")?.Id;
+            var defaultWeightId = DbContext.Set<MeasureWeight>().FirstOrDefault(x => x.SystemKeyword == "kg")?.Id;
+            var defaultCountryId = DbContext.Set<Country>().FirstOrDefault(x => x.TwoLetterIsoCode == "DE")?.Id;
+
             settings
                 .Alter<MeasureSettings>(x =>
                 {
-                    x.BaseDimensionId = base.DbContext.Set<MeasureDimension>().Where(m => m.SystemKeyword == "m").Single().Id;
-                    x.BaseWeightId = base.DbContext.Set<MeasureWeight>().Where(m => m.SystemKeyword == "kg").Single().Id;
+                    x.BaseDimensionId = defaultDimensionId ?? x.BaseDimensionId;
+                    x.BaseWeightId = defaultWeightId ?? x.BaseWeightId;
                 })
-
                 .Alter<SeoSettings>(x =>
                 {
                     x.DefaultTitle = "Mein Shop";
                 })
-
                 .Alter<OrderSettings>(x =>
                 {
                     x.ReturnRequestActions = "Reparatur,Ersatz,Gutschein";
                     x.ReturnRequestReasons = "Falschen Artikel erhalten,Falsch bestellt,Ware fehlerhaft bzw. defekt";
                     x.NumberOfDaysReturnRequestAvailable = 14;
                 })
-
                 .Alter<ShippingSettings>(x =>
                 {
                     x.EstimateShippingEnabled = false;
@@ -1992,10 +1993,10 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.TaxDisplayType = TaxDisplayType.IncludingTax;
                     x.DisplayTaxSuffix = true;
                     x.ShippingIsTaxable = true;
-                    x.ShippingPriceIncludesTax = false;
+                    x.ShippingPriceIncludesTax = true;
                     x.ShippingTaxClassId = _taxCategories["Normal"].Id;
                     x.EuVatEnabled = true;
-                    x.EuVatShopCountryId = base.DbContext.Set<Country>().Where(c => c.TwoLetterIsoCode == "DE").Single().Id;
+                    x.EuVatShopCountryId = defaultCountryId ?? x.EuVatShopCountryId;
                     x.EuVatAllowVatExemption = true;
                     x.EuVatUseWebService = false;
                     x.EuVatEmailAdminWhenNewVatSubmitted = true;

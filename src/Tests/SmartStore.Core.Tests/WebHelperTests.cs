@@ -48,8 +48,10 @@ namespace SmartStore.Core.Tests
         [Test]
         public void Can_get_storeLocation_without_ssl()
         {
-            var serverVariables = new NameValueCollection();
-            serverVariables.Add("HTTP_HOST", "www.example.com");
+            var serverVariables = new NameValueCollection
+            {
+                { "HTTP_HOST", "www.example.com" }
+            };
             _httpContext = new FakeHttpContext("~/", "GET", null, null, null, null, null, serverVariables);
             _webHelper = new WebHelper(_httpContext);
             _webHelper.GetStoreLocation(false).ShouldEqual("http://www.example.com/");

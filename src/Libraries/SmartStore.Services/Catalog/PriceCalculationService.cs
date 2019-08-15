@@ -598,7 +598,7 @@ namespace SmartStore.Services.Catalog
 				{
 					var itemPrice = GetFinalPrice(itemData.Item.Product, customer, itemData.AdditionalCharge, includeDiscounts, 1, itemData, context);
 
-					result = result + decimal.Multiply(itemPrice, itemData.Item.Quantity);
+					result += decimal.Multiply(itemPrice, itemData.Item.Quantity);
 				}
 
 				return result < decimal.Zero ? decimal.Zero : result;

@@ -39,6 +39,7 @@
 			.MinValue(GetMetadata<byte?>("min") ?? 0)
 			.MaxValue(GetMetadata<byte?>("max") ?? 255)
 			.IncrementStep(GetMetadata<byte?>("step") ?? 1)
+            .DecimalDigits(0)
 			.Value(Value)
 	)
 

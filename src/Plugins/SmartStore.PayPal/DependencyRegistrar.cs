@@ -8,7 +8,7 @@ using SmartStore.Web.Controllers;
 
 namespace SmartStore.PayPal
 {
-	public class DependencyRegistrar : IDependencyRegistrar
+    public class DependencyRegistrar : IDependencyRegistrar
 	{
 		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
 		{
@@ -27,7 +27,13 @@ namespace SmartStore.PayPal
 				builder.RegisterType<PayPalPlusWidgetZoneFilter>()
 					.AsActionFilterFor<CheckoutController>(x => x.Completed())
 					.InstancePerRequest();
-			}
+
+                builder.RegisterType<PayPalInstalmentsCheckoutFilter>()
+                    .AsActionFilterFor<CheckoutController>()
+                    .InstancePerRequest();
+
+                //builder.RegisterType<PayPalFilter>().AsActionFilterFor<PublicControllerBase>();
+            }
 		}
 
 		public int Order

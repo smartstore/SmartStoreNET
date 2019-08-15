@@ -28,7 +28,7 @@ namespace SmartStore.PayPal.Settings
 		public bool IpnChangesPaymentStatus { get; set; }
 	}
 
-    public abstract class PayPalApiSettingsBase : PayPalSettingsBase
+    public class PayPalApiSettingsBase : PayPalSettingsBase
 	{
 		public TransactMode TransactMode { get; set; }
 		public string ApiAccountName { get; set; }

@@ -50,10 +50,6 @@
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
-            builder.AddOrUpdate("Admin.Configuration.Languages.NoAvailableLanguagesFound",
-                "There were no other available languages found for version {0}. On <a href=\"https://translate.smartstore.com/\" target=\"_blank\">translate.smartstore.com</a> you will find more details about available resources.",
-                "Es wurden keine weiteren verfügbaren Sprachen für Version {0} gefunden. Auf <a href=\"https://translate.smartstore.com/\" target=\"_blank\">translate.smartstore.com</a> finden Sie weitere Details zu verfügbaren Ressourcen.");
-
             builder.AddOrUpdate("Checkout.OrderCompletes",
                 "Your order will be completed.",
                 "Ihre Bestellung wird abgeschlossen.");
@@ -142,7 +138,6 @@
             builder.AddOrUpdate("Admin.Rules.RuleOperator.NotContains", "Not contains", "Enthält nicht");
             builder.AddOrUpdate("Admin.Rules.RuleOperator.NotIn", "Not in", "Ist KEINE von");
             builder.AddOrUpdate("Admin.Rules.RuleOperator.StartsWith", "Starts with", "Beginnt mit");
-
         }
     }
 }

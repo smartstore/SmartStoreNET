@@ -32,11 +32,13 @@ using SmartStore.Core.Search;
 using SmartStore.Core.Themes;
 using SmartStore.Data;
 using SmartStore.Data.Caching;
+using SmartStore.Rules;
 using SmartStore.Services;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Authentication;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Blogs;
+using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Catalog.Importer;
@@ -120,7 +122,8 @@ namespace SmartStore.Web.Framework
             builder.RegisterModule(new TasksModule(typeFinder));
 			builder.RegisterModule(new DataExchangeModule(typeFinder));
 			builder.RegisterModule(new EventModule(typeFinder, pluginFinder));
-		}
+            builder.RegisterModule(new RuleModule(typeFinder));
+        }
 
         public int Order
         {
@@ -130,7 +133,7 @@ namespace SmartStore.Web.Framework
 
 	#region Modules
 
-	public class CoreModule : Module
+	internal class CoreModule : Module
 	{
 		private readonly ITypeFinder _typeFinder;
 
@@ -347,7 +350,7 @@ namespace SmartStore.Web.Framework
 		}
 	}
 
-	public class DbModule : Module
+    internal class DbModule : Module
 	{
 		private readonly ITypeFinder _typeFinder;
 
@@ -483,7 +486,7 @@ namespace SmartStore.Web.Framework
 		}
 	}
 
-	public class LocalizationModule : Module
+    internal class LocalizationModule : Module
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
@@ -541,7 +544,7 @@ namespace SmartStore.Web.Framework
 		}
 	}
 
-	public class CachingModule : Module
+    internal class CachingModule : Module
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
@@ -574,7 +577,7 @@ namespace SmartStore.Web.Framework
 		}
 	}
 
-	public class SearchModule : Module
+    internal class SearchModule : Module
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
@@ -597,7 +600,7 @@ namespace SmartStore.Web.Framework
         }
 	}
 
-	public class EventModule : Module
+    internal class EventModule : Module
 	{
 		private readonly ITypeFinder _typeFinder;
 		private readonly IPluginFinder _pluginFinder;
@@ -638,7 +641,7 @@ namespace SmartStore.Web.Framework
 		}
 	}
 
-	public class MessagingModule : Module
+    internal class MessagingModule : Module
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
@@ -659,7 +662,7 @@ namespace SmartStore.Web.Framework
 		}
 	}
 
-	public class WebModule : Module
+    internal class WebModule : Module
 	{
 		private readonly ITypeFinder _typeFinder;
 
@@ -723,7 +726,7 @@ namespace SmartStore.Web.Framework
 		}
 	}
 
-	public class WebApiModule : Module
+    internal class WebApiModule : Module
 	{
 		private readonly ITypeFinder _typeFinder;
 
@@ -789,7 +792,7 @@ namespace SmartStore.Web.Framework
 
 	}
 
-	public class UiModule : Module
+    internal class UiModule : Module
 	{
 		private readonly ITypeFinder _typeFinder;
 
@@ -817,7 +820,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<DefaultBreadcrumb>().As<IBreadcrumb>().InstancePerRequest();
 			builder.RegisterType<IconExplorer>().As<IIconExplorer>().SingleInstance();
 
-            // Menus.
+            // Menus
             builder.RegisterType<MenuService>().As<IMenuService>().InstancePerRequest();
             
             var menuResolverTypes = _typeFinder.FindClassesOfType<IMenuResolver>(ignoreInactivePlugins: true);
@@ -853,7 +856,7 @@ namespace SmartStore.Web.Framework
         }
 	}
 
-	public class IOModule : Module
+    internal class IOModule : Module
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
@@ -870,7 +873,7 @@ namespace SmartStore.Web.Framework
 		}
 	}
 
-	public class PackagingModule : Module
+    internal class PackagingModule : Module
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
@@ -881,7 +884,7 @@ namespace SmartStore.Web.Framework
 		}
 	}
 
-	public class ProvidersModule : Module
+    internal class ProvidersModule : Module
 	{
 		private readonly ITypeFinder _typeFinder;
 		private readonly IPluginFinder _pluginFinder;
@@ -1109,7 +1112,7 @@ namespace SmartStore.Web.Framework
 
 	}
 
-    public class TasksModule : Module
+    internal class TasksModule : Module
     {
         private readonly ITypeFinder _typeFinder;
 
@@ -1150,7 +1153,7 @@ namespace SmartStore.Web.Framework
         }
     }
 
-	public class DataExchangeModule : Module
+    internal class DataExchangeModule : Module
 	{
 		private readonly ITypeFinder _typeFinder;
 
@@ -1184,6 +1187,37 @@ namespace SmartStore.Web.Framework
 			});
 		}
 	}
+
+    internal class RuleModule : SmartStore.Rules.RuleModule
+    {
+        private readonly ITypeFinder _typeFinder;
+
+        public RuleModule(ITypeFinder typeFinder)
+        {
+            _typeFinder = typeFinder;
+        }
+
+        protected override void Load(ContainerBuilder builder)
+        {
+            var cartRuleTypes = _typeFinder.FindClassesOfType<IRule>(ignoreInactivePlugins: true).ToList();
+            foreach (var ruleType in cartRuleTypes)
+            {
+                builder.RegisterType(ruleType).Keyed<IRule>(ruleType).InstancePerRequest();
+            }
+
+            builder.RegisterType<CartRuleProvider>()
+                .As<ICartRuleProvider>()
+                .Keyed<IRuleProvider>(RuleScope.Cart)
+                .InstancePerRequest();
+
+            builder.RegisterType<TargetGroupService>()
+                .As<ITargetGroupService>()
+                .Keyed<IRuleProvider>(RuleScope.Customer)
+                .InstancePerRequest();
+
+            base.Load(builder);
+        }
+    }
 
 	#endregion
 

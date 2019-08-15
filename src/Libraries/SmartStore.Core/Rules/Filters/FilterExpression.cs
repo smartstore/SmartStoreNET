@@ -21,29 +21,5 @@ namespace SmartStore.Rules.Filters
                 ExpressionHelper.CreateValueExpression(Descriptor.MemberExpression.Body.Type, this.Value), 
                 liftToNull);
         }
-
-        //public Expression CreateMemberExpression()
-        //{
-        //    Type memberType = _filter.Descriptor.Type.ClrType;
-        //    var memberName = _filter.Descriptor.Member;
-
-        //    var expression = CreateMemberAccessExpression(_parameterExpression, memberType, memberName);
-        //    if ((memberType != null) && (expression.Type.GetNonNullableType() != memberType.GetNonNullableType()))
-        //    {
-        //        expression = Expression.Convert(expression, memberType);
-        //    }
-
-        //    return expression;
-        //}
-
-        //private Expression CreateMemberAccessExpression(Expression instance, Type memberType, string memberName)
-        //{
-        //    foreach (var token in MemberAccessTokenizer.GetTokens(memberName))
-        //    {
-        //        instance = token.CreateMemberAccessExpression(_parameterExpression);
-        //    }
-
-        //    return instance;
-        //}
     }
 }

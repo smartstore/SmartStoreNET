@@ -754,8 +754,8 @@ namespace SmartStore.Services.Orders
                 var customerCurrencyRate = decimal.Zero;
                 if (!processPaymentRequest.IsRecurringPayment)
                 {
-					var currencyTmp = _currencyService.GetCurrencyById(customer.GetAttribute<int>(SystemCustomerAttributeNames.CurrencyId, processPaymentRequest.StoreId));
-					var customerCurrency = (currencyTmp != null && currencyTmp.Published) ? currencyTmp : _workContext.WorkingCurrency;
+                    var currencyTmp = _currencyService.GetCurrencyById(customer.GetAttribute<int>(SystemCustomerAttributeNames.CurrencyId, processPaymentRequest.StoreId));
+                    var customerCurrency = (currencyTmp != null && currencyTmp.Published) ? currencyTmp : _workContext.WorkingCurrency;
                     customerCurrencyCode = customerCurrency.CurrencyCode;
 
                     var primaryStoreCurrency = _storeContext.CurrentStore.PrimaryStoreCurrency;
@@ -771,8 +771,8 @@ namespace SmartStore.Services.Orders
                 Language customerLanguage = null;
                 if (!processPaymentRequest.IsRecurringPayment)
 				{
-					customerLanguage = _languageService.GetLanguageById(customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId, processPaymentRequest.StoreId));
-				}
+                    customerLanguage = _languageService.GetLanguageById(customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId, processPaymentRequest.StoreId));
+                }
 				else
 				{
 					customerLanguage = _languageService.GetLanguageById(initialOrder.CustomerLanguageId);
@@ -914,7 +914,7 @@ namespace SmartStore.Services.Orders
                     orderTaxTotal = _orderTotalCalculationService.GetTaxTotal(cart, out var taxRatesDictionary);
 
                     // VAT number.
-					var customerVatStatus = (VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId);
+					var customerVatStatus = (VatNumberStatus)customer.VatNumberStatusId;
 					if (_taxSettings.EuVatEnabled && customerVatStatus == VatNumberStatus.Valid)
 					{
 						vatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);

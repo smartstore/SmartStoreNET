@@ -15,19 +15,22 @@ namespace SmartStore.Services.Helpers
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly ISettingService _settingService;
         private readonly DateTimeSettings _dateTimeSettings;
+        private readonly ICustomerService _customerService;
 
-		private TimeZoneInfo _cachedUserTimeZone;
+        private TimeZoneInfo _cachedUserTimeZone;
 
         public DateTimeHelper(
 			IWorkContext workContext,
 			IGenericAttributeService genericAttributeService,
             ISettingService settingService, 
-            DateTimeSettings dateTimeSettings)
+            DateTimeSettings dateTimeSettings,
+            ICustomerService customerService)
         {
             _workContext = workContext;
 			_genericAttributeService = genericAttributeService;
             _settingService = settingService;
             _dateTimeSettings = dateTimeSettings;
+            _customerService = customerService;
         }
 
         public virtual TimeZoneInfo FindTimeZoneById(string id)
@@ -98,7 +101,7 @@ namespace SmartStore.Services.Helpers
             {
                 string timeZoneId = string.Empty;
                 if (customer != null)
-					timeZoneId = customer.GetAttribute<string>(SystemCustomerAttributeNames.TimeZoneId, _genericAttributeService);
+					timeZoneId = customer.TimeZoneId;
 
                 try
                 {
@@ -172,7 +175,9 @@ namespace SmartStore.Services.Helpers
                     timeZoneId = value.Id;
                 }
 
-				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.TimeZoneId, timeZoneId);
+                _workContext.CurrentCustomer.TimeZoneId = timeZoneId;
+                _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+
 				_cachedUserTimeZone = null;
 			}
         }

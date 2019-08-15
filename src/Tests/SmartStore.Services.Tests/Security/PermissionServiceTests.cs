@@ -17,7 +17,8 @@ namespace SmartStore.Services.Tests.Security
     public class PermissionServiceTests
     {
         private IPermissionService2 _permissionService;
-        private IRepository<PermissionRecord> _permissionRecordRepository;
+        private IRepository<PermissionRecord> _permissionRepository;
+        private IRepository<PermissionRoleMapping> _permissionMappingRepository;
         private Lazy<ICustomerService> _customerService;
         private IWorkContext _workContext;
         private ICacheManager _cacheManager;
@@ -33,13 +34,15 @@ namespace SmartStore.Services.Tests.Security
         [SetUp]
         public virtual void Setup()
         {
-            _permissionRecordRepository = MockRepository.GenerateMock<IRepository<PermissionRecord>>();
+            _permissionRepository = MockRepository.GenerateMock<IRepository<PermissionRecord>>();
+            _permissionMappingRepository = MockRepository.GenerateMock<IRepository<PermissionRoleMapping>>();
             _customerService = MockRepository.GenerateMock<Lazy<ICustomerService>>();
             _workContext = MockRepository.GenerateMock<IWorkContext>();
             _cacheManager = NullCache.Instance;
 
             _permissionService = new PermissionService2(
-                _permissionRecordRepository,
+                _permissionRepository,
+                _permissionMappingRepository,
                 _customerService,
                 _workContext,
                 _cacheManager);
@@ -68,8 +71,8 @@ namespace SmartStore.Services.Tests.Security
 
             var permissions = new List<PermissionRecord> { pCatalog, pManu, pManuRead, pManuWrite, pCategory, pCategoryRead, pCategoryWrite };
 
-            _permissionRecordRepository.Expect(x => x.Table).Return(permissions.AsQueryable());
-            _permissionRecordRepository.Expect(x => x.TableUntracked).Return(permissions.AsQueryable());
+            _permissionRepository.Expect(x => x.Table).Return(permissions.AsQueryable());
+            _permissionRepository.Expect(x => x.TableUntracked).Return(permissions.AsQueryable());
         }
 
         [Test]

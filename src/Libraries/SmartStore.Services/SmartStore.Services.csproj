@@ -185,6 +185,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Blogs\BlogMessageFactoryExtensions.cs" />
+    <Compile Include="Cart\Rules\Impl\IPCountryRule.cs" />
     <Compile Include="Catalog\CategoryTreeChangeHandler.cs" />
     <Compile Include="Catalog\CatalogMessageFactoryExtensions.cs" />
     <Compile Include="Catalog\Extensions\ProductUrlHelper.cs" />
@@ -228,6 +229,9 @@
     <Compile Include="Customers\GdprTool.cs" />
     <Compile Include="Customers\IGdprTool.cs" />
     <Compile Include="Customers\Importer\CustomerImporter.cs" />
+    <Compile Include="Customers\Rules\ITargetGroupService.cs" />
+    <Compile Include="Customers\Rules\TargetGroupFilterDescriptor.cs" />
+    <Compile Include="Customers\Rules\TargetGroupService.cs" />
     <Compile Include="DataExchange\Export\Deployment\DataDeploymentResult.cs" />
     <Compile Include="DataExchange\Export\Deployment\PublicFolderPublisher.cs" />
     <Compile Include="DataExchange\Import\ColumnMapping\ColumnMap.cs" />
@@ -344,6 +348,18 @@
     <Compile Include="News\NewsMessageFactoryExtensions.cs" />
     <Compile Include="Orders\AddToCartContext.cs" />
     <Compile Include="Orders\OrderMessageFactoryExtensions.cs" />
+    <Compile Include="Cart\Rules\CartRuleContext.cs" />
+    <Compile Include="Cart\Rules\CartRuleDescriptor.cs" />
+    <Compile Include="Cart\Rules\CartRuleProvider.cs" />
+    <Compile Include="Cart\Rules\IRule.cs" />
+    <Compile Include="Cart\Rules\ListRuleBase.cs" />
+    <Compile Include="Cart\Rules\Impl\CartTotalRule.cs" />
+    <Compile Include="Cart\Rules\CompositeRule.cs" />
+    <Compile Include="Cart\Rules\Impl\CurrencyRule.cs" />
+    <Compile Include="Cart\Rules\Impl\CustomerRoleRule.cs" />
+    <Compile Include="Cart\Rules\Impl\LanguageRule.cs" />
+    <Compile Include="Cart\Rules\Impl\RuleSetRule.cs" />
+    <Compile Include="Cart\Rules\Impl\StoreRule.cs" />
     <Compile Include="Orders\ShoppingCartTotal.cs" />
     <Compile Include="Payments\CapturePaymentHook.cs" />
     <Compile Include="Payments\IPaymentMethodFilter.cs" />
@@ -720,6 +736,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Seo\Hooks\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Cart\Readme.txt">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

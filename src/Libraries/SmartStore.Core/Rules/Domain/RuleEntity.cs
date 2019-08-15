@@ -6,17 +6,19 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using SmartStore.Core;
 
 namespace SmartStore.Rules.Domain
 {
-    public partial class RuleEntity // : BaseEntity
+    public partial class RuleEntity : BaseEntity
     {
         [Required]
         public int RuleSetId { get; set; }
 
         [ForeignKey("RuleSetId")]
-        public virtual RuleSet RuleSet { get; set; }
+        [JsonIgnore]
+        public virtual RuleSetEntity RuleSet { get; set; }
 
         [DataMember]
         [Required, StringLength(100)]
@@ -35,12 +37,14 @@ namespace SmartStore.Rules.Domain
         [StringLength(400)]
         public string Value { get; set; }
 
-        //[DataMember]
-        //[StringLength(400)]
-        //public string UpperValue { get; set; }
-
         [DataMember]
         [Index("IX_PageBuilder_DisplayOrder")]
         public int DisplayOrder { get; set; }
+
+        [NotMapped]
+        public bool IsGroup
+        {
+            get => RuleType.IsCaseInsensitiveEqual("Group");
+        }
     }
 }

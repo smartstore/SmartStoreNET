@@ -1,0 +1,70 @@
+﻿@model IRuleExpressionGroup
+
+@using SmartStore.Rules
+@using SmartStore.Admin.Models.Rules
+
+<div class="ruleset" data-ruleset-id="@Model.Id" data-refrule-id="@Model.RefRuleId">
+    <div class="ruleset-header">
+        @*Wenn
+        <select class="form-control form-control-sm d-inline-block noskin w-auto mx-1 px-1">
+            <option value="And">Alle</option>
+            <option value="Or" selected>Mindestens eine</option>
+        </select>
+        der folgenden Bedingungen zutrifft*@
+
+        <div class="ruleset-operator d-flex align-items-center justify-content-stretch">
+            <span>Wenn mindestens</span>
+            <div class="btn-group" role="group">
+                <button type="button" 
+                        class="btn btn-secondary btn-sm btn-flat font-weight-medium dropdown-toggle mx-1 px-1 no-chevron"
+                        data-toggle="dropdown">
+                    <span class="logical-operator">@(Model.LogicalOperator == LogicalRuleOperator.And ? "ALLE" : "EINE")</span>
+                </button>
+                <div class="dropdown-menu logical-operator-chooser">
+                    <a href="#" class="dropdown-item" data-value="And">ALLE</a>
+                    <a href="#" class="dropdown-item" data-value="Or">EINE</a>
+                </div>
+            </div>
+            <span>der folgenden Bedingungen zutrifft</span>
+        </div>
+    </div>
+
+    <div class="ruleset-body">
+        @foreach (var expression in Model.Expressions)
+        {
+            if (expression is IRuleExpressionGroup)
+            {
+                Html.RenderPartial("_RuleSet", expression);
+            }
+            else
+            {
+                Html.RenderPartial("_Rule", expression);
+            }
+        }
+    </div>
+
+    <div class="ruleset-footer">
+        <div class="row xs-gutters x-mt-3">
+            <div class="col-2">
+                <select class="form-control r-add-rule">
+                    <option>+ Bedingung hinzufügen</option>
+                    @foreach (var d in Model.Provider.RuleDescriptors)
+                    {
+                        <option value="@d.Name">@d.DisplayName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-10">
+                <button type="button" class="btn btn-outline-secondary btn-to-primary r-add-group">
+                    <span>Gruppe hinzufügen</span>
+                </button>
+                @if (Model.IsSubGroup)
+                {
+                    <button type="button" class="btn btn-outline-secondary btn-to-danger r-delete-group" style="float:right">
+                        <span>Gruppe löschen</span>
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -11,6 +11,7 @@ namespace SmartStore.Rules
         public readonly static RuleType Boolean = new RuleType("bool", typeof(bool));
         public readonly static RuleType Int = new RuleType("int", typeof(int));
         public readonly static RuleType Float = new RuleType("float", typeof(float));
+        public readonly static RuleType Money = new RuleType("money", typeof(decimal));
         public readonly static RuleType Guid = new RuleType("Guid", typeof(Guid));
         public readonly static RuleType DateTime = new RuleType("Date", typeof(DateTime));
         public readonly static RuleType NullableBoolean = new RuleType("bool?", typeof(bool?));
@@ -19,9 +20,9 @@ namespace SmartStore.Rules
         public readonly static RuleType NullableGuid = new RuleType("Guid?", typeof(Guid?));
         public readonly static RuleType NullableDateTime = new RuleType("Date?", typeof(DateTime?));
         public readonly static RuleType String = new RuleType("String", typeof(string));
-        public readonly static RuleType IntArray = new RuleType("IntArray", typeof(int[]));
-        public readonly static RuleType FloatArray = new RuleType("FloatArray", typeof(float[]));
-        public readonly static RuleType StringArray = new RuleType("StringArray", typeof(string[]));
+        public readonly static RuleType IntArray = new RuleType("IntArray", typeof(List<int>));
+        public readonly static RuleType FloatArray = new RuleType("FloatArray", typeof(List<float>));
+        public readonly static RuleType StringArray = new RuleType("StringArray", typeof(List<string>));
 
         private RuleType(string name, Type clrType)
         {
@@ -70,7 +71,7 @@ namespace SmartStore.Rules
                 yield return RuleOperator.NotContains;
             }
 
-            if (nonNullableType == typeof(int[]) || nonNullableType == typeof(float[]) || nonNullableType == typeof(string[]))
+            if (nonNullableType == typeof(List<int>) || nonNullableType == typeof(List<float>) || nonNullableType == typeof(List<string>))
             {
                 yield return RuleOperator.In;
                 yield return RuleOperator.NotIn;

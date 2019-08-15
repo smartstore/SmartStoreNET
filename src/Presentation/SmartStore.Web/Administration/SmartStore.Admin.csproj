@@ -218,6 +218,7 @@
     <Compile Include="Controllers\RecurringPaymentController.cs" />
     <Compile Include="Controllers\ReturnRequestController.cs" />
     <Compile Include="Controllers\RoxyFileManagerController.cs" />
+    <Compile Include="Controllers\RuleController.cs" />
     <Compile Include="Controllers\ScheduleTaskController.cs" />
     <Compile Include="Controllers\AdminModelHelper.cs" />
     <Compile Include="Controllers\SecurityController.cs" />
@@ -287,6 +288,8 @@
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Plugins\ProviderModelList.cs" />
     <Compile Include="Models\Polls\PollVotingRecordModel.cs" />
+    <Compile Include="Models\Rules\RuleSetModel.cs" />
+    <Compile Include="Models\Rules\RuleSetListModel.cs" />
     <Compile Include="Models\Settings\ForumSearchSettingsModel.cs" />
     <Compile Include="Models\Settings\PaymentSettingsModel.cs" />
     <Compile Include="Models\Settings\SearchSettingsModel.cs" />
@@ -602,6 +605,15 @@
     <Content Include="Views\Shared\EditorTemplates\AccessPermissions.cshtml" />
     <Content Include="Views\Shared\Menus\Admin.cshtml" />
     <Content Include="Views\Shared\Partials\FontAwesomeIcon.cshtml" />
+    <Content Include="Views\Rule\_CreateOrUpdate.cshtml" />
+    <Content Include="Views\Rule\Create.cshtml" />
+    <Content Include="Views\Rule\Edit.cshtml" />
+    <Content Include="Views\Rule\List.cshtml" />
+    <Content Include="Views\Rule\_RuleSet.cshtml" />
+    <Content Include="Views\Rule\_Rule.cshtml" />
+    <Content Include="Views\Rule\_Rule.Descriptor.cshtml" />
+    <Content Include="Views\Rule\_Rule.Operator.cshtml" />
+    <Content Include="Views\Rule\_Rule.Value.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

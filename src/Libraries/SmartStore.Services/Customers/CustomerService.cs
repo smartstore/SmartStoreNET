@@ -216,13 +216,13 @@ namespace SmartStore.Services.Customers
 			// Search by zip
 			if (q.ZipPostalCode.HasValue())
 			{
-				query = query
-					.Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
-					.Where(z => z.Attribute.KeyGroup == "Customer" &&
-						z.Attribute.Key == SystemCustomerAttributeNames.ZipPostalCode &&
-						z.Attribute.Value.Contains(q.ZipPostalCode))
-					.Select(z => z.Customer);
-			}
+                query = query
+                    .Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
+                    .Where(z => z.Attribute.KeyGroup == "Customer" &&
+                        z.Attribute.Key == SystemCustomerAttributeNames.ZipPostalCode &&
+                        z.Attribute.Value.Contains(q.ZipPostalCode))
+                    .Select(z => z.Customer);
+            }
 
             if (!isOrdered)
             {

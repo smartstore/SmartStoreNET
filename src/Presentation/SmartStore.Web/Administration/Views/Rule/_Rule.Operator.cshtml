@@ -1,0 +1,59 @@
+﻿@model IRuleExpression
+
+@using SmartStore.Rules
+
+@functions {
+    string GetOperatorLabel(RuleOperator op)
+    {
+        var map = new Dictionary<string, string>
+        {
+            { RuleOperator.Contains, T("Admin.Rules.RuleOperator.Contains") },
+            { RuleOperator.EndsWith, T("Admin.Rules.RuleOperator.EndsWith") },
+            { RuleOperator.GreaterThan, T("Admin.Rules.RuleOperator.GreaterThan") },
+            { RuleOperator.GreaterThanOrEqualTo, T("Admin.Rules.RuleOperator.GreaterThanOrEqualTo") },
+            { RuleOperator.In, T("Admin.Rules.RuleOperator.In") },
+            { RuleOperator.IsEmpty, T("Admin.Rules.RuleOperator.IsEmpty") },
+            { RuleOperator.IsEqualTo, T("Admin.Rules.RuleOperator.IsEqualTo") },
+            { RuleOperator.IsNotEmpty, T("Admin.Rules.RuleOperator.IsNotEmpty") },
+            { RuleOperator.IsNotEqualTo, T("Admin.Rules.RuleOperator.IsNotEqualTo") },
+            { RuleOperator.IsNotNull, T("Admin.Rules.RuleOperator.IsNotNull") },
+            { RuleOperator.IsNull, T("Admin.Rules.RuleOperator.IsNull") },
+            { RuleOperator.LessThan, T("Admin.Rules.RuleOperator.LessThan") },
+            { RuleOperator.LessThanOrEqualTo, T("Admin.Rules.RuleOperator.LessThanOrEqualTo") },
+            { RuleOperator.NotContains, T("Admin.Rules.RuleOperator.NotContains") },
+            { RuleOperator.NotIn, T("Admin.Rules.RuleOperator.NotIn") },
+            { RuleOperator.StartsWith, T("Admin.Rules.RuleOperator.StartsWith") }
+        };
+
+        return map.Get(op.Operator);
+    }
+}
+
+<div id="rule-operator@(Model.Id)" class="btn-group d-block rule-operator" role="group" data-value="@Model.Operator">
+    <button type="button" class="btn btn-info btn-block dropdown-toggle d-flex align-items-center justify-content-between" data-toggle="dropdown">
+        @GetOperatorLabel(Model.Operator)
+    </button>
+    <div class="dropdown-menu">
+        @foreach (var op in Model.Descriptor.Operators)
+        {
+            <a href="#" class="dropdown-item" data-value="@op.Operator">@GetOperatorLabel(op)</a>
+        }
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var operator = $("#rule-operator@(Model.Id)");
+        operator.find(".dropdown-item").on("click", function () {
+            operator.data("value", $(this).data("value"));
+            operator.find(".btn").text(GetOperatorLabel(operator.data("value")));
+        });
+    });
+</script>
+
+@*<select class="form-control">
+    @foreach (var op in Model.Descriptor.Operators)
+    {
+        <option value="@op.Operator" @(op == Model.Operator ? " selected" : "")>@op.Operator</option>
+    }
+</select>*@

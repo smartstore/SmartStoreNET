@@ -277,11 +277,7 @@ namespace SmartStore.Web.Controllers
             {
                 if (!customer.Deleted && customer.Active && !customer.IsSystemAccount)
                 {
-                    _genericAttributeService.SaveAttribute(
-                        customer,
-                        SystemCustomerAttributeNames.LastForumVisit,
-                        DateTime.UtcNow,
-                        Services.StoreContext.CurrentStore.Id);
+                    customer.LastForumVisit = DateTime.UtcNow;
                 }
             }
             catch (Exception ex)

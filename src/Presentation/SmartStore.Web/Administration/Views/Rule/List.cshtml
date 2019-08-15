@@ -1,0 +1,83 @@
+﻿@model RuleSetListModel
+
+@using SmartStore.Admin.Models.Rules
+@using Telerik.Web.Mvc.UI
+
+@{
+    ViewBag.Title = T("Admin.Configuration.RuleSets").Text;
+}
+
+<div class="section-header">
+    <div class="title">
+        <i class="far fa-clock"></i>
+        @T("Admin.Configuration.RuleSets")
+    </div>
+    <div class="options">
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+            <i class="fa fa-plus"></i>
+            <span>@T("Admin.Common.AddNew")</span>
+        </a>
+    </div>
+</div>
+
+<div class="row mt-3 grid-filter">
+    @if (Model.AvailableStores.Count > 1)
+    {
+        <div class="col-sm-6 col-xl-3 form-group">
+            @Html.SmartLabelFor(model => model.SearchStoreId)
+            @Html.DropDownList("SearchStoreId", Model.AvailableStores, T("Admin.Common.All"))
+        </div>
+    }
+    <div class="col-sm-6 col-xl-3 form-group">
+        @Html.SmartLabelFor(model => model.SystemName)
+        @Html.TextBoxFor(model => Model.SystemName, new { @class = "form-control" })
+    </div>
+    <div class="col-sm-6 col-xl-3 form-group">
+        @Html.SmartLabelFor(model => model.Title)
+        @Html.TextBoxFor(model => Model.Title, new { @class = "form-control" })
+    </div>
+
+    <div class="col-sm-6 col-xl-3 ml-auto form-group">
+        @if (Model.AvailableStores.Count > 1)
+        {
+            @Html.SmartLabel(string.Empty, string.Empty)
+        }
+
+        <button type="submit" id="btnSearch" value="btnSearch" class="btn btn-warning btn-block">
+            <span>@T("Admin.Common.ApplyFilter")</span>
+        </button>
+    </div>
+</div>
+
+<div>
+    @(Html.Telerik().Grid<RuleSetModel>()
+        .Name("ruleset-grid")
+        .Columns(columns =>
+        {
+            columns.Bound(x => x.Name)
+                .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+            columns.Bound(x => x.Scope)
+                .Centered()
+                .Width(200);
+            columns.Bound(x => x.IsActive)
+                .ClientTemplate(@Html.SymbolForBool("IsActive"))
+                .Centered()
+                .Width(200);
+        })
+        .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Rule"))
+        .PreserveGridState()
+        .EnableCustomBinding(true)
+    )
+</div>
+
+<script>
+    $(function () {
+		// Search button.
+		$('#btnSearch').click(function () {
+            var grid = $('#ruleset-grid').data('tGrid');
+			grid.currentPage = 1; //new search. Set page size to 1
+			grid.ajaxRequest();
+			return false;
+		});
+	});
+</script>

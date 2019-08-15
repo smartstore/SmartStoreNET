@@ -1,0 +1,15 @@
+﻿@model IRuleExpression
+
+@using SmartStore.Rules
+
+<div class="input-group">
+    <input type="text" class="form-control rule-value" value="@Model.RawValue" />
+    <div class="input-group-append">
+        <button class="btn btn-light r-save-rule" type="button">
+            <i class="fa fa-save"></i>
+        </button>
+        <button class="btn btn-light btn-to-danger r-delete-rule" type="button">
+            <i class="fa fa-trash-alt"></i>
+        </button>
+    </div>
+</div>

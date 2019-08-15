@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Services.Localization;
@@ -72,8 +73,9 @@ namespace SmartStore.Web.Models.Catalog
         public ProductReviewHelpfulnessModel Helpfulness { get; set; }
 
         public string WrittenOnStr { get; set; }
-    }
 
+        public DateTime WrittenOn { get; set; }
+    }
 
     public partial class ProductReviewHelpfulnessModel : ModelBase
     {

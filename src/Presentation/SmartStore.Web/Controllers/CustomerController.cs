@@ -218,31 +218,33 @@ namespace SmartStore.Web.Controllers
 				var dateOfBirth = customer.BirthDate;
 				var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email, _storeContext.CurrentStore.Id);
 
-				model.VatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
+                model.Company = customer.Company;
                 model.Title = customer.Title;
                 model.FirstName = customer.FirstName;
                 model.LastName = customer.LastName;
-                model.Gender = customer.GetAttribute<string>(SystemCustomerAttributeNames.Gender);
+                model.Gender = customer.Gender;
+                model.CustomerNumber = customer.CustomerNumber;
+                model.Email = customer.Email;
+                model.Username = customer.Username;
+
                 if (dateOfBirth.HasValue)
                 {
                     model.DateOfBirthDay = dateOfBirth.Value.Day;
                     model.DateOfBirthMonth = dateOfBirth.Value.Month;
                     model.DateOfBirthYear = dateOfBirth.Value.Year;
                 }
-                model.Company = customer.Company;
+
+                model.VatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
                 model.StreetAddress = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress);
                 model.StreetAddress2 = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress2);
-                model.ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode);
                 model.City = customer.GetAttribute<string>(SystemCustomerAttributeNames.City);
+                model.ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode);
                 model.CountryId = customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId);
                 model.StateProvinceId = customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId);
                 model.Phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone);
                 model.Fax = customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax);
-                model.CustomerNumber = customer.CustomerNumber;
                 model.Newsletter = newsletter != null && newsletter.Active;
                 model.Signature = customer.GetAttribute<string>(SystemCustomerAttributeNames.Signature);
-                model.Email = customer.Email;
-                model.Username = customer.Username;
             }
             else
             {
@@ -289,8 +291,7 @@ namespace SmartStore.Web.Controllers
             }
 
             model.DisplayVatNumber = _taxSettings.EuVatEnabled;
-			model.VatNumberStatusNote = ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId))
-				 .GetLocalizedEnum(_localizationService, _workContext);
+			model.VatNumberStatusNote = ((VatNumberStatus)customer.VatNumberStatusId).GetLocalizedEnum(_localizationService, _workContext);
             model.GenderEnabled = _customerSettings.GenderEnabled;
             model.TitleEnabled = _customerSettings.TitleEnabled;
             model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
@@ -616,21 +617,18 @@ namespace SmartStore.Web.Controllers
                 {
                     // properties
 					if (_dateTimeSettings.AllowCustomersToSetTimeZone)
-					{
-						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
-					}
-
+                        customer.TimeZoneId = model.TimeZoneId;
+                    
                     // VAT number
                     if (_taxSettings.EuVatEnabled)
                     {
 						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.VatNumber, model.VatNumber);
 
 						var vatNumberStatus = _taxService.GetVatNumberStatus(model.VatNumber, out var vatName, out var vatAddress);
-						_genericAttributeService.SaveAttribute(customer,
-							SystemCustomerAttributeNames.VatNumberStatusId,
-							(int)vatNumberStatus);
+                        customer.VatNumberStatusId = (int)vatNumberStatus;
+
 						// send VAT number admin notification
-						if (!String.IsNullOrEmpty(model.VatNumber) && _taxSettings.EuVatEmailAdminWhenNewVatSubmitted)
+						if (model.VatNumber.HasValue() && _taxSettings.EuVatEmailAdminWhenNewVatSubmitted)
 							Services.MessageFactory.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
                     }
 
@@ -652,19 +650,18 @@ namespace SmartStore.Web.Controllers
 
 					if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.AutomaticallySet && customer.CustomerNumber.IsEmpty())
 						customer.CustomerNumber = customer.Id.Convert<string>();
-
 					if (_customerSettings.GenderEnabled)
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
+                        customer.Gender = customer.Gender;
+                    if (_customerSettings.ZipPostalCodeEnabled)
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.ZipPostalCode, model.ZipPostalCode);
+                    if (_customerSettings.CountryEnabled)
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CountryId, model.CountryId);
                     if (_customerSettings.StreetAddressEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StreetAddress, model.StreetAddress);
                     if (_customerSettings.StreetAddress2Enabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StreetAddress2, model.StreetAddress2);
-                    if (_customerSettings.ZipPostalCodeEnabled)
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.ZipPostalCode, model.ZipPostalCode);
                     if (_customerSettings.CityEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.City, model.City);
-                    if (_customerSettings.CountryEnabled)
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CountryId, model.CountryId);
                     if (_customerSettings.CountryEnabled && _customerSettings.StateProvinceEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StateProvinceId, model.StateProvinceId);
                     if (_customerSettings.PhoneEnabled)
@@ -713,23 +710,21 @@ namespace SmartStore.Web.Controllers
 
                     // Associated with external account (if possible)
                     TryAssociateAccountWithExternalAccount(customer);
-                    
+
                     // Insert default address (if possible)
                     var defaultAddress = new Address
                     {
-						Title = customer.Title,
-						FirstName = customer.FirstName,
+                        Title = customer.Title,
+                        FirstName = customer.FirstName,
                         LastName = customer.LastName,
                         Email = customer.Email,
                         Company = customer.Company,
-                        CountryId = customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId) > 0 ? 
-                            (int?)customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId) : null,
-                        StateProvinceId = customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId) > 0 ?
-                            (int?)customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId) : null,
+                        CountryId = customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId) > 0 ? (int?)customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId) : null,
+                        ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode),
+                        StateProvinceId = customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId) > 0 ? (int?)customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId) : null,
                         City = customer.GetAttribute<string>(SystemCustomerAttributeNames.City),
                         Address1 = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress),
                         Address2 = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress2),
-                        ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode),
                         PhoneNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone),
                         FaxNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax),
                         CreatedOnUtc = customer.CreatedOnUtc
@@ -1042,7 +1037,7 @@ namespace SmartStore.Web.Controllers
 						if (prevVatNumber != model.VatNumber)
 						{
 							var vatNumberStatus = _taxService.GetVatNumberStatus(model.VatNumber, out var vatName, out var vatAddress);
-							_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.VatNumberStatusId, (int)vatNumberStatus);
+                            customer.VatNumberStatusId = (int)vatNumberStatus;
 
                             // Send VAT number admin notification.
                             if (model.VatNumber.HasValue() && _taxSettings.EuVatEmailAdminWhenNewVatSubmitted)
@@ -1092,7 +1087,7 @@ namespace SmartStore.Web.Controllers
                     }
                     if (_customerSettings.GenderEnabled)
                     {
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
+                        customer.Gender = model.Gender;
                     }
                     if (_customerSettings.StreetAddressEnabled)
                     {
@@ -1136,7 +1131,7 @@ namespace SmartStore.Web.Controllers
 					}
                     if (_dateTimeSettings.AllowCustomersToSetTimeZone)
                     {
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
+                        customer.TimeZoneId = model.TimeZoneId;
                     }
 
                     _customerService.UpdateCustomer(customer);

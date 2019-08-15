@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.2.2
 
@@ -6,6 +6,12 @@
 * External category links: alternative links for categories in the main menu and in category listings.
 * Page Builder: multistore support for stories.
 * #1639 Shipping.ByTotal: Add option to calculate the shipping rate based on the net total instead of the gross total.
+* #1537 Implement "Ratenzahlung powered by PayPal" provider.
+* New Heidelpay payment plugin.
+* Shop-Connector: mapping of product SKUs that differ between client shops.
+* MegaMenu supports configuration of menu items
+ 
+
 ### Improvements
 * Amazon Pay: PSD2. Strong customer authentication (SCA) upgrade.
 * Updated *MaxMind.GeoIP* library and country database
@@ -15,15 +21,25 @@
 * (SEO) Activated GZIP compression for all dynamic and static responses.
 * Set max. file upload size to 2 GB (globally)
 * (Dev) Added a sample block for the *Page Builder* in DevTools plugin.
-* Various other minor improvements
+* Various other minor improvements.
+* PayPal PLUS: paying by instalments can be selected in payment wall.
+* Payone: send more information to API (e.g. shipping address) to stay as frictionless as possible for PSD2.
+* PageBuilder: Added keyboard shortcuts
+* #1582 Added structured data to reviews 
+* BMEcat: added support for import of specification attributes
 
 ### Bugfixes
 * Fixed wrong XML sitemap index numbering.
 * #1646 Setting ManufacturerItemsToDisplayOnHomepage to 1 will not show any manufacturer.
 * #1647 All manufacturers page: link of last character missing in alphabetical letter list.
 * #1664 RTL: CMS menu issues in backend.
+* #1677 Page Builder: moving and resizing blocks via drag & drop didn't work correctly in RTL.
 * Do not adjust inventory twice when an order is cancelled and deleted.
-* Various other minor fixes
+* #1500 Fallback to fixed VAT rate instead of rate by region for countries that are not subject to vat.
+* Fixed "The entity wrapper stored in the proxy does not reference the same proxy" when copying an export profile.
+* Various other minor fixes.
+* BMEcat: set TaxCategoryId & MainPictureId for newly imported products
+  
 
 
 ## SmartStore.NET 3.2.1

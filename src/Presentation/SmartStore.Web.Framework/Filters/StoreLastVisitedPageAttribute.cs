@@ -4,6 +4,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Services.Common;
+using SmartStore.Services.Customers;
 
 namespace SmartStore.Web.Framework.Filters
 {
@@ -14,8 +15,9 @@ namespace SmartStore.Web.Framework.Filters
 		public Lazy<CustomerSettings> CustomerSettings { get; set; }
 		public Lazy<IGenericAttributeService> GenericAttributeService { get; set; }
 		public Lazy<IUserAgent> UserAgent { get; set; }
+        public Lazy<ICustomerService> CustomerService { get; set; }
 
-		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
+        public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {
 			if (!DataSettings.DatabaseIsInstalled())
                 return;
@@ -55,10 +57,11 @@ namespace SmartStore.Web.Framework.Filters
 
 			if (userAgent.HasValue())
 			{
-				var previousUserAgent = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastUserAgent);
+				var previousUserAgent = customer.LastUserAgent;
 				if (!userAgent.IsCaseInsensitiveEqual(previousUserAgent))
 				{
-					genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.LastUserAgent, userAgent);
+                    customer.LastUserAgent = userAgent;
+                    CustomerService.Value.UpdateCustomer(customer);
 				}
 			}
 		}

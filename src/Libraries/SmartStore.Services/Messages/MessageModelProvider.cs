@@ -599,7 +599,7 @@ namespace SmartStore.Services.Messages
 			var email = part.FindEmail();
 			var pwdRecoveryToken = part.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken).NullEmpty();
 			var accountActivationToken = part.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken).NullEmpty();
-            var customerVatStatus = (VatNumberStatus)part.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId);
+            var customerVatStatus = (VatNumberStatus)part.VatNumberStatusId;
 
             int rewardPointsBalance = part.GetRewardPointsBalance();
 			decimal rewardPointsAmountBase = _services.Resolve<IOrderTotalCalculationService>().ConvertRewardPointsToAmount(rewardPointsBalance);

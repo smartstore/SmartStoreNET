@@ -442,6 +442,113 @@ namespace SmartStore.Data.Utilities
 			return numUpdated;
 		}
 
+
+        /// <summary>
+        /// Moves several customer fields saved as generic attributes to customer entity 
+        /// (Gender, ZipPostalCode, VatNumberStatusId, TimeZoneId, TaxDisplayTypeId, CountryId, CurrencyId, LanguageId, LastForumVisit, LastUserAgent)
+        /// </summary>
+        /// <param name="context">Database context (must be <see cref="SmartObjectContext"/>)</param>
+        /// <returns>The total count of fixed and updated customer entities</returns>
+        public static int MoveFurtherCustomerFields(IDbContext context)
+        {
+            var ctx = context as SmartObjectContext;
+            if (ctx == null)
+                throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+
+            // We delete attrs only if the WHOLE migration succeeded
+            var attrIdsToDelete = new List<int>(1000);
+            var gaTable = context.Set<GenericAttribute>();
+            var candidates = new[] { "Gender", "VatNumberStatusId", "TimeZoneId", "TaxDisplayTypeId", "LastForumVisit", "LastUserAgent", "LastUserDeviceType" };
+
+            var query = gaTable
+                .AsNoTracking()
+                .Where(x => x.KeyGroup == "Customer" && candidates.Contains(x.Key))
+                .OrderBy(x => x.Id);
+
+            int numUpdated = 0;
+
+            using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
+            {
+                for (var pageIndex = 0; pageIndex < 9999999; ++pageIndex)
+                {
+                    var attrs = new PagedList<GenericAttribute>(query, pageIndex, 250);
+
+                    var customerIds = attrs.Select(a => a.EntityId).Distinct().ToArray();
+                    var customers = context.Set<Customer>()
+                        .Where(x => customerIds.Contains(x.Id))
+                        .ToDictionary(x => x.Id);
+
+                    // Move attrs one by one to customer
+                    foreach (var attr in attrs)
+                    {
+                        var customer = customers.Get(attr.EntityId);
+                        if (customer == null)
+                            continue;
+
+                        switch (attr.Key)
+                        {
+                            case "Gender":
+                                customer.Gender = attr.Value?.Truncate(100);
+                                break;
+                            case "VatNumberStatusId":
+                                customer.VatNumberStatusId = attr.Value.Convert<int>();
+                                break;
+                            case "TimeZoneId":
+                                customer.TimeZoneId = attr.Value?.Truncate(255);
+                                break;
+                            case "TaxDisplayTypeId":
+                                customer.TaxDisplayTypeId = attr.Value.Convert<int>();
+                                break;
+                            case "LastForumVisit":
+                                customer.LastForumVisit = attr.Value.Convert<DateTime>();
+                                break;
+                            case "LastUserAgent":
+                                customer.LastUserAgent = attr.Value.Convert<string>();
+                                break;
+                            case "LastUserDeviceType":
+                                // TODO: split
+                                customer.LastUserDeviceType = attr.Value.Convert<string>();
+                                break;
+                        }
+
+                        attrIdsToDelete.Add(attr.Id);
+                    }
+
+                    // Save batch
+                    numUpdated += scope.Commit();
+
+                    // Breathe
+                    context.DetachAll();
+
+                    if (!attrs.HasNextPage)
+                        break;
+                }
+
+                // Everything worked out, now delete all orpahned attributes
+                if (attrIdsToDelete.Count > 0)
+                {
+                    try
+                    {
+                        // Don't rollback migration when this fails
+                        var stubs = attrIdsToDelete.Select(x => new GenericAttribute { Id = x }).ToList();
+                        foreach (var chunk in stubs.Slice(500))
+                        {
+                            chunk.Each(x => gaTable.Attach(x));
+                            gaTable.RemoveRange(chunk);
+                            scope.Commit();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        var msg = ex.Message;
+                    }
+                }
+            }
+
+            return numUpdated;
+        }
+
+
         #endregion
 
         #region CreateSystemMenus (V3.2)

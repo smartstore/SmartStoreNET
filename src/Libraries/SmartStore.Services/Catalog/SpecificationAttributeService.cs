@@ -105,10 +105,16 @@ namespace SmartStore.Services.Catalog
 
 		public virtual IList<SpecificationAttributeOption> GetSpecificationAttributeOptionsBySpecificationAttribute(int specificationAttributeId)
 		{
+            if (specificationAttributeId == 0)
+            {
+                return new List<SpecificationAttributeOption>();
+            }
+
 			var query = from sao in _specificationAttributeOptionRepository.Table
 						orderby sao.DisplayOrder
 						where sao.SpecificationAttributeId == specificationAttributeId
 						select sao;
+
 			var specificationAttributeOptions = query.ToList();
 			return specificationAttributeOptions;
 		}

@@ -1,0 +1,33 @@
+﻿@model RuleSetModel
+
+@using SmartStore.Admin.Models.Rules
+
+@{
+    ViewBag.Title = "Edit Rule " + Model.Id;
+}
+
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            @ViewBag.Title @Html.ActionLink("(" + @T("Admin.Common.BackToList") + ")", "List")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+                <i class="fa fa-check"></i>
+                <span>@T("Admin.Common.Save")</span>
+            </button>
+            <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
+                <span>@T("Admin.Common.SaveContinue")</span>
+            </button>
+            <button type="submit" id="rule-delete" name="rule-delete" class="btn btn-danger">
+                <i class="far fa-trash-alt"></i>
+                <span>@T("Admin.Common.Delete")</span>
+            </button>
+        </div>
+    </div>
+
+    Html.RenderPartial("_CreateOrUpdate", Model);
+}
+
+@*@Html.DeleteConfirmation("delivery-time-delete")*@

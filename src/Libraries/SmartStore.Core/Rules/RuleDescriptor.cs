@@ -6,10 +6,16 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Rules
 {
-    public class RuleDescriptor
+    public abstract class RuleDescriptor
     {
         private RuleOperator[] _operators;
 
+        protected RuleDescriptor(RuleScope scope)
+        {
+            Scope = scope;
+        }
+
+        public RuleScope Scope { get; protected set; }
         public string Name { get; set; }
         public string DisplayName { get; set; }
         public string Description { get; set; }

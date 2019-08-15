@@ -71,9 +71,9 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(subscription, nameof(subscription));
 
 			var customer = subscription.Customer;
-			var languageId = customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId);
+            var languageId = customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId);
 
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.BackInStockCustomer, languageId, subscription.StoreId, customer), true, subscription.Product);
+            return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.BackInStockCustomer, languageId, subscription.StoreId, customer), true, subscription.Product);
 		}
 	}
 }

@@ -1,0 +1,115 @@
+﻿@using SmartStore.PayPal;
+@using SmartStore.PayPal.Models;
+@using SmartStore.Web.Framework;
+@using SmartStore.Web.Framework.UI;
+@model ApiConfigurationModel
+@{
+	Layout = "";
+
+    var hasCredentials = Model.ClientId.HasValue() && Model.Secret.HasValue();
+}
+
+<table class="adminContent">
+	<tr>
+		<td colspan="2">
+			<div class="admin-config-group">
+				<div class="title">
+					@T("Plugins.SmartStore.PayPal.AccessData")
+				</div>
+			</div>
+		</td>
+	</tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.UseSandbox)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.UseSandbox)
+            @Html.ValidationMessageFor(model => model.UseSandbox)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ClientId)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.ClientId)
+            @Html.ValidationMessageFor(model => model.ClientId)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Secret)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.Secret)
+            @Html.ValidationMessageFor(model => model.Secret)
+        </td>
+    </tr>
+	<tr class="adminSeparator">
+		<td colspan="2">
+			<div class="admin-config-group">
+				<div class="title">
+                    @T("Admin.Common.DataExchange")
+				</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.ExperienceProfileId)
+		</td>
+		<td class="adminData">
+			@Html.SettingEditorFor(model => model.ExperienceProfileId)
+
+			<a class="btn @(Model.ExperienceProfileId.HasValue() ? "btn-warning" : "btn-primary") mt-1" 
+				onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);' @(hasCredentials ? "" : "disabled='disabled'")
+				href="@Url.Action("UpsertExperienceProfile", new { area = Plugin.SystemName })">
+				<i class="fa-fw @(Model.ExperienceProfileId.HasValue() ? "fa fa-sync" : "far fa-list-alt")"></i>
+				<span>@T(Model.ExperienceProfileId.HasValue() ? "Common.Refresh" : "Common.AddNew")</span>
+			</a>
+
+			@if (Model.ExperienceProfileId.HasValue())
+			{
+				<a class="btn btn-danger mt-1" onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);' @(hasCredentials ? "" : "disabled='disabled'")
+					href="@Url.Action("DeleteExperienceProfile", new { area = Plugin.SystemName })">
+					<i class="far fa-trash-alt"></i>
+					<span>@T("Admin.Common.Delete")</span>
+				</a>
+			}
+
+			@Html.ValidationMessageFor(model => model.ExperienceProfileId)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.WebhookId)
+		</td>
+		<td class="adminData">
+			<div class="input-group">
+				@* IPNs and webhook messages have no store context, so multistore configuration not possible here *@
+				@Html.EditorFor(model => model.WebhookId)
+
+				<div class="input-group-append">
+					@if (Model.WebhookId.HasValue())
+					{
+						<a class="btn btn-danger" onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);' @(hasCredentials ? "" : "disabled='disabled'")
+							href="@Url.Action("DeleteWebhook", new { area = Plugin.SystemName })">
+							<i class="far fa-trash-alt"></i>
+							<span>@T("Admin.Common.Delete")</span>
+						</a>
+					}
+					else
+					{
+						<a class="btn btn-primary btn-primary-outline" onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);' @(hasCredentials ? "" : "disabled='disabled'")
+							href="@Url.Action("CreateWebhook", new { area = Plugin.SystemName })">
+							<i class="fa fa-plus"></i>
+							<span>@T("Common.AddNew")</span>
+						</a>
+					}
+				</div>
+			</div>
+			@Html.ValidationMessageFor(model => model.WebhookId)
+		</td>
+	</tr>
+</table>

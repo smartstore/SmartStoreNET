@@ -148,7 +148,7 @@ namespace SmartStore.Services.Tax
 			}
 
 			// It's EU: check VAT number status
-			var vatStatus = (VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId);
+			var vatStatus = (VatNumberStatus)customer.VatNumberStatusId;
 			// companies with invalid VAT numbers are assumed to be consumers
 			return vatStatus != VatNumberStatus.Valid;
 		}
@@ -816,7 +816,7 @@ namespace SmartStore.Services.Tax
                 if (address.CountryId == _taxSettings.EuVatShopCountryId)
                     return false;
 
-                var customerVatStatus = (VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId);
+                var customerVatStatus = (VatNumberStatus)customer.VatNumberStatusId;
                 return customerVatStatus == VatNumberStatus.Valid && _taxSettings.EuVatAllowVatExemption;
             }
         }

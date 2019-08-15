@@ -40,11 +40,8 @@ namespace SmartStore.Services.DataExchange.Export
 	{
 		private readonly string[] _orderCustomerAttributes = new string[]
 		{
-			SystemCustomerAttributeNames.Gender,
 			SystemCustomerAttributeNames.VatNumber,
-			SystemCustomerAttributeNames.VatNumberStatusId,
-			SystemCustomerAttributeNames.TimeZoneId,
-			SystemCustomerAttributeNames.ImpersonatedCustomerId
+            SystemCustomerAttributeNames.ImpersonatedCustomerId
 		};
 
 		private void PrepareProductDescription(DataExporterContext ctx, dynamic dynObject, Product product)

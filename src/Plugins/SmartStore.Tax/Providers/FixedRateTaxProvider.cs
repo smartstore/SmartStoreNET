@@ -1,37 +1,35 @@
 ﻿using System.Web.Routing;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Configuration;
-using SmartStore.Services.Localization;
 using SmartStore.Services.Tax;
 
 namespace SmartStore.Tax
 {
-	[SystemName("Tax.FixedRate")]
+    [SystemName("Tax.FixedRate")]
 	[FriendlyName("Fixed Tax Rate")]
 	[DisplayOrder(5)]
 	public class FixedRateTaxProvider : ITaxProvider, IConfigurable
     {
         private readonly ISettingService _settingService;
-        private readonly ILocalizationService _localizationService;
 
-        public FixedRateTaxProvider(ISettingService settingService, ILocalizationService localizationService)
+        public FixedRateTaxProvider(ISettingService settingService)
         {
-            this._settingService = settingService;
-            _localizationService = localizationService;
+            _settingService = settingService;
         }
         
         public CalculateTaxResult GetTaxRate(CalculateTaxRequest calculateTaxRequest)
         {
-            var result = new CalculateTaxResult()
+            var result = new CalculateTaxResult
             {
                 TaxRate = GetTaxRate(calculateTaxRequest.TaxCategoryId)
             };
+
             return result;
         }
 
         protected decimal GetTaxRate(int taxCategoryId)
         {
-            decimal rate = this._settingService.GetSettingByKey<decimal>(string.Format("Tax.TaxProvider.FixedRate.TaxCategoryId{0}", taxCategoryId));
+            var rate = _settingService.GetSettingByKey<decimal>($"Tax.TaxProvider.FixedRate.TaxCategoryId{taxCategoryId}");
             return rate;
         }
         
@@ -39,8 +37,7 @@ namespace SmartStore.Tax
         {
             actionName = "Configure";
             controllerName = "TaxFixedRate";
-			routeValues = new RouteValueDictionary() { { "area", "SmartStore.Tax" } };
+			routeValues = new RouteValueDictionary { { "area", "SmartStore.Tax" } };
         }
-
     }
 }

@@ -312,11 +312,16 @@ namespace SmartStore.Services.Customers.Importer
 				row.SetProperty(context.Result, (x) => x.CreatedOnUtc, UtcNow);
 				row.SetProperty(context.Result, (x) => x.LastActivityDateUtc, UtcNow);
 
-				if (affiliateId > 0 && allAffiliateIds.Contains(affiliateId))
-				{
-					customer.AffiliateId = affiliateId;
-				}
 
+                if (_dateTimeSettings.AllowCustomersToSetTimeZone)
+                    row.SetProperty(context.Result, (x) => x.TimeZoneId);
+
+                if (_customerSettings.GenderEnabled)
+                    row.SetProperty(context.Result, (x) => x.Gender);
+
+                if (affiliateId > 0 && allAffiliateIds.Contains(affiliateId))
+                    customer.AffiliateId = affiliateId;
+                
 				string customerNumber = null;
 
 				if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.AutomaticallySet && row.IsTransient)
@@ -515,28 +520,22 @@ namespace SmartStore.Services.Customers.Importer
 		{
 			foreach (var row in batch)
 			{
-				if (_dateTimeSettings.AllowCustomersToSetTimeZone)
-					SaveAttribute(row, SystemCustomerAttributeNames.TimeZoneId);
-
-				if (_customerSettings.GenderEnabled)
-					SaveAttribute(row, SystemCustomerAttributeNames.Gender);
-
-				if (_customerSettings.StreetAddressEnabled)
+                if (_customerSettings.StreetAddressEnabled)
 					SaveAttribute(row, SystemCustomerAttributeNames.StreetAddress);
 
 				if (_customerSettings.StreetAddress2Enabled)
 					SaveAttribute(row, SystemCustomerAttributeNames.StreetAddress2);
 
-				if (_customerSettings.ZipPostalCodeEnabled)
-					SaveAttribute(row, SystemCustomerAttributeNames.ZipPostalCode);
-
 				if (_customerSettings.CityEnabled)
 					SaveAttribute(row, SystemCustomerAttributeNames.City);
 
-				if (_customerSettings.CountryEnabled)
-					SaveAttribute<int>(row, SystemCustomerAttributeNames.CountryId);
+                if (_customerSettings.ZipPostalCodeEnabled)
+                    SaveAttribute(row, SystemCustomerAttributeNames.ZipPostalCode);
 
-				if (_customerSettings.CountryEnabled && _customerSettings.StateProvinceEnabled)
+                if (_customerSettings.CountryEnabled)
+                    SaveAttribute<int>(row, SystemCustomerAttributeNames.CountryId);
+
+                if (_customerSettings.CountryEnabled && _customerSettings.StateProvinceEnabled)
 					SaveAttribute<int>(row, SystemCustomerAttributeNames.StateProvinceId);
 
 				if (_customerSettings.PhoneEnabled)
@@ -551,18 +550,15 @@ namespace SmartStore.Services.Customers.Importer
 				if (_forumSettings.SignaturesEnabled)
 					SaveAttribute(row, SystemCustomerAttributeNames.Signature);
 
-				var countryId = CountryCodeToId(allCountries, row.GetDataValue<string>("CountryCode"));
-				var stateId = StateAbbreviationToId(allStateProvinces, countryId, row.GetDataValue<string>("StateAbbreviation"));
+                var countryId = CountryCodeToId(allCountries, row.GetDataValue<string>("CountryCode"));
+                var stateId = StateAbbreviationToId(allStateProvinces, countryId, row.GetDataValue<string>("StateAbbreviation"));
 
-				if (countryId.HasValue)
-				{
-					SaveAttribute(row, SystemCustomerAttributeNames.CountryId, countryId.Value);
-				}
-
-				if (stateId.HasValue)
-				{
+                if (countryId.HasValue)
+                    SaveAttribute(row, SystemCustomerAttributeNames.CountryId, countryId.Value);
+                
+                if (stateId.HasValue)
 					SaveAttribute(row, SystemCustomerAttributeNames.StateProvinceId, stateId.Value);
-				}
+				
 			}
 
 			return _services.DbContext.SaveChanges();

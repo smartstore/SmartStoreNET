@@ -1,0 +1,2 @@
+﻿We gonna move all cart related stuff from "Orders" to this location and refactor namespaces accordingly.
+But for now we just put new stuff (Rules) here and will move existing code sometime in the future.

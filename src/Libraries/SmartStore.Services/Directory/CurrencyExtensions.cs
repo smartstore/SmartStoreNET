@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Directory;
 
@@ -8,30 +9,19 @@ namespace SmartStore.Services.Directory
 	{
 		public static bool HasDomainEnding(this Currency currency, string domain)
 		{
-			if (currency != null && domain.HasValue() && currency.DomainEndings.HasValue())
-			{
-				var endings = currency.DomainEndings.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            if (currency == null || domain.IsEmpty() || currency.DomainEndings.IsEmpty())
+                return false;
 
-				foreach (var ending in endings)
-				{
-					if (domain.EndsWith(ending, StringComparison.InvariantCultureIgnoreCase))
-						return true;
-				}
-			}
-			return false;
+			var endings = currency.DomainEndings.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            return endings.Any(x => domain.EndsWith(x, StringComparison.InvariantCultureIgnoreCase));
 		}
 
 		public static Currency GetByDomainEnding(this IEnumerable<Currency> currencies, string domain)
 		{
-			if (currencies != null && domain.HasValue())
-			{
-				foreach (var currency in currencies)
-				{
-					if (currency.Published && currency.HasDomainEnding(domain))
-						return currency;
-				}
-			}
-			return null;
+            if (currencies == null || domain.IsEmpty())
+                return null;
+
+            return currencies.FirstOrDefault(x => x.Published && x.HasDomainEnding(domain));
 		}
 	}
 }

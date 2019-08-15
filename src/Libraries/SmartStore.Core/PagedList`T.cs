@@ -73,7 +73,7 @@ namespace SmartStore.Core
 			{
 				if (_totalCount == null)
 				{
-					_totalCount = SourceQuery.Count();
+					_totalCount = await SourceQuery.CountAsync();
 				}
 
 				if (_queryIsPagedAlready)

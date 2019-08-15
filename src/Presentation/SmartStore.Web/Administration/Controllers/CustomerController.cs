@@ -238,10 +238,10 @@ namespace SmartStore.Admin.Controllers
                 FullName = customer.GetFullName(),
                 Company = customer.Company,
                 CustomerNumber = customer.CustomerNumber,
-                Phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone),
                 ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode),
-                CustomerRoleNames = GetCustomerRolesNames(customer.CustomerRoles.ToList()),
                 Active = customer.Active,
+                Phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone),
+                CustomerRoleNames = GetCustomerRolesNames(customer.CustomerRoles.ToList()),
                 CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc),
                 LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc),
             };
@@ -329,9 +329,7 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			model.DisplayVatNumber = _taxSettings.EuVatEnabled;
-			model.VatNumberStatusNote = ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId))
-				 .GetLocalizedEnum(_localizationService, _workContext);
-
+			model.VatNumberStatusNote = ((VatNumberStatus)customer.VatNumberStatusId).GetLocalizedEnum(_localizationService, _workContext);
 			model.CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc);
 			model.LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc);
 			model.LastIpAddress = model.LastIpAddress;
@@ -645,9 +643,9 @@ namespace SmartStore.Admin.Controllers
                 
                 // Form fields.
 				if (_dateTimeSettings.AllowCustomersToSetTimeZone)
-					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
+                    customer.TimeZoneId = model.TimeZoneId;
                 if (_customerSettings.GenderEnabled)
-                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
+                    customer.Gender = model.Gender;
                 if (_customerSettings.StreetAddressEnabled)
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StreetAddress, model.StreetAddress);
                 if (_customerSettings.StreetAddress2Enabled)
@@ -716,7 +714,7 @@ namespace SmartStore.Admin.Controllers
 				AdminComment = customer.AdminComment,
 				IsTaxExempt = customer.IsTaxExempt,
 				Active = customer.Active,
-				TimeZoneId = customer.GetAttribute<string>(SystemCustomerAttributeNames.TimeZoneId),
+				TimeZoneId = customer.TimeZoneId,
 				VatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber),
 				AffiliateId = customer.AffiliateId
 			};
@@ -735,12 +733,12 @@ namespace SmartStore.Admin.Controllers
             model.DateOfBirth = customer.BirthDate;
             model.Company = customer.Company;
             model.CustomerNumber = customer.CustomerNumber;
-			model.Gender = customer.GetAttribute<string>(SystemCustomerAttributeNames.Gender);
-			model.StreetAddress = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress);
-            model.StreetAddress2 = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress2);
+			model.Gender = customer.Gender;
             model.ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode);
-            model.City = customer.GetAttribute<string>(SystemCustomerAttributeNames.City);
             model.CountryId = customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId);
+            model.StreetAddress = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress);
+            model.StreetAddress2 = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress2);
+            model.City = customer.GetAttribute<string>(SystemCustomerAttributeNames.City);
             model.StateProvinceId = customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId);
             model.Phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone);
             model.Fax = customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax);
@@ -850,34 +848,30 @@ namespace SmartStore.Admin.Controllers
 						{
 							if (!model.VatNumber.Equals(prevVatNumber, StringComparison.InvariantCultureIgnoreCase))
 							{
-								_genericAttributeService.SaveAttribute(customer,
-									SystemCustomerAttributeNames.VatNumberStatusId,
-									(int)_taxService.GetVatNumberStatus(model.VatNumber));
+                                customer.VatNumberStatusId = (int)_taxService.GetVatNumberStatus(model.VatNumber);
 							}
 						}
 						else
 						{
-							_genericAttributeService.SaveAttribute(customer,
-								SystemCustomerAttributeNames.VatNumberStatusId,
-								(int)VatNumberStatus.Empty);
+                            customer.VatNumberStatusId = (int)VatNumberStatus.Empty;
 						}
-                    }		
+                    }
 
                     // form fields
-					if (_dateTimeSettings.AllowCustomersToSetTimeZone)
-						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
+                    if (_dateTimeSettings.AllowCustomersToSetTimeZone)
+                        customer.TimeZoneId = model.TimeZoneId;
                     if (_customerSettings.GenderEnabled)
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
+                        customer.Gender = model.Gender;
+                    if (_customerSettings.CountryEnabled)
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CountryId, model.CountryId);
+                    if (_customerSettings.ZipPostalCodeEnabled)
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.ZipPostalCode, model.ZipPostalCode);
                     if (_customerSettings.StreetAddressEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StreetAddress, model.StreetAddress);
                     if (_customerSettings.StreetAddress2Enabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StreetAddress2, model.StreetAddress2);
-                    if (_customerSettings.ZipPostalCodeEnabled)
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.ZipPostalCode, model.ZipPostalCode);
                     if (_customerSettings.CityEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.City, model.City);
-                    if (_customerSettings.CountryEnabled)
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CountryId, model.CountryId);
                     if (_customerSettings.CountryEnabled && _customerSettings.StateProvinceEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StateProvinceId, model.StateProvinceId);
                     if (_customerSettings.PhoneEnabled)
@@ -903,10 +897,11 @@ namespace SmartStore.Admin.Controllers
                                     customer.CustomerRoles.Remove(customerRole);
                             }
                         }
-                        _customerService.UpdateCustomer(customer);
                     }
 
-					_eventPublisher.Publish(new ModelBoundEvent(model, customer, form));
+                    _customerService.UpdateCustomer(customer);
+
+                    _eventPublisher.Publish(new ModelBoundEvent(model, customer, form));
 
                     // activity log
                     _customerActivityService.InsertActivity("EditCustomer", T("ActivityLog.EditCustomer"), customer.Id);
@@ -968,9 +963,9 @@ namespace SmartStore.Admin.Controllers
             if (customer == null)
                 return RedirectToAction("List");
 
-			_genericAttributeService.SaveAttribute(customer,
-				SystemCustomerAttributeNames.VatNumberStatusId,
-				(int)VatNumberStatus.Valid);
+            customer.VatNumberStatusId = (int)VatNumberStatus.Valid;
+
+            _customerService.UpdateCustomer(customer);
 
             return RedirectToAction("Edit", customer.Id);
         }
@@ -986,10 +981,10 @@ namespace SmartStore.Admin.Controllers
             if (customer == null)
                 return RedirectToAction("List");
 
-			_genericAttributeService.SaveAttribute(customer,
-				SystemCustomerAttributeNames.VatNumberStatusId,
-				(int)VatNumberStatus.Invalid);
-            
+            customer.VatNumberStatusId = (int)VatNumberStatus.Invalid;
+
+            _customerService.UpdateCustomer(customer);
+
             return RedirectToAction("Edit", customer.Id);
         }
 

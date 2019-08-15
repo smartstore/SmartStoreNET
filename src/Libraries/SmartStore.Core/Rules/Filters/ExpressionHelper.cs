@@ -70,7 +70,7 @@ namespace SmartStore.Rules.Filters
                 throw new ArgumentException("Provided expression should be string type", nameof(stringExpression));
             }
 
-            if (IsNotNullConstantExpression(stringExpression))
+            if (IsNotNullConstantExpression(stringExpression, out _))
             {
                 return stringExpression;
             }
@@ -78,11 +78,14 @@ namespace SmartStore.Rules.Filters
             return Expression.Coalesce(stringExpression, EmptyStringLiteral);
         }
 
-        public static bool IsNotNullConstantExpression(Expression expression)
+        public static bool IsNotNullConstantExpression(Expression expression, out object value)
         {
+            value = null;
+
             if (expression is ConstantExpression c)
             {
-                return c.Value != null;
+                value = c.Value;
+                return value != null;
             }
 
             return false;

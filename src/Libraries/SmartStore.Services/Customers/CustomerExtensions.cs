@@ -299,9 +299,9 @@ namespace SmartStore.Services.Customers
 			if (customer == null)
 				return null;
 
-			var language = EngineContext.Current.Resolve<ILanguageService>().GetLanguageById(customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId));
+            var language = EngineContext.Current.Resolve<ILanguageService>().GetLanguageById(customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId));
 
-			if (language == null || !language.Published)
+            if (language == null || !language.Published)
 			{
 				language = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage;
 			}

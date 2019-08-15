@@ -43,11 +43,6 @@ namespace SmartStore.PayPal
 			return GetControllerType().Name.EmptyNull().Replace("Controller", "");
 		}
 
-        public static string CheckoutCompletedKey
-		{
-			get { return "PayPalCheckoutCompleted"; }
-		}
-
 		public override bool SupportCapture
 		{
 			get { return true; }
@@ -90,7 +85,7 @@ namespace SmartStore.PayPal
 				NewPaymentStatus = PaymentStatus.Pending
 			};
 
-			HttpContext.Session.SafeRemove(CheckoutCompletedKey);
+			HttpContext.Session.SafeRemove("PayPalCheckoutCompleted");
 
             var storeId = processPaymentRequest.StoreId;
             var customer = Services.WorkContext.CurrentCustomer;
@@ -102,7 +97,7 @@ namespace SmartStore.PayPal
                 session.SessionExpired = true;
                 result.AddError(T("Plugins.SmartStore.PayPal.SessionExpired"));
 
-                // Redirect to payment wall and create new payment (we need the payment id).
+                // Redirect to payment page and create new payment (we need the payment id).
                 var urlHelper = new UrlHelper(HttpContext.Request.RequestContext);
                 HttpContext.Response.Redirect(urlHelper.Action("PaymentMethod", "Checkout", new { area = "" }));
 
@@ -194,14 +189,14 @@ namespace SmartStore.PayPal
 
 		public override void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest)
 		{
-            var storeId = postProcessPaymentRequest.Order.StoreId;
-            var customer = Services.WorkContext.CurrentCustomer;
-            var session = HttpContext.GetPayPalState(_providerSystemName, customer, storeId, GenericAttributeService);
+            var order = postProcessPaymentRequest.Order;
+            var customer = order.Customer ?? Services.WorkContext.CurrentCustomer;
+            var session = HttpContext.GetPayPalState(_providerSystemName, customer, order.StoreId, GenericAttributeService);
             var instruction = PayPalService.CreatePaymentInstruction(session.PaymentInstruction);
 
 			if (instruction.HasValue())
 			{
-				HttpContext.Session[CheckoutCompletedKey] = instruction;
+				HttpContext.Session["PayPalCheckoutCompleted"] = instruction;
 
 				OrderService.AddOrderNote(postProcessPaymentRequest.Order, instruction, true);
 			}
@@ -215,19 +210,23 @@ namespace SmartStore.PayPal
 			};
 
 			var settings = Services.Settings.LoadSetting<TSetting>(capturePaymentRequest.Order.StoreId);
-			var session = new PayPalSessionData();
+            var session = new PayPalSessionData { ProviderSystemName = _providerSystemName };
 
-			var apiResult = PayPalService.EnsureAccessToken(session, settings);
+            var apiResult = PayPalService.EnsureAccessToken(session, settings);
 			if (apiResult.Success)
 			{
 				apiResult = PayPalService.Capture(settings, session, capturePaymentRequest);
 
-				if (apiResult.Success)
-					result.NewPaymentStatus = PaymentStatus.Paid;
+                if (apiResult.Success)
+                {
+                    result.NewPaymentStatus = PaymentStatus.Paid;
+                }
 			}
 
-			if (!apiResult.Success)
-				result.Errors.Add(apiResult.ErrorMessage);
+            if (!apiResult.Success)
+            {
+                result.Errors.Add(apiResult.ErrorMessage);
+            }
 
 			return result;
         }
@@ -240,23 +239,24 @@ namespace SmartStore.PayPal
 			};
 
 			var settings = Services.Settings.LoadSetting<TSetting>(refundPaymentRequest.Order.StoreId);
-			var session = new PayPalSessionData();
+            var session = new PayPalSessionData { ProviderSystemName = _providerSystemName };
 
-			var apiResult = PayPalService.EnsureAccessToken(session, settings);
+            var apiResult = PayPalService.EnsureAccessToken(session, settings);
 			if (apiResult.Success)
 			{
 				apiResult = PayPalService.Refund(settings, session, refundPaymentRequest);
 				if (apiResult.Success)
 				{
-					if (refundPaymentRequest.IsPartialRefund)
-						result.NewPaymentStatus = PaymentStatus.PartiallyRefunded;
-					else
-						result.NewPaymentStatus = PaymentStatus.Refunded;
+                    result.NewPaymentStatus = refundPaymentRequest.IsPartialRefund
+                        ? PaymentStatus.PartiallyRefunded
+                        : PaymentStatus.Refunded;
 				}
 			}
 
-			if (!apiResult.Success)
-				result.Errors.Add(apiResult.ErrorMessage);
+            if (!apiResult.Success)
+            {
+                result.Errors.Add(apiResult.ErrorMessage);
+            }
 
 			return result;
         }
@@ -269,9 +269,9 @@ namespace SmartStore.PayPal
 			};
 
 			var settings = Services.Settings.LoadSetting<TSetting>(voidPaymentRequest.Order.StoreId);
-			var session = new PayPalSessionData();
+            var session = new PayPalSessionData { ProviderSystemName = _providerSystemName };
 
-			var apiResult = PayPalService.EnsureAccessToken(session, settings);
+            var apiResult = PayPalService.EnsureAccessToken(session, settings);
 			if (apiResult.Success)
 			{
 				apiResult = PayPalService.Void(settings, session, voidPaymentRequest);
@@ -281,8 +281,10 @@ namespace SmartStore.PayPal
 				}
 			}
 
-			if (!apiResult.Success)
-				result.Errors.Add(apiResult.ErrorMessage);
+            if (!apiResult.Success)
+            {
+                result.Errors.Add(apiResult.ErrorMessage);
+            }
 
 			return result;
         }
@@ -291,14 +293,14 @@ namespace SmartStore.PayPal
         {
 			actionName = "Configure";
             controllerName = GetControllerName();
-            routeValues = new RouteValueDictionary { { "area", "SmartStore.PayPal" } };
+            routeValues = new RouteValueDictionary { { "area", Plugin.SystemName } };
         }
 
         public override void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
             actionName = "PaymentInfo";
             controllerName = GetControllerName();
-            routeValues = new RouteValueDictionary { { "area", "SmartStore.PayPal" } };
+            routeValues = new RouteValueDictionary { { "area", Plugin.SystemName } };
         }
     }
 }

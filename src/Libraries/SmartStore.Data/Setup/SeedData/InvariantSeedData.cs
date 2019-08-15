@@ -9096,7 +9096,7 @@ namespace SmartStore.Data.Setup
                 Name = "Trousers",
                 Alias = "Pants",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_trousers.jpg"), "image/png", GetSeName("Trousers")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_trousers.png"), "image/png", GetSeName("Trousers")),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
                 DisplayOrder = 1,

@@ -9072,7 +9072,7 @@ namespace SmartStore.Data.Setup
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_leather_jackets.jpg"), "image/png", GetSeName("Leather jackets")),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Jackets").First().Id,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
                 DisplayOrder = 1,
                 MetaTitle = "Leather jackets",
                 ShowOnHomePage = true

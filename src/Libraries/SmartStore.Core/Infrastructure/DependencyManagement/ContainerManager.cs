@@ -154,7 +154,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
         [DebuggerStepThrough]
         public bool TryResolve<T>(ILifetimeScope scope, out T instance)
 		{
-			instance = default;
+			instance = default(T);
 
 			try
 			{

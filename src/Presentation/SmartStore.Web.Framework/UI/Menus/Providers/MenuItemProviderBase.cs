@@ -79,6 +79,7 @@ namespace SmartStore.Web.Framework.UI
                 EntityName = nameof(MenuItemRecord),
                 MenuItemId = entity.Id,
 				Text = title,
+                Summary = shortDescription,
                 Visible = entity.Published,
                 Rtl = title?.CurrentLanguage?.Rtl ?? false,
                 PermissionNames = entity.PermissionNames

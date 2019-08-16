@@ -28,7 +28,7 @@
 
     .smtree-expander-container {
         display: inline-block;
-        min-width: 16px;
+        min-width: 14px;
     }
 
     .smtree-expander {
@@ -79,6 +79,11 @@
             background-color: #fff;
             margin: 2px 4px 0 0;
         }
+
+        .smtree-state:hover::before {
+            box-shadow: 0 0 4px rgba($gray-700, 0.8);
+            transition: box-shadow 0.1s linear;
+        }
         // State indicator 'allow'.
         input[type=checkbox]:checked {
             ~ .smtree-state:before {
@@ -122,5 +127,20 @@
             }
         }
     }
+
+    /*.state-allow input[type=checkbox]:indeterminate {
+        ~ .smtree-state:after {
+            content: "";
+            position: absolute;
+            display: block;
+            top: 5px;
+            left: 6px;
+            width: 6px;
+            height: 10px;
+            border: 2px solid $gray-400;
+            border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
+        }
+    }*/
 }
 

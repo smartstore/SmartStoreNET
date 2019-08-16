@@ -90,6 +90,11 @@
 {
     if (Model.Id > 0)
     {
+        <p>
+			<button id="ExpandCollapseAll" type="button" class="btn btn-sm btn-secondary">
+				<span>@T("Common.ExpandCollapseAll")</span>
+			</button>
+        </p>
         <div id="permission-tree" class="smtree">
             @if (Model.PermissionTree != null && Model.PermissionTree.HasChildren)
             {
@@ -113,8 +118,13 @@
     <script>
         $(function () {
             // Init permission tree.
-            $('#permission-tree').smTree({
-                nodeState: 'tri'
+            $('#permission-tree').smTree('init', {
+                nodeState: 'allow-deny'
+            });
+
+            // Expand\collapse all.
+            $('#ExpandCollapseAll').on('click', function () {
+                $('#permission-tree').smTree('expandAll');
             });
 	    });
     </script>

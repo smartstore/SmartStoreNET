@@ -2,6 +2,8 @@
 /// <reference path="_mixins.scss" />
 /// <reference path="../bs4/scss/bootstrap.scss" />
 
+$default-state-color: $gray-400;
+
 // Tree
 // ------------------------------
 
@@ -19,7 +21,7 @@
     }
 
     li {
-        padding: 2px 0;
+        padding: 1px 0;
     }
 
     label {
@@ -68,79 +70,69 @@
             width: 0;
             margin: 0;
         }
-        // State box default style.
-        .smtree-state::before {
-            content: "";
-            float: left;
-            height: 18px;
-            width: 18px;
-            border-radius: 5px;
-            border: 2px solid $gray-400;
-            background-color: #fff;
-            margin: 2px 4px 0 0;
-        }
-
-        .smtree-state:hover::before {
-            box-shadow: 0 0 4px rgba($gray-700, 0.8);
-            transition: box-shadow 0.1s linear;
-        }
-        // State indicator 'allow'.
-        input[type=checkbox]:checked {
-            ~ .smtree-state:before {
-                border: 2px solid $success;
-            }
-
-            ~ .smtree-state:after {
-                content: "";
-                position: absolute;
-                display: block;
-                top: 5px;
-                left: 6px;
-                width: 6px;
-                height: 10px;
-                border: 2px solid $success;
-                border-width: 0 3px 3px 0;
-                transform: rotate(45deg);
-            }
-        }
-        // State indicator 'deny'.
-        input[type=checkbox]:not(:checked):not(:indeterminate) {
-            ~ .smtree-state:before {
-                border: 2px solid $danger;
-            }
-
-            ~ .smtree-state:after {
-                content: '\002D';
-                position: absolute;
-                display: block;
-                top: 10px;
-                left: 8px;
-                font: bold 20px helvetica, arial, sans-serif;
-                color: $danger;
-                transform: translate(-50%,-50%) scaleX(1.9);
-            }
-        }
-        // State indicator 'indeterminate'.
-        input[type=checkbox]:indeterminate {
-            ~ .smtree-state:after {
-                display: none;
-            }
-        }
+    }
+    // State box default style.
+    .smtree-state::before {
+        content: "";
+        float: left;
+        height: 18px;
+        width: 18px;
+        border-radius: 5px;
+        border: 2px solid $default-state-color;
+        background-color: #fff;
+        margin: 2px 4px 0 0;
     }
 
-    /*.state-allow input[type=checkbox]:indeterminate {
-        ~ .smtree-state:after {
-            content: "";
-            position: absolute;
-            display: block;
-            top: 5px;
-            left: 6px;
-            width: 6px;
-            height: 10px;
-            border: 2px solid $gray-400;
-            border-width: 0 3px 3px 0;
-            transform: rotate(45deg);
-        }
-    }*/
+    .smtree-state::after {
+        position: absolute;
+        display: block;
+    }
+
+    .smtree-state:hover::before {
+        box-shadow: 0 0 4px rgba($warning, 0.8);
+        transition: box-shadow 0.1s linear;
+    }
+    // State indicator 'allow'.
+    .allow:after,
+    .in-allow:after {
+        content: "";
+        top: 5px;
+        left: 6px;
+        width: 6px;
+        height: 10px;
+        transform: rotate(45deg);
+        border: 2px solid $default-state-color;
+        border-width: 0 3px 3px 0;
+    }
+
+    .allow:before,
+    .allow:after {
+        border-color: $success;
+    }
+
+    .in-allow:after {
+        border-color: $default-state-color;
+    }
+    // State indicator 'deny'.
+    .deny:after,
+    .in-deny:after {
+        content: '\002D';
+        top: 10px;
+        left: 8px;
+        font: bold 20px helvetica, arial, sans-serif;
+        transform: translate(-50%,-50%) scaleX(1.9);
+    }
+
+    .deny:before {
+        border-color: $danger;
+    }
+
+    .deny:after {
+        color: $danger;
+    }
+
+    .in-deny:after {
+        color: $default-state-color;
+    }
 }
 

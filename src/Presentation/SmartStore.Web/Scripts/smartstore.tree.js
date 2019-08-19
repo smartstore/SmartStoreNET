@@ -29,7 +29,7 @@
     $.smTree.defaults = {
         expanded: false,
         showLines: false,
-        nodeState: null,  // allow-deny
+        nodeState: '',  // allow-deny
         expandedClass: 'fas fa-angle-down',
         collapsedClass: 'fas fa-angle-right',
     };
@@ -49,16 +49,16 @@
     }
 
     function initialize(context, opt) {
-        var self = $(context);
+        var root = $(context);
         var labelHtml = '<label class="smtree-label"><span class="smtree-text"></span></label>';
         var noLeafHtml = '<div class="smtree-inner"><span class="smtree-expander-container smtree-expander"></span>' + labelHtml + '</div>';
         var leafHtml = '<div class="smtree-inner"><span class="smtree-expander-container"></span>' + labelHtml + '</div>';
 
         opt = $.extend({}, $.smTree.defaults, opt);
-        self.data('smtree-options', opt);
+        root.data('smtree-options', opt);
 
         // Set node HTML.
-        self.find('li').each(function () {
+        root.find('li').each(function () {
             var li = $(this);
             var isLeaf = !li.has('ul').length;
 
@@ -68,82 +68,95 @@
         });
 
         // Initially expand or collapse nodes.
-        self.find('.smtree-noleaf').each(function () {
+        root.find('.smtree-noleaf').each(function () {
             expandNode($(this), opt.expanded, opt);
         });
 
         // Helper lines.
         if (opt.showLines) {
-            self.find('ul:first').find('ul')
+            root.find('ul:first').find('ul')
                 .addClass('smtree-hline')
                 .prepend('<span class="smtree-vline"></span>');
         }
 
-        // Node state checkbox.
-        if (opt.nodeState) {
-            // Add state HTML.
-            self.find('.smtree-label').each(function (i, el) {
+        if (opt.nodeState === 'allow-deny') {
+            // Add state checkbox HTML.
+            root.find('.smtree-label').each(function (i, el) {
                 var label = $(this);
-                var li = label.closest('.smtree-node');
-                var value = parseInt(li.data('value'));
-                var name = li.data('name');
+                var node = label.closest('.smtree-node');
+                var value = parseInt(node.data('value'));
+                var name = node.data('name');
                 var html = '';
+                var stateClass = '';
 
                 if (opt.nodeState === 'allow-deny') {
-                    if (value === 0) {
-                        // ' state-indeterminate';
-                    }
-                    else if (value === 1) {
-                        li.addClass('state-deny');
+                    if (value === 1) {
+                        stateClass = 'deny';
                     }
                     else if (value === 2) {
-                        li.addClass('state-allow');
+                        stateClass = 'allow';
                     }
 
                     html += '<input type="checkbox" name="' + name + '" id="' + name + '" value="' + value + '"' + (value === 2 ? ' checked="checked"' : '') + ' />';
                     html += '<input type="hidden" name="' + name + '" value="' + (value === 0 ? 0 : 1) + '" />';
-                    html += '<span class="smtree-state"></span>';
+                    html += '<span class="smtree-state ' + stateClass + '"></span>';
                 }
 
                 label.attr('for', name).prepend(html);
             });
 
             // Set indeterminate property.
-            if (opt.nodeState === 'allow-deny') {
-                self.find('input[type=checkbox][value=0]').prop('indeterminate', true);
-            }
+            root.find('input[type=checkbox][value=0]').prop('indeterminate', true);
+
+            // Set indeterminate state class.
+            root.find('ul:first > .smtree-node').each(function () {
+                setIndeterminateClass($(this), 0);
+            });
         }
 
         // Expander click handler.
-        self.on('click', '.smtree-expander', function () {
-            var li = $(this).closest('.smtree-node');
-            expandNode(li, li.hasClass('smtree-collapsed'), opt);
+        root.on('click', '.smtree-expander', function () {
+            var node = $(this).closest('.smtree-node');
+            expandNode(node, node.hasClass('smtree-collapsed'), opt);
         });
 
         // State click handler.
-        self.on('click', 'input[type=checkbox]', function () {
+        root.on('click', 'input[type=checkbox]', function () {
             var el = $(this);
+            var node = el.closest('.smtree-node');
+            var state = el.siblings('.smtree-state:first');
 
             if (opt.nodeState === 'allow-deny') {
                 var hIn = el.next();
+                var inheritedState = 0;
+                state.removeClass('allow deny in-allow in-deny');
+
                 switch (parseInt(el.val())) {
                     case 0:
                         // Indeterminate > checked.
                         el.prop({ checked: true, indeterminate: false, value: 2 });
                         hIn.val(1);
+                        state.addClass('allow');
+                        inheritedState = 2;
                         break;
                     case 2:
                         // Checked > unchecked.
                         el.prop({ checked: false, indeterminate: false, value: 1 });
                         hIn.val(1);
+                        state.addClass('deny');
+                        inheritedState = 1;
                         break;
                     case 1:
                     default:
                         // Unchecked > indeterminate.
                         el.prop({ checked: false, indeterminate: true, value: 0 });
                         hIn.val(0);
+                        inheritedState = getInheritedState(node);
                         break;
                 }
+
+                // Update classes for nodes with inherited state.
+                setIndeterminateClass(node, inheritedState);
             }
         });
     }
@@ -170,6 +183,50 @@
             node.removeClass('smtree-expanded').addClass('smtree-collapsed');
         }
         node.find('.smtree-inner:first .smtree-expander').html('<i class="' + (expand ? opt.expandedClass : opt.collapsedClass) + '"></i>');
+    }
+
+    function setIndeterminateClass(node, inheritedState) {
+        if (!node) return;
+
+        var childState = inheritedState;
+        var val = parseInt(node.find('> .smtree-inner input[type=checkbox]').val()) || 0;
+
+        if (val > 0) {
+            childState = val;
+        }
+        else {
+            var state = node.find('.smtree-state:first');
+            state.removeClass('in-allow in-deny');
+
+            if (inheritedState === 2) {
+                state.addClass('in-allow');
+            }
+            else if (inheritedState === 1) {
+                state.addClass('in-deny');
+            }
+            else {
+                // No inherited state.
+            }
+        }
+
+        node.find('> ul > .smtree-node').each(function () {
+            setIndeterminateClass($(this), childState);
+        });
+    }
+
+    function getInheritedState(node) {
+        var result = 0;
+
+        if (node) {
+            node.parents('.smtree-node').each(function () {
+                result = parseInt($(this).find('> .smtree-inner input[type=checkbox]').val()) || 0;
+                if (result > 0) {
+                    return false;
+                }
+            });
+        }
+
+        return result;
     }
 
 })( jQuery, this, document );

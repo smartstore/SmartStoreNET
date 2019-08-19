@@ -40,19 +40,25 @@
 	</div>
 
 	<div class="col-auto">
-		<div class="btn-group btn-group-toggle unselectable" data-toggle="buttons" id="@Html.IdFor(x => x.Style)">
-			<label class="btn btn-icon btn-secondary@(Model.Style == "fas" ? " active" : "")" title="Solid">
-				<input class="fa-chooser-style" type="radio" name="@Html.NameFor(x => x.Style)" value="fas" @(Model.Style == "fas" ? "checked" : "") />
-				<span class="d-inline-block rounded-circle bg-dark" style="width:14px; height:14px; line-height:14px; vertical-align:-1px"></span>
-			</label>
-			<label class="btn btn-icon btn-secondary@(Model.Style == "far" ? " active" : "")" title="Regular">
-				<input class="fa-chooser-style" type="radio" name="@Html.NameFor(x => x.Style)" value="far" @(Model.Style == "far" ? "checked" : "") />
-				<span class="d-inline-block rounded-circle border border-dark" style="width:14px; height:14px; border-width: 2px !important; vertical-align:-1px"></span>
-			</label>
-			<label class="btn btn-icon btn-secondary@(Model.Style == "fal" ? " active" : "")" title="Light (Pro only)">
-				<input class="fa-chooser-style" type="radio" name="@Html.NameFor(x => x.Style)" value="fal" @(Model.Style == "fal" ? "checked" : "") />
-				<span class="d-inline-block rounded-circle border border-gray" style="width:14px; height:14px; border-width: 1px !important; vertical-align:-1px"></span>
-			</label>
-		</div>
+        <div class="btn-group btn-group-toggle unselectable" data-toggle="buttons" id="@Html.IdFor(x => x.Style)">
+            <label class="btn btn-icon btn-secondary@(Model.Style == "fas" ? " active" : "")" title="Solid">
+                <input class="fa-chooser-style" type="radio" name="@Html.NameFor(x => x.Style)" value="fas" @(Model.Style == "fas" ? "checked" : "") />
+                <span class="d-inline-block rounded-circle bg-dark" style="width:14px; height:14px; line-height:14px; vertical-align:-1px"></span>
+            </label>
+            <label class="btn btn-icon btn-secondary@(Model.Style == "far" ? " active" : "")" title="Regular">
+                <input class="fa-chooser-style" type="radio" name="@Html.NameFor(x => x.Style)" value="far" @(Model.Style == "far" ? "checked" : "") />
+                <span class="d-inline-block rounded-circle border border-dark" style="width:14px; height:14px; border-width: 2px !important; vertical-align:-1px"></span>
+            </label>
+            <label class="btn btn-icon btn-secondary@(Model.Style == "fal" ? " active" : "")" title="Light (Pro only)">
+                <input class="fa-chooser-style" type="radio" name="@Html.NameFor(x => x.Style)" value="fal" @(Model.Style == "fal" ? "checked" : "") />
+                <span class="d-inline-block rounded-circle border border-gray" style="width:14px; height:14px; border-width: 1px !important; vertical-align:-1px"></span>
+            </label>
+
+            <label class="btn btn-icon btn-secondary@(Model.Style == "fad" ? " active" : "")" title="Duotone (Pro only)">
+                <input class="fa-chooser-style" type="radio" name="@Html.NameFor(x => x.Style)" value="fad" @(Model.Style == "fad" ? "checked" : "") />
+                <i class="fas fa-adjust" style="position: absolute; width:14px; height:14px; font-size: 14px"></i>
+                <span class="d-inline-block rounded-circle" style="width:14px; height:14px; background-color: rgba(0,0,0, 0.16)"></span>
+            </label>
+        </div>
 	</div>
 </div>

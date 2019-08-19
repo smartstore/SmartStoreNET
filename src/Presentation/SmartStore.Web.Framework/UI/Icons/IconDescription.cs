@@ -67,7 +67,11 @@ namespace SmartStore.Web.Framework.UI
 					case "fal":
 						prefix = "fal";
 						break;
-				}
+                    case "duotone":
+                    case "fad":
+                        prefix = "fad";
+                        break;
+                }
 			}
 
 			return string.Concat(prefix, " fa-", Name);

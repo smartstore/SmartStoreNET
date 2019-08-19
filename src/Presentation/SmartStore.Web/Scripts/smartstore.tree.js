@@ -108,9 +108,9 @@
             // Set indeterminate property.
             root.find('input[type=checkbox][value=0]').prop('indeterminate', true);
 
-            // Set indeterminate state class.
+            // Set inherited state.
             root.find('ul:first > .smtree-node').each(function () {
-                setIndeterminateClass($(this), 0);
+                setInheritedState($(this), 0);
             });
         }
 
@@ -156,7 +156,7 @@
                 }
 
                 // Update classes for nodes with inherited state.
-                setIndeterminateClass(node, inheritedState);
+                setInheritedState(node, inheritedState);
             }
         });
     }
@@ -185,32 +185,25 @@
         node.find('.smtree-inner:first .smtree-expander').html('<i class="' + (expand ? opt.expandedClass : opt.collapsedClass) + '"></i>');
     }
 
-    function setIndeterminateClass(node, inheritedState) {
+    function setInheritedState(node, inheritedState) {
         if (!node) return;
 
         var childState = inheritedState;
         var val = parseInt(node.find('> .smtree-inner input[type=checkbox]').val()) || 0;
 
         if (val > 0) {
+            // Has direct state.
             childState = val;
         }
         else {
+            // Has no direct state.
             var state = node.find('.smtree-state:first');
             state.removeClass('in-allow in-deny');
-
-            if (inheritedState === 2) {
-                state.addClass('in-allow');
-            }
-            else if (inheritedState === 1) {
-                state.addClass('in-deny');
-            }
-            else {
-                // No inherited state.
-            }
+            state.addClass(inheritedState === 2 ? 'in-allow' : 'in-deny');
         }
 
         node.find('> ul > .smtree-node').each(function () {
-            setIndeterminateClass($(this), childState);
+            setInheritedState($(this), childState);
         });
     }
 

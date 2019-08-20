@@ -614,6 +614,9 @@
     <Content Include="Views\Rule\_Rule.Descriptor.cshtml" />
     <Content Include="Views\Rule\_Rule.Operator.cshtml" />
     <Content Include="Views\Rule\_Rule.Value.cshtml" />
+    <Content Include="Views\Measure\WeightCreatePopup.cshtml" />
+    <Content Include="Views\Measure\WeightEditPopup.cshtml" />
+    <Content Include="Views\Measure\_CreateOrUpdateWeight.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

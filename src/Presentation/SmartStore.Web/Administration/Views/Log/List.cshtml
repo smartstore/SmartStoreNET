@@ -70,7 +70,7 @@
 				columns.Bound(x => x.ShortMessage)
 					.ClientTemplate("<span class='badge badge-<#= LogLevelHint #>' style='margin-right: 4px'><#= LogLevel #></span><a href=\"View/<#= Id #>\"><#= ShortMessage #></a>");
 				columns.Bound(x => x.UserName)
-					.Width(120);
+					.Width(220);
 				columns.Bound(x => x.CreatedOn)
 					.Width(160);
 			})

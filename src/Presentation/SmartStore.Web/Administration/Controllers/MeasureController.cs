@@ -79,7 +79,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
         [GridAction(EnableCustomBinding = true)]
-        public ActionResult WeightDelete(int id, GridCommand command)
+        public ActionResult DeleteWeight(int id, GridCommand command)
         {
 			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
 			{
@@ -98,7 +98,7 @@ namespace SmartStore.Admin.Controllers
             return Weights(command);
         }
 
-        public ActionResult WeightCreatePopup()
+        public ActionResult CreateWeightPopup()
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
             {
@@ -113,7 +113,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult WeightCreatePopup(string btnId, MeasureWeightModel model)
+        public ActionResult CreateWeightPopup(string btnId, MeasureWeightModel model)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
             {
@@ -154,7 +154,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        public ActionResult WeightEditPopup(int id)
+        public ActionResult EditWeightPopup(int id)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
             {
@@ -179,7 +179,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult WeightEditPopup(string btnId, MeasureWeightModel model)
+        public ActionResult EditWeightPopup(string btnId, MeasureWeightModel model)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
             {
@@ -231,36 +231,11 @@ namespace SmartStore.Admin.Controllers
         public ActionResult Dimensions(string id)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
+            {
                 return AccessDeniedView();
-
-            // Mark as primary dimension (if selected).
-            if (id.HasValue())
-            {
-                int primaryDimensionId = Convert.ToInt32(id);
-                var primaryDimension = _measureService.GetMeasureDimensionById(primaryDimensionId);
-                if (primaryDimension != null)
-                {
-                    _measureSettings.BaseDimensionId = primaryDimensionId;
-                    Services.Settings.SaveSetting(_measureSettings);
-                }
             }
 
-            var dimensionsModel = _measureService.GetAllMeasureDimensions()
-                .Select(x => x.ToModel())
-                .ToList();
-
-            foreach (var wm in dimensionsModel)
-            {
-                wm.IsPrimaryDimension = wm.Id == _measureSettings.BaseDimensionId;
-            }
-
-            var model = new GridModel<MeasureDimensionModel>
-            {
-                Data = dimensionsModel,
-                Total = dimensionsModel.Count
-            };
-
-            return View(model);
+            return View();
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
@@ -297,61 +272,149 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        public ActionResult DimensionUpdate(MeasureDimensionModel model, GridCommand command)
+        public ActionResult DeleteDimension(int id, GridCommand command)
         {
 			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
 			{
-				if (!ModelState.IsValid)
-				{
-					var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-					return Content(modelStateErrors.FirstOrDefault());
-				}
+				var entity = _measureService.GetMeasureDimensionById(id);
 
-				var dimension = _measureService.GetMeasureDimensionById(model.Id);
-				dimension = model.ToEntity(dimension);
-
-				_measureService.UpdateMeasureDimension(dimension);
-			}
-            
-            return Dimensions(command);
-        }
-
-        [GridAction(EnableCustomBinding = true)]
-        public ActionResult DimensionAdd([Bind(Exclude="Id")] MeasureDimensionModel model, GridCommand command)
-        {
-			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-			{
-				if (!ModelState.IsValid)
-				{
-					var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-					return Content(modelStateErrors.FirstOrDefault());
-				}
-
-				var dimension = new MeasureDimension();
-				dimension = model.ToEntity(dimension);
-
-				_measureService.InsertMeasureDimension(dimension);
+                if (entity.Id == _measureSettings.BaseDimensionId)
+                {
+                    NotifyError(T("Admin.Configuration.Measures.Dimensions.CantDeletePrimary"));
+                }
+                else
+                {
+                    _measureService.DeleteMeasureDimension(entity);
+                }
 			}
 
             return Dimensions(command);
         }
 
-        [GridAction(EnableCustomBinding = true)]
-        public ActionResult DimensionDelete(int id, GridCommand command)
+        public ActionResult CreateDimensionPopup()
         {
-			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-			{
-				var dimension = _measureService.GetMeasureDimensionById(id);
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
+            {
+                return AccessDeniedPartialView();
+            }
 
-				if (dimension.Id == _measureSettings.BaseDimensionId)
-				{
-					return Content(T("Admin.Configuration.Measures.Dimensions.CantDeletePrimary"));
-				}
+            var model = new MeasureDimensionModel();
 
-				_measureService.DeleteMeasureDimension(dimension);
-			}
+            AddLocales(_languageService, model.Locales);
 
-            return Dimensions(command);
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult CreateDimensionPopup(string btnId, MeasureDimensionModel model)
+        {
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
+            {
+                return AccessDeniedPartialView();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var entity = new MeasureDimension();
+
+                try
+                {
+                    entity = model.ToEntity(entity);
+
+                    _measureService.InsertMeasureDimension(entity);
+
+                    if (model.IsPrimaryDimension)
+                    {
+                        _measureSettings.BaseDimensionId = entity.Id;
+                        Services.Settings.SaveSetting(_measureSettings);
+                    }
+
+                    foreach (var localized in model.Locales)
+                    {
+                        _localizedEntityService.SaveLocalizedValue(entity, x => x.Name, localized.Name, localized.LanguageId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    return View(model);
+                }
+
+                ViewBag.RefreshPage = true;
+                ViewBag.btnId = btnId;
+            }
+
+            return View(model);
+        }
+
+        public ActionResult EditDimensionPopup(int id)
+        {
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
+            {
+                return AccessDeniedPartialView();
+            }
+
+            var entity = _measureService.GetMeasureDimensionById(id);
+            if (entity == null)
+            {
+                return HttpNotFound();
+            }
+
+            var model = entity.ToModel();
+            model.IsPrimaryDimension = entity.Id == _measureSettings.BaseDimensionId;
+
+            AddLocales(_languageService, model.Locales, (locale, languageId) =>
+            {
+                locale.Name = entity.GetLocalized(x => x.Name, languageId, false, false);
+            });
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult EditDimensionPopup(string btnId, MeasureDimensionModel model)
+        {
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
+            {
+                return AccessDeniedPartialView();
+            }
+
+            var entity = _measureService.GetMeasureDimensionById(model.Id);
+            if (entity == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    entity = model.ToEntity(entity);
+
+                    _measureService.UpdateMeasureDimension(entity);
+
+                    if (model.IsPrimaryDimension && _measureSettings.BaseDimensionId != entity.Id)
+                    {
+                        _measureSettings.BaseDimensionId = entity.Id;
+                        Services.Settings.SaveSetting(_measureSettings);
+                    }
+
+                    foreach (var localized in model.Locales)
+                    {
+                        _localizedEntityService.SaveLocalizedValue(entity, x => x.Name, localized.Name, localized.LanguageId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    return View(model);
+                }
+
+                ViewBag.RefreshPage = true;
+                ViewBag.btnId = btnId;
+            }
+
+            return View(model);
         }
 
         #endregion

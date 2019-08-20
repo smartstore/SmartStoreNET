@@ -1,6 +1,4 @@
-﻿@*@model Telerik.Web.Mvc.GridModel<MeasureWeightModel>*@
-@*@using System.Linq;*@
-@{
+﻿@{
     ViewBag.Title = T("Admin.Configuration.Measures.Weights").Text;
 }
 
@@ -46,7 +44,7 @@
 		{
 			dataBinding.Ajax()
                 .Select("Weights", "Measure")
-				.Delete("WeightDelete", "Measure");
+				.Delete("DeleteWeight", "Measure");
 		})
 		.EnableCustomBinding(true))
 </div>
@@ -54,7 +52,7 @@
 @helper WeightGridCommands(Grid<MeasureWeightModel> grid)
 {
 	<button type="submit" id="btnAddNewOption" name="btnAddNewOption" class="btn btn-below"
-			onclick="javascript:openPopup('@(Url.Action("WeightCreatePopup", "Measure", new { btnId = "btnRefresh" }))'); return false;">
+			onclick="javascript:openPopup('@(Url.Action("CreateWeightPopup", "Measure", new { btnId = "btnRefresh" }))'); return false;">
 		<i class="fa fa-plus"></i>
 		<span>@T("Admin.Configuration.Measures.Weights.AddWeight")</span>
 	</button>
@@ -72,7 +70,7 @@
 			e.preventDefault();
 			var tr = $(this).closest('tr');
 			var id = $('#measure-weight-grid').data('tGrid').dataItem(tr).Id;
-			var href = "@Url.Content("~/Admin/Measure/WeightEditPopup/")" + id + "?btnId=btnRefresh";
+			var href = "@Url.Content("~/Admin/Measure/EditWeightPopup/")" + id + "?btnId=btnRefresh";
 			
 			openPopup(href);
 			return false;

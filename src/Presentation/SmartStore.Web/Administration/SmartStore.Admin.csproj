@@ -614,9 +614,12 @@
     <Content Include="Views\Rule\_Rule.Descriptor.cshtml" />
     <Content Include="Views\Rule\_Rule.Operator.cshtml" />
     <Content Include="Views\Rule\_Rule.Value.cshtml" />
-    <Content Include="Views\Measure\WeightCreatePopup.cshtml" />
-    <Content Include="Views\Measure\WeightEditPopup.cshtml" />
+    <Content Include="Views\Measure\CreateWeightPopup.cshtml" />
+    <Content Include="Views\Measure\EditWeightPopup.cshtml" />
     <Content Include="Views\Measure\_CreateOrUpdateWeight.cshtml" />
+    <Content Include="Views\Measure\_CreateOrUpdateDimension.cshtml" />
+    <Content Include="Views\Measure\CreateDimensionPopup.cshtml" />
+    <Content Include="Views\Measure\EditDimensionPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

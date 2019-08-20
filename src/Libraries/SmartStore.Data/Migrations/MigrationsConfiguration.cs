@@ -53,7 +53,12 @@
             builder.AddOrUpdate("Admin.Configuration.Measures.Weights.AddWeight", "Add weight", "Gewicht hinzufügen");
             builder.AddOrUpdate("Admin.Configuration.Measures.Weights.EditWeight", "Edit weight", "Gewicht bearbeiten");
 
-            builder.Delete("Admin.Configuration.Measures.Weights.Fields.MarkAsPrimaryWeight");
+            builder.AddOrUpdate("Admin.Configuration.Measures.Dimensions.AddDimension", "Add dimension", "Abmessung hinzufügen");
+            builder.AddOrUpdate("Admin.Configuration.Measures.Dimensions.EditDimension", "Edit dimension", "Abmessung bearbeiten");
+
+            builder.Delete(
+                "Admin.Configuration.Measures.Weights.Fields.MarkAsPrimaryWeight",
+                "Admin.Configuration.Measures.Dimensions.Fields.MarkAsPrimaryDimension");
         }
     }
 }

@@ -35,13 +35,19 @@
 			    <a href="@item.Url" @Html.Attrs(attributes)>
 		            @if (hasIcons)
                     {
-			            <i class="fal fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "") list-group-item-icon"></i>
+			            <i class="fal fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : " fas") list-group-item-icon"></i>
+                    }
+                    else if (hasImages && item.ImageUrl.HasValue())
+                    {
+                        <img class="sm-icon" src="@Url.Content(item.ImageUrl)" alt="" />
                     }
                     else if (hasImages)
                     {
-                        <img class="sm-icon" src="@Url.Content(item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png")" alt="" />
+                        <i class="fa-fw fas"></i>
                     }
+
                     <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != rtl)>@itemText</span>
+
                     @if (item.BadgeText.HasValue())
                     {
                         <span class="badge badge-pill badge-@item.BadgeStyle.ToString().ToLower() ml-auto">@Html.Raw(item.BadgeText)</span>

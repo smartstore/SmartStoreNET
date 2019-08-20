@@ -56,6 +56,9 @@
             builder.AddOrUpdate("Admin.Configuration.Measures.Dimensions.AddDimension", "Add dimension", "Abmessung hinzufügen");
             builder.AddOrUpdate("Admin.Configuration.Measures.Dimensions.EditDimension", "Edit dimension", "Abmessung bearbeiten");
 
+            builder.AddOrUpdate("Admin.Configuration.QuantityUnit.AddQuantityUnit", "Add quantity unit", "Verpackungseinheit hinzufügen");
+            builder.AddOrUpdate("Admin.Configuration.QuantityUnit.EditQuantityUnit", "Edit quantity unit", "Verpackungseinheit bearbeiten");
+
             builder.Delete(
                 "Admin.Configuration.Measures.Weights.Fields.MarkAsPrimaryWeight",
                 "Admin.Configuration.Measures.Dimensions.Fields.MarkAsPrimaryDimension");

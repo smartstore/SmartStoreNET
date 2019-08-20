@@ -122,11 +122,9 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var entity = new MeasureWeight();
-
                 try
                 {
-                    entity = model.ToEntity(entity);
+                    var entity = model.ToEntity();
 
                     _measureService.InsertMeasureWeight(entity);
 
@@ -315,11 +313,9 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var entity = new MeasureDimension();
-
                 try
                 {
-                    entity = model.ToEntity(entity);
+                    var entity = model.ToEntity();
 
                     _measureService.InsertMeasureDimension(entity);
 

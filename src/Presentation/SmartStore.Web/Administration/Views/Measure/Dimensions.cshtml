@@ -4,7 +4,8 @@
 
 <div class="section-header">
     <div class="title">
-        @T("Admin.Configuration.Measures.Dimensions")
+        <i class="fas fa-ruler-combined"></i>
+        <span>@T("Admin.Configuration.Measures.Dimensions")</span>
     </div>
 </div>
 
@@ -30,8 +31,7 @@
             columns.Bound(x => x.IsPrimaryDimension)
                 .Width(100)
                 .Centered()
-                .ClientTemplate(@Html.SymbolForBool("IsPrimaryDimension"))
-                .ReadOnly();
+                .ClientTemplate(@Html.SymbolForBool("IsPrimaryDimension"));
             columns.Command(commands =>
             {
                 commands.Custom("edit-measure-dimension").Text(T("Common.Edit"));
@@ -51,8 +51,7 @@
     
 @helper DimensionGridCommands(Grid<MeasureDimensionModel> grid)
 {
-	<button type="submit" id="btnAddNewOption" name="btnAddNewOption" class="btn btn-below"
-			onclick="javascript:openPopup('@(Url.Action("CreateDimensionPopup", "Measure", new { btnId = "btnRefresh" }))'); return false;">
+	<button type="submit" id="btnAddNew" name="btnAddNew" class="btn" onclick="javascript:openPopup('@(Url.Action("CreateDimensionPopup", "Measure", new { btnId = "btnRefresh" }))'); return false;">
 		<i class="fa fa-plus"></i>
 		<span>@T("Admin.Configuration.Measures.Dimensions.AddDimension")</span>
 	</button>

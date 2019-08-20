@@ -4,7 +4,8 @@
 
 <div class="section-header">
     <div class="title">
-        @T("Admin.Configuration.Measures.Weights")
+        <i class="fas fa-balance-scale"></i>
+        <span>@T("Admin.Configuration.Measures.Weights")</span>
     </div>
 </div>
 
@@ -30,8 +31,7 @@
 			columns.Bound(x => x.IsPrimaryWeight)
 				.Width(100)
 				.Centered()
-				.ClientTemplate(@Html.SymbolForBool("IsPrimaryWeight"))
-				.ReadOnly();
+				.ClientTemplate(@Html.SymbolForBool("IsPrimaryWeight"));
 			columns.Command(commands =>
 			{
 				commands.Custom("edit-measure-weight").Text(T("Common.Edit"));
@@ -51,8 +51,7 @@
 
 @helper WeightGridCommands(Grid<MeasureWeightModel> grid)
 {
-	<button type="submit" id="btnAddNewOption" name="btnAddNewOption" class="btn btn-below"
-			onclick="javascript:openPopup('@(Url.Action("CreateWeightPopup", "Measure", new { btnId = "btnRefresh" }))'); return false;">
+	<button type="submit" id="btnAddNew" name="btnAddNew" class="btn" onclick="javascript:openPopup('@(Url.Action("CreateWeightPopup", "Measure", new { btnId = "btnRefresh" }))'); return false;">
 		<i class="fa fa-plus"></i>
 		<span>@T("Admin.Configuration.Measures.Weights.AddWeight")</span>
 	</button>

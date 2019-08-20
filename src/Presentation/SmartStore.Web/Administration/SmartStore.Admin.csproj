@@ -532,8 +532,6 @@
     <Content Include="Views\Home\MarketplaceFeed.cshtml" />
     <Content Include="Views\Order\ShipmentDetails.Print.cshtml" />
     <Content Include="Views\QuantityUnit\_CreateOrUpdate.cshtml" />
-    <Content Include="Views\QuantityUnit\Create.cshtml" />
-    <Content Include="Views\QuantityUnit\Edit.cshtml" />
     <Content Include="Views\QuantityUnit\List.cshtml" />
     <Content Include="Views\Home\UaTester.cshtml" />
     <Content Include="Views\Plugin\LicensePlugin.cshtml" />
@@ -620,6 +618,8 @@
     <Content Include="Views\Measure\_CreateOrUpdateDimension.cshtml" />
     <Content Include="Views\Measure\CreateDimensionPopup.cshtml" />
     <Content Include="Views\Measure\EditDimensionPopup.cshtml" />
+    <Content Include="Views\QuantityUnit\CreateQuantityUnitPopup.cshtml" />
+    <Content Include="Views\QuantityUnit\EditQuantityUnitPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

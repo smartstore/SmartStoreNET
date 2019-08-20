@@ -663,7 +663,7 @@ namespace SmartStore.Admin.Controllers
 					model.ProductUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, Request.Url.Scheme);
 				}
 
-                // downloads
+                // Downloads.
                 model.DownloadVersions = _downloadService.GetDownloadsFor(product)
                     .Select(x => new DownloadVersion
                     {
@@ -681,14 +681,14 @@ namespace SmartStore.Admin.Controllers
             }
 
             model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
-			model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.Name;
-			model.BaseDimensionIn = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId)?.Name;
+			model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.GetLocalized(x => x.Name) ?? string.Empty;
+			model.BaseDimensionIn = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId)?.GetLocalized(x => x.Name) ?? string.Empty;
 
 			model.NumberOfAvailableProductAttributes = _productAttributeService.GetAllProductAttributes().Count;
 			model.NumberOfAvailableManufacturers = _manufacturerService.GetAllManufacturers("",	pageIndex: 0, pageSize: 1, showHidden: true).TotalCount;
 			model.NumberOfAvailableCategories = _categoryService.GetAllCategories(pageIndex: 0, pageSize: 1, showHidden: true).TotalCount;
 
-			// copy product
+			// Copy product.
 			if (product != null)
 			{
 				model.CopyProductModel.Id = product.Id;
@@ -697,7 +697,7 @@ namespace SmartStore.Admin.Controllers
 				model.CopyProductModel.CopyImages = true;
 			}
 
-			// templates
+			// Templates.
 			var templates = _productTemplateService.GetAllProductTemplates();
 			foreach (var template in templates)
 			{
@@ -708,7 +708,7 @@ namespace SmartStore.Admin.Controllers
 				});
 			}
 
-			// Product tags
+			// Product tags.
 			if (product != null)
 			{
 				model.ProductTags = product.ProductTags.Select(x => x.Name).ToArray();
@@ -717,7 +717,7 @@ namespace SmartStore.Admin.Controllers
 			var allTags = _productTagService.GetAllProductTagNames();
 			model.AvailableProductTags = new MultiSelectList(allTags, model.ProductTags);
 
-			// tax categories
+			// Tax categories.
 			var taxCategories = _taxCategoryService.GetAllTaxCategories();
 			foreach (var tc in taxCategories)
 			{
@@ -735,7 +735,7 @@ namespace SmartStore.Admin.Controllers
                 model.AvailableTaxCategories.Insert(0, new SelectListItem { Text = T("Common.PleaseSelect"), Value = "", Selected = true });
             }
 
-            // delivery times
+            // Delivery times.
             var defaultDeliveryTime = _deliveryTimesService.GetDefaultDeliveryTime();
             var deliveryTimes = _deliveryTimesService.GetAllDeliveryTimes();
 			foreach (var dt in deliveryTimes)
@@ -743,11 +743,11 @@ namespace SmartStore.Admin.Controllers
 				var isSelected = false;
 				if (setPredefinedValues)
 				{
-					isSelected = (defaultDeliveryTime != null && dt.Id == defaultDeliveryTime.Id);
+					isSelected = defaultDeliveryTime != null && dt.Id == defaultDeliveryTime.Id;
 				}
 				else
 				{
-					isSelected = (product != null && dt.Id == product.DeliveryTimeId.GetValueOrDefault());
+					isSelected = product != null && dt.Id == product.DeliveryTimeId.GetValueOrDefault();
 				}
 
 				model.AvailableDeliveryTimes.Add(new SelectListItem
@@ -758,7 +758,7 @@ namespace SmartStore.Admin.Controllers
                 });
 			}
             
-            // quantity units
+            // Quantity units.
             var quantityUnits = _quantityUnitService.GetAllQuantityUnits();
             foreach (var mu in quantityUnits)
             {
@@ -774,7 +774,7 @@ namespace SmartStore.Admin.Controllers
 			var measureUnits = _measureService.GetAllMeasureWeights()
 				.Select(x => x.SystemKeyword).Concat(_measureService.GetAllMeasureDimensions().Select(x => x.SystemKeyword)).ToList();
 
-			// don't forget biz import!
+			// Don't forget biz import!
             if (product != null && !setPredefinedValues && product.BasePriceMeasureUnit.HasValue() && !measureUnits.Exists(u => u.IsCaseInsensitiveEqual(product.BasePriceMeasureUnit)))
 			{
                 measureUnits.Add(product.BasePriceMeasureUnit);
@@ -790,7 +790,7 @@ namespace SmartStore.Admin.Controllers
 				});
 			}
 
-			// specification attributes
+			// Specification attributes.
 			var specificationAttributes = _specificationAttributeService.GetSpecificationAttributes().ToList();
 			for (int i = 0; i < specificationAttributes.Count; i++)
 			{
@@ -798,7 +798,7 @@ namespace SmartStore.Admin.Controllers
 				model.AddSpecificationAttributeModel.AvailableAttributes.Add(new SelectListItem { Text = sa.Name, Value = sa.Id.ToString() });
 				if (i == 0)
 				{
-					//attribute options
+					// Attribute options.
 					foreach (var sao in _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(sa.Id))
 					{
 						model.AddSpecificationAttributeModel.AvailableOptions.Add(new SelectListItem { Text = sao.Name, Value = sao.Id.ToString() });
@@ -806,7 +806,7 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
-			// discounts
+			// Discounts.
 			var discounts = _discountService.GetAllDiscounts(DiscountType.AssignedToSkus, null, true);
 			model.AvailableDiscounts = discounts.ToList();
 			if (product != null && !excludeProperties)
@@ -3608,7 +3608,7 @@ namespace SmartStore.Admin.Controllers
 
 			model.ProductId = product.Id;
 			model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
-			model.BaseDimensionIn = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId)?.Name;
+			model.BaseDimensionIn = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId)?.GetLocalized(x => x.Name) ?? string.Empty;
 
 			if (entity == null)
 			{

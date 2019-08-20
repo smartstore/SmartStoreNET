@@ -3,6 +3,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Services;
 using SmartStore.Services.Directory;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Shipping;
 using SmartStore.ShippingByWeight.Domain;
 using SmartStore.ShippingByWeight.Models;
@@ -13,7 +14,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.ShippingByWeight.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public class ShippingByWeightController : PluginControllerBase
     {
         private readonly IShippingService _shippingService;
@@ -35,14 +36,14 @@ namespace SmartStore.ShippingByWeight.Controllers
 			AdminAreaSettings adminAreaSettings,
 			ICommonServices services)
         {
-            this._shippingService = shippingService;
-            this._countryService = countryService;
-            this._shippingByWeightSettings = shippingByWeightSettings;
-            this._shippingByWeightService = shippingByWeightService;
-            this._measureService = measureService;
-            this._measureSettings = measureSettings;
-			this._adminAreaSettings = adminAreaSettings;
-			this._services = services;
+            _shippingService = shippingService;
+            _countryService = countryService;
+            _shippingByWeightSettings = shippingByWeightSettings;
+            _shippingByWeightService = shippingByWeightService;
+            _measureService = measureService;
+            _measureSettings = measureSettings;
+			_adminAreaSettings = adminAreaSettings;
+			_services = services;
         }
 
         public ActionResult Configure()
@@ -62,7 +63,6 @@ namespace SmartStore.ShippingByWeight.Controllers
 				model.AvailableShippingMethods.Add(new SelectListItem { Text = sm.Name, Value = sm.Id.ToString() });
 			}
 
-			//stores
 			model.AvailableStores.Add(new SelectListItem { Text = "*", Value = "0" });
 			foreach (var store in allStores)
 			{
@@ -79,7 +79,7 @@ namespace SmartStore.ShippingByWeight.Controllers
             model.CalculatePerWeightUnit = _shippingByWeightSettings.CalculatePerWeightUnit;
 			model.IncludeWeightOfFreeShippingProducts = _shippingByWeightSettings.IncludeWeightOfFreeShippingProducts;
             model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
-            model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name;
+            model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.GetLocalized(x => x.Name) ?? string.Empty;
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
             return View(model);

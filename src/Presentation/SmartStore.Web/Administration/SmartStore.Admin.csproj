@@ -620,6 +620,8 @@
     <Content Include="Views\Measure\EditDimensionPopup.cshtml" />
     <Content Include="Views\QuantityUnit\CreateQuantityUnitPopup.cshtml" />
     <Content Include="Views\QuantityUnit\EditQuantityUnitPopup.cshtml" />
+    <Content Include="Views\DeliveryTime\CreateDeliveryTimePopup.cshtml" />
+    <Content Include="Views\DeliveryTime\EditDeliveryTimePopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />
@@ -1205,12 +1207,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\DeliveryTime\_CreateOrUpdate.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\DeliveryTime\Create.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\DeliveryTime\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\AttributeCombinationCreatePopup.cshtml" />

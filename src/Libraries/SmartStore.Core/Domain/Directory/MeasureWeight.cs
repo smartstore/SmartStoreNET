@@ -1,4 +1,5 @@
 using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Domain.Directory
 {
@@ -6,7 +7,7 @@ namespace SmartStore.Core.Domain.Directory
 	/// Represents a measure weight
 	/// </summary>
 	[DataContract]
-	public partial class MeasureWeight : BaseEntity
+	public partial class MeasureWeight : BaseEntity, ILocalizedEntity
     {
 		/// <summary>
 		/// Gets or sets the name

@@ -575,7 +575,9 @@ namespace SmartStore.Web.Controllers
 
 			if (model.ShowWeight && contextProduct.Weight > 0)
 			{
-				item.Weight = "{0} {1}".FormatCurrent(contextProduct.Weight.ToString("N2"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name);
+                var measureWeightName = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.GetLocalized(x => x.Name) ?? string.Empty;
+
+                item.Weight = "{0} {1}".FormatCurrent(contextProduct.Weight.ToString("N2"), measureWeightName);
 			}
 
 			// New Badge

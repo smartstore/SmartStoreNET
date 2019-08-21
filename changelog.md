@@ -1,5 +1,13 @@
 # Release Notes
 
+## SmartStore.NET 4.0.0
+
+### Improvements
+
+* #1663 Make MeasureDimension and MeasureWeight localizable.
+
+
+
 ## SmartStore.NET 3.2.2
 
 ### New Features
@@ -10,7 +18,7 @@
 * New Heidelpay payment plugin.
 * Shop-Connector: mapping of product SKUs that differ between client shops.
 * MegaMenu supports configuration of menu items
- 
+
 
 ### Improvements
 * Amazon Pay: PSD2. Strong customer authentication (SCA) upgrade.

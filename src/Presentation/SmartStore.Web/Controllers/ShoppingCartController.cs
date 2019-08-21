@@ -698,9 +698,9 @@ namespace SmartStore.Web.Controllers
 			model.ShowSku = _catalogSettings.ShowProductSku;
 
             var measure = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
-            if(measure != null) 
+            if (measure != null) 
             {
-                model.MeasureUnitName = measure.Name;
+                model.MeasureUnitName = measure.GetLocalized(x => x.Name);
             }
             
 			var checkoutAttributesXml = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
@@ -711,7 +711,7 @@ namespace SmartStore.Web.Controllers
 			model.IsValidMinOrderSubtotal = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
 			model.TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled;
 
-			//gift card and gift card boxes
+			// Gift card and gift card boxes.
 			model.DiscountBox.Display = _shoppingCartSettings.ShowDiscountBox;
 			var discountCouponCode = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.DiscountCouponCode);
 			var discount = _discountService.GetDiscountByCouponCode(discountCouponCode);
@@ -724,7 +724,7 @@ namespace SmartStore.Web.Controllers
 			model.DisplayCommentBox = _shoppingCartSettings.ShowCommentBox;
 			model.DisplayEsdRevocationWaiverBox = _shoppingCartSettings.ShowEsdRevocationWaiverBox;
 
-            //reward points
+            // Reward points.
             if (_rewardPointsSettings.Enabled && !cart.IsRecurring() && !_workContext.CurrentCustomer.IsGuest())
             {
                 int rewardPointsBalance = _workContext.CurrentCustomer.GetRewardPointsBalance();
@@ -741,7 +741,7 @@ namespace SmartStore.Web.Controllers
                 }
             }
 
-            //cart warnings
+            // Cart warnings.
             var cartWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, validateCheckoutAttributes);
 			foreach (var warning in cartWarnings)
 			{
@@ -755,7 +755,7 @@ namespace SmartStore.Web.Controllers
 			var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
 			if (!cart.RequiresShipping())
 			{
-				//remove attributes which require shippable products
+				// Remove attributes which require shippable products.
 				checkoutAttributes = checkoutAttributes.RemoveShippableAttributes();
 			}
 
@@ -1981,7 +1981,7 @@ namespace SmartStore.Web.Controllers
                 var measure = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
                 if (measure != null)
                 {
-                    model.WeightMeasureUnitName = measure.Name;
+                    model.WeightMeasureUnitName = measure.GetLocalized(x => x.Name);
                 }
 
                 // Subtotal

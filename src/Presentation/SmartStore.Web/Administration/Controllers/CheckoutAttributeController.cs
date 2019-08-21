@@ -277,7 +277,6 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        //delete
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -324,7 +323,6 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        //create
         public ActionResult ValueCreatePopup(int checkoutAttributeId)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -333,10 +331,10 @@ namespace SmartStore.Admin.Controllers
             var model = new CheckoutAttributeValueModel();
             model.CheckoutAttributeId = checkoutAttributeId;
 			model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
-            model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name;
+            model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.GetLocalized(x => x.Name) ?? string.Empty;
 
-            //locales
             AddLocales(_languageService, model.Locales);
+
             return View(model);
         }
 
@@ -348,10 +346,12 @@ namespace SmartStore.Admin.Controllers
 
             var checkoutAttribute = _checkoutAttributeService.GetCheckoutAttributeById(model.CheckoutAttributeId);
             if (checkoutAttribute == null)
+            {
                 return RedirectToAction("List");
+            }
 
 			model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
-            model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name;
+            model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.GetLocalized(x => x.Name) ?? string.Empty;
 
             if (ModelState.IsValid)
             {
@@ -363,14 +363,13 @@ namespace SmartStore.Admin.Controllers
                 ViewBag.RefreshPage = true;
                 ViewBag.btnId = btnId;
                 ViewBag.formId = formId;
+
                 return View(model);
             }
 
-            //If we got this far, something failed, redisplay form
             return View(model);
         }
 
-        //edit
         public ActionResult ValueEditPopup(int id)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -378,13 +377,14 @@ namespace SmartStore.Admin.Controllers
 
             var cav = _checkoutAttributeService.GetCheckoutAttributeValueById(id);
             if (cav == null)
+            {
                 return RedirectToAction("List");
+            }
 
             var model = cav.ToModel();
 			model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
-            model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name;
+            model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.GetLocalized(x => x.Name) ?? string.Empty;
 
-            //locales
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Name = cav.GetLocalized(x => x.Name, languageId, false, false);
@@ -401,10 +401,12 @@ namespace SmartStore.Admin.Controllers
 
             var cav = _checkoutAttributeService.GetCheckoutAttributeValueById(model.Id);
             if (cav == null)
+            {
                 return RedirectToAction("List");
+            }
 
 			model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
-            model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name;
+            model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.GetLocalized(x => x.Name) ?? string.Empty;
 
             if (ModelState.IsValid)
             {
@@ -416,10 +418,10 @@ namespace SmartStore.Admin.Controllers
                 ViewBag.RefreshPage = true;
                 ViewBag.btnId = btnId;
                 ViewBag.formId = formId;
+
                 return View(model);
             }
 
-            //If we got this far, something failed, redisplay form
             return View(model);
         }
 

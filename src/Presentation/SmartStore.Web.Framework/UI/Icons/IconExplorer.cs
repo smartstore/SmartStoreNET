@@ -149,7 +149,7 @@ namespace SmartStore.Web.Framework.UI
 					IsPro = true,
 					Name = name,
 					Label = name,
-					Styles = new[] { "solid", "regular", "light" },
+					Styles = new[] { "solid", "regular", "light", "duotone" },
 					HasRegularStyle = true,
 				};
 			}

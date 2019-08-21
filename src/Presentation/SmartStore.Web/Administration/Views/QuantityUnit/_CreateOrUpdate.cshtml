@@ -1,7 +1,8 @@
 ﻿@model QuantityUnitModel
-
+@Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
-@(Html.LocalizedEditor<QuantityUnitModel, QuantityUnitLocalizedModel>("measure-unit-info-localized",
+
+@(Html.LocalizedEditor<QuantityUnitModel, QuantityUnitLocalizedModel>("quantity-unit-localized",
     @<table class="adminContent">
         <tr>
             <td class="adminTitle">

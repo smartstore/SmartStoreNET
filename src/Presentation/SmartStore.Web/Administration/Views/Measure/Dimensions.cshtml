@@ -1,78 +1,78 @@
-﻿@model Telerik.Web.Mvc.GridModel<MeasureDimensionModel>
-@using Telerik.Web.Mvc.UI;
-@using System.Linq;
-@{
+﻿@{
     ViewBag.Title = T("Admin.Configuration.Measures.Dimensions").Text;
 }
 
 <div class="section-header">
     <div class="title">
-        @T("Admin.Configuration.Measures.Dimensions")
+        <i class="fas fa-ruler-combined"></i>
+        <span>@T("Admin.Configuration.Measures.Dimensions")</span>
     </div>
 </div>
 
-<div class="alert alert-warning alert-dismissible">
-	@T("Admin.Configuration.Measures.Dimensions.Description")
-	<button type="button" class="close" data-dismiss="alert">&times;</button>
-</div>
-
 <div>
-	@(Html.Telerik().Grid<MeasureDimensionModel>(Model.Data)
-			.Name("measuredimension-grid")
-			.DataKeys(x =>
-			{
-				x.Add(y => y.Id).RouteKey("Id");
-			})
-			.Columns(columns =>
-			{
-				columns.Bound(x => x.Name)
-					.Width(200);
-				columns.Bound(x => x.SystemKeyword)
-					.Width(150);
-				columns.Bound(x => x.Ratio)
-					.Format("{0:0.00000000}")
-					.Width(180);
-				columns.Bound(x => x.DisplayOrder)
-					.Centered()
-					.Width(100);
-				columns.Bound(x => x.IsPrimaryDimension)
-					.Width(100)
-					.Centered()
-					.Template(item => @Html.SymbolForBool(item.IsPrimaryDimension))
-					.ClientTemplate(@Html.SymbolForBool("IsPrimaryDimension"))
-					.ReadOnly();
-				columns.Command(commands => commands.Select().Text(T("Admin.Telerik.GridLocalization.Select").ToString()))
-					.Title(T("Admin.Configuration.Measures.Dimensions.Fields.MarkAsPrimaryDimension").Text)
-					.Width(100);
-				columns.Command(commands =>
-				{
-					commands.Edit().Localize(T);
-					commands.Delete().Localize(T);
-				}).Width(180)
-				.HtmlAttributes(new { align = "right", @class = "omega" }); ;
-
-			})
-			.ToolBar(x => x.Insert())
-			.Editable(x =>
-			{
-				x.Mode(GridEditMode.InLine);
-			})
-			.DataBinding(dataBinding =>
-			{
-				dataBinding.Ajax().Select("Dimensions", "Measure")
-					.Update("DimensionUpdate", "Measure")
-					.Delete("DimensionDelete", "Measure")
-					.Insert("DimensionAdd", "Measure");
-			})
-			.ClientEvents(x => x.OnError("grid_onError"))
-			.EnableCustomBinding(true))
-
-	<script type="text/javascript">
-		function grid_onError(e) {
-			alert(e.XMLHttpRequest.responseText);
-			e.preventDefault();
-		}
-	</script>
-
+	@(Html.Telerik().Grid<MeasureDimensionModel>()
+        .Name("measure-dimension-grid")
+        .DataKeys(x =>
+        {
+            x.Add(y => y.Id).RouteKey("Id");
+        })
+        .Columns(columns =>
+        {
+            columns.Bound(x => x.Name)
+                .Width(200);
+            columns.Bound(x => x.SystemKeyword)
+                .Width(150);
+            columns.Bound(x => x.Ratio)
+                .Format("{0:0.00000000}")
+                .Width(180);
+            columns.Bound(x => x.DisplayOrder)
+                .Centered()
+                .Width(100);
+            columns.Bound(x => x.IsPrimaryDimension)
+                .Width(100)
+                .Centered()
+                .ClientTemplate(@Html.SymbolForBool("IsPrimaryDimension"));
+            columns.Command(commands =>
+            {
+                commands.Custom("edit-measure-dimension").Text(T("Common.Edit"));
+                commands.Delete().Localize(T);
+            }).Width(180)
+            .HtmlAttributes(new { align = "right", @class = "omega" });
+        })
+        .ToolBar(commands => commands.Template(DimensionGridCommands))
+        .DataBinding(dataBinding =>
+        {
+            dataBinding.Ajax()
+                .Select("Dimensions", "Measure")
+                .Delete("DeleteDimension", "Measure");
+        })
+        .EnableCustomBinding(true))
 </div>
     
+@helper DimensionGridCommands(Grid<MeasureDimensionModel> grid)
+{
+	<button type="submit" id="btnAddNew" name="btnAddNew" class="btn" onclick="javascript:openPopup('@(Url.Action("CreateDimensionPopup", "Measure", new { btnId = "btnRefresh" }))'); return false;">
+		<i class="fa fa-plus"></i>
+		<span>@T("Admin.Configuration.Measures.Dimensions.AddDimension")</span>
+	</button>
+	<input type="submit" id="btnRefresh" name="btnRefresh" class="d-none" />
+}
+
+<script>
+	$(function() {
+		$('#btnRefresh').click(function () {
+			$('#measure-dimension-grid').data('tGrid').ajaxRequest();
+			return false;
+		});
+
+		$('#measure-dimension-grid').on('click', '.t-grid-edit-measure-dimension', function (e) {
+			e.preventDefault();
+			var tr = $(this).closest('tr');
+			var id = $('#measure-dimension-grid').data('tGrid').dataItem(tr).Id;
+			var href = "@Url.Content("~/Admin/Measure/EditDimensionPopup/")" + id + "?btnId=btnRefresh";
+			
+			openPopup(href);
+			return false;
+		});
+	});
+</script>

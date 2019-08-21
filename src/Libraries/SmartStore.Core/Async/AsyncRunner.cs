@@ -28,18 +28,7 @@ namespace SmartStore.Core.Async
 
 		public void Dispose()
 		{
-			try
-			{
-				CurrentContext.BeginMessageLoop();
-			}
-			catch (Exception e)
-			{
-				throw e;
-			}
-			finally
-			{
-				SynchronizationContext.SetSynchronizationContext(OldContext);
-			}
+	        SynchronizationContext.SetSynchronizationContext(OldContext);
 		}
 
 		private void Increment()
@@ -80,7 +69,9 @@ namespace SmartStore.Core.Async
 					Decrement();
 				}
 			}, null);
-		}
+
+            CurrentContext.BeginMessageLoop();
+        }
 
 		/// <summary>
 		/// Executes an async Task method which has a TResult return type synchronously
@@ -90,8 +81,9 @@ namespace SmartStore.Core.Async
 		public TResult Run<TResult>(Task<TResult> task, Action<Task<TResult>> continuation = null)
 		{
 			var result = default(TResult);
+            var curContext = CurrentContext;
 
-			CurrentContext.Post(async _ =>
+            curContext.Post(async _ =>
 			{
 				try
 				{
@@ -110,7 +102,9 @@ namespace SmartStore.Core.Async
 				}
 			}, null);
 
-			return result;
+            curContext.BeginMessageLoop();
+
+            return result;
 		}
 
 		#endregion

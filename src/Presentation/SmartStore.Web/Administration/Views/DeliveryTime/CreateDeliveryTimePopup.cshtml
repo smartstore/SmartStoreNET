@@ -1,20 +1,18 @@
 ﻿@model DeliveryTimeModel
-@{
-    ViewBag.Title = T("Admin.Configuration.DeliveryTimes.AddNew").Text;
+@{    
+	ViewBag.Title = T("Admin.Configuration.DeliveryTimes.AddNew").Text;
+	Layout = "_AdminPopupLayout";
 }
 @using (Html.BeginForm())
 {
     <div class="section-header">
         <div class="title">
-            @T("Admin.Configuration.DeliveryTimes.AddNew") @Html.ActionLink("(" + T("Admin.Configuration.DeliveryTimes.BackToList") + ")", "List")
+            @T("Admin.Configuration.DeliveryTimes.AddNew")
         </div>
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-primary">
 				<i class="fa fa-check"></i>
 				<span>@T("Admin.Common.Save")</span>
-			</button>
-            <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
-				<span>@T("Admin.Common.SaveContinue")</span>
 			</button>
         </div>
     </div>

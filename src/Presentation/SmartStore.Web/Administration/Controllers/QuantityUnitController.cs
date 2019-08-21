@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Directory;
@@ -7,7 +8,6 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
@@ -29,8 +29,6 @@ namespace SmartStore.Admin.Controllers
             _localizedEntityService = localizedEntityService;
             _languageService = languageService;
         }
-        
-        #region Methods
 
         public ActionResult Index()
         {
@@ -44,17 +42,34 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
             }
 
-            var quantityUnitModel = _quantityUnitService.GetAllQuantityUnits()
-                .Select(x => x.ToModel())
-                .ToList();
+            return View();
+        }
 
-            var gridModel = new GridModel<QuantityUnitModel>
+        [HttpPost, GridAction(EnableCustomBinding = true)]
+        public ActionResult List(GridCommand command)
+        {
+            var model = new GridModel<QuantityUnitModel>();
+
+            if (Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
             {
-                Data = quantityUnitModel,
-                Total = quantityUnitModel.Count()
-            };
+                var quantityUnitModel = _quantityUnitService.GetAllQuantityUnits()
+                    .Select(x => x.ToModel())
+                    .ToList();
 
-            return View(gridModel);
+                model.Data = quantityUnitModel;
+                model.Total = quantityUnitModel.Count;
+            }
+            else
+            {
+                model.Data = Enumerable.Empty<QuantityUnitModel>();
+
+                NotifyAccessDenied();
+            }
+
+            return new JsonResult
+            {
+                Data = model
+            };
         }
 
         // Ajax.
@@ -77,15 +92,11 @@ namespace SmartStore.Admin.Controllers
             return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
-        #endregion
-
-        #region Create / Edit / Delete / Save
-
-        public ActionResult Create()
+        public ActionResult CreateQuantityUnitPopup()
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
             {
-                return AccessDeniedView();
+                return AccessDeniedPartialView();
             }
 
             var model = new QuantityUnitModel();
@@ -94,8 +105,8 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public ActionResult Create(QuantityUnitModel model, bool continueEditing)
+        [HttpPost]
+        public ActionResult CreateQuantityUnitPopup(string btnId, QuantityUnitModel model)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
             {
@@ -104,115 +115,114 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var quantityUnit = model.ToEntity();
+                try
+                {
+                    var entity = model.ToEntity();
 
-                _quantityUnitService.InsertQuantityUnit(quantityUnit);
+                    _quantityUnitService.InsertQuantityUnit(entity);
 
-                UpdateLocales(quantityUnit, model);
+                    UpdateLocales(entity, model);
 
-                NotifySuccess(T("Admin.Configuration.QuantityUnit.Added"));
-                return continueEditing ? RedirectToAction("Edit", new { id = quantityUnit.Id }) : RedirectToAction("List");
+                    NotifySuccess(T("Admin.Configuration.QuantityUnit.Added"));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    return View(model);
+                }
+
+                ViewBag.RefreshPage = true;
+                ViewBag.btnId = btnId;
             }
 
             return View(model);
         }
 
-        public ActionResult Edit(int id)
+        public ActionResult EditQuantityUnitPopup(int id)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
             {
-                return AccessDeniedView();
+                return AccessDeniedPartialView();
             }
 
-            var quantityUnit = _quantityUnitService.GetQuantityUnitById(id);
-            if (quantityUnit == null)
+            var entity = _quantityUnitService.GetQuantityUnitById(id);
+            if (entity == null)
             {
-                return RedirectToAction("List");
+                return HttpNotFound();
             }
 
-            var model = quantityUnit.ToModel();
+            var model = entity.ToModel();
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
-                locale.Name = quantityUnit.GetLocalized(x => x.Name, languageId, false, false);
-                locale.NamePlural = quantityUnit.GetLocalized(x => x.NamePlural, languageId, false, false);
-                locale.Description = quantityUnit.GetLocalized(x => x.Description, languageId, false, false);
+                locale.Name = entity.GetLocalized(x => x.Name, languageId, false, false);
+                locale.NamePlural = entity.GetLocalized(x => x.NamePlural, languageId, false, false);
+                locale.Description = entity.GetLocalized(x => x.Description, languageId, false, false);
             });
 
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public ActionResult Edit(QuantityUnitModel model, bool continueEditing)
+        [HttpPost]
+        public ActionResult EditQuantityUnitPopup(string btnId, QuantityUnitModel model)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
             {
-                return AccessDeniedView();
+                return AccessDeniedPartialView();
             }
 
-            var quantityUnit = _quantityUnitService.GetQuantityUnitById(model.Id);
-            if (quantityUnit == null)
+            var entity = _quantityUnitService.GetQuantityUnitById(model.Id);
+            if (entity == null)
             {
-                return RedirectToAction("List");
+                return HttpNotFound();
             }
 
             if (ModelState.IsValid)
             {
-                quantityUnit = model.ToEntity(quantityUnit);
+                try
+                {
+                    entity = model.ToEntity(entity);
 
-                UpdateLocales(quantityUnit, model);
+                    _quantityUnitService.UpdateQuantityUnit(entity);
 
-                _quantityUnitService.UpdateQuantityUnit(quantityUnit);
+                    UpdateLocales(entity, model);
 
-                NotifySuccess(T("Admin.Configuration.QuantityUnits.Updated"));
-                return continueEditing ? RedirectToAction("Edit", new { id = quantityUnit.Id }) : RedirectToAction("List");
+                    NotifySuccess(T("Admin.Configuration.QuantityUnits.Updated"));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    return View(model);
+                }
+
+                ViewBag.RefreshPage = true;
+                ViewBag.btnId = btnId;
             }
 
             return View(model);
         }
 
-        [HttpPost]
-        public ActionResult Save(FormCollection formValues)
+        [GridAction(EnableCustomBinding = true)]
+        public ActionResult DeleteQuantityUnit(int id, GridCommand command)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
+            if (Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
             {
-                return AccessDeniedView();
+                var entity = _quantityUnitService.GetQuantityUnitById(id);
+
+                try
+                {
+                    _quantityUnitService.DeleteQuantityUnit(entity);
+
+                    NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+                }
+                catch (Exception ex)
+                {
+                    NotifyError(ex);
+                }
             }
 
-            return RedirectToAction("List", "QuantityUnit");
+            return List(command);
         }
-
-        [HttpPost, ActionName("Delete")]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-            {
-                return AccessDeniedView();
-            }
-
-            var quantityUnit = _quantityUnitService.GetQuantityUnitById(id);
-            if (quantityUnit == null)
-            {
-                return RedirectToAction("List");
-            }
-
-            try
-            {
-                _quantityUnitService.DeleteQuantityUnit(quantityUnit);
-
-                NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
-                return RedirectToAction("List");
-            }
-            catch (Exception ex)
-            {
-                NotifyError(ex);
-                return RedirectToAction("Edit", new { id = quantityUnit.Id });
-            }
-        }
-
-        #endregion
-
-        #region Utilities
 
         private void UpdateLocales(QuantityUnit quantityUnit, QuantityUnitModel model)
         {
@@ -223,7 +233,5 @@ namespace SmartStore.Admin.Controllers
                 _localizedEntityService.SaveLocalizedValue(quantityUnit, x => x.Description, localized.Description, localized.LanguageId);
             }
         }
-
-        #endregion
     }
 }

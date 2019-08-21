@@ -1,4 +1,6 @@
-﻿using SmartStore.Web.Framework;
+﻿using FluentValidation;
+using FluentValidation.Attributes;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
 using System.Collections.Generic;
@@ -6,6 +8,7 @@ using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Directory
 {
+    [Validator(typeof(QuantityUnitValidator))]
     public class QuantityUnitModel : EntityModelBase, ILocalizedModel<QuantityUnitLocalizedModel>
     {
         public QuantityUnitModel()
@@ -44,5 +47,14 @@ namespace SmartStore.Admin.Models.Directory
 
         [SmartResourceDisplayName("Common.Description")]
         public string Description { get; set; }
+    }
+
+    public partial class QuantityUnitValidator : AbstractValidator<QuantityUnitModel>
+    {
+        public QuantityUnitValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.NamePlural).NotEmpty();
+        }
     }
 }

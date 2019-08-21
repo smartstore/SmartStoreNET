@@ -7,24 +7,17 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public class DeliveryTimeController :  AdminControllerBase
     {
-        #region Fields
-
         private readonly IDeliveryTimeService _deliveryTimeService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ILanguageService _languageService;
-
-        #endregion
-
-        #region Constructors
 
         public DeliveryTimeController(
 			IDeliveryTimeService deliveryTimeService,
@@ -36,10 +29,6 @@ namespace SmartStore.Admin.Controllers
             _languageService = languageService;
         }
         
-        #endregion
-
-        #region Utilities
-
         [NonAction]
         public void UpdateLocales(DeliveryTime deliveryTime, DeliveryTimeModel model)
         {
@@ -49,10 +38,6 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
-        #endregion
-
-        #region Methods
-
         public ActionResult Index()
         {
             return RedirectToAction("List");
@@ -61,7 +46,9 @@ namespace SmartStore.Admin.Controllers
         public ActionResult List()
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
+            {
                 return AccessDeniedView();
+            }
 
             return View();
         }
@@ -93,7 +80,7 @@ namespace SmartStore.Admin.Controllers
 			};
 		}
 
-		//ajax
+		// Ajax.
 		public ActionResult AllDeliveryTimes(string label, int selectedId)
         {
             var deliveryTimes = _deliveryTimeService.GetAllDeliveryTimes();
@@ -117,126 +104,140 @@ namespace SmartStore.Admin.Controllers
 			};
         }
 
-        #endregion
-
-        #region Create / Edit / Delete / Save
-
-        public ActionResult Create()
+        public ActionResult CreateDeliveryTimePopup()
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
-                return AccessDeniedView();
+            {
+                return AccessDeniedPartialView();
+            }
 
             var model = new DeliveryTimeModel();
-
             AddLocales(_languageService, model.Locales);
-            
+
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public ActionResult Create(DeliveryTimeModel model, bool continueEditing)
+        [HttpPost]
+        public ActionResult CreateDeliveryTimePopup(string btnId, DeliveryTimeModel model)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
+            {
                 return AccessDeniedView();
+            }
 
             if (ModelState.IsValid)
             {
-                var deliveryTime = model.ToEntity();
-                
-                _deliveryTimeService.InsertDeliveryTime(deliveryTime);
+                try
+                {
+                    var entity = model.ToEntity();
 
-                UpdateLocales(deliveryTime, model);
+                    _deliveryTimeService.InsertDeliveryTime(entity);
 
-                NotifySuccess(T("Admin.Configuration.DeliveryTime.Added"));
-                return continueEditing ? RedirectToAction("Edit", new { id = deliveryTime.Id }) : RedirectToAction("List");
+                    UpdateLocales(entity, model);
+
+                    NotifySuccess(T("Admin.Configuration.DeliveryTime.Added"));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    return View(model);
+                }
+
+                ViewBag.RefreshPage = true;
+                ViewBag.btnId = btnId;
             }
 
-            //If we got this far, something failed, redisplay form
+
             return View(model);
         }
 
-        public ActionResult Edit(int id)
+        public ActionResult EditDeliveryTimePopup(int id)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
-                return AccessDeniedView();
+            {
+                return AccessDeniedPartialView();
+            }
 
-            var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(id);
-            if (deliveryTime == null)
-                return RedirectToAction("List");
+            var entity = _deliveryTimeService.GetDeliveryTimeById(id);
+            if (entity == null)
+            {
+                return HttpNotFound();
+            }
 
-            var model = deliveryTime.ToModel();
+            var model = entity.ToModel();
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
-                locale.Name = deliveryTime.GetLocalized(x => x.Name, languageId, false, false);
+                locale.Name = entity.GetLocalized(x => x.Name, languageId, false, false);
             });
 
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public ActionResult Edit(DeliveryTimeModel model, bool continueEditing)
+        [HttpPost]
+        public ActionResult EditDeliveryTimePopup(string btnId, DeliveryTimeModel model)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
-                return AccessDeniedView();
+            {
+                return AccessDeniedPartialView();
+            }
 
-            var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(model.Id);
-            if (deliveryTime == null)
-                return RedirectToAction("List");
+            var entity = _deliveryTimeService.GetDeliveryTimeById(model.Id);
+            if (entity == null)
+            {
+                return HttpNotFound();
+            }
 
             if (ModelState.IsValid)
             {
-                deliveryTime = model.ToEntity(deliveryTime);
-
-                // if this is the default delivery time set all other delivery times to non default
-                if (model.IsDefault)
+                try
                 {
-                    _deliveryTimeService.SetToDefault(deliveryTime);
+                    entity = model.ToEntity(entity);
+
+                    // If this is the default delivery time set all other delivery times to non default.
+                    if (model.IsDefault)
+                    {
+                        _deliveryTimeService.SetToDefault(entity);
+                    }
+
+                    _deliveryTimeService.UpdateDeliveryTime(entity);
+                    UpdateLocales(entity, model);
+
+                    NotifySuccess(T("Admin.Configuration.DeliveryTimes.Updated"));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    return View(model);
                 }
 
-                UpdateLocales(deliveryTime, model);
-				_deliveryTimeService.UpdateDeliveryTime(deliveryTime);
-                
-                NotifySuccess(T("Admin.Configuration.DeliveryTimes.Updated"));
-                return continueEditing ? RedirectToAction("Edit", new { id = deliveryTime.Id }) : RedirectToAction("List");
+                ViewBag.RefreshPage = true;
+                ViewBag.btnId = btnId;
             }
 
             return View(model);
         }
 
-        [HttpPost, ActionName("Delete")]
-        public ActionResult DeleteConfirmed(int id)
+        [GridAction(EnableCustomBinding = true)]
+        public ActionResult DeleteDeliveryTime(int id, GridCommand command)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
-                return AccessDeniedView();
-
-            var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(id);
-            if (deliveryTime == null)
-                return RedirectToAction("List");
-
-            try
+            if (Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
             {
-                _deliveryTimeService.DeleteDeliveryTime(deliveryTime);
+                var entity = _deliveryTimeService.GetDeliveryTimeById(id);
 
-                NotifySuccess(T("Admin.Configuration.DeliveryTimes.Deleted"));
-                return RedirectToAction("List");
+                try
+                {
+                    _deliveryTimeService.DeleteDeliveryTime(entity);
+
+                    NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+                }
+                catch (Exception ex)
+                {
+                    NotifyError(ex);
+                }
             }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-                return RedirectToAction("Edit", new { id = deliveryTime.Id });
-            }
+
+            return List(command);
         }
-
-        [HttpPost]
-        public ActionResult Save(FormCollection formValues)
-        {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
-                return AccessDeniedView();
-
-            return RedirectToAction("List", "DeliveryTime");
-        }
-
-        #endregion
     }
 }

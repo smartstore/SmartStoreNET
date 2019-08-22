@@ -677,8 +677,8 @@
         })();
         
         // Modal stuff
-        $(document).on('hide.bs.modal', '.modal', function (e) { body.addClass('modal-hiding'); })
-        $(document).on('hidden.bs.modal', '.modal', function (e) { body.removeClass('modal-hiding'); })
+        $(document).on('hide.bs.modal', '.modal', function (e) { body.addClass('modal-hiding'); });
+        $(document).on('hidden.bs.modal', '.modal', function (e) { body.removeClass('modal-hiding'); });
     });
 
 })( jQuery, this, document );

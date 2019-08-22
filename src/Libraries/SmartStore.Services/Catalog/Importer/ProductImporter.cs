@@ -1055,15 +1055,24 @@ namespace SmartStore.Services.Catalog.Importer
             {
                 try
                 {
-                    var tagNames = row.GetDataValue<List<string>>("TagNames");
                     var product = row.Entity;
+                    var tags = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+
+                    foreach (var str in row.GetDataValue<string>("TagNames").SplitSafe("|"))
+                    {
+                        var arr = str.SplitSafe("~");
+                        if (arr.Length > 0)
+                        {
+                            tags[arr[0]] = arr.Length > 1 ? arr[1].ToBool(true) : true;
+                        }
+                    }
 
                     if (!tagsPerBatch.TryGetValue(product.Id, out var existingTags))
                     {
                         existingTags = new List<ProductTag>();
                     }
 
-                    if (tagNames.IsNullOrEmpty())
+                    if (!tags.Any())
                     {
                         // Remove all tags.
                         if (existingTags.Any())
@@ -1078,7 +1087,7 @@ namespace SmartStore.Services.Catalog.Importer
                         var tagsToRemove = new List<ProductTag>();
                         foreach (var existingTag in existingTags)
                         {
-                            if (!tagNames.Any(x => x.IsCaseInsensitiveEqual(existingTag.Name)))
+                            if (!tags.Keys.Any(x => x.IsCaseInsensitiveEqual(existingTag.Name)))
                             {
                                 tagsToRemove.Add(existingTag);
                             }
@@ -1090,17 +1099,17 @@ namespace SmartStore.Services.Catalog.Importer
                         }
 
                         // Add tags.
-                        foreach (var tagName in tagNames.Distinct())
+                        foreach (var tag in tags)
                         {
-                            if (!existingTags.Any(x => x.Name.IsCaseInsensitiveEqual(tagName)))
+                            if (!existingTags.Any(x => x.Name.IsCaseInsensitiveEqual(tag.Key)))
                             {
-                                var productTag = _productTagRepository.Table.FirstOrDefault(x => x.Name == tagName);
+                                var productTag = _productTagRepository.Table.FirstOrDefault(x => x.Name == tag.Key);
                                 if (productTag == null)
                                 {
                                     productTag = new ProductTag
                                     {
-                                        Name = tagName,
-                                        Published = true
+                                        Name = tag.Key,
+                                        Published = tag.Value
                                     };
                                     _productTagRepository.Insert(productTag);
                                 }

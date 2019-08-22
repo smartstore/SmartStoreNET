@@ -1908,10 +1908,12 @@
     <Content Include="App_GlobalResources\GridLocalization.de.resx">
       <Generator>GlobalResourceProxyGenerator</Generator>
       <LastGenOutput>GridLocalization.de.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="App_GlobalResources\GridLocalization.resx">
       <Generator>GlobalResourceProxyGenerator</Generator>
       <LastGenOutput>GridLocalization.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>

@@ -4,11 +4,9 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using Autofac;
-using Newtonsoft.Json;
+using NuGet;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Collections;
 using SmartStore.Core;
@@ -48,11 +46,10 @@ using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
-using NuGet;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public partial class ProductController : AdminControllerBase
     {
         #region Fields
@@ -359,7 +356,11 @@ namespace SmartStore.Admin.Controllers
 				if (productTag2 == null)
 				{
 					// Add new product tag
-					productTag = new ProductTag { Name = productTagName };
+					productTag = new ProductTag 
+                    {
+                        Name = productTagName,
+                        Published = true
+                    };
 					_productTagService.InsertProductTag(productTag);
 				}
 				else
@@ -2619,15 +2620,16 @@ namespace SmartStore.Admin.Controllers
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var tags = _productTagService.GetAllProductTags()
-					.OrderByDescending(x => _productTagService.GetProductCount(x.Id, 0))
+				var tags = _productTagService.GetAllProductTags(true)
+					.OrderByDescending(x => _productTagService.GetProductCount(x.Id, 0, true))
 					.Select(x =>
 					{
 						return new ProductTagModel
 						{
 							Id = x.Id,
 							Name = x.Name,
-							ProductCount = _productTagService.GetProductCount(x.Id, 0)
+                            Published = x.Published,
+							ProductCount = _productTagService.GetProductCount(x.Id, 0, true)
 						};
 					})
 					.ForCommand(command);
@@ -2661,24 +2663,27 @@ namespace SmartStore.Admin.Controllers
             return ProductTags(command);
         }
 
-        //edit
         public ActionResult EditProductTag(int id)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+            {
                 return AccessDeniedView();
+            }
 
             var productTag = _productTagService.GetProductTagById(id);
             if (productTag == null)
-                //No product tag found with the specified id
-                return RedirectToAction("List");
+            {
+                return HttpNotFound();
+            }
 
-            var model = new ProductTagModel()
+            var model = new ProductTagModel
             {
                 Id = productTag.Id,
                 Name = productTag.Name,
-				ProductCount = _productTagService.GetProductCount(productTag.Id, 0)
+                Published = productTag.Published,
+				ProductCount = _productTagService.GetProductCount(productTag.Id, 0, true)
             };
-            //locales
+
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Name = productTag.GetLocalized(x => x.Name, languageId, false, false);
@@ -2691,27 +2696,30 @@ namespace SmartStore.Admin.Controllers
         public ActionResult EditProductTag(string btnId, string formId, ProductTagModel model)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+            {
                 return AccessDeniedView();
+            }
 
             var productTag = _productTagService.GetProductTagById(model.Id);
             if (productTag == null)
-                //No product tag found with the specified id
-                return RedirectToAction("List");
+            {
+                return HttpNotFound();
+            }
 
             if (ModelState.IsValid)
             {
                 productTag.Name = model.Name;
+                productTag.Published = model.Published;
+
                 _productTagService.UpdateProductTag(productTag);
-                //locales
+
                 UpdateLocales(productTag, model);
 
                 ViewBag.RefreshPage = true;
                 ViewBag.btnId = btnId;
                 ViewBag.formId = formId;
-                return View(model);
             }
 
-            //If we got this far, something failed, redisplay form
             return View(model);
         }
 

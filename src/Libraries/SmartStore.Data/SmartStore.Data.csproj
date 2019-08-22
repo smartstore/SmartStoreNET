@@ -683,7 +683,6 @@
     <Compile Include="Migrations\201907032251575_CategoryExternalLink.Designer.cs">
       <DependentUpon>201907032251575_CategoryExternalLink.cs</DependentUpon>
     </Compile>
-
     <Compile Include="Migrations\201907250103367_RuleSystem.cs" />
     <Compile Include="Migrations\201907250103367_RuleSystem.Designer.cs">
       <DependentUpon>201907250103367_RuleSystem.cs</DependentUpon>
@@ -695,6 +694,14 @@
     <Compile Include="Migrations\201908150749388_V322Resources.cs" />
     <Compile Include="Migrations\201908150749388_V322Resources.Designer.cs">
       <DependentUpon>201908150749388_V322Resources.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908211821559_Merge5.cs" />
+    <Compile Include="Migrations\201908211821559_Merge5.Designer.cs">
+      <DependentUpon>201908211821559_Merge5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908211825244_ProductTagPublished.cs" />
+    <Compile Include="Migrations\201908211825244_ProductTagPublished.Designer.cs">
+      <DependentUpon>201908211825244_ProductTagPublished.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -1243,6 +1250,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201908150749388_V322Resources.resx">
       <DependentUpon>201908150749388_V322Resources.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908211821559_Merge5.resx">
+      <DependentUpon>201908211821559_Merge5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908211825244_ProductTagPublished.resx">
+      <DependentUpon>201908211825244_ProductTagPublished.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

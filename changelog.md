@@ -2,6 +2,9 @@
 
 ## SmartStore.NET 4.0.0
 
+### New Features
+* #1598 Add published property to ProductTag entity.
+
 ### Improvements
 
 * #1663 Make MeasureDimension and MeasureWeight localizable.

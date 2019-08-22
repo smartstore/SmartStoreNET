@@ -335,21 +335,20 @@ namespace SmartStore.Data.Tests.Catalog
                 CreatedOnUtc = new DateTime(2010, 01, 01),
                 UpdatedOnUtc = new DateTime(2010, 01, 02)
             };
-            product.ProductTags.Add
-                (
-                    new ProductTag
-                    {
-                        Name = "Tag name 1"
-                    }
-                );
+
+            product.ProductTags.Add(new ProductTag
+            {
+                Name = "Tag name 1"
+            });
+
             var fromDb = SaveAndLoadEntity(product);
             fromDb.ShouldNotBeNull();
             fromDb.Name.ShouldEqual("Name 1");
 
-
             fromDb.ProductTags.ShouldNotBeNull();
             (fromDb.ProductTags.Count == 1).ShouldBeTrue();
             fromDb.ProductTags.First().Name.ShouldEqual("Tag name 1");
+            fromDb.ProductTags.First().Published.ShouldEqual(true);
         }
 
 		[Test]

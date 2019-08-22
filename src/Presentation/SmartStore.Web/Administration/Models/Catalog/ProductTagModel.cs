@@ -15,9 +15,13 @@ namespace SmartStore.Admin.Models.Catalog
         {
             Locales = new List<ProductTagLocalizedModel>();
         }
+
         [SmartResourceDisplayName("Admin.Catalog.ProductTags.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.ProductTags.Published")]
+        public bool Published { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.ProductTags.Fields.ProductCount")]
         public int ProductCount { get; set; }

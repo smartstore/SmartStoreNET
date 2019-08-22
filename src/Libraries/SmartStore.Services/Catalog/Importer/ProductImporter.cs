@@ -1097,7 +1097,11 @@ namespace SmartStore.Services.Catalog.Importer
                                 var productTag = _productTagRepository.Table.FirstOrDefault(x => x.Name == tagName);
                                 if (productTag == null)
                                 {
-                                    productTag = new ProductTag { Name = tagName };
+                                    productTag = new ProductTag
+                                    {
+                                        Name = tagName,
+                                        Published = true
+                                    };
                                     _productTagRepository.Insert(productTag);
                                 }
 

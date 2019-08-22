@@ -146,12 +146,13 @@ namespace SmartStore.Services.Catalog
 		/// <param name="product">Product</param>
         void UpdateHasDiscountsApplied(Product product);
 
-		/// <summary>
-		/// Get product tags by product identifiers
-		/// </summary>
-		/// <param name="productIds">Product identifiers</param>
-		/// <returns>Map of product tags</returns>
-		Multimap<int, ProductTag> GetProductTagsByProductIds(int[] productIds);
+        /// <summary>
+        /// Get product tags by product identifiers
+        /// </summary>
+        /// <param name="productIds">Product identifiers</param>
+        /// <param name="includeHidden">Whether to include hidden product tags.</param>
+        /// <returns>Map of product tags</returns>
+        Multimap<int, ProductTag> GetProductTagsByProductIds(int[] productIds, bool includeHidden = false);
 
         /// <summary>
         /// Gets products that are assigned to group products.

@@ -840,7 +840,7 @@ namespace SmartStore.Services.DataExchange.Export
 			Customer customer = null,
 			int? storeId = null,
 			int? maxPicturesPerProduct = null,
-			bool showHidden = true)
+			bool includeHidden = true)
 		{
 			if (customer == null)
 				customer = _services.WorkContext.CurrentCustomer;
@@ -853,14 +853,14 @@ namespace SmartStore.Services.DataExchange.Export
 				x => _productAttributeService.Value.GetProductVariantAttributeCombinations(x),
 				x => _specificationAttributeService.Value.GetProductSpecificationAttributesByProductIds(x),
 				x => _productService.Value.GetTierPricesByProductIds(x, customer, storeId.GetValueOrDefault()),
-				x => _categoryService.Value.GetProductCategoriesByProductIds(x, null, showHidden),
+				x => _categoryService.Value.GetProductCategoriesByProductIds(x, null, includeHidden),
 				x => _manufacturerService.Value.GetProductManufacturersByProductIds(x),
 				x => _productService.Value.GetAppliedDiscountsByProductIds(x),
-				x => _productService.Value.GetBundleItemsByProductIds(x, showHidden),
+				x => _productService.Value.GetBundleItemsByProductIds(x, includeHidden),
                 x => _productService.Value.GetAssociatedProductsByProductIds(x),
 				x => _pictureService.Value.GetPicturesByProductIds(x, maxPicturesPerProduct, true),
 				x => _productService.Value.GetProductPicturesByProductIds(x),
-				x => _productService.Value.GetProductTagsByProductIds(x),
+				x => _productService.Value.GetProductTagsByProductIds(x, includeHidden),
                 x => _downloadService.Value.GetDownloadsByEntityIds(x, nameof(Product))
 			);
 

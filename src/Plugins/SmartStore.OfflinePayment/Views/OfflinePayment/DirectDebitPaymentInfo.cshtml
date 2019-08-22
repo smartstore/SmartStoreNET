@@ -29,11 +29,11 @@ else
 			<div class="form-inline form-control-plaintext">
 				<div class="form-check form-check-inline">
 					<input type="radio" id="EnterIBAN_1" name="EnterIBAN" value="no-iban" @(Model.EnterIBAN == "no-iban" ? "checked=\"checked\"" : "") class="form-check-input" />
-					<label for="EnterIBAN_1" class="form-check-label">@T("Plugins.Payments.IPaymentDirectDebit.NoEnterIBAN")</label>
+					<label for="EnterIBAN_1" class="form-check-label">@T("Plugins.Payments.DirectDebit.NoEnterIBAN")</label>
 				</div>
 				<div class="form-check form-check-inline">
 					<input type="radio" id="EnterIBAN_2" name="EnterIBAN" value="iban" @(Model.EnterIBAN == "iban" ? "checked=\"checked\"" : "") class="form-check-input" />
-					<label for="EnterIBAN_2" class="form-check-label">@T("Plugins.Payments.IPaymentDirectDebit.YesEnterIBAN")</label>
+					<label for="EnterIBAN_2" class="form-check-label">@T("Plugins.Payments.DirectDebit.YesEnterIBAN")</label>
 				</div>
 			</div>
         </div>

@@ -316,11 +316,13 @@
 							@foreach (var item in Model.Shipments)
 							{
 								<tr>
-									<td>@item.Id.ToString()</td>
 									<td>
 										<a href="@Url.Action("ShipmentDetails", new { id = item.Id })" title="@T("Order.Shipments.ViewDetails")">
-											@(item.TrackingNumber.NullEmpty() ?? T("Order.Shipments.ViewDetails").Text)
+											@item.Id
 										</a>
+                                    </td>
+									<td>
+                                        @item.TrackingNumber
 									</td>
 									<td>
 										@if (item.ShippedDate.HasValue)

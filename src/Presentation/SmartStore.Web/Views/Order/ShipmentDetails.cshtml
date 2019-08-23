@@ -57,7 +57,7 @@
 					{
 						<h5>@T("Order.Shipments.TrackingNumber")</h5>
 						<p>
-							@if (!string.IsNullOrEmpty(Model.TrackingNumberUrl))
+							@if (Model.TrackingNumberUrl.HasValue())
 							{
 								<a href="@Model.TrackingNumberUrl" target="_blank" class="tracking-url" rel="nofollow">@Model.TrackingNumber</a>
 							}

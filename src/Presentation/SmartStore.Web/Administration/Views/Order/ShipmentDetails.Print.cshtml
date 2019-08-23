@@ -62,9 +62,18 @@
 						</tr>
 						<tr>
 							<td class="label">@T("PDFPackagingSlip.DeliveryDate"):</td>
-							<td class="value">@shipment.DeliveryDate</td>
+							<td class="value">
+					            @if (shipment.DeliveryDate.HasValue)
+					            {
+						            @shipment.DeliveryDate.Value.ToString()
+					            }
+					            else
+					            {
+						            <span>@T("Admin.Orders.Shipments.DeliveryDate.NotYet")</span>
+					            }
+                            </td>
 						</tr>
-						@if (!String.IsNullOrEmpty(shipment.TrackingNumber))
+						@if (shipment.TrackingNumber.HasValue())
 						{
 							<tr>
 								<td class="label">@T("PDFPackagingSlip.TrackingNumber"):</td>
@@ -128,7 +137,7 @@
 
 			@if (item.AttributeInfo.HasValue())
 			{
-				<div class="attributes  text-small">
+				<div class="attributes text-small">
 					@Html.Raw(item.AttributeInfo)
 				</div>
 			}

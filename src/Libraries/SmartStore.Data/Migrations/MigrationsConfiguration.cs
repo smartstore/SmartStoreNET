@@ -59,6 +59,12 @@
             builder.AddOrUpdate("Admin.Configuration.QuantityUnit.AddQuantityUnit", "Add quantity unit", "Verpackungseinheit hinzufügen");
             builder.AddOrUpdate("Admin.Configuration.QuantityUnit.EditQuantityUnit", "Edit quantity unit", "Verpackungseinheit bearbeiten");
 
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ApplyPercentageDiscountOnTierPrice",
+                "Apply percentage discounts on tier prices",
+                "Prozentuale Rabatte auf Staffelpreise anwenden",
+                "Specifies whether to apply percentage discounts also on tier prices.",
+                "Legt fest, ob prozentuale Rabatte auch auf Staffelpreise angewendet werden sollen.");
+
             builder.Delete(
                 "Admin.Configuration.Measures.Weights.Fields.MarkAsPrimaryWeight",
                 "Admin.Configuration.Measures.Dimensions.Fields.MarkAsPrimaryDimension");

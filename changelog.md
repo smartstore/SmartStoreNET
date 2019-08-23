@@ -4,11 +4,10 @@
 
 ### New Features
 * #1598 Add published property to ProductTag entity.
+* #1669 Apply percentage discounts also on tier prices.
 
 ### Improvements
-
 * #1663 Make MeasureDimension and MeasureWeight localizable.
-
 
 
 ## SmartStore.NET 3.2.2

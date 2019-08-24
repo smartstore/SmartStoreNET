@@ -387,10 +387,12 @@ table th {
 // Animations
 // ------------------------------------------------------
 
-body.no-anims * {
+.no-anims,
+.no-anims * {
     transition-property: none !important;
-    transform: none !important;
+    transition-duration: 0 !important;
     animation: none !important;
+    //transform: none !important;
 }
 
 

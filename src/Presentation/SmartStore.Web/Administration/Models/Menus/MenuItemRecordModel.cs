@@ -2,10 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
 using FluentValidation;
 using FluentValidation.Attributes;
-using Newtonsoft.Json;
 using SmartStore.Collections;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
@@ -16,7 +14,7 @@ using SmartStore.Web.Framework.UI;
 namespace SmartStore.Admin.Models.Menus
 {
     [Validator(typeof(MenuItemRecordValidator))]
-    public class MenuItemRecordModel : TabbableModel, IIcon, ILocalizedModel<MenuItemRecordLocalizedModel>
+    public class MenuItemRecordModel : TabbableModel, IIcon, ILocalizedModel<MenuItemRecordLocalizedModel>, IStoreSelector, IAclSelector
     {
         public int MenuId { get; set; }
         public string Model { get; set; }
@@ -68,6 +66,17 @@ namespace SmartStore.Admin.Models.Menus
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.CssClass")]
         public string CssClass { get; set; }
+
+        // Store mapping.
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
+        public IEnumerable<SelectListItem> AvailableStores { get; set; }
+        public int[] SelectedStoreIds { get; set; }
+
+        // ACL.
+        public bool SubjectToAcl { get; set; }
+        public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
+        public int[] SelectedCustomerRoleIds { get; set; }
 
         public IList<MenuItemRecordLocalizedModel> Locales { get; set; }
     }

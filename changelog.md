@@ -5,6 +5,7 @@
 ### New Features
 * #1598 Add published property to ProductTag entity.
 * #1669 Apply percentage discounts also on tier prices.
+* #1618 Implement ACL and multistore capability on menu item level.
 
 ### Improvements
 * #1663 Make MeasureDimension and MeasureWeight localizable.

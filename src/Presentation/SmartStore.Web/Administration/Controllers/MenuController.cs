@@ -300,6 +300,8 @@ namespace SmartStore.Admin.Controllers
 
                 _menuStorage.InsertMenuItem(item);
 
+                SaveStoreMappings(item, itemModel);
+                SaveAclMappings(item, itemModel);
                 UpdateLocales(item, itemModel);
 
                 Services.EventPublisher.Publish(new ModelBoundEvent(itemModel, item, form));
@@ -368,6 +370,8 @@ namespace SmartStore.Admin.Controllers
 
                 _menuStorage.UpdateMenuItem(item);
 
+                SaveStoreMappings(item, itemModel);
+                SaveAclMappings(item, itemModel);
                 UpdateLocales(item, itemModel);
 
                 Services.EventPublisher.Publish(new ModelBoundEvent(itemModel, item, form));
@@ -504,6 +508,15 @@ namespace SmartStore.Admin.Controllers
 
             model.Locales = new List<MenuItemRecordLocalizedModel>();
             model.AllItems = new List<SelectListItem>();
+
+            if (entity != null && ModelState.IsValid)
+            {
+                model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(entity);
+                model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(entity);
+            }
+
+            model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
+            model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
 
             if (_menuItemProviders.TryGetValue(model.ProviderName, out provider))
             {

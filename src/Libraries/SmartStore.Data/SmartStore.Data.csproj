@@ -702,9 +702,9 @@
     <Compile Include="Migrations\201908211825244_ProductTagPublished.Designer.cs">
       <DependentUpon>201908211825244_ProductTagPublished.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201908250745081_MenuItemMultistore.cs" />
-    <Compile Include="Migrations\201908250745081_MenuItemMultistore.Designer.cs">
-      <DependentUpon>201908250745081_MenuItemMultistore.cs</DependentUpon>
+    <Compile Include="Migrations\201908261226350_MenuItemMultistore.cs" />
+    <Compile Include="Migrations\201908261226350_MenuItemMultistore.Designer.cs">
+      <DependentUpon>201908261226350_MenuItemMultistore.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -1260,8 +1260,8 @@
     <EmbeddedResource Include="Migrations\201908211825244_ProductTagPublished.resx">
       <DependentUpon>201908211825244_ProductTagPublished.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201908250745081_MenuItemMultistore.resx">
-      <DependentUpon>201908250745081_MenuItemMultistore.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201908261226350_MenuItemMultistore.resx">
+      <DependentUpon>201908261226350_MenuItemMultistore.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

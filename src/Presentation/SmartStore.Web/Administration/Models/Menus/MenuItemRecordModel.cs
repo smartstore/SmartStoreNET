@@ -61,6 +61,9 @@ namespace SmartStore.Admin.Models.Menus
 
         public string Style { get; set; }
 
+        [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.IconColor")]
+        public string IconColor { get; set; }
+
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.HtmlId")]
         public string HtmlId { get; set; }
 

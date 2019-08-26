@@ -13,7 +13,7 @@ namespace SmartStore.Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201908250745081_MenuItemMultistore"; }
+            get { return "201908261226350_MenuItemMultistore"; }
         }
         
         string IMigrationMetadata.Source

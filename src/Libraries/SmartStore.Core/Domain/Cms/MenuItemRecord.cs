@@ -105,6 +105,12 @@ namespace SmartStore.Core.Domain.Cms
         public string Style { get; set; }
 
         /// <summary>
+        /// Gets or sets fontawesome icon color.
+        /// </summary>
+        [StringLength(100)]
+        public string IconColor { get; set; }
+
+        /// <summary>
         /// Gets or sets HTML id attribute.
         /// </summary>
         [StringLength(100)]

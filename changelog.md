@@ -9,6 +9,7 @@
 
 ### Improvements
 * #1663 Make MeasureDimension and MeasureWeight localizable.
+* #1600 Show an example currency value for custom formatting value changes.
 
 
 ## SmartStore.NET 3.2.2

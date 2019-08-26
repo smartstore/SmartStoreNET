@@ -114,6 +114,7 @@
         <td class="adminData">
             @Html.EditorFor(model => model.CustomFormatting)
             @Html.ValidationMessageFor(model => model.CustomFormatting)
+            <div id="CustomFormattingExample"></div>
         </td>
     </tr>
     <tr>
@@ -291,3 +292,33 @@
 {
 	@Html.Partial("StoreSelector", Model)
 }
+
+<script>
+    $(function () {
+
+        // Show custom formatting example.
+        $('#@Html.FieldIdFor(model => model.CustomFormatting)').on('change', function () {
+			$.ajax({
+				cache: false,
+				type: 'GET',
+				url: '@(Url.Action("GetCustomFormattingExample", "Currency"))',
+				data: {
+					"currencyId" : @Model.Id,
+					"customFormat": $('#@Html.FieldIdFor(model => model.CustomFormatting)').val()
+				},
+				success: function (response) {
+                    if (response.error.length > 0) {
+                        $('#CustomFormattingExample').html('<div class="text-warning mt-1">' + response.error + '</div>');
+                    }
+                    else if (response.example.length > 0) {
+                        $('#CustomFormattingExample').html('<div class="text-muted mt-1">' + response.example + '</div>');
+                    }
+                    else {
+                        $('#CustomFormattingExample').empty();
+                    }
+				}
+            });
+        }).trigger('change');
+
+    });
+</script>

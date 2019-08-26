@@ -457,6 +457,32 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToAction("Edit", new { id = currency.Id });
         }
 
+        public ActionResult GetCustomFormattingExample(int currencyId, string customFormat)
+        {
+            var example = string.Empty;
+            var error = string.Empty;
+
+            if (customFormat.HasValue())
+            {
+                try
+                {
+                    var currency = _currencyService.GetCurrencyById(currencyId);
+                    var clone = currency.Clone();
+                    clone.Id = 0;
+                    clone.CustomFormatting = customFormat;
+
+                    var money = new Money(1234.45M, clone);
+                    example = money.ToString();
+                }
+                catch (Exception ex)
+                {
+                    error = ex.Message;
+                }
+            }
+
+            return Json(new { example, error }, JsonRequestBehavior.AllowGet);
+        }
+
         #endregion
     }
 }

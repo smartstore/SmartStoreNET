@@ -64,10 +64,14 @@
 			</header>
         }
 
+        @{ 
+            Html.RenderAction("HomepageContentSlider", "ContentSlider");
+        }
+
         <div id="content-wrapper">
 			@{ 
-				Html.RenderAction("JavaScriptDisabledWarning", "Common", new { area = "" });
-				Html.RenderWidget("content_before");
+                Html.RenderAction("JavaScriptDisabledWarning", "Common", new { area = "" });
+                Html.RenderWidget("content_before");
 			}
             <section id="content" class="container">
 				@{ 

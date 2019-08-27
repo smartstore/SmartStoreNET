@@ -257,6 +257,7 @@
     <Compile Include="Controllers\CatalogHelper.cs" />
     <Compile Include="Controllers\CatalogHelper.MapProduct.cs" />
     <Compile Include="Controllers\CheckoutController.cs" />
+    <Compile Include="Controllers\ContentSliderController.cs" />
     <Compile Include="Controllers\EntityController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\BlogController.cs" />
@@ -849,6 +850,8 @@
     <Content Include="Content\editors\summernote\summernote-bs4.min.js" />
     <Content Include="Content\fontastic\fontastic.css" />
     <Content Include="Content\fontastic\fonts\fontastic.svg" />
+    <Content Include="Content\Images\0000355.png" />
+    <Content Include="Content\Images\0003155.png" />
     <Content Include="Content\Images\grip-h.png" />
     <Content Include="Content\Images\grip-ne.png" />
     <Content Include="Content\Images\grip-se.png" />
@@ -1833,6 +1836,7 @@
     <Content Include="Views\Shared\Menus\ListGroup.cshtml" />
     <Content Include="Views\Shared\Menus\Main.cshtml" />
     <Content Include="Views\Catalog\Menus\Categories.cshtml" />
+    <Content Include="Views\ContentSlider\HomepageContentSlider.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

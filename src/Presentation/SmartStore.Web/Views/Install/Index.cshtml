@@ -459,7 +459,7 @@
                     if (data.Success) {
                     	$("#install-message").html("@ILS.GetResource("Common.StartShop")");
                         $("#install-progress").html("");
-                        setLocation(data.RedirectUrl);
+                        window.location = data.RedirectUrl;
                     }
                     else {
                         $.throbber.hide();

@@ -13,7 +13,8 @@
 * #1600 Show an example currency value for custom formatting value changes.
 
 ### Bugfixes
-* Export: Fixed "The given key was not present in the dictionary".
+* Export: Fixed KeyNotFoundException when batch size was 1.
+* #1686 Fixed KeyNotFoundException when payment method friendly name ends with spaces.
 
 
 ## SmartStore.NET 3.2.2

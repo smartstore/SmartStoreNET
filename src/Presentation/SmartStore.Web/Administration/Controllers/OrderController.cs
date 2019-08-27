@@ -899,7 +899,7 @@ namespace SmartStore.Admin.Controllers
             model.AvailablePaymentMethods = paymentMethods
                 .Select(x => new SelectListItem
                 {
-                    Text = _pluginMediator.GetLocalizedFriendlyName(x.Metadata).NullEmpty() ?? x.Metadata.FriendlyName.NullEmpty() ?? x.Metadata.SystemName,
+                    Text = (_pluginMediator.GetLocalizedFriendlyName(x.Metadata).NullEmpty() ?? x.Metadata.FriendlyName.NullEmpty() ?? x.Metadata.SystemName).EmptyNull(),
                     Value = x.Metadata.SystemName
                 })
                 .ToList();
@@ -907,13 +907,14 @@ namespace SmartStore.Admin.Controllers
             var paymentMethodsCounts = model.AvailablePaymentMethods
                 .GroupBy(x => x.Text)
                 .Select(x => new { Name = x.Key.EmptyNull(), Count = x.Count() })
-                .ToDictionarySafe(x => x.Name, x => x.Count);                
+                .ToDictionarySafe(x => x.Name, x => x.Count);
 
+            // Append system name if there are payment methods with the same friendly name.
             model.AvailablePaymentMethods = model.AvailablePaymentMethods
                 .OrderBy(x => x.Text)
                 .Select(x =>
                 {
-                    if (paymentMethodsCounts[x.Text] > 1)
+                    if (paymentMethodsCounts.TryGetValue(x.Text, out var count) && count > 1)
                     {
                         x.Text = "{0} ({1})".FormatInvariant(x.Text, x.Value);
                     }

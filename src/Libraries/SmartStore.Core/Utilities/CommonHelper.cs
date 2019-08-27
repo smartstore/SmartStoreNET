@@ -165,7 +165,8 @@ namespace SmartStore.Utilities
 
             if (TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
             {
-                convertedValue = (T)result;
+                if (result != null)
+                    convertedValue = (T)result;
                 return true;
             }
 
@@ -178,7 +179,8 @@ namespace SmartStore.Utilities
 
             if (TryConvert(value, typeof(T), culture, out object result))
             {
-                convertedValue = (T)result;
+                if (result != null)
+                    convertedValue = (T)result;
                 return true;
             }
 

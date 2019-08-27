@@ -171,8 +171,10 @@ namespace SmartStore.Web.Framework
 				if (file != null)
 				{
                     context.Items["DebugFile"] = file;
-                    context.Response.WriteFile(file.PhysicalPath);
-                    //context.Response.End();
+                    context.Response.TransmitFile(file.PhysicalPath);
+                    context.Response.Flush(); // TBD: optional?
+                    context.Response.SuppressContent = true; // TBD: optional?
+                    context.ApplicationInstance.CompleteRequest();
                 }
 			}
 		}

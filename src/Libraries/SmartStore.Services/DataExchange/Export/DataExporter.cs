@@ -339,11 +339,9 @@ namespace SmartStore.Services.DataExchange.Export
 
         private void DetachAllEntitiesAndClear(DataExporterContext ctx)
 		{
-			try
+            try
 			{
                 ctx.AssociatedProductContext?.Clear();
-                ctx.TranslationsPerPage?.Clear();
-                ctx.UrlRecordsPerPage?.Clear();
 
                 if (ctx.ProductExportContext != null)
 				{
@@ -362,7 +360,7 @@ namespace SmartStore.Services.DataExchange.Export
 					_dbContext.DetachEntities(x =>
 					{
 						return x is Order || x is Address || x is GenericAttribute || x is Customer ||
-							   x is OrderItem || x is RewardPointsHistory || x is Shipment;
+							   x is OrderItem || x is RewardPointsHistory || x is Shipment || x is ProductVariantAttributeCombination;
 					});
 
 					ctx.OrderExportContext.Clear();
@@ -402,15 +400,17 @@ namespace SmartStore.Services.DataExchange.Export
 				{
 					_dbContext.DetachEntities(x =>
 					{
-						return x is ShoppingCartItem || x is Customer || x is Product;
+						return x is ShoppingCartItem || x is Customer || x is Product || x is ProductVariantAttributeCombination;
 					});
 				}
-			}
-			catch (Exception ex)
+            }
+            catch (Exception ex)
 			{
 				ctx.Log.Warn(ex, "Detaching entities failed.");
 			}
-		}
+
+            //((DbContext)_dbContext).DumpAttachedEntities();
+        }
 
 		private IExportDataSegmenterProvider CreateSegmenter(DataExporterContext ctx)
 		{
@@ -940,6 +940,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private List<Product> GetProducts(DataExporterContext ctx)
 		{
+            DetachAllEntitiesAndClear(ctx);
+
             var stats = ctx.StatsPerStore[ctx.Store.Id];
             if (ctx.LastId >= stats.MaxId)
             {
@@ -1009,7 +1011,7 @@ namespace SmartStore.Services.DataExchange.Export
             ctx.LastId = products.Last().Id;
             SetProgress(ctx, products.Count);
 
-			return result;
+            return result;
 		}
 
 		private IQueryable<Order> GetOrderQuery(DataExporterContext ctx, int? skip, int take)
@@ -1053,6 +1055,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private List<Order> GetOrders(DataExporterContext ctx)
 		{
+            DetachAllEntitiesAndClear(ctx);
+
             var stats = ctx.StatsPerStore[ctx.Store.Id];
             if (ctx.LastId >= stats.MaxId)
             {
@@ -1074,7 +1078,7 @@ namespace SmartStore.Services.DataExchange.Export
             ctx.LastId = orders.Last().Id;
             SetProgress(ctx, orders.Count);
 
-			return orders;
+            return orders;
 		}
 
 		private IQueryable<Manufacturer> GetManufacturerQuery(DataExporterContext ctx, int? skip, int take)
@@ -1109,6 +1113,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private List<Manufacturer> GetManufacturers(DataExporterContext ctx)
 		{
+            DetachAllEntitiesAndClear(ctx);
+
             var stats = ctx.StatsPerStore[ctx.Store.Id];
             if (ctx.LastId >= stats.MaxId)
             {
@@ -1125,7 +1131,7 @@ namespace SmartStore.Services.DataExchange.Export
             ctx.LastId = manus.Last().Id;
             SetProgress(ctx, manus.Count);
 
-			return manus;
+            return manus;
 		}
 
 		private IQueryable<Category> GetCategoryQuery(DataExporterContext ctx, int? skip, int take)
@@ -1160,6 +1166,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private List<Category> GetCategories(DataExporterContext ctx)
 		{
+            DetachAllEntitiesAndClear(ctx);
+
             var stats = ctx.StatsPerStore[ctx.Store.Id];
             if (ctx.LastId >= stats.MaxId)
             {
@@ -1176,7 +1184,7 @@ namespace SmartStore.Services.DataExchange.Export
             ctx.LastId = categories.Last().Id;
             SetProgress(ctx, categories.Count);
 
-			return categories;
+            return categories;
 		}
 
 		private IQueryable<Customer> GetCustomerQuery(DataExporterContext ctx, int? skip, int take)
@@ -1281,6 +1289,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private List<Customer> GetCustomers(DataExporterContext ctx)
 		{
+            DetachAllEntitiesAndClear(ctx);
+
             var stats = ctx.StatsPerStore[ctx.Store.Id];
             if (ctx.LastId >= stats.MaxId)
             {
@@ -1297,7 +1307,7 @@ namespace SmartStore.Services.DataExchange.Export
             ctx.LastId = customers.Last().Id;
             SetProgress(ctx, customers.Count);
 
-			return customers;
+            return customers;
 		}
 
 		private IQueryable<NewsLetterSubscription> GetNewsLetterSubscriptionQuery(DataExporterContext ctx, int? skip, int take)
@@ -1370,6 +1380,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private List<NewsLetterSubscription> GetNewsLetterSubscriptions(DataExporterContext ctx)
 		{
+            DetachAllEntitiesAndClear(ctx);
+
             var stats = ctx.StatsPerStore[ctx.Store.Id];
             if (ctx.LastId >= stats.MaxId)
             {
@@ -1386,7 +1398,7 @@ namespace SmartStore.Services.DataExchange.Export
             ctx.LastId = subscriptions.Last().Id;
             SetProgress(ctx, subscriptions.Count);
 
-			return subscriptions;
+            return subscriptions;
 		}
 
 		private IQueryable<ShoppingCartItem> GetShoppingCartItemQuery(DataExporterContext ctx, int? skip, int take)
@@ -1492,6 +1504,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private List<ShoppingCartItem> GetShoppingCartItems(DataExporterContext ctx)
 		{
+            DetachAllEntitiesAndClear(ctx);
+
             var stats = ctx.StatsPerStore[ctx.Store.Id];
             if (ctx.LastId >= stats.MaxId)
             {
@@ -1508,7 +1522,7 @@ namespace SmartStore.Services.DataExchange.Export
             ctx.LastId = cartItems.Last().Id;
             SetProgress(ctx, cartItems.Count);
 
-			return cartItems;
+            return cartItems;
 		}
 
 		#endregion
@@ -1723,7 +1737,6 @@ namespace SmartStore.Services.DataExchange.Export
 					}
 
                     ctx.EntityIdsPerSegment.Clear();
-                    DetachAllEntitiesAndClear(ctx);
 
                     if (context.IsMaxFailures)
                     {
@@ -1735,7 +1748,7 @@ namespace SmartStore.Services.DataExchange.Export
                     }
 				}
 
-				if (context.Abort != DataExchangeAbortion.Hard)
+                if (context.Abort != DataExchangeAbortion.Hard)
 				{
                     var calledExecuted = false;
 
@@ -1920,9 +1933,12 @@ namespace SmartStore.Services.DataExchange.Export
                         ctx.Translations.Clear();
                         ctx.UrlRecords.Clear();
 
-						ctx.Request.CustomData.Clear();
+                        ctx.TranslationsPerPage?.Clear();
+                        ctx.UrlRecordsPerPage?.Clear();
 
-						ctx.ExecuteContext.CustomProperties.Clear();
+                        ctx.Request.CustomData.Clear();
+
+                        ctx.ExecuteContext.CustomProperties.Clear();
 						ctx.ExecuteContext.Log = null;
 						ctx.Log = null;
 					}

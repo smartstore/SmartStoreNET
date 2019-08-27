@@ -227,7 +227,7 @@ namespace SmartStore.Admin.Models.DataExchange
 
             RuleFor(x => x.ExportRelatedData)
                 .Must(x => x == false)
-                .When(x => x.Projection.AttributeCombinationAsProduct)
+                .When(x => x.Projection?.AttributeCombinationAsProduct ?? false)
                 .WithMessage(T("Admin.DataExchange.Export.ExportRelatedData.Validate"));
         }
     }

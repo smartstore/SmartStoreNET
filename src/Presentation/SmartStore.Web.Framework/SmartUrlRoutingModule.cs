@@ -170,10 +170,10 @@ namespace SmartStore.Web.Framework
 				var file = HostingEnvironment.VirtualPathProvider.GetFile(request.AppRelativeCurrentExecutionFilePath) as DebugVirtualFile;
 				if (file != null)
 				{
-					context.Items["DebugFile"] = file;
-					context.Response.WriteFile(file.PhysicalPath);
-					context.Response.End();
-				}
+                    context.Items["DebugFile"] = file;
+                    context.Response.WriteFile(file.PhysicalPath);
+                    //context.Response.End();
+                }
 			}
 		}
 

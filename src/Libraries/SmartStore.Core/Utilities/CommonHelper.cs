@@ -161,28 +161,82 @@ namespace SmartStore.Utilities
 
 		public static bool TryConvert<T>(object value, out T convertedValue)
 		{
-			return TryConvert<T>(value, CultureInfo.InvariantCulture, out convertedValue);
-		}
+            convertedValue = default;
 
-		public static bool TryConvert<T>(object value, CultureInfo culture, out T convertedValue)
+            if (TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
+            {
+                convertedValue = (T)result;
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool TryConvert<T>(object value, CultureInfo culture, out T convertedValue)
+        {
+            convertedValue = default;
+
+            if (TryConvert(value, typeof(T), culture, out object result))
+            {
+                convertedValue = (T)result;
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool TryConvert(object value, Type to, out object convertedValue)
 		{
-			return TryAction<T>(delegate
-			{
-				return value.Convert<T>(culture);
-			}, out convertedValue);
-		}
+            return TryConvert(value, to, CultureInfo.InvariantCulture, out convertedValue);
+        }
 
-		public static bool TryConvert(object value, Type to, out object convertedValue)
-		{
-			return TryConvert(value, to, CultureInfo.InvariantCulture, out convertedValue);
-		}
+        public static bool TryConvert(object value, Type to, CultureInfo culture, out object convertedValue)
+        {
+            if (to == null)
+                throw new ArgumentNullException(nameof(to));
 
-		public static bool TryConvert(object value, Type to, CultureInfo culture, out object convertedValue)
-		{
-			return TryAction<object>(delegate { return value.Convert(to, culture); }, out convertedValue);
-		}
+            convertedValue = null;
 
-		public static ExpandoObject ToExpando(object value)
+            if (value == null || value == DBNull.Value || to.IsInstanceOfType(value))
+            {
+                convertedValue = value == DBNull.Value ? null : value;
+                return true;
+            }
+
+            Type from = value.GetType();
+
+            if (culture == null)
+            {
+                culture = CultureInfo.InvariantCulture;
+            }
+
+            // Get a converter for 'to' (value -> to)
+            var converter = TypeConverterFactory.GetConverter(to);
+            if (converter != null && converter.CanConvertFrom(from))
+            {
+                convertedValue = converter.ConvertFrom(culture, value);
+                return true;
+            }
+
+            // Try the other way round with a 'from' converter (to <- from)
+            converter = TypeConverterFactory.GetConverter(from);
+            if (converter != null && converter.CanConvertTo(to))
+            {
+                convertedValue = converter.ConvertTo(culture, null, value, to);
+                return true;
+            }
+
+            // Use Convert.ChangeType if both types are IConvertible
+            if (value is IConvertible && typeof(IConvertible).IsAssignableFrom(to))
+            {
+                convertedValue = System.Convert.ChangeType(value, to, culture);
+                return true;
+            }
+
+            return false;
+        }
+
+        public static ExpandoObject ToExpando(object value)
 		{
 			Guard.NotNull(value, nameof(value));
 

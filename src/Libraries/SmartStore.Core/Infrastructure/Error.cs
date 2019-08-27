@@ -108,7 +108,7 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static Exception InvalidCast(Type fromType, Type toType, Exception innerException)
         {
-            return new InvalidCastException("Cannot convert from type '{0}' to '{1}'.".FormatCurrent(fromType.FullName, toType.FullName), innerException);
+            return new InvalidCastException("Cannot convert from type '{0}' to '{1}'.".FormatCurrent(fromType?.FullName ?? "NULL", toType.FullName), innerException);
         }
 
         [DebuggerStepThrough]

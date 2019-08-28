@@ -161,7 +161,7 @@ namespace SmartStore.Utilities
 
 		public static bool TryConvert<T>(object value, out T convertedValue)
 		{
-            convertedValue = default;
+            convertedValue = default(T);
 
             if (TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
             {
@@ -175,7 +175,7 @@ namespace SmartStore.Utilities
 
         public static bool TryConvert<T>(object value, CultureInfo culture, out T convertedValue)
         {
-            convertedValue = default;
+            convertedValue = default(T);
 
             if (TryConvert(value, typeof(T), culture, out object result))
             {

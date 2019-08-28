@@ -294,8 +294,8 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
+                itemModel.ParentItemId = itemModel.ParentItemId ?? 0;
                 var item = MiniMapper.Map<MenuItemRecordModel, MenuItemRecord>(itemModel);
-                item.ParentItemId = itemModel.ParentItemId ?? 0;
                 item.PermissionNames = string.Join(",", itemModel.PermissionNames ?? new string[0]).NullEmpty();
 
                 _menuStorage.InsertMenuItem(item);
@@ -364,8 +364,8 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
+                itemModel.ParentItemId = itemModel.ParentItemId ?? 0;
                 MiniMapper.Map(itemModel, item);
-                item.ParentItemId = itemModel.ParentItemId ?? 0;
                 item.PermissionNames = string.Join(",", itemModel.PermissionNames ?? new string[0]).NullEmpty();
 
                 _menuStorage.UpdateMenuItem(item);

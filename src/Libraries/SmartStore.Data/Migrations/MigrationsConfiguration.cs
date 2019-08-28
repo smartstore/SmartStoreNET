@@ -65,6 +65,12 @@
                 "Specifies whether to apply percentage discounts also on tier prices.",
                 "Legt fest, ob prozentuale Rabatte auch auf Staffelpreise angewendet werden sollen.");
 
+            builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.ShowProductBundleImagesOnShoppingCart",
+                "Show product images of bundle items",
+                "Produktbilder von Bundle-Bestandteilen anzeigen",
+                "Specifies whether to show product images of bundle items.",
+                "Legt fest, ob Produktbilder von Bundle-Bestandteilen angezeigt werden sollen.");
+
             builder.Delete(
                 "Admin.Configuration.Measures.Weights.Fields.MarkAsPrimaryWeight",
                 "Admin.Configuration.Measures.Dimensions.Fields.MarkAsPrimaryDimension");

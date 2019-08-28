@@ -15,6 +15,7 @@
 ### Bugfixes
 * Export: Fixed KeyNotFoundException when batch size was 1.
 * #1686 Fixed KeyNotFoundException when payment method friendly name ends with spaces.
+* Cart: Fixed ShoppingCartSettings.ShowProductBundleImagesOnShoppingCart hides the bundle item name.
 
 
 ## SmartStore.NET 3.2.2

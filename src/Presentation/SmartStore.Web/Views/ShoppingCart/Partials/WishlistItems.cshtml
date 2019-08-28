@@ -27,7 +27,7 @@
 
                     @if (Model.DisplayShortDesc && item.ShortDesc.Value.HasValue())
                     {
-                        <div class="cart-item-desc fs-sm text-muted" @Html.LanguageAttributes(item.ShortDesc)>
+                        <div class="cart-item-desc fs-sm" @Html.LanguageAttributes(item.ShortDesc)>
                             @Html.Raw(item.ShortDesc.Value.Truncate(180, "..."))
                         </div>
                     }
@@ -135,45 +135,49 @@
         {
             <div class="cart-row cart-row-child">
                 <div class="cart-col cart-col-main">
-                    <div class="product">
-                        <div class="bundle-item">
-                            @if (Model.ShowProductBundleImages)
+                    <div class="row sm-gutters">
+                        <div class="col cart-item-img">
+                            <!-- Spacer -->
+                        </div>
+                        <div class="col">
+                            <div class="d-flex w-100 align-items-center justify-content-start flex-nowrap">
+                                @if (Model.ShowProductBundleImages)
+                                {
+                                    <div class="mr-3" style="@("width: {0}px;".FormatInvariant(Math.Min(Model.BundleThumbSize, 60)))">
+                                        @if (item.Picture.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
+                                        {
+                                            <img class="img-fluid" src="@item.Picture.ImageUrl" alt="@item.Picture.AlternateText" title="@item.Picture.Title" />
+                                        }
+                                    </div>
+                                }
+								<div>
+									@if (item.EnteredQuantity > 1 && item.BundlePerItemShoppingCart)
+									{
+										<span class="font-weight-medium">@(item.EnteredQuantity)&nbsp;&#215;</span>
+									}
+									@if (item.VisibleIndividually)
+									{
+										<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</a>
+									}
+									else
+									{
+										<span class="cart-item-link" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</span>
+									}
+								</div>
+                            </div>
+
+                            @if (Model.DisplayShortDesc && item.ShortDesc.Value.HasValue())
                             {
-                                <div class="bundle-item-image" style="@("min-width: {0}px; min-height: {0}px;".FormatInvariant(Model.BundleThumbSize + 10))">
-                                    @if (item.Picture.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
-                                    {
-                                        <img src="@item.Picture.ImageUrl" alt="@item.Picture.AlternateText" title="@item.Picture.Title" />
-                                    }
+                                <div class="cart-item-desc mt-1" @Html.LanguageAttributes(item.ShortDesc)>
+                                    @Html.Raw(item.ShortDesc.Value.Truncate(210, "..."))
                                 </div>
                             }
-                            <div class="bundle-item-body">
-                                <div class="bundle-item-name" @Html.LanguageAttributes(item.ProductName)>
-                                    @if (item.VisibleIndividually)
-                                    {
-                                        <a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
-                                    }
-                                    else
-                                    {
-										<span class="cart-item-link">@item.ProductName</span>
-                                    }
-                                    @if (item.EnteredQuantity > 1 && item.BundlePerItemShoppingCart)
-                                    {
-                                        <text>&#215;&nbsp;@item.EnteredQuantity</text>
-                                    }
+                            @if (item.AttributeInfo.HasValue())
+                            {
+                                <div class="cart-item-attrs text-muted mt-1">
+                                    @Html.Raw(item.AttributeInfo)
                                 </div>
-                                @if (Model.DisplayShortDesc && item.ShortDesc.Value.HasValue())
-                                {
-                                    <div class="bundle-item-description cart-item-desc fs-sm text-muted" @Html.LanguageAttributes(item.ShortDesc)>
-                                        @Html.Raw(item.ShortDesc.Value.Truncate(210, "..."))
-                                    </div>
-                                }
-                                @if (item.AttributeInfo.HasValue())
-                                {
-                                    <div class="bundle-item-attribute-info text-muted">
-                                        @Html.Raw(item.AttributeInfo)
-                                    </div>
-                                }
-                            </div>
+                            }
                         </div>
                     </div>
                 </div>

@@ -8,6 +8,11 @@ namespace SmartStore.Web.Controllers
 {
     public class ContentSliderController : Controller
     {
+        public ContentSliderController()
+        {
+
+        }
+
         [ChildActionOnly]
         public ActionResult HomepageContentSlider()
         {

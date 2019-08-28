@@ -1847,6 +1847,7 @@
   <ItemGroup>
     <Folder Include="Content\editors\CodeMirror\js\" />
     <Folder Include="Plugins\" />
+    <Folder Include="Views\ContentSlider\Partials\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">

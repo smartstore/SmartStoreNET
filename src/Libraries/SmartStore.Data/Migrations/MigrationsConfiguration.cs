@@ -71,6 +71,10 @@
                 "Specifies whether to show product images of bundle items.",
                 "Legt fest, ob Produktbilder von Bundle-Bestandteilen angezeigt werden sollen.");
 
+            builder.AddOrUpdate("Admin.Promotions.Discounts.DiscountRequirementsCount",
+                "Number of requirements",
+                "Anzahl an Voraussetzungen");
+
             builder.Delete(
                 "Admin.Configuration.Measures.Weights.Fields.MarkAsPrimaryWeight",
                 "Admin.Configuration.Measures.Dimensions.Fields.MarkAsPrimaryDimension");

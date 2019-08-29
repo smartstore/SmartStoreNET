@@ -18,7 +18,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public class DiscountController : AdminControllerBase
     {
         #region Fields
@@ -148,9 +148,15 @@ namespace SmartStore.Admin.Controllers
             var discounts = _discountService.GetAllDiscounts(null, null, true);
             var gridModel = new GridModel<DiscountModel>
             {
-                Data = discounts.Select(x => x.ToModel()),
+                Data = discounts.Select(x =>
+                {
+                    var discountModel = x.ToModel();
+                    discountModel.DiscountRequirementsCount = x.DiscountRequirements.Count;
+                    return discountModel;
+                }),
                 Total = discounts.Count()
             };
+
             return View(gridModel);
         }
 
@@ -163,7 +169,13 @@ namespace SmartStore.Admin.Controllers
 			{
 				var discounts = _discountService.GetAllDiscounts(null, null, true);
 
-				model.Data = discounts.Select(x => x.ToModel()).ToList();
+				model.Data = discounts.Select(x =>
+                {
+                    var discountModel = x.ToModel();
+                    discountModel.DiscountRequirementsCount = x.DiscountRequirements.Count;
+                    return discountModel;
+                });
+
 				model.Total = discounts.Count();
 			}
 			else

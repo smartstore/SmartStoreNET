@@ -595,7 +595,8 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.AddDiscountRequirement, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableDiscountRequirementRules, mo => mo.Ignore())
 				.ForMember(dest => dest.DiscountRequirementMetaInfos, mo => mo.Ignore())
-				.ForMember(dest => dest.AppliedToCategoryModels, mo => mo.Ignore())
+                .ForMember(dest => dest.DiscountRequirementsCount, mo => mo.Ignore())
+                .ForMember(dest => dest.AppliedToCategoryModels, mo => mo.Ignore())
 				.ForMember(dest => dest.AppliedToManufacturerModels, mo => mo.Ignore())
 				.ForMember(dest => dest.AppliedToProductModels, mo => mo.Ignore());
 			CreateMap<DiscountModel, Discount>()

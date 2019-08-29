@@ -20,67 +20,66 @@ namespace SmartStore
 
         public static T Convert<T>(this object value)
         {
-			return (T)(Convert(value, typeof(T)) ?? default(T));
-		}
+            var to = typeof(T);
+            if (!CommonHelper.TryConvert(value, to, CultureInfo.InvariantCulture, out object result))
+            {
+                throw Error.InvalidCast(value?.GetType(), to);
+            }
+
+            return (T)(result ?? default(T));
+        }
 
 		public static T Convert<T>(this object value, T defaultValue)
 		{
-			return (T)(Convert(value, typeof(T)) ?? defaultValue);
-		}
+            var to = typeof(T);
+            if (!CommonHelper.TryConvert(value, to, CultureInfo.InvariantCulture, out object result))
+            {
+                throw Error.InvalidCast(value?.GetType(), to);
+            }
+
+            return (T)(result ?? defaultValue);
+        }
 
 		public static T Convert<T>(this object value, CultureInfo culture)
         {
-			return (T)(Convert(value, typeof(T), culture) ?? default(T));
-		}
+            var to = typeof(T);
+            if (!CommonHelper.TryConvert(value, to, culture, out object result))
+            {
+                throw Error.InvalidCast(value?.GetType(), to);
+            }
+
+            return (T)(result ?? default(T));
+        }
 
 		public static T Convert<T>(this object value, T defaultValue, CultureInfo culture)
 		{
-			return (T)(Convert(value, typeof(T), culture) ?? defaultValue);
-		}
+            var to = typeof(T);
+            if (!CommonHelper.TryConvert(value, to, culture, out object result))
+            {
+                throw Error.InvalidCast(value?.GetType(), to);
+            }
+
+            return (T)(result ?? defaultValue);
+        }
 
 		public static object Convert(this object value, Type to)
         {
-			return value.Convert(to, CultureInfo.InvariantCulture);
+            if (!CommonHelper.TryConvert(value, to, CultureInfo.InvariantCulture, out object result))
+            {
+                throw Error.InvalidCast(value?.GetType(), to);
+            }
+
+            return result;
         }
 
 		public static object Convert(this object value, Type to, CultureInfo culture)
 		{
-			if (to == null)
-				throw new ArgumentNullException(nameof(to));
-
-			if (value == null || value == DBNull.Value || to.IsInstanceOfType(value))
-			{
-				return value == DBNull.Value ? null : value;
-			}
-
-			Type from = value.GetType();
-
-			if (culture == null)
-			{
-				culture = CultureInfo.InvariantCulture;
+            if (!CommonHelper.TryConvert(value, to, culture, out object result))
+            {
+                throw Error.InvalidCast(value?.GetType(), to);
             }
 
-			// get a converter for 'to' (value -> to)
-			var converter = TypeConverterFactory.GetConverter(to);
-			if (converter != null && converter.CanConvertFrom(from))
-			{
-				return converter.ConvertFrom(culture, value);
-			}
-
-			// try the other way round with a 'from' converter (to <- from)
-			converter = TypeConverterFactory.GetConverter(from);
-			if (converter != null && converter.CanConvertTo(to))
-			{
-				return converter.ConvertTo(culture, null, value, to);
-			}
-
-			// use Convert.ChangeType if both types are IConvertible
-			if (value is IConvertible && typeof(IConvertible).IsAssignableFrom(to))
-			{
-				return System.Convert.ChangeType(value, to, culture);
-			}
-
-			throw Error.InvalidCast(from, to);
+            return result;
 		}
 
         #endregion

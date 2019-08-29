@@ -78,17 +78,13 @@ namespace SmartStore.ComponentModel
 					continue;
 				}
 
-				object value = null;
-				try
-				{
-					// Get the value from source instance and try to convert it to target props type
-					value = fromProp.GetValue(from).Convert(toProp.Property.PropertyType, culture);
-					
-					// Set it
-					toProp.SetValue(to, value);
-				}
-				catch { }
-			}
+                // Get the value from source instance and try to convert it to target prop type
+                if (CommonHelper.TryConvert(fromProp.GetValue(from), toProp.Property.PropertyType, culture, out object value))
+                {
+                    // Set it
+                    toProp.SetValue(to, value);
+                }
+            }
 		}
 
 		private static IEnumerable<FastProperty> GetFastPropertiesFor(Type type)

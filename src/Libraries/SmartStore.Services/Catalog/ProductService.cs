@@ -594,7 +594,7 @@ namespace SmartStore.Services.Catalog
 				UpdateProduct(product);
         }
 
-		public virtual Multimap<int, ProductTag> GetProductTagsByProductIds(int[] productIds)
+		public virtual Multimap<int, ProductTag> GetProductTagsByProductIds(int[] productIds, bool includeHidden = false)
 		{
 			Guard.NotNull(productIds, nameof(productIds));
 
@@ -610,15 +610,17 @@ namespace SmartStore.Services.Catalog
 				.Select(x => new
 				{
 					ProductId = x.Id,
-					Tags = x.ProductTags
+					Tags = x.ProductTags.Where(y => includeHidden || y.Published)
 				});
 
 			var list = query.ToList();
 
 			foreach (var item in list)
 			{
-				foreach (var tag in item.Tags)
-					map.Add(item.ProductId, tag);
+                foreach (var tag in item.Tags)
+                {
+                    map.Add(item.ProductId, tag);
+                }
 			}
 
 			return map;

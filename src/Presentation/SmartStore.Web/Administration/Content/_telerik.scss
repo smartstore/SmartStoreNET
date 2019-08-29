@@ -410,78 +410,83 @@ a.t-button.t-state-disabled:hover,
 -------------------------------------------------------------- */
 
 .t-grid {
-	box-shadow: 1px 1px 3px rgba(#000, 0.1);
-	overflow-x: auto;
+    box-shadow: 1px 1px 3px rgba(#000, 0.1);
+    overflow-x: auto;
 
-	.t-status-text {
-		color: $gray-600;
-		font-size: $font-size-sm;
-	}
+    .t-status-text {
+        color: $gray-600;
+        font-size: $font-size-sm;
+    }
 
-	.t-button .fa {
-		margin-top: 0;
-	}
+    .t-button .fa {
+        margin-top: 0;
+    }
 
-	.t-grid-header-wrap, .t-grid-footer-wrap {
-		border-color: #a4abb2;
-	}
+    .t-grid-header-wrap, .t-grid-footer-wrap {
+        border-color: #a4abb2;
+    }
 
-	tbody .t-button {
-		@extend .btn-sm;
-		min-width: 92px;
+    tbody .t-button {
+        @extend .btn-sm;
+        min-width: 92px;
 
-		&.t-grid-update, &.t-grid-insert {
-			text-transform: capitalize;
-			@extend .btn-warning;
-		}
+        &.t-grid-update, &.t-grid-insert {
+            text-transform: capitalize;
+            @extend .btn-warning;
+        }
 
-		&.t-grid-delete {
-			@extend .btn-danger;
-		}
+        &.t-grid-delete {
+            @extend .btn-danger;
+        }
 
-		&:not(.t-grid-update):not(.t-grid-delete):not(.t-grid-insert) {
-			@extend .btn-secondary;
-		}
-	}
+        &:not(.t-grid-update):not(.t-grid-delete):not(.t-grid-insert) {
+            @extend .btn-secondary;
+        }
+    }
 
-	form.t-grid-actions {
-		margin: 0;
-	}
+    form.t-grid-actions {
+        margin: 0;
+    }
 
-	.text-box.single-line {
-		/* ... */
-	}
+    .text-box.single-line {
+        /* ... */
+    }
 
-	.t-filter-options {
-		border-radius: $border-radius;
-		padding: 0.5rem;
-		box-sizing: border-box;
-		//width: 200px;
-		min-width: 200px;
+    .t-filter-options {
+        border-radius: $border-radius;
+        padding: 0.5rem;
+        box-sizing: border-box;
+        //width: 200px;
+        min-width: 200px;
 
-		.t-filter-help-text {
-			font-size: 12px;
-			padding: 0.25rem 0;
-		}
+        .t-filter-help-text {
+            font-size: 12px;
+            padding: 0.25rem 0;
+        }
 
-		.t-button {
-			@extend .btn-sm;
-			@extend .btn-secondary;
-		}
+        .t-button {
+            @extend .btn-sm;
+            @extend .btn-secondary;
+        }
 
-		.t-filter-button {
-			margin-top: 1rem;
-		}
+        .t-filter-button {
+            margin-top: 1rem;
+        }
 
-		input[type=text], .t-filter-operator {
-			width: 100%;
-			padding: $input-padding-y-sm $input-padding-x-sm !important;
-			font-size: $font-size-sm !important;
-			line-height: $input-line-height-sm !important;
-			height: $input-height-sm !important;
-			@include border-radius($input-border-radius-sm);
-		}
-	}
+        input[type=text], .t-filter-operator {
+            width: 100%;
+            padding: $input-padding-y-sm $input-padding-x-sm !important;
+            font-size: $font-size-sm !important;
+            line-height: $input-line-height-sm !important;
+            height: $input-height-sm !important;
+            @include border-radius($input-border-radius-sm);
+        }
+
+        input[type=radio] {
+            margin-right: 0.25rem;
+            vertical-align: bottom;
+        }
+    }
 }
 
 .t-grid > table,

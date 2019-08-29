@@ -76,7 +76,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IGiftCardService _giftCardService;
         private readonly IDownloadService _downloadService;
 	    private readonly IShipmentService _shipmentService;
-		private readonly ITaxService _taxService;
+        private readonly ITaxService _taxService;
 		private readonly IPriceCalculationService _priceCalculationService;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly ICustomerService _customerService;
@@ -762,36 +762,37 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[NonAction]
-		protected ShipmentModel PrepareShipmentModel(Shipment shipment, bool prepareProducts, bool prepareAddresses)
+		protected ShipmentModel PrepareShipmentModel(Shipment shipment, bool withAllDetails)
         {
+            var order = shipment.Order;
             var baseWeight = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
             var baseDimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId);
-			var orderStoreId = shipment.Order.StoreId;
 
 			var model = new ShipmentModel
             {
                 Id = shipment.Id,
                 OrderId = shipment.OrderId,
-				StoreId = orderStoreId,
-				LanguageId = shipment.Order.CustomerLanguageId,
-				OrderNumber = shipment.Order.GetOrderNumber(),
-				PurchaseOrderNumber = shipment.Order.PurchaseOrderNumber,
-				ShippingMethod = shipment.Order.ShippingMethod,
+				StoreId = order.StoreId,
+				LanguageId = order.CustomerLanguageId,
+				OrderNumber = order.GetOrderNumber(),
+				PurchaseOrderNumber = order.PurchaseOrderNumber,
+				ShippingMethod = order.ShippingMethod,
                 TrackingNumber = shipment.TrackingNumber,
                 TotalWeight = shipment.TotalWeight.HasValue ? string.Format("{0:F2} [{1}]", shipment.TotalWeight, baseWeight?.GetLocalized(x => x.Name) ?? "") : "",
-                ShippedDate = shipment.ShippedDateUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(shipment.ShippedDateUtc.Value, DateTimeKind.Utc).ToString() : _localizationService.GetResource("Admin.Orders.Shipments.ShippedDate.NotYet"),
                 CanShip = !shipment.ShippedDateUtc.HasValue,
-                DeliveryDate = shipment.DeliveryDateUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(shipment.DeliveryDateUtc.Value, DateTimeKind.Utc).ToString() : _localizationService.GetResource("Admin.Orders.Shipments.DeliveryDate.NotYet"),
                 CanDeliver = shipment.ShippedDateUtc.HasValue && !shipment.DeliveryDateUtc.HasValue,
+                ShippedDate = shipment.ShippedDateUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(shipment.ShippedDateUtc.Value, DateTimeKind.Utc) : (DateTime?)null,
+                DeliveryDate = shipment.DeliveryDateUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(shipment.DeliveryDateUtc.Value, DateTimeKind.Utc) : (DateTime?)null,
                 DisplayPdfPackagingSlip = _pdfSettings.Enabled,
 				ShowSku = _catalogSettings.ShowProductSku
 			};
 
-			if (prepareAddresses)
+			if (withAllDetails)
 			{
-				model.ShippingAddress = shipment.Order.ShippingAddress;
+                // Shipping address.
+				model.ShippingAddress = order.ShippingAddress;
 
-				var store = Services.StoreService.GetStoreById(orderStoreId) ?? Services.StoreContext.CurrentStore;
+				var store = Services.StoreService.GetStoreById(order.StoreId) ?? Services.StoreContext.CurrentStore;
 				var companyInfoSettings = Services.Settings.LoadSetting<CompanyInformationSettings>(store.Id);
 				model.MerchantCompanyInfo = companyInfoSettings;
 
@@ -801,19 +802,19 @@ namespace SmartStore.Admin.Controllers
 				}
 
 				model.FormattedMerchantAddress = _addressService.FormatAddress(model.MerchantCompanyInfo, true);
-			}
 
-            if (prepareProducts)
-            {
+                // Shipment items.
                 foreach (var shipmentItem in shipment.ShipmentItems)
                 {
                     var orderItem = _orderService.GetOrderItemById(shipmentItem.OrderItemId);
-                    if (orderItem == null)
-                        continue;
-
-					var itemModel = PrepareShipmentItemModel(shipment.Order, orderItem, shipmentItem, baseDimension, baseWeight);
-                    model.Items.Add(itemModel);
+                    if (orderItem != null)
+                    {
+                        var itemModel = PrepareShipmentItemModel(order, orderItem, shipmentItem, baseDimension, baseWeight);
+                        model.Items.Add(itemModel);
+                    }
                 }
+
+                // TODO: Tracking URL.
             }
 
             return model;
@@ -898,7 +899,7 @@ namespace SmartStore.Admin.Controllers
             model.AvailablePaymentMethods = paymentMethods
                 .Select(x => new SelectListItem
                 {
-                    Text = _pluginMediator.GetLocalizedFriendlyName(x.Metadata).NullEmpty() ?? x.Metadata.FriendlyName.NullEmpty() ?? x.Metadata.SystemName,
+                    Text = (_pluginMediator.GetLocalizedFriendlyName(x.Metadata).NullEmpty() ?? x.Metadata.FriendlyName.NullEmpty() ?? x.Metadata.SystemName).EmptyNull(),
                     Value = x.Metadata.SystemName
                 })
                 .ToList();
@@ -906,13 +907,14 @@ namespace SmartStore.Admin.Controllers
             var paymentMethodsCounts = model.AvailablePaymentMethods
                 .GroupBy(x => x.Text)
                 .Select(x => new { Name = x.Key.EmptyNull(), Count = x.Count() })
-                .ToDictionarySafe(x => x.Name, x => x.Count);                
+                .ToDictionarySafe(x => x.Name, x => x.Count);
 
+            // Append system name if there are payment methods with the same friendly name.
             model.AvailablePaymentMethods = model.AvailablePaymentMethods
                 .OrderBy(x => x.Text)
                 .Select(x =>
                 {
-                    if (paymentMethodsCounts[x.Text] > 1)
+                    if (paymentMethodsCounts.TryGetValue(x.Text, out var count) && count > 1)
                     {
                         x.Text = "{0} ({1})".FormatInvariant(x.Text, x.Value);
                     }
@@ -2126,7 +2128,7 @@ namespace SmartStore.Admin.Controllers
 				//load shipments
 				var shipments = _shipmentService.GetAllShipments(model.TrackingNumber, startDateValue, endDateValue, command.Page - 1, command.PageSize);
 
-				gridModel.Data = shipments.Select(shipment => PrepareShipmentModel(shipment, false, false));
+				gridModel.Data = shipments.Select(shipment => PrepareShipmentModel(shipment, false));
 				gridModel.Total = shipments.TotalCount;
 			}
 			else
@@ -2156,7 +2158,7 @@ namespace SmartStore.Admin.Controllers
 
 				foreach (var shipment in shipments)
 				{
-					shipmentModels.Add(PrepareShipmentModel(shipment, false, false));
+					shipmentModels.Add(PrepareShipmentModel(shipment, false));
 				}
 
 				model.Data = shipmentModels;
@@ -2267,7 +2269,7 @@ namespace SmartStore.Admin.Controllers
                 //No shipment found with the specified id
                 return RedirectToAction("List");
 
-            var model = PrepareShipmentModel(shipment, true, true);
+            var model = PrepareShipmentModel(shipment, true);
 
             return View(model);
         }
@@ -2402,7 +2404,7 @@ namespace SmartStore.Admin.Controllers
 				pdfFileName = "PackagingSlip-{0}.pdf".FormatInvariant(shipments[0].Id);
 			}
 
-			var model = shipments.Select(x => PrepareShipmentModel(x, true, true)).ToList();
+			var model = shipments.Select(x => PrepareShipmentModel(x, true)).ToList();
 
 			// TODO: (mc) this is bad for multi-document processing, where orders can originate from different stores.
 			var storeId = model[0].StoreId;

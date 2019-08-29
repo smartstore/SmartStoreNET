@@ -125,14 +125,13 @@ namespace SmartStore.Utilities
 			{
 
 				int currentValue = min;
-				int tempMax = 0;
-				int radix = 1;
+                int radix = 1;
 
 				while (m_isForward || radix != 0)
 				{
-					tempMax = GetNextMaximum(currentValue, max, radix);
+                    int tempMax = GetNextMaximum(currentValue, max, radix);
 
-					if (tempMax >= currentValue)
+                    if (tempMax >= currentValue)
 					{
 						pattern += prefix + ParseRange(currentValue, tempMax, radix);
 						if (!(!m_isForward && radix == 1))

@@ -10,6 +10,15 @@
 			{
 				value = Convert.ToInt32(ViewData.Model, System.Globalization.CultureInfo.InvariantCulture);
 			}
+            else
+            {
+                var htmlAttributes = new RouteValueDictionary(ViewData["htmlAttributes"] ?? new object());
+                if (htmlAttributes.TryGetValue("value", out var rawValue))
+                {
+                    value = Convert.ToInt32(rawValue, System.Globalization.CultureInfo.InvariantCulture);
+                }
+            }
+
 			return value;
 		}
 	}

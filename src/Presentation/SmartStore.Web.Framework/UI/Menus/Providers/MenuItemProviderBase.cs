@@ -114,6 +114,11 @@ namespace SmartStore.Web.Framework.UI
             if (entity.Icon.HasValue() && !request.IsEditMode)
             {
                 menuItem.Icon = IconExplorer.GetIconByName(entity.Icon).GetCssClass(entity.Style);
+
+                if (entity.IconColor.HasValue())
+                {
+                    menuItem.Icon += " text-" + entity.IconColor;
+                }
             }
 
             // For future use: entity.ShowExpanded

@@ -4,11 +4,11 @@
 
 <div class="art-brand">
 	@if (Model.Manufacturer != null)
-	{
-		if (Model.Manufacturer.Picture != null && Model.Parent.ViewMode == ProductSummaryViewMode.List)
-		{
-			// TODO: (mc) (low) Whether to link or not > make setting.
-			var picture = Model.Manufacturer.Picture;
+    {
+        var picture = Model.Manufacturer.Picture;
+        if (picture?.ImageUrl != null && Model.Parent.ViewMode == ProductSummaryViewMode.List)
+        {
+            // TODO: (mc) (low) Whether to link or not > make setting.
 			<a href="@Url.RouteUrl("Manufacturer", new RouteValueDictionary { { "SeName", Model.Manufacturer.SeName } })" title="@picture.Title">
 				<img src="@picture.ImageUrl" alt="@picture.AlternateText" class="art-brand-picture" />
 			</a>

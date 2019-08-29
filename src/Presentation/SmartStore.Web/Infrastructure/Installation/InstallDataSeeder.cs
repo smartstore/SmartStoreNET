@@ -354,7 +354,8 @@ namespace SmartStore.Web.Infrastructure.Installation
             {
                 productTag = new ProductTag
                 {
-                    Name = tag
+                    Name = tag,
+                    Published = true
                 };
             }
 			product.ProductTags.Add(productTag);

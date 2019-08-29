@@ -32,19 +32,17 @@
 
 	var formatRe = /\{(\d+)\}/g;
 	
-	String.prototype.format = function() {
-	    var s = this, args = arguments;
-	    return s.replace(formatRe, function(m, i) {
-	        return args[i];
-	    });
-	};
+    String.prototype.format = function() {
+        var s = this, args = arguments;
+        return s.replace(formatRe, function(m, i) {
+            return args[i];
+        });
+    };
 
 	// define noop funcs for window.console in order
 	// to prevent scripting errors
 	var c = window.console = window.console || {};
-	function noop() { };
-	var funcs = ['log', 'debug', 'info', 'warn', 'error', 'assert', 'dir', 'dirxml', 'group', 'groupEnd', 
-					'time', 'timeEnd', 'count', 'trace', 'profile', 'profileEnd'],
+	var funcs = ['log', 'debug', 'info', 'warn', 'error', 'assert', 'dir', 'dirxml', 'group', 'groupEnd', 'time', 'timeEnd', 'count', 'trace', 'profile', 'profileEnd'],
 		flen = funcs.length,
 		noop = function(){};
 	while (flen) {
@@ -55,7 +53,7 @@
 		
 	// define default secure-casts
 	jQuery.extend(window, {
-			
+
 		toBool: function(val) {
 			var defVal = typeof arguments[1] === "boolean" ? arguments[1] : false;
 			var t = typeof val;
@@ -105,7 +103,11 @@
 				return defVal;	
 			}
 			return x;
-		}				
+        },
+
+        requestAnimationFrame: window.requestAnimationFrame || function (callback) {
+            setTimeout(callback, 10);
+        }
 	});
 	
 	// provide main app namespace

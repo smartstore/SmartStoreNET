@@ -661,12 +661,15 @@ namespace SmartStore.Services.DataExchange.Export
 				_writer.WriteStartElement("ProductTags");
 				foreach (dynamic tag in product.ProductTags)
 				{
+                    ProductTag entityTag = tag.Entity;
+
 					_writer.WriteStartElement("ProductTag");
 					_writer.Write("Id", ((int)tag.Id).ToString());
 					_writer.Write("Name", (string)tag.Name);
 					_writer.Write("SeName", (string)tag.SeName);
+                    _writer.Write("Published", entityTag.Published.ToString());
 
-					WriteLocalized(tag);
+                    WriteLocalized(tag);
 
 					_writer.WriteEndElement();	// ProductTag
 				}

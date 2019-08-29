@@ -24,12 +24,14 @@ namespace SmartStore.Web.Framework.UI
 		{
             // Always resolve against current store, current customer and working language.
             var result = _linkResolver.Resolve(request.Entity.Model);
-			node.Value.Url = result.Link;
-            node.Value.ImageId = result.PictureId;
+            var item = node.Value;
 
-            if (node.Value.Text.IsEmpty())
+            item.Url = result.Link;
+            item.ImageId = result.PictureId;
+
+            if (item.Text.IsEmpty())
             {
-                node.Value.Text = result.Label;
+                item.Text = result.Label;
             }
 
             switch (result.Type)
@@ -44,8 +46,8 @@ namespace SmartStore.Web.Framework.UI
                     }
                     else
                     {
-                        node.Value.EntityId = result.Id;
-                        node.Value.EntityName = result.Type.ToString();
+                        item.EntityId = result.Id;
+                        item.EntityName = result.Type.ToString();
                     }
                     break;
             }
@@ -53,19 +55,19 @@ namespace SmartStore.Web.Framework.UI
             if (request.IsEditMode)
             {
                 var info = result.Type.GetLinkTypeInfo();
-                node.Value.Summary = T(info.ResKey);
-                node.Value.Icon = info.Icon;
+                item.Summary = T(info.ResKey);
+                item.Icon = info.Icon;
 
-                if (node.Value.Url.IsEmpty())
+                if (item.Url.IsEmpty())
                 {
-                    node.Value.Text = null;
-                    node.Value.ResKey = "Admin.ContentManagement.Menus.SpecifyLinkTarget";
+                    item.Text = null;
+                    item.ResKey = "Admin.ContentManagement.Menus.SpecifyLinkTarget";
                 }
             }
             else
             {
                 // For edit mode, only apply MenuItemRecord.Published.
-                node.Value.Visible = result.Status == LinkStatus.Ok;
+                item.Visible = result.Status == LinkStatus.Ok;
             }
         }
     }

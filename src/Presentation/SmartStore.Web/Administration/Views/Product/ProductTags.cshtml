@@ -10,9 +10,17 @@
     <div class="section-header">
         <div class="title">
             <i class="fa fa-tags"></i>
-            @T("Admin.Catalog.ProductTags")
+            <span>@T("Admin.Catalog.ProductTags")</span>
         </div>
     </div>
+
+    <script>
+        function onRowDataBound(e) {
+	        if (!e.dataItem.Published) {
+		        $(e.row).find('td').wrapInner('<span class="muted" />');
+	        }
+        }
+    </script>
 
     <div>
 		@(Html.Telerik().Grid<ProductTagModel>()
@@ -23,14 +31,18 @@
 				columns.Bound(x => x.Name);
 				columns.Bound(x => x.ProductCount)
 					.Centered()
-					.Width(150);
+					.Width(300);
+				columns.Bound(x => x.Published)
+					.ClientTemplate(@Html.SymbolForBool("Published"))
+					.Centered()
+                    .Width(300);
 				columns.Command(commands =>
 				{
 					commands.Custom("edit-product-tag").Text(T("Common.Edit"));
 					commands.Delete().Localize(T);
 				})
-				.Width(90)
-				.HtmlAttributes(new { align = "right" });
+				.Width(200)
+				.HtmlAttributes(new { align = "right", @class = "omega" });
 			})
 			.DataBinding(dataBinding =>
 			{
@@ -38,6 +50,7 @@
 					.Select("ProductTags", "Product")
 					.Delete("ProductTagDelete", "Product");
 			})
+            .ClientEvents(events => events.OnRowDataBound("onRowDataBound"))
 			.Filterable()
 			.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
 			.PreserveGridState()
@@ -47,14 +60,10 @@
 	</div>
 }
 
-<script type="text/javascript">
-	$(document).ready(function () {
+<script>
+	$(function() {
 		$('#btnRefresh').click(function () {
-			//refresh grid
-			var optionsGrid = $("#product-tags-grid");
-			optionsGrid.data('tGrid').ajaxRequest();
-
-			//return false to don't reload a page
+			$('#product-tags-grid').data('tGrid').ajaxRequest();
 			return false;
 		});
 
@@ -66,7 +75,6 @@
 			var href = "@Url.Content("~/Admin/Product/EditProductTag/")" + id + "?btnId=btnRefresh&formId=product-tags-form";
 
 			openPopup(href);
-
 			return false;
 		});
 	});

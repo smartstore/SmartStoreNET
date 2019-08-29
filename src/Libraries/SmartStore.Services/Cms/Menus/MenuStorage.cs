@@ -394,6 +394,8 @@ namespace SmartStore.Services.Cms
             int storeId,
             bool includeHidden)
         {
+            var applied = false;
+            var entityName = nameof(MenuItemRecord);
             var singleMenu = menuId != 0 || (systemName.HasValue() && storeId != 0);
             var menuQuery = BuildMenuQuery(menuId, storeId, systemName, null, includeHidden, !singleMenu, !singleMenu);
 
@@ -408,6 +410,43 @@ namespace SmartStore.Services.Cms
                 where includeHidden || mi.Published
                 orderby mi.ParentItemId, mi.DisplayOrder
                 select mi;
+
+            if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
+            {
+                query =
+                    from x in query
+                    join m in _storeMappingRepository.Table
+                    on new { x1 = x.Id, x2 = entityName } equals new { x1 = m.EntityId, x2 = m.EntityName } into sm
+                    from m in sm.DefaultIfEmpty()
+                    where !x.LimitedToStores || storeId == m.StoreId
+                    select x;
+
+                applied = true;
+            }
+
+            if (!includeHidden && !QuerySettings.IgnoreAcl)
+            {
+                var allowedRoleIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+
+                query =
+                    from x in query
+                    join a in _aclRepository.Table
+                    on new { x1 = x.Id, x2 = entityName } equals new { x1 = a.EntityId, x2 = a.EntityName } into ac
+                    from a in ac.DefaultIfEmpty()
+                    where !x.SubjectToAcl || allowedRoleIds.Contains(a.CustomerRoleId)
+                    select x;
+
+                applied = true;
+            }
+
+            if (applied)
+            {
+                query =
+                    from x in query
+                    group x by x.Id into grp
+                    orderby grp.Key
+                    select grp.FirstOrDefault();
+            }
 
             return query;
         }

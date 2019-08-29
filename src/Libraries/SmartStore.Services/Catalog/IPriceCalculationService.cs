@@ -189,6 +189,7 @@ namespace SmartStore.Services.Catalog
 		/// <param name="appliedDiscount">Applied discount</param>
 		/// <param name="bundleItem">A product bundle item</param>
 		/// <param name="context">Object with cargo data for better performance</param>
+        /// <param name="finalPrice">Final product price without discount.</param>
 		/// <returns>Discount amount</returns>
 		decimal GetDiscountAmount(Product product,
 			Customer customer,
@@ -196,7 +197,8 @@ namespace SmartStore.Services.Catalog
 			int quantity,
 			out Discount appliedDiscount,
 			ProductBundleItemData bundleItem = null,
-			PriceCalculationContext context = null);
+			PriceCalculationContext context = null,
+            decimal? finalPrice = null);
 
 
         /// <summary>

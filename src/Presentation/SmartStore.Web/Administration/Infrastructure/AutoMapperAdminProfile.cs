@@ -398,14 +398,16 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.QuantityUnitId, mo => mo.Ignore())
 				.AfterMap((src, dest) => dest.SetAssignedPictureIds(src.AssignedPictureIds));
 
-			//measure weights
 			CreateMap<MeasureWeight, MeasureWeightModel>()
-				.ForMember(dest => dest.IsPrimaryWeight, mo => mo.Ignore());
-			CreateMap<MeasureWeightModel, MeasureWeight>();
-			//measure dimensions
+				.ForMember(dest => dest.IsPrimaryWeight, mo => mo.Ignore())
+                .ForMember(dest => dest.Locales, mo => mo.Ignore());
+            CreateMap<MeasureWeightModel, MeasureWeight>();
+
 			CreateMap<MeasureDimension, MeasureDimensionModel>()
-				.ForMember(dest => dest.IsPrimaryDimension, mo => mo.Ignore());
-			CreateMap<MeasureDimensionModel, MeasureDimension>();
+				.ForMember(dest => dest.IsPrimaryDimension, mo => mo.Ignore())
+                .ForMember(dest => dest.Locales, mo => mo.Ignore());
+            CreateMap<MeasureDimensionModel, MeasureDimension>();
+
 			//tax categories
 			CreateMap<TaxCategory, TaxCategoryModel>();
 			CreateMap<TaxCategoryModel, TaxCategory>();
@@ -593,7 +595,8 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.AddDiscountRequirement, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableDiscountRequirementRules, mo => mo.Ignore())
 				.ForMember(dest => dest.DiscountRequirementMetaInfos, mo => mo.Ignore())
-				.ForMember(dest => dest.AppliedToCategoryModels, mo => mo.Ignore())
+                .ForMember(dest => dest.DiscountRequirementsCount, mo => mo.Ignore())
+                .ForMember(dest => dest.AppliedToCategoryModels, mo => mo.Ignore())
 				.ForMember(dest => dest.AppliedToManufacturerModels, mo => mo.Ignore())
 				.ForMember(dest => dest.AppliedToProductModels, mo => mo.Ignore());
 			CreateMap<DiscountModel, Discount>()

@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Cms
 {
@@ -8,7 +10,7 @@ namespace SmartStore.Core.Domain.Cms
     /// Represents a menu item.
     /// </summary>
     [Table("MenuItemRecord")]
-    public class MenuItemRecord : BaseEntity, ILocalizedEntity
+    public class MenuItemRecord : BaseEntity, ILocalizedEntity, IStoreMappingSupported, IAclSupported
     {
         /// <summary>
         /// Gets or sets the menu identifier.
@@ -103,6 +105,12 @@ namespace SmartStore.Core.Domain.Cms
         public string Style { get; set; }
 
         /// <summary>
+        /// Gets or sets fontawesome icon color.
+        /// </summary>
+        [StringLength(100)]
+        public string IconColor { get; set; }
+
+        /// <summary>
         /// Gets or sets HTML id attribute.
         /// </summary>
         [StringLength(100)]
@@ -113,5 +121,17 @@ namespace SmartStore.Core.Domain.Cms
         /// </summary>
         [StringLength(100)]
         public string CssClass { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the entity is limited/restricted to certain stores.
+        /// </summary>
+        [Index("IX_MenuItem_LimitedToStores")]
+        public bool LimitedToStores { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the entity is subject to ACL.
+        /// </summary>
+        [Index("IX_MenuItem_SubjectToAcl")]
+        public bool SubjectToAcl { get; set; }
     }
 }

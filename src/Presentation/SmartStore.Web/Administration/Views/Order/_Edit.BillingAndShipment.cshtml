@@ -57,26 +57,24 @@
 
 @if (Model.IsShippable && Model.ShippingAddress != null)
 {
-	<h5>@T("Admin.Orders.Shipments")</h5>
-	
+	<h5>@T("Admin.Orders.Shipments")</h5>	
 	<div>
 		@(Html.Telerik().Grid<ShipmentModel>().Name("shipments-grid")
-			.DataBinding(binding =>
-			{
-				binding.Ajax().Select("ShipmentsSelect", "Order", new { orderId = Model.Id });
-			})
-			.Columns(columns =>
-			{
-				columns.Bound(x => x.Id)
-					.Template(x => Html.ActionLink(x.Id.ToString(), "ShipmentDetails", "Order", new { id = x.Id }, new { }))
-					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/ShipmentDetails/") + "<#= Id #>\"><#= Id #></a>");
-				columns.Bound(x => x.TrackingNumber);
-				columns.Bound(x => x.TotalWeight);
-				columns.Bound(x => x.ShippedDate);
-				columns.Bound(x => x.DeliveryDate);
-			})
-			.ToolBar(commands => commands.Template(GridCommands))
-			.EnableCustomBinding(true))
+            .DataBinding(binding =>
+            {
+                binding.Ajax().Select("ShipmentsSelect", "Order", new { orderId = Model.Id });
+            })
+            .Columns(columns =>
+            {
+                columns.Bound(x => x.Id)
+                    .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/ShipmentDetails/") + "<#= Id #>\"><#= Id #></a>");
+                columns.Bound(x => x.TrackingNumber);
+                columns.Bound(x => x.TotalWeight);
+                columns.Bound(x => x.ShippedDate);
+                columns.Bound(x => x.DeliveryDate);
+            })
+            .ToolBar(commands => commands.Template(GridCommands))
+            .EnableCustomBinding(true))
 	</div>
 }
 

@@ -456,38 +456,42 @@ namespace SmartStore.Web.Controllers
 		public ActionResult PopularProductTags()
 		{
             if (!_catalogSettings.ShowPopularProductTagsOnHomepage)
+            {
                 return new EmptyResult();
+            }
 
-            var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCTTAG_POPULAR_MODEL_KEY, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id);
+            var store = _services.StoreContext.CurrentStore;
+
+            var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCTTAG_POPULAR_MODEL_KEY, _services.WorkContext.WorkingLanguage.Id, store.Id);
 			var cacheModel = _services.Cache.Get(cacheKey, () =>
 			{
 				var model = new PopularProductTagsModel();
 
-				//get all tags
 				var allTags = _productTagService
 					.GetAllProductTags()
-					//filter by current store
-					.Where(x => _productTagService.GetProductCount(x.Id, _services.StoreContext.CurrentStore.Id) > 0)
-					//order by product count
-					.OrderByDescending(x => _productTagService.GetProductCount(x.Id, _services.StoreContext.CurrentStore.Id))
+					.Where(x => _productTagService.GetProductCount(x.Id, store.Id) > 0)
+					.OrderByDescending(x => _productTagService.GetProductCount(x.Id, store.Id))
 					.ToList();
 
 				var tags = allTags
 					.Take(_catalogSettings.NumberOfProductTags)
 					.ToList();
-				//sorting
+
 				tags = tags.OrderBy(x => x.GetLocalized(y => y.Name)).ToList();
 
 				model.TotalTags = allTags.Count;
 
-				foreach (var tag in tags)
-					model.Tags.Add(new ProductTagModel
-					{
-						Id = tag.Id,
-						Name = tag.GetLocalized(y => y.Name),
-						SeName = tag.GetSeName(),
-						ProductCount = _productTagService.GetProductCount(tag.Id, _services.StoreContext.CurrentStore.Id)
-					});
+                foreach (var tag in tags)
+                {
+                    model.Tags.Add(new ProductTagModel
+                    {
+                        Id = tag.Id,
+                        Name = tag.GetLocalized(y => y.Name),
+                        SeName = tag.GetSeName(),
+                        ProductCount = _productTagService.GetProductCount(tag.Id, store.Id)
+                    });
+                }
+
 				return model;
 			});
 
@@ -525,12 +529,12 @@ namespace SmartStore.Web.Controllers
 		[RewriteUrl(SslRequirement.No)]
 		public ActionResult ProductTagsAll()
 		{
+            var store = _services.StoreContext.CurrentStore;
 			var model = new PopularProductTagsModel();
+
 			model.Tags = _productTagService
 				.GetAllProductTags()
-				//filter by current store
-				.Where(x => _productTagService.GetProductCount(x.Id, _services.StoreContext.CurrentStore.Id) > 0)
-				//sort by name
+				.Where(x => _productTagService.GetProductCount(x.Id, store.Id) > 0)
 				.OrderBy(x => x.GetLocalized(y => y.Name))
 				.Select(x =>
 				{
@@ -539,11 +543,12 @@ namespace SmartStore.Web.Controllers
 						Id = x.Id,
 						Name = x.GetLocalized(y => y.Name),
 						SeName = x.GetSeName(),
-						ProductCount = _productTagService.GetProductCount(x.Id, _services.StoreContext.CurrentStore.Id)
+						ProductCount = _productTagService.GetProductCount(x.Id, store.Id)
 					};
 					return ptModel;
 				})
 				.ToList();
+
 			return View(model);
 		}
 

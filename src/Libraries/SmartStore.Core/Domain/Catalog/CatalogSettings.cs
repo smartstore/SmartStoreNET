@@ -472,6 +472,11 @@ namespace SmartStore.Core.Domain.Catalog
         public bool IgnoreDiscounts { get; set; }
 
         /// <summary>
+        /// Gets or sets whether to also apply percentage discounts in tier prices.
+        /// </summary>
+        public bool ApplyPercentageDiscountOnTierPrice { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether to ignore featured products (side-wide)
         /// </summary>
         public bool IgnoreFeaturedProducts { get; set; }

@@ -806,10 +806,35 @@ namespace SmartStore
 
 			return string.Concat(value, delimiter, grow);
 		}
-		
-		/// <summary>
-		/// Returns n/a if string is empty else self.
-		/// </summary>
+
+        /// <summary>
+        /// Left-pads a string. Always returns empty string if source is null or empty.
+        /// </summary>
+        [DebuggerStepThrough]
+        public static string LeftPad(this string value, string format = null, char pad = ' ', int count = 1)
+        {
+            if (string.IsNullOrEmpty(value))
+                return string.Empty;
+
+            Guard.NotNull(pad, nameof(pad));
+
+            if (count < 1)
+                return value;
+
+            var left = new String(pad, count);
+            var right = value;
+
+            if (!string.IsNullOrWhiteSpace(format))
+            {
+                right = string.Format(CultureInfo.InvariantCulture, format, value);
+            }
+
+            return left + right;
+        }
+
+        /// <summary>
+        /// Returns n/a if string is empty else self.
+        /// </summary>
         [DebuggerStepThrough]
 		public static string NaIfEmpty(this string value) 
         {

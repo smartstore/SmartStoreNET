@@ -94,6 +94,7 @@
 	  margin-right: 0;
 	}
 	.custom-control-label {
+        padding-right: $custom-control-indicator-size * 1.5;
 		&::before {
 			right: 0;
 			left: initial;

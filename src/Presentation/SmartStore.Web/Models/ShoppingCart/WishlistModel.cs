@@ -55,7 +55,7 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public string Sku { get; set; }
 
-            public PictureModel Picture {get;set;}
+            public PictureModel Picture { get; set; }
 
             public int ProductId { get; set; }
 

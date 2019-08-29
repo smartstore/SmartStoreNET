@@ -59,7 +59,14 @@
             </td>
             <td class="adminData">
 				<div class="form-control-plaintext">
-					@Model.ShippedDate
+					@if (Model.ShippedDate.HasValue)
+					{
+						@Model.ShippedDate.ToString()
+					}
+					else
+					{
+						<span class="text-muted">@T("Admin.Orders.Shipments.ShippedDate.NotYet")</span>
+					}
 					@if (Model.CanShip)
 					{
 						<button type="submit" id="setasshipped" name="setasshipped" class="btn btn-sm btn-secondary ml-2 align-text-top" value="@T("Admin.Orders.Shipments.ShippedDate.Button")">
@@ -76,7 +83,14 @@
             </td>
             <td class="adminData">
 				<div class="form-control-plaintext">
-					@Model.DeliveryDate
+					@if (Model.DeliveryDate.HasValue)
+					{
+						@Model.DeliveryDate.Value.ToString()
+					}
+					else
+					{
+						<span class="text-muted">@T("Admin.Orders.Shipments.DeliveryDate.NotYet")</span>
+					}
 					@if (Model.CanDeliver)
 					{
 						<button type="submit" id="setasdelivered" name="setasdelivered" class="btn btn-sm btn-secondary ml-2 align-text-top" value="@T("Admin.Orders.Shipments.DeliveryDate.Button")">

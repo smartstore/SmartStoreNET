@@ -127,7 +127,7 @@ namespace SmartStore.Services.Cms
 							GetEntityData<Category>(d2, storeId, languageId, x => new ResolverEntitySummary
 							{
 								Name = x.Name,
-								Published = x.Published,
+                                Published = x.Published,
 								Deleted = x.Deleted,
 								SubjectToAcl = x.SubjectToAcl,
 								LimitedToStores = x.LimitedToStores,
@@ -138,7 +138,7 @@ namespace SmartStore.Services.Cms
 							GetEntityData<Manufacturer>(d2, storeId, languageId, x => new ResolverEntitySummary
 							{
 								Name = x.Name,
-								Published = x.Published,
+                                Published = x.Published,
 								Deleted = x.Deleted,
 								LimitedToStores = x.LimitedToStores,
                                 PictureId = x.PictureId
@@ -352,7 +352,7 @@ namespace SmartStore.Services.Cms
 				
                 if (data.Type == LinkType.Topic)
                 {
-                    data.Label = GetLocalized(data.Id, entityName, "ShortTitle", languageId, null)
+                    data.Label = GetLocalized(data.Id, entityName, nameof(Topic.ShortTitle), languageId, null)
                         ?? GetLocalized(data.Id, entityName, "Title", languageId, null)
                         ?? summary.ShortTitle.NullEmpty()
                         ?? summary.Title.NullEmpty()

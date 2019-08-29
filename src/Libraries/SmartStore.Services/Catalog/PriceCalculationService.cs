@@ -524,7 +524,7 @@ namespace SmartStore.Services.Catalog
 			bool isTierPrice = false)
 		{
             // Initial price.
-			decimal result = product.Price;
+			var result = product.Price;
 
             // Special price.
 			var specialPrice = GetSpecialPrice(product);
@@ -538,18 +538,32 @@ namespace SmartStore.Services.Catalog
                 includeDiscounts = true;
             }
 
-            // Tier prices.
+            // Tier price.
             if (product.HasTierPrices && includeDiscounts && !(bundleItem != null && bundleItem.Item != null))
             {
-				var tierPrice = GetMinimumTierPrice(product, customer, quantity, context);
-                var discountAmountTest = GetDiscountAmount(product, customer, additionalCharge, quantity, out var appliedDiscountTest, bundleItem);
-                var discountProductTest = result - discountAmountTest;
-
-				//decimal? tierPrice = GetMinimumTierPrice(product, customer, quantity);
-                if (tierPrice.HasValue && tierPrice < discountProductTest)
+                var tierPrice = GetMinimumTierPrice(product, customer, quantity, context);
+                if (tierPrice.HasValue)
                 {
-                    includeDiscounts = false;
-                    result = Math.Min(result, tierPrice.Value);
+                    if (_catalogSettings.ApplyPercentageDiscountOnTierPrice && !isTierPrice)
+                    {
+                        var discountOnTierPrice = GetDiscountAmount(product, customer, decimal.Zero, quantity, out var appliedDiscount, bundleItem, context, tierPrice);
+
+                        if (appliedDiscount != null && appliedDiscount.UsePercentage)
+                        {
+                            result = Math.Min(result, tierPrice.Value) + additionalCharge - discountOnTierPrice;
+
+                            return Math.Max(result, decimal.Zero);
+                        }
+                    }
+
+                    var discountAmountTest = GetDiscountAmount(product, customer, additionalCharge, quantity, out var appliedDiscountTest, bundleItem);
+                    var discountProductTest = result - discountAmountTest;
+
+                    if (tierPrice < discountProductTest)
+                    {
+                        includeDiscounts = false;
+                        result = Math.Min(result, tierPrice.Value);
+                    }
                 }
             }
 
@@ -564,12 +578,7 @@ namespace SmartStore.Services.Catalog
                 result = result + additionalCharge;
             }
 
-            if (result < decimal.Zero)
-            {
-                result = decimal.Zero;
-            }
-
-            return result;
+            return Math.Max(result, decimal.Zero);
         }
 
 		public virtual decimal GetFinalPrice(
@@ -828,11 +837,11 @@ namespace SmartStore.Services.Catalog
             int quantity,
             out Discount appliedDiscount,
 			ProductBundleItemData bundleItem = null,
-			PriceCalculationContext context = null)
+			PriceCalculationContext context = null,
+            decimal? finalPrice = null)
         {
             appliedDiscount = null;
-            decimal appliedDiscountAmount = decimal.Zero;
-			decimal finalPriceWithoutDiscount = decimal.Zero;
+            var appliedDiscountAmount = decimal.Zero;
 
 			if (bundleItem != null && bundleItem.Item != null)
 			{
@@ -845,13 +854,13 @@ namespace SmartStore.Services.Catalog
 						DiscountAmount = bundleItem.Item.Discount.Value
 					};
 
-					finalPriceWithoutDiscount = GetFinalPrice(product, customer, additionalCharge, false, quantity, bundleItem, context);
+                    var finalPriceWithoutDiscount = finalPrice ?? GetFinalPrice(product, customer, additionalCharge, false, quantity, bundleItem, context);
 					appliedDiscountAmount = appliedDiscount.GetDiscountAmount(finalPriceWithoutDiscount);
 				}
 			}
 			else
 			{
-				// dont't apply when customer entered price or discounts should be ignored completely
+				// Don't apply when customer entered price or discounts should be ignored in any case.
 				if (product.CustomerEntersPrice || _catalogSettings.IgnoreDiscounts)
 				{
 					return appliedDiscountAmount;
@@ -863,7 +872,7 @@ namespace SmartStore.Services.Catalog
 					return appliedDiscountAmount;
 				}
 
-				finalPriceWithoutDiscount = GetFinalPrice(product, customer, additionalCharge, false, quantity, bundleItem, context);
+                var finalPriceWithoutDiscount = finalPrice ?? GetFinalPrice(product, customer, additionalCharge, false, quantity, bundleItem, context);
 				appliedDiscount = allowedDiscounts.GetPreferredDiscount(finalPriceWithoutDiscount);
 
 				if (appliedDiscount != null)

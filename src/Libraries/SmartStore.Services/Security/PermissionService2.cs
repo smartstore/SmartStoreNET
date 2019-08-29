@@ -238,35 +238,39 @@ namespace SmartStore.Services.Security
                 return false;
             }
 
+            var result = false;
+
             foreach (var role in customer.CustomerRoles.Where(x => x.Active))
             {
-                if (Authorize(permissionSystemName, role))
+                var tree = GetPermissionTree(role);
+                var node = tree.SelectNodeById(permissionSystemName);
+                if (node == null)
                 {
-                    return true;
+                    throw new SmartException($"Unknown permission \"{permissionSystemName}\".");
+                }
+
+                // Find explicit allow or deny.
+                while (node != null && !node.Value.Allow.HasValue)
+                {
+                    node = node.Parent;
+                }
+                if (node == null || !node.Value.Allow.HasValue)
+                {
+                    continue;
+                }
+
+                if (node.Value.Allow.Value)
+                {
+                    result = true;
+                }
+                else
+                {
+                    return false;
                 }
             }
 
-            return false;
+            return result;
         }
-
-        protected virtual bool Authorize(string permissionSystemName, CustomerRole role)
-        {
-            var tree = GetPermissionTree(role);
-            var node = tree.SelectNodeById(permissionSystemName);
-
-            if (node == null)
-            {
-                throw new SmartException($"Unknown permission \"{permissionSystemName}\".");
-            }
-
-            while (node != null && !node.Value.Allow.HasValue)
-            {
-                node = node.Parent;
-            }
-
-            return node?.Value?.Allow ?? false;
-        }
-
 
         public virtual TreeNode<IPermissionNode> GetPermissionTree(CustomerRole role)
         {

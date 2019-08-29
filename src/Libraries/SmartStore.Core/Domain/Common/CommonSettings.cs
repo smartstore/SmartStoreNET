@@ -10,6 +10,7 @@ namespace SmartStore.Core.Domain.Common
 			AutoUpdateEnabled = true;
 			EntityPickerPageSize = 48;
             MaxScheduleHistoryAgeInDays = 30;
+            MaxLogAgeInDays = 7;
             MaxNumberOfScheduleHistoryEntries = 100;
             MaxQueuedMessagesAgeInDays = 14;
         }
@@ -36,6 +37,11 @@ namespace SmartStore.Core.Domain.Common
         /// Gets or sets the maximum age of schedule history entries (in days).
         /// </summary>
         public int MaxScheduleHistoryAgeInDays { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum age of log entries (in days).
+        /// </summary>
+        public int MaxLogAgeInDays { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum number of schedule history entries per task.

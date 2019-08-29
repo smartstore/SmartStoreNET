@@ -219,6 +219,8 @@
     <Compile Include="Common\IUserAgent.cs" />
     <Compile Include="Common\TempFileCleanupTask.cs" />
     <Compile Include="Common\UAParserUserAgent.cs" />
+    <Compile Include="ContentSlider\ContentSliderService.cs" />
+    <Compile Include="ContentSlider\IContentSliderService.cs" />
     <Compile Include="Customers\CustomerMessageFactoryExtensions.cs" />
     <Compile Include="Customers\CustomerSearchQuery.cs" />
     <Compile Include="Customers\Events\CustomerAnonymizedEvent.cs" />

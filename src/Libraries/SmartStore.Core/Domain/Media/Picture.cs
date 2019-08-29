@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.ContentSlider;
 
 namespace SmartStore.Core.Domain.Media
 {
@@ -10,6 +11,7 @@ namespace SmartStore.Core.Domain.Media
 	public partial class Picture : BaseEntity, ITransient, IHasMedia
 	{
 		private ICollection<ProductPicture> _productPictures;
+		private ICollection<Slide> _slides;
 
 		/// <summary>
 		/// Gets or sets the picture binary
@@ -80,6 +82,14 @@ namespace SmartStore.Core.Domain.Media
         {
 			get { return _productPictures ?? (_productPictures = new HashSet<ProductPicture>()); }
             protected set { _productPictures = value; }
+        }
+
+
+        [DataMember]
+        public virtual ICollection<Slide> Slides
+        {
+            get { return _slides ?? (_slides = new HashSet<Slide>()); }
+            protected set { _slides = value; }
         }
     }
 }

@@ -67,10 +67,17 @@ fieldset.content-group {
 		left: 0;
 		z-index: 10;
 		width: $input-height;
-		height: $input-height;
+		height: 100%;
 		line-height: $input-height;
 		text-align: center;
 		vertical-align: middle;
+
+        :before {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
 	}
 
 	&.has-icon-right .input-group-icon {

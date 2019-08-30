@@ -28,6 +28,20 @@ $mtab-font-weight:			$font-weight-medium !default;
 $mtab-color:				inherit !default;
 
 
+// Offcanvas
+// ==============================================================
+
+$offcanvas-width:                   320px !default;
+$offcanvas-width-lg:                480px !default;
+$offcanvas-easing:                  ease-out !default;
+$offcanvas-duration:                0.3s !default;
+$offcanvas-offset:                  0.3 !default;
+$offcanvas-offset-p:                $offcanvas-offset * 100% !default;
+$offcanvas-offset-p-neg:            ($offcanvas-offset * 100) * -1% !default;
+$offcanvas-z-index:                 99999 !default;
+$offcanvas-shadow:                  0 0 24px rgba(#000, 0.3) !default;
+
+
 //
 // Icons
 // --------------------------------------------------

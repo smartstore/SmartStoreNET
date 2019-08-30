@@ -345,15 +345,18 @@ $btn-size-sm: $input-height-sm;
 			left: 0;
 			top: 0;
 			bottom: 0;
-			width: 1.4em;
+			width: 1.8em;
 			text-align: left;
 			opacity: 0;
-			line-height: $line-height-base*0.825;
+            line-height: inherit;
 			transition: opacity 0.2s ease-out;
 			transform: translateX(-100%);
 
 			&:before {
-				vertical-align: middle;
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
 			}
 		}
 	}

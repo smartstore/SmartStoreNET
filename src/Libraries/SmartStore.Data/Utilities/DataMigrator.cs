@@ -19,6 +19,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.IO;
+using SmartStore.Core.Security;
 using SmartStore.Data.Setup;
 using SmartStore.Utilities;
 using EfState = System.Data.Entity.EntityState;
@@ -957,7 +958,7 @@ namespace SmartStore.Data.Utilities
             using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
             {
                 // Insert new granular permissions.
-                var permissionSystemNames = Permissions.GetAll();
+                var permissionSystemNames = PermissionHelper.GetPermissions(typeof(Permissions));
                 foreach (var systemName in permissionSystemNames)
                 {
                     var entity = permissionSet.Add(new PermissionRecord { SystemName = systemName, Name = string.Empty, Category = string.Empty });
@@ -1019,36 +1020,37 @@ namespace SmartStore.Data.Utilities
 
                 scope.Commit();
 
+                //TODO!.....
                 // Migrate plugin permissions.
-                var pluginPermissions = new Dictionary<string, PermissionRecord>(StringComparer.OrdinalIgnoreCase);
-                var pluginPermissionNames = new string[] { "ManageDebitoor", "AccessImportBiz", "ManageShopConnector", "ManageNewsImporter", "ManageWebApi", "ManageMegaSearch", "ManageErpConnector",
-                    "ManagePowerBi", "ManageWallet", "ManageStories", "ManageDlm" };
+                //var pluginPermissions = new Dictionary<string, PermissionRecord>(StringComparer.OrdinalIgnoreCase);
+                //var pluginPermissionNames = new string[] { "ManageDebitoor", "AccessImportBiz", "ManageShopConnector", "ManageNewsImporter", "ManageWebApi", "ManageMegaSearch", "ManageErpConnector",
+                //    "ManagePowerBi", "ManageWallet", "ManageStories", "ManageDlm" };
 
-                foreach (var oldSystemName in pluginPermissionNames)
-                {
-                    if (permissionToRoles.ContainsKey(oldSystemName))
-                    {
-                        var newSystemName = oldSystemName.ToLower();
-                        if (newSystemName.StartsWith("manage"))
-                        {
-                            newSystemName = newSystemName.Substring(6);
-                        }
+                //foreach (var oldSystemName in pluginPermissionNames)
+                //{
+                //    if (permissionToRoles.ContainsKey(oldSystemName))
+                //    {
+                //        var newSystemName = oldSystemName.ToLower();
+                //        if (newSystemName.StartsWith("manage"))
+                //        {
+                //            newSystemName = newSystemName.Substring(6);
+                //        }
 
-                        var entity = permissionSet.Add(new PermissionRecord { SystemName = newSystemName + ".manage", Name = string.Empty, Category = string.Empty });
-                        pluginPermissions.Add(oldSystemName, entity);
-                    }
-                    else
-                    {
-                        // Ignore unknown permissions. Will be deleted later.
-                    }
-                }
+                //        var entity = permissionSet.Add(new PermissionRecord { SystemName = newSystemName + ".manage", Name = string.Empty, Category = string.Empty });
+                //        pluginPermissions.Add(oldSystemName, entity);
+                //    }
+                //    else
+                //    {
+                //        // Ignore unknown permissions. Will be deleted later.
+                //    }
+                //}
 
-                scope.Commit();
+                //scope.Commit();
 
-                // Migrate mappings of plugin permissions.
-                pluginPermissions.Each(x => Allow(true, x.Key, x.Value));
+                //// Migrate mappings of plugin permissions.
+                //pluginPermissions.Each(x => Allow(true, x.Key, x.Value));
 
-                scope.Commit();
+                //scope.Commit();
             }
 
             // allowOnly = false: to use when parent may set permissions (always sets Allow property).

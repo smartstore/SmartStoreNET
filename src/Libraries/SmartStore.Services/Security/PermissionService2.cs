@@ -136,7 +136,7 @@ namespace SmartStore.Services.Security
         }
 
 
-        public virtual void InstallPermissions(IPermissionProvider permissionProvider)
+        public virtual void InstallPermissions(IPermissionProvider2 permissionProvider)
         {
             Guard.NotNull(permissionProvider, nameof(permissionProvider));
 
@@ -153,7 +153,12 @@ namespace SmartStore.Services.Security
                     var newPermission = GetPermissionBySystemName(permission.SystemName);
                     if (newPermission == null)
                     {
-                        newPermission = new PermissionRecord { SystemName = permission.SystemName };
+                        newPermission = new PermissionRecord
+                        {
+                            Name = string.Empty,
+                            SystemName = permission.SystemName,
+                            Category = string.Empty
+                        };
 
                         // Default customer role mappings.
                         var defaultPermissions = permissionProvider.GetDefaultPermissions();
@@ -193,7 +198,7 @@ namespace SmartStore.Services.Security
             }
         }
 
-        public virtual void UninstallPermissions(IPermissionProvider permissionProvider)
+        public virtual void UninstallPermissions(IPermissionProvider2 permissionProvider)
         {
             var permissions = permissionProvider.GetPermissions();
             var systemNames = new HashSet<string>(permissions.Select(x => x.SystemName));

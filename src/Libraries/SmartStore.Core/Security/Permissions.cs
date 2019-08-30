@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-
-namespace SmartStore.Core
+﻿namespace SmartStore.Core
 {
     /// <summary>
     /// Provides system names of standard permissions.
@@ -11,31 +6,6 @@ namespace SmartStore.Core
     /// </summary>
     public static class Permissions
     {
-        /// <summary>
-        /// Gets a list of all standard permission system names.
-        /// </summary>
-        /// <returns>Permission system names.</returns>
-        public static IList<string> GetAll()
-        {
-            var result = new List<string>();
-            GetPermissions(typeof(Permissions));
-
-            return result;
-
-            void GetPermissions(Type type)
-            {
-                var permissions = type
-                    .GetFields(BindingFlags.Public | BindingFlags.Static)
-                    .Where(fi => fi.IsLiteral && !fi.IsInitOnly && fi.FieldType == typeof(string))
-                    .Select(x => (string)x.GetRawConstantValue());
-
-                result.AddRange(permissions);
-
-                var nestedTypes = type.GetNestedTypes(BindingFlags.Public | BindingFlags.Static);
-                nestedTypes.Each(x => GetPermissions(x));
-            }
-        }
-
         public static class Catalog
         {
             public const string Self = "catalog";

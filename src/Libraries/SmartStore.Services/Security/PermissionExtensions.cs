@@ -111,12 +111,19 @@ namespace SmartStore.Services.Security
                 var token = tokens.LastOrDefault();
                 if (token != null)
                 {
-                    // Known token of default permissions.
+                    // Try known token of default permissions.
                     if (!resourceKeys.TryGetValue(token, out var key) || !resources.TryGetValue(key, out var name))
                     {
-                        // Unknown token (e.g. permission added by plugin). Try resource by name convention.
+                        // Unknown token. Try to find resource by name convention.
                         key = "Permissions.DisplayName." + token.Replace("-", "");
-                        name = services.Localization.GetResource(key, language.Id, false, token, false);
+
+                        // Try resource provided by core.
+                        name = services.Localization.GetResource(key, language.Id, false, string.Empty, true);
+                        if (name.IsEmpty())
+                        {
+                            // Try resource provided by plugin.
+                            name = services.Localization.GetResource("Plugins." + key, language.Id, false, string.Empty, true);
+                        }
                     }
 
                     node.SetThreadMetadata("DisplayName", string.IsNullOrWhiteSpace(name) ? token : name);

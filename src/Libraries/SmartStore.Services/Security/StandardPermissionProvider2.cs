@@ -3,6 +3,7 @@ using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Security;
 
 namespace SmartStore.Services.Security
 {
@@ -10,7 +11,7 @@ namespace SmartStore.Services.Security
     {
         public virtual IEnumerable<PermissionRecord> GetPermissions()
         {
-            var permissionSystemNames = Permissions.GetAll();
+            var permissionSystemNames = PermissionHelper.GetPermissions(typeof(Permissions));
             var permissions = permissionSystemNames.Select(x => new PermissionRecord { SystemName = x });            
 
             return permissions;

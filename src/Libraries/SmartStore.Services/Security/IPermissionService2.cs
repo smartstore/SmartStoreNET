@@ -79,13 +79,13 @@ namespace SmartStore.Services.Security
         /// Install permissions.
         /// </summary>
         /// <param name="permissionProvider">Permission provider.</param>
-        void InstallPermissions(IPermissionProvider permissionProvider);
+        void InstallPermissions(IPermissionProvider2 permissionProvider);
 
         /// <summary>
         /// Uninstall permissions.
         /// </summary>
         /// <param name="permissionProvider">Permission provider.</param>
-        void UninstallPermissions(IPermissionProvider permissionProvider);
+        void UninstallPermissions(IPermissionProvider2 permissionProvider);
 
 
         /// <summary>

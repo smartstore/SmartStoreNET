@@ -102,9 +102,9 @@ namespace SmartStore
 
         public static int ToInt(this string value, int defaultValue = 0)
         {
-			if (CommonHelper.TryConvert(value, out int result))
+			if (CommonHelper.TryConvert(value, typeof(int), CultureInfo.InvariantCulture, out object result))
 			{
-				return result;
+				return (int)result;
 			}
 
 			return defaultValue;

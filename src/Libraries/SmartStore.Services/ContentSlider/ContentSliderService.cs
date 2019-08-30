@@ -9,7 +9,7 @@ using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Services.ContentSlider
 {
-    class ContentSliderService : IContentSliderService
+    public class ContentSliderService : IContentSliderService
     {
         private readonly IRepository<Core.Domain.ContentSlider.ContentSlider> _contentSliderRepository;
         private readonly IRepository<Slide> _contentSliderSlideRepository;

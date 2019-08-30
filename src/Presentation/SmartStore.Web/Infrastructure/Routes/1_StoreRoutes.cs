@@ -334,6 +334,15 @@ namespace SmartStore.Web.Infrastructure
 				new { controller = "Common", action = "Settings" },
 				new[] { "SmartStore.Web.Controllers" });
 
+            /* content Slider
+			----------------------------------------*/
+
+            /*routes.MapLocalizedRoute("HomepageContentSlider",
+                "HomepageContentSlider",
+                new { controller = "ContentSlider", action = "HomepageContentSlider" },
+                null,
+                new[] { "SmartStore.Web.Controllers" });*/
+
         }
 
         public int Priority

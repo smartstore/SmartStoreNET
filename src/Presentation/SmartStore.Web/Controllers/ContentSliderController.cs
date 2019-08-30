@@ -13,11 +13,7 @@ namespace SmartStore.Web.Controllers
     {
         private readonly ICommonServices _services;
         private readonly IContentSliderService _contentSliderService;
-        public ContentSliderController()
-        {
-
-        }
-
+        
         public ContentSliderController(ICommonServices services,
             IContentSliderService contentSliderService)
         {

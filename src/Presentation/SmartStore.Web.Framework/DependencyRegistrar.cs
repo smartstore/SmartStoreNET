@@ -46,6 +46,7 @@ using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.ContentSlider;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Customers.Importer;
 using SmartStore.Services.DataExchange;
@@ -276,9 +277,12 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<OpenAuthenticationService>().As<IOpenAuthenticationService>().InstancePerRequest();
 
 			builder.RegisterType<CommonServices>().As<ICommonServices>().InstancePerRequest();
-		}
 
-		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
+            builder.RegisterType<ContentSliderService>().As<IContentSliderService>().InstancePerRequest();
+
+        }
+
+        protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
 		{
 			// Look for first settable property of type "ICommonServices" and inject
 			var servicesProperty = FindCommonServicesProperty(registration.Activator.LimitType);

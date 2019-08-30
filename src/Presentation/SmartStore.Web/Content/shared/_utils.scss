@@ -288,6 +288,75 @@ table th {
 
 
 //
+// Shadows
+// --------------------------------------------------
+
+/*.shadow {
+    border-width: 0;
+    box-shadow: 0 15px 35px rgba(#32325d, .1), 0 5px 15px rgba(#000, .07);
+}*/
+
+/*.shadow-lg {
+    border-width: 0;
+    box-shadow: 0 40px 80px rgba(#32325d, .1), 0 15px 35px rgba(#32325d, .15), 0 5px 15px rgba(#000, .1);
+}*/
+
+.shadow {
+    --shadow-color-1: rgba(0,0,0, .12);
+    --shadow-color-2: rgba(0,0,0, .12);
+}
+
+.shadow-sm {
+    --shadow-color-1: rgba(0,0,0, .12);
+    --shadow-color-2: rgba(0,0,0, .07);
+    box-shadow: $box-shadow-sm !important;
+}
+
+.shadow-lg {
+    --shadow-color-1: rgba(0,0,0, .175);
+    --shadow-color-2: rgba(0,0,0, .12);
+    box-shadow: $box-shadow-lg !important;
+}
+
+[class*="shadow-sm-"] {
+    box-shadow: $box-shadow-sm !important;
+}
+
+[class*="shadow-lg-"] {
+    box-shadow: $box-shadow-lg !important;
+}
+
+@each $color, $value in $theme-colors {
+    @if $color != "secondary" and $color != "light" { 
+        .shadow-#{$color},
+        .shadow-sm-#{$color},
+        .shadow-lg-#{$color} { 
+            --shadow-color-1: #{rgba(darken($value, 25%), .15)};
+            --shadow-color-2: #{rgba($value, .15)};
+        }
+
+        .shadow-#{$color} { 
+            box-shadow: $box-shadow !important;
+        }
+    }
+}
+
+@each $color, $value in $theme-colors {
+    .xshadow-#{$color} { 
+        box-shadow: 0 15px 35px rgba($value, .15), 0 5px 15px rgba(darken($value, 30%), .1) !important;   
+    }
+    @if $color != "secondary" and $color != "light" {
+        .xshadow-sm-#{$color} { 
+            box-shadow: 0 0 .625rem 0 rgba($value, .15) !important;   
+        }
+        .xshadow-lg-#{$color} { 
+            box-shadow: 0 40px 80px rgba($value, .15), 0 15px 35px rgba(darken($value, 30%), .2) !important;   
+        }
+    }
+}
+
+
+//
 // Some shims
 // ------------------------------------------------------
 

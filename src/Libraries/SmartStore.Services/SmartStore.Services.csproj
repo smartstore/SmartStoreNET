@@ -603,7 +603,6 @@
     <Compile Include="Security\IEncryptionService.cs" />
     <Compile Include="Security\IPermissionProvider2.cs" />
     <Compile Include="Security\IPermissionService2.cs" />
-    <Compile Include="Security\PermissionExtensions.cs" />
     <Compile Include="Security\PermissionService.cs" />
     <Compile Include="Security\IPermissionService.cs" />
     <Compile Include="Security\IPermissionProvider.cs" />

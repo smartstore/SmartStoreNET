@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -8,6 +9,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Services.Customers;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Security
 {
@@ -17,9 +19,81 @@ namespace SmartStore.Services.Security
         internal const string PERMISSION_TREE_KEY = "permission:tree-{0}";
         private const string PERMISSION_TREE_PATTERN_KEY = "permission:tree-*";
 
+        private static readonly Dictionary<string, string> _displayNameResourceKeys = new Dictionary<string, string>
+        {
+            { "read", "Common.Read" },
+            { "update", "Common.Edit" },
+            { "create", "Common.Create" },
+            { "delete", "Common.Delete" },
+            { "catalog", "Admin.Catalog" },
+            { "product", "Admin.Catalog.Products" },
+            { "category", "Admin.Catalog.Categories" },
+            { "manufacturer", "Admin.Catalog.Manufacturers" },
+            { "variant", "Admin.Catalog.Attributes.ProductAttributes" },
+            { "attribute", "Admin.Catalog.Attributes.SpecificationAttributes" },
+            { "customer", "Admin.Customers" },
+            { "impersonate", "Admin.Customers.Customers.Impersonate" },
+            { "role", "Admin.Customers.CustomerRoles" },
+            { "order", "Admin.Orders" },
+            { "gift-card", "Admin.GiftCards" },
+            { "notify", "Common.Notify" },
+            { "return-request", "Admin.ReturnRequests" },
+            { "accept", "Admin.ReturnRequests.Accept" },
+            { "promotion", "Admin.Catalog.Products.Promotion" },
+            { "affiliate", "Admin.Affiliates" },
+            { "campaign", "Admin.Promotions.Campaigns" },
+            { "discount", "Admin.Promotions.Discounts" },
+            { "newsletter", "Admin.Promotions.NewsLetterSubscriptions" },
+            { "cms", "Admin.ContentManagement" },
+            { "poll", "Admin.ContentManagement.Polls" },
+            { "news", "Admin.ContentManagement.News" },
+            { "blog", "Admin.ContentManagement.Blog" },
+            { "widget", "Admin.ContentManagement.Widgets" },
+            { "topic", "Admin.ContentManagement.Topics" },
+            { "menu", "Admin.ContentManagement.Menus" },
+            { "forum", "Admin.ContentManagement.Forums" },
+            { "message-template", "Admin.ContentManagement.MessageTemplates" },
+            { "configuration", "Admin.Configuration" },
+            { "country", "Admin.Configuration.Countries" },
+            { "language", "Admin.Configuration.Languages" },
+            { "setting", "Admin.Configuration.Settings" },
+            { "payment-method", "Admin.Configuration.Payment.Methods" },
+            { "activate", "Admin.Common.Activate" },
+            { "authentication", "Admin.Configuration.ExternalAuthenticationMethods" },
+            { "currency", "Admin.Configuration.Currencies" },
+            { "delivery-time", "Admin.Configuration.DeliveryTimes" },
+            { "theme", "Admin.Configuration.Themes" },
+            { "measure", "Admin.Configuration.Measures.Dimensions" },
+            { "activity-log", "Admin.Configuration.ActivityLog.ActivityLogType" },
+            { "acl", "Admin.Configuration.ACL" },
+            { "email-account", "Admin.Configuration.EmailAccounts" },
+            { "store", "Admin.Common.Stores" },
+            { "shipping", "Admin.Configuration.DeliveryTimes" },
+            { "tax", "Admin.Configuration.Tax.Providers" },
+            { "plugin", "Admin.Configuration.Plugins" },
+            { "upload", "Common.Upload" },
+            { "install", "Admin.Configuration.Plugins.Fields.Install" },
+            { "license", "Admin.Common.License" },
+            { "export", "Common.Export" },
+            { "execute", "Admin.Common.Go" },
+            { "import", "Common.Import" },
+            { "system", "Admin.System" },
+            { "administrate", "Admin.Plugins.KnownGroup.Admin" },
+            { "log", "Admin.System.Log" },
+            { "message", "Admin.System.QueuedEmails" },
+            { "send", "Common.Send" },
+            { "maintenance", "Admin.System.Maintenance" },
+            { "schedule-task", "Admin.System.ScheduleTasks" },
+            { "url-record", "Admin.System.SeNames" },
+            { "cart", "ShoppingCart" },
+            { "checkout-attribute", "Admin.Catalog.Attributes.CheckoutAttributes" },
+            { "media", "Admin.Plugins.KnownGroup.Media" }
+        };
+
         private readonly IRepository<PermissionRecord> _permissionRepository;
         private readonly IRepository<PermissionRoleMapping> _permissionMappingRepository;
         private readonly Lazy<ICustomerService> _customerService;
+        private readonly ILocalizationService _localizationService;
         private readonly IWorkContext _workContext;
         private readonly ICacheManager _cacheManager;
 
@@ -27,12 +101,14 @@ namespace SmartStore.Services.Security
             IRepository<PermissionRecord> permissionRepository,
             IRepository<PermissionRoleMapping> permissionMappingRepository,
             Lazy<ICustomerService> customerService,
+            ILocalizationService localizationService,
             IWorkContext workContext,
             ICacheManager cacheManager)
         {
             _permissionRepository = permissionRepository;
             _permissionMappingRepository = permissionMappingRepository;
             _customerService = customerService;
+            _localizationService = localizationService;
             _workContext = workContext;
             _cacheManager = cacheManager;
         }
@@ -66,6 +142,43 @@ namespace SmartStore.Services.Security
         {
             var permissions = _permissionRepository.Table.ToList();
             return permissions;
+        }
+
+        public virtual IDictionary<string, string> GetAllSystemNames()
+        {
+            var language = _workContext.WorkingLanguage;
+            var resourcesLookup = GetDisplayNameLookup(language.Id);
+
+            Func<string, string> nameSelector = x =>
+            {
+                var tokens = x.EmptyNull().ToLower().Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+                if (!tokens.Any())
+                {
+                    return string.Empty;
+                }
+
+                var sb = new StringBuilder();
+
+                foreach (var token in tokens)
+                {
+                    if (sb.Length > 0)
+                    {
+                        sb.Append(" » ");
+                    }
+
+                    var displayName = GetDisplayName(token, language.Id, resourcesLookup) ?? token ?? string.Empty;
+                    sb.Append(displayName);
+                }
+
+                return sb.ToString();
+            };
+
+            var systemNames = _permissionRepository.TableUntracked
+                .Select(x => x.SystemName)
+                .ToList()
+                .ToDictionarySafe(x => x, nameSelector);
+
+            return systemNames;
         }
 
         public virtual void InsertPermission(PermissionRecord permission)
@@ -277,7 +390,8 @@ namespace SmartStore.Services.Security
             return result;
         }
 
-        public virtual TreeNode<IPermissionNode> GetPermissionTree(CustomerRole role)
+        
+        public virtual TreeNode<IPermissionNode> GetPermissionTree(CustomerRole role, bool addDisplayNames = false)
         {
             Guard.NotNull(role, nameof(role));
 
@@ -290,46 +404,106 @@ namespace SmartStore.Services.Security
                     .Where(x => string.IsNullOrEmpty(x.Name))//GP: TODO, remove clause later
                     .ToList();
 
-                AddChildItems(permissions, root, null);
+                AddChildItems(root, role, permissions, null);
 
                 return root;
             });
 
-            return result;
-
-            void AddChildItems(List<PermissionRecord> permissions, TreeNode<IPermissionNode> parentNode, string path)
+            if (addDisplayNames)
             {
-                if (parentNode == null)
-                {
-                    return;
-                }
-
-                IEnumerable<PermissionRecord> entities = null;
-                    
-                if (path == null)
-                {
-                    entities = permissions.Where(x => x.SystemName.IndexOf('.') == -1);
-                }
-                else
-                {
-                    var tmpPath = path.EnsureEndsWith(".");
-                    entities = permissions.Where(x => x.SystemName.StartsWith(tmpPath) && x.SystemName.IndexOf('.', tmpPath.Length) == -1);
-                }
-
-                foreach (var entity in entities)
-                {
-                    var mapping = entity.PermissionRoleMappings.FirstOrDefault(x => x.CustomerRoleId == role.Id);
-
-                    var newNode = parentNode.Append(new PermissionNode
-                    {
-                        PermissionRecordId = entity.Id,
-                        Allow = mapping?.Allow ?? null,     // null = inherit
-                        SystemName = entity.SystemName
-                    }, entity.SystemName);
-
-                    AddChildItems(permissions, newNode, entity.SystemName);
-                }
+                var language = _workContext.WorkingLanguage;
+                var resourcesLookup = GetDisplayNameLookup(language.Id);
+                AddDisplayName(result, language.Id, resourcesLookup);
             }
+
+            return result;
+        }
+
+        
+        private void AddChildItems(TreeNode<IPermissionNode> parentNode, CustomerRole role, List<PermissionRecord> permissions, string path)
+        {
+            if (parentNode == null)
+            {
+                return;
+            }
+
+            IEnumerable<PermissionRecord> entities = null;
+
+            if (path == null)
+            {
+                entities = permissions.Where(x => x.SystemName.IndexOf('.') == -1);
+            }
+            else
+            {
+                var tmpPath = path.EnsureEndsWith(".");
+                entities = permissions.Where(x => x.SystemName.StartsWith(tmpPath) && x.SystemName.IndexOf('.', tmpPath.Length) == -1);
+            }
+
+            foreach (var entity in entities)
+            {
+                var mapping = entity.PermissionRoleMappings.FirstOrDefault(x => x.CustomerRoleId == role.Id);
+
+                var newNode = parentNode.Append(new PermissionNode
+                {
+                    PermissionRecordId = entity.Id,
+                    Allow = mapping?.Allow ?? null,     // null = inherit
+                    SystemName = entity.SystemName
+                }, entity.SystemName);
+
+                AddChildItems(newNode, role, permissions, entity.SystemName);
+            }
+        }
+
+        private void AddDisplayName(TreeNode<IPermissionNode> node, int languageId, Dictionary<string, string> resourcesLookup)
+        {
+            var tokens = node.Value.SystemName.EmptyNull().ToLower().Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            var token = tokens.LastOrDefault();
+            var displayName = GetDisplayName(token, languageId, resourcesLookup) ?? token ?? node.Value.SystemName;
+
+            node.SetThreadMetadata("DisplayName", displayName);
+
+            if (node.HasChildren)
+            {
+                node.Children.Each(x => AddDisplayName(x, languageId, resourcesLookup));
+            }
+        }
+
+        private string GetDisplayName(string token, int languageId, Dictionary<string, string> resourcesLookup)
+        {
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                // Try known token of default permissions.
+                if (!_displayNameResourceKeys.TryGetValue(token, out var key) || !resourcesLookup.TryGetValue(key, out var name))
+                {
+                    // Unknown token. Try to find resource by name convention.
+                    key = "Permissions.DisplayName." + token.Replace("-", "");
+
+                    // Try resource provided by core.
+                    name = _localizationService.GetResource(key, languageId, false, string.Empty, true);
+                    if (name.IsEmpty())
+                    {
+                        // Try resource provided by plugin.
+                        name = _localizationService.GetResource("Plugins." + key, languageId, false, string.Empty, true);
+                    }
+                }
+
+                return name;
+            }
+
+            return null;
+        }
+
+        private Dictionary<string, string> GetDisplayNameLookup(int languageId)
+        {
+            var allKeys = _displayNameResourceKeys.Select(x => x.Value);
+
+            // Load all known string resources in one go.
+            var resourceQuery = _localizationService.All(languageId);
+            var resourcesLookup = resourceQuery.Where(x => allKeys.Contains(x.ResourceName))
+                .ToList()
+                .ToDictionarySafe(x => x.ResourceName, x => x.ResourceValue);
+
+            return resourcesLookup;
         }
     }
 }

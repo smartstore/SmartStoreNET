@@ -163,9 +163,7 @@ namespace SmartStore.Admin.Controllers
 
             var model = customerRole.ToModel();
             model.TaxDisplayTypes = GetTaxDisplayTypesList(model);
-            model.PermissionTree = _permissionService2.GetPermissionTree(customerRole);
-
-            model.PermissionTree.GetDisplayNames(Services);
+            model.PermissionTree = _permissionService2.GetPermissionTree(customerRole, true);
 
             return View(model);
 		}

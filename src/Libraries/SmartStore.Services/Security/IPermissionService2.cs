@@ -31,6 +31,12 @@ namespace SmartStore.Services.Security
         IList<PermissionRecord> GetAllPermissions();
 
         /// <summary>
+        /// Gets system and display name of all permissions.
+        /// </summary>
+        /// <returns>System and display names.</returns>
+        IDictionary<string, string> GetAllSystemNames();
+
+        /// <summary>
         /// Inserts a permission.
         /// </summary>
         /// <param name="permission">Permission.</param>
@@ -123,7 +129,8 @@ namespace SmartStore.Services.Security
         /// Gets the permission tree for a customer role.
         /// </summary>
         /// <param name="role">Customer role.</param>
+        /// <param name="addDisplayNames">Whether to add the permission display names.</param>
         /// <returns>Permission tree.</returns>
-        TreeNode<IPermissionNode> GetPermissionTree(CustomerRole role);
+        TreeNode<IPermissionNode> GetPermissionTree(CustomerRole role, bool addDisplayNames = false);
     }
 }

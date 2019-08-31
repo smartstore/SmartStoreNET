@@ -19,25 +19,30 @@ namespace SmartStore.Admin.Controllers
 
         private readonly IWorkContext _workContext;
         private readonly IPermissionService _permissionService;
+        private readonly IPermissionService2 _permissionService2;
         private readonly ICustomerService _customerService;
 
 		#endregion
 
 		#region Constructors
 
-        public SecurityController(IWorkContext workContext,
+        public SecurityController(
+            IWorkContext workContext,
             IPermissionService permissionService,
+            IPermissionService2 permissionService2,
             ICustomerService customerService)
 		{
-            this._workContext = workContext;
-            this._permissionService = permissionService;
-            this._customerService = customerService;
+            _workContext = workContext;
+            _permissionService = permissionService;
+            _permissionService2 = permissionService2;
+            _customerService = customerService;
 		}
 
         #endregion
 
         #region Methods
 
+        //GP: remove and use method AllAccessPermissions2 below.
         // Ajax.
         public ActionResult AllAccessPermissions(string selected)
         {
@@ -48,8 +53,26 @@ namespace SmartStore.Admin.Controllers
                 .Select(x => new
                 {
                     id = x.SystemName,
-                    text = x.Name,  // TODO: localization.
+                    text = x.Name,
                     selected = selectedArr.Contains(x.SystemName)
+                })
+                .ToList();
+
+            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
+
+        // Ajax.
+        public ActionResult AllAccessPermissions2(string selected)
+        {
+            var systemNames = _permissionService2.GetAllSystemNames();
+            var selectedArr = selected.SplitSafe(",");
+
+            var data = systemNames
+                .Select(x => new
+                {
+                    id = x.Key,
+                    text = x.Value,
+                    selected = selectedArr.Contains(x.Key)
                 })
                 .ToList();
 

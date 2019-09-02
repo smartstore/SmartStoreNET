@@ -1,12 +1,14 @@
-﻿using FluentValidation;
-using FluentValidation.Attributes;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Modelling;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using FluentValidation;
+using FluentValidation.Attributes;
+using SmartStore.Collections;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Security;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Customers
 {
@@ -185,7 +187,8 @@ namespace SmartStore.Admin.Models.Customers
 
 		public bool Deleted { get; set; }
 
-        
+        public TreeNode<IPermissionNode> PermissionTree { get; set; }
+
         #region Nested classes
 
         public class AssociatedExternalAuthModel : EntityModelBase

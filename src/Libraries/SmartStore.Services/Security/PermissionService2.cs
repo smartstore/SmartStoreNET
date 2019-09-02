@@ -356,7 +356,12 @@ namespace SmartStore.Services.Security
                 return false;
             }
 
-            var result = false;
+            // Rules for permission check:
+            // - Direct permission takes precedence over indirect permission.
+            // - "Deny" takes precedence over "allow".
+
+            bool? directly = null;
+            bool? indirectly = null;
 
             foreach (var role in customer.CustomerRoles.Where(x => x.Active))
             {
@@ -367,30 +372,33 @@ namespace SmartStore.Services.Security
                     throw new SmartException($"Unknown permission \"{permissionSystemName}\".");
                 }
 
-                // Find explicit allow or deny.
-                while (node != null && !node.Value.Allow.HasValue)
+                if (node.Value.Allow.HasValue)
                 {
-                    node = node.Parent;
-                }
-                if (node == null || !node.Value.Allow.HasValue)
-                {
-                    continue;
-                }
-
-                if (node.Value.Allow.Value)
-                {
-                    result = true;
+                    if (!(directly.HasValue && !directly.Value))
+                    {
+                        directly = node.Value.Allow;
+                    }
                 }
                 else
                 {
-                    return false;
+                    while (node != null && !node.Value.Allow.HasValue)
+                    {
+                        node = node.Parent;
+                    }
+                    if (node != null && node.Value.Allow.HasValue)
+                    {
+                        if (!(indirectly.HasValue && !indirectly.Value))
+                        {
+                            indirectly = node.Value.Allow;
+                        }
+                    }
                 }
             }
 
-            return result;
+            return directly ?? indirectly ?? false;
         }
 
-        
+
         public virtual TreeNode<IPermissionNode> GetPermissionTree(CustomerRole role, bool addDisplayNames = false)
         {
             Guard.NotNull(role, nameof(role));
@@ -404,7 +412,11 @@ namespace SmartStore.Services.Security
                     .Where(x => string.IsNullOrEmpty(x.Name))//GP: TODO, remove clause later
                     .ToList();
 
-                AddChildItems(root, role, permissions, null);
+                AddChildItems(root, permissions, null, permission =>
+                {
+                    var mapping = permission.PermissionRoleMappings.FirstOrDefault(x => x.CustomerRoleId == role.Id);
+                    return mapping?.Allow ?? null;
+                });
 
                 return root;
             });
@@ -419,8 +431,33 @@ namespace SmartStore.Services.Security
             return result;
         }
 
-        
-        private void AddChildItems(TreeNode<IPermissionNode> parentNode, CustomerRole role, List<PermissionRecord> permissions, string path)
+        public virtual TreeNode<IPermissionNode> GetPermissionTree(Customer customer, bool addDisplayNames = false)
+        {
+            Guard.NotNull(customer, nameof(customer));
+
+            var root = new TreeNode<IPermissionNode>(new PermissionNode());
+
+            var permissions = _permissionRepository.TableUntracked
+                .Where(x => string.IsNullOrEmpty(x.Name))//GP: TODO, remove clause later
+                .ToList();
+
+            AddChildItems(root, permissions, null, permission =>
+            {
+                return Authorize(permission.SystemName, customer);
+            });
+
+            if (addDisplayNames)
+            {
+                var language = _workContext.WorkingLanguage;
+                var resourcesLookup = GetDisplayNameLookup(language.Id);
+                AddDisplayName(root, language.Id, resourcesLookup);
+            }
+
+            return root;
+        }
+
+
+        private void AddChildItems(TreeNode<IPermissionNode> parentNode, List<PermissionRecord> permissions, string path, Func<PermissionRecord, bool?> allow)
         {
             if (parentNode == null)
             {
@@ -441,16 +478,14 @@ namespace SmartStore.Services.Security
 
             foreach (var entity in entities)
             {
-                var mapping = entity.PermissionRoleMappings.FirstOrDefault(x => x.CustomerRoleId == role.Id);
-
                 var newNode = parentNode.Append(new PermissionNode
                 {
                     PermissionRecordId = entity.Id,
-                    Allow = mapping?.Allow ?? null,     // null = inherit
+                    Allow = allow(entity),     // null = inherit
                     SystemName = entity.SystemName
                 }, entity.SystemName);
 
-                AddChildItems(newNode, role, permissions, entity.SystemName);
+                AddChildItems(newNode, permissions, entity.SystemName, allow);
             }
         }
 

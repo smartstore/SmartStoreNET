@@ -58,10 +58,8 @@ $default-state-color: $gray-400;
         border-top: 1px solid $gray-300;
     }
 
-    .smtree-label {
-        position: relative;
+    .smtree-control {
         cursor: pointer;
-        user-select: none;
 
         input[type=checkbox] {
             position: absolute;
@@ -70,6 +68,16 @@ $default-state-color: $gray-400;
             width: 0;
             margin: 0;
         }
+
+        .smtree-state:hover::before {
+            box-shadow: 0 0 4px rgba($warning, 0.8);
+            transition: box-shadow 0.1s linear;
+        }
+    }
+
+    .smtree-label {
+        position: relative;
+        user-select: none;
     }
     // State box default style.
     .smtree-state::before {
@@ -86,11 +94,6 @@ $default-state-color: $gray-400;
     .smtree-state::after {
         position: absolute;
         display: block;
-    }
-
-    .smtree-state:hover::before {
-        box-shadow: 0 0 4px rgba($warning, 0.8);
-        transition: box-shadow 0.1s linear;
     }
     // State indicator 'allow'.
     .allow:after,

@@ -1,4 +1,6 @@
-﻿@using SmartStore.Core.Domain.Orders;
+﻿@using SmartStore.Collections
+@using SmartStore.Core.Domain.Security
+@using SmartStore.Core.Domain.Orders;
 @model CustomerModel
 
 @Html.ValidationSummary(false)
@@ -15,6 +17,7 @@
 
 	if (Model.Id > 0)
 	{
+        x.Add().Text(T("Admin.Configuration.ACL").Text).Content(TabPermissions());
 		x.Add().Text(T("Admin.Customers.Customers.Orders").Text).Content(TabOrders());
 
 		if (Model.DisplayRewardPointsHistory)
@@ -27,7 +30,6 @@
 		x.Add().Text(T("Admin.Customers.Customers.Impersonate").Text).Content(TabImpersonate());
 	}
 
-	//generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customer-edit", this.Html, this.Model));
 })
 
@@ -438,6 +440,61 @@
             </tr>
         }
     </table>
+}
+
+@helper TabPermissions()
+{
+    if (Model.PermissionTree != null && Model.PermissionTree.HasChildren)
+    {
+        <div class="alert alert-info">
+            @Html.Raw(T("Admin.Customers.PermissionViewNote", Url.Action("List", "CustomerRole")))
+        </div>
+        <p>
+			<button id="ExpandCollapseAll" type="button" class="btn btn-sm btn-secondary">
+				<span>@T("Common.ExpandCollapseAll")</span>
+			</button>
+        </p>
+        <div id="permission-tree" class="smtree">
+            @PermissionNode(Model.PermissionTree)
+        </div>
+    }
+    else
+    {
+	    <div class="alert alert-warning">
+		    @T("Admin.System.Warnings.NoPermissionsDefined")
+	    </div>
+    }        
+
+    <script>
+        $(function () {
+            // Init permission tree.
+            $('#permission-tree').smTree('init', {
+                readOnly: true,
+                nodeState: 'allow-deny'
+            });
+
+            // Expand\collapse all.
+            $('#ExpandCollapseAll').on('click', function () {
+                $('#permission-tree').smTree('expandAll');
+            });
+	    });
+    </script>
+}
+
+@helper PermissionNode(TreeNode<IPermissionNode> node)
+{
+    <ul>
+        @foreach (var child in node.Children)
+        {
+            var value = child.Value.Allow.HasValue ? (child.Value.Allow.Value ? 2 : 1) : 0;
+            <li data-name="permission-@child.Value.PermissionRecordId" data-value="@value" data-label="@(child.GetMetadata<string>("DisplayName", false))">
+                @if (child.HasChildren)
+                {
+                    @PermissionNode(child)
+                }
+            </li>
+        }
+    </ul>
 }
 
 @helper TabCustomerRoles()

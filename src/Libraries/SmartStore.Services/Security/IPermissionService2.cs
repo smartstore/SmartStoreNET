@@ -132,5 +132,13 @@ namespace SmartStore.Services.Security
         /// <param name="addDisplayNames">Whether to add the permission display names.</param>
         /// <returns>Permission tree.</returns>
         TreeNode<IPermissionNode> GetPermissionTree(CustomerRole role, bool addDisplayNames = false);
+
+        /// <summary>
+        /// Gets the permission tree for a customer.
+        /// </summary>
+        /// <param name="customer">Customer.</param>
+        /// <param name="addDisplayNames">Whether to add the permission display names.</param>
+        /// <returns>Permission tree.</returns>
+        TreeNode<IPermissionNode> GetPermissionTree(Customer customer, bool addDisplayNames = false);
     }
 }

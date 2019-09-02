@@ -72,6 +72,7 @@ namespace SmartStore.Admin.Controllers
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPriceCalculationService _priceCalculationService;
         private readonly IPermissionService _permissionService;
+        private readonly IPermissionService2 _permissionService2;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly IQueuedEmailService _queuedEmailService;
         private readonly IEmailAccountService _emailAccountService;
@@ -106,7 +107,9 @@ namespace SmartStore.Admin.Controllers
             IOrderService orderService,
             ICustomerActivityService customerActivityService,
             IPriceCalculationService priceCalculationService,
-            IPermissionService permissionService, AdminAreaSettings adminAreaSettings,
+            IPermissionService permissionService,
+            IPermissionService2 permissionService2,
+            AdminAreaSettings adminAreaSettings,
             IQueuedEmailService queuedEmailService,
             IEmailAccountService emailAccountService, ForumSettings forumSettings,
             IForumService forumService, IOpenAuthenticationService openAuthenticationService,
@@ -139,6 +142,7 @@ namespace SmartStore.Admin.Controllers
             _customerActivityService = customerActivityService;
             _priceCalculationService = priceCalculationService;
             _permissionService = permissionService;
+            _permissionService2 = permissionService2;
             _adminAreaSettings = adminAreaSettings;
             _queuedEmailService = queuedEmailService;
             _emailAccountService = emailAccountService;
@@ -382,16 +386,15 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
-			model.AvailableCustomerRoles = _customerService
-				.GetAllCustomerRoles(true)
-				.Select(cr => cr.ToModel())
-				.ToList();
+            var customerRoles = _customerService.GetAllCustomerRoles(true);
+            model.AvailableCustomerRoles = customerRoles.Select(cr => cr.ToModel()).ToList();
 
 			model.AllowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
 			model.DisplayRewardPointsHistory = _rewardPointsSettings.Enabled;
 			model.AddRewardPointsValue = 0;
 			model.AssociatedExternalAuthRecords = GetAssociatedExternalAuthRecords(customer);
-		}
+            model.PermissionTree = _permissionService2.GetPermissionTree(customer, true);
+        }
 
         [NonAction]
         protected string ValidateCustomerRoles(IList<CustomerRole> customerRoles)

@@ -9,6 +9,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Services.Customers;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 
 namespace SmartStore.Services.Tests.Security
@@ -20,6 +21,7 @@ namespace SmartStore.Services.Tests.Security
         private IRepository<PermissionRecord> _permissionRepository;
         private IRepository<PermissionRoleMapping> _permissionMappingRepository;
         private Lazy<ICustomerService> _customerService;
+        private ILocalizationService _localizationService;
         private IWorkContext _workContext;
         private ICacheManager _cacheManager;
 
@@ -37,6 +39,7 @@ namespace SmartStore.Services.Tests.Security
             _permissionRepository = MockRepository.GenerateMock<IRepository<PermissionRecord>>();
             _permissionMappingRepository = MockRepository.GenerateMock<IRepository<PermissionRoleMapping>>();
             _customerService = MockRepository.GenerateMock<Lazy<ICustomerService>>();
+            _localizationService = MockRepository.GenerateMock<ILocalizationService>();
             _workContext = MockRepository.GenerateMock<IWorkContext>();
             _cacheManager = NullCache.Instance;
 
@@ -44,6 +47,7 @@ namespace SmartStore.Services.Tests.Security
                 _permissionRepository,
                 _permissionMappingRepository,
                 _customerService,
+                _localizationService,
                 _workContext,
                 _cacheManager);
 

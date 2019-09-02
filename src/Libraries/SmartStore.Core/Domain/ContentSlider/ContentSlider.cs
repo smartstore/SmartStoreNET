@@ -9,9 +9,6 @@ namespace SmartStore.Core.Domain.ContentSlider
     [DataContract]
 	public partial class ContentSlider : BaseEntity
 	{
-		private ICollection<Slide> _slides;
-       
-        
 		[DataMember]
         public bool IsActive { get; set; }
 		
@@ -28,10 +25,6 @@ namespace SmartStore.Core.Domain.ContentSlider
 		public int Height { get; set; }
 
         [DataMember]
-        public virtual ICollection<Slide> Slides
-        {
-            get { return _slides ?? (_slides = new List<Slide>()); }
-            protected set { _slides = value; }
-        }
+        public virtual ICollection<Slide> Slides { get; set; }
     }
 }

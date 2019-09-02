@@ -97,8 +97,8 @@ namespace SmartStore.Services.ContentSlider
         {
             var query =
                 from s in _contentSliderSlideRepository.Table
-                orderby s.Id
-                where s.IsActive && s.SliderId== contentSliderId
+                orderby s.DisplayOrder
+                where s.IsActive && s.SliderId == contentSliderId
                 select s;
 
             var slides = query.ToList();

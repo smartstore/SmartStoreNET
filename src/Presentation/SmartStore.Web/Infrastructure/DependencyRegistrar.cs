@@ -16,6 +16,7 @@ namespace SmartStore.Web.Infrastructure
         {
 			builder.RegisterType<CatalogHelper>().InstancePerRequest();
             builder.RegisterType<OrderHelper>().InstancePerRequest();
+            builder.RegisterType<ContentSliderHelper>().InstancePerRequest();
 
             builder.RegisterType<DefaultWidgetSelector>().As<IWidgetSelector>().InstancePerRequest();
 			builder.RegisterType<DefaultFacetTemplateSelector>().As<IFacetTemplateSelector>().SingleInstance();

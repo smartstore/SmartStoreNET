@@ -1,80 +1,77 @@
-﻿<div id="carousel-2" class="carousel slide xhide-on-active-filter bright fluid d-none d-md-block" data-ride="carousel" data-interval="3000">
+﻿<div id="carousel-2" class="carousel slide xhide-on-active-filter bright fluid d-none d-md-block" data-ride="carousel" data-interval="@Model.Delay" style="display:@(Model.IsActive == true ? "block" : "none"); background-color: transparent;height:@(Model.Height)px">
     <ol class="carousel-indicators">
-        <li data-target="#carousel-2" data-slide-to="0" class=""></li>
-        <li data-target="#carousel-2" data-slide-to="1" class="active"></li>
+        @if (Model.IsActive == true)
+        {
+            for (int i = 0; i < Model.Slides.Count; i++)
+            {
+                if (i == 0)
+                {
+                    <li data-target="#carousel-2" data-slide-to=@i class="active"></li>
+                }
+                else
+                {
+                    <li data-target="#carousel-2" data-slide-to=@i class=""></li>
+                }
+            }
+        }
     </ol>
     <div class="carousel-inner" role="listbox">
-        @*@foreach (var item in collection)
+        @if (Model.IsActive == true)
         {
+            foreach (var slide in Model.Slides)
+            {
+                <div id="carousel-item-@slide.DisplayOrder" class="carousel-item bright pb-0 product-slide @(@slide.DisplayOrder == 0 ? "active" : "")" style="background-color: transparent;height:400px">
+                    @if (slide.DisplayPrice == true)
+                    {
+                        <div class="slide-badges d-flex">
+                            <div class="badge badge-danger">- @slide.ProductDetails.ProductPrice.SavingPercent%</div>
+                        </div>
+                    }
+                    <div class="container d-flex flex-column h-100 slide-type-4">
+                        <div class="data pb-3">
 
-        }*@
-
-        <div id="carousel-item-7" class="carousel-item bright product-slide" style="background-color: transparent;height:500px">
-            <div class="slide-badges d-flex">
-                <div class="badge badge-danger">- 15 %</div>
-            </div>
-            <div class="container slide-type-2 h-100">
-                <div class="row h-100">
-                    <div class="col-md-6 text-md-right d-flex align-items-center">
-                        <figure class="picture text-center aos-init aos-animate" data-aos="zoom-in">
-                            <a href="/charles-eames-lounge-chair-1956-2" title="Show details for Charles Eames Lounge Chair (1956)">
-                                <img alt="Picture of Charles Eames Lounge Chair (1956)" src="//demo.smartstore.com/frontend/media/image/355/0000355.png" title="Show details for Charles Eames Lounge Chair (1956)" class="img-fluid">
+                            <h4 class="slide-title display-4 aos-init aos-animate" data-aos="slide-down" data-aos-easing="ease-out-cubic">
+                                <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", slide.SlideTitle } })">
+                                    <span>@slide.SlideTitle</span>
+                                </a>
+                            </h4>
+                            }
+                            <p class="slide-subtitle fs-h4 d-none d-lg-block aos-init aos-animate" title="" data-aos="slide-down" data-aos-easing="ease-out-cubic">
+                                @slide.SlideContent
+                            </p>
+                            @if (slide.DisplayPrice == true)
+                            {
+                                if (@slide.ProductDetails.ProductPrice.SavingPercent > 0)
+                                {
+                                    <div class="prices aos-init aos-animate" data-aos="slide-left">
+                                        <p class="old-product-price h3">
+                                            <span class="price">@slide.ProductDetails.ProductPrice.OldPrice</span>
+                                        </p>
+                                        <p class="product-price h2">
+                                            <span class="price">@slide.ProductDetails.ProductPrice.Price</span>
+                                        </p>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="prices aos-init aos-animate" data-aos="slide-left">
+                                        <p class="product-price h3">
+                                            <span class="price">@slide.ProductDetails.ProductPrice.Price</span>
+                                        </p>
+                                    </div>
+                                }
+                            }
+                            </div>
+                        <figure class="picture align-self-stretch mt-auto mb-0 aos-init aos-animate" data-aos="zoom-in" data-aos-easing="ease-out-cubic">
+                            <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", slide.SlideTitle } })" title="@slide.PictureModel.Name">
+                                <img alt="@slide.PictureModel.AlternateText" src="@slide.PictureModel.PictureModel.ImageUrl" title="@slide.PictureModel.Name" class="img-fluid">
                             </a>
                         </figure>
                     </div>
-                    <div class="col-md-6 d-flex align-items-center">
-                        <div class="data text-md-left text-center p-3">
-                            <h4 class="slide-title display-4 aos-init aos-animate" data-aos="slide-left">
-                                <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName","charles-eames-lounge-chair-1956-2" } })">
-                                    <span>Charles Eames Lounge Chair (1956)</span>
-                                </a>
-                            </h4>
-                            <p class="slide-subtitle fs-h4 d-none d-md-block aos-init aos-animate" title="" data-aos="slide-left">
-                                Lounge chair, Designer Charles Eames, width 80 cm, depth 80 cm, height 60 cm, seat shell: plywood, foot (rotatable): cast aluminum, cushions (upholstered) with leather cover
-                            </p>
-                            <div class="prices aos-init aos-animate" data-aos="slide-left">
-                                <p class="old-product-price h3">
-                                    <span class="price">1.999,00 €</span>
-                                </p>
-                                <p class="product-price h2">
-                                    <span class="price">From 1.619,10 €</span>
-                                </p>
-                            </div>
-                            <div class="product-slide-buttons d-none d-md-block pt-3 aos-init aos-animate" data-aos="slide-up">
-                                <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName","charles-eames-lounge-chair-1956-2" } })" class="btn btn-clear-dark btn-animate btn-animate-right btn-lg" title="Description">
-                                    <span>
-                                        <i class="fa fa-angle-right"></i>
-                                        <span>More information</span>
-                                    </span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-            </div>
-        </div>
-        <div id="carousel-item-24" class="carousel-item bright pb-0 product-slide active" style="background-image:url(//demo.smartstore.com/frontend/media/image/3222/0003222.jpg);background-color: transparent;height:500px">
-            <div class="slide-badges d-flex">
-                <div class="badge badge-danger">- 5 %</div>
-            </div>
-            <div class="container d-flex flex-column h-100 slide-type-4">
-                <div class="data pb-3">
-                    <h4 class="slide-title display-4 aos-init aos-animate" data-aos="slide-down" data-aos-easing="ease-out-cubic">
-                        <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName","couturier-lady-2" } })">
-                            <span>COUTURIER LADY</span>
-                        </a>
-                    </h4>
-                    <p class="slide-subtitle fs-h4 d-none d-lg-block aos-init aos-animate" title="" data-aos="slide-down" data-aos-easing="ease-out-cubic">
-                        The Tissot Couturier Quartz is a stylish watch with great attention to detail.
-                    </p>
-                </div>
-                <figure class="picture align-self-stretch mt-auto mb-0 aos-init aos-animate" data-aos="zoom-in" data-aos-easing="ease-out-cubic">
-                    <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName","couturier-lady-2" } })" title="Show details for COUTURIER LADY">
-                        <img alt="Picture of COUTURIER LADY" src="//demo.smartstore.com/frontend/media/image/3155/0003155.png" title="Show details for COUTURIER LADY" class="img-fluid">
-                    </a>
-                </figure>
-            </div>
-        </div>
+
+            }
+        }
     </div>
 
     <a class="left carousel-control" href="#carousel-2" role="button" data-slide="prev">

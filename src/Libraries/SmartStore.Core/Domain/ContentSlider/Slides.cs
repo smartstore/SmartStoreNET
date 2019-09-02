@@ -35,8 +35,11 @@ namespace SmartStore.Core.Domain.ContentSlider
         [DataMember]
         public bool DisplayButton { get; set; }
 
+        [DataMember]
+        public int ItemId { get; set; }
+
         public virtual Picture Picture { get; set; }
 
-        public virtual ContentSlider ContentSlider { get; set; }
+        public virtual ContentSlider Slider { get; set; }
     }
 }

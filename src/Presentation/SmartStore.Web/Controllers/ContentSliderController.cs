@@ -1,6 +1,8 @@
-﻿using SmartStore.Services;
+﻿using SmartStore.Core.Domain.ContentSlider;
+using SmartStore.Services;
 using SmartStore.Services.ContentSlider;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Models.ContentSlider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,20 +15,63 @@ namespace SmartStore.Web.Controllers
     {
         private readonly ICommonServices _services;
         private readonly IContentSliderService _contentSliderService;
-        
+        private readonly ContentSliderHelper _helper;
+
         public ContentSliderController(ICommonServices services,
-            IContentSliderService contentSliderService)
+            IContentSliderService contentSliderService,
+            ContentSliderHelper helper)
         {
             _services = services;
             _contentSliderService = contentSliderService;
+            _helper = helper;
         }
 
         [ChildActionOnly]
         public ActionResult HomepageContentSlider()
         {
             var contentSliders = _contentSliderService.GetAllContentSliders();
+            ContentSliderModel CSModel = new ContentSliderModel();
+            ContentSlider slider = new ContentSlider();
+            if (contentSliders.Count > 0)
+            {
+                slider = contentSliders[0];
 
-            return PartialView(contentSliders[0]);
+                CSModel = new ContentSliderModel
+                {
+                    SliderId = slider.Id,
+                    IsActive = slider.IsActive,
+                    RandamizeSlides = slider.RandamizeSlides,
+                    AutoPlay = slider.AutoPlay,
+                    Delay = slider.Delay,
+                    Height = slider.Height
+                };
+
+                List<SlideModel> SliderSlides = new List<SlideModel>();
+                foreach (var slide in slider.Slides)
+                {
+                    var slideModelObject = new SlideModel
+                    {
+                        SlideId = slide.Id,
+                        SlideTitle = slide.SlideTitle,
+                        SlideContent = slide.SlideContent,
+                        Picture = slide.Picture,
+                        PictureId = slide.PictureId,
+                        IsActive = slide.IsActive,
+                        DisplayButton = slide.DisplayButton,
+                        DisplayOrder = slide.DisplayOrder,
+                        DisplayPrice=slide.DisplayPrice,
+                        SliderId = CSModel.SliderId,
+                        SlideType = slide.SlideType,
+                        ItemId = slide.ItemId
+                    };
+
+                    _helper.PrepareContentSliderModel(slideModelObject);
+                    SliderSlides.Add(slideModelObject);
+                }
+                CSModel.Slides = SliderSlides;
+            }
+
+            return PartialView(CSModel);
         }
     }
 }

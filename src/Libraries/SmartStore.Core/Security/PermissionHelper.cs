@@ -14,6 +14,8 @@ namespace SmartStore.Core.Security
         /// <returns>Permission system names.</returns>
         public static IList<string> GetPermissions(Type type)
         {
+            Guard.NotNull(type, nameof(type));
+
             var result = new List<string>();
             GetPermissionsPerType(type);
 

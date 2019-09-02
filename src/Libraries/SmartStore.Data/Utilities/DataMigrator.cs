@@ -959,10 +959,10 @@ namespace SmartStore.Data.Utilities
             {
                 // Insert new granular permissions.
                 var permissionSystemNames = PermissionHelper.GetPermissions(typeof(Permissions));
-                foreach (var systemName in permissionSystemNames)
+                foreach (var permissionName in permissionSystemNames)
                 {
-                    var entity = permissionSet.Add(new PermissionRecord { SystemName = systemName, Name = string.Empty, Category = string.Empty });
-                    newPermissions[systemName] = entity;
+                    var entity = permissionSet.Add(new PermissionRecord { SystemName = permissionName, Name = string.Empty, Category = string.Empty });
+                    newPermissions[permissionName] = entity;
                 }
 
                 scope.Commit();
@@ -1019,38 +1019,66 @@ namespace SmartStore.Data.Utilities
                 Allow(true, "PublicStoreAllowNavigation", newPermissions[Permissions.System.AccessShop]);
 
                 scope.Commit();
+                newPermissions.Clear();
 
-                //TODO!.....
-                // Migrate plugin permissions.
-                //var pluginPermissions = new Dictionary<string, PermissionRecord>(StringComparer.OrdinalIgnoreCase);
-                //var pluginPermissionNames = new string[] { "ManageDebitoor", "AccessImportBiz", "ManageShopConnector", "ManageNewsImporter", "ManageWebApi", "ManageMegaSearch", "ManageErpConnector",
-                //    "ManagePowerBi", "ManageWallet", "ManageStories", "ManageDlm" };
+                // Migrate known plugin permissions.
+                var pluginPermissionNames = new Dictionary<string, string>
+                {
+                    { "ManageDebitoor", "SmartStore.Debitoor.Security.DebitoorPermissions, SmartStore.Debitoor" },
+                    { "AccessImportBiz", "SmartStore.BizImporter.Security.BizImporterPermissions, SmartStore.BizImporter" },
+                    { "ManageShopConnector", "SmartStore.ShopConnector.Security.ShopConnectorPermissions, SmartStore.ShopConnector" },
+                    { "ManageNewsImporter", "SmartStore.NewsImporter.Security.NewImporterPermissions, SmartStore.NewsImporter" },
+                    { "ManageWebApi", "SmartStore.WebApi.Security.WebApiPermissions, SmartStore.WebApi" },
+                    { "ManageMegaSearch", "SmartStore.MegaSearch.Security.MegaSearchPermissions, SmartStore.MegaSearch" },
+                    { "ManageErpConnector", "Srt.ErpConnector.Security.ErpConnectorPermissions, Srt.ErpConnector" },
+                    { "ManagePowerBi", "SmartStore.PowerBi.Security.PowerBiPermissions, SmartStore.PowerBi" },
+                    { "ManageWallet", "SmartStore.Wallet.Security.WalletPermissions, SmartStore.Wallet" },
+                    { "ManageStories", "SmartStore.PageBuilder.Services.PageBuilderPermissions, SmartStore.PageBuilder" },
+                    { "ManageDlm", "SmartStore.Dlm.Security.DlmPermissions, SmartStore.Dlm" }
+                };
 
-                //foreach (var oldSystemName in pluginPermissionNames)
-                //{
-                //    if (permissionToRoles.ContainsKey(oldSystemName))
-                //    {
-                //        var newSystemName = oldSystemName.ToLower();
-                //        if (newSystemName.StartsWith("manage"))
-                //        {
-                //            newSystemName = newSystemName.Substring(6);
-                //        }
+                foreach (var kvp in pluginPermissionNames)
+                {
+                    if (permissionToRoles.ContainsKey(kvp.Key))
+                    {
+                        var assemblyName = Type.GetType(kvp.Value)?.AssemblyQualifiedName;
+                        if (assemblyName.HasValue())
+                        {
+                            var type = Type.GetType(assemblyName);
+                            var newPluginPermissionNames = PermissionHelper.GetPermissions(type);
+                            foreach (var permissionName in newPluginPermissionNames)
+                            {
+                                var entity = permissionSet.Add(new PermissionRecord { SystemName = permissionName, Name = string.Empty, Category = string.Empty });
+                                newPermissions[permissionName] = entity;
+                            }
+                        }
+                        else
+                        {
+                            $"Plugin permission type not found ({kvp.Value}).".Dump();
+                        }
+                    }
+                    else
+                    {
+                        // Ignore unknown permissions. Will be deleted later by another migration.
+                    }
+                }
 
-                //        var entity = permissionSet.Add(new PermissionRecord { SystemName = newSystemName + ".manage", Name = string.Empty, Category = string.Empty });
-                //        pluginPermissions.Add(oldSystemName, entity);
-                //    }
-                //    else
-                //    {
-                //        // Ignore unknown permissions. Will be deleted later.
-                //    }
-                //}
+                scope.Commit();
 
-                //scope.Commit();
+                PermissionRecord pr;
+                if (newPermissions.TryGetValue("debitoor", out pr)) Allow(true, "ManageDebitoor", pr);
+                if (newPermissions.TryGetValue("biz-importer", out pr)) Allow(true, "AccessImportBiz", pr);
+                if (newPermissions.TryGetValue("shop-connector", out pr)) Allow(true, "ManageShopConnector", pr);
+                if (newPermissions.TryGetValue("news-importer", out pr)) Allow(true, "ManageNewsImporter", pr);
+                if (newPermissions.TryGetValue("web-api", out pr)) Allow(true, "ManageWebApi", pr);
+                if (newPermissions.TryGetValue("megasearch", out pr)) Allow(true, "ManageMegaSearch", pr);
+                if (newPermissions.TryGetValue("erp-connector", out pr)) Allow(true, "ManageErpConnector", pr);
+                if (newPermissions.TryGetValue("power-bi", out pr)) Allow(true, "ManagePowerBi", pr);
+                if (newPermissions.TryGetValue("wallet", out pr)) Allow(true, "ManageWallet", pr);
+                if (newPermissions.TryGetValue("page-builder", out pr)) Allow(true, "ManageStories", pr);
+                if (newPermissions.TryGetValue("dlm", out pr)) Allow(true, "ManageDlm", pr);
 
-                //// Migrate mappings of plugin permissions.
-                //pluginPermissions.Each(x => Allow(true, x.Key, x.Value));
-
-                //scope.Commit();
+                scope.Commit();
             }
 
             // allowOnly = false: to use when parent may set permissions (always sets Allow property).

@@ -53,13 +53,11 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Common.Read", "Read", "Lesen");
             builder.AddOrUpdate("Common.Create", "Create", "Erstellen");
             builder.AddOrUpdate("Common.Notify", "Notify", "Benachrichtigen");
-            builder.AddOrUpdate("Common.Export", "Export", "Export");
-            builder.AddOrUpdate("Common.Import", "Import", "Import");
 
             builder.AddOrUpdate("Permissions.DisplayName.DisplayPrice", "Display prices", "Preise anzeigen");
             builder.AddOrUpdate("Permissions.DisplayName.AccessShop", "Access shop", "Zugang zum Shop");
-            builder.AddOrUpdate("Permissions.DisplayName.AccessShoppingCart", "Access shoppping cart", "Zugriff auf Warenkorb");
-            builder.AddOrUpdate("Permissions.DisplayName.AccessWishlist", "Access wishlist", "Zugriff auf Wunschliste");
+            builder.AddOrUpdate("Permissions.DisplayName.AccessShoppingCart", "Access shoppping cart", "Auf Warenkorb zugreifen");
+            builder.AddOrUpdate("Permissions.DisplayName.AccessWishlist", "Access wishlist", "Auf Wunschliste zugreifen");
 
             builder.AddOrUpdate("Common.ExpandCollapseAll", "Expand\\collapse all", "Alle auf\\zuklappen");
         }

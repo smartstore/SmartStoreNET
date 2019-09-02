@@ -90,23 +90,23 @@
 {
     if (Model.Id > 0)
     {
-        <p>
-			<button id="ExpandCollapseAll" type="button" class="btn btn-sm btn-secondary">
-				<span>@T("Common.ExpandCollapseAll")</span>
-			</button>
-        </p>
-        <div id="permission-tree" class="smtree">
-            @if (Model.PermissionTree != null && Model.PermissionTree.HasChildren)
-            {
+        if (Model.PermissionTree != null && Model.PermissionTree.HasChildren)
+        {
+            <p>
+			    <button id="ExpandCollapseAll" type="button" class="btn btn-sm btn-secondary">
+				    <span>@T("Common.ExpandCollapseAll")</span>
+			    </button>
+            </p>
+            <div id="permission-tree" class="smtree">
                 @PermissionNode(Model.PermissionTree)
-            }
-            else
-            {
-	            <div class="alert alert-warning">
-		            @T("Admin.System.Warnings.NoPermissionsDefined")
-	            </div>
-            }
-        </div>
+            </div>
+        }
+        else
+        {
+	        <div class="alert alert-warning">
+		        @T("Admin.System.Warnings.NoPermissionsDefined")
+	        </div>
+        }        
     }
     else
     {

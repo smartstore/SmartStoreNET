@@ -27,7 +27,7 @@ namespace SmartStore.Web.Controllers
         }
 
         [ChildActionOnly]
-        public ActionResult ContentSlider()
+        public ActionResult HomePageContentSlider()
         {
             var contentSliders = _contentSliderService.GetContentSliderByType((int)SliderType.HomePageSlider);
             ContentSliderModel CSModel = new ContentSliderModel();

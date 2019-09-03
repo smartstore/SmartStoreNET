@@ -22,7 +22,8 @@ namespace SmartStore
 		private static readonly List<Tuple<string, string>> _sslHeaders = new List<Tuple<string, string>>
 		{
 			new Tuple<string, string>("HTTP_CLUSTER_HTTPS", "on"),
-			new Tuple<string, string>("X-Forwarded-Proto", "https"),
+            new Tuple<string, string>("HTTP_X_FORWARDED_PROTO", "https"),
+            new Tuple<string, string>("X-Forwarded-Proto", "https"),
 			new Tuple<string, string>("x-arr-ssl", null),
 			new Tuple<string, string>("X-Forwarded-Protocol", "https"),
 			new Tuple<string, string>("X-Forwarded-Ssl", "on"),

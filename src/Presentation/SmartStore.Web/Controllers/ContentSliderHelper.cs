@@ -37,7 +37,6 @@ namespace SmartStore.Web.Controllers
             T = NullLocalizer.Instance;
             _pictureService = pictureService;
         }
-        public enum SlideType { NormalSlide, ProductSlide, CategorySlide, BrandSlide };
 
         public void PrepareContentSliderModel(SlideModel slide)
         {

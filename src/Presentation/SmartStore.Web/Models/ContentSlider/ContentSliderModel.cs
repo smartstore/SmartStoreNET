@@ -9,6 +9,9 @@ using System.Web;
 
 namespace SmartStore.Web.Models.ContentSlider
 {
+    public enum SlideType { NormalSlide, ProductSlide, CategorySlide, BrandSlide };
+    public enum SliderType { HomePageSlider, CategorySlider, BrandSlider };
+
     public class ContentSliderModel : EntityModelBase
     {
         public int SliderId {get;set;}

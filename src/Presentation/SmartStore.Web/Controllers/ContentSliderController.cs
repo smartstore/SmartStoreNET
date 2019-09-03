@@ -27,9 +27,9 @@ namespace SmartStore.Web.Controllers
         }
 
         [ChildActionOnly]
-        public ActionResult HomepageContentSlider()
+        public ActionResult ContentSlider()
         {
-            var contentSliders = _contentSliderService.GetAllContentSliders();
+            var contentSliders = _contentSliderService.GetContentSliderByType((int)SliderType.HomePageSlider);
             ContentSliderModel CSModel = new ContentSliderModel();
             ContentSlider slider = new ContentSlider();
             if (contentSliders.Count > 0)
@@ -46,8 +46,10 @@ namespace SmartStore.Web.Controllers
                     Height = slider.Height
                 };
 
+                IList<Slide> Slides = _contentSliderService.GetContentSliderSlidesBySliderId(CSModel.SliderId);
+
                 List<SlideModel> SliderSlides = new List<SlideModel>();
-                foreach (var slide in slider.Slides)
+                foreach (var slide in Slides)
                 {
                     var slideModelObject = new SlideModel
                     {
@@ -59,7 +61,7 @@ namespace SmartStore.Web.Controllers
                         IsActive = slide.IsActive,
                         DisplayButton = slide.DisplayButton,
                         DisplayOrder = slide.DisplayOrder,
-                        DisplayPrice=slide.DisplayPrice,
+                        DisplayPrice = slide.DisplayPrice,
                         SliderId = CSModel.SliderId,
                         SlideType = slide.SlideType,
                         ItemId = slide.ItemId
@@ -68,7 +70,11 @@ namespace SmartStore.Web.Controllers
                     _helper.PrepareContentSliderModel(slideModelObject);
                     SliderSlides.Add(slideModelObject);
                 }
-                CSModel.Slides = SliderSlides;
+
+                if (SliderSlides.Count > 0)
+                    CSModel.Slides = SliderSlides;
+                else
+                    CSModel = new ContentSliderModel();
             }
 
             return PartialView(CSModel);

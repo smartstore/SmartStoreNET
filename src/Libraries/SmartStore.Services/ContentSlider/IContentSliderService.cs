@@ -13,6 +13,7 @@ namespace SmartStore.Services.ContentSlider
         void DeleteContentSlider(SmartStore.Core.Domain.ContentSlider.ContentSlider contentslider);
         IList<SmartStore.Core.Domain.ContentSlider.ContentSlider> GetAllContentSliders();
         SmartStore.Core.Domain.ContentSlider.ContentSlider GetContentSliders(int SliderId);
+        IList<Core.Domain.ContentSlider.ContentSlider> GetContentSliderByType(int SliderType);
 
         void InsertContentSlider(SmartStore.Core.Domain.ContentSlider.ContentSlider contentslider);
 

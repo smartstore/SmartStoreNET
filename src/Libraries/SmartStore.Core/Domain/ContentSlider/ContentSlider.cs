@@ -25,6 +25,9 @@ namespace SmartStore.Core.Domain.ContentSlider
 		public int Height { get; set; }
 
         [DataMember]
+        public int SliderType { get; set; }
+
+        [DataMember]
         public virtual ICollection<Slide> Slides { get; set; }
     }
 }

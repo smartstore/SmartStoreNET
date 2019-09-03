@@ -18,24 +18,24 @@
     <div class="carousel-inner" role="listbox">
         @if (Model.IsActive == true)
         {
-            foreach (var slide in Model.Slides)
+            for (int i = 0; i < Model.Slides.Count; i++)//foreach (var slide in Model.Slides)
             {
-                <div id="carousel-item-@slide.DisplayOrder" class="carousel-item bright pb-0 product-slide @(@slide.DisplayOrder == 0 ? "active" : "")" style="background-color: transparent;height:400px">
-                    @if (slide.DisplayPrice == true)
+                var slide = Model.Slides[i];
+                <div id="carousel-item-@i" class="carousel-item bright pb-0 product-slide @(@i == 0 ? "active" : "")" style="background-color: transparent;height:400px">
+                    @if (slide.DisplayPrice == true && Math.Floor(slide.ProductDetails.ProductPrice.SavingPercent) > 0)
                     {
                         <div class="slide-badges d-flex">
-                            <div class="badge badge-danger">- @slide.ProductDetails.ProductPrice.SavingPercent%</div>
+                            <div class="badge badge-danger">- @Math.Floor(slide.ProductDetails.ProductPrice.SavingPercent)%</div>
                         </div>
                     }
                     <div class="container d-flex flex-column h-100 slide-type-4">
                         <div class="data pb-3">
 
                             <h4 class="slide-title display-4 aos-init aos-animate" data-aos="slide-down" data-aos-easing="ease-out-cubic">
-                                <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", slide.SlideTitle } })">
+                                <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", slide.ProductDetails.SeName } })">
                                     <span>@slide.SlideTitle</span>
                                 </a>
                             </h4>
-                            }
                             <p class="slide-subtitle fs-h4 d-none d-lg-block aos-init aos-animate" title="" data-aos="slide-down" data-aos-easing="ease-out-cubic">
                                 @slide.SlideContent
                             </p>
@@ -61,12 +61,23 @@
                                     </div>
                                 }
                             }
-                            </div>
+                        </div>
                         <figure class="picture align-self-stretch mt-auto mb-0 aos-init aos-animate" data-aos="zoom-in" data-aos-easing="ease-out-cubic">
-                            <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", slide.SlideTitle } })" title="@slide.PictureModel.Name">
+                            <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", slide.ProductDetails.SeName } })" title="@slide.PictureModel.Name">
                                 <img alt="@slide.PictureModel.AlternateText" src="@slide.PictureModel.PictureModel.ImageUrl" title="@slide.PictureModel.Name" class="img-fluid">
                             </a>
                         </figure>
+                        @if (slide.DisplayButton == true)
+                        {
+                            <div class="product-slide-buttons d-none d-md-block pt-3 aos-init aos-animate" data-aos="slide-up">
+                                <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", slide.ProductDetails.SeName } })" class="btn btn-clear-dark btn-animate btn-animate-right btn-lg" title="Description">
+                                    <span>
+                                        <i class="fa fa-angle-right"></i>
+                                        <span>@T("Common.MoreInfo")</span>
+                                    </span>
+                                </a>
+                            </div>
+                        }
                     </div>
                 </div>
 

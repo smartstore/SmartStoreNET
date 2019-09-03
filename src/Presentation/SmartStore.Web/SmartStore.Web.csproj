@@ -1838,7 +1838,7 @@
     <Content Include="Views\Shared\Menus\ListGroup.cshtml" />
     <Content Include="Views\Shared\Menus\Main.cshtml" />
     <Content Include="Views\Catalog\Menus\Categories.cshtml" />
-    <Content Include="Views\ContentSlider\HomepageContentSlider.cshtml" />
+    <Content Include="Views\ContentSlider\ContentSlider.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

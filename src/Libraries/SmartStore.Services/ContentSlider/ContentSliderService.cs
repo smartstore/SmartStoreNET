@@ -50,7 +50,7 @@ namespace SmartStore.Services.ContentSlider
             var query =
                 from cs in _contentSliderRepository.Table
                 orderby cs.Id
-                where cs.IsActive
+                where cs.IsActive == true
                 select cs;
 
             var contentSliders = query.ToList();
@@ -62,11 +62,23 @@ namespace SmartStore.Services.ContentSlider
             var query =
                 from cs in _contentSliderRepository.Table
                 orderby cs.Id
-                where cs.IsActive && cs.Id==SliderId
+                where cs.IsActive == true && cs.Id == SliderId
                 select cs;
 
             var contentSlider = query.FirstOrDefault();
             return contentSlider;
+        }
+
+        public IList<Core.Domain.ContentSlider.ContentSlider> GetContentSliderByType(int SliderType)
+        {
+            var query =
+                from cs in _contentSliderRepository.Table
+                orderby cs.Id
+                where cs.IsActive == true && cs.SliderType == SliderType
+                select cs;
+
+            var contentSliders = query.ToList();
+            return contentSliders;
         }
 
         public Slide GetContentSliderSlideById(int slideId)
@@ -74,7 +86,7 @@ namespace SmartStore.Services.ContentSlider
             var query =
                 from s in _contentSliderSlideRepository.Table
                 orderby s.Id
-                where s.IsActive && s.Id == slideId
+                where s.IsActive == true && s.Id == slideId
                 select s;
 
             var slide = query.FirstOrDefault();
@@ -86,7 +98,7 @@ namespace SmartStore.Services.ContentSlider
             var query =
                 from s in _contentSliderSlideRepository.Table
                 orderby s.Id
-                where s.IsActive
+                where s.IsActive == true
                 select s;
 
             var slides = query.ToList();
@@ -98,7 +110,7 @@ namespace SmartStore.Services.ContentSlider
             var query =
                 from s in _contentSliderSlideRepository.Table
                 orderby s.DisplayOrder
-                where s.IsActive && s.SliderId == contentSliderId
+                where s.IsActive == true && s.SliderId == contentSliderId
                 select s;
 
             var slides = query.ToList();

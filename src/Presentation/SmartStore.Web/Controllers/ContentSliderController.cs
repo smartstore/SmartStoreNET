@@ -77,7 +77,7 @@ namespace SmartStore.Web.Controllers
                     CSModel = new ContentSliderModel();
             }
 
-            return PartialView(CSModel);
+            return PartialView("ContentSlider", CSModel);
         }
     }
 }

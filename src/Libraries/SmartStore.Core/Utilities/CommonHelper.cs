@@ -199,9 +199,14 @@ namespace SmartStore.Utilities
 
             convertedValue = null;
 
-            if (value == null || value == DBNull.Value || (to != typeof(object) && to.IsInstanceOfType(value)))
+            if (value == null || value == DBNull.Value)
             {
-                convertedValue = value == DBNull.Value ? null : value;
+                return to.IsNullable(out _);
+            }
+
+            if (to != typeof(object) && to.IsInstanceOfType(value))
+            {
+                convertedValue = value;
                 return true;
             }
 

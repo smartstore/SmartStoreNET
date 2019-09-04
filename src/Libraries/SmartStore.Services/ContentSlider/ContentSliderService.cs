@@ -74,7 +74,19 @@ namespace SmartStore.Services.ContentSlider
             var query =
                 from cs in _contentSliderRepository.Table
                 orderby cs.Id
-                where cs.IsActive == true && cs.SliderType == SliderType
+                where cs.IsActive == true && cs.SliderType == SliderType && cs.ItemId == null
+            select cs;
+
+            var contentSliders = query.ToList();
+            return contentSliders;
+        }
+
+        public IList<Core.Domain.ContentSlider.ContentSlider> GetContentSliderByTypeAndItemId(int SliderType, int ItemId)
+        {
+            var query =
+                from cs in _contentSliderRepository.Table
+                orderby cs.Id
+                where cs.IsActive == true && cs.SliderType == SliderType && cs.ItemId.Value == ItemId
                 select cs;
 
             var contentSliders = query.ToList();

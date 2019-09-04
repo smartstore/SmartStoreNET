@@ -14,6 +14,7 @@ namespace SmartStore.Services.ContentSlider
         IList<SmartStore.Core.Domain.ContentSlider.ContentSlider> GetAllContentSliders();
         SmartStore.Core.Domain.ContentSlider.ContentSlider GetContentSliders(int SliderId);
         IList<Core.Domain.ContentSlider.ContentSlider> GetContentSliderByType(int SliderType);
+        IList<Core.Domain.ContentSlider.ContentSlider> GetContentSliderByTypeAndItemId(int SliderType,int ItemId);
 
         void InsertContentSlider(SmartStore.Core.Domain.ContentSlider.ContentSlider contentslider);
 

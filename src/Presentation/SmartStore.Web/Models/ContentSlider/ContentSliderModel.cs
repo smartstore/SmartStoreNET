@@ -20,6 +20,8 @@ namespace SmartStore.Web.Models.ContentSlider
 		public bool AutoPlay { get; set; }
         public int Delay { get; set; }
 		public int Height { get; set; }
+		public int SliderType { get; set; }
+		public int? ItemId { get; set; }
         public IList<SlideModel> Slides { get; set; }
     }
 
@@ -35,10 +37,12 @@ namespace SmartStore.Web.Models.ContentSlider
         public int DisplayOrder { get; set; }
         public bool DisplayPrice { get; set; }
         public bool DisplayButton { get; set; }
-        public int ItemId { get; set; }
+        public int? ItemId { get; set; }
         public Picture Picture { get; set; }
         public ContentSliderSlidePictureModel PictureModel { get; set; }
         public ProductDetailsModel ProductDetails { get; set; }
+        public CategoryModel CategoryDetails { get; set; }
+        public ManufacturerModel ManufacturerDetails { get; set; }
 
     }
 

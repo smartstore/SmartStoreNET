@@ -11,6 +11,7 @@ namespace SmartStore.Core.Domain.Media
 			CategoryThumbPictureSize = 250;
 			ManufacturerThumbPictureSize = 250;
 			ProductDetailsPictureSize = 600;
+            SliderPictureSize = 400;
 			ProductThumbPictureSizeOnProductDetailsPage = 70;
 			MessageProductThumbPictureSize = 70;
 			AssociatedProductPictureSize = 600;
@@ -31,6 +32,7 @@ namespace SmartStore.Core.Domain.Media
 		public int AvatarPictureSize { get; set; }
         public int ProductThumbPictureSize { get; set; }
         public int ProductDetailsPictureSize { get; set; }
+        public int SliderPictureSize { get; set; }
         public int ProductThumbPictureSizeOnProductDetailsPage { get; set; }
 		public int MessageProductThumbPictureSize { get; set; }
 		public int AssociatedProductPictureSize { get; set; }

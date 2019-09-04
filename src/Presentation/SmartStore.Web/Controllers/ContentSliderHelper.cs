@@ -19,6 +19,8 @@ namespace SmartStore.Web.Controllers
         private readonly ICommonServices _services;
         private readonly CatalogHelper _helper;
         private readonly IProductService _productService;
+        private readonly ICategoryService _categoryService;
+        private readonly IManufacturerService _manufacturerService;
         private readonly MediaSettings _mediaSettings;
         private readonly IPictureService _pictureService;
         public Localizer T { get; set; }
@@ -28,26 +30,52 @@ namespace SmartStore.Web.Controllers
             CatalogHelper helper,
             MediaSettings mediaSettings,
             IPictureService pictureService,
-            IProductService productService)
+            IProductService productService,
+            ICategoryService categoryService,
+            IManufacturerService manufacturerService)
         {
             _services = services;
             _helper = helper;
             _productService = productService;
+            _categoryService = categoryService;
             _mediaSettings = mediaSettings;
             T = NullLocalizer.Instance;
             _pictureService = pictureService;
+            _manufacturerService = manufacturerService;
         }
 
         public void PrepareContentSliderModel(SlideModel slide)
         {
+            if (slide.SlideType == (int)SlideType.NormalSlide)
+            {
+                PrepareSlidePictureModel(slide.PictureModel = new ContentSliderSlidePictureModel(), slide.Picture, slide.SlideTitle);
+            }
             if (slide.SlideType == (int)SlideType.ProductSlide)
             {
-                var product = _productService.GetProductById(slide.ItemId);
+                var product = _productService.GetProductById(slide.ItemId.Value);
                 slide.ProductDetails = _helper.PrepareProductDetailsPageModel(product, new Services.Catalog.Modelling.ProductVariantQuery());
                 slide.SlideTitle = slide.ProductDetails.Name;
                 slide.SlideContent = slide.ProductDetails.ShortDescription;
 
                 PrepareSlidePictureModel(slide.PictureModel = new ContentSliderSlidePictureModel(), slide.Picture, slide.ProductDetails.Name);
+            }
+            if (slide.SlideType == (int)SlideType.CategorySlide)
+            {
+                var category = _categoryService.GetCategoryById(slide.ItemId.Value);
+                slide.SlideTitle = category.Name;
+                slide.SlideContent = category.Description;
+                slide.CategoryDetails = category.ToModel();
+
+                PrepareSlidePictureModel(slide.PictureModel = new ContentSliderSlidePictureModel(), slide.Picture, slide.SlideTitle);
+            }
+            if (slide.SlideType == (int)SlideType.BrandSlide)
+            {
+                var manufacturer = _manufacturerService.GetManufacturerById(slide.ItemId.Value);
+                slide.SlideTitle = manufacturer.Name;
+                slide.SlideContent = manufacturer.Description;
+                slide.ManufacturerDetails = manufacturer.ToModel();
+
+                PrepareSlidePictureModel(slide.PictureModel = new ContentSliderSlidePictureModel(), slide.Picture, slide.SlideTitle);
             }
         }
 
@@ -63,7 +91,7 @@ namespace SmartStore.Web.Controllers
             model.AlternateText = T("Media.Product.ImageAlternateTextFormat", model.Name);
 
             Picture defaultPicture = null;
-            int defaultPictureSize = _mediaSettings.ProductDetailsPictureSize;
+            int defaultPictureSize = _mediaSettings.SliderPictureSize;
 
             using (var scope = new DbContextScope(_services.DbContext, autoCommit: false))
             {
@@ -72,7 +100,7 @@ namespace SmartStore.Web.Controllers
 
                 if (picture != null)
                 {
-                    model.PictureModel = CreatePictureModel(model, picture, _mediaSettings.ProductDetailsPictureSize);
+                    model.PictureModel = CreatePictureModel(model, picture, _mediaSettings.SliderPictureSize);
 
                     model.GalleryStartIndex = 0;
                     defaultPicture = picture;

@@ -26,7 +26,7 @@ namespace SmartStore.ComponentModel
 
 		public override object ConvertFrom(CultureInfo culture, object value)
 		{
-			return _converter.ConvertFrom(null, culture, value);
+            return _converter.ConvertFrom(null, culture, value);
 		}
 
 		public override object ConvertTo(CultureInfo culture, string format, object value, Type to)

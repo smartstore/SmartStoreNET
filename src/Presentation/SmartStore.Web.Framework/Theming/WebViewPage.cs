@@ -222,7 +222,7 @@ namespace SmartStore.Web.Framework.Theming
                 {
                     return defaultValue;
                 }
-                return (T)value.Convert(typeof(T));
+                return value.Convert<T>();
             }
 
             return defaultValue;

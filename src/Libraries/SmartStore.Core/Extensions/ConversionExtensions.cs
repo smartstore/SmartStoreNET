@@ -20,46 +20,42 @@ namespace SmartStore
 
         public static T Convert<T>(this object value)
         {
-            var to = typeof(T);
-            if (!CommonHelper.TryConvert(value, to, CultureInfo.InvariantCulture, out object result))
+            if (CommonHelper.TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
             {
-                throw Error.InvalidCast(value?.GetType(), to);
+                return (T)result;
             }
 
-            return (T)(result ?? default(T));
+            return default(T);
         }
 
 		public static T Convert<T>(this object value, T defaultValue)
 		{
-            var to = typeof(T);
-            if (!CommonHelper.TryConvert(value, to, CultureInfo.InvariantCulture, out object result))
+            if (CommonHelper.TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
             {
-                throw Error.InvalidCast(value?.GetType(), to);
+                return (T)result;
             }
 
-            return (T)(result ?? defaultValue);
+            return defaultValue;
         }
 
 		public static T Convert<T>(this object value, CultureInfo culture)
         {
-            var to = typeof(T);
-            if (!CommonHelper.TryConvert(value, to, culture, out object result))
+            if (CommonHelper.TryConvert(value, typeof(T), culture, out object result))
             {
-                throw Error.InvalidCast(value?.GetType(), to);
+                return (T)result;
             }
 
-            return (T)(result ?? default(T));
+            return default(T);
         }
 
 		public static T Convert<T>(this object value, T defaultValue, CultureInfo culture)
 		{
-            var to = typeof(T);
-            if (!CommonHelper.TryConvert(value, to, culture, out object result))
+            if (CommonHelper.TryConvert(value, typeof(T), culture, out object result))
             {
-                throw Error.InvalidCast(value?.GetType(), to);
+                return (T)result;
             }
 
-            return (T)(result ?? defaultValue);
+            return defaultValue;
         }
 
 		public static object Convert(this object value, Type to)

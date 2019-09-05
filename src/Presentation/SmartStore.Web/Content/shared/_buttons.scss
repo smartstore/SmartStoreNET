@@ -151,6 +151,47 @@ $btn-size-sm: $input-height-sm;
 }
 
 
+// Social buttons
+// --------------------------------------------------
+
+@if $enable-social-buttons {
+    .btn-brand-facebook,
+    .btn-brand-facebook-f {
+        @include button-variant($clr-brand-facebook, $clr-brand-facebook);
+    }
+
+    .btn-brand-twitter {
+        @include button-variant($clr-brand-twitter, $clr-brand-twitter);
+    }
+
+    .btn-brand-youtube {
+        @include button-variant($clr-brand-youtube, $clr-brand-youtube);
+    }
+
+    .btn-brand-pinterest,
+    .btn-brand-pinterest-p {
+        @include button-variant($clr-brand-pinterest, $clr-brand-pinterest);
+    }
+
+    .btn-brand-google-plus,
+    .btn-brand-google-plus-g {
+        @include button-variant($clr-brand-googleplus, $clr-brand-googleplus);
+    }
+
+    .btn-brand-instagram {
+        @include button-variant($clr-brand-instagram, $clr-brand-instagram);
+    }
+
+    .btn-brand-linkedin {
+        @include button-variant($clr-brand-linkedin, $clr-brand-linkedin);
+    }
+
+    .btn-brand-xing {
+        @include button-variant($clr-brand-xing, $clr-brand-xing);
+    }
+}
+
+
 // btn-flat
 // --------------------------------------------------
 
@@ -640,46 +681,5 @@ $btn-size-sm: $input-height-sm;
         .show > &.dropdown-toggle:focus {
             @include button-3d-state($color, 'pressed');
         }
-	}
-}
-
-
-// Social buttons
-// --------------------------------------------------
-
-@if $enable-social-buttons {
-	.btn-brand-facebook,
-    .btn-brand-facebook-f {
-		@include button-variant($clr-brand-facebook, $clr-brand-facebook);
-	}
-
-	.btn-brand-twitter {
-		@include button-variant($clr-brand-twitter, $clr-brand-twitter);
-	}
-
-	.btn-brand-youtube {
-		@include button-variant($clr-brand-youtube, $clr-brand-youtube);
-	}
-
-	.btn-brand-pinterest,
-    .btn-brand-pinterest-p {
-		@include button-variant($clr-brand-pinterest, $clr-brand-pinterest);
-	}
-
-	.btn-brand-google-plus,
-    .btn-brand-google-plus-g {
-		@include button-variant($clr-brand-googleplus , $clr-brand-googleplus);
-	}
-
-	.btn-brand-instagram {
-		@include button-variant($clr-brand-instagram, $clr-brand-instagram);
-	}
-
-	.btn-brand-linkedin {
-		@include button-variant($clr-brand-linkedin, $clr-brand-linkedin);
-	}
-
-	.btn-brand-xing {
-		@include button-variant($clr-brand-xing, $clr-brand-xing);
 	}
 }

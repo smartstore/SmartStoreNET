@@ -15,7 +15,7 @@
 
     function update() {
         _.each(stages, function (item, i) {
-            if (item.type == 'bg' && isTouch) {
+            if (item.type === 'bg' && isTouch) {
                 // Found no proper way to make bg parallax
                 // run reliably on touch devices.
                 return;
@@ -38,6 +38,7 @@
                     // Restore original styling
                     el.css('background-position', item.originalPosition);
                     el.css('background-attachment', item.originalAttachment);
+                    el.css(window.Prefixer.css('transform'), '');
                     item.initialized = false;
                 }
 
@@ -62,6 +63,7 @@
                     rate = 100 / (bottom + winHeight - top) * ((scrollTop + winHeight) - top),
                     ytransform = (rate - 50) * (speed * -6) + item.offset;
 
+                item.initialized = true;
                 el.css(window.Prefixer.css('transform'), 'translate3d(0, ' + ytransform + 'px, 0)');
             }
         });

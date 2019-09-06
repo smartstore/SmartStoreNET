@@ -118,9 +118,9 @@ namespace SmartStore
 
 		public static float ToFloat(this string value, float defaultValue = 0)
         {
-			if (CommonHelper.TryConvert(value, out float result))
+			if (CommonHelper.TryConvert(value, typeof(float), CultureInfo.InvariantCulture, out object result))
 			{
-				return result;
+				return (float)result;
 			}
 
 			return defaultValue;
@@ -128,9 +128,9 @@ namespace SmartStore
 
         public static bool ToBool(this string value, bool defaultValue = false)
         {
-			if (CommonHelper.TryConvert(value, out bool result))
+			if (CommonHelper.TryConvert(value, typeof(bool), out object result))
 			{
-				return result;
+				return (bool)result;
 			}
 
 			return defaultValue;

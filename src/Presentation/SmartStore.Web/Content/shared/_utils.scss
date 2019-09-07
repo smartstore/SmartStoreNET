@@ -291,6 +291,12 @@ table th {
     --border-radius: 50%;
 }
 
+.rounded-pill {
+    --border-radius: 50rem;
+    --border-radius-inner: calc(50rem - 1px);
+    border-radius: 50rem;
+}
+
 .rounded-0 {
     --border-radius: 0;
 }

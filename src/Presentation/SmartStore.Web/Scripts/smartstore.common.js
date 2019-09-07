@@ -650,11 +650,15 @@
 		
 		// scroll top
 		(function () {
-			$('#scroll-top').on('click', function (e) {
-				e.preventDefault();
-				win.scrollTo(0, 600);
-				return false;
-			});
+            $(document).on('click', 'a.waypoint', function (e) {
+                e.preventDefault();
+                var href = $(this).attr('href');
+                var target = href === '#'
+                    ? $('body')
+                    : $(href);
+                $(window).scrollTo(target, 500);
+                return false;
+            });
 
 			var prevY;
 

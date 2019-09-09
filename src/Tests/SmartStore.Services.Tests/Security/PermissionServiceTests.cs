@@ -139,15 +139,14 @@ namespace SmartStore.Services.Tests.Security
             var node = tree.SelectNodeById(permissionSystemName);
 
             Assert.NotNull(node, $"Cannot select node by id '{permissionSystemName}'.");
-            Assert.NotNull(node.Value.Allow, "The selected node must not be 'null'.");
 
             if (allow)
             {
-                Assert.IsTrue(node.Value.Allow.Value, "The value of the selected node must be 'true'.");
+                Assert.IsTrue(node.Value.Allow, "The value of the selected node must be 'true'.");
             }
             else
             {
-                Assert.IsFalse(node.Value.Allow.Value, "The value of the selected node must be 'false'.");
+                Assert.IsFalse(node.Value.Allow, "The value of the selected node must be 'false'.");
             }
         }
     }

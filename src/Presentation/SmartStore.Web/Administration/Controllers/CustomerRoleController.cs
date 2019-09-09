@@ -205,17 +205,7 @@ namespace SmartStore.Admin.Controllers
                         .Select(x =>
                         {
                             var id = x.Substring(permissionKey.Length).ToInt();
-                            bool? allow = null;
-                            var value = form[x].EmptyNull();
-                            if (value.StartsWith("2"))
-                            {
-                                allow = true;
-                            }
-                            else if (value.StartsWith("1"))
-                            {
-                                allow = false;
-                            }
-
+                            var allow = form[x].EmptyNull() == "1,0";
                             return new { id, allow };
                         })
                         .ToDictionary(x => x.id, x => x.allow);
@@ -226,9 +216,13 @@ namespace SmartStore.Admin.Controllers
                         {
                             if (existingMappings.TryGetValue(item.Key, out var mapping))
                             {
-                                if (item.Value.HasValue)
+                                if (item.Value == mapping.Allow)
                                 {
-                                    mapping.Allow = item.Value.Value;
+                                    // Nothing to change.
+                                }
+                                else if (item.Value)
+                                {
+                                    mapping.Allow = item.Value;
 
                                     _permissionService2.UpdatePermissionRoleMapping(mapping);
                                 }
@@ -237,11 +231,11 @@ namespace SmartStore.Admin.Controllers
                                     _permissionService2.DeletePermissionRoleMapping(mapping);
                                 }
                             }
-                            else if (item.Value.HasValue)
+                            else if (item.Value)
                             {
                                 _permissionService2.InsertPermissionRoleMapping(new PermissionRoleMapping
                                 {
-                                    Allow = item.Value.Value,
+                                    Allow = item.Value,
                                     PermissionRecordId = item.Key,
                                     CustomerRoleId = customerRole.Id
                                 });

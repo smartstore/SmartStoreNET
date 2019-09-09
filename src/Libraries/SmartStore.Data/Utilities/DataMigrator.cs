@@ -967,56 +967,56 @@ namespace SmartStore.Data.Utilities
 
                 scope.Commit();
 
-                // Migrate mappings of standard permissions (whether the new permission is granted or denied).
-                Allow(true, "AccessAdminPanel", newPermissions[Permissions.System.Administrate]);
-                Allow(false, "AllowCustomerImpersonation", newPermissions[Permissions.Customer.Impersonate]);
-                Allow(false, "ManageCatalog", newPermissions[Permissions.Catalog.Self]);
-                Allow(true, "ManageCatalog", newPermissions[Permissions.Cart.CheckoutAttribute.Self]);
-                Allow(false, "ManageCustomers", newPermissions[Permissions.Customer.Self]);
-                Allow(false, "ManageCustomerRoles", newPermissions[Permissions.Customer.Role.Self]);
-                Allow(false, "ManageOrders", newPermissions[Permissions.Order.Self]);
-                Allow(false, "ManageGiftCards", newPermissions[Permissions.Order.GiftCard.Self]);
-                Allow(false, "ManageReturnRequests", newPermissions[Permissions.Order.ReturnRequest.Self]);
-                Allow(true, "ManageAffiliates", newPermissions[Permissions.Promotion.Affiliate.Self]);
-                Allow(true, "ManageCampaigns", newPermissions[Permissions.Promotion.Campaign.Self]);
-                Allow(true, "ManageDiscounts", newPermissions[Permissions.Promotion.Discount.Self]);
-                Allow(true, "ManageNewsletterSubscribers", newPermissions[Permissions.Promotion.Newsletter.Self]);
-                Allow(true, "ManagePolls", newPermissions[Permissions.Cms.Poll.Self]);
-                Allow(true, "ManageNews", newPermissions[Permissions.Cms.News.Self]);
-                Allow(true, "ManageBlog", newPermissions[Permissions.Cms.Blog.Self]);
-                Allow(true, "ManageWidgets", newPermissions[Permissions.Cms.Widget.Self]);
-                Allow(true, "ManageTopics", newPermissions[Permissions.Cms.Topic.Self]);
-                Allow(true, "ManageMenus", newPermissions[Permissions.Cms.Menu.Self]);
-                Allow(true, "ManageForums", newPermissions[Permissions.Cms.Forum.Self]);
-                Allow(true, "ManageMessageTemplates", newPermissions[Permissions.Cms.MessageTemplate.Self]);
-                Allow(true, "ManageCountries", newPermissions[Permissions.Configuration.Country.Self]);
-                Allow(true, "ManageLanguages", newPermissions[Permissions.Configuration.Language.Self]);
-                Allow(true, "ManageSettings", newPermissions[Permissions.Configuration.Setting.Self]);
-                Allow(true, "ManagePaymentMethods", newPermissions[Permissions.Configuration.PaymentMethod.Self]);
-                Allow(true, "ManageExternalAuthenticationMethods", newPermissions[Permissions.Configuration.Authentication.Self]);
-                Allow(true, "ManageTaxSettings", newPermissions[Permissions.Configuration.Tax.Self]);
-                Allow(true, "ManageShippingSettings", newPermissions[Permissions.Configuration.Shipping.Self]);
-                Allow(true, "ManageCurrencies", newPermissions[Permissions.Configuration.Currency.Self]);
-                Allow(true, "ManageDeliveryTimes", newPermissions[Permissions.Configuration.DeliveryTime.Self]);
-                Allow(true, "ManageThemes", newPermissions[Permissions.Configuration.Theme.Self]);
-                Allow(true, "ManageMeasures", newPermissions[Permissions.Configuration.Measure.Self]);
-                Allow(true, "ManageActivityLog", newPermissions[Permissions.Configuration.ActivityLog.Self]);
-                Allow(true, "ManageACL", newPermissions[Permissions.Configuration.Acl.Self]);
-                Allow(true, "ManageEmailAccounts", newPermissions[Permissions.Configuration.EmailAccount.Self]);
-                Allow(true, "ManageStores", newPermissions[Permissions.Configuration.Store.Self]);
-                Allow(true, "ManagePlugins", newPermissions[Permissions.Configuration.Plugin.Self]);
-                Allow(true, "ManageSystemLog", newPermissions[Permissions.System.Log.Self]);
-                Allow(true, "ManageMessageQueue", newPermissions[Permissions.System.Message.Self]);
-                Allow(true, "ManageMaintenance", newPermissions[Permissions.System.Maintenance.Self]);
-                Allow(true, "UploadPictures", newPermissions[Permissions.Media.Self]);
-                Allow(true, "ManageScheduleTasks", newPermissions[Permissions.System.ScheduleTask.Self]);
-                Allow(true, "ManageExports", newPermissions[Permissions.Configuration.Export.Self]);
-                Allow(true, "ManageImports", newPermissions[Permissions.Configuration.Import.Self]);
-                Allow(true, "ManageUrlRecords", newPermissions[Permissions.System.UrlRecord.Self]);
-                Allow(false, "DisplayPrices", newPermissions[Permissions.Catalog.DisplayPrice]);
-                Allow(true, "EnableShoppingCart", newPermissions[Permissions.Cart.AccessShoppingCart]);
-                Allow(true, "EnableWishlist", newPermissions[Permissions.Cart.AccessWishlist]);
-                Allow(true, "PublicStoreAllowNavigation", newPermissions[Permissions.System.AccessShop]);
+                // Migrate mappings of standard permissions (whether the new permission is granted).
+                Allow("AccessAdminPanel", newPermissions[Permissions.System.Administrate]);
+                Allow("AllowCustomerImpersonation", newPermissions[Permissions.Customer.Impersonate]);
+                Allow("ManageCatalog", newPermissions[Permissions.Catalog.Self]);
+                Allow("ManageCatalog", newPermissions[Permissions.Cart.CheckoutAttribute.Self]);
+                Allow("ManageCustomers", newPermissions[Permissions.Customer.Self]);
+                Allow("ManageCustomerRoles", newPermissions[Permissions.Customer.Role.Self]);
+                Allow("ManageOrders", newPermissions[Permissions.Order.Self]);
+                Allow("ManageGiftCards", newPermissions[Permissions.Order.GiftCard.Self]);
+                Allow("ManageReturnRequests", newPermissions[Permissions.Order.ReturnRequest.Self]);
+                Allow("ManageAffiliates", newPermissions[Permissions.Promotion.Affiliate.Self]);
+                Allow("ManageCampaigns", newPermissions[Permissions.Promotion.Campaign.Self]);
+                Allow("ManageDiscounts", newPermissions[Permissions.Promotion.Discount.Self]);
+                Allow("ManageNewsletterSubscribers", newPermissions[Permissions.Promotion.Newsletter.Self]);
+                Allow("ManagePolls", newPermissions[Permissions.Cms.Poll.Self]);
+                Allow("ManageNews", newPermissions[Permissions.Cms.News.Self]);
+                Allow("ManageBlog", newPermissions[Permissions.Cms.Blog.Self]);
+                Allow("ManageWidgets", newPermissions[Permissions.Cms.Widget.Self]);
+                Allow("ManageTopics", newPermissions[Permissions.Cms.Topic.Self]);
+                Allow("ManageMenus", newPermissions[Permissions.Cms.Menu.Self]);
+                Allow("ManageForums", newPermissions[Permissions.Cms.Forum.Self]);
+                Allow("ManageMessageTemplates", newPermissions[Permissions.Cms.MessageTemplate.Self]);
+                Allow("ManageCountries", newPermissions[Permissions.Configuration.Country.Self]);
+                Allow("ManageLanguages", newPermissions[Permissions.Configuration.Language.Self]);
+                Allow("ManageSettings", newPermissions[Permissions.Configuration.Setting.Self]);
+                Allow("ManagePaymentMethods", newPermissions[Permissions.Configuration.PaymentMethod.Self]);
+                Allow("ManageExternalAuthenticationMethods", newPermissions[Permissions.Configuration.Authentication.Self]);
+                Allow("ManageTaxSettings", newPermissions[Permissions.Configuration.Tax.Self]);
+                Allow("ManageShippingSettings", newPermissions[Permissions.Configuration.Shipping.Self]);
+                Allow("ManageCurrencies", newPermissions[Permissions.Configuration.Currency.Self]);
+                Allow("ManageDeliveryTimes", newPermissions[Permissions.Configuration.DeliveryTime.Self]);
+                Allow("ManageThemes", newPermissions[Permissions.Configuration.Theme.Self]);
+                Allow("ManageMeasures", newPermissions[Permissions.Configuration.Measure.Self]);
+                Allow("ManageActivityLog", newPermissions[Permissions.Configuration.ActivityLog.Self]);
+                Allow("ManageACL", newPermissions[Permissions.Configuration.Acl.Self]);
+                Allow("ManageEmailAccounts", newPermissions[Permissions.Configuration.EmailAccount.Self]);
+                Allow("ManageStores", newPermissions[Permissions.Configuration.Store.Self]);
+                Allow("ManagePlugins", newPermissions[Permissions.Configuration.Plugin.Self]);
+                Allow("ManageSystemLog", newPermissions[Permissions.System.Log.Self]);
+                Allow("ManageMessageQueue", newPermissions[Permissions.System.Message.Self]);
+                Allow("ManageMaintenance", newPermissions[Permissions.System.Maintenance.Self]);
+                Allow("UploadPictures", newPermissions[Permissions.Media.Self]);
+                Allow("ManageScheduleTasks", newPermissions[Permissions.System.ScheduleTask.Self]);
+                Allow("ManageExports", newPermissions[Permissions.Configuration.Export.Self]);
+                Allow("ManageImports", newPermissions[Permissions.Configuration.Import.Self]);
+                Allow("ManageUrlRecords", newPermissions[Permissions.System.UrlRecord.Self]);
+                Allow("DisplayPrices", newPermissions[Permissions.Catalog.DisplayPrice]);
+                Allow("EnableShoppingCart", newPermissions[Permissions.Cart.AccessShoppingCart]);
+                Allow("EnableWishlist", newPermissions[Permissions.Cart.AccessWishlist]);
+                Allow("PublicStoreAllowNavigation", newPermissions[Permissions.System.AccessShop]);
 
                 scope.Commit();
                 newPermissions.Clear();
@@ -1066,24 +1066,22 @@ namespace SmartStore.Data.Utilities
                 scope.Commit();
 
                 PermissionRecord pr;
-                if (newPermissions.TryGetValue("debitoor", out pr)) Allow(true, "ManageDebitoor", pr);
-                if (newPermissions.TryGetValue("biz-importer", out pr)) Allow(true, "AccessImportBiz", pr);
-                if (newPermissions.TryGetValue("shop-connector", out pr)) Allow(true, "ManageShopConnector", pr);
-                if (newPermissions.TryGetValue("news-importer", out pr)) Allow(true, "ManageNewsImporter", pr);
-                if (newPermissions.TryGetValue("web-api", out pr)) Allow(true, "ManageWebApi", pr);
-                if (newPermissions.TryGetValue("megasearch", out pr)) Allow(true, "ManageMegaSearch", pr);
-                if (newPermissions.TryGetValue("erp-connector", out pr)) Allow(true, "ManageErpConnector", pr);
-                if (newPermissions.TryGetValue("power-bi", out pr)) Allow(true, "ManagePowerBi", pr);
-                if (newPermissions.TryGetValue("wallet", out pr)) Allow(true, "ManageWallet", pr);
-                if (newPermissions.TryGetValue("page-builder", out pr)) Allow(true, "ManageStories", pr);
-                if (newPermissions.TryGetValue("dlm", out pr)) Allow(true, "ManageDlm", pr);
+                if (newPermissions.TryGetValue("debitoor", out pr)) Allow("ManageDebitoor", pr);
+                if (newPermissions.TryGetValue("biz-importer", out pr)) Allow("AccessImportBiz", pr);
+                if (newPermissions.TryGetValue("shop-connector", out pr)) Allow("ManageShopConnector", pr);
+                if (newPermissions.TryGetValue("news-importer", out pr)) Allow("ManageNewsImporter", pr);
+                if (newPermissions.TryGetValue("web-api", out pr)) Allow("ManageWebApi", pr);
+                if (newPermissions.TryGetValue("megasearch", out pr)) Allow("ManageMegaSearch", pr);
+                if (newPermissions.TryGetValue("erp-connector", out pr)) Allow("ManageErpConnector", pr);
+                if (newPermissions.TryGetValue("power-bi", out pr)) Allow("ManagePowerBi", pr);
+                if (newPermissions.TryGetValue("wallet", out pr)) Allow("ManageWallet", pr);
+                if (newPermissions.TryGetValue("page-builder", out pr)) Allow("ManageStories", pr);
+                if (newPermissions.TryGetValue("dlm", out pr)) Allow("ManageDlm", pr);
 
                 scope.Commit();
             }
 
-            // allowOnly = false: to use when parent may set permissions (always sets Allow property).
-            // allowOnly = true: to use if there's no parent that sets the permission (only sets Allow = true).
-            void Allow(bool allowOnly, string oldSystemName, params PermissionRecord[] permissions)
+            void Allow(string oldSystemName, params PermissionRecord[] permissions)
             {
                 var appliedRoleIds = permissionToRoles.ContainsKey(oldSystemName)
                     ? permissionToRoles[oldSystemName]
@@ -1093,29 +1091,14 @@ namespace SmartStore.Data.Utilities
                 {
                     Guard.NotZero(permission.Id, nameof(permission.Id));
 
-                    if (allowOnly)
+                    foreach (var roleId in appliedRoleIds)
                     {
-                        foreach (var roleId in appliedRoleIds)
+                        mappingSet.Add(new PermissionRoleMapping
                         {
-                            mappingSet.Add(new PermissionRoleMapping
-                            {
-                                Allow = true,
-                                PermissionRecordId = permission.Id,
-                                CustomerRoleId = roleId
-                            });
-                        }
-                    }
-                    else
-                    {
-                        foreach (var roleId in allRoles.Select(x => x.Id))
-                        {
-                            mappingSet.Add(new PermissionRoleMapping
-                            {
-                                Allow = appliedRoleIds.Contains(roleId),
-                                PermissionRecordId = permission.Id,
-                                CustomerRoleId = roleId
-                            });
-                        }
+                            Allow = true,
+                            PermissionRecordId = permission.Id,
+                            CustomerRoleId = roleId
+                        });
                     }
                 }
             }

@@ -30,7 +30,7 @@
         expanded: false,    // Whether initially expand tree.
         showLines: false,   // Whether to show helper lines.
         readOnly: false,    // Whether state changed are enabled.
-        nodeState: '',      // allow-deny
+        nodeState: '',      // on-off
         expandedClass: 'fas fa-angle-down',
         collapsedClass: 'fas fa-angle-right',
     };
@@ -81,7 +81,7 @@
                 .prepend('<span class="smtree-vline"></span>');
         }
 
-        if (opt.nodeState === 'allow-deny') {
+        if (opt.nodeState === 'on-off') {
             // Add state checkbox HTML.
             root.find('.smtree-label').each(function (i, el) {
                 var label = $(this);
@@ -89,30 +89,19 @@
                 var value = parseInt(node.data('value'));
                 var name = node.data('name');
                 var html = '';
-                var stateClass = '';
-
-                if (value === 1) {
-                    stateClass = 'deny';
-                }
-                else if (value === 2) {
-                    stateClass = 'allow';
-                }
 
                 if (!opt.readOnly) {
                     label.attr('for', name);
 
-                    html += '<input type="checkbox" name="' + name + '" id="' + name + '" value="' + value + '"' + (value === 2 ? ' checked="checked"' : '') + ' />';
-                    html += '<input type="hidden" name="' + name + '" value="' + (value === 0 ? 0 : 1) + '" />';
+                    html += '<input type="checkbox" name="' + name + '" id="' + name + '" value="' + value + '"' + (value === 1 ? ' checked="checked"' : '') + ' />';
+                    html += '<input type="hidden" name="' + name + '" value="0" />';
                 }
-                html += '<span class="smtree-state ' + stateClass + '"></span>';
+                html += '<span class="smtree-state ' + (value === 1 ? 'on' : 'off') + '"></span>';
 
                 label.prepend(html);
             });
 
             if (!opt.readOnly) {
-                // Set indeterminate property.
-                root.find('input[type=checkbox][value=0]').prop('indeterminate', true);
-
                 // Set inherited state.
                 root.find('ul:first > .smtree-node').each(function () {
                     setInheritedState($(this), 0);
@@ -132,32 +121,23 @@
             var node = el.closest('.smtree-node');
             var state = el.siblings('.smtree-state:first');
 
-            if (opt.nodeState === 'allow-deny') {
-                var hIn = el.next();
+            if (opt.nodeState === 'on-off') {
                 var inheritedState = 0;
-                state.removeClass('allow deny in-allow in-deny');
+                state.removeClass('on off in-on');
 
                 switch (parseInt(el.val())) {
-                    case 0:
-                        // Indeterminate > checked.
-                        el.prop({ checked: true, indeterminate: false, value: 2 });
-                        hIn.val(1);
-                        state.addClass('allow');
-                        inheritedState = 2;
-                        break;
-                    case 2:
-                        // Checked > unchecked.
-                        el.prop({ checked: false, indeterminate: false, value: 1 });
-                        hIn.val(1);
-                        state.addClass('deny');
-                        inheritedState = 1;
-                        break;
                     case 1:
-                    default:
-                        // Unchecked > indeterminate.
-                        el.prop({ checked: false, indeterminate: true, value: 0 });
-                        hIn.val(0);
+                        // Checked > unchecked.
+                        el.prop({ checked: false, value: 0 });
+                        state.addClass('off');
                         inheritedState = getInheritedState(node);
+                        break;
+                    case 0:
+                    default:
+                        // Unchecked > checked.
+                        el.prop({ checked: true, value: 1 });
+                        state.addClass('on');
+                        inheritedState = 1;
                         break;
                 }
 
@@ -198,14 +178,13 @@
         var val = parseInt(node.find('> .smtree-inner input[type=checkbox]').val()) || 0;
 
         if (val > 0) {
-            // Has direct state.
+            // Is directly on.
             childState = val;
         }
         else {
-            // Has no direct state.
+            // Is not directly on.
             var state = node.find('.smtree-state:first');
-            state.removeClass('in-allow in-deny');
-            state.addClass(inheritedState === 2 ? 'in-allow' : 'in-deny');
+            state.toggleClass('in-on', inheritedState === 1);
         }
 
         node.find('> ul > .smtree-node').each(function () {

@@ -95,9 +95,9 @@ $default-state-color: $gray-400;
         position: absolute;
         display: block;
     }
-    // State indicator 'allow'.
-    .allow:after,
-    .in-allow:after {
+    // State indicator 'on'.
+    .on:after,
+    .in-on:after {
         content: "";
         top: 5px;
         left: 6px;
@@ -108,17 +108,17 @@ $default-state-color: $gray-400;
         border-width: 0 3px 3px 0;
     }
 
-    .allow:before,
-    .allow:after {
+    .on:before,
+    .on:after {
         border-color: $success;
     }
 
-    .in-allow:after {
+    .in-on:after {
         border-color: $default-state-color;
     }
-    // State indicator 'deny'.
-    .deny:after,
-    .in-deny:after {
+    // State indicator 'off'.
+    /*.off:after,
+    .in-off:after {
         content: '\002D';
         top: 10px;
         left: 8px;
@@ -126,16 +126,16 @@ $default-state-color: $gray-400;
         transform: translate(-50%,-50%) scaleX(1.9);
     }
 
-    .deny:before {
+    .off:before {
         border-color: $danger;
     }
 
-    .deny:after {
+    .off:after {
         color: $danger;
     }
 
-    .in-deny:after {
+    .in-off:after {
         color: $default-state-color;
-    }
+    }*/
 }
 

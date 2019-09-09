@@ -1,6 +1,8 @@
 ﻿@model ContentSliderListModel
 @using Telerik.Web.Mvc.UI
-@{   
+@using System.Collections;
+
+@{
     ViewBag.Title = T("Admin.CMS.ContentSlider").Text;
 }
 <div class="section-header">
@@ -9,39 +11,47 @@
         @T("Admin.CMS.ContentSlider")
     </div>
     <div class="options">
-		@{ Html.RenderWidget("admin_button_toolbar_before"); }
+        @{ Html.RenderWidget("admin_button_toolbar_before"); }
 
         <a href="@Url.Action("Create")" class="btn btn-primary">
-			<i class="fa fa-plus"></i>
-			<span>@T("Admin.Common.AddNew")</span>
-		</a>
+            <i class="fa fa-plus"></i>
+            <span>@T("Admin.Common.AddNew")</span>
+        </a>
 
-		@{ Html.RenderWidget("admin_button_toolbar_after"); }
+        @{ Html.RenderWidget("admin_button_toolbar_after"); }
     </div>
 </div>
 
 <div class="row mt-3 grid-filter">
-	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-		@Html.SmartLabelFor(model => model.SearchContentSliderName)
-		@Html.TextBoxFor(model => Model.SearchContentSliderName, new { @class = "form-control" })
-	</div>
-	@if (Model.AvailableStores.Count > 1)
-	{
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.SearchStoreId)
-			@Html.DropDownListFor(model => model.SearchStoreId, Model.AvailableStores, T("Admin.Common.All"), new { @class = "form-control" })
-		</div>
-	}
-	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-		@Html.SmartLabel(string.Empty, string.Empty)
-		<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
-			<span>@T("Admin.Common.ApplyFilter")</span>
-		</button>
-	</div>
+    <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+        @Html.SmartLabelFor(model => model.SearchContentSliderName)
+        @Html.TextBoxFor(model => Model.SearchContentSliderName, new { @class = "form-control" })
+    </div>
+    @if (Model.AvailableStores.Count > 1)
+    {
+        <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+            @Html.SmartLabelFor(model => model.SearchStoreId)
+            @Html.DropDownListFor(model => model.SearchStoreId, Model.AvailableStores, T("Admin.Common.All"), new { @class = "form-control" })
+        </div>
+    }
+    <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+        @Html.SmartLabel(string.Empty, string.Empty)
+        <button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+            <span>@T("Admin.Common.ApplyFilter")</span>
+        </button>
+    </div>
 </div>
 
+@{
+    ArrayList SliderTypeList = new ArrayList
+    {
+        new { SLiderTypeId=0,SliderTypeName=T("Admin.CMS.ContentSlider.HomePageSlider")},
+        new { SLiderTypeId=1,SliderTypeName=T("Admin.CMS.ContentSlider.CategorySlider")},
+        new { SLiderTypeId=2,SliderTypeName=T("Admin.CMS.ContentSlider.ManufacturerSlider")},
+    };
+}
 <div class="mt-3">
-	@(Html.Telerik().Grid<ContentSliderModel>()
+    @(Html.Telerik().Grid<ContentSliderModel>()
         .Name("contentslider-grid")
         .ClientEvents(events => events
             .OnDataBinding("onDataBinding")
@@ -71,9 +81,10 @@
             columns.Bound(x => x.Delay)
                .Width(160)
                .Centered();
-            columns.Bound(x => x.SliderTypeName)
-                .Width(160)
-                .Centered();
+            columns.ForeignKey(p => p.SliderType, SliderTypeList, "SLiderTypeId", "SliderTypeName")
+            //columns.Bound(x => x.SliderType)
+            .Width(160)
+            .Centered();
         })
         .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
         .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "ContentSlider"))

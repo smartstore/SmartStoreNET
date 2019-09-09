@@ -111,6 +111,18 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
+        public void UpdateLocales(ContentSlider contentSlider, ContentSliderModel model)
+        {
+            foreach (var localized in model.Locales)
+            {
+                _localizedEntityService.SaveLocalizedValue(contentSlider,
+                                                               x => x.SliderName,
+                                                               localized.SliderName,
+                                                               localized.LanguageId);
+            }
+        }
+
+        [NonAction]
         private void PrepareContentSliderModel(ContentSliderModel model, ContentSlider slider, bool excludeProperties)
         {
             if (model == null)
@@ -213,7 +225,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult List(GridCommand command, ManufacturerListModel model)
+        public ActionResult List(GridCommand command, ContentSliderListModel model)
         {
             var gridModel = new GridModel<ContentSliderModel>();
 
@@ -221,20 +233,20 @@ namespace SmartStore.Admin.Controllers
 
             if (_permissionService.Authorize(StandardPermissionProvider.ManageContentSlider))
             {
-                var contentSliders = _contentSliderService.GetAllContentSliders(model.SearchManufacturerName, command.Page - 1, command.PageSize,
+                var contentSliders = _contentSliderService.GetAllContentSliders(model.SearchContentSliderName, command.Page - 1, command.PageSize,
                     model.SearchStoreId, true);
                 var contentslidermodels = contentSliders.Select(x => x.ToModel());
-                List<ContentSliderModel> slidersList = new List<ContentSliderModel>();
+                //List<ContentSliderModel> slidersList = new List<ContentSliderModel>();
 
-                foreach (var slider in contentslidermodels)
-                {
-                    ContentSliderModel SliderObject = slider;
-                    SliderObject.SliderTypeName = ((SliderType)slider.SliderType).ToString();
+                //foreach (var slider in contentslidermodels)
+                //{
+                //    ContentSliderModel SliderObject = slider;
+                //    SliderObject.SliderTypeName = ((SliderType)slider.SliderType).ToString();
 
-                    slidersList.Add(SliderObject);
-                }
+                //    slidersList.Add(SliderObject);
+                //}
 
-                gridModel.Data = slidersList.OrderBy(x => x.Id);
+                gridModel.Data = contentslidermodels.OrderBy(x => x.Id);
                 gridModel.Total = contentSliders.TotalCount;
             }
             else
@@ -277,18 +289,18 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var manufacturer = model.ToEntity();
+                var contentSlider = model.ToEntity();
 
                 //MediaHelper.UpdatePictureTransientStateFor(manufacturer, m => m.PictureId);
 
-                //_manufacturerService.InsertManufacturer(manufacturer);
+                _contentSliderService.InsertContentSlider(contentSlider);
 
                 //// search engine name
                 //model.SeName = manufacturer.ValidateSeName(model.SeName, manufacturer.Name, true);
                 //_urlRecordService.SaveSlug(manufacturer, model.SeName, 0);
 
-                //// locales
-                //UpdateLocales(manufacturer, model);
+                // locales
+                UpdateLocales(contentSlider, model);
 
                 //// discounts
                 //var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToManufacturers, null, true);
@@ -311,11 +323,11 @@ namespace SmartStore.Admin.Controllers
                 //// Stores
                 //SaveStoreMappings(manufacturer, model);
 
-                //// activity log
-                //_customerActivityService.InsertActivity("AddNewManufacturer", _localizationService.GetResource("ActivityLog.AddNewManufacturer"), manufacturer.Name);
+                // activity log
+                _customerActivityService.InsertActivity("AddNewContentSlider", _localizationService.GetResource("ActivityLog.AddNewContentSlider"), contentSlider.SliderName);
 
                 NotifySuccess(_localizationService.GetResource("Admin.CMS.ContentSlider.Added"));
-                return continueEditing ? RedirectToAction("Edit", new { id = manufacturer.Id }) : RedirectToAction("List");
+                return continueEditing ? RedirectToAction("Edit", new { id = contentSlider.Id }) : RedirectToAction("List");
             }
 
             //If we got this far, something failed, redisplay form
@@ -333,6 +345,9 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             var model = contentslider.ToModel();
+
+            //locales
+            AddLocales(_languageService, model.Locales);
 
             return View(model);
         }
@@ -357,12 +372,12 @@ namespace SmartStore.Admin.Controllers
                 //model.SeName = contentslider.ValidateSeName(model.SeName, contentslider.SliderName, true);
                 //_urlRecordService.SaveSlug(contentslider, model.SeName, 0);
 
-                // locales
-                //UpdateLocales(contentslider, model);
+                //locales
+                UpdateLocales(contentslider, model);
 
                 // discounts
                 //var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToManufacturers, null, true);
-                
+
                 //contentslider.HasDiscountsApplied = contentslider.AppliedDiscounts.Count > 0;
                 //contentslider.UpdatedOnUtc = DateTime.UtcNow;
 
@@ -436,7 +451,7 @@ namespace SmartStore.Admin.Controllers
                             SlideContent = x.SlideContent,
                             SlideTitle = x.SlideTitle,
                             DisplayOrder1 = x.DisplayOrder,
-                            SlideTypeName = ((SlideType)x.SlideType).ToString(),
+                            //SlideTypeName = ((SlideType)x.SlideType).ToString(),
                             SlideType = x.SlideType
                         };
                     });

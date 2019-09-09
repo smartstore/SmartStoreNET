@@ -47,9 +47,9 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public int SliderType { get; set; }
 
-        [SmartResourceDisplayName("Admin.CMS.ContentSlider.Fields.SliderType")]
-        [AllowHtml]
-        public string SliderTypeName { get; set; }
+        //[SmartResourceDisplayName("Admin.CMS.ContentSlider.Fields.SliderType")]
+        //[AllowHtml]
+        //public string SliderTypeName { get; set; }
 
         [SmartResourceDisplayName("Admin.CMS.ContentSlider.Fields.ItemId")]
         [AllowHtml]
@@ -82,8 +82,8 @@ namespace SmartStore.Admin.Models.Catalog
             [SmartResourceDisplayName("Admin.CMS.ContentSlider.Slides.Fields.SlideType")]
             public int SlideType { get; set; }
 
-            [SmartResourceDisplayName("Admin.CMS.ContentSlider.Slides.Fields.SlideTypeName")]
-			public string SlideTypeName { get; set; }
+   //         [SmartResourceDisplayName("Admin.CMS.ContentSlider.Slides.Fields.SlideTypeName")]
+			//public string SlideTypeName { get; set; }
 			public string SlideTypeLabelHint { get; set; }
 
 			[SmartResourceDisplayName("Admin.CMS.ContentSlider.Slides.Fields.IsActive")]

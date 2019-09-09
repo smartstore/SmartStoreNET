@@ -1,4 +1,5 @@
-﻿using SmartStore.Core.Domain.Media;
+﻿using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Media;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -10,7 +11,7 @@ namespace SmartStore.Core.Domain.ContentSlider
     /// Represents a ContentSlider
     /// </summary>
     [DataContract]
-    public partial class Slide : BaseEntity
+    public partial class Slide : BaseEntity, ILocalizedEntity
     {
         [DataMember]
         public bool IsActive { get; set; }

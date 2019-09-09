@@ -1,3 +1,4 @@
+using SmartStore.Core.Domain.Localization;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -10,8 +11,8 @@ namespace SmartStore.Core.Domain.ContentSlider
     /// Represents a ContentSlider
     /// </summary>
     [DataContract]
-	public partial class ContentSlider : BaseEntity
-	{
+	public partial class ContentSlider : BaseEntity, ILocalizedEntity
+    {
         [DataMember]
         public string SliderName { get; set; }
         [DataMember]

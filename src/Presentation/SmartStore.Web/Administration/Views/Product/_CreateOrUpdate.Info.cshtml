@@ -43,7 +43,7 @@
 </script>
 
 <div>
-	<table class="adminContent">
+	<table class="adminContent mb-2">
 		@if (Model.Id != 0)
 		{
 			<tr>
@@ -107,8 +107,6 @@
 			</td>
 		</tr>
 	</table>
-
-	<p></p>
 
 	@(Html.LocalizedEditor<ProductModel, ProductLocalizedModel>("product-info-localized",
 	@<table class="adminContent">
@@ -241,15 +239,6 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SelectedStoreIds)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.SelectedStoreIds)
-				@Html.ValidationMessageFor(model => model.SelectedStoreIds)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.AvailableStartDateTimeUtc)
 			</td>
 			<td class="adminData">
@@ -277,6 +266,15 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Published)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Published)
+				@Html.ValidationMessageFor(model => model.Published)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.ShowOnHomePage)
 			</td>
 			<td class="adminData">
@@ -293,15 +291,18 @@
 				@Html.ValidationMessageFor(model => model.HomePageDisplayOrder)
 			</td>
 		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.Published)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.Published)
-				@Html.ValidationMessageFor(model => model.Published)
-			</td>
-		</tr>
+        @if (Model.Id != 0)
+        {
+		    <tr>
+			    <td class="adminTitle">
+				    @Html.SmartLabelFor(model => model.SelectedStoreIds)
+			    </td>
+			    <td class="adminData">
+				    @Html.EditorFor(model => model.SelectedStoreIds)
+				    @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+			    </td>
+		    </tr>
+        }
 		@if(Model.CreatedOn.HasValue)
 		{
 			<tr>

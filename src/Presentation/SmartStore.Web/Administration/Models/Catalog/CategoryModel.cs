@@ -12,7 +12,7 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Catalog
 {
     [Validator(typeof(CategoryValidator))]
-    public class CategoryModel : TabbableModel, ILocalizedModel<CategoryLocalizedModel>, IStoreSelector, IAclSelector
+    public class CategoryModel : TabbableModel, ILocalizedModel<CategoryLocalizedModel>, IAclSelector
     {
         public CategoryModel()
         {
@@ -118,11 +118,10 @@ namespace SmartStore.Admin.Models.Catalog
         public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
         public int[] SelectedCustomerRoleIds { get; set; }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
+		// Store mapping.
+		[UIHint("Stores"), SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+        public bool LimitedToStores { get; set; }
 
         public string ParentCategoryBreadcrumb { get; set; }
 

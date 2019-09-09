@@ -1,6 +1,5 @@
-﻿@model ManufacturerModel
-
-@using Telerik.Web.Mvc.UI;
+﻿@using Telerik.Web.Mvc.UI;
+@model ManufacturerModel
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
@@ -10,27 +9,55 @@
     x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
     x.Add().Text(T("Admin.Catalog.Manufacturers.Products").Text).Content(TabProducts());
 	x.Add().Text(T("Admin.Promotions.Discounts").Text).Content(TabDiscounts());
-	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
     
-    //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "manufacturer-edit", this.Html, this.Model));
 })
 @helper TabInfo()
 { 
-	if (Model.Id != 0)
-	{
-		<table class="adminContent">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Id)
-				</td>
-				<td class="adminData">
-					@Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
-					@Html.ValidationMessageFor(model => model.Id)
-				</td>
-			</tr>
-		</table>
-	}
+	<table class="adminContent mb-2">
+	    @if (Model.Id != 0)
+	    {
+		    <tr>
+			    <td class="adminTitle">
+				    @Html.SmartLabelFor(model => model.Id)
+			    </td>
+			    <td class="adminData">
+				    @Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
+				    @Html.ValidationMessageFor(model => model.Id)
+			    </td>
+		    </tr>
+	    }
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Published)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.Published)
+                @Html.ValidationMessageFor(model => model.Published)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisplayOrder)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DisplayOrder)
+                @Html.ValidationMessageFor(model => model.DisplayOrder)
+            </td>
+        </tr>
+        @if (Model.Id != 0)
+        {
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SelectedStoreIds)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(x => x.SelectedStoreIds)
+                    @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+                </td>
+            </tr>
+        }
+	</table>
 
     @(Html.LocalizedEditor<ManufacturerModel, ManufacturerLocalizedModel>("manufacturer-info-localized",
         @<table class="adminContent">
@@ -87,24 +114,6 @@
             <td class="adminData">
                 @Html.EditorFor(model => model.PictureId, new { transientUpload = true })
                 @Html.ValidationMessageFor(model => model.PictureId)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Published)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.Published)
-                @Html.ValidationMessageFor(model => model.Published)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.DisplayOrder)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.DisplayOrder)
-                @Html.ValidationMessageFor(model => model.DisplayOrder)
             </td>
         </tr>
         <tr>
@@ -351,11 +360,6 @@
 	}
 }
 
-@helper TabStores()
-{
-	@Html.Partial("StoreSelector", Model)
-}
-
 <script type="text/javascript">
 	$(function () {
         $("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").change(togglePageSize);
@@ -363,7 +367,6 @@
     });
 
 	function PickProducts_Completed(ids) {
-		//console.log(ids);
 		$({}).doAjax({
 			type: 'POST',
 			url: '@Url.Action("ProductAdd")',

@@ -12,7 +12,7 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Catalog
 {
 	[Validator(typeof(ManufacturerValidator))]
-    public class ManufacturerModel : TabbableModel, ILocalizedModel<ManufacturerLocalizedModel>, IStoreSelector
+    public class ManufacturerModel : TabbableModel, ILocalizedModel<ManufacturerLocalizedModel>
 	{
         public ManufacturerModel()
         {
@@ -81,11 +81,11 @@ namespace SmartStore.Admin.Models.Catalog
         
         public IList<ManufacturerLocalizedModel> Locales { get; set; }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
+		// Store mapping.
+		[UIHint("Stores"), SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+        public bool LimitedToStores { get; set; }
 		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
 
 		public List<Discount> AvailableDiscounts { get; set; }
 		public int[] SelectedDiscountIds { get; set; }

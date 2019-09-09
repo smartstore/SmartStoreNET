@@ -117,6 +117,46 @@ namespace SmartStore.Web.Framework.UI
         {
             return builder.Text(T("Admin.Common.Delete").Text);
         }
+
+
+        public static string LabeledSlideName<T>(this HtmlHelper<T> helper, string id, string typeName = "SlideTypeName", string typeLabelHint = "SlideTypeLabelHint")
+        {
+            string namePart = null;
+
+            if (id.HasValue())
+            {
+                string url = UrlHelper.GenerateContentUrl("~/Admin/Slide/Edit/", helper.ViewContext.RequestContext.HttpContext);
+                namePart = "<a href=\"{0}<#= {1} #>\"><#= {2} #></a>".FormatInvariant(url, id, id);
+            }
+            else
+            {
+                namePart = "<span><#= {0} #></span>".FormatInvariant(id);
+            }
+
+            string result = "<span class='badge badge-<#= {0} #> mr-1'><#= {1} #></span>{2}".FormatInvariant(typeLabelHint, typeName, namePart);
+
+            return "<# if({0} && {0}.length > 0) {{ #>{1}<# }} #>".FormatInvariant(id, result);
+        }
+
+        public static HelperResult LabeledSlideName<T>(this HtmlHelper<T> helper, int id, string name, string typeName, string typeLabelHint)
+        {
+            if (id == 0 && name.IsEmpty())
+                return null;
+
+            string namePart = null;
+
+            if (id != 0)
+            {
+                string url = UrlHelper.GenerateContentUrl("~/Admin/Slide/Edit/", helper.ViewContext.RequestContext.HttpContext);
+                namePart = "<a href=\"{0}{1}\" title='{2}'>{2}</a>".FormatInvariant(url, id, helper.Encode(name));
+            }
+            else
+            {
+                namePart = "<span>{0}</span>".FormatInvariant(helper.Encode(name));
+            }
+
+            return new HelperResult(writer => writer.Write("<span class='badge badge-{0} mr-1'>{1}</span>{2}".FormatInvariant(typeLabelHint, typeName, namePart)));
+        }
     }
 }
 

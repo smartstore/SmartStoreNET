@@ -23,6 +23,7 @@ using SmartStore.Admin.Models.Topics;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.ContentSlider;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
@@ -41,6 +42,7 @@ using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Seo;
+using static SmartStore.Admin.Models.Catalog.ContentSliderModel;
 
 namespace SmartStore.Admin.Infrastructure
 {
@@ -727,6 +729,14 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.Id, mo => mo.Ignore());
 			CreateMap<ThemeListModel, ThemeSettings>();
-		}
+            //ContentSlider
+            CreateMap<ContentSlider, ContentSliderModel>()
+                .ForMember(dest => dest.Locales, mo => mo.Ignore())
+                .ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.SliderName));
+            CreateMap<ContentSliderModel, ContentSlider>();
+
+            CreateMap<Slide, SliderSlidModel>();
+            CreateMap<SliderSlidModel, Slide>();
+        }
 	}
 }

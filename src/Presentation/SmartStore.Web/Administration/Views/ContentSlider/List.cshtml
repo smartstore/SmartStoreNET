@@ -1,0 +1,154 @@
+﻿@model ContentSliderListModel
+@using Telerik.Web.Mvc.UI
+@{   
+    ViewBag.Title = T("Admin.CMS.ContentSlider").Text;
+}
+<div class="section-header">
+    <div class="title">
+        <i class="far fa-building"></i>
+        @T("Admin.CMS.ContentSlider")
+    </div>
+    <div class="options">
+		@{ Html.RenderWidget("admin_button_toolbar_before"); }
+
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Common.AddNew")</span>
+		</a>
+
+		@{ Html.RenderWidget("admin_button_toolbar_after"); }
+    </div>
+</div>
+
+<div class="row mt-3 grid-filter">
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.SearchContentSliderName)
+		@Html.TextBoxFor(model => Model.SearchContentSliderName, new { @class = "form-control" })
+	</div>
+	@if (Model.AvailableStores.Count > 1)
+	{
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchStoreId)
+			@Html.DropDownListFor(model => model.SearchStoreId, Model.AvailableStores, T("Admin.Common.All"), new { @class = "form-control" })
+		</div>
+	}
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabel(string.Empty, string.Empty)
+		<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+			<span>@T("Admin.Common.ApplyFilter")</span>
+		</button>
+	</div>
+</div>
+
+<div class="mt-3">
+	@(Html.Telerik().Grid<ContentSliderModel>()
+        .Name("contentslider-grid")
+        .ClientEvents(events => events
+            .OnDataBinding("onDataBinding")
+            .OnDataBound("onDataBound"))
+        .Columns(columns =>
+        {
+            columns.Bound(x => x.Id)
+                .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+                .Title("<input id='mastercheckbox' type='checkbox'/>")
+                .Width(50)
+                .HtmlAttributes(new { style = "text-align:center" })
+                .HeaderHtmlAttributes(new { style = "text-align:center" });
+            columns.Bound(x => x.SliderName)
+                .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= SliderName #></a>");
+            columns.Bound(x => x.IsActive)
+                .Width(160)
+                .ClientTemplate(@Html.SymbolForBool("IsActive"))
+                .Centered();
+            columns.Bound(x => x.RandamizeSlides)
+                .Width(160)
+                .ClientTemplate(@Html.SymbolForBool("RandamizeSlides"))
+                .Centered();
+            columns.Bound(x => x.AutoPlay)
+                .Width(160)
+                .ClientTemplate(@Html.SymbolForBool("AutoPlay"))
+                .Centered();
+            columns.Bound(x => x.Delay)
+               .Width(160)
+               .Centered();
+            columns.Bound(x => x.SliderTypeName)
+                .Width(160)
+                .Centered();
+        })
+        .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+        .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "ContentSlider"))
+        .PreserveGridState()
+        .EnableCustomBinding(true))
+</div>
+
+<script type="text/javascript">
+	@*used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@
+	var selectedIds = [];
+
+	$(document).ready(function () {
+		//search button
+		$('#btnSearch').click(function () {
+			//search
+			var grid = $('#contentslider-grid').data('tGrid');
+			grid.currentPage = 1; //new search. Set page size to 1
+			grid.ajaxRequest();
+			return false;
+		});
+
+		$("#@Html.FieldIdFor(model => model.SearchContentSliderName)").keydown(function (event) {
+			if (event.keyCode == 13) {
+				$("#btnSearch").click();
+				return false;
+			}
+		});
+
+		$('#mastercheckbox').click(function () {
+			$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+		});
+
+		//wire up checkboxes.
+		$(document).on('change', '#contentslider-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
+			var $check = $(this);
+			if ($check.is(":checked") == true) {
+				var checked = jQuery.inArray($check.val(), selectedIds);
+				if (checked == -1) {
+					selectedIds.push($check.val());
+				}
+			}
+			else {
+				var checked = jQuery.inArray($check.val(), selectedIds);
+				if (checked > -1) {
+					selectedIds = $.grep(selectedIds, function (item, index) {
+						return item != $check.val();
+					});
+				}
+			}
+			updateMasterCheckbox();
+		});
+	});
+
+	function onDataBinding(e) {
+		var searchModel = {
+			SearchContentSliderName: $('#@Html.FieldIdFor(model => model.SearchContentSliderName)').val(),
+			SearchStoreId: $('#@Html.FieldIdFor(model => model.SearchStoreId)').val()
+		};
+		e.data = searchModel;
+	}
+
+	function onDataBound(e) {
+		$('#contentslider-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+			var currentId = $(this).val();
+			var checked = jQuery.inArray(currentId, selectedIds);
+			$(this).attr('checked', checked > -1);
+		});
+
+		updateMasterCheckbox();
+	}
+
+	function updateMasterCheckbox() {
+		var numChkBoxes = $('#contentslider-grid input[type=checkbox][id!=mastercheckbox]').length;
+		var numChkBoxesChecked = $('#contentslider-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+		$('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+	}
+
+</script>

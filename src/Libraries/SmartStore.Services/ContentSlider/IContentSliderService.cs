@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SmartStore.Collections;
+using SmartStore.Core;
 using SmartStore.Core.Domain.ContentSlider;
 
 namespace SmartStore.Services.ContentSlider
@@ -11,6 +12,10 @@ namespace SmartStore.Services.ContentSlider
     public partial interface IContentSliderService
     {
         void DeleteContentSlider(SmartStore.Core.Domain.ContentSlider.ContentSlider contentslider);
+        IPagedList<Core.Domain.ContentSlider.ContentSlider> GetAllContentSliders(string contentSliderName,
+           int pageIndex, int pageSize, int storeId = 0, bool showHidden = false);
+        IPagedList<Core.Domain.ContentSlider.ContentSlider> GetAllContentSliders(int contentSliderId,
+           int pageIndex, int pageSize, int storeId = 0, bool showHidden = false);
         IList<SmartStore.Core.Domain.ContentSlider.ContentSlider> GetAllContentSliders();
         SmartStore.Core.Domain.ContentSlider.ContentSlider GetContentSliders(int SliderId);
         IList<Core.Domain.ContentSlider.ContentSlider> GetContentSliderByType(int SliderType);
@@ -30,5 +35,6 @@ namespace SmartStore.Services.ContentSlider
         void InsertContentSliderSlide(Slide contentSliderSlide);
 
         void UpdateContentSliderSlide(Slide contentSliderSlide);
+        IPagedList<Slide> GetSlidesContentSliderBySliderId(int SliderId, int pageIndex, int pageSize, bool showHidden = false);
     }
 }

@@ -4,6 +4,8 @@ using System.Runtime.Serialization;
 
 namespace SmartStore.Core.Domain.ContentSlider
 {
+    public enum SlideType { NormalSlide, ProductSlide, CategorySlide, ManufacturerSlide };
+
     /// <summary>
     /// Represents a ContentSlider
     /// </summary>

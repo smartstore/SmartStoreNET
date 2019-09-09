@@ -63,12 +63,12 @@ namespace SmartStore.Web.Controllers
             ContentSliderModel CSModel = new ContentSliderModel();
             ContentSlider slider = new ContentSlider();
 
-            var ThisManufacturerContentSliders = _contentSliderService.GetContentSliderByTypeAndItemId((int)SliderType.BrandSlider, ManufacturerId);
+            var ThisManufacturerContentSliders = _contentSliderService.GetContentSliderByTypeAndItemId((int)SliderType.ManufacturerSlider, ManufacturerId);
             if (ThisManufacturerContentSliders.Count > 0)
                 CSModel = MapSliderObject(slider, ThisManufacturerContentSliders);
             else
             {
-                var contentSliders = _contentSliderService.GetContentSliderByType((int)SliderType.BrandSlider);
+                var contentSliders = _contentSliderService.GetContentSliderByType((int)SliderType.ManufacturerSlider);
                 if (contentSliders.Count > 0)
                     CSModel = MapSliderObject(slider, contentSliders);
             }

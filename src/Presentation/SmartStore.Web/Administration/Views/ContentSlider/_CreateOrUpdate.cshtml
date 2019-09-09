@@ -1,0 +1,233 @@
+﻿@model ContentSliderModel
+
+@using Telerik.Web.Mvc.UI;
+@using SmartStore.Core.Domain.ContentSlider;
+@using System.Collections;
+
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+@Html.SmartStore().TabStrip().Name("contentslider-edit").Style(TabsStyle.Material).Items(x =>
+{
+    x.Add().Text(T("Admin.CMS.ContentSlider.Info").Text).Content(TabInfo()).Selected(true);
+    x.Add().Text(T("Admin.CMS.ContentSlider.Slides").Text).Content(TabSlides());
+
+    //generate an event
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "contentslider-edit", this.Html, this.Model));
+})
+@helper TabInfo()
+{
+    if (Model.Id != 0)
+    {
+        <table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Id)
+                </td>
+                <td class="adminData">
+                    @Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
+                    @Html.ValidationMessageFor(model => model.Id)
+                </td>
+            </tr>
+        </table>
+    }
+
+    @(Html.LocalizedEditor<ContentSliderModel, ContentSliderLocalizedModel>("manufacturer-info-localized",
+            @<table class="adminContent">
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.Locales[item].SliderName)
+                    </td>
+                    <td class="adminData">
+                        @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+                        @Html.HiddenFor(model => model.Locales[item].LanguageId)
+
+                        @Html.EditorFor(model => Model.Locales[item].SliderName)
+                        @Html.ValidationMessageFor(model => model.Locales[item].SliderName)
+                    </td>
+                </tr>
+
+            </table>
+,
+            @<table class="adminContent">
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.SliderName)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.SliderName)
+                        @Html.ValidationMessageFor(model => model.SliderName)
+                    </td>
+                </tr>
+            </table>
+    ))
+
+    IList<SelectListItem> SliderTypeSelectedList = new List<SelectListItem>
+    {
+        new SelectListItem {Text=T("Admin.CMS.ContentSlider.HomePageSlider"),Value="0" },
+        new SelectListItem {Text=T("Admin.CMS.ContentSlider.CategorySlider"),Value="1" },
+        new SelectListItem {Text=T("Admin.CMS.ContentSlider.ManufacturerSlider"),Value="2" }
+    };
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.IsActive)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.IsActive)
+                @Html.ValidationMessageFor(model => model.IsActive)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Height)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Height, new { postfix = "Pixel" })
+                @Html.ValidationMessageFor(model => model.Height)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RandamizeSlides)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.RandamizeSlides)
+                @Html.ValidationMessageFor(model => model.RandamizeSlides)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AutoPlay)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.AutoPlay)
+                @Html.ValidationMessageFor(model => model.AutoPlay)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Delay)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.Delay, new { postfix = "Milliseconds" })
+                @Html.ValidationMessageFor(model => model.Delay)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SliderType)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.SliderType, SliderTypeSelectedList, T("Common.Unspecified"))
+                @Html.ValidationMessageFor(model => model.SliderType)
+            </td>
+        </tr>
+    </table>
+}
+
+@helper TabSlides()
+{
+    ArrayList SlideTypeList = new ArrayList
+    {
+        new { SLideTypeId=0,SlideTypeName=T("Admin.CMS.ContentSlider.Slide.NormalSlide")},
+        new { SLideTypeId=1,SlideTypeName=T("Admin.CMS.ContentSlider.Slide.ProductSlide")},
+        new { SLideTypeId=2,SlideTypeName=T("Admin.CMS.ContentSlider.Slide.CategorySlide")},
+        new { SLideTypeId=3,SlideTypeName=T("Admin.CMS.ContentSlider.Slide.ManufacturerSlide")}
+    };
+    if (Model.Id > 0)
+    {
+        <div>
+            @(Html.Telerik().Grid<ContentSliderModel.SliderSlidModel>()
+            .Name("Slides-grid")
+            .DataKeys(keys =>
+            {
+                keys.Add(x => x.Id);
+            })
+            .DataBinding(dataBinding =>
+            {
+                dataBinding.Ajax()
+                    .Select("SlideList", "ContentSlider", new { SliderId = Model.Id })
+                    .Update("SlideUpdate", "ContentSlider")
+                    .Delete("SlideDelete", "ContentSlider");
+            })
+            .Columns(columns =>
+            {
+                columns.Bound(x => x.SlideId)
+                    .ReadOnly()
+                    .Width("20%")
+                    .ClientTemplate("<a href='../../Slide/Edit/<#= SlideId #>'><#= SlideId #></a>");
+                columns.Bound(x => x.IsActive)
+                   .ClientTemplate(@Html.SymbolForBool("IsActive"))
+                   .Centered();
+                columns.Bound(x => x.DisplayOrder1)
+                    .Centered();
+                columns.ForeignKey(p => p.SlideType, SlideTypeList, "SLideTypeId", "SlideTypeName")
+                .Width("10%");
+                columns.Bound(x => x.SlideTitle)
+                    .ReadOnly()
+                    //.ClientTemplate("<a href='../../Slide/Edit/<#= SlideId #>'><#= SlideTitle #></a>")
+                    .Width("30%");
+                columns.Bound(x => x.SlideContent)
+                    .ReadOnly()
+                    .Width("40%");
+                //columns.Command(commands =>
+                //{
+                //    commands.Edit().Localize(T);
+                //    commands.Delete().Localize(T);
+                //})
+                //.HtmlAttributes(new { align = "right" })
+                //.Width("15%");
+            })
+            .Pageable(settings => settings.PageSize(20).Position(GridPagerPosition.Both))
+            .PreserveGridState()
+            .ToolBar(commands => commands.Template(ContentSliderGridCommands))
+            .EnableCustomBinding(true))
+        </div>
+    }
+    else
+    {
+        @T("Admin.CMS.ContentSlider.Slide.SaveBeforeEdit")
+    }
+}
+
+@helper ContentSliderGridCommands(Grid<ContentSliderModel.SliderSlidModel> grid)
+{
+    @(Html.SmartStore().EntityPicker()
+        .IconCssClass("fa fa-plus")
+        .HtmlAttribute("class", "btn btn-warning")
+        .DialogTitle(T("Admin.CMS.ContentSlider.Slide.AddNew").Text.EncodeJsString('\'', false))
+        .Caption(T("Admin.CMS.ContentSlider.Slide.AddNew").Text.EncodeJsString('\'', false))
+        .OnSelectionCompleted("PickProducts_Completed"))
+}
+
+<script type="text/javascript">
+	@*$(function () {
+        $("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").change(togglePageSize);
+		togglePageSize();
+    });*@
+
+	function PickProducts_Completed(ids) {
+		//console.log(ids);
+		$({}).doAjax({
+			type: 'POST',
+			url: '@Url.Action("SlideAdd")',
+			data: { "sliderId": @Model.Id, "selectedslideIds": ids },
+			callbackSuccess: function () {
+				$('#Slides-grid').data('tGrid').ajaxRequest();
+			}
+		});
+		return true;
+	}
+
+    function togglePageSize() {
+        var isEnabled = true;
+
+        if (isEnabled != "false") {
+            $('#pnlPageSize').hide();
+            $('#pnlPageSizeOptions').show();
+        } else {
+            $('#pnlPageSize').show();
+            $('#pnlPageSizeOptions').hide();
+        }
+    }
+</script>

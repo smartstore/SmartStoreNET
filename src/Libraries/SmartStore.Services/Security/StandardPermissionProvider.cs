@@ -23,6 +23,7 @@ namespace SmartStore.Services.Security
         public static readonly PermissionRecord ManageNews = new PermissionRecord { Name = "Admin area. Manage News", SystemName = "ManageNews", Category = "Content Management" };
         public static readonly PermissionRecord ManageBlog = new PermissionRecord { Name = "Admin area. Manage Blog", SystemName = "ManageBlog", Category = "Content Management" };
         public static readonly PermissionRecord ManageWidgets = new PermissionRecord { Name = "Admin area. Manage Widgets", SystemName = "ManageWidgets", Category = "Content Management" };
+        public static readonly PermissionRecord ManageContentSlider = new PermissionRecord { Name = "Admin area. Manage COntentSlider", SystemName = "ManageContentSlider", Category = "Content Management" };
         public static readonly PermissionRecord ManageTopics = new PermissionRecord { Name = "Admin area. Manage Topics", SystemName = "ManageTopics", Category = "Content Management" };
         public static readonly PermissionRecord ManageMenus = new PermissionRecord { Name = "Admin area. Manage Menus", SystemName = "ManageMenus", Category = "Content Management" };
         public static readonly PermissionRecord ManageForums = new PermissionRecord { Name = "Admin area. Manage Forums", SystemName = "ManageForums", Category = "Content Management" };
@@ -111,6 +112,7 @@ namespace SmartStore.Services.Security
                 EnableShoppingCart,
                 EnableWishlist,
                 PublicStoreAllowNavigation,
+                ManageContentSlider,
             };
         }
 
@@ -171,6 +173,7 @@ namespace SmartStore.Services.Security
                         EnableShoppingCart,
                         EnableWishlist,
                         PublicStoreAllowNavigation,
+                        ManageContentSlider,
                     }
                 },
                 new DefaultPermissionRecord 

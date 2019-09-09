@@ -43,6 +43,8 @@ using SmartStore.Services.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Services.Common;
 using SmartStore.Core.Domain.Payments;
+using SmartStore.Core.Domain.ContentSlider;
+using static SmartStore.Admin.Models.Catalog.ContentSliderModel;
 
 namespace SmartStore.Admin
 {
@@ -996,6 +998,41 @@ namespace SmartStore.Admin
 			return Mapper.Map(model, destination);
 		}
 
-		#endregion
+        #endregion
+
+
+        #region Content Slider
+
+        public static ContentSliderModel ToModel(this ContentSlider entity)
+        {
+            return Mapper.Map<ContentSlider, ContentSliderModel>(entity);
+        }
+
+        public static ContentSlider ToEntity(this ContentSliderModel model)
+        {
+            return Mapper.Map<ContentSliderModel, ContentSlider>(model);
+        }
+
+        public static ContentSlider ToEntity(this ContentSliderModel model, ContentSlider destination)
+        {
+            return Mapper.Map(model, destination);
+        }
+
+        public static SliderSlidModel ToModel(this Slide entity)
+        {
+            return Mapper.Map<Slide, SliderSlidModel>(entity);
+        }
+
+        public static Slide ToEntity(this SliderSlidModel model)
+        {
+            return Mapper.Map<SliderSlidModel, Slide>(model);
+        }
+
+        public static Slide ToEntity(this SliderSlidModel model, Slide destination)
+        {
+            return Mapper.Map(model, destination);
+        }
+
+        #endregion
     }
 }

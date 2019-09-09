@@ -3,13 +3,18 @@ using System.Runtime.Serialization;
 
 namespace SmartStore.Core.Domain.ContentSlider
 {
+
+    public enum SliderType { HomePageSlider, CategorySlider, ManufacturerSlider };
+
     /// <summary>
     /// Represents a ContentSlider
     /// </summary>
     [DataContract]
 	public partial class ContentSlider : BaseEntity
 	{
-		[DataMember]
+        [DataMember]
+        public string SliderName { get; set; }
+        [DataMember]
         public bool IsActive { get; set; }
 		
 		[DataMember]

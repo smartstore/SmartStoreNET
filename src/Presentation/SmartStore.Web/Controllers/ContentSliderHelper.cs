@@ -1,4 +1,5 @@
 ﻿using SmartStore.Core.Data;
+using SmartStore.Core.Domain.ContentSlider;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Localization;
 using SmartStore.Services;
@@ -68,7 +69,7 @@ namespace SmartStore.Web.Controllers
 
                 PrepareSlidePictureModel(slide.PictureModel = new ContentSliderSlidePictureModel(), slide.Picture, slide.SlideTitle);
             }
-            if (slide.SlideType == (int)SlideType.BrandSlide)
+            if (slide.SlideType == (int)SlideType.ManufacturerSlide)
             {
                 var manufacturer = _manufacturerService.GetManufacturerById(slide.ItemId.Value);
                 slide.SlideTitle = manufacturer.Name;

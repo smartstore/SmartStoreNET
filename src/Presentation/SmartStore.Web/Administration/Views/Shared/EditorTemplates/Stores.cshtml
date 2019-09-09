@@ -1,0 +1,66 @@
+﻿@using System.Globalization;
+@using SmartStore.Web.Framework;
+@{
+    if (!TryGetMetadata<bool>("multiple", out bool multiple))
+    {
+        multiple = true;
+    }
+
+    var strValue = Value;
+    var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+    var name = ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
+    var url = Url.Action("AllStores", "Store", new
+    {
+        label = multiple ? (string)null : T("Admin.Common.StoresAll").Text,
+        selectedIds = strValue
+    });
+}
+<select id="@id" name="@name" class="form-control" data-select-url="@url" @Html.Attr("multiple", "multiple", multiple)></select>
+<script>
+    $(function () {
+        var ctrl = $('#@id');
+        if (!_.isEmpty('@strValue')) {
+            $.ajax({
+                url: '@url',
+                dataType: 'json',
+                success: function (data) {
+                    _.each(data, function (item) {
+                        var option = new Option(item.text, item.id, item.selected, item.selected);
+                        ctrl.append(option);
+                    });
+                },
+                complete: function () {
+                    ctrl.selectWrapper();
+                }
+            });
+        }
+        else {
+            ctrl.selectWrapper();
+        }
+    });
+</script>
+
+@functions
+{
+    private string Value
+    {
+        get
+        {
+            if (ViewData.Model != null)
+            {
+                // Be careful with the conversion here because it's very vulnerable to errors.
+                if (ViewData.Model is int[])
+                {
+                    return string.Join(",", ViewData.Model);
+                }
+
+                if (CommonHelper.TryConvert(ViewData.Model, typeof(string), CultureInfo.InvariantCulture, out object obj) && obj != null)
+                {
+                    return obj.ToString();
+                }
+            }
+
+            return null;
+        }
+    }
+}

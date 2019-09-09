@@ -15,7 +15,7 @@ using SmartStore.Core.Localization;
 namespace SmartStore.Admin.Models.Catalog
 {
 	[Validator(typeof(ProductValidator))]
-    public class ProductModel : TabbableModel, ILocalizedModel<ProductLocalizedModel>, IStoreSelector, IAclSelector
+    public class ProductModel : TabbableModel, ILocalizedModel<ProductLocalizedModel>, IAclSelector
 	{
         public ProductModel()
         {
@@ -358,11 +358,10 @@ namespace SmartStore.Admin.Models.Catalog
         public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
         public int[] SelectedCustomerRoleIds { get; set; }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
+		// Store mapping.
+        [UIHint("Stores"), SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+        public bool LimitedToStores { get; set; }
 
         //categories
         public int NumberOfAvailableCategories { get; set; }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Security;
@@ -60,13 +61,25 @@ namespace SmartStore.Web.Framework.Controllers
 			Services.Resolve<IStoreMappingService>().SaveStoreMappings(entity, model.SelectedStoreIds);
 		}
 
-		/// <summary>
-		/// Save the ACL mappings for an entity
-		/// </summary>
-		/// <typeparam name="T">Entity type</typeparam>
-		/// <param name="entity">The entity</param>
-		/// <param name="model">Model representation of ACL selection</param>
-		protected virtual void SaveAclMappings<T>(T entity, IAclSelector model) where T : BaseEntity, IAclSupported
+        /// <summary>
+        /// Save the store mappings for an entity.
+        /// </summary>
+        /// <typeparam name="T">Entity type.</typeparam>
+        /// <param name="entity">The entity.</param>
+        /// <param name="selectedStoreIds">Selected store identifiers.</param>
+        protected virtual void SaveStoreMappings<T>(T entity, int[] selectedStoreIds) where T : BaseEntity, IStoreMappingSupported
+        {
+            entity.LimitedToStores = selectedStoreIds?.Any() ?? false;
+            Services.Resolve<IStoreMappingService>().SaveStoreMappings(entity, selectedStoreIds);
+        }
+
+        /// <summary>
+        /// Save the ACL mappings for an entity
+        /// </summary>
+        /// <typeparam name="T">Entity type</typeparam>
+        /// <param name="entity">The entity</param>
+        /// <param name="model">Model representation of ACL selection</param>
+        protected virtual void SaveAclMappings<T>(T entity, IAclSelector model) where T : BaseEntity, IAclSupported
 		{
 			entity.SubjectToAcl = model.SubjectToAcl;
 			Services.Resolve<IAclService>().SaveAclMappings(entity, model.SelectedCustomerRoleIds);

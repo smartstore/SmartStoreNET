@@ -258,8 +258,10 @@ namespace SmartStore.Admin.Controllers
 			p.CountryOfOriginId = m.CountryOfOriginId == 0 ? (int?)null : m.CountryOfOriginId;
 
 			p.AvailableEndDateTimeUtc = p.AvailableEndDateTimeUtc.ToEndOfTheDay();
-			p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();		
-		}
+			p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();
+
+            SaveStoreMappings(p, model.SelectedStoreIds);
+        }
 
         [NonAction]
         protected void UpdateProductDownloads(Product product, ProductModel model)
@@ -615,19 +617,6 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[NonAction]
-		private void PrepareStoresMappingModel(ProductModel model, Product product, bool excludeProperties)
-		{
-			Guard.NotNull(model, nameof(model));
-
-			if (!excludeProperties)
-			{
-				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(product);
-			}
-
-			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
-		}
-
-		[NonAction]
 		protected void PrepareProductModel(ProductModel model, Product product, bool setPredefinedValues, bool excludeProperties)
 		{
 			Guard.NotNull(model, nameof(model));
@@ -643,8 +632,9 @@ namespace SmartStore.Admin.Controllers
 
 				model.CreatedOn = _dateTimeHelper.ConvertToUserTime(product.CreatedOnUtc, DateTimeKind.Utc);
 				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(product.UpdatedOnUtc, DateTimeKind.Utc);
+                model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(product);
 
-				if (product.LimitedToStores)
+                if (product.LimitedToStores)
 				{
 					var storeMappings = _storeMappingService.GetStoreMappings(product);
 					if (storeMappings.FirstOrDefault(x => x.StoreId == _services.StoreContext.CurrentStore.Id) == null)
@@ -984,7 +974,6 @@ namespace SmartStore.Admin.Controllers
 
 		#region Product list / create / edit / delete
 
-		//list products
         public ActionResult Index()
         {
             return RedirectToAction("List");
@@ -1138,7 +1127,6 @@ namespace SmartStore.Admin.Controllers
             return List(model);
         }
 
-        //create product
         public ActionResult Create()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -1146,11 +1134,8 @@ namespace SmartStore.Admin.Controllers
 
             var model = new ProductModel();
 			PrepareProductModel(model, null, true, true);
-
-            //product
             AddLocales(_languageService, model.Locales);
             PrepareAclModel(model, null, false);
-			PrepareStoresMappingModel(model, null, false);
 
             return View(model);
         }
@@ -1220,11 +1205,10 @@ namespace SmartStore.Admin.Controllers
             // If we got this far, something failed, redisplay form
 			PrepareProductModel(model, null, false, true);
             PrepareAclModel(model, null, true);
-			PrepareStoresMappingModel(model, null, true);
+
             return View(model);
         }
 
-        //edit product
         public ActionResult Edit(int id)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -1261,7 +1245,6 @@ namespace SmartStore.Admin.Controllers
 
 			PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPictureInfo(product.MainPictureId));
             PrepareAclModel(model, product, false);
-			PrepareStoresMappingModel(model, product, false);
 
             return View(model);
         }
@@ -1305,7 +1288,6 @@ namespace SmartStore.Admin.Controllers
 				MapModelToProduct(model, product, form);
 				UpdateDataOfExistingProduct(product, model, true);
 
-                // activity log
                 _customerActivityService.InsertActivity("EditProduct", _localizationService.GetResource("ActivityLog.EditProduct"), product.Name);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.Products.Updated"));
@@ -1318,8 +1300,6 @@ namespace SmartStore.Admin.Controllers
 			PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPictureInfo(product.MainPictureId));
 
             PrepareAclModel(model, product, true);
-
-			PrepareStoresMappingModel(model, product, true);
 
             return View(model);
         }
@@ -1362,9 +1342,6 @@ namespace SmartStore.Admin.Controllers
 						break;
 					case "acl":
 						SaveAclMappings(product, model);
-						break;
-					case "stores":
-						SaveStoreMappings(product, model);
 						break;
 				}
 			}
@@ -1412,8 +1389,6 @@ namespace SmartStore.Admin.Controllers
 
 				PrepareAclModel(model, product, false);
 
-				PrepareStoresMappingModel(model, product, false);
-
 				return PartialView(viewPath.NullEmpty() ?? "_CreateOrUpdate." + tabName, model);
 			}
 			catch (Exception ex)
@@ -1422,7 +1397,6 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-        //delete product
         [HttpPost]
         public ActionResult Delete(int id)
         {

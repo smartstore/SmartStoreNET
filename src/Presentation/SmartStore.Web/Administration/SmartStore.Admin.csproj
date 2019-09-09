@@ -626,6 +626,7 @@
     <Content Include="Views\QuantityUnit\EditQuantityUnitPopup.cshtml" />
     <Content Include="Views\DeliveryTime\CreateDeliveryTimePopup.cshtml" />
     <Content Include="Views\DeliveryTime\EditDeliveryTimePopup.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Stores.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />
@@ -1280,9 +1281,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.SpecificationAttributes.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Product\_CreateOrUpdate.Stores.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.AssociatedProducts.cshtml" />

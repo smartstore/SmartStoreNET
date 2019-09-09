@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework;
@@ -8,11 +9,11 @@ namespace SmartStore.Admin.Models.DataExchange
 {
 	public class ExportFilterModel
 	{
-		#region All entity types
+        #region All entity types
 
-		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.StoreId")]
+        [SmartResourceDisplayName("Admin.DataExchange.Export.Filter.StoreId")]
+        [UIHint("Stores"), AdditionalMetadata("multiple", false)]
 		public int? StoreId { get; set; }
-		public List<SelectListItem> AvailableStores { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.CreatedFrom")]
 		public DateTime? CreatedFrom { get; set; }

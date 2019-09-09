@@ -499,10 +499,6 @@ namespace SmartStore.Admin.Controllers
 				ShoppingCartTypeId = filter.ShoppingCartTypeId
 			};
 
-			model.Filter.AvailableStores = allStores
-				.Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
-				.ToList();
-
             model.Filter.AvailableLanguages = new List<SelectListItem>();
             model.Filter.AvailableLanguages.Add(new SelectListItem { Text = T("Common.Unspecified"), Value = "" });
 

@@ -9,13 +9,10 @@
     var strValue = Value;
     var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
     var name = ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
-    var url = Url.Action("AllStores", "Store", new
-    {
-        label = multiple ? (string)null : T("Admin.Common.StoresAll").Text,
-        selectedIds = strValue
-    });
+    var placeholder = GetMetadata<string>("placeholder").NullEmpty() ?? (multiple ? null : T("Admin.Common.StoresAll").Text);
+    var url = Url.Action("AllStores", "Store", new { selectedIds = strValue });
 }
-<select id="@id" name="@name" class="form-control" data-select-url="@url" @Html.Attr("multiple", "multiple", multiple)></select>
+<select id="@id" name="@name" class="form-control" data-select-url="@url" @Html.Attr("multiple", "multiple", multiple) @Html.Attr("data-placeholder", placeholder, placeholder.HasValue())></select>
 <script>
     $(function () {
         var ctrl = $('#@id');

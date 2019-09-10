@@ -58,18 +58,18 @@ namespace SmartStore.Web.Framework.Security
 
         protected virtual void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
-            var context = filterContext.HttpContext;
-            if ((context?.Request ?? null) == null)
-            {
+            var httpContext = filterContext.HttpContext;
+            var request = httpContext?.Request;
+
+            if (request == null)
                 return;
-            }
 
-            if (context.Request.IsAjaxRequest())
+            if (request.IsAjaxRequest())
             {
-                context.Response.AddHeader("X-Message-Type", "error");
-                context.Response.AddHeader("X-Message", T("Admin.AccessDenied.Description"));
+                httpContext.Response.AddHeader("X-Message-Type", "error");
+                httpContext.Response.AddHeader("X-Message", T("Admin.AccessDenied.Description"));
 
-                if (context.Request.AcceptTypes?.Any(x => x.IsCaseInsensitiveEqual("text/html")) ?? false)
+                if (request.AcceptTypes?.Any(x => x.IsCaseInsensitiveEqual("text/html")) ?? false)
                 {
                     filterContext.Result = AccessDeniedResult();
                 }
@@ -96,8 +96,8 @@ namespace SmartStore.Web.Framework.Security
                 }
                 else
                 {
-                    var urlHelper = new UrlHelper(context.Request.RequestContext);
-                    var url = urlHelper.Action("AccessDenied", "Security", new { pageUrl = context.Request.RawUrl, area = "Admin" });
+                    var urlHelper = new UrlHelper(request.RequestContext);
+                    var url = urlHelper.Action("AccessDenied", "Security", new { pageUrl = request.RawUrl, area = "Admin" });
                     filterContext.Result = new RedirectResult(url);
                 }
             }

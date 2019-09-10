@@ -18,15 +18,15 @@
         },
     };
 
-    $.fn.smTree = function (method) {
+    $.fn.tree = function (method) {
         return main.apply(this, arguments);
     };
 
-    $.smTree = function () {
-        return main.apply($('.smtree:first'), arguments);
+    $.tree = function () {
+        return main.apply($('.tree:first'), arguments);
     };
 
-    $.smTree.defaults = {
+    $.tree.defaults = {
         expanded: false,    // Whether initially expand tree.
         showLines: false,   // Whether to show helper lines.
         readOnly: false,    // Whether state changed are enabled.
@@ -45,47 +45,47 @@
             return methods.init.apply(this, arguments);
         }
 
-        EventBroker.publish("message", { title: 'Method "' + method + '" does not exist on jQuery.smTree', type: "error" });
+        EventBroker.publish("message", { title: 'Method "' + method + '" does not exist on jQuery.tree', type: "error" });
         return null;
     }
 
     function initialize(context, opt) {
         var root = $(context);
 
-        opt = $.extend({}, $.smTree.defaults, opt);
-        root.data('smtree-options', opt);
+        opt = $.extend({}, $.tree.defaults, opt);
+        root.data('tree-options', opt);
 
-        var labelHtml = '<label class="smtree-label' + (opt.readOnly ? '' : ' smtree-control') + '"><span class="smtree-text"></span></label>';
-        var noLeafHtml = '<div class="smtree-inner"><span class="smtree-expander-container smtree-expander"></span>' + labelHtml + '</div>';
-        var leafHtml = '<div class="smtree-inner"><span class="smtree-expander-container"></span>' + labelHtml + '</div>';
+        var labelHtml = '<label class="tree-label' + (opt.readOnly ? '' : ' tree-control') + '"><span class="tree-text"></span></label>';
+        var noLeafHtml = '<div class="tree-inner"><span class="tree-expander-container tree-expander"></span>' + labelHtml + '</div>';
+        var leafHtml = '<div class="tree-inner"><span class="tree-expander-container"></span>' + labelHtml + '</div>';
 
         // Set node HTML.
         root.find('li').each(function () {
             var li = $(this);
             var isLeaf = !li.has('ul').length;
 
-            li.addClass('smtree-node ' + (isLeaf ? 'smtree-leaf' : 'smtree-noleaf'))
+            li.addClass('tree-node ' + (isLeaf ? 'tree-leaf' : 'tree-noleaf'))
                 .prepend(isLeaf ? leafHtml : noLeafHtml)
-                .find('.smtree-text').html(li.data('label'));
+                .find('.tree-text').html(li.data('label'));
         });
 
         // Initially expand or collapse nodes.
-        root.find('.smtree-noleaf').each(function () {
+        root.find('.tree-noleaf').each(function () {
             expandNode($(this), opt.expanded, opt);
         });
 
         // Helper lines.
         if (opt.showLines) {
             root.find('ul:first').find('ul')
-                .addClass('smtree-hline')
-                .prepend('<span class="smtree-vline"></span>');
+                .addClass('tree-hline')
+                .prepend('<span class="tree-vline"></span>');
         }
 
         if (opt.nodeState === 'on-off') {
             // Add state checkbox HTML.
-            root.find('.smtree-label').each(function (i, el) {
+            root.find('.tree-label').each(function (i, el) {
                 var label = $(this);
-                var node = label.closest('.smtree-node');
+                var node = label.closest('.tree-node');
                 var value = parseInt(node.data('value'));
                 var name = node.data('name');
                 var html = '';
@@ -96,30 +96,30 @@
                     html += '<input type="checkbox" name="' + name + '" id="' + name + '" value="' + value + '"' + (value === 1 ? ' checked="checked"' : '') + ' />';
                     html += '<input type="hidden" name="' + name + '" value="0" />';
                 }
-                html += '<span class="smtree-state ' + (value === 1 ? 'on' : 'off') + '"></span>';
+                html += '<span class="tree-state ' + (value === 1 ? 'on' : 'off') + '"></span>';
 
                 label.prepend(html);
             });
 
             if (!opt.readOnly) {
                 // Set inherited state.
-                root.find('ul:first > .smtree-node').each(function () {
+                root.find('ul:first > .tree-node').each(function () {
                     setInheritedState($(this), 0);
                 });
             }
         }
 
         // Expander click handler.
-        root.on('click', '.smtree-expander', function () {
-            var node = $(this).closest('.smtree-node');
-            expandNode(node, node.hasClass('smtree-collapsed'), opt);
+        root.on('click', '.tree-expander', function () {
+            var node = $(this).closest('.tree-node');
+            expandNode(node, node.hasClass('tree-collapsed'), opt);
         });
 
         // State click handler.
         root.on('click', 'input[type=checkbox]', function () {
             var el = $(this);
-            var node = el.closest('.smtree-node');
-            var state = el.siblings('.smtree-state:first');
+            var node = el.closest('.tree-node');
+            var state = el.siblings('.tree-state:first');
 
             if (opt.nodeState === 'on-off') {
                 var inheritedState = 0;
@@ -149,10 +149,10 @@
 
     function expandAll(context) {
         var self = $(context);
-        var opt = self.data('smtree-options') || $.smTree.defaults;
+        var opt = self.data('tree-options') || $.tree.defaults;
         var expand = !(opt.expanded || false);
 
-        self.find('.smtree-noleaf').each(function () {
+        self.find('.tree-noleaf').each(function () {
             expandNode($(this), expand, opt);
         });
 
@@ -162,20 +162,20 @@
     function expandNode(node, expand, opt) {
         if (expand) {
             node.children('ul').show();
-            node.removeClass('smtree-collapsed').addClass('smtree-expanded');
+            node.removeClass('tree-collapsed').addClass('tree-expanded');
         }
         else {
             node.children('ul').hide();
-            node.removeClass('smtree-expanded').addClass('smtree-collapsed');
+            node.removeClass('tree-expanded').addClass('tree-collapsed');
         }
-        node.find('.smtree-inner:first .smtree-expander').html('<i class="' + (expand ? opt.expandedClass : opt.collapsedClass) + '"></i>');
+        node.find('.tree-inner:first .tree-expander').html('<i class="' + (expand ? opt.expandedClass : opt.collapsedClass) + '"></i>');
     }
 
     function setInheritedState(node, inheritedState) {
         if (!node) return;
 
         var childState = inheritedState;
-        var val = parseInt(node.find('> .smtree-inner input[type=checkbox]').val()) || 0;
+        var val = parseInt(node.find('> .tree-inner input[type=checkbox]').val()) || 0;
 
         if (val > 0) {
             // Is directly on.
@@ -183,11 +183,11 @@
         }
         else {
             // Is not directly on.
-            var state = node.find('.smtree-state:first');
+            var state = node.find('.tree-state:first');
             state.toggleClass('in-on', inheritedState === 1);
         }
 
-        node.find('> ul > .smtree-node').each(function () {
+        node.find('> ul > .tree-node').each(function () {
             setInheritedState($(this), childState);
         });
     }
@@ -196,8 +196,8 @@
         var result = 0;
 
         if (node) {
-            node.parents('.smtree-node').each(function () {
-                result = parseInt($(this).find('> .smtree-inner input[type=checkbox]').val()) || 0;
+            node.parents('.tree-node').each(function () {
+                result = parseInt($(this).find('> .tree-inner input[type=checkbox]').val()) || 0;
                 if (result > 0) {
                     return false;
                 }

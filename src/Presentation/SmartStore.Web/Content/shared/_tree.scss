@@ -7,7 +7,7 @@ $default-state-color: $gray-400;
 // Tree
 // ------------------------------
 
-.smtree {
+.tree {
     position: relative;
 
     :first-child {
@@ -28,16 +28,16 @@ $default-state-color: $gray-400;
         margin: 0;
     }
 
-    .smtree-expander-container {
+    .tree-expander-container {
         display: inline-block;
         min-width: 14px;
     }
 
-    .smtree-expander {
+    .tree-expander {
         cursor: pointer;
     }
 
-    .smtree-vline {
+    .tree-vline {
         content: "";
         position: absolute;
         top: 0;
@@ -48,7 +48,7 @@ $default-state-color: $gray-400;
         height: calc(100% - 12px);
     }
 
-    .smtree-hline li::before {
+    .tree-hline li::before {
         content: "";
         position: absolute;
         left: 6px;
@@ -58,7 +58,7 @@ $default-state-color: $gray-400;
         border-top: 1px solid $gray-300;
     }
 
-    .smtree-control {
+    .tree-control {
         cursor: pointer;
 
         input[type=checkbox] {
@@ -69,18 +69,18 @@ $default-state-color: $gray-400;
             margin: 0;
         }
 
-        .smtree-state:hover::before {
+        .tree-state:hover::before {
             box-shadow: 0 0 4px rgba($warning, 0.8);
             transition: box-shadow 0.1s linear;
         }
     }
 
-    .smtree-label {
+    .tree-label {
         position: relative;
         user-select: none;
     }
     // State box default style.
-    .smtree-state::before {
+    .tree-state::before {
         content: "";
         float: left;
         height: 18px;
@@ -91,7 +91,7 @@ $default-state-color: $gray-400;
         margin: 2px 4px 0 0;
     }
 
-    .smtree-state::after {
+    .tree-state::after {
         position: absolute;
         display: block;
     }

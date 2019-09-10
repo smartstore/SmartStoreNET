@@ -454,7 +454,7 @@
 				<span>@T("Common.ExpandCollapseAll")</span>
 			</button>
         </p>
-        <div id="permission-tree" class="smtree">
+        <div id="permission-tree" class="tree">
             @PermissionNode(Model.PermissionTree)
         </div>
     }
@@ -468,14 +468,14 @@
     <script>
         $(function () {
             // Init permission tree.
-            $('#permission-tree').smTree('init', {
+            $('#permission-tree').tree('init', {
                 readOnly: true,
                 nodeState: 'on-off'
             });
 
             // Expand\collapse all.
             $('#ExpandCollapseAll').on('click', function () {
-                $('#permission-tree').smTree('expandAll');
+                $('#permission-tree').tree('expandAll');
             });
 	    });
     </script>

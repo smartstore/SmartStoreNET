@@ -24,7 +24,7 @@
     </div>
 </div>
 
-@if (Model.AvailableStores.Count > 1)
+@if (!Model.IsSingleStoreMode)
 {
 	using (Html.BeginForm())
 	{
@@ -34,7 +34,7 @@
 					@Html.SmartLabelFor(model => model.SearchStoreId)
 					<div class="form-row">
 						<div class="col">
-							@Html.DropDownList("SearchStoreId", Model.AvailableStores, T("Admin.Common.All"), new { @class = "form-control" })
+							@Html.EditorFor(model => model.SearchStoreId)
 						</div>
 						<div class="col">
 							<button type="submit" id="btnSearch" class="btn btn-secondary">

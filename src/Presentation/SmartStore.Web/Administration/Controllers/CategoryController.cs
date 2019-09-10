@@ -21,7 +21,6 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
@@ -171,6 +170,7 @@ namespace SmartStore.Admin.Controllers
 				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(category.UpdatedOnUtc, DateTimeKind.Utc);
                 model.SelectedDiscountIds = category.AppliedDiscounts.Select(d => d.Id).ToArray();
                 model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(category);
+                model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(category);
             }
 
             model.AvailableDefaultViewModes.Add(
@@ -189,26 +189,6 @@ namespace SmartStore.Admin.Controllers
             model.AvailableBadgeStyles.Add(new SelectListItem { Value = "5", Text = "Danger", Selected = model.BadgeStyle == 5 });
 			model.AvailableBadgeStyles.Add(new SelectListItem { Value = "6", Text = "Light", Selected = model.BadgeStyle == 6 });
 			model.AvailableBadgeStyles.Add(new SelectListItem { Value = "7", Text = "Dark", Selected = model.BadgeStyle == 7});
-		}
-
-        [NonAction]
-        private void PrepareAclModel(CategoryModel model, Category category, bool excludeProperties)
-        {
-			Guard.NotNull(model, nameof(model));
-
-            if (!excludeProperties)
-            {
-                if (category != null)
-                {
-                    model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(category);
-                }
-                else
-                {
-                    model.SelectedCustomerRoleIds = new int[0];
-                }
-            }
-
-			model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
 		}
 
         #endregion
@@ -346,16 +326,13 @@ namespace SmartStore.Admin.Controllers
             var customerChoice = _genericAttributeService.Value.GetAttribute<string>("Customer", _workContext.CurrentCustomer.Id, "AdminCategoriesType");
             if (customerChoice == null || customerChoice.Equals("List"))
             {
-                _genericAttributeService.Value.SaveAttribute<string>(_workContext.CurrentCustomer, "AdminCategoriesType", "Tree");
+                _genericAttributeService.Value.SaveAttribute(_workContext.CurrentCustomer, "AdminCategoriesType", "Tree");
             }
-            
-            var allStores = _storeService.GetAllStores();
-			var model = new CategoryTreeModel();
 
-			foreach (var store in allStores)
-			{
-				model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString() });
-			}
+            var model = new CategoryTreeModel
+            {
+                IsSingleStoreMode = _storeService.IsSingleStoreMode()
+            };
 
 			return View(model);
         }
@@ -365,8 +342,6 @@ namespace SmartStore.Admin.Controllers
         public ActionResult TreeLoadChildren(TreeViewItem node, CategoryTreeModel model)
         {
             var parentId = !string.IsNullOrEmpty(node.Value) ? Convert.ToInt32(node.Value) : 0;
-			var urlHelper = new UrlHelper(this.ControllerContext.RequestContext);
-
 			var parentCategories = _categoryService.GetAllCategoriesByParentCategoryId(parentId, true);
 
 			if (parentId == 0 && model.SearchStoreId != 0)
@@ -384,17 +359,17 @@ namespace SmartStore.Admin.Controllers
 			var children = parentCategories.Select(x =>
 			{
 				var childCount = _categoryService.GetAllCategoriesByParentCategoryId(x.Id, true).Count;
-				string text = (childCount > 0 ? "{0} ({1})".FormatInvariant(x.Name, childCount) : x.Name);
+				string text = childCount > 0 ? "{0} ({1})".FormatInvariant(x.Name, childCount) : x.Name;
 
 				var item = new TreeViewItem
 				{
 					Text = x.Alias.HasValue() ? "{0} <span class='badge badge-secondary'>{1}</span>".FormatCurrent(text, x.Alias) : text,
 					Encoded = x.Alias.IsEmpty(),
 					Value = x.Id.ToString(),
-					LoadOnDemand = (childCount > 0),
+					LoadOnDemand = childCount > 0,
 					Enabled = true,
 					ImageUrl = Url.Content(x.Published ? "~/Administration/Content/images/ico-content.png" : "~/Administration/Content/images/ico-content-o60.png"),
-					Url = urlHelper.Action("Edit", "Category", new { id = x.Id })
+					Url = Url.Action("Edit", "Category", new { id = x.Id })
 				};
 
                 return item;
@@ -477,7 +452,6 @@ namespace SmartStore.Admin.Controllers
 
             PrepareTemplatesModel(model);
             PrepareCategoryModel(model, null);
-			PrepareAclModel(model, null, false);
 
             model.Published = true;
 
@@ -517,7 +491,7 @@ namespace SmartStore.Admin.Controllers
                 _categoryService.UpdateHasDiscountsApplied(category);
 
                 UpdatePictureSeoNames(category);
-                SaveAclMappings(category, model);
+                SaveAclMappings(category, model.SelectedCustomerRoleIds);
 				SaveStoreMappings(category, model.SelectedStoreIds);
 
 				_eventPublisher.Publish(new ModelBoundEvent(model, category, form));
@@ -544,7 +518,6 @@ namespace SmartStore.Admin.Controllers
             }
 
             PrepareCategoryModel(model, null);
-            PrepareAclModel(model, null, true);
 
             return View(model);
         }
@@ -590,7 +563,6 @@ namespace SmartStore.Admin.Controllers
 
             PrepareTemplatesModel(model);
             PrepareCategoryModel(model, category);
-            PrepareAclModel(model, category, false);
 
             return View(model);
         }
@@ -641,8 +613,8 @@ namespace SmartStore.Admin.Controllers
                 _categoryService.UpdateHasDiscountsApplied(category);
 
                 UpdatePictureSeoNames(category);
-                SaveAclMappings(category, model);
-				SaveStoreMappings(category, model.SelectedStoreIds);
+                SaveAclMappings(category, model.SelectedCustomerRoleIds);
+                SaveStoreMappings(category, model.SelectedStoreIds);
 
 				_eventPublisher.Publish(new ModelBoundEvent(model, category, form));
 
@@ -668,7 +640,6 @@ namespace SmartStore.Admin.Controllers
 
             PrepareTemplatesModel(model);
             PrepareCategoryModel(model, category);
-            PrepareAclModel(model, category, true);
 
             return View(model);
         }

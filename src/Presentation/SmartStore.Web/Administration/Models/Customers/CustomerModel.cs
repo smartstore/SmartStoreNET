@@ -18,7 +18,6 @@ namespace SmartStore.Admin.Models.Customers
             AvailableTimeZones = new List<SelectListItem>();
             SendEmail = new SendEmailModel();
             SendPm = new SendPmModel();
-            AvailableCustomerRoles = new List<CustomerRoleModel>();
             AssociatedExternalAuthRecords = new List<AssociatedExternalAuthModel>();
             AvailableCountries = new List<SelectListItem>();
             AvailableStates = new List<SelectListItem>();
@@ -126,7 +125,6 @@ namespace SmartStore.Admin.Models.Customers
         public int AffiliateId { get; set; }
 		public string AffiliateFullName { get; set; }
 
-        //time zone
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.TimeZoneId")]
         [AllowHtml]
         public string TimeZoneId { get; set; }
@@ -135,7 +133,6 @@ namespace SmartStore.Admin.Models.Customers
 
         public IList<SelectListItem> AvailableTimeZones { get; set; }
 
-        //EU VAT
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.VatNumber")]
         [AllowHtml]
         public string VatNumber { get; set; }
@@ -144,13 +141,11 @@ namespace SmartStore.Admin.Models.Customers
 
         public bool DisplayVatNumber { get; set; }
 
-        //registration date
         [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.LastActivityDate")]
         public DateTime LastActivityDate { get; set; }
 
-        //IP adderss
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.IPAddress")]
         public string LastIpAddress { get; set; }
 
@@ -158,14 +153,14 @@ namespace SmartStore.Admin.Models.Customers
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.LastVisitedPage")]
         public string LastVisitedPage { get; set; }
 
-        //customer roles
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.CustomerRoles")]
         public string CustomerRoleNames { get; set; }
-        public List<CustomerRoleModel> AvailableCustomerRoles { get; set; }
+        
+        [UIHint("CustomerRoles"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
         public int[] SelectedCustomerRoleIds { get; set; }
         public bool AllowManagingCustomerRoles { get; set; }
 
-        //reward points history
         public bool DisplayRewardPointsHistory { get; set; }
 
         [SmartResourceDisplayName("Admin.Customers.Customers.RewardPoints.Fields.AddRewardPointsValue")]
@@ -175,9 +170,7 @@ namespace SmartStore.Admin.Models.Customers
         [AllowHtml]
         public string AddRewardPointsMessage { get; set; }
         
-        //send email model
         public SendEmailModel SendEmail { get; set; }
-        //send PM model
         public SendPmModel SendPm { get; set; }
 
         [SmartResourceDisplayName("Admin.Customers.Customers.AssociatedExternalAuth")]

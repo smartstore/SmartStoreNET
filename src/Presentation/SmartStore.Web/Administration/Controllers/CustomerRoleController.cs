@@ -1,51 +1,40 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Customers;
-using SmartStore.Core;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework;
-using Telerik.Web.Mvc;
-using System.Collections.Generic;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
+using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public class CustomerRoleController : AdminControllerBase
 	{
-		#region Fields
-
 		private readonly ICustomerService _customerService;
         private readonly ILocalizationService _localizationService;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPermissionService _permissionService;
-        private readonly TaxSettings _taxSettings;
 
-		#endregion
-
-		#region Constructors
-
-        public CustomerRoleController(ICustomerService customerService,
-            ILocalizationService localizationService, ICustomerActivityService customerActivityService,
-            IPermissionService permissionService, TaxSettings taxSettings)
+        public CustomerRoleController(
+            ICustomerService customerService,
+            ILocalizationService localizationService,
+            ICustomerActivityService customerActivityService,
+            IPermissionService permissionService)
 		{
-            this._customerService = customerService;
-            this._localizationService = localizationService;
-            this._customerActivityService = customerActivityService;
-            this._permissionService = permissionService;
-            this._taxSettings = taxSettings;
+            _customerService = customerService;
+            _localizationService = localizationService;
+            _customerActivityService = customerActivityService;
+            _permissionService = permissionService;
 		}
-
-		#endregion 
-
-        #region Utilities
 
         [NonAction]
         protected List<SelectListItem> GetTaxDisplayTypesList(CustomerRoleModel model)
@@ -76,9 +65,28 @@ namespace SmartStore.Admin.Controllers
             return list;
         }
 
-        #endregion
+        // Ajax.
+        public ActionResult AllCustomerRoles(string label, string selectedIds)
+        {
+            var customerRoles = _customerService.GetAllCustomerRoles(true);
+            var ids = selectedIds.ToIntArray();
 
-        #region Customer roles
+            if (label.HasValue())
+            {
+                customerRoles.Insert(0, new CustomerRole { Name = label, Id = 0 });
+            }
+
+            var list = 
+                from c in customerRoles
+                select new
+                {
+                    id = c.Id.ToString(),
+                    text = c.Name,
+                    selected = ids.Contains(c.Id)
+                };
+
+            return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
 
         public ActionResult Index()
         {
@@ -242,7 +250,5 @@ namespace SmartStore.Admin.Controllers
             }
 
 		}
-
-		#endregion
     }
 }

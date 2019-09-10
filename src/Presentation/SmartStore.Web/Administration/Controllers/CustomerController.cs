@@ -45,7 +45,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public partial class CustomerController : AdminControllerBase
     {
         #region Fields
@@ -254,17 +254,12 @@ namespace SmartStore.Admin.Controllers
 			model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
 			model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
 			model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
+            model.DisplayVatNumber = false;
 
-			foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
+            foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
 			{
 				model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == timeZoneId) });
 			}
-
-			model.DisplayVatNumber = false;
-			model.AvailableCustomerRoles = _customerService
-				.GetAllCustomerRoles(true)
-				.Select(cr => cr.ToModel())
-				.ToList();
 
 			if (model.SelectedCustomerRoleIds == null || model.SelectedCustomerRoleIds.Count() == 0)
 			{
@@ -382,11 +377,6 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
-			model.AvailableCustomerRoles = _customerService
-				.GetAllCustomerRoles(true)
-				.Select(cr => cr.ToModel())
-				.ToList();
-
 			model.AllowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
 			model.DisplayRewardPointsHistory = _rewardPointsSettings.Enabled;
 			model.AddRewardPointsValue = 0;
@@ -424,26 +414,6 @@ namespace SmartStore.Admin.Controllers
         #endregion
 
         #region Customers
-
-        //ajax
-        public ActionResult AllCustomerRoles(string label, int selectedId)
-        {
-            var customerRoles = _customerService.GetAllCustomerRoles(true);
-            if (label.HasValue())
-            {
-                customerRoles.Insert(0, new CustomerRole { Name = label, Id = 0 });
-            }
-
-            var list = from c in customerRoles
-                       select new
-                       {
-                           id = c.Id.ToString(),
-                           text = c.Name,
-                           selected = c.Id == selectedId
-                       };
-
-            return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
-        }
 
         public ActionResult Index()
         {
@@ -574,6 +544,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             // Validate customer roles.
+            var allowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
             var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
             var newCustomerRoles = new List<CustomerRole>();
 
@@ -589,16 +560,14 @@ namespace SmartStore.Admin.Controllers
 			}
 
             var customerRolesError = ValidateCustomerRoles(newCustomerRoles);
-
             if (customerRolesError.HasValue())
             {
                 ModelState.AddModelError("", customerRolesError);
             }
-
-            var allowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
             
             if (ModelState.IsValid)
             {
+                var utcNow = DateTime.UtcNow;
                 var customer = new Customer
                 {
                     CustomerGuid = Guid.NewGuid(),
@@ -609,8 +578,8 @@ namespace SmartStore.Admin.Controllers
                     AdminComment = model.AdminComment,
                     IsTaxExempt = model.IsTaxExempt,
                     Active = model.Active,
-                    CreatedOnUtc = DateTime.UtcNow,
-                    LastActivityDateUtc = DateTime.UtcNow,
+                    CreatedOnUtc = utcNow,
+                    LastActivityDateUtc = utcNow,
                 };
 
 				if (_customerSettings.TitleEnabled)
@@ -671,7 +640,9 @@ namespace SmartStore.Admin.Controllers
                     if (!changePassResult.Success)
                     {
                         foreach (var changePassError in changePassResult.Errors)
-							NotifyError(changePassError);
+                        {
+                            NotifyError(changePassError);
+                        }
                     }
                 }
 
@@ -679,7 +650,9 @@ namespace SmartStore.Admin.Controllers
                 if (allowManagingCustomerRoles)
                 {
                     foreach (var customerRole in newCustomerRoles)
+                    {
                         customer.CustomerRoles.Add(customerRole);
+                    }
                     _customerService.UpdateCustomer(customer);
                 }
 
@@ -762,7 +735,7 @@ namespace SmartStore.Admin.Controllers
             if (customer == null || customer.Deleted)
                 return RedirectToAction("List");
 
-            //validate customer roles
+            // Validate customer roles.
 			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
 			var allowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
 
@@ -772,13 +745,17 @@ namespace SmartStore.Admin.Controllers
 
 				foreach (var customerRole in allCustomerRoles)
 				{
-					if (model.SelectedCustomerRoleIds != null && model.SelectedCustomerRoleIds.Contains(customerRole.Id))
-						newCustomerRoles.Add(customerRole);
+                    if (model.SelectedCustomerRoleIds != null && model.SelectedCustomerRoleIds.Contains(customerRole.Id))
+                    {
+                        newCustomerRoles.Add(customerRole);
+                    }
 				}
 
 				var customerRolesError = ValidateCustomerRoles(newCustomerRoles);
-				if (customerRolesError.HasValue())
-					ModelState.AddModelError("", customerRolesError);
+                if (customerRolesError.HasValue())
+                {
+                    ModelState.AddModelError("", customerRolesError);
+                }
 			}
             
             if (ModelState.IsValid)
@@ -798,7 +775,7 @@ namespace SmartStore.Admin.Controllers
 					if (_customerSettings.CompanyEnabled)
 						customer.Company = model.Company;
 
-					// customer number
+					// Customer number.
 					if (_customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled)
 					{
 						var numberExists = _customerService.SearchCustomers(new CustomerSearchQuery { CustomerNumber = model.CustomerNumber }).SourceQuery.Any();
@@ -812,7 +789,6 @@ namespace SmartStore.Admin.Controllers
 						}
 					}
 
-					// Email
 					if (model.Email.HasValue())
                     {
                         _customerRegistrationService.SetEmail(customer, model.Email);
@@ -822,7 +798,6 @@ namespace SmartStore.Admin.Controllers
                         customer.Email = model.Email;
                     }
 
-                    // Username
                     if (_customerSettings.CustomerLoginType != CustomerLoginType.Email && _customerSettings.AllowUsersToChangeUsernames)
                     {
                         if (model.Username.HasValue())
@@ -837,13 +812,13 @@ namespace SmartStore.Admin.Controllers
 
 					_customerService.UpdateCustomer(customer);
 
-					// VAT number
+					// VAT number.
 					if (_taxSettings.EuVatEnabled)
                     {
 						string prevVatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
 
 						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.VatNumber, model.VatNumber);
-						// Set VAT number status
+						// Set VAT number status.
 						if (model.VatNumber.HasValue())
 						{
 							if (!model.VatNumber.Equals(prevVatNumber, StringComparison.InvariantCultureIgnoreCase))
@@ -857,7 +832,7 @@ namespace SmartStore.Admin.Controllers
 						}
                     }
 
-                    // form fields
+                    // Form fields.
                     if (_dateTimeSettings.AllowCustomersToSetTimeZone)
                         customer.TimeZoneId = model.TimeZoneId;
                     if (_customerSettings.GenderEnabled)
@@ -879,22 +854,24 @@ namespace SmartStore.Admin.Controllers
                     if (_customerSettings.FaxEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Fax, model.Fax);
 
-                    // customer roles
+                    // Customer roles.
                     if (allowManagingCustomerRoles)
                     {
                         foreach (var customerRole in allCustomerRoles)
                         {
                             if (model.SelectedCustomerRoleIds != null && model.SelectedCustomerRoleIds.Contains(customerRole.Id))
                             {
-                                // new role
                                 if (customer.CustomerRoles.Where(cr => cr.Id == customerRole.Id).Count() == 0)
+                                {
                                     customer.CustomerRoles.Add(customerRole);
+                                }
                             }
                             else
                             {
-                                // removed role
                                 if (customer.CustomerRoles.Where(cr => cr.Id == customerRole.Id).Count() > 0)
+                                {
                                     customer.CustomerRoles.Remove(customerRole);
+                                }
                             }
                         }
                     }
@@ -902,21 +879,18 @@ namespace SmartStore.Admin.Controllers
                     _customerService.UpdateCustomer(customer);
 
                     _eventPublisher.Publish(new ModelBoundEvent(model, customer, form));
-
-                    // activity log
                     _customerActivityService.InsertActivity("EditCustomer", T("ActivityLog.EditCustomer"), customer.Id);
 
                     NotifySuccess(T("Admin.Customers.Customers.Updated"));
-
                     return continueEditing ? RedirectToAction("Edit", customer.Id) : RedirectToAction("List");
                 }
-                catch (Exception exc)
+                catch (Exception ex)
                 {
-					NotifyError(exc.Message, false);
+					NotifyError(ex.Message, false);
                 }
             }
 
-			// If we got this far, something failed, redisplay form
+			// If we got this far, something failed, redisplay form.
 			PrepareCustomerModelForEdit(model, customer);
 
             return View(model);

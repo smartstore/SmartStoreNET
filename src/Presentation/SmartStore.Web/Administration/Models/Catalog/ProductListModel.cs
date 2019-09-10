@@ -34,7 +34,7 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchWithoutManufacturers")]
 		public bool? SearchWithoutManufacturers { get; set; }
 
-        [UIHint("Stores"), AdditionalMetadata("multiple", false)]
+        [UIHint("Stores")]
         [SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
 		public int SearchStoreId { get; set; }
 

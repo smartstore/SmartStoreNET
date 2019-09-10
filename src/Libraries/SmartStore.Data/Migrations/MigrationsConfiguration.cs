@@ -89,9 +89,16 @@
                 "Number of requirements",
                 "Anzahl an Voraussetzungen");
 
+            builder.AddOrUpdate("Admin.Common.CustomerRole.LimitedTo",
+                "Limited to customer roles",
+                "Auf Kundengruppen begrenzt",
+                "Specifies whether the object is only available to certain customer groups.",
+                "Legt fest, ob das Objekt nur für bestimmte Kundengruppen verfügbar ist.");
+
             builder.Delete(
                 "Admin.Configuration.Measures.Weights.Fields.MarkAsPrimaryWeight",
-                "Admin.Configuration.Measures.Dimensions.Fields.MarkAsPrimaryDimension");
+                "Admin.Configuration.Measures.Dimensions.Fields.MarkAsPrimaryDimension",
+                "Admin.Catalog.Products.Acl");
         }
     }
 }

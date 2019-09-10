@@ -588,31 +588,12 @@ namespace SmartStore.Admin.Controllers
 			
 			UpdateProductTags(p, m.ProductTags);
             SaveStoreMappings(p, model.SelectedStoreIds);
+            SaveAclMappings(p, model.SelectedCustomerRoleIds);
         }
 
 		#endregion
 
 		#region Utitilies
-
-        [NonAction]
-        private void PrepareAclModel(ProductModel model, Product product, bool excludeProperties)
-        {
-			Guard.NotNull(model, nameof(model));
-
-            if (!excludeProperties)
-            {
-                if (product != null)
-                {
-                    model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(product);
-                }
-                else
-                {
-                    model.SelectedCustomerRoleIds = new int[0];
-                }
-            }
-
-			model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
-		}
 
 		[NonAction]
 		protected void PrepareProductModel(ProductModel model, Product product, bool setPredefinedValues, bool excludeProperties)
@@ -631,6 +612,7 @@ namespace SmartStore.Admin.Controllers
 				model.CreatedOn = _dateTimeHelper.ConvertToUserTime(product.CreatedOnUtc, DateTimeKind.Utc);
 				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(product.UpdatedOnUtc, DateTimeKind.Utc);
                 model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(product);
+                model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(product);
 
                 if (product.LimitedToStores)
 				{
@@ -1127,7 +1109,6 @@ namespace SmartStore.Admin.Controllers
             var model = new ProductModel();
 			PrepareProductModel(model, null, true, true);
             AddLocales(_languageService, model.Locales);
-            PrepareAclModel(model, null, false);
 
             return View(model);
         }
@@ -1194,7 +1175,6 @@ namespace SmartStore.Admin.Controllers
 
             // If we got this far, something failed, redisplay form.
 			PrepareProductModel(model, null, false, true);
-            PrepareAclModel(model, null, true);
 
             return View(model);
         }
@@ -1234,7 +1214,6 @@ namespace SmartStore.Admin.Controllers
             });
 
 			PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPictureInfo(product.MainPictureId));
-            PrepareAclModel(model, product, false);
 
             return View(model);
         }
@@ -1286,10 +1265,7 @@ namespace SmartStore.Admin.Controllers
 
             // If we got this far, something failed, redisplay form
 			PrepareProductModel(model, product, false, true);
-
 			PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPictureInfo(product.MainPictureId));
-
-            PrepareAclModel(model, product, true);
 
             return View(model);
         }
@@ -1329,9 +1305,6 @@ namespace SmartStore.Admin.Controllers
                         break;
                     case "seo":
 						UpdateProductSeo(product, model);
-						break;
-					case "acl":
-						SaveAclMappings(product, model);
 						break;
 				}
 			}
@@ -1376,8 +1349,6 @@ namespace SmartStore.Admin.Controllers
 				});
 
 				PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPictureInfo(product.MainPictureId));
-
-				PrepareAclModel(model, product, false);
 
 				return PartialView(viewPath.NullEmpty() ?? "_CreateOrUpdate." + tabName, model);
 			}

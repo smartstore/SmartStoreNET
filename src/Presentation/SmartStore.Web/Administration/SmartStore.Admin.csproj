@@ -627,6 +627,7 @@
     <Content Include="Views\DeliveryTime\CreateDeliveryTimePopup.cshtml" />
     <Content Include="Views\DeliveryTime\EditDeliveryTimePopup.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Stores.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\CustomerRoles.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />
@@ -1254,9 +1255,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\EditorTemplates\AttributeControlType.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Product\_CreateOrUpdate.Acl.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.Categories.cshtml" />

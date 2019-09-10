@@ -11,7 +11,7 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string SearchManufacturerName { get; set; }
 
-        [UIHint("Stores"), AdditionalMetadata("multiple", false)]
+        [UIHint("Stores")]
         [SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
 		public int SearchStoreId { get; set; }
 

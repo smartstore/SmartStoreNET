@@ -11,8 +11,8 @@ namespace SmartStore.Admin.Models.DataExchange
 	{
         #region All entity types
 
+        [UIHint("Stores")]
         [SmartResourceDisplayName("Admin.DataExchange.Export.Filter.StoreId")]
-        [UIHint("Stores"), AdditionalMetadata("multiple", false)]
 		public int? StoreId { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.CreatedFrom")]

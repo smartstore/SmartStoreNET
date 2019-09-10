@@ -42,7 +42,8 @@ namespace SmartStore.Admin.Controllers
 			return View();
 		}
 
-		public ActionResult AllStores(string label, string selectedIds)
+        // Ajax.
+        public ActionResult AllStores(string label, string selectedIds)
 		{
 			var stores = Services.StoreService.GetAllStores();
             var ids = selectedIds.ToIntArray();

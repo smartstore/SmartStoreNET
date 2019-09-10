@@ -45,15 +45,6 @@
                 @Html.ValidationMessageFor(model => model.DisplayOrder)
             </td>
         </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SelectedStoreIds)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.SelectedStoreIds)
-                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
-            </td>
-        </tr>
 	</table>
 
     @(Html.LocalizedEditor<ManufacturerModel, ManufacturerLocalizedModel>("manufacturer-info-localized",
@@ -147,6 +138,15 @@
             <td class="adminData">
                 @Html.DropDownListFor(model => model.ManufacturerTemplateId, Model.AvailableManufacturerTemplates)
                 @Html.ValidationMessageFor(model => model.ManufacturerTemplateId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedStoreIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.SelectedStoreIds)
+                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
             </td>
         </tr>
 		@if(Model.CreatedOn.HasValue)

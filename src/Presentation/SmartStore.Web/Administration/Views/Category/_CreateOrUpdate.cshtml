@@ -8,7 +8,6 @@
 	x.Add().Text(T("Admin.Common.SEO").Text).Icon("fa fa-search fa-lg fa-fw").Content(TabSeo());
 	x.Add().Text(T("Admin.Catalog.Categories.Products").Text).Icon("fa fa-cube fa-lg fa-fw").Content(TabProducts());
 	x.Add().Text(T("Admin.Catalog.Categories.Discounts").Text).Icon("fa fa-percent fa-lg fa-fw").Content(TabDiscounts());
-	x.Add().Text(T("Admin.Catalog.Categories.Acl").Text).Icon("fa fa-users fa-lg fa-fw").Content(TabAcl());
 
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "category-edit", this.Html, this.Model));
 })
@@ -82,15 +81,6 @@
             <td class="adminData">
                 @Html.EditorFor(model => model.DisplayOrder)
                 @Html.ValidationMessageFor(model => model.DisplayOrder)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SelectedStoreIds)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.SelectedStoreIds)
-                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
             </td>
         </tr>
 	</table>
@@ -292,6 +282,34 @@
             <td class="adminData">
                 @Html.DropDownListFor(model => model.CategoryTemplateId, Model.AvailableCategoryTemplates)
                 @Html.ValidationMessageFor(model => model.CategoryTemplateId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedStoreIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.SelectedStoreIds)
+                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedCustomerRoleIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.SelectedCustomerRoleIds)
+                @Html.ValidationMessageFor(model => model.SelectedCustomerRoleIds)
+
+	            <div class="mt-4">
+		            <div class="alert alert-danger">
+			            @T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts.Hint")
+		            </div>
+		            <a href="@Url.Action("InheritAclIntoChildren", "Category", new { categoryId = Model.Id })" name="inherit-acl-into-children" class="btn btn-danger">
+			            <i class="fa fa-bolt"></i>
+			            <span>@T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts")</span>
+		            </a>
+	            </div>
             </td>
         </tr>
 		@if (Model.CreatedOn.HasValue)
@@ -499,21 +517,6 @@
 			@T("Admin.Promotions.Discounts.NoDiscountsAvailable")
 		</div>
 	}
-}
-
-@helper TabAcl()
-{    
-    @Html.Partial("AclSelector", Model)
-	
-	<div class="mt-4">
-		<div class="alert alert-danger">
-			@T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts.Hint")
-		</div>
-		<a href="@Url.Action("InheritAclIntoChildren", "Category", new { categoryId = Model.Id })" name="inherit-acl-into-children" class="btn btn-danger">
-			<i class="fa fa-bolt"></i>
-			<span>@T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts")</span>
-		</a>
-	</div>
 }
 
 <script>

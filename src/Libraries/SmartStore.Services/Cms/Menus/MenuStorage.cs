@@ -15,7 +15,7 @@ namespace SmartStore.Services.Cms
 {
     public partial class MenuStorage : IMenuStorage
     {
-        private const string MENU_ALLSYSTEMNAMEs_CACHE_KEY = "MenuStorage:SystemNames";
+        private const string MENU_ALLSYSTEMNAMES_CACHE_KEY = "MenuStorage:SystemNames";
         private const string MENU_USER_CACHE_KEY = "MenuStorage:Menus:User-{0}-{1}";
         private const string MENU_PATTERN_KEY = "MenuStorage:Menus:*";
 
@@ -298,9 +298,9 @@ namespace SmartStore.Services.Cms
 
         private ISet GetMenuSystemNames(bool create)
 		{
-			if (create || _services.Cache.Contains(MENU_ALLSYSTEMNAMEs_CACHE_KEY))
+			if (create || _services.Cache.Contains(MENU_ALLSYSTEMNAMES_CACHE_KEY))
 			{
-				return _services.Cache.GetHashSet(MENU_ALLSYSTEMNAMEs_CACHE_KEY, () =>
+				return _services.Cache.GetHashSet(MENU_ALLSYSTEMNAMES_CACHE_KEY, () =>
 				{
 					return _menuRepository.TableUntracked
 						.Where(x => x.Published)

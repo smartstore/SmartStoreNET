@@ -9,9 +9,7 @@ namespace SmartStore.Web.Framework.UI
         protected readonly IComponentContext _ctx;
         protected readonly IMenuStorage _menuStorage;
 
-        public DatabaseMenuResolver(
-            IComponentContext ctx,
-            IMenuStorage menuStorage)
+        public DatabaseMenuResolver(IComponentContext ctx, IMenuStorage menuStorage)
         {
             _ctx = ctx;
             _menuStorage = menuStorage;

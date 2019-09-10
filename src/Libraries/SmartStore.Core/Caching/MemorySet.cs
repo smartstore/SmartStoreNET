@@ -12,6 +12,7 @@ namespace SmartStore.Core.Caching
 		private readonly ICacheManager _cache;
 
 		public MemorySet(ICacheManager cache)
+            : base(StringComparer.OrdinalIgnoreCase)
 		{
 			_cache = cache;
 		}

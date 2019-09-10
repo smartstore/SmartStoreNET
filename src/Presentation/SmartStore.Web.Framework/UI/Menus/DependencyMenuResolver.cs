@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -8,7 +9,7 @@ namespace SmartStore.Web.Framework.UI
 
         public DependencyMenuResolver(IEnumerable<IMenu> menus)
         {
-            _menus = menus.ToDictionarySafe(x => x.Name, x => x);
+            _menus = menus.ToDictionarySafe(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);
         }
 
         public int Order => 0;

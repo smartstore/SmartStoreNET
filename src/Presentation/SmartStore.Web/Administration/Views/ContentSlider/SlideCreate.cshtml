@@ -1,15 +1,15 @@
-﻿@model ContentSliderModel
+﻿@model SliderSlideModel
 @using SmartStore.Admin.Models.ContentSlider;
 
 @{
-    ViewBag.Title = T("Admin.CMS.ContentSlider.AddNew").Text;
+    ViewBag.Title = T("Admin.CMS.ContentSlider.Slide.AddNew").Text;
 }
-@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "contentslider-form" }))
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "sliderslide-form" }))
 {
     <div class="section-header">
         <div class="title">
-            @T("Admin.CMS.ContentSlider.AddNew")
-            <a href='@Url.Action("List")'>(@T("Admin.CMS.ContentSlider.BackToList"))</a>
+            @T("Admin.CMS.ContentSlider.Slide.AddNew")
+            <a href='@Url.Action("Edit",new { id = Model.SliderId })'>(@T("Admin.CMS.ContentSlider.Slide.BackToList"))</a>
         </div>
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-primary">
@@ -22,5 +22,5 @@
         </div>
     </div>
 
-    Html.RenderPartial("_CreateOrUpdate", Model);
+    Html.RenderPartial("_SlideCreateOrUpdate", Model);
 }

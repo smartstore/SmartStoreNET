@@ -11,7 +11,7 @@ namespace SmartStore.Services.ContentSlider
     /// </summary>
     public partial interface IContentSliderService
     {
-        void DeleteContentSlider(SmartStore.Core.Domain.ContentSlider.ContentSlider contentslider);
+        Core.Domain.ContentSlider.ContentSlider DeleteContentSlider(SmartStore.Core.Domain.ContentSlider.ContentSlider contentslider);
         IPagedList<Core.Domain.ContentSlider.ContentSlider> GetAllContentSliders(string contentSliderName,
            int pageIndex, int pageSize, int storeId = 0, bool showHidden = false);
         IPagedList<Core.Domain.ContentSlider.ContentSlider> GetAllContentSliders(int contentSliderId,
@@ -31,6 +31,7 @@ namespace SmartStore.Services.ContentSlider
         IList<Slide> GetContentSliderSlides();
 
         Slide GetContentSliderSlideById(int slideId);
+        Slide GetContentSliderActiveSlideById(int slideId);
 
         void InsertContentSliderSlide(Slide contentSliderSlide);
 

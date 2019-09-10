@@ -1,0 +1,146 @@
+﻿@model SliderSlideModel
+
+@using Telerik.Web.Mvc.UI;
+@using SmartStore.Core.Domain.ContentSlider;
+@using SmartStore.Admin.Models.ContentSlider;
+@using System.Collections;
+
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.SliderId)
+@Html.SmartStore().TabStrip().Name("sliderslide-edit").Style(TabsStyle.Material).Items(x =>
+{
+    x.Add().Text(T("Admin.CMS.ContentSlider.Slide.Info").Text).Content(TabInfo()).Selected(true);
+
+    //generate an event
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "sliderslide-edit", this.Html, this.Model));
+})
+@helper TabInfo()
+{
+    if (Model.Id != 0)
+    {
+        <table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Id)
+                </td>
+                <td class="adminData">
+                    @Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
+                    @Html.ValidationMessageFor(model => model.Id)
+                </td>
+            </tr>
+        </table>
+    }
+
+    @(Html.LocalizedEditor<SliderSlideModel, SliderSlidLocalizedModel>("sliderslide-info-localized",
+                            @<table class="adminContent">
+                                <tr>
+                                    <td class="adminTitle">
+                                        @Html.SmartLabelFor(model => model.Locales[item].SlideTitle)
+                                    </td>
+                                    <td class="adminData">
+                                        @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+                                        @Html.HiddenFor(model => model.Locales[item].LanguageId)
+
+                                        @Html.EditorFor(model => Model.Locales[item].SlideTitle)
+                                        @Html.ValidationMessageFor(model => model.Locales[item].SlideTitle)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="adminTitle">
+                                        @Html.SmartLabelFor(model => model.Locales[item].SlideContent)
+                                    </td>
+                                    <td class="adminData">
+                                        @Html.TextAreaFor(model => model.Locales[item].SlideContent)
+                                        @Html.ValidationMessageFor(model => model.Locales[item].SlideContent)
+                                    </td>
+                                </tr>
+
+                            </table>
+,
+                                                    @<table class="adminContent">
+                                                        <tr>
+                                                            <td class="adminTitle">
+                                                                @Html.SmartLabelFor(model => model.SlideTitle)
+                                                            </td>
+                                                            <td class="adminData">
+                                                                @Html.EditorFor(model => model.SlideTitle)
+                                                                @Html.ValidationMessageFor(model => model.SlideTitle)
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="adminTitle">
+                                                                @Html.SmartLabelFor(model => model.SlideContent)
+                                                            </td>
+                                                            <td class="adminData">
+                                                                @Html.EditorFor(model => model.SlideContent)
+                                                                @Html.ValidationMessageFor(model => model.SlideContent)
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+            ))
+
+    IList<SelectListItem> SlideTypeSelectedList = new List<SelectListItem>
+{
+        new SelectListItem {Text=T("Admin.CMS.ContentSlider.Slide.NormalSlide"),Value="0" },
+        new SelectListItem {Text=T("Admin.CMS.ContentSlider.Slide.ProductSlide"),Value="1" },
+        new SelectListItem {Text=T("Admin.CMS.ContentSlider.Slide.CategorySlide"),Value="2" },
+        new SelectListItem {Text=T("Admin.CMS.ContentSlider.Slide.ManufacturerSlide"),Value="3" }
+    };
+<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.IsActive)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(x => x.IsActive)
+            @Html.ValidationMessageFor(model => model.IsActive)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.PictureId)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.PictureId, new { transientUpload = true })
+            @Html.ValidationMessageFor(model => model.PictureId)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.DisplayOrder1)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(x => x.DisplayOrder1)
+            @Html.ValidationMessageFor(model => model.DisplayOrder1)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SlideType)
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(model => model.SlideType, SlideTypeSelectedList, T("Common.Unspecified"))
+            @Html.ValidationMessageFor(model => model.SlideType)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.DisplayPrice)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(x => x.DisplayPrice)
+            @Html.ValidationMessageFor(model => model.DisplayPrice)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.DisplayButton)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(x => x.DisplayButton)
+            @Html.ValidationMessageFor(model => model.DisplayButton)
+        </td>
+    </tr>
+</table>
+}

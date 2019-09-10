@@ -43,5 +43,6 @@ namespace SmartStore.Core.Domain.Customers
 		public static string WorkingThemeName { get { return "WorkingThemeName"; } }
 		public static string UseRewardPointsDuringCheckout { get { return "UseRewardPointsDuringCheckout"; } }
 		public static string UseCreditBalanceDuringCheckout { get { return "UseCreditBalanceDuringCheckout"; } }
-	}
+		public static string MostRecentlyUsedContentSliders { get { return "MostRecentlyUsedContentSliders"; } }
+    }
 }

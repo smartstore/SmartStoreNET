@@ -86,11 +86,12 @@ namespace SmartStore.Services.ContentSlider
             return query;
         }
 
-        public void DeleteContentSlider(Core.Domain.ContentSlider.ContentSlider contentslider)
+        public Core.Domain.ContentSlider.ContentSlider DeleteContentSlider(Core.Domain.ContentSlider.ContentSlider contentslider)
         {
             Guard.NotNull(contentslider, nameof(contentslider));
 
             _contentSliderRepository.Delete(contentslider);
+            return GetContentSliders(contentslider.Id);
         }
 
         public void DeleteContentSliderSlide(Slide contentSliderSlide)
@@ -105,7 +106,6 @@ namespace SmartStore.Services.ContentSlider
             var query =
                 from cs in _contentSliderRepository.Table
                 orderby cs.Id
-                where cs.IsActive == true
                 select cs;
 
             var contentSliders = query.ToList();
@@ -117,7 +117,7 @@ namespace SmartStore.Services.ContentSlider
             var query =
                 from cs in _contentSliderRepository.Table
                 orderby cs.Id
-                where cs.IsActive == true && cs.Id == SliderId
+                where cs.Id == SliderId
                 select cs;
 
             var contentSlider = query.FirstOrDefault();
@@ -148,12 +148,24 @@ namespace SmartStore.Services.ContentSlider
             return contentSliders;
         }
 
-        public Slide GetContentSliderSlideById(int slideId)
+        public Slide GetContentSliderActiveSlideById(int slideId)
         {
             var query =
                 from s in _contentSliderSlideRepository.Table
                 orderby s.Id
                 where s.IsActive == true && s.Id == slideId
+                select s;
+
+            var slide = query.FirstOrDefault();
+            return slide;
+        }
+
+        public Slide GetContentSliderSlideById(int slideId)
+        {
+            var query =
+                from s in _contentSliderSlideRepository.Table
+                orderby s.Id
+                where s.Id == slideId
                 select s;
 
             var slide = query.FirstOrDefault();

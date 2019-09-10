@@ -530,5 +530,6 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a value indicating whether percental values of tierprices should be applied to price adjustments of attributes
         /// </summary>
         public bool ApplyTierPricePercentageToAttributePriceAdjustments { get; set; }
+		public int MostRecentlyUsedContentSlidersMaxSize { get; set; }
     }
 }

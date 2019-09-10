@@ -1,6 +1,8 @@
 ﻿@model ContentSliderListModel
 @using Telerik.Web.Mvc.UI
 @using System.Collections;
+@using SmartStore.Admin.Models.ContentSlider;
+
 
 @{
     ViewBag.Title = T("Admin.CMS.ContentSlider").Text;
@@ -44,7 +46,7 @@
 
 @{
     ArrayList SliderTypeList = new ArrayList
-    {
+{
         new { SLiderTypeId=0,SliderTypeName=T("Admin.CMS.ContentSlider.HomePageSlider")},
         new { SLiderTypeId=1,SliderTypeName=T("Admin.CMS.ContentSlider.CategorySlider")},
         new { SLiderTypeId=2,SliderTypeName=T("Admin.CMS.ContentSlider.ManufacturerSlider")},

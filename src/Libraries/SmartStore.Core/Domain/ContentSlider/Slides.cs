@@ -24,7 +24,7 @@ namespace SmartStore.Core.Domain.ContentSlider
         public string SlideContent { get; set; }
 
         [DataMember]
-        public int PictureId { get; set; }
+        public int? PictureId { get; set; }
 
         [DataMember]
         public int SlideType { get; set; }

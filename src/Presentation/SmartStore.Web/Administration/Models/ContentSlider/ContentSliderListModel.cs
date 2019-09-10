@@ -3,7 +3,7 @@ using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
-namespace SmartStore.Admin.Models.Catalog
+namespace SmartStore.Admin.Models.ContentSlider
 {
 	public class ContentSliderListModel : ModelBase
     {

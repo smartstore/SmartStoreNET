@@ -29,7 +29,7 @@ namespace SmartStore.Web.Models.ContentSlider
         public int SliderId { get; set; }
         public string SlideTitle { get; set; }
         public string SlideContent { get; set; }
-        public int PictureId { get; set; }
+        public int? PictureId { get; set; }
         public int SlideType { get; set; }
         public int DisplayOrder { get; set; }
         public bool DisplayPrice { get; set; }

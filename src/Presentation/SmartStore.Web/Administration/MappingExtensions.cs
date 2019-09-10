@@ -44,7 +44,8 @@ using SmartStore.Core.Domain.Themes;
 using SmartStore.Services.Common;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.ContentSlider;
-using static SmartStore.Admin.Models.Catalog.ContentSliderModel;
+using SmartStore.Admin.Models.ContentSlider;
+using static SmartStore.Admin.Models.ContentSlider.ContentSliderModel;
 
 namespace SmartStore.Admin
 {
@@ -1018,17 +1019,17 @@ namespace SmartStore.Admin
             return Mapper.Map(model, destination);
         }
 
-        public static SliderSlidModel ToModel(this Slide entity)
+        public static SliderSlideModel ToModel(this Slide entity)
         {
-            return Mapper.Map<Slide, SliderSlidModel>(entity);
+            return Mapper.Map<Slide, SliderSlideModel>(entity);
         }
 
-        public static Slide ToEntity(this SliderSlidModel model)
+        public static Slide ToEntity(this SliderSlideModel model)
         {
-            return Mapper.Map<SliderSlidModel, Slide>(model);
+            return Mapper.Map<SliderSlideModel, Slide>(model);
         }
 
-        public static Slide ToEntity(this SliderSlidModel model, Slide destination)
+        public static Slide ToEntity(this SliderSlideModel model, Slide destination)
         {
             return Mapper.Map(model, destination);
         }

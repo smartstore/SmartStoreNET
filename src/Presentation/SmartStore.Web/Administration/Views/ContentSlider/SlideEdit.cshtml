@@ -1,15 +1,15 @@
-﻿@model ContentSliderModel
+﻿@model SliderSlideModel
 @using SmartStore.Admin.Models.ContentSlider;
 
 @{
-    ViewBag.Title = T("Admin.CMS.ContentSlider.EditContentSliderDetails").Text;
+    ViewBag.Title = T("Admin.CMS.ContentSlider.Slide.EditSlideDetails").Text;
 }
-@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "contentslider-form" }))
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "sliderslide-form" }))
 {
     <div class="section-header">
         <div class="title">
-            @T("Admin.CMS.ContentSlider.EditContentSliderDetails") - @Model.SliderName
-            <a href='@Url.Action("List")'>(@T("Admin.CMS.ContentSlider.BackToList"))</a>
+            @T("Admin.CMS.ContentSlider.Slide.EditSlideDetails") - @Model.SlideId
+            <a href='@Url.Action("Edit",new { id = Model.SliderId })'>(@T("Admin.CMS.ContentSlider.Slide.BackToList"))</a>
         </div>
         <div class="options">
             @{ Html.RenderWidget("admin_button_toolbar_before"); }
@@ -21,7 +21,7 @@
             <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
                 <span>@T("Admin.Common.SaveContinue")</span>
             </button>
-            <button type="submit" name="contentslider-delete" id="contentslider-delete" class="btn btn-danger">
+            <button type="submit" name="delete" id="sliderslide-delete" class="btn btn-danger">
                 <i class="far fa-trash-alt"></i>
                 <span>@T("Admin.Common.Delete")</span>
             </button>
@@ -30,6 +30,6 @@
         </div>
     </div>
 
-    Html.RenderPartial("_CreateOrUpdate", Model);
+    Html.RenderPartial("_SlideCreateOrUpdate", Model);
 }
-@Html.DeleteConfirmation("contentslider-delete")
+@Html.DeleteConfirmation("sliderslide-delete")

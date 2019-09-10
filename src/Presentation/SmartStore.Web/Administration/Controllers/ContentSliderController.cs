@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using SmartStore.Admin.Models.Catalog;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
@@ -25,9 +23,9 @@ using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Core.Events;
 using SmartStore.Services.ContentSlider;
 using SmartStore.Core.Domain.ContentSlider;
+using SmartStore.Admin.Models.ContentSlider;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -105,9 +103,9 @@ namespace SmartStore.Admin.Controllers
         #region Utilities
 
         [NonAction]
-        protected void UpdatePictureSeoNames(Manufacturer manufacturer)
+        protected void UpdatePictureSeoNames(Slide slide)
         {
-            _pictureService.SetSeoFilename(manufacturer.PictureId.GetValueOrDefault(), _pictureService.GetPictureSeName(manufacturer.Name));
+            _pictureService.SetSeoFilename(slide.PictureId.GetValueOrDefault(), _pictureService.GetPictureSeName(slide.SlideTitle));
         }
 
         [NonAction]
@@ -118,6 +116,23 @@ namespace SmartStore.Admin.Controllers
                 _localizedEntityService.SaveLocalizedValue(contentSlider,
                                                                x => x.SliderName,
                                                                localized.SliderName,
+                                                               localized.LanguageId);
+            }
+        }
+
+        [NonAction]
+        public void UpdateLocales(Slide slide, SliderSlideModel model)
+        {
+            foreach (var localized in model.Locales)
+            {
+                _localizedEntityService.SaveLocalizedValue(slide,
+                                                               x => x.SlideTitle,
+                                                               localized.SlideTitle,
+                                                               localized.LanguageId);
+
+                _localizedEntityService.SaveLocalizedValue(slide,
+                                                               x => x.SlideContent,
+                                                               localized.SlideContent,
                                                                localized.LanguageId);
             }
         }
@@ -170,8 +185,8 @@ namespace SmartStore.Admin.Controllers
             var mainList = list.ToList();
 
             var mruList = new TrimmedBuffer<string>(
-                _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
-                _catalogSettings.MostRecentlyUsedManufacturersMaxSize)
+                _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedContentSliders),
+                _catalogSettings.MostRecentlyUsedContentSlidersMaxSize)
                 .Reverse()
                 .Select(x =>
                 {
@@ -272,6 +287,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var model = new ContentSliderModel();
+            model.SliderType = -1; ;
 
             //locales
             AddLocales(_languageService, model.Locales);
@@ -347,7 +363,12 @@ namespace SmartStore.Admin.Controllers
             var model = contentslider.ToModel();
 
             //locales
-            AddLocales(_languageService, model.Locales);
+            //AddLocales(_languageService, model.Locales);
+
+            AddLocales(_languageService, model.Locales, (locale, languageId) =>
+            {
+                locale.SliderName = contentslider.GetLocalized(x => x.SliderName, languageId, false, false);
+            });
 
             return View(model);
         }
@@ -410,14 +431,14 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageContentSlider))
                 return AccessDeniedView();
 
-            var manufacturer = _manufacturerService.GetManufacturerById(id);
-            if (manufacturer == null)
+            var contentSlider = _contentSliderService.GetContentSliders(id);
+            if (contentSlider == null)
                 return RedirectToAction("List");
 
-            _manufacturerService.DeleteManufacturer(manufacturer);
+            _contentSliderService.DeleteContentSlider(contentSlider);
 
             //activity log
-            _customerActivityService.InsertActivity("DeleteManufacturer", _localizationService.GetResource("ActivityLog.DeleteManufacturer"), manufacturer.Name);
+            _customerActivityService.InsertActivity("DeleteContentSlider", _localizationService.GetResource("ActivityLog.DeleteManufacturer"), contentSlider.SliderName);
 
             NotifySuccess(_localizationService.GetResource("Admin.CMS.ContentSlider.Deleted"));
             return RedirectToAction("List");
@@ -430,7 +451,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult SlideList(GridCommand command, int sliderId)
         {
-            var model = new GridModel<ContentSliderModel.SliderSlidModel>();
+            var model = new GridModel<SliderSlideModel>();
 
             if (_permissionService.Authorize(StandardPermissionProvider.ManageContentSlider))
             {
@@ -439,7 +460,7 @@ namespace SmartStore.Admin.Controllers
                 model.Data = contentsliderSlides
                     .Select(x =>
                     {
-                        return new ContentSliderModel.SliderSlidModel
+                        return new SliderSlideModel
                         {
                             Id = x.Id,
                             SlideId = x.Id,
@@ -460,7 +481,7 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-                model.Data = Enumerable.Empty<ContentSliderModel.SliderSlidModel>();
+                model.Data = Enumerable.Empty<SliderSlideModel>();
 
                 NotifyAccessDenied();
             }
@@ -471,73 +492,129 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        //[GridAction(EnableCustomBinding = true)]
-        //public ActionResult ProductUpdate(GridCommand command, ContentSliderModel.ManufacturerProductModel model)
-        //{
-        //    var productManufacturer = _manufacturerService.GetProductManufacturerById(model.Id);
 
-        //    if (_permissionService.Authorize(StandardPermissionProvider.ManageContentSlider))
-        //    {
-        //        productManufacturer.IsFeaturedProduct = model.IsFeaturedProduct;
-        //        productManufacturer.DisplayOrder = model.DisplayOrder1;
+        public ActionResult SlideCreate(int SliderId)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageContentSlider))
+                return AccessDeniedView();
 
-        //        _manufacturerService.UpdateProductManufacturer(productManufacturer);
-        //    }
+            var model = new SliderSlideModel();
+            model.SliderId = SliderId;
+            model.SlideType = -1; ;
 
-        //    return ProductList(command, productManufacturer.ManufacturerId);
-        //}
+            //locales
+            AddLocales(_languageService, model.Locales);
 
-        //[GridAction(EnableCustomBinding = true)]
-        //public ActionResult ProductDelete(int id, GridCommand command)
-        //{
-        //    var productManufacturer = _manufacturerService.GetProductManufacturerById(id);
-        //    var manufacturerId = productManufacturer.ManufacturerId;
+            model.IsActive = true;
 
-        //    if (_permissionService.Authorize(StandardPermissionProvider.ManageContentSlider))
-        //    {
-        //        _manufacturerService.DeleteProductManufacturer(productManufacturer);
-        //    }
+            return View(model);
+        }
 
-        //    return ProductList(command, manufacturerId);
-        //}
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        public ActionResult SlideCreate(SliderSlideModel model, bool continueEditing)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageContentSlider))
+                return AccessDeniedView();
 
-        //[HttpPost]
-        //public ActionResult ProductAdd(int manufacturerId, int[] selectedProductIds)
-        //{
-        //    if (_permissionService.Authorize(StandardPermissionProvider.ManageContentSlider))
-        //    {
-        //        var products = _productService.GetProductsByIds(selectedProductIds);
-        //        ProductManufacturer productManu = null;
-        //        var maxDisplayOrder = -1;
+            if (ModelState.IsValid)
+            {
+                var slide = model.ToEntity();
 
-        //        foreach (var product in products)
-        //        {
-        //            var existingProductManus = _manufacturerService.GetProductManufacturersByManufacturerId(manufacturerId, 0, int.MaxValue, true);
+                _contentSliderService.InsertContentSliderSlide(slide);
 
-        //            if (!existingProductManus.Any(x => x.ProductId == product.Id && x.ManufacturerId == manufacturerId))
-        //            {
-        //                if (maxDisplayOrder == -1 && (productManu = existingProductManus.OrderByDescending(x => x.DisplayOrder).FirstOrDefault()) != null)
-        //                {
-        //                    maxDisplayOrder = productManu.DisplayOrder;
-        //                }
+                // locales
+                UpdateLocales(slide, model);
 
-        //                _manufacturerService.InsertProductManufacturer(new ProductManufacturer
-        //                {
-        //                    ManufacturerId = manufacturerId,
-        //                    ProductId = product.Id,
-        //                    IsFeaturedProduct = false,
-        //                    DisplayOrder = ++maxDisplayOrder
-        //                });
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        NotifyAccessDenied();
-        //    }
+                UpdatePictureSeoNames(slide);
 
-        //    return new EmptyResult();
-        //}
+                // activity log
+                _customerActivityService.InsertActivity("AddNewSliderSlide", _localizationService.GetResource("ActivityLog.AddNewSliderSlide"), slide.SliderId);
+
+                NotifySuccess(_localizationService.GetResource("Admin.CMS.ContentSlider.Slide.Added"));
+                return continueEditing ? RedirectToAction("SlideEdit", new { id = slide.Id }) : RedirectToAction("Edit", new { id = slide.SliderId });
+            }
+
+            //If we got this far, something failed, redisplay form
+
+            return View(model);
+        }
+
+        public ActionResult SlideEdit(int id)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageContentSlider))
+                return AccessDeniedView();
+
+            var slide = _contentSliderService.GetContentSliderSlideById(id);
+            if (slide == null)
+                return RedirectToAction("List");
+
+            var model = slide.ToModel();
+
+            //locales
+            //AddLocales(_languageService, model.Locales);
+
+            AddLocales(_languageService, model.Locales, (locale, languageId) =>
+            {
+                locale.SlideTitle = slide.GetLocalized(x => x.SlideTitle, languageId, false, false);
+                locale.SlideContent = slide.GetLocalized(x => x.SlideContent, languageId, false, false);
+            });
+
+            return View(model);
+        }
+
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateInput(false)]
+        public ActionResult SlideEdit(SliderSlideModel model, bool continueEditing, FormCollection form)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageContentSlider))
+                return AccessDeniedView();
+
+            var slide = _contentSliderService.GetContentSliderSlideById(model.Id);
+            if (slide == null)
+                return RedirectToAction("List");
+
+            if (ModelState.IsValid)
+            {
+                slide = model.ToEntity(slide);
+                
+                //locales
+                UpdateLocales(slide, model);
+
+                // Commit now
+                _contentSliderService.UpdateContentSliderSlide(slide);
+
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, slide, form));
+
+                // activity log
+                _customerActivityService.InsertActivity("EditSlide", _localizationService.GetResource("ActivityLog.EditSlide"), slide.SliderId);
+
+                NotifySuccess(_localizationService.GetResource("Admin.CMS.ContentSlider.Slide.Updated"));
+                return continueEditing ? RedirectToAction("SlideEdit", new { id = slide.Id }) : RedirectToAction("Edit", new { id = slide.SliderId });
+            }
+
+            //If we got this far, something failed, redisplay form
+
+            return View(model);
+        }
+
+        [HttpPost, ParameterBasedOnFormName("delete", null)]
+        public ActionResult SlideDelete(SliderSlideModel model, bool continueEditing)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageContentSlider))
+                return AccessDeniedView();
+
+            //var slide = _contentSliderService.GetContentSliderSlideById(id);
+            //if (slide == null)
+            //    return RedirectToAction("List");
+
+            _contentSliderService.DeleteContentSliderSlide(model.ToEntity());
+
+            //activity log
+            _customerActivityService.InsertActivity("DeleteSlide", _localizationService.GetResource("ActivityLog.DeleteSlide"), model.SliderId);
+
+            NotifySuccess(_localizationService.GetResource("Admin.CMS.ContentSlider.Slide.Deleted"));
+            return RedirectToAction("Edit", new { id = model.SliderId });
+        }
 
         #endregion
     }

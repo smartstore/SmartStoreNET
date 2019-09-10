@@ -69,7 +69,12 @@ namespace SmartStore.Web.Framework.Controllers
         /// <param name="selectedStoreIds">Selected store identifiers.</param>
         protected virtual void SaveStoreMappings<T>(T entity, int[] selectedStoreIds) where T : BaseEntity, IStoreMappingSupported
         {
-            entity.LimitedToStores = selectedStoreIds?.Any() ?? false;
+            Guard.NotNull(entity, nameof(entity));
+
+            entity.LimitedToStores = (selectedStoreIds?.Length ?? 0) == 1 && selectedStoreIds[0] == 0
+                ? false
+                : selectedStoreIds?.Any() ?? false;
+
             Services.Resolve<IStoreMappingService>().SaveStoreMappings(entity, selectedStoreIds);
         }
 

@@ -121,6 +121,7 @@ namespace SmartStore.Admin.Models.Catalog
 		// Store mapping.
 		[UIHint("Stores"), SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
         public int[] SelectedStoreIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
         public bool LimitedToStores { get; set; }
 
         public string ParentCategoryBreadcrumb { get; set; }

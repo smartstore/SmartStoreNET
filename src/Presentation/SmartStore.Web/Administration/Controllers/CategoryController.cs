@@ -235,19 +235,14 @@ namespace SmartStore.Admin.Controllers
             var customerChoice = _genericAttributeService.Value.GetAttribute<string>("Customer", _workContext.CurrentCustomer.Id, "AdminCategoriesType");
             if (customerChoice == null || customerChoice.Equals("Tree"))
             {
-                _genericAttributeService.Value.SaveAttribute<string>(_workContext.CurrentCustomer, "AdminCategoriesType", "List");
+                _genericAttributeService.Value.SaveAttribute(_workContext.CurrentCustomer, "AdminCategoriesType", "List");
             }
             
-            var allStores = _storeService.GetAllStores();
 			var model = new CategoryListModel
 			{
+                IsSingleStoreMode = _storeService.IsSingleStoreMode(),
 				GridPageSize = _adminAreaSettings.GridPageSize
 			};
-
-			foreach (var store in allStores)
-			{
-				model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString() });
-			}
 
             return View(model);
         }

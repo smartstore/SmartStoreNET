@@ -52,7 +52,7 @@
 					data_select = true,
 					data_select_lazy = true,
 					data_select_init_text = Model.ParentCategoryBreadcrumb,
-					data_select_url = Url.Action("Allcategories", "Category", new { selectedId =  Model.ParentCategoryId })
+					data_select_url = Url.Action("AllCategories", "Category", new { selectedId = Model.ParentCategoryId })
 				})
                 @Html.ValidationMessageFor(model => model.ParentCategoryId)
             </td>
@@ -84,18 +84,15 @@
                 @Html.ValidationMessageFor(model => model.DisplayOrder)
             </td>
         </tr>
-        @if (Model.Id != 0)
-        {
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.SelectedStoreIds)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(x => x.SelectedStoreIds)
-                    @Html.ValidationMessageFor(model => model.SelectedStoreIds)
-                </td>
-            </tr>
-        }
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedStoreIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.SelectedStoreIds)
+                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+            </td>
+        </tr>
 	</table>
 
     @(Html.LocalizedEditor<CategoryModel, CategoryLocalizedModel>("category-info-localized",

@@ -259,8 +259,6 @@ namespace SmartStore.Admin.Controllers
 
 			p.AvailableEndDateTimeUtc = p.AvailableEndDateTimeUtc.ToEndOfTheDay();
 			p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();
-
-            SaveStoreMappings(p, model.SelectedStoreIds);
         }
 
         [NonAction]
@@ -588,9 +586,9 @@ namespace SmartStore.Admin.Controllers
 				UpdatePictureSeoNames(p);
 			}
 			
-			// product tags
 			UpdateProductTags(p, m.ProductTags);
-		}
+            SaveStoreMappings(p, model.SelectedStoreIds);
+        }
 
 		#endregion
 
@@ -984,9 +982,8 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-			var allStores = _storeService.GetAllStores();
-
             model.DisplayProductPictures = _adminAreaSettings.DisplayProductPictures;
+            model.IsSingleStoreMode = _storeService.IsSingleStoreMode();
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
             foreach (var c in _categoryService.GetCategoryTree(includeHidden: true).FlattenNodes(false))
@@ -997,11 +994,6 @@ namespace SmartStore.Admin.Controllers
             foreach (var m in _manufacturerService.GetAllManufacturers(true))
             {
                 model.AvailableManufacturers.Add(new SelectListItem { Text = m.Name, Value = m.Id.ToString() });
-            }
-
-            foreach (var s in allStores)
-            {
-                model.AvailableStores.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
             }
 
 			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
@@ -1177,17 +1169,14 @@ namespace SmartStore.Admin.Controllers
                 
                 if (product.ProductType == ProductType.BundledProduct)
 				{
-					product.BundleTitleText = _localizationService.GetResource("Products.Bundle.BundleIncludes");
+					product.BundleTitleText = T("Products.Bundle.BundleIncludes");
 				}
 
                 _productService.InsertProduct(product);
 
 				UpdateDataOfExistingProduct(product, model, false);
 
-                //activity log
-                _customerActivityService.InsertActivity("AddNewProduct", _localizationService.GetResource("ActivityLog.AddNewProduct"), product.Name);
-
-                NotifySuccess(_localizationService.GetResource("Admin.Catalog.Products.Added"));
+                _customerActivityService.InsertActivity("AddNewProduct", T("ActivityLog.AddNewProduct"), product.Name);
 
 				if (continueEditing)
 				{
@@ -1199,10 +1188,11 @@ namespace SmartStore.Admin.Controllers
 					}
 				}
 
+                NotifySuccess(T("Admin.Catalog.Products.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = product.Id }) : RedirectToAction("List");
             }
 
-            // If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
 			PrepareProductModel(model, null, false, true);
             PrepareAclModel(model, null, true);
 

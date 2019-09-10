@@ -163,7 +163,7 @@
                 firstOption.text("");
             }
 
-            if (placeholder && !hasOptionLabel) {
+            if (placeholder && !hasOptionLabel && !sel.is('[multiple=multiple]')) {
                 // create empty first option
                 // "allowClear" doesn't work otherwise.
                 firstOption = $('<option></option>').prependTo(sel);

@@ -244,10 +244,9 @@ namespace SmartStore.Admin.Controllers
 
 			var model = new ManufacturerListModel
 			{
+                IsSingleStoreMode = _storeService.IsSingleStoreMode(),
 				GridPageSize = _adminAreaSettings.GridPageSize
 			};
-
-			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems();
 
 			return View(model);
         }
@@ -257,12 +256,9 @@ namespace SmartStore.Admin.Controllers
         {
 			var gridModel = new GridModel<ManufacturerModel>();
 
-			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems();
-
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var manufacturers = _manufacturerService.GetAllManufacturers(model.SearchManufacturerName, command.Page - 1, command.PageSize,
-					model.SearchStoreId, true);
+				var manufacturers = _manufacturerService.GetAllManufacturers(model.SearchManufacturerName, command.Page - 1, command.PageSize, model.SearchStoreId, true);
 
 				gridModel.Data = manufacturers.Select(x => x.ToModel());
 				gridModel.Total = manufacturers.TotalCount;

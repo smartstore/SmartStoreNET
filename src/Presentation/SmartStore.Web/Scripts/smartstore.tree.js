@@ -88,6 +88,7 @@
                 var node = label.closest('.tree-node');
                 var value = parseInt(node.data('value'));
                 var name = node.data('name');
+                var stateTitle = node.data('state-title');
                 var html = '';
 
                 if (!opt.readOnly) {
@@ -96,7 +97,7 @@
                     html += '<input type="checkbox" name="' + name + '" id="' + name + '" value="' + value + '"' + (value === 1 ? ' checked="checked"' : '') + ' />';
                     html += '<input type="hidden" name="' + name + '" value="0" />';
                 }
-                html += '<span class="tree-state ' + (value === 1 ? 'on' : 'off') + '"></span>';
+                html += '<span class="tree-state ' + (value === 1 ? 'on' : 'off') + '" title="' + stateTitle + '"></span>';
 
                 label.prepend(html);
             });

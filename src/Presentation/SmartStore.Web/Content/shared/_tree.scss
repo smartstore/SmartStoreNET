@@ -21,7 +21,7 @@ $default-state-color: $gray-400;
     }
 
     li {
-        padding: 1px 0;
+        padding: 3px 0;
     }
 
     label {
@@ -30,7 +30,7 @@ $default-state-color: $gray-400;
 
     .tree-expander-container {
         display: inline-block;
-        min-width: 14px;
+        min-width: 15px;
     }
 
     .tree-expander {
@@ -79,6 +79,10 @@ $default-state-color: $gray-400;
         position: relative;
         user-select: none;
     }
+
+    .tree-noleaf > .tree-inner .tree-text {
+        font-weight: $font-weight-medium;
+    }
     // State box default style.
     .tree-state::before {
         content: "";
@@ -88,7 +92,7 @@ $default-state-color: $gray-400;
         border-radius: 5px;
         border: 2px solid $default-state-color;
         background-color: #fff;
-        margin: 2px 4px 0 0;
+        margin: 2px 6px 0 0;
     }
 
     .tree-state::after {

@@ -28,6 +28,7 @@ namespace SmartStore.Web.Framework.UI
         private readonly List<string> _canonicalUrlParts;
 		private readonly List<string> _customHeadParts;
         private readonly List<string> _bodyCssClasses;
+        private readonly IDictionary<string, object> _bodyAttributes;
         private string _htmlId;
         private readonly Dictionary<ResourceLocation, List<WebAssetDescriptor>> _scriptParts;
         private readonly Dictionary<ResourceLocation, List<WebAssetDescriptor>> _cssParts;
@@ -55,6 +56,7 @@ namespace SmartStore.Web.Framework.UI
             _canonicalUrlParts = new List<string>();
 			_customHeadParts = new List<string>();
             _bodyCssClasses = new List<string>();
+            _bodyAttributes = new RouteValueDictionary();
             _linkParts = new List<RouteValueDictionary>();
 			_storeContext = storeContext;
             _bundleBuilder = bundleBuilder;
@@ -89,6 +91,13 @@ namespace SmartStore.Web.Framework.UI
             }
         }
 
+        public void AddBodyAttribute(string name, object value)
+        {
+            Guard.NotEmpty(name, nameof(name));
+
+            _bodyAttributes[name] = value;
+        }
+
         public void AddBodyCssClass(string className)
         {
 			if (className.IsEmpty())
@@ -104,17 +113,17 @@ namespace SmartStore.Web.Framework.UI
 			}	
         }
 
-        public void SetHtmlId(string htmlId)
-        {
-            _htmlId = htmlId;
-        }
-
         public string GenerateBodyCssClasses()
         {
             if (_bodyCssClasses.Count == 0)
                 return null;
 
             return String.Join(" ", _bodyCssClasses);
+        }
+
+        public void SetHtmlId(string htmlId)
+        {
+            _htmlId = htmlId;
         }
 
         public string GenerateHtmlId()

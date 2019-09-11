@@ -648,15 +648,15 @@
 			});
 		});
 		
-		// scroll top
+		// Waypoint / scroll top
 		(function () {
             $(document).on('click', 'a.waypoint', function (e) {
                 e.preventDefault();
                 var href = $(this).attr('href');
-                var target = href === '#'
-                    ? $('body')
-                    : $(href);
-                $(window).scrollTo(target, 500);
+                var target = href === '#' ? $('body') : $(href);
+                var offset = $(this).data('offset') || 0;
+
+                $(window).scrollTo(target, { duration: 500, offset: offset });
                 return false;
             });
 

@@ -11,6 +11,7 @@ namespace SmartStore.Web.Framework.UI
         void AddMetaKeywordParts(IEnumerable<string> parts, bool append = false);
         void AddCanonicalUrlParts(IEnumerable<string> parts, bool append = false);
 		void AddCustomHeadParts(IEnumerable<string> parts, bool append = false);
+        void AddBodyAttribute(string name, object value);
         void AddBodyCssClass(string className);
         void SetHtmlId(string htmlId);
         void AddScriptParts(ResourceLocation location, IEnumerable<string> parts, bool excludeFromBundling = false, bool append = false);

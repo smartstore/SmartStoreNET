@@ -656,7 +656,7 @@
                 var target = href === '#' ? $('body') : $(href);
                 var offset = $(this).data('offset') || 0;
 
-                $(window).scrollTo(target, { duration: 500, offset: offset });
+                $(window).scrollTo(target, { duration: 800, offset: offset });
                 return false;
             });
 

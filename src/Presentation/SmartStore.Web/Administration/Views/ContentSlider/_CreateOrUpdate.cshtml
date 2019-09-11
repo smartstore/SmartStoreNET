@@ -68,7 +68,7 @@
         new SelectListItem {Text=T("Admin.CMS.ContentSlider.CategorySlider"),Value="1" },
         new SelectListItem {Text=T("Admin.CMS.ContentSlider.ManufacturerSlide"),Value="2" }
     };
-<table class="adminContent">
+<table id="contentsliderTable" class="adminContent">
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.IsActive)
@@ -123,6 +123,57 @@
             @Html.ValidationMessageFor(model => model.SliderType)
         </td>
     </tr>
+    <tr class="select-item-category">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ItemId)
+        </td>
+        <td class="adminData">
+            <div class="input-group">
+                @Html.TextBoxFor(model => model.ItemId, new { @readonly = "readonly" })
+                <span class="input-group-append">
+                    <a class="btn btn-secondary" id="reset-required-productids" title="@T("Admin.Common.Reset")">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </span>
+                <span class="input-group-append">
+                    @(Html.SmartStore().EntityPicker()
+                        .For(x => x.ItemId)
+                        .AppendMode(false)
+                        .MaxItems(1)
+                        .EntityType("Category")
+                        .DialogTitle(T("Admin.CMS.ContentSlider.SelectItem").Text.EncodeJsString('\'', false))
+                        .Caption(T("Admin.Common.Search").Text.EncodeJsString('\'', false)))
+                </span>
+            </div>
+            @Html.ValidationMessageFor(model => model.ItemId)
+        </td>
+    </tr>
+    <tr class="select-item-manufacturer">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ItemId)
+        </td>
+        <td class="adminData">
+            <div class="input-group">
+                @Html.TextBoxFor(model => model.ItemId, new { @readonly = "readonly", @id="manufactureItemId" })
+                <span class="input-group-append">
+                    <a class="btn btn-secondary" id="reset-required-productids" title="@T("Admin.Common.Reset")">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </span>
+                <span class="input-group-append">
+                    @(Html.SmartStore().EntityPicker()
+                        .For(x => x.ItemId)
+                        .AppendMode(false)
+                        .MaxItems(1)
+                        .EntityType("Manufacturer")
+                        .DialogTitle(T("Admin.CMS.ContentSlider.SelectItem").Text.EncodeJsString('\'', false))
+                        .Caption(T("Admin.Common.Search").Text.EncodeJsString('\'', false))
+                        .OnSelectionCompleted("PickManufacture_Completed"))
+                </span>
+            </div>
+            @Html.ValidationMessageFor(model => model.ItemId)
+        </td>
+    </tr>
 </table>
 }
 
@@ -160,7 +211,7 @@
                 columns.Bound(x => x.IsActive)
                    .ClientTemplate(@Html.SymbolForBool("IsActive"))
                    .Centered();
-                columns.Bound(x => x.DisplayOrder1)
+                columns.Bound(x => x.DisplayOrder)
                     .Centered();
                 columns.ForeignKey(p => p.SlideType, SlideTypeList, "SLideTypeId", "SlideTypeName")
                 .Width("10%");
@@ -199,22 +250,30 @@
 }
 
 <script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#@(Html.FieldIdFor(x => x.SliderType))').change(function () {
+                var type = $(this).val();
+                if (type == '@((int)SliderType.HomePageSlider)' || type == '') {
+                    $('#contentsliderTable').find('.select-item-category').hide(type);
+                    $('#contentsliderTable').find('.select-item-manufacturer').hide(type);
+                } else if (type == '@((int)SliderType.CategorySlider)') {
+                    $('#contentsliderTable').find('.select-item-manufacturer').hide(type);
+                    $('#contentsliderTable').find('.select-item-category').show(type);
+                } else if (type == '@((int)SliderType.ManufacturerSlider)') {
+                    $('#contentsliderTable').find('.select-item-category').hide(type);
+                    $('#contentsliderTable').find('.select-item-manufacturer').show(type);
+                }
+            }).trigger('change');
+		});
 	@*$(function () {
         $("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").change(togglePageSize);
 		togglePageSize();
     });*@
 
-	function PickProducts_Completed(ids) {
-		//console.log(ids);
-		$({}).doAjax({
-			type: 'POST',
-			url: '@Url.Action("SlideCreate")',
-			data: { "sliderId": @Model.Id, "selectedslideIds": ids },
-			callbackSuccess: function () {
-				$('#Slides-grid').data('tGrid').ajaxRequest();
-			}
-		});
-		return true;
+    function PickManufacture_Completed(ids) {
+        $('#manufactureItemId').val(ids);
+        return true;
 	}
 
     function togglePageSize() {

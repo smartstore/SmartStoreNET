@@ -21,10 +21,14 @@
             <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
                 <span>@T("Admin.Common.SaveContinue")</span>
             </button>
-            <button type="submit" name="delete" id="sliderslide-delete" class="btn btn-danger">
-                <i class="far fa-trash-alt"></i>
+            @*<button type="submit" name="delete" id="sliderslide-delete" class="btn btn-danger">
+            <i class="far fa-trash-alt"></i>
+            <span>@T("Admin.Common.Delete")</span>
+        </button>*@
+            <a href="@Url.Action("SlideDelete",new { id = Model.Id})" class="btn  btn-danger">
+                <i class="fa fa-trash-alt"></i>
                 <span>@T("Admin.Common.Delete")</span>
-            </button>
+            </a>
 
             @{ Html.RenderWidget("admin_button_toolbar_after"); }
         </div>

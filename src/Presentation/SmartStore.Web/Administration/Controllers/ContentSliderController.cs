@@ -287,7 +287,9 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var model = new ContentSliderModel();
-            model.SliderType = -1; ;
+            model.SliderType = -1;
+            model.Height = 500;
+            model.Delay = 3000;
 
             //locales
             AddLocales(_languageService, model.Locales);
@@ -305,39 +307,15 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var contentSlider = model.ToEntity();
+                if (model.SliderType == (int)SliderType.HomePageSlider)
+                    model.ItemId = null;
 
-                //MediaHelper.UpdatePictureTransientStateFor(manufacturer, m => m.PictureId);
+                var contentSlider = model.ToEntity();
 
                 _contentSliderService.InsertContentSlider(contentSlider);
 
-                //// search engine name
-                //model.SeName = manufacturer.ValidateSeName(model.SeName, manufacturer.Name, true);
-                //_urlRecordService.SaveSlug(manufacturer, model.SeName, 0);
-
                 // locales
                 UpdateLocales(contentSlider, model);
-
-                //// discounts
-                //var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToManufacturers, null, true);
-                //foreach (var discount in allDiscounts)
-                //{
-                //    if (model.SelectedDiscountIds != null && model.SelectedDiscountIds.Contains(discount.Id))
-                //        manufacturer.AppliedDiscounts.Add(discount);
-                //}
-
-                //var hasDiscountsApplied = manufacturer.AppliedDiscounts.Count > 0;
-                //if (hasDiscountsApplied)
-                //{
-                //    manufacturer.HasDiscountsApplied = manufacturer.AppliedDiscounts.Count > 0;
-                //    _manufacturerService.UpdateManufacturer(manufacturer);
-                //}
-
-                //// update picture seo file name
-                //UpdatePictureSeoNames(manufacturer);
-
-                //// Stores
-                //SaveStoreMappings(manufacturer, model);
 
                 // activity log
                 _customerActivityService.InsertActivity("AddNewContentSlider", _localizationService.GetResource("ActivityLog.AddNewContentSlider"), contentSlider.SliderName);
@@ -386,35 +364,25 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                contentslider = model.ToEntity(contentslider);
-                //MediaHelper.UpdatePictureTransientStateFor(contentslider, m => m.PictureId);
+                if (model.SliderType == (int)SliderType.HomePageSlider)
+                    model.ItemId = null;
 
-                // search engine name
-                //model.SeName = contentslider.ValidateSeName(model.SeName, contentslider.SliderName, true);
-                //_urlRecordService.SaveSlug(contentslider, model.SeName, 0);
+                List<Slide> SlidesList = contentslider.Slides.ToList();
+
+                contentslider = model.ToEntity(contentslider);
+
+                contentslider.Slides = SlidesList;
 
                 //locales
                 UpdateLocales(contentslider, model);
-
-                // discounts
-                //var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToManufacturers, null, true);
-
-                //contentslider.HasDiscountsApplied = contentslider.AppliedDiscounts.Count > 0;
-                //contentslider.UpdatedOnUtc = DateTime.UtcNow;
 
                 // Commit now
                 _contentSliderService.UpdateContentSlider(contentslider);
 
                 Services.EventPublisher.Publish(new ModelBoundEvent(model, contentslider, form));
 
-                // update picture seo file name
-                //UpdatePictureSeoNames(contentslider);
-
-                // Stores
-                //SaveStoreMappings(contentslider, model);
-
                 // activity log
-                _customerActivityService.InsertActivity("EditManufacturer", _localizationService.GetResource("ActivityLog.EditManufacturer"), contentslider.SliderName);
+                _customerActivityService.InsertActivity("EditContentSlider", _localizationService.GetResource("ActivityLog.EditContentSlider"), contentslider.SliderName);
 
                 NotifySuccess(_localizationService.GetResource("Admin.CMS.ContentSlider.Updated"));
                 return continueEditing ? RedirectToAction("Edit", contentslider.Id) : RedirectToAction("List");
@@ -438,7 +406,7 @@ namespace SmartStore.Admin.Controllers
             _contentSliderService.DeleteContentSlider(contentSlider);
 
             //activity log
-            _customerActivityService.InsertActivity("DeleteContentSlider", _localizationService.GetResource("ActivityLog.DeleteManufacturer"), contentSlider.SliderName);
+            _customerActivityService.InsertActivity("DeleteContentSlider", _localizationService.GetResource("ActivityLog.DeleteContentSlider"), contentSlider.SliderName);
 
             NotifySuccess(_localizationService.GetResource("Admin.CMS.ContentSlider.Deleted"));
             return RedirectToAction("List");
@@ -471,7 +439,7 @@ namespace SmartStore.Admin.Controllers
                             ItemId = x.ItemId,
                             SlideContent = x.SlideContent,
                             SlideTitle = x.SlideTitle,
-                            DisplayOrder1 = x.DisplayOrder,
+                            DisplayOrder = x.DisplayOrder,
                             //SlideTypeName = ((SlideType)x.SlideType).ToString(),
                             SlideType = x.SlideType
                         };
@@ -518,6 +486,23 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
+                if (model.SlideType == (int)SlideType.NormalSlide)
+                {
+                    model.ItemId = null;
+                    model.DisplayPrice = false;
+                    model.DisplayButton = false;
+                }
+                else if (model.SlideType == (int)SlideType.CategorySlide)
+                {
+                    model.DisplayPrice = false;
+                    model.DisplayButton = false;
+                }
+                else if (model.SlideType == (int)SlideType.ManufacturerSlide)
+                {
+                    model.DisplayPrice = false;
+                    model.DisplayButton = false;
+                }
+
                 var slide = model.ToEntity();
 
                 _contentSliderService.InsertContentSliderSlide(slide);
@@ -546,7 +531,7 @@ namespace SmartStore.Admin.Controllers
 
             var slide = _contentSliderService.GetContentSliderSlideById(id);
             if (slide == null)
-                return RedirectToAction("List");
+                return RedirectToAction("Edit", new { id = slide.SliderId });
 
             var model = slide.ToModel();
 
@@ -571,12 +556,29 @@ namespace SmartStore.Admin.Controllers
 
             var slide = _contentSliderService.GetContentSliderSlideById(model.Id);
             if (slide == null)
-                return RedirectToAction("List");
+                return RedirectToAction("Edit", new { id = slide.SliderId });
 
             if (ModelState.IsValid)
             {
+                if (model.SlideType == (int)SlideType.NormalSlide)
+                {
+                    model.ItemId = null;
+                    model.DisplayPrice = false;
+                    model.DisplayButton = false;
+                }
+                else if (model.SlideType == (int)SlideType.CategorySlide)
+                {
+                    model.DisplayPrice = false;
+                    model.DisplayButton = false;
+                }
+                else if (model.SlideType == (int)SlideType.ManufacturerSlide)
+                {
+                    model.DisplayPrice = false;
+                    model.DisplayButton = false;
+                }
+
                 slide = model.ToEntity(slide);
-                
+
                 //locales
                 UpdateLocales(slide, model);
 
@@ -597,23 +599,23 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormName("delete", null)]
-        public ActionResult SlideDelete(SliderSlideModel model, bool continueEditing)
+        [HttpGet]
+        public ActionResult SlideDelete(int id)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageContentSlider))
                 return AccessDeniedView();
 
-            //var slide = _contentSliderService.GetContentSliderSlideById(id);
-            //if (slide == null)
-            //    return RedirectToAction("List");
+            var slide = _contentSliderService.GetContentSliderSlideById(id);
+            if (slide == null)
+                return RedirectToAction("List");
 
-            _contentSliderService.DeleteContentSliderSlide(model.ToEntity());
+            _contentSliderService.DeleteContentSliderSlide(slide);
 
             //activity log
-            _customerActivityService.InsertActivity("DeleteSlide", _localizationService.GetResource("ActivityLog.DeleteSlide"), model.SliderId);
+            _customerActivityService.InsertActivity("DeleteSlide", _localizationService.GetResource("ActivityLog.DeleteSlide"), slide.SliderId);
 
             NotifySuccess(_localizationService.GetResource("Admin.CMS.ContentSlider.Slide.Deleted"));
-            return RedirectToAction("Edit", new { id = model.SliderId });
+            return RedirectToAction("Edit", new { id = slide.SliderId });
         }
 
         #endregion

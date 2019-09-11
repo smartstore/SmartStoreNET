@@ -53,7 +53,7 @@ namespace SmartStore.Admin.Models.ContentSlider
 
         [SmartResourceDisplayName("Admin.CMS.ContentSlider.Fields.ItemId")]
         [AllowHtml]
-        public int ItemId { get; set; }
+        public int? ItemId { get; set; }
 
         [SmartResourceDisplayName("Admin.CMS.ContentSlider.Fields.SeName")]
         [AllowHtml]
@@ -80,6 +80,7 @@ namespace SmartStore.Admin.Models.ContentSlider
 		{
 			RuleFor(x => x.SliderName).NotEmpty();
             RuleFor(x => x.SliderType).GreaterThan(-1);
+            RuleFor(x => x.Height).Equals(500);
         }
     }
 }

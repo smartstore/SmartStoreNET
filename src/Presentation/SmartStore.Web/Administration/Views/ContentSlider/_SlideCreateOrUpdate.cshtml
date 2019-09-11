@@ -33,51 +33,51 @@
     }
 
     @(Html.LocalizedEditor<SliderSlideModel, SliderSlidLocalizedModel>("sliderslide-info-localized",
-                            @<table class="adminContent">
-                                <tr>
-                                    <td class="adminTitle">
-                                        @Html.SmartLabelFor(model => model.Locales[item].SlideTitle)
-                                    </td>
-                                    <td class="adminData">
-                                        @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
-                                        @Html.HiddenFor(model => model.Locales[item].LanguageId)
+                                                            @<table class="adminContent">
+                                                                <tr>
+                                                                    <td class="adminTitle">
+                                                                        @Html.SmartLabelFor(model => model.Locales[item].SlideTitle)
+                                                                    </td>
+                                                                    <td class="adminData">
+                                                                        @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+                                                                        @Html.HiddenFor(model => model.Locales[item].LanguageId)
 
-                                        @Html.EditorFor(model => Model.Locales[item].SlideTitle)
-                                        @Html.ValidationMessageFor(model => model.Locales[item].SlideTitle)
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="adminTitle">
-                                        @Html.SmartLabelFor(model => model.Locales[item].SlideContent)
-                                    </td>
-                                    <td class="adminData">
-                                        @Html.TextAreaFor(model => model.Locales[item].SlideContent)
-                                        @Html.ValidationMessageFor(model => model.Locales[item].SlideContent)
-                                    </td>
-                                </tr>
+                                                                        @Html.EditorFor(model => Model.Locales[item].SlideTitle)
+                                                                        @Html.ValidationMessageFor(model => model.Locales[item].SlideTitle)
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="adminTitle">
+                                                                        @Html.SmartLabelFor(model => model.Locales[item].SlideContent)
+                                                                    </td>
+                                                                    <td class="adminData">
+                                                                        @Html.TextAreaFor(model => model.Locales[item].SlideContent)
+                                                                        @Html.ValidationMessageFor(model => model.Locales[item].SlideContent)
+                                                                    </td>
+                                                                </tr>
 
-                            </table>
+                                                            </table>
 ,
-                                                    @<table class="adminContent">
-                                                        <tr>
-                                                            <td class="adminTitle">
-                                                                @Html.SmartLabelFor(model => model.SlideTitle)
-                                                            </td>
-                                                            <td class="adminData">
-                                                                @Html.EditorFor(model => model.SlideTitle)
-                                                                @Html.ValidationMessageFor(model => model.SlideTitle)
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="adminTitle">
-                                                                @Html.SmartLabelFor(model => model.SlideContent)
-                                                            </td>
-                                                            <td class="adminData">
-                                                                @Html.EditorFor(model => model.SlideContent)
-                                                                @Html.ValidationMessageFor(model => model.SlideContent)
-                                                            </td>
-                                                        </tr>
-                                                    </table>
+                                                                                                                                    @<table class="adminContent">
+                                                                                                                                        <tr>
+                                                                                                                                            <td class="adminTitle">
+                                                                                                                                                @Html.SmartLabelFor(model => model.SlideTitle)
+                                                                                                                                            </td>
+                                                                                                                                            <td class="adminData">
+                                                                                                                                                @Html.EditorFor(model => model.SlideTitle)
+                                                                                                                                                @Html.ValidationMessageFor(model => model.SlideTitle)
+                                                                                                                                            </td>
+                                                                                                                                        </tr>
+                                                                                                                                        <tr>
+                                                                                                                                            <td class="adminTitle">
+                                                                                                                                                @Html.SmartLabelFor(model => model.SlideContent)
+                                                                                                                                            </td>
+                                                                                                                                            <td class="adminData">
+                                                                                                                                                @Html.EditorFor(model => model.SlideContent)
+                                                                                                                                                @Html.ValidationMessageFor(model => model.SlideContent)
+                                                                                                                                            </td>
+                                                                                                                                        </tr>
+                                                                                                                                    </table>
             ))
 
     IList<SelectListItem> SlideTypeSelectedList = new List<SelectListItem>
@@ -87,7 +87,7 @@
         new SelectListItem {Text=T("Admin.CMS.ContentSlider.Slide.CategorySlide"),Value="2" },
         new SelectListItem {Text=T("Admin.CMS.ContentSlider.Slide.ManufacturerSlide"),Value="3" }
     };
-<table class="adminContent">
+<table class="adminContent" id="slidesTable">
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.IsActive)
@@ -108,11 +108,11 @@
     </tr>
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.DisplayOrder1)
+            @Html.SmartLabelFor(model => model.DisplayOrder)
         </td>
         <td class="adminData">
-            @Html.EditorFor(x => x.DisplayOrder1)
-            @Html.ValidationMessageFor(model => model.DisplayOrder1)
+            @Html.EditorFor(x => x.DisplayOrder)
+            @Html.ValidationMessageFor(model => model.DisplayOrder)
         </td>
     </tr>
     <tr>
@@ -124,7 +124,84 @@
             @Html.ValidationMessageFor(model => model.SlideType)
         </td>
     </tr>
-    <tr>
+    <tr class="select-item-product">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ItemId)
+        </td>
+        <td class="adminData">
+            <div class="input-group">
+                @Html.TextBoxFor(model => model.ItemId, new { @readonly = "readonly" })
+                <span class="input-group-append">
+                    <a class="btn btn-secondary" id="reset-required-productids" title="@T("Admin.Common.Reset")">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </span>
+                <span class="input-group-append">
+                    @(Html.SmartStore().EntityPicker()
+                        .For(x => x.ItemId)
+                        .AppendMode(false)
+                        .MaxItems(1)
+                        .EntityType("Product")
+                        .DialogTitle(T("Admin.CMS.ContentSlider.SelectItem").Text.EncodeJsString('\'', false))
+                        .Caption(T("Admin.Common.Search").Text.EncodeJsString('\'', false)))
+                </span>
+            </div>
+            @Html.ValidationMessageFor(model => model.ItemId)
+        </td>
+    </tr>
+    <tr class="select-item-category">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ItemId)
+        </td>
+        <td class="adminData">
+            <div class="input-group">
+                @Html.TextBoxFor(model => model.ItemId, new { @readonly = "readonly", @id = "categoryItemId" })
+                <span class="input-group-append">
+                    <a class="btn btn-secondary" id="reset-required-productids" title="@T("Admin.Common.Reset")">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </span>
+                <span class="input-group-append">
+                    @(Html.SmartStore().EntityPicker()
+                        .For(x => x.ItemId)
+                        .AppendMode(false)
+                        .MaxItems(1)
+                        .EntityType("Category")
+                        .DialogTitle(T("Admin.CMS.ContentSlider.SelectItem").Text.EncodeJsString('\'', false))
+                        .Caption(T("Admin.Common.Search").Text.EncodeJsString('\'', false))
+                        .OnSelectionCompleted("PicCategory_Completed"))
+                </span>
+            </div>
+            @Html.ValidationMessageFor(model => model.ItemId)
+        </td>
+    </tr>
+    <tr class="select-item-manufacturer">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ItemId)
+        </td>
+        <td class="adminData">
+            <div class="input-group">
+                @Html.TextBoxFor(model => model.ItemId, new { @readonly = "readonly", @id = "manufactureItemId" })
+                <span class="input-group-append">
+                    <a class="btn btn-secondary" id="reset-required-productids" title="@T("Admin.Common.Reset")">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </span>
+                <span class="input-group-append">
+                    @(Html.SmartStore().EntityPicker()
+                        .For(x => x.ItemId)
+                        .AppendMode(false)
+                        .MaxItems(1)
+                        .EntityType("Manufacturer")
+                        .DialogTitle(T("Admin.CMS.ContentSlider.SelectItem").Text.EncodeJsString('\'', false))
+                        .Caption(T("Admin.Common.Search").Text.EncodeJsString('\'', false))
+                        .OnSelectionCompleted("PickManufacture_Completed"))
+                </span>
+            </div>
+            @Html.ValidationMessageFor(model => model.ItemId)
+        </td>
+    </tr>
+    <tr class="displayproductprice">
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.DisplayPrice)
         </td>
@@ -133,7 +210,7 @@
             @Html.ValidationMessageFor(model => model.DisplayPrice)
         </td>
     </tr>
-    <tr>
+    <tr class="showproductbutton">
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.DisplayButton)
         </td>
@@ -144,3 +221,46 @@
     </tr>
 </table>
 }
+
+<script type="text/javascript">
+$(document).ready(function () {
+
+        $('#@(Html.FieldIdFor(x => x.SlideType))').change(function () {
+        var type = $(this).val();
+        if (type == '@((int)SlideType.NormalSlide)' || type == '') {
+            $('#slidesTable').find('.select-item-product').hide(type);
+            $('#slidesTable').find('.select-item-category').hide(type);
+            $('#slidesTable').find('.select-item-manufacturer').hide(type);
+            $('#slidesTable').find('.displayproductprice').hide(type);
+            $('#slidesTable').find('.showproductbutton').hide(type);
+        } else if (type == '@((int)SlideType.ProductSlide)') {
+            $('#slidesTable').find('.select-item-category').hide(type);
+            $('#slidesTable').find('.select-item-manufacturer').hide(type);
+            $('#slidesTable').find('.select-item-product').show(type);
+            $('#slidesTable').find('.displayproductprice').show(type);
+            $('#slidesTable').find('.showproductbutton').show(type);
+        } else if (type == '@((int)SlideType.CategorySlide)') {
+            $('#slidesTable').find('.select-item-product').hide(type);
+            $('#slidesTable').find('.select-item-manufacturer').hide(type);
+            $('#slidesTable').find('.select-item-category').show(type);
+            $('#slidesTable').find('.displayproductprice').hide(type);
+            $('#slidesTable').find('.showproductbutton').hide(type);
+        } else if (type == '@((int)SlideType.ManufacturerSlide)') {
+            $('#slidesTable').find('.select-item-product').hide(type);
+            $('#slidesTable').find('.select-item-category').hide(type);
+            $('#slidesTable').find('.select-item-manufacturer').show(type);
+            $('#slidesTable').find('.displayproductprice').hide(type);
+            $('#slidesTable').find('.showproductbutton').hide(type);
+        }}).trigger('change');
+});
+
+    function PickManufacture_Completed(ids) {
+        $('#manufactureItemId').val(ids);
+        return true;
+    }
+
+     function PicCategory_Completed(ids) {
+        $('#categoryItemId').val(ids);
+        return true;
+	}
+</script>

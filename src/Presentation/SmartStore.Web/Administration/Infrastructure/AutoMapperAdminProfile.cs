@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using SmartStore.Admin.Models.Blogs;
 using SmartStore.Admin.Models.Catalog;
@@ -733,11 +734,14 @@ namespace SmartStore.Admin.Infrastructure
             //ContentSlider
             CreateMap<ContentSlider, ContentSliderModel>()
                 .ForMember(dest => dest.Locales, mo => mo.Ignore())
-                .ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.SliderName));
+                .ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.SliderName))
+                .ForMember(dest => dest.Slides, mo => mo.MapFrom(src => src.Slides));
             CreateMap<ContentSliderModel, ContentSlider>();
 
             CreateMap<Slide, SliderSlideModel>();
             CreateMap<SliderSlideModel, Slide>();
+            CreateMap<List<Slide>, List<SliderSlideModel>>();
+            CreateMap<List<SliderSlideModel> ,List<Slide>>();
         }
 	}
 }

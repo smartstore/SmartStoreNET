@@ -46,6 +46,7 @@ using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.ContentSlider;
 using SmartStore.Admin.Models.ContentSlider;
 using static SmartStore.Admin.Models.ContentSlider.ContentSliderModel;
+using System.Collections.Generic;
 
 namespace SmartStore.Admin
 {
@@ -1030,6 +1031,21 @@ namespace SmartStore.Admin
         }
 
         public static Slide ToEntity(this SliderSlideModel model, Slide destination)
+        {
+            return Mapper.Map(model, destination);
+        }
+
+        public static List<SliderSlideModel> ToModel(this List<Slide> entity)
+        {
+            return Mapper.Map< List<Slide>, List<SliderSlideModel>>(entity);
+        }
+
+        public static List<Slide> ToEntity(this List<SliderSlideModel> model)
+        {
+            return Mapper.Map< List<SliderSlideModel>, List<Slide>>(model);
+        }
+
+        public static List<Slide> ToEntity(this List<SliderSlideModel> model, List<Slide> destination)
         {
             return Mapper.Map(model, destination);
         }

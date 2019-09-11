@@ -121,6 +121,9 @@ $default-state-color: $gray-400;
         border-color: $default-state-color;
     }
     // State indicator 'off'.
+    .off:before {
+        border-color: $success;
+    }
     /*.off:after,
     .in-off:after {
         content: '\002D';

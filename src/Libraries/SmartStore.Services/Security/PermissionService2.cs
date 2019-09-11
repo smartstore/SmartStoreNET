@@ -365,21 +365,22 @@ namespace SmartStore.Services.Security
                     throw new SmartException($"Unknown permission \"{permissionSystemName}\".");
                 }
 
-                // Directly allowed.
-                if (node.Value.Allow)
-                {
-                    return true;
-                }
-
-                while (node != null && !node.Value.Allow)
+                while (node != null && !node.Value.Allow.HasValue)
                 {
                     node = node.Parent;
                 }
 
-                // Indirectly allowed.
-                if (node != null && node.Value.Allow)
+                if (node != null && node.Value.Allow.HasValue)
                 {
-                    return true;
+                    if (node.Value.Allow.Value)
+                    {
+                        // Directly or indirectly allowed.
+                        return true;
+                    }
+                    else
+                    {
+                        // Continue with next role.
+                    }
                 }
             }
 
@@ -403,7 +404,7 @@ namespace SmartStore.Services.Security
                 AddChildItems(root, permissions, null, permission =>
                 {
                     var mapping = permission.PermissionRoleMappings.FirstOrDefault(x => x.CustomerRoleId == role.Id);
-                    return mapping?.Allow ?? false;
+                    return mapping?.Allow ?? null;
                 });
 
                 return root;
@@ -445,7 +446,7 @@ namespace SmartStore.Services.Security
         }
 
 
-        private void AddChildItems(TreeNode<IPermissionNode> parentNode, List<PermissionRecord> permissions, string path, Func<PermissionRecord, bool> allow)
+        private void AddChildItems(TreeNode<IPermissionNode> parentNode, List<PermissionRecord> permissions, string path, Func<PermissionRecord, bool?> allow)
         {
             if (parentNode == null)
             {
@@ -469,7 +470,7 @@ namespace SmartStore.Services.Security
                 var newNode = parentNode.Append(new PermissionNode
                 {
                     PermissionRecordId = entity.Id,
-                    Allow = allow(entity),
+                    Allow = allow(entity),  // null = inherit
                     SystemName = entity.SystemName
                 }, entity.SystemName);
 

@@ -468,9 +468,11 @@
     <script>
         $(function () {
             // Init permission tree.
+            var inherited = @T("Common.Inherited").JsText;
             $('#permission-tree').tree('init', {
                 readOnly: true,
-                nodeState: 'on-off'
+                nodeState: 'on-off',
+                stateTitles: ['(' + inherited + ')', @T("Common.Deny").JsText, @T("Common.Allow").JsText]
             });
 
             // Expand\collapse all.
@@ -486,7 +488,9 @@
     <ul>
         @foreach (var child in node.Children)
         {
-            <li data-name="permission-@child.Value.PermissionRecordId" data-value="@(child.Value.Allow ? 1 : 0)" data-label="@(child.GetMetadata<string>("DisplayName", false))" data-state-title="">
+            <li data-name="permission-@child.Value.PermissionRecordId" 
+                data-value="@(child.Value.Allow.HasValue ? (child.Value.Allow.Value ? 2 : 1) : 0)" 
+                data-label="@(child.GetMetadata<string>("DisplayName", false))">
                 @if (child.HasChildren)
                 {
                     @PermissionNode(child)

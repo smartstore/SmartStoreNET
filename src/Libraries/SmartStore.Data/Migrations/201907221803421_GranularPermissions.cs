@@ -54,9 +54,9 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Common.Create", "Create", "Erstellen");
             builder.AddOrUpdate("Common.Notify", "Notify", "Benachrichtigen");
 
-            builder.AddOrUpdate("Common.Allow", "allow", "erlaubt");
-            builder.AddOrUpdate("Common.Deny", "deny", "verweigert");
-            builder.AddOrUpdate("Common.Inherited", "inherited", "geerbt");
+            builder.AddOrUpdate("Common.Allow", "Allow", "Erlaubt");
+            builder.AddOrUpdate("Common.Deny", "Deny", "Verweigert");
+            builder.AddOrUpdate("Common.Inherited", "Inherited", "Geerbt");
 
             builder.AddOrUpdate("Permissions.DisplayName.DisplayPrice", "Display prices", "Preise anzeigen");
             builder.AddOrUpdate("Permissions.DisplayName.AccessShop", "Access shop", "Zugang zum Shop");

@@ -1,7 +1,4 @@
 ﻿@model CategoryModel
-
-@using Telerik.Web.Mvc.UI;
-
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 
@@ -11,85 +8,82 @@
 	x.Add().Text(T("Admin.Common.SEO").Text).Icon("fa fa-search fa-lg fa-fw").Content(TabSeo());
 	x.Add().Text(T("Admin.Catalog.Categories.Products").Text).Icon("fa fa-cube fa-lg fa-fw").Content(TabProducts());
 	x.Add().Text(T("Admin.Catalog.Categories.Discounts").Text).Icon("fa fa-percent fa-lg fa-fw").Content(TabDiscounts());
-	x.Add().Text(T("Admin.Catalog.Categories.Acl").Text).Icon("fa fa-users fa-lg fa-fw").Content(TabAcl());
-	x.Add().Text(T("Admin.Common.Stores").Text).Icon("fa fa-globe fa-lg fa-fw").Content(TabStores());
 
-	//generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "category-edit", this.Html, this.Model));
 })
 
 @helper TabInfo()
 {
-	if (Model.Id != 0)
-	{
-		<table class="adminContent">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Id)
-				</td>
-				<td class="adminData">
-					@Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
-					@Html.ValidationMessageFor(model => model.Id)
-				</td>
-			</tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.ExternalLink)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.ExternalLink)
-                    @Html.ValidationMessageFor(model => model.ExternalLink)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.ParentCategoryId)
-                </td>
-                <td class="adminData">
-				    @Html.DropDownListFor(model => model.ParentCategoryId,
-				    Model.ParentCategoryId == null ? Enumerable.Empty<SelectListItem>() : new List<SelectListItem> {
-					    new SelectListItem { Text = Model.ParentCategoryBreadcrumb, Value = Model.ParentCategoryId.ToString() }
-				    },
-				    new
-				    {
-					    placeholder = "[" + T("Common.Unspecified") + "]",
-					    data_select = true,
-					    data_select_lazy = true,
-					    data_select_init_text = Model.ParentCategoryBreadcrumb,
-					    data_select_url = Url.Action("Allcategories", "Category", new { selectedId =  Model.ParentCategoryId })
-				    })
-                    @Html.ValidationMessageFor(model => model.ParentCategoryId)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.DisplayOrder)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.DisplayOrder)
-                    @Html.ValidationMessageFor(model => model.DisplayOrder)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.Published)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(x => x.Published)
-                    @Html.ValidationMessageFor(model => model.Published)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.ShowOnHomePage)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(x => x.ShowOnHomePage)
-                    @Html.ValidationMessageFor(model => model.ShowOnHomePage)
-                </td>
-            </tr>
-		</table>
-	}
+	<table class="adminContent mb-2">
+        @if (Model.Id != 0)
+        {
+		    <tr>
+			    <td class="adminTitle">
+				    @Html.SmartLabelFor(model => model.Id)
+			    </td>
+			    <td class="adminData">
+				    @Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
+				    @Html.ValidationMessageFor(model => model.Id)
+			    </td>
+		    </tr>
+        }
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ExternalLink)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ExternalLink)
+                @Html.ValidationMessageFor(model => model.ExternalLink)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ParentCategoryId)
+            </td>
+            <td class="adminData">
+				@Html.DropDownListFor(model => model.ParentCategoryId,
+				Model.ParentCategoryId == null ? Enumerable.Empty<SelectListItem>() : new List<SelectListItem> {
+					new SelectListItem { Text = Model.ParentCategoryBreadcrumb, Value = Model.ParentCategoryId.ToString() }
+				},
+				new
+				{
+					placeholder = "[" + T("Common.Unspecified") + "]",
+					data_select = true,
+					data_select_lazy = true,
+					data_select_init_text = Model.ParentCategoryBreadcrumb,
+					data_select_url = Url.Action("AllCategories", "Category", new { selectedId = Model.ParentCategoryId })
+				})
+                @Html.ValidationMessageFor(model => model.ParentCategoryId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Published)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.Published)
+                @Html.ValidationMessageFor(model => model.Published)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowOnHomePage)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.ShowOnHomePage)
+                @Html.ValidationMessageFor(model => model.ShowOnHomePage)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisplayOrder)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DisplayOrder)
+                @Html.ValidationMessageFor(model => model.DisplayOrder)
+            </td>
+        </tr>
+	</table>
 
     @(Html.LocalizedEditor<CategoryModel, CategoryLocalizedModel>("category-info-localized",
 		@<table class="adminContent">
@@ -288,6 +282,34 @@
             <td class="adminData">
                 @Html.DropDownListFor(model => model.CategoryTemplateId, Model.AvailableCategoryTemplates)
                 @Html.ValidationMessageFor(model => model.CategoryTemplateId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedStoreIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.SelectedStoreIds)
+                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedCustomerRoleIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.SelectedCustomerRoleIds)
+                @Html.ValidationMessageFor(model => model.SelectedCustomerRoleIds)
+
+	            <div class="mt-4">
+		            <div class="alert alert-danger">
+			            @T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts.Hint")
+		            </div>
+		            <a href="@Url.Action("InheritAclIntoChildren", "Category", new { categoryId = Model.Id })" name="inherit-acl-into-children" class="btn btn-danger">
+			            <i class="fa fa-bolt"></i>
+			            <span>@T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts")</span>
+		            </a>
+	            </div>
             </td>
         </tr>
 		@if (Model.CreatedOn.HasValue)
@@ -495,26 +517,6 @@
 			@T("Admin.Promotions.Discounts.NoDiscountsAvailable")
 		</div>
 	}
-}
-
-@helper TabAcl()
-{    
-    @Html.Partial("AclSelector", Model)
-	
-	<div class="mt-4">
-		<div class="alert alert-danger">
-			@T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts.Hint")
-		</div>
-		<a href="@Url.Action("InheritAclIntoChildren", "Category", new { categoryId = Model.Id })" name="inherit-acl-into-children" class="btn btn-danger">
-			<i class="fa fa-bolt"></i>
-			<span>@T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts")</span>
-		</a>
-	</div>
-}
-
-@helper TabStores()
-{
-    @Html.Partial("StoreSelector", Model)
 }
 
 <script>

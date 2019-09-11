@@ -1131,8 +1131,7 @@ namespace SmartStore.Services.Catalog.Importer
 
         private int? ZeroToNull(object value, CultureInfo culture)
 		{
-			int result;
-			if (CommonHelper.TryConvert<int>(value, culture, out result) && result > 0)
+			if (CommonHelper.TryConvert<int>(value, culture, out int result) && result > 0)
 			{
 				return result;
 			}

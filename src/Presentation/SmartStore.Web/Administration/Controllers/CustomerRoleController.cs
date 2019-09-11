@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Customers;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Tax;
@@ -36,8 +37,6 @@ namespace SmartStore.Admin.Controllers
             _permissionService2 = permissionService2;
 		}
 
-        #region Utilities
-
         [NonAction]
         protected List<SelectListItem> GetTaxDisplayTypesList(CustomerRoleModel model)
         {
@@ -67,9 +66,28 @@ namespace SmartStore.Admin.Controllers
             return list;
         }
 
-        #endregion
+        // Ajax.
+        public ActionResult AllCustomerRoles(string label, string selectedIds)
+        {
+            var customerRoles = _customerService.GetAllCustomerRoles(true);
+            var ids = selectedIds.ToIntArray();
 
-        #region Customer roles
+            if (label.HasValue())
+            {
+                customerRoles.Insert(0, new CustomerRole { Name = label, Id = 0 });
+            }
+
+            var list = 
+                from c in customerRoles
+                select new
+                {
+                    id = c.Id.ToString(),
+                    text = c.Name,
+                    selected = ids.Contains(c.Id)
+                };
+
+            return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
 
         public ActionResult Index()
         {
@@ -294,7 +312,5 @@ namespace SmartStore.Admin.Controllers
             }
 
 		}
-
-        #endregion
     }
 }

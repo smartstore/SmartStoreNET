@@ -18,6 +18,10 @@
 * #1686 Fixed KeyNotFoundException when payment method friendly name ends with spaces.
 * Cart: Fixed ShoppingCartSettings.ShowProductBundleImagesOnShoppingCart hides the bundle item name.
 * MegaSearch: Fixed the preset sorting order of products on a manufacturer page may be wrong depending on catalog settings.
+* **Page Builder**:
+	* #1689 Block with z-index < 0 can not be selected in story view - Block tools can reduce z-index below 0.
+	* #1691 Manually editing/removing block cols/rows does not refresh grid state correctly.
+* Multistore mapping was ignored for manufacturers in sitemap.
 
 
 ## SmartStore.NET 3.2.2

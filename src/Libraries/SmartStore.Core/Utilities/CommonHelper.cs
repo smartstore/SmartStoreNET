@@ -199,9 +199,14 @@ namespace SmartStore.Utilities
 
             convertedValue = null;
 
-            if (value == null || value == DBNull.Value || to.IsInstanceOfType(value))
+            if (value == null || value == DBNull.Value)
             {
-                convertedValue = value == DBNull.Value ? null : value;
+                return to == typeof(string) || to.IsPredefinedSimpleType() == false;
+            }
+            
+            if (to != typeof(object) && to.IsInstanceOfType(value))
+            {
+                convertedValue = value;
                 return true;
             }
 
@@ -212,27 +217,34 @@ namespace SmartStore.Utilities
                 culture = CultureInfo.InvariantCulture;
             }
 
-            // Get a converter for 'to' (value -> to)
-            var converter = TypeConverterFactory.GetConverter(to);
-            if (converter != null && converter.CanConvertFrom(from))
+            try
             {
-                convertedValue = converter.ConvertFrom(culture, value);
-                return true;
-            }
+                // Get a converter for 'to' (value -> to)
+                var converter = TypeConverterFactory.GetConverter(to);
+                if (converter != null && converter.CanConvertFrom(from))
+                {
+                    convertedValue = converter.ConvertFrom(culture, value);
+                    return true;
+                }
 
-            // Try the other way round with a 'from' converter (to <- from)
-            converter = TypeConverterFactory.GetConverter(from);
-            if (converter != null && converter.CanConvertTo(to))
-            {
-                convertedValue = converter.ConvertTo(culture, null, value, to);
-                return true;
-            }
+                // Try the other way round with a 'from' converter (to <- from)
+                converter = TypeConverterFactory.GetConverter(from);
+                if (converter != null && converter.CanConvertTo(to))
+                {
+                    convertedValue = converter.ConvertTo(culture, null, value, to);
+                    return true;
+                }
 
-            // Use Convert.ChangeType if both types are IConvertible
-            if (value is IConvertible && typeof(IConvertible).IsAssignableFrom(to))
+                // Use Convert.ChangeType if both types are IConvertible
+                if (value is IConvertible && typeof(IConvertible).IsAssignableFrom(to))
+                {
+                    convertedValue = System.Convert.ChangeType(value, to, culture);
+                    return true;
+                }
+            }
+            catch
             {
-                convertedValue = System.Convert.ChangeType(value, to, culture);
-                return true;
+                return false;
             }
 
             return false;

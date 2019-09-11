@@ -113,7 +113,7 @@
 
 	@{ Html.RenderZone("head"); }
 </head>
-<body class="@Html.BodyCssClass()"@(Html.BodyId())>   
+<body @Html.BodyAttributes()>   
 	@{ Html.RenderZone("start"); }
 	@RenderBody()
 	@{ Html.RenderZone("aftercontent"); }

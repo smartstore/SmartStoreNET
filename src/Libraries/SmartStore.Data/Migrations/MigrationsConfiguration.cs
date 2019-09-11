@@ -6,7 +6,8 @@
     using SmartStore.Core.Data;
     using SmartStore.Core.Domain.Catalog;
 	using SmartStore.Core.Domain.Common;
-	using SmartStore.Utilities;
+    using SmartStore.Core.Domain.Tasks;
+    using SmartStore.Utilities;
 
 	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
 	{
@@ -39,7 +40,20 @@
 
 		protected override void Seed(SmartObjectContext context)
 		{
-			context.MigrateLocaleResources(MigrateLocaleResources);
+            context.Set<ScheduleTask>().AddOrUpdate(x => x.Type,
+                new ScheduleTask
+                {
+                    Name = "Rebuild XML Sitemap",
+                    CronExpression = "45 3 * * *",
+                    Type = "SmartStore.Services.Seo.RebuildXmlSitemapTask, SmartStore.Services",
+                    Enabled = true,
+                    StopOnError = false
+                }
+            );
+
+            context.SaveChanges();
+
+            context.MigrateLocaleResources(MigrateLocaleResources);
 			MigrateSettings(context);
         }
 
@@ -75,9 +89,16 @@
                 "Number of requirements",
                 "Anzahl an Voraussetzungen");
 
+            builder.AddOrUpdate("Admin.Common.CustomerRole.LimitedTo",
+                "Limited to customer roles",
+                "Auf Kundengruppen begrenzt",
+                "Specifies whether the object is only available to certain customer groups.",
+                "Legt fest, ob das Objekt nur für bestimmte Kundengruppen verfügbar ist.");
+
             builder.Delete(
                 "Admin.Configuration.Measures.Weights.Fields.MarkAsPrimaryWeight",
-                "Admin.Configuration.Measures.Dimensions.Fields.MarkAsPrimaryDimension");
+                "Admin.Configuration.Measures.Dimensions.Fields.MarkAsPrimaryDimension",
+                "Admin.Catalog.Products.Acl");
         }
     }
 }

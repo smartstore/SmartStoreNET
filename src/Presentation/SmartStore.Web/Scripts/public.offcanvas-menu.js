@@ -14,7 +14,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	var currentManufacturerId = 0;
 	var publicStoreNavigationAllowed = true;
 
-    var menu = $("#offcanvas-menu #menu-container");
+    var menu = $("#offcanvas-menu-container");
 
     $(function () {
 

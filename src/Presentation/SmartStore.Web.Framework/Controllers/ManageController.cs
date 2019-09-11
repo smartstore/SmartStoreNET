@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Security;
@@ -60,23 +61,55 @@ namespace SmartStore.Web.Framework.Controllers
 			Services.Resolve<IStoreMappingService>().SaveStoreMappings(entity, model.SelectedStoreIds);
 		}
 
-		/// <summary>
-		/// Save the ACL mappings for an entity
-		/// </summary>
-		/// <typeparam name="T">Entity type</typeparam>
-		/// <param name="entity">The entity</param>
-		/// <param name="model">Model representation of ACL selection</param>
-		protected virtual void SaveAclMappings<T>(T entity, IAclSelector model) where T : BaseEntity, IAclSupported
+        /// <summary>
+        /// Save the store mappings for an entity.
+        /// </summary>
+        /// <typeparam name="T">Entity type.</typeparam>
+        /// <param name="entity">The entity.</param>
+        /// <param name="selectedStoreIds">Selected store identifiers.</param>
+        protected virtual void SaveStoreMappings<T>(T entity, int[] selectedStoreIds) where T : BaseEntity, IStoreMappingSupported
+        {
+            Guard.NotNull(entity, nameof(entity));
+
+            entity.LimitedToStores = (selectedStoreIds?.Length ?? 0) == 1 && selectedStoreIds[0] == 0
+                ? false
+                : selectedStoreIds?.Any() ?? false;
+
+            Services.Resolve<IStoreMappingService>().SaveStoreMappings(entity, selectedStoreIds);
+        }
+
+        /// <summary>
+        /// Save the ACL mappings for an entity
+        /// </summary>
+        /// <typeparam name="T">Entity type</typeparam>
+        /// <param name="entity">The entity</param>
+        /// <param name="model">Model representation of ACL selection</param>
+        protected virtual void SaveAclMappings<T>(T entity, IAclSelector model) where T : BaseEntity, IAclSupported
 		{
 			entity.SubjectToAcl = model.SubjectToAcl;
 			Services.Resolve<IAclService>().SaveAclMappings(entity, model.SelectedCustomerRoleIds);
 		}
 
-		/// <summary>
-		/// Access denied view
-		/// </summary>
-		/// <returns>Access denied view</returns>
-		[SuppressMessage("ReSharper", "Mvc.AreaNotResolved")]
+        /// <summary>
+        /// Save the ACL mappings for an entity.
+        /// </summary>
+        /// <typeparam name="T">Entity type</typeparam>
+        /// <param name="entity">The entity</param>
+        /// <param name="model">Model representation of ACL selection</param>
+        protected virtual void SaveAclMappings<T>(T entity, int[] selectedCustomerRoleIds) where T : BaseEntity, IAclSupported
+        {
+            entity.SubjectToAcl = (selectedCustomerRoleIds?.Length ?? 0) == 1 && selectedCustomerRoleIds[0] == 0
+                ? false
+                : selectedCustomerRoleIds?.Any() ?? false;                
+
+            Services.Resolve<IAclService>().SaveAclMappings(entity, selectedCustomerRoleIds);
+        }
+
+        /// <summary>
+        /// Access denied view
+        /// </summary>
+        /// <returns>Access denied view</returns>
+        [SuppressMessage("ReSharper", "Mvc.AreaNotResolved")]
         protected ActionResult AccessDeniedView()
         {
             return RedirectToAction("AccessDenied", "Security", new { pageUrl = this.Request.RawUrl, area = "Admin" });

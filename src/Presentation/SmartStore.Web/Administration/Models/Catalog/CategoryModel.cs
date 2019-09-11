@@ -12,7 +12,7 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Catalog
 {
     [Validator(typeof(CategoryValidator))]
-    public class CategoryModel : TabbableModel, ILocalizedModel<CategoryLocalizedModel>, IStoreSelector, IAclSelector
+    public class CategoryModel : TabbableModel, ILocalizedModel<CategoryLocalizedModel>
     {
         public CategoryModel()
         {
@@ -113,16 +113,19 @@ namespace SmartStore.Admin.Models.Catalog
 
         public string Breadcrumb { get; set; }
 
-        // ACL
-        public bool SubjectToAcl { get; set; }
-        public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
+        // ACL.
+        [UIHint("CustomerRoles"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
         public int[] SelectedCustomerRoleIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
+        public bool SubjectToAcl { get; set; }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
+        // Store mapping.
+        [UIHint("Stores"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
 
         public string ParentCategoryBreadcrumb { get; set; }
 

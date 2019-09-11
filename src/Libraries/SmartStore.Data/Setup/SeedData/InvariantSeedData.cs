@@ -4589,8 +4589,16 @@ namespace SmartStore.Data.Setup
 					Type = "SmartStore.Services.Common.TempFileCleanupTask, SmartStore.Services",
 					Enabled = true,
 					StopOnError = false
-				}
-			};
+				},
+                new ScheduleTask
+                {
+                    Name = "Rebuild XML Sitemap",
+                    CronExpression = "45 3 * * *",
+                    Type = "SmartStore.Services.Seo.RebuildXmlSitemapTask, SmartStore.Services",
+                    Enabled = true,
+                    StopOnError = false
+                }
+            };
 			this.Alter(entities);
 			return entities;
 		}

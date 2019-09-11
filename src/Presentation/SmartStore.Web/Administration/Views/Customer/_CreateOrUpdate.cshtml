@@ -13,7 +13,6 @@
 @Html.SmartStore().TabStrip().Name("customer-edit").OnAjaxSuccess("customerEditTab_onAjaxSuccess").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
 {
 	x.Add().Text(T("Admin.Customers.Customers.Info").Text).Content(TabInfo()).Selected(true);
-	x.Add().Text(T("Admin.Customers.Customers.CustomerRoles").Text).Content(TabCustomerRoles());
 
 	if (Model.Id > 0)
 	{
@@ -29,7 +28,6 @@
 		x.Add().Text(T("Admin.Customers.Customers.CurrentCart").Text).Content(TabCurrentShoppingCart());
 		x.Add().Text(T("Admin.Customers.Customers.Impersonate").Text).Content(TabImpersonate());
 	}
-
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customer-edit", this.Html, this.Model));
 })
 
@@ -327,6 +325,15 @@
             <td class="adminData">
                 @Html.TextAreaFor(model => model.AdminComment)
                 @Html.ValidationMessageFor(model => model.AdminComment)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedCustomerRoleIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedCustomerRoleIds, null, new { htmlAttributes = new { disabled = Model.AllowManagingCustomerRoles ? (string)null : "disabled" } })
+                @Html.ValidationMessageFor(model => model.SelectedCustomerRoleIds)
             </td>
         </tr>
         <tr>
@@ -716,9 +723,7 @@
 
 @helper TabCurrentShoppingCart()
 {
-
 	<h4 class="mt-3">@T("Admin.Customers.Customers.CurrentShoppingCart")</h4>
-
 	<div class="mt-3">
 		@(Html.Telerik().Grid<ShoppingCartItemModel>()
 			.Name("currentshoppingcart-grid")
@@ -743,7 +748,6 @@
 	</div>
 
 	<h4 class="mt-5">@T("Admin.Customers.Customers.CurrentWishlist")</h4>
-
 	<div class="mt-3">
 		@(Html.Telerik().Grid<ShoppingCartItemModel>()
 			.Name("currentwishlist-grid")

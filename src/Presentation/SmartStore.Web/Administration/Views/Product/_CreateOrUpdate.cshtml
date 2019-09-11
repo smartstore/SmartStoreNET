@@ -106,16 +106,6 @@
         .Icon("fa fa-search fa-lg fa-fw")
         .LinkHtmlAttributes(new { data_tab_name = "SEO" })
         .Content(Html.Partial("_CreateOrUpdate.SEO", Model).ToHtmlString());
-    x.Add().Text(T("Admin.Catalog.Products.Acl").Text)
-        .Icon("fa fa-users fa-lg fa-fw")
-        .LinkHtmlAttributes(new { data_tab_name = "Acl" })
-        .Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Acl" })
-        .Ajax();
-    x.Add().Text(T("Admin.Common.Stores").Text)
-        .Icon("fa fa-globe fa-lg fa-fw")
-        .LinkHtmlAttributes(new { data_tab_name = "Stores" })
-        .Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Stores" })
-        .Ajax();
     x.Add().Text(T("Common.Downloads").Text)
         .Icon("fa fa-download fa-lg fa-fw")
         .LinkHtmlAttributes(new { data_tab_name = "Downloads" })

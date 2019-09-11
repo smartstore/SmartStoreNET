@@ -1097,6 +1097,7 @@ namespace SmartStore.Admin.Controllers
 
 					model.Data = attributes
 						.Where(x => x.StoreId == storeId || x.StoreId == 0)
+                        .OrderBy(x => x.Key)
 						.Select(x => new GenericAttributeModel
 						{
 							Id = x.Id,
@@ -1133,7 +1134,7 @@ namespace SmartStore.Admin.Controllers
 			if (_services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel))
 			{
 				model.Key = model.Key.TrimSafe();
-				model.Value = model.Value.TrimSafe();
+				model.Value = model.Value.TrimSafe() ?? string.Empty;
 
 				if (!ModelState.IsValid)
 				{

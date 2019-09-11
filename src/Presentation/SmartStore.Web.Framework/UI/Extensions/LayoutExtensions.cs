@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core;
@@ -296,20 +297,26 @@ namespace SmartStore.Web.Framework.UI
 			return MvcHtmlString.Create(pageAssetsBuilder.GenerateLinkRels());
 		}
 
-		#endregion
+        #endregion
 
-		#region Body
+        #region Body
 
-		public static void AddBodyCssClass(this HtmlHelper html, string cssClassName)
+        public static void AddBodyAttribute(this HtmlHelper html, string name, object value)
+        {
+            var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
+            pageAssetsBuilder.AddBodyAttribute(name, value);
+        }
+
+        public static void AddBodyCssClass(this HtmlHelper html, string cssClassName)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             pageAssetsBuilder.AddBodyCssClass(cssClassName);
         }
 
-        public static MvcHtmlString BodyCssClass(this HtmlHelper html)
+        public static IHtmlString BodyAttributes(this HtmlHelper html)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
-            return MvcHtmlString.Create(pageAssetsBuilder.GenerateBodyCssClasses());
+            return html.Attrs(pageAssetsBuilder.BodyAttributes);
         }
 
         public static void SetHtmlId(this HtmlHelper html, string htmlId)
@@ -330,20 +337,6 @@ namespace SmartStore.Web.Framework.UI
             catch { }
 
             return MvcHtmlString.Create(result);
-        }
-
-        public static MvcHtmlString BodyId(this HtmlHelper html)
-		{
-			string result = "";
-
-			try
-			{
-				var storeContext = EngineContext.Current.Resolve<IStoreContext>();
-				result = storeContext.CurrentStore.HtmlBodyId.ToAttribute("id");
-			}
-			catch { }
-
-			return MvcHtmlString.Create(result);
         }
 
         #endregion

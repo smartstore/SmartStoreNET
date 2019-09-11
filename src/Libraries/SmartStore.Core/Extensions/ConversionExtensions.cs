@@ -20,46 +20,42 @@ namespace SmartStore
 
         public static T Convert<T>(this object value)
         {
-            var to = typeof(T);
-            if (!CommonHelper.TryConvert(value, to, CultureInfo.InvariantCulture, out object result))
+            if (CommonHelper.TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
             {
-                throw Error.InvalidCast(value?.GetType(), to);
+                return (T)result;
             }
 
-            return (T)(result ?? default(T));
+            return default(T);
         }
 
 		public static T Convert<T>(this object value, T defaultValue)
 		{
-            var to = typeof(T);
-            if (!CommonHelper.TryConvert(value, to, CultureInfo.InvariantCulture, out object result))
+            if (CommonHelper.TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
             {
-                throw Error.InvalidCast(value?.GetType(), to);
+                return (T)result;
             }
 
-            return (T)(result ?? defaultValue);
+            return defaultValue;
         }
 
 		public static T Convert<T>(this object value, CultureInfo culture)
         {
-            var to = typeof(T);
-            if (!CommonHelper.TryConvert(value, to, culture, out object result))
+            if (CommonHelper.TryConvert(value, typeof(T), culture, out object result))
             {
-                throw Error.InvalidCast(value?.GetType(), to);
+                return (T)result;
             }
 
-            return (T)(result ?? default(T));
+            return default(T);
         }
 
 		public static T Convert<T>(this object value, T defaultValue, CultureInfo culture)
 		{
-            var to = typeof(T);
-            if (!CommonHelper.TryConvert(value, to, culture, out object result))
+            if (CommonHelper.TryConvert(value, typeof(T), culture, out object result))
             {
-                throw Error.InvalidCast(value?.GetType(), to);
+                return (T)result;
             }
 
-            return (T)(result ?? defaultValue);
+            return defaultValue;
         }
 
 		public static object Convert(this object value, Type to)
@@ -102,9 +98,9 @@ namespace SmartStore
 
         public static int ToInt(this string value, int defaultValue = 0)
         {
-			if (CommonHelper.TryConvert(value, out int result))
+			if (CommonHelper.TryConvert(value, typeof(int), CultureInfo.InvariantCulture, out object result))
 			{
-				return result;
+				return (int)result;
 			}
 
 			return defaultValue;
@@ -122,9 +118,9 @@ namespace SmartStore
 
 		public static float ToFloat(this string value, float defaultValue = 0)
         {
-			if (CommonHelper.TryConvert(value, out float result))
+			if (CommonHelper.TryConvert(value, typeof(float), CultureInfo.InvariantCulture, out object result))
 			{
-				return result;
+				return (float)result;
 			}
 
 			return defaultValue;
@@ -132,9 +128,9 @@ namespace SmartStore
 
         public static bool ToBool(this string value, bool defaultValue = false)
         {
-			if (CommonHelper.TryConvert(value, out bool result))
+			if (CommonHelper.TryConvert(value, typeof(bool), out object result))
 			{
-				return result;
+				return (bool)result;
 			}
 
 			return defaultValue;

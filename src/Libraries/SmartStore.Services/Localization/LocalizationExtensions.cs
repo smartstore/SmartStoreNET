@@ -282,7 +282,7 @@ namespace SmartStore.Services.Localization
 					if (str.HasValue())
 					{
 						currentLanguage = requestLanguage;
-						result = (TProp)str.Convert(typeof(TProp), CultureInfo.InvariantCulture);
+						result = str.Convert<TProp>(CultureInfo.InvariantCulture);
 					}
 				}
 			}

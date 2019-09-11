@@ -42,9 +42,11 @@ namespace SmartStore.Admin.Controllers
 			return View();
 		}
 
-		public ActionResult AllStores(string label, int selectedId = 0)
+        // Ajax.
+        public ActionResult AllStores(string label, string selectedIds)
 		{
 			var stores = Services.StoreService.GetAllStores();
+            var ids = selectedIds.ToIntArray();
 
 			if (label.HasValue())
 			{
@@ -57,7 +59,7 @@ namespace SmartStore.Admin.Controllers
 				{
 					id = m.Id.ToString(),
 					text = m.Name,
-					selected = m.Id == selectedId
+					selected = ids.Contains(m.Id)
 				};
 
 			return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };

@@ -710,7 +710,7 @@ namespace SmartStore.Services.Seo
 
 			if (seoSettings.XmlSitemapIncludesManufacturers)
 			{
-				holder.Manufacturers = _manufacturerService.GetManufacturers(false).OrderBy(x => x.DisplayOrder).ThenBy(x => x.Name);
+				holder.Manufacturers = _manufacturerService.GetManufacturers(false, storeId).OrderBy(x => x.DisplayOrder).ThenBy(x => x.Name);
 			}
 
 			if (seoSettings.XmlSitemapIncludesTopics)

@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Collections;
@@ -21,7 +21,6 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
@@ -31,14 +30,13 @@ using Telerik.Web.Mvc.UI;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public partial class CategoryController : AdminControllerBase
     {
         #region Fields
 
         private readonly ICategoryService _categoryService;
         private readonly ICategoryTemplateService _categoryTemplateService;
-        private readonly IManufacturerService _manufacturerService;
         private readonly IProductService _productService; 
         private readonly ICustomerService _customerService;
         private readonly IUrlRecordService _urlRecordService;
@@ -63,13 +61,21 @@ namespace SmartStore.Admin.Controllers
 
         #region Constructors
 
-        public CategoryController(ICategoryService categoryService, ICategoryTemplateService categoryTemplateService,
-            IManufacturerService manufacturerService, IProductService productService, 
+        public CategoryController(
+            ICategoryService categoryService, 
+            ICategoryTemplateService categoryTemplateService,
+            IProductService productService, 
             ICustomerService customerService,
-            IUrlRecordService urlRecordService, IPictureService pictureService, ILanguageService languageService,
-            ILocalizationService localizationService, ILocalizedEntityService localizedEntityService,
-            IDiscountService discountService, IPermissionService permissionService,
-			IAclService aclService, IStoreService storeService, IStoreMappingService storeMappingService,
+            IUrlRecordService urlRecordService,
+            IPictureService pictureService, 
+            ILanguageService languageService,
+            ILocalizationService localizationService, 
+            ILocalizedEntityService localizedEntityService,
+            IDiscountService discountService, 
+            IPermissionService permissionService,
+			IAclService aclService,
+            IStoreService storeService,
+            IStoreMappingService storeMappingService,
             IWorkContext workContext,
             ICustomerActivityService customerActivityService,
 			IDateTimeHelper dateTimeHelper,
@@ -78,27 +84,26 @@ namespace SmartStore.Admin.Controllers
             IEventPublisher eventPublisher,
             Lazy<IGenericAttributeService> genericAttributeService)
         {
-            this._categoryService = categoryService;
-            this._categoryTemplateService = categoryTemplateService;
-            this._manufacturerService = manufacturerService;
-            this._productService = productService;
-            this._customerService = customerService;
-            this._urlRecordService = urlRecordService;
-            this._pictureService = pictureService;
-            this._languageService = languageService;
-            this._localizationService = localizationService;
-            this._localizedEntityService = localizedEntityService;
-            this._discountService = discountService;
-            this._permissionService = permissionService;
-            this._aclService = aclService;
-			this._storeService = storeService;
-			this._storeMappingService = storeMappingService;
-            this._workContext = workContext;
-            this._customerActivityService = customerActivityService;
-			this._dateTimeHelper = dateTimeHelper;
-            this._adminAreaSettings = adminAreaSettings;
-            this._catalogSettings = catalogSettings;
-			this._eventPublisher = eventPublisher;
+            _categoryService = categoryService;
+            _categoryTemplateService = categoryTemplateService;
+            _productService = productService;
+            _customerService = customerService;
+            _urlRecordService = urlRecordService;
+            _pictureService = pictureService;
+            _languageService = languageService;
+            _localizationService = localizationService;
+            _localizedEntityService = localizedEntityService;
+            _discountService = discountService;
+            _permissionService = permissionService;
+            _aclService = aclService;
+			_storeService = storeService;
+			_storeMappingService = storeMappingService;
+            _workContext = workContext;
+            _customerActivityService = customerActivityService;
+			_dateTimeHelper = dateTimeHelper;
+            _adminAreaSettings = adminAreaSettings;
+            _catalogSettings = catalogSettings;
+			_eventPublisher = eventPublisher;
             _genericAttributeService = genericAttributeService;
         }
 
@@ -150,35 +155,32 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
-        protected void PrepareCategoryModel(CategoryModel model, Category category, bool excludeProperties)
+        protected void PrepareCategoryModel(CategoryModel model, Category category)
         {
-            if (model == null)
-                throw new ArgumentNullException("model");
-
-			model.GridPageSize = _adminAreaSettings.GridPageSize;
+            Guard.NotNull(model, nameof(model));
 
             var discounts = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories, null, true);
-            model.AvailableDiscounts = discounts.ToList();
 
-            if (!excludeProperties)
-            {
-                model.SelectedDiscountIds = category.AppliedDiscounts.Select(d => d.Id).ToArray();
-            }
+            model.AvailableDiscounts = discounts.ToList();
+            model.GridPageSize = _adminAreaSettings.GridPageSize;            
 
 			if (category != null)
 			{
 				model.CreatedOn = _dateTimeHelper.ConvertToUserTime(category.CreatedOnUtc, DateTimeKind.Utc);
 				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(category.UpdatedOnUtc, DateTimeKind.Utc);
-			}
+                model.SelectedDiscountIds = category.AppliedDiscounts.Select(d => d.Id).ToArray();
+                model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(category);
+                model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(category);
+            }
 
             model.AvailableDefaultViewModes.Add(
-                new SelectListItem { Value = "grid", Text = _localizationService.GetResource("Common.Grid"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("grid") }
+                new SelectListItem { Value = "grid", Text = T("Common.Grid"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("grid") }
             );
             model.AvailableDefaultViewModes.Add(
-                new SelectListItem { Value = "list", Text = _localizationService.GetResource("Common.List"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("list") }
+                new SelectListItem { Value = "list", Text = T("Common.List"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("list") }
             );
 
-			// add available badges
+			// Add available badges.
 			model.AvailableBadgeStyles.Add(new SelectListItem { Value = "0", Text = "Secondary", Selected = model.BadgeStyle == 0 });
             model.AvailableBadgeStyles.Add(new SelectListItem { Value = "1", Text = "Primary", Selected = model.BadgeStyle == 1 });
             model.AvailableBadgeStyles.Add(new SelectListItem { Value = "2", Text = "Success", Selected = model.BadgeStyle == 2 });
@@ -187,39 +189,6 @@ namespace SmartStore.Admin.Controllers
             model.AvailableBadgeStyles.Add(new SelectListItem { Value = "5", Text = "Danger", Selected = model.BadgeStyle == 5 });
 			model.AvailableBadgeStyles.Add(new SelectListItem { Value = "6", Text = "Light", Selected = model.BadgeStyle == 6 });
 			model.AvailableBadgeStyles.Add(new SelectListItem { Value = "7", Text = "Dark", Selected = model.BadgeStyle == 7});
-		}
-
-        [NonAction]
-        private void PrepareAclModel(CategoryModel model, Category category, bool excludeProperties)
-        {
-			Guard.NotNull(model, nameof(model));
-
-            if (!excludeProperties)
-            {
-                if (category != null)
-                {
-                    model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(category);
-                }
-                else
-                {
-                    model.SelectedCustomerRoleIds = new int[0];
-                }
-            }
-
-			model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
-		}
-
-		[NonAction]
-		private void PrepareStoresMappingModel(CategoryModel model, Category category, bool excludeProperties)
-		{
-			Guard.NotNull(model, nameof(model));
-
-			if (!excludeProperties)
-			{
-				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(category);
-			}
-
-			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 		}
 
         #endregion
@@ -231,7 +200,9 @@ namespace SmartStore.Admin.Controllers
             var customerChoice = _genericAttributeService.Value.GetAttribute<string>("Customer", _workContext.CurrentCustomer.Id, "AdminCategoriesType");
 
             if (customerChoice != null && customerChoice.Equals("Tree"))
+            {
                 return RedirectToAction("Tree");
+            }
 
             return RedirectToAction("List");
         }
@@ -244,19 +215,14 @@ namespace SmartStore.Admin.Controllers
             var customerChoice = _genericAttributeService.Value.GetAttribute<string>("Customer", _workContext.CurrentCustomer.Id, "AdminCategoriesType");
             if (customerChoice == null || customerChoice.Equals("Tree"))
             {
-                _genericAttributeService.Value.SaveAttribute<string>(_workContext.CurrentCustomer, "AdminCategoriesType", "List");
+                _genericAttributeService.Value.SaveAttribute(_workContext.CurrentCustomer, "AdminCategoriesType", "List");
             }
             
-            var allStores = _storeService.GetAllStores();
 			var model = new CategoryListModel
 			{
+                IsSingleStoreMode = _storeService.IsSingleStoreMode(),
 				GridPageSize = _adminAreaSettings.GridPageSize
 			};
-
-			foreach (var store in allStores)
-			{
-				model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString() });
-			}
 
             return View(model);
         }
@@ -294,7 +260,7 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-		// Ajax
+		// Ajax.
 		public ActionResult AllCategories(string label, int selectedId)
         {
 			var categoryTree = _categoryService.GetCategoryTree(includeHidden: true);
@@ -360,27 +326,22 @@ namespace SmartStore.Admin.Controllers
             var customerChoice = _genericAttributeService.Value.GetAttribute<string>("Customer", _workContext.CurrentCustomer.Id, "AdminCategoriesType");
             if (customerChoice == null || customerChoice.Equals("List"))
             {
-                _genericAttributeService.Value.SaveAttribute<string>(_workContext.CurrentCustomer, "AdminCategoriesType", "Tree");
+                _genericAttributeService.Value.SaveAttribute(_workContext.CurrentCustomer, "AdminCategoriesType", "Tree");
             }
-            
-            var allStores = _storeService.GetAllStores();
-			var model = new CategoryTreeModel();
 
-			foreach (var store in allStores)
-			{
-				model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString() });
-			}
+            var model = new CategoryTreeModel
+            {
+                IsSingleStoreMode = _storeService.IsSingleStoreMode()
+            };
 
 			return View(model);
         }
 
-        // Ajax
+        // Ajax.
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TreeLoadChildren(TreeViewItem node, CategoryTreeModel model)
         {
             var parentId = !string.IsNullOrEmpty(node.Value) ? Convert.ToInt32(node.Value) : 0;
-			var urlHelper = new UrlHelper(this.ControllerContext.RequestContext);
-
 			var parentCategories = _categoryService.GetAllCategoriesByParentCategoryId(parentId, true);
 
 			if (parentId == 0 && model.SearchStoreId != 0)
@@ -398,17 +359,17 @@ namespace SmartStore.Admin.Controllers
 			var children = parentCategories.Select(x =>
 			{
 				var childCount = _categoryService.GetAllCategoriesByParentCategoryId(x.Id, true).Count;
-				string text = (childCount > 0 ? "{0} ({1})".FormatInvariant(x.Name, childCount) : x.Name);
+				string text = childCount > 0 ? "{0} ({1})".FormatInvariant(x.Name, childCount) : x.Name;
 
 				var item = new TreeViewItem
 				{
 					Text = x.Alias.HasValue() ? "{0} <span class='badge badge-secondary'>{1}</span>".FormatCurrent(text, x.Alias) : text,
 					Encoded = x.Alias.IsEmpty(),
 					Value = x.Id.ToString(),
-					LoadOnDemand = (childCount > 0),
+					LoadOnDemand = childCount > 0,
 					Enabled = true,
 					ImageUrl = Url.Content(x.Published ? "~/Administration/Content/images/ico-content.png" : "~/Administration/Content/images/ico-content-o60.png"),
-					Url = urlHelper.Action("Edit", "Category", new { id = x.Id })
+					Url = Url.Action("Edit", "Category", new { id = x.Id })
 				};
 
                 return item;
@@ -417,7 +378,7 @@ namespace SmartStore.Admin.Controllers
             return new JsonResult { Data = children };
         }
 
-        //ajax
+        // Ajax.
         public ActionResult TreeDrop(int item, int destinationitem, string position)
         {
             var categoryItem = _categoryService.GetCategoryById(item);
@@ -490,9 +451,7 @@ namespace SmartStore.Admin.Controllers
 			AddLocales(_languageService, model.Locales);
 
             PrepareTemplatesModel(model);
-            PrepareCategoryModel(model, null, true);
-			PrepareAclModel(model, null, false);
-			PrepareStoresMappingModel(model, null, false);
+            PrepareCategoryModel(model, null);
 
             model.Published = true;
 
@@ -514,61 +473,52 @@ namespace SmartStore.Admin.Controllers
 
                 _categoryService.InsertCategory(category);
                 
-				//search engine name
                 model.SeName = category.ValidateSeName(model.SeName, category.Name, true);
                 _urlRecordService.SaveSlug(category, model.SeName, 0);
                 
-				//locales
                 UpdateLocales(category, model);
                 
-				//discounts
                 var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories, null, true);
                 foreach (var discount in allDiscounts)
                 {
                     if (model.SelectedDiscountIds != null && model.SelectedDiscountIds.Contains(discount.Id))
+                    {
                         category.AppliedDiscounts.Add(discount);
+                    }
                 }
                 _categoryService.UpdateCategory(category);
 
-                //update "HasDiscountsApplied" property
                 _categoryService.UpdateHasDiscountsApplied(category);
 
-                //update picture seo file name
                 UpdatePictureSeoNames(category);
-
-                // ACL (customer roles)
-                SaveAclMappings(category, model);
-
-				// Stores
-				SaveStoreMappings(category, model);
+                SaveAclMappings(category, model.SelectedCustomerRoleIds);
+				SaveStoreMappings(category, model.SelectedStoreIds);
 
 				_eventPublisher.Publish(new ModelBoundEvent(model, category, form));
 
-                //activity log
-                _customerActivityService.InsertActivity("AddNewCategory", _localizationService.GetResource("ActivityLog.AddNewCategory"), category.Name);
+                _customerActivityService.InsertActivity("AddNewCategory", T("ActivityLog.AddNewCategory"), category.Name);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Catalog.Categories.Added"));
+                NotifySuccess(T("Admin.Catalog.Categories.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = category.Id }) : RedirectToAction("Index");
             }
 
-            //If we got this far, something failed, redisplay form
-            //templates
+            // If we got this far, something failed, redisplay form.
             PrepareTemplatesModel(model);
-            //parent categories
             if (model.ParentCategoryId.HasValue)
             {
                 var parentCategory = _categoryService.GetCategoryTree(model.ParentCategoryId.Value, true);
                 if (parentCategory != null)
+                {
                     model.ParentCategoryBreadcrumb = _categoryService.GetCategoryPath(parentCategory);
+                }
                 else
+                {
                     model.ParentCategoryId = 0;
+                }
             }
 
-            PrepareCategoryModel(model, null, true);
-            //ACL
-            PrepareAclModel(model, null, true);
-			//Stores
-			PrepareStoresMappingModel(model, null, true);
+            PrepareCategoryModel(model, null);
+
             return View(model);
         }
 
@@ -579,19 +529,23 @@ namespace SmartStore.Admin.Controllers
 
             var category = _categoryService.GetCategoryById(id);
             if (category == null || category.Deleted)
+            {
                 return RedirectToAction("Index");
+            }
 
             var model = category.ToModel();
 
-			//parent categories
 			if (model.ParentCategoryId.HasValue)
             {
                 var parentCategory = _categoryService.GetCategoryTree(model.ParentCategoryId.Value, true);
-
                 if (parentCategory != null)
+                {
                     model.ParentCategoryBreadcrumb = _categoryService.GetCategoryPath(parentCategory);
+                }
                 else
+                {
                     model.ParentCategoryId = 0;
+                }
             }
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
@@ -608,9 +562,7 @@ namespace SmartStore.Admin.Controllers
             });
 
             PrepareTemplatesModel(model);
-            PrepareCategoryModel(model, category, false);
-            PrepareAclModel(model, category, false);
-			PrepareStoresMappingModel(model, category, false);
+            PrepareCategoryModel(model, category);
 
             return View(model);
         }
@@ -624,7 +576,9 @@ namespace SmartStore.Admin.Controllers
 
             var category = _categoryService.GetCategoryById(model.Id);
             if (category == null || category.Deleted)
+            {
                 return RedirectToAction("Index");
+            }
 
             if (ModelState.IsValid)
             {
@@ -635,71 +589,57 @@ namespace SmartStore.Admin.Controllers
 
                 _categoryService.UpdateCategory(category);
 
-                //search engine name
                 model.SeName = category.ValidateSeName(model.SeName, category.Name, true);
                 _urlRecordService.SaveSlug(category, model.SeName, 0);
 
-                //locales
                 UpdateLocales(category, model);
 
-                //discounts
                 var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories, null, true);
                 foreach (var discount in allDiscounts)
                 {
                     if (model.SelectedDiscountIds != null && model.SelectedDiscountIds.Contains(discount.Id))
                     {
-                        //new role
                         if (category.AppliedDiscounts.Where(d => d.Id == discount.Id).Count() == 0)
                             category.AppliedDiscounts.Add(discount);
                     }
                     else
                     {
-                        //removed role
                         if (category.AppliedDiscounts.Where(d => d.Id == discount.Id).Count() > 0)
                             category.AppliedDiscounts.Remove(discount);
                     }
                 }
                 _categoryService.UpdateCategory(category);
 
-                // update "HasDiscountsApplied" property
                 _categoryService.UpdateHasDiscountsApplied(category);
 
-                // update picture seo file name
                 UpdatePictureSeoNames(category);
-
-                // ACL
-                SaveAclMappings(category, model);
-
-				// Stores
-				SaveStoreMappings(category, model);
+                SaveAclMappings(category, model.SelectedCustomerRoleIds);
+                SaveStoreMappings(category, model.SelectedStoreIds);
 
 				_eventPublisher.Publish(new ModelBoundEvent(model, category, form));
 
-                //activity log
                 _customerActivityService.InsertActivity("EditCategory", _localizationService.GetResource("ActivityLog.EditCategory"), category.Name);
 
                 NotifySuccess(T("Admin.Catalog.Categories.Updated"));
                 return continueEditing ? RedirectToAction("Edit", category.Id) : RedirectToAction("Index");
             }
 
-
-            //If we got this far, something failed, redisplay form
-            //parent categories
+            // If we got this far, something failed, redisplay form.
             if (model.ParentCategoryId.HasValue)
             {
                 var parentCategory = _categoryService.GetCategoryTree(model.ParentCategoryId.Value, true);
                 if (parentCategory != null)
+                {
                     model.ParentCategoryBreadcrumb = _categoryService.GetCategoryPath(parentCategory);
+                }
                 else
+                {
                     model.ParentCategoryId = 0;
+                }
             }
-            //templates
+
             PrepareTemplatesModel(model);
-            PrepareCategoryModel(model, category, true);
-            //ACL
-            PrepareAclModel(model, category, true);
-			//Stores
-			PrepareStoresMappingModel(model, category, true);
+            PrepareCategoryModel(model, category);
 
             return View(model);
         }

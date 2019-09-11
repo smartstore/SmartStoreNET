@@ -648,13 +648,17 @@
 			});
 		});
 		
-		// scroll top
+		// Waypoint / scroll top
 		(function () {
-			$('#scroll-top').on('click', function (e) {
-				e.preventDefault();
-				win.scrollTo(0, 600);
-				return false;
-			});
+            $(document).on('click', 'a.waypoint', function (e) {
+                e.preventDefault();
+                var href = $(this).attr('href');
+                var target = href === '#' ? $('body') : $(href);
+                var offset = $(this).data('offset') || 0;
+
+                $(window).scrollTo(target, { duration: 800, offset: offset });
+                return false;
+            });
 
 			var prevY;
 

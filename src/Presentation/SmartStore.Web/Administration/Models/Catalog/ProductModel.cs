@@ -15,7 +15,7 @@ using SmartStore.Core.Localization;
 namespace SmartStore.Admin.Models.Catalog
 {
 	[Validator(typeof(ProductValidator))]
-    public class ProductModel : TabbableModel, ILocalizedModel<ProductLocalizedModel>, IStoreSelector, IAclSelector
+    public class ProductModel : TabbableModel, ILocalizedModel<ProductLocalizedModel>
 	{
         public ProductModel()
         {
@@ -353,24 +353,22 @@ namespace SmartStore.Admin.Models.Catalog
 
         public IList<ProductLocalizedModel> Locales { get; set; }
 
-        // ACL (customer roles)
-        public bool SubjectToAcl { get; set; }
-        public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
+        // ACL (customer roles).
+        [UIHint("CustomerRoles"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
         public int[] SelectedCustomerRoleIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
+        public bool SubjectToAcl { get; set; }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
+        // Store mapping.
+        [UIHint("Stores"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
 
-        //categories
         public int NumberOfAvailableCategories { get; set; }
-
-        //manufacturers
         public int NumberOfAvailableManufacturers { get; set; }
-
-		//product attributes
 		public int NumberOfAvailableProductAttributes { get; set; }
 
         //pictures

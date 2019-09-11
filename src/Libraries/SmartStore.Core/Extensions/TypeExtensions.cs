@@ -11,7 +11,6 @@ namespace SmartStore
     public static class TypeExtensions
     {
         private static readonly Type[] s_predefinedTypes = new Type[] { typeof(string), typeof(decimal), typeof(DateTime), typeof(TimeSpan), typeof(Guid) };
-		private static readonly Type[] s_predefinedGenericTypes = new Type[] { typeof(Nullable<>) };
 
         public static string AssemblyQualifiedNameWithoutVersion(this Type type)
         {
@@ -98,7 +97,7 @@ namespace SmartStore
                 return false;
             }
 
-            return s_predefinedGenericTypes.Any(t => t == type);
+            return type == typeof(Nullable<>);
         }
 
         public static bool IsPredefinedType(this Type type)

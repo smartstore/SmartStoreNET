@@ -19,7 +19,7 @@
         this.canvas = $(this.options.canvas || '.wrapper');
         this.state = null;
 
-        if (this.options.placement == 'right') {
+        if (this.options.placement === 'right') {
             this.el.addClass('offcanvas-right');
         }
 
@@ -36,9 +36,17 @@
             delete this.options.disablescrolling;
         }
 
-        EventBroker.subscribe("page.resized", function (msg, viewport) {
-        	if (viewport.is('>sm')) self.hide();
-        });
+        if (this.options.hideonresize) {
+            var _hide = _.throttle(function () {
+                self.hide();
+            }, 250);
+            $(window).on('resize', _hide);
+        }
+        else {
+            EventBroker.subscribe("page.resized", function (msg, viewport) {
+                if (viewport.is('>sm')) self.hide();
+            });
+        }
 
         if (this.options.autohide) {
             $('body, .canvas-blocker').on('click', $.proxy(this.autohide, this));
@@ -61,11 +69,12 @@
         toggle: true,
         placement: 'left',
         fullscreen: false,
-		overlay: false,
+        overlay: false,
         autohide: true,
+        hideonresize: false,
         disableScrolling: false,
         blocker: true
-    }
+    };
 
 
 	// OFFCANVAS Internal
@@ -89,7 +98,7 @@
     	}
 
     	function isScrolling(e, g) {
-    		if (nodeScrollable == null || nodeScrollable.length == 0)
+    		if (nodeScrollable === null || nodeScrollable.length === 0)
     			return false;
 
     		var initialScrollDelta = nodeScrollable.data('initial-scroll-top');
@@ -114,7 +123,7 @@
     			$(e.currentTarget).css(Prefixer.css('transform'), 'translate3d(' + delta + 'px, 0, 0)');
     		}
     		else {
-    			if (nodeScrollable != null && nodeScrollable.length > 0) {
+    			if (nodeScrollable !== null && nodeScrollable.length > 0) {
     				if (nodeScrollable.height() >= nodeScrollable[0].scrollHeight) {
     					// Content is NOT scrollable. Don't let iOS Safari scroll the body.
     					e.preventDefault();
@@ -202,19 +211,19 @@
         });
         
         body.addClass('canvas-sliding canvas-sliding-'
-            + (this.options.placement == 'right' ? 'left' : 'right')
+            + (this.options.placement === 'right' ? 'left' : 'right')
 			+ (this.options.lg ? ' canvas-lg' : '')
             + (this.options.fullscreen ? ' canvas-fullscreen' : ''));
 
         this.el.addClass("on").one(Prefixer.event.transitionEnd, function (e) {
-            if (self.state != 'slide-in') return;
+            if (self.state !== 'slide-in') return;
             body.addClass('canvas-slid');
             self.state = 'slid';
             self.el.trigger('shown.sm.offcanvas');
         });
-    }
+    };
 
-    OffCanvas.prototype.hide = function (fn) { 
+    OffCanvas.prototype.hide = function (fn) {
         if (this.state !== 'slid') return;
 
         var self = this;
@@ -232,24 +241,24 @@
         body.removeClass('canvas-blocking canvas-noscroll canvas-slid canvas-sliding canvas-sliding-left canvas-sliding-right canvas-lg canvas-fullscreen canvas-overlay');
 
         this.el.removeClass("on").one(Prefixer.event.transitionEnd, function (e) {
-            if (self.state != 'slide-out') return;
+            if (self.state !== 'slide-out') return;
 
             body.removeClass('canvas-sliding-out');
             self.state = null;
             self.el.trigger('hidden.sm.offcanvas');
         });
-    }
+    };
 
     OffCanvas.prototype.toggle = function (fn) {
         if (this.state === 'slide-in' || this.state === 'slide-out') return;
         this[this.state === 'slid' ? 'hide' : 'show']();
-    }
+    };
 
     OffCanvas.prototype.autohide = function (e) {
         var target = $(e.target);
         if (target.closest(this.el).length === 0 && !target.hasClass("select2-results__option"))
             this.hide();
-    }
+    };
 
 
     // OFFCANVAS PLUGIN DEFINITION
@@ -266,7 +275,7 @@
         })
     }
 
-    $.fn.offcanvas.Constructor = OffCanvas
+    $.fn.offcanvas.Constructor = OffCanvas;
 
 
     // OFFCANVAS DATA API

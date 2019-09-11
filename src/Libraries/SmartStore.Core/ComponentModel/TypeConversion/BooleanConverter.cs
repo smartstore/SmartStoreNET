@@ -49,14 +49,12 @@ namespace SmartStore.ComponentModel
 			{
 				var str = (string)value;
 
-				bool b;
-				if (bool.TryParse(str, out b))
+				if (bool.TryParse(str, out var b))
 				{
 					return b;
 				}
 
-				short sh;
-				if (short.TryParse(str, out sh))
+				if (short.TryParse(str, out var sh))
 				{
 					if (sh == 0)
 					{

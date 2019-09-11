@@ -27,7 +27,6 @@ namespace SmartStore.Web.Framework.UI
         private readonly List<string> _metaKeywordParts;
         private readonly List<string> _canonicalUrlParts;
 		private readonly List<string> _customHeadParts;
-        private readonly List<string> _bodyCssClasses;
         private string _htmlId;
         private readonly Dictionary<ResourceLocation, List<WebAssetDescriptor>> _scriptParts;
         private readonly Dictionary<ResourceLocation, List<WebAssetDescriptor>> _cssParts;
@@ -54,10 +53,15 @@ namespace SmartStore.Web.Framework.UI
             _cssParts = new Dictionary<ResourceLocation, List<WebAssetDescriptor>>();
             _canonicalUrlParts = new List<string>();
 			_customHeadParts = new List<string>();
-            _bodyCssClasses = new List<string>();
             _linkParts = new List<RouteValueDictionary>();
 			_storeContext = storeContext;
             _bundleBuilder = bundleBuilder;
+
+            var bodyHtmlId = storeContext.CurrentStore.HtmlBodyId;
+            if (bodyHtmlId.HasValue())
+            {
+                BodyAttributes["id"] = bodyHtmlId;
+            }
         }
 
         private bool IsValidPart<T>(T part)
@@ -89,32 +93,29 @@ namespace SmartStore.Web.Framework.UI
             }
         }
 
+        public IDictionary<string, object> BodyAttributes { get; } = new RouteValueDictionary();
+
+        public void AddBodyAttribute(string name, object value)
+        {
+            Guard.NotEmpty(name, nameof(name));
+
+            BodyAttributes[name] = value;
+        }
+
         public void AddBodyCssClass(string className)
         {
 			if (className.IsEmpty())
 				return;
 
-			var classes = className.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-			foreach (var clas in classes)
-			{
-				if (!_bodyCssClasses.Contains(clas))
-				{
-					_bodyCssClasses.Insert(0, clas);
-				}
-			}	
+            if (className.HasValue())
+            {
+                BodyAttributes.PrependCssClass(className);
+            }           
         }
 
         public void SetHtmlId(string htmlId)
         {
             _htmlId = htmlId;
-        }
-
-        public string GenerateBodyCssClasses()
-        {
-            if (_bodyCssClasses.Count == 0)
-                return null;
-
-            return String.Join(" ", _bodyCssClasses);
         }
 
         public string GenerateHtmlId()

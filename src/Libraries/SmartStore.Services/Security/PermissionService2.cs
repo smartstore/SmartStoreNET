@@ -387,6 +387,58 @@ namespace SmartStore.Services.Security
             return false;
         }
 
+       
+        public virtual bool FindAuthorization(string permissionSystemName)
+        {
+            return FindAuthorization(permissionSystemName, _workContext.CurrentCustomer);
+        }
+
+        public virtual bool FindAuthorization(string permissionSystemName, Customer customer)
+        {
+            if (string.IsNullOrEmpty(permissionSystemName))
+            {
+                return false;
+            }
+
+            foreach (var role in customer.CustomerRoles.Where(x => x.Active))
+            {
+                var tree = GetPermissionTree(role);
+                var node = tree.SelectNodeById(permissionSystemName);
+                if (node == null)
+                {
+                    throw new SmartException($"Unknown permission \"{permissionSystemName}\".");
+                }
+
+                if (FindAllow(node))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+
+            bool FindAllow(TreeNode<IPermissionNode> n)
+            {
+                if (n.Value.Allow ?? false)
+                {
+                    return true;
+                }
+
+                if (n.HasChildren)
+                {
+                    foreach (var child in n.Children)
+                    {
+                        if (FindAllow(child))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            }
+        }
+
 
         public virtual TreeNode<IPermissionNode> GetPermissionTree(CustomerRole role, bool addDisplayNames = false)
         {

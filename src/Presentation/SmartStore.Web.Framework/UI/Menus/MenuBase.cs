@@ -170,6 +170,7 @@ namespace SmartStore.Web.Framework.UI
 
             if (item.PermissionNames.HasValue())
             {
+                //GP: use FindAuthorization method here.
                 var permitted = item.PermissionNames.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Any(x => Services.Permissions.Authorize(x.Trim()));
                 if (!permitted)
                 {

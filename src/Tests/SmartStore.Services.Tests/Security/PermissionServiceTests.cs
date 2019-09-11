@@ -68,6 +68,7 @@ namespace SmartStore.Services.Tests.Security
             AddMapping(pManu, _rAdmin, true);
             AddMapping(pCategory, _rAdmin, true);
 
+            AddMapping(pManu, _rModerator, false);
             AddMapping(pManuRead, _rModerator, true);
             AddMapping(pManuWrite, _rModerator, false);
 
@@ -119,6 +120,15 @@ namespace SmartStore.Services.Tests.Security
 
             result = _permissionService.Authorize("catalog.manufacturer.write", _cGuest);
             Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void Permission_find()
+        {
+            CheckTreeNode(_rModerator, "catalog.manufacturer", false);
+
+            var result = _permissionService.FindAuthorization("catalog.manufacturer", _cModerator);
+            Assert.IsTrue(result);
         }
 
         private void AddMapping(PermissionRecord permission, CustomerRole role, bool allow)

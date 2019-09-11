@@ -33,6 +33,7 @@
         nodeState: '',      // on-off
         expandedClass: 'fas fa-angle-down',
         collapsedClass: 'fas fa-angle-right',
+        leafClass: 'tree-leaf left-align',
         stateTitles: ['', '', '']
     };
 
@@ -65,7 +66,7 @@
             var li = $(this);
             var isLeaf = !li.has('ul').length;
 
-            li.addClass('tree-node ' + (isLeaf ? 'tree-leaf' : 'tree-noleaf'))
+            li.addClass('tree-node ' + (isLeaf ? opt.leafClass : 'tree-noleaf'))
                 .prepend(isLeaf ? leafHtml : noLeafHtml)
                 .find('.tree-text').html(li.data('label'));
         });

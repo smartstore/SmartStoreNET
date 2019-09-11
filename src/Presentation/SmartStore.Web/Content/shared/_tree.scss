@@ -80,6 +80,15 @@ $default-state-color: $gray-400;
         user-select: none;
     }
 
+    .tree-leaf {
+        &.left-align {
+            display: inline-block;
+            flex: 0 0 auto;
+            width: auto;
+            max-width: none;
+        }
+    }
+
     .tree-noleaf > .tree-inner .tree-text {
         font-weight: $font-weight-medium;
     }

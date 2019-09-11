@@ -126,6 +126,22 @@ namespace SmartStore.Services.Security
 
 
         /// <summary>
+        /// Search all child permissions for an authorization (initial permission included).
+        /// </summary>
+        /// <param name="permissionSystemName">Permission record system name.</param>
+        /// <returns><c>true</c> authorization found otherwise <c>false</c>.</returns>
+        bool FindAuthorization(string permissionSystemName);
+
+        /// <summary>
+        /// Search all child permissions for an authorization (initial permission included).
+        /// </summary>
+        /// <param name="permissionSystemName">Permission record system name.</param>
+        /// <param name="customer">Customer.</param>
+        /// <returns><c>true</c> authorization found otherwise <c>false</c>.</returns>
+        bool FindAuthorization(string permissionSystemName, Customer customer);
+
+
+        /// <summary>
         /// Gets the permission tree for a customer role.
         /// </summary>
         /// <param name="role">Customer role.</param>

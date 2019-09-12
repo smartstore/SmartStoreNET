@@ -650,7 +650,7 @@
 		
 		// Waypoint / scroll top
 		(function () {
-            $(document).on('click', 'a.waypoint', function (e) {
+            $(document).on('click', 'a.scrollto', function (e) {
                 e.preventDefault();
                 var href = $(this).attr('href');
                 var target = href === '#' ? $('body') : $(href);

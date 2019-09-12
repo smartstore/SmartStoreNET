@@ -66,7 +66,7 @@
 {
         new SelectListItem {Text=T("Admin.CMS.ContentSlider.HomePageSlider"),Value="0" },
         new SelectListItem {Text=T("Admin.CMS.ContentSlider.CategorySlider"),Value="1" },
-        new SelectListItem {Text=T("Admin.CMS.ContentSlider.ManufacturerSlide"),Value="2" }
+        new SelectListItem {Text=T("Admin.CMS.ContentSlider.ManufacturerSlider"),Value="2" }
     };
 <table id="contentsliderTable" class="adminContent">
     <tr>
@@ -141,7 +141,7 @@
                         .AppendMode(false)
                         .MaxItems(1)
                         .EntityType("Category")
-                        .DialogTitle(T("Admin.CMS.ContentSlider.SelectItem").Text.EncodeJsString('\'', false))
+                        .DialogTitle(T("Admin.CMS.ContentSlider.SelectCategory").Text.EncodeJsString('\'', false))
                         .Caption(T("Admin.Common.Search").Text.EncodeJsString('\'', false)))
                 </span>
             </div>
@@ -166,7 +166,7 @@
                         .AppendMode(false)
                         .MaxItems(1)
                         .EntityType("Manufacturer")
-                        .DialogTitle(T("Admin.CMS.ContentSlider.SelectItem").Text.EncodeJsString('\'', false))
+                        .DialogTitle(T("Admin.CMS.ContentSlider.SelectManufacturer").Text.EncodeJsString('\'', false))
                         .Caption(T("Admin.Common.Search").Text.EncodeJsString('\'', false))
                         .OnSelectionCompleted("PickManufacture_Completed"))
                 </span>
@@ -184,7 +184,7 @@
         new { SLideTypeId=0,SlideTypeName=T("Admin.CMS.ContentSlider.Slide.NormalSlide")},
         new { SLideTypeId=1,SlideTypeName=T("Admin.CMS.ContentSlider.Slide.ProductSlide")},
         new { SLideTypeId=2,SlideTypeName=T("Admin.CMS.ContentSlider.Slide.CategorySlide")},
-        new { SLideTypeId=3,SlideTypeName=T("Admin.CMS.ContentSlider.Slide.contentsliderSlide")}
+        new { SLideTypeId=3,SlideTypeName=T("Admin.CMS.ContentSlider.Slide.ManufacturerSlide")}
     };
     if (Model.Id > 0)
     {

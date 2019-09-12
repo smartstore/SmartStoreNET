@@ -25,7 +25,7 @@ namespace SmartStore.Admin.Models.ContentSlider
 
         public int? ItemId { get; set; }
 
-        [SmartResourceDisplayName("Admin.CMS.ContentSlider.Slides.Fields.Slide")]
+        [SmartResourceDisplayName("Admin.CMS.ContentSlider.Slides.Fields.SlideTitle")]
         public string SlideTitle { get; set; }
 
         [SmartResourceDisplayName("Admin.CMS.ContentSlider.Slides.Fields.Content")]

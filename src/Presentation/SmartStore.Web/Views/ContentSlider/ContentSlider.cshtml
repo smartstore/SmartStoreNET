@@ -1,4 +1,7 @@
-﻿<div id="carousel-2" class="carousel slide xhide-on-active-filter bright fluid d-none d-md-block" data-ride="carousel" data-interval="@Model.Delay" style="display:@(Model.IsActive == true ? "block" : "none"); background-color: transparent;height:@(Model.Height)px">
+﻿@model ContentSliderModel
+@using SmartStore.Web.Models.ContentSlider;
+
+<div id="carousel-2" class="carousel slide xhide-on-active-filter bright fluid d-none d-md-block" data-ride="carousel" data-interval="@Model.Delay" style="display:@(Model.IsActive == true ? "block" : "none"); background-color: transparent;height:@(Model.Height)px">
     <ol class="carousel-indicators">
         @if (Model.IsActive == true)
         {
@@ -21,8 +24,8 @@
             for (int i = 0; i < Model.Slides.Count; i++)//foreach (var slide in Model.Slides)
             {
                 var slide = Model.Slides[i];
-                <div id="carousel-item-@i" class="carousel-item bright pb-0 product-slide @(@i == 0 ? "active" : "")" style="background-color: transparent;height:400px">
-                    @if (slide.SlideType == (int)SmartStore.Web.Models.ContentSlider.SlideType.ProductSlide)
+                <div id="carousel-item-@i" class="carousel-item bright pb-0 product-slide @(i == 0 ? "active" : "")" style="background-color: transparent;height:400px">
+                    @if (slide.SlideType == (int)SmartStore.Core.Domain.ContentSlider.SlideType.ProductSlide)
                     {
                         if (slide.DisplayPrice == true && Math.Floor(slide.ProductDetails.ProductPrice.SavingPercent) > 0)
                         {
@@ -32,7 +35,7 @@
                         }
                     }
                     <div class="container d-flex flex-column h-100 slide-type-4">
-                        @if (slide.SlideType == (int)SmartStore.Web.Models.ContentSlider.SlideType.ProductSlide)
+                        @if (slide.SlideType == (int)SmartStore.Core.Domain.ContentSlider.SlideType.ProductSlide)
                         {
                             <div class="data pb-3">
 
@@ -68,7 +71,7 @@
                                 }
                             </div>
                         }
-                        else if (slide.SlideType == (int)SmartStore.Web.Models.ContentSlider.SlideType.CategorySlide)
+                        else if (slide.SlideType == (int)SmartStore.Core.Domain.ContentSlider.SlideType.CategorySlide)
                         {
                             <div class="data pb-3">
                                 <h4 class="slide-title display-4 aos-init aos-animate" data-aos="slide-down" data-aos-easing="ease-out-cubic">
@@ -81,7 +84,7 @@
                                 </p>
                             </div>
                         }
-                        else if (slide.SlideType == (int)SmartStore.Web.Models.ContentSlider.SlideType.BrandSlide)
+                        else if (slide.SlideType == (int)SmartStore.Core.Domain.ContentSlider.SlideType.ManufacturerSlide)
                         {
                             <div class="data pb-3">
                                 <h4 class="slide-title display-4 aos-init aos-animate" data-aos="slide-down" data-aos-easing="ease-out-cubic">
@@ -95,7 +98,7 @@
                             </div>
                         }
                         <figure class="picture align-self-stretch mt-auto mb-0 aos-init aos-animate" data-aos="zoom-in" data-aos-easing="ease-out-cubic">
-                            @if (slide.SlideType == (int)SmartStore.Web.Models.ContentSlider.SlideType.ProductSlide)
+                            @if (slide.SlideType == (int)SmartStore.Core.Domain.ContentSlider.SlideType.ProductSlide)
                             {
                                 <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", slide.ProductDetails.SeName } })" title="@slide.PictureModel.Name">
                                     <img alt="@slide.PictureModel.AlternateText" src="@slide.PictureModel.PictureModel.ImageUrl" title="@slide.PictureModel.Name" class="img-fluid">
@@ -106,7 +109,7 @@
                                 <img alt="@slide.PictureModel.AlternateText" src="@slide.PictureModel.PictureModel.ImageUrl" title="@slide.PictureModel.Name" class="img-fluid">
                             }
                         </figure>
-                        @if (slide.SlideType == (int)SmartStore.Web.Models.ContentSlider.SlideType.ProductSlide)
+                        @if (slide.SlideType == (int)SmartStore.Core.Domain.ContentSlider.SlideType.ProductSlide)
                         {
                             if (slide.DisplayButton == true)
                             {

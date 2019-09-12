@@ -142,22 +142,6 @@ namespace SmartStore.Admin.Controllers
         {
             if (model == null)
                 throw new ArgumentNullException("model");
-
-            //if (!excludeProperties)
-            //{
-            //    model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(manufacturer);
-            //    model.SelectedDiscountIds = (manufacturer != null ? manufacturer.AppliedDiscounts.Select(d => d.Id).ToArray() : new int[0]);
-            //}
-
-            //if (manufacturer != null)
-            //{
-            //    model.CreatedOn = _dateTimeHelper.ConvertToUserTime(manufacturer.CreatedOnUtc, DateTimeKind.Utc);
-            //    model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(manufacturer.UpdatedOnUtc, DateTimeKind.Utc);
-            //}
-
-            //model.GridPageSize = _adminAreaSettings.GridPageSize;
-            //model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
-            //model.AvailableDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToManufacturers, null, true).ToList();
         }
 
         #endregion
@@ -403,6 +387,13 @@ namespace SmartStore.Admin.Controllers
             if (contentSlider == null)
                 return RedirectToAction("List");
 
+            for (int i = contentSlider.Slides.Count-1; i > -1; i--)
+            {
+                var slide = contentSlider.Slides.ToArray()[i];
+                _pictureService.DeletePicture(slide.Picture);
+                _contentSliderService.DeleteContentSliderSlide(slide);
+            }
+           
             _contentSliderService.DeleteContentSlider(contentSlider);
 
             //activity log
@@ -608,6 +599,8 @@ namespace SmartStore.Admin.Controllers
             var slide = _contentSliderService.GetContentSliderSlideById(id);
             if (slide == null)
                 return RedirectToAction("List");
+
+            _pictureService.DeletePicture(slide.Picture);
 
             _contentSliderService.DeleteContentSliderSlide(slide);
 

@@ -33,7 +33,8 @@ namespace SmartStore.Services
 		IPictureService PictureService { get; }
 		INotifier Notifier { get; }
 		IPermissionService Permissions { get; }
-		ISettingService Settings { get; }
+        IPermissionService2 Permissions2 { get; }
+        ISettingService Settings { get; }
 		IStoreService StoreService { get; }
 		IDateTimeHelper DateTimeHelper { get; }
 		IChronometer Chronometer { get; }

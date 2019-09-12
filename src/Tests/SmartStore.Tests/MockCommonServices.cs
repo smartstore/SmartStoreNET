@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using Rhino.Mocks;
@@ -22,7 +19,7 @@ using SmartStore.Services.Stores;
 
 namespace SmartStore.Tests
 {
-	public class MockCommonServices : ICommonServices
+    public class MockCommonServices : ICommonServices
 	{
 		private IComponentContext _container;
 		private IDbContext _dbContext;
@@ -51,7 +48,8 @@ namespace SmartStore.Tests
 		public IPictureService PictureService => MockRepository.GenerateMock<IPictureService>();
 		public INotifier Notifier => MockRepository.GenerateMock<INotifier>();
 		public IPermissionService Permissions => MockRepository.GenerateMock<IPermissionService>();
-		public ISettingService Settings => MockRepository.GenerateMock<ISettingService>();
+        public IPermissionService2 Permissions2 => MockRepository.GenerateMock<IPermissionService2>();
+        public ISettingService Settings => MockRepository.GenerateMock<ISettingService>();
 		public IStoreService StoreService => MockRepository.GenerateMock<IStoreService>();
 		public IDateTimeHelper DateTimeHelper => MockRepository.GenerateMock<IDateTimeHelper>();
 		public IDisplayControl DisplayControl => MockRepository.GenerateMock<IDisplayControl>();

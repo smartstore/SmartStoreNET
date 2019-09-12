@@ -1,35 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using SmartStore.Utilities;
-using SmartStore.Core.Packaging;
-using SmartStore.Web.Framework.Controllers;
-using SmartStore.Core.Localization;
-using System.IO;
-using SmartStore.Services;
-using SmartStore.Services.Security;
-using System.Dynamic;
+using SmartStore.Core;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Packaging;
 using SmartStore.Core.Themes;
+using SmartStore.Utilities;
+using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
-
-	[AdminAuthorize]
+    [AdminAuthorize]
 	public class PackagingController : AdminControllerBase
 	{
-		private readonly ICommonServices _services;
 		private readonly IPackageManager _packageManager;
 		private readonly Lazy<IThemeRegistry> _themeRegistry;
 
-		public PackagingController(ICommonServices services, IPackageManager packageManager, Lazy<IThemeRegistry> themeRegistry)
+		public PackagingController(
+            IPackageManager packageManager,
+            Lazy<IThemeRegistry> themeRegistry)
 		{
-			this._services = services;
-			this._packageManager = packageManager;
-			this._themeRegistry = themeRegistry;
+			_packageManager = packageManager;
+			_themeRegistry = themeRegistry;
 		}
 
 		[ChildActionOnly]
@@ -45,18 +37,18 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult UploadPackage(FormCollection form, string returnUrl = "")
 		{
-			bool isTheme = false;
+			var isTheme = false;
 
 			try
 			{
 				var file = Request.Files["packagefile"].ToPostedFileResult();
 				if (file != null)
 				{
-					var requiredPermission = (isTheme = PackagingUtils.IsTheme(file.FileName))
-						? StandardPermissionProvider.ManageThemes
-						: StandardPermissionProvider.ManagePlugins;
+                    var requiredPermission = (isTheme = PackagingUtils.IsTheme(file.FileName))
+                        ? Permissions.Configuration.Theme.Upload
+                        : Permissions.Configuration.Plugin.Upload;
 
-					if (!_services.Permissions.Authorize(requiredPermission))
+					if (!Services.Permissions2.Authorize(requiredPermission))
 					{
 						return AccessDeniedView();
 					}
@@ -72,7 +64,7 @@ namespace SmartStore.Admin.Controllers
 
 					if (isTheme)
 					{
-						// avoid getting terrorized by IO events
+						// Avoid getting terrorized by IO events.
 						_themeRegistry.Value.StopMonitoring();
 					}
 
@@ -80,7 +72,7 @@ namespace SmartStore.Admin.Controllers
 
 					if (isTheme)
 					{
-						// create manifest
+						// Create manifest.
 						if (packageInfo != null)
 						{
 							var manifest = ThemeManifest.Create(packageInfo.ExtensionDescriptor.Path);
@@ -90,7 +82,7 @@ namespace SmartStore.Admin.Controllers
 							}
 						}
 
-						// SOFT start IO events again
+						// SOFT start IO events again.
 						_themeRegistry.Value.StartMonitoring(false);
 					}
 				}
@@ -102,19 +94,18 @@ namespace SmartStore.Admin.Controllers
 
 				if (!isTheme)
 				{
-					_services.WebHelper.RestartAppDomain();
+					Services.WebHelper.RestartAppDomain();
 				}
+
 				NotifySuccess(T("Admin.Packaging.InstallSuccess"));
-				return RedirectToReferrer(returnUrl);
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
-				NotifyError(exc);
-				Logger.Error(exc);
-				return RedirectToReferrer(returnUrl);
+				NotifyError(ex);
+				Logger.Error(ex);
 			}
-		}
 
+            return RedirectToReferrer(returnUrl);
+        }
 	}
-
 }

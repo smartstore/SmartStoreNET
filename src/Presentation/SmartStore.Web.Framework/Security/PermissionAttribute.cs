@@ -81,6 +81,7 @@ namespace SmartStore.Web.Framework.Security
                         Data = new
                         {
                             error = true,
+                            success = false,
                             controller = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName,
                             action = filterContext.ActionDescriptor.ActionName,
                             message = T("Admin.AccessDenied.Description").Text

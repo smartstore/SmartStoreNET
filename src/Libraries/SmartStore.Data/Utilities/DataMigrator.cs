@@ -946,14 +946,14 @@ namespace SmartStore.Data.Utilities
             var permissionSet = ctx.Set<PermissionRecord>();
             var mappingSet = ctx.Set<PermissionRoleMapping>();
             var allRoles = ctx.Set<CustomerRole>().ToList();
-            var allPermissions = permissionSet.Expand(x => x.CustomerRoles).ToList();
+            var allPermissions = permissionSet.Expand(x => x.CustomerRoles).ToList().ToDictionarySafe(x => x.SystemName, x => x);
             var newPermissions = new Dictionary<string, PermissionRecord>();
             //var adminRole = allRoles.FirstOrDefault(x => x.SystemName.IsCaseInsensitiveEqual("Administrators"));
 
             var permissionToRoles = new Multimap<string, int>(StringComparer.OrdinalIgnoreCase);
             foreach (var permission in allPermissions)
             {
-                permissionToRoles.AddRange(permission.SystemName, permission.CustomerRoles.Select(x => x.Id));
+                permissionToRoles.AddRange(permission.Key, permission.Value.CustomerRoles.Select(x => x.Id));
             }
 
             using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
@@ -962,8 +962,12 @@ namespace SmartStore.Data.Utilities
                 var permissionSystemNames = PermissionHelper.GetPermissions(typeof(Permissions));
                 foreach (var permissionName in permissionSystemNames)
                 {
-                    var entity = permissionSet.Add(new PermissionRecord { SystemName = permissionName, Name = string.Empty, Category = string.Empty });
-                    newPermissions[permissionName] = entity;
+                    if (!allPermissions.TryGetValue(permissionName, out var permission))
+                    {
+                        permission = permissionSet.Add(new PermissionRecord { SystemName = permissionName, Name = string.Empty, Category = string.Empty });
+                    }
+
+                    newPermissions[permissionName] = permission;
                 }
 
                 scope.Commit();
@@ -1052,8 +1056,12 @@ namespace SmartStore.Data.Utilities
                             var newPluginPermissionNames = PermissionHelper.GetPermissions(type);
                             foreach (var permissionName in newPluginPermissionNames)
                             {
-                                var entity = permissionSet.Add(new PermissionRecord { SystemName = permissionName, Name = string.Empty, Category = string.Empty });
-                                newPermissions[permissionName] = entity;
+                                if (!allPermissions.TryGetValue(permissionName, out var permission))
+                                {
+                                    permission = permissionSet.Add(new PermissionRecord { SystemName = permissionName, Name = string.Empty, Category = string.Empty });
+                                }
+
+                                newPermissions[permissionName] = permission;
                             }
                         }
                         else

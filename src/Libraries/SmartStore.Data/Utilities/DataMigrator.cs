@@ -948,6 +948,7 @@ namespace SmartStore.Data.Utilities
             var allRoles = ctx.Set<CustomerRole>().ToList();
             var allPermissions = permissionSet.Expand(x => x.CustomerRoles).ToList();
             var newPermissions = new Dictionary<string, PermissionRecord>();
+            //var adminRole = allRoles.FirstOrDefault(x => x.SystemName.IsCaseInsensitiveEqual("Administrators"));
 
             var permissionToRoles = new Multimap<string, int>(StringComparer.OrdinalIgnoreCase);
             foreach (var permission in allPermissions)
@@ -1017,6 +1018,9 @@ namespace SmartStore.Data.Utilities
                 Allow("EnableShoppingCart", newPermissions[Permissions.Cart.AccessShoppingCart]);
                 Allow("EnableWishlist", newPermissions[Permissions.Cart.AccessWishlist]);
                 Allow("PublicStoreAllowNavigation", newPermissions[Permissions.System.AccessShop]);
+
+                // Add mappings for new permissions.
+                //AllowForRole(adminRole, newPermissions[Permissions....]);
 
                 scope.Commit();
                 newPermissions.Clear();
@@ -1102,6 +1106,19 @@ namespace SmartStore.Data.Utilities
                     }
                 }
             }
+
+            //void AllowForRole(CustomerRole role, params PermissionRecord[] permissions)
+            //{
+            //    foreach (var permission in permissions)
+            //    {
+            //        mappingSet.Add(new PermissionRoleMapping
+            //        {
+            //            Allow = true,
+            //            PermissionRecordId = permission.Id,
+            //            CustomerRoleId = role.Id
+            //        });
+            //    }
+            //}
         }
 
         #endregion

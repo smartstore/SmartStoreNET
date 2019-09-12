@@ -2490,13 +2490,15 @@ namespace SmartStore.Admin.Controllers
             return model;
         }
 
-		public ActionResult BestsellersBriefReportByQuantity()
+        [Permission(Permissions.Order.Read)]
+        public ActionResult BestsellersBriefReportByQuantity()
         {
             var model = GetBestsellersBriefReportModel(5, 1);
             return PartialView(model);
         }
 
 		[GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Order.Read)]
         public ActionResult BestsellersBriefReportByQuantityList(GridCommand command)
         {
             var model = GetBestsellersBriefReportModel(5, 1);
@@ -2512,13 +2514,15 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-		public ActionResult BestsellersBriefReportByAmount()
+        [Permission(Permissions.Order.Read)]
+        public ActionResult BestsellersBriefReportByAmount()
         {
             var model = GetBestsellersBriefReportModel(5, 2);
             return PartialView(model);
         }
 
 		[GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Order.Read)]
         public ActionResult BestsellersBriefReportByAmountList(GridCommand command)
         {
             var model = GetBestsellersBriefReportModel(5, 2);
@@ -2534,6 +2538,7 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
+        [Permission(Permissions.Order.Read)]
         public ActionResult BestsellersReport()
         {
 			var model = new BestsellersReportModel
@@ -2553,6 +2558,7 @@ namespace SmartStore.Admin.Controllers
         }
 
 		[GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Order.Read)]
         public ActionResult BestsellersReportList(GridCommand command, BestsellersReportModel model)
         {
             DateTime? startDateValue = (model.StartDate == null) ? null
@@ -2598,7 +2604,7 @@ namespace SmartStore.Admin.Controllers
         }
 
 
-
+        [Permission(Permissions.Order.Read)]
         public ActionResult NeverSoldReport()
         {
             var model = new NeverSoldReportModel();
@@ -2606,6 +2612,7 @@ namespace SmartStore.Admin.Controllers
         }
 
 		[GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Order.Read)]
         public ActionResult NeverSoldReportList(GridCommand command, NeverSoldReportModel model)
         {
             DateTime? startDateValue = (model.StartDate == null) ? null
@@ -2639,6 +2646,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.Order.Read)]
         public ActionResult PendingTodayReport()
         {
             var report = _orderReportService.OrderAverageReport(0, OrderStatus.Pending);
@@ -2686,6 +2694,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [ChildActionOnly]
+        [Permission(Permissions.Order.Read)]
         public ActionResult OrderAverageReport()
         {
 			var model = GetOrderAverageReportModel();
@@ -2693,6 +2702,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Order.Read)]
         public ActionResult OrderAverageReportList(GridCommand command)
         {
             var model = GetOrderAverageReportModel();
@@ -2712,7 +2722,6 @@ namespace SmartStore.Admin.Controllers
         protected virtual IList<OrderIncompleteReportLineModel> GetOrderIncompleteReportModel()
         {
             var model = new List<OrderIncompleteReportLineModel>();
-			var urlHelper = new UrlHelper(Request.RequestContext);
 
             // Not paid.
 			var psPending = _orderReportService.GetOrderAverageReportLine(0, null, new int[] { (int)PaymentStatus.Pending }, null, null, null, null, true);
@@ -2721,7 +2730,7 @@ namespace SmartStore.Admin.Controllers
                 Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalUnpaidOrders"),
                 Count = psPending.CountOrders,
                 Total = _priceFormatter.FormatPrice(psPending.SumOrders, true, false),
-				Url = urlHelper.Action("List", "Order", new { PaymentStatusIds = (int)PaymentStatus.Pending })
+				Url = Url.Action("List", "Order", new { PaymentStatusIds = (int)PaymentStatus.Pending })
             });
             
             // Not shipped.
@@ -2731,7 +2740,7 @@ namespace SmartStore.Admin.Controllers
                 Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalNotShippedOrders"),
                 Count = ssPending.CountOrders,
                 Total = _priceFormatter.FormatPrice(ssPending.SumOrders, true, false),
-				Url = urlHelper.Action("List", "Order", new { ShippingStatusIds = (int)ShippingStatus.NotYetShipped })
+				Url = Url.Action("List", "Order", new { ShippingStatusIds = (int)ShippingStatus.NotYetShipped })
             });
 
             // Pending.
@@ -2741,13 +2750,14 @@ namespace SmartStore.Admin.Controllers
                 Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalIncompleteOrders"),
                 Count = osPending.CountOrders,
                 Total = _priceFormatter.FormatPrice(osPending.SumOrders, true, false),
-				Url = urlHelper.Action("List", "Order", new { OrderStatusIds = (int)OrderStatus.Pending })
+				Url = Url.Action("List", "Order", new { OrderStatusIds = (int)OrderStatus.Pending })
             });
 
             return model;
         }
 
 		[ChildActionOnly]
+        [Permission(Permissions.Order.Read)]
         public ActionResult OrderIncompleteReport()
         {
             var model = GetOrderIncompleteReportModel();
@@ -2755,6 +2765,7 @@ namespace SmartStore.Admin.Controllers
         }
 
 		[GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Order.Read)]
         public ActionResult OrderIncompleteReportList(GridCommand command)
         {
             var model = GetOrderIncompleteReportModel();

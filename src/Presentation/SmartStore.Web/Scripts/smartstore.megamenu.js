@@ -243,7 +243,7 @@
 							? firstVisible.prev()
 							: firstVisible.next();
 
-                        if (nextItem.length == 0)
+                        if (nextItem.length === 0)
                             return;
 
                         // determine left pos of the item 

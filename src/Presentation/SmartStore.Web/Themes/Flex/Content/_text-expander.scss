@@ -13,7 +13,9 @@
     .btn-text-expander {
         display: none;
 		align-items: center;
+        justify-content: var(--text-expander-justify-content, initial);
         position: absolute;
+        color: inherit;
         font-weight: $font-weight-medium;
         left: 0;
         right: 0;
@@ -29,8 +31,13 @@
         left: 0;
         right: 0;
         bottom: 0;
-        height: ($font-size-base * $line-height-base) * 3;
-        background: linear-gradient(to bottom, rgba($body-bg, 0), $body-bg 70%, $body-bg 100%);
+        height: var(--text-expander-height, #{($font-size-base * $line-height-base) * 3});
+
+        $c: $body-bg;
+        @if alpha($body-bg) == 0 {
+            $c: $site-bg;
+        }
+        background: linear-gradient(to bottom, rgba($c, 0), $c 70%, $c 100%);
     }
 
     .btn-text-expander--collapse {

@@ -370,18 +370,8 @@ table th {
     }
 }
 
-@each $color, $value in $theme-colors {
-    .xshadow-#{$color} { 
-        box-shadow: 0 15px 35px rgba($value, .15), 0 5px 15px rgba(darken($value, 30%), .1) !important;   
-    }
-    @if $color != "secondary" and $color != "light" {
-        .xshadow-sm-#{$color} { 
-            box-shadow: 0 0 .625rem 0 rgba($value, .15) !important;   
-        }
-        .xshadow-lg-#{$color} { 
-            box-shadow: 0 40px 80px rgba($value, .15), 0 15px 35px rgba(darken($value, 30%), .2) !important;   
-        }
-    }
+.shadow-light {
+    box-shadow: 0 0 20px 0 rgba(#000, .08);
 }
 
 

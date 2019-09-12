@@ -77,8 +77,8 @@ namespace SmartStore.Admin.Models.ContentSlider
     {
         public SliderSlideValidator()
         {
-            RuleFor(x => x.SlideTitle).NotEmpty();
-            RuleFor(x => x.SlideContent).NotEmpty();
+            //RuleFor(x => x.SlideTitle).NotEmpty();
+            //RuleFor(x => x.SlideContent).NotEmpty();
             RuleFor(x => x.SlideType).GreaterThan(-1);
         }
     }

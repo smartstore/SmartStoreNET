@@ -97,18 +97,41 @@
                                 </p>
                             </div>
                         }
-                        <figure class="picture align-self-stretch mt-auto mb-0 aos-init aos-animate" data-aos="zoom-in" data-aos-easing="ease-out-cubic">
-                            @if (slide.SlideType == (int)SmartStore.Core.Domain.ContentSlider.SlideType.ProductSlide)
-                            {
-                                <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", slide.ProductDetails.SeName } })" title="@slide.PictureModel.Name">
-                                    <img alt="@slide.PictureModel.AlternateText" src="@slide.PictureModel.PictureModel.ImageUrl" title="@slide.PictureModel.Name" class="img-fluid">
-                                </a>
-                            }
-                            else
-                            {
+                        else if (slide.SlideType == (int)SmartStore.Core.Domain.ContentSlider.SlideType.NormalSlide)
+                        {
+                            <div class="data pb-3">
+                                <h4 class="slide-title display-4 aos-init aos-animate" data-aos="slide-down" data-aos-easing="ease-out-cubic">
+                                    <span>@slide.SlideTitle</span>
+                                </h4>
+                                <p class="slide-subtitle fs-h4 d-none d-lg-block aos-init aos-animate" title="" data-aos="slide-down" data-aos-easing="ease-out-cubic">
+                                    @slide.SlideContent
+                                </p>
+                            </div>
+                        }
+                    <figure class="picture align-self-stretch mt-auto mb-0 aos-init aos-animate" data-aos="zoom-in" data-aos-easing="ease-out-cubic">
+                        @if (slide.SlideType == (int)SmartStore.Core.Domain.ContentSlider.SlideType.ProductSlide)
+                        {
+                            <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", slide.ProductDetails.SeName } })" title="@slide.PictureModel.Name">
                                 <img alt="@slide.PictureModel.AlternateText" src="@slide.PictureModel.PictureModel.ImageUrl" title="@slide.PictureModel.Name" class="img-fluid">
-                            }
-                        </figure>
+                            </a>
+                        }
+                        else if (slide.SlideType == (int)SmartStore.Core.Domain.ContentSlider.SlideType.CategorySlide)
+                        {
+                            <a href="@Url.RouteUrl("Category", new RouteValueDictionary { { "SeName", slide.CategoryDetails.SeName } })" title="@slide.PictureModel.Name">
+                                <img alt="@slide.PictureModel.AlternateText" src="@slide.PictureModel.PictureModel.ImageUrl" title="@slide.PictureModel.Name" class="img-fluid">
+                            </a>
+                        }
+                        else if (slide.SlideType == (int)SmartStore.Core.Domain.ContentSlider.SlideType.ManufacturerSlide)
+                        {
+                            <a href="@Url.RouteUrl("Manufacturer", new RouteValueDictionary { { "SeName", slide.ManufacturerDetails.SeName } })" title="@slide.PictureModel.Name">
+                                <img alt="@slide.PictureModel.AlternateText" src="@slide.PictureModel.PictureModel.ImageUrl" title="@slide.PictureModel.Name" class="img-fluid">
+                            </a>
+                        }
+                        else if (slide.SlideType == (int)SmartStore.Core.Domain.ContentSlider.SlideType.NormalSlide)
+                        {
+                            <img alt="@slide.PictureModel.AlternateText" src="@slide.PictureModel.PictureModel.ImageUrl" title="@slide.PictureModel.Name" class="img-fluid">
+                        }
+                    </figure>
                         @if (slide.SlideType == (int)SmartStore.Core.Domain.ContentSlider.SlideType.ProductSlide)
                         {
                             if (slide.DisplayButton == true)

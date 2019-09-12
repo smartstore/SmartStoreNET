@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Core.Domain.Security;
 
-namespace SmartStore.Services.Security
+namespace SmartStore.Core.Security
 {
     public interface IPermissionProvider2
     {

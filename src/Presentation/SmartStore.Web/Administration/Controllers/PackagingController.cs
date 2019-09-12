@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Web.Mvc;
-using SmartStore.Core;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Packaging;
+using SmartStore.Core.Security;
 using SmartStore.Core.Themes;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;

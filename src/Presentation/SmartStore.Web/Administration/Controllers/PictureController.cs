@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Security;
 using SmartStore.Data.Utilities;
 using SmartStore.Services.Media;
 using SmartStore.Web.Framework.Controllers;

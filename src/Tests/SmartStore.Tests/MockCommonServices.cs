@@ -8,6 +8,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Events;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Security;
 using SmartStore.Services;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Helpers;

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Customers;
-using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Logging;
@@ -23,18 +23,15 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICustomerService _customerService;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPermissionService _permissionService;
-        private readonly IPermissionService2 _permissionService2;
 
         public CustomerRoleController(
             ICustomerService customerService,
             ICustomerActivityService customerActivityService,
-            IPermissionService permissionService,
-            IPermissionService2 permissionService2)
+            IPermissionService permissionService)
 		{
             _customerService = customerService;
             _customerActivityService = customerActivityService;
             _permissionService = permissionService;
-            _permissionService2 = permissionService2;
 		}
 
         [NonAction]
@@ -181,7 +178,7 @@ namespace SmartStore.Admin.Controllers
 
             var model = customerRole.ToModel();
             model.TaxDisplayTypes = GetTaxDisplayTypesList(model);
-            model.PermissionTree = _permissionService2.GetPermissionTree(customerRole, true);
+            model.PermissionTree = Services.Permissions2.GetPermissionTree(customerRole, true);
 
             return View(model);
 		}
@@ -248,16 +245,16 @@ namespace SmartStore.Admin.Controllers
                                 {
                                     mapping.Allow = item.Value.Value;
 
-                                    _permissionService2.UpdatePermissionRoleMapping(mapping);
+                                    Services.Permissions2.UpdatePermissionRoleMapping(mapping);
                                 }
                                 else
                                 {
-                                    _permissionService2.DeletePermissionRoleMapping(mapping);
+                                    Services.Permissions2.DeletePermissionRoleMapping(mapping);
                                 }
                             }
                             else if (item.Value.HasValue)
                             {
-                                _permissionService2.InsertPermissionRoleMapping(new PermissionRoleMapping
+                                Services.Permissions2.InsertPermissionRoleMapping(new PermissionRoleMapping
                                 {
                                     Allow = item.Value.Value,
                                     PermissionRecordId = item.Key,

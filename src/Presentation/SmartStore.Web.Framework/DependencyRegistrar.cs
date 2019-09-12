@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Web;
@@ -29,6 +28,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Packaging;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Search;
+using SmartStore.Core.Security;
 using SmartStore.Core.Themes;
 using SmartStore.Data;
 using SmartStore.Data.Caching;

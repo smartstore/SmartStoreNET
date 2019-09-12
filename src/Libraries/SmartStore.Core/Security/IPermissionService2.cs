@@ -3,7 +3,7 @@ using SmartStore.Collections;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
 
-namespace SmartStore.Services.Security
+namespace SmartStore.Core.Security
 {
     /// <summary>
     /// Permission service interface.

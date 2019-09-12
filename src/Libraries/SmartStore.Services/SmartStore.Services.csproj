@@ -601,8 +601,6 @@
     <Compile Include="Security\EncryptionService.cs" />
     <Compile Include="Security\IAclService.cs" />
     <Compile Include="Security\IEncryptionService.cs" />
-    <Compile Include="Security\IPermissionProvider2.cs" />
-    <Compile Include="Security\IPermissionService2.cs" />
     <Compile Include="Security\PermissionService.cs" />
     <Compile Include="Security\IPermissionService.cs" />
     <Compile Include="Security\IPermissionProvider.cs" />

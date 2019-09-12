@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Security;
 
 namespace SmartStore.Services.Security
 {
-    public partial class StandardPermissionProvider2 : IPermissionProvider
+    public partial class StandardPermissionProvider2 : IPermissionProvider2
     {
         public virtual IEnumerable<PermissionRecord> GetPermissions()
         {

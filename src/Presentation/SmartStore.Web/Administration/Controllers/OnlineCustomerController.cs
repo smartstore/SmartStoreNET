@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Customers;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Security;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;

@@ -72,7 +72,6 @@ namespace SmartStore.Admin.Controllers
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPriceCalculationService _priceCalculationService;
         private readonly IPermissionService _permissionService;
-        private readonly IPermissionService2 _permissionService2;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly IQueuedEmailService _queuedEmailService;
         private readonly IEmailAccountService _emailAccountService;
@@ -108,7 +107,6 @@ namespace SmartStore.Admin.Controllers
             ICustomerActivityService customerActivityService,
             IPriceCalculationService priceCalculationService,
             IPermissionService permissionService,
-            IPermissionService2 permissionService2,
             AdminAreaSettings adminAreaSettings,
             IQueuedEmailService queuedEmailService,
             IEmailAccountService emailAccountService, ForumSettings forumSettings,
@@ -142,7 +140,6 @@ namespace SmartStore.Admin.Controllers
             _customerActivityService = customerActivityService;
             _priceCalculationService = priceCalculationService;
             _permissionService = permissionService;
-            _permissionService2 = permissionService2;
             _adminAreaSettings = adminAreaSettings;
             _queuedEmailService = queuedEmailService;
             _emailAccountService = emailAccountService;
@@ -385,7 +382,7 @@ namespace SmartStore.Admin.Controllers
 			model.DisplayRewardPointsHistory = _rewardPointsSettings.Enabled;
 			model.AddRewardPointsValue = 0;
 			model.AssociatedExternalAuthRecords = GetAssociatedExternalAuthRecords(customer);
-            model.PermissionTree = _permissionService2.GetPermissionTree(customer, true);
+            model.PermissionTree = Services.Permissions2.GetPermissionTree(customer, true);
         }
 
         [NonAction]

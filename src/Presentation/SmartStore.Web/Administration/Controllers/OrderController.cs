@@ -18,6 +18,7 @@ using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Search;
+using SmartStore.Core.Security;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;

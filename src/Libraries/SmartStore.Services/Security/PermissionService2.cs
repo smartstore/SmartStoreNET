@@ -8,6 +8,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Security;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 

@@ -19,7 +19,6 @@ namespace SmartStore.Admin.Controllers
 
         private readonly IWorkContext _workContext;
         private readonly IPermissionService _permissionService;
-        private readonly IPermissionService2 _permissionService2;
         private readonly ICustomerService _customerService;
 
 		#endregion
@@ -29,12 +28,10 @@ namespace SmartStore.Admin.Controllers
         public SecurityController(
             IWorkContext workContext,
             IPermissionService permissionService,
-            IPermissionService2 permissionService2,
             ICustomerService customerService)
 		{
             _workContext = workContext;
             _permissionService = permissionService;
-            _permissionService2 = permissionService2;
             _customerService = customerService;
 		}
 
@@ -64,7 +61,7 @@ namespace SmartStore.Admin.Controllers
         // Ajax.
         public ActionResult AllAccessPermissions2(string selected)
         {
-            var systemNames = _permissionService2.GetAllSystemNames();
+            var systemNames = Services.Permissions2.GetAllSystemNames();
             var selectedArr = selected.SplitSafe(",");
 
             var data = systemNames

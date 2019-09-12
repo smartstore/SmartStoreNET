@@ -520,6 +520,9 @@
     <Compile Include="Search\Settings\ForumSearchSettings.cs" />
     <Compile Include="Search\Settings\SearchSettings.cs" />
     <Compile Include="Search\SearchSort.cs" />
+    <Compile Include="Security\IPermissionProvider2.cs" />
+    <Compile Include="Security\IPermissionService2.cs" />
+    <Compile Include="Security\PermissionAttribute.cs" />
     <Compile Include="Security\PermissionHelper.cs" />
     <Compile Include="Security\Permissions.cs" />
     <Compile Include="Security\SmartStorePrincipal.cs" />

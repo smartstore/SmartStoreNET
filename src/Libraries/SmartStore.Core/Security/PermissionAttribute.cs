@@ -3,11 +3,9 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web.Mvc;
-using SmartStore.Core;
 using SmartStore.Core.Localization;
-using SmartStore.Services.Security;
 
-namespace SmartStore.Web.Framework.Security
+namespace SmartStore.Core.Security
 {
     /// <summary>
     /// Checks request permission for the current customer.

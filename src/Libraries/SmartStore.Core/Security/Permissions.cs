@@ -1,4 +1,4 @@
-﻿namespace SmartStore.Core
+﻿namespace SmartStore.Core.Security
 {
     /// <summary>
     /// Provides system names of standard permissions.

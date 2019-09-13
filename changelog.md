@@ -8,6 +8,7 @@
 * #1618 Implement ACL and multistore capability on menu item level.
 * #1683 Menu Builder items: implement support for icon (brand) color.
 * #1584 Show bundle item images in order details like in shopping cart details.
+* SVG support for image uploads
 
 ### Improvements
 * #1663 Make MeasureDimension and MeasureWeight localizable.

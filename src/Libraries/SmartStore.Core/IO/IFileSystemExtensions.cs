@@ -9,7 +9,26 @@ namespace SmartStore.Core.IO
 {
 	public static class IFileSystemExtensions
 	{
-		public static void WriteAllText(this IFileSystem fileSystem, string path, string contents)
+		public static void WriteAllText(this IFileSystem fileSystem, string path, string contents, Encoding encoding = null)
+		{
+			Guard.NotEmpty(path, nameof(path));
+			Guard.NotEmpty(contents, nameof(contents));
+
+			if (fileSystem.FileExists(path))
+			{
+				fileSystem.DeleteFile(path);
+			}
+
+			var file = fileSystem.CreateFile(path);
+
+            using (var stream = file.OpenWrite())
+            using (var streamWriter = new StreamWriter(stream, encoding ?? new UTF8Encoding(false, true)))
+            {
+                streamWriter.Write(contents);
+            }
+        }
+
+		public static async Task WriteAllTextAsync(this IFileSystem fileSystem, string path, string contents, Encoding encoding = null)
 		{
 			Guard.NotEmpty(path, nameof(path));
 			Guard.NotEmpty(contents, nameof(contents));
@@ -21,25 +40,7 @@ namespace SmartStore.Core.IO
 
 			var file = fileSystem.CreateFile(path);
 			using (var stream = file.OpenWrite())
-			using (var streamWriter = new StreamWriter(stream))
-			{
-				streamWriter.Write(contents);
-			}
-		}
-
-		public static async Task WriteAllTextAsync(this IFileSystem fileSystem, string path, string contents)
-		{
-			Guard.NotEmpty(path, nameof(path));
-			Guard.NotEmpty(contents, nameof(contents));
-
-			if (fileSystem.FileExists(path))
-			{
-				fileSystem.DeleteFile(path);
-			}
-
-			var file = fileSystem.CreateFile(path);
-			using (var stream = file.OpenWrite())
-			using (var streamWriter = new StreamWriter(stream))
+			using (var streamWriter = new StreamWriter(stream, encoding ?? new UTF8Encoding(false, true)))
 			{
 				await streamWriter.WriteAsync(contents);
 			}
@@ -56,7 +57,7 @@ namespace SmartStore.Core.IO
 
 			var file = fileSystem.GetFile(path);
 			using (var stream = file.OpenRead())
-			using (var streamReader = new StreamReader(stream))
+			using (var streamReader = new StreamReader(stream, Encoding.UTF8))
 			{
 				return streamReader.ReadToEnd();
 			}
@@ -73,7 +74,7 @@ namespace SmartStore.Core.IO
 
 			var file = fileSystem.GetFile(path);
 			using (var stream = file.OpenRead())
-			using (var streamReader = new StreamReader(stream))
+			using (var streamReader = new StreamReader(stream, Encoding.UTF8))
 			{
 				return await streamReader.ReadToEndAsync();
 			}

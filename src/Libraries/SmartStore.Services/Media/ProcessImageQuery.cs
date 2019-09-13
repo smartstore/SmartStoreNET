@@ -142,7 +142,7 @@ namespace SmartStore.Services.Media
 		}
 
 		/// <summary>
-		/// Gets or sets the output file format either as a string ("png", "jpg", and "gif"),
+		/// Gets or sets the output file format either as a string ("png", "jpg", "gif" and "svg"),
 		/// or as a format object instance.
 		/// When format is not specified, the original format of the source image is used (unless it is not a web safe format - jpeg is the fallback in that scenario).
 		/// </summary>
@@ -170,6 +170,12 @@ namespace SmartStore.Services.Media
 		{
 			if (base.Count == 0)
 				return false;
+
+            if (object.Equals(Format, "svg"))
+            {
+                // SVG cannot be processed.
+                return false;
+            }
 
 			if (ignoreQualityFlag && base.Count == 1 && base["q"] != null)
 			{

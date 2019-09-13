@@ -165,6 +165,13 @@ namespace SmartStore.Services.Media
 			size = Size.Empty;
 
 			var originalSize = ImageHeader.GetDimensions(pictureBinary, mimeType);
+
+            if (mimeType == "image/svg+xml")
+            {
+                size = originalSize;
+                return pictureBinary;
+            }
+
 			var maxSize = _mediaSettings.MaximumImageSize;
 
 			var query = new ProcessImageQuery(pictureBinary)

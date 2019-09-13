@@ -222,7 +222,7 @@ namespace SmartStore
 				using (var streamReader = new MemoryStream())
 				{
 					stream.CopyTo(streamReader);
-					return streamReader.GetBuffer();
+					return streamReader.ToArray();
 				}
 			}
 		}

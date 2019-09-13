@@ -22,7 +22,7 @@
 	@(Html.SmartStore().FileUploader()
 		.Name("uploadedFile")
 		.UploadUrl(Url.Action("UploadAvatar", "Customer"))
-		.AcceptedFileTypes("gif|jpe?g|png")
+		.AcceptedFileTypes("gif|jpe?g|png|svg")
 		.ShowRemoveButton(Model.Avatar.PictureUrl.HasValue())
 		.ShowRemoveButtonAfterUpload(true)
 		.UploadText(T("Common.FileUploader.Upload"))

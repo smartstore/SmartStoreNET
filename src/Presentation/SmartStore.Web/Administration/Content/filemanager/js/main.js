@@ -533,7 +533,7 @@ function tooltipContent() {
 	if ($('#hdViewType').val() == 'thumb' && f.IsImage()) {
 		html = f.fullPath + '<br><span class="filesize">' + t('Size') + ': ' + RoxyUtils.FormatFileSize(f.size) + ' ' + t('Dimensions') + ': ' + f.width + 'x' + f.height + '</span>';
 	}
-	else if (f.IsImage()) {
+    else if (f.IsImage()) {
 		var imgUrl = f.fullPath;
 		if (RoxyFilemanConf.GENERATETHUMB) {
 			// Let the SMNET MediaController do the image resizing per ImageProcessor

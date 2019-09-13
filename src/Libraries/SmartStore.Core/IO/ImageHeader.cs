@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml;
 
 namespace SmartStore.Core.IO
 {
@@ -109,8 +110,12 @@ namespace SmartStore.Core.IO
 					gdip = true;
 					return GetDimensionsByGdip(input);
 				}
+                else if (mime == "image/svg+xml")
+                {
+                    return GetDimensionsFromSvg(input);
+                }
 
-				using (var reader = new BinaryReader(input, Encoding.Unicode, true))
+                using (var reader = new BinaryReader(input, Encoding.Unicode, true))
 				{
 					return GetDimensions(reader);
 				}
@@ -175,7 +180,29 @@ namespace SmartStore.Core.IO
 			}
 		}
 
-		private static bool StartsWith(byte[] thisBytes, byte[] thatBytes)
+        private static Size GetDimensionsFromSvg(Stream input)
+        {
+            using (var reader = XmlReader.Create(input))
+            {
+                while (reader.Read())
+                {
+                    if (reader.IsStartElement())
+                    {
+                        if (reader.Name == "svg")
+                        {
+                            var width = reader["width"];
+                            var height = reader["height"];
+
+                            return new Size(width.ToInt(), height.ToInt());
+                        }
+                    }
+                }
+            }
+
+            return Size.Empty;
+        }
+
+        private static bool StartsWith(byte[] thisBytes, byte[] thatBytes)
 		{
 			for (int i = 0; i < thatBytes.Length; i += 1)
 			{

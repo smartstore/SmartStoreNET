@@ -195,7 +195,7 @@ namespace SmartStore.Web.Controllers
 			var tenantPrefix = DataSettings.Current.TenantName + "/";
 			if (path.StartsWith(tenantPrefix))
 			{
-				// V3.0.x comapt: in previous versions the file path
+				// V3.0.x compat: in previous versions the file path
 				// contained the tenant name. Strip it out.
 				path = path.Substring(tenantPrefix.Length);
 			}
@@ -377,7 +377,12 @@ namespace SmartStore.Web.Controllers
 
 		protected virtual ProcessImageQuery CreateImageQuery(string mimeType, string extension)
 		{
-			var qs = Request.QueryString;
+            if (extension == "svg")
+            {
+                return new ProcessImageQuery { Format = "svg" };
+            }
+
+            var qs = Request.QueryString;
 
 			// TODO: (mc) implement "raw" image handling later
 			//if (qs.GetValues(null).Contains("raw", StringComparer.OrdinalIgnoreCase) || qs["raw"] != null)

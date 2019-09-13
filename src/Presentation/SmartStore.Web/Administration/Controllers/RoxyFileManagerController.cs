@@ -783,7 +783,7 @@ namespace SmartStore.Admin.Controllers
 						var dest = Path.Combine(tempDir, file.FileName);
 						file.SaveAs(dest);
 
-						if (GetFileContentType(extension) == "image")
+						if (GetFileContentType(extension) == "image" && extension != ".svg")
 						{
 							ImageResize(dest, dest, width, height, notify);
 						}

@@ -301,7 +301,8 @@ RoxyUtils.GetFileType = function (path, mime) {
 		case "jpeg":
 		case "bmp":
 		case "gif":
-		case "webp":
+        case "webp":
+        case "svg":
 		case "psd":
 			ret = "image";
 			break;

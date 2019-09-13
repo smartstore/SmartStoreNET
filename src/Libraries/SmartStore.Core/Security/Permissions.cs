@@ -83,6 +83,7 @@
             public const string Update = "order.update";
             public const string Create = "order.create";
             public const string Delete = "order.delete";
+            public const string EditItem = "order.edit-order-item";
 
             public static class GiftCard
             {
@@ -390,7 +391,7 @@
         public static class System
         {
             public const string Self = "system";
-            public const string Administrate = "system.administrate";
+            public const string AccessBackend = "system.access-backend";
             public const string AccessShop = "system.access-shop";
 
             public static class Log

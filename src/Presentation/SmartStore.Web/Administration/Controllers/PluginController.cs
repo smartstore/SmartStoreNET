@@ -512,7 +512,7 @@ namespace SmartStore.Admin.Controllers
 
         #region Licensing
 
-        [Permission(Permissions.Configuration.Plugin.Read)]
+        [Permission(Permissions.Configuration.Plugin.License)]
         public ActionResult LicensePlugin(string systemName, string licenseKey)
         {
             var descriptor = _pluginFinder.GetPluginDescriptorBySystemName(systemName);

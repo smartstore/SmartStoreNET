@@ -1496,7 +1496,7 @@ namespace SmartStore.Admin.Controllers
         }
         
         [HttpPost]
-        [Permission(Permissions.Order.Read)]
+        [Permission(Permissions.Order.EditItem)]
         public ActionResult EditOrderItem(AutoUpdateOrderItemModel model, FormCollection form)
         {
 			var oi = _orderService.GetOrderItemById(model.Id);
@@ -1545,7 +1545,7 @@ namespace SmartStore.Admin.Controllers
         }
 
 		[HttpPost]
-        [Permission(Permissions.Order.Update)]
+        [Permission(Permissions.Order.EditItem)]
         public ActionResult DeleteOrderItem(AutoUpdateOrderItemModel model)
         {
 			var oi = _orderService.GetOrderItemById(model.Id);
@@ -1788,7 +1788,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [Permission(Permissions.Order.Read)]
+        [Permission(Permissions.Order.EditItem)]
         public ActionResult AddProductToOrder(int orderId)
         {
             var model = new OrderModel.AddOrderProductModel { OrderId = orderId };
@@ -1809,7 +1809,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Order.Read)]
+        [Permission(Permissions.Order.EditItem)]
         public ActionResult AddProductToOrder(GridCommand command, OrderModel.AddOrderProductModel model)
         {
 			var gridModel = new GridModel<OrderModel.AddOrderProductModel.ProductModel>();
@@ -1855,7 +1855,7 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        [Permission(Permissions.Order.Read)]
+        [Permission(Permissions.Order.EditItem)]
         public ActionResult AddProductToOrderDetails(int orderId, int productId)
         {
             var model = PrepareAddProductToOrderModel(orderId, productId);
@@ -1863,7 +1863,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false)]
-        [Permission(Permissions.Order.Update)]
+        [Permission(Permissions.Order.EditItem)]
         public ActionResult AddProductToOrderDetails(int orderId, int productId, bool adjustInventory, bool? updateTotals, ProductVariantQuery query, FormCollection form)
         {
             var order = _orderService.GetOrderById(orderId);

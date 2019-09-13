@@ -946,34 +946,34 @@ namespace SmartStore.Data.Utilities
             var permissionSet = ctx.Set<PermissionRecord>();
             var mappingSet = ctx.Set<PermissionRoleMapping>();
             var allRoles = ctx.Set<CustomerRole>().ToList();
-            var allPermissions = permissionSet.Expand(x => x.CustomerRoles).ToList().ToDictionarySafe(x => x.SystemName, x => x);
+            var allPermissions = permissionSet.Expand(x => x.CustomerRoles).ToList();
             var newPermissions = new Dictionary<string, PermissionRecord>();
             //var adminRole = allRoles.FirstOrDefault(x => x.SystemName.IsCaseInsensitiveEqual("Administrators"));
 
             var permissionToRoles = new Multimap<string, int>(StringComparer.OrdinalIgnoreCase);
             foreach (var permission in allPermissions)
             {
-                permissionToRoles.AddRange(permission.Key, permission.Value.CustomerRoles.Select(x => x.Id));
+                permissionToRoles.AddRange(permission.SystemName, permission.CustomerRoles.Select(x => x.Id));
             }
 
             using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
             {
-                // Insert new granular permissions.
                 var permissionSystemNames = PermissionHelper.GetPermissions(typeof(Permissions));
+
+                // Delete existing granular permissions to ensure correct order in tree.
+                permissionSet.RemoveRange(permissionSet.Where(x => permissionSystemNames.Contains(x.SystemName)).ToList());
+                scope.Commit();
+
+                // Insert new granular permissions.
                 foreach (var permissionName in permissionSystemNames)
                 {
-                    if (!allPermissions.TryGetValue(permissionName, out var permission))
-                    {
-                        permission = permissionSet.Add(new PermissionRecord { SystemName = permissionName, Name = string.Empty, Category = string.Empty });
-                    }
-
+                    var permission = permissionSet.Add(new PermissionRecord { SystemName = permissionName, Name = string.Empty, Category = string.Empty });
                     newPermissions[permissionName] = permission;
                 }
-
                 scope.Commit();
 
                 // Migrate mappings of standard permissions (whether the new permission is granted).
-                Allow("AccessAdminPanel", newPermissions[Permissions.System.Administrate]);
+                Allow("AccessAdminPanel", newPermissions[Permissions.System.AccessBackend]);
                 Allow("AllowCustomerImpersonation", newPermissions[Permissions.Customer.Impersonate]);
                 Allow("ManageCatalog", newPermissions[Permissions.Catalog.Self]);
                 Allow("ManageCatalog", newPermissions[Permissions.Cart.CheckoutAttribute.Self]);
@@ -1045,6 +1045,7 @@ namespace SmartStore.Data.Utilities
                     { "ManageDlm", "SmartStore.Dlm.Security.DlmPermissions, SmartStore.Dlm" }
                 };
 
+                var allPluginPermissionNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 foreach (var kvp in pluginPermissionNames)
                 {
                     if (permissionToRoles.ContainsKey(kvp.Key))
@@ -1053,16 +1054,7 @@ namespace SmartStore.Data.Utilities
                         if (assemblyName.HasValue())
                         {
                             var type = Type.GetType(assemblyName);
-                            var newPluginPermissionNames = PermissionHelper.GetPermissions(type);
-                            foreach (var permissionName in newPluginPermissionNames)
-                            {
-                                if (!allPermissions.TryGetValue(permissionName, out var permission))
-                                {
-                                    permission = permissionSet.Add(new PermissionRecord { SystemName = permissionName, Name = string.Empty, Category = string.Empty });
-                                }
-
-                                newPermissions[permissionName] = permission;
-                            }
+                            allPluginPermissionNames.AddRange(PermissionHelper.GetPermissions(type));
                         }
                         else
                         {
@@ -1075,6 +1067,16 @@ namespace SmartStore.Data.Utilities
                     }
                 }
 
+                // Delete existing granular permissions to ensure correct order in tree.
+                permissionSet.RemoveRange(permissionSet.Where(x => allPluginPermissionNames.Contains(x.SystemName)).ToList());
+                scope.Commit();
+
+                // Insert new granular permissions.
+                foreach (var permissionName in allPluginPermissionNames)
+                {
+                    var permission = permissionSet.Add(new PermissionRecord { SystemName = permissionName, Name = string.Empty, Category = string.Empty });
+                    newPermissions[permissionName] = permission;
+                }
                 scope.Commit();
 
                 PermissionRecord pr;

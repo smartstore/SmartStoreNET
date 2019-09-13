@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Logging;
 using SmartStore.Core;
-using SmartStore.Core.Domain.Logging;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
+using SmartStore.Services.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
-using SmartStore.Services.Logging;
-using System.Text;
 
 namespace SmartStore.Admin.Controllers
 {

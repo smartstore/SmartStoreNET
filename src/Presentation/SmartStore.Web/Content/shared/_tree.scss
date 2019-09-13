@@ -108,7 +108,7 @@ $default-state-color: $gray-400;
         position: absolute;
         display: block;
     }
-    // State indicator 'on'.
+    // State indicator 'on' and 'off'.
     .on:after,
     .in-on:after {
         content: "";
@@ -122,16 +122,22 @@ $default-state-color: $gray-400;
     }
 
     .on:before,
-    .on:after {
+    .on:after,
+    .in-on:before,
+    .in-on:after {
         border-color: $success;
     }
 
-    .in-on:after {
-        border-color: $default-state-color;
+    .off:before,
+    .in-off:before {
+        border-color: $danger;
     }
-    // State indicator 'off'.
-    .off:before {
-        border-color: $success;
+
+    .in-on:before,
+    .in-on:after,
+    .in-off:before,
+    .in-off:after {
+        opacity: 0.3;
     }
     /*.off:after,
     .in-off:after {

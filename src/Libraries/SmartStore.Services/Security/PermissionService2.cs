@@ -79,7 +79,6 @@ namespace SmartStore.Services.Security
             { "execute", "Admin.Common.Go" },
             { "import", "Common.Import" },
             { "system", "Admin.System" },
-            { "administrate", "Admin.Plugins.KnownGroup.Admin" },
             { "log", "Admin.System.Log" },
             { "message", "Admin.System.QueuedEmails" },
             { "send", "Common.Send" },

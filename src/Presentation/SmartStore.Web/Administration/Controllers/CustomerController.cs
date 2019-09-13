@@ -264,7 +264,8 @@ namespace SmartStore.Admin.Controllers
 
 			if (model.SelectedCustomerRoleIds == null || model.SelectedCustomerRoleIds.Count() == 0)
 			{
-                model.SelectedCustomerRoleIds = new int[] { 3 };      // 3 = CustomerRole > registered 
+                var role = _customerService.GetCustomerRoleBySystemName("Registered");
+                model.SelectedCustomerRoleIds = new int[] { role.Id };
             }
 
 			model.AllowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);

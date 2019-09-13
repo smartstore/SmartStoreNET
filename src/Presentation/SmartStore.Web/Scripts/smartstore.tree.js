@@ -34,7 +34,7 @@
         expandedClass: 'fas fa-angle-down',
         collapsedClass: 'fas fa-angle-right',
         leafClass: 'tree-leaf left-align',
-        stateTitles: ['', '', '']
+        stateTitles: ['', '', '', '']
     };
 
 
@@ -71,6 +71,11 @@
                 .find('.tree-text').html(li.data('label'));
         });
 
+        // Set root item class.
+        root.find('ul:first > .tree-node').each(function () {
+            $(this).addClass('root-node');
+        });
+
         // Initially expand or collapse nodes.
         root.find('.tree-noleaf').each(function () {
             expandNode($(this), opt.expanded, opt);
@@ -92,12 +97,16 @@
                 var name = node.data('name');
                 var html = '';
                 var stateClass = '';
+                var stateTitle = '';
 
-                if (value === 1) {
-                    stateClass = 'off';
-                }
-                else if (value === 2) {
+                if (value === 2) {
                     stateClass = 'on';
+                    stateTitle = opt.stateTitles[0];
+                }
+                else if (value === 1 || node.hasClass('root-node')) {
+                    value = 1;
+                    stateClass = 'off';
+                    stateTitle = opt.stateTitles[1];
                 }
 
                 if (!opt.readOnly) {
@@ -106,18 +115,18 @@
                     html += '<input type="checkbox" name="' + name + '" id="' + name + '" value="' + value + '"' + (value === 2 ? ' checked="checked"' : '') + ' />';
                     html += '<input type="hidden" name="' + name + '" value="' + (value === 0 ? 0 : 1) + '" />';
                 }
-                html += '<span class="tree-state ' + stateClass + '" title="' + opt.stateTitles[value] + '"></span>';
+                html += '<span class="tree-state ' + stateClass + '" title="' + stateTitle + '"></span>';
 
                 label.prepend(html);
             });
 
             if (!opt.readOnly) {
                 // Set indeterminate property.
-                root.find('input[type=checkbox][value=0]').prop('indeterminate', true);
+                //root.find('input[type=checkbox][value=0]').prop('indeterminate', true);
 
                 // Set inherited state.
                 root.find('ul:first > .tree-node').each(function () {
-                    setInheritedState($(this), 0);
+                    setInheritedState($(this), 0, opt);
                 });
             }
         }
@@ -132,40 +141,39 @@
         root.on('click', 'input[type=checkbox]', function () {
             var el = $(this);
             var node = el.closest('.tree-node');
-            var state = el.siblings('.tree-state:first');
 
             if (opt.nodeState === 'on-off') {
                 var hIn = el.next();
+                var state = el.siblings('.tree-state:first');
                 var inheritedState = 0;
+                var val = parseInt(el.val());
+
                 state.removeClass('on off in-on in-off');
 
-                switch (parseInt(el.val())) {
-                    case 0:
-                        // Indeterminate > checked.
-                        el.prop({ checked: true, indeterminate: false, value: 2 });
-                        hIn.val(1);
-                        state.addClass('on').attr('title', opt.stateTitles[2]);
-                        inheritedState = 2;
-                        break;
-                    case 2:
-                        // Checked > unchecked.
-                        el.prop({ checked: false, indeterminate: false, value: 1 });
-                        hIn.val(1);
-                        state.addClass('off').attr('title', opt.stateTitles[1]);
-                        inheritedState = 1;
-                        break;
-                    case 1:
-                    default:
-                        // Unchecked > indeterminate.
-                        el.prop({ checked: false, indeterminate: true, value: 0 });
-                        hIn.val(0);
-                        state.attr('title', opt.stateTitles[0]);
-                        inheritedState = getInheritedState(node);
-                        break;
+                if (val === 2) {
+                    // Checked > unchecked.
+                    el.prop({ checked: false, indeterminate: false, value: 1 });
+                    hIn.val(1);
+                    state.addClass('off').attr('title', opt.stateTitles[1]);
+                    inheritedState = 1;
+                }
+                else if (val === 0 || node.hasClass('root-node')) {
+                    // Indeterminate > checked.
+                    // Root item cannot have an inherited state.
+                    el.prop({ checked: true, indeterminate: false, value: 2 });
+                    hIn.val(1);
+                    state.addClass('on').attr('title', opt.stateTitles[0]);
+                    inheritedState = 2;
+                }
+                else {
+                    // Unchecked > indeterminate.
+                    el.prop({ checked: false, indeterminate: true, value: 0 });
+                    hIn.val(0);
+                    inheritedState = getInheritedState(node);
                 }
 
-                // Update classes for nodes with inherited state.
-                setInheritedState(node, inheritedState);
+                // Update nodes with inherited state.
+                setInheritedState(node, inheritedState, opt);
             }
         });
     }
@@ -194,7 +202,7 @@
         node.find('.tree-inner:first .tree-expander').html('<i class="' + (expand ? opt.expandedClass : opt.collapsedClass) + '"></i>');
     }
 
-    function setInheritedState(node, inheritedState) {
+    function setInheritedState(node, inheritedState, opt) {
         if (!node) return;
 
         var childState = inheritedState;
@@ -206,13 +214,14 @@
         }
         else {
             // Is not directly on.
-            var state = node.find('.tree-state:first');
-            state.removeClass('in-on in-off');
-            state.addClass(inheritedState === 2 ? 'in-on' : 'in-off');
+            node.find('.tree-state:first')
+                .removeClass('in-on in-off on off')
+                .addClass(inheritedState === 2 ? 'in-on' : 'in-off')
+                .attr('title', opt.stateTitles[inheritedState === 2 ? 2 : 3]);
         }
 
         node.find('> ul > .tree-node').each(function () {
-            setInheritedState($(this), childState);
+            setInheritedState($(this), childState, opt);
         });
     }
 

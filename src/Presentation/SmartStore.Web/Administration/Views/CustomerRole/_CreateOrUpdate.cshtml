@@ -118,10 +118,9 @@
     <script>
         $(function () {
             // Init permission tree.
-            var inherited = @T("Common.Inherited").JsText;
             $('#permission-tree').tree('init', {
                 nodeState: 'on-off',
-                stateTitles: ['(' + inherited + ')', @T("Common.Deny").JsText, @T("Common.Allow").JsText]
+                stateTitles: [@T("Common.Allow").JsText, @T("Common.Deny").JsText, @T("Admin.Permissions.AllowInherited").JsText, @T("Admin.Permissions.DenyInherited").JsText]
             });
 
             // Expand\collapse all.

@@ -332,7 +332,8 @@
                 @Html.SmartLabelFor(model => model.SelectedCustomerRoleIds)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SelectedCustomerRoleIds, null, new { htmlAttributes = new { disabled = Model.AllowManagingCustomerRoles ? (string)null : "disabled" } })
+                @Html.EditorFor(model => model.SelectedCustomerRoleIds, null,
+                    Model.AllowManagingCustomerRoles ? (object)null : new { htmlAttributes = new { disabled = "disabled" } })
                 @Html.ValidationMessageFor(model => model.SelectedCustomerRoleIds)
             </td>
         </tr>
@@ -475,11 +476,10 @@
     <script>
         $(function () {
             // Init permission tree.
-            var inherited = @T("Common.Inherited").JsText;
             $('#permission-tree').tree('init', {
                 readOnly: true,
                 nodeState: 'on-off',
-                stateTitles: ['(' + inherited + ')', @T("Common.Deny").JsText, @T("Common.Allow").JsText]
+                stateTitles: [@T("Common.Allow").JsText, @T("Common.Deny").JsText, @T("Admin.Permissions.AllowInherited").JsText, @T("Admin.Permissions.DenyInherited").JsText]
             });
 
             // Expand\collapse all.

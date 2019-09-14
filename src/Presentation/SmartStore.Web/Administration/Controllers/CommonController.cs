@@ -130,7 +130,7 @@ namespace SmartStore.Admin.Controllers
 
             ViewBag.UserName = _services.Settings.LoadSetting<CustomerSettings>().CustomerLoginType != CustomerLoginType.Email ? currentCustomer.Username : currentCustomer.Email;
             ViewBag.Stores = _services.StoreService.GetAllStores();
-            if (_services.Permissions2.Authorize(StandardPermissionProvider.ManageMaintenance))
+            if (_services.Permissions2.Authorize(Permissions.System.Maintenance.Self))
             {
                 ViewBag.CheckUpdateResult = AsyncRunner.RunSync(() => CheckUpdateInternalAsync(false));
             }
@@ -1078,7 +1078,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.System.Administrate)]
+        [Permission(Permissions.System.AccessBackend)]
         public ActionResult GenericAttributesSelect(string entityName, int entityId, GridCommand command)
         {
             var model = new GridModel<GenericAttributeModel>();
@@ -1117,7 +1117,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.System.Administrate)]
+        [Permission(Permissions.System.AccessBackend)]
         public ActionResult GenericAttributeAdd(GenericAttributeModel model, GridCommand command)
         {
             model.Key = model.Key.TrimSafe();
@@ -1153,7 +1153,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.System.Administrate)]
+        [Permission(Permissions.System.AccessBackend)]
         public ActionResult GenericAttributeUpdate(GenericAttributeModel model, GridCommand command)
         {
             model.Key = model.Key.TrimSafe();
@@ -1190,7 +1190,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.System.Administrate)]
+        [Permission(Permissions.System.AccessBackend)]
         public ActionResult GenericAttributeDelete(int id, GridCommand command)
         {
             var attr = _genericAttributeService.GetAttributeById(id);

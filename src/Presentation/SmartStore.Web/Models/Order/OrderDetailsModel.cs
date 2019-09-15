@@ -46,6 +46,7 @@ namespace SmartStore.Web.Models.Order
         public AddressModel ShippingAddress { get; set; }
         public string ShippingMethod { get; set; }
         public IList<ShipmentBriefModel> Shipments { get; set; }
+        public string BundleItemImages { get; set; }
 
         public AddressModel BillingAddress { get; set; }
 

@@ -22,11 +22,11 @@
         <table class="adminContent">
             <tr>
                 <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.Id)
+                    @Html.SmartLabelFor(model => model.SlideId)
                 </td>
                 <td class="adminData">
-                    @Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
-                    @Html.ValidationMessageFor(model => model.Id)
+                    @Html.TextBoxFor(model => model.SlideId, new { @readonly = "readonly", @class = "form-control-plaintext" })
+                    @Html.ValidationMessageFor(model => model.SlideId)
                 </td>
             </tr>
         </table>

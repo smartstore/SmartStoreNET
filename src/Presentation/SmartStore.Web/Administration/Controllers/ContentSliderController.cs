@@ -525,6 +525,7 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("Edit", new { id = slide.SliderId });
 
             var model = slide.ToModel();
+            model.SlideId = model.Id;
 
             //locales
             //AddLocales(_languageService, model.Locales);

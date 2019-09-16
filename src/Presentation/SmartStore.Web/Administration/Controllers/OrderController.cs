@@ -2146,7 +2146,7 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        [Permission(Permissions.Order.Read)]
+        [Permission(Permissions.Order.EditShipment)]
         public ActionResult AddShipment(int orderId)
         {
             var order = _orderService.GetOrderById(orderId);
@@ -2182,7 +2182,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
-        [Permission(Permissions.Order.Update)]
+        [Permission(Permissions.Order.EditShipment)]
         public ActionResult AddShipment(int orderId, FormCollection form, bool continueEditing)
         {
             var order = _orderService.GetOrderById(orderId);
@@ -2238,7 +2238,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        [Permission(Permissions.Order.Update)]
+        [Permission(Permissions.Order.EditShipment)]
         public ActionResult DeleteShipment(int id)
         {
             var shipment = _shipmentService.GetShipmentById(id);
@@ -2257,7 +2257,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("ShipmentDetails")]
         [FormValueRequired("settrackingnumber")]
-        [Permission(Permissions.Order.Update)]
+        [Permission(Permissions.Order.EditShipment)]
         public ActionResult SetTrackingNumber(ShipmentModel model)
         {
             var shipment = _shipmentService.GetShipmentById(model.Id);
@@ -2274,7 +2274,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("ShipmentDetails")]
         [FormValueRequired("setasshipped")]
-        [Permission(Permissions.Order.Update)]
+        [Permission(Permissions.Order.EditShipment)]
         public ActionResult SetAsShipped(int id)
         {
             var shipment = _shipmentService.GetShipmentById(id);
@@ -2297,7 +2297,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("ShipmentDetails")]
         [FormValueRequired("setasdelivered")]
-        [Permission(Permissions.Order.Update)]
+        [Permission(Permissions.Order.EditShipment)]
         public ActionResult SetAsDelivered(int id)
         {
             var shipment = _shipmentService.GetShipmentById(id);

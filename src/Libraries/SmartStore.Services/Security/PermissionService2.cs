@@ -87,7 +87,8 @@ namespace SmartStore.Services.Security
             { "url-record", "Admin.System.SeNames" },
             { "cart", "ShoppingCart" },
             { "checkout-attribute", "Admin.Catalog.Attributes.CheckoutAttributes" },
-            { "media", "Admin.Plugins.KnownGroup.Media" }
+            { "media", "Admin.Plugins.KnownGroup.Media" },
+            { "download", "Common.Downloads" }
         };
 
         private readonly IRepository<PermissionRecord> _permissionRepository;

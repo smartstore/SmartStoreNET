@@ -18,6 +18,16 @@
                 public const string Update = "catalog.product.update";
                 public const string Create = "catalog.product.create";
                 public const string Delete = "catalog.product.delete";
+                public const string EditCategory = "catalog.product.edit-category";
+                public const string EditManufacturer = "catalog.product.edit-manufacturer";
+                public const string EditAssociatedProduct = "catalog.product.edit-associated-product";
+                public const string EditBundle = "catalog.product.edit-bundle";
+                public const string EditAttribute = "catalog.product.edit-attribute";
+                public const string EditVariant = "catalog.product.edit-variant";
+                public const string EditPromotion = "catalog.product.edit-promotion";
+                public const string EditPicture = "catalog.product.edit-picture";
+                public const string EditTag = "catalog.product.edit-tag";
+                public const string EditTierPrice = "catalog.product.edit-tier-price";
             }
 
             public static class Category
@@ -45,6 +55,7 @@
                 public const string Update = "catalog.variant.update";
                 public const string Create = "catalog.variant.create";
                 public const string Delete = "catalog.variant.delete";
+                public const string EditSet = "catalog.variant.edit-option-set";
             }
 
             public static class Attribute
@@ -84,6 +95,7 @@
             public const string Create = "order.create";
             public const string Delete = "order.delete";
             public const string EditItem = "order.edit-order-item";
+            public const string EditShipment = "order.edit-shipment";
 
             public static class GiftCard
             {
@@ -158,6 +170,7 @@
                 public const string Update = "cms.poll.update";
                 public const string Create = "cms.poll.create";
                 public const string Delete = "cms.poll.delete";
+                public const string EditAnswer = "cms.poll.edit-answer";
             }
 
             public static class News
@@ -454,6 +467,15 @@
         {
             public const string Self = "media";
             public const string Upload = "media.upload";
+
+            public static class Download
+            {
+                public const string Self = "media.download";
+                public const string Read = "media.download.read";
+                public const string Update = "media.download.update";
+                public const string Create = "media.download.create";
+                public const string Delete = "media.download.delete";
+            }
         }
     }
 }

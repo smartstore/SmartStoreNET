@@ -102,11 +102,34 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		#endregion
+        #endregion
 
-		#region Product attribute
+        #region Product attribute
 
-		public ActionResult Index()
+        // Ajax.
+        [Permission(Permissions.Catalog.Variant.Read)]
+        public ActionResult AllProductAttributes(string label, int selectedId)
+        {
+            var attributes = _productAttributeService.GetAllProductAttributes();
+
+            if (label.HasValue())
+            {
+                attributes.Insert(0, new ProductAttribute { Name = label, Id = 0 });
+            }
+
+            var query =
+                from attr in attributes
+                select new
+                {
+                    id = attr.Id.ToString(),
+                    text = attr.Name,
+                    selected = attr.Id == selectedId
+                };
+
+            return new JsonResult { Data = query.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
+
+        public ActionResult Index()
         {
             return RedirectToAction("List");
         }
@@ -313,7 +336,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Catalog.Variant.Create)]
+        [Permission(Permissions.Catalog.Variant.EditSet)]
         public ActionResult OptionsSetInsert(ProductAttributeOptionsSetModel model, GridCommand command)
 		{
 			var entity = new ProductAttributeOptionsSet
@@ -328,7 +351,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Catalog.Variant.Update)]
+        [Permission(Permissions.Catalog.Variant.EditSet)]
         public ActionResult OptionsSetUpdate(ProductAttributeOptionsSetModel model, GridCommand command)
 		{
 			var entity = _productAttributeService.GetProductAttributeOptionsSetById(model.Id);
@@ -340,7 +363,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Catalog.Variant.Delete)]
+        [Permission(Permissions.Catalog.Variant.EditSet)]
         public ActionResult OptionsSetDelete(int id, int productAttributeId, GridCommand command)
 		{
 			var entity = _productAttributeService.GetProductAttributeOptionsSetById(id);
@@ -354,7 +377,7 @@ namespace SmartStore.Admin.Controllers
 
         #region Product attribute options
 
-        [Permission(Permissions.Catalog.Variant.Create)]
+        [Permission(Permissions.Catalog.Variant.EditSet)]
         public ActionResult OptionCreatePopup(int id)
 		{
 			var optionsSet = _productAttributeService.GetProductAttributeOptionsSetById(id);
@@ -377,7 +400,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost]
-        [Permission(Permissions.Catalog.Variant.Create)]
+        [Permission(Permissions.Catalog.Variant.EditSet)]
         public ActionResult OptionCreatePopup(string btnId, string formId, ProductAttributeOptionModel model)
 		{
 			if (ModelState.IsValid)
@@ -410,7 +433,7 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-        [Permission(Permissions.Catalog.Variant.Read)]
+        [Permission(Permissions.Catalog.Variant.EditSet)]
         public ActionResult OptionEditPopup(int id)
 		{
 			var option = _productAttributeService.GetProductAttributeOptionById(id);
@@ -426,7 +449,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost]
-        [Permission(Permissions.Catalog.Variant.Update)]
+        [Permission(Permissions.Catalog.Variant.EditSet)]
         public ActionResult OptionEditPopup(string btnId, string formId, ProductAttributeOptionModel model)
 		{
 			var entity = _productAttributeService.GetProductAttributeOptionById(model.Id);
@@ -463,7 +486,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost]
-        [Permission(Permissions.Catalog.Variant.Delete)]
+        [Permission(Permissions.Catalog.Variant.EditSet)]
         public ActionResult OptionDelete(int id)
 		{
 			var entity = _productAttributeService.GetProductAttributeOptionById(id);

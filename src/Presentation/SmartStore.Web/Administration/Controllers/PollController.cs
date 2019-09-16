@@ -260,7 +260,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Cms.Poll.Update)]
+        [Permission(Permissions.Cms.Poll.EditAnswer)]
         public ActionResult PollAnswerUpdate(PollAnswerModel model, GridCommand command)
         {
 			var pollAnswer = _pollService.GetPollAnswerById(model.Id);
@@ -280,7 +280,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Cms.Poll.Create)]
+        [Permission(Permissions.Cms.Poll.EditAnswer)]
         public ActionResult PollAnswerAdd(int pollId, PollAnswerModel model, GridCommand command)
         {
 			if (!ModelState.IsValid)
@@ -303,7 +303,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Cms.Poll.Delete)]
+        [Permission(Permissions.Cms.Poll.EditAnswer)]
         public ActionResult PollAnswerDelete(int id, GridCommand command)
         {
 			var pollAnswer = _pollService.GetPollAnswerById(id);

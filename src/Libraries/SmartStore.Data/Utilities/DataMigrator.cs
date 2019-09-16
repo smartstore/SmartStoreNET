@@ -157,7 +157,7 @@ namespace SmartStore.Data.Utilities
 						select new { p.Id, p.MainPictureId };	
 
 			// Key = ProductId, Value = MainPictureId
-			var toUpate = new Dictionary<int, int?>();
+			var toUpdate = new Dictionary<int, int?>();
 
 			// 1st pass
 			int pageIndex = -1;
@@ -178,7 +178,7 @@ namespace SmartStore.Data.Utilities
 					// Update only if fixed PictureId differs from current
 					if (fixedPictureId != p.MainPictureId)
 					{
-						toUpate.Add(p.Id, fixedPictureId);
+						toUpdate.Add(p.Id, fixedPictureId);
 					}
 				}
 
@@ -187,7 +187,7 @@ namespace SmartStore.Data.Utilities
 			}
 
 			// 2nd pass
-			foreach (var chunk in toUpate.Slice(1000))
+			foreach (var chunk in toUpdate.Slice(1000))
 			{
 				using (var tx = ctx.Database.BeginTransaction())
 				{
@@ -201,7 +201,7 @@ namespace SmartStore.Data.Utilities
 				}
 			}
 
-			return toUpate.Count;
+			return toUpdate.Count;
 		}
 
 		private static IDictionary<int, int> GetPoductPictureMap(SmartObjectContext context, IEnumerable<int> productIds)
@@ -1024,7 +1024,7 @@ namespace SmartStore.Data.Utilities
                 Allow("PublicStoreAllowNavigation", newPermissions[Permissions.System.AccessShop]);
 
                 // Add mappings for new permissions.
-                //AllowForRole(adminRole, newPermissions[Permissions....]);
+                //AllowForRole(adminRole, newPermissions[Permissions.....]);
 
                 scope.Commit();
                 newPermissions.Clear();

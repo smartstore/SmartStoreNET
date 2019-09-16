@@ -7,7 +7,7 @@ using SmartStore.Admin.Models.Tasks;
 using SmartStore.Core.Async;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Tasks;
-using SmartStore.Services.Security;
+using SmartStore.Core.Security;
 using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -70,11 +70,9 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
+        [Permission(Permissions.System.ScheduleTask.Read)]
         public ActionResult List()
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
-                return AccessDeniedView();
-
             var models = new List<ScheduleTaskModel>();
             var tasks = _scheduleTaskService.GetAllTasks(true);
             var lastHistoryEntries = _scheduleTaskService.GetHistoryEntries(0, int.MaxValue, 0, true, true).ToDictionarySafe(x => x.ScheduleTaskId);
@@ -93,8 +91,9 @@ namespace SmartStore.Admin.Controllers
         }
 
 		[HttpPost]
-		public ActionResult GetRunningTasks()
+        public ActionResult GetRunningTasks()
 		{
+            // We better not check permission here.
             var runningHistoryEntries = _scheduleTaskService.GetHistoryEntries(0, int.MaxValue, 0, true, true, true);
             if (!runningHistoryEntries.Any())
             {
@@ -116,9 +115,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost]
 		public ActionResult GetTaskRunInfo(int id /* taskId */)
 		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
-				return new HttpUnauthorizedResult();
-
+            // We better not check permission here.
             var model = _adminModelHelper.CreateScheduleTaskModel(id);
             if (model == null)
             {
@@ -132,11 +129,9 @@ namespace SmartStore.Admin.Controllers
 			});
 		}
 
-		public ActionResult RunJob(int id, string returnUrl = "")
+        [Permission(Permissions.System.ScheduleTask.Execute)]
+        public ActionResult RunJob(int id, string returnUrl = "")
 		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
-				return AccessDeniedView();
-
 			var taskParams = new Dictionary<string, string>
 			{
 				{ TaskExecutor.CurrentCustomerIdParamName, Services.WorkContext.CurrentCustomer.Id.ToString() },
@@ -172,11 +167,9 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToReferrer(returnUrl);
 		}
 
-		public ActionResult CancelJob(int id /* scheduleTaskId */, string returnUrl = "")
+        [Permission(Permissions.System.ScheduleTask.Update)]
+        public ActionResult CancelJob(int id /* scheduleTaskId */, string returnUrl = "")
 		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
-				return AccessDeniedView();
-	
 			if (_asyncState.Cancel<ScheduleTask>(id.ToString()))
 			{
 				NotifyWarning(T("Admin.System.ScheduleTasks.CancellationRequested"));
@@ -185,11 +178,9 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToReferrer(returnUrl);
 		}
 
-		public ActionResult Edit(int id /* taskId */, string returnUrl = null)
+        [Permission(Permissions.System.ScheduleTask.Read)]
+        public ActionResult Edit(int id /* taskId */, string returnUrl = null)
 		{
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
-                return AccessDeniedView();
-
             var model = _adminModelHelper.CreateScheduleTaskModel(id);
             if (model == null)
             {
@@ -207,11 +198,9 @@ namespace SmartStore.Admin.Controllers
 
 		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		[ValidateAntiForgeryToken]
-		public ActionResult Edit(ScheduleTaskModel model, bool continueEditing, string returnUrl = null)
+        [Permission(Permissions.System.ScheduleTask.Update)]
+        public ActionResult Edit(ScheduleTaskModel model, bool continueEditing, string returnUrl = null)
 		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
-				return AccessDeniedView();
-
 			ViewBag.ReturnUrl = returnUrl;
 
 			if (!ModelState.IsValid)
@@ -248,22 +237,14 @@ namespace SmartStore.Admin.Controllers
 		}
 
         [GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.System.ScheduleTask.Read)]
         public ActionResult HistoryList(GridCommand command, int taskId)
         {
             var gridModel = new GridModel<ScheduleTaskHistoryModel>();
+            var history = _scheduleTaskService.GetHistoryEntries(command.Page - 1, command.PageSize, taskId);
 
-            if (Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
-            {
-                var history = _scheduleTaskService.GetHistoryEntries(command.Page - 1, command.PageSize, taskId);
-
-                gridModel.Total = history.TotalCount;
-                gridModel.Data = history.Select(x => _adminModelHelper.CreateScheduleTaskHistoryModel(x)).ToList();
-            }
-            else
-            {
-                gridModel.Data = Enumerable.Empty<ScheduleTaskHistoryModel>();
-                NotifyAccessDenied();
-            }
+            gridModel.Total = history.TotalCount;
+            gridModel.Data = history.Select(x => _adminModelHelper.CreateScheduleTaskHistoryModel(x)).ToList();
 
             return new JsonResult
             {
@@ -272,23 +253,21 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.System.ScheduleTask.Delete)]
         public ActionResult DeleteHistoryEntry(int id, GridCommand command)
         {
             var historyEntry = _scheduleTaskService.GetHistoryEntryById(id);
-
-            if (Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+            if (historyEntry != null)
             {
-                if (historyEntry != null)
-                {
-                    _scheduleTaskService.DeleteHistoryEntry(historyEntry);
-                }
+                _scheduleTaskService.DeleteHistoryEntry(historyEntry);
             }
 
             return HistoryList(command, historyEntry.ScheduleTaskId);
         }
 
         [HttpPost]
-		public ActionResult FutureSchedules(string expression)
+        [Permission(Permissions.System.ScheduleTask.Read)]
+        public ActionResult FutureSchedules(string expression)
 		{
 			try
 			{
@@ -313,7 +292,7 @@ namespace SmartStore.Admin.Controllers
                 return new EmptyResult();
             }
 
-            ViewBag.HasPermission = Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks);
+            ViewBag.CanUpdate = Services.Permissions2.Authorize(Permissions.System.ScheduleTask.Update);
             ViewBag.ReturnUrl = returnUrl;
             ViewBag.Cancellable = cancellable;
             ViewBag.ReloadPage = reloadPage;
@@ -330,7 +309,8 @@ namespace SmartStore.Admin.Controllers
                 return new EmptyResult();
             }
 
-            ViewBag.HasPermission = Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks);
+            ViewBag.CanRead = Services.Permissions2.Authorize(Permissions.System.ScheduleTask.Read);
+            ViewBag.CanExecute = Services.Permissions2.Authorize(Permissions.System.ScheduleTask.Execute);
             ViewBag.ReturnUrl = returnUrl;
 
             return PartialView("_MinimalTaskWidget", model);

@@ -1,5 +1,9 @@
-﻿using SmartStore.Admin.Models.Rules;
+﻿using System;
+using System.Linq;
+using System.Web.Mvc;
+using SmartStore.Admin.Models.Rules;
 using SmartStore.ComponentModel;
+using SmartStore.Core.Security;
 using SmartStore.Rules;
 using SmartStore.Rules.Domain;
 using SmartStore.Services.Cart.Rules;
@@ -7,9 +11,6 @@ using SmartStore.Services.Customers;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
-using System;
-using System.Linq;
-using System.Web.Mvc;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -42,9 +43,9 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
+        [Permission(Permissions.System.Rule.Read)]
         public ActionResult List()
         {
-            // TODO: check permission
             var model = new RuleSetListModel();
 
             foreach (var s in Services.StoreService.GetAllStores())
@@ -56,12 +57,10 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.System.Rule.Read)]
         public ActionResult List(GridCommand command, RuleSetListModel model)
         {
-            // TODO: check permission
-
             var gridModel = new GridModel<RuleSetModel>();
-
             var ruleSets = _ruleStorage.GetAllRuleSets(false, false);
 
             gridModel.Data = ruleSets.Select(x =>
@@ -82,10 +81,9 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
+        [Permission(Permissions.System.Rule.Create)]
         public ActionResult Create()
         {
-            // TODO: check permission
-
             var model = new RuleSetModel();
 
             model.ExpressionGroup = _ruleFactory.CreateExpressionGroup(new RuleSetEntity { Scope = RuleScope.Customer }, _targetGroupService);
@@ -96,12 +94,13 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [ValidateInput(false)]
+        [Permission(Permissions.System.Rule.Create)]
         public ActionResult Create(RuleSetModel model, bool continueEditing, FormCollection form)
         {
-            // TODO: check permission
-
             if (!ModelState.IsValid)
+            {
                 return View(model);
+            }
 
             var ruleSet = new RuleSetEntity();
 
@@ -114,6 +113,7 @@ namespace SmartStore.Admin.Controllers
             return continueEditing ? RedirectToAction("Edit", new { id = ruleSet.Id }) : RedirectToAction("List");                        
         }
 
+        [Permission(Permissions.System.Rule.Read)]
         public ActionResult Edit(int id /* ruleSetId */)
         {
             var entity = _ruleStorage.GetRuleSetById(id, false, true);
@@ -138,6 +138,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.System.Rule.Update)]
         public ActionResult Edit(RuleSetModel model)
         {
             var ruleSet = _ruleStorage.GetRuleSetById(model.Id, true, true);
@@ -150,6 +151,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.System.Rule.Create)]
         public ActionResult AddRule(int ruleSetId, RuleScope scope, string ruleType)
         {
             var provider = _ruleProvider(scope);
@@ -170,6 +172,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.System.Rule.Update)]
         public ActionResult UpdateRule(int ruleId, string op, string value)
         {
             var rule = _ruleStorage.GetRuleById(ruleId, true);
@@ -188,6 +191,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.System.Rule.Delete)]
         public ActionResult DeleteRule(int ruleId)
         {
             var rule = _ruleStorage.GetRuleById(ruleId, true);
@@ -203,6 +207,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.System.Rule.Update)]
         public ActionResult ChangeOperator(int ruleSetId, string op)
         {
             var ruleSet = _ruleStorage.GetRuleSetById(ruleSetId, false, false);
@@ -215,6 +220,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.System.Rule.Create)]
         public ActionResult AddGroup(int ruleSetId, RuleScope scope)
         {
             var provider = _ruleProvider(scope);
@@ -243,6 +249,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.System.Rule.Delete)]
         public ActionResult DeleteGroup(int refRuleId)
         {
             var refRule = _ruleStorage.GetRuleById(refRuleId, true);
@@ -262,11 +269,13 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.System.Rule.Execute)]
         public ActionResult Execute(int ruleSetId)
         {
             var result = _targetGroupService.ProcessFilter(new[] { ruleSetId }, 0, 500);
 
-            return Json(new {
+            return Json(new
+            {
                 Success = true,
                 Message = $"{result.TotalCount} Kunden entsprechen dem Filter."
             });

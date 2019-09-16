@@ -90,7 +90,8 @@ namespace SmartStore.Services.Security
             { "media", "Admin.Plugins.KnownGroup.Media" },
             { "download", "Common.Downloads" },
             { "product-review", "Admin.Catalog.ProductReviews" },
-            { "approve", "Common.Approve" }
+            { "approve", "Common.Approve" },
+            { "rule", "Common.Rules" }
         };
 
         private readonly IRepository<PermissionRecord> _permissionRepository;

@@ -106,6 +106,7 @@
             public const string Delete = "order.delete";
             public const string EditItem = "order.edit-order-item";
             public const string EditShipment = "order.edit-shipment";
+            public const string EditRecurringPayment = "order.edit-recurring-payment";
 
             public static class GiftCard
             {
@@ -422,6 +423,16 @@
                 public const string Self = "system.log";
                 public const string Read = "system.log.read";
                 public const string Delete = "system.log.delete";
+            }
+
+            public static class Rule
+            {
+                public const string Self = "system.rule";
+                public const string Read = "system.rule.read";
+                public const string Update = "system.rule.update";
+                public const string Create = "system.rule.create";
+                public const string Delete = "system.rule.delete";
+                public const string Execute = "system.rule.execute";
             }
 
             public static class Message

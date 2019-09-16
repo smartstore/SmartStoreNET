@@ -54,6 +54,7 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Common.Create", "Create", "Erstellen");
             builder.AddOrUpdate("Common.Notify", "Notify", "Benachrichtigen");
             builder.AddOrUpdate("Common.Approve", "Approve", "Genehmigen");
+            builder.AddOrUpdate("Common.Rules", "Rules", "Regeln");
 
             builder.AddOrUpdate("Common.Allow", "Allow", "Erlaubt");
             builder.AddOrUpdate("Common.Deny", "Deny", "Verweigert");
@@ -83,6 +84,7 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Permissions.DisplayName.EditAttribute", "Edit attributes", "Attribute bearbeiten");
             builder.AddOrUpdate("Permissions.DisplayName.EditVariant", "Edit variants", "Varianten bearbeiten");
             builder.AddOrUpdate("Permissions.DisplayName.EditTierPrice", "Edit tier prices", "Staffelpreise bearbeiten");
+            builder.AddOrUpdate("Permissions.DisplayName.EditRecurringPayment", "Edit recurring payment", "Wiederkehrende Zahlungen bearbeiten");
         }
     }
 }

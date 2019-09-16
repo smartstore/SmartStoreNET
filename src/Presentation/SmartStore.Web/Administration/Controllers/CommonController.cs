@@ -38,7 +38,6 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Payments;
-using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tasks;
 using SmartStore.Utilities;
@@ -201,7 +200,7 @@ namespace SmartStore.Admin.Controllers
                         model.CurrentVersion = curVersion;
                         model.LanguageCode = lang;
 
-                        if (CommonHelper.IsDevEnvironment || !_commonSettings.Value.AutoUpdateEnabled || !_services.Permissions2.Authorize(StandardPermissionProvider.ManageMaintenance))
+                        if (CommonHelper.IsDevEnvironment || !_commonSettings.Value.AutoUpdateEnabled || !_services.Permissions2.Authorize(Permissions.System.Maintenance.Self))
                         {
                             model.AutoUpdatePossible = false;
                         }
@@ -385,7 +384,7 @@ namespace SmartStore.Admin.Controllers
                 if (DataSettings.Current.IsValid())
                 {
                     model.DataProviderFriendlyName = DataSettings.Current.ProviderFriendlyName;
-                    model.ShrinkDatabaseEnabled = _services.Permissions2.Authorize(StandardPermissionProvider.ManageMaintenance) && DataSettings.Current.IsSqlServer;
+                    model.ShrinkDatabaseEnabled = _services.Permissions2.Authorize(Permissions.System.Maintenance.Self) && DataSettings.Current.IsSqlServer;
                 }
             }
             catch { }
@@ -1195,10 +1194,7 @@ namespace SmartStore.Admin.Controllers
         {
             var attr = _genericAttributeService.GetAttributeById(id);
 
-            //if (_services.Permissions2.Authorize(StandardPermissionProvider.AccessAdminPanel))
-            //{
-                _genericAttributeService.DeleteAttribute(attr);
-            //}
+            _genericAttributeService.DeleteAttribute(attr);
 
             return GenericAttributesSelect(attr.KeyGroup, attr.EntityId, command);
         }

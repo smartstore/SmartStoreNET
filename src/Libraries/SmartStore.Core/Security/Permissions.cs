@@ -30,6 +30,16 @@
                 public const string EditTierPrice = "catalog.product.edit-tier-price";
             }
 
+            public static class ProductReview
+            {
+                public const string Self = "catalog.product-review";
+                public const string Read = "catalog.product-review.read";
+                public const string Update = "catalog.product-review.update";
+                public const string Create = "catalog.product-review.create";
+                public const string Delete = "catalog.product-review.delete";
+                public const string Approve = "catalog.product-review.Approve";
+            }
+
             public static class Category
             {
                 public const string Self = "catalog.category";

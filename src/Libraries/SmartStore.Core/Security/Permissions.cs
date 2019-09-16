@@ -429,6 +429,7 @@
                 public const string Self = "system.message";
                 public const string Read = "system.message.read";
                 public const string Update = "system.message.update";
+                public const string Create = "system.message.create";
                 public const string Delete = "system.message.delete";
                 public const string Send = "system.message.send";
             }

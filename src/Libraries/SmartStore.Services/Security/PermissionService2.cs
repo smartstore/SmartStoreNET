@@ -155,25 +155,8 @@ namespace SmartStore.Services.Security
             Func<string, string> nameSelector = x =>
             {
                 var tokens = x.EmptyNull().ToLower().Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-                if (!tokens.Any())
-                {
-                    return string.Empty;
-                }
 
-                var sb = new StringBuilder();
-
-                foreach (var token in tokens)
-                {
-                    if (sb.Length > 0)
-                    {
-                        sb.Append(" » ");
-                    }
-
-                    var displayName = GetDisplayName(token, language.Id, resourcesLookup) ?? token ?? string.Empty;
-                    sb.Append(displayName);
-                }
-
-                return sb.ToString();
+                return GetDisplayName(tokens, language.Id, resourcesLookup);
             };
 
             var systemNames = _permissionRepository.TableUntracked
@@ -500,6 +483,20 @@ namespace SmartStore.Services.Security
             return root;
         }
 
+        public virtual string GetDiplayName(string permissionSystemName)
+        {
+            var tokens = permissionSystemName.EmptyNull().ToLower().Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            if (tokens.Any())
+            {
+                var language = _workContext.WorkingLanguage;
+                var resourcesLookup = GetDisplayNameLookup(language.Id);
+
+                return GetDisplayName(tokens, language.Id, resourcesLookup);
+            }
+
+            return string.Empty;
+        }
+
 
         private void AddChildItems(TreeNode<IPermissionNode> parentNode, List<PermissionRecord> permissions, string path, Func<PermissionRecord, bool?> allow)
         {
@@ -570,6 +567,29 @@ namespace SmartStore.Services.Security
             }
 
             return null;
+        }
+
+        private string GetDisplayName(string[] tokens, int languageId, Dictionary<string, string> resourcesLookup)
+        {
+            if (tokens?.Any() ?? false)
+            {
+                var sb = new StringBuilder();
+
+                foreach (var token in tokens)
+                {
+                    if (sb.Length > 0)
+                    {
+                        sb.Append(" » ");
+                    }
+
+                    var displayName = GetDisplayName(token, languageId, resourcesLookup) ?? token ?? string.Empty;
+                    sb.Append(displayName);
+                }
+
+                return sb.ToString();
+            }
+
+            return string.Empty;
         }
 
         private Dictionary<string, string> GetDisplayNameLookup(int languageId)

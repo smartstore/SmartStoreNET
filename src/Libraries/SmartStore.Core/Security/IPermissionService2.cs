@@ -156,5 +156,12 @@ namespace SmartStore.Core.Security
         /// <param name="addDisplayNames">Whether to add the permission display names.</param>
         /// <returns>Permission tree.</returns>
         TreeNode<IPermissionNode> GetPermissionTree(Customer customer, bool addDisplayNames = false);
+
+        /// <summary>
+        /// Get display name for a permission system name.
+        /// </summary>
+        /// <param name="permissionSystemName">Permission record system name.</param>
+        /// <returns>Display name.</returns>
+        string GetDiplayName(string permissionSystemName);
     }
 }

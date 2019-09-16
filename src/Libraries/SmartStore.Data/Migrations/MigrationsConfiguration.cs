@@ -98,6 +98,10 @@
             builder.AddOrUpdate("Admin.Permissions.AllowInherited", "Allow (inherited)", "Erlaubt (geerbt)");
             builder.AddOrUpdate("Admin.Permissions.DenyInherited", "Deny (inherited)", "Verweigert (geerbt)");
 
+            builder.AddOrUpdate("Admin.AccessDenied.DetailedDescription",
+                "<div>You do not have permission to perform the selected operation.</div><div>Access right: {0}</div><div>System name: {1}</div>",
+                "<div>Sie haben keine Berechtigung, diesen Vorgang durchzuführen.</div><div>Zugriffsrecht: {0}</div><div>Systemname: {1}</div>");
+
             builder.Delete(
                 "Admin.Configuration.Measures.Weights.Fields.MarkAsPrimaryWeight",
                 "Admin.Configuration.Measures.Dimensions.Fields.MarkAsPrimaryDimension",

@@ -60,12 +60,16 @@ namespace SmartStore.Core.Security
             var request = httpContext?.Request;
 
             if (request == null)
+            {
                 return;
+            }
+
+            var message = GetUnauthorizedMessage();
 
             if (request.IsAjaxRequest())
             {
                 httpContext.Response.AddHeader("X-Message-Type", "error");
-                httpContext.Response.AddHeader("X-Message", T("Admin.AccessDenied.Description"));
+                httpContext.Response.AddHeader("X-Message", message);
 
                 if (request.AcceptTypes?.Any(x => x.IsCaseInsensitiveEqual("text/html")) ?? false)
                 {
@@ -82,7 +86,7 @@ namespace SmartStore.Core.Security
                             success = false,
                             controller = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName,
                             action = filterContext.ActionDescriptor.ActionName,
-                            message = T("Admin.AccessDenied.Description").Text
+                            message
                         }
                     };
                 }
@@ -97,6 +101,8 @@ namespace SmartStore.Core.Security
                 {
                     var urlHelper = new UrlHelper(request.RequestContext);
                     var url = urlHelper.Action("AccessDenied", "Security", new { pageUrl = request.RawUrl, area = "Admin" });
+
+                    filterContext.Controller.TempData["UnauthorizedMessage"] = message;
                     filterContext.Result = new RedirectResult(url);
                 }
             }
@@ -104,12 +110,21 @@ namespace SmartStore.Core.Security
 
         protected virtual ContentResult AccessDeniedResult()
         {
+            var message = GetUnauthorizedMessage();
+
             return new ContentResult
             {
-                Content = "<div class=\"alert alert-danger\">{0}</div>".FormatInvariant(T("Admin.AccessDenied.Description")),
+                Content = "<div class=\"alert alert-danger\">{0}</div>".FormatInvariant(message),
                 ContentType = "text/html",
                 ContentEncoding = Encoding.UTF8
             };
+        }
+
+        protected virtual string GetUnauthorizedMessage()
+        {
+            var displayName = PermissionService.GetDiplayName(SystemName);
+            var message = T("Admin.AccessDenied.DetailedDescription", displayName.NaIfEmpty(), SystemName.NaIfEmpty());
+            return message;
         }
     }
 }

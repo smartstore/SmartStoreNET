@@ -3,9 +3,9 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Directory;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Security;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
@@ -13,22 +13,22 @@ using Telerik.Web.Mvc;
 namespace SmartStore.Admin.Controllers
 {
     [AdminAuthorize]
-    public class DeliveryTimeController :  AdminControllerBase
+    public class DeliveryTimeController : AdminControllerBase
     {
         private readonly IDeliveryTimeService _deliveryTimeService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ILanguageService _languageService;
 
         public DeliveryTimeController(
-			IDeliveryTimeService deliveryTimeService,
-            ILocalizedEntityService localizedEntityService, 
+            IDeliveryTimeService deliveryTimeService,
+            ILocalizedEntityService localizedEntityService,
             ILanguageService languageService)
         {
             _deliveryTimeService = deliveryTimeService;
             _localizedEntityService = localizedEntityService;
             _languageService = languageService;
         }
-        
+
         [NonAction]
         public void UpdateLocales(DeliveryTime deliveryTime, DeliveryTimeModel model)
         {
@@ -43,45 +43,34 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
+        [Permission(Permissions.Configuration.DeliveryTime.Read)]
         public ActionResult List()
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
-            {
-                return AccessDeniedView();
-            }
-
             return View();
         }
 
-		[HttpPost, GridAction(EnableCustomBinding = true)]
-		public ActionResult List(GridCommand command)
-		{
-			var gridModel = new GridModel<DeliveryTimeModel>();
+        [HttpPost, GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Configuration.DeliveryTime.Read)]
+        public ActionResult List(GridCommand command)
+        {
+            var gridModel = new GridModel<DeliveryTimeModel>();
 
-			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
-			{
-				var deliveryTimeModels = _deliveryTimeService.GetAllDeliveryTimes()
-					.Select(x => x.ToModel())
-					.ToList();
+            var deliveryTimeModels = _deliveryTimeService.GetAllDeliveryTimes()
+                .Select(x => x.ToModel())
+                .ToList();
 
-				gridModel.Data = deliveryTimeModels;
-				gridModel.Total = deliveryTimeModels.Count();
-			}
-			else
-			{
-				gridModel.Data = Enumerable.Empty<DeliveryTimeModel>();
+            gridModel.Data = deliveryTimeModels;
+            gridModel.Total = deliveryTimeModels.Count();
 
-				NotifyAccessDenied();
-			}
+            return new JsonResult
+            {
+                Data = gridModel
+            };
+        }
 
-			return new JsonResult
-			{
-				Data = gridModel
-			};
-		}
-
-		// Ajax.
-		public ActionResult AllDeliveryTimes(string label, int selectedId)
+        // Ajax.
+        [Permission(Permissions.Configuration.DeliveryTime.Read)]
+        public ActionResult AllDeliveryTimes(string label, int selectedId)
         {
             var deliveryTimes = _deliveryTimeService.GetAllDeliveryTimes();
             if (label.HasValue())
@@ -98,19 +87,15 @@ namespace SmartStore.Admin.Controllers
                        };
 
             return new JsonResult
-			{
-				Data = list.ToList(),
-				JsonRequestBehavior = JsonRequestBehavior.AllowGet
-			};
+            {
+                Data = list.ToList(),
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet
+            };
         }
 
+        [Permission(Permissions.Configuration.DeliveryTime.Create)]
         public ActionResult CreateDeliveryTimePopup()
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
-            {
-                return AccessDeniedPartialView();
-            }
-
             var model = new DeliveryTimeModel();
             AddLocales(_languageService, model.Locales);
 
@@ -118,13 +103,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.Configuration.DeliveryTime.Create)]
         public ActionResult CreateDeliveryTimePopup(string btnId, DeliveryTimeModel model)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
-            {
-                return AccessDeniedView();
-            }
-
             if (ModelState.IsValid)
             {
                 try
@@ -147,17 +128,12 @@ namespace SmartStore.Admin.Controllers
                 ViewBag.btnId = btnId;
             }
 
-
             return View(model);
         }
 
+        [Permission(Permissions.Configuration.DeliveryTime.Read)]
         public ActionResult EditDeliveryTimePopup(int id)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
-            {
-                return AccessDeniedPartialView();
-            }
-
             var entity = _deliveryTimeService.GetDeliveryTimeById(id);
             if (entity == null)
             {
@@ -175,13 +151,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.Configuration.DeliveryTime.Update)]
         public ActionResult EditDeliveryTimePopup(string btnId, DeliveryTimeModel model)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
-            {
-                return AccessDeniedPartialView();
-            }
-
             var entity = _deliveryTimeService.GetDeliveryTimeById(model.Id);
             if (entity == null)
             {
@@ -219,22 +191,20 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Configuration.DeliveryTime.Delete)]
         public ActionResult DeleteDeliveryTime(int id, GridCommand command)
         {
-            if (Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
+            var entity = _deliveryTimeService.GetDeliveryTimeById(id);
+
+            try
             {
-                var entity = _deliveryTimeService.GetDeliveryTimeById(id);
+                _deliveryTimeService.DeleteDeliveryTime(entity);
 
-                try
-                {
-                    _deliveryTimeService.DeleteDeliveryTime(entity);
-
-                    NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
-                }
-                catch (Exception ex)
-                {
-                    NotifyError(ex);
-                }
+                NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+            }
+            catch (Exception ex)
+            {
+                NotifyError(ex);
             }
 
             return List(command);

@@ -303,7 +303,7 @@ namespace SmartStore.Admin.Controllers
             return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
-        [Permission(Permissions.Catalog.Category.Update)]
+        [Permission(Permissions.Catalog.Category.Read)]
         public ActionResult Tree()
         {
             var customerChoice = _genericAttributeService.Value.GetAttribute<string>("Customer", _workContext.CurrentCustomer.Id, "AdminCategoriesType");
@@ -503,7 +503,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [Permission(Permissions.Catalog.Category.Update)]
+        [Permission(Permissions.Catalog.Category.Read)]
         public ActionResult Edit(int id)
         {
             var category = _categoryService.GetCategoryById(id);

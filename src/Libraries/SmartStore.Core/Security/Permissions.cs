@@ -87,6 +87,8 @@
             public const string Create = "customer.create";
             public const string Delete = "customer.delete";
             public const string Impersonate = "customer.impersonate";
+            public const string EditAddress = "customer.edit-address";
+            public const string SendPm = "customer.send-pm";
 
             public static class Role
             {
@@ -449,6 +451,7 @@
             public static class Maintenance
             {
                 public const string Self = "system.maintenance";
+                public const string Read = "system.maintenance.read";
                 public const string Execute = "system.maintenance.execute";
             }
 
@@ -473,6 +476,7 @@
         public static class Cart
         {
             public const string Self = "cart";
+            public const string Read = "cart.read";
             public const string AccessShoppingCart = "cart.access-shopping-cart";
             public const string AccessWishlist = "cart.access-wishlist";
 

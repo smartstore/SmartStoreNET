@@ -337,7 +337,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [Permission(Permissions.Configuration.Currency.Update)]
+        [Permission(Permissions.Configuration.Currency.Read)]
         public ActionResult Edit(int id)
         {
             var currency = _currencyService.GetCurrencyById(id);

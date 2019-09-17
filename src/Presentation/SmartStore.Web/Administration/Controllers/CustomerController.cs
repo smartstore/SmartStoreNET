@@ -655,7 +655,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [Permission(Permissions.Customer.Update)]
+        [Permission(Permissions.Customer.Read)]
         public ActionResult Edit(int id)
         {
             var customer = _customerService.GetCustomerById(id);
@@ -997,7 +997,7 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("Index", "Home", new { area = "" });
         }
 
-        [Permission(Permissions.Configuration.EmailAccount.Self)]
+        [Permission(Permissions.System.Message.Send)]
         public ActionResult SendEmail(CustomerModel model)
         {
             var customer = _customerService.GetCustomerById(model.Id);
@@ -1041,7 +1041,7 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("Edit", new { id = customer.Id });
         }
 
-        [Permission(Permissions.Customer.Self)]
+        [Permission(Permissions.Customer.SendPm)]
         public ActionResult SendPm(CustomerModel model)
         {
             var customer = _customerService.GetCustomerById(model.Id);
@@ -1088,7 +1088,7 @@ namespace SmartStore.Admin.Controllers
         #region Reward points history
 
         [GridAction]
-        [Permission(Permissions.Customer.Update)]
+        [Permission(Permissions.Customer.Read)]
         public ActionResult RewardPointsHistorySelect(int customerId)
         {
             var customer = _customerService.GetCustomerById(customerId);
@@ -1136,7 +1136,7 @@ namespace SmartStore.Admin.Controllers
         #region Addresses
 
         [GridAction]
-        [Permission(Permissions.Customer.Update)]
+        [Permission(Permissions.Customer.Read)]
         public ActionResult AddressesSelect(int customerId, GridCommand command)
         {
             var customer = _customerService.GetCustomerById(customerId);
@@ -1195,7 +1195,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction]
-        [Permission(Permissions.Customer.Update)]
+        [Permission(Permissions.Customer.EditAddress)]
         public ActionResult AddressDelete(int customerId, int addressId, GridCommand command)
         {
             var customer = _customerService.GetCustomerById(customerId);
@@ -1211,7 +1211,7 @@ namespace SmartStore.Admin.Controllers
             return AddressesSelect(customerId, command);
         }
 
-        [Permission(Permissions.Customer.Update)]
+        [Permission(Permissions.Customer.EditAddress)]
         public ActionResult AddressCreate(int customerId)
         {
             var customer = _customerService.GetCustomerById(customerId);
@@ -1254,7 +1254,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        [Permission(Permissions.Customer.Update)]
+        [Permission(Permissions.Customer.EditAddress)]
         public ActionResult AddressCreate(CustomerAddressModel model)
         {
             var customer = _customerService.GetCustomerById(model.CustomerId);
@@ -1300,7 +1300,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [Permission(Permissions.Customer.Update)]
+        [Permission(Permissions.Customer.EditAddress)]
         public ActionResult AddressEdit(int addressId, int customerId)
         {
             var customer = _customerService.GetCustomerById(customerId);
@@ -1355,7 +1355,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        [Permission(Permissions.Customer.Update)]
+        [Permission(Permissions.Customer.EditAddress)]
         public ActionResult AddressEdit(CustomerAddressModel model)
         {
             var customer = _customerService.GetCustomerById(model.CustomerId);
@@ -1423,39 +1423,31 @@ namespace SmartStore.Admin.Controllers
         #region Orders
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Order.Read)]
         public ActionResult OrderList(int customerId, GridCommand command)
         {
             var model = new GridModel<CustomerModel.OrderModel>();
 
-            if (_permissionService.Authorize(Permissions.Order.Read))
-            {
-                var orders = _orderService.SearchOrders(0, customerId, null, null, null, null, null, null, null, null, 0, int.MaxValue);
+            var orders = _orderService.SearchOrders(0, customerId, null, null, null, null, null, null, null, null, 0, int.MaxValue);
 
-                model.Data = orders.PagedForCommand(command)
-                    .Select(order =>
+            model.Data = orders.PagedForCommand(command)
+                .Select(order =>
+                {
+                    var store = _storeService.GetStoreById(order.StoreId);
+                    var orderModel = new CustomerModel.OrderModel()
                     {
-                        var store = _storeService.GetStoreById(order.StoreId);
-                        var orderModel = new CustomerModel.OrderModel()
-                        {
-                            Id = order.Id,
-                            OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
-                            PaymentStatus = order.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext),
-                            ShippingStatus = order.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext),
-                            OrderTotal = _priceFormatter.FormatPrice(order.OrderTotal, true, false),
-                            StoreName = store != null ? store.Name : "".NaIfEmpty(),
-                            CreatedOn = _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc),
-                        };
-                        return orderModel;
-                    });
+                        Id = order.Id,
+                        OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
+                        PaymentStatus = order.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext),
+                        ShippingStatus = order.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext),
+                        OrderTotal = _priceFormatter.FormatPrice(order.OrderTotal, true, false),
+                        StoreName = store != null ? store.Name : "".NaIfEmpty(),
+                        CreatedOn = _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc),
+                    };
+                    return orderModel;
+                });
 
-                model.Total = orders.Count;
-            }
-            else
-            {
-                model.Data = Enumerable.Empty<CustomerModel.OrderModel>();
-
-                NotifyAccessDenied();
-            }
+            model.Total = orders.Count;
 
             return new JsonResult
             {
@@ -1605,7 +1597,7 @@ namespace SmartStore.Admin.Controllers
         #region Current shopping cart/ wishlist
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Cart.Self)]
+        [Permission(Permissions.Cart.Read)]
         public ActionResult GetCartList(int customerId, int cartTypeId)
         {
             var customer = _customerService.GetCustomerById(customerId);
@@ -1648,7 +1640,6 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Configuration.ActivityLog.Read)]
-
         public JsonResult ListActivityLog(GridCommand command, int customerId)
         {
             var activityLog = _customerActivityService.GetAllActivities(null, null, customerId, 0, command.Page - 1, command.PageSize);
@@ -1676,7 +1667,7 @@ namespace SmartStore.Admin.Controllers
 
         #region GDPR
 
-        [Permission(Permissions.Configuration.Export.Execute)]
+        [Permission(Permissions.Customer.Read)]
         public ActionResult Export(int id /* customerId */)
         {
             var customer = _customerService.GetCustomerById(id);

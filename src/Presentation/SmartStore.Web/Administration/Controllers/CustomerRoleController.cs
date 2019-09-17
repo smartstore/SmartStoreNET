@@ -8,8 +8,8 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Security;
 using SmartStore.Services.Customers;
-using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -19,20 +19,17 @@ namespace SmartStore.Admin.Controllers
 {
     [AdminAuthorize]
     public class CustomerRoleController : AdminControllerBase
-	{
-		private readonly ICustomerService _customerService;
+    {
+        private readonly ICustomerService _customerService;
         private readonly ICustomerActivityService _customerActivityService;
-        private readonly IPermissionService _permissionService;
 
         public CustomerRoleController(
             ICustomerService customerService,
-            ICustomerActivityService customerActivityService,
-            IPermissionService permissionService)
-		{
+            ICustomerActivityService customerActivityService)
+        {
             _customerService = customerService;
             _customerActivityService = customerActivityService;
-            _permissionService = permissionService;
-		}
+        }
 
         [NonAction]
         protected List<SelectListItem> GetTaxDisplayTypesList(CustomerRoleModel model)
@@ -74,7 +71,7 @@ namespace SmartStore.Admin.Controllers
                 customerRoles.Insert(0, new CustomerRole { Name = label, Id = 0 });
             }
 
-            var list = 
+            var list =
                 from c in customerRoles
                 select new
                 {
@@ -91,50 +88,38 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
-		public ActionResult List()
+        [Permission(Permissions.Customer.Role.Read)]
+        public ActionResult List()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles))
-                return AccessDeniedView();
-            
-			var customerRoles = _customerService.GetAllCustomerRoles(true);
-			var gridModel = new GridModel<CustomerRoleModel>
-			{
+            var customerRoles = _customerService.GetAllCustomerRoles(true);
+            var gridModel = new GridModel<CustomerRoleModel>
+            {
                 Data = customerRoles.Select(x => x.ToModel()),
                 Total = customerRoles.Count()
-			};
-			return View(gridModel);
-		}
+            };
+            return View(gridModel);
+        }
 
-		[HttpPost, GridAction(EnableCustomBinding = true)]
-		public ActionResult List(GridCommand command)
+        [HttpPost, GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Customer.Role.Read)]
+        public ActionResult List(GridCommand command)
         {
-			var model = new GridModel<CustomerRoleModel>();
+            var model = new GridModel<CustomerRoleModel>();
 
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles))
-			{
-				var customerRoles = _customerService.GetAllCustomerRoles(true);
+            var customerRoles = _customerService.GetAllCustomerRoles(true);
 
-				model.Data = customerRoles.Select(x => x.ToModel());
-				model.Total = customerRoles.Count();
-			}
-			else
-			{
-				model.Data = Enumerable.Empty<CustomerRoleModel>();
+            model.Data = customerRoles.Select(x => x.ToModel());
+            model.Total = customerRoles.Count();
 
-				NotifyAccessDenied();
-			}
+            return new JsonResult
+            {
+                Data = model
+            };
+        }
 
-			return new JsonResult
-			{
-				Data = model
-			};
-		}
-
+        [Permission(Permissions.Customer.Role.Create)]
         public ActionResult Create()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles))
-                return AccessDeniedView();
-
             var model = new CustomerRoleModel
             {
                 Active = true
@@ -146,11 +131,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [Permission(Permissions.Customer.Role.Create)]
         public ActionResult Create(CustomerRoleModel model, bool continueEditing)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles))
-                return AccessDeniedView();
-            
             if (ModelState.IsValid)
             {
                 var customerRole = model.ToEntity();
@@ -165,11 +148,9 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-		public ActionResult Edit(int id)
+        [Permission(Permissions.Customer.Role.Read)]
+        public ActionResult Edit(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles))
-                return AccessDeniedView();
-            
             var customerRole = _customerService.GetCustomerRoleById(id);
             if (customerRole == null)
             {
@@ -181,14 +162,12 @@ namespace SmartStore.Admin.Controllers
             model.PermissionTree = Services.Permissions2.GetPermissionTree(customerRole, true);
 
             return View(model);
-		}
+        }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [Permission(Permissions.Customer.Role.Update)]
         public ActionResult Edit(CustomerRoleModel model, bool continueEditing, FormCollection form)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles))
-                return AccessDeniedView();
-            
             var customerRole = _customerService.GetCustomerRoleById(model.Id);
             if (customerRole == null)
             {
@@ -282,11 +261,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [Permission(Permissions.Customer.Role.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles))
-                return AccessDeniedView();
-            
             var customerRole = _customerService.GetCustomerRoleById(id);
             if (customerRole == null)
             {
@@ -304,10 +281,10 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception ex)
             {
-				NotifyError(ex.Message);
+                NotifyError(ex.Message);
                 return RedirectToAction("Edit", new { id = customerRole.Id });
             }
 
-		}
+        }
     }
 }

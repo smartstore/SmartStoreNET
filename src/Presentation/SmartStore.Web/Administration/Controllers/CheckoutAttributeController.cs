@@ -211,7 +211,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         //edit
-        [Permission(Permissions.Cart.CheckoutAttribute.Update)]
+        [Permission(Permissions.Cart.CheckoutAttribute.Read)]
         public ActionResult Edit(int id)
         {
             var checkoutAttribute = _checkoutAttributeService.GetCheckoutAttributeById(id);

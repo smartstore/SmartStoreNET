@@ -116,7 +116,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [Permission(Permissions.Promotion.Campaign.Update)]
+        [Permission(Permissions.Promotion.Campaign.Read)]
         public ActionResult Edit(int id)
         {
             var campaign = _campaignService.GetCampaignById(id);
@@ -158,7 +158,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("send-mass-email")]
-        [Permission(Permissions.Promotion.Campaign.Update)]
+        [Permission(Permissions.System.Message.Send)]
         public ActionResult SendMassEmail(CampaignModel model)
         {
             var campaign = _campaignService.GetCampaignById(model.Id);

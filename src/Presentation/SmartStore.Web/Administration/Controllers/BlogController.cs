@@ -168,7 +168,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [Permission(Permissions.Cms.Blog.Update)]
+        [Permission(Permissions.Cms.Blog.Read)]
         public ActionResult Edit(int id)
         {
             var blogPost = _blogService.GetBlogPostById(id);

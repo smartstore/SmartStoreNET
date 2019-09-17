@@ -128,47 +128,35 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Configuration.Country.Update)]
         public ActionResult CountryUpdate(CountryModel model, GridCommand command)
         {
-            if (_services.Permissions2.Authorize(Permissions.Configuration.Country.Update))
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    var modelStateErrors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-                    return Content(modelStateErrors.FirstOrDefault());
-                }
-
-                var country = _countryService.GetCountryById(model.Id);
-
-                country = model.ToEntity(country);
-                _countryService.UpdateCountry(country);
+                var modelStateErrors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+                return Content(modelStateErrors.FirstOrDefault());
             }
-            else
-            {
-                NotifyAccessDenied();
-            }
+
+            var country = _countryService.GetCountryById(model.Id);
+
+            country = model.ToEntity(country);
+            _countryService.UpdateCountry(country);
 
             return CountryList(command);
         }
 
         [GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Configuration.Country.Delete)]
         public ActionResult CountryDelete(int id, GridCommand command)
         {
-            if (_services.Permissions2.Authorize(Permissions.Configuration.Country.Delete))
+            if (_addressService.GetAddressTotalByCountryId(id) > 0)
             {
-                if (_addressService.GetAddressTotalByCountryId(id) > 0)
-                {
-                    return Content(T("Admin.Configuration.Countries.CannotDeleteDueToAssociatedAddresses"));
-                }
-
-                var country = _countryService.GetCountryById(id);
-
-                _countryService.DeleteCountry(country);
+                return Content(T("Admin.Configuration.Countries.CannotDeleteDueToAssociatedAddresses"));
             }
-            else
-            {
-                NotifyAccessDenied();
-            }
+
+            var country = _countryService.GetCountryById(id);
+
+            _countryService.DeleteCountry(country);
 
             return CountryList(command);
         }

@@ -212,7 +212,7 @@ namespace SmartStore.Admin.Controllers
 
 
         //edit
-        [Permission(Permissions.Promotion.Affiliate.Update)]
+        [Permission(Permissions.Promotion.Affiliate.Read)]
         public ActionResult Edit(int id)
         {
             var affiliate = _affiliateService.GetAffiliateById(id);

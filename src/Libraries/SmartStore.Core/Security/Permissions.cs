@@ -75,6 +75,7 @@
                 public const string Update = "catalog.attribute.update";
                 public const string Create = "catalog.attribute.create";
                 public const string Delete = "catalog.attribute.delete";
+                public const string EditOption = "catalog.attribute.edit-option";
             }
         }
 

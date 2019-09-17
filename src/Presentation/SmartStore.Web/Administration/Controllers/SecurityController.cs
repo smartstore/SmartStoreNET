@@ -5,6 +5,7 @@ using SmartStore.Admin.Models.Customers;
 using SmartStore.Admin.Models.Security;
 using SmartStore.Core;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Security;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
@@ -15,15 +16,9 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class SecurityController : AdminControllerBase
 	{
-		#region Fields
-
         private readonly IWorkContext _workContext;
         private readonly IPermissionService _permissionService;
         private readonly ICustomerService _customerService;
-
-		#endregion
-
-		#region Constructors
 
         public SecurityController(
             IWorkContext workContext,
@@ -35,31 +30,9 @@ namespace SmartStore.Admin.Controllers
             _customerService = customerService;
 		}
 
-        #endregion
-
-        #region Methods
-
-        //GP: remove and use method AllAccessPermissions2 below.
         // Ajax.
+        [Permission(Core.Security.Permissions.Configuration.Acl.Read)]
         public ActionResult AllAccessPermissions(string selected)
-        {
-            var permissions = _permissionService.GetAllPermissionRecords();
-            var selectedArr = selected.SplitSafe(",");
-
-            var data = permissions
-                .Select(x => new
-                {
-                    id = x.SystemName,
-                    text = x.Name,
-                    selected = selectedArr.Contains(x.SystemName)
-                })
-                .ToList();
-
-            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
-        }
-
-        // Ajax.
-        public ActionResult AllAccessPermissions2(string selected)
         {
             var systemNames = Services.Permissions2.GetAllSystemNames();
             var selectedArr = selected.SplitSafe(",");
@@ -78,25 +51,23 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult AccessDenied(string pageUrl)
         {
-            var currentCustomer = _workContext.CurrentCustomer;
+            var customer = _workContext.CurrentCustomer;
 
-            if (currentCustomer == null || currentCustomer.IsGuest())
+            if (customer == null || customer.IsGuest())
             {
 				Logger.Info(T("Admin.System.Warnings.AccessDeniedToAnonymousRequest", pageUrl.NaIfEmpty()));
                 return View();
             }
 
 			Logger.Info(T("Admin.System.Warnings.AccessDeniedToUser",
-				currentCustomer.Email.NaIfEmpty(), currentCustomer.Email.NaIfEmpty(), pageUrl.NaIfEmpty()));
+				customer.Email.NaIfEmpty(), customer.Email.NaIfEmpty(), pageUrl.NaIfEmpty()));
 
             return View();
         }
 
+        //GP: remove (old permission list).
         public ActionResult Permissions()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageAcl))
-                return AccessDeniedView();
-
             var model = new PermissionMappingModel();
 
             var permissionRecords = _permissionService.GetAllPermissionRecords();
@@ -137,12 +108,10 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
+        //GP: remove (old permission list).
         [HttpPost, ActionName("Permissions")]
         public ActionResult PermissionsSave(FormCollection form)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageAcl))
-                return AccessDeniedView();
-
             var permissionRecords = _permissionService.GetAllPermissionRecords();
             var customerRoles = _customerService.GetAllCustomerRoles(true);
 
@@ -177,7 +146,5 @@ namespace SmartStore.Admin.Controllers
 
             return RedirectToAction("Permissions");
         }
-
-        #endregion
     }
 }

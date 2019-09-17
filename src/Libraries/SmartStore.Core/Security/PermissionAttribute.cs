@@ -17,11 +17,13 @@ namespace SmartStore.Core.Security
         /// e.g. [Permission(PermissionSystemNames.Customer.Read)]
         /// </summary>
         /// <param name="systemName">The system name of the permission.</param>
-        public PermissionAttribute(string systemName)
+        /// <param name="addMessageHeader">Whether to show an unauthorization message for AJAX operations.</param>
+        public PermissionAttribute(string systemName, bool addMessageHeader = true)
         {
             Guard.NotEmpty(systemName, nameof(systemName));
 
             SystemName = systemName;
+            AddMessageHeader = addMessageHeader;
 
             T = NullLocalizer.Instance;
         }
@@ -30,6 +32,11 @@ namespace SmartStore.Core.Security
         /// The system name of the permission.
         /// </summary>
         public string SystemName { get; private set; }
+
+        /// <summary>
+        /// Whether to show an unauthorization message for AJAX operations.
+        /// </summary>
+        public bool AddMessageHeader { get; private set; }
 
         public Localizer T { get; set; }
         public IWorkContext WorkContext { get; set; }
@@ -68,12 +75,15 @@ namespace SmartStore.Core.Security
 
             if (request.IsAjaxRequest())
             {
-                httpContext.Response.AddHeader("X-Message-Type", "error");
-                httpContext.Response.AddHeader("X-Message", message);
+                if (AddMessageHeader)
+                {
+                    httpContext.Response.AddHeader("X-Message-Type", "error");
+                    httpContext.Response.AddHeader("X-Message", message);
+                }
 
                 if (request.AcceptTypes?.Any(x => x.IsCaseInsensitiveEqual("text/html")) ?? false)
                 {
-                    filterContext.Result = AccessDeniedResult();
+                    filterContext.Result = AccessDeniedResult(message);
                 }
                 else
                 {
@@ -95,7 +105,7 @@ namespace SmartStore.Core.Security
             {
                 if (filterContext.IsChildAction)
                 {
-                    filterContext.Result = AccessDeniedResult();
+                    filterContext.Result = AccessDeniedResult(message);
                 }
                 else
                 {
@@ -108,10 +118,8 @@ namespace SmartStore.Core.Security
             }
         }
 
-        protected virtual ContentResult AccessDeniedResult()
+        protected virtual ActionResult AccessDeniedResult(string message)
         {
-            var message = GetUnauthorizedMessage();
-
             return new ContentResult
             {
                 Content = "<div class=\"alert alert-danger\">{0}</div>".FormatInvariant(message),

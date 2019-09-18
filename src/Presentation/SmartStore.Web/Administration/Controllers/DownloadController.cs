@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Security;
 using SmartStore.Services.Media;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
@@ -19,6 +20,7 @@ namespace SmartStore.Admin.Controllers
             this._downloadService = downloadService;
         }
 
+        [Permission(Permissions.Media.Download.Read)]
         public ActionResult DownloadFile(int downloadId)
         {
             var download = _downloadService.GetDownloadById(downloadId);
@@ -49,7 +51,8 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-		public ActionResult SaveDownloadUrl(string downloadUrl, bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
+        [Permission(Permissions.Media.Upload)]
+        public ActionResult SaveDownloadUrl(string downloadUrl, bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
         {
 			var download = new Download
 			{
@@ -74,7 +77,8 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-		public ActionResult AsyncUpload(bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
+        [Permission(Permissions.Media.Upload)]
+        public ActionResult AsyncUpload(bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
         {
 			var postedFile = Request.ToPostedFileResult();
 			if (postedFile == null)
@@ -110,6 +114,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
+        [Permission(Permissions.Media.Download.Update)]
         public ActionResult AddChangelog(int downloadId, string changelogText)
         {
             var success = false;
@@ -129,6 +134,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.Media.Download.Read)]
         public ActionResult GetChangelogText(int downloadId)
         {
             var success = false;
@@ -141,6 +147,8 @@ namespace SmartStore.Admin.Controllers
                 success = true;
             }
 
+            changeLogText = String.Empty;
+
             return Json(new
             {
                 success = success,
@@ -149,7 +157,8 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-		public ActionResult DeleteDownload(bool minimalMode = false, string fieldName = null)
+        [Permission(Permissions.Media.Download.Delete)]
+        public ActionResult DeleteDownload(bool minimalMode = false, string fieldName = null)
 		{
 			// We don't actually delete here. We just return the editor in it's init state
 			// so the download entity can be set to transient state and deleted later by a scheduled task.

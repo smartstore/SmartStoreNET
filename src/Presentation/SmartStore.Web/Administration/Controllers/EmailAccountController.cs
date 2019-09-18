@@ -19,6 +19,8 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class EmailAccountController : AdminControllerBase
     {
+        #region Fields
+
         private readonly IEmailAccountService _emailAccountService;
         private readonly ILocalizationService _localizationService;
         private readonly ISettingService _settingService;
@@ -26,6 +28,10 @@ namespace SmartStore.Admin.Controllers
         private readonly IEmailSender _emailSender;
         private readonly EmailAccountSettings _emailAccountSettings;
         private readonly IPermissionService2 _permissionService2;
+
+        #endregion
+
+        #region Constructor 
 
         public EmailAccountController(
             IEmailAccountService emailAccountService,
@@ -44,6 +50,10 @@ namespace SmartStore.Admin.Controllers
             _storeContext = storeContext;
             _permissionService2 = permissionService2;
         }
+
+        #endregion
+
+        #region List
 
         [Permission(Permissions.Configuration.EmailAccount.Read)]
         public ActionResult List(string id)
@@ -98,6 +108,10 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
+        #endregion
+
+        #region Create
+
         [Permission(Permissions.Configuration.EmailAccount.Create)]
         public ActionResult Create()
         {
@@ -124,6 +138,10 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
+        #endregion
+
+        #region Edit
+
         [Permission(Permissions.Configuration.EmailAccount.Read)]
         public ActionResult Edit(int id)
         {
@@ -134,7 +152,6 @@ namespace SmartStore.Admin.Controllers
 
             return View(emailAccount.ToModel());
         }
-
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
@@ -158,6 +175,28 @@ namespace SmartStore.Admin.Controllers
             //If we got this far, something failed, redisplay form
             return View(model);
         }
+
+        #endregion
+
+        #region Delete
+
+        [HttpPost, ActionName("Delete")]
+        [Permission(Permissions.Configuration.EmailAccount.Delete)]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            var emailAccount = _emailAccountService.GetEmailAccountById(id);
+            if (emailAccount == null)
+                //No email account found with the specified id
+                return RedirectToAction("List");
+
+            NotifySuccess(_localizationService.GetResource("Admin.Configuration.EmailAccounts.Deleted"));
+            _emailAccountService.DeleteEmailAccount(emailAccount);
+            return RedirectToAction("List");
+        }
+
+        #endregion
+
+        #region Test email
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("sendtestemail")]
@@ -198,18 +237,6 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ActionName("Delete")]
-        [Permission(Permissions.Configuration.EmailAccount.Delete)]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            var emailAccount = _emailAccountService.GetEmailAccountById(id);
-            if (emailAccount == null)
-                //No email account found with the specified id
-                return RedirectToAction("List");
-
-            NotifySuccess(_localizationService.GetResource("Admin.Configuration.EmailAccounts.Deleted"));
-            _emailAccountService.DeleteEmailAccount(emailAccount);
-            return RedirectToAction("List");
-        }
+        #endregion
     }
 }

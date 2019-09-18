@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Forums;
 using SmartStore.Core.Domain.Forums;
+using SmartStore.Core.Security;
 using SmartStore.Services;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Forums;
@@ -21,6 +22,8 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class ForumController : AdminControllerBase
     {
+        #region Fields
+
         private readonly IForumService _forumService;
 		private readonly ICommonServices _services;
 		private readonly IStoreMappingService _storeMappingService;
@@ -30,6 +33,10 @@ namespace SmartStore.Admin.Controllers
 		private readonly ILocalizedEntityService _localizedEntityService;
 		private readonly IUrlRecordService _urlRecordService;
         private readonly IDateTimeHelper _dateTimeHelper;
+
+        #endregion
+
+        #region Constructor
 
         public ForumController(
             IForumService forumService,
@@ -53,9 +60,11 @@ namespace SmartStore.Admin.Controllers
             _dateTimeHelper = dateTimeHelper;
         }
 
-		#region Utilities
+        #endregion
 
-		[NonAction]
+        #region Utilities
+
+        [NonAction]
 		private void PrepareForumGroupModel(ForumGroupModel model, ForumGroup forumGroup, bool excludeProperties)
 		{
 			Guard.NotNull(model, nameof(model));
@@ -107,18 +116,16 @@ namespace SmartStore.Admin.Controllers
 
 		#endregion
 
-        #region List
+        #region Forum
 
         public ActionResult Index()
         {
             return RedirectToAction("List");
         }
 
+        [Permission(Permissions.Cms.Forum.Read)]
         public ActionResult List()
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
-                return AccessDeniedView();
-
             var forumGroupsModel = _forumService.GetAllForumGroups(0, true)
                 .Select(fg =>
                 {
@@ -140,15 +147,9 @@ namespace SmartStore.Admin.Controllers
             return View(forumGroupsModel);
         }
 
-        #endregion
-
-        #region Create
-
+        [Permission(Permissions.Cms.Forum.Create)]
         public ActionResult CreateForumGroup()
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
-                return AccessDeniedView();
-
 			var model = new ForumGroupModel { DisplayOrder = 1 };
 
 			AddLocales(_languageService, model.Locales);
@@ -159,13 +160,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [Permission(Permissions.Cms.Forum.Create)]
         public ActionResult CreateForumGroup(ForumGroupModel model, bool continueEditing)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
-            {
-                return AccessDeniedView();
-            }
-
             if (ModelState.IsValid)
             {
 				var forumGroup = model.ToEntity();
@@ -191,11 +188,9 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
+        [Permission(Permissions.Cms.Forum.Create)]
         public ActionResult CreateForum()
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
-                return AccessDeniedView();
-
 			var model = new ForumModel { DisplayOrder = 1 };
 
 			AddLocales(_languageService, model.Locales);
@@ -210,11 +205,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [Permission(Permissions.Cms.Forum.Create)]
         public ActionResult CreateForum(ForumModel model, bool continueEditing)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
-                return AccessDeniedView();
-
             if (ModelState.IsValid)
             {
 				var utcNow = DateTime.UtcNow;
@@ -238,16 +231,10 @@ namespace SmartStore.Admin.Controllers
             }
             return View(model);
         }
-
-        #endregion
-
-        #region Edit
-
+        
+        [Permission(Permissions.Cms.Forum.Read)]
         public ActionResult EditForumGroup(int id)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
-                return AccessDeniedView();
-
             var forumGroup = _forumService.GetForumGroupById(id);
             if (forumGroup == null)
                 return RedirectToAction("List");
@@ -267,13 +254,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [Permission(Permissions.Cms.Forum.Update)]
         public ActionResult EditForumGroup(ForumGroupModel model, bool continueEditing)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
-            {
-                return AccessDeniedView();
-            }
-
             var forumGroup = _forumService.GetForumGroupById(model.Id);
             if (forumGroup == null)
             {
@@ -305,11 +288,9 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
+        [Permission(Permissions.Cms.Forum.Read)]
         public ActionResult EditForum(int id)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
-                return AccessDeniedView();
-
             var forum = _forumService.GetForumById(id);
             if (forum == null)
                 return RedirectToAction("List");
@@ -332,11 +313,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [Permission(Permissions.Cms.Forum.Update)]
         public ActionResult EditForum(ForumModel model, bool continueEditing)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
-                return AccessDeniedView();
-
             var forum = _forumService.GetForumById(model.Id);
             if (forum == null)
                 return RedirectToAction("List");
@@ -366,16 +345,10 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        #endregion
-
-        #region Delete
-
         [HttpPost]
+        [Permission(Permissions.Cms.Forum.Delete)]
         public ActionResult DeleteForumGroup(int id)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
-                return AccessDeniedView();
-
             var forumGroup = _forumService.GetForumGroupById(id);
             if (forumGroup == null)
                 return RedirectToAction("List");
@@ -387,11 +360,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.Cms.Forum.Delete)]
         public ActionResult DeleteForum(int id)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
-                return AccessDeniedView();
-
             var forum = _forumService.GetForumById(id);
             if (forum == null)
                 return RedirectToAction("List");

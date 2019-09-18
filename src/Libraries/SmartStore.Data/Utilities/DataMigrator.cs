@@ -948,7 +948,7 @@ namespace SmartStore.Data.Utilities
             var allRoles = ctx.Set<CustomerRole>().ToList();
             var allPermissions = permissionSet.Expand(x => x.CustomerRoles).ToList();
             var newPermissions = new Dictionary<string, PermissionRecord>();
-            //var adminRole = allRoles.FirstOrDefault(x => x.SystemName.IsCaseInsensitiveEqual("Administrators"));
+            var adminRole = allRoles.FirstOrDefault(x => x.SystemName.IsCaseInsensitiveEqual("Administrators"));
 
             var permissionToRoles = new Multimap<string, int>(StringComparer.OrdinalIgnoreCase);
             foreach (var permission in allPermissions)
@@ -1024,7 +1024,7 @@ namespace SmartStore.Data.Utilities
                 Allow("PublicStoreAllowNavigation", newPermissions[Permissions.System.AccessShop]);
 
                 // Add mappings for new permissions.
-                //AllowForRole(adminRole, newPermissions[Permissions.....]);
+                AllowForRole(adminRole, newPermissions[Permissions.Cart.Read]);
 
                 scope.Commit();
                 newPermissions.Clear();
@@ -1117,18 +1117,18 @@ namespace SmartStore.Data.Utilities
                 }
             }
 
-            //void AllowForRole(CustomerRole role, params PermissionRecord[] permissions)
-            //{
-            //    foreach (var permission in permissions)
-            //    {
-            //        mappingSet.Add(new PermissionRoleMapping
-            //        {
-            //            Allow = true,
-            //            PermissionRecordId = permission.Id,
-            //            CustomerRoleId = role.Id
-            //        });
-            //    }
-            //}
+            void AllowForRole(CustomerRole role, params PermissionRecord[] permissions)
+            {
+                foreach (var permission in permissions)
+                {
+                    mappingSet.Add(new PermissionRoleMapping
+                    {
+                        Allow = true,
+                        PermissionRecordId = permission.Id,
+                        CustomerRoleId = role.Id
+                    });
+                }
+            }
         }
 
         #endregion

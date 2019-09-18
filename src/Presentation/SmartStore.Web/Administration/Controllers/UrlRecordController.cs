@@ -5,9 +5,8 @@ using System.Web.Mvc;
 using SmartStore.Admin.Models.UrlRecord;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Seo;
-using SmartStore.Services;
+using SmartStore.Core.Security;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -16,23 +15,20 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
 	public class UrlRecordController : AdminControllerBase
 	{
 		private readonly IUrlRecordService _urlRecordService;
 		private readonly AdminAreaSettings _adminAreaSettings;
-		private readonly ICommonServices _services;
 		private readonly ILanguageService _languageService;
 
 		public UrlRecordController(
 			IUrlRecordService urlRecordService,
 			AdminAreaSettings adminAreaSettings,
-			ICommonServices services,
 			ILanguageService languageService)
 		{
 			_urlRecordService = urlRecordService;
 			_adminAreaSettings = adminAreaSettings;
-			_services = services;
 			_languageService = languageService;
 		}
 
@@ -81,11 +77,9 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
+        [Permission(Permissions.System.UrlRecord.Read)]
 		public ActionResult List(string entityName, int? entityId)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageUrlRecords))
-				return AccessDeniedView();
-
 			var model = new UrlRecordListModel
 			{
 				GridPageSize = _adminAreaSettings.GridPageSize,
@@ -105,51 +99,42 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost, GridAction(EnableCustomBinding = true)]
-		public ActionResult List(GridCommand command, UrlRecordListModel model)
+        [Permission(Permissions.System.UrlRecord.Read)]
+        public ActionResult List(GridCommand command, UrlRecordListModel model)
 		{
 			var gridModel = new GridModel<UrlRecordModel>();
+			var allLanguages = _languageService.GetAllLanguages(true);
+			var defaultLanguageName = T("Admin.System.SeNames.Language.Standard");
 
-			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageUrlRecords))
+			var urlRecords = _urlRecordService.GetAllUrlRecords(command.Page - 1, command.PageSize,
+				model.SeName, model.EntityName, model.EntityId, model.LanguageId, model.IsActive);
+
+			var slugsPerEntity = _urlRecordService.CountSlugsPerEntity(urlRecords.Select(x => x.Id).Distinct().ToArray());
+
+			gridModel.Data = urlRecords.Select(x =>
 			{
-				var allLanguages = _languageService.GetAllLanguages(true);
-				var defaultLanguageName = T("Admin.System.SeNames.Language.Standard");
+				string languageName;
 
-				var urlRecords = _urlRecordService.GetAllUrlRecords(command.Page - 1, command.PageSize,
-					model.SeName, model.EntityName, model.EntityId, model.LanguageId, model.IsActive);
-
-				var slugsPerEntity = _urlRecordService.CountSlugsPerEntity(urlRecords.Select(x => x.Id).Distinct().ToArray());
-
-				gridModel.Data = urlRecords.Select(x =>
+				if (x.LanguageId == 0)
 				{
-					string languageName;
+					languageName = defaultLanguageName;
+				}
+				else
+				{
+					var language = allLanguages.FirstOrDefault(y => y.Id == x.LanguageId);
+					languageName = (language != null ? language.Name : "".NaIfEmpty());
+				}
 
-					if (x.LanguageId == 0)
-					{
-						languageName = defaultLanguageName;
-					}
-					else
-					{
-						var language = allLanguages.FirstOrDefault(y => y.Id == x.LanguageId);
-						languageName = (language != null ? language.Name : "".NaIfEmpty());
-					}
+				var urlRecordModel = new UrlRecordModel();
+				PrepareUrlRecordModel(urlRecordModel, x, true);
 
-					var urlRecordModel = new UrlRecordModel();
-					PrepareUrlRecordModel(urlRecordModel, x, true);
+				urlRecordModel.Language = languageName;
+				urlRecordModel.SlugsPerEntity = slugsPerEntity.ContainsKey(x.Id) ? slugsPerEntity[x.Id] : 0;
 
-					urlRecordModel.Language = languageName;
-					urlRecordModel.SlugsPerEntity = (slugsPerEntity.ContainsKey(x.Id) ? slugsPerEntity[x.Id] : 0);
+				return urlRecordModel;
+			});
 
-					return urlRecordModel;
-				});
-
-				gridModel.Total = urlRecords.TotalCount;
-			}
-			else
-			{
-				gridModel.Data = Enumerable.Empty<UrlRecordModel>();
-
-				NotifyAccessDenied();
-			}
+			gridModel.Total = urlRecords.TotalCount;
 
 			return new JsonResult
 			{
@@ -157,14 +142,14 @@ namespace SmartStore.Admin.Controllers
 			};
 		}
 
-		public ActionResult Edit(int id)
+        [Permission(Permissions.System.UrlRecord.Read)]
+        public ActionResult Edit(int id)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageUrlRecords))
-				return AccessDeniedView();
-
 			var urlRecord = _urlRecordService.GetUrlRecordById(id);
-			if (urlRecord == null)
-				return RedirectToAction("List");
+            if (urlRecord == null)
+            {
+                return RedirectToAction("List");
+            }
 
 			var model = new UrlRecordModel();
 			PrepareUrlRecordModel(model, urlRecord);
@@ -173,14 +158,14 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-		public ActionResult Edit(UrlRecordModel model, bool continueEditing)
+        [Permission(Permissions.System.UrlRecord.Update)]
+        public ActionResult Edit(UrlRecordModel model, bool continueEditing)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageUrlRecords))
-				return AccessDeniedView();
-
 			var urlRecord = _urlRecordService.GetUrlRecordById(model.Id);
-			if (urlRecord == null)
-				return RedirectToAction("List");
+            if (urlRecord == null)
+            {
+                return RedirectToAction("List");
+            }
 
 			if (!urlRecord.IsActive && model.IsActive)
 			{
@@ -211,14 +196,14 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost, ActionName("Delete")]
-		public ActionResult DeleteConfirmed(int id)
+        [Permission(Permissions.System.UrlRecord.Delete)]
+        public ActionResult DeleteConfirmed(int id)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageUrlRecords))
-				return AccessDeniedView();
-
 			var urlRecord = _urlRecordService.GetUrlRecordById(id);
-			if (urlRecord == null)
-				return RedirectToAction("List");
+            if (urlRecord == null)
+            {
+                return RedirectToAction("List");
+            }
 
 			try
 			{
@@ -228,19 +213,17 @@ namespace SmartStore.Admin.Controllers
 
 				return RedirectToAction("List");
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
-				NotifyError(exc);
+				NotifyError(ex);
 				return RedirectToAction("Edit", new { id = urlRecord.Id });
 			}
 		}
 
 		[HttpPost]
-		public ActionResult DeleteSelected(ICollection<int> selectedIds)
+        [Permission(Permissions.System.UrlRecord.Delete)]
+        public ActionResult DeleteSelected(ICollection<int> selectedIds)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageUrlRecords))
-				return AccessDeniedView();
-
 			if (selectedIds != null)
 			{
 				var urlRecords = _urlRecordService.GetUrlRecordsByIds(selectedIds.ToArray());
@@ -251,19 +234,22 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
-			return Json(new { Result = true });
+			return Json(new { success = true });
 		}
 
 		[ChildActionOnly]
 		public ActionResult NamesPerEntity(string entityName, int entityId)
 		{
-			if (entityName.IsEmpty() || entityId == 0)
-				return new EmptyResult();
+            // Permission check not necessary.
+            if (entityName.IsEmpty() || entityId == 0)
+            {
+                return new EmptyResult();
+            }
 
 			var count = _urlRecordService.CountSlugsPerEntity(entityName, entityId);
 
 			ViewBag.CountSlugsPerEntity = count;
-			ViewBag.UrlRecordListUrl = Url.Action("List", "UrlRecord", new { entityName = entityName, entityId = entityId });
+			ViewBag.UrlRecordListUrl = Url.Action("List", "UrlRecord", new { entityName, entityId });
 
 			return View();
 		}

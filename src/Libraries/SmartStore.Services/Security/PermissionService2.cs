@@ -8,6 +8,8 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Localization;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
@@ -115,7 +117,13 @@ namespace SmartStore.Services.Security
             _localizationService = localizationService;
             _workContext = workContext;
             _cacheManager = cacheManager;
+
+            T = NullLocalizer.Instance;
+            Logger = NullLogger.Instance;
         }
+
+        public Localizer T { get; set; }
+        public ILogger Logger { get; set; }
 
         public virtual PermissionRecord GetPermissionById(int permissionId)
         {
@@ -349,7 +357,8 @@ namespace SmartStore.Services.Security
                 var node = tree.SelectNodeById(permissionSystemName);
                 if (node == null)
                 {
-                    throw new SmartException($"Unknown permission \"{permissionSystemName}\".");
+                    Logger.Error(T("Admin.Permissions.UnknownPermission", permissionSystemName));
+                    return false;
                 }
 
                 while (node != null && !node.Value.Allow.HasValue)

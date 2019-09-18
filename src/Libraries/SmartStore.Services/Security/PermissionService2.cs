@@ -359,7 +359,7 @@ namespace SmartStore.Services.Security
                 if (node == null)
                 {
                     Logger.Error(T("Admin.Permissions.UnknownPermission", permissionSystemName));
-                    return false;
+                    continue;
                 }
 
                 while (node != null && !node.Value.Allow.HasValue)
@@ -403,7 +403,8 @@ namespace SmartStore.Services.Security
                 var node = tree.SelectNodeById(permissionSystemName);
                 if (node == null)
                 {
-                    throw new SmartException($"Unknown permission \"{permissionSystemName}\".");
+                    Logger.Error(T("Admin.Permissions.UnknownPermission", permissionSystemName));
+                    continue;
                 }
 
                 if (FindAllow(node))

@@ -984,7 +984,7 @@ namespace SmartStore.Data.Utilities
                 }
 
                 // Add more mappings for new permissions.
-                AllowForRole(adminRole, newPermissions[Permissions.Cart.Read]);
+                AllowForRole(adminRole, newPermissions[Permissions.Cart.Read], newPermissions[Permissions.System.Rule.Self]);
 
                 scope.Commit();
                 newPermissions.Clear();

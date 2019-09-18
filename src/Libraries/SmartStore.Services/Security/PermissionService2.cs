@@ -169,6 +169,7 @@ namespace SmartStore.Services.Security
             };
 
             var systemNames = _permissionRepository.TableUntracked
+                .Where(x => string.IsNullOrEmpty(x.Name))//GP: TODO, remove clause later
                 .Select(x => x.SystemName)
                 .ToList()
                 .ToDictionarySafe(x => x, nameSelector);

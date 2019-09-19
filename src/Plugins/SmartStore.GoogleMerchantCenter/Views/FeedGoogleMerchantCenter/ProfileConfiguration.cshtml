@@ -66,7 +66,7 @@
 			@Html.SmartLabelFor(m => m.DefaultGoogleCategory)
 		</td>
 		<td class="adminData wide">
-			@Html.DropDownListFor(model => model.DefaultGoogleCategory, Model.AvailableCategories, new { autocomplete = "off" })
+			@Html.DropDownListFor(model => model.DefaultGoogleCategory, Model.AvailableCategories)
 			@Html.ValidationMessageFor(m => m.DefaultGoogleCategory)
 		</td>
 	</tr>

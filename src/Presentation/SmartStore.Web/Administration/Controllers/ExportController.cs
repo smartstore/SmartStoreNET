@@ -157,9 +157,9 @@ namespace SmartStore.Admin.Controllers
                 };
             }
 
-            return (continueEditing ?
+            return continueEditing ?
                 RedirectToAction("EditDeployment", new { id = deploymentId }) :
-                RedirectToAction("Edit", new { id = profileId }));
+                RedirectToAction("Edit", new { id = profileId });
         }
 
         private void AddFileInfo(

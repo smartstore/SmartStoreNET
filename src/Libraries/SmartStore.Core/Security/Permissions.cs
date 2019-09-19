@@ -47,6 +47,7 @@
                 public const string Update = "catalog.category.update";
                 public const string Create = "catalog.category.create";
                 public const string Delete = "catalog.category.delete";
+                public const string EditProduct= "catalog.category.edit-product";
             }
 
             public static class Manufacturer
@@ -56,6 +57,7 @@
                 public const string Update = "catalog.manufacturer.update";
                 public const string Create = "catalog.manufacturer.create";
                 public const string Delete = "catalog.manufacturer.delete";
+                public const string EditProduct = "catalog.manufacturer.edit-product";
             }
 
             public static class Variant
@@ -168,7 +170,6 @@
                 public const string Self = "promotion.newsletter";
                 public const string Read = "promotion.newsletter.read";
                 public const string Update = "promotion.newsletter.update";
-                public const string Create = "promotion.newsletter.create";
                 public const string Delete = "promotion.newsletter.delete";
             }
         }
@@ -194,6 +195,7 @@
                 public const string Update = "cms.news.update";
                 public const string Create = "cms.news.create";
                 public const string Delete = "cms.news.delete";
+                public const string EditComments = "cms.news.edit-comment";
             }
 
             public static class Blog
@@ -203,6 +205,7 @@
                 public const string Update = "cms.blog.update";
                 public const string Create = "cms.blog.create";
                 public const string Delete = "cms.blog.delete";
+                public const string EditComments = "cms.blog.edit-comments";
             }
 
             public static class Widget
@@ -270,6 +273,7 @@
                 public const string Update = "configuration.language.update";
                 public const string Create = "configuration.language.create";
                 public const string Delete = "configuration.language.delete";
+                public const string EditResources = "configuration.language.edit-resources";
             }
 
             public static class Setting

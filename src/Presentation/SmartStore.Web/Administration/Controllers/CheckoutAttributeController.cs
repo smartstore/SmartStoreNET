@@ -210,7 +210,6 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        //edit
         [Permission(Permissions.Cart.CheckoutAttribute.Read)]
         public ActionResult Edit(int id)
         {
@@ -278,7 +277,7 @@ namespace SmartStore.Admin.Controllers
         #region Checkout attribute values
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Cart.CheckoutAttribute.Update)]
+        [Permission(Permissions.Cart.CheckoutAttribute.Read)]
         public ActionResult ValueList(int checkoutAttributeId, GridCommand command)
         {
             var model = new GridModel<CheckoutAttributeValueModel>();

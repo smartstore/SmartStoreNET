@@ -137,7 +137,6 @@ namespace SmartStore.Admin.Controllers
 
         #region Methods
 
-        //list
         public ActionResult Index()
         {
             return RedirectToAction("List");
@@ -173,7 +172,6 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        //create
         [Permission(Permissions.Promotion.Affiliate.Create)]
         public ActionResult Create()
         {
@@ -211,7 +209,6 @@ namespace SmartStore.Admin.Controllers
         }
 
 
-        //edit
         [Permission(Permissions.Promotion.Affiliate.Read)]
         public ActionResult Edit(int id)
         {
@@ -254,7 +251,6 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        //delete
         [HttpPost]
         [Permission(Permissions.Promotion.Affiliate.Delete)]
         public ActionResult Delete(int id)

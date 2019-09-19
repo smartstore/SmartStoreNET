@@ -93,7 +93,7 @@ namespace SmartStore.Services.Security
             { "download", "Common.Downloads" },
             { "product-review", "Admin.Catalog.ProductReviews" },
             { "approve", "Common.Approve" },
-            { "rule", "Common.Rules" }
+            { "rule", "Common.Rules" },
         };
 
         private readonly IRepository<PermissionRecord> _permissionRepository;

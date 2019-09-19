@@ -583,7 +583,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Configuration.Language.Read)]
+        [Permission(Permissions.Configuration.Language.EditResources)]
         public ActionResult Resources(int languageId, GridCommand command)
         {
             var model = new GridModel<LanguageResourceModel>();
@@ -614,7 +614,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Configuration.Language.Update)]
+        [Permission(Permissions.Configuration.Language.EditResources)]
         public ActionResult ResourceUpdate(LanguageResourceModel model, GridCommand command)
         {
             if (model.ResourceName != null)
@@ -650,7 +650,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Configuration.Language.Update)]
+        [Permission(Permissions.Configuration.Language.EditResources)]
         public ActionResult ResourceAdd(int id, LanguageResourceModel model, GridCommand command)
         {
             if (model.ResourceName != null)
@@ -683,7 +683,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Configuration.Language.Update)]
+        [Permission(Permissions.Configuration.Language.EditResources)]
         public ActionResult ResourceDelete(int id, int languageId, GridCommand command)
         {
             var resource = _services.Localization.GetLocaleStringResourceById(id);
@@ -717,7 +717,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        [Permission(Permissions.Configuration.Language.Update)]
+        [Permission(Permissions.Configuration.Language.EditResources)]
         public async Task<ActionResult> ImportXml(int id, FormCollection form, ImportModeFlags mode, bool updateTouched, int? availableLanguageSetId)
         {
             var language = _languageService.GetLanguageById(id);

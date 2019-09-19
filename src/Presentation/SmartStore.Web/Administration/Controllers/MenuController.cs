@@ -7,6 +7,7 @@ using SmartStore.ComponentModel;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Security;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
@@ -25,6 +26,9 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class MenuController : AdminControllerBase
     {
+
+        #region Fields
+
         private readonly IMenuStorage _menuStorage;
         private readonly ILanguageService _languageService;
         private readonly ILocalizedEntityService _localizedEntityService;
@@ -34,6 +38,10 @@ namespace SmartStore.Admin.Controllers
         private readonly IDictionary<string, Lazy<IMenuItemProvider, MenuItemProviderMetadata>> _menuItemProviders;
         private readonly AdminAreaSettings _adminAreaSettings;
 
+        #endregion
+
+        #region Constructors
+
         public MenuController(
             IMenuStorage menuStorage,
             ILanguageService languageService,
@@ -41,7 +49,8 @@ namespace SmartStore.Admin.Controllers
             IStoreMappingService storeMappingService,
             IAclService aclService,
             ICustomerService customerService,
-            IEnumerable<Lazy<IMenuItemProvider, MenuItemProviderMetadata>> menuItemProviders,
+            IEnumerable<Lazy<IMenuItemProvider,
+            MenuItemProviderMetadata>> menuItemProviders,
             AdminAreaSettings adminAreaSettings)
         {
             _menuStorage = menuStorage;
@@ -54,18 +63,18 @@ namespace SmartStore.Admin.Controllers
             _adminAreaSettings = adminAreaSettings;
         }
 
+        #endregion
+
+        #region Menu
+
         public ActionResult Index()
         {
             return RedirectToAction("List");
         }
 
+        [Permission(Permissions.Cms.Menu.Read)]
         public ActionResult List()
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
-            {
-                return AccessDeniedView();
-            }
-
             var model = new MenuRecordListModel
             {
                 GridPageSize = _adminAreaSettings.GridPageSize,
@@ -76,29 +85,22 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Cms.Menu.Read)]
         public ActionResult List(GridCommand command, MenuRecordListModel model)
         {
             var gridModel = new GridModel<MenuRecordModel>();
 
-            if (Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
+            var menus = _menuStorage.GetAllMenus(model.SystemName, model.StoreId, true, command.Page - 1, command.PageSize);
+
+            gridModel.Data = menus.Select(x =>
             {
-                var menus = _menuStorage.GetAllMenus(model.SystemName, model.StoreId, true, command.Page - 1, command.PageSize);
+                var itemModel = new MenuRecordModel();
+                MiniMapper.Map(x, itemModel);
 
-                gridModel.Data = menus.Select(x =>
-                {
-                    var itemModel = new MenuRecordModel();
-                    MiniMapper.Map(x, itemModel);
+                return itemModel;
+            });
 
-                    return itemModel;
-                });
-
-                gridModel.Total = menus.TotalCount;
-            }
-            else
-            {
-                gridModel.Data = Enumerable.Empty<MenuRecordModel>();
-                NotifyAccessDenied();
-            }
+            gridModel.Total = menus.TotalCount;
 
             return new JsonResult
             {
@@ -107,13 +109,9 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
+        [Permission(Permissions.Cms.Menu.Create)]
         public ActionResult Create()
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
-            {
-                return AccessDeniedView();
-            }
-
             var model = new MenuRecordModel();
             PrepareModel(model, null);
             AddLocales(_languageService, model.Locales);
@@ -122,13 +120,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [Permission(Permissions.Cms.Menu.Create)]
         public ActionResult Create(MenuRecordModel model, bool continueEditing, FormCollection form)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
-            {
-                return AccessDeniedView();
-            }
-
             if (ModelState.IsValid)
             {
                 var menu = MiniMapper.Map<MenuRecordModel, MenuRecord>(model);
@@ -151,13 +145,9 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
+        [Permission(Permissions.Cms.Menu.Read)]
         public ActionResult Edit(int id)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
-            {
-                return AccessDeniedView();
-            }
-
             var menu = _menuStorage.GetMenuById(id);
             if (menu == null)
             {
@@ -177,13 +167,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [Permission(Permissions.Cms.Menu.Update)]
         public ActionResult Edit(MenuRecordModel model, bool continueEditing, FormCollection form)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
-            {
-                return AccessDeniedView();
-            }
-
             var menu = _menuStorage.GetMenuById(model.Id);
             if (menu == null)
             {
@@ -213,13 +199,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [Permission(Permissions.Cms.Menu.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
-            {
-                return AccessDeniedView();
-            }
-
             var menu = _menuStorage.GetMenuById(id);
             if (menu == null)
             {
@@ -238,17 +220,14 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
+        #endregion
+
         #region Menu items
 
         // Ajax.
+        [Permission(Permissions.Cms.Menu.Read)]
         public ActionResult ItemList(int id)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
-            {
-                NotifyAccessDenied();
-                return new EmptyResult();
-            }
-
             var model = new MenuRecordModel { Id = id };
             PrepareModel(model, null);
 
@@ -256,13 +235,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         // Do not use model binding because of input validation.
+        [Permission(Permissions.Cms.Menu.Create)]
         public ActionResult CreateItem(string providerName, int menuId, int parentItemId)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
-            {
-                return AccessDeniedView();
-            }
-
             var menu = _menuStorage.GetMenuById(menuId);
             if (menu == null)
             {
@@ -285,13 +260,9 @@ namespace SmartStore.Admin.Controllers
 
         // Do not name parameter "model" because of property of same name.
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-item-continue", "continueEditing")]
+        [Permission(Permissions.Cms.Menu.Create)]
         public ActionResult CreateItem(MenuItemRecordModel itemModel, bool continueEditing, FormCollection form)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
-            {
-                return AccessDeniedView();
-            }
-
             if (ModelState.IsValid)
             {
                 itemModel.ParentItemId = itemModel.ParentItemId ?? 0;
@@ -320,13 +291,9 @@ namespace SmartStore.Admin.Controllers
             return View(itemModel);
         }
 
+        [Permission(Permissions.Cms.Menu.Read)]
         public ActionResult EditItem(int id)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
-            {
-                return AccessDeniedView();
-            }
-
             var item = _menuStorage.GetMenuItemById(id);
             if (item == null)
             {
@@ -349,13 +316,9 @@ namespace SmartStore.Admin.Controllers
 
         // Do not name parameter "model" because of property of same name.
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-item-continue", "continueEditing")]
+        [Permission(Permissions.Cms.Menu.Update)]
         public ActionResult EditItem(MenuItemRecordModel itemModel, bool continueEditing, FormCollection form)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
-            {
-                return AccessDeniedView();
-            }
-
             var item = _menuStorage.GetMenuItemById(itemModel.Id);
             if (item == null)
             {
@@ -392,16 +355,11 @@ namespace SmartStore.Admin.Controllers
 
         // Ajax.
         [HttpPost]
+        [Permission(Permissions.Cms.Menu.Update)]
         public ActionResult MoveItem(int menuId, int sourceId, string direction)
         {
             if (menuId == 0 || sourceId == 0 || direction.IsEmpty())
             {
-                return new EmptyResult();
-            }
-
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
-            {
-                NotifyAccessDenied();
                 return new EmptyResult();
             }
 
@@ -437,14 +395,10 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.Cms.Menu.Delete)]
         public ActionResult DeleteItem(int id)
         {
             var isAjax = Request.IsAjaxRequest();
-
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
-            {
-                return isAjax ? new EmptyResult() : AccessDeniedView();
-            }
 
             var item = _menuStorage.GetMenuItemById(id);
             if (item == null)
@@ -545,7 +499,7 @@ namespace SmartStore.Admin.Controllers
                     // Ignore. Element cannot be parent itself.
                     model.TitlePlaceholder = x.Value.Text;
                 }
-                else if (entities.TryGetValue(x.Value.EntityId, out var record) && 
+                else if (entities.TryGetValue(x.Value.EntityId, out var record) &&
                     _menuItemProviders.TryGetValue(record.ProviderName, out provider) &&
                     provider.Metadata.AppendsMultipleItems)
                 {

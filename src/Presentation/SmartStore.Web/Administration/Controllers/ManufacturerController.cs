@@ -437,7 +437,7 @@ namespace SmartStore.Admin.Controllers
         #region Products
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Catalog.Product.Read)]
+        [Permission(Permissions.Catalog.Manufacturer.Read)]
         public ActionResult ProductList(GridCommand command, int manufacturerId)
         {
             var model = new GridModel<ManufacturerModel.ManufacturerProductModel>();
@@ -476,7 +476,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Catalog.Product.Update)]
+        [Permission(Permissions.Catalog.Manufacturer.EditProduct)]
         public ActionResult ProductUpdate(GridCommand command, ManufacturerModel.ManufacturerProductModel model)
         {
             var productManufacturer = _manufacturerService.GetProductManufacturerById(model.Id);
@@ -490,7 +490,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Catalog.Product.Delete)]
+        [Permission(Permissions.Catalog.Manufacturer.EditProduct)]
         public ActionResult ProductDelete(int id, GridCommand command)
         {
             var productManufacturer = _manufacturerService.GetProductManufacturerById(id);
@@ -502,7 +502,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        [Permission(Permissions.Catalog.Product.Update)]
+        [Permission(Permissions.Catalog.Manufacturer.EditProduct)]
         public ActionResult ProductAdd(int manufacturerId, int[] selectedProductIds)
         {
             var products = _productService.GetProductsByIds(selectedProductIds);

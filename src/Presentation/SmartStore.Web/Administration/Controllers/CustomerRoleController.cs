@@ -83,6 +83,8 @@ namespace SmartStore.Admin.Controllers
             return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
+        #region List / Create / Edit / Delete
+
         public ActionResult Index()
         {
             return RedirectToAction("List");
@@ -286,5 +288,7 @@ namespace SmartStore.Admin.Controllers
             }
 
         }
+
+        #endregion
     }
 }

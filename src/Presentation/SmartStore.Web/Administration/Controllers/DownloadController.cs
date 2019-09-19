@@ -20,6 +20,8 @@ namespace SmartStore.Admin.Controllers
             this._downloadService = downloadService;
         }
 
+        #region Download
+
         [Permission(Permissions.Media.Download.Read)]
         public ActionResult DownloadFile(int downloadId)
         {
@@ -168,5 +170,7 @@ namespace SmartStore.Admin.Controllers
 				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, null, new { minimalMode = minimalMode, fieldName = fieldName }),
 			});
 		}
+
+        #endregion
     }
 }

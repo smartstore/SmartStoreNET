@@ -38,6 +38,8 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
+        #region Delivery time
+
         public ActionResult Index()
         {
             return RedirectToAction("List");
@@ -69,7 +71,6 @@ namespace SmartStore.Admin.Controllers
         }
 
         // Ajax.
-        [Permission(Permissions.Configuration.DeliveryTime.Read)]
         public ActionResult AllDeliveryTimes(string label, int selectedId)
         {
             var deliveryTimes = _deliveryTimeService.GetAllDeliveryTimes();
@@ -209,5 +210,7 @@ namespace SmartStore.Admin.Controllers
 
             return List(command);
         }
+
+        #endregion
     }
 }

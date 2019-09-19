@@ -115,9 +115,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		#endregion
-
-        #region Forum
-
+        
         public ActionResult Index()
         {
             return RedirectToAction("List");
@@ -146,6 +144,127 @@ namespace SmartStore.Admin.Controllers
 
             return View(forumGroupsModel);
         }
+        
+        #region Forum
+
+        [Permission(Permissions.Cms.Forum.Create)]
+        public ActionResult CreateForum()
+        {
+            var model = new ForumModel { DisplayOrder = 1 };
+
+            AddLocales(_languageService, model.Locales);
+
+            foreach (var forumGroup in _forumService.GetAllForumGroups(0, true))
+            {
+                var forumGroupModel = forumGroup.ToModel();
+                model.ForumGroups.Add(forumGroupModel);
+            }
+
+            return View(model);
+        }
+
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [Permission(Permissions.Cms.Forum.Create)]
+        public ActionResult CreateForum(ForumModel model, bool continueEditing)
+        {
+            if (ModelState.IsValid)
+            {
+                var utcNow = DateTime.UtcNow;
+                var forum = model.ToEntity();
+
+                _forumService.InsertForum(forum);
+
+                model.SeName = forum.ValidateSeName(model.SeName, forum.Name, true);
+                _urlRecordService.SaveSlug(forum, model.SeName, 0);
+
+                NotifySuccess(_services.Localization.GetResource("Admin.ContentManagement.Forums.Forum.Added"));
+
+                return continueEditing ? RedirectToAction("EditForum", new { forum.Id }) : RedirectToAction("List");
+            }
+
+            //If we got this far, something failed, redisplay form
+            foreach (var forumGroup in _forumService.GetAllForumGroups(0, true))
+            {
+                var forumGroupModel = forumGroup.ToModel();
+                model.ForumGroups.Add(forumGroupModel);
+            }
+            return View(model);
+        }
+
+        [Permission(Permissions.Cms.Forum.Read)]
+        public ActionResult EditForum(int id)
+        {
+            var forum = _forumService.GetForumById(id);
+            if (forum == null)
+                return RedirectToAction("List");
+
+            var model = forum.ToModel();
+
+            AddLocales(_languageService, model.Locales, (locale, languageId) =>
+            {
+                locale.Name = forum.GetLocalized(x => x.Name, languageId, false, false);
+                locale.Description = forum.GetLocalized(x => x.Description, languageId, false, false);
+                locale.SeName = forum.GetSeName(languageId, false, false);
+            });
+
+            foreach (var forumGroup in _forumService.GetAllForumGroups(0, true))
+            {
+                var forumGroupModel = forumGroup.ToModel();
+                model.ForumGroups.Add(forumGroupModel);
+            }
+            return View(model);
+        }
+
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [Permission(Permissions.Cms.Forum.Update)]
+        public ActionResult EditForum(ForumModel model, bool continueEditing)
+        {
+            var forum = _forumService.GetForumById(model.Id);
+            if (forum == null)
+                return RedirectToAction("List");
+
+            if (ModelState.IsValid)
+            {
+                forum = model.ToEntity(forum);
+
+                _forumService.UpdateForum(forum);
+
+                model.SeName = forum.ValidateSeName(model.SeName, forum.Name, true);
+                _urlRecordService.SaveSlug(forum, model.SeName, 0);
+
+                UpdateLocales(model, forum);
+
+                NotifySuccess(_services.Localization.GetResource("Admin.ContentManagement.Forums.Forum.Updated"));
+
+                return continueEditing ? RedirectToAction("EditForum", forum.Id) : RedirectToAction("List");
+            }
+
+            //If we got this far, something failed, redisplay form
+            foreach (var forumGroup in _forumService.GetAllForumGroups(0, true))
+            {
+                var forumGroupModel = forumGroup.ToModel();
+                model.ForumGroups.Add(forumGroupModel);
+            }
+            return View(model);
+        }
+
+        [HttpPost]
+        [Permission(Permissions.Cms.Forum.Delete)]
+        public ActionResult DeleteForum(int id)
+        {
+            var forum = _forumService.GetForumById(id);
+            if (forum == null)
+                return RedirectToAction("List");
+
+            _forumService.DeleteForum(forum);
+
+            NotifySuccess(_services.Localization.GetResource("Admin.ContentManagement.Forums.Forum.Deleted"));
+            return RedirectToAction("List");
+        }
+
+        #endregion
+
+        #region Forum group
 
         [Permission(Permissions.Cms.Forum.Create)]
         public ActionResult CreateForumGroup()
@@ -188,50 +307,6 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [Permission(Permissions.Cms.Forum.Create)]
-        public ActionResult CreateForum()
-        {
-			var model = new ForumModel { DisplayOrder = 1 };
-
-			AddLocales(_languageService, model.Locales);
-
-            foreach (var forumGroup in _forumService.GetAllForumGroups(0, true))
-            {
-                var forumGroupModel = forumGroup.ToModel();
-                model.ForumGroups.Add(forumGroupModel);
-            }
-
-            return View(model);
-        }
-
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        [Permission(Permissions.Cms.Forum.Create)]
-        public ActionResult CreateForum(ForumModel model, bool continueEditing)
-        {
-            if (ModelState.IsValid)
-            {
-				var utcNow = DateTime.UtcNow;
-                var forum = model.ToEntity();
-
-                _forumService.InsertForum(forum);
-
-				model.SeName = forum.ValidateSeName(model.SeName, forum.Name, true);
-				_urlRecordService.SaveSlug(forum, model.SeName, 0);
-
-                NotifySuccess(_services.Localization.GetResource("Admin.ContentManagement.Forums.Forum.Added"));
-
-                return continueEditing ? RedirectToAction("EditForum", new { forum.Id }) : RedirectToAction("List");
-            }
-
-            //If we got this far, something failed, redisplay form
-            foreach (var forumGroup in _forumService.GetAllForumGroups(0, true))
-            {
-                var forumGroupModel = forumGroup.ToModel();
-                model.ForumGroups.Add(forumGroupModel);
-            }
-            return View(model);
-        }
-        
         [Permission(Permissions.Cms.Forum.Read)]
         public ActionResult EditForumGroup(int id)
         {
@@ -288,63 +363,6 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [Permission(Permissions.Cms.Forum.Read)]
-        public ActionResult EditForum(int id)
-        {
-            var forum = _forumService.GetForumById(id);
-            if (forum == null)
-                return RedirectToAction("List");
-
-            var model = forum.ToModel();
-
-			AddLocales(_languageService, model.Locales, (locale, languageId) =>
-			{
-				locale.Name = forum.GetLocalized(x => x.Name, languageId, false, false);
-				locale.Description = forum.GetLocalized(x => x.Description, languageId, false, false);
-				locale.SeName = forum.GetSeName(languageId, false, false);
-			});
-
-            foreach (var forumGroup in _forumService.GetAllForumGroups(0, true))
-            {
-                var forumGroupModel = forumGroup.ToModel();
-                model.ForumGroups.Add(forumGroupModel);
-            }
-            return View(model);
-        }
-
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        [Permission(Permissions.Cms.Forum.Update)]
-        public ActionResult EditForum(ForumModel model, bool continueEditing)
-        {
-            var forum = _forumService.GetForumById(model.Id);
-            if (forum == null)
-                return RedirectToAction("List");
-
-            if (ModelState.IsValid)
-            {
-                forum = model.ToEntity(forum);
-
-                _forumService.UpdateForum(forum);
-
-				model.SeName = forum.ValidateSeName(model.SeName, forum.Name, true);
-				_urlRecordService.SaveSlug(forum, model.SeName, 0);
-
-				UpdateLocales(model, forum);
-
-                NotifySuccess(_services.Localization.GetResource("Admin.ContentManagement.Forums.Forum.Updated"));
-
-                return continueEditing ? RedirectToAction("EditForum", forum.Id) : RedirectToAction("List");
-            }
-
-            //If we got this far, something failed, redisplay form
-            foreach (var forumGroup in _forumService.GetAllForumGroups(0, true))
-            {
-                var forumGroupModel = forumGroup.ToModel();
-                model.ForumGroups.Add(forumGroupModel);
-            }
-            return View(model);
-        }
-
         [HttpPost]
         [Permission(Permissions.Cms.Forum.Delete)]
         public ActionResult DeleteForumGroup(int id)
@@ -356,20 +374,6 @@ namespace SmartStore.Admin.Controllers
             _forumService.DeleteForumGroup(forumGroup);
 
             NotifySuccess(_services.Localization.GetResource("Admin.ContentManagement.Forums.ForumGroup.Deleted"));
-            return RedirectToAction("List");
-        }
-
-        [HttpPost]
-        [Permission(Permissions.Cms.Forum.Delete)]
-        public ActionResult DeleteForum(int id)
-        {
-            var forum = _forumService.GetForumById(id);
-            if (forum == null)
-                return RedirectToAction("List");
-
-            _forumService.DeleteForum(forum);
-
-            NotifySuccess(_services.Localization.GetResource("Admin.ContentManagement.Forums.Forum.Deleted"));
             return RedirectToAction("List");
         }
 

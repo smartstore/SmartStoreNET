@@ -72,7 +72,6 @@ namespace SmartStore.Web.Controllers
 		private readonly MeasureSettings _measureSettings;
 		private readonly IDeliveryTimeService _deliveryTimeService;
 		private readonly Lazy<IDataExporter> _dataExporter;
-        private readonly Lazy<IPermissionService> _permissionService;
         private readonly ICatalogSearchService _catalogSearchService;
 		private readonly ICatalogSearchQueryFactory _catalogSearchQueryFactory;
 		private readonly HttpRequestBase _httpRequest;
@@ -112,7 +111,6 @@ namespace SmartStore.Web.Controllers
 			IDeliveryTimeService deliveryTimeService,
 			Lazy<IMenuPublisher> _menuPublisher,
 			Lazy<IDataExporter> dataExporter,
-            Lazy<IPermissionService> permissionService,
             ICatalogSearchService catalogSearchService,
 			ICatalogSearchQueryFactory catalogSearchQueryFactory,
 			HttpRequestBase httpRequest,
@@ -151,7 +149,6 @@ namespace SmartStore.Web.Controllers
 			_customerSettings = customerSettings;
 			_captchaSettings = captchaSettings;
 			_dataExporter = dataExporter;
-            _permissionService = permissionService;
             _catalogSearchService = catalogSearchService;
 			_catalogSearchQueryFactory = catalogSearchQueryFactory;
 			_httpRequest = httpRequest;

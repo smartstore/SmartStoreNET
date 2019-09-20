@@ -18,6 +18,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
+using SmartStore.Core.Security;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
 using SmartStore.Services.Configuration;
@@ -617,11 +618,11 @@ namespace SmartStore.Web.Controllers
 
 					// Register default permissions
 					var permissionProviders = new List<Type>();
-					permissionProviders.Add(typeof(StandardPermissionProvider));
+					permissionProviders.Add(typeof(StandardPermissionProvider2));
 					foreach (var providerType in permissionProviders)
 					{
 						dynamic provider = Activator.CreateInstance(providerType);
-						scope.Resolve<IPermissionService>().InstallPermissions(provider);
+						scope.Resolve<IPermissionService2>().InstallPermissions(provider);
 					}
 
 					// do not ignore settings migrated by data seeder (e.g. default media storage provider)
@@ -636,9 +637,9 @@ namespace SmartStore.Web.Controllers
 						Logger.Info("Installation completed successfully");
 					});
 				}
-				catch (Exception exception)
+				catch (Exception ex)
 				{
-					Logger.Error(exception);
+					Logger.Error(ex);
 					
 					// Clear provider settings if something got wrong
 					DataSettings.Delete();
@@ -654,14 +655,14 @@ namespace SmartStore.Web.Controllers
 						catch { }
 					}
 
-					var msg = exception.Message;
-					var realException = exception;
+					var msg = ex.Message;
+					var realException = ex;
 					while (realException.InnerException != null)
 					{
 						realException = realException.InnerException;
 					}
 
-					if (!Object.Equals(exception, realException))
+					if (!Object.Equals(ex, realException))
 					{
 						msg += " (" + realException.Message + ")";
 					}

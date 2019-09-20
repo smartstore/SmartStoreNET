@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core;
@@ -14,6 +13,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.DataExchange.Export;
@@ -22,7 +22,6 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
-using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
@@ -31,7 +30,7 @@ using SmartStore.Web.Models.Media;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class CatalogHelper
+    public partial class CatalogHelper
 	{
 		public void MapListActions(ProductSummaryModel model, IPagingOptions entity, string defaultPageSizeOptions)
 		{
@@ -182,7 +181,7 @@ namespace SmartStore.Web.Controllers
 					ShowBrand = settings.MapManufacturers,
 					ForceRedirectionAfterAddingToCart = settings.ForceRedirectionAfterAddingToCart,
 					CompareEnabled = _catalogSettings.CompareProductsEnabled,
-					WishlistEnabled = _permissionService.Value.Authorize(StandardPermissionProvider.EnableWishlist),
+					WishlistEnabled = _services.Permissions2.Authorize(Permissions.Cart.AccessWishlist),
 					BuyEnabled = !_catalogSettings.HideBuyButtonInLists,
 					ThumbSize = settings.ThumbnailSize,
 					ShowDiscountBadge = _catalogSettings.ShowDiscountSign,

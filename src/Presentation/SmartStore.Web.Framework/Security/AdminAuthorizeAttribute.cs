@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using SmartStore.Core.Security;
+using SmartStore.Services.Security;
 
 namespace SmartStore.Web.Framework.Security
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited=true, AllowMultiple=true)]
     public class AdminAuthorizeAttribute : FilterAttribute, IAuthorizationFilter
     {
-		public IPermissionService2 PermissionService { get; set; }
+		public IPermissionService PermissionService { get; set; }
 		
 		private void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
@@ -48,7 +48,7 @@ namespace SmartStore.Web.Framework.Security
 
         public virtual bool HasAdminAccess(AuthorizationContext filterContext)
         {
-			var result = PermissionService.Authorize(Permissions.System.AccessBackend);
+			var result = PermissionService.Authorize(StandardPermissionProvider.AccessAdminPanel);
             return result;
         }
     }

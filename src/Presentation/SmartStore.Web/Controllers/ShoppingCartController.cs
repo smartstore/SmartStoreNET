@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Mvc.Html;
 using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -32,7 +30,6 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
-using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
@@ -47,7 +44,7 @@ using SmartStore.Web.Models.ShoppingCart;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class ShoppingCartController : PublicControllerBase
+    public partial class ShoppingCartController : PublicControllerBase
     {
         #region Fields
 
@@ -2193,8 +2190,8 @@ namespace SmartStore.Web.Controllers
         {
             var model = new OffCanvasCartModel
 			{
-				ShoppingCartEnabled = Services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled,
-				WishlistEnabled = Services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist),
+				ShoppingCartEnabled = Services.Permissions2.Authorize(Permissions.Cart.AccessShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled,
+				WishlistEnabled = Services.Permissions2.Authorize(Permissions.Cart.AccessWishlist),
 				CompareProductsEnabled = _catalogSettings.CompareProductsEnabled
 			};
 
@@ -2299,8 +2296,8 @@ namespace SmartStore.Web.Controllers
 		[HttpPost]
 		public ActionResult CartSummary(bool cart = false, bool wishlist = false, bool compare = false)
 		{
-			var cartEnabled = cart && Services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled;
-			var wishlistEnabled = wishlist && Services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
+			var cartEnabled = cart && Services.Permissions2.Authorize(Permissions.Cart.AccessShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled;
+			var wishlistEnabled = wishlist && Services.Permissions2.Authorize(Permissions.Cart.AccessWishlist);
 			var compareEnabled = compare && _catalogSettings.CompareProductsEnabled;
 
 			int cartItemsCount = 0;

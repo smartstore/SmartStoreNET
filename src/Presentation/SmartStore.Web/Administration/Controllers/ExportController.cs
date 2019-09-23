@@ -1293,7 +1293,6 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpGet]
-        [Permission(Permissions.Configuration.Export.Read)]
         public ActionResult DownloadExportFile(int id, string name, bool? isDeployment)
         {
             if (PathHelper.HasInvalidFileNameChars(name))
@@ -1304,7 +1303,7 @@ namespace SmartStore.Admin.Controllers
             string message = null;
             string path = null;
 
-            if (Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+            if (Services.Permissions2.Authorize(Permissions.Configuration.Export.Read))
             {
                 if (isDeployment ?? false)
                 {

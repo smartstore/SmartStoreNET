@@ -1,29 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Web;
-using System.Data.Entity;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Email;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Common;
@@ -36,15 +40,11 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Search;
-using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
-using SmartStore.Collections;
-using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Services.DataExchange.Export
 {
@@ -275,25 +275,7 @@ namespace SmartStore.Services.DataExchange.Export
 				return true;
 			}
 
-			switch (ctx.Request.Provider.Value.EntityType)
-			{
-				case ExportEntityType.Product:
-				case ExportEntityType.Category:
-				case ExportEntityType.Manufacturer:
-					return _services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog, customer);
-
-				case ExportEntityType.Customer:
-					return _services.Permissions.Authorize(StandardPermissionProvider.ManageCustomers, customer);
-
-				case ExportEntityType.Order:
-				case ExportEntityType.ShoppingCartItem:
-					return _services.Permissions.Authorize(StandardPermissionProvider.ManageOrders, customer);
-
-				case ExportEntityType.NewsLetterSubscription:
-					return _services.Permissions.Authorize(StandardPermissionProvider.ManageNewsletterSubscribers, customer);
-			}
-
-			return true;
+            return _services.Permissions2.Authorize(Permissions.Configuration.Export.Execute);
 		}
 
         private void StreamToFile(DataExporterContext ctx, Stream stream, string path, Action<Stream> onDisposed)

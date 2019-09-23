@@ -741,7 +741,6 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpGet]
-        [Permission(Permissions.Configuration.Import.Read)]
         public ActionResult DownloadImportFile(int id, string name)
         {
             if (PathHelper.HasInvalidFileNameChars(name))
@@ -751,34 +750,41 @@ namespace SmartStore.Admin.Controllers
 
             string message = null;
 
-            var profile = _importProfileService.GetImportProfileById(id);
-            if (profile != null)
+            if (Services.Permissions2.Authorize(Permissions.Configuration.Import.Read))
             {
-                var path = Path.Combine(profile.GetImportFolder(true), name);
-
-                if (!System.IO.File.Exists(path))
+                var profile = _importProfileService.GetImportProfileById(id);
+                if (profile != null)
                 {
-                    path = Path.Combine(profile.GetImportFolder(false), name);
-                }
+                    var path = Path.Combine(profile.GetImportFolder(true), name);
 
-                if (System.IO.File.Exists(path))
-                {
-                    try
+                    if (!System.IO.File.Exists(path))
                     {
-                        var stream = new FileStream(path, FileMode.Open);
+                        path = Path.Combine(profile.GetImportFolder(false), name);
+                    }
 
-                        var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(path))
+                    if (System.IO.File.Exists(path))
+                    {
+                        try
                         {
-                            FileDownloadName = Path.GetFileName(path)
-                        };
+                            var stream = new FileStream(path, FileMode.Open);
 
-                        return result;
-                    }
-                    catch (IOException)
-                    {
-                        message = T("Admin.Common.FileInUse");
+                            var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(path))
+                            {
+                                FileDownloadName = Path.GetFileName(path)
+                            };
+
+                            return result;
+                        }
+                        catch (IOException)
+                        {
+                            message = T("Admin.Common.FileInUse");
+                        }
                     }
                 }
+            }
+            else
+            {
+                message = T("Admin.AccessDenied.Description");
             }
 
             if (message.IsEmpty())

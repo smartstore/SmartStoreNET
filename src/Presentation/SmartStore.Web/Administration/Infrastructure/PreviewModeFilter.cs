@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Web.Mvc;
+using SmartStore.Core.Security;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
-using SmartStore.Services.Security;
 using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Admin.Infrastructure
-{	
-	public class PreviewModeFilter : IResultFilter
+{
+    public class PreviewModeFilter : IResultFilter
 	{
 		private readonly Lazy<IThemeContext> _themeContext;
 		private readonly ICommonServices _services;
@@ -37,7 +37,7 @@ namespace SmartStore.Admin.Infrastructure
 			if (theme == null && storeId == null)
 				return;
 
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
+			if (!_services.Permissions2.Authorize(Permissions.Configuration.Theme.Read))
 				return;
 
 			_widgetProvider.Value.RegisterAction(

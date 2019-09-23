@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Directory;
@@ -16,7 +17,6 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Pdf;
-using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Web.Framework.Controllers;
@@ -201,14 +201,12 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[AdminAuthorize]
+        [Permission(Permissions.Order.Read)]
 		public ActionResult PrintMany(string ids = null, bool pdf = false)
 		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageOrders))
-				return new HttpUnauthorizedResult();
-
 			const int maxOrders = 500;
 			IList<Order> orders = null;
-			int totalCount = 0;
+			var totalCount = 0;
 
 			using (var scope = new DbContextScope(Services.DbContext, autoDetectChanges: false, forceNoTracking: true))
 			{
@@ -322,9 +320,9 @@ namespace SmartStore.Web.Controllers
 					}
 				}
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				NotifyError(exception);
+				NotifyError(ex);
 			}
 
 			return RedirectToAction("Details", "Order", new { id = order.Id });
@@ -352,19 +350,19 @@ namespace SmartStore.Web.Controllers
 
 		private bool IsNonExistentOrder(Order order)
 		{
-			var flag = order == null || order.Deleted;
+			var result = order == null || order.Deleted;
 
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageOrders))
+			if (!Services.Permissions2.Authorize(Permissions.Order.Read))
 			{
-				flag = flag || (order.StoreId != 0 && order.StoreId != Services.StoreContext.CurrentStore.Id);
+				result = result || (order.StoreId != 0 && order.StoreId != Services.StoreContext.CurrentStore.Id);
 			}
 
-			return flag;
+			return result;
 		}
 
 		private bool IsUnauthorizedOrder(Order order)
 		{
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageOrders))
+            if (!Services.Permissions2.Authorize(Permissions.Order.Read))
                 return order == null || order.CustomerId != Services.WorkContext.CurrentCustomer.Id;
             else
                 return order == null;

@@ -199,9 +199,9 @@ namespace SmartStore.Web.Controllers
 				var customer = _services.WorkContext.CurrentCustomer;
 				var currency = _services.WorkContext.WorkingCurrency;
 				var language = _services.WorkContext.WorkingLanguage;
-				var allowPrices = _services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices);
-				var allowShoppingCart = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
-				var allowWishlist = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
+				var allowPrices = _services.Permissions2.Authorize(Permissions.Catalog.DisplayPrice);
+				var allowShoppingCart = _services.Permissions2.Authorize(Permissions.Cart.AccessShoppingCart);
+				var allowWishlist = _services.Permissions2.Authorize(Permissions.Cart.AccessWishlist);
 				var taxDisplayType = _services.WorkContext.GetTaxDisplayTypeFor(customer, store.Id);
 				var cachedManufacturerModels = new Dictionary<int, ManufacturerOverviewModel>();
 				var prefetchTranslations = settings.PrefetchTranslations == true || (settings.PrefetchTranslations == null && _performanceSettings.AlwaysPrefetchTranslations);

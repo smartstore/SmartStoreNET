@@ -16,6 +16,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Fakes;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Security;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
@@ -307,7 +308,7 @@ namespace SmartStore.Web.Controllers
 						? PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), null, _catalogSettings.ShowManufacturerPicturesInProductDetail)
 						: null,
 					ReviewCount = product.ApprovedTotalReviews,
-					DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel, customer),
+					DisplayAdminLink = _services.Permissions2.Authorize(Permissions.System.AccessBackend, customer),
 					ShowSku = _catalogSettings.ShowProductSku,
 					Sku = product.Sku,
 					ShowManufacturerPartNumber = _catalogSettings.ShowManufacturerPartNumber,
@@ -745,7 +746,7 @@ namespace SmartStore.Web.Controllers
 
 			var preSelectedPriceAdjustmentBase = decimal.Zero;
 			var preSelectedWeightAdjustment = decimal.Zero;
-			var displayPrices = _services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices);
+			var displayPrices = _services.Permissions2.Authorize(Permissions.Catalog.DisplayPrice);
 			var isBundle = product.ProductType == ProductType.BundledProduct;
 			var isBundleItemPricing = productBundleItem != null && productBundleItem.Item.BundleProduct.BundlePerItemPricing;
 			var isBundlePricing = productBundleItem != null && !productBundleItem.Item.BundleProduct.BundlePerItemPricing;
@@ -1327,11 +1328,11 @@ namespace SmartStore.Web.Controllers
 
             // 'add to cart', 'add to wishlist' buttons.
             model.AddToCart.DisableBuyButton = !displayPrices || product.DisableBuyButton || 
-                !_services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
+                !_services.Permissions2.Authorize(Permissions.Cart.AccessShoppingCart);
 
 			model.AddToCart.DisableWishlistButton = !displayPrices || product.DisableWishlistButton
                 || product.ProductType == ProductType.GroupedProduct
-                || !_services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
+                || !_services.Permissions2.Authorize(Permissions.Cart.AccessWishlist);
 
 			model.AddToCart.CustomerEntersPrice = product.CustomerEntersPrice;
 			if (model.AddToCart.CustomerEntersPrice)

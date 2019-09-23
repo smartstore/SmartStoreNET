@@ -90,6 +90,7 @@
             public const string Delete = "customer.delete";
             public const string Impersonate = "customer.impersonate";
             public const string EditAddress = "customer.edit-address";
+            public const string EditRole = "customer.edit-customer-role";
             public const string SendPm = "customer.send-pm";
 
             public static class Role
@@ -481,9 +482,6 @@
         {
             public const string Self = "cart";
             public const string Read = "cart.read";
-            public const string Update = "cart.update";
-            public const string Create = "cart.create";
-            public const string Delete = "cart.delete";
             public const string AccessShoppingCart = "cart.access-shopping-cart";
             public const string AccessWishlist = "cart.access-wishlist";
 
@@ -500,10 +498,6 @@
         public static class Media
         {
             public const string Self = "media";
-            public const string Read = "media.read";
-            public const string Update = "media.update";
-            public const string Create = "media.create";
-            public const string Delete = "media.delete";
             public const string Upload = "media.upload";
 
             public static class Download

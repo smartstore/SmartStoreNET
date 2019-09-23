@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Security;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Modelling;
@@ -122,7 +123,7 @@ namespace SmartStore.Web.Controllers
 
 			// Is published? Check whether the current user has a "Manage catalog" permission.
 			// It allows him to preview a product before publishing.
-			if (!product.Published && !_services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog))
+			if (!product.Published && !_services.Permissions2.Authorize(Permissions.Catalog.Product.Read))
 				return HttpNotFound();
 
 			// ACL (access control list)
@@ -277,9 +278,9 @@ namespace SmartStore.Web.Controllers
 		[ChildActionOnly]
 		public ActionResult ProductTierPrices(int productId)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices))
+			if (!_services.Permissions2.Authorize(Permissions.Catalog.DisplayPrice))
 			{
-				return Content("");
+                return new EmptyResult();
 			}	
 
 			var product = _productService.GetProductById(productId);
@@ -290,9 +291,9 @@ namespace SmartStore.Web.Controllers
 			
 			if (!product.HasTierPrices)
 			{
-				// No tier prices
-				return Content(""); 
-			}
+                // No tier prices.
+                return new EmptyResult();
+            }
 
             var model = _helper.CreateTierPriceModel(product);
             

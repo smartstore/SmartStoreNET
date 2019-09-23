@@ -4,6 +4,7 @@ using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core.Data;
 using SmartStore.Core.Security;
+using SmartStore.Services.Security;
 
 namespace SmartStore.Web.Framework.Filters
 {
@@ -21,7 +22,7 @@ namespace SmartStore.Web.Framework.Filters
 			new Tuple<string, string>("SmartStore.Web.Controllers.CatalogController", "OffCanvasMenu")
 		};
 
-		public Lazy<IPermissionService2> PermissionService { get; set; }
+		public Lazy<IPermissionService> PermissionService { get; set; }
 		
 		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {
@@ -48,7 +49,7 @@ namespace SmartStore.Web.Framework.Filters
                 return;
 
 			var permissionService = PermissionService.Value;
-            var publicStoreAllowNavigation = permissionService.Authorize(Permissions.System.AccessShop);
+            var publicStoreAllowNavigation = permissionService.Authorize(StandardPermissionProvider.PublicStoreAllowNavigation);
             if (!publicStoreAllowNavigation && !IsPermittedRoute(controllerName, actionName))
             {
                 filterContext.Result = new HttpUnauthorizedResult();

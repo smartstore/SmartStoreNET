@@ -27,9 +27,10 @@ namespace SmartStore.Web.Framework.WebApi
 			public static string CustomerId { get { return Prefix + "CustomerId"; } }
 			public static string HmacResultId { get { return Prefix + "HmacResultId"; } }
 			public static string HmacResultDescription { get { return Prefix + "HmacResultDesc"; } }
-			//public static string LastRequest { get { return Prefix + "LastRequest"; } }
+            public static string MissingPermission { get { return Prefix + "MissingPermission"; } }
+            //public static string LastRequest { get { return Prefix + "LastRequest"; } }
 
-			public static string CorsExposed
+            public static string CorsExposed
 			{
 				get
 				{

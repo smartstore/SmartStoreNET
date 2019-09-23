@@ -268,7 +268,7 @@ namespace SmartStore.Admin.Controllers
                 model.SelectedCustomerRoleIds = new int[] { role.Id };
             }
 
-            model.AllowManagingCustomerRoles = _permissionService.Authorize(Permissions.Customer.Role.Update);
+            model.AllowManagingCustomerRoles = _permissionService.Authorize(Permissions.Customer.EditRole);
 
             // Form fields
             model.TitleEnabled = _customerSettings.TitleEnabled;
@@ -379,7 +379,7 @@ namespace SmartStore.Admin.Controllers
                 }
             }
 
-            model.AllowManagingCustomerRoles = _permissionService.Authorize(Permissions.Customer.Role.Update);
+            model.AllowManagingCustomerRoles = _permissionService.Authorize(Permissions.Customer.EditRole);
             model.DisplayRewardPointsHistory = _rewardPointsSettings.Enabled;
             model.AddRewardPointsValue = 0;
             model.AssociatedExternalAuthRecords = GetAssociatedExternalAuthRecords(customer);
@@ -529,7 +529,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             // Validate customer roles.
-            var allowManagingCustomerRoles = _permissionService.Authorize(Permissions.Customer.Role.Update);
+            var allowManagingCustomerRoles = _permissionService.Authorize(Permissions.Customer.EditRole);
             var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
             var newCustomerRoles = new List<CustomerRole>();
 
@@ -718,7 +718,7 @@ namespace SmartStore.Admin.Controllers
 
             // Validate customer roles.
             var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-            var allowManagingCustomerRoles = _permissionService.Authorize(Permissions.Customer.Role.Update);
+            var allowManagingCustomerRoles = _permissionService.Authorize(Permissions.Customer.EditRole);
 
             if (allowManagingCustomerRoles)
             {

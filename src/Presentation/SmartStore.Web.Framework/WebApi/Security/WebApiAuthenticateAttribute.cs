@@ -258,7 +258,12 @@ namespace SmartStore.Web.Framework.WebApi.Security
 				headers.Add(WebApiGlobal.Header.HmacResultId, ((int)result).ToString());
 				headers.Add(WebApiGlobal.Header.HmacResultDescription, result.ToString());
 
-				if (controllingData.LogUnauthorized)
+                if (result == HmacResult.UserHasNoPermission && Permission.HasValue())
+                {
+                    headers.Add(WebApiGlobal.Header.MissingPermission, Permission);
+                }
+
+                if (controllingData.LogUnauthorized)
 				{
 					LogUnauthorized(actionContext, dependencyScope, result, customer);
 				}

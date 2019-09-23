@@ -296,7 +296,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Cms.Blog.EditComments)]
+        [Permission(Permissions.Cms.Blog.EditComment)]
         public ActionResult CommentDelete(int? filterByBlogPostId, int id, GridCommand command)
         {
             var comment = _customerContentService.GetCustomerContentById(id) as BlogComment;

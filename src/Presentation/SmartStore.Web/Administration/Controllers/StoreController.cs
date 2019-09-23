@@ -35,7 +35,6 @@ namespace SmartStore.Admin.Controllers
 		}
 
         // Ajax.
-        [Permission(Permissions.Configuration.Store.Read)]
         public ActionResult AllStores(string label, string selectedIds)
         {
             var stores = Services.StoreService.GetAllStores();

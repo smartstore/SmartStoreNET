@@ -27,7 +27,6 @@ namespace SmartStore.Admin.Controllers
         private readonly IStoreContext _storeContext;
         private readonly IEmailSender _emailSender;
         private readonly EmailAccountSettings _emailAccountSettings;
-        private readonly IPermissionService2 _permissionService2;
 
         #endregion
 
@@ -39,7 +38,6 @@ namespace SmartStore.Admin.Controllers
             ISettingService settingService,
             IEmailSender emailSender,
             IStoreContext storeContext,
-            IPermissionService2 permissionService2,
             EmailAccountSettings emailAccountSettings)
         {
             _emailAccountService = emailAccountService;
@@ -48,7 +46,6 @@ namespace SmartStore.Admin.Controllers
             _emailSender = emailSender;
             _settingService = settingService;
             _storeContext = storeContext;
-            _permissionService2 = permissionService2;
         }
 
         #endregion
@@ -58,12 +55,12 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Configuration.EmailAccount.Read)]
         public ActionResult List(string id)
         {
-            //mark as default email account (if selected)
-            if (!String.IsNullOrEmpty(id))
+            // Mark as default email account (if selected).
+            if (!string.IsNullOrEmpty(id))
             {
                 int defaultEmailAccountId = Convert.ToInt32(id);
                 var defaultEmailAccount = _emailAccountService.GetEmailAccountById(defaultEmailAccountId);
-                if (defaultEmailAccount != null && _permissionService2.Authorize(Permissions.Configuration.EmailAccount.Update))
+                if (defaultEmailAccount != null && Services.Permissions2.Authorize(Permissions.Configuration.EmailAccount.Update))
                 {
                     _emailAccountSettings.DefaultEmailAccountId = defaultEmailAccountId;
                     _settingService.SaveSetting(_emailAccountSettings);
@@ -71,16 +68,20 @@ namespace SmartStore.Admin.Controllers
             }
 
             var emailAccountModels = _emailAccountService.GetAllEmailAccounts()
-                                    .Select(x => x.ToModel())
-                                    .ToList();
+                .Select(x => x.ToModel())
+                .ToList();
+
             foreach (var eam in emailAccountModels)
+            {
                 eam.IsDefaultEmailAccount = eam.Id == _emailAccountSettings.DefaultEmailAccountId;
+            }
 
             var gridModel = new GridModel<EmailAccountModel>
             {
                 Data = emailAccountModels,
                 Total = emailAccountModels.Count()
             };
+
             return View(gridModel);
         }
 
@@ -205,7 +206,9 @@ namespace SmartStore.Admin.Controllers
         {
             var emailAccount = _emailAccountService.GetEmailAccountById(model.Id);
             if (emailAccount == null)
+            {
                 return RedirectToAction("List");
+            }
 
             try
             {
@@ -227,13 +230,12 @@ namespace SmartStore.Admin.Controllers
                     NotifySuccess(T("Admin.Configuration.EmailAccounts.SendTestEmail.Success"), false);
                 }
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                model.TestEmailShortErrorMessage = exception.ToAllMessages();
-                model.TestEmailFullErrorMessage = exception.ToString();
+                model.TestEmailShortErrorMessage = ex.ToAllMessages();
+                model.TestEmailFullErrorMessage = ex.ToString();
             }
 
-            //If we got this far, something failed, redisplay form
             return View(model);
         }
 

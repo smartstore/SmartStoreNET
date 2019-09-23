@@ -165,7 +165,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("ListLogs")]
         [FormValueRequired("clearall")]
-        [Permission(Permissions.Configuration.ActivityLog.Update)]
+        [Permission(Permissions.Configuration.ActivityLog.Delete)]
         public ActionResult ClearAll()
         {
             _customerActivityService.ClearAllActivities();
@@ -174,7 +174,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        [Permission(Permissions.Configuration.ActivityLog.Update)]
+        [Permission(Permissions.Configuration.ActivityLog.Delete)]
         public ActionResult DeleteSelected(ICollection<int> selectedIds)
         {
             if (selectedIds != null)
@@ -182,10 +182,12 @@ namespace SmartStore.Admin.Controllers
                 var activityLogs = _customerActivityService.GetActivityByIds(selectedIds.ToArray());
 
                 foreach (var activityLog in activityLogs)
+                {
                     _customerActivityService.DeleteActivity(activityLog);
+                }
             }
 
-            return Json(new { Result = true });
+            return Json(new { success = true });
         }
 
         #endregion

@@ -29,6 +29,27 @@ namespace SmartStore.Admin.Controllers
             _languageService = languageService;
         }
 
+        // Ajax.
+        public ActionResult AllQuantityUnits(string label, int selectedId)
+        {
+            var quantityUnits = _quantityUnitService.GetAllQuantityUnits();
+            if (label.HasValue())
+            {
+                quantityUnits.Insert(0, new QuantityUnit { Name = label, Id = 0 });
+            }
+
+            var list =
+                from m in quantityUnits
+                select new
+                {
+                    id = m.Id.ToString(),
+                    text = m.Name,
+                    selected = m.Id == selectedId
+                };
+
+            return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
+
         public ActionResult Index()
         {
             return RedirectToAction("List");
@@ -57,28 +78,6 @@ namespace SmartStore.Admin.Controllers
             {
                 Data = model
             };
-        }
-
-        // Ajax.
-        [Permission(Permissions.Configuration.Measure.Read)]
-        public ActionResult AllQuantityUnits(string label, int selectedId)
-        {
-            var quantityUnits = _quantityUnitService.GetAllQuantityUnits();
-            if (label.HasValue())
-            {
-                quantityUnits.Insert(0, new QuantityUnit { Name = label, Id = 0 });
-            }
-
-            var list = 
-                from m in quantityUnits
-                select new
-                {
-                    id = m.Id.ToString(),
-                    text = m.Name,
-                    selected = m.Id == selectedId
-                };
-
-            return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
         [Permission(Permissions.Configuration.Measure.Create)]

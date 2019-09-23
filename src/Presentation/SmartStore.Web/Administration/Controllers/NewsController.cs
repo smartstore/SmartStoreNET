@@ -321,7 +321,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Cms.News.Delete)]
+        [Permission(Permissions.Cms.News.Update)]
         public ActionResult CommentDelete(int? filterByNewsItemId, int id, GridCommand command)
         {
             var comment = _customerContentService.GetCustomerContentById(id) as NewsComment;
@@ -329,7 +329,6 @@ namespace SmartStore.Admin.Controllers
             var newsItem = comment.NewsItem;
             _customerContentService.DeleteCustomerContent(comment);
 
-            //update totals
             _newsService.UpdateCommentTotals(newsItem);
 
             return Comments(filterByNewsItemId, command);

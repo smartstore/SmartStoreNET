@@ -231,7 +231,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        [Permission(Permissions.Order.GiftCard.Update)]
+        [Permission(Permissions.Order.GiftCard.Read)]
         public ActionResult GenerateCouponCode()
         {
             return Json(new { CouponCode = _giftCardService.GenerateGiftCardCode() }, JsonRequestBehavior.AllowGet);

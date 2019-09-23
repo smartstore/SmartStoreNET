@@ -312,10 +312,10 @@ namespace SmartStore.Admin.Controllers
         #region Discount requirements
 
         [AcceptVerbs(HttpVerbs.Get)]
-        [Permission(Permissions.Promotion.Discount.Update)]
+        [Permission(Permissions.Promotion.Discount.Read)]
         public ActionResult GetDiscountRequirementConfigurationUrl(string systemName, int discountId, int? discountRequirementId)
         {
-            if (String.IsNullOrEmpty(systemName))
+            if (string.IsNullOrEmpty(systemName))
                 throw new ArgumentNullException("systemName");
 
             var discountRequirementRule = _discountService.LoadDiscountRequirementRuleBySystemName(systemName);
@@ -327,10 +327,10 @@ namespace SmartStore.Admin.Controllers
                 throw new ArgumentException("Discount could not be loaded");
 
             string url = GetRequirementUrlInternal(discountRequirementRule.Value, discount, discountRequirementId);
-            return Json(new { url = url }, JsonRequestBehavior.AllowGet);
+            return Json(new { url }, JsonRequestBehavior.AllowGet);
         }
 
-        [Permission(Permissions.Promotion.Discount.Update)]
+        [Permission(Permissions.Promotion.Discount.Read)]
         public ActionResult GetDiscountRequirementMetaInfo(int discountRequirementId, int discountId)
         {
             var discount = _discountService.GetDiscountById(discountId);
@@ -348,7 +348,7 @@ namespace SmartStore.Admin.Controllers
             string url = GetRequirementUrlInternal(discountRequirementRule.Value, discount, discountRequirementId);
             string ruleName = _pluginMediator.GetLocalizedFriendlyName(discountRequirementRule.Metadata);
 
-            return Json(new { url = url, ruleName = ruleName }, JsonRequestBehavior.AllowGet);
+            return Json(new { url, ruleName }, JsonRequestBehavior.AllowGet);
         }
 
         [Permission(Permissions.Promotion.Discount.Update)]

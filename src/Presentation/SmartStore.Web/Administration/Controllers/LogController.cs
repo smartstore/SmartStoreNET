@@ -212,5 +212,6 @@ namespace SmartStore.Admin.Controllers
             return Json(new { Result = true });
         }
         #endregion
+
     }
 }

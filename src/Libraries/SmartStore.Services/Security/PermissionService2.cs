@@ -509,6 +509,12 @@ namespace SmartStore.Services.Security
             return string.Empty;
         }
 
+        public virtual string GetUnauthorizedMessage(string permissionSystemName)
+        {
+            var displayName = GetDiplayName(permissionSystemName);
+            var message = T("Admin.AccessDenied.DetailedDescription", displayName.NaIfEmpty(), permissionSystemName.NaIfEmpty());
+            return message;
+        }
 
         private void AddChildItems(TreeNode<IPermissionNode> parentNode, List<PermissionRecord> permissions, string path, Func<PermissionRecord, bool?> allow)
         {

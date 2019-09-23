@@ -583,7 +583,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Configuration.Language.EditResources)]
+        [Permission(Permissions.Configuration.Language.EditResource)]
         public ActionResult Resources(int languageId, GridCommand command)
         {
             var model = new GridModel<LanguageResourceModel>();
@@ -614,7 +614,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Configuration.Language.EditResources)]
+        [Permission(Permissions.Configuration.Language.EditResource)]
         public ActionResult ResourceUpdate(LanguageResourceModel model, GridCommand command)
         {
             if (model.ResourceName != null)
@@ -650,7 +650,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Configuration.Language.EditResources)]
+        [Permission(Permissions.Configuration.Language.EditResource)]
         public ActionResult ResourceAdd(int id, LanguageResourceModel model, GridCommand command)
         {
             if (model.ResourceName != null)
@@ -683,7 +683,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Configuration.Language.EditResources)]
+        [Permission(Permissions.Configuration.Language.EditResource)]
         public ActionResult ResourceDelete(int id, int languageId, GridCommand command)
         {
             var resource = _services.Localization.GetLocaleStringResourceById(id);
@@ -702,22 +702,24 @@ namespace SmartStore.Admin.Controllers
         {
             var language = _languageService.GetLanguageById(id);
             if (language == null)
+            {
                 return RedirectToAction("List");
+            }
 
             try
             {
                 var xml = _services.Localization.ExportResourcesToXml(language);
                 return new XmlDownloadResult(xml, "language-pack-{0}.xml".FormatInvariant(language.UniqueSeoCode));
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
-                NotifyError(exc);
+                NotifyError(ex);
                 return RedirectToAction("List");
             }
         }
 
         [HttpPost]
-        [Permission(Permissions.Configuration.Language.EditResources)]
+        [Permission(Permissions.Configuration.Language.EditResource)]
         public async Task<ActionResult> ImportXml(int id, FormCollection form, ImportModeFlags mode, bool updateTouched, int? availableLanguageSetId)
         {
             var language = _languageService.GetLanguageById(id);
@@ -838,9 +840,9 @@ namespace SmartStore.Admin.Controllers
                 });
                 genericAttributeService.SaveAttribute(language, "LastResourcesImportInfo", str);
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                logger.ErrorsAll(exception);
+                logger.ErrorsAll(ex);
             }
             finally
             {
@@ -853,7 +855,7 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
-        [Permission(Permissions.Configuration.Language.Update)]
+        [Permission(Permissions.Configuration.Language.EditResource)]
         public async Task<ActionResult> Download(int setId)
         {
             var ctx = new LanguageDownloadContext(setId)
@@ -870,7 +872,6 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        [Permission(Permissions.Configuration.Language.Read)]
         public JsonResult DownloadProgress()
         {
             try
@@ -888,14 +889,14 @@ namespace SmartStore.Admin.Controllers
                     return Json(new object[] { progressInfo });
                 }
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                exception.Dump();
+                ex.Dump();
             }
 
             return Json(null);
         }
 
-        #endregion Download
+        #endregion
     }
 }

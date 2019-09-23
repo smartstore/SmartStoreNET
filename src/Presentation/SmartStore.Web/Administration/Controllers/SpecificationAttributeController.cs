@@ -445,7 +445,6 @@ namespace SmartStore.Admin.Controllers
 
         // Ajax.
         [AcceptVerbs(HttpVerbs.Get)]
-        [Permission(Permissions.Catalog.Attribute.Read)]
         public ActionResult GetOptionsByAttributeId(int attributeId)
         {
             var options = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(attributeId);

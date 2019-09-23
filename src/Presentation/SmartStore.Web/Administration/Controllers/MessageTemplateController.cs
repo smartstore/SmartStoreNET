@@ -317,7 +317,8 @@ namespace SmartStore.Admin.Controllers
 
             return View(model);
         }
-        
+
+        [Permission(Permissions.Cms.MessageTemplate.Read)]
         public ActionResult PreviewBody(string token)
         {
             var body = GetPreviewMailModel(token)?.Body;
@@ -333,7 +334,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost]
         public ActionResult PreservePreview(string token)
         {
-            // WHile the preview window is open, the preview model should not expire
+            // While the preview window is open, the preview model should not expire.
             GetPreviewMailModel(token);
             return Content(token);
         }
@@ -415,10 +416,10 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
-        [Permission(Permissions.Cms.MessageTemplate.Update)]
+        [Permission(Permissions.Cms.MessageTemplate.Create)]
         public ActionResult ImportAllTemplates()
         {
-            // Hidden action for admins
+            // Hidden action for admins.
             var converter = new MessageTemplateConverter(Services.DbContext);
             converter.ImportAll(Services.WorkContext.WorkingLanguage);
 

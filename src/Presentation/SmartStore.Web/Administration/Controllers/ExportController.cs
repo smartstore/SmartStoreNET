@@ -952,7 +952,7 @@ namespace SmartStore.Admin.Controllers
 
 
 
-        [Permission(Permissions.Configuration.Export.Update)]
+        [Permission(Permissions.Configuration.Export.Read)]
         public ActionResult ResolveFileNamePatternExample(int id, string pattern)
         {
             var profile = _exportService.GetExportProfileById(id);
@@ -962,7 +962,7 @@ namespace SmartStore.Admin.Controllers
 
             var resolvedPattern = profile.ResolveFileNamePattern(Services.StoreContext.CurrentStore, 1, _dataExchangeSettings.MaxFileNameLength);
 
-            return this.Content(resolvedPattern);
+            return Content(resolvedPattern);
         }
 
         #endregion

@@ -107,7 +107,6 @@ namespace SmartStore.Admin.Controllers
         #region Product attribute
 
         // Ajax.
-        [Permission(Permissions.Catalog.Variant.Read)]
         public ActionResult AllProductAttributes(string label, int selectedId)
         {
             var attributes = _productAttributeService.GetAllProductAttributes();

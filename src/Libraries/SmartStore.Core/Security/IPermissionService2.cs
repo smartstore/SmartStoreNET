@@ -163,5 +163,12 @@ namespace SmartStore.Core.Security
         /// <param name="permissionSystemName">Permission record system name.</param>
         /// <returns>Display name.</returns>
         string GetDiplayName(string permissionSystemName);
+
+        /// <summary>
+        /// Get detailed unauthorization message.
+        /// </summary>
+        /// <param name="permissionSystemName">Permission record system name.</param>
+        /// <returns>Detailed unauthorization message</returns>
+        string GetUnauthorizedMessage(string permissionSystemName);
     }
 }

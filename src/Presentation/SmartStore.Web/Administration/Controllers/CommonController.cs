@@ -23,6 +23,8 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Packaging;
@@ -139,12 +141,14 @@ namespace SmartStore.Admin.Controllers
 
         #region CheckUpdate
 
+        [Permission(Permissions.System.Maintenance.Read)]
         public async Task<ActionResult> CheckUpdate(bool enforce = false)
         {
             var model = await CheckUpdateInternalAsync(enforce);
             return View(model);
         }
 
+        [Permission(Permissions.System.Maintenance.Execute)]
         public ActionResult CheckUpdateSuppress(string myVersion, string newVersion)
         {
             CheckUpdateSuppressInternal(myVersion, newVersion);
@@ -1077,36 +1081,38 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.System.AccessBackend)]
         public ActionResult GenericAttributesSelect(string entityName, int entityId, GridCommand command)
         {
-            var model = new GridModel<GenericAttributeModel>();
+            var model = new GridModel<GenericAttributeModel>
+            {
+                Data = Enumerable.Empty<GenericAttributeModel>()
+            };
 
             var storeId = _services.StoreContext.CurrentStore.Id;
             ViewBag.StoreId = storeId;
 
             if (entityName.HasValue() && entityId > 0)
             {
-                var attributes = _genericAttributeService.GetAttributesForEntity(entityId, entityName);
+                var infos = GetGenericAttributesInfos(entityName);
+                if (infos.ReadPermission.IsEmpty() || Services.Permissions2.Authorize(infos.ReadPermission))
+                {
+                    var attributes = _genericAttributeService.GetAttributesForEntity(entityId, entityName);
 
-                model.Data = attributes
-                    .Where(x => x.StoreId == storeId || x.StoreId == 0)
-                    .OrderBy(x => x.Key)
-                    .Select(x => new GenericAttributeModel
-                    {
-                        Id = x.Id,
-                        EntityId = x.EntityId,
-                        EntityName = x.KeyGroup,
-                        Key = x.Key,
-                        Value = x.Value
-                    })
-                    .ToList();
+                    model.Data = attributes
+                        .Where(x => x.StoreId == storeId || x.StoreId == 0)
+                        .OrderBy(x => x.Key)
+                        .Select(x => new GenericAttributeModel
+                        {
+                            Id = x.Id,
+                            EntityId = x.EntityId,
+                            EntityName = x.KeyGroup,
+                            Key = x.Key,
+                            Value = x.Value
+                        })
+                        .ToList();
 
-                model.Total = model.Data.Count();
-            }
-            else
-            {
-                model.Data = Enumerable.Empty<GenericAttributeModel>();
+                    model.Total = model.Data.Count();
+                }
             }
 
             return new JsonResult
@@ -1116,87 +1122,131 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.System.AccessBackend)]
         public ActionResult GenericAttributeAdd(GenericAttributeModel model, GridCommand command)
         {
             model.Key = model.Key.TrimSafe();
             model.Value = model.Value.TrimSafe() ?? string.Empty;
 
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var modelStateErrorMessages = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-                return Content(modelStateErrorMessages.FirstOrDefault());
-            }
-
-            var storeId = _services.StoreContext.CurrentStore.Id;
-
-            var attr = _genericAttributeService.GetAttribute<string>(model.EntityName, model.EntityId, model.Key, storeId);
-            if (attr == null)
-            {
-                _genericAttributeService.InsertAttribute(new GenericAttribute
+                var storeId = _services.StoreContext.CurrentStore.Id;
+                var infos = GetGenericAttributesInfos(model.EntityName);
+                if (infos.UpdatePermission.HasValue() && !Services.Permissions2.Authorize(infos.UpdatePermission))
                 {
-                    StoreId = storeId,
-                    KeyGroup = model.EntityName,
-                    EntityId = model.EntityId,
-                    Key = model.Key,
-                    Value = model.Value
-                });
+                    NotifyError(Services.Permissions2.GetUnauthorizedMessage(infos.UpdatePermission));
+                }
+                else
+                {
+                    var attr = _genericAttributeService.GetAttribute<string>(model.EntityName, model.EntityId, model.Key, storeId);
+                    if (attr == null)
+                    {
+                        _genericAttributeService.InsertAttribute(new GenericAttribute
+                        {
+                            StoreId = storeId,
+                            KeyGroup = model.EntityName,
+                            EntityId = model.EntityId,
+                            Key = model.Key,
+                            Value = model.Value
+                        });
+                    }
+                    else
+                    {
+                        NotifyWarning(T("Admin.Common.GenericAttributes.NameAlreadyExists", model.Key));
+                    }
+                }
             }
             else
             {
-                return Content(T("Admin.Common.GenericAttributes.NameAlreadyExists", model.Key));
+                var modelStateErrorMessages = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+                return Content(modelStateErrorMessages.FirstOrDefault());
             }
-
 
             return GenericAttributesSelect(model.EntityName, model.EntityId, command);
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.System.AccessBackend)]
         public ActionResult GenericAttributeUpdate(GenericAttributeModel model, GridCommand command)
         {
             model.Key = model.Key.TrimSafe();
             model.Value = model.Value.TrimSafe();
 
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var modelStateErrorMessages = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-                return Content(modelStateErrorMessages.FirstOrDefault());
-            }
+                var storeId = _services.StoreContext.CurrentStore.Id;
+                var infos = GetGenericAttributesInfos(model.EntityName);
 
-            var storeId = _services.StoreContext.CurrentStore.Id;
-
-            var attr = _genericAttributeService.GetAttributeById(model.Id);
-            // if the key changed, ensure it isn't being used by another attribute
-            if (!attr.Key.IsCaseInsensitiveEqual(model.Key))
-            {
-                var attr2 = _genericAttributeService.GetAttributesForEntity(model.EntityId, model.EntityName)
-                    .Where(x => x.StoreId == storeId && x.Key.Equals(model.Key, StringComparison.InvariantCultureIgnoreCase))
-                    .FirstOrDefault();
-
-                if (attr2 != null && attr2.Id != attr.Id)
+                if (infos.UpdatePermission.HasValue() && !Services.Permissions2.Authorize(infos.UpdatePermission))
                 {
-                    return Content(T("Admin.Common.GenericAttributes.NameAlreadyExists", model.Key));
+                    NotifyError(Services.Permissions2.GetUnauthorizedMessage(infos.UpdatePermission));
+                }
+                else
+                {
+                    var attr = _genericAttributeService.GetAttributeById(model.Id);
+
+                    // If the key changed, ensure it isn't being used by another attribute.
+                    if (!attr.Key.IsCaseInsensitiveEqual(model.Key))
+                    {
+                        var attr2 = _genericAttributeService.GetAttributesForEntity(model.EntityId, model.EntityName)
+                            .Where(x => x.StoreId == storeId && x.Key.Equals(model.Key, StringComparison.InvariantCultureIgnoreCase))
+                            .FirstOrDefault();
+
+                        if (attr2 != null && attr2.Id != attr.Id)
+                        {
+                            NotifyWarning(T("Admin.Common.GenericAttributes.NameAlreadyExists", model.Key));
+                            return GenericAttributesSelect(model.EntityName, model.EntityId, command);
+                        }
+                    }
+
+                    attr.Key = model.Key;
+                    attr.Value = model.Value;
+
+                    _genericAttributeService.UpdateAttribute(attr);
                 }
             }
-
-            attr.Key = model.Key;
-            attr.Value = model.Value;
-
-            _genericAttributeService.UpdateAttribute(attr);
+            else
+            {
+                var modelStateErrorMessages = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+                NotifyError(modelStateErrorMessages.FirstOrDefault());
+            }
 
             return GenericAttributesSelect(model.EntityName, model.EntityId, command);
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.System.AccessBackend)]
-        public ActionResult GenericAttributeDelete(int id, GridCommand command)
+        public ActionResult GenericAttributeDelete(int id, string entityName, GridCommand command)
         {
+            var infos = GetGenericAttributesInfos(entityName);
             var attr = _genericAttributeService.GetAttributeById(id);
 
-            _genericAttributeService.DeleteAttribute(attr);
+            if (infos.UpdatePermission.HasValue() && !Services.Permissions2.Authorize(infos.UpdatePermission))
+            {
+                NotifyError(Services.Permissions2.GetUnauthorizedMessage(infos.UpdatePermission));
+            }
+            else
+            {
+                _genericAttributeService.DeleteAttribute(attr);
+            }
 
             return GenericAttributesSelect(attr.KeyGroup, attr.EntityId, command);
+        }
+
+        private (string ReadPermission, string UpdatePermission) GetGenericAttributesInfos(string entityName)
+        {
+            string readPermission = null;
+            string updatePermission = null;
+
+            if (entityName.IsCaseSensitiveEqual(nameof(Order)))
+            {
+                readPermission = Permissions.Order.Read;
+                updatePermission = Permissions.Order.Update;
+            }
+            else if (entityName.IsCaseSensitiveEqual(nameof(Topic)))
+            {
+                readPermission = Permissions.Cms.Topic.Read;
+                updatePermission = Permissions.Cms.Topic.Update;
+            }
+
+            return (readPermission, updatePermission);
         }
 
         #endregion

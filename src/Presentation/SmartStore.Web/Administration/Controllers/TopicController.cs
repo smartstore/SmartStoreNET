@@ -357,7 +357,6 @@ namespace SmartStore.Admin.Controllers
         }
 
         // AJAX.
-        [Permission(Permissions.Cms.Topic.Read, false)]
         public ActionResult AllTopics(string label, int selectedId, bool useTitles = false, bool includeWidgets = false, bool includeHomePage = false)
 		{
 			var query = from x in _topicService.GetAllTopics(showHidden: true).SourceQuery

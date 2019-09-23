@@ -5,7 +5,6 @@ using SmartStore.Admin.Models.Customers;
 using SmartStore.Admin.Models.Security;
 using SmartStore.Core;
 using SmartStore.Core.Logging;
-using SmartStore.Core.Security;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
@@ -31,7 +30,6 @@ namespace SmartStore.Admin.Controllers
 		}
 
         // Ajax.
-        [Permission(Core.Security.Permissions.Configuration.Acl.Read)]
         public ActionResult AllAccessPermissions(string selected)
         {
             var systemNames = Services.Permissions2.GetAllSystemNames();

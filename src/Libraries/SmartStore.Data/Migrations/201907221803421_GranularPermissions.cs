@@ -91,8 +91,7 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Permissions.DisplayName.SendPM", "Send private messages", "Private Nachrichten senden");
             builder.AddOrUpdate("Permissions.DisplayName.EditProduct", "Edit products", "Produkte bearbeiten");
             builder.AddOrUpdate("Permissions.DisplayName.EditComment", "Edit comments", "Kommentare bearbeiten");
-            builder.AddOrUpdate("Permissions.DisplayName.EditResources", "Edit resources", "Ressourcen bearbeiten");
-
+            builder.AddOrUpdate("Permissions.DisplayName.EditResource", "Edit resources", "Ressourcen bearbeiten");
         }
     }
 }

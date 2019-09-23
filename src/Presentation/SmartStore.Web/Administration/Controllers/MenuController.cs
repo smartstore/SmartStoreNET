@@ -235,7 +235,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         // Do not use model binding because of input validation.
-        [Permission(Permissions.Cms.Menu.Create)]
+        [Permission(Permissions.Cms.Menu.Update)]
         public ActionResult CreateItem(string providerName, int menuId, int parentItemId)
         {
             var menu = _menuStorage.GetMenuById(menuId);
@@ -260,7 +260,7 @@ namespace SmartStore.Admin.Controllers
 
         // Do not name parameter "model" because of property of same name.
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-item-continue", "continueEditing")]
-        [Permission(Permissions.Cms.Menu.Create)]
+        [Permission(Permissions.Cms.Menu.Update)]
         public ActionResult CreateItem(MenuItemRecordModel itemModel, bool continueEditing, FormCollection form)
         {
             if (ModelState.IsValid)

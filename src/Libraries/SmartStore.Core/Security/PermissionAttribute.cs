@@ -71,7 +71,7 @@ namespace SmartStore.Core.Security
                 return;
             }
 
-            var message = GetUnauthorizedMessage();
+            var message = PermissionService.GetUnauthorizedMessage(SystemName);
 
             if (request.IsAjaxRequest())
             {
@@ -126,13 +126,6 @@ namespace SmartStore.Core.Security
                 ContentType = "text/html",
                 ContentEncoding = Encoding.UTF8
             };
-        }
-
-        protected virtual string GetUnauthorizedMessage()
-        {
-            var displayName = PermissionService.GetDiplayName(SystemName);
-            var message = T("Admin.AccessDenied.DetailedDescription", displayName.NaIfEmpty(), SystemName.NaIfEmpty());
-            return message;
         }
     }
 }

@@ -36,7 +36,6 @@ namespace SmartStore.Admin.Controllers
         private readonly MeasureSettings _measureSettings;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IStoreMappingService _storeMappingService;
-
         private readonly AdminAreaSettings _adminAreaSettings;
 
         #endregion
@@ -172,14 +171,12 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        //create
         [Permission(Permissions.Cart.CheckoutAttribute.Create)]
         public ActionResult Create()
         {
             var model = new CheckoutAttributeModel();
             model.IsActive = true;
 
-            //locales
             AddLocales(_languageService, model.Locales);
             PrepareCheckoutAttributeModel(model, null, true);
             return View(model);

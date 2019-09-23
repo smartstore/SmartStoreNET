@@ -47,7 +47,7 @@
                 public const string Update = "catalog.category.update";
                 public const string Create = "catalog.category.create";
                 public const string Delete = "catalog.category.delete";
-                public const string EditProduct= "catalog.category.edit-product";
+                public const string EditProduct = "catalog.category.edit-product";
             }
 
             public static class Manufacturer
@@ -196,7 +196,7 @@
                 public const string Update = "cms.news.update";
                 public const string Create = "cms.news.create";
                 public const string Delete = "cms.news.delete";
-                public const string EditComments = "cms.news.edit-comment";
+                public const string EditComment = "cms.news.edit-comment";
             }
 
             public static class Blog
@@ -206,7 +206,7 @@
                 public const string Update = "cms.blog.update";
                 public const string Create = "cms.blog.create";
                 public const string Delete = "cms.blog.delete";
-                public const string EditComments = "cms.blog.edit-comments";
+                public const string EditComment = "cms.blog.edit-comment";
             }
 
             public static class Widget
@@ -274,7 +274,7 @@
                 public const string Update = "configuration.language.update";
                 public const string Create = "configuration.language.create";
                 public const string Delete = "configuration.language.delete";
-                public const string EditResources = "configuration.language.edit-resources";
+                public const string EditResource = "configuration.language.edit-resource";
             }
 
             public static class Setting
@@ -342,6 +342,7 @@
                 public const string Self = "configuration.activity-log";
                 public const string Read = "configuration.activity-log.read";
                 public const string Update = "configuration.activity-log.update";
+                public const string Delete = "configuration.activity-log.delete";
             }
 
             public static class Acl

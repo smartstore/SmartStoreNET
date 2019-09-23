@@ -200,7 +200,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [Permission(Permissions.Configuration.Country.Update)]
+        [Permission(Permissions.Configuration.Country.Read)]
         public ActionResult Edit(int id)
         {
             var country = _countryService.GetCountryById(id);
@@ -277,7 +277,7 @@ namespace SmartStore.Admin.Controllers
         #region States / provinces
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Configuration.Country.Update)]
+        [Permission(Permissions.Configuration.Country.Read)]
         public ActionResult States(int countryId, GridCommand command)
         {
             var model = new GridModel<StateProvinceModel>();
@@ -294,7 +294,6 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        //create
         [Permission(Permissions.Configuration.Country.Update)]
         public ActionResult StateCreatePopup(int countryId)
         {
@@ -334,8 +333,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        //edit
-        [Permission(Permissions.Configuration.Country.Update)]
+        [Permission(Permissions.Configuration.Country.Read)]
         public ActionResult StateEditPopup(int id)
         {
             var sp = _stateProvinceService.GetStateProvinceById(id);

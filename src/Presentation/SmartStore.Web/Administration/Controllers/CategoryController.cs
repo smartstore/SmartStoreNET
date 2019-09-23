@@ -245,7 +245,6 @@ namespace SmartStore.Admin.Controllers
         }
 
         // Ajax.
-        [Permission(Permissions.Catalog.Category.Read)]
         public ActionResult AllCategories(string label, int selectedId)
         {
             var categoryTree = _categoryService.GetCategoryTree(includeHidden: true);
@@ -322,7 +321,7 @@ namespace SmartStore.Admin.Controllers
 
         // Ajax.
         [AcceptVerbs(HttpVerbs.Post)]
-        [Permission(Permissions.Catalog.Category.Update)]
+        [Permission(Permissions.Catalog.Category.Read)]
         public ActionResult TreeLoadChildren(TreeViewItem node, CategoryTreeModel model)
         {
             var parentId = !string.IsNullOrEmpty(node.Value) ? Convert.ToInt32(node.Value) : 0;
@@ -654,7 +653,6 @@ namespace SmartStore.Admin.Controllers
             NotifySuccess(_localizationService.GetResource("Admin.Catalog.Categories.Deleted"));
             return RedirectToAction("Index");
         }
-
 
         #endregion
 

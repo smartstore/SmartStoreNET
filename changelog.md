@@ -8,7 +8,10 @@
 * #1618 Implement ACL and multistore capability on menu item level.
 * #1683 Menu Builder items: implement support for icon (brand) color.
 * #1584 Show bundle item images in order details like in shopping cart details.
-* SVG support for image uploads
+* SVG support for image uploads.
+* **MegaSearch**:
+	* Added more text analysis options.
+	* Added tool to display internal information about a search, such as Lucene terms.
 
 ### Improvements
 * #1663 Make MeasureDimension and MeasureWeight localizable.

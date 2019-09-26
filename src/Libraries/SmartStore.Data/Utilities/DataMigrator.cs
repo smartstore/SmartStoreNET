@@ -1041,15 +1041,15 @@ namespace SmartStore.Data.Utilities
 
                 PermissionRecord pr;
                 if (newPermissions.TryGetValue("debitoor", out pr)) Allow("ManageDebitoor", pr);
-                if (newPermissions.TryGetValue("biz-importer", out pr)) Allow("AccessImportBiz", pr);
-                if (newPermissions.TryGetValue("shop-connector", out pr)) Allow("ManageShopConnector", pr);
-                if (newPermissions.TryGetValue("news-importer", out pr)) Allow("ManageNewsImporter", pr);
-                if (newPermissions.TryGetValue("web-api", out pr)) Allow("ManageWebApi", pr);
+                if (newPermissions.TryGetValue("bizimporter", out pr)) Allow("AccessImportBiz", pr);
+                if (newPermissions.TryGetValue("shopconnector", out pr)) Allow("ManageShopConnector", pr);
+                if (newPermissions.TryGetValue("newsimporter", out pr)) Allow("ManageNewsImporter", pr);
+                if (newPermissions.TryGetValue("webapi", out pr)) Allow("ManageWebApi", pr);
                 if (newPermissions.TryGetValue("megasearch", out pr)) Allow("ManageMegaSearch", pr);
-                if (newPermissions.TryGetValue("erp-connector", out pr)) Allow("ManageErpConnector", pr);
-                if (newPermissions.TryGetValue("power-bi", out pr)) Allow("ManagePowerBi", pr);
+                if (newPermissions.TryGetValue("erpconnector", out pr)) Allow("ManageErpConnector", pr);
+                if (newPermissions.TryGetValue("powerbi", out pr)) Allow("ManagePowerBi", pr);
                 if (newPermissions.TryGetValue("wallet", out pr)) Allow("ManageWallet", pr);
-                if (newPermissions.TryGetValue("page-builder", out pr)) Allow("ManageStories", pr);
+                if (newPermissions.TryGetValue("pagebuilder", out pr)) Allow("ManageStories", pr);
                 if (newPermissions.TryGetValue("dlm", out pr)) Allow("ManageDlm", pr);
 
                 scope.Commit();

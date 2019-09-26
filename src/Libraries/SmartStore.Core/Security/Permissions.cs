@@ -9,7 +9,7 @@
         public static class Catalog
         {
             public const string Self = "catalog";
-            public const string DisplayPrice = "catalog.display-price";
+            public const string DisplayPrice = "catalog.displayprice";
 
             public static class Product
             {
@@ -18,26 +18,26 @@
                 public const string Update = "catalog.product.update";
                 public const string Create = "catalog.product.create";
                 public const string Delete = "catalog.product.delete";
-                public const string EditCategory = "catalog.product.edit-category";
-                public const string EditManufacturer = "catalog.product.edit-manufacturer";
-                public const string EditAssociatedProduct = "catalog.product.edit-associated-product";
-                public const string EditBundle = "catalog.product.edit-bundle";
-                public const string EditAttribute = "catalog.product.edit-attribute";
-                public const string EditVariant = "catalog.product.edit-variant";
-                public const string EditPromotion = "catalog.product.edit-promotion";
-                public const string EditPicture = "catalog.product.edit-picture";
-                public const string EditTag = "catalog.product.edit-tag";
-                public const string EditTierPrice = "catalog.product.edit-tier-price";
+                public const string EditCategory = "catalog.product.editcategory";
+                public const string EditManufacturer = "catalog.product.editmanufacturer";
+                public const string EditAssociatedProduct = "catalog.product.editassociatedproduct";
+                public const string EditBundle = "catalog.product.editbundle";
+                public const string EditAttribute = "catalog.product.editattribute";
+                public const string EditVariant = "catalog.product.editvariant";
+                public const string EditPromotion = "catalog.product.editpromotion";
+                public const string EditPicture = "catalog.product.editpicture";
+                public const string EditTag = "catalog.product.edittag";
+                public const string EditTierPrice = "catalog.product.edittierprice";
             }
 
             public static class ProductReview
             {
-                public const string Self = "catalog.product-review";
-                public const string Read = "catalog.product-review.read";
-                public const string Update = "catalog.product-review.update";
-                public const string Create = "catalog.product-review.create";
-                public const string Delete = "catalog.product-review.delete";
-                public const string Approve = "catalog.product-review.Approve";
+                public const string Self = "catalog.productreview";
+                public const string Read = "catalog.productreview.read";
+                public const string Update = "catalog.productreview.update";
+                public const string Create = "catalog.productreview.create";
+                public const string Delete = "catalog.productreview.delete";
+                public const string Approve = "catalog.productreview.Approve";
             }
 
             public static class Category
@@ -47,7 +47,7 @@
                 public const string Update = "catalog.category.update";
                 public const string Create = "catalog.category.create";
                 public const string Delete = "catalog.category.delete";
-                public const string EditProduct = "catalog.category.edit-product";
+                public const string EditProduct = "catalog.category.editproduct";
             }
 
             public static class Manufacturer
@@ -57,7 +57,7 @@
                 public const string Update = "catalog.manufacturer.update";
                 public const string Create = "catalog.manufacturer.create";
                 public const string Delete = "catalog.manufacturer.delete";
-                public const string EditProduct = "catalog.manufacturer.edit-product";
+                public const string EditProduct = "catalog.manufacturer.editproduct";
             }
 
             public static class Variant
@@ -67,7 +67,7 @@
                 public const string Update = "catalog.variant.update";
                 public const string Create = "catalog.variant.create";
                 public const string Delete = "catalog.variant.delete";
-                public const string EditSet = "catalog.variant.edit-option-set";
+                public const string EditSet = "catalog.variant.editoptionset";
             }
 
             public static class Attribute
@@ -77,7 +77,7 @@
                 public const string Update = "catalog.attribute.update";
                 public const string Create = "catalog.attribute.create";
                 public const string Delete = "catalog.attribute.delete";
-                public const string EditOption = "catalog.attribute.edit-option";
+                public const string EditOption = "catalog.attribute.editoption";
             }
         }
 
@@ -89,9 +89,9 @@
             public const string Create = "customer.create";
             public const string Delete = "customer.delete";
             public const string Impersonate = "customer.impersonate";
-            public const string EditAddress = "customer.edit-address";
-            public const string EditRole = "customer.edit-customer-role";
-            public const string SendPm = "customer.send-pm";
+            public const string EditAddress = "customer.editaddress";
+            public const string EditRole = "customer.editcustomerrole";
+            public const string SendPm = "customer.sendpm";
 
             public static class Role
             {
@@ -110,28 +110,28 @@
             public const string Update = "order.update";
             public const string Create = "order.create";
             public const string Delete = "order.delete";
-            public const string EditItem = "order.edit-order-item";
-            public const string EditShipment = "order.edit-shipment";
-            public const string EditRecurringPayment = "order.edit-recurring-payment";
+            public const string EditItem = "order.editorderitem";
+            public const string EditShipment = "order.editshipment";
+            public const string EditRecurringPayment = "order.editrecurringpayment";
 
             public static class GiftCard
             {
-                public const string Self = "order.gift-card";
-                public const string Read = "order.gift-card.read";
-                public const string Update = "order.gift-card.update";
-                public const string Create = "order.gift-card.create";
-                public const string Delete = "order.gift-card.delete";
-                public const string Notify = "order.gift-card.notify";
+                public const string Self = "order.giftcard";
+                public const string Read = "order.giftcard.read";
+                public const string Update = "order.giftcard.update";
+                public const string Create = "order.giftcard.create";
+                public const string Delete = "order.giftcard.delete";
+                public const string Notify = "order.giftcard.notify";
             }
 
             public static class ReturnRequest
             {
-                public const string Self = "order.return-request";
-                public const string Read = "order.return-request.read";
-                public const string Update = "order.return-request.update";
-                public const string Create = "order.return-request.create";
-                public const string Delete = "order.return-request.delete";
-                public const string Accept = "order.return-request.accept";
+                public const string Self = "order.returnrequest";
+                public const string Read = "order.returnrequest.read";
+                public const string Update = "order.returnrequest.update";
+                public const string Create = "order.returnrequest.create";
+                public const string Delete = "order.returnrequest.delete";
+                public const string Accept = "order.returnrequest.accept";
             }
         }
 
@@ -186,7 +186,7 @@
                 public const string Update = "cms.poll.update";
                 public const string Create = "cms.poll.create";
                 public const string Delete = "cms.poll.delete";
-                public const string EditAnswer = "cms.poll.edit-answer";
+                public const string EditAnswer = "cms.poll.editanswer";
             }
 
             public static class News
@@ -196,7 +196,7 @@
                 public const string Update = "cms.news.update";
                 public const string Create = "cms.news.create";
                 public const string Delete = "cms.news.delete";
-                public const string EditComment = "cms.news.edit-comment";
+                public const string EditComment = "cms.news.editcomment";
             }
 
             public static class Blog
@@ -206,7 +206,7 @@
                 public const string Update = "cms.blog.update";
                 public const string Create = "cms.blog.create";
                 public const string Delete = "cms.blog.delete";
-                public const string EditComment = "cms.blog.edit-comment";
+                public const string EditComment = "cms.blog.editcomment";
             }
 
             public static class Widget
@@ -246,11 +246,11 @@
 
             public static class MessageTemplate
             {
-                public const string Self = "cms.message-template";
-                public const string Read = "cms.message-template.read";
-                public const string Update = "cms.message-template.update";
-                public const string Create = "cms.message-template.create";
-                public const string Delete = "cms.message-template.delete";
+                public const string Self = "cms.messagetemplate";
+                public const string Read = "cms.messagetemplate.read";
+                public const string Update = "cms.messagetemplate.update";
+                public const string Create = "cms.messagetemplate.create";
+                public const string Delete = "cms.messagetemplate.delete";
             }
         }
 
@@ -274,7 +274,7 @@
                 public const string Update = "configuration.language.update";
                 public const string Create = "configuration.language.create";
                 public const string Delete = "configuration.language.delete";
-                public const string EditResource = "configuration.language.edit-resource";
+                public const string EditResource = "configuration.language.editresource";
             }
 
             public static class Setting
@@ -288,10 +288,10 @@
 
             public static class PaymentMethod
             {
-                public const string Self = "configuration.payment-method";
-                public const string Read = "configuration.payment-method.read";
-                public const string Update = "configuration.payment-method.update";
-                public const string Activate = "configuration.payment-method.activate";
+                public const string Self = "configuration.paymentmethod";
+                public const string Read = "configuration.paymentmethod.read";
+                public const string Update = "configuration.paymentmethod.update";
+                public const string Activate = "configuration.paymentmethod.activate";
             }
 
             public static class Authentication
@@ -313,11 +313,11 @@
 
             public static class DeliveryTime
             {
-                public const string Self = "configuration.delivery-time";
-                public const string Read = "configuration.delivery-time.read";
-                public const string Update = "configuration.delivery-time.update";
-                public const string Create = "configuration.delivery-time.create";
-                public const string Delete = "configuration.delivery-time.delete";
+                public const string Self = "configuration.deliverytime";
+                public const string Read = "configuration.deliverytime.read";
+                public const string Update = "configuration.deliverytime.update";
+                public const string Create = "configuration.deliverytime.create";
+                public const string Delete = "configuration.deliverytime.delete";
             }
 
             public static class Theme
@@ -339,10 +339,10 @@
 
             public static class ActivityLog
             {
-                public const string Self = "configuration.activity-log";
-                public const string Read = "configuration.activity-log.read";
-                public const string Update = "configuration.activity-log.update";
-                public const string Delete = "configuration.activity-log.delete";
+                public const string Self = "configuration.activitylog";
+                public const string Read = "configuration.activitylog.read";
+                public const string Update = "configuration.activitylog.update";
+                public const string Delete = "configuration.activitylog.delete";
             }
 
             public static class Acl
@@ -354,11 +354,11 @@
 
             public static class EmailAccount
             {
-                public const string Self = "configuration.email-account";
-                public const string Read = "configuration.email-account.read";
-                public const string Update = "configuration.email-account.update";
-                public const string Create = "configuration.email-account.create";
-                public const string Delete = "configuration.email-account.delete";
+                public const string Self = "configuration.emailaccount";
+                public const string Read = "configuration.emailaccount.read";
+                public const string Update = "configuration.emailaccount.update";
+                public const string Create = "configuration.emailaccount.create";
+                public const string Delete = "configuration.emailaccount.delete";
             }
 
             public static class Store
@@ -424,8 +424,8 @@
         public static class System
         {
             public const string Self = "system";
-            public const string AccessBackend = "system.access-backend";
-            public const string AccessShop = "system.access-shop";
+            public const string AccessBackend = "system.accessbackend";
+            public const string AccessShop = "system.accessshop";
 
             public static class Log
             {
@@ -463,19 +463,19 @@
 
             public static class ScheduleTask
             {
-                public const string Self = "system.schedule-task";
-                public const string Read = "system.schedule-task.read";
-                public const string Update = "system.schedule-task.update";
-                public const string Delete = "system.schedule-task.delete";
-                public const string Execute = "system.schedule-task.execute";
+                public const string Self = "system.scheduletask";
+                public const string Read = "system.scheduletask.read";
+                public const string Update = "system.scheduletask.update";
+                public const string Delete = "system.scheduletask.delete";
+                public const string Execute = "system.scheduletask.execute";
             }
 
             public static class UrlRecord
             {
-                public const string Self = "system.url-record";
-                public const string Read = "system.url-record.read";
-                public const string Update = "system.url-record.update";
-                public const string Delete = "system.url-record.delete";
+                public const string Self = "system.urlrecord";
+                public const string Read = "system.urlrecord.read";
+                public const string Update = "system.urlrecord.update";
+                public const string Delete = "system.urlrecord.delete";
             }
         }
 
@@ -483,16 +483,16 @@
         {
             public const string Self = "cart";
             public const string Read = "cart.read";
-            public const string AccessShoppingCart = "cart.access-shopping-cart";
-            public const string AccessWishlist = "cart.access-wishlist";
+            public const string AccessShoppingCart = "cart.accessshoppingcart";
+            public const string AccessWishlist = "cart.accesswishlist";
 
             public static class CheckoutAttribute
             {
-                public const string Self = "cart.checkout-attribute";
-                public const string Read = "cart.checkout-attribute.read";
-                public const string Update = "cart.checkout-attribute.update";
-                public const string Create = "cart.checkout-attribute.create";
-                public const string Delete = "cart.checkout-attribute.delete";
+                public const string Self = "cart.checkoutattribute";
+                public const string Read = "cart.checkoutattribute.read";
+                public const string Update = "cart.checkoutattribute.update";
+                public const string Create = "cart.checkoutattribute.create";
+                public const string Delete = "cart.checkoutattribute.delete";
             }
         }
 

@@ -29,7 +29,7 @@ namespace SmartStore.Core.IO
 			{ new byte[] { 0x47, 0x49, 0x46, 0x38, 0x37, 0x61 }, DecodeGif },
 			{ new byte[] { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61 }, DecodeGif },
 			{ new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A }, DecodePng },
-   //         { new byte[] { 0xff, 0xd8 }, DecodeJfif },
+            //{ new byte[] { 0xff, 0xd8 }, DecodeJfif },
 			//{ new byte[] { 0xff, 0xd8, 0xff, 0xe0 }, DecodeJpeg },
 			//{ new byte[] { 0xff }, DecodeJpeg2 },
 		};
@@ -193,7 +193,21 @@ namespace SmartStore.Core.IO
                             var width = reader["width"];
                             var height = reader["height"];
 
-                            return new Size(width.ToInt(), height.ToInt());
+                            var size = new Size(width.ToInt(), height.ToInt());
+                            if (size.Width == 0 || size.Height == 0)
+                            {
+                                var viewBox = reader["viewBox"];
+                                if (viewBox.HasValue())
+                                {
+                                    var arrViewBox = viewBox.Trim().Split(' ');
+                                    if (arrViewBox.Length == 4)
+                                    {
+                                        size = new Size(arrViewBox[2].ToInt(), arrViewBox[3].ToInt());
+                                    }
+                                }
+                            }
+
+                            return size;
                         }
                     }
                 }

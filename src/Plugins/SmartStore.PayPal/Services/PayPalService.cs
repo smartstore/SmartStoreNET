@@ -674,7 +674,8 @@ namespace SmartStore.PayPal.Services
 							ex.Dump();
 						}
 
-						Logger.Log(LogLevel.Error, new Exception(sb.ToString()), result.ErrorMessage, null);
+                        var logLevel = webResponse.StatusCode == HttpStatusCode.InternalServerError ? LogLevel.Warning : LogLevel.Error;
+                        Logger.Log(LogLevel.Error, new Exception(sb.ToString()), result.ErrorMessage, null);
 					}
 				}
 			}
@@ -853,6 +854,11 @@ namespace SmartStore.PayPal.Services
             PayPalSessionData session,
             Dictionary<string, object> data)
         {
+            if (data == null || !data.Any())
+            {
+                return null;
+            }
+
             var serializeData = JsonConvert.SerializeObject(data);
             var result = CallApi("POST", "/v1/payments/payment", settings, session, serializeData);
 
@@ -886,7 +892,7 @@ namespace SmartStore.PayPal.Services
 				data.Add(shippingAddress);
 			}
 
-			// update of whole amount object required. patching single amount values not possible (MALFORMED_REQUEST).
+			// Update of whole amount object required. patching single amount values not possible (MALFORMED_REQUEST).
 			var amount = CreateAmount(session, store, customer, cart, null);
 
 			amountTotal.Add("op", "replace");

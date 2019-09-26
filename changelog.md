@@ -26,6 +26,7 @@
 	* #1689 Block with z-index < 0 can not be selected in story view - Block tools can reduce z-index below 0.
 	* #1691 Manually editing/removing block cols/rows does not refresh grid state correctly.
 * Multistore mapping was ignored for manufacturers in sitemap.
+* PayPal PLUS: fixes rare exception "Unsupported Media Type" (415).
 
 
 ## SmartStore.NET 3.2.2

@@ -675,7 +675,7 @@ namespace SmartStore.PayPal.Services
 						}
 
                         var logLevel = webResponse.StatusCode == HttpStatusCode.InternalServerError ? LogLevel.Warning : LogLevel.Error;
-                        Logger.Log(LogLevel.Error, new Exception(sb.ToString()), result.ErrorMessage, null);
+                        Logger.Log(logLevel, new Exception(sb.ToString()), result.ErrorMessage, null);
 					}
 				}
 			}

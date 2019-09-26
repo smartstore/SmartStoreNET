@@ -1,8 +1,13 @@
 ﻿@model CategoryTreeModel
-@using Telerik.Web.Mvc.UI;
-@using SmartStore.Services.Catalog;
-@{   
+
+@using Telerik.Web.Mvc.UI
+@using SmartStore.Core.Security
+@using SmartStore.Services.Catalog
+
+@{
     ViewBag.Title = T("Admin.Catalog.Categories.Manage").Text;
+    var permissionService = EngineContext.Current.Resolve<IPermissionService2>();
+    var canEdit = permissionService.Authorize(Permissions.Catalog.Category.Update);
 }
 
 <div class="section-header">
@@ -10,14 +15,14 @@
         <i class="fa fa-sitemap"></i>
         @T("Admin.Catalog.Categories.Manage")
 
-		<div class="btn-group ml-2" style="vertical-align: text-top">
-			<a class="btn btn-outline-secondary btn-sm tooltip-toggle" href="@Url.Action("List")" title="@T("Admin.Catalog.Categories.SwitchToListView")">
-				<i class="fa fa-bars"></i>
-			</a>
-			<a class="btn btn-outline-secondary btn-sm tooltip-toggle active" style="cursor:default" href="javascript:void(0)">
-				<i class="fa fa-sitemap"></i>
-			</a>
-		</div>
+        <div class="btn-group ml-2" style="vertical-align: text-top">
+            <a class="btn btn-outline-secondary btn-sm tooltip-toggle" href="@Url.Action("List")" title="@T("Admin.Catalog.Categories.SwitchToListView")">
+                <i class="fa fa-bars"></i>
+            </a>
+            <a class="btn btn-outline-secondary btn-sm tooltip-toggle active" style="cursor:default" href="javascript:void(0)">
+                <i class="fa fa-sitemap"></i>
+            </a>
+        </div>
     </div>
     <div class="options">
         <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
@@ -26,38 +31,40 @@
 
 @if (!Model.IsSingleStoreMode)
 {
-	using (Html.BeginForm())
-	{
-		<div class="row">
-			<div class="col-lg-6">
-				<div class="form-group">
-					@Html.SmartLabelFor(model => model.SearchStoreId)
-					<div class="form-row">
-						<div class="col">
-							@Html.EditorFor(model => model.SearchStoreId)
-						</div>
-						<div class="col">
-							<button type="submit" id="btnSearch" class="btn btn-secondary">
-								<i class="fa fa-search"></i>
-								<span>@T("Admin.Common.Search")</span>
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	}
+    using (Html.BeginForm())
+    {
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="form-group">
+                    @Html.SmartLabelFor(model => model.SearchStoreId)
+                    <div class="form-row">
+                        <div class="col">
+                            @Html.EditorFor(model => model.SearchStoreId)
+                        </div>
+                        <div class="col">
+                            <button type="submit" id="btnSearch" class="btn btn-secondary">
+                                <i class="fa fa-search"></i>
+                                <span>@T("Admin.Common.Search")</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 }
 
 <p></p>
 
 <div class="category-tree-container">
     @(Html.Telerik().TreeView()
-        .Name("category-treeview")
-		.ClientEvents(events => events.OnNodeDropped("onNodeDropped").OnDataBinding("onDataBinding"))
-        .DataBinding(dataBinding => dataBinding.Ajax().Enabled(true).Select("TreeLoadChildren", "Category"))
-        .ShowLines(true)
-        .DragAndDrop(true))
+            .Name("category-treeview")
+            .ClientEvents(events => events.OnNodeDropped("onNodeDropped").OnDataBinding("onDataBinding"))
+            .DataBinding(dataBinding => dataBinding.Ajax().Enabled(true).Select("TreeLoadChildren", "Category"))
+            .ShowLines(true)
+            .DragAndDrop(canEdit))
+
+
 </div>
 
 <script type="text/javascript">
@@ -71,10 +78,10 @@
 
 	function onNodeDropped(e) {
 		var treeview = $('#category-treeview').data("tTreeView");
-                
+
 		var item = treeview.getItemValue(e.item);
 		var destination = treeview.getItemValue(e.destinationItem);
-                
+
 		var data = {};
 		data.item = item;
 		data.destinationitem = destination;

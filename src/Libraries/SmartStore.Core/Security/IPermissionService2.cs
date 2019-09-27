@@ -124,6 +124,14 @@ namespace SmartStore.Core.Security
         /// <returns><c>true</c> authorized otherwise <c>false</c>.</returns>
         bool Authorize(string permissionSystemName, Customer customer);
 
+        /// <summary>
+        /// Authorize permission by alias permission name. Required if granular permission migration has not yet run.
+        /// Functional only if the old permission resources still exist in the database.
+        /// </summary>
+        /// <param name="permissionSystemName">Permission record system name.</param>
+        /// <returns><c>true</c> authorized otherwise <c>false</c>.</returns>
+        bool AuthorizeByAlias(string permissionSystemName);
+
 
         /// <summary>
         /// Search all child permissions for an authorization (initial permission included).

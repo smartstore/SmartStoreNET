@@ -56,7 +56,19 @@ namespace SmartStore
 			}
 		}
 
-		public static bool DatabaseExists(this DbContext context, string databaseName)
+        public static bool TableExists(this DbContext context, string tableName)
+        {
+            if (context != null && tableName.HasValue())
+            {
+                var sql = @"Select table_name From INFORMATION_SCHEMA.TABLES Where table_name = {0}";
+                var table = ((IObjectContextAdapter)context).ObjectContext.ExecuteStoreQuery<string>(sql, tableName).FirstOrDefault();
+                return table.HasValue();
+            }
+
+            return false;
+        }
+
+        public static bool DatabaseExists(this DbContext context, string databaseName)
 		{
 			if (context != null && databaseName.HasValue()) {
 				//string sql = @"Select database_id From sys.databases Where Name = @databaseName";

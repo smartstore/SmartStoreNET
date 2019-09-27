@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using SmartStore.Collections;
@@ -21,6 +22,12 @@ namespace SmartStore.Services.Security
         // {0} = roleId
         internal const string PERMISSION_TREE_KEY = "permission:tree-{0}";
         private const string PERMISSION_TREE_PATTERN_KEY = "permission:tree-*";
+
+        private static readonly Dictionary<string, string> _permissionAliases = new Dictionary<string, string>
+        {
+            { Permissions.System.AccessShop, "PublicStoreAllowNavigation" },
+            { Permissions.System.AccessBackend, "AccessAdminPanel" }
+        };
 
         private static readonly Dictionary<string, string> _displayNameResourceKeys = new Dictionary<string, string>
         {
@@ -384,7 +391,44 @@ namespace SmartStore.Services.Security
             return false;
         }
 
-       
+        public virtual bool AuthorizeByAlias(string permissionSystemName)
+        {
+            if (string.IsNullOrEmpty(permissionSystemName) || !_permissionAliases.TryGetValue(permissionSystemName, out var alias))
+            {
+                return false;
+            }
+
+            var aliasPermission = GetPermissionBySystemName(alias);
+            if (aliasPermission == null)
+            {
+                return false;
+            }
+
+            // SQL required because the old mapping was only accessible via navigation property but it no longer exists.
+            var context = (DbContext)_permissionRepository.Context;
+            if (context.TableExists("PermissionRecord_Role_Mapping"))
+            {
+                var aliasCutomerRoleIds = _permissionRepository.Context
+                    .SqlQuery<int>("select [CustomerRole_Id] from [dbo].[PermissionRecord_Role_Mapping] where [PermissionRecord_Id] = {0}", aliasPermission.Id)
+                    .ToList();
+
+                if (aliasCutomerRoleIds.Any())
+                {
+                    var roles = _workContext.CurrentCustomer.CustomerRoles.Where(x => x.Active);
+                    foreach (var role in roles)
+                    {
+                        if (aliasCutomerRoleIds.Contains(role.Id))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+
         public virtual bool FindAuthorization(string permissionSystemName)
         {
             return FindAuthorization(permissionSystemName, _workContext.CurrentCustomer);

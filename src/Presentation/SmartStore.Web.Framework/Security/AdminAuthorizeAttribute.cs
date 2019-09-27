@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using SmartStore.Services.Security;
+using SmartStore.Core.Security;
 
 namespace SmartStore.Web.Framework.Security
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited=true, AllowMultiple=true)]
     public class AdminAuthorizeAttribute : FilterAttribute, IAuthorizationFilter
     {
-		public IPermissionService PermissionService { get; set; }
+		public IPermissionService2 PermissionService { get; set; }
 		
 		private void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
@@ -27,29 +27,44 @@ namespace SmartStore.Web.Framework.Security
         {
             var adminAttributes = GetAdminAuthorizeAttributes(filterContext.ActionDescriptor);
             if (adminAttributes != null && adminAttributes.Any())
+            {
                 return true;
+            }
+
             return false;
         }
 
         public void OnAuthorization(AuthorizationContext filterContext)
         {
-            if (filterContext == null)
-                throw new ArgumentNullException("filterContext");
+            Guard.NotNull(filterContext, nameof(filterContext));
 
             if (OutputCacheAttribute.IsChildActionCacheActive(filterContext))
-                throw new InvalidOperationException("You cannot use [AdminAuthorize] attribute when a child action cache is active");
+            {
+                throw new InvalidOperationException("You cannot use [AdminAuthorize] attribute when a child action cache is active.");
+            }
 
             if (IsAdminPageRequested(filterContext))
             {
-                if (!this.HasAdminAccess(filterContext))
-                    this.HandleUnauthorizedRequest(filterContext);
+                if (!HasAdminAccess(filterContext))
+                {
+                    HandleUnauthorizedRequest(filterContext);
+                }
             }
         }
 
         public virtual bool HasAdminAccess(AuthorizationContext filterContext)
         {
-			var result = PermissionService.Authorize(StandardPermissionProvider.AccessAdminPanel);
-            return result;
+            if (PermissionService.Authorize(Permissions.System.AccessBackend))
+            {
+                return true;
+            }
+
+            if (PermissionService.AuthorizeByAlias(Permissions.System.AccessBackend))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

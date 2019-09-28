@@ -1,0 +1,202 @@
+﻿/// <reference path="../../../Content/shared/_variables-shared.scss" />
+/// <reference path="../../../Content/shared/_mixins.scss" />
+/// <reference path="_variables.scss" />
+/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
+
+// Common
+// ------------------------------------
+
+.bg-black {
+    background-color: #000;
+}
+
+.bg-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    border-radius: var(--border-radius, 0);
+    transition: opacity $box-transition-duration $box-transition-timing;
+}
+
+.bg-video {
+    overflow: hidden;
+
+    > video {
+        position: relative;
+        left: 50%;
+        top: 50%;
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        transform: translateX(-50%) translateY(-50%);
+    }
+}
+
+
+// Gradients
+// ------------------------------------
+
+@mixin make-bg-gradient($color, $value, $radial: false, $mode: darken) {
+    $cstart: $value;
+    $cend: $value;
+    $cred: red($value);
+
+    @if $mode == "hue" or $mode == "hue-rev" {
+        $mindeg: 30;
+        $maxdeg: 60;
+        $deg: ($maxdeg - $mindeg) / 360 * (hue($value) - 360) + $maxdeg;
+        $cshade: theme-color-level($color, 2);
+        $cstart: adjust-hue($cshade, $deg);
+    }
+    @else if $mode == "lighten" or $mode == "lighten-rev" {
+        $minlevel: -4;
+        $maxlevel: -2;
+        $level: ($maxlevel - $minlevel) / 100 * (lightness($value) - 100) + $maxlevel;
+        $cstart: theme-color-level($color, $level);
+    }
+    @else {
+        $minlevel: 4;
+        $maxlevel: 2;
+        $level: ($maxlevel - $minlevel) / 100 * (lightness($value) - 100) + $maxlevel;
+        $cend: theme-color-level($color, $level);
+    }
+
+    @if (str-index($mode, "-rev")) {
+        $cend2: $cend;
+        $cend: $cstart;
+        $cstart: $cend2;
+    }
+
+    @if $radial == true {
+        background: radial-gradient(var(--gradientdir, circle at left top), $cstart, $cend);
+    }
+    @else {
+        background: linear-gradient(var(--gradientdir, to bottom right), $cstart, $cend);
+    }
+}
+
+@each $color, $value in $theme-colors {
+    .bg-gradient-#{$color} {
+        @include make-bg-gradient($color, $value, false, "darken");
+    }
+    .bg-gradient-#{$color}-light {
+        @include make-bg-gradient($color, $value, false, "lighten");
+    }
+    .bg-gradient-#{$color}-hue {
+        @include make-bg-gradient($color, $value, false, "hue");
+    }
+    .bg-gradient-#{$color}-rev {
+        @include make-bg-gradient($color, $value, false, "darken-rev");
+    }
+    .bg-gradient-#{$color}-light-rev {
+        @include make-bg-gradient($color, $value, false, "lighten-rev");
+    }
+    .bg-gradient-#{$color}-hue-rev {
+        @include make-bg-gradient($color, $value, false, "hue-rev");
+    }
+
+    .bg-gradient-#{$color}-radial {
+        @include make-bg-gradient($color, $value, true, "darken");
+    }
+    .bg-gradient-#{$color}-radial-light {
+        @include make-bg-gradient($color, $value, true, "lighten");
+    }
+    .bg-gradient-#{$color}-radial-hue {
+        @include make-bg-gradient($color, $value, true, "hue");
+    }
+    .bg-gradient-#{$color}-radial-rev {
+        @include make-bg-gradient($color, $value, true, "darken-rev");
+    }
+    .bg-gradient-#{$color}-radial-light-rev {
+        @include make-bg-gradient($color, $value, true, "lighten-rev");
+    }
+    .bg-gradient-#{$color}-radial-hue-rev {
+        @include make-bg-gradient($color, $value, true, "hue-rev");
+    } 
+}
+
+
+// Shades
+// ------------------------------------
+
+@mixin make-bg-shade($color, $radial: false) {
+    background: scrim-gradient($color, 'var(--gradientdir, to right)', $radial);
+}
+
+.bg-shade-white {
+    @include make-bg-shade(#fff, false);
+}
+.bg-shade-white-radial {
+    @include make-bg-shade(#fff, true);
+}
+
+.bg-shade-black {
+    @include make-bg-shade(#000, false);
+}
+.bg-shade-black-radial {
+    @include make-bg-shade(#000, true);
+}
+
+@each $color, $value in $theme-colors {
+    .bg-shade-#{$color} {
+        @include make-bg-shade($value, false);
+    }
+    .bg-shade-#{$color}-radial {
+        @include make-bg-shade($value, true);
+    }
+}
+
+
+// Utils
+// ------------------------------------
+
+.bg-rev {
+    transform: rotate(180deg);
+    left: auto;
+    right: 0;
+    top: auto;
+    bottom: 0;
+}
+
+.bg-o-1 { opacity: 0.97; }
+.bg-o-2 { opacity: 0.92; }
+.bg-o-3 { opacity: 0.87; }
+.bg-o-4 { opacity: 0.82; }
+.bg-o-5 { opacity: 0.75; }
+.bg-o-6 { opacity: 0.70; }
+.bg-o-7 { opacity: 0.65; }
+.bg-o-8 { opacity: 0.50; }
+.bg-o-9 { opacity: 0.40; }
+.bg-o-0 { opacity: 0.00; }
+
+
+// Tint (change opacity on hover)
+// ------------------------------
+
+@each $size in (1, 2, 3) {
+    $step: 0.15;
+    $o1: 1 - ($step * $size);
+    $o2: $o1 - $step;
+
+    .bg-tint-#{$size} {
+        .bg-overlay { opacity: $o1 !important; }
+        &:hover .bg-overlay { opacity: $o2 !important; }
+    }
+
+    .bg-tint-#{$size}-rev {
+        .bg-overlay { opacity: $o2 !important; }
+        &:hover .bg-overlay { opacity: $o1 !important; }
+    }
+}
+
+
+// Blur
+// ------------------------------
+
+.bg-blur {
+    margin: -20px;
+    filter: blur(10px);
+}

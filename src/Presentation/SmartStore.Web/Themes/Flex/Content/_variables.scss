@@ -270,3 +270,8 @@ $offcanvas-cart-footer:         $success !default;
 $art-active-bg-color:           #fff !default;
 $art-active-border-color:       rgba(0,0,0, 0.2) !default;
 $product-detail-addtocart-box-bg:   $gray-100 !default;
+
+$box-transition-duration: 0.5s;
+//$card-transition-timing:    cubic-bezier(.2, 1, .22, 1);
+$box-transition-timing: cubic-bezier(0.25, 1, 0.2, 1);
+$box-scale-factor: 1.08;

@@ -1,0 +1,133 @@
+﻿/// <reference path="../../../Content/shared/_variables-shared.scss" />
+/// <reference path="../../../Content/shared/_mixins.scss" />
+/// <reference path="_variables.scss" />
+/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
+
+.box-scale,
+.box-rise {
+    will-change: transform, box-shadow;
+    transition-property: transform, box-shadow;
+    transition-duration: $box-transition-duration;
+    transition-timing-function: $box-transition-timing;
+    z-index: 1;
+}
+
+.box-scale {
+    &:hover {
+        transform: scale($box-scale-factor);
+        z-index: 2;
+    }
+}
+
+.box-rise {
+    &:not(.box-flat):not(:hover) {
+        &.shadow {
+            box-shadow: 0 8px 12px rgba(#32325d, .11),
+                        0 2px 8px rgba(#000, .07);
+        }
+
+        @each $color, $value in $theme-colors {
+            &.shadow-#{$color} { 
+                box-shadow: 0 8px 12px rgba($value, .15),
+                            0 2px 8px rgba(darken($value, 30%), .1);
+            }
+        }
+
+        &.shadow-lg {
+            box-shadow: 0 35px 50px rgba(#32325d, .1),
+                        0 8px 12px rgba(#32325d, .18),
+                        0 2px 8px rgba(#000, .09);
+        }  
+
+        @each $color, $value in $theme-colors {
+            &.shadow-#{$color}-lg { 
+                box-shadow: 0 35px 50px rgba($value, .15),
+                            0 8px 12px rgba($value, .22),
+                            0 2px 8px rgba(darken($value, 30%), .12);
+            }
+        }
+    }
+
+    &:hover {
+        transform: translateY(-8px);
+        z-index: 2;
+    }
+}
+
+
+// 
+// Flat boxes
+// -----------------------------------------------
+
+.box-flat {
+    transition-property: transform, color, box-shadow, background-color, background-image;
+    transition-duration: $box-transition-duration;
+    transition-timing-function: $box-transition-timing;
+
+    &:not(:hover) {
+        background-color: transparent !important;
+        background-image: none !important;
+        box-shadow: none !important;
+        border-color: transparent !important;
+        color: $body-color;
+
+        // Handle gradients smoothly
+        .bg-overlay { 
+            //background-image: none; 
+            opacity: 0 !important;
+        }
+    }
+
+    &.box-flat-inverse:hover,
+    &.box-flat-inverse:hover .g-icon > i {
+        color: $yiq-text-light !important; 
+    }
+}
+
+
+// 
+// Box image
+// -----------------------------------------------
+
+.box-img-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.box-img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.box-img-scale,
+.box-img-scale-rev {
+    transition: transform 0.7s $box-transition-timing;
+    //backface-visibility: hidden;
+}
+
+.box-img-scale {
+    transform: scale(1);
+}
+
+.box-img-scale-rev {
+    transform: scale($box-scale-factor);
+}
+
+.box-img-left,
+.box-img-right {
+    flex-flow: row;
+}
+
+.box-img-top,
+.box-img-bottom {
+    flex-flow: column;
+}
+
+.box-img-background .g-block-content {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}

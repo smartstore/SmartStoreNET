@@ -313,7 +313,8 @@ namespace SmartStore.Admin.Controllers
 
             var model = new CategoryTreeModel
             {
-                IsSingleStoreMode = _storeService.IsSingleStoreMode()
+                IsSingleStoreMode = _storeService.IsSingleStoreMode(),
+                CanEdit = Services.Permissions2.Authorize(Permissions.Catalog.Category.Update)
             };
 
             return View(model);

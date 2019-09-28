@@ -11,5 +11,6 @@ namespace SmartStore.Admin.Models.Catalog
 		public int SearchStoreId { get; set; }
 
         public bool IsSingleStoreMode { get; set; }
+        public bool CanEdit { get; set; }
     }
 }

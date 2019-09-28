@@ -1,13 +1,6 @@
 ﻿@model CategoryTreeModel
-
-@using Telerik.Web.Mvc.UI
-@using SmartStore.Core.Security
-@using SmartStore.Services.Catalog
-
 @{
     ViewBag.Title = T("Admin.Catalog.Categories.Manage").Text;
-    var permissionService = EngineContext.Current.Resolve<IPermissionService2>();
-    var canEdit = permissionService.Authorize(Permissions.Catalog.Category.Update);
 }
 
 <div class="section-header">
@@ -54,17 +47,13 @@
     }
 }
 
-<p></p>
-
-<div class="category-tree-container">
+<div class="category-tree-container mt-3">
     @(Html.Telerik().TreeView()
             .Name("category-treeview")
             .ClientEvents(events => events.OnNodeDropped("onNodeDropped").OnDataBinding("onDataBinding"))
             .DataBinding(dataBinding => dataBinding.Ajax().Enabled(true).Select("TreeLoadChildren", "Category"))
             .ShowLines(true)
-            .DragAndDrop(canEdit))
-
-
+            .DragAndDrop(Model.CanEdit))
 </div>
 
 <script type="text/javascript">

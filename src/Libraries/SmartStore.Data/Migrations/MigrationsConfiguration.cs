@@ -106,6 +106,8 @@
             builder.Delete(
                 "Admin.Configuration.Measures.Weights.Fields.MarkAsPrimaryWeight",
                 "Admin.Configuration.Measures.Dimensions.Fields.MarkAsPrimaryDimension",
+                "Admin.Customers.Customers.Addresses.AddButton",
+                "Admin.Address",
                 "Admin.Catalog.Products.Acl");
         }
     }

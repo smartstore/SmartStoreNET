@@ -1,19 +1,22 @@
 ﻿@model CustomerAddressModel
 @{
-    //page title
     ViewBag.Title = T("Admin.Customers.Customers.Addresses.AddNew").Text;
 }
 @using (Html.BeginForm())
 {
     <div class="section-header">
         <div class="title">
-            @T("Admin.Customers.Customers.Addresses.AddNew") @Html.ActionLink("(" + T("Admin.Customers.Customers.Addresses.BackToCustomer") + ")", "Edit", new { id = Model.CustomerId })
+            @T("Admin.Customers.Customers.Addresses.AddNew") - @Model.Username
+            @Html.ActionLink("(" + T("Admin.Customers.Customers.Addresses.BackToCustomer") + ")", "Edit", new { id = Model.CustomerId })
         </div>
         <div class="options">
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" name="save" value="save" class="btn btn-warning">
 				<i class="fa fa-check"></i>
 				<span>@T("Admin.Common.Save")</span>
 			</button>
+            <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
+                <span>@T("Admin.Common.SaveContinue")</span>
+            </button>
         </div>
     </div>
 

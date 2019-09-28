@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.Admin.Models.Common;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
@@ -27,6 +28,7 @@ namespace SmartStore.Admin.Models.Customers
 
         public bool AllowUsersToChangeUsernames { get; set; }
         public bool UsernamesEnabled { get; set; }
+        public int GridPageSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.Username")]
         [AllowHtml]
@@ -181,6 +183,7 @@ namespace SmartStore.Admin.Models.Customers
 		public bool Deleted { get; set; }
 
         public TreeNode<IPermissionNode> PermissionTree { get; set; }
+        public List<AddressModel> Addresses { get; set; }
 
         #region Nested classes
 

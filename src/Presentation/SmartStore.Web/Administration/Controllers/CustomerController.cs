@@ -10,7 +10,6 @@ using SmartStore.Admin.Models.ShoppingCart;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
@@ -19,7 +18,6 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Email;
 using SmartStore.Core.Events;
-using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
 using SmartStore.Services.Affiliates;
@@ -250,8 +248,9 @@ namespace SmartStore.Admin.Controllers
 
         protected virtual void PrepareCustomerModelForCreate(CustomerModel model)
         {
-            string timeZoneId = (model.TimeZoneId.HasValue() ? model.TimeZoneId : _dateTimeHelper.DefaultStoreTimeZone.Id);
+            string timeZoneId = model.TimeZoneId.HasValue() ? model.TimeZoneId : _dateTimeHelper.DefaultStoreTimeZone.Id;
 
+            model.GridPageSize = _adminAreaSettings.GridPageSize;
             model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
             model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
             model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
@@ -259,7 +258,7 @@ namespace SmartStore.Admin.Controllers
 
             foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
             {
-                model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == timeZoneId) });
+                model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = tzi.Id == timeZoneId });
             }
 
             if (model.SelectedCustomerRoleIds == null || model.SelectedCustomerRoleIds.Count() == 0)
@@ -291,7 +290,7 @@ namespace SmartStore.Admin.Controllers
 
                 foreach (var c in _countryService.GetAllCountries())
                 {
-                    model.AvailableCountries.Add(new SelectListItem { Text = c.Name, Value = c.Id.ToString(), Selected = (c.Id == model.CountryId) });
+                    model.AvailableCountries.Add(new SelectListItem { Text = c.Name, Value = c.Id.ToString(), Selected = c.Id == model.CountryId });
                 }
 
                 if (_customerSettings.StateProvinceEnabled)
@@ -302,7 +301,7 @@ namespace SmartStore.Admin.Controllers
                     {
                         foreach (var s in states)
                         {
-                            model.AvailableStates.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == model.StateProvinceId) });
+                            model.AvailableStates.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString(), Selected = s.Id == model.StateProvinceId });
                         }
                     }
                     else
@@ -315,6 +314,7 @@ namespace SmartStore.Admin.Controllers
 
         protected virtual void PrepareCustomerModelForEdit(CustomerModel model, Customer customer)
         {
+            model.GridPageSize = _adminAreaSettings.GridPageSize;
             model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
             model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
             model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
@@ -322,7 +322,7 @@ namespace SmartStore.Admin.Controllers
 
             foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
             {
-                model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == model.TimeZoneId) });
+                model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = tzi.Id == model.TimeZoneId });
             }
 
             model.DisplayVatNumber = _taxSettings.EuVatEnabled;
@@ -332,7 +332,7 @@ namespace SmartStore.Admin.Controllers
             model.LastIpAddress = model.LastIpAddress;
             model.LastVisitedPage = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
 
-            // Form fields
+            // Form fields.
             model.TitleEnabled = _customerSettings.TitleEnabled;
             model.GenderEnabled = _customerSettings.GenderEnabled;
             model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
@@ -384,6 +384,16 @@ namespace SmartStore.Admin.Controllers
             model.AddRewardPointsValue = 0;
             model.AssociatedExternalAuthRecords = GetAssociatedExternalAuthRecords(customer);
             model.PermissionTree = Services.Permissions2.GetPermissionTree(customer, true);
+
+            // Addresses.
+            var addresses = customer.Addresses
+                .OrderByDescending(a => a.CreatedOnUtc)
+                .ThenByDescending(a => a.Id)
+                .ToList();
+
+            model.Addresses = addresses
+                .Select(x => x.ToModel(_addressService))
+                .ToList();
         }
 
         [NonAction]
@@ -1135,168 +1145,74 @@ namespace SmartStore.Admin.Controllers
 
         #region Addresses
 
-        [GridAction]
-        [Permission(Permissions.Customer.Read)]
-        public ActionResult AddressesSelect(int customerId, GridCommand command)
-        {
-            var customer = _customerService.GetCustomerById(customerId);
-            if (customer == null)
-                throw new ArgumentException("No customer found with the specified id", "customerId");
-
-            var addresses = customer.Addresses
-                .OrderByDescending(a => a.CreatedOnUtc)
-                .ThenByDescending(a => a.Id)
-                .ToList();
-
-            var wantedAddressKeys = new string[] { "Street1", "Street2", "Country", "CountryId", "CountryAbbrev2", "CountryAbbrev3", "State", "StateAbbrev", "City", "ZipCode" };
-
-            var gridModel = new GridModel<AddressModel>
-            {
-                Data = addresses.Select(x =>
-                {
-                    var model = x.ToModel(_addressService);
-
-                    try
-                    {
-                        var messageContext = MessageContext.Create(
-                            x.Country?.AddressFormat,
-                            _workContext.WorkingLanguage.Id,
-                            _storeContext.CurrentStore.Id,
-                            customer);
-                        messageContext.Model = new TemplateModel();
-
-                        _messageModelProvider.AddModelPart(x, messageContext, "Address");
-
-                        var addressModel = messageContext.Model["Address"];
-                        var dic = addressModel as Dictionary<string, object>;
-                        if (dic != null)
-                        {
-                            var keysToRemove = dic.Keys.Except(wantedAddressKeys).ToList();
-                            keysToRemove.Each(key => dic.Remove(key));
-                        }
-
-                        model.AddressHtml = _addressService.FormatAddress(addressModel, x.Country?.AddressFormat, messageContext.FormatProvider);
-                        model.AddressHtml = HtmlUtils.ConvertPlainTextToHtml(model.AddressHtml);
-                    }
-                    catch (Exception exception)
-                    {
-                        Logger.Error(exception);
-                    }
-
-                    return model;
-                }),
-                Total = addresses.Count
-            };
-
-            return new JsonResult
-            {
-                Data = gridModel
-            };
-        }
-
-        [GridAction]
-        [Permission(Permissions.Customer.EditAddress)]
-        public ActionResult AddressDelete(int customerId, int addressId, GridCommand command)
-        {
-            var customer = _customerService.GetCustomerById(customerId);
-            if (customer == null)
-                throw new ArgumentException("No customer found with the specified id", "customerId");
-
-            var address = customer.Addresses.Where(a => a.Id == addressId).FirstOrDefault();
-            customer.RemoveAddress(address);
-            _customerService.UpdateCustomer(customer);
-            //now delete the address record
-            _addressService.DeleteAddress(address);
-
-            return AddressesSelect(customerId, command);
-        }
-
         [Permission(Permissions.Customer.EditAddress)]
         public ActionResult AddressCreate(int customerId)
         {
             var customer = _customerService.GetCustomerById(customerId);
             if (customer == null)
+            {
                 return RedirectToAction("List");
+            }
 
             var model = new CustomerAddressModel();
-            model.Address = new AddressModel();
-            model.CustomerId = customerId;
-            model.Address.TitleEnabled = _addressSettings.TitleEnabled;
-            model.Address.FirstNameEnabled = true;
-            model.Address.FirstNameRequired = true;
-            model.Address.LastNameEnabled = true;
-            model.Address.LastNameRequired = true;
-            model.Address.EmailEnabled = true;
-            model.Address.EmailRequired = true;
-            model.Address.ValidateEmailAddress = _addressSettings.ValidateEmailAddress;
-            model.Address.CompanyEnabled = _addressSettings.CompanyEnabled;
-            model.Address.CompanyRequired = _addressSettings.CompanyRequired;
-            model.Address.CountryEnabled = _addressSettings.CountryEnabled;
-            model.Address.StateProvinceEnabled = _addressSettings.StateProvinceEnabled;
-            model.Address.CityEnabled = _addressSettings.CityEnabled;
-            model.Address.CityRequired = _addressSettings.CityRequired;
-            model.Address.StreetAddressEnabled = _addressSettings.StreetAddressEnabled;
-            model.Address.StreetAddressRequired = _addressSettings.StreetAddressRequired;
-            model.Address.StreetAddress2Enabled = _addressSettings.StreetAddress2Enabled;
-            model.Address.StreetAddress2Required = _addressSettings.StreetAddress2Required;
-            model.Address.ZipPostalCodeEnabled = _addressSettings.ZipPostalCodeEnabled;
-            model.Address.ZipPostalCodeRequired = _addressSettings.ZipPostalCodeRequired;
-            model.Address.PhoneEnabled = _addressSettings.PhoneEnabled;
-            model.Address.PhoneRequired = _addressSettings.PhoneRequired;
-            model.Address.FaxEnabled = _addressSettings.FaxEnabled;
-            model.Address.FaxRequired = _addressSettings.FaxRequired;
-            //countries
-            foreach (var c in _countryService.GetAllCountries(true))
-                model.Address.AvailableCountries.Add(new SelectListItem() { Text = c.Name, Value = c.Id.ToString() });
-            model.Address.AvailableStates.Add(new SelectListItem() { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
+            PrepareAddressModel(model, customer, null);
 
             return View(model);
         }
 
-        [HttpPost]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [FormValueRequired("save", "save-continue")]
         [Permission(Permissions.Customer.EditAddress)]
-        public ActionResult AddressCreate(CustomerAddressModel model)
+        public ActionResult AddressCreate(CustomerAddressModel model, bool continueEditing)
         {
             var customer = _customerService.GetCustomerById(model.CustomerId);
             if (customer == null)
+            {
                 return RedirectToAction("List");
+            }
 
             if (ModelState.IsValid)
             {
                 var address = model.Address.ToEntity();
                 address.CreatedOnUtc = DateTime.UtcNow;
-                //some validation
+
                 if (address.CountryId == 0)
+                {
                     address.CountryId = null;
+                }
                 if (address.StateProvinceId == 0)
+                {
                     address.StateProvinceId = null;
+                }
+
                 customer.Addresses.Add(address);
                 _customerService.UpdateCustomer(customer);
 
                 NotifySuccess(T("Admin.Customers.Customers.Addresses.Added"));
-                return RedirectToAction("AddressEdit", new { addressId = address.Id, customerId = model.CustomerId });
+
+                return continueEditing
+                    ? RedirectToAction("AddressEdit", new { addressId = address.Id, customerId = model.CustomerId })
+                    : RedirectToAction("Edit", new { id = customer.Id });
             }
 
-            //If we got this far, something failed, redisplay form
             model.CustomerId = customer.Id;
-            //countries
-            foreach (var c in _countryService.GetAllCountries(true))
+
+            model.Address.AvailableCountries = _countryService.GetAllCountries(true)
+                .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString(), Selected = x.Id == model.Address?.CountryId })
+                .ToList();
+
+            var states = _stateProvinceService.GetStateProvincesByCountryId(model.Address?.CountryId ?? 0);
+            if (states.Any())
             {
-                model.Address.AvailableCountries.Add(new SelectListItem() { Text = c.Name, Value = c.Id.ToString(), Selected = (c.Id == model.Address.CountryId) });
-            }
-            //states
-            var states = model.Address.CountryId.HasValue ? _stateProvinceService.GetStateProvincesByCountryId(model.Address.CountryId.Value, true).ToList() : new List<StateProvince>();
-            if (states.Count > 0)
-            {
-                foreach (var s in states)
-                {
-                    model.Address.AvailableStates.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == model.Address.StateProvinceId) });
-                }
+                model.Address.AvailableStates = states
+                    .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString(), Selected = x.Id == model.Address?.StateProvinceId })
+                    .ToList();
             }
             else
             {
-                model.Address.AvailableStates.Add(new SelectListItem() { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
+                model.Address.AvailableStates.Add(new SelectListItem { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
             }
+
             return View(model);
         }
 
@@ -1305,66 +1221,38 @@ namespace SmartStore.Admin.Controllers
         {
             var customer = _customerService.GetCustomerById(customerId);
             if (customer == null)
+            {
                 return RedirectToAction("List");
+            }
 
             var address = _addressService.GetAddressById(addressId);
             if (address == null)
+            {
                 return RedirectToAction("Edit", new { id = customer.Id });
+            }
 
             var model = new CustomerAddressModel();
-            model.CustomerId = customerId;
-            model.Address = address.ToModel(_addressService);
-            model.Address.TitleEnabled = _addressSettings.TitleEnabled;
-            model.Address.FirstNameEnabled = true;
-            model.Address.FirstNameRequired = true;
-            model.Address.LastNameEnabled = true;
-            model.Address.LastNameRequired = true;
-            model.Address.EmailEnabled = true;
-            model.Address.EmailRequired = true;
-            model.Address.ValidateEmailAddress = _addressSettings.ValidateEmailAddress;
-            model.Address.CompanyEnabled = _addressSettings.CompanyEnabled;
-            model.Address.CompanyRequired = _addressSettings.CompanyRequired;
-            model.Address.CountryEnabled = _addressSettings.CountryEnabled;
-            model.Address.StateProvinceEnabled = _addressSettings.StateProvinceEnabled;
-            model.Address.CityEnabled = _addressSettings.CityEnabled;
-            model.Address.CityRequired = _addressSettings.CityRequired;
-            model.Address.StreetAddressEnabled = _addressSettings.StreetAddressEnabled;
-            model.Address.StreetAddressRequired = _addressSettings.StreetAddressRequired;
-            model.Address.StreetAddress2Enabled = _addressSettings.StreetAddress2Enabled;
-            model.Address.StreetAddress2Required = _addressSettings.StreetAddress2Required;
-            model.Address.ZipPostalCodeEnabled = _addressSettings.ZipPostalCodeEnabled;
-            model.Address.ZipPostalCodeRequired = _addressSettings.ZipPostalCodeRequired;
-            model.Address.PhoneEnabled = _addressSettings.PhoneEnabled;
-            model.Address.PhoneRequired = _addressSettings.PhoneRequired;
-            model.Address.FaxEnabled = _addressSettings.FaxEnabled;
-            model.Address.FaxRequired = _addressSettings.FaxRequired;
-            //countries
-            foreach (var c in _countryService.GetAllCountries(true))
-                model.Address.AvailableCountries.Add(new SelectListItem() { Text = c.Name, Value = c.Id.ToString(), Selected = (c.Id == address.CountryId) });
-            //states
-            var states = address.Country != null ? _stateProvinceService.GetStateProvincesByCountryId(address.Country.Id, true).ToList() : new List<StateProvince>();
-            if (states.Count > 0)
-            {
-                foreach (var s in states)
-                    model.Address.AvailableStates.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == address.StateProvinceId) });
-            }
-            else
-                model.Address.AvailableStates.Add(new SelectListItem() { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
+            PrepareAddressModel(model, customer, address);
 
             return View(model);
         }
 
-        [HttpPost]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [FormValueRequired("save", "save-continue")]
         [Permission(Permissions.Customer.EditAddress)]
-        public ActionResult AddressEdit(CustomerAddressModel model)
+        public ActionResult AddressEdit(CustomerAddressModel model, bool continueEditing)
         {
             var customer = _customerService.GetCustomerById(model.CustomerId);
             if (customer == null)
+            {
                 return RedirectToAction("List");
+            }
 
             var address = _addressService.GetAddressById(model.Address.Id);
             if (address == null)
+            {
                 return RedirectToAction("Edit", new { id = customer.Id });
+            }
 
             if (ModelState.IsValid)
             {
@@ -1372,12 +1260,36 @@ namespace SmartStore.Admin.Controllers
                 _addressService.UpdateAddress(address);
 
                 NotifySuccess(T("Admin.Customers.Customers.Addresses.Updated"));
-                return RedirectToAction("AddressEdit", new { addressId = model.Address.Id, customerId = model.CustomerId });
+
+                return continueEditing 
+                    ? RedirectToAction("AddressEdit", new { addressId = model.Address.Id, customerId = model.CustomerId })
+                    : RedirectToAction("Edit", new { id = customer.Id });
             }
 
-            //If we got this far, something failed, redisplay form
+            PrepareAddressModel(model, customer, address);
+
+            return View(model);
+        }
+
+        [Permission(Permissions.Customer.EditAddress)]
+        public ActionResult AddressDelete(int customerId, int addressId)
+        {
+            var customer = _customerService.GetCustomerById(customerId);
+            var address = customer.Addresses.FirstOrDefault(x => x.Id == addressId);
+
+            customer.RemoveAddress(address);
+            _customerService.UpdateCustomer(customer);
+
+            _addressService.DeleteAddress(address);
+
+            return new JsonResult { Data = new { success = true } };
+        }
+
+        private void PrepareAddressModel(CustomerAddressModel model, Customer customer, Address address)
+        {
             model.CustomerId = customer.Id;
-            model.Address = address.ToModel(_addressService);
+            model.Username = customer.Username;
+            model.Address = address?.ToModel(_addressService) ?? new AddressModel();
             model.Address.TitleEnabled = _addressSettings.TitleEnabled;
             model.Address.FirstNameEnabled = true;
             model.Address.FirstNameRequired = true;
@@ -1402,20 +1314,22 @@ namespace SmartStore.Admin.Controllers
             model.Address.PhoneRequired = _addressSettings.PhoneRequired;
             model.Address.FaxEnabled = _addressSettings.FaxEnabled;
             model.Address.FaxRequired = _addressSettings.FaxRequired;
-            //countries
-            foreach (var c in _countryService.GetAllCountries(true))
-                model.Address.AvailableCountries.Add(new SelectListItem() { Text = c.Name, Value = c.Id.ToString(), Selected = (c.Id == address.CountryId) });
-            //states
-            var states = address.Country != null ? _stateProvinceService.GetStateProvincesByCountryId(address.Country.Id, true).ToList() : new List<StateProvince>();
-            if (states.Count > 0)
+
+            model.Address.AvailableCountries = _countryService.GetAllCountries(true)
+                .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString(), Selected = x.Id == address?.CountryId })
+                .ToList();
+
+            var states = _stateProvinceService.GetStateProvincesByCountryId(address?.CountryId ?? 0);
+            if (states.Any())
             {
-                foreach (var s in states)
-                    model.Address.AvailableStates.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == address.StateProvinceId) });
+                model.Address.AvailableStates = states
+                    .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString(), Selected = x.Id == address?.StateProvinceId })
+                    .ToList();
             }
             else
-                model.Address.AvailableStates.Add(new SelectListItem() { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
-
-            return View(model);
+            {
+                model.Address.AvailableStates.Add(new SelectListItem { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
+            }
         }
 
         #endregion

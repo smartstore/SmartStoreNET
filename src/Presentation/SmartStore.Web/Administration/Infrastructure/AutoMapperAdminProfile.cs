@@ -73,7 +73,6 @@ namespace SmartStore.Admin.Infrastructure
 
             //address
             CreateMap<Address, AddressModel>()
-				.ForMember(dest => dest.AddressHtml, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableCountries, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStates, mo => mo.Ignore())
 				.ForMember(dest => dest.TitleEnabled, mo => mo.Ignore())

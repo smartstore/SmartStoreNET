@@ -1,10 +1,10 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using System.Collections.Generic;
-using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Common
 {
@@ -77,9 +77,6 @@ namespace SmartStore.Admin.Models.Common
         [SmartResourceDisplayName("Admin.Address.Fields.FaxNumber")]
         [AllowHtml]
         public string FaxNumber { get; set; }
-
-        [SmartResourceDisplayName("Admin.Address")]
-        public string AddressHtml { get; set; }
 		
         public IList<SelectListItem> AvailableCountries { get; set; }
         public IList<SelectListItem> AvailableStates { get; set; }

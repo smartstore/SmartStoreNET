@@ -58,6 +58,11 @@ namespace SmartStore.Services.Directory
         
         public virtual IList<StateProvince> GetStateProvincesByCountryId(int countryId, bool showHidden = false)
         {
+            if (countryId == 0)
+            {
+                return new List<StateProvince>();
+            }
+
 			var query = from sp in _stateProvinceRepository.Table
 						orderby sp.DisplayOrder
 						where sp.CountryId == countryId &&

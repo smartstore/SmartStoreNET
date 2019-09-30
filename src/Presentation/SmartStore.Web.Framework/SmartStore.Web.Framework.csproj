@@ -217,6 +217,7 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\AdminControllerBase.cs" />
     <Compile Include="Extensions\ActionResultExtensions.cs" />
+    <Compile Include="Extensions\HtmlPrefixScopeExtensions.cs" />
     <Compile Include="Extensions\HtmlZoneExtensions.cs" />
     <Compile Include="Extensions\LocalizedValueExtensions.cs" />
     <Compile Include="Extensions\TagBuilderExtensions.cs" />

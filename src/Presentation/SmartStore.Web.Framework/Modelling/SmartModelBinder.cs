@@ -140,6 +140,7 @@ namespace SmartStore.Web.Framework.Modelling
 				var type = Type.GetType(valueProvider.GetValue(typeKey).AttemptedValue, true);
 				return type;
 			}
+
 			return typeof(object);
 		}
 

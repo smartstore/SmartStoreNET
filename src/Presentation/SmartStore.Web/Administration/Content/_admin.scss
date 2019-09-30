@@ -906,6 +906,7 @@ textarea:not([class*="form-control"]) {
 	width: 100%;
     text-decoration: none;
     color: inherit;
+    cursor: pointer;
 
     &:hover {
         text-decoration: none;
@@ -943,14 +944,14 @@ textarea:not([class*="form-control"]) {
 	}
 }
 
-a.admin-config-group[data-toggle=collapse] {
+.admin-config-group[data-toggle=collapse] {
     position: relative;
 
     &:after {
-        @include fontawesome-font("\f107", regular);    // angle-down
+        @include fontawesome-font("\f078", regular);    // chevron-down
         display: block;
         position: absolute;
-        font-size: 1.2rem;
+        font-size: 0.85rem;
         line-height: 1;
         color: $body-color;
         right: 0;

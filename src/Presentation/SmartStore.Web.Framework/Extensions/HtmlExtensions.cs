@@ -679,29 +679,6 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Create(sb.ToString());
 		}
 
-		//public static MvcHtmlString SettingEditorFor<TModel, TValue>(
-		//	this HtmlHelper<TModel> helper,
-		//	Expression<Func<TModel, TValue>> expression,
-		//	string parentSelector = null,
-		//	object additionalViewData = null)
-		//{
-		//	var editor = helper.EditorFor(expression, additionalViewData);
-
-		//	var data = helper.ViewData[StoreDependingSettingHelper.ViewDataKey] as StoreDependingSettingData;
-		//	if (data == null || data.ActiveStoreScopeConfiguration <= 0)
-		//		return editor; // CONTROL
-
-		//	var sb = new StringBuilder("<div class='form-row flex-nowrap multi-store-setting-group'>");
-		//	sb.Append("<div class='col-auto'><div class='form-control-plaintext'>");
-		//	sb.Append(helper.SettingOverrideCheckboxInternal(expression, data, parentSelector)); // CHECK
-		//	sb.Append("</div></div>");
-		//	sb.Append("<div class='col multi-store-setting-control'>");
-		//	sb.Append(editor); // CONTROL
-		//	sb.Append("</div></div>");
-
-		//	return MvcHtmlString.Create(sb.ToString());
-		//}
-
 		public static MvcHtmlString SettingEditorFor<TModel, TValue>(
 			this HtmlHelper<TModel> helper,
 			Expression<Func<TModel, TValue>> expression,

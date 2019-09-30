@@ -136,23 +136,23 @@ Text suggestions:</div><ul>
 		<Value>The Merchant ID you received during registration at Amazon's Seller Central.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Marketplace">
-		<Value>Marketplace</Value>
+		<Value>Currency</Value>
 	</LocaleResource>
 	<LocaleResource Name="Marketplace.Hint">
-		<Value>The country where you registered your Amazon seller account.</Value>
+		<Value>Specifies both the currency and the Amazon region.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Marketplace.De">
-		<Value>Germany</Value>
-	</LocaleResource>
-	<LocaleResource Name="Marketplace.Uk">
-		<Value>United Kingdom of Great Britain</Value>
-	</LocaleResource>
-	<LocaleResource Name="Marketplace.Us">
-		<Value>USA</Value>
-	</LocaleResource>
-	<LocaleResource Name="Marketplace.Jp">
-		<Value>Japan</Value>
-	</LocaleResource>
+    <LocaleResource Name="Marketplace.De">
+        <Value>EUR (Euro)</Value>
+    </LocaleResource>
+    <LocaleResource Name="Marketplace.Uk">
+        <Value>GBP (Pound Sterling)</Value>
+    </LocaleResource>
+    <LocaleResource Name="Marketplace.Us">
+        <Value>USD (US Dollar)</Value>
+    </LocaleResource>
+    <LocaleResource Name="Marketplace.Jp">
+        <Value>JPY (Japanese Yen)</Value>
+    </LocaleResource>
 	<LocaleResource Name="AccessKey">
 		<Value>Your Access Key ID</Value>
 	</LocaleResource>

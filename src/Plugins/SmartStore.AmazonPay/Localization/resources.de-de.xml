@@ -136,22 +136,22 @@ Textvorschläge:</div><ul>
 		<Value>Die Händlernummer, die Sie währen der Registrierung bei Amazon Seller Central erhalten haben.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Marketplace">
-		<Value>Marktplatz</Value>
+		<Value>Währung</Value>
 	</LocaleResource>
 	<LocaleResource Name="Marketplace.Hint">
-		<Value>Das Land unter dem Sie Ihr Amazon Verkäuferkonto registriert haben.</Value>
+		<Value>Legt die Währung und zugleich die Amazon Region fest.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Marketplace.De">
-		<Value>Deutschland</Value>
+		<Value>EUR (Euro)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Marketplace.Uk">
-		<Value>Großbritannien</Value>
+		<Value>GBP (Pfund Sterling)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Marketplace.Us">
-		<Value>USA</Value>
+		<Value>USD (US Dollar)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Marketplace.Jp">
-		<Value>Japan</Value>
+		<Value>JPY (Japanischer Yen)</Value>
 	</LocaleResource>
 	<LocaleResource Name="AccessKey">
 		<Value>Ihre Access Key ID</Value>

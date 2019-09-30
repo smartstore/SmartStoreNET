@@ -12,6 +12,7 @@
 * **MegaSearch**:
 	* Added more text analysis options.
 	* Added tool to display internal information about a search, such as Lucene terms.
+	* #1693 Find the grouped product when searching for the SKU, GTIN, MPN of a non individually visible, associated product.
 
 ### Improvements
 * #1663 Make MeasureDimension and MeasureWeight localizable.

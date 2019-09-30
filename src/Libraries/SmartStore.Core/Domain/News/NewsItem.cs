@@ -39,6 +39,16 @@ namespace SmartStore.Core.Domain.News
         public bool Published { get; set; }
 
         /// <summary>
+        /// Gets or sets the picture identifier
+        /// </summary>
+        public int? PictureId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the preview picture identifier
+        /// </summary>
+        public int? PreviewPictureId { get; set; }
+
+        /// <summary>
         /// Gets or sets the news item start date and time
         /// </summary>
         public DateTime? StartDateUtc { get; set; }
@@ -47,6 +57,16 @@ namespace SmartStore.Core.Domain.News
         /// Gets or sets the news item end date and time
         /// </summary>
         public DateTime? EndDateUtc { get; set; }
+
+        /// <summary>
+        /// Gets or sets background for the news post
+        /// </summary>
+        public string SectionBg { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the news post has a background image
+        /// </summary>
+        public bool HasBgImage { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the news post comments are allowed 

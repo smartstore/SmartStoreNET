@@ -1,6 +1,7 @@
 ﻿@model BlogPostModel
 
 @using Telerik.Web.Mvc.UI;
+
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("blog-post-edit").Style(TabsStyle.Material).Items(x =>
@@ -41,11 +42,67 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PictureId)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.PictureId, new { transientUpload = true })
+                @Html.ValidationMessageFor(model => model.PictureId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PreviewPictureId)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.PreviewPictureId, new { transientUpload = true })
+                @Html.ValidationMessageFor(model => model.PreviewPictureId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Intro)
+            </td>
+            <td class="adminData wide">
+                @Html.TextAreaFor(model => model.Intro, new { style = "height:100px" })
+                @Html.ValidationMessageFor(model => model.Intro)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Body)
             </td>
             <td class="adminData wide">
                 @Html.EditorFor(x => x.Body, "Html")
                 @Html.ValidationMessageFor(model => model.Body)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SectionBg)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.SectionBg, 
+                    new List<SelectListItem> {
+                        new SelectListItem {  Text = "primary", Value = "primary" },
+                        new SelectListItem {  Text = "secondary", Value = "secondary" },
+                        new SelectListItem {  Text = "success", Value = "success" },
+                        new SelectListItem {  Text = "danger", Value = "danger" },
+                        new SelectListItem {  Text = "warning", Value = "warning" },
+                        new SelectListItem {  Text = "info", Value = "info" },
+                        new SelectListItem {  Text = "light", Value = "light" },
+                        new SelectListItem {  Text = "dark", Value = "dark" }
+                    },  T("Common.Unspecified"))
+
+                @Html.ValidationMessageFor(model => model.SectionBg)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.HasBgImage)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.HasBgImage)
+                @Html.ValidationMessageFor(model => model.HasBgImage)
             </td>
         </tr>
         <tr>
@@ -84,15 +141,15 @@
                 @Html.ValidationMessageFor(model => model.EndDate)
             </td>
         </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CreatedOnUtc)
-			</td>
-			<td class="adminData">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CreatedOnUtc)
+            </td>
+            <td class="adminData">
                 @Html.EditorFor(model => model.CreatedOnUtc)
                 @Html.ValidationMessageFor(model => model.CreatedOnUtc)
-			</td>
-		</tr>
+            </td>
+        </tr>
     </table>
 }
 @helper TabSeo()

@@ -16,16 +16,34 @@
 }
 
 <article class="page blogpost-page">  
+
+    @if (Model.DisplayAdminLink)
+	{
+		<a class="btn btn-secondary btn-flat btn-edit-blogpost" href="@Url.Action("Edit", "Blog", new { id = Model.Id, area = "admin" })" target="admin-blogpost" rel="nofollow">
+			<i class="fa fa-cog"></i>
+			<span>@T("Common.Cms.EditBlogpost")</span>
+		</a>
+	}
+
+    @if (Model.PictureModel.FullSizeImageUrl.HasValue())
+    {
+        <div class="blogpost-picture mb-3">
+            <img class="img-fluid" src="@Model.PictureModel.FullSizeImageUrl" alt="@Model.PictureModel.AlternateText" title="@Model.PictureModel.Title"/>
+        </div>
+    }
+
     <div class="blogpost-date text-muted">
         @Model.CreatedOn.ToNativeString("D")
     </div>
 
-    <div class="page-title mb-5">
+    <div class="page-title mb-4 mt-3">
 		<h1 class="fs-h2">@Model.Title</h1>
     </div>
 
     <div class="blogpost-body">
-		@{ Html.RenderWidget("blogpost_page_before_body"); }
+		
+        @{ Html.RenderWidget("blogpost_page_before_body"); }
+
         <div class="blogpost-content text-body html-editor-content">
             @Html.Raw(Model.Body)
         </div>
@@ -33,12 +51,10 @@
         @if (Model.Tags.Count > 0)
         {
             <div class="blogpost-tags mt-4">
-                <i class="fa fa-tags" title='@T("Blog.Tags")'></i>
                 @for (int i = 0, length = Model.Tags.Count; i < length; i++)
                 {
                     var tag = Model.Tags[i];
-                    var isLast = i == length - 1;
-                    <a class="blogpost-tag" href="@Url.RouteUrl("BlogByTag", new { tag = tag.SeName })">@tag.Name</a>@(!isLast ? ", " : "")
+                    <a class="blogpost-tag badge badge-pill badge-info py-2 px-3 mb-1" href="@Url.RouteUrl("BlogByTag", new { tag = tag.SeName })">@tag.Name</a>
                 }
             </div>
         }

@@ -109,6 +109,10 @@
                 "Admin.Customers.Customers.Addresses.AddButton",
                 "Admin.Address",
                 "Admin.Catalog.Products.Acl");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Blog.BlogPosts.Fields.Tags.Hint",
+                "Tags are keywords that this blog post can also be identified by. Enter a comma separated list of the tags to be associated with this blog post.",
+                "Dieser Blog-Eintrag kann durch die Verwendung von Tags (Stichwörter) gekennzeichnet und kategorisiert werden. Mehrere Tags können als kommagetrennte Liste eingegeben werden.");
         }
     }
 }

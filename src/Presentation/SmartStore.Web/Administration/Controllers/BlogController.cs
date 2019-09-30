@@ -10,6 +10,7 @@ using SmartStore.Services.Blogs;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
@@ -142,10 +143,15 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var blogPost = model.ToEntity();
+                
+                MediaHelper.UpdatePictureTransientStateFor(blogPost, c => c.PictureId);
+                MediaHelper.UpdatePictureTransientStateFor(blogPost, c => c.PreviewPictureId);
+
                 blogPost.CreatedOnUtc = model.CreatedOnUtc;
                 blogPost.StartDateUtc = model.StartDate;
                 blogPost.EndDateUtc = model.EndDate;
                 blogPost.CreatedOnUtc = DateTime.UtcNow;
+
                 _blogService.InsertBlogPost(blogPost);
 
                 //search engine name
@@ -163,6 +169,7 @@ namespace SmartStore.Admin.Controllers
 
             //If we got this far, something failed, redisplay form
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
+
             //Stores
             PrepareStoresMappingModel(model, null, true);
             return View(model);
@@ -176,11 +183,13 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
+
             var model = blogPost.ToModel();
             model.CreatedOnUtc = blogPost.CreatedOnUtc;
             model.StartDate = blogPost.StartDateUtc;
             model.EndDate = blogPost.EndDateUtc;
-            //Store
+
+            // Store
             PrepareStoresMappingModel(model, blogPost, false);
             return View(model);
         }
@@ -196,28 +205,38 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 blogPost = model.ToEntity(blogPost);
+
+                MediaHelper.UpdatePictureTransientStateFor(blogPost, c => c.PictureId);
+                MediaHelper.UpdatePictureTransientStateFor(blogPost, c => c.PreviewPictureId);
+
                 blogPost.CreatedOnUtc = model.CreatedOnUtc;
                 blogPost.StartDateUtc = model.StartDate;
                 blogPost.EndDateUtc = model.EndDate;
+
                 _blogService.UpdateBlogPost(blogPost);
 
-                // search engine name
+                // Search engine name
                 var seName = blogPost.ValidateSeName(model.SeName, model.Title, true);
                 _urlRecordService.SaveSlug(blogPost, seName, blogPost.LanguageId);
 
                 // Stores
                 SaveStoreMappings(blogPost, model);
 
+                // Event
                 Services.EventPublisher.Publish(new ModelBoundEvent(model, blogPost, form));
 
+                // Notify
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Updated"));
+
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
-            //Store
+
+            // Store
             PrepareStoresMappingModel(model, blogPost, true);
+
             return View(model);
         }
 

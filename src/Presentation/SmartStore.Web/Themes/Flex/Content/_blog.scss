@@ -5,56 +5,21 @@
 // Blog Styles
 // --------------------------------------------------
 
-.blog-page .blogpost {
-	padding: 20px 0;		
-    border-top: 1px solid #ddd;
+.blogpost-tags-overlay,
+.comments-overlay {
+    position: absolute;
+    z-index: 1;
+}
+.blogpost-tags-overlay {
+    top: 0;
+    left: 0;
+}
+.comments-overlay {
+    bottom: 0rem;
+    right: 0;
 }
 
-.blog-page .blogpost:first-child {
-    border-top: none;
-}
-
-.blog-page .blogpost .blogpost-info {
-	.blogpost-comments {
-		position: relative;
-		display: block;
-		text-decoration: none;
-		font-weight: bold;
-		width: 50px;
-		height: 50px;	
-	}
-	
-	.blogpost-comments .blogpost-comments-icon {
-		position: absolute;
-		font-size: 50px;
-		line-height: 50px;
-		color: $gray-300;
-	}
-	
-	.blogpost-comments .blogpost-comments-count {
-		position: absolute;
-		top: 13px;
-		font-size: 13px;
-		line-height: 16px;
-		width: 38px;
-		text-align: center;
-		color: $gray-500;
-	}
-	
-    
-	.blogpost-comments.vivid {
-		.blogpost-comments-icon { color: $gray-700 }
-		.blogpost-comments-count { color: $white }
-	}
-	
-	.blogpost-tags {
-        border-radius: $border-radius;
-        border: 1px solid $gray-300;
-        font-size: $font-size-sm;
-        background-color: $gray-100;
-	}
-}
-
+// comments
 .comment-item {
     padding: 1rem 0;
     border-bottom: 1px solid rgba(0,0,0, 0.12);
@@ -69,11 +34,51 @@
     }
 }
 
-.block-popular-blogtags {
-    overflow: hidden;
+// tags
+.blogpost-tags .badge,
+.block-popular-blogtags .badge {
+    font-size: .875rem;
+}
 
-    .list-inline-item {
-        line-height: 1.2;
+// admin edit
+.btn-edit-blogpost {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    background-color: rgba(#fff, 0.5);
+
+    .blogpost-page:hover & {
+        display: inline-block;
     }
 }
 
+
+.box-img-top .bg-shade {
+    --gradientdir: to top;
+    top: 50%
+}
+
+.has-section-bg {
+    .blogpost-date {
+        color: var(--section-color-4) !important;
+    }
+    .blogpost-title {
+        color: var(--section-color-1) !important;
+    }
+    .blogpost-intro {
+        color: var(--section-color-2) !important;
+    }
+}
+
+.has-section-bg.has-tags .blogpost-date {
+    padding-top: 1.5rem;
+}
+
+.has-image-bg {
+    .blogpost-date,
+    .blogpost-title,
+    .blogpost-intro {
+        color: #fff !important;
+    }
+}

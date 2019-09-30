@@ -5,7 +5,7 @@
 
 @{
     Layout = "_Layout";
-    
+
     var parsedMonth = Model.PagingFilteringContext.GetParsedMonth();
 
     Html.AddTitleParts(
@@ -36,21 +36,21 @@
         <div class="col">
             <div class="heading">
                 <h1 class="heading-title">
-                    @if (String.IsNullOrEmpty(Model.PagingFilteringContext.Tag))
-					{
-						if (Model.PagingFilteringContext.GetParsedMonth().HasValue)
-						{
-							@T("Blog.FilteredByMonth", Model.PagingFilteringContext.GetParsedMonth().Value.Year, Model.PagingFilteringContext.GetParsedMonth().Value.ToNativeString("MMMM"))
-						}
-						else
-						{
+                    @if (!Model.PagingFilteringContext.Tag.HasValue())
+                    {
+                        if (Model.PagingFilteringContext.GetParsedMonth().HasValue)
+                        {
+                            @T("Blog.FilteredByMonth", Model.PagingFilteringContext.GetParsedMonth().Value.Year, Model.PagingFilteringContext.GetParsedMonth().Value.ToNativeString("MMMM"))
+                        }
+                        else
+                        {
                             @T("Blog")
-						}
-					}
-					else
-					{
-						@T("Blog.TaggedWith", Model.PagingFilteringContext.Tag)
-					}
+                        }
+                    }
+                    else
+                    {
+                        @T("Blog.TaggedWith", Model.PagingFilteringContext.Tag)
+                    }
                 </h1>
             </div>
         </div>
@@ -63,70 +63,122 @@
     </div>
 
     <div class="page-body">
-        
+
         @{ Html.RenderWidget("bloglist_page_before_posts"); }
 
         <div class="blogposts">
-            @foreach (var item in Model.BlogPosts)
-            {
-                <article class="blogpost row mt-0">
+            <div class="card-columns card-cols-sm-1 card-cols-lg-2">
+
+                @foreach (var item in Model.BlogPosts)
+                {
+                    var imageUrl = item.PreviewPictureModel.ImageUrl.HasValue() ? item.PreviewPictureModel.ImageUrl : item.PictureModel.ImageUrl;
+                    var itemHasImage = item.PictureModel.ImageUrl.HasValue() || item.PreviewPictureModel.ImageUrl.HasValue();
+                    var articleClass = "card rounded shadow-sm border-0 box-img-top{0}{1}{2}".FormatWith(
+                        item.HasBgImage ? " bg-tint-3 has-image-bg" : "",
+                        item.SectionBg.HasValue() ? " has-section-bg section-" + item.SectionBg : "",
+                        item.Tags.Count > 0 ? " has-tags" : ""
+                    );
                     
-                    <div class="blogpost-content col-12 col-md-9">
-                        <h3 class="blogpost-title">
-                            <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })">
-                                @item.Title
-                            </a>
-                        </h3>
+                    <article class="@articleClass">
 
-                        <div class="blogpost-body html-editor-content">
-                            @Html.Raw(item.Body)
-                        </div>
-
-                        @{ Html.RenderWidget("bloglist_page_inside_post"); }
-                    </div>
-
-                    <div class="blogpost-info col-12 col-md-3">
-                        @if (item.Comments.AllowComments)
+                        @if (item.HasBgImage && itemHasImage)
                         {
-                            <a class="blogpost-comments@(item.Comments.NumberOfComments > 0 ? " vivid" : "") d-none d-md-block"
-                               href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })"
-                               title="@string.Format(@T("Blog.CommentsLink").Text, item.Comments.NumberOfComments)"
-                               data-toggle="tooltip">
-                                <span class="blogpost-comments-icon fa fa-comments"></span>
-                                <span class="blogpost-comments-count">@item.Comments.NumberOfComments</span>
-                            </a>
+                            <div class="box-img-wrapper card-img">
+                                <img class="card-img box-scale" src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title">
+                            </div>
+                            <div class="bg-overlay bg-primary card-img"></div>
+                            <div class="bg-overlay bg-shade bg-shade-primary card-img h-50"></div>
+                            @RenderTags(item)
+                            @RenderComments(item)
                         }
-
-                        <div class="blogpost-date mb-2 text-muted">
-                            @item.CreatedOn.ToNativeString("dd MMMM, yyyy")
-                        </div>
-
-                        @if (item.Tags.Count > 0)
+                        else if(!item.SectionBg.HasValue())
                         {
-                            <div class="blogpost-tags mb-3 mb-md-0 p-2">
-                                <i class="fa fa-tags" title='@T("Blog.Tags")'></i>
-                                @for (int i = 0, length = item.Tags.Count; i < length; i++)
+                            <div class="box-img-wrapper">
+                                @if (itemHasImage)
                                 {
-                                    var tag = item.Tags[i];
-                                    var isLast = i == length - 1;
-                                    <a class="blogpost-tag" href="@Url.RouteUrl("BlogByTag", new { tag = tag.SeName })">@tag.Name@(!isLast ? "," : "")</a>
+                                    <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })">
+                                        <img class="box-img box-scale" src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title">
+                                    </a>
                                 }
+
+                                @RenderTags(item)
+                                @RenderComments(item)
                             </div>
                         }
-                    </div>
+                        else
+                        {
+                            @RenderTags(item)
+                            @RenderComments(item)
+                        }
 
-                </article>
-            }
+                        <div class="@(item.HasBgImage ? "card-img-overlay d-flex flex-column justify-content-end" : "box-img-top")">
+                            <div class="text-left w-100 p-3">
+                                <div class="blogpost-date mb-2 text-muted">
+                                    @item.CreatedOn.ToNativeString("dd MMMM, yyyy")
+                                </div>
+
+                                <h3 class="fs-h4 mb-3 mt-1 font-weight-medium">
+                                    <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })" class="blogpost-title text-body">
+                                        @item.Title
+                                    </a>
+                                </h3>
+
+                                @if (item.Intro.HasValue())
+                                {
+                                    <div class="py-1 blogpost-intro">@Html.Raw(item.Intro)</div>
+                                }
+
+                                @{ Html.RenderWidget("bloglist_page_inside_post"); }
+
+                            </div>
+                        </div>
+                        
+                    </article>
+                }
+            </div>
         </div>
 
         @(Html.SmartStore().Pager(Model.PagingFilteringContext)
-				.Name("pagination-bottom")
-				.QueryParam("pagenumber")
-				.ShowFirst(false)
-				.ShowLast(false)
-				.Style(PagerStyle.Pagination)
-				.MaxPagesToDisplay(6))
+                .Name("pagination-bottom")
+                .QueryParam("pagenumber")
+                .ShowFirst(false)
+                .ShowLast(false)
+                .Style(PagerStyle.Pagination)
+                .MaxPagesToDisplay(6))
 
         @{ Html.RenderWidget("bloglist_page_after_posts"); }
     </div>
 </div>
+
+
+@helper RenderTags(BlogPostModel item)
+{
+    if (item.Tags.Count > 0)
+    {
+        <div class="blogpost-tags-overlay mb-3 mb-md-0 p-2">
+            @for (int i = 0, length = item.Tags.Count; i < length; i++)
+            {
+                var tag = item.Tags[i];
+                var tagClasses = "blogpost-tag badge p-1 {0}".FormatWith(item.SectionBg.HasValue() && item.SectionBg.Equals("primary") && !item.HasBgImage ? "badge-secondary" : "badge-primary");
+
+                <a class="@tagClasses" href="@Url.RouteUrl("BlogByTag", new { tag = tag.SeName })">@tag.Name</a>
+            }
+        </div>
+    }
+}
+
+@helper RenderComments(BlogPostModel item)
+{
+    if (item.Comments.AllowComments)
+    {
+        <div class="comments-overlay">
+            <a class="fs-xs m-2 btn btn-secondary btn-circle@(item.Comments.NumberOfComments > 0 ? " vivid" : "")"
+                href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })"
+                title="@string.Format(@T("Blog.CommentsLink").Text, item.Comments.NumberOfComments)">
+                <span class="blogpost-comments-icon fa fa-comment-alt pr-1"></span>
+                <span class="blogpost-comments-count">@item.Comments.NumberOfComments</span>
+            </a>
+        </div>
+    }
+}
+

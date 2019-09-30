@@ -27,9 +27,27 @@ namespace SmartStore.Admin.Models.Blogs
         [AllowHtml]
         public string SeName { get; set; }
 
+        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Intro")]
+        [AllowHtml]
+        public string Intro { get; set; }
+
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Body")]
         [AllowHtml]
         public string Body { get; set; }
+
+        [UIHint("Picture")]
+        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Picture")]
+        public int? PictureId { get; set; }
+
+        [UIHint("Picture")]
+        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.PreviewPicture")]
+        public int? PreviewPictureId { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.SectionBg")]
+        public string SectionBg { get; set; }
+        
+        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.HasBgImage")]
+        public bool HasBgImage { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.AllowComments")]
         public bool AllowComments { get; set; }

@@ -27,10 +27,38 @@ namespace SmartStore.Core.Domain.Blogs
 		[DataMember]
 		public string Title { get; set; }
 
-		/// <summary>
-		/// Gets or sets the blog post title
-		/// </summary>
-		[DataMember]
+        /// <summary>
+        /// Gets or sets the picture identifier
+        /// </summary>
+        [DataMember]
+        public int? PictureId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the preview picture identifier
+        /// </summary>
+        [DataMember]
+        public int? PreviewPictureId { get; set; }
+
+        /// <summary>
+        /// Gets or sets background for the blog post
+        /// </summary>
+        public string SectionBg { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the blog post has a background image
+        /// </summary>
+        [DataMember]
+        public bool HasBgImage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the blog post intro
+        /// </summary>
+        public string Intro { get; set; }
+
+        /// <summary>
+        /// Gets or sets the blog post title
+        /// </summary>
+        [DataMember]
 		public string Body { get; set; }
 
 		/// <summary>
@@ -62,10 +90,10 @@ namespace SmartStore.Core.Domain.Blogs
 		[DataMember]
 		public string Tags { get; set; }
 
-		/// <summary>
-		/// Gets or sets the blog post start date and time
-		/// </summary>
-		[DataMember]
+        /// <summary>
+        /// Gets or sets the blog post start date and time
+        /// </summary>
+        [DataMember]
 		public DateTime? StartDateUtc { get; set; }
 
 		/// <summary>

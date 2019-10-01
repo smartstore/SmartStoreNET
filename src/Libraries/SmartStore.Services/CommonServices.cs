@@ -11,7 +11,6 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
-using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 
 namespace SmartStore.Services
@@ -31,7 +30,6 @@ namespace SmartStore.Services
 		private readonly Lazy<ICustomerActivityService> _customerActivity;
 		private readonly Lazy<IPictureService> _pictureService;
 		private readonly Lazy<INotifier> _notifier;
-		private readonly Lazy<IPermissionService> _permissions;
         private readonly Lazy<IPermissionService2> _permissions2;
         private readonly Lazy<ISettingService> _settings;
 		private readonly Lazy<IStoreService> _storeService;
@@ -54,7 +52,6 @@ namespace SmartStore.Services
 			Lazy<ICustomerActivityService> customerActivity,
 			Lazy<IPictureService> pictureService,
 			Lazy<INotifier> notifier,
-			Lazy<IPermissionService> permissions,
             Lazy<IPermissionService2> permissions2,
             Lazy<ISettingService> settings,
 			Lazy<IStoreService> storeService,
@@ -76,7 +73,6 @@ namespace SmartStore.Services
 			_customerActivity = customerActivity;
 			_pictureService = pictureService;
 			_notifier = notifier;
-			_permissions = permissions;
             _permissions2 = permissions2;
 			_settings = settings;
 			_storeService = storeService;
@@ -99,7 +95,6 @@ namespace SmartStore.Services
 		public ICustomerActivityService CustomerActivity => _customerActivity.Value;
 		public IPictureService PictureService => _pictureService.Value;
 		public INotifier Notifier => _notifier.Value;
-		public IPermissionService Permissions => _permissions.Value;
         public IPermissionService2 Permissions2 => _permissions2.Value;
         public ISettingService Settings => _settings.Value;
 		public IStoreService StoreService => _storeService.Value;

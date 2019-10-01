@@ -15,7 +15,6 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
-using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 
 namespace SmartStore.Tests
@@ -48,7 +47,6 @@ namespace SmartStore.Tests
 		public ICustomerActivityService CustomerActivity => MockRepository.GenerateMock<ICustomerActivityService>();
 		public IPictureService PictureService => MockRepository.GenerateMock<IPictureService>();
 		public INotifier Notifier => MockRepository.GenerateMock<INotifier>();
-		public IPermissionService Permissions => MockRepository.GenerateMock<IPermissionService>();
         public IPermissionService2 Permissions2 => MockRepository.GenerateMock<IPermissionService2>();
         public ISettingService Settings => MockRepository.GenerateMock<ISettingService>();
 		public IStoreService StoreService => MockRepository.GenerateMock<IStoreService>();

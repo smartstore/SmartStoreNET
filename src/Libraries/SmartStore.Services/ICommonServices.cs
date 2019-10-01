@@ -11,7 +11,6 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
-using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 
 namespace SmartStore.Services
@@ -32,7 +31,6 @@ namespace SmartStore.Services
 		ICustomerActivityService CustomerActivity { get; }
 		IPictureService PictureService { get; }
 		INotifier Notifier { get; }
-		IPermissionService Permissions { get; }
         IPermissionService2 Permissions2 { get; }
         ISettingService Settings { get; }
 		IStoreService StoreService { get; }

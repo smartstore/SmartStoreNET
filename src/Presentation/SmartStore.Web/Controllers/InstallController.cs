@@ -618,7 +618,7 @@ namespace SmartStore.Web.Controllers
 
 					// Register default permissions
 					var permissionProviders = new List<Type>();
-					permissionProviders.Add(typeof(StandardPermissionProvider2));
+					permissionProviders.Add(typeof(StandardPermissionProvider));
 					foreach (var providerType in permissionProviders)
 					{
 						dynamic provider = Activator.CreateInstance(providerType);

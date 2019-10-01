@@ -273,10 +273,13 @@ namespace SmartStore.Services.Cms.Blocks
                 {
                     case PartialViewResult _:
                     case ContentResult _:
+                    case EmptyResult _:
                         base.InvokeActionResult(controllerContext, actionResult);
                         break;
+                    case HttpNotFoundResult nfr:
+                        throw new InvalidOperationException(nfr.StatusDescription.NullEmpty() ?? $"The resource was not found ({nfr.StatusCode}).");
                     default:
-                        throw new InvalidOperationException($"The action result type of an MVC route block must either be '{nameof(PartialViewResult)}' or '{nameof(ContentResult)}'");
+                        throw new InvalidOperationException($"The action result type of an MVC route block must either be '{nameof(PartialViewResult)}', '{nameof(ContentResult)}' or '{nameof(EmptyResult)}'");
                 }
             }
         }

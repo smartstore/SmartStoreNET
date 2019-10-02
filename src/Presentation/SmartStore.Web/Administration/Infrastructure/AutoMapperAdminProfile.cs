@@ -506,15 +506,13 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.Language, mo => mo.Ignore())
 				.ForMember(dest => dest.StartDateUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.EndDateUtc, mo => mo.Ignore());
-			//customer roles
+
 			CreateMap<CustomerRole, CustomerRoleModel>()
 				.ForMember(dest => dest.TaxDisplayTypes, mo => mo.Ignore());
 			/*.ForMember(dest => dest.TaxDisplayType, mo => mo.MapFrom((src) => src.TaxDisplayType))*/
-			;
-			CreateMap<CustomerRoleModel, CustomerRole>()
-				.ForMember(dest => dest.PermissionRecords, mo => mo.Ignore());
+
+			CreateMap<CustomerRoleModel, CustomerRole>();
 			/*.ForMember(dest => dest.TaxDisplayType, mo => mo.MapFrom((src) => src.TaxDisplayType))*/
-			;
 
 			//product attributes
 			CreateMap<ProductAttribute, ProductAttributeModel>()

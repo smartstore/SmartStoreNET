@@ -88,8 +88,8 @@
                 .prepend('<span class="tree-vline"></span>');
         }
 
+        // Add state checkbox HTML.
         if (opt.nodeState === 'on-off') {
-            // Add state checkbox HTML.
             root.find('.tree-label').each(function (i, el) {
                 var label = $(this);
                 var node = label.closest('.tree-node');
@@ -103,8 +103,7 @@
                     stateClass = 'on';
                     stateTitle = opt.stateTitles[0];
                 }
-                else if (value === 1 || node.hasClass('root-node')) {
-                    value = 1;
+                else if (value === 1) {
                     stateClass = 'off';
                     stateTitle = opt.stateTitles[1];
                 }
@@ -157,9 +156,8 @@
                     state.addClass('off').attr('title', opt.stateTitles[1]);
                     inheritedState = 1;
                 }
-                else if (val === 0 || node.hasClass('root-node')) {
+                else if (val === 0) {
                     // Indeterminate > checked.
-                    // Root item cannot have an inherited state.
                     el.prop({ checked: true, indeterminate: false, value: 2 });
                     hIn.val(1);
                     state.addClass('on').attr('title', opt.stateTitles[0]);
@@ -214,10 +212,12 @@
         }
         else {
             // Is not directly on.
+            var isRootNode = node.hasClass('root-node');
+
             node.find('.tree-state:first')
                 .removeClass('in-on in-off on off')
                 .addClass(inheritedState === 2 ? 'in-on' : 'in-off')
-                .attr('title', opt.stateTitles[inheritedState === 2 ? 2 : 3]);
+                .attr('title', isRootNode ? '' : opt.stateTitles[inheritedState === 2 ? 2 : 3]);
         }
 
         node.find('> ul > .tree-node').each(function () {

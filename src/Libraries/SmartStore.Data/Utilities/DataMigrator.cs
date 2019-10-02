@@ -937,11 +937,11 @@ namespace SmartStore.Data.Utilities
             var mappingSet = ctx.Set<PermissionRoleMapping>();
             var permissionSet = ctx.Set<PermissionRecord>();
             var allPermissions = permissionSet.ToList();
-            var newPermissions = new Dictionary<string, PermissionRecord>();
+            var oldPermissions = GetOldPermissions();
             var allRoles = ctx.Set<CustomerRole>().ToList();
             var adminRole = allRoles.FirstOrDefault(x => x.SystemName.IsCaseInsensitiveEqual("Administrators"));
 
-            // No entity, no navigation property -> use SQL.
+            // Mapping has no entity and no navigation property -> use SQL.
             var oldMappings = new Multimap<int, int>();
             if (((DbContext)context).TableExists("PermissionRecord_Role_Mapping"))
             {
@@ -960,10 +960,10 @@ namespace SmartStore.Data.Utilities
                 permissionToRoles.AddRange(permission.SystemName, roleIds);
             }
 
-            var oldPermissions = GetOldPermissions();
-
             using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
             {
+                // Name and category property cannot be null, exist in database, but not in the domain model -> use SQL.
+                var insertSql = "Insert Into PermissionRecord (SystemName, Name, Category) Values({0}, {1}, {2})";
                 var permissionSystemNames = PermissionHelper.GetPermissions(typeof(Permissions));
 
                 // Delete existing granular permissions to ensure correct order in tree.
@@ -973,10 +973,12 @@ namespace SmartStore.Data.Utilities
                 // Insert new granular permissions.
                 foreach (var permissionName in permissionSystemNames)
                 {
-                    var permission = permissionSet.Add(new PermissionRecord { SystemName = permissionName, Name = string.Empty, Category = string.Empty });
-                    newPermissions[permissionName] = permission;
+                    ctx.Database.ExecuteSqlCommand(insertSql, permissionName, string.Empty, string.Empty);
                 }
-                scope.Commit();
+                
+                var newPermissions = permissionSet.Where(x => permissionSystemNames.Contains(x.SystemName))
+                    .ToList()
+                    .ToDictionarySafe(x => x.SystemName, x => x);
 
                 // Migrate mappings of standard permissions (whether the new permission is granted).
                 foreach (var kvp in oldPermissions)
@@ -1050,10 +1052,12 @@ namespace SmartStore.Data.Utilities
                 // Insert new granular permissions.
                 foreach (var permissionName in allPluginPermissionNames)
                 {
-                    var permission = permissionSet.Add(new PermissionRecord { SystemName = permissionName, Name = string.Empty, Category = string.Empty });
-                    newPermissions[permissionName] = permission;
+                    ctx.Database.ExecuteSqlCommand(insertSql, permissionName, string.Empty, string.Empty);
                 }
-                scope.Commit();
+
+                newPermissions = permissionSet.Where(x => allPluginPermissionNames.Contains(x.SystemName))
+                    .ToList()
+                    .ToDictionarySafe(x => x.SystemName, x => x);
 
                 PermissionRecord pr;
                 if (newPermissions.TryGetValue("debitoor", out pr)) Allow("ManageDebitoor", pr);

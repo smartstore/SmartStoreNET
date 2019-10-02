@@ -10,7 +10,6 @@ namespace SmartStore.Core.Domain.Customers
     [DataContract]
     public partial class CustomerRole : BaseEntity
     {
-        private ICollection<PermissionRecord> _permissionRecords;
         private ICollection<PermissionRoleMapping> _permissionRoleMappings;
 
         /// <summary>
@@ -54,16 +53,6 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         [DataMember]
         public string SystemName { get; set; }
-
-        //GP: remove.
-        /// <summary>
-        /// Gets or sets the permission records
-        /// </summary>
-        public virtual ICollection<PermissionRecord> PermissionRecords
-        {
-            get { return _permissionRecords ?? (_permissionRecords = new HashSet<PermissionRecord>()); }
-            protected set { _permissionRecords = value; }
-        }
 
         /// <summary>
         /// Gets or sets the permission role mappings.

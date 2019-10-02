@@ -176,7 +176,6 @@ namespace SmartStore.Services.Security
             };
 
             var systemNames = _permissionRepository.TableUntracked
-                .Where(x => string.IsNullOrEmpty(x.Name))//GP: TODO, remove clause later
                 .Select(x => x.SystemName)
                 .ToList()
                 .ToDictionarySafe(x => x, nameSelector);
@@ -269,12 +268,7 @@ namespace SmartStore.Services.Security
                     var newPermission = GetPermissionBySystemName(permission.SystemName);
                     if (newPermission == null)
                     {
-                        newPermission = new PermissionRecord
-                        {
-                            Name = string.Empty,
-                            SystemName = permission.SystemName,
-                            Category = string.Empty
-                        };
+                        newPermission = new PermissionRecord { SystemName = permission.SystemName };
 
                         // Default customer role mappings.
                         var defaultPermissions = permissionProvider.GetDefaultPermissions();
@@ -492,7 +486,6 @@ namespace SmartStore.Services.Security
 
                 var permissions = _permissionRepository.TableUntracked
                     .Expand(x => x.PermissionRoleMappings)
-                    .Where(x => string.IsNullOrEmpty(x.Name))//GP: TODO, remove clause later
                     .ToList();
 
                 AddChildItems(root, permissions, null, permission =>
@@ -519,10 +512,7 @@ namespace SmartStore.Services.Security
             Guard.NotNull(customer, nameof(customer));
 
             var root = new TreeNode<IPermissionNode>(new PermissionNode());
-
-            var permissions = _permissionRepository.TableUntracked
-                .Where(x => string.IsNullOrEmpty(x.Name))//GP: TODO, remove clause later
-                .ToList();
+            var permissions = _permissionRepository.TableUntracked.ToList();
 
             AddChildItems(root, permissions, null, permission =>
             {

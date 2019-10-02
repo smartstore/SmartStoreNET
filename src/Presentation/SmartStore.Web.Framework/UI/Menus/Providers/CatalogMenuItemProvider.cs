@@ -103,6 +103,7 @@ namespace SmartStore.Web.Framework.UI
                 BadgeText = node.Id > 0 ? node.GetLocalized(x => x.BadgeText) : null,
                 BadgeStyle = (BadgeStyle)node.BadgeStyle,
                 RouteName = node.Id > 0 ? "Category" : "HomePage",
+                ImageId = node.PictureId
             };
 
             // Handle external link

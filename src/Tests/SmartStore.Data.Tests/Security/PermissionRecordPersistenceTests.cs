@@ -1,8 +1,6 @@
-﻿using System.Linq;
-using SmartStore.Core.Domain.Customers;
+﻿using NUnit.Framework;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Security
 {
@@ -19,28 +17,6 @@ namespace SmartStore.Data.Tests.Security
             fromDb.Name.ShouldEqual("Name 1");
             fromDb.SystemName.ShouldEqual("SystemName 2");
             fromDb.Category.ShouldEqual("Category 4");
-        }
-
-        [Test]
-        public void Can_save_and_load_permissionRecord_with_customerRoles()
-        {
-            var permissionRecord = GetTestPermissionRecord();
-            permissionRecord.CustomerRoles.Add
-                (
-                    new CustomerRole()
-                    {
-                        Name = "Administrators",
-                        SystemName = "Administrators"
-                    }
-                );
-
-
-            var fromDb = SaveAndLoadEntity(permissionRecord);
-            fromDb.ShouldNotBeNull();
-
-            fromDb.CustomerRoles.ShouldNotBeNull();
-            (fromDb.CustomerRoles.Count == 1).ShouldBeTrue();
-            fromDb.CustomerRoles.First().Name.ShouldEqual("Administrators");
         }
 
         protected PermissionRecord GetTestPermissionRecord()

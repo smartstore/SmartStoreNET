@@ -45,15 +45,6 @@ namespace SmartStore.Data.Migrations
 		public void Seed(SmartObjectContext context)
 		{
 			context.MigrateLocaleResources(MigrateLocaleResources);
-
-			var permissionMigrator = new PermissionMigrator(context);
-
-			permissionMigrator.AddPermission(new PermissionRecord
-			{
-				Name = "Admin area. Manage Url Records",
-				SystemName = "ManageUrlRecords",
-				Category = "Configuration"
-			}, new string[] { SystemCustomerRoleNames.Administrators });
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)

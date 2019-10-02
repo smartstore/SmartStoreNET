@@ -597,14 +597,6 @@ namespace SmartStore.Data.Utilities
 
             using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
             {
-                var permissionMigrator = new PermissionMigrator(ctx);
-                permissionMigrator.AddPermission(new PermissionRecord
-                {
-                    Name = "Admin area. Manage Menus",
-                    SystemName = "ManageMenus",
-                    Category = "Content Management"
-                }, new string[] { SystemCustomerRoleNames.Administrators });
-
                 var menuSet = context.Set<MenuRecord>();
                 var menuItemSet = context.Set<MenuItemRecord>();
                 var defaultLang = context.Set<Language>().OrderBy(x => x.DisplayOrder).First();
@@ -982,9 +974,21 @@ namespace SmartStore.Data.Utilities
                         Allow(kvp.Key, newPermissions[name]);
                     }
                 }
+                // Commit to avoid duplicate mappings!
+                scope.Commit();
 
-                // Add more mappings for new permissions.
-                AllowForRole(adminRole, newPermissions[Permissions.Cart.Read], newPermissions[Permissions.System.Rule.Self]);
+                // Add mappings for new permissions.
+                AllowForRole(adminRole,
+                    newPermissions[Permissions.Cart.Read],
+                    newPermissions[Permissions.System.Rule.Self]);
+
+                // Add mappings originally added by old migrations.
+                // We had to remove these migration statementent again because the table does not yet exist at this time.
+                AllowForRole(adminRole,
+                    newPermissions[Permissions.Configuration.Export.Self],
+                    newPermissions[Permissions.Configuration.Import.Self],
+                    newPermissions[Permissions.System.UrlRecord.Self],
+                    newPermissions[Permissions.Cms.Menu.Self]);
 
                 scope.Commit();
                 newPermissions.Clear();
@@ -1102,12 +1106,15 @@ namespace SmartStore.Data.Utilities
             {
                 foreach (var permission in permissions)
                 {
-                    mappingSet.Add(new PermissionRoleMapping
+                    if (!mappingSet.Any(x => x.PermissionRecordId == permission.Id && x.CustomerRoleId == role.Id))
                     {
-                        Allow = true,
-                        PermissionRecordId = permission.Id,
-                        CustomerRoleId = role.Id
-                    });
+                        mappingSet.Add(new PermissionRoleMapping
+                        {
+                            Allow = true,
+                            PermissionRecordId = permission.Id,
+                            CustomerRoleId = role.Id
+                        });
+                    }
                 }
             }
 

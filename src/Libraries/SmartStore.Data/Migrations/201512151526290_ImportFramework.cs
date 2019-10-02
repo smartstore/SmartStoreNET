@@ -48,15 +48,7 @@ namespace SmartStore.Data.Migrations
 		{
 			context.MigrateLocaleResources(MigrateLocaleResources);
 
-			var permissionMigrator = new PermissionMigrator(context);
 			var activityLogMigrator = new ActivityLogTypeMigrator(context);
-
-			permissionMigrator.AddPermission(new PermissionRecord
-			{
-				Name = "Admin area. Manage Imports",
-				SystemName = "ManageImports",
-				Category = "Configuration"
-			}, new string[] { SystemCustomerRoleNames.Administrators });
 
 			activityLogMigrator.AddActivityLogType("DeleteOrder", "Delete order", "Auftrag gelöscht");
 

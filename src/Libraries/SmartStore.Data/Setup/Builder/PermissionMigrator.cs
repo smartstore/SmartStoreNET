@@ -1,15 +1,15 @@
 ﻿using System.Data.Entity;
 using System.Linq;
-using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
 
 namespace SmartStore.Data.Setup
 {
-	internal class PermissionMigrator
+    internal class PermissionMigrator
 	{
 		private readonly SmartObjectContext _ctx;
 		private readonly DbSet<PermissionRecord> _permissionRecords;
+        private readonly DbSet<PermissionRoleMapping> _permissionRoleMappings;
 		private readonly IQueryable<CustomerRole> _customerRoles;
 
 		public PermissionMigrator(SmartObjectContext ctx)
@@ -18,7 +18,8 @@ namespace SmartStore.Data.Setup
 
 			_ctx = ctx;
 			_permissionRecords = _ctx.Set<PermissionRecord>();
-			_customerRoles = _ctx.Set<CustomerRole>().Expand(x => x.PermissionRecords);
+            _permissionRoleMappings = _ctx.Set<PermissionRoleMapping>();
+			_customerRoles = _ctx.Set<CustomerRole>();
 		}
 
 		public void AddPermission(PermissionRecord permission, string[] rolesToMap)
@@ -26,15 +27,15 @@ namespace SmartStore.Data.Setup
 			Guard.NotNull(permission, nameof(permission));
 			Guard.NotNull(rolesToMap, nameof(rolesToMap));
 
-			if (permission.SystemName.IsEmpty())
-				return;
+            if (permission.SystemName.IsEmpty())
+            {
+                return;
+            }
 
 			var permissionRecord = _permissionRecords.FirstOrDefault(x => x.SystemName == permission.SystemName);
-
 			if (permissionRecord == null)
 			{
 				_permissionRecords.Add(permission);
-
 				_ctx.SaveChanges();
 			}
 
@@ -42,11 +43,19 @@ namespace SmartStore.Data.Setup
 
 			foreach (var roleName in rolesToMap)
 			{
-				var role = _customerRoles.FirstOrDefault(x => x.SystemName == roleName);
-				if (role != null && !role.PermissionRecords.Any(x => x.SystemName == permission.SystemName))
-				{
-					role.PermissionRecords.Add(permissionRecord);
-				}
+                var role = _customerRoles.FirstOrDefault(x => x.SystemName == roleName);
+                if (role != null)
+                {
+                    if (!_permissionRoleMappings.Any(x => x.PermissionRecord.SystemName == permission.SystemName && x.CustomerRole.SystemName == roleName))
+                    {
+                        _permissionRoleMappings.Add(new PermissionRoleMapping
+                        {
+                            Allow = true,
+                            CustomerRoleId = role.Id,
+                            PermissionRecordId = permissionRecord.Id
+                        });
+                    }
+                }
 			}
 
 			_ctx.SaveChanges();

@@ -29,7 +29,7 @@ namespace SmartStore.Web.Framework.Modelling
             return model;
         }
 
-		protected override void SetProperty(ControllerContext controllerContext, ModelBindingContext bindingContext, PropertyDescriptor property, object value)
+        protected override void SetProperty(ControllerContext controllerContext, ModelBindingContext bindingContext, PropertyDescriptor property, object value)
 		{
 			var attrs = property.Attributes;
 			var sanitizeHtmlAttr = attrs.OfType<SanitizeHtmlAttribute>().FirstOrDefault();
@@ -143,7 +143,5 @@ namespace SmartStore.Web.Framework.Modelling
 
 			return typeof(object);
 		}
-
-
     }
 }

@@ -108,7 +108,7 @@ namespace SmartStore.Web.Controllers
 
             // Check whether the current user has a "Manage catalog" permission.
             // It allows him to preview a category before publishing.
-            if (!category.Published && !_services.Permissions2.Authorize(Permissions.Catalog.Category.Read))
+            if (!category.Published && !_services.Permissions.Authorize(Permissions.Catalog.Category.Read))
 				return HttpNotFound();
 
             // ACL (access control list).
@@ -259,7 +259,7 @@ namespace SmartStore.Web.Controllers
 
             // Check whether the current user has a "Manage catalog" permission.
             // It allows him to preview a manufacturer before publishing.
-            if (!manufacturer.Published && !_services.Permissions2.Authorize(Permissions.Catalog.Manufacturer.Read))
+            if (!manufacturer.Published && !_services.Permissions.Authorize(Permissions.Catalog.Manufacturer.Read))
 				return HttpNotFound();
 
 			// Store mapping.
@@ -879,12 +879,12 @@ namespace SmartStore.Web.Controllers
 
 			if (_catalogSettings.ShowManufacturersInOffCanvas == true && 
 				_catalogSettings.ManufacturerItemsToDisplayInOffcanvasMenu > 0 &&
-				_services.Permissions2.Authorize(Permissions.System.AccessShop))
+				_services.Permissions.Authorize(Permissions.System.AccessShop))
             {
                 ViewBag.ShowManufacturers = true;
             }
 
-			if (_services.Permissions2.Authorize(Permissions.System.AccessShop))
+			if (_services.Permissions.Authorize(Permissions.System.AccessShop))
 			{
 				ViewBag.ShowCategories = true;
 			}

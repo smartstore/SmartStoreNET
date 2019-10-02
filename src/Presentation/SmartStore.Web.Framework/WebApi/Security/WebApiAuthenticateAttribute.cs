@@ -51,7 +51,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			{
 				try
 				{
-					var permissionService = dependencyScope.GetService<IPermissionService2>();
+					var permissionService = dependencyScope.GetService<IPermissionService>();
                     result = permissionService.Authorize(Permission, customer);
 				}
 				catch { }

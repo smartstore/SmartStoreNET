@@ -6,7 +6,7 @@ using SmartStore.Core.Security;
 
 namespace SmartStore.Services.Security
 {
-    public partial class StandardPermissionProvider : IPermissionProvider2
+    public partial class StandardPermissionProvider : IPermissionProvider
     {
         public virtual IEnumerable<PermissionRecord> GetPermissions()
         {

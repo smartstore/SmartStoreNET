@@ -17,7 +17,7 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Security
 {
-    public partial class PermissionService2 : IPermissionService2
+    public partial class PermissionService : IPermissionService
     {
         // {0} = roleId
         internal const string PERMISSION_TREE_KEY = "permission:tree-{0}";
@@ -110,7 +110,7 @@ namespace SmartStore.Services.Security
         private readonly IWorkContext _workContext;
         private readonly ICacheManager _cacheManager;
 
-        public PermissionService2(
+        public PermissionService(
             IRepository<PermissionRecord> permissionRepository,
             IRepository<PermissionRoleMapping> permissionMappingRepository,
             Lazy<ICustomerService> customerService,
@@ -252,7 +252,7 @@ namespace SmartStore.Services.Security
         }
 
 
-        public virtual void InstallPermissions(IPermissionProvider2 permissionProvider)
+        public virtual void InstallPermissions(IPermissionProvider permissionProvider)
         {
             Guard.NotNull(permissionProvider, nameof(permissionProvider));
 
@@ -314,7 +314,7 @@ namespace SmartStore.Services.Security
             }
         }
 
-        public virtual void UninstallPermissions(IPermissionProvider2 permissionProvider)
+        public virtual void UninstallPermissions(IPermissionProvider permissionProvider)
         {
             var permissions = permissionProvider.GetPermissions();
             var systemNames = new HashSet<string>(permissions.Select(x => x.SystemName));

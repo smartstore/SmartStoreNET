@@ -123,7 +123,7 @@ namespace SmartStore.Web.Controllers
 
 			// Is published? Check whether the current user has a "Manage catalog" permission.
 			// It allows him to preview a product before publishing.
-			if (!product.Published && !_services.Permissions2.Authorize(Permissions.Catalog.Product.Read))
+			if (!product.Published && !_services.Permissions.Authorize(Permissions.Catalog.Product.Read))
 				return HttpNotFound();
 
 			// ACL (access control list)
@@ -278,7 +278,7 @@ namespace SmartStore.Web.Controllers
 		[ChildActionOnly]
 		public ActionResult ProductTierPrices(int productId)
 		{
-			if (!_services.Permissions2.Authorize(Permissions.Catalog.DisplayPrice))
+			if (!_services.Permissions.Authorize(Permissions.Catalog.DisplayPrice))
 			{
                 return new EmptyResult();
 			}	

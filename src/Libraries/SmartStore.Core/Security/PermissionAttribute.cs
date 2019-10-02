@@ -40,7 +40,7 @@ namespace SmartStore.Core.Security
 
         public Localizer T { get; set; }
         public IWorkContext WorkContext { get; set; }
-        public IPermissionService2 PermissionService { get; set; }
+        public IPermissionService PermissionService { get; set; }
 
         public virtual void OnAuthorization(AuthorizationContext filterContext)
         {

@@ -48,7 +48,7 @@ namespace SmartStore.Admin.Controllers
                         ? Permissions.Configuration.Theme.Upload
                         : Permissions.Configuration.Plugin.Upload;
 
-					if (!Services.Permissions2.Authorize(requiredPermission))
+					if (!Services.Permissions.Authorize(requiredPermission))
 					{
 						return AccessDeniedView();
 					}

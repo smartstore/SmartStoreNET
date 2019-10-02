@@ -181,7 +181,7 @@ namespace SmartStore.Web.Controllers
 					ShowBrand = settings.MapManufacturers,
 					ForceRedirectionAfterAddingToCart = settings.ForceRedirectionAfterAddingToCart,
 					CompareEnabled = _catalogSettings.CompareProductsEnabled,
-					WishlistEnabled = _services.Permissions2.Authorize(Permissions.Cart.AccessWishlist),
+					WishlistEnabled = _services.Permissions.Authorize(Permissions.Cart.AccessWishlist),
 					BuyEnabled = !_catalogSettings.HideBuyButtonInLists,
 					ThumbSize = settings.ThumbnailSize,
 					ShowDiscountBadge = _catalogSettings.ShowDiscountSign,
@@ -199,9 +199,9 @@ namespace SmartStore.Web.Controllers
 				var customer = _services.WorkContext.CurrentCustomer;
 				var currency = _services.WorkContext.WorkingCurrency;
 				var language = _services.WorkContext.WorkingLanguage;
-				var allowPrices = _services.Permissions2.Authorize(Permissions.Catalog.DisplayPrice);
-				var allowShoppingCart = _services.Permissions2.Authorize(Permissions.Cart.AccessShoppingCart);
-				var allowWishlist = _services.Permissions2.Authorize(Permissions.Cart.AccessWishlist);
+				var allowPrices = _services.Permissions.Authorize(Permissions.Catalog.DisplayPrice);
+				var allowShoppingCart = _services.Permissions.Authorize(Permissions.Cart.AccessShoppingCart);
+				var allowWishlist = _services.Permissions.Authorize(Permissions.Cart.AccessWishlist);
 				var taxDisplayType = _services.WorkContext.GetTaxDisplayTypeFor(customer, store.Id);
 				var cachedManufacturerModels = new Dictionary<int, ManufacturerOverviewModel>();
 				var prefetchTranslations = settings.PrefetchTranslations == true || (settings.PrefetchTranslations == null && _performanceSettings.AlwaysPrefetchTranslations);

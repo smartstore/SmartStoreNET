@@ -298,7 +298,7 @@ namespace SmartStore.Services.Search.Modelling
 					displayOrder = _searchSettings.BrandDisplayOrder;
 					break;
 				case FacetGroupKind.Price:
-					if (_searchSettings.PriceDisabled || !_services.Permissions2.Authorize(Permissions.Catalog.DisplayPrice))
+					if (_searchSettings.PriceDisabled || !_services.Permissions.Authorize(Permissions.Catalog.DisplayPrice))
 						return;
 					fieldName = "price";
 					displayOrder = _searchSettings.PriceDisplayOrder;

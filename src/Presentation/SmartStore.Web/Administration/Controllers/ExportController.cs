@@ -1303,7 +1303,7 @@ namespace SmartStore.Admin.Controllers
             string message = null;
             string path = null;
 
-            if (Services.Permissions2.Authorize(Permissions.Configuration.Export.Read))
+            if (Services.Permissions.Authorize(Permissions.Configuration.Export.Read))
             {
                 if (isDeployment ?? false)
                 {

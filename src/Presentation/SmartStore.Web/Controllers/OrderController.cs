@@ -352,7 +352,7 @@ namespace SmartStore.Web.Controllers
 		{
 			var result = order == null || order.Deleted;
 
-			if (!Services.Permissions2.Authorize(Permissions.Order.Read))
+			if (!Services.Permissions.Authorize(Permissions.Order.Read))
 			{
 				result = result || (order.StoreId != 0 && order.StoreId != Services.StoreContext.CurrentStore.Id);
 			}
@@ -362,7 +362,7 @@ namespace SmartStore.Web.Controllers
 
 		private bool IsUnauthorizedOrder(Order order)
 		{
-            if (!Services.Permissions2.Authorize(Permissions.Order.Read))
+            if (!Services.Permissions.Authorize(Permissions.Order.Read))
                 return order == null || order.CustomerId != Services.WorkContext.CurrentCustomer.Id;
             else
                 return order == null;

@@ -136,7 +136,7 @@ namespace SmartStore.Web.Controllers
 			model.Comments.AllowComments = blogPost.AllowComments;
 			model.Comments.NumberOfComments = blogPost.ApprovedCommentCount;
 			model.Comments.AllowCustomersToUploadAvatars = _customerSettings.AllowCustomersToUploadAvatars;
-            model.DisplayAdminLink = _services.Permissions2.Authorize(Permissions.System.AccessBackend, _services.WorkContext.CurrentCustomer);
+            model.DisplayAdminLink = _services.Permissions.Authorize(Permissions.System.AccessBackend, _services.WorkContext.CurrentCustomer);
             model.PictureModel = PrepareBlogPostPictureModel(blogPost, blogPost.PictureId);
             model.PreviewPictureModel = PrepareBlogPostPictureModel(blogPost, blogPost.PreviewPictureId);
 

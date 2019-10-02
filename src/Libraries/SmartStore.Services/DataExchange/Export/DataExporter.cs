@@ -275,7 +275,7 @@ namespace SmartStore.Services.DataExchange.Export
 				return true;
 			}
 
-            return _services.Permissions2.Authorize(Permissions.Configuration.Export.Execute);
+            return _services.Permissions.Authorize(Permissions.Configuration.Export.Execute);
 		}
 
         private void StreamToFile(DataExporterContext ctx, Stream stream, string path, Action<Stream> onDisposed)

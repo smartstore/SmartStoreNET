@@ -21,7 +21,7 @@ namespace SmartStore.Admin.Controllers
         // Ajax.
         public ActionResult AllAccessPermissions(string selected)
         {
-            var systemNames = Services.Permissions2.GetAllSystemNames();
+            var systemNames = Services.Permissions.GetAllSystemNames();
             var selectedArr = selected.SplitSafe(",");
 
             var data = systemNames

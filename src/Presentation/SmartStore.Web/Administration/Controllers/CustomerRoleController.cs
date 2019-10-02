@@ -161,7 +161,7 @@ namespace SmartStore.Admin.Controllers
 
             var model = customerRole.ToModel();
             model.TaxDisplayTypes = GetTaxDisplayTypesList(model);
-            model.PermissionTree = Services.Permissions2.GetPermissionTree(customerRole, true);
+            model.PermissionTree = Services.Permissions.GetPermissionTree(customerRole, true);
 
             return View(model);
         }
@@ -226,16 +226,16 @@ namespace SmartStore.Admin.Controllers
                                 {
                                     mapping.Allow = item.Value.Value;
 
-                                    Services.Permissions2.UpdatePermissionRoleMapping(mapping);
+                                    Services.Permissions.UpdatePermissionRoleMapping(mapping);
                                 }
                                 else
                                 {
-                                    Services.Permissions2.DeletePermissionRoleMapping(mapping);
+                                    Services.Permissions.DeletePermissionRoleMapping(mapping);
                                 }
                             }
                             else if (item.Value.HasValue)
                             {
-                                Services.Permissions2.InsertPermissionRoleMapping(new PermissionRoleMapping
+                                Services.Permissions.InsertPermissionRoleMapping(new PermissionRoleMapping
                                 {
                                     Allow = item.Value.Value,
                                     PermissionRecordId = item.Key,

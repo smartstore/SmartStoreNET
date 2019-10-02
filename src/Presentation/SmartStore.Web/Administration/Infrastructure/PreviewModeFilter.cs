@@ -37,7 +37,7 @@ namespace SmartStore.Admin.Infrastructure
 			if (theme == null && storeId == null)
 				return;
 
-			if (!_services.Permissions2.Authorize(Permissions.Configuration.Theme.Read))
+			if (!_services.Permissions.Authorize(Permissions.Configuration.Theme.Read))
 				return;
 
 			_widgetProvider.Value.RegisterAction(

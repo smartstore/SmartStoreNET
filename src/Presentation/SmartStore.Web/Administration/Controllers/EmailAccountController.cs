@@ -60,7 +60,7 @@ namespace SmartStore.Admin.Controllers
             {
                 int defaultEmailAccountId = Convert.ToInt32(id);
                 var defaultEmailAccount = _emailAccountService.GetEmailAccountById(defaultEmailAccountId);
-                if (defaultEmailAccount != null && Services.Permissions2.Authorize(Permissions.Configuration.EmailAccount.Update))
+                if (defaultEmailAccount != null && Services.Permissions.Authorize(Permissions.Configuration.EmailAccount.Update))
                 {
                     _emailAccountSettings.DefaultEmailAccountId = defaultEmailAccountId;
                     _settingService.SaveSetting(_emailAccountSettings);

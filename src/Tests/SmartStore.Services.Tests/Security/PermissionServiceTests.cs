@@ -18,7 +18,7 @@ namespace SmartStore.Services.Tests.Security
     [TestFixture]
     public class PermissionServiceTests
     {
-        private IPermissionService2 _permissionService;
+        private IPermissionService _permissionService;
         private IRepository<PermissionRecord> _permissionRepository;
         private IRepository<PermissionRoleMapping> _permissionMappingRepository;
         private Lazy<ICustomerService> _customerService;
@@ -44,7 +44,7 @@ namespace SmartStore.Services.Tests.Security
             _workContext = MockRepository.GenerateMock<IWorkContext>();
             _cacheManager = NullCache.Instance;
 
-            _permissionService = new PermissionService2(
+            _permissionService = new PermissionService(
                 _permissionRepository,
                 _permissionMappingRepository,
                 _customerService,

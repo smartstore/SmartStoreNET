@@ -8,7 +8,7 @@ namespace SmartStore.Core.Security
     /// <summary>
     /// Permission service interface.
     /// </summary>
-    public partial interface IPermissionService2
+    public partial interface IPermissionService
     {
         /// <summary>
         /// Gets a permission.
@@ -85,13 +85,13 @@ namespace SmartStore.Core.Security
         /// Install permissions.
         /// </summary>
         /// <param name="permissionProvider">Permission provider.</param>
-        void InstallPermissions(IPermissionProvider2 permissionProvider);
+        void InstallPermissions(IPermissionProvider permissionProvider);
 
         /// <summary>
         /// Uninstall permissions.
         /// </summary>
         /// <param name="permissionProvider">Permission provider.</param>
-        void UninstallPermissions(IPermissionProvider2 permissionProvider);
+        void UninstallPermissions(IPermissionProvider permissionProvider);
 
 
         /// <summary>

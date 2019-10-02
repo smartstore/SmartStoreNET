@@ -622,7 +622,7 @@ namespace SmartStore.Web.Controllers
 					foreach (var providerType in permissionProviders)
 					{
 						dynamic provider = Activator.CreateInstance(providerType);
-						scope.Resolve<IPermissionService2>().InstallPermissions(provider);
+						scope.Resolve<IPermissionService>().InstallPermissions(provider);
 					}
 
 					// do not ignore settings migrated by data seeder (e.g. default media storage provider)

@@ -362,7 +362,7 @@ namespace SmartStore.Admin.Controllers
 
             var infos = GetProviderInfos(provider);
 
-            if (infos.ReadPermission.HasValue() && !Services.Permissions2.Authorize(infos.ReadPermission))
+            if (infos.ReadPermission.HasValue() && !Services.Permissions.Authorize(infos.ReadPermission))
             {
                 return AccessDeniedView();
             }
@@ -384,7 +384,7 @@ namespace SmartStore.Admin.Controllers
 
             var infos = GetProviderInfos(provider);
 
-            if (infos.ReadPermission.HasValue() && !Services.Permissions2.Authorize(infos.ReadPermission))
+            if (infos.ReadPermission.HasValue() && !Services.Permissions.Authorize(infos.ReadPermission))
             {
                 return AccessDeniedPartialView();
             }
@@ -419,7 +419,7 @@ namespace SmartStore.Admin.Controllers
 
             var infos = GetProviderInfos(provider);
 
-            if (infos.UpdatePermission.HasValue() && !Services.Permissions2.Authorize(infos.UpdatePermission))
+            if (infos.UpdatePermission.HasValue() && !Services.Permissions.Authorize(infos.UpdatePermission))
             {
                 return AccessDeniedPartialView();
             }

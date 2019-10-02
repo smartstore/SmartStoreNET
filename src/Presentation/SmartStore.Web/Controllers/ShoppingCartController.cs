@@ -73,7 +73,7 @@ namespace SmartStore.Web.Controllers
         private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private readonly ICheckoutAttributeService _checkoutAttributeService;
         private readonly IPaymentService _paymentService;
-        private readonly IPermissionService2 _permissionService;
+        private readonly IPermissionService _permissionService;
         private readonly IDownloadService _downloadService;
         private readonly ICacheManager _cacheManager;
         private readonly ICustomerActivityService _customerActivityService;
@@ -127,7 +127,7 @@ namespace SmartStore.Web.Controllers
             IOrderTotalCalculationService orderTotalCalculationService,
             ICheckoutAttributeService checkoutAttributeService,
 			IPaymentService paymentService,
-            IPermissionService2 permissionService, 
+            IPermissionService permissionService, 
 			IDeliveryTimeService deliveryTimeService,
             IDownloadService downloadService, 
 			ICacheManager cacheManager,
@@ -2190,8 +2190,8 @@ namespace SmartStore.Web.Controllers
         {
             var model = new OffCanvasCartModel
 			{
-				ShoppingCartEnabled = Services.Permissions2.Authorize(Permissions.Cart.AccessShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled,
-				WishlistEnabled = Services.Permissions2.Authorize(Permissions.Cart.AccessWishlist),
+				ShoppingCartEnabled = Services.Permissions.Authorize(Permissions.Cart.AccessShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled,
+				WishlistEnabled = Services.Permissions.Authorize(Permissions.Cart.AccessWishlist),
 				CompareProductsEnabled = _catalogSettings.CompareProductsEnabled
 			};
 
@@ -2296,8 +2296,8 @@ namespace SmartStore.Web.Controllers
 		[HttpPost]
 		public ActionResult CartSummary(bool cart = false, bool wishlist = false, bool compare = false)
 		{
-			var cartEnabled = cart && Services.Permissions2.Authorize(Permissions.Cart.AccessShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled;
-			var wishlistEnabled = wishlist && Services.Permissions2.Authorize(Permissions.Cart.AccessWishlist);
+			var cartEnabled = cart && Services.Permissions.Authorize(Permissions.Cart.AccessShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled;
+			var wishlistEnabled = wishlist && Services.Permissions.Authorize(Permissions.Cart.AccessWishlist);
 			var compareEnabled = compare && _catalogSettings.CompareProductsEnabled;
 
 			int cartItemsCount = 0;

@@ -849,7 +849,7 @@ namespace SmartStore.Admin.Controllers
 
 		public async Task ProcessRequest(string a = null, string d = null)
 		{
-			if (!Services.Permissions2.Authorize(Permissions.Media.Upload))
+			if (!Services.Permissions.Authorize(Permissions.Media.Upload))
 			{
 				Response.Write(T("Admin.AccessDenied.Description"));
 				return;

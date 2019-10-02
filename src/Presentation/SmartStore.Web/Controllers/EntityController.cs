@@ -106,7 +106,7 @@ namespace SmartStore.Web.Controllers
                     {
                         model.SearchTerm = model.SearchTerm.TrimSafe();
 
-                        var hasPermission = Services.Permissions2.Authorize(Permissions.Catalog.Product.Read);
+                        var hasPermission = Services.Permissions.Authorize(Permissions.Catalog.Product.Read);
                         var disableIfNotSimpleProduct = disableIf.Contains("notsimpleproduct");
                         var disableIfGroupedProduct = disableIf.Contains("groupedproduct");
                         var labelTextGrouped = T("Admin.Catalog.Products.ProductType.GroupedProduct.Label").Text;

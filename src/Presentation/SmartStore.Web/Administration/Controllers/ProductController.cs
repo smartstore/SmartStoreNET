@@ -262,7 +262,7 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected void UpdateProductDownloads(Product product, ProductModel model)
         {
-            if (!Services.Permissions2.Authorize(Permissions.Media.Download.Update))
+            if (!Services.Permissions.Authorize(Permissions.Media.Download.Update))
             {
                 return;
             }

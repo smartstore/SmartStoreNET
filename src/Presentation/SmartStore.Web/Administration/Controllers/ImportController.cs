@@ -750,7 +750,7 @@ namespace SmartStore.Admin.Controllers
 
             string message = null;
 
-            if (Services.Permissions2.Authorize(Permissions.Configuration.Import.Read))
+            if (Services.Permissions.Authorize(Permissions.Configuration.Import.Read))
             {
                 var profile = _importProfileService.GetImportProfileById(id);
                 if (profile != null)

@@ -386,11 +386,11 @@ namespace SmartStore.Web.Controllers
                 IsAuthenticated = isRegistered,
                 CustomerEmailUsername = isRegistered ? (_customerSettings.CustomerLoginType != CustomerLoginType.Email ? customer.Username : customer.Email) : "",
 				IsCustomerImpersonated = _services.WorkContext.OriginalCustomerIfImpersonated != null,
-				DisplayAdminLink = _services.Permissions2.Authorize(Permissions.System.AccessBackend),
-				ShoppingCartEnabled = _services.Permissions2.Authorize(Permissions.Cart.AccessShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled,
-				WishlistEnabled = _services.Permissions2.Authorize(Permissions.Cart.AccessWishlist),
+				DisplayAdminLink = _services.Permissions.Authorize(Permissions.System.AccessBackend),
+				ShoppingCartEnabled = _services.Permissions.Authorize(Permissions.Cart.AccessShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled,
+				WishlistEnabled = _services.Permissions.Authorize(Permissions.Cart.AccessWishlist),
                 CompareProductsEnabled = _catalogSettings.CompareProductsEnabled,
-				PublicStoreNavigationAllowed = _services.Permissions2.Authorize(Permissions.System.AccessShop)
+				PublicStoreNavigationAllowed = _services.Permissions.Authorize(Permissions.System.AccessShop)
 			};
 
 			return PartialView(model);
@@ -471,7 +471,7 @@ namespace SmartStore.Web.Controllers
                 CustomerEmailUsername = customer.IsRegistered() ? (_customerSettings.CustomerLoginType != CustomerLoginType.Email ? customer.Username : customer.Email) : "",
 				IsCustomerImpersonated = _services.WorkContext.OriginalCustomerIfImpersonated != null,
                 IsAuthenticated = customer.IsRegistered(),
-				DisplayAdminLink = _services.Permissions2.Authorize(Permissions.System.AccessBackend),
+				DisplayAdminLink = _services.Permissions.Authorize(Permissions.System.AccessBackend),
 				HasContactUsPage = Url.Topic("ContactUs").ToString().HasValue(),
                 DisplayLoginLink = _customerSettings.UserRegistrationType != UserRegistrationType.Disabled
             };
@@ -731,10 +731,10 @@ namespace SmartStore.Web.Controllers
             var model = new AccountDropdownModel
             {
                 IsAuthenticated = customer.IsRegistered(),
-				DisplayAdminLink = _services.Permissions2.Authorize(Permissions.System.AccessBackend),
-				ShoppingCartEnabled = _services.Permissions2.Authorize(Permissions.Cart.AccessShoppingCart),
+				DisplayAdminLink = _services.Permissions.Authorize(Permissions.System.AccessBackend),
+				ShoppingCartEnabled = _services.Permissions.Authorize(Permissions.Cart.AccessShoppingCart),
 				//ShoppingCartItems = customer.CountProductsInCart(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id),
-				WishlistEnabled = _services.Permissions2.Authorize(Permissions.Cart.AccessWishlist),
+				WishlistEnabled = _services.Permissions.Authorize(Permissions.Cart.AccessWishlist),
 				//WishlistItems = customer.CountProductsInCart(ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id),
                 AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
                 UnreadPrivateMessages = unreadMessage,

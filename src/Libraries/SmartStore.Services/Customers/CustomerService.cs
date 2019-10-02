@@ -670,7 +670,7 @@ namespace SmartStore.Services.Customers
 
             _customerRoleRepository.Delete(role);
 
-            _services.Cache.RemoveByPattern(PermissionService2.PERMISSION_TREE_KEY.FormatInvariant(roleId));
+            _services.Cache.RemoveByPattern(PermissionService.PERMISSION_TREE_KEY.FormatInvariant(roleId));
         }
 
         public virtual CustomerRole GetCustomerRoleById(int roleId)
@@ -719,7 +719,7 @@ namespace SmartStore.Services.Customers
 
 			_customerRoleRepository.Update(role);
 
-            _services.Cache.RemoveByPattern(PermissionService2.PERMISSION_TREE_KEY.FormatInvariant(role.Id));
+            _services.Cache.RemoveByPattern(PermissionService.PERMISSION_TREE_KEY.FormatInvariant(role.Id));
         }
 
         #endregion

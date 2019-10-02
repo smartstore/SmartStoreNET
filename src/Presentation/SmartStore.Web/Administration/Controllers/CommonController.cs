@@ -131,7 +131,7 @@ namespace SmartStore.Admin.Controllers
 
             ViewBag.UserName = _services.Settings.LoadSetting<CustomerSettings>().CustomerLoginType != CustomerLoginType.Email ? currentCustomer.Username : currentCustomer.Email;
             ViewBag.Stores = _services.StoreService.GetAllStores();
-            if (_services.Permissions2.Authorize(Permissions.System.Maintenance.Read))
+            if (_services.Permissions.Authorize(Permissions.System.Maintenance.Read))
             {
                 ViewBag.CheckUpdateResult = AsyncRunner.RunSync(() => CheckUpdateInternalAsync(false));
             }
@@ -204,7 +204,7 @@ namespace SmartStore.Admin.Controllers
                         model.CurrentVersion = curVersion;
                         model.LanguageCode = lang;
 
-                        if (CommonHelper.IsDevEnvironment || !_commonSettings.Value.AutoUpdateEnabled || !_services.Permissions2.Authorize(Permissions.System.Maintenance.Read))
+                        if (CommonHelper.IsDevEnvironment || !_commonSettings.Value.AutoUpdateEnabled || !_services.Permissions.Authorize(Permissions.System.Maintenance.Read))
                         {
                             model.AutoUpdatePossible = false;
                         }
@@ -388,7 +388,7 @@ namespace SmartStore.Admin.Controllers
                 if (DataSettings.Current.IsValid())
                 {
                     model.DataProviderFriendlyName = DataSettings.Current.ProviderFriendlyName;
-                    model.ShrinkDatabaseEnabled = _services.Permissions2.Authorize(Permissions.System.Maintenance.Read) && DataSettings.Current.IsSqlServer;
+                    model.ShrinkDatabaseEnabled = _services.Permissions.Authorize(Permissions.System.Maintenance.Read) && DataSettings.Current.IsSqlServer;
                 }
             }
             catch { }
@@ -1094,7 +1094,7 @@ namespace SmartStore.Admin.Controllers
             if (entityName.HasValue() && entityId > 0)
             {
                 var infos = GetGenericAttributesInfos(entityName);
-                if (infos.ReadPermission.IsEmpty() || Services.Permissions2.Authorize(infos.ReadPermission))
+                if (infos.ReadPermission.IsEmpty() || Services.Permissions.Authorize(infos.ReadPermission))
                 {
                     var attributes = _genericAttributeService.GetAttributesForEntity(entityId, entityName);
 
@@ -1131,9 +1131,9 @@ namespace SmartStore.Admin.Controllers
             {
                 var storeId = _services.StoreContext.CurrentStore.Id;
                 var infos = GetGenericAttributesInfos(model.EntityName);
-                if (infos.UpdatePermission.HasValue() && !Services.Permissions2.Authorize(infos.UpdatePermission))
+                if (infos.UpdatePermission.HasValue() && !Services.Permissions.Authorize(infos.UpdatePermission))
                 {
-                    NotifyError(Services.Permissions2.GetUnauthorizedMessage(infos.UpdatePermission));
+                    NotifyError(Services.Permissions.GetUnauthorizedMessage(infos.UpdatePermission));
                 }
                 else
                 {
@@ -1175,9 +1175,9 @@ namespace SmartStore.Admin.Controllers
                 var storeId = _services.StoreContext.CurrentStore.Id;
                 var infos = GetGenericAttributesInfos(model.EntityName);
 
-                if (infos.UpdatePermission.HasValue() && !Services.Permissions2.Authorize(infos.UpdatePermission))
+                if (infos.UpdatePermission.HasValue() && !Services.Permissions.Authorize(infos.UpdatePermission))
                 {
-                    NotifyError(Services.Permissions2.GetUnauthorizedMessage(infos.UpdatePermission));
+                    NotifyError(Services.Permissions.GetUnauthorizedMessage(infos.UpdatePermission));
                 }
                 else
                 {
@@ -1218,9 +1218,9 @@ namespace SmartStore.Admin.Controllers
             var infos = GetGenericAttributesInfos(entityName);
             var attr = _genericAttributeService.GetAttributeById(id);
 
-            if (infos.UpdatePermission.HasValue() && !Services.Permissions2.Authorize(infos.UpdatePermission))
+            if (infos.UpdatePermission.HasValue() && !Services.Permissions.Authorize(infos.UpdatePermission))
             {
-                NotifyError(Services.Permissions2.GetUnauthorizedMessage(infos.UpdatePermission));
+                NotifyError(Services.Permissions.GetUnauthorizedMessage(infos.UpdatePermission));
             }
             else
             {

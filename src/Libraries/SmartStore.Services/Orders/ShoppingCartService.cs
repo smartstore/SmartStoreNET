@@ -44,7 +44,7 @@ namespace SmartStore.Services.Orders
         private readonly ICustomerService _customerService;
         private readonly ShoppingCartSettings _shoppingCartSettings;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IPermissionService2 _permissionService;
+        private readonly IPermissionService _permissionService;
         private readonly IAclService _aclService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly IGenericAttributeService _genericAttributeService;
@@ -67,7 +67,7 @@ namespace SmartStore.Services.Orders
             ICustomerService customerService,
             ShoppingCartSettings shoppingCartSettings,
             IEventPublisher eventPublisher,
-            IPermissionService2 permissionService, 
+            IPermissionService permissionService, 
             IAclService aclService,
 			IStoreMappingService storeMappingService,
 			IGenericAttributeService genericAttributeService,

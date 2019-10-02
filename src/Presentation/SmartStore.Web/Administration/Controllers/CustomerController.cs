@@ -69,7 +69,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IOrderService _orderService;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPriceCalculationService _priceCalculationService;
-        private readonly IPermissionService2 _permissionService;
+        private readonly IPermissionService _permissionService;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly IQueuedEmailService _queuedEmailService;
         private readonly IEmailAccountService _emailAccountService;
@@ -104,7 +104,7 @@ namespace SmartStore.Admin.Controllers
             IOrderService orderService,
             ICustomerActivityService customerActivityService,
             IPriceCalculationService priceCalculationService,
-            IPermissionService2 permissionService,
+            IPermissionService permissionService,
             AdminAreaSettings adminAreaSettings,
             IQueuedEmailService queuedEmailService,
             IEmailAccountService emailAccountService, ForumSettings forumSettings,
@@ -383,7 +383,7 @@ namespace SmartStore.Admin.Controllers
             model.DisplayRewardPointsHistory = _rewardPointsSettings.Enabled;
             model.AddRewardPointsValue = 0;
             model.AssociatedExternalAuthRecords = GetAssociatedExternalAuthRecords(customer);
-            model.PermissionTree = Services.Permissions2.GetPermissionTree(customer, true);
+            model.PermissionTree = Services.Permissions.GetPermissionTree(customer, true);
 
             // Addresses.
             var addresses = customer.Addresses

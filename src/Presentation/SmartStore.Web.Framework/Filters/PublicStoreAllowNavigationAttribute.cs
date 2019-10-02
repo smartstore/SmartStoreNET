@@ -21,7 +21,7 @@ namespace SmartStore.Web.Framework.Filters
 			new Tuple<string, string>("SmartStore.Web.Controllers.CatalogController", "OffCanvasMenu")
 		};
 
-		public Lazy<IPermissionService2> PermissionService { get; set; }
+		public Lazy<IPermissionService> PermissionService { get; set; }
 		
 		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {

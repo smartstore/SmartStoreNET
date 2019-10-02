@@ -47,7 +47,7 @@ namespace SmartStore.Tests
 		public ICustomerActivityService CustomerActivity => MockRepository.GenerateMock<ICustomerActivityService>();
 		public IPictureService PictureService => MockRepository.GenerateMock<IPictureService>();
 		public INotifier Notifier => MockRepository.GenerateMock<INotifier>();
-        public IPermissionService2 Permissions2 => MockRepository.GenerateMock<IPermissionService2>();
+        public IPermissionService Permissions => MockRepository.GenerateMock<IPermissionService>();
         public ISettingService Settings => MockRepository.GenerateMock<ISettingService>();
 		public IStoreService StoreService => MockRepository.GenerateMock<IStoreService>();
 		public IDateTimeHelper DateTimeHelper => MockRepository.GenerateMock<IDateTimeHelper>();

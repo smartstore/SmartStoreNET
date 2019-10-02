@@ -292,7 +292,7 @@ namespace SmartStore.Admin.Controllers
                 return new EmptyResult();
             }
 
-            ViewBag.CanUpdate = Services.Permissions2.Authorize(Permissions.System.ScheduleTask.Update);
+            ViewBag.CanUpdate = Services.Permissions.Authorize(Permissions.System.ScheduleTask.Update);
             ViewBag.ReturnUrl = returnUrl;
             ViewBag.Cancellable = cancellable;
             ViewBag.ReloadPage = reloadPage;
@@ -309,8 +309,8 @@ namespace SmartStore.Admin.Controllers
                 return new EmptyResult();
             }
 
-            ViewBag.CanRead = Services.Permissions2.Authorize(Permissions.System.ScheduleTask.Read);
-            ViewBag.CanExecute = Services.Permissions2.Authorize(Permissions.System.ScheduleTask.Execute);
+            ViewBag.CanRead = Services.Permissions.Authorize(Permissions.System.ScheduleTask.Read);
+            ViewBag.CanExecute = Services.Permissions.Authorize(Permissions.System.ScheduleTask.Execute);
             ViewBag.ReturnUrl = returnUrl;
 
             return PartialView("_MinimalTaskWidget", model);

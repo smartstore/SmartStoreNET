@@ -170,7 +170,7 @@ namespace SmartStore.Web.Framework.UI
 
             if (item.PermissionNames.HasValue())
             {
-                var permitted = item.PermissionNames.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Any(x => Services.Permissions2.FindAuthorization(x.Trim()));
+                var permitted = item.PermissionNames.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Any(x => Services.Permissions.FindAuthorization(x.Trim()));
                 if (!permitted)
                 {
                     result = false;

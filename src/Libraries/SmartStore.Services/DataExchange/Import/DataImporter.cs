@@ -81,7 +81,7 @@ namespace SmartStore.Services.DataExchange.Import
                 return true;
             }
 
-            return _services.Permissions2.Authorize(Permissions.Configuration.Import.Execute);
+            return _services.Permissions.Authorize(Permissions.Configuration.Import.Execute);
         }
 
 		private void LogResults(DataImporterContext ctx)

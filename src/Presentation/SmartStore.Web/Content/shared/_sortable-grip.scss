@@ -22,6 +22,10 @@
 
 }
 
+.sortable-item {
+    position: relative;
+}
+
 .sortable-item:hover .sortable-grip {
 	visibility: visible;
 	opacity: 1;

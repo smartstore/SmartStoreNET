@@ -13,22 +13,34 @@ $.fn.sortable = function(options) {
 		connectWith: false
 	}, options);
 	return this.each(function() {
-		if (/^enable|disable|destroy$/.test(method)) {
-			var items = $(this).children($(this).data('items')).attr('draggable', method == 'enable');
-			if (method == 'destroy') {
-				items.add(this).removeData('connectWith items')
-					.off('dragstart.h5s dragend.h5s selectstart.h5s dragover.h5s dragenter.h5s drop.h5s');
-			}
-			return;
-		}
-		var isHandle, index, items = $(this).children(options.items);
-		var placeholder = $('<' + (/^ul|ol$/i.test(this.tagName) ? 'li' : 'div') + ' class="sortable-placeholder">');
+        if (/^enable|disable|update|destroy$/.test(method)) {
+            var draggables = $(this).children($(this).data('items')).attr('draggable', method === 'enable');
+            if (method === 'destroy' || method === 'update') {
+                draggables.add(this)
+                    .removeData('connectWith items')
+                    .off('dragstart.h5s dragend.h5s selectstart.h5s dragover.h5s dragenter.h5s drop.h5s');
+            }
+            
+            if (method === 'update')
+                options = $(this).data('options');
+            else
+                return;
+        }
+
+        var isHandle,
+            index,
+            items = $(this).children(options.items),
+            placeholder = $('<' + (/^ul|ol$/i.test(this.tagName) ? 'li' : 'div') + ' class="sortable-placeholder">');
+
 		items.find(options.handle).mousedown(function() {
 			isHandle = true;
 		}).mouseup(function() {
 			isHandle = false;
-		});
-		$(this).data('items', options.items)
+        });
+
+        $(this).data('options', options);
+        $(this).data('items', options.items);
+
 		placeholders = placeholders.add(placeholder);
 		if (options.connectWith) {
 			$(options.connectWith).add(this).data('connectWith', options.connectWith);

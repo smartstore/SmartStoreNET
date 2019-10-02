@@ -20,7 +20,6 @@ using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.IO;
 using SmartStore.Core.Security;
-using SmartStore.Data.Setup;
 using SmartStore.Utilities;
 using EfState = System.Data.Entity.EntityState;
 
@@ -935,17 +934,30 @@ namespace SmartStore.Data.Utilities
                 throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
             }
 
-            var permissionSet = ctx.Set<PermissionRecord>();
             var mappingSet = ctx.Set<PermissionRoleMapping>();
-            var allRoles = ctx.Set<CustomerRole>().ToList();
-            var allPermissions = permissionSet.Expand(x => x.CustomerRoles).ToList();
+            var permissionSet = ctx.Set<PermissionRecord>();
+            var allPermissions = permissionSet.ToList();
             var newPermissions = new Dictionary<string, PermissionRecord>();
+            var allRoles = ctx.Set<CustomerRole>().ToList();
             var adminRole = allRoles.FirstOrDefault(x => x.SystemName.IsCaseInsensitiveEqual("Administrators"));
+
+            // No entity, no navigation property -> use SQL.
+            var oldMappings = new Multimap<int, int>();
+            if (((DbContext)context).TableExists("PermissionRecord_Role_Mapping"))
+            {
+                oldMappings = context.SqlQuery<OldPermissionRoleMapping>("select * from [dbo].[PermissionRecord_Role_Mapping]")
+                    .ToList()
+                    .ToMultimap(x => x.PermissionRecord_Id, x => x.CustomerRole_Id);
+            }
 
             var permissionToRoles = new Multimap<string, int>(StringComparer.OrdinalIgnoreCase);
             foreach (var permission in allPermissions)
             {
-                permissionToRoles.AddRange(permission.SystemName, permission.CustomerRoles.Select(x => x.Id));
+                var roleIds = oldMappings.ContainsKey(permission.Id)
+                    ? oldMappings[permission.Id]
+                    : Enumerable.Empty<int>();
+
+                permissionToRoles.AddRange(permission.SystemName, roleIds);
             }
 
             var oldPermissions = GetOldPermissions();
@@ -1172,6 +1184,12 @@ namespace SmartStore.Data.Utilities
 
                 return map;
             }
+        }
+
+        public class OldPermissionRoleMapping
+        {
+            public int PermissionRecord_Id { get; set; }
+            public int CustomerRole_Id { get; set; }
         }
 
         #endregion

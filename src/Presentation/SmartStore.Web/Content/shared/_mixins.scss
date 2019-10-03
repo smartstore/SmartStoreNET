@@ -183,7 +183,7 @@
     $stops: ();
 
     @each $colorstop, $alpha in $coords {
-        $stop: hsla($hue, $saturation, $lightness, $alpha) percentage($colorstop/100);
+        $stop: hsla($hue, $saturation, $lightness, $alpha) calc(#{percentage($colorstop/100)} * var(--gsize,1));
         $stops: append($stops, $stop, comma);
     }
 

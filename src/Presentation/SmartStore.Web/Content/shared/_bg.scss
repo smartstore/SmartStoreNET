@@ -71,10 +71,10 @@
     }
 
     @if $radial == true {
-        background: radial-gradient(var(--gradientdir, circle at left top), $cstart, $cend);
+        background: radial-gradient(var(--gradientdir, circle at left top), $cstart 0%, $cend calc(100% * var(--gsize,1)));
     }
     @else {
-        background: linear-gradient(var(--gradientdir, to bottom right), $cstart, $cend);
+        background: linear-gradient(var(--gradientdir, to bottom right), $cstart 0%, $cend calc(100% * var(--gsize,1)));
     }
 }
 

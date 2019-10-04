@@ -40,19 +40,6 @@
 
 		protected override void Seed(SmartObjectContext context)
 		{
-            context.Set<ScheduleTask>().AddOrUpdate(x => x.Type,
-                new ScheduleTask
-                {
-                    Name = "Rebuild XML Sitemap",
-                    CronExpression = "45 3 * * *",
-                    Type = "SmartStore.Services.Seo.RebuildXmlSitemapTask, SmartStore.Services",
-                    Enabled = true,
-                    StopOnError = false
-                }
-            );
-
-            context.SaveChanges();
-
             context.MigrateLocaleResources(MigrateLocaleResources);
 			MigrateSettings(context);
         }

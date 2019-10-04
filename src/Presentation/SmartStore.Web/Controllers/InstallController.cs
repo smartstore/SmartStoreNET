@@ -556,11 +556,20 @@ namespace SmartStore.Web.Controllers
 						x.ProgressMessage = _locService.GetResource("Progress.BuildingDatabase");
 						Logger.Info(x.ProgressMessage);
 					});
-					// ===>>> actually performs the installation by calling "InstallDataSeeder.Seed()" internally
+					// ===>>> actually performs the installation by calling "InstallDataSeeder.Seed()" internally.
 					dbContext.Database.Initialize(true);
 
-					// install plugins
-					PluginManager.MarkAllPluginsAsUninstalled();
+                    // Register default permissions.
+                    var permissionProviders = new List<Type>();
+                    permissionProviders.Add(typeof(StandardPermissionProvider));
+                    foreach (var providerType in permissionProviders)
+                    {
+                        dynamic provider = Activator.CreateInstance(providerType);
+                        scope.Resolve<IPermissionService>().InstallPermissions(provider);
+                    }
+
+                    // Install plugins.
+                    PluginManager.MarkAllPluginsAsUninstalled();
 					var pluginFinder = scope.Resolve<IPluginFinder>();
 					var plugins = pluginFinder.GetPlugins<IPlugin>(false)
 						//.ToList()
@@ -584,7 +593,8 @@ namespace SmartStore.Web.Controllers
 					var pluginsCount = plugins.Count;
 					var idx = 0;
 
-					using (var dbScope = new DbContextScope(autoDetectChanges: false, hooksEnabled: false)) {
+					using (var dbScope = new DbContextScope(autoDetectChanges: false, hooksEnabled: false))
+                    {
 						foreach (var plugin in plugins)
 						{
 							try
@@ -616,16 +626,7 @@ namespace SmartStore.Web.Controllers
 						Logger.Info(x.ProgressMessage);
 					});
 
-					// Register default permissions
-					var permissionProviders = new List<Type>();
-					permissionProviders.Add(typeof(StandardPermissionProvider));
-					foreach (var providerType in permissionProviders)
-					{
-						dynamic provider = Activator.CreateInstance(providerType);
-						scope.Resolve<IPermissionService>().InstallPermissions(provider);
-					}
-
-					// do not ignore settings migrated by data seeder (e.g. default media storage provider)
+					// Do not ignore settings migrated by data seeder (e.g. default media storage provider).
 					scope.Resolve<ISettingService>().ClearCache();
 
 					// SUCCESS: Redirect to home page

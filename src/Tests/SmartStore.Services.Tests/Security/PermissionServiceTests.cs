@@ -130,6 +130,9 @@ namespace SmartStore.Services.Tests.Security
 
             var result = _permissionService.FindAuthorization("catalog.manufacturer", _cModerator);
             Assert.IsTrue(result);
+
+            result = _permissionService.FindAuthorization("catalog.product", _cModerator);
+            Assert.IsFalse(result);
         }
 
         private void AddMapping(PermissionRecord permission, CustomerRole role, bool allow)

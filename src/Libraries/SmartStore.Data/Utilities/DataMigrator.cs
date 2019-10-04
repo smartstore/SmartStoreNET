@@ -944,8 +944,8 @@ namespace SmartStore.Data.Utilities
 
             // Mapping has no entity and no navigation property -> use SQL.
             var oldMappings = context.SqlQuery<OldPermissionRoleMapping>("select * from [dbo].[PermissionRecord_Role_Mapping]")
-                    .ToList()
-                    .ToMultimap(x => x.PermissionRecord_Id, x => x.CustomerRole_Id);
+                .ToList()
+                .ToMultimap(x => x.PermissionRecord_Id, x => x.CustomerRole_Id);
 
             var permissionToRoles = new Multimap<string, int>(StringComparer.OrdinalIgnoreCase);
             foreach (var permission in allPermissions)

@@ -367,18 +367,9 @@ namespace SmartStore.Services.Security
                 {
                     node = node.Parent;
                 }
-
-                if (node != null && node.Value.Allow.HasValue)
+                if (node?.Value?.Allow ?? false)
                 {
-                    if (node.Value.Allow.Value)
-                    {
-                        // Directly or indirectly allowed.
-                        return true;
-                    }
-                    else
-                    {
-                        // Continue with next role.
-                    }
+                    return true;
                 }
             }
 
@@ -445,7 +436,16 @@ namespace SmartStore.Services.Security
                     continue;
                 }
 
-                if (FindAllow(node))
+                if (FindAllowByChild(node))
+                {
+                    return true;
+                }
+
+                while (node != null && !node.Value.Allow.HasValue)
+                {
+                    node = node.Parent;
+                }
+                if (node?.Value?.Allow ?? false)
                 {
                     return true;
                 }
@@ -453,9 +453,9 @@ namespace SmartStore.Services.Security
 
             return false;
 
-            bool FindAllow(TreeNode<IPermissionNode> n)
+            bool FindAllowByChild(TreeNode<IPermissionNode> n)
             {
-                if (n.Value.Allow ?? false)
+                if (n?.Value?.Allow ?? false)
                 {
                     return true;
                 }
@@ -464,7 +464,7 @@ namespace SmartStore.Services.Security
                 {
                     foreach (var child in n.Children)
                     {
-                        if (FindAllow(child))
+                        if (FindAllowByChild(child))
                         {
                             return true;
                         }

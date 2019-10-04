@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore.ComponentModel
 {
@@ -119,34 +120,37 @@ namespace SmartStore.ComponentModel
 			}
 		}
 
-		/// <summary>
-		/// Returns the property value for the specified <paramref name="instance"/>.
-		/// </summary>
-		/// <param name="instance">The object whose property value will be returned.</param>
-		/// <returns>The property value.</returns>
-		public object GetValue(object instance)
+        /// <summary>
+        /// Returns the property value for the specified <paramref name="instance"/>.
+        /// </summary>
+        /// <param name="instance">The object whose property value will be returned.</param>
+        /// <returns>The property value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public object GetValue(object instance)
 		{
 			return ValueGetter(instance);
 		}
 
-		/// <summary>
-		/// Sets the property value for the specified <paramref name="instance" />.
-		/// </summary>
-		/// <param name="instance">The object whose property value will be set.</param>
-		/// <param name="value">The property value.</param>
-		public void SetValue(object instance, object value)
+        /// <summary>
+        /// Sets the property value for the specified <paramref name="instance" />.
+        /// </summary>
+        /// <param name="instance">The object whose property value will be set.</param>
+        /// <param name="value">The property value.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(object instance, object value)
 		{
 			ValueSetter(instance, value);
 		}
 
-		/// <summary>
-		/// Creates and caches fast property helpers that expose getters for every public get property on the
-		/// underlying type.
-		/// </summary>
-		/// <param name="instance">the instance to extract property accessors for.</param>
-		/// <returns>A cached array of all public property getters from the underlying type of target instance.
-		/// </returns>
-		public static IReadOnlyDictionary<string, FastProperty> GetProperties(object instance)
+        /// <summary>
+        /// Creates and caches fast property helpers that expose getters for every public get property on the
+        /// underlying type.
+        /// </summary>
+        /// <param name="instance">the instance to extract property accessors for.</param>
+        /// <returns>A cached array of all public property getters from the underlying type of target instance.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IReadOnlyDictionary<string, FastProperty> GetProperties(object instance)
 		{
 			return GetProperties(instance.GetType());
 		}
@@ -209,7 +213,8 @@ namespace SmartStore.ComponentModel
 			return (IReadOnlyDictionary<string, FastProperty>)GetVisibleProperties(type, CreateInstance, propertiesCache, visiblePropertiesCache);
 		}
 
-		public static FastProperty GetProperty<T>(
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static FastProperty GetProperty<T>(
 			Expression<Func<T, object>> property,
 			PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
 		{
@@ -293,16 +298,17 @@ namespace SmartStore.ComponentModel
 			return fastProperty != null;
 		}
 
-		/// <summary>
-		/// Creates a single fast property getter. The result is not cached.
-		/// </summary>
-		/// <param name="propertyInfo">propertyInfo to extract the getter for.</param>
-		/// <returns>a fast getter.</returns>
-		/// <remarks>
-		/// This method is more memory efficient than a dynamically compiled lambda, and about the
-		/// same speed.
-		/// </remarks>
-		public static Func<object, object> MakeFastPropertyGetter(PropertyInfo propertyInfo)
+        /// <summary>
+        /// Creates a single fast property getter. The result is not cached.
+        /// </summary>
+        /// <param name="propertyInfo">propertyInfo to extract the getter for.</param>
+        /// <returns>a fast getter.</returns>
+        /// <remarks>
+        /// This method is more memory efficient than a dynamically compiled lambda, and about the
+        /// same speed.
+        /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Func<object, object> MakeFastPropertyGetter(PropertyInfo propertyInfo)
 		{
 			Debug.Assert(propertyInfo != null);
 
@@ -312,16 +318,17 @@ namespace SmartStore.ComponentModel
 				CallPropertyGetterByReferenceOpenGenericMethod);
 		}
 
-		/// <summary>
-		/// Creates a single fast property getter which is safe for a null input object. The result is not cached.
-		/// </summary>
-		/// <param name="propertyInfo">propertyInfo to extract the getter for.</param>
-		/// <returns>a fast getter.</returns>
-		/// <remarks>
-		/// This method is more memory efficient than a dynamically compiled lambda, and about the
-		/// same speed.
-		/// </remarks>
-		public static Func<object, object> MakeNullSafeFastPropertyGetter(PropertyInfo propertyInfo)
+        /// <summary>
+        /// Creates a single fast property getter which is safe for a null input object. The result is not cached.
+        /// </summary>
+        /// <param name="propertyInfo">propertyInfo to extract the getter for.</param>
+        /// <returns>a fast getter.</returns>
+        /// <remarks>
+        /// This method is more memory efficient than a dynamically compiled lambda, and about the
+        /// same speed.
+        /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Func<object, object> MakeNullSafeFastPropertyGetter(PropertyInfo propertyInfo)
 		{
 			Debug.Assert(propertyInfo != null);
 
@@ -476,7 +483,8 @@ namespace SmartStore.ComponentModel
 			return dictionary;
 		}
 
-		private static FastProperty CreateInstance(PropertyInfo property)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static FastProperty CreateInstance(PropertyInfo property)
 		{
 			return new FastProperty(property);
 		}

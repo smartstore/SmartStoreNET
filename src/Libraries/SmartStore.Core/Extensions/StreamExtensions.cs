@@ -2,20 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Web;
 using System.IO;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore
 {
 	public static class StreamExtensions
 	{
-		public static StreamReader ToStreamReader(this Stream stream, bool leaveOpen)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static StreamReader ToStreamReader(this Stream stream, bool leaveOpen)
 		{
 			return new StreamReader(stream, Encoding.UTF8, true, 0x400, leaveOpen);
 		}
 
-		public static StreamReader ToStreamReader(this Stream stream, Encoding encoding, bool detectEncoding, int bufferSize, bool leaveOpen)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static StreamReader ToStreamReader(this Stream stream, Encoding encoding, bool detectEncoding, int bufferSize, bool leaveOpen)
 		{
 			return new StreamReader(stream, encoding, detectEncoding, bufferSize, leaveOpen);
 		}

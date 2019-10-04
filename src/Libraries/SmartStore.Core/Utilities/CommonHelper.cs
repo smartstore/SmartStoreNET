@@ -13,6 +13,7 @@ using SmartStore.ComponentModel;
 using System.Text;
 using Newtonsoft.Json;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore.Utilities
 {
@@ -187,6 +188,7 @@ namespace SmartStore.Utilities
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryConvert(object value, Type to, out object convertedValue)
 		{
             return TryConvert(value, to, CultureInfo.InvariantCulture, out convertedValue);

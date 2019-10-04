@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Collections;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore
 {
@@ -110,7 +111,8 @@ namespace SmartStore
             return true;
         }
 
-		public static bool IsPlainObjectType(this Type type)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsPlainObjectType(this Type type)
 		{
 			return type.IsClass && !type.IsSequenceType() && !type.IsPredefinedType();
 		}
@@ -158,6 +160,7 @@ namespace SmartStore
 			return wrappedType != type;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsEnumType(this Type type)
         {
             return type.GetNonNullableType().IsEnum;
@@ -210,6 +213,7 @@ namespace SmartStore
                 .Any(ctor => ctor.GetParameters().Length == 0);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsSubClass(this Type type, Type check)
         {
 			return IsSubClass(type, check, out Type _);
@@ -437,6 +441,7 @@ namespace SmartStore
             return null;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool HasAttribute<TAttribute>(this ICustomAttributeProvider target, bool inherits) where TAttribute : Attribute
         {
             return target.IsDefined(typeof(TAttribute), inherits);

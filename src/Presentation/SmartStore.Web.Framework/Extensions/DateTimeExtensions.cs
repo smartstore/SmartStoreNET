@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Services.Helpers;
@@ -13,6 +14,7 @@ namespace SmartStore.Web.Framework
         /// </summary>
         /// <param name="source">Source (UTC format)</param>
         /// <returns>Formatted date and time string</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string RelativeFormat(this DateTime source)
         {
             return RelativeFormat(source, string.Empty);
@@ -24,6 +26,7 @@ namespace SmartStore.Web.Framework
         /// <param name="source">Source (UTC format)</param>
         /// <param name="defaultFormat">Default format string (in case relative formatting is not applied)</param>
         /// <returns>Formatted date and time string</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string RelativeFormat(this DateTime source, string defaultFormat)
         {
             return RelativeFormat(source, false, defaultFormat);

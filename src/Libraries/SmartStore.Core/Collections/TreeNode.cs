@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Newtonsoft.Json;
 using SmartStore.ComponentModel;
@@ -85,12 +86,14 @@ namespace SmartStore.Collections
 			return node;
 		}
 
-		public void AppendRange(IEnumerable<TValue> values)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendRange(IEnumerable<TValue> values)
 		{
 			values.Each(x => Append(x));
 		}
 
-		public void AppendRange(IEnumerable<TValue> values, Func<TValue, object> idSelector)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendRange(IEnumerable<TValue> values, Func<TValue, object> idSelector)
 		{
 			Guard.NotNull(idSelector, nameof(idSelector));
 
@@ -105,7 +108,8 @@ namespace SmartStore.Collections
 			return node;
 		}
 
-		public IEnumerable<TValue> Flatten(bool includeSelf = true)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IEnumerable<TValue> Flatten(bool includeSelf = true)
 		{
 			return this.Flatten(null, includeSelf);
 		}

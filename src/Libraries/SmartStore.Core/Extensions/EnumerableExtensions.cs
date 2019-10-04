@@ -9,6 +9,7 @@ using SmartStore.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using SmartStore.Core;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore
 {
@@ -142,7 +143,8 @@ namespace SmartStore
 		/// <param name="source">The list, which holds the objects.</param>
 		/// <param name="action">The action delegate which is called on each item while iterating.</param>
 		[DebuggerStepThrough]
-		public static void Each<T>(this IEnumerable<T> source, Action<T> action)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Each<T>(this IEnumerable<T> source, Action<T> action)
         {
             foreach (T t in source)
             {
@@ -158,7 +160,8 @@ namespace SmartStore
 		/// <param name="source">The list, which holds the objects.</param>
 		/// <param name="action">The action delegate which is called on each item while iterating.</param>
 		[DebuggerStepThrough]
-		public static void Each<T>(this IEnumerable<T> source, Action<T, int> action)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Each<T>(this IEnumerable<T> source, Action<T, int> action)
 		{
 			int i = 0;
 			foreach (T t in source)
@@ -184,27 +187,29 @@ namespace SmartStore
 			return new ReadOnlyCollection<T>(source.ToList());
         }
 
-		/// <summary>
-		/// Converts an enumerable to a dictionary while tolerating duplicate entries (last wins)
-		/// </summary>
-		/// <param name="source">source</param>
-		/// <param name="keySelector">keySelector</param>
-		/// <returns>Result as dictionary</returns>
-		public static Dictionary<TKey, TSource> ToDictionarySafe<TSource, TKey>(
+        /// <summary>
+        /// Converts an enumerable to a dictionary while tolerating duplicate entries (last wins)
+        /// </summary>
+        /// <param name="source">source</param>
+        /// <param name="keySelector">keySelector</param>
+        /// <returns>Result as dictionary</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Dictionary<TKey, TSource> ToDictionarySafe<TSource, TKey>(
 			this IEnumerable<TSource> source,
 			 Func<TSource, TKey> keySelector)
 		{
 			return source.ToDictionarySafe(keySelector, new Func<TSource, TSource>(src => src), null);
 		}
 
-		/// <summary>
-		/// Converts an enumerable to a dictionary while tolerating duplicate entries (last wins)
-		/// </summary>
-		/// <param name="source">source</param>
-		/// <param name="keySelector">keySelector</param>
-		/// <param name="comparer">comparer</param>
-		/// <returns>Result as dictionary</returns>
-		public static Dictionary<TKey, TSource> ToDictionarySafe<TSource, TKey>(
+        /// <summary>
+        /// Converts an enumerable to a dictionary while tolerating duplicate entries (last wins)
+        /// </summary>
+        /// <param name="source">source</param>
+        /// <param name="keySelector">keySelector</param>
+        /// <param name="comparer">comparer</param>
+        /// <returns>Result as dictionary</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Dictionary<TKey, TSource> ToDictionarySafe<TSource, TKey>(
 			this IEnumerable<TSource> source,
 			 Func<TSource, TKey> keySelector,
 			 IEqualityComparer<TKey> comparer)
@@ -212,14 +217,15 @@ namespace SmartStore
 			return source.ToDictionarySafe(keySelector, new Func<TSource, TSource>(src => src), comparer);
 		}
 
-		/// <summary>
-		/// Converts an enumerable to a dictionary while tolerating duplicate entries (last wins)
-		/// </summary>
-		/// <param name="source">source</param>
-		/// <param name="keySelector">keySelector</param>
-		/// <param name="elementSelector">elementSelector</param>
-		/// <returns>Result as dictionary</returns>
-		public static Dictionary<TKey, TElement> ToDictionarySafe<TSource, TKey, TElement>(
+        /// <summary>
+        /// Converts an enumerable to a dictionary while tolerating duplicate entries (last wins)
+        /// </summary>
+        /// <param name="source">source</param>
+        /// <param name="keySelector">keySelector</param>
+        /// <param name="elementSelector">elementSelector</param>
+        /// <returns>Result as dictionary</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Dictionary<TKey, TElement> ToDictionarySafe<TSource, TKey, TElement>(
 			this IEnumerable<TSource> source,
 			 Func<TSource, TKey> keySelector,
 			 Func<TSource, TElement> elementSelector)
@@ -294,16 +300,18 @@ namespace SmartStore
 			return sorted;
 		}
 
-		public static string StrJoin(this IEnumerable<string> source, string separator)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string StrJoin(this IEnumerable<string> source, string separator)
 		{
 			return string.Join(separator, source);
 		}
 
-		#endregion
+        #endregion
 
-		#region Multimap
+        #region Multimap
 
-		public static Multimap<TKey, TValue> ToMultimap<TSource, TKey, TValue>(
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Multimap<TKey, TValue> ToMultimap<TSource, TKey, TValue>(
                                                 this IEnumerable<TSource> source,
                                                 Func<TSource, TKey> keySelector,
                                                 Func<TSource, TValue> valueSelector)

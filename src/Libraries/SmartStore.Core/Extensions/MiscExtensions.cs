@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace SmartStore
@@ -45,16 +46,19 @@ namespace SmartStore
 			return sb.ToString();
 		}
 
-		public static string ToElapsedMinutes(this Stopwatch watch) 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string ToElapsedMinutes(this Stopwatch watch) 
         {
 			return "{0:0.0}".FormatWith(TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds).TotalMinutes);
 		}
 
-		public static string ToElapsedSeconds(this Stopwatch watch) 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string ToElapsedSeconds(this Stopwatch watch) 
         {
 			return "{0:0.0}".FormatWith(TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds).TotalSeconds);
 		}
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNullOrDefault<T>(this T? value) where T : struct
         {
             return default(T).Equals(value.GetValueOrDefault());
@@ -108,7 +112,8 @@ namespace SmartStore
 			}
 		}
 
-		public static string SafeGet(this string[] arr, int index)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string SafeGet(this string[] arr, int index)
 		{
 			return arr != null && index < arr.Length ? arr[index] : "";
 		}

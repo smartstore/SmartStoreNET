@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Web;
@@ -104,6 +105,7 @@ namespace SmartStore.Web.Framework
             });
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static MvcHtmlString DeleteConfirmation<T>(this HtmlHelper<T> helper, string buttonsSelector = null) where T : EntityModelBase
         {
             return DeleteConfirmation<T>(helper, "", buttonsSelector);
@@ -264,6 +266,7 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Create(result.ToString());
 		}
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FieldNameFor<T, TResult>(this HtmlHelper<T> html, Expression<Func<T, TResult>> expression)
         {
             return html.ViewData.TemplateInfo.GetFullHtmlFieldName(ExpressionHelper.GetExpressionText(expression));
@@ -456,6 +459,7 @@ namespace SmartStore.Web.Framework
 
         #endregion
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static MvcHtmlString Widget(this HtmlHelper helper, string widgetZone)
         {
 			return helper.Widget(widgetZone, null);
@@ -472,7 +476,8 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Empty;
 		}
 
-		public static void RenderWidget(this HtmlHelper helper, string widgetZone)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void RenderWidget(this HtmlHelper helper, string widgetZone)
 		{
 			helper.RenderWidget(widgetZone, null);
 		}
@@ -631,7 +636,8 @@ namespace SmartStore.Web.Framework
             return MvcHtmlString.Create(sb.ToString());
         }
 
-		public static MvcHtmlString ColorBox(this HtmlHelper html, string name, string color)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static MvcHtmlString ColorBox(this HtmlHelper html, string name, string color)
 		{
 			return ColorBox(html, name, color, null);
 		}
@@ -795,7 +801,8 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Create(result);
 		}
 
-		public static MvcHtmlString IconForFileExtension(this HtmlHelper helper, string fileExtension, bool renderLabel = false)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static MvcHtmlString IconForFileExtension(this HtmlHelper helper, string fileExtension, bool renderLabel = false)
 		{
 			return IconForFileExtension(helper, fileExtension, null, renderLabel);
 		}

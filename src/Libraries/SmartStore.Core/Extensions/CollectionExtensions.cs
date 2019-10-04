@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using SmartStore.Collections;
 
 namespace SmartStore
@@ -38,7 +39,8 @@ namespace SmartStore
 			return new SyncedCollection<T>(source, syncRoot);
 		}
 
-		public static bool IsNullOrEmpty<T>(this ICollection<T> source)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNullOrEmpty<T>(this ICollection<T> source)
         {
             return source == null || source.Count == 0;
         }

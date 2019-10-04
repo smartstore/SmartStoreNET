@@ -2,22 +2,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore
 {
     public class Guard
     {
-        internal const string AgainstMessage = "Assertion evaluation failed with 'false'.";
-		internal const string ImplementsMessage = "Type '{0}' must implement type '{1}'.";
-		internal const string InheritsFromMessage = "Type '{0}' must inherit from type '{1}'.";
-		internal const string IsTypeOfMessage = "Type '{0}' must be of type '{1}'.";
-		internal const string IsEqualMessage = "Compared objects must be equal.";
-		internal const string IsPositiveMessage = "Argument '{0}' must be a positive value. Value: '{1}'.";
-		internal const string IsTrueMessage = "True expected for '{0}' but the condition was False.";
-		internal const string NotNegativeMessage = "Argument '{0}' cannot be a negative value. Value: '{1}'.";
+        const string AgainstMessage = "Assertion evaluation failed with 'false'.";
+		const string ImplementsMessage = "Type '{0}' must implement type '{1}'.";
+		const string InheritsFromMessage = "Type '{0}' must inherit from type '{1}'.";
+		const string IsTypeOfMessage = "Type '{0}' must be of type '{1}'.";
+		const string IsEqualMessage = "Compared objects must be equal.";
+		const string IsPositiveMessage = "Argument '{0}' must be a positive value. Value: '{1}'.";
+		const string IsTrueMessage = "True expected for '{0}' but the condition was False.";
+		const string NotNegativeMessage = "Argument '{0}' cannot be a negative value. Value: '{1}'.";
+        const string NotEmptyStringMessage = "String parameter '{0}' cannot be null or all whitespace.";
+        const string NotEmptyColMessage = "Collection cannot be null and must contain at least one item.";
+        const string NotEmptyGuidMessage = "Argument '{0}' cannot be an empty guid.";
+        const string InRangeMessage = "The argument '{0}' must be between '{1}' and '{2}'.";
+        const string NotOutOfLengthMessage = "Argument '{0}' cannot be more than {1} characters long.";
+        const string NotZeroMessage = "Argument '{0}' must be greater or less than zero. Value: '{1}'.";
+        const string IsEnumTypeMessage = "Type '{0}' must be a valid Enum type.";
+        const string IsEnumTypeMessage2 = "The value of the argument '{0}' provided for the enumeration '{1}' is invalid.";
+        const string IsSubclassOfMessage = "Type '{0}' must be a subclass of type '{1}'.";
+        const string HasDefaultConstructorMessage = "The type '{0}' must have a default parameterless constructor.";
 
         private Guard()
         {
@@ -26,72 +35,82 @@ namespace SmartStore
 		#region 3.0
 
 		[DebuggerStepThrough]
-		public static void NotNull(object arg, string argName)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void NotNull(object arg, string argName)
 		{
 			if (arg == null)
 				throw new ArgumentNullException(argName);
 		}
 
 		[DebuggerStepThrough]
-		public static void NotEmpty(string arg, string argName)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void NotEmpty(string arg, string argName)
 		{
 			if (string.IsNullOrWhiteSpace(arg))
-				throw Error.Argument(argName, "String parameter '{0}' cannot be null or all whitespace.", argName);
+				throw Error.Argument(argName, NotEmptyStringMessage, argName);
 		}
 
 		[DebuggerStepThrough]
-		public static void NotEmpty<T>(ICollection<T> arg, string argName)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void NotEmpty<T>(ICollection<T> arg, string argName)
 		{
 			if (arg == null || !arg.Any())
-				throw Error.Argument(argName, "Collection cannot be null and must contain at least one item.");
+				throw Error.Argument(argName, NotEmptyColMessage);
 		}
 
 		[DebuggerStepThrough]
-		public static void NotEmpty(Guid arg, string argName)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void NotEmpty(Guid arg, string argName)
 		{
 			if (arg == Guid.Empty)
-				throw Error.Argument(argName, "Argument '{0}' cannot be an empty guid.", argName);
+				throw Error.Argument(argName, NotEmptyGuidMessage, argName);
 		}
 
 		[DebuggerStepThrough]
-		public static void InRange<T>(T arg, T min, T max, string argName) where T : struct, IComparable<T>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void InRange<T>(T arg, T min, T max, string argName) where T : struct, IComparable<T>
 		{
 			if (arg.CompareTo(min) < 0 || arg.CompareTo(max) > 0)
-				throw Error.ArgumentOutOfRange(argName, "The argument '{0}' must be between '{1}' and '{2}'.", argName, min, max);
+				throw Error.ArgumentOutOfRange(argName, InRangeMessage, argName, min, max);
 		}
 
 		[DebuggerStepThrough]
-		public static void NotOutOfLength(string arg, int maxLength, string argName)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void NotOutOfLength(string arg, int maxLength, string argName)
 		{
 			if (arg.Trim().Length > maxLength)
 			{
-				throw Error.Argument(argName, "Argument '{0}' cannot be more than {1} characters long.", argName, maxLength);
+				throw Error.Argument(argName, NotOutOfLengthMessage, argName, maxLength);
 			}
 		}
 
 		[DebuggerStepThrough]
-		public static void NotNegative<T>(T arg, string argName, string message = NotNegativeMessage) where T : struct, IComparable<T>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void NotNegative<T>(T arg, string argName, string message = NotNegativeMessage) where T : struct, IComparable<T>
 		{
 			if (arg.CompareTo(default(T)) < 0)
 				throw Error.ArgumentOutOfRange(argName, message.FormatInvariant(argName, arg));
 		}
 
 		[DebuggerStepThrough]
-		public static void NotZero<T>(T arg, string argName) where T : struct, IComparable<T>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void NotZero<T>(T arg, string argName) where T : struct, IComparable<T>
 		{
 			if (arg.CompareTo(default(T)) == 0)
-				throw Error.ArgumentOutOfRange(argName, "Argument '{0}' must be greater or less than zero. Value: '{1}'.", argName, arg);
+				throw Error.ArgumentOutOfRange(argName, NotZeroMessage, argName, arg);
 		}
 
 		[DebuggerStepThrough]
-		public static void Against<TException>(bool assertion, string message = AgainstMessage) where TException : Exception
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Against<TException>(bool assertion, string message = AgainstMessage) where TException : Exception
 		{
 			if (assertion)
 				throw (TException)Activator.CreateInstance(typeof(TException), message);
 		}
 
 		[DebuggerStepThrough]
-		public static void Against<TException>(Func<bool> assertion, string message = AgainstMessage) where TException : Exception
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Against<TException>(Func<bool> assertion, string message = AgainstMessage) where TException : Exception
 		{
 			//Execute the lambda and if it evaluates to true then throw the exception.
 			if (assertion())
@@ -99,41 +118,46 @@ namespace SmartStore
 		}
 
 		[DebuggerStepThrough]
-		public static void IsPositive<T>(T arg, string argName, string message = IsPositiveMessage) where T : struct, IComparable<T>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void IsPositive<T>(T arg, string argName, string message = IsPositiveMessage) where T : struct, IComparable<T>
 		{
 			if (arg.CompareTo(default(T)) < 1)
 				throw Error.ArgumentOutOfRange(argName, message.FormatInvariant(argName));
 		}
 
 		[DebuggerStepThrough]
-		public static void IsTrue(bool arg, string argName, string message = IsTrueMessage)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void IsTrue(bool arg, string argName, string message = IsTrueMessage)
 		{
 			if (!arg)
 				throw Error.Argument(argName, message.FormatInvariant(argName));
 		}
 
 		[DebuggerStepThrough]
-		public static void IsEnumType(Type arg, string argName)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void IsEnumType(Type arg, string argName)
 		{
 			NotNull(arg, argName);
 
 			if (!arg.IsEnum)
-				throw Error.Argument(argName, "Type '{0}' must be a valid Enum type.", arg.FullName);
+				throw Error.Argument(argName, IsEnumTypeMessage, arg.FullName);
 		}
 
 		[DebuggerStepThrough]
-		public static void IsEnumType(Type enumType, object arg, string argName)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void IsEnumType(Type enumType, object arg, string argName)
 		{
 			NotNull(arg, argName);
 
 			if (!Enum.IsDefined(enumType, arg))
 			{
-				throw Error.ArgumentOutOfRange(argName, "The value of the argument '{0}' provided for the enumeration '{1}' is invalid.", argName, enumType.FullName);
+				throw Error.ArgumentOutOfRange(argName, IsEnumTypeMessage2, argName, enumType.FullName);
 			}
 		}
 
 		[DebuggerStepThrough]
-		public static void NotDisposed(DisposableObject arg, string argName)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void NotDisposed(DisposableObject arg, string argName)
 		{
 			NotNull(arg, argName);
 
@@ -202,6 +226,7 @@ namespace SmartStore
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void InheritsFrom<TBase>(Type type, string message)
         {
             if (type.BaseType != typeof(TBase))
@@ -209,6 +234,7 @@ namespace SmartStore
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Implements<TInterface>(Type type, string message = ImplementsMessage)
         {
             if (!typeof(TInterface).IsAssignableFrom(type))
@@ -221,7 +247,7 @@ namespace SmartStore
             var baseType = typeof(TBase);
             if (!baseType.IsSubClass(type))
             {
-                throw new InvalidOperationException("Type '{0}' must be a subclass of type '{1}'.".FormatInvariant(type.FullName, baseType.FullName));
+                throw new InvalidOperationException(IsSubclassOfMessage.FormatInvariant(type.FullName, baseType.FullName));
             }
         }
 
@@ -232,6 +258,7 @@ namespace SmartStore
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void IsTypeOf<TType>(object instance, string message)
         {
             if (!(instance is TType))
@@ -252,29 +279,15 @@ namespace SmartStore
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void HasDefaultConstructor(Type t)
         {
             if (!t.HasDefaultConstructor())
-                throw Error.InvalidOperation("The type '{0}' must have a default parameterless constructor.", t.FullName);
-        }
-
-
-        [DebuggerStepThrough]
-        [SuppressMessage("ReSharper", "UnusedMember.Local")]
-        private static string GetParamName<T>(Expression<Func<T>> expression)
-        {
-            var name = string.Empty;
-            MemberExpression body = expression.Body as MemberExpression;
-
-            if (body != null)
-            {
-                name = body.Member.Name;
-            }
-
-            return name;
+                throw Error.InvalidOperation(HasDefaultConstructorMessage, t.FullName);
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string GetParamName<T>(Func<T> expression)
         {
             return expression.Method.Name;

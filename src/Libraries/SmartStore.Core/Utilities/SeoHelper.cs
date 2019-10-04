@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace SmartStore.Utilities
@@ -20,7 +21,8 @@ namespace SmartStore.Utilities
 		/// <param name="charConversions">Raw data of semicolon separated char conversions</param>
 		/// <returns>SEO friendly string</returns>
 		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-		public static string GetSeName(string name, bool convertNonWesternChars, bool allowUnicodeChars, string charConversions = null)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string GetSeName(string name, bool convertNonWesternChars, bool allowUnicodeChars, string charConversions = null)
 		{
             return GetSeName(name, convertNonWesternChars, allowUnicodeChars, true, charConversions);
 		}

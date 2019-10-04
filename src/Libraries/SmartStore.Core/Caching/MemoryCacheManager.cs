@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using SmartStore.Utilities.Threading;
 using SmartStore.Core.Infrastructure.DependencyManagement;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore.Core.Caching
 {
@@ -68,7 +69,8 @@ namespace SmartStore.Core.Caching
 			return false;
 		}
 
-		public T Get<T>(string key, bool independent = false)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T Get<T>(string key, bool independent = false)
 		{
 			TryGet(key, independent, out T value);
 			return value;

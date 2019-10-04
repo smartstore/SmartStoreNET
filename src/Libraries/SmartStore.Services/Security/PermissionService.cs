@@ -623,25 +623,22 @@ namespace SmartStore.Services.Security
 
         private string GetDisplayName(string[] tokens, int languageId, Dictionary<string, string> resourcesLookup)
         {
+            var displayName = string.Empty;
+
             if (tokens?.Any() ?? false)
             {
-                var sb = new StringBuilder();
-
                 foreach (var token in tokens)
                 {
-                    if (sb.Length > 0)
+                    if (displayName.Length > 0)
                     {
-                        sb.Append(" » ");
+                        displayName += " » ";
                     }
 
-                    var displayName = GetDisplayName(token, languageId, resourcesLookup) ?? token ?? string.Empty;
-                    sb.Append(displayName);
+                    displayName += GetDisplayName(token, languageId, resourcesLookup) ?? token ?? string.Empty;
                 }
-
-                return sb.ToString();
             }
 
-            return string.Empty;
+            return displayName;
         }
 
         private Dictionary<string, string> GetDisplayNameLookup(int languageId)

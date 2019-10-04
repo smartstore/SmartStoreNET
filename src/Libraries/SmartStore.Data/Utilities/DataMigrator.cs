@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -942,13 +943,9 @@ namespace SmartStore.Data.Utilities
             var adminRole = allRoles.FirstOrDefault(x => x.SystemName.IsCaseInsensitiveEqual("Administrators"));
 
             // Mapping has no entity and no navigation property -> use SQL.
-            var oldMappings = new Multimap<int, int>();
-            if (((DbContext)context).TableExists("PermissionRecord_Role_Mapping"))
-            {
-                oldMappings = context.SqlQuery<OldPermissionRoleMapping>("select * from [dbo].[PermissionRecord_Role_Mapping]")
+            var oldMappings = context.SqlQuery<OldPermissionRoleMapping>("select * from [dbo].[PermissionRecord_Role_Mapping]")
                     .ToList()
                     .ToMultimap(x => x.PermissionRecord_Id, x => x.CustomerRole_Id);
-            }
 
             var permissionToRoles = new Multimap<string, int>(StringComparer.OrdinalIgnoreCase);
             foreach (var permission in allPermissions)

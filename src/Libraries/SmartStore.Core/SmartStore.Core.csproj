@@ -728,6 +728,10 @@
     <Compile Include="Utilities\HashCodeCombiner.cs" />
     <Compile Include="Utilities\Inflector.cs" />
     <Compile Include="Utilities\ObjectDumper.cs" />
+    <Compile Include="Utilities\ObjectPools\LeakTrackingObjectPool.cs" />
+    <Compile Include="Utilities\ObjectPools\ObjectPool.cs" />
+    <Compile Include="Utilities\ObjectPools\IPooledObject.cs" />
+    <Compile Include="Utilities\ObjectPools\PooledStringBuilder.cs" />
     <Compile Include="Utilities\PathHelper.cs" />
     <Compile Include="Utilities\Prettifier.cs" />
     <Compile Include="Utilities\Range.cs" />

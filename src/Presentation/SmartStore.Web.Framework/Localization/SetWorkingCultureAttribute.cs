@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Utilities.ObjectPools;
 using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Framework.Localization
@@ -65,14 +66,14 @@ namespace SmartStore.Web.Framework.Localization
 			var builder = AssetBuilder.Value;
 			var json = CreateCultureJson(culture);
 			
-			var sb = new StringBuilder();
+			var sb = PooledStringBuilder.Rent();
 			sb.Append("<script>");
 			sb.Append("jQuery(function () { if (SmartStore.globalization) { SmartStore.globalization.culture = ");
 			sb.Append(json);
 			sb.Append("; }; });");
 			sb.Append("</script>");
 
-			var script = sb.ToString();
+			var script = sb.ToStringAndReturn();
 
 			builder.AppendCustomHeadParts(script);
 		}

@@ -4,6 +4,7 @@ using System.Text;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Search.Facets;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Core.Search
 {
@@ -252,9 +253,10 @@ namespace SmartStore.Core.Search
 
 		public override string ToString()
 		{
-			var sb = new StringBuilder();
+            var psb = PooledStringBuilder.Rent();
+            var sb = (StringBuilder)psb;
 
-			if (Term.HasValue())
+            if (Term.HasValue())
 			{
 				var fields = (Fields != null && Fields.Length > 0 ? string.Join(", ", Fields) : "".NaIfEmpty());
 
@@ -278,7 +280,7 @@ namespace SmartStore.Core.Search
 				sb.Append(filter.ToString());
 			}
 
-			return sb.ToString();
+			return psb.ToStringAndReturn();
 		}
 	}
 }

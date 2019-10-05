@@ -3,6 +3,7 @@ using System.IO;
 using System.Web.Mvc;
 using System.Web;
 using System.Collections.Generic;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework
 {
@@ -18,7 +19,7 @@ namespace SmartStore.Web.Framework
         public static IDisposable BeginCollectionItem(this HtmlHelper html, string collectionName, TextWriter writer)
         {
             var idsToReuse = GetIdsToReuse(html.ViewContext.HttpContext, collectionName);
-            var itemIndex = idsToReuse.Count > 0 ? idsToReuse.Dequeue() : Guid.NewGuid().ToString();
+            var itemIndex = idsToReuse.Count > 0 ? idsToReuse.Dequeue() : CommonHelper.GenerateRandomDigitCode(10);
 
             // autocomplete="off" is needed to work around a very annoying Chrome behaviour
             // whereby it reuses old values after the user clicks "Back", which causes the

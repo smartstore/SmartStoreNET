@@ -366,18 +366,16 @@ namespace SmartStore
                 }
                 else
                 {
-                    using (var psb = StringBuilderPool.Default.Acquire())
+                    var psb = PooledStringBuilder.Rent();
+                    var sb = (StringBuilder)psb;
+
+                    byte[] hashBytes = md5.ComputeHash(value);
+                    foreach (byte b in hashBytes)
                     {
-                        var sb = psb.Value;
-
-                        byte[] hashBytes = md5.ComputeHash(value);
-                        foreach (byte b in hashBytes)
-                        {
-                            sb.Append(b.ToString("x2").ToLower());
-                        }
-
-                        return sb.ToString();
+                        sb.Append(b.ToString("x2").ToLower());
                     }
+
+                    return psb.ToStringAndReturn();
                 }
             }
         }

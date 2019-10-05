@@ -17,6 +17,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Services.Catalog
 {
@@ -725,7 +726,8 @@ namespace SmartStore.Services.Catalog
 			}
 
 			var trail = treeNode.Trail;
-			var sb = new StringBuilder(string.Empty, (trail.Count()) * 16);
+            var psb = PooledStringBuilder.Rent();
+            var sb = (StringBuilder)psb;
 
 			foreach (var node in trail)
 			{
@@ -753,7 +755,7 @@ namespace SmartStore.Services.Catalog
 				}
 			}
 
-			var path = sb.ToString();
+			var path = psb.ToStringAndReturn();
 			treeNode.SetThreadMetadata(lookupKey, path);
 			return path;
 		}

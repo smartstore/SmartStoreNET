@@ -172,15 +172,15 @@ namespace SmartStore.Admin.Controllers
             if (loggerName.IndexOf('.') < 0)
                 return loggerName;
 
-            var sb = new StringBuilder();
+            var name = string.Empty;
             var tokens = loggerName.Split('.');
             for (int i = 0; i < tokens.Length; i++)
             {
                 var token = tokens[i];
-                sb.Append(i == tokens.Length - 1 ? token : token.Substring(0, 1) + "...");
+                name += i == tokens.Length - 1 ? token : token.Substring(0, 1) + "...";
             }
 
-            return sb.ToString();
+            return name;
         }
 
         [HttpPost, ActionName("Delete")]

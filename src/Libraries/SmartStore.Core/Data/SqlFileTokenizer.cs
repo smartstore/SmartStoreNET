@@ -93,31 +93,29 @@ namespace SmartStore.Core.Data
 
 		private string ReadNextSqlStatement(TextReader reader)
 		{
-            using (var psb = StringBuilderPool.Default.Acquire())
+            var psb = PooledStringBuilder.Rent();
+            var sb = (StringBuilder)psb;
+
+            string lineOfText;
+
+            while (true)
             {
-                var sb = psb.Value;
-
-                string lineOfText;
-
-                while (true)
+                lineOfText = reader.ReadLine();
+                if (lineOfText == null)
                 {
-                    lineOfText = reader.ReadLine();
-                    if (lineOfText == null)
-                    {
-                        if (sb.Length > 0)
-                            return sb.ToString();
-                        else
-                            return null;
-                    }
-
-                    if (lineOfText.TrimEnd().ToUpper() == "GO")
-                        break;
-
-                    sb.Append(lineOfText + Environment.NewLine);
+                    if (sb.Length > 0)
+                        return sb.ToString();
+                    else
+                        return null;
                 }
 
-                return sb.ToString();
+                if (lineOfText.TrimEnd().ToUpper() == "GO")
+                    break;
+
+                sb.Append(lineOfText + Environment.NewLine);
             }
+
+            return psb.ToStringAndReturn();
 		}
 
 	}

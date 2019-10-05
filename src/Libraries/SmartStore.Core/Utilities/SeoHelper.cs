@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Utilities
 {
@@ -58,7 +59,8 @@ namespace SmartStore.Utilities
             name = name.ToLowerInvariant();
 
             var len = name.Length;
-            var sb = new StringBuilder(len);
+            var psb = PooledStringBuilder.Rent();
+            var sb = (StringBuilder)psb;
             var prevdash = false;
 
             char c;
@@ -123,9 +125,9 @@ namespace SmartStore.Utilities
             }
 
             if (prevdash)
-                return sb.ToString().Substring(0, sb.Length - 1).Trim('/');
+                return psb.ToStringAndReturn().Substring(0, sb.Length - 1).Trim('/');
             else
-                return sb.ToString().Trim('/');
+                return psb.ToStringAndReturn().Trim('/');
         }
 
         public static void ResetUserSeoCharacterTable()

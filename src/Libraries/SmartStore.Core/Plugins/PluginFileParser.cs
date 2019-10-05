@@ -246,7 +246,8 @@ namespace SmartStore.Core.Plugins
                 if (i != keyValues.Count -1)
                     sb.Append(Environment.NewLine);
             }
-            //save the file
+
+            // Save the file
             File.WriteAllText(filePath, sb.ToString());
         }
     }

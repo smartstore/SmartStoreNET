@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore
 {
@@ -19,12 +20,13 @@ namespace SmartStore
 
 		public static string ToAllMessages(this Exception exception, bool includeStackTrace = false)
 		{
-			var sb = new StringBuilder();
-			
-			while (exception != null)
-			{
-				if (!sb.ToString().EmptyNull().Contains(exception.Message))
-				{
+            var psb = PooledStringBuilder.Rent();
+            var sb = (StringBuilder)psb;
+
+            while (exception != null)
+            {
+                if (!sb.ToString().EmptyNull().Contains(exception.Message))
+                {
                     if (includeStackTrace)
                     {
                         if (sb.Length > 0)
@@ -38,12 +40,12 @@ namespace SmartStore
                     {
                         sb.Grow(exception.Message, " * ");
                     }
-				}
+                }
 
-				exception = exception.InnerException;
-			}
+                exception = exception.InnerException;
+            }
 
-			return sb.ToString();
+            return psb.ToStringAndReturn();
 		}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

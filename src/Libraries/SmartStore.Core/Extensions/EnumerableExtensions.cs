@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using SmartStore.Core;
 using System.Runtime.CompilerServices;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore
 {
@@ -371,34 +372,35 @@ namespace SmartStore
 		/// <returns>The query string without leading a question mark</returns>
 		public static string BuildQueryString(this NameValueCollection nvc, Encoding encoding, bool encode = true)
 		{
-			var sb = new StringBuilder();
+            var psb = PooledStringBuilder.Rent();
+            var sb = (StringBuilder)psb;
 
-			if (nvc != null)
-			{
-				foreach (string str in nvc)
-				{
-					if (sb.Length > 0)
-						sb.Append('&');
+            if (nvc != null)
+            {
+                foreach (string str in nvc)
+                {
+                    if (sb.Length > 0)
+                        sb.Append('&');
 
-					if (!encode)
-						sb.Append(str);
-					else if (encoding == null)
-						sb.Append(HttpUtility.UrlEncode(str));
-					else
-						sb.Append(HttpUtility.UrlEncode(str, encoding));
+                    if (!encode)
+                        sb.Append(str);
+                    else if (encoding == null)
+                        sb.Append(HttpUtility.UrlEncode(str));
+                    else
+                        sb.Append(HttpUtility.UrlEncode(str, encoding));
 
-					sb.Append('=');
+                    sb.Append('=');
 
-					if (!encode)
-						sb.Append(nvc[str]);
-					else if (encoding == null)
-						sb.Append(HttpUtility.UrlEncode(nvc[str]));
-					else
-						sb.Append(HttpUtility.UrlEncode(nvc[str], encoding));
-				}
-			}
+                    if (!encode)
+                        sb.Append(nvc[str]);
+                    else if (encoding == null)
+                        sb.Append(HttpUtility.UrlEncode(nvc[str]));
+                    else
+                        sb.Append(HttpUtility.UrlEncode(nvc[str], encoding));
+                }
+            }
 
-			return sb.ToString();
+            return psb.ToStringAndReturn();
 		}
 
         #endregion

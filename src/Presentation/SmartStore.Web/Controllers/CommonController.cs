@@ -30,6 +30,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Utilities;
+using SmartStore.Utilities.ObjectPools;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -649,7 +650,7 @@ namespace SmartStore.Web.Controllers
 
 
             const string newLine = "\r\n"; //Environment.NewLine
-            var sb = new StringBuilder();
+            var sb = PooledStringBuilder.Rent();
             sb.Append("User-agent: *");
             sb.Append(newLine);
 			sb.AppendFormat("Sitemap: {0}", Url.RouteUrl("XmlSitemap", (object)null, _services.StoreContext.CurrentStore.ForceSslForAllPages ? "https" : "http"));
@@ -681,7 +682,7 @@ namespace SmartStore.Web.Controllers
             }
 
             Response.ContentType = "text/plain";
-            Response.Write(sb.ToString());
+            Response.Write(sb.ToStringAndReturn());
 
             return null;
         }

@@ -14,6 +14,7 @@ using SmartStore.Core.Domain.Themes;
 using SmartStore.Utilities;
 using System.Web.Hosting;
 using System.Web.Routing;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -203,14 +204,14 @@ namespace SmartStore.Web.Framework.UI
 
         public string GenerateCanonicalUrls()
         {
-            var result = new StringBuilder();
+            var result = PooledStringBuilder.Rent();
 			var parts = _canonicalUrlParts.Distinct();
 			foreach (var part in parts)
             {
                 result.AppendFormat("<link rel=\"canonical\" href=\"{0}\" />", part);
                 result.AppendLine();
             }
-            return result.ToString();
+            return result.ToStringAndReturn();
         }
 
 		public void AddCustomHeadParts(IEnumerable<string> parts, bool append = false)
@@ -220,13 +221,13 @@ namespace SmartStore.Web.Framework.UI
 
 		public string GenerateCustomHead()
 		{
-			var result = new StringBuilder();
+			var result = PooledStringBuilder.Rent();
 			var parts = _customHeadParts.Distinct();
 			foreach (var part in parts)
 			{
 				result.AppendLine(part);
 			}
-			return result.ToString();
+			return result.ToStringAndReturn();
 		}
 
         public void AddScriptParts(ResourceLocation location, IEnumerable<string> parts, bool excludeFromBundling = false, bool append = false)
@@ -261,7 +262,7 @@ namespace SmartStore.Web.Framework.UI
             var bundledParts = parts.Where(x => !x.ExcludeFromBundling).Select(x => x.Part).Distinct();
             var nonBundledParts = parts.Where(x => x.ExcludeFromBundling).Select(x => x.Part).Distinct();
             
-            var sb = new StringBuilder();
+            var sb = PooledStringBuilder.Rent();
 
             if (bundledParts.Any())
             {
@@ -279,7 +280,7 @@ namespace SmartStore.Web.Framework.UI
 
             BundleTable.EnableOptimizations = prevEnableOptimizations;
 
-            return sb.ToString();
+            return sb.ToStringAndReturn();
         }
 
 		private string TryFindMinFile(string path)
@@ -363,7 +364,7 @@ namespace SmartStore.Web.Framework.UI
             var bundledParts = parts.Where(x => !x.ExcludeFromBundling).Select(x => x.Part).Distinct();
             var nonBundledParts = parts.Where(x => x.ExcludeFromBundling).Select(x => x.Part).Distinct();
 
-            var sb = new StringBuilder();
+            var sb = PooledStringBuilder.Rent();
 
             if (bundledParts.Any())
             {
@@ -381,7 +382,7 @@ namespace SmartStore.Web.Framework.UI
 
             BundleTable.EnableOptimizations = prevEnableOptimizations;
 
-            return sb.ToString();
+            return sb.ToStringAndReturn();
         }
 
         private bool BundlingEnabled
@@ -415,7 +416,7 @@ namespace SmartStore.Web.Framework.UI
 
 		public string GenerateLinkRels()
 		{
-			var sb = new StringBuilder();
+			var sb = PooledStringBuilder.Rent();
 			
 			foreach (var part in _linkParts)
 			{
@@ -425,7 +426,7 @@ namespace SmartStore.Web.Framework.UI
 				sb.AppendLine(tag.ToString(TagRenderMode.SelfClosing));
 			}
 
-			return sb.ToString();
+			return sb.ToStringAndReturn();
 		}
 
 		public string GenerateMetaRobots()

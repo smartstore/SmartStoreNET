@@ -17,6 +17,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
 using SmartStore.Utilities;
+using SmartStore.Utilities.ObjectPools;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Settings;
@@ -153,7 +154,7 @@ namespace SmartStore.Web.Framework
 
 		public static MvcHtmlString SmartLabel(this HtmlHelper helper, string expression, string labelText, string hint = null, object htmlAttributes = null)
 		{
-			var result = new StringBuilder();
+			var result = PooledStringBuilder.Rent();
 
 			result.Append("<div class='ctl-label'>");
 
@@ -166,7 +167,7 @@ namespace SmartStore.Web.Framework
                 var labelAttrs = new RouteValueDictionary(htmlAttributes);
                 var label = helper.Label(expression, labelText, labelAttrs);
 
-                result.Append(label);
+                result.Append(label.ToHtmlString());
             }
 
             if (hint.HasValue())
@@ -176,7 +177,7 @@ namespace SmartStore.Web.Framework
 
             result.Append("</div>");
 
-			return MvcHtmlString.Create(result.ToString());
+			return MvcHtmlString.Create(result.ToStringAndReturn());
 		}
 
         public static MvcHtmlString SmartLabelFor<TModel, TValue>(
@@ -214,7 +215,7 @@ namespace SmartStore.Web.Framework
 			bool displayHint = true, 
 			object htmlAttributes = null)
 		{
-			var result = new StringBuilder();
+			var result = PooledStringBuilder.Rent();
 			string labelText = null;
 			string hint = null;
 
@@ -263,7 +264,7 @@ namespace SmartStore.Web.Framework
 				result.Append(label);
 			}
 
-			return MvcHtmlString.Create(result.ToString());
+			return MvcHtmlString.Create(result.ToStringAndReturn());
 		}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -644,7 +645,7 @@ namespace SmartStore.Web.Framework
 
         public static MvcHtmlString ColorBox(this HtmlHelper html, string name, string color, string defaultColor)
         {
-			var sb = new StringBuilder();
+			var sb = PooledStringBuilder.Rent();
 
 			defaultColor = defaultColor.EmptyNull();
 			var isDefault = color.IsCaseInsensitiveEqual(defaultColor);
@@ -656,7 +657,7 @@ namespace SmartStore.Web.Framework
 
             sb.Append("</div>");
 
-            return MvcHtmlString.Create(sb.ToString());
+            return MvcHtmlString.Create(sb.ToStringAndReturn());
         }
 
 		public static MvcHtmlString TableFormattedVariantAttributes(this HtmlHelper helper, string formattedVariantAttributes, string separatorLines = "<br />", string separatorValues = ": ") {
@@ -738,7 +739,7 @@ namespace SmartStore.Web.Framework
 			if (data == null || data.ActiveStoreScopeConfiguration <= 0)
 				return editor; // CONTROL
 
-			var sb = new StringBuilder("<div class='form-row flex-nowrap multi-store-setting-group'>");
+			var sb = PooledStringBuilder.Rent("<div class='form-row flex-nowrap multi-store-setting-group'>");
 			sb.Append("<div class='col-auto'><div class='form-control-plaintext'>");
 			sb.Append(helper.SettingOverrideCheckboxInternal(expression, data, parentSelector)); // CHECK
 			sb.Append("</div></div>");
@@ -746,7 +747,7 @@ namespace SmartStore.Web.Framework
 			sb.Append(editor.ToHtmlString()); // CONTROL
 			sb.Append("</div></div>");
 
-			return MvcHtmlString.Create(sb.ToString());
+			return MvcHtmlString.Create(sb.ToStringAndReturn());
 		}
 
 		private static MvcHtmlString SettingOverrideCheckboxInternal<TModel, TValue>(
@@ -767,7 +768,7 @@ namespace SmartStore.Web.Framework
 			var overrideForStore = (data.OverrideSettingKeys.FirstOrDefault(x => x.IsCaseInsensitiveEqual(settingKey)) != null);
 			var fieldId = settingKey + (settingKey.EndsWith("_OverrideForStore") ? "" : "_OverrideForStore");
 
-			var sb = new StringBuilder();
+			var sb = PooledStringBuilder.Rent();
 			sb.Append("<label class='switch switch-blue multi-store-override-switch'>");
 
 			sb.AppendFormat("<input type='checkbox' id='{0}' name='{0}' class='multi-store-override-option'", fieldId);
@@ -781,7 +782,7 @@ namespace SmartStore.Web.Framework
 			// Controls are not floating, so line-break prevents different distances between them.
 			sb.Append("</label>\r\n");
 
-			return MvcHtmlString.Create(sb.ToString());
+			return MvcHtmlString.Create(sb.ToStringAndReturn());
 		}
 
 		public static MvcHtmlString CollapsedText(this HtmlHelper helper, string text)

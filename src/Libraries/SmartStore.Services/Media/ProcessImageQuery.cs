@@ -194,19 +194,18 @@ namespace SmartStore.Services.Media
 
 		public string CreateHash()
 		{
-			var sb = new StringBuilder();
+			var hash = string.Empty;
 
 			foreach (var key in base.AllKeys)
 			{
 				if (key == "m" && base["m"] == "max")
 					continue; // Mode 'max' is default and can be omitted
 
-				sb.Append("-");
-				sb.Append(key);
-				sb.Append(base[key]);
-			}
+                hash += "-" + key + base[key];
 
-			return sb.ToString();
+            }
+
+			return hash;
 		}
 
 		public string GetResultExtension()

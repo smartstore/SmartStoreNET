@@ -447,7 +447,7 @@ namespace SmartStore.Services.Media
 				host = host.EnsureEndsWith("/");
 			}
 
-			var sb = new StringBuilder(host, 100);
+            var url = host;
 
 			// Strip leading "/", the host/apppath has this already
 			if (virtualPath[0] == '/')
@@ -456,16 +456,16 @@ namespace SmartStore.Services.Media
 			}
 
 			// Append media path
-			sb.Append(virtualPath);
+            url += virtualPath;
 
 			// Append query
 			if (query != null && query.Length > 0)
 			{
-				if (query[0] != '?') sb.Append("?");
-				sb.Append(query);
+				if (query[0] != '?') url += "?";
+                url += query;
 			}
 
-			return sb.ToString();
+			return url;
 		}
 
 		private void EnsurePictureSizeResolved(Picture picture, bool saveOnResolve)

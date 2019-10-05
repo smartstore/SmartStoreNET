@@ -211,34 +211,33 @@ namespace SmartStore.Collections
 		/// <returns>the encoded querystring as it would appear in a browser</returns>
 		public string ToString(bool splitValues)
 		{
-            using (var sb = StringBuilderPool.Default.Acquire())
+            var psb = PooledStringBuilder.Rent();
+            var builder = (StringBuilder)psb;
+
+            for (var i = 0; i < base.Keys.Count; i++)
             {
-                var builder = sb.Value;
-                for (var i = 0; i < base.Keys.Count; i++)
+                var key = base.Keys[i];
+                var value = base[key];
+
+                if (!string.IsNullOrEmpty(key))
                 {
-                    var key = base.Keys[i];
-                    var value = base[key];
+                    builder.Append((builder.Length == 0) ? "?" : "&");
 
-                    if (!string.IsNullOrEmpty(key))
+                    if (splitValues)
                     {
-                        builder.Append((builder.Length == 0) ? "?" : "&");
-
-                        if (splitValues)
+                        foreach (string val in value.EmptyNull().Split(','))
                         {
-                            foreach (string val in value.EmptyNull().Split(','))
-                            {
-                                builder.Append(HttpUtility.UrlEncode(key)).Append("=").Append(val);
-                            }
-                        }
-                        else
-                        {
-                            builder.Append(HttpUtility.UrlEncode(key)).Append("=").Append(value);
+                            builder.Append(HttpUtility.UrlEncode(key)).Append("=").Append(val);
                         }
                     }
+                    else
+                    {
+                        builder.Append(HttpUtility.UrlEncode(key)).Append("=").Append(value);
+                    }
                 }
-
-                return builder.ToString();
             }
+
+            return psb.ToStringAndReturn();
 		}
 	}
 }

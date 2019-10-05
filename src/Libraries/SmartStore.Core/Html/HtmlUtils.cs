@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using AngleSharp.Dom;
 using AngleSharp.Dom.Html;
 using Ganss.XSS;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Core.Html
 {
@@ -217,7 +218,8 @@ namespace SmartStore.Core.Html
                 return string.Empty;
             }
 
-            var builder = new StringBuilder();
+            var psb = PooledStringBuilder.Rent();
+            var builder = (StringBuilder)psb;
 
             builder.AppendFormat("<table{0}>", tableCssClass.HasValue() ? "class='" + tableCssClass + "'" : "");
 
@@ -242,7 +244,7 @@ namespace SmartStore.Core.Html
 
             builder.Append("</table>");
 
-            return builder.ToString();
+            return psb.ToStringAndReturn();
         }
 
         /// <summary>

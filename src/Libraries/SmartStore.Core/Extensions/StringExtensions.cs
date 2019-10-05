@@ -13,6 +13,7 @@ using AngleSharp.Dom;
 using AngleSharp.Parser.Html;
 using SmartStore.Core.Html;
 using System.Runtime.CompilerServices;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore
 {
@@ -403,13 +404,15 @@ namespace SmartStore
 		{
 			Guard.NotNull(input, nameof(input));
 
-			var sb = new StringBuilder();
-			var lines = GetLines(input.Trim(), true, removeEmptyLines).ToArray();
+            var psb = PooledStringBuilder.Rent();
+            var sb = (StringBuilder)psb;
+            var lines = GetLines(input.Trim(), true, removeEmptyLines).ToArray();
 
 			foreach (var line in lines)
 			{
 				var len = line.Length;
-				var sbLine = new StringBuilder(len);
+                var psbLine = PooledStringBuilder.Rent();
+                var sbLine = (StringBuilder)psbLine;
 				var isChar = false;
 				var isLiteral = false; // When we detect the ~! literal
 				int i = 0;
@@ -453,10 +456,11 @@ namespace SmartStore
 				}
 
 				// Append the compacted and trimmed line
-				sb.AppendLine(sbLine.ToString().Trim().Trim(','));	
-			}
+				sb.AppendLine(sbLine.ToString().Trim().Trim(','));
+                psbLine.Return();
+            }
 
-			return sb.ToString().Trim();
+			return psb.ToStringAndReturn().Trim();
 		}
 
 		/// <summary>
@@ -595,8 +599,10 @@ namespace SmartStore
 		[DebuggerStepThrough]
         public static string SplitPascalCase(this string value)
         {
-            var sb = new StringBuilder();
+            var psb = PooledStringBuilder.Rent();
+            var sb = (StringBuilder)psb;
             char[] ca = value.ToCharArray();
+
             sb.Append(ca[0]);
 
             for (int i = 1; i < ca.Length - 1; i++)
@@ -614,7 +620,7 @@ namespace SmartStore
                 sb.Append(ca[ca.Length - 1]);
             }
 
-            return sb.ToString();
+            return psb.ToStringAndReturn();
         }
 
 		/// <summary>
@@ -692,11 +698,14 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static string EncodeJsString(this string value, char delimiter, bool appendDelimiters)
         {
-            var sb = new StringBuilder(value != null ? value.Length : 16);
+            var psb = PooledStringBuilder.Rent();
+            var sb = (StringBuilder)psb;
             using (var w = new StringWriter(sb, CultureInfo.InvariantCulture))
             {
                 EncodeJsString(w, value, delimiter, appendDelimiters);
-                return w.ToString();
+                var result = w.ToString();
+                psb.Return();
+                return result;
             }
         }
 
@@ -940,13 +949,14 @@ namespace SmartStore
 		public static string Slugify(this string value, bool allowSpace = false, char[] allowChars = null) 
         {
 			string res = string.Empty;
+            var psb = PooledStringBuilder.Rent();
 
-			try 
+            try 
             {
 				if (!string.IsNullOrWhiteSpace(value)) 
                 {
-					var sb = new StringBuilder();
-					bool space = false;
+                    var sb = (StringBuilder)psb;
+                    bool space = false;
 					char ch;
 
 					for (int i = 0; i < value.Length; ++i) 
@@ -1013,6 +1023,10 @@ namespace SmartStore
             {
 				ex.Dump();
 			}
+            finally
+            {
+                psb.Return();
+            }
 
 			return (res.Length > 0 ? res : "null");
 		}

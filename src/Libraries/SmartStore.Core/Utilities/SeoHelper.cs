@@ -125,9 +125,14 @@ namespace SmartStore.Utilities
             }
 
             if (prevdash)
-                return psb.ToStringAndReturn().Substring(0, sb.Length - 1).Trim('/');
+            {
+                len = sb.Length;
+                return psb.ToStringAndReturn().Substring(0, len - 1).Trim('/');
+            }
             else
+            {
                 return psb.ToStringAndReturn().Trim('/');
+            }
         }
 
         public static void ResetUserSeoCharacterTable()

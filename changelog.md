@@ -1,6 +1,9 @@
 # Release Notes
 
 ## SmartStore.NET 4.0.0
+### Highlights
+* (NEW) **Granular permissions**: Extensive permission management based on customer groups via tree view. Supports inheritance to allow or deny entire permission ranges.
+* (NEW) **Granular permissions**: All permissions of a customer directly visible on the customer edit page.
 
 ### New Features
 * #1598 Add published property to ProductTag entity.

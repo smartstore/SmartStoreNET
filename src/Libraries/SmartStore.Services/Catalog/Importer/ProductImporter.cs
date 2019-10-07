@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -18,6 +20,7 @@ using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.DataExchange.Import.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
+using SmartStore.Services.Seo;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Catalog.Importer
@@ -30,8 +33,12 @@ namespace SmartStore.Services.Catalog.Importer
         private readonly IRepository<ProductTag> _productTagRepository;
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<TierPrice> _tierPriceRepository;
+        private readonly IRepository<Category> _categoryRepository;
         private readonly IRepository<ProductVariantAttributeValue> _attributeValueRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _attributeCombinationRepository;
+        private readonly IRepository<SpecificationAttribute> _specAttrRepository;
+        private readonly IRepository<SpecificationAttributeOption> _specAttrOptionRepository;
+        private readonly IRepository<ProductSpecificationAttribute> _productSpecificationAttributeRepository;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly IPictureService _pictureService;
         private readonly IManufacturerService _manufacturerService;
@@ -40,6 +47,8 @@ namespace SmartStore.Services.Catalog.Importer
         private readonly IProductTemplateService _productTemplateService;
         private readonly IProductAttributeService _productAttributeService;
         private readonly FileDownloadManager _fileDownloadManager;
+        private readonly ISpecificationAttributeService _specificationAttributeService;
+        private readonly IUrlRecordService _urlRecordService;
 
         private static readonly Dictionary<string, Expression<Func<Product, string>>> _localizableProperties = new Dictionary<string, Expression<Func<Product, string>>>
         {
@@ -58,9 +67,13 @@ namespace SmartStore.Services.Catalog.Importer
             IRepository<ProductCategory> productCategoryRepository,
             IRepository<ProductTag> productTagRepository,
             IRepository<Product> productRepository,
-            IRepository<TierPrice> tierPriceRepository,
+            IRepository<TierPrice> tierPriceRepository, 
+            IRepository<Category> categoryRepository,
             IRepository<ProductVariantAttributeValue> attributeValueRepository,
             IRepository<ProductVariantAttributeCombination> attributeCombinationRepository,
+            IRepository<SpecificationAttribute> specAttrRepository,
+            IRepository<SpecificationAttributeOption> specAttrOptionRepository,
+            IRepository<ProductSpecificationAttribute> productSpecificationAttributeRepository,
             ILocalizedEntityService localizedEntityService,
             IPictureService pictureService,
             IManufacturerService manufacturerService,
@@ -68,7 +81,9 @@ namespace SmartStore.Services.Catalog.Importer
             IProductService productService,
             IProductTemplateService productTemplateService,
             IProductAttributeService productAttributeService,
-            FileDownloadManager fileDownloadManager)
+            FileDownloadManager fileDownloadManager,
+            ISpecificationAttributeService specificationAttributeService,
+            IUrlRecordService urlRecordService)
         {
             _productPictureRepository = productPictureRepository;
             _productManufacturerRepository = productManufacturerRepository;
@@ -76,8 +91,12 @@ namespace SmartStore.Services.Catalog.Importer
             _productTagRepository = productTagRepository;
             _productRepository = productRepository;
             _tierPriceRepository = tierPriceRepository;
+            _categoryRepository = categoryRepository;
             _attributeValueRepository = attributeValueRepository;
             _attributeCombinationRepository = attributeCombinationRepository;
+            _specAttrRepository = specAttrRepository;
+            _specAttrOptionRepository = specAttrOptionRepository;
+            _productSpecificationAttributeRepository = productSpecificationAttributeRepository;
             _localizedEntityService = localizedEntityService;
             _pictureService = pictureService;
             _manufacturerService = manufacturerService;
@@ -86,6 +105,8 @@ namespace SmartStore.Services.Catalog.Importer
             _productTemplateService = productTemplateService;
             _productAttributeService = productAttributeService;
             _fileDownloadManager = fileDownloadManager;
+            _specificationAttributeService = specificationAttributeService;
+            _urlRecordService = urlRecordService;
 
             T = NullLocalizer.Instance;
         }
@@ -121,13 +142,14 @@ namespace SmartStore.Services.Catalog.Importer
         }
 
         protected virtual void ImportProducts(ImportExecuteContext context)
-        {            
+        {
             var segmenter = context.DataSegmenter;
             var srcToDestId = new Dictionary<int, ImportProductMapping>();
             var templateViewPaths = _productTemplateService.GetAllProductTemplates().ToDictionarySafe(x => x.ViewPath, x => x.Id);
 
             while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
             {
+                var watch = Stopwatch.StartNew();
                 var batch = segmenter.GetCurrentBatch<Product>();
 
                 // Perf: detach entities
@@ -135,10 +157,9 @@ namespace SmartStore.Services.Catalog.Importer
                 {
                     return x is Product || x is UrlRecord || x is StoreMapping || x is ProductVariantAttribute || x is LocalizedProperty ||
                             x is ProductBundleItem || x is ProductCategory || x is ProductManufacturer || x is Category || x is Manufacturer ||
-                            x is ProductPicture || x is Picture || x is ProductTag || x is TierPrice;
+                            x is ProductPicture || x is Picture || x is ProductTag || x is TierPrice || x is SpecificationAttribute || x is SpecificationAttributeOption || x is ProductSpecificationAttribute;
                 });
-                //_productRepository.Context.DetachAll(true);
-
+                //_productRepository.Context.DetachAll(false);
                 context.SetProgress(segmenter.CurrentSegmentFirstRowIndex - 1, segmenter.TotalRows);
 
                 // ===========================================================================
@@ -214,7 +235,7 @@ namespace SmartStore.Services.Catalog.Importer
                 // ===========================================================================
                 // 5.) Import product category mappings
                 // ===========================================================================
-                if (segmenter.HasColumn("CategoryIds"))
+                if (segmenter.HasColumn("CategoryIds") || segmenter.HasColumn("Categories"))
                 {
                     try
                     {
@@ -271,7 +292,25 @@ namespace SmartStore.Services.Catalog.Importer
                     }
                 }
 
+                // ===========================================================================
+                // 9.) Import product specification attributes
+                // ===========================================================================
+                if (segmenter.HasColumn("SpecificationAttributes"))
+                {
+                    try
+                    {
+                        ProcessSpecificationAttributes(context, batch);
+                    }
+                    catch (Exception ex)
+                    {
+                        context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessSpecificationAttributes");
+                    }
+                }
+
                 context.Services.EventPublisher.Publish(new ImportBatchExecutedEvent<Product>(context, batch));
+
+                var ms = watch.ElapsedMilliseconds;
+                Debug.WriteLine("Time elapsed: {0} ms.".FormatCurrentUI(ms));
             }
 
             // ===========================================================================
@@ -1004,8 +1043,10 @@ namespace SmartStore.Services.Catalog.Importer
 		protected virtual int ProcessProductCategories(ImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
 		{
 			_productCategoryRepository.AutoCommitEnabled = false;
+            //_categoryRepository.AutoCommitEnabled = false;
+            var seNames = new List<Category>();
 
-			foreach (var row in batch)
+            foreach (var row in batch)
 			{
 				var categoryIds = row.GetDataValue<List<int>>("CategoryIds");
 				if (!categoryIds.IsNullOrEmpty())
@@ -1014,7 +1055,7 @@ namespace SmartStore.Services.Catalog.Importer
 					{
 						foreach (var id in categoryIds)
 						{
-							if (_productCategoryRepository.TableUntracked.Where(x => x.ProductId == row.Entity.Id && x.CategoryId == id).FirstOrDefault() == null)
+							if (_productCategoryRepository.Table.Any(x => x.ProductId == row.Entity.Id && x.CategoryId == id))
 							{
 								// Ensure that category exists.
 								var category = _categoryService.GetCategoryById(id);
@@ -1037,11 +1078,75 @@ namespace SmartStore.Services.Catalog.Importer
 						context.Result.AddWarning(ex.Message, row.GetRowInfo(), "CategoryIds");
 					}
 				}
-			}
+
+                var categoriesField = row.GetDataValue<string>("Categories");
+
+                if (categoriesField.HasValue())
+                {
+                    var categories = categoriesField.Split('\\');
+
+                    foreach (var category in categories)
+                    {
+                        var catPath = category.Split('|');
+                        var lastId = 0;
+
+                        foreach (var categoryLeaf in catPath)
+                        {
+                            var categoryLeafName = categoryLeaf.Trim();
+                            var categoryEntity = _categoryRepository.Table.Where(x => x.Name.Equals(categoryLeafName) && x.Deleted == false && x.ParentCategoryId == lastId).FirstOrDefault();
+
+                            // if category doesn't exist > add
+                            if (categoryEntity == null && categoryLeafName.HasValue())
+                            {
+                                categoryEntity = new Category
+                                {
+                                    Name = categoryLeafName,
+                                    CategoryTemplateId = 1,
+                                    HasDiscountsApplied = false,
+                                    SubjectToAcl = false,
+                                    LimitedToStores = false,
+                                    Published = true,
+                                    Deleted = false,
+                                    ParentCategoryId = lastId
+                                };
+
+                                _categoryRepository.Insert(categoryEntity);
+
+                                //search engine name
+                                seNames.Add(categoryEntity);
+                            }
+
+                            lastId = categoryEntity.Id;
+                        }
+
+                        // insert product category into last category
+                        if (!_productCategoryRepository.Table.Any(x => x.ProductId == row.Entity.Id && x.CategoryId == lastId))
+                        {
+                            var productCategory = new ProductCategory
+                            {
+                                ProductId = row.Entity.Id,
+                                CategoryId = lastId,
+                                IsFeaturedProduct = false,
+                                DisplayOrder = 1
+                            };
+                            _productCategoryRepository.Insert(productCategory);
+                        }
+                    }
+                }
+            }
 
 			// Commit whole batch at once,
 			var num = _productCategoryRepository.Context.SaveChanges();
-			return num;
+
+            //_productCategoryRepository.AutoCommitEnabled = true;
+
+            foreach (var categoryEntity in seNames)
+            {
+                var seName = categoryEntity.ValidateSeName(string.Empty, categoryEntity.Name, true);
+                _urlRecordService.SaveSlug(categoryEntity, seName, 0);
+            }
+
+            return num;
 		}
 
         protected virtual void ProcessProductTags(ImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
@@ -1118,6 +1223,182 @@ namespace SmartStore.Services.Catalog.Importer
 
             // Commit whole batch at once.
             _productTagRepository.Context.SaveChanges();
+        }
+
+        protected virtual void ProcessSpecificationAttributes(ImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
+        {
+            _specAttrOptionRepository.AutoCommitEnabled = false;
+            _specAttrRepository.AutoCommitEnabled = false;
+            //_productSpecificationAttributeRepository.AutoCommitEnabled = false;
+
+            var productIds = batch.Select(x => x.Entity.Id).ToArray();
+            var allProductSpecAttributes = _specificationAttributeService.GetProductSpecificationAttributesByProductIds(productIds);
+            var insertableProductSpecificationAttributes = new List<ProductSpecificationAttribute>();
+            var newBatchAttrs = new Dictionary<string, SpecificationAttribute>();
+            var manufacturerOptions = new Dictionary<string, SpecificationAttributeOption>();
+
+            manufacturerOptions.AddRange(allProductSpecAttributes[0].Select(x => x.SpecificationAttributeOption).Where(x => x.Name.Contains("Hersteller Art.Nr.")).ToDictionary(x => x.Name));
+
+            foreach (var row in batch)
+            {
+                try
+                {
+                    var attrField = row.GetDataValue<string>("SpecificationAttributes");
+                    var product = row.Entity;
+                    var productSpecAttributes = allProductSpecAttributes[product.Id].ToDictionarySafe(x => x.SpecificationAttributeOption.SpecificationAttribute.Name);
+                    
+                    //var productSpecAttributes2 = allProductSpecAttributes[product.Id];
+
+                    // Name1:Wert1|Name2:Wert2| Name3:Wert3
+
+                    // Split this
+                    var attrs = attrField.Split('|');
+
+                    //var existingAttrs = _specAttrRepository.Table.Where(x => attrs.Contains(x.Name /*attrName*/)).Include(x => x.SpecificationAttributeOptions).Distinct().ToDictionary(x => x.Name);
+
+                    var attrList = attrs.Select(x => { return x.Split(':')[0]; }).ToList();
+                    var existingAttrs = _specAttrRepository.Table
+                        .Where(x => attrList.Contains(x.Name))
+                        .Include(x => x.SpecificationAttributeOptions)
+                        .ToList()
+                        .ToDictionarySafe(x => x.Name);
+
+                    // Add attrs which were imported in this batch and which weren't submitted yet
+                    existingAttrs.AddRange(newBatchAttrs);
+
+                    foreach (var attr in attrs)
+                    {
+                        var attrArray = attr.Split(':');
+                        var attrName = attrArray[0];
+                        var attrValue = string.Empty;
+
+                        if (attrArray.Length > 1)
+                            attrValue = attrArray[1];
+                        else
+                            continue;
+
+                        // first check if specificationattr is there
+                        //var existingAttr = _specAttrRepository.Table.Where(x => x.Name == attrName).Include(x => x.SpecificationAttributeOptions).FirstOrDefault();
+                        existingAttrs.TryGetValue(attrName, out var existingAttr);
+
+                        // TODO: first iteration > collect and insert in one go
+                        if (existingAttr == null)
+                        {
+                            // insert attr
+                            existingAttr = new SpecificationAttribute
+                            {
+                                Name = attrName,
+                                DisplayOrder = 0,
+                                AllowFiltering = false,
+                                ShowOnProductPage = true
+                            };
+
+                            _specAttrRepository.Insert(existingAttr);
+
+                            newBatchAttrs.Add(attrName, existingAttr);
+                        }
+
+                        // now check whether the option exists
+                        //var existingOption1 = _specAttrOptionRepository.TableUntracked.Where(x => x.Name == attrValue && x.SpecificationAttributeId == existingAttr.Id).FirstOrDefault();
+                        SpecificationAttributeOption existingOption = null;
+                        if (attrName.Contains("Hersteller Art.Nr."))
+                        {
+                            manufacturerOptions.TryGetValue(attrValue, out existingOption);
+                        }
+                        else
+                        {
+                            existingOption = existingAttr.SpecificationAttributeOptions.Where(x => x.Name == attrValue).FirstOrDefault();
+                        }
+                        
+
+                        if (existingOption == null)
+                        {
+                            // insert option
+                            existingOption = new SpecificationAttributeOption
+                            {
+                                SpecificationAttribute = existingAttr,
+                                Name = attrValue,
+                                DisplayOrder = 0
+                            };
+
+                            existingAttr.SpecificationAttributeOptions.Add(existingOption);
+
+                            if (attrName.Contains("Hersteller Art.Nr."))
+                            {
+                                manufacturerOptions.Add(attrValue, existingOption);
+                            }
+                        }
+
+                        var hasAttr = false;
+                        var hasVal = false;
+
+                        if (productSpecAttributes.Count != 0)
+                        {
+                            //var currentAttr = productSpecAttributes
+                            //    .Where(x => x.SpecificationAttributeOption.SpecificationAttribute.Name.Equals(attrName))
+                            //    .FirstOrDefault();
+
+                            productSpecAttributes.TryGetValue(attrName, out var currentAttr);
+
+                            if (currentAttr != null)
+                            {
+                                hasAttr = true;
+                                var currentVal = currentAttr.SpecificationAttributeOption.Name;
+
+                                if (currentVal.Equals(attrValue))
+                                    hasVal = true;
+                            }
+                        }
+
+                        if (!hasAttr)
+                        {
+                            insertableProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+                            {
+                                ProductId = product.Id,
+                                SpecificationAttributeOption = existingOption,
+                                DisplayOrder = 0,
+                                ShowOnProductPage = true
+                            });
+
+                            // if attr isn't there > insert
+                            //_productSpecificationAttributeRepository.Insert(new ProductSpecificationAttribute
+                            //{
+                            //    ProductId = product.Id,
+                            //    //SpecificationAttributeOptionId = existingOption.Id,
+                            //    SpecificationAttributeOption = existingOption,
+                            //    //AllowFiltering = false,
+                            //    DisplayOrder = 0,
+                            //    ShowOnProductPage = true
+                            //});
+                        }
+                        //else if (!hasVal)
+                        //{
+                        //    // if hasAttr but not hasVal > update
+                        //    //currentAttr.SpecificationAttributeOption = existingOption;
+                        //    //_productSpecificationAttributeRepository.Update(currentAttr);
+                        //}
+                    }
+                }
+                catch (Exception ex)
+                {
+                    context.Result.AddWarning(ex.Message, row.GetRowInfo(), "SpecificationAttributes");
+                }
+            }
+
+            // Commit whole batch at once.
+            _productSpecificationAttributeRepository.Context.SaveChanges();
+
+            _productSpecificationAttributeRepository.AutoCommitEnabled = false;
+
+            try
+            {
+                _productSpecificationAttributeRepository.InsertRange(insertableProductSpecificationAttributes);
+                _productSpecificationAttributeRepository.Context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                context.Result.AddWarning(ex.Message, null, "ProductSpecificationAttributes");
+            }      
         }
 
         private int? ZeroToNull(object value, CultureInfo culture)

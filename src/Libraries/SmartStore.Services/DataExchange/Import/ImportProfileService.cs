@@ -365,8 +365,13 @@ namespace SmartStore.Services.DataExchange.Import
 								dic.Add("SeName", "");
 							}
 
-							// shipping and billing address
-							if (type == ImportEntityType.Customer)
+                            if (type == ImportEntityType.Product)
+                            {
+                                dic.Add("Specification", "");
+                            }
+
+                            // shipping and billing address
+                            if (type == ImportEntityType.Customer)
 							{
 								foreach (var property in addressProperties)
 								{

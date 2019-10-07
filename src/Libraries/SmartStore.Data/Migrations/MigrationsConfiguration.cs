@@ -50,7 +50,11 @@
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
-
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.VatIdValidCustomerRoleId",
+                "Customer role for valid Vat-ID",
+                "Kundengruppe bei valider Vat-ID",
+                "Defines the customer role that is assigned to customers whose Vat ID is valid.",
+                "Legt eine Kundengruppe fest, die Kunden zugeordnet wird, deren Vat-ID gültig ist.");
         }
     }
 }

@@ -626,12 +626,17 @@ namespace SmartStore.Web.Controllers
 						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.VatNumber, model.VatNumber);
 
 						var vatNumberStatus = _taxService.GetVatNumberStatus(model.VatNumber, out var vatName, out var vatAddress);
-						_genericAttributeService.SaveAttribute(customer,
-							SystemCustomerAttributeNames.VatNumberStatusId,
-							(int)vatNumberStatus);
+						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.VatNumberStatusId, (int)vatNumberStatus);
+
 						// send VAT number admin notification
 						if (!String.IsNullOrEmpty(model.VatNumber) && _taxSettings.EuVatEmailAdminWhenNewVatSubmitted)
 							Services.MessageFactory.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
+
+                        if (vatNumberStatus == VatNumberStatus.Valid && _customerSettings.RegisterCustomerRoleId != 0)
+                        {
+                            var customerRole = _customerService.GetCustomerRoleById(_customerSettings.VatIdValidCustomerRoleId);
+                            customer.CustomerRoles.Add(customerRole);
+                        }
                     }
 
 					// form fields
@@ -1048,6 +1053,12 @@ namespace SmartStore.Web.Controllers
                             if (model.VatNumber.HasValue() && _taxSettings.EuVatEmailAdminWhenNewVatSubmitted)
                             {
                                 Services.MessageFactory.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
+                            }
+
+                            if (vatNumberStatus == VatNumberStatus.Valid && _customerSettings.RegisterCustomerRoleId != 0)
+                            {
+                                var customerRole = _customerService.GetCustomerRoleById(_customerSettings.VatIdValidCustomerRoleId);
+                                customer.CustomerRoles.Add(customerRole);
                             }
 						}
                     }

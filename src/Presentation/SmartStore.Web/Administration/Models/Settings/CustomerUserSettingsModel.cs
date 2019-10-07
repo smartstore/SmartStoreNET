@@ -54,7 +54,10 @@ namespace SmartStore.Admin.Models.Settings
 			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.RegisterCustomerRole")]
 			public int RegisterCustomerRoleId { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AllowCustomersToUploadAvatars")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.VatIdValidCustomerRoleId")]
+            public int VatIdValidCustomerRoleId { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AllowCustomersToUploadAvatars")]
             public bool AllowCustomersToUploadAvatars { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.ShowCustomersLocation")]

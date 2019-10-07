@@ -630,18 +630,18 @@ namespace SmartStore.Admin.Controllers
 				}
 				else if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.Enabled && model.CustomerNumber.HasValue())
 				{
-					var numberExists = _customerService.SearchCustomers(new CustomerSearchQuery { CustomerNumber = model.CustomerNumber }).SourceQuery.Any();
-					if (numberExists)
-					{
-						NotifyError("Common.CustomerNumberAlreadyExists");
-					}
-					else
-					{
-						customer.CustomerNumber = model.CustomerNumber;
-					}
-				}
+                    var numberExists = _customerService.SearchCustomers(new CustomerSearchQuery { CustomerNumber = model.CustomerNumber }).SourceQuery.Any();
+                    if (numberExists)
+                    {
+                        NotifyError("Common.CustomerNumberAlreadyExists");
+                    }
+                    else
+                    {
+                        customer.CustomerNumber = model.CustomerNumber;
+                    }
+                }
 
-				_customerService.InsertCustomer(customer);
+                _customerService.InsertCustomer(customer);
                 
                 // Form fields.
 				if (_dateTimeSettings.AllowCustomersToSetTimeZone)
@@ -971,6 +971,12 @@ namespace SmartStore.Admin.Controllers
 			_genericAttributeService.SaveAttribute(customer,
 				SystemCustomerAttributeNames.VatNumberStatusId,
 				(int)VatNumberStatus.Valid);
+
+            if (_customerSettings.RegisterCustomerRoleId != 0)
+            {
+                var customerRole = _customerService.GetCustomerRoleById(_customerSettings.VatIdValidCustomerRoleId);
+                customer.CustomerRoles.Add(customerRole);
+            }
 
             return RedirectToAction("Edit", customer.Id);
         }

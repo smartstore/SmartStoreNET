@@ -259,5 +259,7 @@ namespace SmartStore.Core.Domain.Customers
 		/// Identifier of a customer role that new registered customers will be assigned to
 		/// </summary>
 		public int RegisterCustomerRoleId { get; set; }
-	}
+
+        public int VatIdValidCustomerRoleId { get; set; }
+    }
 }

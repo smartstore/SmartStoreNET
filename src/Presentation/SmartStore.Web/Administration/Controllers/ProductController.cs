@@ -261,8 +261,13 @@ namespace SmartStore.Admin.Controllers
 			p.CountryOfOriginId = m.CountryOfOriginId == 0 ? (int?)null : m.CountryOfOriginId;
 
 			p.AvailableEndDateTimeUtc = p.AvailableEndDateTimeUtc.ToEndOfTheDay();
-			p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();		
-		}
+			p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();
+
+            p.ImportCatalogId = m.ImportCatalogId;
+            p.EClass = m.EClass;
+            p.Supplier = m.Supplier;
+            p.IsDangerousGood = m.IsDangerousGood;
+        }
 
         [NonAction]
         protected void UpdateProductDownloads(Product product, ProductModel model)

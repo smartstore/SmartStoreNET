@@ -778,6 +778,10 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, (x) => x.LimitedToStores, !row.GetDataValue<List<int>>("StoreIds").IsNullOrEmpty());
 				row.SetProperty(context.Result, (x) => x.CustomsTariffNumber);
 				row.SetProperty(context.Result, (x) => x.CountryOfOriginId);
+                row.SetProperty(context.Result, (x) => x.Supplier);
+                row.SetProperty(context.Result, (x) => x.IsDangerousGood);
+                row.SetProperty(context.Result, (x) => x.EClass);
+                row.SetProperty(context.Result, (x) => x.ImportCatalogId);
 
                 if (row.TryGetDataValue("QuantiyControlType", out int qct))
                 {

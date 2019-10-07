@@ -893,10 +893,34 @@ namespace SmartStore.Core.Domain.Catalog
 		public int? MainPictureId { get; set; }
 
         /// <summary>
-		/// Gets or sets a value that indictaes whether the product has a preview picture
+		/// Gets or sets a value that indicates whether the product has a preview picture
 		/// </summary>
 		[DataMember]
         public bool HasPreviewPicture { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that indicates the product origin
+        /// </summary>
+        [DataMember]
+        public string ImportCatalogId { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that indicates the eclass of the product
+        /// </summary>
+        [DataMember]
+        public string EClass { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that indicates the supplier of the product
+        /// </summary>
+        [DataMember]
+        public string Supplier { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that indicates whether the product is a dangerous good
+        /// </summary>
+        [DataMember]
+        public bool IsDangerousGood { get; set; }
 
         /// <summary>
         /// Gets or sets the product type

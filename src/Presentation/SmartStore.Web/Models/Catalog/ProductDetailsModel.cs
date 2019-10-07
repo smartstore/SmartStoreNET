@@ -136,9 +136,11 @@ namespace SmartStore.Web.Models.Catalog
 
 		public IDictionary<string, ActionItemModel> ActionItems { get; set; }
 
-		#region Nested Classes
+        public bool IsDangerousGood { get; set; }
 
-		public partial class ActionItemModel : ModelBase
+        #region Nested Classes
+
+        public partial class ActionItemModel : ModelBase
 		{
 			public string Key { get; set; }
 			public string Title { get; set; }

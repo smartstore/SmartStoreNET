@@ -573,8 +573,12 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("LowestAttributeCombinationPrice", lowestAttributeCombinationPrice.HasValue ? lowestAttributeCombinationPrice.Value.ToString(_culture) : "");
 			_writer.Write("IsEsd", entity.IsEsd.ToString());
 			_writer.Write("CustomsTariffNumber", entity.CustomsTariffNumber);
+            _writer.Write("ImportCatalogId", entity.ImportCatalogId.ToString());
+            _writer.Write("EClass", entity.EClass.ToString());
+            _writer.Write("Supplier", entity.Supplier.ToString());
+            _writer.Write("IsDangerousGood", entity.IsDangerousGood.ToString());
 
-			WriteLocalized(product);
+            WriteLocalized(product);
 
 			WriteDeliveryTime(product.DeliveryTime, "DeliveryTime");
 

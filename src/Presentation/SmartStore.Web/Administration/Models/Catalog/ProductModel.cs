@@ -418,9 +418,21 @@ namespace SmartStore.Admin.Models.Catalog
 		public bool IsSystemProduct { get; set; } 
 		public string SystemName { get; set; }
 
-		#region Nested classes
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.ImportCatalogId")]
+        public string ImportCatalogId { get; set; }
 
-		public class AddProductSpecificationAttributeModel : ModelBase
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.EClass")]
+        public string EClass { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Supplier")]
+        public string Supplier { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.IsDangerousGood")]
+        public bool IsDangerousGood { get; set; }
+
+        #region Nested classes
+
+        public class AddProductSpecificationAttributeModel : ModelBase
         {
             public AddProductSpecificationAttributeModel()
             {

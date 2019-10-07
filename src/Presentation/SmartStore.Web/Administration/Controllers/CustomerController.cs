@@ -630,15 +630,17 @@ namespace SmartStore.Admin.Controllers
 				}
 				else if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.Enabled && model.CustomerNumber.HasValue())
 				{
-                    var numberExists = _customerService.SearchCustomers(new CustomerSearchQuery { CustomerNumber = model.CustomerNumber }).SourceQuery.Any();
-                    if (numberExists)
-                    {
-                        NotifyError("Common.CustomerNumberAlreadyExists");
-                    }
-                    else
-                    {
-                        customer.CustomerNumber = model.CustomerNumber;
-                    }
+                    //var numberExists = _customerService.SearchCustomers(new CustomerSearchQuery { CustomerNumber = model.CustomerNumber }).SourceQuery.Any();
+                    //if (numberExists)
+                    //{
+                    //	NotifyError("Common.CustomerNumberAlreadyExists");
+                    //}
+                    //else
+                    //{
+                    //	customer.CustomerNumber = model.CustomerNumber;
+                    //}
+
+                    customer.CustomerNumber = model.CustomerNumber;
                 }
 
                 _customerService.InsertCustomer(customer);

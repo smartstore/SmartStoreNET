@@ -21,6 +21,7 @@
 * #1663 Make MeasureDimension and MeasureWeight localizable.
 * #1600 Show an example currency value for custom formatting value changes.
 * Card desk instead of a grid for customer addresses on customer edit page.
+* Display "price from" in product lists if any attribute combination price exists.
 
 ### Bugfixes
 * Export: Fixed KeyNotFoundException when batch size was 1.

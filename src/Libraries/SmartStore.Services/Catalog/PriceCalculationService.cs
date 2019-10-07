@@ -634,13 +634,16 @@ namespace SmartStore.Services.Catalog
 
             displayFromMessage = isBundlePerItemPricing;
 
-			if (product.LowestAttributeCombinationPrice.HasValue && product.LowestAttributeCombinationPrice.Value < lowestPrice)
-			{
-				lowestPrice = product.LowestAttributeCombinationPrice.Value;
-				displayFromMessage = true;
-			}
+            if (product.LowestAttributeCombinationPrice.HasValue)
+            {
+                if (product.LowestAttributeCombinationPrice.Value < lowestPrice)
+                {
+                    lowestPrice = product.LowestAttributeCombinationPrice.Value;
+                }
+                displayFromMessage = true;
+            }
 
-			if (lowestPrice == decimal.Zero && product.Price == decimal.Zero)
+            if (lowestPrice == decimal.Zero && product.Price == decimal.Zero)
 			{
 				lowestPrice = product.LowestAttributeCombinationPrice ?? decimal.Zero;
 			}
@@ -656,7 +659,7 @@ namespace SmartStore.Services.Catalog
 				var tierPrices = context.TierPrices.GetOrLoad(product.Id)
 					.RemoveDuplicatedQuantities();
 
-				displayFromMessage = (tierPrices.Count > 0 && !(tierPrices.Count == 1 && tierPrices.First().Quantity <= 1));
+				displayFromMessage = tierPrices.Count > 0 && !(tierPrices.Count == 1 && tierPrices.First().Quantity <= 1);
 			}
 
 			return lowestPrice;

@@ -116,7 +116,7 @@
 
 						@if (Model.DisplayAdminLink)
 						{
-							<a class="btn btn-secondary btn-flat btn-edit-product" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
+							<a class="btn btn-secondary btn-flat btn-admin-edit" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
 								<i class="fa fa-cog"></i>
 								<span>@T("Common.Catalog.EditProduct")</span>
 							</a>

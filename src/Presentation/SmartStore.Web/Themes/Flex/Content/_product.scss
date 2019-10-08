@@ -489,17 +489,3 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
         }
     }
 }
-
-
-// Misc
-// =====================================================
-
-.btn-edit-product {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 0;
-    background-color: rgba(#fff, 0.5);
-
-    .pd-section-top:hover & { display: inline-block; }
-}

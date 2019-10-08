@@ -14,7 +14,7 @@
 
     @if (Model.DisplayAdminLink)
 	{
-		<a class="btn btn-secondary btn-flat btn-edit-newsitem" href="@Url.Action("Edit", "News", new { id = Model.Id, area = "admin" })" target="admin-newsitem" rel="nofollow">
+		<a class="btn btn-secondary btn-flat btn-admin-edit" href="@Url.Action("Edit", "News", new { id = Model.Id, area = "admin" })" target="admin-newsitem" rel="nofollow">
 			<i class="fa fa-cog"></i>
 			<span>@T("Common.Cms.EditNewsItem")</span>
 		</a>

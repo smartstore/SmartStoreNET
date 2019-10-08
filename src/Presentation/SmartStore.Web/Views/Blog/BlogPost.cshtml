@@ -3,7 +3,7 @@
 @{
     Layout = "_Layout";
 
-    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Title);
+    Html.AddTitleParts(Model.MetaTitle.HasValue() ? Model.MetaTitle : Model.Title);
     Html.AddMetaDescriptionParts(Model.MetaDescription);
     Html.AddMetaKeywordParts(Model.MetaKeywords);
 }
@@ -19,7 +19,7 @@
 
     @if (Model.DisplayAdminLink)
 	{
-		<a class="btn btn-secondary btn-flat btn-edit-blogpost" href="@Url.Action("Edit", "Blog", new { id = Model.Id, area = "admin" })" target="admin-blogpost" rel="nofollow">
+		<a class="btn btn-secondary btn-flat btn-admin-edit" href="@Url.Action("Edit", "Blog", new { id = Model.Id, area = "admin" })" target="admin-blogpost" rel="nofollow">
 			<i class="fa fa-cog"></i>
 			<span>@T("Common.Cms.EditBlogpost")</span>
 		</a>

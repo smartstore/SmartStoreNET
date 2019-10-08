@@ -187,3 +187,18 @@
     --muted: #{$text-muted};
     --black: #000;
 }
+
+// admin edit
+.btn-admin-edit {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    background-color: rgba(#fff, 0.5);
+}
+
+.news-item-page:hover .btn-admin-edit,
+.blogpost-page:hover .btn-admin-edit,
+.pd-section-top:hover .btn-admin-edit {
+    display: inline-block;
+}

@@ -40,20 +40,6 @@
     font-size: .875rem;
 }
 
-// admin edit
-.btn-edit-blogpost {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 0;
-    background-color: rgba(#fff, 0.5);
-
-    .blogpost-page:hover & {
-        display: inline-block;
-    }
-}
-
-
 .box-img-top .bg-shade {
     --gradientdir: to top;
     top: 50%

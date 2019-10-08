@@ -80,12 +80,12 @@
                         item.Tags.Count > 0 ? " has-tags" : ""
                     );
                     
-                    <article class="@articleClass">
+                    <article class="@articleClass" itemscope itemtype="http://schema.org/BlogPosting">
 
                         @if (itemHasBgImage)
                         {
                             <div class="box-img-wrapper card-img">
-                                <img class="card-img box-scale" src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title">
+                                <img class="card-img box-scale" src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title" itemprop="image">
                             </div>
                             <div class="bg-overlay bg-primary card-img"></div>
                             <div class="bg-overlay bg-shade bg-shade-primary card-img h-50"></div>
@@ -98,7 +98,7 @@
                                 @if (itemHasImage)
                                 {
                                     <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })">
-                                        <img class="box-img box-scale" src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title">
+                                        <img class="box-img box-scale" src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title" itemprop="image">
                                     </a>
                                 }
 
@@ -114,19 +114,19 @@
 
                         <div class="@(itemHasBgImage ? "card-img-overlay d-flex flex-column justify-content-end" : "box-img-top")">
                             <div class="text-left w-100 p-3">
-                                <div class="blogpost-date mb-2 text-muted">
+                                <div class="blogpost-date mb-2 text-muted" itemprop="dateCreated">
                                     @item.CreatedOn.ToNativeString("dd MMMM, yyyy")
                                 </div>
 
                                 <h3 class="fs-h4 mb-3 mt-1 font-weight-medium">
-                                    <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })" class="blogpost-title text-body">
+                                    <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })" class="blogpost-title text-body" itemprop="headline">
                                         @item.Title
                                     </a>
                                 </h3>
 
                                 @if (item.Intro.HasValue())
                                 {
-                                    <div class="py-1 blogpost-intro">@Html.Raw(item.Intro)</div>
+                                    <div class="py-1 blogpost-intro" itemprop="description">@Html.Raw(item.Intro)</div>
                                 }
 
                                 @{ Html.RenderWidget("bloglist_page_inside_post"); }

@@ -15,7 +15,7 @@
     }
 }
 
-<article class="page blogpost-page">  
+<article class="page blogpost-page" itemscope itemtype="http://schema.org/BlogPosting">  
 
     @if (Model.DisplayAdminLink)
 	{
@@ -28,29 +28,29 @@
     @if (Model.PictureModel.FullSizeImageUrl.HasValue())
     {
         <div class="blogpost-picture mb-3">
-            <img class="img-fluid" src="@Model.PictureModel.FullSizeImageUrl" alt="@Model.PictureModel.AlternateText" title="@Model.PictureModel.Title"/>
+            <img class="img-fluid" src="@Model.PictureModel.FullSizeImageUrl" alt="@Model.PictureModel.AlternateText" title="@Model.PictureModel.Title" itemprop="image" />
         </div>
     }
 
-    <div class="blogpost-date text-muted">
+    <div class="blogpost-date text-muted" itemprop="dateCreated">
         @Model.CreatedOn.ToNativeString("D")
     </div>
 
     <div class="page-title mb-4 mt-3">
-		<h1 class="fs-h2">@Model.Title</h1>
+		<h1 class="fs-h2" itemprop="headline">@Model.Title</h1>
     </div>
 
     <div class="blogpost-body">
 		
         @{ Html.RenderWidget("blogpost_page_before_body"); }
 
-        <div class="blogpost-content text-body html-editor-content">
+        <div class="blogpost-content text-body html-editor-content" itemprop="articleBody">
             @Html.Raw(Model.Body)
         </div>
 
         @if (Model.Tags.Count > 0)
         {
-            <div class="blogpost-tags mt-4">
+            <div class="blogpost-tags mt-4" itemprop="keywords">
                 @for (int i = 0, length = Model.Tags.Count; i < length; i++)
                 {
                     var tag = Model.Tags[i];

@@ -8,14 +8,16 @@ namespace SmartStore.Data.Migrations
     {
         public override void Up()
         {
-            AddColumn("dbo.Product", "ImportCatalogId", c => c.String());
-            AddColumn("dbo.Product", "EClass", c => c.String());
-            AddColumn("dbo.Product", "Supplier", c => c.String());
+            AddColumn("dbo.Product", "ImportCatalogId", c => c.String(maxLength: 255));
+            AddColumn("dbo.Product", "EClass", c => c.String(maxLength: 255));
+            AddColumn("dbo.Product", "Supplier", c => c.String(maxLength: 255));
             AddColumn("dbo.Product", "IsDangerousGood", c => c.Boolean(nullable: false));
+            CreateIndex("dbo.Product", new[] { "ImportCatalogId", "EClass", "Supplier" });
         }
         
         public override void Down()
         {
+            DropIndex("dbo.Product", new[] { "ImportCatalogId", "EClass", "Supplier" });
             DropColumn("dbo.Product", "IsDangerousGood");
             DropColumn("dbo.Product", "Supplier");
             DropColumn("dbo.Product", "EClass");
@@ -40,7 +42,7 @@ namespace SmartStore.Data.Migrations
                 "Import catalog identifier",
                 "Import-Katalog ID",
                 "Specifies the import catalog identifier (can be used to specify the import origin).",
-                "Legt die Import-Katalog ID fest (Kann zur Identifizierung der Produkt-Herkunft beim Import genutzt werden).");
+                "Legt die Import-Katalog ID fest (Kann zur Identifizierung der Produkt-Herkunft beim Datanaustausch genutzt werden).");
 
             builder.AddOrUpdate("Admin.Catalog.Products.Fields.EClass",
                 "EClass",
@@ -58,7 +60,7 @@ namespace SmartStore.Data.Migrations
                 "Is dangerous good",
                 "Ist Gefahrgut",
                 "Specifies whether this product is a dangerous good.",
-                "Legt fest ob das Produkt Gefahrgut ist.");
+                "Legt fest, ob das Produkt Gefahrgut ist.");
 
         }
     }

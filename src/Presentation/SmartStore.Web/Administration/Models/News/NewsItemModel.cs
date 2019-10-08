@@ -50,12 +50,6 @@ namespace SmartStore.Admin.Models.News
         [SmartResourceDisplayName("Admin.Catalog.News.NewsItems.Fields.PreviewPictureId")]
         public int? PreviewPictureId { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.SectionBg")]
-        public string SectionBg { get; set; }
-
-        [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.HasBgImage")]
-        public bool HasBgImage { get; set; }
-
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.AllowComments")]
         public bool AllowComments { get; set; }
 

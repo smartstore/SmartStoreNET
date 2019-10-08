@@ -10,19 +10,37 @@
     Html.AddMetaKeywordParts(Model.MetaKeywords);
 }
 
-<article class="page news-item-page">
-    <div class="news-date text-muted mb-1">
+<article class="page news-item-page" itemscope itemtype="http://schema.org/NewsArticle">
+
+    @if (Model.DisplayAdminLink)
+	{
+		<a class="btn btn-secondary btn-flat btn-edit-newsitem" href="@Url.Action("Edit", "News", new { id = Model.Id, area = "admin" })" target="admin-newsitem" rel="nofollow">
+			<i class="fa fa-cog"></i>
+			<span>@T("Common.Cms.EditNewsItem")</span>
+		</a>
+	}
+
+    @if (Model.PictureModel.FullSizeImageUrl.HasValue())
+    {
+        <figure class="news-item-picture mb-3">
+            <img class="img-fluid" src="@Model.PictureModel.FullSizeImageUrl" alt="@Model.PictureModel.AlternateText" title="@Model.PictureModel.Title" itemprop="image" />
+        </figure>
+    }
+
+    <div class="news-date text-muted mb-2" itemprop="datePublished">
         @Model.CreatedOn.ToNativeString("D")
     </div>
 
-    <div class="page-title mb-5">
-        <h1 class="fs-h2">@Model.Title</h1>
+    <meta itemprop="dateModified" content="@Model.CreatedOn.ToNativeString("D")">
+
+    <div class="page-title mb-4">
+        <h1 class="fs-h2" itemprop="headline">@Model.Title</h1>
     </div>
 
     <div class="news-body">    
         @{ Html.RenderWidget("newsitem_page_before_body"); }
 
-        <div class="news-content text-body html-editor-content">
+        <div class="news-content text-body html-editor-content" itemprop="articleBody">
             @Html.Raw(Model.Full)
         </div>
 
@@ -31,7 +49,7 @@
         @if (Model.Comments.AllowComments)
         {
 			<div class="row">
-				<div class="col-12 col-lg-8 offset-lg-2">
+				<div class="col-12">
 					<div class="block news-comment-form mt-5">
 						@using (Html.BeginForm())
 						{

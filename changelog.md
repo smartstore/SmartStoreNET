@@ -22,6 +22,7 @@
 * #1600 Show an example currency value for custom formatting value changes.
 * Card desk instead of a grid for customer addresses on customer edit page.
 * Display "price from" in product lists if any attribute combination price exists.
+* Reworked blog & news section
 
 ### Bugfixes
 * Export: Fixed KeyNotFoundException when batch size was 1.

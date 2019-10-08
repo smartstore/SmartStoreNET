@@ -70,40 +70,34 @@ namespace SmartStore.Data.Migrations
                 "Has background image",
                 "Hat Hintergrundbild",
                 "Specifies whether the image of the blog post are displayed in the background of the blog preview.",
-                "Legt das Intro des Blog-Posts fest.");
+                "Legt fest, ob das hinterlegte Bild als Hintergrundgrafk des Blog-Posts dargestellt wird.");
 
 
             builder.AddOrUpdate("Admin.ContentManagement.News.NewsItems.Fields.Picture",
                 "Picture",
                 "Bild",
-                "Specifies the picture of the blog post.",
-                "Legt das Bild des Blog-Posts fest.");
+                "Specifies the picture of the news item.",
+                "Legt das Bild des News-Eintrags fest.");
 
             builder.AddOrUpdate("Admin.ContentManagement.News.NewsItems.Fields.PreviewPicture",
                 "Preview picture",
                 "Vorschaubild",
-                "Specifies the preview picture of the blog post.",
-                "Legt das Vorschaubild des Blog-Posts fest.");
+                "Specifies the preview picture of the news item.",
+                "Legt das Vorschaubild des News-Eintrags fest.");
 
-            builder.AddOrUpdate("Admin.ContentManagement.News.NewsItems.Fields.SectionBg",
-                "Background color",
-                "Hintergrundfarbe",
-                "Specifies the background color of the blog post.",
-                "Legt die Hintergrundfarbe des Blog-Posts fest.");
-
-            builder.AddOrUpdate("Admin.ContentManagement.News.NewsItems.Fields.HasBgImage",
-                "Has background image",
-                "Hat Hintergrundbild",
-                "Specifies whether the image of the blog post are displayed in the background of the blog preview.",
-                "Legt das Intro des Blog-Posts fest.");
-
-            builder.AddOrUpdate("Common.Cms.EditBlogpost",
+            builder.AddOrUpdate("Common.Cms.EditBlogPost",
                 "Edit blog post",
-                "Blog-Eintrag bearbeiten");
+                "Blog-Post bearbeiten");
 
             builder.AddOrUpdate("Common.Cms.EditNewsItem",
                 "Edit news item",
                 "News-Eintrag bearbeiten");
+
+            builder.AddOrUpdate("Common.Cms.ReadMore",
+                "Read more",
+                "Mehr lesen");
+
+            
         }
     }
 }

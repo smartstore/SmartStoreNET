@@ -18,7 +18,7 @@
                         <ul id="blog-year-@yearItem.Year" class="list-unstyled">
                             @foreach (var monthItem in yearItem.Months)
                             {
-                                <li class="ml-3">
+                                <li>
                                     <a href="@Url.RouteUrl("BlogByMonth", new { month = yearItem.Year + "-" + monthItem.Month })" class="font-weight-normal color-body">
 										<span>@(new DateTime(yearItem.Year, monthItem.Month, 1).ToNativeString("MMMM"))</span>
                                         <span class="lrm">(@(monthItem.BlogPostCount))</span>

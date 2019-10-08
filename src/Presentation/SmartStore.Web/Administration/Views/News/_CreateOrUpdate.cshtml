@@ -47,6 +47,24 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PictureId)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.PictureId, new { transientUpload = true })
+                @Html.ValidationMessageFor(model => model.PictureId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PreviewPictureId)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.PreviewPictureId, new { transientUpload = true })
+                @Html.ValidationMessageFor(model => model.PreviewPictureId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Full)
             </td>
             <td class="adminData wide">

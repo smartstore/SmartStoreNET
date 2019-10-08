@@ -9,6 +9,7 @@ using SmartStore.Core.Security;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.News;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
@@ -151,6 +152,10 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var newsItem = model.ToEntity();
+                
+                MediaHelper.UpdatePictureTransientStateFor(newsItem, c => c.PictureId);
+                MediaHelper.UpdatePictureTransientStateFor(newsItem, c => c.PreviewPictureId);
+
                 newsItem.StartDateUtc = model.StartDate;
                 newsItem.EndDateUtc = model.EndDate;
                 newsItem.CreatedOnUtc = DateTime.UtcNow;
@@ -206,6 +211,10 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 newsItem = model.ToEntity(newsItem);
+
+                MediaHelper.UpdatePictureTransientStateFor(newsItem, c => c.PictureId);
+                MediaHelper.UpdatePictureTransientStateFor(newsItem, c => c.PreviewPictureId);
+
                 newsItem.StartDateUtc = model.StartDate;
                 newsItem.EndDateUtc = model.EndDate;
                 _newsService.UpdateNews(newsItem);

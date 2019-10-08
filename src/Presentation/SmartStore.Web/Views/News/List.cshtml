@@ -7,40 +7,74 @@
 }
 
 <div class="page news-list-page">
-	<div class="row mb-5">
-		<div class="col">
-			<div class="heading">
-				<h1 class="heading-title fs-h1">@T("News")</h1>
-			</div>
-		</div>
-		<div class="col col-auto">
-			<a class="btn btn-warning" href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" title="@T("News.RSS.Hint")">
-				<i class="fa fa-rss"></i>
-				<span>@T("News.RSS")</span>
-			</a>
-		</div>
-	</div>
+    <div class="row mb-5">
+        <div class="col">
+            <div class="heading">
+                <h1 class="heading-title fs-h1">@T("News")</h1>
+            </div>
+        </div>
+        <div class="col col-auto">
+            <a class="btn btn-warning" href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" title="@T("News.RSS.Hint")">
+                <i class="fa fa-rss"></i>
+                <span>@T("News.RSS")</span>
+            </a>
+        </div>
+    </div>
 
     <div class="page-body">
         @{ Html.RenderWidget("newslist_page_before_items"); }
 
-        <div class="news-items mb-5">
+        <div class="news-items mb-5 row">
             @foreach (var item in Model.NewsItems)
             {
-				<div class="news-item mb-5">
-					<div class="text-muted small">
-						@item.CreatedOn.ToNativeString("D")
-					</div>
-					<h4 class="news-title">
-						<a class="fs-h5 color-body" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
-							@item.Title
-						</a>
-					</h4>
-					<p class="lead mt-2">
-						@Html.Raw(item.Short)
-					</p>
-				</div>
-			}
+                var imageUrl = item.PreviewPictureModel.ImageUrl.HasValue() ? item.PreviewPictureModel.ImageUrl : item.PictureModel.ImageUrl;
+
+                <article class="news-preview-lg mb-5 col-12 col-md-6 col-lg-4 d-flex flex-column" itemscope itemtype="http://schema.org/NewsArticle">
+
+                    @if (imageUrl.HasValue())
+                    {
+                        <figure class="newsitem-picture shadow-sm-primary">
+                            <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
+                                <img src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title" itemprop="image">
+                            </a>
+                        </figure>
+                    }
+
+                    <h4 class="newsitem-title">
+                        <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" itemprop="headline">
+                            @item.Title.Truncate(60, "...")
+                        </a>
+                    </h4>
+
+                    <div class="newsitem-date" itemprop="datePublished">
+                        @item.CreatedOn.ToNativeString("D")
+                    </div>
+                    
+                    <meta itemprop="dateModified" content="@item.CreatedOn.ToNativeString("D")">
+
+                    <p class="newsitem-description my-3 flex-grow-1" itemprop="description">
+                        @Html.Raw(item.Short.Truncate(160, "..."))
+                    </p>
+
+                    <div class="d-flex flex-row">
+                        <div class="flex-grow-1">
+                            <a class="btn btn-outline-gray" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
+                                @T("Common.Cms.ReadMore")
+                            </a>
+                        </div>
+                        
+                        @if (item.Comments.AllowComments)
+                        {
+                            <a class="align-self-end btn btn-gray btn-flat@(item.Comments.NumberOfComments > 0 ? " vivid" : "")"
+                               href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })"
+                               title="@string.Format(@T("Blog.CommentsLink").Text, item.Comments.NumberOfComments)">
+                                <i class="far fa-comment-alt"></i>
+                                <span class="newsitem-comments-count">@item.Comments.NumberOfComments</span>
+                            </a>
+                        }
+                    </div>
+                </article>
+            }
         </div>
 
         @Html.SmartStore().Pager(Model.PagingFilteringContext).Alignment(PagerAlignment.Centered).Size(PagerSize.Large).QueryParam("pagenumber")

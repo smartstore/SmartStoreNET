@@ -73,15 +73,16 @@
                 {
                     var imageUrl = item.PreviewPictureModel.ImageUrl.HasValue() ? item.PreviewPictureModel.ImageUrl : item.PictureModel.ImageUrl;
                     var itemHasImage = item.PictureModel.ImageUrl.HasValue() || item.PreviewPictureModel.ImageUrl.HasValue();
+                    var itemHasBgImage = item.HasBgImage && itemHasImage;
                     var articleClass = "card rounded shadow-sm border-0 box-img-top{0}{1}{2}".FormatWith(
-                        item.HasBgImage ? " bg-tint-3 has-image-bg" : "",
+                        item.HasBgImage && itemHasImage ? " bg-tint-3 has-image-bg" : "",
                         item.SectionBg.HasValue() ? " has-section-bg section-" + item.SectionBg : "",
                         item.Tags.Count > 0 ? " has-tags" : ""
                     );
                     
                     <article class="@articleClass">
 
-                        @if (item.HasBgImage && itemHasImage)
+                        @if (itemHasBgImage)
                         {
                             <div class="box-img-wrapper card-img">
                                 <img class="card-img box-scale" src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title">
@@ -111,7 +112,7 @@
                             @RenderComments(item)
                         }
 
-                        <div class="@(item.HasBgImage ? "card-img-overlay d-flex flex-column justify-content-end" : "box-img-top")">
+                        <div class="@(itemHasBgImage ? "card-img-overlay d-flex flex-column justify-content-end" : "box-img-top")">
                             <div class="text-left w-100 p-3">
                                 <div class="blogpost-date mb-2 text-muted">
                                     @item.CreatedOn.ToNativeString("dd MMMM, yyyy")

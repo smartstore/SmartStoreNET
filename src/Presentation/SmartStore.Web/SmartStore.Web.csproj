@@ -1838,6 +1838,7 @@
     <Content Include="Content\shared\_bg.scss" />
     <Content Include="Content\shared\_box.scss" />
     <Content Include="Content\shared\_sections.scss" />
+    <Content Include="Themes\Flex\Content\_news.scss" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

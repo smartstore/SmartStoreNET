@@ -440,8 +440,6 @@ namespace SmartStore.ComponentModel
 			return result;
 		}
 
-        static Stopwatch _watch = new Stopwatch();
-        static int _wi;
 		protected static IDictionary<string, FastProperty> GetProperties(
 			Type type,
 			Func<PropertyInfo, FastProperty> createPropertyHelper,
@@ -455,12 +453,8 @@ namespace SmartStore.ComponentModel
 
 			IDictionary<string, FastProperty> Get(Type t)
 			{
-                _watch.Start();
                 var candidates = GetCandidateProperties(t);
 				var fastProperties = candidates.Select(p => createPropertyHelper(p)).ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
-                _watch.Stop();
-                _wi++;
-                Debug.WriteLine($"--- Init FastProperties {_wi} '{type.Name}': {_watch.ElapsedMilliseconds} ms.");
 				return fastProperties;
 			}
 		}

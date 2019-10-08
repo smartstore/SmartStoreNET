@@ -370,15 +370,17 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected PictureModel PrepareNewsItemPictureModel(NewsItem newsItem, int? pictureId)
         {
-            var pictureModel = new PictureModel();
             var pictureInfo = _pictureService.GetPictureInfo(pictureId);
 
-            pictureModel.PictureId = newsItem.PictureId.GetValueOrDefault();
-            pictureModel.Size = 512;
-            pictureModel.ImageUrl = _pictureService.GetUrl(pictureInfo, 512, false);
-            pictureModel.FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, false);
-            pictureModel.Title = newsItem.Title;
-            pictureModel.AlternateText = newsItem.Title;
+            var pictureModel = new PictureModel
+            {
+                PictureId = newsItem.PictureId.GetValueOrDefault(),
+                Size = 512,
+                ImageUrl = _pictureService.GetUrl(pictureInfo, 512, false),
+                FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, false),
+                Title = newsItem.Title,
+                AlternateText = newsItem.Title
+            };
 
             return pictureModel;
         }

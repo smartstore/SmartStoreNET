@@ -109,15 +109,16 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected PictureModel PrepareBlogPostPictureModel(BlogPost blogPost, int? pictureId)
         {
-            var pictureModel = new PictureModel();
             var pictureInfo = _pictureService.GetPictureInfo(pictureId);
 
-            pictureModel.PictureId = blogPost.PictureId.GetValueOrDefault();
-            pictureModel.Size = 512;
-            pictureModel.ImageUrl = _pictureService.GetUrl(pictureInfo, 512, false);
-            pictureModel.FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, false);
-            pictureModel.Title = blogPost.Title;
-            pictureModel.AlternateText = blogPost.Title;
+            var pictureModel = new PictureModel {
+                PictureId = blogPost.PictureId.GetValueOrDefault(),
+                Size = 512,
+                ImageUrl = _pictureService.GetUrl(pictureInfo, 512, false),
+                FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, false),
+                Title = blogPost.Title,
+                AlternateText = blogPost.Title
+            };
 
             return pictureModel;
         }

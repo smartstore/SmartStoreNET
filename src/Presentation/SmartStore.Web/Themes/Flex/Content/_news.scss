@@ -5,6 +5,16 @@
 // News Styles
 // --------------------------------------------------
 
+.news-item-page .news-item-picture {
+    padding-top: 40%;
+    width: 100%;
+
+    & img {
+        width: 100%;
+        object-fit: cover;
+    }
+}
+
 .newsitem-title {
     overflow: hidden;
 

@@ -22,8 +22,8 @@
 
     @if (Model.PictureModel.FullSizeImageUrl.HasValue())
     {
-        <figure class="news-item-picture mb-3">
-            <img class="img-fluid" src="@Model.PictureModel.FullSizeImageUrl" alt="@Model.PictureModel.AlternateText" title="@Model.PictureModel.Title" itemprop="image" />
+        <figure class="news-item-picture mb-3 img-center-container">
+            <img class="img-fluid shadow-sm-primary" src="@Model.PictureModel.FullSizeImageUrl" alt="@Model.PictureModel.AlternateText" title="@Model.PictureModel.Title" itemprop="image" />
         </figure>
     }
 

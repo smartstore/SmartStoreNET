@@ -147,7 +147,7 @@ namespace SmartStore.Web
             // This settings will automatically be used by JsonConvert.SerializeObject/DeserializeObject
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
             {
-                ContractResolver = new SmartContractResolver()
+                ContractResolver = SmartContractResolver.Instance
             };
 
             if (installed)

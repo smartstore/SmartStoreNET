@@ -68,7 +68,7 @@ namespace SmartStore.Services.Cms.Blocks
 
 			var settings = new JsonSerializerSettings
 			{
-                ContractResolver = new SmartContractResolver(),
+                ContractResolver = SmartContractResolver.Instance,
                 TypeNameHandling = TypeNameHandling.Objects,
 				ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
 				ObjectCreationHandling = ObjectCreationHandling.Replace,

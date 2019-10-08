@@ -114,7 +114,7 @@ namespace SmartStore.Web.Framework.UI
 				// minified file did not exist: save it.
 				var settings = new JsonSerializerSettings
                 {
-                    ContractResolver = new SmartContractResolver(),
+                    ContractResolver = SmartContractResolver.Instance,
                     DefaultValueHandling = DefaultValueHandling.Ignore,
                     Formatting = Formatting.None
                 };

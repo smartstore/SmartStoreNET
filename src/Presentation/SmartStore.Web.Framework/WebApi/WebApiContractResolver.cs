@@ -1,12 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Net.Http.Formatting;
 using System.Reflection;
 using Newtonsoft.Json.Serialization;
+using SmartStore.ComponentModel;
 
-namespace SmartStore.ComponentModel
+namespace SmartStore.Web.Framework.WebApi
 {
-    public class SmartContractResolver : DefaultContractResolver
+    internal partial class WebApiContractResolver : JsonContractResolver
     {
+        public WebApiContractResolver(MediaTypeFormatter formatter)
+            : base(formatter)
+        {
+        }
+
         protected override IValueProvider CreateMemberValueProvider(MemberInfo member)
         {
             if (member is PropertyInfo pi)
@@ -16,7 +22,5 @@ namespace SmartStore.ComponentModel
 
             return base.CreateMemberValueProvider(member);
         }
-
-        public static SmartContractResolver Instance { get; } = new SmartContractResolver();
     }
 }

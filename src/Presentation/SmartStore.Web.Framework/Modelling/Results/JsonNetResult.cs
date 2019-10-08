@@ -30,7 +30,7 @@ namespace SmartStore.Web.Framework.Modelling
         {
             var settings = new JsonSerializerSettings
             {
-                ContractResolver = new SmartContractResolver(),
+                ContractResolver = SmartContractResolver.Instance,
                 MissingMemberHandling = MissingMemberHandling.Ignore,
                 TypeNameHandling = TypeNameHandling.Objects,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using Newtonsoft.Json;
+using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
@@ -160,7 +161,8 @@ namespace SmartStore.Web.Framework.Localization
 
 			var json = JsonConvert.SerializeObject(dict, new JsonSerializerSettings
 			{
-				Formatting = Formatting.None
+                ContractResolver = new SmartContractResolver(),
+                Formatting = Formatting.None
 			});
 
 			return json;

@@ -286,7 +286,7 @@ namespace SmartStore.Web.Framework
 			if (servicesProperty == null)
 				return;
 			
-			registration.Metadata.Add("Property.ICommonServices", new FastProperty(servicesProperty));
+			registration.Metadata.Add("Property.ICommonServices", FastProperty.Create(servicesProperty));
 
 			registration.Activated += (sender, e) =>
 			{
@@ -334,7 +334,7 @@ namespace SmartStore.Web.Framework
 				.Where(x => x.PropertyType == typeof(ILogger)) // must be a logger
 				.Where(x => x.IndexParameters.Count() == 0) // must not be an indexer
 				.Where(x => x.Accessors.Length != 1 || x.Accessors[0].ReturnType == typeof(void)) //must have get/set, or only set
-				.Select(x => new FastProperty(x.PropertyInfo));
+				.Select(x => FastProperty.Create(x.PropertyInfo));
 
 			// Return an array of actions that resolve a logger and assign the property
 			foreach (var prop in loggerProperties)
@@ -455,7 +455,7 @@ namespace SmartStore.Web.Framework
 			if (querySettingsProperty == null)
 				return;
 
-			registration.Metadata.Add("Property.DbQuerySettings", new FastProperty(querySettingsProperty));
+			registration.Metadata.Add("Property.DbQuerySettings", FastProperty.Create(querySettingsProperty));
 
 			registration.Activated += (sender, e) =>
 			{
@@ -509,7 +509,7 @@ namespace SmartStore.Web.Framework
 			if (userProperty == null)
 				return;
 
-			registration.Metadata.Add("Property.T", new FastProperty(userProperty));
+			registration.Metadata.Add("Property.T", FastProperty.Create(userProperty));
 
 			registration.Activated += (sender, e) =>
 			{

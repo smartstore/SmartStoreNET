@@ -438,7 +438,8 @@ namespace SmartStore.Utilities
 					// Serialization failed or is not supported: make JSON.
 					var json = JsonConvert.SerializeObject(obj, new JsonSerializerSettings
 					{
-						DateFormatHandling = DateFormatHandling.IsoDateFormat,
+                        ContractResolver = new SmartContractResolver(),
+                        DateFormatHandling = DateFormatHandling.IsoDateFormat,
 						DateTimeZoneHandling = DateTimeZoneHandling.Utc,
 						MaxDepth = 10,
 						ReferenceLoopHandling = ReferenceLoopHandling.Ignore

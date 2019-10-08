@@ -60,9 +60,9 @@ namespace SmartStore.Core.Logging
 					.Where(x => x.PropertyType == typeof(ILogger)) // must be a logger
 					.Where(x => x.IndexParameters.Count() == 0) // must not be an indexer
 					.Where(x => x.Accessors.Length != 1 || x.Accessors[0].ReturnType == typeof(void)) //must have get/set, or only set
-					.Select(x => new FastProperty(x.PropertyInfo))
+					.Select(x => FastProperty.Create(x.PropertyInfo))
 					.ToArray();
-
+                
 				hasPropertyLogger = loggerProperties.Length > 0;
 
 				// Ignore components known to be without logger dependencies

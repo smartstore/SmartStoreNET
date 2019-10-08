@@ -13,6 +13,8 @@ using FluentValidation.Mvc;
 using JavaScriptEngineSwitcher.Core;
 using JavaScriptEngineSwitcher.Msie;
 using JavaScriptEngineSwitcher.V8;
+using Newtonsoft.Json;
+using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Events;
@@ -131,7 +133,7 @@ namespace SmartStore.Web
 			// Routes
 			RegisterRoutes(RouteTable.Routes, engine, installed);
 
-			// localize MVC resources
+			// Localize MVC resources
 			ClientDataTypeModelValidatorProvider.ResourceClassKey = "MvcLocalization";
 			DefaultModelBinder.ResourceClassKey = "MvcLocalization";
 			ErrorMessageProvider.SetResourceClassKey("MvcLocalization");
@@ -142,7 +144,13 @@ namespace SmartStore.Web
 			// VPPs
 			RegisterVirtualPathProviders();
 
-			if (installed)
+            // This settings will automatically be used by JsonConvert.SerializeObject/DeserializeObject
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                ContractResolver = new SmartContractResolver()
+            };
+
+            if (installed)
 			{
 				// register our themeable razor view engine we use
 				ViewEngines.Engines.Add(new ThemeableRazorViewEngine());

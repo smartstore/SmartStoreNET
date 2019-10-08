@@ -179,8 +179,10 @@
     <Compile Include="Collections\TopologicalSorter.cs" />
     <Compile Include="Collections\TreeNodeBase.cs" />
     <Compile Include="ComponentModel\FastInvoker.cs" />
+    <Compile Include="ComponentModel\FastPropertyValueProvider.cs" />
     <Compile Include="ComponentModel\MiniMapper.cs" />
     <Compile Include="Collections\ReferenceEqualityComparer.cs" />
+    <Compile Include="ComponentModel\SmartContractResolver.cs" />
     <Compile Include="ComponentModel\TypeConversion\BooleanConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\DictionaryConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\EmailAddressConverter.cs" />

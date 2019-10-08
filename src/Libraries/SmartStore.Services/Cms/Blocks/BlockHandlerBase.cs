@@ -9,6 +9,7 @@ using System.Web.Mvc.Async;
 using System.Web.Mvc.Html;
 using System.Web.Routing;
 using Newtonsoft.Json;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Localization;
 using SmartStore.Utilities;
@@ -67,7 +68,8 @@ namespace SmartStore.Services.Cms.Blocks
 
 			var settings = new JsonSerializerSettings
 			{
-				TypeNameHandling = TypeNameHandling.Objects,
+                ContractResolver = new SmartContractResolver(),
+                TypeNameHandling = TypeNameHandling.Objects,
 				ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
 				ObjectCreationHandling = ObjectCreationHandling.Replace,
 				NullValueHandling = NullValueHandling.Ignore

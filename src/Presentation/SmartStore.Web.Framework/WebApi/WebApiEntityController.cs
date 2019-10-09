@@ -287,7 +287,7 @@ namespace SmartStore.Web.Framework.WebApi
 		{
 			var entity = GetExpandedEntity<TProperty>(key, path);
 
-			var expression = path.Compile();
+			var expression = path.CompileFast(PropertyCachingStrategy.EagerCached);
 			var property = expression.Invoke(entity);
 
 			if (property == null)

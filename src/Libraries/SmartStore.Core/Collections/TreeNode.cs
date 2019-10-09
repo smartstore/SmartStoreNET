@@ -114,7 +114,7 @@ namespace SmartStore.Collections
 			return this.Flatten(null, includeSelf);
 		}
 
-		public IEnumerable<TValue> Flatten(Expression<Func<TValue, bool>> expression, bool includeSelf = true)
+		public IEnumerable<TValue> Flatten(Func<TValue, bool> predicate, bool includeSelf = true)
 		{
 			IEnumerable<TValue> list;
 			if (includeSelf)
@@ -130,9 +130,9 @@ namespace SmartStore.Collections
 				return list;
 
 			var result = list.Union(Children.SelectMany(x => x.Flatten()));
-			if (expression != null)
+			if (predicate != null)
 			{
-				result = result.Where(expression.Compile());
+				result = result.Where(predicate);
 			}
 
 			return result;

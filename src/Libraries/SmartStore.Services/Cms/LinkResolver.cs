@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
@@ -197,7 +198,8 @@ namespace SmartStore.Services.Cms
             return result;
         }
 
-		private bool TokenizeExpression(string expression, out string type, out string path, out string query)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool TokenizeExpression(string expression, out string type, out string path, out string query)
 		{
 			type = null;
 			path = null;

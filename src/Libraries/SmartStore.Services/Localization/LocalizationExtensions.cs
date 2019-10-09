@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Xml;
 using SmartStore.ComponentModel;
 using SmartStore.Core;
@@ -16,25 +17,26 @@ namespace SmartStore.Services.Localization
 {
 	public static class LocalizationExtensions
     {
-		/// <summary>
-		/// Get localized property of an entity
-		/// </summary>
-		/// <typeparam name="T">Entity type</typeparam>
-		/// <param name="entity">Entity</param>
-		/// <param name="keySelector">Key selector</param>
-		/// <param name="detectEmptyHtml">When <c>true</c>, additionally checks whether the localized value contains empty HTML only and falls back to the default value if so.</param>
-		/// <returns>Localized property</returns>
-		public static LocalizedValue<string> GetLocalized<T>(this T entity, Expression<Func<T, string>> keySelector, bool detectEmptyHtml = false)
+        /// <summary>
+        /// Get localized property of an entity
+        /// </summary>
+        /// <typeparam name="T">Entity type</typeparam>
+        /// <param name="entity">Entity</param>
+        /// <param name="keySelector">Key selector</param>
+        /// <param name="detectEmptyHtml">When <c>true</c>, additionally checks whether the localized value contains empty HTML only and falls back to the default value if so.</param>
+        /// <returns>Localized property</returns>
+        public static LocalizedValue<string> GetLocalized<T>(this T entity, Expression<Func<T, string>> keySelector, bool detectEmptyHtml = false)
             where T : BaseEntity, ILocalizedEntity
         {
-			return GetLocalizedEx(
+            Func<T, string> fallback = keySelector.CompileFast(out var localeKey);
+            return GetLocalizedEx(
 				entity,
 				entity.GetEntityName(),
-				LocaleKeyFromExpression(keySelector.Body),
-				x => keySelector.Compile().Invoke(x),
+                localeKey,
+                fallback,
 				EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage,
 				detectEmptyHtml: detectEmptyHtml);
-		}
+        }
 
         /// <summary>
         /// Get localized property of an entity
@@ -55,11 +57,12 @@ namespace SmartStore.Services.Localization
 			bool detectEmptyHtml = false) 
             where T : BaseEntity, ILocalizedEntity
         {
-			return GetLocalizedEx<T, string>(
+            var fallback = keySelector.CompileFast(out var localeKey);
+            return GetLocalizedEx<T, string>(
 				entity,
 				entity.GetEntityName(),
-				LocaleKeyFromExpression(keySelector.Body),
-				x => keySelector.Compile().Invoke(x),
+				localeKey,
+				fallback,
 				EngineContext.Current.Resolve<ILanguageService>().GetLanguageById(languageId),
 				returnDefaultValue,
 				ensureTwoPublishedLanguages,
@@ -116,11 +119,12 @@ namespace SmartStore.Services.Localization
 			bool detectEmptyHtml = false)
 			where T : BaseEntity, ILocalizedEntity
 		{
-			return GetLocalizedEx<T, string>(
+            var fallback = keySelector.CompileFast(out var localeKey);
+            return GetLocalizedEx<T, string>(
 				entity,
 				entity.GetEntityName(),
-				LocaleKeyFromExpression(keySelector.Body),
-				x => keySelector.Compile().Invoke(x),
+                localeKey,
+                fallback,
 				language,
 				returnDefaultValue,
 				ensureTwoPublishedLanguages,
@@ -147,11 +151,12 @@ namespace SmartStore.Services.Localization
 			bool detectEmptyHtml = false)
 			where T : BaseEntity, ILocalizedEntity
 		{
-			return GetLocalizedEx(
+            Func<T, TProp> fallback = keySelector.CompileFast(out var localeKey);
+            return GetLocalizedEx(
 				entity,
 				entity.GetEntityName(),
-				LocaleKeyFromExpression(keySelector.Body),
-				x => keySelector.Compile().Invoke(x),
+				localeKey,
+				fallback,
 				EngineContext.Current.Resolve<ILanguageService>().GetLanguageById(languageId), 
 				returnDefaultValue, 
 				ensureTwoPublishedLanguages,
@@ -178,11 +183,12 @@ namespace SmartStore.Services.Localization
 			bool detectEmptyHtml = false)
 			where T : BaseEntity, ILocalizedEntity
 		{
-			return GetLocalizedEx(
+            Func<T, TProp> fallback = keySelector.CompileFast(out var localeKey);
+            return GetLocalizedEx(
 				entity,
 				entity.GetEntityName(),
-				LocaleKeyFromExpression(keySelector.Body),
-				x => keySelector.Compile().Invoke(x),
+				localeKey,
+                fallback,
 				language,
 				returnDefaultValue,
 				ensureTwoPublishedLanguages,
@@ -197,11 +203,12 @@ namespace SmartStore.Services.Localization
 		/// <returns>Localized property</returns>
 		public static LocalizedValue<string> GetLocalized(this ICategoryNode node, Expression<Func<ICategoryNode, string>> keySelector)
 		{
-			return GetLocalizedEx(
+            Func<ICategoryNode, string> fallback = keySelector.CompileFast(out var localeKey);
+            return GetLocalizedEx(
 				node,
 				"Category",
-				LocaleKeyFromExpression(keySelector.Body),
-				x => keySelector.Compile().Invoke(x),
+				localeKey,
+				fallback,
 				EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage);
 		}
 
@@ -214,11 +221,12 @@ namespace SmartStore.Services.Localization
 		/// <returns>Localized property</returns>
 		public static LocalizedValue<string> GetLocalized(this ICategoryNode node, Expression<Func<ICategoryNode, string>> keySelector, int languageId)
 		{
-			return GetLocalizedEx(
+            Func<ICategoryNode, string> fallback = keySelector.CompileFast(out var localeKey);
+            return GetLocalizedEx(
 				node,
 				"Category",
-				LocaleKeyFromExpression(keySelector.Body),
-				x => keySelector.Compile().Invoke(x),
+				localeKey,
+				fallback,
 				EngineContext.Current.Resolve<ILanguageService>().GetLanguageById(languageId));
 		}
 
@@ -231,11 +239,12 @@ namespace SmartStore.Services.Localization
 		/// <returns>Localized property</returns>
 		public static LocalizedValue<string> GetLocalized(this ICategoryNode node, Expression<Func<ICategoryNode, string>> keySelector, Language language)
 		{
-			return GetLocalizedEx(
+            Func<ICategoryNode, string> fallback = keySelector.CompileFast(out var localeKey);
+            return GetLocalizedEx(
 				node,
 				"Category",
-				LocaleKeyFromExpression(keySelector.Body),
-				x => keySelector.Compile().Invoke(x),
+				localeKey,
+				fallback,
 				language);
 		}
 
@@ -254,7 +263,7 @@ namespace SmartStore.Services.Localization
 
 			TProp result = default;
 			var str = string.Empty;
-
+            
 			var languageService = EngineContext.Current.Resolve<ILanguageService>();
 
 			Language currentLanguage = null;
@@ -265,7 +274,7 @@ namespace SmartStore.Services.Localization
 				if (ensureTwoPublishedLanguages)
 				{
 					var totalPublishedLanguages = languageService.GetLanguagesCount(false);
-					loadLocalizedValue = totalPublishedLanguages >= 2;
+					loadLocalizedValue = totalPublishedLanguages > 1;
 				}
 
 				// Localized value
@@ -282,7 +291,7 @@ namespace SmartStore.Services.Localization
 					if (str.HasValue())
 					{
 						currentLanguage = requestLanguage;
-						result = str.Convert<TProp>(CultureInfo.InvariantCulture);
+                        result = str.Convert<TProp>(CultureInfo.InvariantCulture);
 					}
 				}
 			}
@@ -307,32 +316,15 @@ namespace SmartStore.Services.Localization
 			return new LocalizedValue<TProp>(result, requestLanguage, currentLanguage);
 		}
 
-		private static string LocaleKeyFromExpression(Expression expression)
-		{
-			if (!(expression is MemberExpression member))
-			{
-				throw new ArgumentException($"Expression '{expression}' refers to a method, not to a property.");
-			}
-
-			var propInfo = member.Member as PropertyInfo;
-			if (propInfo == null)
-			{
-				throw new ArgumentException($"Expression '{expression}' refers to a field, not to a property.");
-			}
-
-			return propInfo.Name;
-		}
-
-
-		/// <summary>
-		/// Get localized value of enum
-		/// </summary>
-		/// <typeparam name="T">Enum</typeparam>
-		/// <param name="enumValue">Enum value</param>
-		/// <param name="localizationService">Localization service</param>
-		/// <param name="workContext">Work context</param>
-		/// <returns>Localized value</returns>
-		public static string GetLocalizedEnum<T>(this T enumValue, ILocalizationService localizationService, IWorkContext workContext)
+        /// <summary>
+        /// Get localized value of enum
+        /// </summary>
+        /// <typeparam name="T">Enum</typeparam>
+        /// <param name="enumValue">Enum value</param>
+        /// <param name="localizationService">Localization service</param>
+        /// <param name="workContext">Work context</param>
+        /// <returns>Localized value</returns>
+        public static string GetLocalizedEnum<T>(this T enumValue, ILocalizationService localizationService, IWorkContext workContext)
             where T : struct
         {
 			if (workContext == null)

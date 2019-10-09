@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Autofac;
 using Autofac.Builder;
 using SmartStore.ComponentModel;
@@ -39,18 +40,21 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T ResolveNamed<T>(string name, ILifetimeScope scope = null) where T : class
         {
 			return (scope ?? Scope()).ResolveNamed<T>(name);
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public object Resolve(Type type, ILifetimeScope scope = null)
         {
 			return (scope ?? Scope()).Resolve(type);
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public object ResolveNamed(string name, Type type, ILifetimeScope scope = null)
         {
 			return (scope ?? Scope()).ResolveNamed(name, type);

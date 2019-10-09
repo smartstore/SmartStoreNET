@@ -534,11 +534,11 @@ namespace SmartStore.Collections
 		/// </summary>
 		/// <param name="predicate">predicate</param>
 		/// <returns>The closest node</returns>
-		public T Closest(Expression<Func<T, bool>> predicate)
+		public T Closest(Func<T, bool> predicate)
 		{
 			Guard.NotNull(predicate, nameof(predicate));
 
-			var test = predicate.Compile();
+			var test = predicate;
 
 			if (test((T)this))
 			{
@@ -635,7 +635,7 @@ namespace SmartStore.Collections
 		}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T SelectNode(Expression<Func<T, bool>> predicate, bool includeSelf = false)
+        public T SelectNode(Func<T, bool> predicate, bool includeSelf = false)
 		{
 			Guard.NotNull(predicate, nameof(predicate));
 
@@ -648,7 +648,7 @@ namespace SmartStore.Collections
         /// <param name="predicate">The predicate to match against</param>
         /// <returns>A readonly collection of node matches</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<T> SelectNodes(Expression<Func<T, bool>> predicate, bool includeSelf = false)
+        public IEnumerable<T> SelectNodes(Func<T, bool> predicate, bool includeSelf = false)
 		{
 			Guard.NotNull(predicate, nameof(predicate));
 
@@ -733,7 +733,7 @@ namespace SmartStore.Collections
 			return this.FlattenNodes(null, includeSelf);
 		}
 
-		protected IEnumerable<T> FlattenNodes(Expression<Func<T, bool>> predicate, bool includeSelf = true)
+		protected IEnumerable<T> FlattenNodes(Func<T, bool> predicate, bool includeSelf = true)
 		{
 			IEnumerable<T> list;
 			if (includeSelf)
@@ -751,7 +751,7 @@ namespace SmartStore.Collections
 			var result = list.Union(_children.SelectMany(x => x.FlattenNodes()));
 			if (predicate != null)
 			{
-				result = result.Where(predicate.Compile());
+				result = result.Where(predicate);
 			}
 
 			return result;

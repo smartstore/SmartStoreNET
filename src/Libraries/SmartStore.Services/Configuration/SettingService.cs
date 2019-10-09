@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Caching;
@@ -202,7 +203,8 @@ namespace SmartStore.Services.Configuration
 			return setting != null;
 		}
 
-		public T LoadSetting<T>(int storeId = 0) where T : ISettings, new()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T LoadSetting<T>(int storeId = 0) where T : ISettings, new()
 		{
 			return (T)LoadSettingCore(typeof(T), storeId);
 		}
@@ -349,12 +351,14 @@ namespace SmartStore.Services.Configuration
 			}
         }
 
-		public void SaveSetting<T>(T settings, int storeId = 0) where T : ISettings, new()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SaveSetting<T>(T settings, int storeId = 0) where T : ISettings, new()
         {
 			SaveSettingCore(settings, storeId);
         }
 
-		public void SaveSetting(ISettings settings, int storeId = 0)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SaveSetting(ISettings settings, int storeId = 0)
 		{
 			SaveSettingCore(settings, storeId);
 		}

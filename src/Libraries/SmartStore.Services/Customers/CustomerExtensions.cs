@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Xml;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
@@ -94,19 +95,20 @@ namespace SmartStore.Services.Customers
         /// <param name="customer">Customer</param>
         /// <param name="onlyActiveCustomerRoles">A value indicating whether we should look only in active customer roles</param>
         /// <returns>Result</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAdmin(this Customer customer, bool onlyActiveCustomerRoles = true)
         {
             return IsInCustomerRole(customer, SystemCustomerRoleNames.Administrators, onlyActiveCustomerRoles);
         }
 
-		/// <summary>
-		/// Gets a value indicating whether customer is super administrator
-		/// </summary>
-		/// <remarks>codehint: sm-add</remarks>
-		/// <param name="customer">Customer</param>
-		/// <param name="onlyActiveCustomerRoles">A value indicating whether we should look only in active customer roles</param>
-		/// <returns>Result</returns>
-		public static bool IsSuperAdmin(this Customer customer, bool onlyActiveCustomerRoles = true) {
+        /// <summary>
+        /// Gets a value indicating whether customer is super administrator
+        /// </summary>
+        /// <param name="customer">Customer</param>
+        /// <param name="onlyActiveCustomerRoles">A value indicating whether we should look only in active customer roles</param>
+        /// <returns>Result</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsSuperAdmin(this Customer customer, bool onlyActiveCustomerRoles = true) {
 			return IsInCustomerRole(customer, SystemCustomerRoleNames.SuperAdministrators, onlyActiveCustomerRoles);
 		}
 
@@ -116,6 +118,7 @@ namespace SmartStore.Services.Customers
         /// <param name="customer">Customer</param>
         /// <param name="onlyActiveCustomerRoles">A value indicating whether we should look only in active customer roles</param>
         /// <returns>Result</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsForumModerator(this Customer customer, bool onlyActiveCustomerRoles = true)
         {
             return IsInCustomerRole(customer, SystemCustomerRoleNames.ForumModerators, onlyActiveCustomerRoles);
@@ -127,6 +130,7 @@ namespace SmartStore.Services.Customers
         /// <param name="customer">Customer</param>
         /// <param name="onlyActiveCustomerRoles">A value indicating whether we should look only in active customer roles</param>
         /// <returns>Result</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsRegistered(this Customer customer, bool onlyActiveCustomerRoles = true)
         {
             return IsInCustomerRole(customer, SystemCustomerRoleNames.Registered, onlyActiveCustomerRoles);
@@ -138,6 +142,7 @@ namespace SmartStore.Services.Customers
         /// <param name="customer">Customer</param>
         /// <param name="onlyActiveCustomerRoles">A value indicating whether we should look only in active customer roles</param>
         /// <returns>Result</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsGuest(this Customer customer, bool onlyActiveCustomerRoles = true)
         {
             return IsInCustomerRole(customer, SystemCustomerRoleNames.Guests, onlyActiveCustomerRoles);
@@ -171,6 +176,7 @@ namespace SmartStore.Services.Customers
         /// </summary>
         /// <param name="customer">Customer entity.</param>
         /// <returns>Formatted customer name.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FormatUserName(this Customer customer)
         {
             return FormatUserName(customer, false);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -264,25 +265,27 @@ namespace SmartStore.Core.IO
 			}
 		}
 
-		/// <summary>
-		/// Retrieves the count of files within a path.
-		/// </summary>
-		/// <param name="path">The relative path to the folder in which to retrieve file count.</param>
-		/// <param name="pattern">The file pattern to match</param>
-		/// <param name="deep">Whether to count files in all subfolders also</param>
-		/// <returns>Total count of files.</returns>
-		public static long CountFiles(this IFileSystem fileSystem, string path, string pattern, bool deep = true)
+        /// <summary>
+        /// Retrieves the count of files within a path.
+        /// </summary>
+        /// <param name="path">The relative path to the folder in which to retrieve file count.</param>
+        /// <param name="pattern">The file pattern to match</param>
+        /// <param name="deep">Whether to count files in all subfolders also</param>
+        /// <returns>Total count of files.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long CountFiles(this IFileSystem fileSystem, string path, string pattern, bool deep = true)
 		{
 			return fileSystem.CountFiles(path, pattern, null, deep);
 		}
 
-		/// <summary>
-		/// Retrieves the count of files within a path.
-		/// </summary>
-		/// <param name="path">The relative path to the folder in which to retrieve file count.</param>
-		/// <param name="deep">Whether to count files in all subfolders also</param>
-		/// <returns>Total count of files.</returns>
-		public static long CountFiles(this IFileSystem fileSystem, string path, bool deep = true)
+        /// <summary>
+        /// Retrieves the count of files within a path.
+        /// </summary>
+        /// <param name="path">The relative path to the folder in which to retrieve file count.</param>
+        /// <param name="deep">Whether to count files in all subfolders also</param>
+        /// <returns>Total count of files.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long CountFiles(this IFileSystem fileSystem, string path, bool deep = true)
 		{
 			return fileSystem.CountFiles(path, "*", null, deep);
 		}

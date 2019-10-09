@@ -1,12 +1,13 @@
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Data;
 
 namespace SmartStore.Services.Common
 {
-    public static class GenericAttributeExtentions
+    public static class GenericAttributeExtensions
     {
         /// <summary>
         /// Gets an entity generic attribute value
@@ -16,7 +17,8 @@ namespace SmartStore.Services.Common
         /// <param name="key">Key</param>
 		/// <param name="storeId">Load a value specific for a certain store; pass 0 to load a value shared for all stores</param>
         /// <returns>Attribute value</returns>
-		public static TProp GetAttribute<TProp>(this BaseEntity entity, string key, int storeId = 0)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TProp GetAttribute<TProp>(this BaseEntity entity, string key, int storeId = 0)
         {
 			return GetAttribute<TProp>(
 				entity, 

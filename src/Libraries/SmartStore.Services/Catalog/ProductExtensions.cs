@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
@@ -14,7 +15,8 @@ namespace SmartStore.Services.Catalog
 {
     public static class ProductExtensions
     {
-		public static ProductVariantAttributeCombination MergeWithCombination(this Product product, string selectedAttributes)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ProductVariantAttributeCombination MergeWithCombination(this Product product, string selectedAttributes)
         {
             return product.MergeWithCombination(selectedAttributes, EngineContext.Current.Resolve<IProductAttributeParser>());
         }

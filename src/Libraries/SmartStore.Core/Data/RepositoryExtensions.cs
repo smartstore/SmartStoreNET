@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,6 +11,7 @@ namespace SmartStore.Core.Data
 {   
     public static class RepositoryExtensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T GetFirst<T>(this IRepository<T> rs, Func<T, bool> predicate) where T : BaseEntity
         {
             return rs.Table.FirstOrDefault(predicate);
@@ -39,7 +41,8 @@ namespace SmartStore.Core.Data
 			rs.Context.ChangeState((BaseEntity)entity, System.Data.Entity.EntityState.Deleted);
         }
 
-		public static void DeleteRange<T>(this IRepository<T> rs, IEnumerable<int> ids) where T : BaseEntity
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void DeleteRange<T>(this IRepository<T> rs, IEnumerable<int> ids) where T : BaseEntity
 		{
 			Guard.NotNull(ids, nameof(ids));
 

@@ -267,6 +267,7 @@
     <Compile Include="Events\IConsumerResolver.cs" />
     <Compile Include="Events\IEventPublisher.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
+    <Compile Include="Extensions\ExpressionExtensions.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
     <Compile Include="Extensions\NumericExtensions.cs" />
     <Compile Include="Data\IQueryableExtensions.cs" />

@@ -55,7 +55,7 @@ namespace SmartStore.Services.Messages
 			_services.EventPublisher.Publish(new MessageModelPartCreatedEvent<T>(source, part));
 		}
 
-		private string GetLocalizedValue(MessageContext messageContext, ProviderMetadata metadata, string propertyName, Expression<Func<ProviderMetadata, string>> fallback)
+		private string GetLocalizedValue(MessageContext messageContext, ProviderMetadata metadata, string propertyName, Func<ProviderMetadata, string> fallback)
 		{
 			// TODO: (mc) this actually belongs to PluginMediator, but we simply cannot add a dependency to framework from here. Refactor later!
 
@@ -66,7 +66,7 @@ namespace SmartStore.Services.Messages
 			string result = _services.Localization.GetResource(resourceName, messageContext.Language.Id, false, "", true);
 
 			if (result.IsEmpty())
-				result = fallback.Compile()(metadata);
+				result = fallback(metadata);
 
 			return result;
 		}

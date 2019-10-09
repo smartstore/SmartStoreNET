@@ -35,16 +35,18 @@
 </p>
 {% endif %}
 
-<table class="w-100 brd bg-light p-3">
-  <tr>
-  	<td>
-  		{{ Message.Message }}
-    </td>
-  </tr>
-</table>
+<p>
+    <table class="w-100 brd bg-light p-3">
+      <tr>
+  	    <td>
+  		    {{ Message.Message }}
+        </td>
+      </tr>
+    </table>
+</p>
 
 {% if Customer.IsRegistered %}
-  <p class="mt-4 mb-4 text-center">
+  <p class="text-center">
     <a class="btn btn-primary" href="{{ Customer.EditUrl }}">View customer profile</a>
   </p>
 {% endif %}

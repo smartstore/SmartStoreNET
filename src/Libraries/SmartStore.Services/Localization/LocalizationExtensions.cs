@@ -1,8 +1,5 @@
 using System;
-using System.Globalization;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Xml;
 using SmartStore.ComponentModel;
 using SmartStore.Core;
@@ -28,14 +25,14 @@ namespace SmartStore.Services.Localization
         public static LocalizedValue<string> GetLocalized<T>(this T entity, Expression<Func<T, string>> keySelector, bool detectEmptyHtml = false)
             where T : BaseEntity, ILocalizedEntity
         {
-            Func<T, string> fallback = keySelector.CompileFast(out var localeKey);
-            return GetLocalizedEx(
-				entity,
-				entity.GetEntityName(),
-                localeKey,
-                fallback,
-				EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage,
-				detectEmptyHtml: detectEmptyHtml);
+            var invoker = keySelector.CompileFast();
+            return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
+                entity,
+                entity.GetEntityName(),
+                invoker.Property.Name,
+                (Func<T, string>)invoker,
+                null,
+                detectEmptyHtml: detectEmptyHtml);
         }
 
         /// <summary>
@@ -47,153 +44,153 @@ namespace SmartStore.Services.Localization
         /// <param name="languageId">Language identifier</param>
         /// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
         /// <param name="ensureTwoPublishedLanguages">A value indicating whether to ensure that we have at least two published languages; otherwise, load only default value</param>
-		/// <param name="detectEmptyHtml">When <c>true</c>, additionally checks whether the localized value contains empty HTML only and falls back to the default value if so.</param>
+        /// <param name="detectEmptyHtml">When <c>true</c>, additionally checks whether the localized value contains empty HTML only and falls back to the default value if so.</param>
         /// <returns>Localized property</returns>
         public static LocalizedValue<string> GetLocalized<T>(this T entity, 
             Expression<Func<T, string>> keySelector, 
-			int languageId, 
+            int languageId, 
             bool returnDefaultValue = true, 
-			bool ensureTwoPublishedLanguages = true,
-			bool detectEmptyHtml = false) 
+            bool ensureTwoPublishedLanguages = true,
+            bool detectEmptyHtml = false) 
             where T : BaseEntity, ILocalizedEntity
         {
-            var fallback = keySelector.CompileFast(out var localeKey);
-            return GetLocalizedEx<T, string>(
-				entity,
-				entity.GetEntityName(),
-				localeKey,
-				fallback,
-				EngineContext.Current.Resolve<ILanguageService>().GetLanguageById(languageId),
-				returnDefaultValue,
-				ensureTwoPublishedLanguages,
-				detectEmptyHtml);
+            var invoker = keySelector.CompileFast();
+            return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue<T, string>(
+                entity,
+                entity.GetEntityName(),
+                invoker.Property.Name,
+                invoker,
+                languageId,
+                returnDefaultValue,
+                ensureTwoPublishedLanguages,
+                detectEmptyHtml);
         }
 
-		/// <summary>
-		/// Get localized property of an entity
-		/// </summary>
-		/// <typeparam name="T">Entity type</typeparam>
-		/// <param name="entity">Entity</param>
-		/// <param name="localeKey">Key selector</param>
-		/// <param name="languageId">Language identifier</param>
-		/// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
-		/// <param name="ensureTwoPublishedLanguages">A value indicating whether to ensure that we have at least two published languages; otherwise, load only default value</param>
-		/// <param name="detectEmptyHtml">When <c>true</c>, additionally checks whether the localized value contains empty HTML only and falls back to the default value if so.</param>
-		/// <returns>Localized property</returns>
-		public static LocalizedValue<TProp> GetLocalized<T, TProp>(this T entity,
-			string localeKey,
-			TProp fallback,
-			Language language,
-			bool returnDefaultValue = true,
-			bool ensureTwoPublishedLanguages = true,
-			bool detectEmptyHtml = false)
-			where T : BaseEntity, ILocalizedEntity
-		{
-			return GetLocalizedEx<T, TProp>(
-				entity,
-				entity.GetEntityName(),
-				localeKey,
-				x => fallback,
-				language,
-				returnDefaultValue,
-				ensureTwoPublishedLanguages,
-				detectEmptyHtml);
-		}
-
-		/// <summary>
-		/// Get localized property of an entity
-		/// </summary>
-		/// <typeparam name="T">Entity type</typeparam>
-		/// <param name="entity">Entity</param>
-		/// <param name="keySelector">Key selector</param>
-		/// <param name="language">Language</param>
-		/// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
-		/// <param name="ensureTwoPublishedLanguages">A value indicating whether to ensure that we have at least two published languages; otherwise, load only default value</param>
-		/// <param name="detectEmptyHtml">When <c>true</c>, additionally checks whether the localized value contains empty HTML only and falls back to the default value if so.</param>
-		/// <returns>Localized property</returns>
-		public static LocalizedValue<string> GetLocalized<T>(this T entity,
-			Expression<Func<T, string>> keySelector,
-			Language language,
-			bool returnDefaultValue = true,
-			bool ensureTwoPublishedLanguages = true,
-			bool detectEmptyHtml = false)
-			where T : BaseEntity, ILocalizedEntity
-		{
-            var fallback = keySelector.CompileFast(out var localeKey);
-            return GetLocalizedEx<T, string>(
-				entity,
-				entity.GetEntityName(),
+        /// <summary>
+        /// Get localized property of an entity
+        /// </summary>
+        /// <typeparam name="T">Entity type</typeparam>
+        /// <param name="entity">Entity</param>
+        /// <param name="localeKey">Key selector</param>
+        /// <param name="languageId">Language identifier</param>
+        /// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
+        /// <param name="ensureTwoPublishedLanguages">A value indicating whether to ensure that we have at least two published languages; otherwise, load only default value</param>
+        /// <param name="detectEmptyHtml">When <c>true</c>, additionally checks whether the localized value contains empty HTML only and falls back to the default value if so.</param>
+        /// <returns>Localized property</returns>
+        public static LocalizedValue<TProp> GetLocalized<T, TProp>(this T entity,
+            string localeKey,
+            TProp fallback,
+            Language language,
+            bool returnDefaultValue = true,
+            bool ensureTwoPublishedLanguages = true,
+            bool detectEmptyHtml = false)
+            where T : BaseEntity, ILocalizedEntity
+        {
+            return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue<T, TProp>(
+                entity,
+                entity.GetEntityName(),
                 localeKey,
-                fallback,
-				language,
-				returnDefaultValue,
-				ensureTwoPublishedLanguages,
-				detectEmptyHtml);
-		}
+                x => fallback,
+                language,
+                returnDefaultValue,
+                ensureTwoPublishedLanguages,
+                detectEmptyHtml);
+        }
 
-		/// <summary>
-		/// Get localized property of an entity
-		/// </summary>
-		/// <typeparam name="T">Entity type</typeparam>
-		/// <typeparam name="TProp">Property type</typeparam>
-		/// <param name="entity">Entity</param>
-		/// <param name="keySelector">Key selector</param>
-		/// <param name="languageId">Language identifier</param>
-		/// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
-		/// <param name="ensureTwoPublishedLanguages">A value indicating whether to ensure that we have at least two published languages; otherwise, load only default value</param>
-		/// <param name="detectEmptyHtml">When <c>true</c>, additionally checks whether the localized value contains empty HTML only and falls back to the default value if so.</param>
-		/// <returns>Localized property</returns>
-		public static LocalizedValue<TProp> GetLocalized<T, TProp>(this T entity,
-			Expression<Func<T, TProp>> keySelector,
-			int languageId,
-			bool returnDefaultValue = true,
-			bool ensureTwoPublishedLanguages = true,
-			bool detectEmptyHtml = false)
-			where T : BaseEntity, ILocalizedEntity
-		{
-            Func<T, TProp> fallback = keySelector.CompileFast(out var localeKey);
-            return GetLocalizedEx(
-				entity,
-				entity.GetEntityName(),
-				localeKey,
-				fallback,
-				EngineContext.Current.Resolve<ILanguageService>().GetLanguageById(languageId), 
-				returnDefaultValue, 
-				ensureTwoPublishedLanguages,
-				detectEmptyHtml);
-		}
+        /// <summary>
+        /// Get localized property of an entity
+        /// </summary>
+        /// <typeparam name="T">Entity type</typeparam>
+        /// <param name="entity">Entity</param>
+        /// <param name="keySelector">Key selector</param>
+        /// <param name="language">Language</param>
+        /// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
+        /// <param name="ensureTwoPublishedLanguages">A value indicating whether to ensure that we have at least two published languages; otherwise, load only default value</param>
+        /// <param name="detectEmptyHtml">When <c>true</c>, additionally checks whether the localized value contains empty HTML only and falls back to the default value if so.</param>
+        /// <returns>Localized property</returns>
+        public static LocalizedValue<string> GetLocalized<T>(this T entity,
+            Expression<Func<T, string>> keySelector,
+            Language language,
+            bool returnDefaultValue = true,
+            bool ensureTwoPublishedLanguages = true,
+            bool detectEmptyHtml = false)
+            where T : BaseEntity, ILocalizedEntity
+        {
+            var invoker = keySelector.CompileFast();
+            return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue<T, string>(
+                entity,
+                entity.GetEntityName(),
+                invoker.Property.Name,
+                invoker,
+                language,
+                returnDefaultValue,
+                ensureTwoPublishedLanguages,
+                detectEmptyHtml);
+        }
 
-		/// <summary>
-		/// Get localized property of an entity
-		/// </summary>
-		/// <typeparam name="T">Entity type</typeparam>
-		/// <typeparam name="TProp">Property type</typeparam>
-		/// <param name="entity">Entity</param>
-		/// <param name="keySelector">Key selector</param>
-		/// <param name="language">Language</param>
-		/// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
-		/// <param name="ensureTwoPublishedLanguages">A value indicating whether to ensure that we have at least two published languages; otherwise, load only default value</param>
-		/// <param name="detectEmptyHtml">When <c>true</c>, additionally checks whether the localized value contains empty HTML only and falls back to the default value if so.</param>
-		/// <returns>Localized property</returns>
-		public static LocalizedValue<TProp> GetLocalized<T, TProp>(this T entity,
-			Expression<Func<T, TProp>> keySelector,
-			Language language,
-			bool returnDefaultValue = true,
-			bool ensureTwoPublishedLanguages = true,
-			bool detectEmptyHtml = false)
-			where T : BaseEntity, ILocalizedEntity
-		{
-            Func<T, TProp> fallback = keySelector.CompileFast(out var localeKey);
-            return GetLocalizedEx(
-				entity,
-				entity.GetEntityName(),
-				localeKey,
-                fallback,
-				language,
-				returnDefaultValue,
-				ensureTwoPublishedLanguages,
-				detectEmptyHtml);
-		}
+        /// <summary>
+        /// Get localized property of an entity
+        /// </summary>
+        /// <typeparam name="T">Entity type</typeparam>
+        /// <typeparam name="TProp">Property type</typeparam>
+        /// <param name="entity">Entity</param>
+        /// <param name="keySelector">Key selector</param>
+        /// <param name="languageId">Language identifier</param>
+        /// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
+        /// <param name="ensureTwoPublishedLanguages">A value indicating whether to ensure that we have at least two published languages; otherwise, load only default value</param>
+        /// <param name="detectEmptyHtml">When <c>true</c>, additionally checks whether the localized value contains empty HTML only and falls back to the default value if so.</param>
+        /// <returns>Localized property</returns>
+        public static LocalizedValue<TProp> GetLocalized<T, TProp>(this T entity,
+            Expression<Func<T, TProp>> keySelector,
+            int languageId,
+            bool returnDefaultValue = true,
+            bool ensureTwoPublishedLanguages = true,
+            bool detectEmptyHtml = false)
+            where T : BaseEntity, ILocalizedEntity
+        {
+            var invoker = keySelector.CompileFast();
+            return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
+                entity,
+                entity.GetEntityName(),
+                invoker.Property.Name,
+                (Func<T, TProp>)invoker,
+                languageId,
+                returnDefaultValue, 
+                ensureTwoPublishedLanguages,
+                detectEmptyHtml);
+        }
+
+        /// <summary>
+        /// Get localized property of an entity
+        /// </summary>
+        /// <typeparam name="T">Entity type</typeparam>
+        /// <typeparam name="TProp">Property type</typeparam>
+        /// <param name="entity">Entity</param>
+        /// <param name="keySelector">Key selector</param>
+        /// <param name="language">Language</param>
+        /// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
+        /// <param name="ensureTwoPublishedLanguages">A value indicating whether to ensure that we have at least two published languages; otherwise, load only default value</param>
+        /// <param name="detectEmptyHtml">When <c>true</c>, additionally checks whether the localized value contains empty HTML only and falls back to the default value if so.</param>
+        /// <returns>Localized property</returns>
+        public static LocalizedValue<TProp> GetLocalized<T, TProp>(this T entity,
+            Expression<Func<T, TProp>> keySelector,
+            Language language,
+            bool returnDefaultValue = true,
+            bool ensureTwoPublishedLanguages = true,
+            bool detectEmptyHtml = false)
+            where T : BaseEntity, ILocalizedEntity
+        {
+            var invoker = keySelector.CompileFast();
+            return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
+                entity,
+                entity.GetEntityName(),
+                invoker.Property.Name,
+                (Func<T, TProp>)invoker,
+                language,
+                returnDefaultValue,
+                ensureTwoPublishedLanguages,
+                detectEmptyHtml);
+        }
 
 		/// <summary>
 		/// Get localized property of an <see cref="ICategoryNode"/> instance
@@ -203,118 +200,50 @@ namespace SmartStore.Services.Localization
 		/// <returns>Localized property</returns>
 		public static LocalizedValue<string> GetLocalized(this ICategoryNode node, Expression<Func<ICategoryNode, string>> keySelector)
 		{
-            Func<ICategoryNode, string> fallback = keySelector.CompileFast(out var localeKey);
-            return GetLocalizedEx(
+            var invoker = keySelector.CompileFast();
+            return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
 				node,
 				"Category",
-				localeKey,
-				fallback,
+                invoker.Property.Name,
+                (Func<ICategoryNode, string>)invoker,
 				EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage);
 		}
 
-		/// <summary>
-		/// Get localized property of an <see cref="ICategoryNode"/> instance
-		/// </summary>
-		/// <param name="node">Node</param>
-		/// <param name="keySelector">Key selector</param>
-		/// /// <param name="languageId">Language identifier</param>
-		/// <returns>Localized property</returns>
-		public static LocalizedValue<string> GetLocalized(this ICategoryNode node, Expression<Func<ICategoryNode, string>> keySelector, int languageId)
-		{
-            Func<ICategoryNode, string> fallback = keySelector.CompileFast(out var localeKey);
-            return GetLocalizedEx(
-				node,
-				"Category",
-				localeKey,
-				fallback,
-				EngineContext.Current.Resolve<ILanguageService>().GetLanguageById(languageId));
-		}
+        /// <summary>
+        /// Get localized property of an <see cref="ICategoryNode"/> instance
+        /// </summary>
+        /// <param name="node">Node</param>
+        /// <param name="keySelector">Key selector</param>
+        /// /// <param name="languageId">Language identifier</param>
+        /// <returns>Localized property</returns>
+        public static LocalizedValue<string> GetLocalized(this ICategoryNode node, Expression<Func<ICategoryNode, string>> keySelector, int languageId)
+        {
+            var invoker = keySelector.CompileFast();
+            return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
+	            node,
+	            "Category",
+                invoker.Property.Name,
+                (Func<ICategoryNode, string>)invoker,
+	            languageId);
+        }
 
-		/// <summary>
-		/// Get localized property of an <see cref="ICategoryNode"/> instance
-		/// </summary>
-		/// <param name="node">Node</param>
-		/// <param name="keySelector">Key selector</param>
-		/// /// <param name="language">Language</param>
-		/// <returns>Localized property</returns>
-		public static LocalizedValue<string> GetLocalized(this ICategoryNode node, Expression<Func<ICategoryNode, string>> keySelector, Language language)
-		{
-            Func<ICategoryNode, string> fallback = keySelector.CompileFast(out var localeKey);
-            return GetLocalizedEx(
-				node,
-				"Category",
-				localeKey,
-				fallback,
-				language);
-		}
-
-		internal static LocalizedValue<TProp> GetLocalizedEx<T, TProp>(T entity,
-			string localeKeyGroup,
-			string localeKey,
-			Func<T, TProp> fallback,
-			Language requestLanguage,
-			bool returnDefaultValue = true,
-			bool ensureTwoPublishedLanguages = true,
-			bool detectEmptyHtml = false)
-			where T : ILocalizedEntity
-		{
-			if (entity == null)
-				throw new ArgumentNullException(nameof(entity));
-
-			TProp result = default;
-			var str = string.Empty;
-            
-			var languageService = EngineContext.Current.Resolve<ILanguageService>();
-
-			Language currentLanguage = null;
-			if (requestLanguage != null)
-			{
-				// Ensure that we have at least two published languages
-				var loadLocalizedValue = true;
-				if (ensureTwoPublishedLanguages)
-				{
-					var totalPublishedLanguages = languageService.GetLanguagesCount(false);
-					loadLocalizedValue = totalPublishedLanguages > 1;
-				}
-
-				// Localized value
-				if (loadLocalizedValue)
-				{
-					var leService = EngineContext.Current.Resolve<ILocalizedEntityService>();
-					str = leService.GetLocalizedValue(requestLanguage.Id, entity.Id, localeKeyGroup, localeKey);
-
-					if (detectEmptyHtml && str.HasValue() && str.RemoveHtml().IsEmpty())
-					{
-						str = string.Empty;
-					}
-
-					if (str.HasValue())
-					{
-						currentLanguage = requestLanguage;
-                        result = str.Convert<TProp>(CultureInfo.InvariantCulture);
-					}
-				}
-			}
-
-			// Set default value if required
-			if (returnDefaultValue && str.IsEmpty())
-			{
-				currentLanguage = languageService.GetLanguageById(languageService.GetDefaultLanguageId());
-				result = fallback(entity);
-			}
-
-			if (requestLanguage == null)
-			{
-				requestLanguage = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage;
-			}
-
-			if (currentLanguage == null)
-			{
-				currentLanguage = requestLanguage;
-			}
-
-			return new LocalizedValue<TProp>(result, requestLanguage, currentLanguage);
-		}
+        /// <summary>
+        /// Get localized property of an <see cref="ICategoryNode"/> instance
+        /// </summary>
+        /// <param name="node">Node</param>
+        /// <param name="keySelector">Key selector</param>
+        /// /// <param name="language">Language</param>
+        /// <returns>Localized property</returns>
+        public static LocalizedValue<string> GetLocalized(this ICategoryNode node, Expression<Func<ICategoryNode, string>> keySelector, Language language)
+        {
+            var invoker = keySelector.CompileFast();
+            return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
+		        node,
+		        "Category",
+                invoker.Property.Name,
+                (Func<ICategoryNode, string>)invoker,
+		        language);
+        }
 
         /// <summary>
         /// Get localized value of enum

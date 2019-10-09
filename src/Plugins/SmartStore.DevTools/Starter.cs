@@ -23,10 +23,10 @@ namespace SmartStore.DevTools
 		public void Execute()
 		{
 			StackExchange.Profiling.MiniProfiler.Settings.MaxUnviewedProfiles = 5;
-			//StackExchange.Profiling.MiniProfiler.Settings.Results_List_Authorize = (req) => true;
-			//StackExchange.Profiling.MiniProfiler.Settings.Storage = new NullProfilerStorage();
+            StackExchange.Profiling.MiniProfiler.Settings.Storage = new HttpRuntimeCacheStorage(TimeSpan.FromMinutes(1));
+            //StackExchange.Profiling.MiniProfiler.Settings.Results_List_Authorize = (req) => true;
 
-			StackExchange.Profiling.EntityFramework6.MiniProfilerEF6.Initialize();
+            StackExchange.Profiling.EntityFramework6.MiniProfilerEF6.Initialize();
 			
 			// output cache invidation example 
 			//OutputCacheInvalidationObserver.Execute();

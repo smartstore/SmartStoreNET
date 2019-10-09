@@ -1,3 +1,4 @@
+using System.Web;
 using Autofac;
 using Autofac.Integration.Mvc;
 using SmartStore.Core.Data;
@@ -17,9 +18,18 @@ namespace SmartStore.DevTools
         {
 			if (isActiveModule)
 			{
-				builder.RegisterType<MiniProfilerChronometer>().As<IChronometer>().InstancePerRequest();
+                builder.Register<IChronometer>(c => 
+                {
+                    var ctx = c.Resolve<HttpContextBase>();
 
-				if (DataSettings.DatabaseIsInstalled())
+                    if (ProfilerHttpModule.MiniProfilerStarted(ctx.ApplicationInstance))
+                    {
+                        return new MiniProfilerChronometer();
+                    }
+                    return NullChronometer.Instance;
+                }).InstancePerRequest();
+
+                if (DataSettings.DatabaseIsInstalled())
 				{
 					// intercept ALL public store controller actions
 					builder.RegisterType<ProfilerFilter>().AsActionFilterFor<SmartController>();

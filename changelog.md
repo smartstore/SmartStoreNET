@@ -16,6 +16,7 @@
 	* Added more text analysis options.
 	* Added tool to display internal information about a search, such as Lucene terms.
 	* #1693 Find the grouped product when searching for the SKU, GTIN, MPN of a non individually visible, associated product.
+	* #1711 Find product when searching for GTIN or MPN of an attribute combination.
 
 ### Improvements
 * #1663 Make MeasureDimension and MeasureWeight localizable.
@@ -28,7 +29,10 @@
 * Export: Fixed KeyNotFoundException when batch size was 1.
 * #1686 Fixed KeyNotFoundException when payment method friendly name ends with spaces.
 * Cart: Fixed ShoppingCartSettings.ShowProductBundleImagesOnShoppingCart hides the bundle item name.
-* MegaSearch: Fixed the preset sorting order of products on a manufacturer page may be wrong depending on catalog settings.
+* **MegaSearch**:
+	* Fixed the preset sorting order of products on a manufacturer page may be wrong depending on catalog settings.
+	* #1716 Price facet filter bypasses Call for Pricing and shows the approximate price of a product.
+
 * **Page Builder**:
 	* #1689 Block with z-index < 0 can not be selected in story view - Block tools can reduce z-index below 0.
 	* #1691 Manually editing/removing block cols/rows does not refresh grid state correctly.

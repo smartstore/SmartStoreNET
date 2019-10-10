@@ -28,20 +28,20 @@
   <a href="mailto:{{ Message.SenderEmail }}">{{ Message.SenderEmail }}</a>
 </p>
 
-<p>
-    <table class="w-100 brd bg-light p-3">
-      <tr>
-  	    <td>
-  		    {{ Message.Message }}
-        </td>
-      </tr>
-    </table>
-</p>
+<table class="w-100 brd bg-light p-3">
+  <tr>
+  	<td>
+  		{{ Message.Message }}
+    </td>
+  </tr>
+</table>
 
 {% if Customer.IsRegistered %}
+<div class="mt-4">
   <p class="text-center">
     <a class="btn btn-primary" href="{{ Customer.EditUrl }}">Zum Kundenprofil</a>
   </p>
+</div>
 {% endif %}
 
 {% endblock %}]]></Body>

@@ -17,13 +17,14 @@
 	* Added tool to display internal information about a search, such as Lucene terms.
 	* #1693 Find the grouped product when searching for the SKU, GTIN, MPN of a non individually visible, associated product.
 	* #1711 Find product when searching for GTIN or MPN of an attribute combination.
+* #1714 Direct links to variations on a product.
 
 ### Improvements
 * #1663 Make MeasureDimension and MeasureWeight localizable.
 * #1600 Show an example currency value for custom formatting value changes.
 * Card desk instead of a grid for customer addresses on customer edit page.
 * Display "price from" in product lists if any attribute combination price exists.
-* Reworked blog & news section
+* Reworked blog & news section.
 
 ### Bugfixes
 * Export: Fixed KeyNotFoundException when batch size was 1.

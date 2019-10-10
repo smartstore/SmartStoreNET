@@ -16,6 +16,8 @@ namespace SmartStore.Services.Catalog.Modelling
 			_checkoutAttributes = new List<CheckoutAttributeQueryItem>();
 		}
 
+        public int VariantCombinationId { get; set; }
+
 		public IReadOnlyList<ProductVariantQueryItem> Variants
 		{
 			get

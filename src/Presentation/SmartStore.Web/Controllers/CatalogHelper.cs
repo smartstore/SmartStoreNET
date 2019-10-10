@@ -846,44 +846,55 @@ namespace SmartStore.Web.Controllers
 					{
 						ProductBundleItemAttributeFilter attributeFilter = null;
 
-						if (productBundleItem?.Item?.FilterOut(pvaValue, out attributeFilter) ?? false)
-							continue;
-
-						if (preSelectedValueId == 0 && attributeFilter != null && attributeFilter.IsPreSelected)
-							preSelectedValueId = attributeFilter.AttributeValueId;
+                        if (productBundleItem?.Item?.FilterOut(pvaValue, out attributeFilter) ?? false)
+                        {
+                            continue;
+                        }
+                        if (preSelectedValueId == 0 && attributeFilter != null && attributeFilter.IsPreSelected)
+                        {
+                            preSelectedValueId = attributeFilter.AttributeValueId;
+                        }
 
 						var linkedProduct = _productService.GetProductById(pvaValue.LinkedProductId);
 
-						var pvaValueModel = new ProductDetailsModel.ProductVariantAttributeValueModel();
-						pvaValueModel.PriceAdjustment = string.Empty;
-						pvaValueModel.Id = pvaValue.Id;
-						pvaValueModel.Name = pvaValue.GetLocalized(x => x.Name);
-						pvaValueModel.Alias = pvaValue.Alias;
-						pvaValueModel.Color = pvaValue.Color; // used with "Boxes" attribute type
-						pvaValueModel.IsPreSelected = pvaValue.IsPreSelected;
+                        var pvaValueModel = new ProductDetailsModel.ProductVariantAttributeValueModel
+                        {
+                            Id = pvaValue.Id,
+                            PriceAdjustment = string.Empty,
+						    Name = pvaValue.GetLocalized(x => x.Name),
+						    Alias = pvaValue.Alias,
+						    Color = pvaValue.Color, // Used with "Boxes" attribute type.
+						    IsPreSelected = pvaValue.IsPreSelected
+                        };
 
-						if (linkedProduct != null && linkedProduct.VisibleIndividually)
-							pvaValueModel.SeName = linkedProduct.GetSeName();
+                        if (linkedProduct != null && linkedProduct.VisibleIndividually)
+                        {
+                            pvaValueModel.SeName = linkedProduct.GetSeName();
+                        }
 
-						// Explicitly selected always discards pre-selected by merchant.
-						if (hasSelectedAttributes)
-							pvaValueModel.IsPreSelected = false;
+                        // Explicitly selected always discards pre-selected by merchant.
+                        if (hasSelectedAttributes || query.VariantCombinationId != 0)
+                        {
+                            pvaValueModel.IsPreSelected = false;
+                        }
 
 						// Display price if allowed.
 						if (displayPrices && !isBundlePricing)
 						{
-							decimal taxRate = decimal.Zero;
-							decimal attributeValuePriceAdjustment = _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(pvaValue, 
-                                product, _services.WorkContext.CurrentCustomer, null, selectedQuantity);
-							decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out taxRate);
-							decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, currency);
+							var attributeValuePriceAdjustment = _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(pvaValue, product, customer, null, selectedQuantity);
+							var priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out var _);
+							var priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, currency);
 
 							if (_catalogSettings.ShowVariantCombinationPriceAdjustment)
 							{
-								if (priceAdjustmentBase > decimal.Zero)
-									pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment, true, false);
-								else if (priceAdjustmentBase < decimal.Zero)
-									pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment, true, false);
+                                if (priceAdjustmentBase > decimal.Zero)
+                                {
+                                    pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment, true, false);
+                                }
+                                else if (priceAdjustmentBase < decimal.Zero)
+                                {
+                                    pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment, true, false);
+                                }
 							}
 
 							if (pvaValueModel.IsPreSelected)
@@ -903,8 +914,10 @@ namespace SmartStore.Web.Controllers
 						if (_catalogSettings.ShowLinkedAttributeValueImage && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)
 						{
 							var linkagePicture = _pictureService.GetPicturesByProductId(pvaValue.LinkedProductId, 1).FirstOrDefault();
-							if (linkagePicture != null)
-								pvaValueModel.ImageUrl = _pictureService.GetUrl(linkagePicture, _mediaSettings.VariantValueThumbPictureSize, false);
+                            if (linkagePicture != null)
+                            {
+                                pvaValueModel.ImageUrl = _pictureService.GetUrl(linkagePicture, _mediaSettings.VariantValueThumbPictureSize, false);
+                            }
 						}
                         else if (pvaValue.PictureId != 0)
                         {
@@ -915,7 +928,7 @@ namespace SmartStore.Web.Controllers
 					}
 
 					// We need selected attributes to get initially displayed combination images.
-					if (!hasSelectedAttributes)
+					if (!hasSelectedAttributes && query.VariantCombinationId == 0)
 					{
 						ProductDetailsModel.ProductVariantAttributeValueModel defaultValue = null;
 
@@ -924,7 +937,9 @@ namespace SmartStore.Web.Controllers
 						{
 							pvaModel.Values.Each(x => x.IsPreSelected = false);
 
-							if ((defaultValue = pvaModel.Values.OfType<ProductDetailsModel.ProductVariantAttributeValueModel>().FirstOrDefault(v => v.Id == preSelectedValueId)) != null)
+                            defaultValue = pvaModel.Values.OfType<ProductDetailsModel.ProductVariantAttributeValueModel>().FirstOrDefault(v => v.Id == preSelectedValueId);
+
+                            if (defaultValue != null)
 							{
 								defaultValue.IsPreSelected = true;
 								query.AddVariant(new ProductVariantQueryItem(defaultValue.Id.ToString())
@@ -966,15 +981,23 @@ namespace SmartStore.Web.Controllers
 
 			if (!isBundle)
 			{
-				if (query.Variants.Count > 0)
+				if (query.Variants.Any() || query.VariantCombinationId != 0)
 				{
 					// Merge with combination data if there's a match.
 					var warnings = new List<string>();
-					var attributeXml = query.CreateSelectedAttributesXml(product.Id, bundleItemId, variantAttributes, _productAttributeParser, _localizationService,
-						_downloadService, _catalogSettings, _httpRequest, warnings);
+                    var attributeXml = string.Empty;
+
+                    if (query.VariantCombinationId != 0)
+                    {
+                        attributeXml = _productAttributeService.GetProductVariantAttributeCombinationById(query.VariantCombinationId)?.AttributesXml ?? string.Empty;
+                    }
+                    else
+                    {
+                        attributeXml = query.CreateSelectedAttributesXml(product.Id, bundleItemId, variantAttributes, _productAttributeParser, _localizationService, _downloadService, _catalogSettings, _httpRequest, warnings);
+                    }
 
 					selectedAttributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributeXml).ToList();
-					hasSelectedAttributesValues = (selectedAttributeValues.Count > 0);
+					hasSelectedAttributesValues = selectedAttributeValues.Any();
 
 					if (isBundlePricing)
 					{

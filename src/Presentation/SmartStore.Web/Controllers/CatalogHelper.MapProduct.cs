@@ -159,8 +159,8 @@ namespace SmartStore.Web.Controllers
 			{
 				settings = new ProductSummaryMappingSettings();
 			}
-			
-			using (_services.Chronometer.Step("MapProductSummaryModel"))
+
+            using (_services.Chronometer.Step("MapProductSummaryModel"))
 			{
 				var model = new ProductSummaryModel(products)
 				{

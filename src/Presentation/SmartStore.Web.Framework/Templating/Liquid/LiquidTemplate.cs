@@ -70,7 +70,7 @@ namespace SmartStore.Templating.Liquid
 				}
 				else
 				{
-					var props = FastProperty.GetProperties(data);
+					var props = FastProperty.GetProperties(data.GetType());
 					foreach (var prop in props)
 					{
 						hash[prop.Key] = LiquidUtil.CreateSafeObject(prop.Value.GetValue(data));

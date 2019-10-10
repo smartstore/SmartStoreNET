@@ -10,6 +10,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using SmartStore.Utilities.Threading;
 
 namespace SmartStore.ComponentModel
 {
@@ -157,77 +159,6 @@ namespace SmartStore.ComponentModel
 			ValueSetter(instance, value);
 		}
 
-        /// <summary>
-        /// Creates and caches fast property helpers that expose getters for every public get property on the
-        /// underlying type.
-        /// </summary>
-        /// <param name="instance">the instance to extract property accessors for.</param>
-        /// <returns>A cached array of all public property getters from the underlying type of target instance.
-        /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IReadOnlyDictionary<string, FastProperty> GetProperties(object instance)
-		{
-			return GetProperties(instance.GetType());
-		}
-
-		/// <summary>
-		/// Creates and caches fast property helpers that expose getters for every public get property on the
-		/// specified type.
-		/// </summary>
-		/// <param name="type">The type to extract property accessors for.</param>
-		/// <returns>A cached array of all public property getters from the type of target instance.
-		/// </returns>
-		public static IReadOnlyDictionary<string, FastProperty> GetProperties(Type type, PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
-		{
-			var propertiesCache = cachingStrategy > PropertyCachingStrategy.Uncached ? _propertiesCache : CreateVolatileCache();
-
-			return (IReadOnlyDictionary<string, FastProperty>)GetProperties(type, Create, propertiesCache);
-		}
-
-		/// <summary>
-		/// <para>
-		/// Creates and caches fast property helpers that expose getters for every non-hidden get property
-		/// on the specified type.
-		/// </para>
-		/// <para>
-		/// <see cref="GetVisibleProperties(object, PropertyCachingStrategy)"/> excludes properties defined on base types that have been
-		/// hidden by definitions using the <c>new</c> keyword.
-		/// </para>
-		/// </summary>
-		/// <param name="instance">The instance to extract property accessors for.</param>
-		/// <returns>
-		/// A cached array of all public property getters from the instance's type.
-		/// </returns>
-		public static IReadOnlyDictionary<string, FastProperty> GetVisibleProperties(object instance, PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
-		{
-			var propertiesCache = cachingStrategy > PropertyCachingStrategy.Uncached ? _propertiesCache : CreateVolatileCache();
-			var visiblePropertiesCache = cachingStrategy > PropertyCachingStrategy.Uncached ? _visiblePropertiesCache : CreateVolatileCache();
-
-			return (IReadOnlyDictionary<string, FastProperty>)GetVisibleProperties(instance.GetType(), Create, propertiesCache, visiblePropertiesCache);
-		}
-
-		/// <summary>
-		/// <para>
-		/// Creates and caches fast property helpers that expose getters for every non-hidden get property
-		/// on the specified type.
-		/// </para>
-		/// <para>
-		/// <see cref="GetVisibleProperties(Type, PropertyCachingStrategy)"/> excludes properties defined on base types that have been
-		/// hidden by definitions using the <c>new</c> keyword.
-		/// </para>
-		/// </summary>
-		/// <param name="type">The type to extract property accessors for.</param>
-		/// <returns>
-		/// A cached array of all public property getters from the type.
-		/// </returns>
-		public static IReadOnlyDictionary<string, FastProperty> GetVisibleProperties(Type type, PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
-		{
-			var propertiesCache = cachingStrategy > PropertyCachingStrategy.Uncached ? _propertiesCache : CreateVolatileCache();
-			var visiblePropertiesCache = cachingStrategy > PropertyCachingStrategy.Uncached ? _visiblePropertiesCache : CreateVolatileCache();
-
-			return (IReadOnlyDictionary<string, FastProperty>)GetVisibleProperties(type, Create, propertiesCache, visiblePropertiesCache);
-		}
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static FastProperty GetProperty<T>(
 			Expression<Func<T, object>> property,
@@ -342,7 +273,7 @@ namespace SmartStore.ComponentModel
 			{
 				keySelector = keySelector ?? new Func<string, string>(key => key);
 
-				foreach (var prop in GetProperties(value).Values)
+				foreach (var prop in GetProperties(value.GetType()).Values)
 				{
 					var propValue = prop.GetValue(value);
 					if (deep && propValue != null && prop.Property.PropertyType.IsPlainObjectType())
@@ -363,101 +294,148 @@ namespace SmartStore.ComponentModel
 			return new DelegatedAccessor(property);
 		}
 
-		protected static IDictionary<string, FastProperty> GetVisibleProperties(
-			Type type,
-			Func<PropertyInfo, FastProperty> createPropertyHelper,
-			ConcurrentDictionary<Type, IDictionary<string, FastProperty>> allPropertiesCache,
-			ConcurrentDictionary<Type, IDictionary<string, FastProperty>> visiblePropertiesCache)
-		{
-			if (visiblePropertiesCache.TryGetValue(type, out var result))
-			{
-				return result;
-			}
-			
-			// The simple and common case, this is normal POCO object - no need to allocate.
-			var allPropertiesDefinedOnType = true;
-			var allProperties = GetProperties(type, createPropertyHelper, allPropertiesCache);
-			foreach (var propertyHelper in allProperties.Values)
-			{
-				if (propertyHelper.Property.DeclaringType != type)
-				{
-					allPropertiesDefinedOnType = false;
-					break;
-				}
-			}
 
-			if (allPropertiesDefinedOnType)
-			{
-				result = allProperties;
-				visiblePropertiesCache.TryAdd(type, result);
-				return result;
-			}
+        /// <summary>
+        /// <para>
+        /// Creates and caches fast property helpers that expose getters for every non-hidden get property
+        /// on the specified type.
+        /// </para>
+        /// <para>
+        /// <see cref="GetVisibleProperties(Type, PropertyCachingStrategy)"/> excludes properties defined on base types that have been
+        /// hidden by definitions using the <c>new</c> keyword.
+        /// </para>
+        /// </summary>
+        /// <param name="type">The type to extract property accessors for.</param>
+        /// <returns>
+        /// A cached array of all public property getters from the type.
+        /// </returns>
+        public static IReadOnlyDictionary<string, FastProperty> GetVisibleProperties(Type type, PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
+        {
+            Guard.NotNull(type, nameof(type));
 
-			// There's some inherited properties here, so we need to check for hiding via 'new'.
-			var filteredProperties = new List<FastProperty>(allProperties.Count);
-			foreach (var propertyHelper in allProperties.Values)
-			{
-				var declaringType = propertyHelper.Property.DeclaringType;
-				if (declaringType == type)
-				{
-					filteredProperties.Add(propertyHelper);
-					continue;
-				}
+            // Unwrap nullable types. This means Nullable<T>.Value and Nullable<T>.HasValue will not be
+            // part of the sequence of properties returned by this method.
+            type = Nullable.GetUnderlyingType(type) ?? type;
 
-				// If this property was declared on a base type then look for the definition closest to the
-				// the type to see if we should include it.
-				var ignoreProperty = false;
+            if (_visiblePropertiesCache.TryGetValue(type, out var result))
+            {
+                return (IReadOnlyDictionary<string, FastProperty>)result;
+            }
 
-				// Walk up the hierarchy until we find the type that actally declares this
-				// PropertyInfo.
-				var currentTypeInfo = type.GetTypeInfo();
-				var declaringTypeInfo = declaringType.GetTypeInfo();
-				while (currentTypeInfo != null && currentTypeInfo != declaringTypeInfo)
-				{
-					// We've found a 'more proximal' public definition
-					var declaredProperty = currentTypeInfo.GetDeclaredProperty(propertyHelper.Name);
-					if (declaredProperty != null)
-					{
-						ignoreProperty = true;
-						break;
-					}
+            var visiblePropertiesCache = cachingStrategy > PropertyCachingStrategy.Uncached ? _visiblePropertiesCache : CreateVolatileCache();
 
-					if (currentTypeInfo.BaseType != null)
-					{
-						currentTypeInfo = currentTypeInfo.BaseType.GetTypeInfo();
-					}
+            // The simple and common case, this is normal POCO object - no need to allocate.
+            var allPropertiesDefinedOnType = true;
+            var allProperties = GetProperties(type, cachingStrategy);
+            foreach (var prop in allProperties.Values)
+            {
+                if (prop.Property.DeclaringType != type)
+                {
+                    allPropertiesDefinedOnType = false;
+                    break;
+                }
+            }
 
-				}
+            if (allPropertiesDefinedOnType)
+            {
+                result = (IDictionary<string, FastProperty>)allProperties;
+                visiblePropertiesCache.TryAdd(type, result);
+                return allProperties;
+            }
 
-				if (!ignoreProperty)
-				{
-					filteredProperties.Add(propertyHelper);
-				}
-			}
+            // There's some inherited properties here, so we need to check for hiding via 'new'.
+            var filteredProperties = new List<FastProperty>(allProperties.Count);
+            foreach (var prop in allProperties.Values)
+            {
+                var declaringType = prop.Property.DeclaringType;
+                if (declaringType == type)
+                {
+                    filteredProperties.Add(prop);
+                    continue;
+                }
 
-			result = filteredProperties.ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
-			visiblePropertiesCache.TryAdd(type, result);
-			return result;
-		}
+                // If this property was declared on a base type then look for the definition closest to the
+                // the type to see if we should include it.
+                var ignoreProperty = false;
 
-		protected static IDictionary<string, FastProperty> GetProperties(
-			Type type,
-			Func<PropertyInfo, FastProperty> createPropertyHelper,
-			ConcurrentDictionary<Type, IDictionary<string, FastProperty>> cache)
-		{
-			// Unwrap nullable types. This means Nullable<T>.Value and Nullable<T>.HasValue will not be
-			// part of the sequence of properties returned by this method.
-			type = Nullable.GetUnderlyingType(type) ?? type;
+                // Walk up the hierarchy until we find the type that actally declares this
+                // PropertyInfo.
+                var currentTypeInfo = type.GetTypeInfo();
+                var declaringTypeInfo = declaringType.GetTypeInfo();
+                while (currentTypeInfo != null && currentTypeInfo != declaringTypeInfo)
+                {
+                    // We've found a 'more proximal' public definition
+                    var declaredProperty = currentTypeInfo.GetDeclaredProperty(prop.Name);
+                    if (declaredProperty != null)
+                    {
+                        ignoreProperty = true;
+                        break;
+                    }
 
-			return cache.GetOrAdd(type, Get);
+                    if (currentTypeInfo.BaseType != null)
+                    {
+                        currentTypeInfo = currentTypeInfo.BaseType.GetTypeInfo();
+                    }
 
-			IDictionary<string, FastProperty> Get(Type t)
-			{
+                }
+
+                if (!ignoreProperty)
+                {
+                    filteredProperties.Add(prop);
+                }
+            }
+
+            result = filteredProperties.ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+            visiblePropertiesCache.TryAdd(type, result);
+            return (IReadOnlyDictionary<string, FastProperty>)result;
+        }
+
+        /// <summary>
+        /// Creates and caches fast property helpers that expose getters for every public get property on the
+        /// specified type.
+        /// </summary>
+        /// <param name="type">The type to extract property accessors for.</param>
+        /// <returns>A cached array of all public property getters from the type of target instance.
+        /// </returns>
+        public static IReadOnlyDictionary<string, FastProperty> GetProperties(Type type, PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
+        {
+            Guard.NotNull(type, nameof(type));
+
+            // Unwrap nullable types. This means Nullable<T>.Value and Nullable<T>.HasValue will not be
+            // part of the sequence of properties returned by this method.
+            type = Nullable.GetUnderlyingType(type) ?? type;
+
+            if (!_propertiesCache.TryGetValue(type, out var props))
+            {
+                if (cachingStrategy == PropertyCachingStrategy.Uncached)
+                {
+                    props = Get(type);
+                }
+                else
+                {
+                    props = _propertiesCache.GetOrAdd(type, Get);
+                }
+            }
+
+            return (IReadOnlyDictionary<string, FastProperty>)props;
+
+            IDictionary<string, FastProperty> Get(Type t)
+            {
                 var candidates = GetCandidateProperties(t);
-				var fastProperties = candidates.Select(p => createPropertyHelper(p)).ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
-				return fastProperties;
-			}
-		}
+                var fastProperties = candidates.Select(p => Create(p)).ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+                CleanDuplicates(t, fastProperties.Keys);
+                return fastProperties;
+            }
+        }
+
+        private static void CleanDuplicates(Type type, IEnumerable<string> propNames)
+        {
+            foreach (var name in propNames)
+            {
+                var key = new PropertyKey(type, name);
+                _singlePropertiesCache.TryRemove(key, out _);
+            }
+        }
 
 		internal static IEnumerable<PropertyInfo> GetCandidateProperties(Type type)
 		{

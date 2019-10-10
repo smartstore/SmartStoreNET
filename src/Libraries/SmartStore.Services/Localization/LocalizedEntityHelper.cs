@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.Localization
 {
@@ -10,6 +11,7 @@ namespace SmartStore.Services.Localization
     {
         private readonly ILanguageService _languageService;
         private readonly ILocalizedEntityService _localizedEntityService;
+        private readonly IUrlRecordService _urlRecordService;
         private readonly IWorkContext _workContext;
 
         private readonly int _languageCount;
@@ -18,10 +20,12 @@ namespace SmartStore.Services.Localization
         public LocalizedEntityHelper(
             ILanguageService languageService, 
             ILocalizedEntityService localizedEntityService,
+            IUrlRecordService urlRecordService,
             IWorkContext workContext)
         {
             _languageService = languageService;
             _localizedEntityService = localizedEntityService;
+            _urlRecordService = urlRecordService;
             _workContext = workContext;
 
             _languageCount = _languageService.GetLanguagesCount(false);
@@ -101,6 +105,45 @@ namespace SmartStore.Services.Localization
             }
 
             return new LocalizedValue<TProp>(result, requestLanguage, currentLanguage);
+        }
+
+        public string GetSeName(
+            string entityName,
+            int entityId,
+            int? languageId,
+            bool returnDefaultValue = true,
+            bool ensureTwoPublishedLanguages = true)
+        {
+            string result = string.Empty;
+
+            if (languageId == null)
+            {
+                languageId = _workContext.WorkingLanguage.Id;
+            }
+
+            if (languageId > 0)
+            {
+                // Ensure that we have at least two published languages
+                bool loadLocalizedValue = true;
+                if (ensureTwoPublishedLanguages)
+                {
+                    loadLocalizedValue = _languageCount > 1;
+                }
+
+                // Localized value
+                if (loadLocalizedValue)
+                {
+                    result = _urlRecordService.GetActiveSlug(entityId, entityName, languageId.Value);
+                }
+            }
+
+            // Set default value if required
+            if (String.IsNullOrEmpty(result) && returnDefaultValue)
+            {
+                result = _urlRecordService.GetActiveSlug(entityId, entityName, 0);
+            }
+
+            return result;
         }
     }
 }

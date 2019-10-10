@@ -46,6 +46,7 @@
         }
 
         --section-bg: #{$value};
+        --section-bg-rgb: #{red($value)}, #{green($value)}, #{blue($value)};
         background-color: var(--section-bg);
     }
 }

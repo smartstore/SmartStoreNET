@@ -24,23 +24,38 @@ namespace SmartStore.ComponentModel
 
                         var typeFinder = EngineContext.Current.Resolve<ITypeFinder>();
                         var mapperTypes = typeFinder.FindClassesOfType(typeof(IMapper<,>));
-                        
-                        foreach (var type in mapperTypes)
-                        {
-                            foreach (var intf in type.GetInterfaces())
-                            {
-                                intf.IsSubClass(typeof(IMapper<,>), out var impl);
-                                var genericArguments = impl.GetGenericArguments();
-                                var typePair = new TypePair(genericArguments[0], genericArguments[1]);
-                                _mapperTypes.Add(typePair, type);
-                            }
-                        }
+
+                        RegisterMappers(mapperTypes.ToArray());
                     }
+                }
+            }
+        }
+        
+        /// <summary>
+        /// For testing purposes
+        /// </summary>
+        internal static void RegisterMappers(params Type[] mapperTypes)
+        {
+            if (_mapperTypes == null)
+            {
+                _mapperTypes = new Dictionary<TypePair, Type>();
+            }
+
+            foreach (var type in mapperTypes)
+            {
+                foreach (var intf in type.GetInterfaces())
+                {
+                    intf.IsSubClass(typeof(IMapper<,>), out var impl);
+                    var genericArguments = impl.GetGenericArguments();
+                    var typePair = new TypePair(genericArguments[0], genericArguments[1]);
+                    _mapperTypes.Add(typePair, type);
                 }
             }
         }
 
         public static IMapper<TFrom, TTo> GetMapper<TFrom, TTo>()
+            where TFrom : class
+            where TTo : class
         {
             EnsureInitialized();
 
@@ -53,7 +68,7 @@ namespace SmartStore.ComponentModel
                 return (IMapper<TFrom, TTo>)instance;
             }
 
-            return null;
+            return new GenericMapper<TFrom, TTo>();
         }
 
         class TypePair : Tuple<Type, Type>
@@ -65,6 +80,16 @@ namespace SmartStore.ComponentModel
 
             public Type FromType { get => base.Item1; }
             public Type ToType { get => base.Item2; }
+        }
+
+        class GenericMapper<TFrom, TTo> : IMapper<TFrom, TTo>
+            where TFrom : class
+            where TTo : class
+        {
+            public void Map(TFrom from, TTo to)
+            {
+                MiniMapper.Map<TFrom, TTo>(from, to);
+            }
         }
     }
 }

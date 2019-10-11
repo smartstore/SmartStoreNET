@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 namespace SmartStore.ComponentModel
 {
     public interface IMapper<in TFrom, in TTo>
+        where TFrom : class
+        where TTo : class
     {
         /// <summary>
         /// Maps the specified source object into the destination object.
@@ -27,7 +29,8 @@ namespace SmartStore.ComponentModel
         /// <param name="from">The source object.</param>
         /// <returns>The mapped object of type <typeparamref name="TTo"/>.</returns>
         public static TTo Map<TFrom, TTo>(this IMapper<TFrom, TTo> mapper, TFrom from)
-            where TTo : new()
+            where TFrom : class
+            where TTo : class, new()
         {
             Guard.NotNull(mapper, nameof(mapper));
             Guard.NotNull(from, nameof(from));
@@ -46,7 +49,8 @@ namespace SmartStore.ComponentModel
         /// <param name="from">The source collection.</param>
         /// <returns>An array of <typeparamref name="TTo"/>.</returns>
         public static TTo[] MapArray<TFrom, TTo>(this IMapper<TFrom, TTo> mapper, IEnumerable<TFrom> from)
-            where TTo : new()
+            where TFrom : class
+            where TTo : class, new()
         {
             Guard.NotNull(mapper, nameof(mapper));
             Guard.NotNull(from, nameof(from));
@@ -63,7 +67,8 @@ namespace SmartStore.ComponentModel
         /// <param name="from">The source collection.</param>
         /// <returns>A list of <typeparamref name="TTo"/>.</returns>
         public static List<TTo> MapList<TFrom, TTo>(this IMapper<TFrom, TTo> mapper, IEnumerable<TFrom> from)
-            where TTo : new()
+            where TFrom : class
+            where TTo : class, new()
         {
             Guard.NotNull(mapper, nameof(mapper));
             Guard.NotNull(from, nameof(from));
@@ -81,7 +86,8 @@ namespace SmartStore.ComponentModel
         /// <param name="to">The destination collection.</param>
         /// <returns>A list of <typeparamref name="TTo"/>.</returns>
         public static void MapCollection<TFrom, TTo>(this IMapper<TFrom, TTo> mapper, IEnumerable<TFrom> from, ICollection<TTo> to)
-            where TTo : new()
+            where TFrom : class
+            where TTo : class, new()
         {
             Guard.NotNull(mapper, nameof(mapper));
             Guard.NotNull(from, nameof(from));

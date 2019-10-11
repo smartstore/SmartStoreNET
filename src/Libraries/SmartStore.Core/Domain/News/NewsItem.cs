@@ -59,16 +59,6 @@ namespace SmartStore.Core.Domain.News
         public DateTime? EndDateUtc { get; set; }
 
         /// <summary>
-        /// Gets or sets background for the news post
-        /// </summary>
-        public string SectionBg { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the news post has a background image
-        /// </summary>
-        public bool HasBgImage { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether the news post comments are allowed 
         /// </summary>
         public bool AllowComments { get; set; }

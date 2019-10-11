@@ -67,8 +67,16 @@
     }
 }
 
-.has-section-bg.has-tags .blogpost-date {
-    padding-top: 1.5rem;
+
+.has-tags:not(.has-image),
+.has-section-bg.has-tags:not(.has-image-bg) {
+    .blogpost-tags-overlay {
+        position: relative;
+    }
+
+    .blogpost-text {
+        padding-top: 0 !important;
+    }
 }
 
 .has-image-bg {

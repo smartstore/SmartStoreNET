@@ -10,23 +10,21 @@ namespace SmartStore.Data.Migrations
         {   
             AddColumn("dbo.BlogPost", "PictureId", c => c.Int());
             AddColumn("dbo.BlogPost", "PreviewPictureId", c => c.Int());
-            AddColumn("dbo.BlogPost", "SectionBg", c => c.String());
-            AddColumn("dbo.BlogPost", "HasBgImage", c => c.Boolean(nullable: false));
+            AddColumn("dbo.BlogPost", "SectionBg", c => c.String(maxLength: 100));
             AddColumn("dbo.BlogPost", "Intro", c => c.String());
+            AddColumn("dbo.BlogPost", "DisplayTagsInPreview", c => c.Boolean(nullable: false));
+            AddColumn("dbo.BlogPost", "PreviewPictureDisplayType", c => c.Int());
             AddColumn("dbo.News", "PictureId", c => c.Int());
             AddColumn("dbo.News", "PreviewPictureId", c => c.Int());
-            AddColumn("dbo.News", "SectionBg", c => c.String());
-            AddColumn("dbo.News", "HasBgImage", c => c.Boolean(nullable: false));
         }
         
         public override void Down()
         {
-            DropColumn("dbo.News", "HasBgImage");
-            DropColumn("dbo.News", "SectionBg");
             DropColumn("dbo.News", "PreviewPictureId");
             DropColumn("dbo.News", "PictureId");
+            DropColumn("dbo.BlogPost", "PreviewPictureDisplayType");
+            DropColumn("dbo.BlogPost", "DisplayTagsInPreview");
             DropColumn("dbo.BlogPost", "Intro");
-            DropColumn("dbo.BlogPost", "HasBgImage");
             DropColumn("dbo.BlogPost", "SectionBg");
             DropColumn("dbo.BlogPost", "PreviewPictureId");
             DropColumn("dbo.BlogPost", "PictureId");
@@ -66,13 +64,6 @@ namespace SmartStore.Data.Migrations
                 "Specifies the background color of the blog post.",
                 "Legt die Hintergrundfarbe des Blog-Posts fest.");
 
-            builder.AddOrUpdate("Admin.ContentManagement.Blog.BlogPosts.Fields.HasBgImage",
-                "Has background image",
-                "Hat Hintergrundbild",
-                "Specifies whether the image of the blog post are displayed in the background of the blog preview.",
-                "Legt fest, ob das hinterlegte Bild als Hintergrundgrafk des Blog-Posts dargestellt wird.");
-
-
             builder.AddOrUpdate("Admin.ContentManagement.News.NewsItems.Fields.Picture",
                 "Picture",
                 "Bild",
@@ -84,6 +75,18 @@ namespace SmartStore.Data.Migrations
                 "Vorschaubild",
                 "Specifies the preview picture of the news item.",
                 "Legt das Vorschaubild des News-Eintrags fest.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.News.Blog.BlogPosts.PreviewDisplayType",
+                "Preview display type",
+                "Vorschau-Darstellung",
+                "Specifies display type of the preview for a blog item.",
+                "Legt die Darstellung der Vorschau für einen Blog-Eintrag fest.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.News.Blog.BlogPosts.DisplayTagsInPreview",
+                "Display tags on preview",
+                "Tags in Vorschau anzeigen",
+                "Specifies whether tags are display in the preview for blog item.",
+                "Bestimmt, ob Tags in der Vorschau eines Blog-Eintrags angezeigt werden.");
 
             builder.AddOrUpdate("Common.Cms.EditBlogPost",
                 "Edit blog post",
@@ -97,7 +100,12 @@ namespace SmartStore.Data.Migrations
                 "Read more",
                 "Mehr lesen");
 
-            
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.Bare", "Bare", "Einfach");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.Default", "Picture", "Bild");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.Preview", "Preview picture", "Vorschaubild");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.DefaultSectionBg", "Picture & background color", "Bild & Hintergrundfarbe");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.PreviewSectionBg", "Preview picture & background color", "Vorschaubild & Hintergrundfarbe");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.SectionBg", "Background color", "Hintergrundfarbe");
         }
     }
 }

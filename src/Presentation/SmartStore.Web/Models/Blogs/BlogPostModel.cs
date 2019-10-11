@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.Core.Domain.Blogs;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
@@ -42,6 +43,10 @@ namespace SmartStore.Web.Models.Blogs
         public bool HasBgImage { get; set; }
 
         public bool DisplayAdminLink { get; set; }
+
+        public bool DisplayTagsInPreview { get; set; }
+
+        public PreviewDisplayType PreviewDisplayType { get; set; }
 
         public AddBlogCommentModel AddNewComment { get; set; }
 		public CommentListModel Comments { get; set; }

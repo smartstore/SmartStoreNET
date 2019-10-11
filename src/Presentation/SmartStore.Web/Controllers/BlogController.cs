@@ -138,8 +138,24 @@ namespace SmartStore.Web.Controllers
 			model.Comments.NumberOfComments = blogPost.ApprovedCommentCount;
 			model.Comments.AllowCustomersToUploadAvatars = _customerSettings.AllowCustomersToUploadAvatars;
             model.DisplayAdminLink = _services.Permissions.Authorize(Permissions.System.AccessBackend, _services.WorkContext.CurrentCustomer);
-            model.PictureModel = PrepareBlogPostPictureModel(blogPost, blogPost.PictureId);
-            model.PreviewPictureModel = PrepareBlogPostPictureModel(blogPost, blogPost.PreviewPictureId);
+
+            model.HasBgImage = blogPost.PreviewDisplayType == PreviewDisplayType.DefaultSectionBg || blogPost.PreviewDisplayType == PreviewDisplayType.PreviewSectionBg;
+
+            if (blogPost.PreviewDisplayType == PreviewDisplayType.Default || blogPost.PreviewDisplayType == PreviewDisplayType.DefaultSectionBg)
+            {
+                model.PreviewPictureModel = PrepareBlogPostPictureModel(blogPost, blogPost.PictureId);
+            }
+            else  if (blogPost.PreviewDisplayType == PreviewDisplayType.Preview || blogPost.PreviewDisplayType == PreviewDisplayType.PreviewSectionBg)
+            {
+                model.PreviewPictureModel = PrepareBlogPostPictureModel(blogPost, blogPost.PreviewPictureId);
+            }
+
+            if (blogPost.PreviewDisplayType == PreviewDisplayType.Preview || 
+                blogPost.PreviewDisplayType == PreviewDisplayType.Default || 
+                blogPost.PreviewDisplayType == PreviewDisplayType.Bare)
+            {
+                model.SectionBg = string.Empty;
+            }
 
             // tags 
             model.Tags = blogPost.ParseTags().Select(x => new BlogPostTagModel

@@ -5,8 +5,10 @@ using System.Web.Mvc;
 using System.Linq;
 using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
+using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
@@ -823,4 +825,25 @@ namespace SmartStore.Admin.Models.Catalog
 			RuleFor(x => x.Quantity).GreaterThanOrEqualTo(1).When(x => x.ValueTypeId == (int)ProductVariantAttributeValueType.ProductLinkage);
 		}
 	}
+
+    public class ProductMapper : 
+        IMapper<Product, ProductModel>, 
+        IMapper<ProductModel, Product>
+    {
+        public ProductMapper(Services.ICommonServices services)
+        {
+
+        }
+
+        public void Map(Product from, ProductModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.SeName = from.GetSeName(0, true, false);
+        }
+
+        public void Map(ProductModel from, Product to)
+        {
+            MiniMapper.Map(from, to);
+        }
+    }
 }

@@ -43,6 +43,7 @@ using SmartStore.Services.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Services.Common;
 using SmartStore.Core.Domain.Payments;
+using SmartStore.ComponentModel;
 
 namespace SmartStore.Admin
 {
@@ -90,7 +91,9 @@ namespace SmartStore.Admin
 
         public static ProductModel ToModel(this Product entity)
         {
-            return Mapper.Map<Product, ProductModel>(entity);
+            //return Mapper.Map<Product, ProductModel>(entity);
+            //return MiniMapper.Map<Product, ProductModel>(entity);
+            return MapperFactory.GetMapper<Product, ProductModel>().Map(entity);
         }
 
         public static Product ToEntity(this ProductModel model)

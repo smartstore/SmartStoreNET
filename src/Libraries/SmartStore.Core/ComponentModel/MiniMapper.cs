@@ -38,7 +38,14 @@ namespace SmartStore.ComponentModel
 			Guard.NotNull(toType, nameof(toType));
 			Guard.HasDefaultConstructor(toType);
 
-			var target = Activator.CreateInstance(toType);
+            // First check for a registered type converter
+            var typeConverter = TypeConverterFactory.GetConverter<TFrom>();
+            if (typeConverter.CanConvertTo(toType))
+            {
+                return typeConverter.Convert(toType, culture);
+            }
+
+            var target = FastActivator.CreateInstance(toType);
 
 			Map(from, target, culture);
 			return target;
@@ -72,7 +79,7 @@ namespace SmartStore.ComponentModel
 
 			foreach (var toProp in toProps)
 			{
-				var fromProp = FastProperty.GetProperty(fromType, toProp.Name, PropertyCachingStrategy.Uncached);
+				var fromProp = FastProperty.GetProperty(fromType, toProp.Name, PropertyCachingStrategy.Cached);
 				if (fromProp == null)
 				{
 					continue;
@@ -87,11 +94,12 @@ namespace SmartStore.ComponentModel
             }
 		}
 
-		private static IEnumerable<FastProperty> GetFastPropertiesFor(Type type)
+		private static FastProperty[] GetFastPropertiesFor(Type type)
 		{
-			return FastProperty.GetCandidateProperties(type)
-				.Select(pi => FastProperty.GetProperty(pi, PropertyCachingStrategy.Uncached))
-				.Where(pi => pi.IsPublicSettable);
+            return FastProperty.GetProperties(type, PropertyCachingStrategy.Uncached)
+                .Values
+                .Where(pi => pi.IsPublicSettable)
+                .ToArray();
 		}
 
 		private static void ValidateType(Type type)

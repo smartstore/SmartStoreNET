@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.Core.Domain.Blogs;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 using System;
@@ -36,6 +37,10 @@ namespace SmartStore.Admin.Models.Blogs
         public string Body { get; set; }
 
         [UIHint("Picture")]
+        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.PreviewDisplayType")]
+        public PreviewDisplayType PreviewDisplayType { get; set; }
+
+        [UIHint("Picture")]
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Picture")]
         public int? PictureId { get; set; }
 
@@ -46,11 +51,11 @@ namespace SmartStore.Admin.Models.Blogs
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.SectionBg")]
         public string SectionBg { get; set; }
         
-        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.HasBgImage")]
-        public bool HasBgImage { get; set; }
-
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.AllowComments")]
         public bool AllowComments { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.DisplayTagsInPreview")]
+        public bool DisplayTagsInPreview { get; set; } = true;
 
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Tags")]
         [AllowHtml]
@@ -96,6 +101,12 @@ namespace SmartStore.Admin.Models.Blogs
         {
             RuleFor(x => x.Title).NotNull();
             RuleFor(x => x.Body).NotNull();
+            RuleFor(x => x.PictureId)
+                .NotNull()
+                .When(x => x.PreviewDisplayType == PreviewDisplayType.Default || x.PreviewDisplayType == PreviewDisplayType.DefaultSectionBg);
+            RuleFor(x => x.PreviewPictureId)
+                .NotNull()
+                .When(x => x.PreviewDisplayType == PreviewDisplayType.Preview || x.PreviewDisplayType == PreviewDisplayType.PreviewSectionBg);
         }
     }
 }

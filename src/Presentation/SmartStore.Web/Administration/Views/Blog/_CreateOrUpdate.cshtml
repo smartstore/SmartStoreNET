@@ -1,5 +1,6 @@
 ﻿@model BlogPostModel
 
+@using SmartStore.Core.Domain.Blogs;
 @using Telerik.Web.Mvc.UI;
 
 @Html.ValidationSummary(false)
@@ -7,14 +8,14 @@
 @Html.SmartStore().TabStrip().Name("blog-post-edit").Style(TabsStyle.Material).Items(x =>
 {
     x.Add().Text(T("Admin.ContentManagement.Blog.BlogPosts.Info").Text)
-		.Content(TabInfo())
-		.Selected(true);
+        .Content(TabInfo())
+        .Selected(true);
 
     x.Add().Text(T("Admin.Common.SEO").Text)
-		.Content(TabSeo());
+        .Content(TabSeo());
 
-	x.Add().Text(T("Admin.Common.Stores").Text)
-		.Content(TabStores());
+    x.Add().Text(T("Admin.Common.Stores").Text)
+        .Content(TabStores());
 
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "blog-post-edit", this.Html, this.Model));
@@ -42,24 +43,6 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PictureId)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.PictureId, new { transientUpload = true })
-                @Html.ValidationMessageFor(model => model.PictureId)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PreviewPictureId)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.PreviewPictureId, new { transientUpload = true })
-                @Html.ValidationMessageFor(model => model.PreviewPictureId)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Intro)
             </td>
             <td class="adminData wide">
@@ -78,10 +61,56 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Tags)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Tags)
+                @Html.ValidationMessageFor(model => model.Tags)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisplayTagsInPreview)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DisplayTagsInPreview)
+                @Html.ValidationMessageFor(model => model.DisplayTagsInPreview)
+            </td>
+        </tr>
+
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PreviewDisplayType)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListForEnum(model => model.PreviewDisplayType)
+                @Html.ValidationMessageFor(model => model.PreviewDisplayType)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PictureId)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.PictureId, new { transientUpload = true })
+                @Html.ValidationMessageFor(model => model.PictureId)
+            </td>
+        </tr>
+        <tr id="pnlPreviewPicture">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PreviewPictureId)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.PreviewPictureId, new { transientUpload = true })
+                @Html.ValidationMessageFor(model => model.PreviewPictureId)
+            </td>
+        </tr>
+        <tr id="pnlSectionBg">
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SectionBg)
             </td>
             <td class="adminData">
-                @Html.DropDownListFor(model => model.SectionBg, 
+                @Html.DropDownListFor(model => model.SectionBg,
                     new List<SelectListItem> {
                         new SelectListItem {  Text = "primary", Value = "primary" },
                         new SelectListItem {  Text = "secondary", Value = "secondary" },
@@ -91,12 +120,12 @@
                         new SelectListItem {  Text = "info", Value = "info" },
                         new SelectListItem {  Text = "light", Value = "light" },
                         new SelectListItem {  Text = "dark", Value = "dark" }
-                    },  T("Common.Unspecified"))
+                    }, T("Common.Unspecified"))
 
                 @Html.ValidationMessageFor(model => model.SectionBg)
             </td>
         </tr>
-        <tr>
+        @*<tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.HasBgImage)
             </td>
@@ -104,7 +133,7 @@
                 @Html.EditorFor(model => model.HasBgImage)
                 @Html.ValidationMessageFor(model => model.HasBgImage)
             </td>
-        </tr>
+        </tr>*@
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AllowComments)
@@ -112,15 +141,6 @@
             <td class="adminData">
                 @Html.EditorFor(model => model.AllowComments)
                 @Html.ValidationMessageFor(model => model.AllowComments)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Tags)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.Tags)
-                @Html.ValidationMessageFor(model => model.Tags)
             </td>
         </tr>
         <tr>
@@ -188,7 +208,7 @@
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.SeName)
-				@if (Model.Id != 0)
+                @if (Model.Id != 0)
                 {
                     @Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "BlogPost", entityId = Model.Id })
                 }
@@ -200,5 +220,18 @@
 
 @helper TabStores()
 {
-	@Html.Partial("StoreSelector", Model)
+    @Html.Partial("StoreSelector", Model)
 }
+
+<script>
+    $(function () {
+        $('#@Html.FieldIdFor(model => model.PreviewDisplayType)').change(function () {
+            $('#pnlPreviewPicture').toggle($(this).val() === '@(PreviewDisplayType.Preview.ToString())' || $(this).val() === '@(PreviewDisplayType.PreviewSectionBg.ToString())');
+            $('#pnlSectionBg').toggle(
+                $(this).val() === '@(PreviewDisplayType.DefaultSectionBg.ToString())' ||
+                $(this).val() === '@(PreviewDisplayType.PreviewSectionBg.ToString())' ||
+                $(this).val() === '@(PreviewDisplayType.SectionBg.ToString())'
+            );
+        }).trigger('change');
+    });
+</script>

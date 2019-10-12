@@ -91,7 +91,8 @@ namespace SmartStore.ComponentModel
 		{
             if (type.IsSequenceType(out var elementType))
             {
-                return _elementTypeConverter.CanConvertFrom(elementType) 
+                return elementType.IsAssignableFrom(typeof(T))
+                    || _elementTypeConverter.CanConvertFrom(elementType) 
                     || TypeConverterFactory.GetConverter(elementType).CanConvertTo(typeof(T));
             }
 
@@ -130,7 +131,8 @@ namespace SmartStore.ComponentModel
                 items.GetType().IsSequenceType(out var elementType);
                 var elementConverter = _elementTypeConverter;
                 var isOtherConverter = false;
-                if (!elementConverter.CanConvertFrom(elementType))
+                var isAssignable = elementType.IsAssignableFrom(typeof(T));
+                if (!isAssignable && !elementConverter.CanConvertFrom(elementType))
                 {
                     elementConverter = TypeConverterFactory.GetConverter(elementType);
                     isOtherConverter = true;
@@ -139,7 +141,10 @@ namespace SmartStore.ComponentModel
                 var result = items
                     .Cast<object>()
                     .Select(x => 
-                    { 
+                    {
+                        if (isAssignable)
+                            return x;
+                        
                         return !isOtherConverter 
                             ? elementConverter.ConvertFrom(culture, x) 
                             : elementConverter.ConvertTo(culture, null, x, elementType); 

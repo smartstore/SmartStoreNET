@@ -64,7 +64,7 @@ namespace SmartStore.ComponentModel
 				return;
 			}
 
-			var fromType = from.GetType();
+            var fromType = from.GetType();
 			var toType = to.GetType();
 
 			ValidateType(fromType);

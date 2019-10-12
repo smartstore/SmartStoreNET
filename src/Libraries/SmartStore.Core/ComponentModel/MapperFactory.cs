@@ -43,9 +43,9 @@ namespace SmartStore.ComponentModel
 
             foreach (var type in mapperTypes)
             {
-                foreach (var intf in type.GetInterfaces())
+                foreach (var intface in type.GetInterfaces())
                 {
-                    intf.IsSubClass(typeof(IMapper<,>), out var impl);
+                    intface.IsSubClass(typeof(IMapper<,>), out var impl);
                     var genericArguments = impl.GetGenericArguments();
                     var typePair = new TypePair(genericArguments[0], genericArguments[1]);
                     _mapperTypes.Add(typePair, type);

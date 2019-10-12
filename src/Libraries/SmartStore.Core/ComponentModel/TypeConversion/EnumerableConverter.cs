@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using SmartStore.Collections;
+using SmartStore.Core.Caching;
 
 namespace SmartStore.ComponentModel
 {
@@ -13,7 +16,7 @@ namespace SmartStore.ComponentModel
 		private readonly Func<IEnumerable<T>, object> _activator;
 		private readonly ITypeConverter _elementTypeConverter;
 
-		public EnumerableConverter(Type sequenceType)
+        public EnumerableConverter(Type sequenceType)
 			: base(typeof(object))
 		{
 			_elementTypeConverter = TypeConverterFactory.GetConverter<T>();
@@ -35,7 +38,11 @@ namespace SmartStore.ComponentModel
 			{
 				activator = (x) => x;
 			}
-			else if (t == (typeof(IReadOnlyCollection<T>)) || t == (typeof(IReadOnlyList<T>)))
+            else if (t == typeof(T[]))
+            {
+                activator = (x) => x.ToArray();
+            }
+            else if (t == (typeof(IReadOnlyCollection<T>)) || t == (typeof(IReadOnlyList<T>)))
 			{
 				activator = (x) => x.AsReadOnly();
 			}
@@ -47,7 +54,7 @@ namespace SmartStore.ComponentModel
 			{
 				activator = (x) => new HashSet<T>(x);
 			}
-			else if (t.IsAssignableFrom(typeof(Queue<T>)))
+            else if (t.IsAssignableFrom(typeof(Queue<T>)))
 			{
 				activator = (x) => new Queue<T>(x);
 			}
@@ -63,7 +70,11 @@ namespace SmartStore.ComponentModel
 			{
 				activator = (x) => new ConcurrentBag<T>(x);
 			}
-			else if (t.IsAssignableFrom(typeof(ArraySegment<T>)))
+            else if (t.IsAssignableFrom(typeof(SyncedCollection<T>)))
+            {
+                activator = (x) => new SyncedCollection<T>(new List<T>(x));
+            }
+            else if (t.IsAssignableFrom(typeof(ArraySegment<T>)))
 			{
 				activator = (x) => new ArraySegment<T>(x.ToArray());
 			}
@@ -78,13 +89,19 @@ namespace SmartStore.ComponentModel
 
 		public override bool CanConvertFrom(Type type)
 		{
-			return type == typeof(string) || typeof(IConvertible).IsAssignableFrom(type);
-		}
+            if (type.IsSequenceType(out var elementType))
+            {
+                return _elementTypeConverter.CanConvertFrom(elementType) 
+                    || TypeConverterFactory.GetConverter(elementType).CanConvertTo(typeof(T));
+            }
+
+            return type == typeof(string) || typeof(IConvertible).IsAssignableFrom(type);
+        }
 
 		public override bool CanConvertTo(Type type)
 		{
-			return type == typeof(string);
-		}
+            return type == typeof(string) && _elementTypeConverter.CanConvertTo(type);
+        }
 
 		public override object ConvertFrom(CultureInfo culture, object value)
 		{
@@ -93,28 +110,47 @@ namespace SmartStore.ComponentModel
 				return _activator(Enumerable.Empty<T>());
 			}
 
-			if (value is string)
-			{
-				var items = GetStringArray((string)value);
+            var items = value as IEnumerable;
 
-				var result = items
-					.Select(x => _elementTypeConverter.ConvertFrom(culture, x))
-					.Where(x => x != null)
-					.Cast<T>();
-				
-				return _activator(result);
-			}
+            if (value is string str)
+            {
+                items = GetStringArray(str);
+            }
+            else if (value is IConvertible c)
+            {
+                var result2 = (new object[] { value })
+                    .Select(x => Convert.ChangeType(value, typeof(T)))
+                    .Cast<T>();
 
-			if (value is IConvertible)
-			{
-				var result2 = (new object[] { value })
-					.Select(x => Convert.ChangeType(value, typeof(T)))
-					.Cast<T>();
+                return _activator(result2);
+            }
 
-				return _activator(result2);
-			}
+            if (items != null)
+            {
+                items.GetType().IsSequenceType(out var elementType);
+                var elementConverter = _elementTypeConverter;
+                var isOtherConverter = false;
+                if (!elementConverter.CanConvertFrom(elementType))
+                {
+                    elementConverter = TypeConverterFactory.GetConverter(elementType);
+                    isOtherConverter = true;
+                }
 
-			return base.ConvertFrom(culture, value);
+                var result = items
+                    .Cast<object>()
+                    .Select(x => 
+                    { 
+                        return !isOtherConverter 
+                            ? elementConverter.ConvertFrom(culture, x) 
+                            : elementConverter.ConvertTo(culture, null, x, elementType); 
+                    })
+                    .Where(x => x != null)
+                    .Cast<T>();
+
+                return _activator(result);
+            }
+
+            return base.ConvertFrom(culture, value);
 		}
 
 		public override object ConvertTo(CultureInfo culture, string format, object value, Type to)
@@ -144,9 +180,7 @@ namespace SmartStore.ComponentModel
 		protected virtual string[] GetStringArray(string input)
 		{
 			var result = input.SplitSafe(null);
-
 			Array.ForEach(result, s => s.Trim());
-
 			return result;
 		}
 	}

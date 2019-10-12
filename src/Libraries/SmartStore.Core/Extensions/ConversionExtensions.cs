@@ -23,45 +23,45 @@ namespace SmartStore
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Convert<T>(this object value)
         {
-            if (CommonHelper.TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
+            if (!CommonHelper.TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
             {
-                return (T)result;
+                throw Error.InvalidCast(value?.GetType(), typeof(T));
             }
 
-            return default(T);
+            return (T)result;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Convert<T>(this object value, T defaultValue)
 		{
-            if (CommonHelper.TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
+            if (!CommonHelper.TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
             {
-                return (T)result;
+                return defaultValue;
             }
 
-            return defaultValue;
+            return (T)result;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Convert<T>(this object value, CultureInfo culture)
         {
-            if (CommonHelper.TryConvert(value, typeof(T), culture, out object result))
+            if (!CommonHelper.TryConvert(value, typeof(T), culture, out object result))
             {
-                return (T)result;
+                throw Error.InvalidCast(value?.GetType(), typeof(T));
             }
 
-            return default(T);
+            return (T)result;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Convert<T>(this object value, T defaultValue, CultureInfo culture)
 		{
-            if (CommonHelper.TryConvert(value, typeof(T), culture, out object result))
+            if (!CommonHelper.TryConvert(value, typeof(T), culture, out object result))
             {
-                return (T)result;
+                return defaultValue;
             }
 
-            return defaultValue;
+            return (T)result;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

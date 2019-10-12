@@ -186,6 +186,7 @@
     <Compile Include="Collections\ReferenceEqualityComparer.cs" />
     <Compile Include="ComponentModel\SmartContractResolver.cs" />
     <Compile Include="ComponentModel\TypeConversion\BooleanConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\JObjectConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\DictionaryConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\EmailAddressConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\EnumerableConverter.cs" />
@@ -195,7 +196,6 @@
     <Compile Include="ComponentModel\TypeConversion\TimeSpanConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\DateTimeConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\ITypeConverter.cs" />
-    <Compile Include="ComponentModel\TypeConversion\TypeConverterAdapter.cs" />
     <Compile Include="ComponentModel\TypeConversion\TypeConverterBase.cs" />
     <Compile Include="ComponentModel\TypeConversion\TypeConverterFactory.cs" />
     <Compile Include="Data\Hooks\HookableAttribute.cs" />

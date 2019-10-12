@@ -62,6 +62,29 @@ namespace SmartStore
 			return type.IsArray || typeof(IEnumerable).IsAssignableFrom(type);
         }
 
+        public static bool IsSequenceType(this Type type, out Type elementType)
+        {
+            elementType = null;
+
+            if (type == typeof(string))
+                return false;
+
+            if (type.IsArray)
+            {
+                elementType = type.GetElementType();
+            }
+            else if (type.IsSubClass(typeof(IEnumerable<>), out var implType))
+            {
+                var genericArgs = implType.GetGenericArguments();
+                if (genericArgs.Length == 1)
+                {
+                    elementType = genericArgs[0];
+                }
+            }
+
+            return elementType != null;
+        }
+
         public static bool IsPredefinedSimpleType(this Type type)
         {
             if ((type.IsPrimitive && (type != typeof(IntPtr))) && (type != typeof(UIntPtr)))
@@ -148,16 +171,14 @@ namespace SmartStore
             return wrappedType;
         }
 
-        public static bool IsNullable(this Type type, out Type wrappedType)
+        public static bool IsNullable(this Type type, out Type elementType)
         {
-			wrappedType = null;
-
-			if (type != null && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
-				wrappedType = type.GetGenericArguments()[0];
+            if (type != null && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+				elementType = type.GetGenericArguments()[0];
             else
-                wrappedType = type;
+                elementType = type;
 
-			return wrappedType != type;
+			return elementType != type;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

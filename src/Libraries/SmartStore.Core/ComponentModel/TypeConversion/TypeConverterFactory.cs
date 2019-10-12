@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Dynamic;
 using System.Web.Routing;
+using Newtonsoft.Json.Linq;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Email;
@@ -42,9 +43,11 @@ namespace SmartStore.ComponentModel
 			_typeConverters.TryAdd(typeof(Dictionary<string, object>), converter);
 			_typeConverters.TryAdd(typeof(RouteValueDictionary), new DictionaryTypeConverter<RouteValueDictionary>());
 			_typeConverters.TryAdd(typeof(ExpandoObject), new DictionaryTypeConverter<ExpandoObject>());
+            _typeConverters.TryAdd(typeof(HybridExpando), new DictionaryTypeConverter<HybridExpando>());
 
-			_typeConverters.TryAdd(typeof(EmailAddress), new EmailAddressConverter());
-		}
+            _typeConverters.TryAdd(typeof(EmailAddress), new EmailAddressConverter());
+            _typeConverters.TryAdd(typeof(JObject), new JObjectConverter());
+        }
 
 		public static void RegisterConverter<T>(ITypeConverter typeConverter)
 		{
@@ -86,40 +89,31 @@ namespace SmartStore.ComponentModel
 
 		public static ITypeConverter GetConverter(Type type)
 		{
-			if (type == null)
-				throw new ArgumentNullException(nameof(type));
+            Guard.NotNull(type, nameof(type));
 
-			if (_typeConverters.TryGetValue(type, out var converter))
+            if (_typeConverters.TryGetValue(type, out var converter))
 			{
 				return converter;
 			}
-			
-			var isGenericType = type.IsGenericType;
-			if (isGenericType)
+
+            // Nullable types
+			if (type.IsNullable(out _))
 			{
-				var definition = type.GetGenericTypeDefinition();
+				converter = new NullableConverter(type);
+				RegisterConverter(type, converter);
+				return converter;
+            }
 
-				// Nullables
-				if (definition == typeof(Nullable<>))
-				{
-					converter = new NullableConverter(type);
-					RegisterConverter(type, converter);
-					return converter;
-				}
+            // Sequence types
+            if (type.IsSequenceType(out var elementType))
+            {
+                converter = (ITypeConverter)Activator.CreateInstance(typeof(EnumerableConverter<>).MakeGenericType(elementType), type);
+                RegisterConverter(type, converter);
+                return converter;
+            }
 
-				// Sequence types
-				var genericArgs = type.GetGenericArguments();
-				var isEnumerable = genericArgs.Length == 1 && type.IsSubClass(typeof(IEnumerable<>));
-				if (isEnumerable)
-				{
-					converter = (ITypeConverter)Activator.CreateInstance(typeof(EnumerableConverter<>).MakeGenericType(genericArgs[0]), type);
-					RegisterConverter(type, converter);
-					return converter;
-				}
-			}
-
-			// default fallback
-			converter = new TypeConverterAdapter(TypeDescriptor.GetConverter(type));
+            // Default fallback
+            converter = new TypeConverterAdapter(type);
 			RegisterConverter(type, converter);
 			return converter;
 		}

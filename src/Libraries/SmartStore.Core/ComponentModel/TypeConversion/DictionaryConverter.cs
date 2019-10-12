@@ -16,12 +16,12 @@ namespace SmartStore.ComponentModel
 
 		public override bool CanConvertFrom(Type type)
 		{
-			return !type.IsPredefinedType() && type.IsClass;
+            return type.IsPlainObjectType() || type.IsAnonymous();
 		}
 
 		public override bool CanConvertTo(Type type)
 		{
-			return !type.IsPredefinedType() && DictionaryConverter.CanCreateType(type);
+			return DictionaryConverter.CanCreateType(type);
 		}
 
 		public override object ConvertFrom(CultureInfo culture, object value)
@@ -34,7 +34,7 @@ namespace SmartStore.ComponentModel
 			{
 				return new RouteValueDictionary(dict);
 			}
-			if (to == typeof(Dictionary<string, object>))
+			else if (to == typeof(Dictionary<string, object>))
 			{
 				return (Dictionary<string, object>)dict;
 			}
@@ -44,7 +44,13 @@ namespace SmartStore.ComponentModel
 				expando.Merge(dict);
 				return expando;
 			}
-			else
+            else if (to == typeof(HybridExpando))
+            {
+                var expando = new HybridExpando();
+                expando.Merge(dict);
+                return expando;
+            }
+            else
 			{
 				return dict;
 			}
@@ -55,7 +61,7 @@ namespace SmartStore.ComponentModel
 			// Dict > Obj
 			if (value is IDictionary<string, object>  dict)
 			{
-				return DictionaryConverter.CreateAndPopulate(to, dict, out var problems);
+				return DictionaryConverter.CreateAndPopulate(to, dict, out _);
 			}
 
 			return base.ConvertTo(culture, format, value, to);

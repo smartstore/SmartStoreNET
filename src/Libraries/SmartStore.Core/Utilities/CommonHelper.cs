@@ -236,13 +236,6 @@ namespace SmartStore.Utilities
                     convertedValue = converter.ConvertTo(culture, null, value, to);
                     return true;
                 }
-
-                // Use Convert.ChangeType if both types are IConvertible
-                if (value is IConvertible && typeof(IConvertible).IsAssignableFrom(to))
-                {
-                    convertedValue = System.Convert.ChangeType(value, to, culture);
-                    return true;
-                }
             }
             catch
             {

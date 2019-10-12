@@ -830,11 +830,6 @@ namespace SmartStore.Admin.Models.Catalog
         IMapper<Product, ProductModel>, 
         IMapper<ProductModel, Product>
     {
-        public ProductMapper(Services.ICommonServices services)
-        {
-
-        }
-
         public void Map(Product from, ProductModel to)
         {
             MiniMapper.Map(from, to);

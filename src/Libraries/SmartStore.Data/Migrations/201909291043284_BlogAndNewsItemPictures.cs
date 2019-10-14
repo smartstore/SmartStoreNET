@@ -100,11 +100,11 @@ namespace SmartStore.Data.Migrations
                 "Read more",
                 "Mehr lesen");
 
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.Bare", "Bare", "Einfach");
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.Default", "Picture", "Bild");
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.Preview", "Preview picture", "Vorschaubild");
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.DefaultSectionBg", "Picture & background color", "Bild & Hintergrundfarbe");
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.PreviewSectionBg", "Preview picture & background color", "Vorschaubild & Hintergrundfarbe");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.Bare", "Minimal (no image, no background)", "Minimal (kein Bild, kein Hintergrund)");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.Default", "Picture over text", "Bild über Text");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.Preview", "Preview picture over text", "Galleriebild über Text");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.DefaultSectionBg", "Picture behind text", "Bild hinter Text");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.PreviewSectionBg", "Preview picture behind text", "Galleriebild hinter Text");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.SectionBg", "Background color", "Hintergrundfarbe");
         }
     }

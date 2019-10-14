@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Services.Search;
+using SmartStore.Web.Controllers;
 using SmartStore.Web.Models.Catalog;
 
 namespace SmartStore.Web.Models.Search
@@ -40,7 +41,13 @@ namespace SmartStore.Web.Models.Search
 			set;
 		}
 
-		public ProductSummaryModel TopProducts
+        public ProductSummaryMappingSettings MappingSettings
+        {
+            get;
+            set;
+        }
+
+        public ProductSummaryModel TopProducts
 		{
 			get;
 			set;

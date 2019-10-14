@@ -98,7 +98,7 @@ namespace SmartStore.Web.Controllers
 				TotalProductsCount = result.TotalHitsCount
 			};
 
-			var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini, x => 
+			model.MappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini, x => 
 			{
 				x.MapPrices = false;
 				x.MapShortDescription = true;
@@ -121,7 +121,7 @@ namespace SmartStore.Web.Controllers
 				}
 				
 				// Add product hits.
-				model.TopProducts = _catalogHelper.MapProductSummaryModel(result.Hits, mappingSettings);
+				model.TopProducts = _catalogHelper.MapProductSummaryModel(result.Hits, model.MappingSettings);
 
 				// Add spell checker suggestions (if any).
 				model.AddSpellCheckerSuggestions(result.SpellCheckerSuggestions, T, x => Url.RouteUrl("Search", new { q = x }));
@@ -185,8 +185,8 @@ namespace SmartStore.Web.Controllers
 			model.Term = query.Term;
 			model.TotalProductsCount = result.TotalHitsCount;
 
-			var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
-			var summaryModel = _catalogHelper.MapProductSummaryModel(result.Hits, mappingSettings);
+            model.MappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
+			var summaryModel = _catalogHelper.MapProductSummaryModel(result.Hits, model.MappingSettings);
 
 			// Prepare paging/sorting/mode stuff.
 			_catalogHelper.MapListActions(summaryModel, null, _catalogSettings.DefaultPageSizeOptions);

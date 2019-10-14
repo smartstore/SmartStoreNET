@@ -71,7 +71,7 @@ namespace SmartStore.Core.Search
         public string[] Fields { get; set; }
 		public string Term { get; set; }
 		public bool EscapeTerm { get; protected set; }
-		public SearchMode Mode { get; protected set; }
+		public SearchMode Mode { get; set; }
 		public bool IsFuzzySearch { get; protected set; }
 
 		// Filtering

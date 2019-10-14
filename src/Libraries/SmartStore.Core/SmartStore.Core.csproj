@@ -457,6 +457,7 @@
     <Compile Include="Search\AcquireWriterContext.cs" />
     <Compile Include="Search\DefaultIndexManager.cs" />
     <Compile Include="Search\Events\IndexingCompletedEvent.cs" />
+    <Compile Include="Search\Events\UpdateIndexEvent.cs" />
     <Compile Include="Search\Facets\Facet.cs" />
     <Compile Include="Search\Facets\FacetExtensions.cs" />
     <Compile Include="Search\Facets\FacetGroup.cs" />

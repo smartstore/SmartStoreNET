@@ -141,6 +141,8 @@ namespace SmartStore.Web.Controllers
 
             model.HasBgImage = blogPost.PreviewDisplayType == PreviewDisplayType.DefaultSectionBg || blogPost.PreviewDisplayType == PreviewDisplayType.PreviewSectionBg;
 
+            model.PictureModel = PrepareBlogPostPictureModel(blogPost, blogPost.PictureId);
+
             if (blogPost.PreviewDisplayType == PreviewDisplayType.Default || blogPost.PreviewDisplayType == PreviewDisplayType.DefaultSectionBg)
             {
                 model.PreviewPictureModel = PrepareBlogPostPictureModel(blogPost, blogPost.PictureId);

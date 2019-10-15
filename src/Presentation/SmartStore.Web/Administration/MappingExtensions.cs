@@ -52,17 +52,17 @@ namespace SmartStore.Admin
 
         public static CategoryModel ToModel(this Category entity)
         {
-            return MapperFactory.GetMapper<Category, CategoryModel>().Map(entity);
+            return MapperFactory.Map<Category, CategoryModel>(entity);
         }
 
         public static Category ToEntity(this CategoryModel model)
         {
-            return MapperFactory.GetMapper<CategoryModel, Category>().Map(model);
+            return MapperFactory.Map<CategoryModel, Category>(model);
         }
 
         public static Category ToEntity(this CategoryModel model, Category entity)
         {
-            MapperFactory.GetMapper<CategoryModel, Category>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -72,17 +72,17 @@ namespace SmartStore.Admin
 
         public static ManufacturerModel ToModel(this Manufacturer entity)
         {
-            return MapperFactory.GetMapper<Manufacturer, ManufacturerModel>().Map(entity);
+            return MapperFactory.Map<Manufacturer, ManufacturerModel>(entity);
         }
 
         public static Manufacturer ToEntity(this ManufacturerModel model)
         {
-            return MapperFactory.GetMapper<ManufacturerModel, Manufacturer>().Map(model);
+            return MapperFactory.Map<ManufacturerModel, Manufacturer>(model);
         }
 
         public static Manufacturer ToEntity(this ManufacturerModel model, Manufacturer entity)
         {
-            MapperFactory.GetMapper<ManufacturerModel, Manufacturer>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -92,17 +92,17 @@ namespace SmartStore.Admin
 
         public static ProductModel ToModel(this Product entity)
         {
-            return MapperFactory.GetMapper<Product, ProductModel>().Map(entity);
+            return MapperFactory.Map<Product, ProductModel>(entity);
         }
 
         public static Product ToEntity(this ProductModel model)
         {
-            return MapperFactory.GetMapper<ProductModel, Product>().Map(model);
+            return MapperFactory.Map<ProductModel, Product>(model);
         }
 
         public static Product ToEntity(this ProductModel model, Product entity)
         {
-            MapperFactory.GetMapper<ProductModel, Product>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -112,33 +112,33 @@ namespace SmartStore.Admin
 
         public static ProductAttributeModel ToModel(this ProductAttribute entity)
         {
-            return MapperFactory.GetMapper<ProductAttribute, ProductAttributeModel>().Map(entity);
+            return MapperFactory.Map<ProductAttribute, ProductAttributeModel>(entity);
         }
 
         public static ProductAttribute ToEntity(this ProductAttributeModel model)
         {
-            return MapperFactory.GetMapper<ProductAttributeModel, ProductAttribute>().Map(model);
+            return MapperFactory.Map<ProductAttributeModel, ProductAttribute>(model);
         }
 
         public static ProductAttribute ToEntity(this ProductAttributeModel model, ProductAttribute entity)
         {
-            MapperFactory.GetMapper<ProductAttributeModel, ProductAttribute>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
 		public static ProductAttributeOptionModel ToModel(this ProductAttributeOption entity)
 		{
-            return MapperFactory.GetMapper<ProductAttributeOption, ProductAttributeOptionModel>().Map(entity);
+            return MapperFactory.Map<ProductAttributeOption, ProductAttributeOptionModel>(entity);
 		}
 
 		public static ProductAttributeOption ToEntity(this ProductAttributeOptionModel model)
 		{
-            return MapperFactory.GetMapper<ProductAttributeOptionModel, ProductAttributeOption>().Map(model);
+            return MapperFactory.Map<ProductAttributeOptionModel, ProductAttributeOption>(model);
 		}
 
 		public static ProductAttributeOption ToEntity(this ProductAttributeOptionModel model, ProductAttributeOption entity)
 		{
-            MapperFactory.GetMapper<ProductAttributeOptionModel, ProductAttributeOption>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
 		}
 
@@ -148,33 +148,33 @@ namespace SmartStore.Admin
 
 		public static SpecificationAttributeModel ToModel(this SpecificationAttribute entity)
         {
-            return MapperFactory.GetMapper<SpecificationAttribute, SpecificationAttributeModel>().Map(entity);
+            return MapperFactory.Map<SpecificationAttribute, SpecificationAttributeModel>(entity);
         }
 
         public static SpecificationAttribute ToEntity(this SpecificationAttributeModel model)
         {
-            return MapperFactory.GetMapper<SpecificationAttributeModel, SpecificationAttribute>().Map(model);
+            return MapperFactory.Map<SpecificationAttributeModel, SpecificationAttribute>(model);
         }
 
         public static SpecificationAttribute ToEntity(this SpecificationAttributeModel model, SpecificationAttribute entity)
         {
-            MapperFactory.GetMapper<SpecificationAttributeModel, SpecificationAttribute>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
         public static SpecificationAttributeOptionModel ToModel(this SpecificationAttributeOption entity)
         {
-            return MapperFactory.GetMapper<SpecificationAttributeOption, SpecificationAttributeOptionModel>().Map(entity);
+            return MapperFactory.Map<SpecificationAttributeOption, SpecificationAttributeOptionModel>(entity);
         }
 
         public static SpecificationAttributeOption ToEntity(this SpecificationAttributeOptionModel model)
         {
-            return MapperFactory.GetMapper<SpecificationAttributeOptionModel, SpecificationAttributeOption>().Map(model);
+            return MapperFactory.Map<SpecificationAttributeOptionModel, SpecificationAttributeOption>(model);
         }
 
         public static SpecificationAttributeOption ToEntity(this SpecificationAttributeOptionModel model, SpecificationAttributeOption entity)
         {
-            MapperFactory.GetMapper<SpecificationAttributeOptionModel, SpecificationAttributeOption>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -184,33 +184,33 @@ namespace SmartStore.Admin
 
         public static CheckoutAttributeModel ToModel(this CheckoutAttribute entity)
         {
-            return MapperFactory.GetMapper<CheckoutAttribute, CheckoutAttributeModel>().Map(entity);
+            return MapperFactory.Map<CheckoutAttribute, CheckoutAttributeModel>(entity);
         }
 
         public static CheckoutAttribute ToEntity(this CheckoutAttributeModel model)
         {
-            return MapperFactory.GetMapper<CheckoutAttributeModel, CheckoutAttribute>().Map(model);
+            return MapperFactory.Map<CheckoutAttributeModel, CheckoutAttribute>(model);
         }
 
         public static CheckoutAttribute ToEntity(this CheckoutAttributeModel model, CheckoutAttribute entity)
         {
-            MapperFactory.GetMapper<CheckoutAttributeModel, CheckoutAttribute>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
         public static CheckoutAttributeValueModel ToModel(this CheckoutAttributeValue entity)
         {
-            return MapperFactory.GetMapper<CheckoutAttributeValue, CheckoutAttributeValueModel>().Map(entity);
+            return MapperFactory.Map<CheckoutAttributeValue, CheckoutAttributeValueModel>(entity);
         }
 
         public static CheckoutAttributeValue ToEntity(this CheckoutAttributeValueModel model)
         {
-            return MapperFactory.GetMapper<CheckoutAttributeValueModel, CheckoutAttributeValue>().Map(model);
+            return MapperFactory.Map<CheckoutAttributeValueModel, CheckoutAttributeValue>(model);
         }
 
         public static CheckoutAttributeValue ToEntity(this CheckoutAttributeValueModel model, CheckoutAttributeValue entity)
         {
-            MapperFactory.GetMapper<CheckoutAttributeValueModel, CheckoutAttributeValue>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
         
@@ -220,17 +220,17 @@ namespace SmartStore.Admin
 
 		public static ProductBundleItemModel ToModel(this ProductBundleItem entity)
 		{
-            return MapperFactory.GetMapper<ProductBundleItem, ProductBundleItemModel>().Map(entity);
+            return MapperFactory.Map<ProductBundleItem, ProductBundleItemModel>(entity);
 		}
 
 		public static ProductBundleItem ToEntity(this ProductBundleItemModel model)
 		{
-            return MapperFactory.GetMapper<ProductBundleItemModel, ProductBundleItem>().Map(model);
+            return MapperFactory.Map<ProductBundleItemModel, ProductBundleItem>(model);
 		}
 
 		public static ProductBundleItem ToEntity(this ProductBundleItemModel model, ProductBundleItem entity)
 		{
-            MapperFactory.GetMapper<ProductBundleItemModel, ProductBundleItem>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
 		}
 
@@ -240,17 +240,17 @@ namespace SmartStore.Admin
 
 		public static LanguageModel ToModel(this Language entity)
         {
-            return MapperFactory.GetMapper<Language, LanguageModel>().Map(entity);
+            return MapperFactory.Map<Language, LanguageModel>(entity);
         }
 
         public static Language ToEntity(this LanguageModel model)
         {
-            return MapperFactory.GetMapper<LanguageModel, Language>().Map(model);
+            return MapperFactory.Map<LanguageModel, Language>(model);
         }
 
         public static Language ToEntity(this LanguageModel model, Language entity)
         {
-            MapperFactory.GetMapper<LanguageModel, Language>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
         
@@ -260,17 +260,17 @@ namespace SmartStore.Admin
 
         public static EmailAccountModel ToModel(this EmailAccount entity)
         {
-            return MapperFactory.GetMapper<EmailAccount, EmailAccountModel>().Map(entity);
+            return MapperFactory.Map<EmailAccount, EmailAccountModel>(entity);
         }
 
         public static EmailAccount ToEntity(this EmailAccountModel model)
         {
-            return MapperFactory.GetMapper<EmailAccountModel, EmailAccount>().Map(model);
+            return MapperFactory.Map<EmailAccountModel, EmailAccount>(model);
         }
 
         public static EmailAccount ToEntity(this EmailAccountModel model, EmailAccount entity)
         {
-            MapperFactory.GetMapper<EmailAccountModel, EmailAccount>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -280,17 +280,17 @@ namespace SmartStore.Admin
 
         public static MessageTemplateModel ToModel(this MessageTemplate entity)
         {
-            return MapperFactory.GetMapper<MessageTemplate, MessageTemplateModel>().Map(entity);
+            return MapperFactory.Map<MessageTemplate, MessageTemplateModel>(entity);
         }
 
         public static MessageTemplate ToEntity(this MessageTemplateModel model)
         {
-            return MapperFactory.GetMapper<MessageTemplateModel, MessageTemplate>().Map(model);
+            return MapperFactory.Map<MessageTemplateModel, MessageTemplate>(model);
         }
 
         public static MessageTemplate ToEntity(this MessageTemplateModel model, MessageTemplate entity)
         {
-            MapperFactory.GetMapper<MessageTemplateModel, MessageTemplate>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -300,17 +300,17 @@ namespace SmartStore.Admin
 
         public static QueuedEmailModel ToModel(this QueuedEmail entity)
         {
-            return MapperFactory.GetMapper<QueuedEmail, QueuedEmailModel>().Map(entity);
+            return MapperFactory.Map<QueuedEmail, QueuedEmailModel>(entity);
         }
 
         public static QueuedEmail ToEntity(this QueuedEmailModel model)
         {
-            return MapperFactory.GetMapper<QueuedEmailModel, QueuedEmail>().Map(model);
+            return MapperFactory.Map<QueuedEmailModel, QueuedEmail>(model);
         }
 
         public static QueuedEmail ToEntity(this QueuedEmailModel model, QueuedEmail entity)
         {
-            MapperFactory.GetMapper<QueuedEmailModel, QueuedEmail>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -320,17 +320,17 @@ namespace SmartStore.Admin
 
         public static CampaignModel ToModel(this Campaign entity)
         {
-            return MapperFactory.GetMapper<Campaign, CampaignModel>().Map(entity);
+            return MapperFactory.Map<Campaign, CampaignModel>(entity);
         }
 
         public static Campaign ToEntity(this CampaignModel model)
         {
-            return MapperFactory.GetMapper<CampaignModel, Campaign>().Map(model);
+            return MapperFactory.Map<CampaignModel, Campaign>(model);
         }
 
         public static Campaign ToEntity(this CampaignModel model, Campaign entity)
         {
-            MapperFactory.GetMapper<CampaignModel, Campaign>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -340,17 +340,17 @@ namespace SmartStore.Admin
 
         public static TopicModel ToModel(this Topic entity)
         {
-            return MapperFactory.GetMapper<Topic, TopicModel>().Map(entity);
+            return MapperFactory.Map<Topic, TopicModel>(entity);
         }
 
         public static Topic ToEntity(this TopicModel model)
         {
-            return MapperFactory.GetMapper<TopicModel, Topic>().Map(model);
+            return MapperFactory.Map<TopicModel, Topic>(model);
         }
 
         public static Topic ToEntity(this TopicModel model, Topic entity)
         {
-            MapperFactory.GetMapper<TopicModel, Topic>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -360,28 +360,28 @@ namespace SmartStore.Admin
 
         public static LogModel ToModel(this Log entity)
         {
-            return MapperFactory.GetMapper<Log, LogModel>().Map(entity);
+            return MapperFactory.Map<Log, LogModel>(entity);
         }
 
         public static Log ToEntity(this LogModel model)
         {
-            return MapperFactory.GetMapper<LogModel, Log>().Map(model);
+            return MapperFactory.Map<LogModel, Log>(model);
         }
 
         public static Log ToEntity(this LogModel model, Log entity)
         {
-            MapperFactory.GetMapper<LogModel, Log>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
         public static ActivityLogTypeModel ToModel(this ActivityLogType entity)
         {
-            return MapperFactory.GetMapper<ActivityLogType, ActivityLogTypeModel>().Map(entity);
+            return MapperFactory.Map<ActivityLogType, ActivityLogTypeModel>(entity);
         }
 
         public static ActivityLogModel ToModel(this ActivityLog entity)
         {
-            return MapperFactory.GetMapper<ActivityLog, ActivityLogModel>().Map(entity);
+            return MapperFactory.Map<ActivityLog, ActivityLogModel>(entity);
         }
 
         #endregion
@@ -390,17 +390,17 @@ namespace SmartStore.Admin
 
         public static CurrencyModel ToModel(this Currency entity)
         {
-            return MapperFactory.GetMapper<Currency, CurrencyModel>().Map(entity);
+            return MapperFactory.Map<Currency, CurrencyModel>(entity);
         }
 
         public static Currency ToEntity(this CurrencyModel model)
         {
-            return MapperFactory.GetMapper<CurrencyModel, Currency>().Map(model);
+            return MapperFactory.Map<CurrencyModel, Currency>(model);
         }
 
         public static Currency ToEntity(this CurrencyModel model, Currency entity)
         {
-            MapperFactory.GetMapper<CurrencyModel, Currency>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
         
@@ -410,17 +410,17 @@ namespace SmartStore.Admin
 
         public static DeliveryTimeModel ToModel(this DeliveryTime entity)
         {
-            return MapperFactory.GetMapper<DeliveryTime, DeliveryTimeModel>().Map(entity);
+            return MapperFactory.Map<DeliveryTime, DeliveryTimeModel>(entity);
         }
 
         public static DeliveryTime ToEntity(this DeliveryTimeModel model)
         {
-            return MapperFactory.GetMapper<DeliveryTimeModel, DeliveryTime>().Map(model);
+            return MapperFactory.Map<DeliveryTimeModel, DeliveryTime>(model);
         }
 
         public static DeliveryTime ToEntity(this DeliveryTimeModel model, DeliveryTime entity)
         {
-            MapperFactory.GetMapper<DeliveryTimeModel, DeliveryTime>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -430,17 +430,17 @@ namespace SmartStore.Admin
 
         public static ProductVariantAttributeCombinationModel ToModel(this ProductVariantAttributeCombination entity)
         {
-            return MapperFactory.GetMapper<ProductVariantAttributeCombination, ProductVariantAttributeCombinationModel>().Map(entity);
+            return MapperFactory.Map<ProductVariantAttributeCombination, ProductVariantAttributeCombinationModel>(entity);
         }
 
         public static ProductVariantAttributeCombination ToEntity(this ProductVariantAttributeCombinationModel model)
         {
-            return MapperFactory.GetMapper<ProductVariantAttributeCombinationModel, ProductVariantAttributeCombination>().Map(model);
+            return MapperFactory.Map<ProductVariantAttributeCombinationModel, ProductVariantAttributeCombination>(model);
         }
 
         public static ProductVariantAttributeCombination ToEntity(this ProductVariantAttributeCombinationModel model, ProductVariantAttributeCombination entity)
         {
-            MapperFactory.GetMapper<ProductVariantAttributeCombinationModel, ProductVariantAttributeCombination>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -450,17 +450,17 @@ namespace SmartStore.Admin
 
         public static MeasureWeightModel ToModel(this MeasureWeight entity)
         {
-            return MapperFactory.GetMapper<MeasureWeight, MeasureWeightModel>().Map(entity);
+            return MapperFactory.Map<MeasureWeight, MeasureWeightModel>(entity);
         }
 
         public static MeasureWeight ToEntity(this MeasureWeightModel model)
         {
-            return MapperFactory.GetMapper<MeasureWeightModel, MeasureWeight>().Map(model);
+            return MapperFactory.Map<MeasureWeightModel, MeasureWeight>(model);
         }
 
         public static MeasureWeight ToEntity(this MeasureWeightModel model, MeasureWeight entity)
         {
-            MapperFactory.GetMapper<MeasureWeightModel, MeasureWeight>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -470,17 +470,17 @@ namespace SmartStore.Admin
 
         public static MeasureDimensionModel ToModel(this MeasureDimension entity)
         {
-            return MapperFactory.GetMapper<MeasureDimension, MeasureDimensionModel>().Map(entity);
+            return MapperFactory.Map<MeasureDimension, MeasureDimensionModel>(entity);
         }
 
         public static MeasureDimension ToEntity(this MeasureDimensionModel model)
         {
-            return MapperFactory.GetMapper<MeasureDimensionModel, MeasureDimension>().Map(model);
+            return MapperFactory.Map<MeasureDimensionModel, MeasureDimension>(model);
         }
 
         public static MeasureDimension ToEntity(this MeasureDimensionModel model, MeasureDimension entity)
         {
-            MapperFactory.GetMapper<MeasureDimensionModel, MeasureDimension>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -490,17 +490,17 @@ namespace SmartStore.Admin
 
         public static QuantityUnitModel ToModel(this QuantityUnit entity)
         {
-            return MapperFactory.GetMapper<QuantityUnit, QuantityUnitModel>().Map(entity);
+            return MapperFactory.Map<QuantityUnit, QuantityUnitModel>(entity);
         }
 
         public static QuantityUnit ToEntity(this QuantityUnitModel model)
         {
-            return MapperFactory.GetMapper<QuantityUnitModel, QuantityUnit>().Map(model);
+            return MapperFactory.Map<QuantityUnitModel, QuantityUnit>(model);
         }
 
         public static QuantityUnit ToEntity(this QuantityUnitModel model, QuantityUnit entity)
         {
-            MapperFactory.GetMapper<QuantityUnitModel, QuantityUnit>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -519,17 +519,17 @@ namespace SmartStore.Admin
 
         public static TaxCategoryModel ToModel(this TaxCategory entity)
         {
-            return MapperFactory.GetMapper<TaxCategory, TaxCategoryModel>().Map(entity);
+            return MapperFactory.Map<TaxCategory, TaxCategoryModel>(entity);
         }
 
         public static TaxCategory ToEntity(this TaxCategoryModel model)
         {
-            return MapperFactory.GetMapper<TaxCategoryModel, TaxCategory>().Map(model);
+            return MapperFactory.Map<TaxCategoryModel, TaxCategory>(model);
         }
 
         public static TaxCategory ToEntity(this TaxCategoryModel model, TaxCategory entity)
         {
-            MapperFactory.GetMapper<TaxCategoryModel, TaxCategory>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -548,17 +548,17 @@ namespace SmartStore.Admin
 
         public static ShippingMethodModel ToModel(this ShippingMethod entity)
         {
-            return MapperFactory.GetMapper<ShippingMethod, ShippingMethodModel>().Map(entity);
+            return MapperFactory.Map<ShippingMethod, ShippingMethodModel>(entity);
         }
 
         public static ShippingMethod ToEntity(this ShippingMethodModel model)
         {
-            return MapperFactory.GetMapper<ShippingMethodModel, ShippingMethod>().Map(model);
+            return MapperFactory.Map<ShippingMethodModel, ShippingMethod>(model);
         }
 
         public static ShippingMethod ToEntity(this ShippingMethodModel model, ShippingMethod entity)
         {
-            MapperFactory.GetMapper<ShippingMethodModel, ShippingMethod>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -573,7 +573,7 @@ namespace SmartStore.Admin
 
 		public static AddressModel ToModel(this Address entity, IAddressService addressService)
 		{
-            var model = MapperFactory.GetMapper<Address, AddressModel>().Map(entity);
+            var model = MapperFactory.Map<Address, AddressModel>(entity);
 
             if (addressService != null)
             {
@@ -585,12 +585,12 @@ namespace SmartStore.Admin
 
 		public static Address ToEntity(this AddressModel model)
         {
-            return MapperFactory.GetMapper<AddressModel, Address>().Map(model);
+            return MapperFactory.Map<AddressModel, Address>(model);
         }
 
         public static Address ToEntity(this AddressModel model, Address entity)
         {
-            MapperFactory.GetMapper<AddressModel, Address>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -600,17 +600,17 @@ namespace SmartStore.Admin
 
         public static NewsLetterSubscriptionModel ToModel(this NewsLetterSubscription entity)
         {
-            return MapperFactory.GetMapper<NewsLetterSubscription, NewsLetterSubscriptionModel>().Map(entity);
+            return MapperFactory.Map<NewsLetterSubscription, NewsLetterSubscriptionModel>(entity);
         }
 
         public static NewsLetterSubscription ToEntity(this NewsLetterSubscriptionModel model)
         {
-            return MapperFactory.GetMapper<NewsLetterSubscriptionModel, NewsLetterSubscription>().Map(model);
+            return MapperFactory.Map<NewsLetterSubscriptionModel, NewsLetterSubscription>(model);
         }
 
         public static NewsLetterSubscription ToEntity(this NewsLetterSubscriptionModel model, NewsLetterSubscription entity)
         {
-            MapperFactory.GetMapper<NewsLetterSubscriptionModel, NewsLetterSubscription>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -620,17 +620,17 @@ namespace SmartStore.Admin
 
         public static DiscountModel ToModel(this Discount entity)
         {
-            return MapperFactory.GetMapper<Discount, DiscountModel>().Map(entity);
+            return MapperFactory.Map<Discount, DiscountModel>(entity);
         }
 
         public static Discount ToEntity(this DiscountModel model)
         {
-            return MapperFactory.GetMapper<DiscountModel, Discount>().Map(model);
+            return MapperFactory.Map<DiscountModel, Discount>(model);
         }
 
         public static Discount ToEntity(this DiscountModel model, Discount entity)
         {
-            MapperFactory.GetMapper<DiscountModel, Discount>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -640,33 +640,33 @@ namespace SmartStore.Admin
 
         public static ForumGroupModel ToModel(this ForumGroup entity)
         {
-            return MapperFactory.GetMapper<ForumGroup, ForumGroupModel>().Map(entity);
+            return MapperFactory.Map<ForumGroup, ForumGroupModel>(entity);
         }
 
         public static ForumGroup ToEntity(this ForumGroupModel model)
         {
-            return MapperFactory.GetMapper<ForumGroupModel, ForumGroup>().Map(model);
+            return MapperFactory.Map<ForumGroupModel, ForumGroup>(model);
         }
 
         public static ForumGroup ToEntity(this ForumGroupModel model, ForumGroup entity)
         {
-            MapperFactory.GetMapper<ForumGroupModel, ForumGroup>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
         public static ForumModel ToModel(this Forum entity)
         {
-            return MapperFactory.GetMapper<Forum, ForumModel>().Map(entity);
+            return MapperFactory.Map<Forum, ForumModel>(entity);
         }
 
         public static Forum ToEntity(this ForumModel model)
         {
-            return MapperFactory.GetMapper<ForumModel, Forum>().Map(model);
+            return MapperFactory.Map<ForumModel, Forum>(model);
         }
 
         public static Forum ToEntity(this ForumModel model, Forum entity)
         {
-            MapperFactory.GetMapper<ForumModel, Forum>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
         
@@ -676,17 +676,17 @@ namespace SmartStore.Admin
 
         public static BlogPostModel ToModel(this BlogPost entity)
         {
-            return MapperFactory.GetMapper<BlogPost, BlogPostModel>().Map(entity);
+            return MapperFactory.Map<BlogPost, BlogPostModel>(entity);
         }
 
         public static BlogPost ToEntity(this BlogPostModel model)
         {
-            return MapperFactory.GetMapper<BlogPostModel, BlogPost>().Map(model);
+            return MapperFactory.Map<BlogPostModel, BlogPost>(model);
         }
 
         public static BlogPost ToEntity(this BlogPostModel model, BlogPost entity)
         {
-            MapperFactory.GetMapper<BlogPostModel, BlogPost>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -696,17 +696,17 @@ namespace SmartStore.Admin
 
         public static NewsItemModel ToModel(this NewsItem entity)
         {
-            return MapperFactory.GetMapper<NewsItem, NewsItemModel>().Map(entity);
+            return MapperFactory.Map<NewsItem, NewsItemModel>(entity);
         }
 
         public static NewsItem ToEntity(this NewsItemModel model)
         {
-            return MapperFactory.GetMapper<NewsItemModel, NewsItem>().Map(model);
+            return MapperFactory.Map<NewsItemModel, NewsItem>(model);
         }
 
         public static NewsItem ToEntity(this NewsItemModel model, NewsItem entity)
         {
-            MapperFactory.GetMapper<NewsItemModel, NewsItem>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -716,17 +716,17 @@ namespace SmartStore.Admin
 
         public static PollModel ToModel(this Poll entity)
         {
-            return MapperFactory.GetMapper<Poll, PollModel>().Map(entity);
+            return MapperFactory.Map<Poll, PollModel>(entity);
         }
 
         public static Poll ToEntity(this PollModel model)
         {
-            return MapperFactory.GetMapper<PollModel, Poll>().Map(model);
+            return MapperFactory.Map<PollModel, Poll>(model);
         }
 
         public static Poll ToEntity(this PollModel model, Poll entity)
         {
-            MapperFactory.GetMapper<PollModel, Poll>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -736,17 +736,17 @@ namespace SmartStore.Admin
 
         public static CustomerRoleModel ToModel(this CustomerRole entity)
         {
-            return MapperFactory.GetMapper<CustomerRole, CustomerRoleModel>().Map(entity);
+            return MapperFactory.Map<CustomerRole, CustomerRoleModel>(entity);
         }
 
         public static CustomerRole ToEntity(this CustomerRoleModel model)
         {
-            return MapperFactory.GetMapper<CustomerRoleModel, CustomerRole>().Map(model);
+            return MapperFactory.Map<CustomerRoleModel, CustomerRole>(model);
         }
 
         public static CustomerRole ToEntity(this CustomerRoleModel model, CustomerRole entity)
         {
-            MapperFactory.GetMapper<CustomerRoleModel, CustomerRole>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -756,17 +756,17 @@ namespace SmartStore.Admin
 
         public static GiftCardModel ToModel(this GiftCard entity)
         {
-            return MapperFactory.GetMapper<GiftCard, GiftCardModel>().Map(entity);
+            return MapperFactory.Map<GiftCard, GiftCardModel>(entity);
         }
 
         public static GiftCard ToEntity(this GiftCardModel model)
         {
-            return MapperFactory.GetMapper<GiftCardModel, GiftCard>().Map(model);
+            return MapperFactory.Map<GiftCardModel, GiftCard>(model);
         }
 
         public static GiftCard ToEntity(this GiftCardModel model, GiftCard entity)
         {
-            MapperFactory.GetMapper<GiftCardModel, GiftCard>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -776,33 +776,33 @@ namespace SmartStore.Admin
 
         public static CountryModel ToModel(this Country entity)
         {
-            return MapperFactory.GetMapper<Country, CountryModel>().Map(entity);
+            return MapperFactory.Map<Country, CountryModel>(entity);
         }
 
         public static Country ToEntity(this CountryModel model)
         {
-            return MapperFactory.GetMapper<CountryModel, Country>().Map(model);
+            return MapperFactory.Map<CountryModel, Country>(model);
         }
 
         public static Country ToEntity(this CountryModel model, Country entity)
         {
-            MapperFactory.GetMapper<CountryModel, Country>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
         public static StateProvinceModel ToModel(this StateProvince entity)
         {
-            return MapperFactory.GetMapper<StateProvince, StateProvinceModel>().Map(entity);
+            return MapperFactory.Map<StateProvince, StateProvinceModel>(entity);
         }
 
         public static StateProvince ToEntity(this StateProvinceModel model)
         {
-            return MapperFactory.GetMapper<StateProvinceModel, StateProvince>().Map(model);
+            return MapperFactory.Map<StateProvinceModel, StateProvince>(model);
         }
 
         public static StateProvince ToEntity(this StateProvinceModel model, StateProvince entity)
         {
-            MapperFactory.GetMapper<StateProvinceModel, StateProvince>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
@@ -1006,7 +1006,7 @@ namespace SmartStore.Admin
 
 		public static PluginModel ToModel(this PluginDescriptor entity)
         {
-            return MapperFactory.GetMapper<PluginDescriptor, PluginModel>().Map(entity);
+            return MapperFactory.Map<PluginDescriptor, PluginModel>(entity);
         }
 
         #endregion
@@ -1016,17 +1016,17 @@ namespace SmartStore.Admin
 
 		public static StoreModel ToModel(this Store entity)
 		{
-            return MapperFactory.GetMapper<Store, StoreModel>().Map(entity);
+            return MapperFactory.Map<Store, StoreModel>(entity);
 		}
 
 		public static Store ToEntity(this StoreModel model)
 		{
-            return MapperFactory.GetMapper<StoreModel, Store>().Map(model);
+            return MapperFactory.Map<StoreModel, Store>(model);
 		}
 
 		public static Store ToEntity(this StoreModel model, Store entity)
 		{
-            MapperFactory.GetMapper<StoreModel, Store>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
 		}
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using SmartStore.Core.Infrastructure;
@@ -51,6 +52,22 @@ namespace SmartStore.ComponentModel
                     _mapperTypes.Add(typePair, type);
                 }
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TTo Map<TFrom, TTo>(TFrom from)
+            where TFrom : class
+            where TTo : class, new()
+        {
+            return GetMapper<TFrom, TTo>().Map(from);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Map<TFrom, TTo>(TFrom from, TTo to)
+            where TFrom : class
+            where TTo : class
+        {
+            GetMapper<TFrom, TTo>().Map(from, to);
         }
 
         public static IMapper<TFrom, TTo> GetMapper<TFrom, TTo>()

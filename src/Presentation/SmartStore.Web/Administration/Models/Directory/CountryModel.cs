@@ -84,18 +84,12 @@ namespace SmartStore.Admin.Models.Directory
     }
 
     public class CountryMapper :
-        IMapper<Country, CountryModel>,
-        IMapper<CountryModel, Country>
+        IMapper<Country, CountryModel>
     {
         public void Map(Country from, CountryModel to)
         {
             MiniMapper.Map(from, to);
             to.NumberOfStates = from.StateProvinces?.Count ?? 0;
-        }
-
-        public void Map(CountryModel from, Country to)
-        {
-            MiniMapper.Map(from, to);
         }
     }
 }

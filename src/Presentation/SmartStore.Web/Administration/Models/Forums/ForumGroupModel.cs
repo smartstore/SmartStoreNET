@@ -78,18 +78,12 @@ namespace SmartStore.Admin.Models.Forums
     }
 
     public class ForumGroupMapper :
-        IMapper<ForumGroup, ForumGroupModel>,
-        IMapper<ForumGroupModel, ForumGroup>
+        IMapper<ForumGroup, ForumGroupModel>
     {
         public void Map(ForumGroup from, ForumGroupModel to)
         {
             MiniMapper.Map(from, to);
             to.SeName = from.GetSeName(0, true, false);
-        }
-
-        public void Map(ForumGroupModel from, ForumGroup to)
-        {
-            MiniMapper.Map(from, to);
         }
     }
 }

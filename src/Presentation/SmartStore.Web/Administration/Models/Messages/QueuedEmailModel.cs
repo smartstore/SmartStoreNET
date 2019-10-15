@@ -91,8 +91,7 @@ namespace SmartStore.Admin.Models.Messages
     }
 
     public class QueuedEmailMapper :
-        IMapper<QueuedEmail, QueuedEmailModel>,
-        IMapper<QueuedEmailModel, QueuedEmail>
+        IMapper<QueuedEmail, QueuedEmailModel>
     {
         public void Map(QueuedEmail from, QueuedEmailModel to)
         {
@@ -102,11 +101,6 @@ namespace SmartStore.Admin.Models.Messages
             to.Attachments = from.Attachments
                 .Select(x => new QueuedEmailModel.QueuedEmailAttachmentModel { Id = x.Id, Name = x.Name, MimeType = x.MimeType })
                 .ToList();
-        }
-
-        public void Map(QueuedEmailModel from, QueuedEmail to)
-        {
-            MiniMapper.Map(from, to);
         }
     }
 }

@@ -113,18 +113,12 @@ namespace SmartStore.Admin.Models.Blogs
     }
 
     public class BlogPostMapper :
-        IMapper<BlogPost, BlogPostModel>,
-        IMapper<BlogPostModel, BlogPost>
+        IMapper<BlogPost, BlogPostModel>
     {
         public void Map(BlogPost from, BlogPostModel to)
         {
             MiniMapper.Map(from, to);
             to.SeName = from.GetSeName(from.LanguageId, true, false);
-        }
-
-        public void Map(BlogPostModel from, BlogPost to)
-        {
-            MiniMapper.Map(from, to);
         }
     }
 }

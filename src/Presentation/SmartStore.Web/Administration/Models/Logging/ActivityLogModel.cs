@@ -29,19 +29,13 @@ namespace SmartStore.Admin.Models.Logging
 	}
 
     public class ActivityLogMapper :
-        IMapper<ActivityLog, ActivityLogModel>,
-        IMapper<ActivityLogModel, ActivityLog>
+        IMapper<ActivityLog, ActivityLogModel>
     {
         public void Map(ActivityLog from, ActivityLogModel to)
         {
             MiniMapper.Map(from, to);
             to.ActivityLogTypeName = from.ActivityLogType?.Name;
             to.CustomerEmail = from.Customer?.Email;
-        }
-
-        public void Map(ActivityLogModel from, ActivityLog to)
-        {
-            MiniMapper.Map(from, to);
         }
     }
 }

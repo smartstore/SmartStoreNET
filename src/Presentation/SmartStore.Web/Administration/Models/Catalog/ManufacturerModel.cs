@@ -166,18 +166,12 @@ namespace SmartStore.Admin.Models.Catalog
 	}
 
     public class ManufacturerMapper :
-        IMapper<Manufacturer, ManufacturerModel>,
-        IMapper<ManufacturerModel, Manufacturer>
+        IMapper<Manufacturer, ManufacturerModel>
     {
         public void Map(Manufacturer from, ManufacturerModel to)
         {
             MiniMapper.Map(from, to);
             to.SeName = from.GetSeName(0, true, false);
-        }
-
-        public void Map(ManufacturerModel from, Manufacturer to)
-        {
-            MiniMapper.Map(from, to);
         }
     }
 }

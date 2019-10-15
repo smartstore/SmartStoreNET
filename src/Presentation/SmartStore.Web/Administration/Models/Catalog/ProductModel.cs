@@ -827,18 +827,12 @@ namespace SmartStore.Admin.Models.Catalog
 	}
 
     public class ProductMapper : 
-        IMapper<Product, ProductModel>, 
-        IMapper<ProductModel, Product>
+        IMapper<Product, ProductModel>
     {
         public void Map(Product from, ProductModel to)
         {
             MiniMapper.Map(from, to);
             to.SeName = from.GetSeName(0, true, false);
-        }
-
-        public void Map(ProductModel from, Product to)
-        {
-            MiniMapper.Map(from, to);
         }
     }
 }

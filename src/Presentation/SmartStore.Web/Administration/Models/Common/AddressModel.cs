@@ -174,8 +174,7 @@ namespace SmartStore.Admin.Models.Common
     }
 
     public class AddressMapper :
-        IMapper<Address, AddressModel>,
-        IMapper<AddressModel, Address>
+        IMapper<Address, AddressModel>
     {
         public void Map(Address from, AddressModel to)
         {
@@ -183,11 +182,6 @@ namespace SmartStore.Admin.Models.Common
             to.CountryName = from.Country?.Name;
             to.StateProvinceName = from.StateProvince?.Name;
             to.EmailMatch = from.Email;
-        }
-
-        public void Map(AddressModel from, Address to)
-        {
-            MiniMapper.Map(from, to);
         }
     }
 }

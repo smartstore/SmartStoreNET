@@ -95,18 +95,12 @@ namespace SmartStore.Admin.Models.News
     }
 
     public class NewsItemMapper :
-        IMapper<NewsItem, NewsItemModel>,
-        IMapper<NewsItemModel, NewsItem>
+        IMapper<NewsItem, NewsItemModel>
     {
         public void Map(NewsItem from, NewsItemModel to)
         {
             MiniMapper.Map(from, to);
             to.SeName = from.GetSeName(from.LanguageId, true, false);
-        }
-
-        public void Map(NewsItemModel from, NewsItem to)
-        {
-            MiniMapper.Map(from, to);
         }
     }
 }

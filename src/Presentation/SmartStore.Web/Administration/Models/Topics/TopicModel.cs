@@ -178,19 +178,13 @@ namespace SmartStore.Admin.Models.Topics
     }
 
     public class TopicMapper :
-        IMapper<Topic, TopicModel>,
-        IMapper<TopicModel, Topic>
+        IMapper<Topic, TopicModel>
     {
         public void Map(Topic from, TopicModel to)
         {
             MiniMapper.Map(from, to);
             to.SeName = from.GetSeName(0, true, false);
             to.WidgetWrapContent = from.WidgetWrapContent ?? true;
-        }
-
-        public void Map(TopicModel from, Topic to)
-        {
-            MiniMapper.Map(from, to);
         }
     }
 }

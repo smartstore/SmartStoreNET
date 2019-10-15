@@ -36,7 +36,7 @@ namespace SmartStore.Web.Controllers
         [RewriteUrl(SslRequirement.No)]
         public ActionResult Index()
         {
-			return View();
+            return View();
         }
 
 		public ActionResult StoreClosed()

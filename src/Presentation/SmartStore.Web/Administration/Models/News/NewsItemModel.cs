@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.News;
+using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -88,6 +91,16 @@ namespace SmartStore.Admin.Models.News
             RuleFor(x => x.Title).NotEmpty();
             RuleFor(x => x.Short).NotEmpty();
             RuleFor(x => x.Full).NotEmpty();
+        }
+    }
+
+    public class NewsItemMapper :
+        IMapper<NewsItem, NewsItemModel>
+    {
+        public void Map(NewsItem from, NewsItemModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.SeName = from.GetSeName(from.LanguageId, true, false);
         }
     }
 }

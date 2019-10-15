@@ -42,7 +42,6 @@ namespace SmartStore.Admin.Controllers
         private readonly IOrderService _orderService;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly CustomerSettings _customerSettings;
-        private readonly IAddressService _addressService;
 
         #endregion
 
@@ -53,8 +52,7 @@ namespace SmartStore.Admin.Controllers
             ICountryService countryService, IStateProvinceService stateProvinceService,
             IPriceFormatter priceFormatter, IAffiliateService affiliateService,
             ICustomerService customerService, IOrderService orderService,
-            AdminAreaSettings adminAreaSettings, CustomerSettings customerSettings,
-            IAddressService addressService)
+            AdminAreaSettings adminAreaSettings, CustomerSettings customerSettings)
         {
             this._localizationService = localizationService;
             this._workContext = workContext;
@@ -68,7 +66,6 @@ namespace SmartStore.Admin.Controllers
             this._orderService = orderService;
             this._adminAreaSettings = adminAreaSettings;
             this._customerSettings = customerSettings;
-            this._addressService = addressService;
         }
 
         #endregion
@@ -88,7 +85,7 @@ namespace SmartStore.Admin.Controllers
                 if (!excludeProperties)
                 {
                     model.Active = affiliate.Active;
-                    model.Address = affiliate.Address.ToModel(_addressService);
+                    model.Address = affiliate.Address.ToModel();
                 }
             }
 

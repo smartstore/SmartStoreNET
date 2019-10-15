@@ -5,7 +5,7 @@ using SmartStore.ComponentModel;
 
 namespace SmartStore.Services.DataExchange.Csv
 {
-	public class CsvConfigurationConverter : TypeConverterBase
+	public class CsvConfigurationConverter : DefaultTypeConverter
 	{
 		public CsvConfigurationConverter()
 			: base(typeof(object))

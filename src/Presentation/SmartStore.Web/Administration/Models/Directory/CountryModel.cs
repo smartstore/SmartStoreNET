@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
@@ -78,6 +80,16 @@ namespace SmartStore.Admin.Models.Directory
             RuleFor(x => x.TwoLetterIsoCode).Length(2);
             RuleFor(x => x.ThreeLetterIsoCode).NotEmpty();
             RuleFor(x => x.ThreeLetterIsoCode).Length(3);
+        }
+    }
+
+    public class CountryMapper :
+        IMapper<Country, CountryModel>
+    {
+        public void Map(Country from, CountryModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.NumberOfStates = from.StateProvinces?.Count ?? 0;
         }
     }
 }

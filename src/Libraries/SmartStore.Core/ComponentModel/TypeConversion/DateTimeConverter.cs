@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace SmartStore.ComponentModel
 {
 	[SuppressMessage("ReSharper", "CanBeReplacedWithTryCastAndCheckForNull")]
-	public class DateTimeConverter : TypeConverterBase
+	public class DateTimeConverter : DefaultTypeConverter
 	{
 		public DateTimeConverter()
 			: base(typeof(DateTime))

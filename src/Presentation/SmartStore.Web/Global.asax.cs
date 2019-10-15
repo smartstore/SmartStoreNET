@@ -7,7 +7,6 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using System.Web.WebPages;
-using AutoMapper;
 using FluentValidation;
 using FluentValidation.Mvc;
 using JavaScriptEngineSwitcher.Core;
@@ -64,22 +63,6 @@ namespace SmartStore.Web
 			// register custom bundles
 			var bundlePublisher = engine.Resolve<IBundlePublisher>();
 			bundlePublisher.RegisterBundles(bundles);
-		}
-
-		public static void RegisterClassMaps(IEngine engine)
-		{
-			// register AutoMapper maps
-			var profileTypes = engine.Resolve<ITypeFinder>().FindClassesOfType<Profile>();
-
-			if (profileTypes.Any())
-			{
-				Mapper.Initialize(cfg => {
-					foreach (var profileType in profileTypes)
-					{
-						cfg.AddProfile(profileType);
-					}
-				});
-			}
 		}
 
 		public static void RegisterJsEngines()
@@ -163,9 +146,6 @@ namespace SmartStore.Web
 
 				// "throw-away" filter for task scheduler initialization (the filter removes itself when processed)
 				GlobalFilters.Filters.Add(new InitializeSchedulerFilter(), int.MinValue);
-
-				// register AutoMapper class maps
-				RegisterClassMaps(engine);
 			}
 			else
 			{

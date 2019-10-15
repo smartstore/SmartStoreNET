@@ -645,105 +645,105 @@ namespace SmartStore.Admin.Infrastructure
 			//	.ForMember(dest => dest.PrimaryExchangeRateCurrency, mo => mo.Ignore());
 
 			//Settings
-			CreateMap<TaxSettings, TaxSettingsModel>()
-				.ForMember(dest => dest.DefaultTaxAddress, mo => mo.Ignore())
-				.ForMember(dest => dest.PaymentMethodAdditionalFeeTaxCategories, mo => mo.Ignore())
-				.ForMember(dest => dest.ShippingTaxCategories, mo => mo.Ignore())
-				.ForMember(dest => dest.EuVatShopCountries, mo => mo.Ignore());
-			CreateMap<TaxSettingsModel, TaxSettings>()
-				.ForMember(dest => dest.ActiveTaxProviderSystemName, mo => mo.Ignore());
-			CreateMap<NewsSettings, NewsSettingsModel>();
-			CreateMap<NewsSettingsModel, NewsSettings>();
-			CreateMap<ForumSettings, ForumSettingsModel>();
-			CreateMap<ForumSettingsModel, ForumSettings>()
-				.ForMember(dest => dest.TopicSubjectMaxLength, mo => mo.Ignore())
-				.ForMember(dest => dest.StrippedTopicMaxLength, mo => mo.Ignore())
-				.ForMember(dest => dest.PostMaxLength, mo => mo.Ignore())
-				.ForMember(dest => dest.LatestCustomerPostsPageSize, mo => mo.Ignore())
-				.ForMember(dest => dest.PrivateMessagesPageSize, mo => mo.Ignore())
-				.ForMember(dest => dest.ForumSubscriptionsPageSize, mo => mo.Ignore())
-				.ForMember(dest => dest.PMSubjectMaxLength, mo => mo.Ignore())
-				.ForMember(dest => dest.PMTextMaxLength, mo => mo.Ignore())
-				.ForMember(dest => dest.HomePageActiveDiscussionsTopicCount, mo => mo.Ignore())
-				.ForMember(dest => dest.ActiveDiscussionsPageTopicCount, mo => mo.Ignore());
-			CreateMap<BlogSettings, BlogSettingsModel>();
-			CreateMap<BlogSettingsModel, BlogSettings>();
-			CreateMap<ShippingSettings, ShippingSettingsModel>()
-				.ForMember(dest => dest.ShippingOriginAddress, mo => mo.Ignore())
-				.ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore());
-			CreateMap<ShippingSettingsModel, ShippingSettings>()
-				.ForMember(dest => dest.ActiveShippingRateComputationMethodSystemNames, mo => mo.Ignore())
-				.ForMember(dest => dest.ReturnValidOptionsIfThereAreAny, mo => mo.Ignore());
-			CreateMap<CatalogSettings, CatalogSettingsModel>()
-				.ForMember(dest => dest.AvailableSubCategoryDisplayTypes, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailablePriceDisplayTypes, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableDefaultViewModes, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableSortOrderModes, mo => mo.Ignore());
-			CreateMap<CatalogSettingsModel, CatalogSettings>()
-				.ForMember(dest => dest.PageShareCode, mo => mo.Ignore())
-				.ForMember(dest => dest.DefaultProductRatingValue, mo => mo.Ignore())
-				.ForMember(dest => dest.UseSmallProductBoxOnHomePage, mo => mo.Ignore())
-				.ForMember(dest => dest.MaximumBackInStockSubscriptions, mo => mo.Ignore())
-				.ForMember(dest => dest.DisplayTierPricesWithDiscounts, mo => mo.Ignore())
-				.ForMember(dest => dest.FileUploadMaximumSizeBytes, mo => mo.Ignore())
-				.ForMember(dest => dest.FileUploadAllowedExtensions, mo => mo.Ignore())
-				.ForMember(dest => dest.MostRecentlyUsedCategoriesMaxSize, mo => mo.Ignore())
-				.ForMember(dest => dest.AllowCustomersToSelectPageSize, mo => mo.Ignore())
-				.ForMember(dest => dest.MostRecentlyUsedManufacturersMaxSize, mo => mo.Ignore());
-			CreateMap<RewardPointsSettings, RewardPointsSettingsModel>()
-				.ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore());
-			CreateMap<RewardPointsSettingsModel, RewardPointsSettings>();
-			CreateMap<OrderSettings, OrderSettingsModel>()
-				.ForMember(dest => dest.GiftCards_Activated_OrderStatuses, mo => mo.Ignore())
-				.ForMember(dest => dest.GiftCards_Deactivated_OrderStatuses, mo => mo.Ignore())
-				.ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
-				.ForMember(dest => dest.StoreCount, mo => mo.Ignore())
-				.ForMember(dest => dest.OrderIdent, mo => mo.Ignore())
-				.ForMember(dest => dest.Locales, mo => mo.Ignore());
-			CreateMap<OrderSettingsModel, OrderSettings>()
-				.ForMember(dest => dest.MinimumOrderPlacementInterval, mo => mo.Ignore())
-				.ForMember(dest => dest.Id, mo => mo.Ignore());
-			CreateMap<ShoppingCartSettings, ShoppingCartSettingsModel>()
-				.ForMember(dest => dest.AvailableNewsLetterSubscriptions, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableThirdPartyEmailHandOver, mo => mo.Ignore())
-				.ForMember(dest => dest.Locales, mo => mo.Ignore());
-			CreateMap<ShoppingCartSettingsModel, ShoppingCartSettings>()
-				.ForMember(dest => dest.Id, mo => mo.Ignore())
-				.ForMember(dest => dest.MoveItemsFromWishlistToCart, mo => mo.Ignore())
-				.ForMember(dest => dest.ShowItemsFromWishlistToCartButton, mo => mo.Ignore());
-			CreateMap<MediaSettings, MediaSettingsModel>()
-				.ForMember(dest => dest.StorageProvider, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableStorageProvider, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailablePictureZoomTypes, mo => mo.Ignore());
-			CreateMap<MediaSettingsModel, MediaSettings>()
-				.ForMember(dest => dest.DefaultImageQuality, mo => mo.Ignore())
-				.ForMember(dest => dest.MultipleThumbDirectories, mo => mo.Ignore())
-				.ForMember(dest => dest.DefaultThumbnailAspectRatio, mo => mo.Ignore())
-				.ForMember(dest => dest.VariantValueThumbPictureSize, mo => mo.Ignore());
-			CreateMap<CustomerSettings, CustomerUserSettingsModel.CustomerSettingsModel>()
-				.ForMember(dest => dest.AvailableRegisterCustomerRoles, mo => mo.Ignore());
-            CreateMap<CustomerUserSettingsModel.CustomerSettingsModel, CustomerSettings>()
-                .ForMember(dest => dest.HashedPasswordFormat, mo => mo.Ignore())
-                .ForMember(dest => dest.PasswordMinLength, mo => mo.Ignore())
-                .ForMember(dest => dest.AvatarMaximumSizeBytes, mo => mo.Ignore())
-                .ForMember(dest => dest.DownloadableProductsValidateUser, mo => mo.Ignore())
-                .ForMember(dest => dest.OnlineCustomerMinutes, mo => mo.Ignore());
-			CreateMap<AddressSettings, CustomerUserSettingsModel.AddressSettingsModel>();
-			CreateMap<CustomerUserSettingsModel.AddressSettingsModel, AddressSettings>()
-				.ForMember(dest => dest.Id, mo => mo.Ignore());
-			CreateMap<PrivacySettings, CustomerUserSettingsModel.PrivacySettingsModel>();
-			CreateMap<CustomerUserSettingsModel.PrivacySettingsModel, PrivacySettings>()
-				.ForMember(dest => dest.Id, mo => mo.Ignore());
+			//CreateMap<TaxSettings, TaxSettingsModel>()
+			//	.ForMember(dest => dest.DefaultTaxAddress, mo => mo.Ignore())
+			//	.ForMember(dest => dest.PaymentMethodAdditionalFeeTaxCategories, mo => mo.Ignore())
+			//	.ForMember(dest => dest.ShippingTaxCategories, mo => mo.Ignore())
+			//	.ForMember(dest => dest.EuVatShopCountries, mo => mo.Ignore());
+			//CreateMap<TaxSettingsModel, TaxSettings>()
+			//	.ForMember(dest => dest.ActiveTaxProviderSystemName, mo => mo.Ignore());
+			//CreateMap<NewsSettings, NewsSettingsModel>();
+			//CreateMap<NewsSettingsModel, NewsSettings>();
+			//CreateMap<ForumSettings, ForumSettingsModel>();
+			//CreateMap<ForumSettingsModel, ForumSettings>()
+			//	.ForMember(dest => dest.TopicSubjectMaxLength, mo => mo.Ignore())
+			//	.ForMember(dest => dest.StrippedTopicMaxLength, mo => mo.Ignore())
+			//	.ForMember(dest => dest.PostMaxLength, mo => mo.Ignore())
+			//	.ForMember(dest => dest.LatestCustomerPostsPageSize, mo => mo.Ignore())
+			//	.ForMember(dest => dest.PrivateMessagesPageSize, mo => mo.Ignore())
+			//	.ForMember(dest => dest.ForumSubscriptionsPageSize, mo => mo.Ignore())
+			//	.ForMember(dest => dest.PMSubjectMaxLength, mo => mo.Ignore())
+			//	.ForMember(dest => dest.PMTextMaxLength, mo => mo.Ignore())
+			//	.ForMember(dest => dest.HomePageActiveDiscussionsTopicCount, mo => mo.Ignore())
+			//	.ForMember(dest => dest.ActiveDiscussionsPageTopicCount, mo => mo.Ignore());
+			//CreateMap<BlogSettings, BlogSettingsModel>();
+			//CreateMap<BlogSettingsModel, BlogSettings>();
+			//CreateMap<ShippingSettings, ShippingSettingsModel>()
+			//	.ForMember(dest => dest.ShippingOriginAddress, mo => mo.Ignore())
+			//	.ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore());
+			//CreateMap<ShippingSettingsModel, ShippingSettings>()
+			//	.ForMember(dest => dest.ActiveShippingRateComputationMethodSystemNames, mo => mo.Ignore())
+			//	.ForMember(dest => dest.ReturnValidOptionsIfThereAreAny, mo => mo.Ignore());
+			//CreateMap<CatalogSettings, CatalogSettingsModel>()
+			//	.ForMember(dest => dest.AvailableSubCategoryDisplayTypes, mo => mo.Ignore())
+			//	.ForMember(dest => dest.AvailablePriceDisplayTypes, mo => mo.Ignore())
+			//	.ForMember(dest => dest.AvailableDefaultViewModes, mo => mo.Ignore())
+			//	.ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore())
+			//	.ForMember(dest => dest.AvailableSortOrderModes, mo => mo.Ignore());
+			//CreateMap<CatalogSettingsModel, CatalogSettings>()
+			//	.ForMember(dest => dest.PageShareCode, mo => mo.Ignore())
+			//	.ForMember(dest => dest.DefaultProductRatingValue, mo => mo.Ignore())
+			//	.ForMember(dest => dest.UseSmallProductBoxOnHomePage, mo => mo.Ignore())
+			//	.ForMember(dest => dest.MaximumBackInStockSubscriptions, mo => mo.Ignore())
+			//	.ForMember(dest => dest.DisplayTierPricesWithDiscounts, mo => mo.Ignore())
+			//	.ForMember(dest => dest.FileUploadMaximumSizeBytes, mo => mo.Ignore())
+			//	.ForMember(dest => dest.FileUploadAllowedExtensions, mo => mo.Ignore())
+			//	.ForMember(dest => dest.MostRecentlyUsedCategoriesMaxSize, mo => mo.Ignore())
+			//	.ForMember(dest => dest.AllowCustomersToSelectPageSize, mo => mo.Ignore())
+			//	.ForMember(dest => dest.MostRecentlyUsedManufacturersMaxSize, mo => mo.Ignore());
+			//CreateMap<RewardPointsSettings, RewardPointsSettingsModel>()
+			//	.ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore());
+			//CreateMap<RewardPointsSettingsModel, RewardPointsSettings>();
+			//CreateMap<OrderSettings, OrderSettingsModel>()
+			//	.ForMember(dest => dest.GiftCards_Activated_OrderStatuses, mo => mo.Ignore())
+			//	.ForMember(dest => dest.GiftCards_Deactivated_OrderStatuses, mo => mo.Ignore())
+			//	.ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
+			//	.ForMember(dest => dest.StoreCount, mo => mo.Ignore())
+			//	.ForMember(dest => dest.OrderIdent, mo => mo.Ignore())
+			//	.ForMember(dest => dest.Locales, mo => mo.Ignore());
+			//CreateMap<OrderSettingsModel, OrderSettings>()
+			//	.ForMember(dest => dest.MinimumOrderPlacementInterval, mo => mo.Ignore())
+			//	.ForMember(dest => dest.Id, mo => mo.Ignore());
+			//CreateMap<ShoppingCartSettings, ShoppingCartSettingsModel>()
+			//	.ForMember(dest => dest.AvailableNewsLetterSubscriptions, mo => mo.Ignore())
+			//	.ForMember(dest => dest.AvailableThirdPartyEmailHandOver, mo => mo.Ignore())
+			//	.ForMember(dest => dest.Locales, mo => mo.Ignore());
+			//CreateMap<ShoppingCartSettingsModel, ShoppingCartSettings>()
+			//	.ForMember(dest => dest.Id, mo => mo.Ignore())
+			//	.ForMember(dest => dest.MoveItemsFromWishlistToCart, mo => mo.Ignore())
+			//	.ForMember(dest => dest.ShowItemsFromWishlistToCartButton, mo => mo.Ignore());
+			//CreateMap<MediaSettings, MediaSettingsModel>()
+			//	.ForMember(dest => dest.StorageProvider, mo => mo.Ignore())
+			//	.ForMember(dest => dest.AvailableStorageProvider, mo => mo.Ignore())
+			//	.ForMember(dest => dest.AvailablePictureZoomTypes, mo => mo.Ignore());
+			//CreateMap<MediaSettingsModel, MediaSettings>()
+			//	.ForMember(dest => dest.DefaultImageQuality, mo => mo.Ignore())
+			//	.ForMember(dest => dest.MultipleThumbDirectories, mo => mo.Ignore())
+			//	.ForMember(dest => dest.DefaultThumbnailAspectRatio, mo => mo.Ignore())
+			//	.ForMember(dest => dest.VariantValueThumbPictureSize, mo => mo.Ignore());
+			//CreateMap<CustomerSettings, CustomerUserSettingsModel.CustomerSettingsModel>()
+			//	.ForMember(dest => dest.AvailableRegisterCustomerRoles, mo => mo.Ignore());
+   //         CreateMap<CustomerUserSettingsModel.CustomerSettingsModel, CustomerSettings>()
+   //             .ForMember(dest => dest.HashedPasswordFormat, mo => mo.Ignore())
+   //             .ForMember(dest => dest.PasswordMinLength, mo => mo.Ignore())
+   //             .ForMember(dest => dest.AvatarMaximumSizeBytes, mo => mo.Ignore())
+   //             .ForMember(dest => dest.DownloadableProductsValidateUser, mo => mo.Ignore())
+   //             .ForMember(dest => dest.OnlineCustomerMinutes, mo => mo.Ignore());
+			//CreateMap<AddressSettings, CustomerUserSettingsModel.AddressSettingsModel>();
+			//CreateMap<CustomerUserSettingsModel.AddressSettingsModel, AddressSettings>()
+			//	.ForMember(dest => dest.Id, mo => mo.Ignore());
+			//CreateMap<PrivacySettings, CustomerUserSettingsModel.PrivacySettingsModel>();
+			//CreateMap<CustomerUserSettingsModel.PrivacySettingsModel, PrivacySettings>()
+			//	.ForMember(dest => dest.Id, mo => mo.Ignore());
 
-			CreateMap<ThemeSettings, ThemeListModel>()
-				.ForMember(dest => dest.AvailableBundleOptimizationValues, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableAssetCachingValues, mo => mo.Ignore())
-				.ForMember(dest => dest.Themes, mo => mo.Ignore())
-				.ForMember(dest => dest.StoreId, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
-				.ForMember(dest => dest.Id, mo => mo.Ignore());
-			CreateMap<ThemeListModel, ThemeSettings>();
+			//CreateMap<ThemeSettings, ThemeListModel>()
+			//	.ForMember(dest => dest.AvailableBundleOptimizationValues, mo => mo.Ignore())
+			//	.ForMember(dest => dest.AvailableAssetCachingValues, mo => mo.Ignore())
+			//	.ForMember(dest => dest.Themes, mo => mo.Ignore())
+			//	.ForMember(dest => dest.StoreId, mo => mo.Ignore())
+			//	.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
+			//	.ForMember(dest => dest.Id, mo => mo.Ignore());
+			//CreateMap<ThemeListModel, ThemeSettings>();
 		}
 	}
 }

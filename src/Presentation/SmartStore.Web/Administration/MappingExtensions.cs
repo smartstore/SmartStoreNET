@@ -568,7 +568,7 @@ namespace SmartStore.Admin
 
         public static AddressModel ToModel(this Address entity)
         {
-            return ToModel(entity, null);
+            return MapperFactory.Map<Address, AddressModel>(entity);
         }
 
 		public static AddressModel ToModel(this Address entity, IAddressService addressService)

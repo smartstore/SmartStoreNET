@@ -81,7 +81,6 @@ namespace SmartStore.Admin.Controllers
         private readonly IEventPublisher _eventPublisher;
         private readonly PluginMediator _pluginMediator;
         private readonly IAffiliateService _affiliateService;
-        private readonly IMessageModelProvider _messageModelProvider;
         private readonly Lazy<IGdprTool> _gdprTool;
 
         #endregion
@@ -113,7 +112,6 @@ namespace SmartStore.Admin.Controllers
             IEventPublisher eventPublisher,
             PluginMediator pluginMediator,
             IAffiliateService affiliateService,
-            IMessageModelProvider messageModelProvider,
             Lazy<IGdprTool> gdprTool)
         {
             _customerService = customerService;
@@ -149,7 +147,6 @@ namespace SmartStore.Admin.Controllers
             _eventPublisher = eventPublisher;
             _pluginMediator = pluginMediator;
             _affiliateService = affiliateService;
-            _messageModelProvider = messageModelProvider;
             _gdprTool = gdprTool;
         }
 
@@ -392,7 +389,7 @@ namespace SmartStore.Admin.Controllers
                 .ToList();
 
             model.Addresses = addresses
-                .Select(x => x.ToModel(_addressService))
+                .Select(x => x.ToModel())
                 .ToList();
         }
 
@@ -1289,7 +1286,7 @@ namespace SmartStore.Admin.Controllers
         {
             model.CustomerId = customer.Id;
             model.Username = customer.Username;
-            model.Address = address?.ToModel(_addressService) ?? new AddressModel();
+            model.Address = address?.ToModel() ?? new AddressModel();
             model.Address.TitleEnabled = _addressSettings.TitleEnabled;
             model.Address.FirstNameEnabled = true;
             model.Address.FirstNameRequired = true;

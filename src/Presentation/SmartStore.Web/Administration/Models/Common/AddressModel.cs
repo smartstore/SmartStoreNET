@@ -5,6 +5,7 @@ using FluentValidation.Attributes;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Localization;
+using SmartStore.Services.Common;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -176,12 +177,20 @@ namespace SmartStore.Admin.Models.Common
     public class AddressMapper :
         IMapper<Address, AddressModel>
     {
+        private readonly IAddressService _addressService;
+
+        public AddressMapper(IAddressService addressService)
+        {
+            _addressService = addressService;
+        }
+
         public void Map(Address from, AddressModel to)
         {
             MiniMapper.Map(from, to);
             to.CountryName = from.Country?.Name;
             to.StateProvinceName = from.StateProvince?.Name;
             to.EmailMatch = from.Email;
+            to.FormattedAddress = _addressService.FormatAddress(from, true);
         }
     }
 }

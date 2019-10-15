@@ -314,7 +314,7 @@ namespace SmartStore.Admin.Controllers
 				: null;
 
 			model.ShippingOriginAddress = originAddress != null
-				? originAddress.ToModel(_addressService)
+				? originAddress.ToModel()
 				: new AddressModel();
 
 			foreach (var c in _countryService.GetAllCountries(true))
@@ -434,7 +434,7 @@ namespace SmartStore.Admin.Controllers
             // Default tax address.
             var defaultAddress = (taxSettings.DefaultTaxAddressId > 0 ? _addressService.GetAddressById(taxSettings.DefaultTaxAddressId) : null);
 			model.DefaultTaxAddress = defaultAddress != null
-				? defaultAddress.ToModel(_addressService)
+				? defaultAddress.ToModel()
 				: new AddressModel();
 
 			if (storeScope > 0 && Services.Settings.SettingExists(taxSettings, x => x.DefaultTaxAddressId, storeScope))

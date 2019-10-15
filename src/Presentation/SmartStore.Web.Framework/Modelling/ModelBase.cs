@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
-using AutoMapper;
 using Newtonsoft.Json;
 using SmartStore.Core.Infrastructure;
 
@@ -60,7 +59,6 @@ namespace SmartStore.Web.Framework.Modelling
         /// <summary>
         /// Use this property to store any custom value for your models. 
         /// </summary>
-		[IgnoreMap]
 		public CustomPropertiesDictionary CustomProperties { get; set; }
 
 		/// <summary>
@@ -71,7 +69,7 @@ namespace SmartStore.Web.Framework.Modelling
 		/// Use thread properties whenever you need to persist request-scoped data,
 		/// but the model is potentially cached statically.
 		/// </remarks>
-		[IgnoreMap, JsonIgnore]
+		[JsonIgnore]
 		public IDictionary<string, object> CustomThreadProperties
 		{
 			get
@@ -121,7 +119,6 @@ namespace SmartStore.Web.Framework.Modelling
 
 	public abstract partial class TabbableModel : EntityModelBase
 	{
-		[IgnoreMap]
 		public virtual string[] LoadedTabs { get; set; }
 	}
 

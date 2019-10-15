@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Globalization;
 using SmartStore.Utilities;
+using SmartStore.Core;
 
 namespace SmartStore.ComponentModel
 {
@@ -79,6 +80,7 @@ namespace SmartStore.ComponentModel
             }
 
             var toType = to.GetType();
+            var isEntityMapping = typeof(BaseEntity).IsAssignableFrom(toType);
             var toProps = GetFastPropertiesFor(toType).ToArray();
 
             foreach (var toProp in toProps)
@@ -89,10 +91,22 @@ namespace SmartStore.ComponentModel
                     continue;
                 }
 
-                if (TryMap(fromProp.GetValue(from), fromProp.Property.PropertyType, toProp.Property.PropertyType, culture, out var propValue))
+                var fromPropType = fromProp.Property.PropertyType;
+                var toPropType = toProp.Property.PropertyType;
+                var sourceValue = fromProp.GetValue(from);
+
+                if (isEntityMapping && fromPropType == typeof(int) && toPropType == typeof(int?) && object.Equals(0, sourceValue) && toProp.Name.EndsWith("Id"))
+                {
+                    // TODO: This is more a hack than a proper solution. Find a more generic way to convert int FK properties...
+                    // Special mapper, that avoids DbUpdate exceptions in cases where
+                    // optional (nullable) int FK properties are 0 instead of "null" 
+                    // after mapping model > entity.
+                    toProp.SetValue(to, null);
+                }
+                else if (TryMap(sourceValue, fromPropType, toPropType, culture, out var targetValue))
                 {
                     // Set it
-                    toProp.SetValue(to, propValue);
+                    toProp.SetValue(to, targetValue);
                 }
             }
         }

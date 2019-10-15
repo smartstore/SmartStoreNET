@@ -11,15 +11,15 @@ using SmartStore.Core.Caching;
 namespace SmartStore.ComponentModel
 {
 	[SuppressMessage("ReSharper", "CanBeReplacedWithTryCastAndCheckForNull")]
-	public class EnumerableConverter<T> : TypeConverterBase
+	public class EnumerableConverter<T> : DefaultTypeConverter
 	{
 		private readonly Func<IEnumerable<T>, object> _activator;
-		private readonly ITypeConverter _elementTypeConverter;
+        private readonly ITypeConverter _elementTypeConverter;
 
         public EnumerableConverter(Type sequenceType)
 			: base(typeof(object))
 		{
-			_elementTypeConverter = TypeConverterFactory.GetConverter<T>();
+            _elementTypeConverter = TypeConverterFactory.GetConverter<T>();
 			if (_elementTypeConverter == null)
 				throw new InvalidOperationException("No type converter exists for type " + typeof(T).FullName);
 

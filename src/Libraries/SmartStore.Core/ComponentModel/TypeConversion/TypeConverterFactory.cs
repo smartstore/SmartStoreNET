@@ -91,31 +91,26 @@ namespace SmartStore.ComponentModel
 		{
             Guard.NotNull(type, nameof(type));
 
-            if (_typeConverters.TryGetValue(type, out var converter))
-			{
-				return converter;
-			}
+            return _typeConverters.GetOrAdd(type, Get);
 
-            // Nullable types
-			if (type.IsNullable(out _))
-			{
-				converter = new NullableConverter(type);
-				RegisterConverter(type, converter);
-				return converter;
-            }
-
-            // Sequence types
-            if (type.IsSequenceType(out var elementType))
+            ITypeConverter Get(Type t)
             {
-                converter = (ITypeConverter)Activator.CreateInstance(typeof(EnumerableConverter<>).MakeGenericType(elementType), type);
-                RegisterConverter(type, converter);
-                return converter;
-            }
+                // Nullable types
+                if (type.IsNullable(out Type elementType))
+                {
+                    return new NullableConverter(type, elementType);
+                }
 
-            // Default fallback
-            converter = new TypeConverterAdapter(type);
-			RegisterConverter(type, converter);
-			return converter;
+                // Sequence types
+                if (type.IsSequenceType(out elementType))
+                {
+                    var converter = (ITypeConverter)Activator.CreateInstance(typeof(EnumerableConverter<>).MakeGenericType(elementType), type);
+                    return converter;
+                }
+
+                // Default fallback
+                return new DefaultTypeConverter(type);
+            }
 		}
 	}
 }

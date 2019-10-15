@@ -9,23 +9,23 @@ using System.Threading.Tasks;
 namespace SmartStore.ComponentModel
 {
 	[SuppressMessage("ReSharper", "TryCastAlwaysSucceeds")]
-	public class NullableConverter : TypeConverterBase
+	public class NullableConverter : DefaultTypeConverter
 	{
-		private readonly bool _underlyingTypeIsConvertible;
+		private readonly bool _elementTypeIsConvertible;
 
-		public NullableConverter(Type type)
+		internal NullableConverter(Type type, Type elementType)
 			: base(type)
 		{
 			NullableType = type;
-			UnderlyingType = Nullable.GetUnderlyingType(type);
+			ElementType = elementType ?? Nullable.GetUnderlyingType(type);
 
-			if (UnderlyingType == null)
+			if (ElementType == null)
 			{
 				throw Error.Argument("type", "Type is not a nullable type.");
 			}
 
-			_underlyingTypeIsConvertible = typeof(IConvertible).IsAssignableFrom(UnderlyingType) && !UnderlyingType.IsEnum;
-			UnderlyingTypeConverter = TypeConverterFactory.GetConverter(UnderlyingType);
+			_elementTypeIsConvertible = typeof(IConvertible).IsAssignableFrom(ElementType) && !ElementType.IsEnum;
+			ElementTypeConverter = TypeConverterFactory.GetConverter(ElementType);
 		}
 
 		public Type NullableType
@@ -34,13 +34,13 @@ namespace SmartStore.ComponentModel
 			private set;
 		}
 
-		public Type UnderlyingType
+		public Type ElementType
 		{
 			get;
 			private set;
 		}
 
-		public ITypeConverter UnderlyingTypeConverter
+		public ITypeConverter ElementTypeConverter
 		{
 			get;
 			private set;
@@ -48,17 +48,17 @@ namespace SmartStore.ComponentModel
 
 		public override bool CanConvertFrom(Type type)
 		{
-			if (type == this.UnderlyingType)
+			if (type == this.ElementType)
 			{
 				return true;
 			}
 
-			if (UnderlyingTypeConverter.CanConvertFrom(type))
+			if (ElementTypeConverter.CanConvertFrom(type))
 			{
 				return true;
 			}
 
-			if (_underlyingTypeIsConvertible && type != typeof(string) && typeof(IConvertible).IsAssignableFrom(type))
+			if (_elementTypeIsConvertible && type != typeof(string) && typeof(IConvertible).IsAssignableFrom(type))
 			{
 				return true;
 			}
@@ -70,17 +70,17 @@ namespace SmartStore.ComponentModel
 		{
 			//Console.WriteLine("NullableConverter can convert to {0}: {1}".FormatInvariant(type.Name, UnderlyingTypeConverter.CanConvertTo(type)));
 
-			if (type == this.UnderlyingType)
+			if (type == this.ElementType)
 			{
 				return true;
 			}
 
-			return UnderlyingTypeConverter.CanConvertTo(type);
+			return ElementTypeConverter.CanConvertTo(type);
 		}
 
 		public override object ConvertFrom(CultureInfo culture, object value)
 		{
-			if ((value == null) || (value.GetType() == this.UnderlyingType))
+			if ((value == null) || (value.GetType() == this.ElementType))
 			{
 				return value;
 			}
@@ -90,18 +90,18 @@ namespace SmartStore.ComponentModel
 				return null;
 			}
 
-			if (_underlyingTypeIsConvertible && !(value is string) && value is IConvertible)
+			if (_elementTypeIsConvertible && !(value is string) && value is IConvertible)
 			{
 				// num > num?
-				return Convert.ChangeType(value, UnderlyingType, culture);
+				return Convert.ChangeType(value, ElementType, culture);
 			}
 
-			return UnderlyingTypeConverter.ConvertFrom(culture, value);
+			return ElementTypeConverter.ConvertFrom(culture, value);
 		}
 
 		public override object ConvertTo(CultureInfo culture, string format, object value, Type to)
 		{
-			if ((to == this.UnderlyingType) && this.NullableType.IsInstanceOfType(value))
+			if ((to == this.ElementType) && this.NullableType.IsInstanceOfType(value))
 			{
 				return value;
 			}
@@ -114,7 +114,7 @@ namespace SmartStore.ComponentModel
 				}
 			}
 
-			return UnderlyingTypeConverter.ConvertTo(culture, format, value, to);
+			return ElementTypeConverter.ConvertTo(culture, format, value, to);
 		}
 	}
 }

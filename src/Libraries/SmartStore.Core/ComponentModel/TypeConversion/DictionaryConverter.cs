@@ -7,7 +7,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.ComponentModel
 {
-	public class DictionaryTypeConverter<T> : TypeConverterBase where T : IDictionary<string, object>
+	public class DictionaryTypeConverter<T> : DefaultTypeConverter where T : IDictionary<string, object>
 	{
 		public DictionaryTypeConverter()
 			: base(typeof(object))

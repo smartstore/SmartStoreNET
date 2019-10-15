@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace SmartStore.ComponentModel
 {
 	[SuppressMessage("ReSharper", "CanBeReplacedWithTryCastAndCheckForNull")]
-	public class TimeSpanConverter : TypeConverterBase
+	public class TimeSpanConverter : DefaultTypeConverter
 	{
 		public TimeSpanConverter()
 			: base(typeof(TimeSpan))

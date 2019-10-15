@@ -4,22 +4,14 @@ using System.Globalization;
 
 namespace SmartStore.ComponentModel
 {
-    internal class TypeConverterAdapter : TypeConverterBase
-    {
-        public TypeConverterAdapter(Type type)
-            : base(type)
-        {
-        }
-    }
-
-    public abstract class TypeConverterBase : ITypeConverter
+    public class DefaultTypeConverter : ITypeConverter
 	{
 		private readonly Lazy<TypeConverter> _systemConverter;
 		private readonly Type _type;
         private readonly bool _typeIsConvertible;
         private readonly bool _typeIsEnum;
 
-        protected TypeConverterBase(Type type)
+        public DefaultTypeConverter(Type type)
 		{
 			Guard.NotNull(type, nameof(type));
 

@@ -12,7 +12,7 @@ using Newtonsoft.Json.Linq;
 namespace SmartStore.ComponentModel
 {
 	[SuppressMessage("ReSharper", "CanBeReplacedWithTryCastAndCheckForNull")]
-	public class JObjectConverter : TypeConverterBase
+	public class JObjectConverter : DefaultTypeConverter
 	{
 		public JObjectConverter()
 			: base(typeof(JObject))

@@ -509,7 +509,7 @@ namespace SmartStore.Admin
 
         public static TaxProviderModel ToModel(this Provider<ITaxProvider> entity)
         {
-            return MapperFactory.GetMapper<Provider<ITaxProvider>, TaxProviderModel>().Map(entity);
+            return MapperFactory.Map<Provider<ITaxProvider>, TaxProviderModel>(entity);
         }
 
         #endregion
@@ -538,7 +538,7 @@ namespace SmartStore.Admin
 
         public static ShippingRateComputationMethodModel ToModel(this IShippingRateComputationMethod entity)
         {
-            return MapperFactory.GetMapper<IShippingRateComputationMethod, ShippingRateComputationMethodModel>().Map(entity);
+            return MapperFactory.Map<IShippingRateComputationMethod, ShippingRateComputationMethodModel>(entity);
         }
 
         #endregion
@@ -811,206 +811,206 @@ namespace SmartStore.Admin
 
         public static TaxSettingsModel ToModel(this TaxSettings entity)
         {
-            return MapperFactory.GetMapper<TaxSettings, TaxSettingsModel>().Map(entity);
+            return MapperFactory.Map<TaxSettings, TaxSettingsModel>(entity);
         }
         public static TaxSettings ToEntity(this TaxSettingsModel model)
         {
-            return MapperFactory.GetMapper<TaxSettingsModel, TaxSettings>().Map(model);
+            return MapperFactory.Map<TaxSettingsModel, TaxSettings>(model);
         }
         public static TaxSettings ToEntity(this TaxSettingsModel model, TaxSettings entity)
         {
-            MapperFactory.GetMapper<TaxSettingsModel, TaxSettings>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
 
         public static ShippingSettingsModel ToModel(this ShippingSettings entity)
         {
-            return MapperFactory.GetMapper<ShippingSettings, ShippingSettingsModel>().Map(entity);
+            return MapperFactory.Map<ShippingSettings, ShippingSettingsModel>(entity);
         }
         public static ShippingSettings ToEntity(this ShippingSettingsModel model)
         {
-            return MapperFactory.GetMapper<ShippingSettingsModel, ShippingSettings>().Map(model);
+            return MapperFactory.Map<ShippingSettingsModel, ShippingSettings>(model);
         }
         public static ShippingSettings ToEntity(this ShippingSettingsModel model, ShippingSettings entity)
         {
-            MapperFactory.GetMapper<ShippingSettingsModel, ShippingSettings>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
 
         public static ForumSettingsModel ToModel(this ForumSettings entity)
         {
-            return MapperFactory.GetMapper<ForumSettings, ForumSettingsModel>().Map(entity);
+            return MapperFactory.Map<ForumSettings, ForumSettingsModel>(entity);
         }
         public static ForumSettings ToEntity(this ForumSettingsModel model)
         {
-            return MapperFactory.GetMapper<ForumSettingsModel, ForumSettings>().Map(model);
+            return MapperFactory.Map<ForumSettingsModel, ForumSettings>(model);
         }
         public static ForumSettings ToEntity(this ForumSettingsModel model, ForumSettings entity)
         {
-            MapperFactory.GetMapper<ForumSettingsModel, ForumSettings>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
 
         public static BlogSettingsModel ToModel(this BlogSettings entity)
         {
-            return MapperFactory.GetMapper<BlogSettings, BlogSettingsModel>().Map(entity);
+            return MapperFactory.Map<BlogSettings, BlogSettingsModel>(entity);
         }
         public static BlogSettings ToEntity(this BlogSettingsModel model)
         {
-            return MapperFactory.GetMapper<BlogSettingsModel, BlogSettings>().Map(model);
+            return MapperFactory.Map<BlogSettingsModel, BlogSettings>(model);
         }
         public static BlogSettings ToEntity(this BlogSettingsModel model, BlogSettings entity)
         {
-            MapperFactory.GetMapper<BlogSettingsModel, BlogSettings>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
 
         public static NewsSettingsModel ToModel(this NewsSettings entity)
         {
-            return MapperFactory.GetMapper<NewsSettings, NewsSettingsModel>().Map(entity);
+            return MapperFactory.Map<NewsSettings, NewsSettingsModel>(entity);
         }
         public static NewsSettings ToEntity(this NewsSettingsModel model)
         {
-            return MapperFactory.GetMapper<NewsSettingsModel, NewsSettings>().Map(model);
+            return MapperFactory.Map<NewsSettingsModel, NewsSettings>(model);
         }
         public static NewsSettings ToEntity(this NewsSettingsModel model, NewsSettings entity)
         {
-            MapperFactory.GetMapper<NewsSettingsModel, NewsSettings>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
 
         public static CatalogSettingsModel ToModel(this CatalogSettings entity)
         {
-            return MapperFactory.GetMapper<CatalogSettings, CatalogSettingsModel>().Map(entity);
+            return MapperFactory.Map<CatalogSettings, CatalogSettingsModel>(entity);
         }
         public static CatalogSettings ToEntity(this CatalogSettingsModel model)
         {
-            return MapperFactory.GetMapper<CatalogSettingsModel, CatalogSettings>().Map(model);
+            return MapperFactory.Map<CatalogSettingsModel, CatalogSettings>(model);
         }
         public static CatalogSettings ToEntity(this CatalogSettingsModel model, CatalogSettings entity)
         {
-            MapperFactory.GetMapper<CatalogSettingsModel, CatalogSettings>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
 
         public static RewardPointsSettingsModel ToModel(this RewardPointsSettings entity)
         {
-            return MapperFactory.GetMapper<RewardPointsSettings, RewardPointsSettingsModel>().Map(entity);
+            return MapperFactory.Map<RewardPointsSettings, RewardPointsSettingsModel>(entity);
         }
         public static RewardPointsSettings ToEntity(this RewardPointsSettingsModel model)
         {
-            return MapperFactory.GetMapper<RewardPointsSettingsModel, RewardPointsSettings>().Map(model);
+            return MapperFactory.Map<RewardPointsSettingsModel, RewardPointsSettings>(model);
         }
         public static RewardPointsSettings ToEntity(this RewardPointsSettingsModel model, RewardPointsSettings entity)
         {
-            MapperFactory.GetMapper<RewardPointsSettingsModel, RewardPointsSettings>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
 
         public static OrderSettingsModel ToModel(this OrderSettings entity)
         {
-            return MapperFactory.GetMapper<OrderSettings, OrderSettingsModel>().Map(entity);
+            return MapperFactory.Map<OrderSettings, OrderSettingsModel>(entity);
         }
         public static OrderSettings ToEntity(this OrderSettingsModel model)
         {
-            return MapperFactory.GetMapper<OrderSettingsModel, OrderSettings>().Map(model);
+            return MapperFactory.Map<OrderSettingsModel, OrderSettings>(model);
         }
         public static OrderSettings ToEntity(this OrderSettingsModel model, OrderSettings entity)
         {
-            MapperFactory.GetMapper<OrderSettingsModel, OrderSettings>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
 
         public static ShoppingCartSettingsModel ToModel(this ShoppingCartSettings entity)
         {
-            return MapperFactory.GetMapper<ShoppingCartSettings, ShoppingCartSettingsModel>().Map(entity);
+            return MapperFactory.Map<ShoppingCartSettings, ShoppingCartSettingsModel>(entity);
         }
         public static ShoppingCartSettings ToEntity(this ShoppingCartSettingsModel model)
         {
-            return MapperFactory.GetMapper<ShoppingCartSettingsModel, ShoppingCartSettings>().Map(model);
+            return MapperFactory.Map<ShoppingCartSettingsModel, ShoppingCartSettings>(model);
         }
         public static ShoppingCartSettings ToEntity(this ShoppingCartSettingsModel model, ShoppingCartSettings entity)
         {
-            MapperFactory.GetMapper<ShoppingCartSettingsModel, ShoppingCartSettings>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
 
 		public static MediaSettingsModel ToModel(this MediaSettings entity)
         {
-            return MapperFactory.GetMapper<MediaSettings, MediaSettingsModel>().Map(entity);
+            return MapperFactory.Map<MediaSettings, MediaSettingsModel>(entity);
         }
         public static MediaSettings ToEntity(this MediaSettingsModel model)
         {
-            return MapperFactory.GetMapper<MediaSettingsModel, MediaSettings>().Map(model);
+            return MapperFactory.Map<MediaSettingsModel, MediaSettings>(model);
         }
         public static MediaSettings ToEntity(this MediaSettingsModel model, MediaSettings entity)
         {
-            MapperFactory.GetMapper<MediaSettingsModel, MediaSettings>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 
         public static CustomerUserSettingsModel.CustomerSettingsModel ToModel(this CustomerSettings entity)
         {
-            return MapperFactory.GetMapper<CustomerSettings, CustomerUserSettingsModel.CustomerSettingsModel>().Map(entity);
+            return MapperFactory.Map<CustomerSettings, CustomerUserSettingsModel.CustomerSettingsModel>(entity);
         }
         public static CustomerSettings ToEntity(this CustomerUserSettingsModel.CustomerSettingsModel model)
         {
-            return MapperFactory.GetMapper<CustomerUserSettingsModel.CustomerSettingsModel, CustomerSettings>().Map(model);
+            return MapperFactory.Map<CustomerUserSettingsModel.CustomerSettingsModel, CustomerSettings>(model);
         }
         public static CustomerSettings ToEntity(this CustomerUserSettingsModel.CustomerSettingsModel model, CustomerSettings entity)
         {
-            MapperFactory.GetMapper<CustomerUserSettingsModel.CustomerSettingsModel, CustomerSettings>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
         
         public static CustomerUserSettingsModel.AddressSettingsModel ToModel(this AddressSettings entity)
         {
-            return MapperFactory.GetMapper<AddressSettings, CustomerUserSettingsModel.AddressSettingsModel>().Map(entity);
+            return MapperFactory.Map<AddressSettings, CustomerUserSettingsModel.AddressSettingsModel>(entity);
         }
         public static AddressSettings ToEntity(this CustomerUserSettingsModel.AddressSettingsModel model)
         {
-            return MapperFactory.GetMapper<CustomerUserSettingsModel.AddressSettingsModel, AddressSettings>().Map(model);
+            return MapperFactory.Map<CustomerUserSettingsModel.AddressSettingsModel, AddressSettings>(model);
         }
         public static AddressSettings ToEntity(this CustomerUserSettingsModel.AddressSettingsModel model, AddressSettings entity)
         {
-            MapperFactory.GetMapper<CustomerUserSettingsModel.AddressSettingsModel, AddressSettings>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 		
         public static CustomerUserSettingsModel.PrivacySettingsModel ToModel(this PrivacySettings entity)
 		{
-            return MapperFactory.GetMapper<PrivacySettings, CustomerUserSettingsModel.PrivacySettingsModel>().Map(entity);
+            return MapperFactory.Map<PrivacySettings, CustomerUserSettingsModel.PrivacySettingsModel>(entity);
 		}
 		public static PrivacySettings ToEntity(this CustomerUserSettingsModel.PrivacySettingsModel model)
 		{
-            return MapperFactory.GetMapper<CustomerUserSettingsModel.PrivacySettingsModel, PrivacySettings>().Map(model);
+            return MapperFactory.Map<CustomerUserSettingsModel.PrivacySettingsModel, PrivacySettings>(model);
 		}
 		public static PrivacySettings ToEntity(this CustomerUserSettingsModel.PrivacySettingsModel model, PrivacySettings entity)
 		{
-            MapperFactory.GetMapper<CustomerUserSettingsModel.PrivacySettingsModel, PrivacySettings>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
 		}
 
         public static ThemeListModel ToModel(this ThemeSettings entity)
         {
-            return MapperFactory.GetMapper<ThemeSettings, ThemeListModel>().Map(entity);
+            return MapperFactory.Map<ThemeSettings, ThemeListModel>(entity);
         }
         public static ThemeSettings ToEntity(this ThemeListModel model)
         {
-            return MapperFactory.GetMapper<ThemeListModel, ThemeSettings>().Map(model);
+            return MapperFactory.Map<ThemeListModel, ThemeSettings>(model);
         }
         public static ThemeSettings ToEntity(this ThemeListModel model, ThemeSettings entity)
         {
-            MapperFactory.GetMapper<ThemeListModel, ThemeSettings>().Map(model, entity);
+            MapperFactory.Map(model, entity);
             return entity;
         }
 

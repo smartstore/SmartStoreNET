@@ -36,9 +36,6 @@ namespace SmartStore.Web.Controllers
         [RewriteUrl(SslRequirement.No)]
         public ActionResult Index()
         {
-            var list = new System.Collections.Generic.List<string>();
-            var arr = list.Convert<string[]>();
-
             return View();
         }
 

@@ -49,7 +49,12 @@ namespace SmartStore.ComponentModel
             _typeConverters.TryAdd(typeof(JObject), new JObjectConverter());
         }
 
-		public static void RegisterConverter<T>(ITypeConverter typeConverter)
+        public static IReadOnlyCollection<ITypeConverter> Converters
+        {
+            get { return _typeConverters.Values.AsReadOnly(); }
+        }
+
+        public static void RegisterConverter<T>(ITypeConverter typeConverter)
 		{
 			RegisterConverter(typeof(T), typeConverter);
 		}
@@ -67,7 +72,7 @@ namespace SmartStore.ComponentModel
 			return RemoveConverter(typeof(T));
 		}
 
-		public static ITypeConverter RemoveConverter(Type type)
+        public static ITypeConverter RemoveConverter(Type type)
 		{
 			Guard.NotNull(type, nameof(type));
 

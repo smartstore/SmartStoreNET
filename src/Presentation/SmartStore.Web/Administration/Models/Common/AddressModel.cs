@@ -2,6 +2,8 @@
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
@@ -168,6 +170,24 @@ namespace SmartStore.Admin.Models.Common
                 .Equal(x => x.Email)
                 .WithMessage(T("Admin.Address.Fields.EmailMatch.MustMatchEmail"))
                 .When(x => x.ValidateEmailAddress);
+        }
+    }
+
+    public class AddressMapper :
+        IMapper<Address, AddressModel>,
+        IMapper<AddressModel, Address>
+    {
+        public void Map(Address from, AddressModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.CountryName = from.Country?.Name;
+            to.StateProvinceName = from.StateProvince?.Name;
+            to.EmailMatch = from.Email;
+        }
+
+        public void Map(AddressModel from, Address to)
+        {
+            MiniMapper.Map(from, to);
         }
     }
 }

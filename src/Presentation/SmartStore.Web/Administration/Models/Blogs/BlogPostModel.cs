@@ -1,12 +1,14 @@
-﻿using FluentValidation;
-using FluentValidation.Attributes;
-using SmartStore.Core.Domain.Blogs;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Modelling;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using FluentValidation;
+using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Blogs;
+using SmartStore.Services.Seo;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Blogs
 {
@@ -107,6 +109,22 @@ namespace SmartStore.Admin.Models.Blogs
             RuleFor(x => x.PreviewPictureId)
                 .NotNull()
                 .When(x => x.PreviewDisplayType == PreviewDisplayType.Preview || x.PreviewDisplayType == PreviewDisplayType.PreviewSectionBg);
+        }
+    }
+
+    public class BlogPostMapper :
+        IMapper<BlogPost, BlogPostModel>,
+        IMapper<BlogPostModel, BlogPost>
+    {
+        public void Map(BlogPost from, BlogPostModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.SeName = from.GetSeName(from.LanguageId, true, false);
+        }
+
+        public void Map(BlogPostModel from, BlogPost to)
+        {
+            MiniMapper.Map(from, to);
         }
     }
 }

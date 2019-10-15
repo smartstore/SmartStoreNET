@@ -155,7 +155,7 @@
 							.Template(item => @Html.SymbolForBool(item.Published))
 							.ClientTemplate(@Html.SymbolForBool("Published"))
 							.Centered();
-						columns.Bound(x => x.DisplayOrder1)
+						columns.Bound(x => x.DisplayOrder)
 							.Centered();
 						columns.Command(commands =>
 						{

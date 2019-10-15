@@ -4,7 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
+using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
@@ -161,4 +164,20 @@ namespace SmartStore.Admin.Models.Catalog
 			RuleFor(x => x.Name).NotEmpty();
 		}
 	}
+
+    public class ManufacturerMapper :
+        IMapper<Manufacturer, ManufacturerModel>,
+        IMapper<ManufacturerModel, Manufacturer>
+    {
+        public void Map(Manufacturer from, ManufacturerModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.SeName = from.GetSeName(0, true, false);
+        }
+
+        public void Map(ManufacturerModel from, Manufacturer to)
+        {
+            MiniMapper.Map(from, to);
+        }
+    }
 }

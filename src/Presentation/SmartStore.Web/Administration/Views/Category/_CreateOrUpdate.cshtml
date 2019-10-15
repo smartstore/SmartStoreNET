@@ -437,48 +437,48 @@
 	{
 		<div>
 			@(Html.Telerik().Grid<CategoryModel.CategoryProductModel>()
-					.Name("products-grid")
-					.DataKeys(keys => { keys.Add(x => x.Id); })
-					.DataBinding(dataBinding =>
-					{
-						dataBinding.Ajax()
-							.Select("ProductList", "Category", new { categoryId = Model.Id })
-							.Update("ProductUpdate", "Category")
-							.Delete("ProductDelete", "Category");
-					})
-					.Columns(columns =>
-					{
-						columns.Bound(x => x.ProductName)
-							.ReadOnly()
-							.Width("50%")
-							.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-						columns.Bound(x => x.Sku)
-							.Width("20%")
-							.ReadOnly();
-						columns.Bound(x => x.Published)
-							.ReadOnly()
-							.Width("5%")
-							.ClientTemplate(@Html.SymbolForBool("Published"))
-							.Centered();
-						columns.Bound(x => x.IsFeaturedProduct)
-							.ClientTemplate(@Html.SymbolForBool("IsFeaturedProduct"))
-							.Width("5%")
-							.Centered();
-						columns.Bound(x => x.DisplayOrder1)
-							.Width("5%")
-							.Centered();
-						columns.Command(commands =>
-						{
-							commands.Edit().Localize(T);
-							commands.Delete().Localize(T);
-						})
-						.HtmlAttributes(new { align = "right" })
-						.Width("15%");
-					})
-					.ToolBar(commands => commands.Template(CategoryProductsGridCommands))
-					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-					.PreserveGridState()
-					.EnableCustomBinding(true))
+                    .Name("products-grid")
+                    .DataKeys(keys => { keys.Add(x => x.Id); })
+                    .DataBinding(dataBinding =>
+                    {
+                        dataBinding.Ajax()
+                            .Select("ProductList", "Category", new { categoryId = Model.Id })
+                            .Update("ProductUpdate", "Category")
+                            .Delete("ProductDelete", "Category");
+                    })
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.ProductName)
+                            .ReadOnly()
+                            .Width("50%")
+                            .ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+                        columns.Bound(x => x.Sku)
+                            .Width("20%")
+                            .ReadOnly();
+                        columns.Bound(x => x.Published)
+                            .ReadOnly()
+                            .Width("5%")
+                            .ClientTemplate(@Html.SymbolForBool("Published"))
+                            .Centered();
+                        columns.Bound(x => x.IsFeaturedProduct)
+                            .ClientTemplate(@Html.SymbolForBool("IsFeaturedProduct"))
+                            .Width("5%")
+                            .Centered();
+                        columns.Bound(x => x.DisplayOrder1)
+                            .Width("5%")
+                            .Centered();
+                        columns.Command(commands =>
+                        {
+                            commands.Edit().Localize(T);
+                            commands.Delete().Localize(T);
+                        })
+                        .HtmlAttributes(new { align = "right" })
+                        .Width("15%");
+                    })
+                    .ToolBar(commands => commands.Template(CategoryProductsGridCommands))
+                    .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+                    .PreserveGridState()
+                    .EnableCustomBinding(true))
 		</div>
 	}
 	else

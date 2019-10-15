@@ -1,14 +1,16 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Topics;
+using SmartStore.Core.Localization;
+using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
-using System.Linq;
-using SmartStore.Core.Localization;
 
 namespace SmartStore.Admin.Models.Topics
 {
@@ -172,6 +174,23 @@ namespace SmartStore.Admin.Models.Topics
             RuleFor(x => x.HtmlId)
                 .Must(u => u.IsEmpty() || !u.Any(x => char.IsWhiteSpace(x)))
                 .WithMessage(T("Admin.ContentManagement.Topics.Validation.NoWhiteSpace"));
+        }
+    }
+
+    public class TopicMapper :
+        IMapper<Topic, TopicModel>,
+        IMapper<TopicModel, Topic>
+    {
+        public void Map(Topic from, TopicModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.SeName = from.GetSeName(0, true, false);
+            to.WidgetWrapContent = from.WidgetWrapContent ?? true;
+        }
+
+        public void Map(TopicModel from, Topic to)
+        {
+            MiniMapper.Map(from, to);
         }
     }
 }

@@ -27,23 +27,18 @@
 
 	var shortDescription = Model.ShortDescription.Value.HasValue() ? Model.ShortDescription : Model.MetaDescription;
 
-	// FB OpenGraph og:*
-	Html.AddCustomHeadParts("<meta property='og:site_name' content='{0}' />".FormatInvariant(CommonServices.StoreContext.CurrentStore.Name));
+	// FB OpenGraph og:* & Twitter card
+	Html.AddCustomHeadParts("<meta property='og:site_name' content='{0}' />".FormatInvariant(Html.Encode(CommonServices.StoreContext.CurrentStore.Name)));
 	Html.AddCustomHeadParts("<meta property='og:type' content='{0}' />".FormatInvariant(Model.ProductType == ProductType.SimpleProduct ? "product" : "product.group"));
 	Html.AddCustomHeadParts("<meta property='og:url' content='{0}' />".FormatInvariant(canonicalUrl));
 	Html.AddCustomHeadParts("<meta property='og:site' content='{0}' />".FormatInvariant(Url.RouteUrl("HomePage", null, this.Request.Url.Scheme)));
-	Html.AddCustomHeadParts("<meta property='og:title' content='{0}' />".FormatInvariant(Model.Name.Value));
-	if (shortDescription.Value.HasValue())
-	{
-		Html.AddCustomHeadParts("<meta property='og:description' content='{0}' />".FormatInvariant(shortDescription.Value));
-	}
-
-	// Twitter card
+	Html.AddCustomHeadParts("<meta property='og:title' content='{0}' />".FormatInvariant(Html.Encode(Model.Name.Value)));
 	Html.AddCustomHeadParts("<meta property='twitter:card' content='product' />");
-	Html.AddCustomHeadParts("<meta property='twitter:title' content='{0}' />".FormatInvariant(Model.Name));
+	Html.AddCustomHeadParts("<meta property='twitter:title' content='{0}' />".FormatInvariant(Html.Encode(Model.Name)));
 	if (shortDescription.Value.HasValue())
 	{
-		Html.AddCustomHeadParts("<meta property='twitter:description' content='{0}' />".FormatInvariant(shortDescription.Value));
+        Html.AddCustomHeadParts("<meta property='og:description' content='{0}' />".FormatInvariant(Html.Encode(shortDescription.Value)));
+		Html.AddCustomHeadParts("<meta property='twitter:description' content='{0}' />".FormatInvariant(Html.Encode(shortDescription.Value)));
 	}
 
 	/* TODO: (mc)

@@ -225,7 +225,12 @@ namespace SmartStore.PayPal.Controllers
 			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(store.Id);
 			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
-			var pppMethod = _paymentService.GetPaymentMethodBySystemName(PayPalPlusProvider.SystemName);
+            if (!cart.Any())
+            {
+                return RedirectToRoute("ShoppingCart");
+            }
+
+            var pppMethod = _paymentService.GetPaymentMethodBySystemName(PayPalPlusProvider.SystemName);
 			var pppProvider = _paymentService.LoadPaymentMethodBySystemName(PayPalPlusProvider.SystemName, false, store.Id);
 
 			var methods = _paymentService.LoadActivePaymentMethods(customer, cart, store.Id, null, false);

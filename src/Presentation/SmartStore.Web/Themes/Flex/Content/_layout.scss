@@ -62,8 +62,8 @@ body {
 }
 
 #content {
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
+    margin-top: var(--content-margin-top, 1.5rem);
+    margin-bottom: var(--content-margin-bottom, 1.5rem);
 }
 
 .page-main {

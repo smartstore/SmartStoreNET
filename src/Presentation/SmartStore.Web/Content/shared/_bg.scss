@@ -70,12 +70,18 @@
         $cstart: $cend2;
     }
 
-    @if $radial == true {
-        background: radial-gradient(var(--gradientdir, circle at left top), $cstart 0%, $cend calc(100% * var(--gsize,1)));
-    }
-    @else {
-        background: linear-gradient(var(--gradientdir, to bottom right), $cstart 0%, $cend calc(100% * var(--gsize,1)));
-    }
+    --cstart: #{$cstart};
+    --cstart-rgb: #{red($cstart)}, #{green($cstart)}, #{blue($cstart)};
+    --cend: #{$cend};
+    --cend-rgb: #{red($cend)}, #{green($cend)}, #{blue($cend)};
+}
+
+[class*="bg-gradient-"] {
+    background: linear-gradient(var(--gdir, to bottom right), var(--cstart) 0%, var(--cend) calc(100% * var(--gsize,1)));
+}
+
+[class*="bg-gradient-radial-"] {
+    background: radial-gradient(var(--gdir, circle at left top), var(--cstart) 0%, var(--cend) calc(100% * var(--gsize,1)));
 }
 
 @each $color, $value in $theme-colors {
@@ -98,22 +104,22 @@
         @include make-bg-gradient($color, $value, false, "hue-rev");
     }
 
-    .bg-gradient-#{$color}-radial {
+    .bg-gradient-radial-#{$color} {
         @include make-bg-gradient($color, $value, true, "darken");
     }
-    .bg-gradient-#{$color}-radial-light {
+    .bg-gradient-radial-#{$color}-light {
         @include make-bg-gradient($color, $value, true, "lighten");
     }
-    .bg-gradient-#{$color}-radial-hue {
+    .bg-gradient-radial-#{$color}-hue {
         @include make-bg-gradient($color, $value, true, "hue");
     }
-    .bg-gradient-#{$color}-radial-rev {
+    .bg-gradient-radial-#{$color}-rev {
         @include make-bg-gradient($color, $value, true, "darken-rev");
     }
-    .bg-gradient-#{$color}-radial-light-rev {
+    .bg-gradient-radial-#{$color}-light-rev {
         @include make-bg-gradient($color, $value, true, "lighten-rev");
     }
-    .bg-gradient-#{$color}-radial-hue-rev {
+    .bg-gradient-radial-#{$color}-hue-rev {
         @include make-bg-gradient($color, $value, true, "hue-rev");
     } 
 }
@@ -122,30 +128,31 @@
 // Shades
 // ------------------------------------
 
-@mixin make-bg-shade($color, $radial: false) {
-    background: scrim-gradient($color, 'var(--gradientdir, to right)', $radial);
+[class*="bg-shade-"] {
+    background: scrim-gradient-generic('var(--gdir, to right)', false);
 }
 
-.bg-shade-white {
-    @include make-bg-shade(#fff, false);
-}
-.bg-shade-white-radial {
-    @include make-bg-shade(#fff, true);
+[class*="bg-shade-radial"] {
+    background: scrim-gradient-generic('var(--gdir, center at top left)', true);
 }
 
-.bg-shade-black {
-    @include make-bg-shade(#000, false);
+.bg-shade-white,
+.bg-shade-radial-white {
+    --cstart: #fff;
+    --cstart-rgb: 255,255,255;
 }
-.bg-shade-black-radial {
-    @include make-bg-shade(#000, true);
+
+.bg-shade-black,
+.bg-shade-radial-black {
+    --cstart: #000;
+    --cstart-rgb: 0,0,0;
 }
 
 @each $color, $value in $theme-colors {
-    .bg-shade-#{$color} {
-        @include make-bg-shade($value, false);
-    }
-    .bg-shade-#{$color}-radial {
-        @include make-bg-shade($value, true);
+    .bg-shade-#{$color},
+    .bg-shade-radial-#{$color} {
+        --cstart: #{$value};
+        --cstart-rgb: #{red($value)}, #{green($value)}, #{blue($value)};
     }
 }
 

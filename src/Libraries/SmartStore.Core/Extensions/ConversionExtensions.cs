@@ -25,7 +25,7 @@ namespace SmartStore
         {
             if (!CommonHelper.TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
             {
-                throw Error.InvalidCast(value?.GetType(), typeof(T));
+                return default(T);
             }
 
             return (T)result;
@@ -47,7 +47,7 @@ namespace SmartStore
         {
             if (!CommonHelper.TryConvert(value, typeof(T), culture, out object result))
             {
-                throw Error.InvalidCast(value?.GetType(), typeof(T));
+                return default(T);
             }
 
             return (T)result;

@@ -15,10 +15,16 @@ namespace SmartStore.Core.Domain.Blogs
     {
         private ICollection<BlogComment> _blogComments;
 
-		/// <summary>
-		/// Gets or sets the language identifier
-		/// </summary>
-		[DataMember]
+        /// <summary>
+        /// Gets or sets a value indicating whether the blog post comments are allowed 
+        /// </summary>
+        [DataMember]
+        public bool IsPublished { get; set; }
+
+        /// <summary>
+        /// Gets or sets the language identifier
+        /// </summary>
+        [DataMember]
 		public int LanguageId { get; set; }
 
 		/// <summary>

@@ -150,7 +150,6 @@ namespace SmartStore.Admin.Controllers
                 blogPost.CreatedOnUtc = model.CreatedOnUtc;
                 blogPost.StartDateUtc = model.StartDate;
                 blogPost.EndDateUtc = model.EndDate;
-                blogPost.CreatedOnUtc = DateTime.UtcNow;
 
                 _blogService.InsertBlogPost(blogPost);
 

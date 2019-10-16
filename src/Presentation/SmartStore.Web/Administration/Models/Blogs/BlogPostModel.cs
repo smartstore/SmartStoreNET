@@ -15,7 +15,10 @@ namespace SmartStore.Admin.Models.Blogs
     [Validator(typeof(BlogPostValidator))]
     public class BlogPostModel : TabbableModel, IStoreSelector
 	{
-		[SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Language")]
+        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.IsPublished")]
+        public bool IsPublished { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Language")]
         public int LanguageId { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Language")]

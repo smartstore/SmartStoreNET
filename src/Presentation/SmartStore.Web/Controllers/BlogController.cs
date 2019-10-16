@@ -332,7 +332,7 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
 
             var blogPost = _blogService.GetBlogPostById(blogPostId);
-            if (blogPost == null ||
+            if (blogPost == null || !blogPost.IsPublished ||
                 (blogPost.StartDateUtc.HasValue && blogPost.StartDateUtc.Value >= DateTime.UtcNow) ||
                 (blogPost.EndDateUtc.HasValue && blogPost.EndDateUtc.Value <= DateTime.UtcNow))
 				return HttpNotFound();

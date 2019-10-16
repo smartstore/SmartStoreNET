@@ -13,6 +13,7 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.BlogPost", "SectionBg", c => c.String(maxLength: 100));
             AddColumn("dbo.BlogPost", "Intro", c => c.String());
             AddColumn("dbo.BlogPost", "DisplayTagsInPreview", c => c.Boolean(nullable: false));
+            AddColumn("dbo.BlogPost", "IsPublished", c => c.Boolean(nullable: false));
             AddColumn("dbo.BlogPost", "PreviewDisplayType", c => c.Int(nullable: false));
             AddColumn("dbo.News", "PictureId", c => c.Int());
             AddColumn("dbo.News", "PreviewPictureId", c => c.Int());
@@ -23,6 +24,7 @@ namespace SmartStore.Data.Migrations
             DropColumn("dbo.News", "PreviewPictureId");
             DropColumn("dbo.News", "PictureId");
             DropColumn("dbo.BlogPost", "PreviewDisplayType");
+            DropColumn("dbo.BlogPost", "IsPublished");
             DropColumn("dbo.BlogPost", "DisplayTagsInPreview");
             DropColumn("dbo.BlogPost", "Intro");
             DropColumn("dbo.BlogPost", "SectionBg");
@@ -76,18 +78,24 @@ namespace SmartStore.Data.Migrations
                 "Specifies the preview picture of the news item.",
                 "Legt das Vorschaubild des News-Eintrags fest.");
 
-            builder.AddOrUpdate("Admin.ContentManagement.News.Blog.BlogPosts.PreviewDisplayType",
+            builder.AddOrUpdate("Admin.ContentManagement.News.Blog.BlogPosts.Fields.PreviewDisplayType",
                 "Preview display type",
                 "Vorschau-Darstellung",
                 "Specifies display type of the preview for a blog item.",
                 "Legt die Darstellung der Vorschau für einen Blog-Eintrag fest.");
 
-            builder.AddOrUpdate("Admin.ContentManagement.News.Blog.BlogPosts.DisplayTagsInPreview",
+            builder.AddOrUpdate("Admin.ContentManagement.News.Blog.BlogPosts.Fields.DisplayTagsInPreview",
                 "Display tags on preview",
                 "Tags in Vorschau anzeigen",
                 "Specifies whether tags are display in the preview for blog item.",
                 "Bestimmt, ob Tags in der Vorschau eines Blog-Eintrags angezeigt werden.");
 
+            builder.AddOrUpdate("Admin.ContentManagement.News.Blog.BlogPosts.Fields.IsPublished",
+                "Is published",
+                "Veröffentlicht",
+                "Specifies whether the blog post is published and thus will be displayed in the frontend",
+                "Bestimmt, ob der Blog-Eintrag veröffentlicht ist und somit im Frontend dargestellt wird.");
+            
             builder.AddOrUpdate("Common.Cms.EditBlogPost",
                 "Edit blog post",
                 "Blog-Post bearbeiten");

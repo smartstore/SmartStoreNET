@@ -25,7 +25,7 @@ namespace SmartStore.Web.Framework.UI
 					_seekedSelectedNode = true;
 				}
 
-				return _selectedNode;
+				return _selectedNode ?? Root;
 			}
             set
             {

@@ -25,6 +25,7 @@
 * Card desk instead of a grid for customer addresses on customer edit page.
 * Display "price from" in product lists if any attribute combination price exists.
 * Reworked blog & news section.
+* #1718 Activated ReCaptcha without keys can cause the merchant to lock himself out of the shop.
 
 ### Bugfixes
 * Export: Fixed KeyNotFoundException when batch size was 1.

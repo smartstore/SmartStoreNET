@@ -133,7 +133,7 @@ namespace SmartStore.Web.Controllers
 
             model.SeName = blogPost.GetSeName(blogPost.LanguageId, ensureTwoPublishedLanguages: false);
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogPost.CreatedOnUtc, DateTimeKind.Utc);
-            model.AddNewComment.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnBlogCommentPage;
+            model.AddNewComment.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnBlogCommentPage;
 			model.Comments.AllowComments = blogPost.AllowComments;
 			model.Comments.NumberOfComments = blogPost.ApprovedCommentCount;
 			model.Comments.AllowCustomersToUploadAvatars = _customerSettings.AllowCustomersToUploadAvatars;
@@ -367,7 +367,7 @@ namespace SmartStore.Web.Controllers
             }
 
             //validate CAPTCHA
-            if (_captchaSettings.Enabled && _captchaSettings.ShowOnBlogCommentPage && !captchaValid)
+            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnBlogCommentPage && !captchaValid)
             {
                 ModelState.AddModelError("", T("Common.WrongCaptcha"));
             }

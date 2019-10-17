@@ -711,7 +711,7 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
 
 			// validate CAPTCHA
-			if (_captchaSettings.Enabled && _captchaSettings.ShowOnProductReviewPage && !captchaValid)
+			if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnProductReviewPage && !captchaValid)
 			{
 				ModelState.AddModelError("", T("Common.WrongCaptcha"));
 			}
@@ -869,7 +869,7 @@ namespace SmartStore.Web.Controllers
 			model.SenderNameRequired = _privacySettings.Value.FullNameOnProductRequestRequired;
 			model.SenderPhone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone);
 			model.Question = T("Products.AskQuestion.Question.Text").Text.FormatCurrentUI(model.ProductName);
-			model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnAskQuestionPage;
+			model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnAskQuestionPage;
 
 			return View(model);
 		}
@@ -884,7 +884,7 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
 
 			// validate CAPTCHA
-			if (_captchaSettings.Enabled && _captchaSettings.ShowOnAskQuestionPage && !captchaValid)
+			if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnAskQuestionPage && !captchaValid)
 			{
 				ModelState.AddModelError("", T("Common.WrongCaptcha"));
 			}
@@ -916,7 +916,8 @@ namespace SmartStore.Web.Controllers
 			model.Id = product.Id;
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
-			model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnAskQuestionPage;
+			model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnAskQuestionPage;
+
 			return View(model);
 		}
 
@@ -938,7 +939,8 @@ namespace SmartStore.Web.Controllers
 			model.ProductSeName = product.GetSeName();
 			model.YourEmailAddress = _services.WorkContext.CurrentCustomer.Email;
             model.AllowChangedCustomerEmail = _catalogSettings.AllowDifferingEmailAddressForEmailAFriend;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnEmailProductToFriendPage;
+
 			return View(model);
 		}
 
@@ -952,7 +954,7 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
 
 			//validate CAPTCHA
-			if (_captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage && !captchaValid)
+			if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnEmailProductToFriendPage && !captchaValid)
 			{
 				ModelState.AddModelError("", T("Common.WrongCaptcha"));
 			}
@@ -987,7 +989,8 @@ namespace SmartStore.Web.Controllers
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
             model.AllowChangedCustomerEmail = _catalogSettings.AllowDifferingEmailAddressForEmailAFriend;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnEmailProductToFriendPage;
+
 			return View(model);
 		}
 

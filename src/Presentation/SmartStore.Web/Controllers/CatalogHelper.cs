@@ -566,7 +566,7 @@ namespace SmartStore.Web.Controllers
 			}
 
 			model.CanCurrentCustomerLeaveReview = _catalogSettings.AllowAnonymousUsersToReviewProduct || !_services.WorkContext.CurrentCustomer.IsGuest();
-			model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnProductReviewPage;
+			model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnProductReviewPage;
 		}
 
 		private PictureModel CreatePictureModel(ProductDetailsPictureModel model, Picture picture, int pictureSize)

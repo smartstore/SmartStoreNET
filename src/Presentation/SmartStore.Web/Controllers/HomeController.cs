@@ -55,7 +55,7 @@ namespace SmartStore.Web.Controllers
 				Email = Services.WorkContext.CurrentCustomer.Email,
 				FullName = Services.WorkContext.CurrentCustomer.GetFullName(),
 				FullNameRequired = _privacySettings.Value.FullNameOnContactUsRequired,
-				DisplayCaptcha = _captchaSettings.Value.Enabled && _captchaSettings.Value.ShowOnContactUsPage,
+				DisplayCaptcha = _captchaSettings.Value.CanDisplayCaptcha && _captchaSettings.Value.ShowOnContactUsPage,
                 MetaKeywords = topic?.GetLocalized(x => x.MetaKeywords),
                 MetaDescription = topic?.GetLocalized(x => x.MetaDescription),
                 MetaTitle = topic?.GetLocalized(x => x.MetaTitle),
@@ -70,7 +70,7 @@ namespace SmartStore.Web.Controllers
 		public ActionResult ContactUsSend(ContactUsModel model, bool captchaValid)
 		{
 			// Validate CAPTCHA
-			if (_captchaSettings.Value.Enabled && _captchaSettings.Value.ShowOnContactUsPage && !captchaValid)
+			if (_captchaSettings.Value.CanDisplayCaptcha && _captchaSettings.Value.ShowOnContactUsPage && !captchaValid)
 			{
 				ModelState.AddModelError("", T("Common.WrongCaptcha"));
 			}
@@ -108,7 +108,8 @@ namespace SmartStore.Web.Controllers
 				return View(model);
 			}
 
-			model.DisplayCaptcha = _captchaSettings.Value.Enabled && _captchaSettings.Value.ShowOnContactUsPage;
+			model.DisplayCaptcha = _captchaSettings.Value.CanDisplayCaptcha && _captchaSettings.Value.ShowOnContactUsPage;
+
 			return View(model);
 		}
 

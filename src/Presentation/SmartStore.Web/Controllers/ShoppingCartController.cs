@@ -2520,11 +2520,12 @@ namespace SmartStore.Web.Controllers
             if (cart.Count == 0)
                 return RedirectToRoute("HomePage");
 
-            var model = new WishlistEmailAFriendModel()
+            var model = new WishlistEmailAFriendModel
             {
                 YourEmailAddress = _workContext.CurrentCustomer.Email,
-                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailWishlistToFriendPage
+                DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnEmailWishlistToFriendPage
             };
+
             return View(model);
         }
 
@@ -2543,7 +2544,7 @@ namespace SmartStore.Web.Controllers
                 return RedirectToRoute("HomePage");
 
             //validate CAPTCHA
-            if (_captchaSettings.Enabled && _captchaSettings.ShowOnEmailWishlistToFriendPage && !captchaValid)
+            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnEmailWishlistToFriendPage && !captchaValid)
             {
                 ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptcha"));
             }
@@ -2569,9 +2570,10 @@ namespace SmartStore.Web.Controllers
                 return View(model);
             }
 
-            //If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
             ModelState.AddModelError("", _localizationService.GetResource("Common.Error.Sendmail"));
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailWishlistToFriendPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnEmailWishlistToFriendPage;
+
             return View(model);
         }
 

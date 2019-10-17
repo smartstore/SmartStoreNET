@@ -413,7 +413,7 @@ namespace SmartStore.Web.Controllers
             var model = new LoginModel();
             model.CustomerLoginType = _customerSettings.CustomerLoginType;
             model.CheckoutAsGuest = checkoutAsGuest ?? false;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnLoginPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnLoginPage;
            
             return View(model);
         }
@@ -423,7 +423,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult Login(LoginModel model, string returnUrl, bool captchaValid)
         {
             // Validate CAPTCHA.
-            if (_captchaSettings.Enabled && _captchaSettings.ShowOnLoginPage && !captchaValid)
+            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnLoginPage && !captchaValid)
             {
                 ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptcha"));
             }
@@ -497,7 +497,7 @@ namespace SmartStore.Web.Controllers
 
             // If we got this far, something failed, redisplay form.
             model.CustomerLoginType = _customerSettings.CustomerLoginType;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnLoginPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnLoginPage;
 
             return View(model);
         }
@@ -540,7 +540,7 @@ namespace SmartStore.Web.Controllers
             model.NewsletterEnabled = _customerSettings.NewsletterEnabled;
             model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
             model.CheckUsernameAvailabilityEnabled = _customerSettings.CheckUsernameAvailabilityEnabled;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnRegistrationPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnRegistrationPage;
 
 			foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
 			{
@@ -596,7 +596,7 @@ namespace SmartStore.Web.Controllers
             var customer = _workContext.CurrentCustomer;
 
             // validate CAPTCHA
-            if (_captchaSettings.Enabled && _captchaSettings.ShowOnRegistrationPage && !captchaValid)
+            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnRegistrationPage && !captchaValid)
             {
                 ModelState.AddModelError("", T("Common.WrongCaptcha"));
             }
@@ -816,7 +816,7 @@ namespace SmartStore.Web.Controllers
             model.NewsletterEnabled = _customerSettings.NewsletterEnabled;
             model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
             model.CheckUsernameAvailabilityEnabled = _customerSettings.CheckUsernameAvailabilityEnabled;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnRegistrationPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnRegistrationPage;
 
             if (_customerSettings.CountryEnabled)
             {

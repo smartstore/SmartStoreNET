@@ -2,6 +2,7 @@
 using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 using System.Collections.Generic;
@@ -341,12 +342,22 @@ namespace SmartStore.Admin.Models.Settings
 
     public partial class GeneralCommonSettingsValidator : AbstractValidator<GeneralCommonSettingsModel>
     {
-        public GeneralCommonSettingsValidator()
+        public GeneralCommonSettingsValidator(Localizer T)
         {
             RuleFor(x => x.ContactDataSettings.CompanyEmailAddress).EmailAddress();
             RuleFor(x => x.ContactDataSettings.ContactEmailAddress).EmailAddress();
             RuleFor(x => x.ContactDataSettings.SupportEmailAddress).EmailAddress();
             RuleFor(x => x.ContactDataSettings.WebmasterEmailAddress).EmailAddress();
+
+            RuleFor(x => x.CaptchaSettings.ReCaptchaPublicKey)
+                .NotEmpty()
+                .When(x => x.CaptchaSettings.Enabled)
+                .WithMessage(T("Admin.Configuration.Settings.GeneralCommon.CaptchaEnabledNoKeys"));
+
+            RuleFor(x => x.CaptchaSettings.ReCaptchaPrivateKey)
+                .NotEmpty()
+                .When(x => x.CaptchaSettings.Enabled)
+                .WithMessage(T("Admin.Configuration.Settings.GeneralCommon.CaptchaEnabledNoKeys"));
         }
     }
 }

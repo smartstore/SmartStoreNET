@@ -118,7 +118,7 @@ namespace SmartStore.Web.Controllers
             model.Short = newsItem.Short;
             model.Full = newsItem.Full;
 			model.CreatedOn = _dateTimeHelper.ConvertToUserTime(newsItem.CreatedOnUtc, DateTimeKind.Utc);
-            model.AddNewComment.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnNewsCommentPage;
+            model.AddNewComment.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnNewsCommentPage;
             model.DisplayAdminLink = _services.Permissions.Authorize(Permissions.System.AccessBackend, _services.WorkContext.CurrentCustomer);
             model.PictureModel = PrepareNewsItemPictureModel(newsItem, newsItem.PictureId);
             model.PreviewPictureModel = PrepareNewsItemPictureModel(newsItem, newsItem.PreviewPictureId);
@@ -311,7 +311,7 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
 
             //validate CAPTCHA
-            if (_captchaSettings.Enabled && _captchaSettings.ShowOnNewsCommentPage && !captchaValid)
+            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnNewsCommentPage && !captchaValid)
             {
                 ModelState.AddModelError("", T("Common.WrongCaptcha"));
             }

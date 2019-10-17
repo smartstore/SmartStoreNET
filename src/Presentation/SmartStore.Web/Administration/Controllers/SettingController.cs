@@ -1099,7 +1099,13 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, FormValueRequired("save")]
         public ActionResult GeneralCommon(GeneralCommonSettingsModel model, FormCollection form)
         {
-			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+            if (!ModelState.IsValid)
+            {
+                return GeneralCommon();
+            }
+
+            ModelState.Clear();
+            var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 
 			// Store information.
 			var storeInformationSettings = Services.Settings.LoadSetting<StoreInformationSettings>(storeScope);
@@ -1144,8 +1150,8 @@ namespace SmartStore.Admin.Controllers
 			// Social.
 			var socialSettings = Services.Settings.LoadSetting<SocialSettings>(storeScope);
 			MiniMapper.Map(model.SocialSettings, socialSettings);
-			
-			using (Services.Settings.BeginScope())
+
+            using (Services.Settings.BeginScope())
 			{
 				StoreDependingSettings.UpdateSettings(storeInformationSettings, form, storeScope, Services.Settings);
 				StoreDependingSettings.UpdateSettings(seoSettings, form, storeScope, Services.Settings);
@@ -1168,11 +1174,6 @@ namespace SmartStore.Admin.Controllers
 			if (clearSeoFriendlyUrls)
 			{
 				LocalizedRoute.ClearSeoFriendlyUrlsCachedValue();
-			}
-
-			if (captchaSettings.Enabled && (captchaSettings.ReCaptchaPublicKey.IsEmpty() || captchaSettings.ReCaptchaPrivateKey.IsEmpty()))
-			{
-				NotifyError(T("Admin.Configuration.Settings.GeneralCommon.CaptchaEnabledNoKeys"));
 			}
 
 			return NotifyAndRedirect("GeneralCommon");

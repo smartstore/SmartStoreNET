@@ -74,8 +74,6 @@ namespace SmartStore.Admin.Controllers
 			{
 				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(topic);
 			}
-
-			model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 		}
 
 		private void PrepareAclModel(TopicModel model, Topic topic, bool excludeProperties)
@@ -84,17 +82,8 @@ namespace SmartStore.Admin.Controllers
 
 			if (!excludeProperties)
 			{
-				if (topic != null)
-				{
-					model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(topic);
-				}
-				else
-				{
-					model.SelectedCustomerRoleIds = new int[0];
-				}
+                model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(topic);
 			}
-
-			model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
 		}
 
 		private string GetTopicUrl(Topic topic)
@@ -232,8 +221,8 @@ namespace SmartStore.Admin.Controllers
 				model.SeName = topic.ValidateSeName(model.SeName, topic.Title.NullEmpty() ?? topic.SystemName, true);
 				_urlRecordService.SaveSlug(topic, model.SeName, 0);
 
-				SaveStoreMappings(topic, model);
-				SaveAclMappings(topic, model);
+				SaveStoreMappings(topic, model.SelectedStoreIds);
+				SaveAclMappings(topic, model.SelectedCustomerRoleIds);
 				UpdateLocales(topic, model);
 
                 Services.EventPublisher.Publish(new ModelBoundEvent(model, topic, form));
@@ -311,9 +300,9 @@ namespace SmartStore.Admin.Controllers
 				model.SeName = topic.ValidateSeName(model.SeName, topic.Title.NullEmpty() ?? topic.SystemName, true);
 				_urlRecordService.SaveSlug(topic, model.SeName, 0);
 
-				SaveStoreMappings(topic, model);
-				SaveAclMappings(topic, model);
-				UpdateLocales(topic, model);
+                SaveStoreMappings(topic, model.SelectedStoreIds);
+                SaveAclMappings(topic, model.SelectedCustomerRoleIds);
+                UpdateLocales(topic, model);
 
                 Services.EventPublisher.Publish(new ModelBoundEvent(model, topic, form));
 

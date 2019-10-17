@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -6,7 +7,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Payments
 {
-	public class PaymentMethodEditModel : TabbableModel, ILocalizedModel<PaymentMethodLocalizedModel>, IStoreSelector
+    public class PaymentMethodEditModel : TabbableModel, ILocalizedModel<PaymentMethodLocalizedModel>
 	{
 		public PaymentMethodEditModel()
 		{
@@ -35,12 +36,13 @@ namespace SmartStore.Admin.Models.Payments
         [SmartResourceDisplayName("Admin.Configuration.Payment.Methods.RoundOrderTotalEnabled")]
         public bool RoundOrderTotalEnabled { get; set; }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
-	}
+        // Store mapping.
+        [UIHint("Stores"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
+    }
 
 
 	public class PaymentMethodLocalizedModel : ILocalizedModelLocal

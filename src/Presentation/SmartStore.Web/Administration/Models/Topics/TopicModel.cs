@@ -15,7 +15,7 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Topics
 {
     [Validator(typeof(TopicValidator))]
-    public class TopicModel : TabbableModel, ILocalizedModel<TopicLocalizedModel>, IStoreSelector, IAclSelector
+    public class TopicModel : TabbableModel, ILocalizedModel<TopicLocalizedModel>
     {       
         public TopicModel()
         {
@@ -32,18 +32,21 @@ namespace SmartStore.Admin.Models.Topics
             AvailableTitleTags.Add(new SelectListItem { Text = "span", Value = "span" });
         }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
+        // Store mapping.
+        [UIHint("Stores"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
 
-		// ACL
-		public bool SubjectToAcl { get; set; }
-		public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
-		public int[] SelectedCustomerRoleIds { get; set; }
+        // ACL.
+        [UIHint("CustomerRoles"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
+        public int[] SelectedCustomerRoleIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
+        public bool SubjectToAcl { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SystemName")]
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SystemName")]
         [AllowHtml]
         public string SystemName { get; set; }
 

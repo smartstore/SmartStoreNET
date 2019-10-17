@@ -68,17 +68,14 @@ namespace SmartStore.Admin.Controllers
 					.Select(x => string.Concat("'", x, "'"))
 					.OrderBy(x => x)
 					.ToList();
-
-				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(shippingMethod);
 			}
 			else
 			{
 				model.FilterConfigurationUrls = new List<string>();
-				model.SelectedStoreIds = new int[0];
 			}
 
-			model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
-		}
+            model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(shippingMethod);
+        }
 
         #endregion
 
@@ -186,8 +183,7 @@ namespace SmartStore.Admin.Controllers
                 var sm = model.ToEntity();
                 _shippingService.InsertShippingMethod(sm);
 
-				SaveStoreMappings(sm, model);
-
+				SaveStoreMappings(sm, model.SelectedStoreIds);
 				UpdateLocales(sm, model);
 
                 NotifySuccess(T("Admin.Configuration.Shipping.Methods.Added"));
@@ -233,8 +229,7 @@ namespace SmartStore.Admin.Controllers
                 sm = model.ToEntity(sm);
                 _shippingService.UpdateShippingMethod(sm);
 
-				SaveStoreMappings(sm, model);
-
+				SaveStoreMappings(sm, model.SelectedStoreIds);
 				UpdateLocales(sm, model);
 
 				Services.EventPublisher.Publish(new ModelBoundEvent(model, sm, form));

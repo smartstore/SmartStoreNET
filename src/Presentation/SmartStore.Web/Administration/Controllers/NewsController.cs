@@ -73,8 +73,6 @@ namespace SmartStore.Admin.Controllers
             {
                 model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(newsItem);
             }
-
-            model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
         }
 
         #endregion
@@ -165,7 +163,7 @@ namespace SmartStore.Admin.Controllers
                 var seName = newsItem.ValidateSeName(model.SeName, model.Title, true);
                 _urlRecordService.SaveSlug(newsItem, seName, newsItem.LanguageId);
 
-                SaveStoreMappings(newsItem, model);
+                SaveStoreMappings(newsItem, model.SelectedStoreIds);
 
                 Services.EventPublisher.Publish(new ModelBoundEvent(model, newsItem, form));
 
@@ -223,7 +221,7 @@ namespace SmartStore.Admin.Controllers
                 var seName = newsItem.ValidateSeName(model.SeName, model.Title, true);
                 _urlRecordService.SaveSlug(newsItem, seName, newsItem.LanguageId);
 
-                SaveStoreMappings(newsItem, model);
+                SaveStoreMappings(newsItem, model.SelectedStoreIds);
 
                 Services.EventPublisher.Publish(new ModelBoundEvent(model, newsItem, form));
 

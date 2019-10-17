@@ -32,14 +32,14 @@
 					  columns.Bound(x => x.DisplayOrder)
 						  .Width(150)
 						  .Centered();
+					  columns.Bound(x => x.CreatedOn)
+						  .Width(200);
 					  columns.Bound(x => x.LimitedToStores)
 						  .Template(item => @Html.SymbolForBool(item.LimitedToStores))
 						  .ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
 						  .Centered()
 						  .Width(100)
 						  .Hidden(ViewBag.StoreCount <= 1);
-					  columns.Bound(x => x.CreatedOn)
-						  .Width(200);
 					  columns.Bound(x => x.Id)
 							  .Width(50)
 							  .Centered()

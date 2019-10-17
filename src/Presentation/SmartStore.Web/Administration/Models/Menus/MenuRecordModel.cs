@@ -13,7 +13,7 @@ using SmartStore.Web.Framework.UI;
 namespace SmartStore.Admin.Models.Menus
 {
     [Validator(typeof(MenuRecordValidator))]
-    public class MenuRecordModel : TabbableModel, ILocalizedModel<MenuRecordLocalizedModel>, IStoreSelector, IAclSelector
+    public class MenuRecordModel : TabbableModel, ILocalizedModel<MenuRecordLocalizedModel>
     {
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.SystemName")]
         public string SystemName { get; set; }
@@ -39,15 +39,18 @@ namespace SmartStore.Admin.Models.Menus
         public int DisplayOrder { get; set; }
 
         // Store mapping.
+        [UIHint("Stores"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
         [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
         public bool LimitedToStores { get; set; }
-        public IEnumerable<SelectListItem> AvailableStores { get; set; }
-        public int[] SelectedStoreIds { get; set; }
 
         // ACL.
-        public bool SubjectToAcl { get; set; }
-        public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
+        [UIHint("CustomerRoles"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
         public int[] SelectedCustomerRoleIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
+        public bool SubjectToAcl { get; set; }
 
         public IList<MenuRecordLocalizedModel> Locales { get; set; }
         public IList<SelectListItem> AllProviders { get; set; }

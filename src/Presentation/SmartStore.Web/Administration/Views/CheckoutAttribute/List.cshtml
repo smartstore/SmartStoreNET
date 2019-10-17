@@ -36,7 +36,7 @@
 				.Centered();
 			columns.Bound(x => x.LimitedToStores)
 				.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
-				.Hidden(Model.AvailableStores.Count <= 1)
+				.Hidden(Model.IsSingleStoreMode)
 				.Centered();
 		})
 		.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))

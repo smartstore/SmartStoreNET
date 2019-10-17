@@ -1,18 +1,19 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
+using System.Web.Script.Serialization;
+using FluentValidation;
 using FluentValidation.Attributes;
 using Newtonsoft.Json;
 using SmartStore.Collections;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using System.Collections.Generic;
-using System.Web.Mvc;
-using System.Web.Script.Serialization;
 
 namespace SmartStore.Admin.Models.Messages
 {
     [Validator(typeof(MessageTemplateValidator))]
-    public class MessageTemplateModel : TabbableModel, ILocalizedModel<MessageTemplateLocalizedModel>, IStoreSelector
+    public class MessageTemplateModel : TabbableModel, ILocalizedModel<MessageTemplateLocalizedModel>
     {
         public MessageTemplateModel()
         {
@@ -70,13 +71,14 @@ namespace SmartStore.Admin.Models.Messages
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment3FileId")]
 		public int? Attachment3FileId { get; set; }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
+        // Store mapping.
+        [UIHint("Stores"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
 
-		public IList<MessageTemplateLocalizedModel> Locales { get; set; }
+        public IList<MessageTemplateLocalizedModel> Locales { get; set; }
         public IList<EmailAccountModel> AvailableEmailAccounts { get; set; }
 	}
 

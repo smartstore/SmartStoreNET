@@ -71,8 +71,6 @@ namespace SmartStore.Admin.Controllers
             {
                 model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(blogPost);
             }
-
-            model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
         }
 
         #endregion
@@ -153,24 +151,22 @@ namespace SmartStore.Admin.Controllers
 
                 _blogService.InsertBlogPost(blogPost);
 
-                //search engine name
+                // Search engine name.
                 var seName = blogPost.ValidateSeName(model.SeName, model.Title, true);
                 _urlRecordService.SaveSlug(blogPost, seName, blogPost.LanguageId);
 
-                // Stores
-                SaveStoreMappings(blogPost, model);
+                SaveStoreMappings(blogPost, model.SelectedStoreIds);
 
                 Services.EventPublisher.Publish(new ModelBoundEvent(model, blogPost, form));
 
-                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Added"));
+                NotifySuccess(T("Admin.ContentManagement.Blog.BlogPosts.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
 
-            //Stores
             PrepareStoresMappingModel(model, null, true);
+
             return View(model);
         }
 
@@ -214,26 +210,20 @@ namespace SmartStore.Admin.Controllers
 
                 _blogService.UpdateBlogPost(blogPost);
 
-                // Search engine name
+                // Search engine name.
                 var seName = blogPost.ValidateSeName(model.SeName, model.Title, true);
                 _urlRecordService.SaveSlug(blogPost, seName, blogPost.LanguageId);
 
-                // Stores
-                SaveStoreMappings(blogPost, model);
+                SaveStoreMappings(blogPost, model.SelectedStoreIds);
 
-                // Event
                 Services.EventPublisher.Publish(new ModelBoundEvent(model, blogPost, form));
-
-                // Notify
-                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Updated"));
+                NotifySuccess(T("Admin.ContentManagement.Blog.BlogPosts.Updated"));
 
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");
             }
 
-            // If we got this far, something failed, redisplay form
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
 
-            // Store
             PrepareStoresMappingModel(model, blogPost, true);
 
             return View(model);

@@ -46,7 +46,6 @@ namespace SmartStore.Admin.Controllers
                 model.CreatedOn = Services.DateTimeHelper.ConvertToUserTime(campaign.CreatedOnUtc, DateTimeKind.Utc);
             }
 
-            model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
             model.LastModelTree = _messageModelProvider.GetLastModelTree(MessageTemplateNames.SystemCampaign);
         }
 
@@ -104,13 +103,12 @@ namespace SmartStore.Admin.Controllers
                 campaign.CreatedOnUtc = DateTime.UtcNow;
                 _campaignService.InsertCampaign(campaign);
 
-                SaveStoreMappings(campaign, model);
+                SaveStoreMappings(campaign, model.SelectedStoreIds);
 
                 NotifySuccess(T("Admin.Promotions.Campaigns.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = campaign.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
             PrepareCampaignModel(model, null, true);
 
             return View(model);
@@ -137,20 +135,21 @@ namespace SmartStore.Admin.Controllers
         {
             var campaign = _campaignService.GetCampaignById(model.Id);
             if (campaign == null)
+            {
                 return RedirectToAction("List");
+            }
 
             if (ModelState.IsValid)
             {
                 campaign = model.ToEntity(campaign);
                 _campaignService.UpdateCampaign(campaign);
 
-                SaveStoreMappings(campaign, model);
+                SaveStoreMappings(campaign, model.SelectedStoreIds);
 
                 NotifySuccess(T("Admin.Promotions.Campaigns.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = campaign.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
             PrepareCampaignModel(model, campaign, true);
 
             return View(model);

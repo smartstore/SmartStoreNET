@@ -1,16 +1,16 @@
-﻿using FluentValidation;
-using FluentValidation.Attributes;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Modelling;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using FluentValidation;
+using FluentValidation.Attributes;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Polls
 {
     [Validator(typeof(PollValidator))]
-    public class PollModel : EntityModelBase, IStoreSelector
+    public class PollModel : EntityModelBase
     {
         public bool UsernamesEnabled { get; set; }
         public int GridPageSize { get; set; }
@@ -49,12 +49,13 @@ namespace SmartStore.Admin.Models.Polls
         [SmartResourceDisplayName("Admin.ContentManagement.Polls.Fields.EndDate")]
         public DateTime? EndDate { get; set; }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
-	}
+        // Store mapping
+        [UIHint("Stores"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
+    }
 
     public partial class PollValidator : AbstractValidator<PollModel>
     {

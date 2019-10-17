@@ -82,9 +82,6 @@ namespace SmartStore.Admin.Controllers
                 model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(forumGroup);
             }
 
-			model.AvailableStores = allStores.ToSelectListItems(model.SelectedStoreIds);
-            model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
-
             ViewBag.StoreCount = allStores.Count;
 		}
 
@@ -293,8 +290,8 @@ namespace SmartStore.Admin.Controllers
 
 				UpdateLocales(model, forumGroup);
 
-				SaveStoreMappings(forumGroup, model);
-                SaveAclMappings(forumGroup, model);
+				SaveStoreMappings(forumGroup, model.SelectedStoreIds);
+                SaveAclMappings(forumGroup, model.SelectedCustomerRoleIds);
 
                 NotifySuccess(T("Admin.ContentManagement.Forums.ForumGroup.Added"));
 
@@ -349,8 +346,8 @@ namespace SmartStore.Admin.Controllers
 
 				UpdateLocales(model, forumGroup);
 
-				SaveStoreMappings(forumGroup, model);
-                SaveAclMappings(forumGroup, model);
+				SaveStoreMappings(forumGroup, model.SelectedStoreIds);
+                SaveAclMappings(forumGroup, model.SelectedCustomerRoleIds);
 
                 NotifySuccess(T("Admin.ContentManagement.Forums.ForumGroup.Updated"));
 

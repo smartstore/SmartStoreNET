@@ -50,6 +50,12 @@
 					.Template(item => @Html.SymbolForBool(item.SendManually))
 					.ClientTemplate(@Html.SymbolForBool("SendManually"))
 					.Centered();
+			    columns.Bound(x => x.LimitedToStores)
+				    .Width(160)
+				    .Template(item => @Html.SymbolForBool(item.LimitedToStores))
+				    .ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+				    .Hidden(Model.AvailableStores.Count <= 1)
+				    .Centered();
 			})
 			.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "MessageTemplate"))
 			.ClientEvents(events => events.OnDataBinding("onDataBinding").OnRowDataBound("onRowDataBound"))

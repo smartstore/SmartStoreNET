@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
@@ -13,7 +12,7 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Blogs
 {
     [Validator(typeof(BlogPostValidator))]
-    public class BlogPostModel : TabbableModel, IStoreSelector
+    public class BlogPostModel : TabbableModel
 	{
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.IsPublished")]
         public bool IsPublished { get; set; }
@@ -93,11 +92,12 @@ namespace SmartStore.Admin.Models.Blogs
         [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
+        // Store mapping.
+        [UIHint("Stores"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
     }
 
     public partial class BlogPostValidator : AbstractValidator<BlogPostModel>

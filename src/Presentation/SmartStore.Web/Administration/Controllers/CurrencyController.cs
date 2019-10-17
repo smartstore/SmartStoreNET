@@ -125,8 +125,6 @@ namespace SmartStore.Admin.Controllers
             {
                 model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(currency);
             }
-
-            model.AvailableStores = allStores.ToSelectListItems(model.SelectedStoreIds);
         }
 
         private CurrencyModel CreateCurrencyListModel(Currency currency)
@@ -324,14 +322,12 @@ namespace SmartStore.Admin.Controllers
                 _currencyService.InsertCurrency(currency);
 
                 UpdateLocales(currency, model);
+                SaveStoreMappings(currency, model.SelectedStoreIds);
 
-                SaveStoreMappings(currency, model);
-
-                NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Currencies.Added"));
+                NotifySuccess(T("Admin.Configuration.Currencies.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = currency.Id }) : RedirectToAction("List");
             }
 
-            // If we got this far, something failed, redisplay form
             PrepareCurrencyModel(model, null, true);
 
             return View(model);
@@ -379,7 +375,9 @@ namespace SmartStore.Admin.Controllers
         {
             var currency = _currencyService.GetCurrencyById(model.Id);
             if (currency == null)
+            {
                 return RedirectToAction("List");
+            }
 
             if (ModelState.IsValid)
             {
@@ -391,15 +389,13 @@ namespace SmartStore.Admin.Controllers
                     _currencyService.UpdateCurrency(currency);
 
                     UpdateLocales(currency, model);
+                    SaveStoreMappings(currency, model.SelectedStoreIds);
 
-                    SaveStoreMappings(currency, model);
-
-                    NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Currencies.Updated"));
+                    NotifySuccess(T("Admin.Configuration.Currencies.Updated"));
                     return continueEditing ? RedirectToAction("Edit", new { id = currency.Id }) : RedirectToAction("List");
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(currency.CreatedOnUtc, DateTimeKind.Utc);
 
             PrepareCurrencyModel(model, currency, true);

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
@@ -13,7 +12,7 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.News
 {
     [Validator(typeof(NewsItemValidator))]
-    public class NewsItemModel : TabbableModel, IStoreSelector
+    public class NewsItemModel : TabbableModel
     {
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Language")]
         public int LanguageId { get; set; }
@@ -22,14 +21,14 @@ namespace SmartStore.Admin.Models.News
         [AllowHtml]
         public string LanguageName { get; set; }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
+        // Store mapping.
+        [UIHint("Stores"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
 
-
-		[SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Title")]
+        [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Title")]
         [AllowHtml]
         public string Title { get; set; }
 

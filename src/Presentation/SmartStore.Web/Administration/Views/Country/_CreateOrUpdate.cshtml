@@ -8,7 +8,6 @@
 {
     x.Add().Text(T("Admin.Configuration.Countries.Info").Text).Content(TabInfo()).Selected(true);
     x.Add().Text("{0} ({1})".FormatInvariant(T("Admin.Configuration.Countries.States"), Model.NumberOfStates)).Content(TabStates());
-	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
     
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "country-edit", this.Html, this.Model));
 })
@@ -117,6 +116,15 @@
                 @Html.ValidationMessageFor(model => model.DisplayOrder)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedStoreIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedStoreIds)
+                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+            </td>
+        </tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.AddressFormat)
@@ -215,9 +223,4 @@
 		<span>@T("Admin.Configuration.Countries.States.AddNew")</span>
 	</button>
 	<input type="submit" id="btnRefresh" name="btnRefresh" class="d-none" />
-}
-
-@helper TabStores()
-{
-	@Html.Partial("StoreSelector", Model)
 }

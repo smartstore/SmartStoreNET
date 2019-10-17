@@ -10,9 +10,7 @@
 {
 	x.Add().Text(T("Admin.Common.Info").Text).Content(TabInfo()).Selected(true);
     x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
-	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
 
-    //generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "news-edit", this.Html, this.Model));
 })
 
@@ -108,6 +106,15 @@
                 @Html.ValidationMessageFor(model => model.Published)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedStoreIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedStoreIds)
+                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+            </td>
+        </tr>
     </table>
 }
 
@@ -156,9 +163,3 @@
         </tr>
     </table>
 }
-
-@helper TabStores()
-{
-	@Html.Partial("StoreSelector", Model)
-}
-

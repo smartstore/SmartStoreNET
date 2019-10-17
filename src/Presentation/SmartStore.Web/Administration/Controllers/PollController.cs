@@ -11,7 +11,6 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Polls;
 using SmartStore.Services.Stores;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -48,8 +47,6 @@ namespace SmartStore.Admin.Controllers
             _customerSettings = customerSettings;
 		}
 
-		#region Utilities
-
 		private void PreparePollModel(PollModel model, Poll poll, bool excludeProperties)
 		{
 			Guard.NotNull(model, nameof(model));
@@ -59,7 +56,6 @@ namespace SmartStore.Admin.Controllers
 				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(poll);
 			}
 
-			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
             model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
             model.GridPageSize = _adminAreaSettings.GridPageSize;
 
@@ -67,8 +63,6 @@ namespace SmartStore.Admin.Controllers
                 .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
                 .ToList();
         }
-
-		#endregion Utilities
 
 		#region Polls
 
@@ -154,7 +148,7 @@ namespace SmartStore.Admin.Controllers
 
                 _pollService.InsertPoll(poll);
 
-				SaveStoreMappings(poll, model);
+				SaveStoreMappings(poll, model.SelectedStoreIds);
 
                 NotifySuccess(T("Admin.ContentManagement.Polls.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = poll.Id }) : RedirectToAction("List");
@@ -201,7 +195,7 @@ namespace SmartStore.Admin.Controllers
 
                 _pollService.UpdatePoll(poll);
 
-				SaveStoreMappings(poll, model);
+				SaveStoreMappings(poll, model.SelectedStoreIds);
 
                 NotifySuccess(T("Admin.ContentManagement.Polls.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = poll.Id }) : RedirectToAction("List");

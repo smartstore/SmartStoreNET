@@ -84,8 +84,6 @@ namespace SmartStore.Admin.Controllers
             {
                 model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(country);
             }
-
-            model.AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
         }
 
         #endregion
@@ -187,11 +185,9 @@ namespace SmartStore.Admin.Controllers
                 _countryService.InsertCountry(country);
 
                 UpdateLocales(country, model);
-
-                SaveStoreMappings(country, model);
+                SaveStoreMappings(country, model.SelectedStoreIds);
 
                 NotifySuccess(T("Admin.Configuration.Countries.Added"));
-
                 return continueEditing ? RedirectToAction("Edit", new { id = country.Id }) : RedirectToAction("List");
             }
 
@@ -225,7 +221,9 @@ namespace SmartStore.Admin.Controllers
         {
             var country = _countryService.GetCountryById(model.Id);
             if (country == null)
+            {
                 return RedirectToAction("List");
+            }
 
             if (ModelState.IsValid)
             {
@@ -233,11 +231,9 @@ namespace SmartStore.Admin.Controllers
                 _countryService.UpdateCountry(country);
 
                 UpdateLocales(country, model);
-
-                SaveStoreMappings(country, model);
+                SaveStoreMappings(country, model.SelectedStoreIds);
 
                 NotifySuccess(T("Admin.Configuration.Countries.Updated"));
-
                 return continueEditing ? RedirectToAction("Edit", new { id = country.Id }) : RedirectToAction("List");
             }
 

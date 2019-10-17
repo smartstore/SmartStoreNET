@@ -7,7 +7,6 @@ using SmartStore.Core.Security;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Stores;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
@@ -61,11 +60,10 @@ namespace SmartStore.Admin.Controllers
 				model.FullDescription = paymentMethod.FullDescription;
                 model.RoundOrderTotalEnabled = paymentMethod.RoundOrderTotalEnabled;
 				model.LimitedToStores = paymentMethod.LimitedToStores;
-				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(paymentMethod);
 			}
 
-			model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
-		}
+            model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(paymentMethod);
+        }
 
         [Permission(Permissions.Configuration.PaymentMethod.Read)]
         public ActionResult Providers()
@@ -187,7 +185,7 @@ namespace SmartStore.Admin.Controllers
                 _paymentService.UpdatePaymentMethod(paymentMethod);
             }
 
-			SaveStoreMappings(paymentMethod, model);
+			SaveStoreMappings(paymentMethod, model.SelectedStoreIds);
 
 			foreach (var localized in model.Locales)
 			{

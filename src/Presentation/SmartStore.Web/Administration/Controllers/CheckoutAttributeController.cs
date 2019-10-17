@@ -102,8 +102,7 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         private void PrepareCheckoutAttributeModel(CheckoutAttributeModel model, CheckoutAttribute checkoutAttribute, bool excludeProperties)
         {
-            if (model == null)
-                throw new ArgumentNullException("model");
+            Guard.NotNull(model, nameof(model));
 
             var taxCategories = _taxCategoryService.GetAllTaxCategories();
 
@@ -113,7 +112,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     Text = tc.Name,
                     Value = tc.Id.ToString(),
-                    Selected = (checkoutAttribute != null && !excludeProperties && tc.Id == checkoutAttribute.TaxCategoryId)
+                    Selected = checkoutAttribute != null && !excludeProperties && tc.Id == checkoutAttribute.TaxCategoryId
                 });
             }
 
@@ -121,8 +120,6 @@ namespace SmartStore.Admin.Controllers
             {
                 model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(checkoutAttribute);
             }
-
-            model.AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
         }
 
         #endregion
@@ -139,10 +136,9 @@ namespace SmartStore.Admin.Controllers
         {
             var model = new CheckoutAttributeListModel
             {
+                IsSingleStoreMode = Services.StoreService.IsSingleStoreMode(),
                 GridPageSize = _adminAreaSettings.GridPageSize
             };
-
-            model.AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems();
 
             return View(model);
         }
@@ -192,18 +188,16 @@ namespace SmartStore.Admin.Controllers
                 _checkoutAttributeService.InsertCheckoutAttribute(checkoutAttribute);
 
                 UpdateAttributeLocales(checkoutAttribute, model);
+                SaveStoreMappings(checkoutAttribute, model.SelectedStoreIds);
 
-                SaveStoreMappings(checkoutAttribute, model);
+                _customerActivityService.InsertActivity("AddNewCheckoutAttribute", T("ActivityLog.AddNewCheckoutAttribute"), checkoutAttribute.Name);
 
-                //activity log
-                _customerActivityService.InsertActivity("AddNewCheckoutAttribute", _services.Localization.GetResource("ActivityLog.AddNewCheckoutAttribute"), checkoutAttribute.Name);
-
-                NotifySuccess(_services.Localization.GetResource("Admin.Catalog.Attributes.CheckoutAttributes.Added"));
+                NotifySuccess(T("Admin.Catalog.Attributes.CheckoutAttributes.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = checkoutAttribute.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
             PrepareCheckoutAttributeModel(model, null, true);
+
             return View(model);
         }
 
@@ -232,7 +226,9 @@ namespace SmartStore.Admin.Controllers
         {
             var checkoutAttribute = _checkoutAttributeService.GetCheckoutAttributeById(model.Id);
             if (checkoutAttribute == null)
+            {
                 return RedirectToAction("List");
+            }
 
             if (ModelState.IsValid)
             {
@@ -240,18 +236,16 @@ namespace SmartStore.Admin.Controllers
                 _checkoutAttributeService.UpdateCheckoutAttribute(checkoutAttribute);
 
                 UpdateAttributeLocales(checkoutAttribute, model);
+                SaveStoreMappings(checkoutAttribute, model.SelectedStoreIds);
 
-                SaveStoreMappings(checkoutAttribute, model);
+                _customerActivityService.InsertActivity("EditCheckoutAttribute", T("ActivityLog.EditCheckoutAttribute"), checkoutAttribute.Name);
 
-                //activity log
-                _customerActivityService.InsertActivity("EditCheckoutAttribute", _services.Localization.GetResource("ActivityLog.EditCheckoutAttribute"), checkoutAttribute.Name);
-
-                NotifySuccess(_services.Localization.GetResource("Admin.Catalog.Attributes.CheckoutAttributes.Updated"));
+                NotifySuccess(T("Admin.Catalog.Attributes.CheckoutAttributes.Updated"));
                 return continueEditing ? RedirectToAction("Edit", checkoutAttribute.Id) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
             PrepareCheckoutAttributeModel(model, checkoutAttribute, true);
+
             return View(model);
         }
 
@@ -262,10 +256,9 @@ namespace SmartStore.Admin.Controllers
             var checkoutAttribute = _checkoutAttributeService.GetCheckoutAttributeById(id);
             _checkoutAttributeService.DeleteCheckoutAttribute(checkoutAttribute);
 
-            //activity log
-            _customerActivityService.InsertActivity("DeleteCheckoutAttribute", _services.Localization.GetResource("ActivityLog.DeleteCheckoutAttribute"), checkoutAttribute.Name);
+            _customerActivityService.InsertActivity("DeleteCheckoutAttribute", T("ActivityLog.DeleteCheckoutAttribute"), checkoutAttribute.Name);
 
-            NotifySuccess(_services.Localization.GetResource("Admin.Catalog.Attributes.CheckoutAttributes.Deleted"));
+            NotifySuccess(T("Admin.Catalog.Attributes.CheckoutAttributes.Deleted"));
             return RedirectToAction("List");
         }
 

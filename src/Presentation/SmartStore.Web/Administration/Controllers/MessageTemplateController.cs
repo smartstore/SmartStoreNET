@@ -13,7 +13,6 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Stores;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
@@ -105,8 +104,6 @@ namespace SmartStore.Admin.Controllers
             {
                 model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(messageTemplate);
             }
-
-            model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
         }
         
         private void PrepareLastModelTree(MessageTemplate template)
@@ -200,7 +197,9 @@ namespace SmartStore.Admin.Controllers
         {
             var messageTemplate = _messageTemplateService.GetMessageTemplateById(model.Id);
             if (messageTemplate == null)
+            {
                 return RedirectToAction("List");
+            }
 
             if (ModelState.IsValid)
             {
@@ -212,26 +211,20 @@ namespace SmartStore.Admin.Controllers
 
                 _messageTemplateService.UpdateMessageTemplate(messageTemplate);
 
-                // Stores
-                SaveStoreMappings(messageTemplate, model);
-
-                // locales
+                SaveStoreMappings(messageTemplate, model.SelectedStoreIds);
                 UpdateLocales(messageTemplate, model);
 
                 Services.EventPublisher.Publish(new ModelBoundEvent(model, messageTemplate, form));
 
-                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Updated"));
+                NotifySuccess(T("Admin.ContentManagement.MessageTemplates.Updated"));
                 return continueEditing ? RedirectToAction("Edit", messageTemplate.Id) : RedirectToAction("List");
             }
 
-            // If we got this far, something failed, redisplay form
+            model.AvailableEmailAccounts = _emailAccountService.GetAllEmailAccounts()
+                .Select(x => x.ToModel())
+                .ToList();
+
             PrepareLastModelTree(messageTemplate);
-
-            // Available email accounts
-            foreach (var ea in _emailAccountService.GetAllEmailAccounts())
-                model.AvailableEmailAccounts.Add(ea.ToModel());
-
-            // Store
             PrepareStoresMappingModel(model, messageTemplate, true);
 
             return View(model);

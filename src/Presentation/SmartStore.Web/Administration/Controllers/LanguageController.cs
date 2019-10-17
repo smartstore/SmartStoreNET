@@ -141,7 +141,6 @@ namespace SmartStore.Admin.Controllers
             }
 
             model.AvailableFlags = model.AvailableFlags.OrderBy(x => x.Text).ToList();
-            model.AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 
             if (language != null)
             {
@@ -408,7 +407,7 @@ namespace SmartStore.Admin.Controllers
                 var language = model.ToEntity();
                 _languageService.InsertLanguage(language);
 
-                SaveStoreMappings(language, model);
+                SaveStoreMappings(language, model.SelectedStoreIds);
 
                 var plugins = _pluginFinder.GetPluginDescriptors(true);
                 var filterLanguages = new List<Language>() { language };
@@ -424,7 +423,6 @@ namespace SmartStore.Admin.Controllers
 
             PrepareLanguageModel(model, null, true);
 
-            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
@@ -493,11 +491,13 @@ namespace SmartStore.Admin.Controllers
         {
             var language = _languageService.GetLanguageById(model.Id);
             if (language == null)
+            {
                 return RedirectToAction("List");
+            }
 
             if (ModelState.IsValid)
             {
-                // Ensure we have at least one published language
+                // Ensure we have at least one published language.
                 var allLanguages = _languageService.GetAllLanguages();
                 if (allLanguages.Count == 1 && allLanguages[0].Id == language.Id && !model.Published)
                 {
@@ -508,7 +508,7 @@ namespace SmartStore.Admin.Controllers
                 language = model.ToEntity(language);
                 _languageService.UpdateLanguage(language);
 
-                SaveStoreMappings(language, model);
+                SaveStoreMappings(language, model.SelectedStoreIds);
 
                 NotifySuccess(T("Admin.Configuration.Languages.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = language.Id }) : RedirectToAction("List");
@@ -516,7 +516,6 @@ namespace SmartStore.Admin.Controllers
 
             PrepareLanguageModel(model, language, true);
 
-            // If we got this far, something failed, redisplay form.
             return View(model);
         }
 

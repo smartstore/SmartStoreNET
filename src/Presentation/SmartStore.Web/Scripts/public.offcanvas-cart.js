@@ -244,7 +244,6 @@ var ShopBar = (function($) {
     }
 
     EventBroker.subscribe("ajaxcart.item.adding", function (msg, data) {
-    	var tool = tools[data.type];
     	ShopBar.showThrobber();
     });
 
@@ -252,7 +251,7 @@ var ShopBar = (function($) {
         var tool = tools[data.type];
         var button = buttons[data.type];
         var badge = $("span.label", button);
-        
+
         if (badge.hasClass("d-none")) {
         	badge.removeClass("d-none");
         }
@@ -291,6 +290,7 @@ var ShopBar = (function($) {
 
     EventBroker.subscribe("ajaxcart.error", function (msg, data) {
         notify(data.response);
+        ShopBar.hideThrobber();
     });
 
     EventBroker.subscribe("ajaxcart.complete", function (msg, data) {

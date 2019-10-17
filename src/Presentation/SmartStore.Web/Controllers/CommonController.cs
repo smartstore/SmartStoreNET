@@ -490,16 +490,24 @@ namespace SmartStore.Web.Controllers
 
             var model = menu.CreateModel(template, ControllerContext);
 
-			var viewName = (template ?? name);
-			if (viewName[0] != '~' && !viewName.StartsWith("Menus/", StringComparison.OrdinalIgnoreCase))
-			{
-				viewName = "Menus/" + viewName;
-			}
-
-			return this.RootActionPartialView(viewName, model);
+            return Menu(model);
 		}
 
-		[ChildActionOnly]
+        [ChildActionOnly, ActionName("MenuFromModel")]
+        public ActionResult Menu(MenuModel model)
+        {
+            Guard.NotNull(model, nameof(model));
+            
+            var viewName = (model.Template ?? model.Name);
+            if (viewName[0] != '~' && !viewName.StartsWith("Menus/", StringComparison.OrdinalIgnoreCase))
+            {
+                viewName = "Menus/" + viewName;
+            }
+
+            return this.RootActionPartialView(viewName, model);
+        }
+
+        [ChildActionOnly]
 		public ActionResult Breadcrumb()
 		{
 			if (_breadcrumb.Trail == null || _breadcrumb.Trail.Count == 0)

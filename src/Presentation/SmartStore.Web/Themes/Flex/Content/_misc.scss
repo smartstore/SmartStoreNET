@@ -34,6 +34,7 @@
 //
 // Cookie Consent
 // -------------------------------------------------
+
 .cookie-consent-panel-message {
     background: $gray-800;
 	z-index: $zindex-fixed + 1;
@@ -47,16 +48,19 @@
 	border-top: 1px solid #222;
 	text-align: center;
 	line-height: 1.5;
-}
-.cookie-consent-panel-message .close {
-    color: #fff !important;
-}
-.cookie-consent-panel-message a {
-	color: inherit;
-	text-decoration: underline;
-}
-.cookie-consent-panel-message .popup {
-	display: none !important;
+
+    .close {
+        color: #fff !important;
+    }
+
+    a {
+	    color: inherit;
+	    text-decoration: underline;
+    }
+
+    .popup {
+	    display: none !important;
+    }
 }
 
 //
@@ -141,6 +145,7 @@
 //
 // Hacks
 // -------------------------------------------------
+
 .ie11 {
     .pd-offer-actions .col,
     .offcanvas-cart-footer-row .col {

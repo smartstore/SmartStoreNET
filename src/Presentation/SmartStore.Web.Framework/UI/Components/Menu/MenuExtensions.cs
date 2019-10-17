@@ -137,14 +137,9 @@ namespace SmartStore.Web.Framework.UI
             {
                 Name = menu.Name,
 				Template = template ?? menu.Name,
-                Root = menu.Root
+                Root = menu.Root,
+                SelectedNode = menu.ResolveCurrentNode(context)
             };
-
-            var currentNode = menu.ResolveCurrentNode(context);
-
-            model.Path = currentNode != null
-                ? currentNode.Trail.Where(x => !x.IsRoot).ToList()
-                : new List<TreeNode<MenuItem>>();
 
             menu.ResolveElementCounts(model.SelectedNode, false);
 

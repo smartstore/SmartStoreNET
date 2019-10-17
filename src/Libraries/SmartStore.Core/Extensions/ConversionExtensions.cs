@@ -69,7 +69,8 @@ namespace SmartStore
         {
             if (!CommonHelper.TryConvert(value, to, CultureInfo.InvariantCulture, out object result))
             {
-                throw Error.InvalidCast(value?.GetType(), to);
+                return null;
+                //throw Error.InvalidCast(value?.GetType(), to);
             }
 
             return result;
@@ -80,7 +81,8 @@ namespace SmartStore
 		{
             if (!CommonHelper.TryConvert(value, to, culture, out object result))
             {
-                throw Error.InvalidCast(value?.GetType(), to);
+                return null;
+                //throw Error.InvalidCast(value?.GetType(), to);
             }
 
             return result;

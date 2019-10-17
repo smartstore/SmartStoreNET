@@ -28,9 +28,9 @@
   <a href="mailto:{{ Message.SenderEmail }}">{{ Message.SenderEmail }}</a>
 </p>
 
-<table class="w-100 brd bg-light p-3">
+<table class="w-100 brd bg-light">
   <tr>
-  	<td>
+  	<td class="p-3">
   		{{ Message.Message }}
     </td>
   </tr>

@@ -11,11 +11,10 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Framework.Controllers
 {
-	public abstract class ManageController : SmartController
+    public abstract class ManageController : SmartController
     { 
 		/// <summary>
 		/// Add locales for localizable entities
@@ -49,18 +48,6 @@ namespace SmartStore.Web.Framework.Controllers
             }
         }
 
-		/// <summary>
-		/// Save the store mappings for an entity
-		/// </summary>
-		/// <typeparam name="T">Entity type</typeparam>
-		/// <param name="entity">The entity</param>
-		/// <param name="model">Model representation of store selection</param>
-		protected virtual void SaveStoreMappings<T>(T entity, IStoreSelector model) where T : BaseEntity, IStoreMappingSupported
-		{
-			entity.LimitedToStores = model.LimitedToStores;
-			Services.Resolve<IStoreMappingService>().SaveStoreMappings(entity, model.SelectedStoreIds);
-		}
-
         /// <summary>
         /// Save the store mappings for an entity.
         /// </summary>
@@ -77,18 +64,6 @@ namespace SmartStore.Web.Framework.Controllers
 
             Services.Resolve<IStoreMappingService>().SaveStoreMappings(entity, selectedStoreIds);
         }
-
-        /// <summary>
-        /// Save the ACL mappings for an entity
-        /// </summary>
-        /// <typeparam name="T">Entity type</typeparam>
-        /// <param name="entity">The entity</param>
-        /// <param name="model">Model representation of ACL selection</param>
-        protected virtual void SaveAclMappings<T>(T entity, IAclSelector model) where T : BaseEntity, IAclSupported
-		{
-			entity.SubjectToAcl = model.SubjectToAcl;
-			Services.Resolve<IAclService>().SaveAclMappings(entity, model.SelectedCustomerRoleIds);
-		}
 
         /// <summary>
         /// Save the ACL mappings for an entity.

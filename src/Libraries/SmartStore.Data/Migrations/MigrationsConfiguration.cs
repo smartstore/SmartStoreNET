@@ -96,7 +96,10 @@
                 "Admin.Customers.Customers.Addresses.AddButton",
                 "Admin.Address",
                 "Admin.Catalog.Products.Acl",
-                "Admin.Configuration.ACL.Updated");
+                "Admin.Configuration.ACL.Updated",
+                "Admin.Configuration.Stores.NoStoresDefined",
+                "Admin.Configuration.Acl.NoRolesDefined",
+                "Admin.Common.Acl.AvailableFor");
 
             builder.AddOrUpdate("Admin.ContentManagement.Blog.BlogPosts.Fields.Tags.Hint",
                 "Tags are keywords that this blog post can also be identified by. Enter a comma separated list of the tags to be associated with this blog post.",

@@ -579,8 +579,6 @@
     <Content Include="Views\Plugin\Partials\LicenseLabel.cshtml" />
     <Content Include="Views\Language\Partials\AvailableLanguages.cshtml" />
     <Content Include="Views\MessageTemplate\Preview.cshtml" />
-    <Content Include="Views\Shared\Partials\StoreSelector.cshtml" />
-    <Content Include="Views\Shared\Partials\AclSelector.cshtml" />
     <Content Include="Views\Order\_Edit.Products.cshtml" />
     <Content Include="Views\Order\_Edit.BillingAndShipment.cshtml" />
     <Content Include="Views\Order\_Edit.Info.cshtml" />

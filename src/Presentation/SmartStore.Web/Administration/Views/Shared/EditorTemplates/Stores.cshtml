@@ -3,7 +3,7 @@
     var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
     var name = ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
     var strValue = Value;
-    var url = Url.Action("AllStores", "Store", new { selectedIds = strValue });
+    var url = Url.Action("AllStores", "Store", new { selectedIds = strValue, area = "admin" });
 
     var htmlAttributes = new RouteValueDictionary(ViewData["htmlAttributes"] ?? new object());
     var attributes = new RouteValueDictionary();

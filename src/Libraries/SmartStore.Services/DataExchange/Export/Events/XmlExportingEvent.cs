@@ -18,6 +18,7 @@ namespace SmartStore.Services.DataExchange.Export.Events
             EntityIds = entityIds;
 
             Injectors = new List<XmlExportingEventInjector>();
+            CustomData = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -28,11 +29,9 @@ namespace SmartStore.Services.DataExchange.Export.Events
         /// <summary>
         /// Ids of the currently exported entities
         /// </summary>
-        public IEnumerable<int> EntityIds
-        {
-            get;
-            private set;
-        }
+        public IEnumerable<int> EntityIds { get; private set; }
+
+        public IDictionary<string, object> CustomData { get; private set; }
     }
 
     public class XmlExportingEventInjector

@@ -22,9 +22,12 @@
 
     @if (Model.PictureModel.FullSizeImageUrl.HasValue())
     {
-        <figure class="news-item-picture mb-3 img-center-container">
-            <img class="img-fluid shadow-sm-primary" src="@Model.PictureModel.FullSizeImageUrl" alt="@Model.PictureModel.AlternateText" title="@Model.PictureModel.Title" itemprop="image" />
-        </figure>
+        var pic = Model.PictureModel;
+        <div class="shadow-sm-primary mb-3">
+            <figure class="news-item-picture">
+                <img class="img-fluid" src="@pic.FullSizeImageUrl" alt="@pic.AlternateText" title="@pic.Title" width="@pic.FullSizeImageWidth.Value" height="@pic.FullSizeImageHeight.Value" itemprop="image" />
+            </figure>
+        </div>
     }
 
     <div class="news-date text-muted mb-2" itemprop="datePublished">
@@ -40,7 +43,7 @@
     <div class="news-body">    
         @{ Html.RenderWidget("newsitem_page_before_body"); }
 
-        <div class="news-content text-body html-editor-content" itemprop="articleBody">
+        <div class="news-content long-text html-editor-content" itemprop="articleBody">
             @Html.Raw(Model.Full)
         </div>
 

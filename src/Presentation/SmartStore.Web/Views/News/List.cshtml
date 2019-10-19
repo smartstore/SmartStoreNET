@@ -41,7 +41,7 @@
                     }
 
                     <h4 class="newsitem-title">
-                        <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" itemprop="headline">
+                        <a class="newsitem-title-link" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" itemprop="headline">
                             @item.Title.Truncate(60, "...")
                         </a>
                     </h4>

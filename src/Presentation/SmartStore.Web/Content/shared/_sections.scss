@@ -1,14 +1,13 @@
-﻿/// <reference path="../../../Content/shared/_variables-shared.scss" />
-/// <reference path="../../../Content/shared/_mixins.scss" />
-/// <reference path="_variables.scss" />
-/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
+﻿/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
 
 //
 // Section colorization
 // --------------------------------------------------
 
 :root {
-    $refcolors: #111214, $body-color, $gray-700, $gray-500;
+    $refcolors: #111214, $body-color, mix($gray-600, $gray-700), mix($gray-500, $gray-600);
     @for $i from 1 through length($refcolors) {
         $c: nth($refcolors, $i);
         --section-color-#{$i}: #{$c};
@@ -31,7 +30,7 @@
             $c1: #111214; // TBD: not black?
             $c2: mix($c1, $value, 82%);
             $c3: mix($c1, $value, 82%);
-            $c4: mix($c1, $value, 52%);
+            $c4: mix($c1, $value, 40%);
         }
         @else {
             --display-dark-logo: none;

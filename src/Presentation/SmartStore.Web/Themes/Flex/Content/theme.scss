@@ -55,6 +55,15 @@
 // Global / Shared
 // --------------------------------------------------
 
+@function body-bg() {
+    @if alpha($body-bg) == 0 {
+        @return $site-bg;
+    }
+    @else {
+        @return $body-bg;
+    }
+}
+
 /*@import 'shared/_colors.scss';*/ // <-- uncomment this for convenient prototyping
 @import '../../../Content/shared/_variables-shared.scss'; 
 @import '../../../Content/shared/_mixins.scss';

@@ -37,7 +37,13 @@ fieldset.content-group {
         > span {
             position: relative;
             display: inline-block;
-            background: $body-bg;
+            @if alpha($body-bg) == 0 {
+                background: $site-bg;
+            }
+            @else {
+                background: $body-bg;
+            }
+            
             padding-right: 1rem;
             z-index: 1;
         }

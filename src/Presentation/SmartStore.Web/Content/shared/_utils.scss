@@ -148,7 +148,7 @@
 	position: relative;
 	height: 0;
 	width: 100%;
-	padding-top: 100%;
+    padding-top: calc(var(--img-aspect-ratio, 1) * 100%);
 	text-decoration: none !important;
 	outline: none !important;
 

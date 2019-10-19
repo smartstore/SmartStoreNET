@@ -116,6 +116,8 @@ namespace SmartStore.Web.Controllers
                 Size = 512,
                 ImageUrl = _pictureService.GetUrl(pictureInfo, 512, false),
                 FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, false),
+                FullSizeImageWidth = pictureInfo?.Width,
+                FullSizeImageHeight = pictureInfo?.Height,
                 Title = blogPost.Title,
                 AlternateText = blogPost.Title
             };

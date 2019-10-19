@@ -32,8 +32,8 @@
                 <article class="row news-preview-lg" itemscope itemtype="http://schema.org/NewsArticle">
                     @if (imageUrl.HasValue())
                     {
-                        <figure class="col-12 col-md-4">
-                            <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
+                        <figure class="col-12 col-md-6">
+                            <a class="d-flex align-items-center justify-content-center" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
                                 <img class="img-fluid" src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title" itemprop="image">
                             </a>
                         </figure>
@@ -41,7 +41,7 @@
 
                     <div class="col-12 col-md mt-3 mt-md-0">
                         <h4 class="newsitem-title mb-2">
-                            <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" itemprop="headline">
+                            <a class="newsitem-title-link" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" itemprop="headline">
                                 @item.Title.Truncate(60, "...")
                             </a>
                         </h4>
@@ -63,18 +63,18 @@
             {
                 <div class="row">
                     <div class="col-12 col-md-5">
-                        @FirstNewsItem(Model.NewsItems.FirstOrDefault())
+                        @FirstNewsItem(Model.NewsItems.First())
                     </div>
                     <div class="col-12 col-md mt-3 mt-md-0">
-                        @NewsItemList(Model.NewsItems.Skip(1).ToList(), false)
+                        @NewsItemList(Model.NewsItems.Skip(1), false)
                     </div>
                 </div>
             }
             else if (Model.NewsItems.Count > 4)
             {
                 int.TryParse((Model.NewsItems.Count / 2).ToString(), out int half);
-                var firstColumn = Model.NewsItems.Skip(1).Take(half).ToList();
-                var secondColumn = Model.NewsItems.Skip(1 + half).ToList();
+                var firstColumn = Model.NewsItems.Skip(1).Take(half);
+                var secondColumn = Model.NewsItems.Skip(1 + half);
 
                 <div class="row">
                     <div class="col-12 col-md-5">
@@ -105,7 +105,7 @@
     <article itemscope itemtype="http://schema.org/NewsArticle">
         @if (imageUrl.HasValue())
         {
-            <figure class="shadow-sm-primary">
+            <figure class="shadow-sm-primary mb-4">
                 <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
                     <img class="img-fluid" src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title" itemprop="image">
                 </a>
@@ -113,7 +113,7 @@
         }
 
         <h4 class="newsitem-title mt-3 mb-2">
-            <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" itemprop="headline">@item.Title</a>
+            <a class="newsitem-title-link" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" itemprop="headline">@item.Title</a>
         </h4>
 
         <div class="newsitem-date" itemprop="datePublished">
@@ -132,7 +132,7 @@
     </article>
 }
 
-@helper NewsItemList(List<NewsItemModel> items, bool isMinimal)
+@helper NewsItemList(IEnumerable<NewsItemModel> items, bool isMinimal)
 {
     foreach (var item in items)
     {
@@ -143,17 +143,15 @@
             @if (imageUrl.HasValue())
             {
                 <div class="col-12 col-md-4">
-                    <figure class="newsitem-picture shadow-sm-primary">
-                        <a class="img-center-container" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
-                            <img class="img-fluid" src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title" itemprop="image">
-                        </a>
-                    </figure>
+                    <a class="newsitem-picture shadow-sm-primary img-center-container" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
+                        <img class="img-fluid" src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title" itemprop="image">
+                    </a>
                 </div>
             }
 
             <div class="col-12 col-md mt-3 mt-md-0">
                 <h4 class="newsitem-title @(isMinimal ? "mb-1" : "mb-2")">
-                    <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" itemprop="headline">
+                    <a class="newsitem-title-link" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" itemprop="headline">
                         @item.Title.Truncate(80, "...")
                     </a>
                 </h4>

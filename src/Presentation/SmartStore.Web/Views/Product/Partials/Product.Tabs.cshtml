@@ -16,7 +16,7 @@
 		var langAttrs = Html.LanguageAttributes(Model.FullDescription);
 		x.Add().Text(@T("Products.Details"))
 				.Summary(summary)
-				.Content(Html.Raw("<div " + langAttrs + " itemprop='description' class='text-body html-editor-content'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
+				.Content(Html.Raw("<div " + langAttrs + " itemprop='description' class='long-text html-editor-content'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
 				.Selected(true);
 	}
 

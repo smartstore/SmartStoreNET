@@ -5,24 +5,8 @@
 // News Styles
 // --------------------------------------------------
 
-.news-item-page .news-item-picture {
-    padding-top: 40%;
-    width: 100%;
-
-    & img {
-        width: 100%;
-        object-fit: cover;
-    }
-}
-
 .newsitem-title {
     overflow: hidden;
-
-    & a {
-        font-size: $h4-font-size;
-        font-weight: $font-weight-medium;
-        color: $body-color;
-    }
 
     .news-preview-xs & {
         max-height: $h5-font-size * 2.6;
@@ -32,6 +16,13 @@
             font-size: $h5-font-size;
         }
     }
+}
+
+.newsitem-title-link {
+    font-size: $h4-font-size;
+    font-weight: $font-weight-medium;
+    color: $body-color;
+    word-break: break-word;
 }
 
 .newsitem-date {
@@ -45,7 +36,9 @@
 }
 
 .newsitem-picture {
+    display: block;
     overflow: hidden;
+    margin-bottom: 0;
 
     .news-preview-lg & {
         max-width: 380px;
@@ -58,11 +51,11 @@
     }
 
     .news-preview-xs & {
-        max-width: 110px;
-        max-height: 80px;
+        /*max-width: 110px;
+        max-height: 80px;*/
     }
 
-    img {
+    > img {
         object-fit: cover;
         display: block;
         width: 100%;
@@ -70,3 +63,12 @@
     }
 }
 
+
+.news-item-page {
+    .news-item-picture {
+        max-height: 300px;
+        width: 100%;
+        overflow: hidden;
+        display: flex;
+    }
+}

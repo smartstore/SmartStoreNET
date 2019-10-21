@@ -31,12 +31,13 @@
 }
 
 .choice-item-img {
-    max-width: 20px;
     max-height: 1em;
+    width: 1.25em;
 
     > img {
         max-width: 100%;
         height: auto;
+        display: inherit;
     }
 }
 

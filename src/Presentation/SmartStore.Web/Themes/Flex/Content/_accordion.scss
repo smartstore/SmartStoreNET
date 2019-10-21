@@ -96,4 +96,12 @@
     .card:last-child .card-header{ 
         border-bottom-width: 0;
     }
+    
+    .card:first-of-type {
+        border-bottom: $card-border-width solid $card-border-color;
+
+        :not(:last-of-type) {
+            border-bottom: 0 !important;
+        }
+    }
 }

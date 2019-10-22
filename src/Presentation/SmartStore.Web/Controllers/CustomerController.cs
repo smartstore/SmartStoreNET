@@ -1066,16 +1066,17 @@ namespace SmartStore.Web.Controllers
 					// Customer number.
 					if (_customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled)
 					{
-						var numberExists = _customerService.SearchCustomers(new CustomerSearchQuery { CustomerNumber = model.CustomerNumber }).SourceQuery.Any();
-						if (model.CustomerNumber != customer.CustomerNumber && numberExists)
-						{
-							NotifyError("Common.CustomerNumberAlreadyExists");
-						}
-						else
-						{
-							customer.CustomerNumber = model.CustomerNumber;
-						}
-					}
+						//var numberExists = _customerService.SearchCustomers(new CustomerSearchQuery { CustomerNumber = model.CustomerNumber }).SourceQuery.Any();
+						//if (model.CustomerNumber != customer.CustomerNumber && numberExists)
+						//{
+						//	NotifyError("Common.CustomerNumberAlreadyExists");
+						//}
+						//else
+						//{
+						//	customer.CustomerNumber = model.CustomerNumber;
+						//}
+                        customer.CustomerNumber = model.CustomerNumber;
+                    }
 
                     if (_customerSettings.DateOfBirthEnabled)
                     {

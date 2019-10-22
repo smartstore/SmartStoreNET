@@ -325,7 +325,7 @@ namespace SmartStore.Services.Catalog
 			int pageSize = int.MaxValue,
 			bool showHidden = false,
 			string alias = null,
-            bool ignoreCategoriesWithoutExistingParent = true,
+            bool ignoreDetachedCategories = true,
             int storeId = 0)
         {
 			var query = BuildCategoriesQuery(categoryName, showHidden, alias, storeId);
@@ -338,7 +338,7 @@ namespace SmartStore.Services.Catalog
             var unsortedCategories = query.ToList();
 
             // Sort categories
-			var sortedCategories = unsortedCategories.SortCategoryNodesForTree(ignoreCategoriesWithoutExistingParent: ignoreCategoriesWithoutExistingParent);
+			var sortedCategories = unsortedCategories.SortCategoryNodesForTree(ignoreDetachedCategories: ignoreDetachedCategories);
 
             // Paging
             return new PagedList<Category>(sortedCategories, pageIndex, pageSize);

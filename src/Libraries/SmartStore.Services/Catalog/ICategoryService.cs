@@ -67,7 +67,7 @@ namespace SmartStore.Services.Catalog
 		/// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <param name="alias">Alias filter</param>
 		/// <param name="applyNavigationFilters">(Obsolete) Whether to apply <see cref="ICategoryNavigationFilter"/> instances to the actual categories query. Never applied when <paramref name="showHidden"/> is <c>true</c></param>
-		/// <param name="ignoreCategoriesWithoutExistingParent">A value indicating whether categories without parent category in provided category list (source) should be ignored</param>
+		/// <param name="ignoreDetachedCategories">A value indicating whether categories without parent category in provided category list (source) should be ignored</param>
 		/// <param name="storeId">Store identifier; 0 to load all records</param>
 		/// <returns>Categories</returns>
 		IPagedList<Category> GetAllCategories(
@@ -76,7 +76,7 @@ namespace SmartStore.Services.Catalog
 			int pageSize = int.MaxValue, 
 			bool showHidden = false, 
 			string alias = null,
-			bool ignoreCategoriesWithoutExistingParent = true, 
+			bool ignoreDetachedCategories = true, 
 			int storeId = 0);
 
         /// <summary>

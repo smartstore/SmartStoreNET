@@ -72,8 +72,7 @@
         color: $body-color;
 
         // Handle gradients smoothly
-        .bg-overlay { 
-            //background-image: none; 
+        .bg-overlay:not(.bg-mask) { 
             opacity: 0 !important;
         }
     }

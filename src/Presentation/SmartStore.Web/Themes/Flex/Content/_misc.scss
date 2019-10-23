@@ -191,6 +191,13 @@
     --body: #{$body-color};
     --muted: #{$text-muted};
     --black: #000;
+
+    @if alpha($body-bg) == 0 {
+        --body-bg: #{$site-bg};
+    }
+    @else {
+        --body-bg: #{$body-bg};
+    }
 }
 
 // admin edit

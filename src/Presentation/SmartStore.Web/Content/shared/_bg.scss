@@ -14,8 +14,8 @@
     position: absolute;
     left: 0;
     top: 0;
-    bottom: 0;
-    right: 0;
+    width: 100%;
+    height: 100%;
     border-radius: var(--border-radius, 0);
     transition: opacity $box-transition-duration $box-transition-timing;
 }
@@ -189,13 +189,13 @@
     $o2: $o1 - $step;
 
     .bg-tint-#{$size} {
-        .bg-overlay { opacity: $o1 !important; }
-        &:hover .bg-overlay { opacity: $o2 !important; }
+        .bg-overlay:not(.bg-mask) { opacity: $o1 !important; }
+        &:hover .bg-overlay:not(.bg-mask) { opacity: $o2 !important; }
     }
 
     .bg-tint-#{$size}-rev {
-        .bg-overlay { opacity: $o2 !important; }
-        &:hover .bg-overlay { opacity: $o1 !important; }
+        .bg-overlay:not(.bg-mask) { opacity: $o2 !important; }
+        &:hover .bg-overlay:not(.bg-mask) { opacity: $o1 !important; }
     }
 }
 

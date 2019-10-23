@@ -22,23 +22,6 @@
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LanguageId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownListFor(model => model.LanguageId, new SelectList(ViewBag.AllLanguages, "Id", "Name"))
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.IsPublished)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.IsPublished)
-                @Html.ValidationMessageFor(model => model.IsPublished)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Title)
             </td>
             <td class="adminData">
@@ -74,15 +57,72 @@
             </td>
         </tr>
         <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.DisplayTagsInPreview)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.DisplayTagsInPreview)
-                @Html.ValidationMessageFor(model => model.DisplayTagsInPreview)
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="head">@T("Admin.ContentManagement.Blog.Heading.Publish")</div>
+                </div>
             </td>
         </tr>
-
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.IsPublished)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.IsPublished)
+                @Html.ValidationMessageFor(model => model.IsPublished)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.LanguageId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.LanguageId, new SelectList(ViewBag.AllLanguages, "Id", "Name"))
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedStoreIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedStoreIds)
+                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.StartDate)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.StartDate)
+                @Html.ValidationMessageFor(model => model.StartDate)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.EndDate)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.EndDate)
+                @Html.ValidationMessageFor(model => model.EndDate)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CreatedOnUtc)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.CreatedOnUtc)
+                @Html.ValidationMessageFor(model => model.CreatedOnUtc)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="head">@T("Admin.ContentManagement.Blog.Heading.Display")</div>
+                </div>
+            </td>
+        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.PreviewDisplayType)
@@ -130,24 +170,6 @@
                 @Html.ValidationMessageFor(model => model.SectionBg)
             </td>
         </tr>
-        @*<tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.HasBgImage)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.HasBgImage)
-                @Html.ValidationMessageFor(model => model.HasBgImage)
-            </td>
-        </tr>*@
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SelectedStoreIds)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SelectedStoreIds)
-                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
-            </td>
-        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AllowComments)
@@ -159,31 +181,14 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.StartDate)
+                @Html.SmartLabelFor(model => model.DisplayTagsInPreview)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.StartDate)
-                @Html.ValidationMessageFor(model => model.StartDate)
+                @Html.EditorFor(model => model.DisplayTagsInPreview)
+                @Html.ValidationMessageFor(model => model.DisplayTagsInPreview)
             </td>
         </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.EndDate)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.EndDate)
-                @Html.ValidationMessageFor(model => model.EndDate)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CreatedOnUtc)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.CreatedOnUtc)
-                @Html.ValidationMessageFor(model => model.CreatedOnUtc)
-            </td>
-        </tr>
+
     </table>
 }
 @helper TabSeo()

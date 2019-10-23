@@ -19,14 +19,6 @@
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LanguageId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownListFor(model => model.LanguageId, new SelectList(ViewBag.AllLanguages, "Id", "Name"))
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Title)
             </td>
             <td class="adminData">
@@ -71,12 +63,36 @@
             </td>
         </tr>
         <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="head">@T("Admin.ContentManagement.News.Heading.Publish")</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AllowComments)
+                @Html.SmartLabelFor(model => model.Published)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.AllowComments)
-                @Html.ValidationMessageFor(model => model.AllowComments)
+                @Html.EditorFor(model => model.Published)
+                @Html.ValidationMessageFor(model => model.Published)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.LanguageId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.LanguageId, new SelectList(ViewBag.AllLanguages, "Id", "Name"))
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedStoreIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedStoreIds)
+                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
             </td>
         </tr>
         <tr>
@@ -98,21 +114,17 @@
             </td>
         </tr>
         <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Published)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.Published)
-                @Html.ValidationMessageFor(model => model.Published)
+            <td colspan="2">
+                <hr />
             </td>
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SelectedStoreIds)
+                @Html.SmartLabelFor(model => model.AllowComments)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SelectedStoreIds)
-                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+                @Html.EditorFor(model => model.AllowComments)
+                @Html.ValidationMessageFor(model => model.AllowComments)
             </td>
         </tr>
     </table>

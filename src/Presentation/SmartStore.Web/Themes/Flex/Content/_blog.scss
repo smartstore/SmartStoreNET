@@ -5,16 +5,6 @@
 // Blog Styles
 // --------------------------------------------------
 
-.blogpost-page .blogpost-picture {
-    padding-top: 40%;
-    width: 100%;
-
-    & img {
-        width: 100%;
-        object-fit: cover;
-    }
-}
-
 .blogpost-tags-overlay,
 .comments-overlay {
     position: absolute;
@@ -25,7 +15,7 @@
     left: 0;
 }
 .comments-overlay {
-    bottom: 0rem;
+    bottom: 0;
     right: 0;
 }
 

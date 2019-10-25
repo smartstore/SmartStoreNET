@@ -27,9 +27,12 @@
 
     @if (Model.PictureModel.FullSizeImageUrl.HasValue())
     {
-        <figure class="blogpost-picture mb-3 img-center-container">
-            <img class="img-fluid shadow-sm-primary" src="@Model.PictureModel.FullSizeImageUrl" alt="@Model.PictureModel.AlternateText" title="@Model.PictureModel.Title" itemprop="image" />
-        </figure>
+        var pic = Model.PictureModel;
+        <div class="shadow-sm-primary mb-3">
+            <figure class="single-media-item-image">
+                <img class="img-fluid" src="@pic.FullSizeImageUrl" alt="@pic.AlternateText" title="@pic.Title" width="@pic.FullSizeImageWidth.Value" height="@pic.FullSizeImageHeight.Value" itemprop="image" />
+            </figure>
+        </div>
     }
 
     <div class="blogpost-date text-muted" itemprop="dateCreated">

@@ -33,14 +33,14 @@
 
                     @if (imageUrl.HasValue())
                     {
-                        <figure class="newsitem-picture shadow-sm-primary">
-                            <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
+                        <figure style="--img-aspect-ratio: 0.5;">
+                            <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" class="newsitem-picture img-center-container shadow-sm-primary">
                                 <img src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title" itemprop="image">
                             </a>
                         </figure>
                     }
 
-                    <h4 class="newsitem-title">
+                    <h4 class="newsitem-title fs-h5">
                         <a class="newsitem-title-link" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" itemprop="headline">
                             @item.Title.Truncate(60, "...")
                         </a>

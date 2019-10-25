@@ -5,21 +5,7 @@
 // News Styles
 // --------------------------------------------------
 
-.newsitem-title {
-    overflow: hidden;
-
-    .news-preview-xs & {
-        max-height: $h5-font-size * 2.6;
-        line-height: 1;
-
-        & a {
-            font-size: $h5-font-size;
-        }
-    }
-}
-
 .newsitem-title-link {
-    font-size: $h4-font-size;
     font-weight: $font-weight-medium;
     color: $body-color;
     word-break: break-word;
@@ -32,28 +18,12 @@
 
 .newsitem-description {
     font-weight: $font-weight-normal;
-    font-size: $h5-font-size;
 }
 
 .newsitem-picture {
     display: block;
     overflow: hidden;
     margin-bottom: 0;
-
-    .news-preview-lg & {
-        max-width: 380px;
-        max-height: 220px;
-    }
-
-    .news-preview-sm & {
-        max-width: 220px;
-        max-height: 190px;
-    }
-
-    .news-preview-xs & {
-        /*max-width: 110px;
-        max-height: 80px;*/
-    }
 
     > img {
         object-fit: cover;
@@ -63,12 +33,15 @@
     }
 }
 
+// Generic (also used for single blog post page)
+.single-media-item-image {
+    max-height: 300px;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
 
-.news-item-page {
-    .news-item-picture {
-        max-height: 300px;
+    > img {
+        object-fit: cover;
         width: 100%;
-        overflow: hidden;
-        display: flex;
     }
 }

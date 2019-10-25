@@ -9,8 +9,6 @@ using System.IO;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using AngleSharp.Dom;
-using AngleSharp.Parser.Html;
 using SmartStore.Core.Html;
 using System.Runtime.CompilerServices;
 using SmartStore.Utilities.ObjectPools;

@@ -213,6 +213,7 @@
     </Compile>
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\AdminControllerBase.cs" />
+    <Compile Include="Controllers\ViewNotFoundException.cs" />
     <Compile Include="Extensions\ActionResultExtensions.cs" />
     <Compile Include="Extensions\HtmlPrefixScopeExtensions.cs" />
     <Compile Include="Extensions\HtmlZoneExtensions.cs" />

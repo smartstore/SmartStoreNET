@@ -19,7 +19,7 @@ namespace SmartStore.Web.Framework
 
             if (builder.Attributes.TryGetValue("style", out var str))
             {
-                builder.Attributes["style"] = str.Trim().EnsureEndsWith(";") + " " + style;
+                builder.Attributes["style"] = style.EnsureEndsWith("; ") + str;
             }
             else
             {
@@ -33,7 +33,7 @@ namespace SmartStore.Web.Framework
 
             if (builder.Attributes.TryGetValue("style", out var str))
             {
-                builder.Attributes["style"] = str.Trim().EnsureEndsWith(";") + " " + styles;
+                builder.Attributes["style"] = styles.EnsureEndsWith("; ") + str;
             }
             else
             {

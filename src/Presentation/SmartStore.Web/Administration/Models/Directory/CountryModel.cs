@@ -1,15 +1,18 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using System.Collections.Generic;
-using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Directory
 {
     [Validator(typeof(CountryValidator))]
-    public class CountryModel : EntityModelBase, ILocalizedModel<CountryLocalizedModel>, IStoreSelector
+    public class CountryModel : EntityModelBase, ILocalizedModel<CountryLocalizedModel>
     {
         public CountryModel()
         {
@@ -54,11 +57,13 @@ namespace SmartStore.Admin.Models.Directory
 
 		public IList<CountryLocalizedModel> Locales { get; set; }
 
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
-	}
+        // Store mapping.
+        [UIHint("Stores"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
+    }
 
     public class CountryLocalizedModel : ILocalizedModelLocal
     {
@@ -78,6 +83,16 @@ namespace SmartStore.Admin.Models.Directory
             RuleFor(x => x.TwoLetterIsoCode).Length(2);
             RuleFor(x => x.ThreeLetterIsoCode).NotEmpty();
             RuleFor(x => x.ThreeLetterIsoCode).Length(3);
+        }
+    }
+
+    public class CountryMapper :
+        IMapper<Country, CountryModel>
+    {
+        public void Map(Country from, CountryModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.NumberOfStates = from.StateProvinces?.Count ?? 0;
         }
     }
 }

@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Search;
+using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Media;
@@ -105,7 +106,7 @@ namespace SmartStore.Web.Controllers
                     {
                         model.SearchTerm = model.SearchTerm.TrimSafe();
 
-                        var hasPermission = Services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog);
+                        var hasPermission = Services.Permissions.Authorize(Permissions.Catalog.Product.Read);
                         var disableIfNotSimpleProduct = disableIf.Contains("notsimpleproduct");
                         var disableIfGroupedProduct = disableIf.Contains("groupedproduct");
                         var labelTextGrouped = T("Admin.Catalog.Products.ProductType.GroupedProduct.Label").Text;

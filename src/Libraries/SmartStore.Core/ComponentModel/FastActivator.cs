@@ -11,12 +11,13 @@ namespace SmartStore.ComponentModel
 	{
 		private static readonly ConcurrentDictionary<Type, FastActivator[]> _activatorsCache = new ConcurrentDictionary<Type, FastActivator[]>();
 
+        private Func<object[], object> _invoker;
+
 		public FastActivator(ConstructorInfo constructorInfo)
 		{
 			Guard.NotNull(constructorInfo, nameof(constructorInfo));
 
 			Constructor = constructorInfo;
-			Invoker = MakeFastInvoker(constructorInfo);
 			ParameterTypes = constructorInfo.GetParameters().Select(p => p.ParameterType).ToArray();
 		}
 
@@ -33,7 +34,18 @@ namespace SmartStore.ComponentModel
 		/// <summary>
 		/// Gets the constructor invoker.
 		/// </summary>
-		public Func<object[], object> Invoker { get; private set; }
+		public Func<object[], object> Invoker 
+        { 
+            get
+            {
+                if (_invoker == null)
+                {
+                    _invoker = MakeFastInvoker(Constructor);
+                }
+
+                return _invoker;
+            } 
+        }
 
 		/// <summary>
 		/// Creates an instance of the type using the specified parameters.
@@ -189,7 +201,8 @@ namespace SmartStore.ComponentModel
 		{
 			var constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 			return constructors.Where(c => c.GetParameters().Length > 0);
-		}
+
+        }
 
 		private static void CheckIsValidType(Type type)
 		{

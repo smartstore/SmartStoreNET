@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Data.Caching;
@@ -39,31 +40,36 @@ namespace SmartStore.Data
 
         public virtual IQueryable<T> TableUntracked
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 return this.Entities.AsNoTracking();
             }
         }
 
-		public virtual ICollection<T> Local
+        public virtual ICollection<T> Local
 		{
-			get
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
 			{
 				return this.Entities.Local;
 			}
 		}
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual T Create()
         {
             return this.Entities.Create();
         }
 
-		public virtual T GetById(object id)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual T GetById(object id)
         {
             return this.Entities.Find(id);
         }
 
-		public virtual T Attach(T entity)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual T Attach(T entity)
 		{
 			return this.Entities.Attach(entity);
 		}

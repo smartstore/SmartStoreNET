@@ -9,8 +9,6 @@
 @Html.SmartStore().TabStrip().Name("menu-item-edit").Style(TabsStyle.Material).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.General").Text).Content(TabGeneral()).Selected(true);
-	x.Add().Text(T("Admin.Catalog.Categories.Acl").Text).Content(TabAcl());
-	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
 	
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "menu-item-edit", this.Html, this.Model));
 })
@@ -136,6 +134,24 @@
             </div>
             <div class="adminRow">
                 <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SelectedStoreIds)
+                </div>
+                <div class="adminData">
+                    @Html.EditorFor(model => model.SelectedStoreIds)
+                    @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+                </div>
+            </div>
+            <div class="adminRow">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SelectedCustomerRoleIds)
+                </div>
+                <div class="adminData">
+                    @Html.EditorFor(model => model.SelectedCustomerRoleIds)
+                    @Html.ValidationMessageFor(model => model.SelectedCustomerRoleIds)
+                </div>
+            </div>
+            <div class="adminRow">
+                <div class="adminTitle">
                     @Html.SmartLabelFor(model => model.BeginGroup)
                 </div>
                 <div class="adminData">
@@ -209,16 +225,6 @@
             </div>
         </div>
     </div>
-}
-
-@helper TabStores()
-{
-	@Html.Partial("StoreSelector", Model)
-}
-
-@helper TabAcl()
-{
-	@Html.Partial("AclSelector", Model)
 }
 
 <script>

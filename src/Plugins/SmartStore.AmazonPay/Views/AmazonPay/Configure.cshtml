@@ -114,6 +114,7 @@
 				@Html.SmartLabelFor(model => model.Marketplace)
 			</td>
 			<td class="adminData">
+                @*To avoid migration, the "Marketplace" setting of the old SDK is retained and only the translation is changed.*@
 				@Html.SettingEditorFor(model => model.Marketplace, Html.DropDownListFor(model => model.Marketplace, new List<SelectListItem>
 				{
 					new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.Marketplace.De"), Value = "de" },

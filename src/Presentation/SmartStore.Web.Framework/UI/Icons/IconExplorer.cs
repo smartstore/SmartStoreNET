@@ -8,6 +8,7 @@ using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Logging;
 using SmartStore.Utilities;
+using SmartStore.ComponentModel;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -111,7 +112,12 @@ namespace SmartStore.Web.Framework.UI
 			if (!fiMin.Exists)
 			{
 				// minified file did not exist: save it.
-				var settings = new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore, Formatting = Formatting.None };
+				var settings = new JsonSerializerSettings
+                {
+                    ContractResolver = SmartContractResolver.Instance,
+                    DefaultValueHandling = DefaultValueHandling.Ignore,
+                    Formatting = Formatting.None
+                };
 				json = JsonConvert.SerializeObject(icons, settings);
 				File.WriteAllText(fiMin.FullName, json, Encoding.GetEncoding(1252));
 			}

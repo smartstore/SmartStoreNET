@@ -59,7 +59,7 @@ namespace SmartStore.Core.Domain.Media
 		/// A value greater than 1 indicates, that your product pictures are generally
 		/// in portrait format, less than 1 indicates landscape format.
 		/// </remarks>
-		public int DefaultThumbnailAspectRatio { get; set; }
+		public float DefaultThumbnailAspectRatio { get; set; }
 
         /// <summary>
         /// Geta or sets a vaue indicating whether single (/media/thumbs/) or multiple (/media/thumbs/0001/ and /media/thumbs/0002/) directories will used for picture thumbs

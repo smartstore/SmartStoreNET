@@ -3,42 +3,210 @@
 
 @if (Model.NewsItems.Count > 0)
 {
-    <div class="block news-list-homepage mb-5">
-		<div class="row">
-			<div class="col">
-				<div class="heading">
-					<h3 class="heading-title fs-h1">@T("News")</h3>
-				</div>
-			</div>
-			<div class="col col-auto">
-				<a class="btn btn-warning" href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" title="@T("News.RSS.Hint")">
-					<i class="fa fa-rss"></i>
-					<span>@T("News.RSS")</span>
-				</a>
-				<a class="btn btn-outline-info btn-flat" href="@Url.RouteUrl("NewsArchive")">
-					<span>@T("News.ViewAll")</span>
-					<i class="fa fa-angle-right"></i>
-				</a>
-			</div>
-		</div>
+    <div class="block news-list-homepage my-5">
+        <div class="row">
+            <div class="col">
+                <div class="heading">
+                    <h3 class="heading-title fs-h1">@T("News")</h3>
+                </div>
+            </div>
+            <div class="col col-auto">
+                <a class="btn btn-warning" href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" title="@T("News.RSS.Hint")">
+                    <i class="fa fa-rss"></i>
+                    <span>@T("News.RSS")</span>
+                </a>
+                <a class="btn btn-outline-info btn-flat" href="@Url.RouteUrl("NewsArchive")">
+                    <span>@T("News.ViewAll")</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+        </div>
 
         <div class="block-body news-items">
-            @foreach (var item in Model.NewsItems)
+
+            @if (Model.NewsItems.Count == 1)
             {
-                <div class="news-item mb-4">
-					<div class="text-muted small">
-						@item.CreatedOn.ToNativeString("D")
-					</div>
-					<h4 class="news-title">
-                        <a class="fs-h5 color-body" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
-                            @item.Title
-                        </a>
-                    </h4>
-                    <p class="lead mt-2">
-                        @Html.Raw(item.Short)
-                    </p>
+                var item = Model.NewsItems.FirstOrDefault();
+                var imageUrl = item.PreviewPictureModel.ImageUrl.HasValue() ? item.PreviewPictureModel.ImageUrl : item.PictureModel.ImageUrl;
+
+                <article class="row" itemscope itemtype="http://schema.org/NewsArticle">
+                    @if (imageUrl.HasValue())
+                    {
+                        <figure class="col-12 col-md-6" style="--img-aspect-ratio: 0.6;">
+                            <a class="newsitem-picture img-center-container shadow-sm-primary" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
+                                <img class="img-fluid" src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title" itemprop="image">
+                            </a>
+                        </figure>
+                    }
+
+                    <div class="col-12 col-md mt-3 mt-md-0">
+                        <h4 class="newsitem-title mb-2">
+                            <a class="newsitem-title-link" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" itemprop="headline">
+                                @item.Title.Truncate(60, "...")
+                            </a>
+                        </h4>
+                        <div class="newsitem-date" itemprop="dateCreated">
+                            @item.CreatedOn.ToNativeString("D")
+                        </div>
+                        <p class="newsitem-description my-3" itemprop="description">
+                            @Html.Raw(item.Short)
+                        </p>
+                        <div>
+                            <a class="btn btn-primary" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
+                                @T("Common.Cms.ReadMore")
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            }
+            else if (Model.NewsItems.Count == 2)
+            {
+                <div class="row" style="--img-aspect-ratio: 0.5;">
+                    <article class="d-flex flex-column col-12 col-md-6" itemscope itemtype="http://schema.org/NewsArticle">
+                        @FirstNewsItem(Model.NewsItems.First())
+                    </article>
+                    <article class="d-flex flex-column col-12 col-md-6" itemscope itemtype="http://schema.org/NewsArticle">
+                        @FirstNewsItem(Model.NewsItems.ElementAt(1))
+                    </article>
                 </div>
             }
+            else if (Model.NewsItems.Count <= 4)
+            {
+                <div class="row">
+                    <article class="col-12 col-md-5" itemscope itemtype="http://schema.org/NewsArticle">
+                        @FirstNewsItem(Model.NewsItems.First())
+                    </article>
+                    <div class="col-12 col-md mt-3 mt-md-0">
+                        @NewsItemList(Model.NewsItems.Skip(1), false)
+                    </div>
+                </div>
+            }
+            else if (Model.NewsItems.Count > 4)
+            {
+
+                var aspectRatio = 0.5;
+                if (Model.NewsItems.Count >= 10)
+                {
+                    aspectRatio = 0.7;
+                }
+                else if (Model.NewsItems.Count >= 10) 
+                { 
+                    aspectRatio = 1;
+                }
+
+                <div class="row">
+                    <article class="col-12 col-md-5" itemscope itemtype="http://schema.org/NewsArticle" style="--img-aspect-ratio: @(aspectRatio.ToString().Replace(",", "."));">
+                        @FirstNewsItem(Model.NewsItems.FirstOrDefault())
+                    </article>
+                    <div class="col-12 col-md mt-3 mt-md-0">
+                        <div class="row">
+                            @NewsItemList(Model.NewsItems, true)
+                        </div>
+                    </div>
+                </div>
+            }
+
         </div>
     </div>
+}
+
+@helper FirstNewsItem(NewsItemModel item)
+{
+    var imageUrl = item.PreviewPictureModel.ImageUrl.HasValue() ? item.PreviewPictureModel.ImageUrl : item.PictureModel.ImageUrl;
+
+    if (imageUrl.HasValue())
+    {
+        <figure class="mb-4">
+            <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" class="newsitem-picture img-center-container shadow-sm-primary">
+                <img class="img-fluid" src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title" itemprop="image">
+            </a>
+        </figure>
+    }
+
+    <h4 class="newsitem-title mt-3 mb-2">
+        <a class="newsitem-title-link" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" itemprop="headline">@item.Title</a>
+    </h4>
+
+    <div class="newsitem-date" itemprop="datePublished">
+        @item.CreatedOn.ToNativeString("D")
+    </div>
+
+    <p class="newsitem-description my-3 flex-grow-1" itemprop="description">
+        @Html.Raw(item.Short)
+    </p>
+
+    <div>
+        <a class="btn btn-primary" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
+            @T("Common.Cms.ReadMore")
+        </a>
+    </div>
+}
+
+@helper NewsItemList(IEnumerable<NewsItemModel> items, bool isMinimal)
+{
+    foreach (var item in items)
+    {
+        var imageUrl = item.PreviewPictureModel.ImageUrl.HasValue() ? item.PreviewPictureModel.ImageUrl : item.PictureModel.ImageUrl;
+        var btnClasses = isMinimal ? "p-0" : "btn btn-sm btn-primary";
+
+        <article class="row sm-gutters mb-4@(isMinimal ? " col-12 col-md-6" : "")" itemscope itemtype="http://schema.org/NewsArticle">
+            @if (imageUrl.HasValue())
+            {
+                <div class="col-12 col-md-4">
+                    <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" class="newsitem-picture img-center-container shadow-sm-primary">
+                        <img class="img-fluid" src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title" itemprop="image">
+                    </a>
+                </div>
+            }
+
+            <div class="col-12 col-md mt-3 mt-md-0">
+
+                @RenderTitle(item.Title, item.SeName, isMinimal)
+
+                @if (!isMinimal)
+                {
+                    <div class="newsitem-date mb-1" itemprop="datePublished">
+                        @item.CreatedOn.ToNativeString("D")
+                    </div>
+                }
+
+                @RenderDescription(item.Short, isMinimal)
+
+                @if (!isMinimal)
+                {
+                    <div class="mt-1">
+                        <a class="@btnClasses" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
+                            @T("Common.Cms.ReadMore")
+                        </a>
+                    </div>
+                }
+            </div>
+        </article>
+    }
+}
+
+@helper RenderTitle(string title, string seName, bool isMinimal)
+{
+    var maxLength = isMinimal ? 50 : 80;
+
+    <h4 class="newsitem-title @(isMinimal ? "mb-1 fs-sm" : "mb-2 fs-h5")">
+        <a class="newsitem-title-link" href="@Url.RouteUrl("NewsItem", new { SeName = seName })" itemprop="headline" @Html.Attr("title", title) @Html.Attr("alt", title)>
+            @title.Truncate(maxLength, "...")
+        </a>
+    </h4>
+}
+
+@helper RenderDescription(string description, bool isMinimal)
+{
+    var maxLength = isMinimal ? 50 : 140;
+    var titleTag = "";
+
+    if (description.Length >= maxLength)
+    {
+        titleTag = description;
+    }
+
+    <p class="newsitem-description pt-1 @(isMinimal ? "fs-sm" : "fs-h6")" itemprop="description" @Html.Attr("title", titleTag, titleTag.HasValue())>
+        @Html.Raw(description.Truncate(maxLength, "..."))
+    </p>
 }

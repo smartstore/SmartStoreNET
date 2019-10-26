@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Collections;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore
 {
@@ -61,6 +62,29 @@ namespace SmartStore
 			return type.IsArray || typeof(IEnumerable).IsAssignableFrom(type);
         }
 
+        public static bool IsSequenceType(this Type type, out Type elementType)
+        {
+            elementType = null;
+
+            if (type == typeof(string))
+                return false;
+
+            if (type.IsArray)
+            {
+                elementType = type.GetElementType();
+            }
+            else if (type.IsSubClass(typeof(IEnumerable<>), out var implType))
+            {
+                var genericArgs = implType.GetGenericArguments();
+                if (genericArgs.Length == 1)
+                {
+                    elementType = genericArgs[0];
+                }
+            }
+
+            return elementType != null;
+        }
+
         public static bool IsPredefinedSimpleType(this Type type)
         {
             if ((type.IsPrimitive && (type != typeof(IntPtr))) && (type != typeof(UIntPtr)))
@@ -110,7 +134,8 @@ namespace SmartStore
             return true;
         }
 
-		public static bool IsPlainObjectType(this Type type)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsPlainObjectType(this Type type)
 		{
 			return type.IsClass && !type.IsSequenceType() && !type.IsPredefinedType();
 		}
@@ -146,18 +171,17 @@ namespace SmartStore
             return wrappedType;
         }
 
-        public static bool IsNullable(this Type type, out Type wrappedType)
+        public static bool IsNullable(this Type type, out Type elementType)
         {
-			wrappedType = null;
-
-			if (type != null && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
-				wrappedType = type.GetGenericArguments()[0];
+            if (type != null && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+				elementType = type.GetGenericArguments()[0];
             else
-                wrappedType = type;
+                elementType = type;
 
-			return wrappedType != type;
+			return elementType != type;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsEnumType(this Type type)
         {
             return type.GetNonNullableType().IsEnum;
@@ -210,6 +234,7 @@ namespace SmartStore
                 .Any(ctor => ctor.GetParameters().Length == 0);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsSubClass(this Type type, Type check)
         {
 			return IsSubClass(type, check, out Type _);
@@ -437,6 +462,7 @@ namespace SmartStore
             return null;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool HasAttribute<TAttribute>(this ICustomAttributeProvider target, bool inherits) where TAttribute : Attribute
         {
             return target.IsDefined(typeof(TAttribute), inherits);

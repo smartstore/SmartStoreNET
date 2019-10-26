@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using SmartStore.Admin.Models.Topics;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Security;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
@@ -48,8 +49,7 @@ namespace SmartStore.Admin.Controllers
 			_customerService = customerService;
 		}
 
-        [NonAction]
-        public void UpdateLocales(Topic topic, TopicModel model)
+        private void UpdateLocales(Topic topic, TopicModel model)
         {
             foreach (var localized in model.Locales)
             {
@@ -66,7 +66,6 @@ namespace SmartStore.Admin.Controllers
 			}
         }
 
-		[NonAction]
 		private void PrepareStoresMappingModel(TopicModel model, Topic topic, bool excludeProperties)
 		{
 			Guard.NotNull(model, nameof(model));
@@ -75,28 +74,16 @@ namespace SmartStore.Admin.Controllers
 			{
 				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(topic);
 			}
-
-			model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 		}
 
-		[NonAction]
 		private void PrepareAclModel(TopicModel model, Topic topic, bool excludeProperties)
 		{
 			Guard.NotNull(model, nameof(model));
 
 			if (!excludeProperties)
 			{
-				if (topic != null)
-				{
-					model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(topic);
-				}
-				else
-				{
-					model.SelectedCustomerRoleIds = new int[0];
-				}
+                model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(topic);
 			}
-
-			model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
 		}
 
 		private string GetTopicUrl(Topic topic)
@@ -128,9 +115,9 @@ namespace SmartStore.Admin.Controllers
 					url = Url.RouteUrl("Topic", new { SeName = topic.GetSeName() }, Request.Url.Scheme);
 				}
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				Logger.Error(exception);
+				Logger.Error(ex);
 			}
 
 			return url;
@@ -141,11 +128,9 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
+        [Permission(Permissions.Cms.Topic.Read)]
         public ActionResult List()
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
-                return AccessDeniedView();
-
 			var model = new TopicListModel();
 
 			foreach (var s in Services.StoreService.GetAllStores())
@@ -157,47 +142,39 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
-		public ActionResult List(GridCommand command, TopicListModel model)
+        [Permission(Permissions.Cms.Topic.Read)]
+        public ActionResult List(GridCommand command, TopicListModel model)
         {
 			var gridModel = new GridModel<TopicModel>();
-
-			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
+			var topics = _topicService.GetAllTopics(model.SearchStoreId, command.Page - 1, command.PageSize, true).AlterQuery(q =>
 			{
-				var topics = _topicService.GetAllTopics(model.SearchStoreId, command.Page - 1, command.PageSize, true).AlterQuery(q =>
-				{
-					var q2 = q;
+				var q2 = q;
 
-					if (model.SystemName.HasValue())
-						q2 = q2.Where(x => x.SystemName.Contains(model.SystemName));
+				if (model.SystemName.HasValue())
+					q2 = q2.Where(x => x.SystemName.Contains(model.SystemName));
 
-					if (model.Title.HasValue())
-						q2 = q2.Where(x => x.Title.Contains(model.Title) || x.ShortTitle.Contains(model.Title));
+				if (model.Title.HasValue())
+					q2 = q2.Where(x => x.Title.Contains(model.Title) || x.ShortTitle.Contains(model.Title));
 
-					if (model.RenderAsWidget.HasValue)
-						q2 = q2.Where(x => x.RenderAsWidget == model.RenderAsWidget.Value);
+				if (model.RenderAsWidget.HasValue)
+					q2 = q2.Where(x => x.RenderAsWidget == model.RenderAsWidget.Value);
 
-					if (model.WidgetZone.HasValue())
-						q2 = q2.Where(x => x.WidgetZone.Contains(model.WidgetZone));
+				if (model.WidgetZone.HasValue())
+					q2 = q2.Where(x => x.WidgetZone.Contains(model.WidgetZone));
 
-					return q2.OrderBy(x => x.SystemName);
-				});
+				return q2.OrderBy(x => x.SystemName);
+			});
 				
-				gridModel.Data = topics.Select(x =>
-				{
-					var item = x.ToModel();
-					item.WidgetZone = x.WidgetZone.SplitSafe(",");
-					// otherwise maxJsonLength could be exceeded
-					item.Body = "";
-					return item;
-				});
-
-				gridModel.Total = topics.TotalCount;
-			}
-			else
+			gridModel.Data = topics.Select(x =>
 			{
-				gridModel.Data = Enumerable.Empty<TopicModel>();
-				NotifyAccessDenied();
-			}
+				var item = x.ToModel();
+				item.WidgetZone = x.WidgetZone.SplitSafe(",");
+				// Otherwise maxJsonLength could be exceeded.
+				item.Body = "";
+				return item;
+			});
+
+			gridModel.Total = topics.TotalCount;
 
             return new JsonResult
 			{
@@ -206,11 +183,9 @@ namespace SmartStore.Admin.Controllers
 			};
         }
 
+        [Permission(Permissions.Cms.Topic.Create)]
         public ActionResult Create()
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
-                return AccessDeniedView();
-
             var model = new TopicModel();
 		
 			PrepareStoresMappingModel(model, null, false);
@@ -224,11 +199,9 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [ValidateInput(false)]
+        [Permission(Permissions.Cms.Topic.Create)]
         public ActionResult Create(TopicModel model, bool continueEditing, FormCollection form)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
-                return AccessDeniedView();
-
             if (ModelState.IsValid)
             {
                 if (!model.IsPasswordProtected)
@@ -248,8 +221,8 @@ namespace SmartStore.Admin.Controllers
 				model.SeName = topic.ValidateSeName(model.SeName, topic.Title.NullEmpty() ?? topic.SystemName, true);
 				_urlRecordService.SaveSlug(topic, model.SeName, 0);
 
-				SaveStoreMappings(topic, model);
-				SaveAclMappings(topic, model);
+				SaveStoreMappings(topic, model.SelectedStoreIds);
+				SaveAclMappings(topic, model.SelectedCustomerRoleIds);
 				UpdateLocales(topic, model);
 
                 Services.EventPublisher.Publish(new ModelBoundEvent(model, topic, form));
@@ -265,14 +238,14 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
         }
 
+        [Permission(Permissions.Cms.Topic.Read)]
         public ActionResult Edit(int id)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
-                return AccessDeniedView();
-
             var topic = _topicService.GetTopicById(id);
             if (topic == null)
+            {
                 return RedirectToAction("List");
+            }
 
             var model = topic.ToModel();
 			model.Url = GetTopicUrl(topic);
@@ -299,14 +272,14 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [ValidateInput(false)]
+        [Permission(Permissions.Cms.Topic.Update)]
         public ActionResult Edit(TopicModel model, bool continueEditing, FormCollection form)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
-                return AccessDeniedView();
-
             var topic = _topicService.GetTopicById(model.Id);
             if (topic == null)
+            {
                 return RedirectToAction("List");
+            }
 
             if (!model.IsPasswordProtected)
             {
@@ -327,9 +300,9 @@ namespace SmartStore.Admin.Controllers
 				model.SeName = topic.ValidateSeName(model.SeName, topic.Title.NullEmpty() ?? topic.SystemName, true);
 				_urlRecordService.SaveSlug(topic, model.SeName, 0);
 
-				SaveStoreMappings(topic, model);
-				SaveAclMappings(topic, model);
-				UpdateLocales(topic, model);
+                SaveStoreMappings(topic, model.SelectedStoreIds);
+                SaveAclMappings(topic, model.SelectedCustomerRoleIds);
+                UpdateLocales(topic, model);
 
                 Services.EventPublisher.Publish(new ModelBoundEvent(model, topic, form));
 
@@ -351,13 +324,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [Permission(Permissions.Cms.Topic.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
-            {
-                return AccessDeniedView();
-            }
-
             var topic = _topicService.GetTopicById(id);
             if (topic == null)
             {
@@ -376,11 +345,11 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
-		// AJAX
-		public ActionResult AllTopics(string label, int selectedId, bool useTitles = false, bool includeWidgets = false, bool includeHomePage = false)
+        // AJAX.
+        public ActionResult AllTopics(string label, int selectedId, bool useTitles = false, bool includeWidgets = false, bool includeHomePage = false)
 		{
 			var query = from x in _topicService.GetAllTopics(showHidden: true).SourceQuery
-						where (includeWidgets || !x.RenderAsWidget)
+						where includeWidgets || !x.RenderAsWidget
 						select x;
 
 			if (useTitles)
@@ -398,10 +367,14 @@ namespace SmartStore.Admin.Controllers
 			if (label.HasValue())
 			{
 				var labelTopic = new Topic();
-				if (useTitles)
-					labelTopic.Title = label;
-				else
-					labelTopic.SystemName = label;
+                if (useTitles)
+                {
+                    labelTopic.Title = label;
+                }
+                else
+                {
+                    labelTopic.SystemName = label;
+                }
 
 				topics.Insert(0, labelTopic);
 			}

@@ -16,7 +16,7 @@ using SmartStore.Web.Framework.Modelling.Results;
 
 namespace SmartStore.Web.Framework.Controllers
 {
-	public static class ContollerExtensions
+    public static class ContollerExtensions
     {
 		#region InvokeAction
 
@@ -207,26 +207,18 @@ namespace SmartStore.Web.Framework.Controllers
 			// if view not found, throw an exception with searched locations
 			if (viewResult.View == null)
 			{
-				var locations = new StringBuilder();
-				locations.AppendLine();
-
-				foreach (string location in viewResult.SearchedLocations)
-				{
-					locations.AppendLine(location);
-				}
-
-				throw new InvalidOperationException(string.Format("The view '{0}' or its master was not found, searched locations: {1}", viewName, locations));
+				throw new ViewNotFoundException(viewName, viewResult.SearchedLocations);
 			}
 		}
 
-		#endregion
+        #endregion
 
-		#region RootActionView
+        #region RootActionView
 
-		/// <summary>
-		/// Creates a <see cref="ViewResult"/> object using the root actions's <see cref="ControllerContext"/> for view resolution.
-		/// </summary>
-		public static ViewResult RootActionView(this Controller controller, string viewName)
+        /// <summary>
+        /// Creates a <see cref="ViewResult"/> object using the root actions's <see cref="ControllerContext"/> for view resolution.
+        /// </summary>
+        public static ViewResult RootActionView(this Controller controller, string viewName)
 		{
 			return RootActionView(controller, viewName, (string)null, null);
 		}

@@ -1,23 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using Autofac;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Events;
-using SmartStore.Services.Localization;
 using SmartStore.Core.Logging;
-using SmartStore.Services.Security;
+using SmartStore.Core.Security;
 using SmartStore.Services.Configuration;
-using SmartStore.Services.Stores;
-using Autofac;
 using SmartStore.Services.Helpers;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services
 {
-	public class CommonServices : ICommonServices
+    public class CommonServices : ICommonServices
 	{
 		private readonly IComponentContext _container;
 		private readonly Lazy<IApplicationEnvironment> _env;
@@ -32,8 +30,8 @@ namespace SmartStore.Services
 		private readonly Lazy<ICustomerActivityService> _customerActivity;
 		private readonly Lazy<IPictureService> _pictureService;
 		private readonly Lazy<INotifier> _notifier;
-		private readonly Lazy<IPermissionService> _permissions;
-		private readonly Lazy<ISettingService> _settings;
+        private readonly Lazy<IPermissionService> _permissions;
+        private readonly Lazy<ISettingService> _settings;
 		private readonly Lazy<IStoreService> _storeService;
 		private readonly Lazy<IDateTimeHelper> _dateTimeHelper;
 		private readonly Lazy<IDisplayControl> _displayControl;
@@ -54,34 +52,34 @@ namespace SmartStore.Services
 			Lazy<ICustomerActivityService> customerActivity,
 			Lazy<IPictureService> pictureService,
 			Lazy<INotifier> notifier,
-			Lazy<IPermissionService> permissions,
-			Lazy<ISettingService> settings,
+            Lazy<IPermissionService> permissions,
+            Lazy<ISettingService> settings,
 			Lazy<IStoreService> storeService,
 			Lazy<IDateTimeHelper> dateTimeHelper,
 			Lazy<IDisplayControl> displayControl,
 			Lazy<IChronometer> chronometer,
 			Lazy<IMessageFactory> messageFactory)
 		{
-			this._container = container;
-			this._env = env;
-			this._cacheManager = cacheManager;
-			this._requestCache = requestCache;
-			this._dbContext = dbContext;
-			this._storeContext = storeContext;
-			this._webHelper = webHelper;
-			this._workContext = workContext;
-			this._eventPublisher = eventPublisher;
-			this._localization = localization;
-			this._customerActivity = customerActivity;
-			this._pictureService = pictureService;
-			this._notifier = notifier;
-			this._permissions = permissions;
-			this._settings = settings;
-			this._storeService = storeService;
-			this._dateTimeHelper = dateTimeHelper;
-			this._displayControl = displayControl;
-			this._chronometer = chronometer;
-			this._messageFactory = messageFactory;
+			_container = container;
+			_env = env;
+			_cacheManager = cacheManager;
+			_requestCache = requestCache;
+			_dbContext = dbContext;
+			_storeContext = storeContext;
+			_webHelper = webHelper;
+			_workContext = workContext;
+			_eventPublisher = eventPublisher;
+			_localization = localization;
+			_customerActivity = customerActivity;
+			_pictureService = pictureService;
+			_notifier = notifier;
+            _permissions = permissions;
+			_settings = settings;
+			_storeService = storeService;
+			_dateTimeHelper = dateTimeHelper;
+			_displayControl = displayControl;
+			_chronometer = chronometer;
+			_messageFactory = messageFactory;
 		}
 
 		public IComponentContext Container => _container;
@@ -97,8 +95,8 @@ namespace SmartStore.Services
 		public ICustomerActivityService CustomerActivity => _customerActivity.Value;
 		public IPictureService PictureService => _pictureService.Value;
 		public INotifier Notifier => _notifier.Value;
-		public IPermissionService Permissions => _permissions.Value;
-		public ISettingService Settings => _settings.Value;
+        public IPermissionService Permissions => _permissions.Value;
+        public ISettingService Settings => _settings.Value;
 		public IStoreService StoreService => _storeService.Value;
 		public IDateTimeHelper DateTimeHelper => _dateTimeHelper.Value;
 		public IDisplayControl DisplayControl => _displayControl.Value;

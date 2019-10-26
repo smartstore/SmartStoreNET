@@ -23,12 +23,12 @@
 				.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
 				.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
 			columns.Bound(x => x.Subject);
+			columns.Bound(x => x.CreatedOn);
 			columns.Bound(x => x.LimitedToStores)
 				.Template(item => @Html.SymbolForBool(item.LimitedToStores))
 				.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
 				.Hidden((int)ViewData["StoreCount"] <= 1)
 				.Centered();
-			columns.Bound(x => x.CreatedOn);
 		})
 		.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Campaign"))
 		.PreserveGridState()

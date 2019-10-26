@@ -1,22 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
+using Autofac;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Events;
-using SmartStore.Services.Localization;
 using SmartStore.Core.Logging;
-using SmartStore.Services.Security;
+using SmartStore.Core.Security;
 using SmartStore.Services.Configuration;
-using SmartStore.Services.Stores;
 using SmartStore.Services.Helpers;
-using Autofac;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services
-{	
-	public interface ICommonServices
+{
+    public interface ICommonServices
 	{
 		IComponentContext Container { get; }
 		IApplicationEnvironment ApplicationEnvironment { get; }
@@ -32,8 +31,8 @@ namespace SmartStore.Services
 		ICustomerActivityService CustomerActivity { get; }
 		IPictureService PictureService { get; }
 		INotifier Notifier { get; }
-		IPermissionService Permissions { get; }
-		ISettingService Settings { get; }
+        IPermissionService Permissions { get; }
+        ISettingService Settings { get; }
 		IStoreService StoreService { get; }
 		IDateTimeHelper DateTimeHelper { get; }
 		IChronometer Chronometer { get; }

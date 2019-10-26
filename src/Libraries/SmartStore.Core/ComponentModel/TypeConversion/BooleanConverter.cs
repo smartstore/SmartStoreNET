@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SmartStore.ComponentModel
 {
 	[SuppressMessage("ReSharper", "CanBeReplacedWithTryCastAndCheckForNull")]
-	public class BooleanConverter : TypeConverterBase
+	public class BooleanConverter : DefaultTypeConverter
 	{
 		private readonly HashSet<string> _trueValues;
 		private readonly HashSet<string> _falseValues;

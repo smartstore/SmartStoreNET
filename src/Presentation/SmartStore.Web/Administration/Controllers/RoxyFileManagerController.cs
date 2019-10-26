@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -15,15 +13,15 @@ using SmartStore.Core.Events;
 using SmartStore.Core.IO;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Security;
 using SmartStore.Services.Media;
-using SmartStore.Services.Security;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
 	public class RoxyFileManagerController : AdminControllerBase
 	{
 		private const int BUFFER_SIZE = 32768;
@@ -34,7 +32,6 @@ namespace SmartStore.Admin.Controllers
 		private Dictionary<string, string> _roxySettings = null;
 
 		private readonly Lazy<IImageProcessor> _imageProcessor;
-		private readonly Lazy<IPictureService> _pictureService;
 		private readonly Lazy<IImageCache> _imageCache;
 		private readonly IMediaFileSystem _fileSystem;
 		private readonly IEventPublisher _eventPublisher;
@@ -43,7 +40,6 @@ namespace SmartStore.Admin.Controllers
 
 		public RoxyFileManagerController(
 			Lazy<IImageProcessor> imageProcessor,
-			Lazy<IPictureService> pictureService,
 			Lazy<IImageCache> imageCache,
 			IMediaFileSystem fileSystem,
 			IEventPublisher eventPublisher,
@@ -51,7 +47,6 @@ namespace SmartStore.Admin.Controllers
 			Lazy<MediaSettings> mediaSettings)
 		{
 			_imageProcessor = imageProcessor;
-			_pictureService = pictureService;
 			_imageCache = imageCache;
 			_fileSystem = fileSystem;
 			_eventPublisher = eventPublisher;
@@ -500,9 +495,9 @@ namespace SmartStore.Admin.Controllers
 
 				Response.Write(GetResultString());
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				throw new Exception(exception.Message + "; " + LangRes("E_RenameFile") + " \"" + oldPath + "\"");
+				throw new Exception(ex.Message + "; " + LangRes("E_RenameFile") + " \"" + oldPath + "\"");
 			}
 		}
 
@@ -783,7 +778,7 @@ namespace SmartStore.Admin.Controllers
 						var dest = Path.Combine(tempDir, file.FileName);
 						file.SaveAs(dest);
 
-						if (GetFileContentType(extension) == "image")
+						if (GetFileContentType(extension) == "image" && extension != ".svg")
 						{
 							ImageResize(dest, dest, width, height, notify);
 						}
@@ -811,10 +806,10 @@ namespace SmartStore.Admin.Controllers
 					}
 				}
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
 				hasError = true;
-				message = exception.Message;
+				message = ex.Message;
 			}
 			finally
 			{
@@ -854,7 +849,7 @@ namespace SmartStore.Admin.Controllers
 
 		public async Task ProcessRequest(string a = null, string d = null)
 		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.UploadPictures))
+			if (!Services.Permissions.Authorize(Permissions.Media.Upload))
 			{
 				Response.Write(T("Admin.AccessDenied.Description"));
 				return;
@@ -918,7 +913,7 @@ namespace SmartStore.Admin.Controllers
 						break;
 				}
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
 				if (action == "UPLOAD")
 				{
@@ -935,10 +930,10 @@ namespace SmartStore.Admin.Controllers
 				}
 				else
 				{
-					Response.Write(GetResultString(exception.Message, "error"));
+					Response.Write(GetResultString(ex.Message, "error"));
 				}
 
-				Logger.ErrorsAll(exception);
+				Logger.ErrorsAll(ex);
 			}
 		}
 	}

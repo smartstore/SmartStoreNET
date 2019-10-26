@@ -119,11 +119,7 @@ namespace SmartStore.Web.Framework.UI
 
             // ensure only valid chars
             hash = SeoExtensions.GetSeName(hash);
-
-            var sb = new StringBuilder(prefix);
-            sb.Append(hash);
-			sb.Append(postfix); 
-            return sb.ToString();
+            return prefix + hash + postfix;
         }
     }
 }

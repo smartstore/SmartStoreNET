@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core.Data;
-using SmartStore.Services.Security;
+using SmartStore.Core.Security;
 
 namespace SmartStore.Web.Framework.Filters
 {
@@ -32,7 +32,7 @@ namespace SmartStore.Web.Framework.Filters
             if (request == null)
                 return;
 
-            //don't apply filter to child methods
+            // Don't apply filter to child methods.
             if (filterContext.IsChildAction)
                 return;
 
@@ -47,9 +47,7 @@ namespace SmartStore.Web.Framework.Filters
             if (!DataSettings.DatabaseIsInstalled())
                 return;
 
-			var permissionService = PermissionService.Value;
-            var publicStoreAllowNavigation = permissionService.Authorize(StandardPermissionProvider.PublicStoreAllowNavigation);
-            if (!publicStoreAllowNavigation && !IsPermittedRoute(controllerName, actionName))
+            if (!HasStoreAccess() && !IsPermittedRoute(controllerName, actionName))
             {
                 filterContext.Result = new HttpUnauthorizedResult();
             }
@@ -58,6 +56,21 @@ namespace SmartStore.Web.Framework.Filters
 		public virtual void OnActionExecuted(ActionExecutedContext filterContext)
 		{
 		}
+
+        protected virtual bool HasStoreAccess()
+        {
+            if (PermissionService.Value.Authorize(Permissions.System.AccessShop))
+            {
+                return true;
+            }
+
+            if (PermissionService.Value.AuthorizeByAlias(Permissions.System.AccessShop))
+            {
+                return true;
+            }
+
+            return false;
+        }
 
 		private static bool IsPermittedRoute(string controllerName, string actionName)
 		{

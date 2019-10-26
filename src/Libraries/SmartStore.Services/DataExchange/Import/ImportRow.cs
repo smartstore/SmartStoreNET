@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using SmartStore.ComponentModel;
 using SmartStore.Core;
 
@@ -159,26 +160,25 @@ namespace SmartStore.Services.DataExchange.Import
 		public bool HasDataValue(string columnName, string index)
 		{
 			var mapping = _segmenter.ColumnMap.GetMapping(columnName, index);
-
-			object value;
-			return (_row.TryGetValue(mapping.MappedName, out value) && value != null && value != DBNull.Value);
+			return (_row.TryGetValue(mapping.MappedName, out var value) && value != null && value != DBNull.Value);
 		}
 
-		public TProp GetDataValue<TProp>(string columnName, bool force = false)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public TProp GetDataValue<TProp>(string columnName, bool force = false)
 		{
-			TProp value;
-			TryGetDataValue<TProp>(columnName, null, out value, force);
+			TryGetDataValue<TProp>(columnName, null, out var value, force);
 			return value;
 		}
 
-		public TProp GetDataValue<TProp>(string columnName, string index, bool force = false)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public TProp GetDataValue<TProp>(string columnName, string index, bool force = false)
 		{
-			TProp value;
-			TryGetDataValue<TProp>(columnName, index, out value, force);
+			TryGetDataValue<TProp>(columnName, index, out var value, force);
 			return value;
 		}
 
-		public bool TryGetDataValue<TProp>(string columnName, out TProp value, bool force = false)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool TryGetDataValue<TProp>(string columnName, out TProp value, bool force = false)
 		{
 			return TryGetDataValue(columnName, null, out value, force);
 		}
@@ -213,7 +213,8 @@ namespace SmartStore.Services.DataExchange.Import
 			return false;
 		}
 
-		public bool SetProperty<TProp>(
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool SetProperty<TProp>(
 			ImportResult result,
 			Expression<Func<T, TProp>> prop,
 			TProp defaultValue = default(TProp),

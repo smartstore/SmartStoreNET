@@ -1010,7 +1010,7 @@ namespace SmartStore.Services.Catalog.Importer
 					{
 						foreach (var id in categoryIds)
 						{
-							if (_productCategoryRepository.TableUntracked.Where(x => x.ProductId == row.Entity.Id && x.CategoryId == id).FirstOrDefault() == null)
+							if (!_productCategoryRepository.TableUntracked.Any(x => x.ProductId == row.Entity.Id && x.CategoryId == id))
 							{
 								// Ensure that category exists.
 								var category = _categoryService.GetCategoryById(id);

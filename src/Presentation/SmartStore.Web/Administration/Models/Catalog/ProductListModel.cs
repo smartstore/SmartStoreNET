@@ -1,4 +1,5 @@
 ﻿﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
 ﻿using SmartStore.Web.Framework.Modelling;
@@ -12,7 +13,6 @@ namespace SmartStore.Admin.Models.Catalog
         {
             AvailableCategories = new List<SelectListItem>();
             AvailableManufacturers = new List<SelectListItem>();
-			AvailableStores = new List<SelectListItem>();
 			AvailableProductTypes = new List<SelectListItem>();
         }
 
@@ -34,7 +34,8 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchWithoutManufacturers")]
 		public bool? SearchWithoutManufacturers { get; set; }
 
-		[SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
+        [UIHint("Stores")]
+        [SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
 		public int SearchStoreId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
@@ -51,7 +52,8 @@ namespace SmartStore.Admin.Models.Catalog
         public string GoDirectlyToSku { get; set; }
 
         public bool DisplayProductPictures { get; set; }
-		public int GridPageSize { get; set; }
+        public bool IsSingleStoreMode { get; set; }
+        public int GridPageSize { get; set; }
 
         public IList<SelectListItem> AvailableCategories { get; set; }
         public IList<SelectListItem> AvailableManufacturers { get; set; }

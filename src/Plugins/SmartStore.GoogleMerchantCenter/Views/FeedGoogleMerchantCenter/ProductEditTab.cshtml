@@ -23,7 +23,7 @@
 			@Html.SmartLabelFor(m => m.Taxonomy)
 		</td>
 		<td class="adminData wide">
-			@Html.DropDownListFor(model => model.Taxonomy, (IEnumerable<SelectListItem>)ViewBag.AvailableCategories, new { autocomplete = "off" })
+			@Html.DropDownListFor(model => model.Taxonomy, (IEnumerable<SelectListItem>)ViewBag.AvailableCategories)
 			@Html.ValidationMessageFor(m => m.Taxonomy)
 		</td>
 	</tr>

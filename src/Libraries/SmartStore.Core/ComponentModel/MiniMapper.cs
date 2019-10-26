@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Globalization;
 using SmartStore.Utilities;
+using SmartStore.Core;
 
 namespace SmartStore.ComponentModel
 {
@@ -19,29 +20,28 @@ namespace SmartStore.ComponentModel
 	{
 		public static TTo Map<TFrom, TTo>(TFrom from, CultureInfo culture = null)
 			where TFrom : class
-			where TTo : class
+			where TTo : class, new()
 		{
-			var to = Map(from, typeof(TTo), culture);
-			return (TTo)to;
-		}
+            Guard.NotNull(from, nameof(from));
 
-		//public static void Map<TFrom, TTo>(TFrom from, TTo to, CultureInfo culture = null) 
-		//	where TFrom : class 
-		//	where TTo : class
-		//{
-		//	Map((object)from, (object)to, culture);
-		//}
+            if (TryMap(from, from.GetType(), typeof(TTo), culture, out var result))
+            {
+                return (TTo)result;
+            }
+
+            return default(TTo);
+		}
 
 		public static object Map<TFrom>(TFrom from, Type toType, CultureInfo culture = null)
 			where TFrom : class
 		{
-			Guard.NotNull(toType, nameof(toType));
+            Guard.NotNull(from, nameof(from));
+            Guard.NotNull(toType, nameof(toType));
 			Guard.HasDefaultConstructor(toType);
 
-			var target = Activator.CreateInstance(toType);
+            TryMap(from, from.GetType(), toType, culture, out var result);
 
-			Map(from, target, culture);
-			return target;
+            return result;
 		}
 
 		public static void Map<TFrom, TTo>(TFrom from, TTo to, CultureInfo culture = null)
@@ -51,60 +51,72 @@ namespace SmartStore.ComponentModel
 			Guard.NotNull(from, nameof(from));
 			Guard.NotNull(to, nameof(to));
 
-			if (object.ReferenceEquals(from, to))
-			{
-				// Cannot map the same instance
-				return;
-			}
+            MapComplex(from, to, from.GetType(), culture ?? CultureInfo.CurrentCulture);
+		}
 
-			var fromType = from.GetType();
-			var toType = to.GetType();
+        private static bool TryMap(object from, Type fromType, Type toType, CultureInfo culture, out object result)
+        {
+            if (CommonHelper.TryConvert(from, toType, culture, out result))
+            {
+                return true;
+            }
 
-			ValidateType(fromType);
-			ValidateType(toType);
+            if (fromType.IsPlainObjectType() && toType.IsPlainObjectType())
+            {
+                result = Activator.CreateInstance(toType);
+                MapComplex(from, result, fromType, culture);
+                return true;
+            }
 
-			if (culture == null)
-			{
-				culture = CultureInfo.CurrentCulture;
-			}
+            return false;
+        }
 
-			var toProps = GetFastPropertiesFor(toType).ToArray();
+        private static void MapComplex(object from, object to, Type fromType, CultureInfo culture)
+        {
+            if (object.ReferenceEquals(from, to))
+            {
+                // Cannot map same instance or null source
+                return;
+            }
 
-			foreach (var toProp in toProps)
-			{
-				var fromProp = FastProperty.GetProperty(fromType, toProp.Name, PropertyCachingStrategy.Uncached);
-				if (fromProp == null)
-				{
-					continue;
-				}
+            var toType = to.GetType();
+            var isEntityMapping = typeof(BaseEntity).IsAssignableFrom(toType);
+            var toProps = GetFastPropertiesFor(toType).ToArray();
 
-                // Get the value from source instance and try to convert it to target prop type
-                if (CommonHelper.TryConvert(fromProp.GetValue(from), toProp.Property.PropertyType, culture, out object value))
+            foreach (var toProp in toProps)
+            {
+                var fromProp = FastProperty.GetProperty(fromType, toProp.Name, PropertyCachingStrategy.Cached);
+                if (fromProp == null)
+                {
+                    continue;
+                }
+
+                var fromPropType = fromProp.Property.PropertyType;
+                var toPropType = toProp.Property.PropertyType;
+                var sourceValue = fromProp.GetValue(from);
+
+                if (isEntityMapping && fromPropType == typeof(int) && toPropType == typeof(int?) && object.Equals(0, sourceValue) && toProp.Name.EndsWith("Id"))
+                {
+                    // TODO: This is more a hack than a proper solution. Find a more generic way to convert int FK properties...
+                    // Special mapper, that avoids DbUpdate exceptions in cases where
+                    // optional (nullable) int FK properties are 0 instead of "null" 
+                    // after mapping model > entity.
+                    toProp.SetValue(to, null);
+                }
+                else if (TryMap(sourceValue, fromPropType, toPropType, culture, out var targetValue))
                 {
                     // Set it
-                    toProp.SetValue(to, value);
+                    toProp.SetValue(to, targetValue);
                 }
             }
-		}
+        }
 
-		private static IEnumerable<FastProperty> GetFastPropertiesFor(Type type)
+		private static FastProperty[] GetFastPropertiesFor(Type type)
 		{
-			return FastProperty.GetCandidateProperties(type)
-				.Select(pi => FastProperty.GetProperty(pi, PropertyCachingStrategy.Uncached))
-				.Where(pi => pi.IsPublicSettable);
-		}
-
-		private static void ValidateType(Type type)
-		{
-			if (type.IsPredefinedType())
-			{
-				throw new InvalidOperationException("Mapping from or to predefined types is not possible. Type was: {0}".FormatInvariant(type.FullName));
-			}
-
-			if (type.IsSequenceType())
-			{
-				throw new InvalidOperationException("Mapping from or to sequence types is not possible. Type was: {0}".FormatInvariant(type.FullName));
-			}
+            return FastProperty.GetProperties(type, PropertyCachingStrategy.Uncached)
+                .Values
+                .Where(pi => pi.IsPublicSettable)
+                .ToArray();
 		}
 	}
 }

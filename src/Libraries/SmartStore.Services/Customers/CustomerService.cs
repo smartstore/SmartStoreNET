@@ -21,6 +21,7 @@ using SmartStore.Data.Caching;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
 using System.Threading.Tasks;
+using SmartStore.Services.Security;
 
 namespace SmartStore.Services.Customers
 {
@@ -665,7 +666,11 @@ namespace SmartStore.Services.Customers
 			if (role.IsSystemRole)
                 throw new SmartException("System role could not be deleted");
 
+            var roleId = role.Id;
+
             _customerRoleRepository.Delete(role);
+
+            _services.Cache.RemoveByPattern(PermissionService.PERMISSION_TREE_KEY.FormatInvariant(roleId));
         }
 
         public virtual CustomerRole GetCustomerRoleById(int roleId)
@@ -713,6 +718,8 @@ namespace SmartStore.Services.Customers
 			Guard.NotNull(role, nameof(role));
 
 			_customerRoleRepository.Update(role);
+
+            _services.Cache.RemoveByPattern(PermissionService.PERMISSION_TREE_KEY.FormatInvariant(role.Id));
         }
 
         #endregion

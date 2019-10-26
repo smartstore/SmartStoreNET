@@ -160,30 +160,46 @@
 // Functions
 // ===============================================
 
-@function scrim-gradient($start-color: #000, $direction: 'to bottom', $radial: false) {
-    $coords: (
-        0: 1,
-        19: 0.738,
-        34: 0.541,
-        47: 0.382,
-        56.5: 0.278,
-        65: 0.194,
-        73: 0.126,
-        80.2: 0.075,
-        86.1: 0.042,
-        91: 0.021,
-        95.2: 0.008,
-        98.2: 0.002,
-        100: 0
-    );
+$scrim-gradient-coords: (
+    0: 1,
+    19: 0.738,
+    34: 0.541,
+    47: 0.382,
+    56.5: 0.278,
+    65: 0.194,
+    73: 0.126,
+    80.2: 0.075,
+    86.1: 0.042,
+    91: 0.021,
+    95.2: 0.008,
+    98.2: 0.002,
+    100: 0
+);
 
+@function scrim-gradient($start-color: #000, $direction: 'to bottom', $radial: false) {
     $hue: hue($start-color);
     $saturation: saturation($start-color);
     $lightness: lightness($start-color);
     $stops: ();
 
-    @each $colorstop, $alpha in $coords {
-        $stop: hsla($hue, $saturation, $lightness, $alpha) percentage($colorstop/100);
+    @each $colorstop, $alpha in $scrim-gradient-coords {
+        $stop: hsla($hue, $saturation, $lightness, $alpha) calc(#{percentage($colorstop/100)} * var(--gsize,1));
+        $stops: append($stops, $stop, comma);
+    }
+
+    @if $radial == true {
+        @return radial-gradient(unquote(#{ $direction }), #{ $stops });
+    }
+    @else {
+        @return linear-gradient(unquote(#{ $direction }), #{ $stops });
+    }   
+}
+
+@function scrim-gradient-generic($direction: 'to bottom', $radial: false) {
+    $stops: ();
+
+    @each $colorstop, $alpha in $scrim-gradient-coords {
+        $stop: rgba(var(--cstart-rgb), $alpha) calc(#{percentage($colorstop/100)} * var(--gsize,1));
         $stops: append($stops, $stop, comma);
     }
 

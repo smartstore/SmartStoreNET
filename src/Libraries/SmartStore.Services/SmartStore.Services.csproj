@@ -312,6 +312,7 @@
     <Compile Include="Hooks\StoreSaveHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityHook.cs" />
     <Compile Include="IScopedService.cs" />
+    <Compile Include="Localization\LocalizedEntityHelper.cs" />
     <Compile Include="Localization\LocalizedValue.cs" />
     <Compile Include="Localization\LocalizedUrlHelper.cs" />
     <Compile Include="Logging\DbLogService.cs" />
@@ -324,7 +325,7 @@
     <Compile Include="Media\Storage\DatabaseMediaStorageProvider.cs" />
     <Compile Include="Media\Storage\FileSystemMediaStorageProvider.cs" />
     <Compile Include="Media\Storage\IMediaStorageProvider.cs" />
-    <Compile Include="Media\MediaExtensions.cs" />
+    <Compile Include="Media\MediaHelper.cs" />
     <Compile Include="Media\Storage\IMediaMover.cs" />
     <Compile Include="Media\Storage\ISupportsMediaMoving.cs" />
     <Compile Include="Media\Storage\MediaMoverContext.cs" />
@@ -426,12 +427,12 @@
     <Compile Include="Cms\WidgetService.cs" />
     <Compile Include="CommonServices.cs" />
     <Compile Include="Common\AddressService.cs" />
-    <Compile Include="Common\AddressExtentions.cs" />
+    <Compile Include="Common\AddressExtensions.cs" />
     <Compile Include="Common\IGenericAttributeService.cs" />
     <Compile Include="Common\GenericAttributeService.cs" />
     <Compile Include="Common\IMaintenanceService.cs" />
     <Compile Include="Common\IMobileDeviceHelper.cs" />
-    <Compile Include="Common\GenericAttributeExtentions.cs" />
+    <Compile Include="Common\GenericAttributeExtensions.cs" />
     <Compile Include="Common\MaintenanceService.cs" />
     <Compile Include="Common\MobileDeviceHelper.cs" />
     <Compile Include="Common\IAddressService.cs" />
@@ -602,12 +603,10 @@
     <Compile Include="Security\EncryptionService.cs" />
     <Compile Include="Security\IAclService.cs" />
     <Compile Include="Security\IEncryptionService.cs" />
-    <Compile Include="Security\PermissionService.cs" />
-    <Compile Include="Security\IPermissionService.cs" />
-    <Compile Include="Security\IPermissionProvider.cs" />
     <Compile Include="Customers\CustomerRegistrationRequest.cs" />
     <Compile Include="Customers\CustomerRegistrationResult.cs" />
     <Compile Include="Directory\StateProvinceService.cs" />
+    <Compile Include="Security\PermissionService.cs" />
     <Compile Include="Security\StandardPermissionProvider.cs" />
     <Compile Include="Seo\IUrlRecordService.cs" />
     <Compile Include="Seo\SeoExtensions.cs" />

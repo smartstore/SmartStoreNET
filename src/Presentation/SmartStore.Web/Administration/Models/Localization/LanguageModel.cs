@@ -1,17 +1,18 @@
-﻿using FluentValidation;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Localization
 {
     [Validator(typeof(LanguageValidator))]
-    public class LanguageModel : EntityModelBase, IStoreSelector
+    public class LanguageModel : EntityModelBase
     {
         public LanguageModel()
         {
@@ -48,10 +49,12 @@ namespace SmartStore.Admin.Models.Localization
         [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
+        // Store mapping.
+        [UIHint("Stores"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.AvailableLanguageSetId")]
         public int AvailableLanguageSetId { get; set; }

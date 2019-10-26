@@ -5,10 +5,10 @@ using SmartStore.Admin.Models.Catalog;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
-using SmartStore.Services.Security;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -17,7 +17,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public class ProductAttributeController : AdminControllerBase
     {
 		#region Fields
@@ -27,7 +27,6 @@ namespace SmartStore.Admin.Controllers
         private readonly ILanguageService _languageService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ICustomerActivityService _customerActivityService;
-        private readonly IPermissionService _permissionService;
 		private readonly AdminAreaSettings _adminAreaSettings;
 
 		#endregion Fields
@@ -40,7 +39,6 @@ namespace SmartStore.Admin.Controllers
             ILanguageService languageService,
 			ILocalizedEntityService localizedEntityService,
 			ICustomerActivityService customerActivityService,
-            IPermissionService permissionService,
 			AdminAreaSettings adminAreaSettings)
         {
 			_productService = productService;
@@ -48,7 +46,6 @@ namespace SmartStore.Admin.Controllers
             _languageService = languageService;
             _localizedEntityService = localizedEntityService;
             _customerActivityService = customerActivityService;
-            _permissionService = permissionService;
 			_adminAreaSettings = adminAreaSettings;
         }
 
@@ -105,77 +102,86 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		#endregion
+        #endregion
 
-		#region Product attribute
+        #region Product attribute
 
-		public ActionResult Index()
+        // Ajax.
+        public ActionResult AllProductAttributes(string label, int selectedId)
+        {
+            var attributes = _productAttributeService.GetAllProductAttributes();
+
+            if (label.HasValue())
+            {
+                attributes.Insert(0, new ProductAttribute { Name = label, Id = 0 });
+            }
+
+            var query =
+                from attr in attributes
+                select new
+                {
+                    id = attr.Id.ToString(),
+                    text = attr.Name,
+                    selected = attr.Id == selectedId
+                };
+
+            return new JsonResult { Data = query.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
+
+        public ActionResult Index()
         {
             return RedirectToAction("List");
         }
 
+        [Permission(Permissions.Catalog.Variant.Read)]
         public ActionResult List()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
 			ViewData["GridPageSize"] = _adminAreaSettings.GridPageSize;
 
             return View();
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Catalog.Variant.Read)]
         public ActionResult List(GridCommand command)
         {
 			var gridModel = new GridModel<ProductAttributeModel>();
+			var productAttributes = _productAttributeService.GetAllProductAttributes();
 
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-			{
-				var productAttributes = _productAttributeService.GetAllProductAttributes();
+			var data = productAttributes
+				.ForCommand(command)
+				.Select(x =>
+				{
+					var model = x.ToModel();
+					return model;
+				})
+				.ToList();
 
-				var data = productAttributes
-					.ForCommand(command)
-					.Select(x =>
-					{
-						var model = x.ToModel();
-						return model;
-					})
-					.ToList();
-
-				gridModel.Data = data.PagedForCommand(command);
-				gridModel.Total = data.Count;
-			}
-			else
-			{
-				gridModel.Data = Enumerable.Empty<ProductAttributeModel>();
-
-				NotifyAccessDenied();
-			}
+			gridModel.Data = data.PagedForCommand(command);
+			gridModel.Total = data.Count;
 
             return new JsonResult
             {
                 Data = gridModel
             };
         }
-        
+
+        [Permission(Permissions.Catalog.Variant.Create)]
         public ActionResult Create()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
-            var model = new ProductAttributeModel();
-			model.AllowFiltering = true;
+            var model = new ProductAttributeModel
+            {
+                AllowFiltering = true
+            };
 
             AddLocales(_languageService, model.Locales);
             return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [Permission(Permissions.Catalog.Variant.Create)]
         public ActionResult Create(ProductAttributeModel model, bool continueEditing)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
             if (ModelState.IsValid)
             {
                 var productAttribute = model.ToEntity();
@@ -184,40 +190,35 @@ namespace SmartStore.Admin.Controllers
 				{
 					_productAttributeService.InsertProductAttribute(productAttribute);
 				}
-				catch (Exception exception)
+				catch (Exception ex)
 				{
-					ModelState.AddModelError("", exception.Message);
+					ModelState.AddModelError("", ex.Message);
 					return View(model);
 				}
 
-				try
-				{
-					UpdateLocales(productAttribute, model);
-				}
-				catch (Exception)
-				{
-					// TODO: what?
-				}
+                try
+                {
+                    UpdateLocales(productAttribute, model);
+                }
+                catch { }
 
-				// activity log
 				_customerActivityService.InsertActivity("AddNewProductAttribute", T("ActivityLog.AddNewProductAttribute", productAttribute.Name));
 
                 NotifySuccess(T("Admin.Catalog.Attributes.ProductAttributes.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = productAttribute.Id }) : RedirectToAction("List");
             }
 
-            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
+        [Permission(Permissions.Catalog.Variant.Read)]
         public ActionResult Edit(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
             var productAttribute = _productAttributeService.GetProductAttributeById(id);
             if (productAttribute == null)
+            {
                 return RedirectToAction("List");
+            }
 
             var model = productAttribute.ToModel();
 
@@ -232,14 +233,14 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [Permission(Permissions.Catalog.Variant.Update)]
         public ActionResult Edit(ProductAttributeModel model, bool continueEditing)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
             var productAttribute = _productAttributeService.GetProductAttributeById(model.Id);
             if (productAttribute == null)
+            {
                 return RedirectToAction("List");
+            }
             
             if (ModelState.IsValid)
             {
@@ -251,36 +252,33 @@ namespace SmartStore.Admin.Controllers
 
 					UpdateLocales(productAttribute, model);
 				}
-				catch (Exception exception)
+				catch (Exception ex)
 				{
-					ModelState.AddModelError("", exception.Message);
+					ModelState.AddModelError("", ex.Message);
 					return View(model);
 				}
 
-				// activity log
 				_customerActivityService.InsertActivity("EditProductAttribute", T("ActivityLog.EditProductAttribute", productAttribute.Name));
 
                 NotifySuccess(T("Admin.Catalog.Attributes.ProductAttributes.Updated"));
                 return continueEditing ? RedirectToAction("Edit", productAttribute.Id) : RedirectToAction("List");
             }
 
-            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
         [HttpPost, ActionName("Delete")]
+        [Permission(Permissions.Catalog.Variant.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
             var productAttribute = _productAttributeService.GetProductAttributeById(id);
             if (productAttribute == null)
+            {
                 return RedirectToAction("List");
+            }
 
             _productAttributeService.DeleteProductAttribute(productAttribute);
 
-            //activity log
             _customerActivityService.InsertActivity("DeleteProductAttribute", T("ActivityLog.DeleteProductAttribute", productAttribute.Name));
 
             NotifySuccess(T("Admin.Catalog.Attributes.ProductAttributes.Deleted"));
@@ -292,31 +290,22 @@ namespace SmartStore.Admin.Controllers
 		#region Product attribute options sets
 
 		[HttpPost, GridAction(EnableCustomBinding = true)]
-		public ActionResult OptionsSetList(int productAttributeId, GridCommand command)
+        [Permission(Permissions.Catalog.Variant.Read)]
+        public ActionResult OptionsSetList(int productAttributeId, GridCommand command)
 		{
 			var gridModel = new GridModel<ProductAttributeOptionsSetModel>();
+			var optionsSets = _productAttributeService.GetProductAttributeOptionsSetsByAttributeId(productAttributeId);
 
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			gridModel.Total = optionsSets.Count();
+			gridModel.Data = optionsSets.Select(x =>
 			{
-				var optionsSets = _productAttributeService.GetProductAttributeOptionsSetsByAttributeId(productAttributeId);
-
-				gridModel.Total = optionsSets.Count();
-				gridModel.Data = optionsSets.Select(x =>
+				return new ProductAttributeOptionsSetModel
 				{
-					return new ProductAttributeOptionsSetModel
-					{
-						Id = x.Id,
-						ProductAttributeId = productAttributeId,
-						Name = x.Name
-					};
-				});
-			}
-			else
-			{
-				gridModel.Data = Enumerable.Empty<ProductAttributeOptionsSetModel>();
-
-				NotifyAccessDenied();
-			}
+					Id = x.Id,
+					ProductAttributeId = productAttributeId,
+					Name = x.Name
+				};
+			});
 
 			return new JsonResult
 			{
@@ -325,28 +314,19 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost, GridAction(EnableCustomBinding = true)]
-		public ActionResult OptionsSetListDetails(int id)
+        [Permission(Permissions.Catalog.Variant.Read)]
+        public ActionResult OptionsSetListDetails(int id)
 		{
 			var gridModel = new GridModel<ProductAttributeOptionModel>();
+			var options = _productAttributeService.GetProductAttributeOptionsByOptionsSetId(id);
 
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			gridModel.Total = options.Count();
+			gridModel.Data = options.Select(x =>
 			{
-				var options = _productAttributeService.GetProductAttributeOptionsByOptionsSetId(id);
-
-				gridModel.Total = options.Count();
-				gridModel.Data = options.Select(x =>
-				{
-					var model = x.ToModel();
-					PrepareProductAttributeOptionModel(model, x);
-					return model;
-				});
-			}
-			else
-			{
-				gridModel.Data = Enumerable.Empty<ProductAttributeOptionModel>();
-
-				NotifyAccessDenied();
-			}
+				var model = x.ToModel();
+				PrepareProductAttributeOptionModel(model, x);
+				return model;
+			});
 
 			return new JsonResult
 			{
@@ -355,69 +335,55 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[GridAction(EnableCustomBinding = true)]
-		public ActionResult OptionsSetInsert(ProductAttributeOptionsSetModel model, GridCommand command)
+        [Permission(Permissions.Catalog.Variant.EditSet)]
+        public ActionResult OptionsSetInsert(ProductAttributeOptionsSetModel model, GridCommand command)
 		{
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			var entity = new ProductAttributeOptionsSet
 			{
-				var entity = new ProductAttributeOptionsSet
-				{
-					Name = model.Name,
-					ProductAttributeId = model.ProductAttributeId
-				};
+				Name = model.Name,
+				ProductAttributeId = model.ProductAttributeId
+			};
 
-				_productAttributeService.InsertProductAttributeOptionsSet(entity);
-			}
-			else
-			{
-				NotifyAccessDenied();
-			}
+			_productAttributeService.InsertProductAttributeOptionsSet(entity);
 
 			return OptionsSetList(model.ProductAttributeId, command);
 		}
 
 		[GridAction(EnableCustomBinding = true)]
-		public ActionResult OptionsSetUpdate(ProductAttributeOptionsSetModel model, GridCommand command)
+        [Permission(Permissions.Catalog.Variant.EditSet)]
+        public ActionResult OptionsSetUpdate(ProductAttributeOptionsSetModel model, GridCommand command)
 		{
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-			{
-				var entity = _productAttributeService.GetProductAttributeOptionsSetById(model.Id);
-				entity.Name = model.Name;
+			var entity = _productAttributeService.GetProductAttributeOptionsSetById(model.Id);
+			entity.Name = model.Name;
 
-				_productAttributeService.UpdateProductAttributeOptionsSet(entity);
-			}
-			else
-			{
-				NotifyAccessDenied();
-			}
+			_productAttributeService.UpdateProductAttributeOptionsSet(entity);
 
 			return OptionsSetList(model.ProductAttributeId, command);
 		}
 
 		[GridAction(EnableCustomBinding = true)]
-		public ActionResult OptionsSetDelete(int id, int productAttributeId, GridCommand command)
+        [Permission(Permissions.Catalog.Variant.EditSet)]
+        public ActionResult OptionsSetDelete(int id, int productAttributeId, GridCommand command)
 		{
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-			{
-				var entity = _productAttributeService.GetProductAttributeOptionsSetById(id);
+			var entity = _productAttributeService.GetProductAttributeOptionsSetById(id);
 
-				_productAttributeService.DeleteProductAttributeOptionsSet(entity);
-			}
+			_productAttributeService.DeleteProductAttributeOptionsSet(entity);
 
 			return OptionsSetList(productAttributeId, command);
 		}
 
-		#endregion
+        #endregion
 
-		#region Product attribute options
+        #region Product attribute options
 
-		public ActionResult OptionCreatePopup(int id)
+        [Permission(Permissions.Catalog.Variant.EditSet)]
+        public ActionResult OptionCreatePopup(int id)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-				return AccessDeniedView();
-
 			var optionsSet = _productAttributeService.GetProductAttributeOptionsSetById(id);
-			if (optionsSet == null)
-				return RedirectToAction("List");
+            if (optionsSet == null)
+            {
+                return RedirectToAction("List");
+            }
 
 			var model = new ProductAttributeOptionModel
 			{
@@ -433,11 +399,9 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult OptionCreatePopup(string btnId, string formId, ProductAttributeOptionModel model)
+        [Permission(Permissions.Catalog.Variant.EditSet)]
+        public ActionResult OptionCreatePopup(string btnId, string formId, ProductAttributeOptionModel model)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-				return AccessDeniedView();
-
 			if (ModelState.IsValid)
 			{
 				var entity = model.ToEntity();
@@ -448,20 +412,17 @@ namespace SmartStore.Admin.Controllers
 				{
 					_productAttributeService.InsertProductAttributeOption(entity);
 				}
-				catch (Exception exception)
+				catch (Exception ex)
 				{
-					ModelState.AddModelError("", exception.Message);
+					ModelState.AddModelError("", ex.Message);
 					return View(model);
 				}
 
-				try
-				{
-					UpdateOptionLocales(entity, model);
-				}
-				catch (Exception)
-				{
-					// TODO: what?
-				}
+                try
+                {
+                    UpdateOptionLocales(entity, model);
+                }
+                catch { }
 
 				ViewBag.RefreshPage = true;
 				ViewBag.btnId = btnId;
@@ -471,14 +432,14 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		public ActionResult OptionEditPopup(int id)
+        [Permission(Permissions.Catalog.Variant.EditSet)]
+        public ActionResult OptionEditPopup(int id)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-				return AccessDeniedView();
-
 			var option = _productAttributeService.GetProductAttributeOptionById(id);
-			if (option == null)
-				return RedirectToAction("List");
+            if (option == null)
+            {
+                return RedirectToAction("List");
+            }
 
 			var model = option.ToModel();
 			PrepareProductAttributeOptionModel(model, option);
@@ -487,14 +448,14 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult OptionEditPopup(string btnId, string formId, ProductAttributeOptionModel model)
+        [Permission(Permissions.Catalog.Variant.EditSet)]
+        public ActionResult OptionEditPopup(string btnId, string formId, ProductAttributeOptionModel model)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-				return AccessDeniedView();
-
 			var entity = _productAttributeService.GetProductAttributeOptionById(model.Id);
-			if (entity == null)
-				return RedirectToAction("List");
+            if (entity == null)
+            {
+                return RedirectToAction("List");
+            }
 
 			if (ModelState.IsValid)
 			{
@@ -509,9 +470,9 @@ namespace SmartStore.Admin.Controllers
 
 					UpdateOptionLocales(entity, model);
 				}
-				catch (Exception exception)
+				catch (Exception ex)
 				{
-					ModelState.AddModelError("", exception.Message);
+					ModelState.AddModelError("", ex.Message);
 					return View(model);
 				}
 
@@ -524,14 +485,12 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult OptionDelete(int id)
+        [Permission(Permissions.Catalog.Variant.EditSet)]
+        public ActionResult OptionDelete(int id)
 		{
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-			{
-				var entity = _productAttributeService.GetProductAttributeOptionById(id);
+			var entity = _productAttributeService.GetProductAttributeOptionById(id);
 
-				_productAttributeService.DeleteProductAttributeOption(entity);
-			}
+			_productAttributeService.DeleteProductAttributeOption(entity);
 
 			return new EmptyResult();
 		}

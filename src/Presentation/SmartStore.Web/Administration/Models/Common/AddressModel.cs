@@ -1,10 +1,13 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Localization;
+using SmartStore.Services.Common;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using System.Collections.Generic;
-using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Common
 {
@@ -77,9 +80,6 @@ namespace SmartStore.Admin.Models.Common
         [SmartResourceDisplayName("Admin.Address.Fields.FaxNumber")]
         [AllowHtml]
         public string FaxNumber { get; set; }
-
-        [SmartResourceDisplayName("Admin.Address")]
-        public string AddressHtml { get; set; }
 		
         public IList<SelectListItem> AvailableCountries { get; set; }
         public IList<SelectListItem> AvailableStates { get; set; }
@@ -171,6 +171,26 @@ namespace SmartStore.Admin.Models.Common
                 .Equal(x => x.Email)
                 .WithMessage(T("Admin.Address.Fields.EmailMatch.MustMatchEmail"))
                 .When(x => x.ValidateEmailAddress);
+        }
+    }
+
+    public class AddressMapper :
+        IMapper<Address, AddressModel>
+    {
+        private readonly IAddressService _addressService;
+
+        public AddressMapper(IAddressService addressService)
+        {
+            _addressService = addressService;
+        }
+
+        public void Map(Address from, AddressModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.CountryName = from.Country?.Name;
+            to.StateProvinceName = from.StateProvince?.Name;
+            to.EmailMatch = from.Email;
+            to.FormattedAddress = _addressService.FormatAddress(from, true);
         }
     }
 }

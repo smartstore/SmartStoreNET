@@ -4,7 +4,7 @@ using SmartStore.Core.Email;
 
 namespace SmartStore.ComponentModel
 {
-	public class EmailAddressConverter : TypeConverterBase
+	public class EmailAddressConverter : DefaultTypeConverter
 	{
 		public EmailAddressConverter() : base(typeof(object))
 		{

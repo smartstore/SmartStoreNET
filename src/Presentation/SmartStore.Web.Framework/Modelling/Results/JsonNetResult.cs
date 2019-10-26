@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using SmartStore.ComponentModel;
 using SmartStore.Services.Helpers;
 
 // ReSharper disable CheckNamespace
@@ -9,7 +10,7 @@ namespace SmartStore.Web.Framework.Modelling
 {
 	public class JsonNetResult : JsonResult
 	{
-		private readonly IDateTimeHelper _dateTimeHelper;
+        private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly JsonSerializerSettings _settings;
 
 		public JsonNetResult(IDateTimeHelper dateTimeHelper)
@@ -25,7 +26,29 @@ namespace SmartStore.Web.Framework.Modelling
 			_settings = settings;
 		}
 
-		public override void ExecuteResult(ControllerContext context)
+        public static JsonSerializerSettings CreateDefaultSerializerSettings()
+        {
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = SmartContractResolver.Instance,
+                MissingMemberHandling = MissingMemberHandling.Ignore,
+                TypeNameHandling = TypeNameHandling.Objects,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind,
+                DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
+
+                // We cannot ignore null. Client template of several Telerik grids would fail.
+                // NullValueHandling = NullValueHandling.Ignore,
+
+                // Limit the object graph we'll consume to a fixed depth. This prevents stackoverflow exceptions
+                // from deserialization errors that might occur from deeply nested objects.
+                MaxDepth = 32
+            };
+
+            return settings;
+        }
+
+        public override void ExecuteResult(ControllerContext context)
 		{
 			Guard.NotNull(context, nameof(context));
 
@@ -46,19 +69,7 @@ namespace SmartStore.Web.Framework.Modelling
 			
 			response.ContentType = this.ContentType.NullEmpty() ?? "application/json";
 
-			var serializerSettings = _settings ?? new JsonSerializerSettings
-			{
-				MissingMemberHandling = MissingMemberHandling.Ignore,
-				TypeNameHandling = TypeNameHandling.Objects,
-				ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-				NullValueHandling = NullValueHandling.Ignore,
-				DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind,
-				DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
-
-				// Limit the object graph we'll consume to a fixed depth. This prevents stackoverflow exceptions
-				// from deserialization errors that might occur from deeply nested objects.
-				MaxDepth = 32
-			};
+            var serializerSettings = _settings ?? CreateDefaultSerializerSettings();
 
 			if (_settings == null)
 			{

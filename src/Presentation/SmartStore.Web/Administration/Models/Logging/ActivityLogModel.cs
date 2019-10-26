@@ -1,4 +1,6 @@
 ﻿using System;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Logging;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -25,4 +27,15 @@ namespace SmartStore.Admin.Models.Logging
 		public bool IsSystemAccount { get; set; }
 		public string SystemAccountName { get; set; }
 	}
+
+    public class ActivityLogMapper :
+        IMapper<ActivityLog, ActivityLogModel>
+    {
+        public void Map(ActivityLog from, ActivityLogModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.ActivityLogTypeName = from.ActivityLogType?.Name;
+            to.CustomerEmail = from.Customer?.Email;
+        }
+    }
 }

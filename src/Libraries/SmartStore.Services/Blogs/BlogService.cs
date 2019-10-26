@@ -112,6 +112,7 @@ namespace SmartStore.Services.Blogs
                 var utcNow = DateTime.UtcNow;
                 query = query.Where(b => !b.StartDateUtc.HasValue || b.StartDateUtc <= utcNow);
                 query = query.Where(b => !b.EndDateUtc.HasValue || b.EndDateUtc >= utcNow);
+                query = query.Where(b => b.IsPublished);
             }
 
 			if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
@@ -169,7 +170,7 @@ namespace SmartStore.Services.Blogs
                     true,
                     _seoSettings.SeoNameCharConversion));
 
-                if (!String.IsNullOrEmpty(tags.FirstOrDefault(t => t.Equals(tag, StringComparison.InvariantCultureIgnoreCase))))
+                if (tags.FirstOrDefault(t => t.Equals(tag, StringComparison.InvariantCultureIgnoreCase)).HasValue())
                     taggedBlogPosts.Add(blogPost);
             }
 

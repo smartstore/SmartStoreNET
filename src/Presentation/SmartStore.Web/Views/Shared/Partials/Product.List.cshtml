@@ -1,5 +1,6 @@
 ﻿@model ProductSummaryModel
 
+@using System.Globalization;
 @using SmartStore.Core.Domain.Media;
 @using SmartStore.Utilities;
 @using SmartStore.Web.Models.Catalog;
@@ -9,11 +10,11 @@
 
     // TODO: (mc) Fetch this from the (new) parent model or the product category
     var thumbAspectRatio = EngineContext.Current.Resolve<MediaSettings>().DefaultThumbnailAspectRatio;
-    var paddingTop = string.Empty;
+    var imgRatio = string.Empty;
 
-    if (thumbAspectRatio != 1 && thumbAspectRatio > 0.2 && thumbAspectRatio < 2)
+    if (Model.ViewMode != ProductSummaryViewMode.List && thumbAspectRatio != 1 && thumbAspectRatio > 0.2 && thumbAspectRatio < 2)
     {
-        paddingTop = (thumbAspectRatio * 100) + "%";
+        imgRatio = thumbAspectRatio.ToString(CultureInfo.InvariantCulture);
     }
 
     string pagerHtml = null;
@@ -45,80 +46,71 @@
     }
 }
 
-@if (Model.ViewMode != ProductSummaryViewMode.List && paddingTop.HasValue())
-{
-	<style type="text/css">
-		#@id .art-picture { 
-			padding-top: @paddingTop;
-		}
-	</style>
-}
-
 @if (Model.ViewMode == ProductSummaryViewMode.List)
 {
-	var maxPictureSize = Model.ThumbSize ?? Model.Items.Select(x => x.Picture)
-		.Where(x => x != null)
-		.Max(x => x.Size);
+    var maxPictureSize = Model.ThumbSize ?? Model.Items.Select(x => x.Picture)
+        .Where(x => x != null)
+        .Max(x => x.Size);
 
-	if (maxPictureSize.HasValue)
-	{
-		<style type="text/css">
+    if (maxPictureSize.HasValue)
+    {
+        <style type="text/css">
 		#@id .art-picture-block {
 			width: @("{0}px".FormatInvariant(maxPictureSize.Value));
 		}
-		</style>
-	}
+        </style>
+    }
 }
 
 @if (Model.PagedList.TotalCount > 0 && hasActions)
 {
-	<div class="artlist-actions artlist-actions--top d-flex flex-wrap">
-		@if (Model.AllowSorting || Model.AllowFiltering)
-		{
-			<div class="artlist-action-group artlist-action-group--filtersort">
-				@{ Html.RenderPartial("Product.List.FilterSort", Model); }
-			</div>
-		}
+    <div class="artlist-actions artlist-actions--top d-flex flex-wrap" @Html.Attr("style", "--img-aspect-ratio: " + imgRatio, imgRatio.HasValue())>
+        @if (Model.AllowSorting || Model.AllowFiltering)
+        {
+            <div class="artlist-action-group artlist-action-group--filtersort">
+                @{ Html.RenderPartial("Product.List.FilterSort", Model); }
+            </div>
+        }
 
-		@if (pagerHtml.HasValue() || Model.AllowViewModeChanging)
-		{
-			<div class="artlist-action-group artlist-action-group--page">
-				@* ViewMode *@
-				@if (Model.AllowViewModeChanging && Model.ViewMode == ProductSummaryViewMode.Grid || Model.ViewMode == ProductSummaryViewMode.List)
-				{
-					Html.RenderPartial("Product.List.ViewMode", Model);
-				}
+        @if (pagerHtml.HasValue() || Model.AllowViewModeChanging)
+        {
+            <div class="artlist-action-group artlist-action-group--page">
+                @* ViewMode *@
+                @if (Model.AllowViewModeChanging && Model.ViewMode == ProductSummaryViewMode.Grid || Model.ViewMode == ProductSummaryViewMode.List)
+                {
+                    Html.RenderPartial("Product.List.ViewMode", Model);
+                }
 
-				@* Pager *@
-				@if (pagerHtml.HasValue())
-				{
-					@Html.Raw(pagerHtml)
-				}
-			</div>
-		}
-	</div>
+                @* Pager *@
+                @if (pagerHtml.HasValue())
+                {
+                    @Html.Raw(pagerHtml)
+                }
+            </div>
+        }
+    </div>
 }
 
 @if (Model.AllowFiltering)
 {
-	Html.RenderAction("ActiveFilters", "Search", new { area = "" });
+    Html.RenderAction("ActiveFilters", "Search", new { area = "" });
 }
 
 @if (Model.PagedList.TotalCount > 0)
 {
-	<div id="@id" class='@String.Join(" ", listCssClasses)'>
-		@foreach (var product in Model.Items)
-		{
-			Html.RenderPartial("Product.List.Item", product);
-		}
-	</div>
+    <div id="@id" class='@String.Join(" ", listCssClasses)'>
+        @foreach (var product in Model.Items)
+        {
+            Html.RenderPartial("Product.List.Item", product);
+        }
+    </div>
 }
 
 @if (Model.PagedList.TotalPages > 1 && pagerHtml.HasValue())
 {
-	<div class="artlist-actions artlist-actions--bottom">
-		<div class="artlist-action-group artlist-action-group--page">
-			@Html.Raw(pagerHtml)
-		</div>
-	</div>
+    <div class="artlist-actions artlist-actions--bottom">
+        <div class="artlist-action-group artlist-action-group--page">
+            @Html.Raw(pagerHtml)
+        </div>
+    </div>
 }

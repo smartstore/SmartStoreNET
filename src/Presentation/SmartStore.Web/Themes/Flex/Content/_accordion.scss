@@ -9,60 +9,70 @@
 .accordion {
     padding-bottom: 1px;
 
-    .card+.card {
-        margin-top: -2px;
+    .card + .card {
+        margin-top: -1px;
     }
 
     .card-title {
         margin: 0;
-        transition: background-color ease-in-out 0.12s;
+        position: relative;
 
-        &:hover {
-            background-color: $gray-200;
-        }
-
-        .fa-chevron {
-            position: absolute;
-            left: 12px;
+        .collapse-chevron {
             font-size: 14px;
-            top: 50%;
-            margin-top: -8px;
-            opacity: 0.4;
-            transition: transform 0.35s ease-out;
+            margin-right: 1rem;
+            opacity: 0.6;
+            transition: transform 0.35s;
         }
 
         .card-title-link {
-            background-color: $danger;
-            color: #fff !important;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.2rem;
-            display: block;
             position: relative;
-            vertical-align: middle;
-            padding: 15px 12px 15px 40px;
-
-            &[aria-expanded=true] .fa-chevron {
-                opacity: 1;
-                transform: rotate(-180deg);
-            }
+            text-decoration: none;
+            font-weight: $font-weight-bold;
+            font-size: 1.125rem;
+            display: block;
+            padding: 1.25rem;
+            display: inline-flex;
+            align-items: center;
+            width: 100%;
+            transition: background-color 0.25s, color 0.25s;
 
             &.collapsed {
-                background-color: $card-cap-bg !important;
-                color: inherit !important;
+                background-color: $card-cap-bg;
+                color: inherit;
+
+                &:hover {
+                    background-color: $gray-200;
+                }
+            }
+
+            &:not(.collapsed) {
+                background-color: $danger;
+                color: #fff;
+
+                .collapse-chevron {
+                    opacity: 1;
+                    transform: rotate(-180deg);
+                }
             }
         }
 
         .hint {
             display: inline-block;
             font-size: 0.85rem;
-            opacity: 0.4;
+            font-weight: $font-weight-normal;
+            opacity: 0.6;
             line-height: 1.5;
         }
     }
 
     .card-header {
-        padding: 0; 
+        padding: 0;
+        background-color: transparent;
+        cursor: pointer;
+    }
+
+    .card-body > *:last-child {
+        margin-bottom: 0 !important;
     }
     
     .card,
@@ -81,5 +91,17 @@
     .card:last-child .card-header{ 
         border-bottom-left-radius: $border-radius;  
         border-bottom-right-radius: $border-radius;
+    }
+
+    .card:last-child .card-header{ 
+        border-bottom-width: 0;
+    }
+    
+    .card:first-of-type {
+        border-bottom: $card-border-width solid $card-border-color;
+
+        :not(:last-of-type) {
+            border-bottom: 0 !important;
+        }
     }
 }

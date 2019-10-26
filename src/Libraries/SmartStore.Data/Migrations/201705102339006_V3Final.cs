@@ -162,7 +162,7 @@
 
 			context.MigrateSettings(x =>
 			{
-				x.Add<int>("MediaSettings.DefaultThumbnailAspectRatio", 1);
+				x.Add<float>("MediaSettings.DefaultThumbnailAspectRatio", 1);
 				x.Delete("ShoppingCartSettings.MiniShoppingCartProductNumber");
 			});
 		}

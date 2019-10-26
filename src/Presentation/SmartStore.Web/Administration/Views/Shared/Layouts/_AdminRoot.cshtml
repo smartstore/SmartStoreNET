@@ -85,6 +85,7 @@
 		jsRoot + "smartstore.thumbzoomer.js",
 		jsRoot + "smartstore.entitypicker.js",
 		jsRoot + "smartstore.rangeslider.js",
+        jsRoot + "smartstore.tree.js",
 		// Admin
 		adminJsRoot + "admin.common.js",
 		adminJsRoot + "admin.globalinit.js");
@@ -112,7 +113,7 @@
 
 	@{ Html.RenderZone("head"); }
 </head>
-<body class="@Html.BodyCssClass()"@(Html.BodyId())>   
+<body @Html.BodyAttributes()>   
 	@{ Html.RenderZone("start"); }
 	@RenderBody()
 	@{ Html.RenderZone("aftercontent"); }

@@ -900,7 +900,7 @@ namespace SmartStore.Web.Controllers
                 IsEdit = false,
                 Published = true,
                 SeName = string.Empty,
-                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
+                DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage,
                 ForumId = forum.Id,
                 ForumName = forum.GetLocalized(x => x.Name),
                 ForumSeName = forum.GetSeName(),
@@ -937,7 +937,7 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
+            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage && !captchaValid)
             {
                 ModelState.AddModelError("", T("Common.WrongCaptcha"));
             }
@@ -1016,7 +1016,7 @@ namespace SmartStore.Web.Controllers
             model.Id = 0;
             model.TopicPriorities = ForumTopicTypesList();
             model.IsEdit = false;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage;
             model.ForumId = forum.Id;
             model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumSeName = forum.GetSeName();
@@ -1049,7 +1049,7 @@ namespace SmartStore.Web.Controllers
                 IsEdit = true,
                 Published = topic.Published,
                 SeName = topic.GetSeName(),
-                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
+                DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage,
                 TopicPriorities = ForumTopicTypesList(),
                 ForumName = topic.Forum.GetLocalized(x => x.Name),
                 ForumSeName = topic.Forum.GetSeName(),
@@ -1102,7 +1102,7 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
+            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage && !captchaValid)
             {
                 ModelState.AddModelError("", T("Common.WrongCaptcha"));
             }
@@ -1191,7 +1191,7 @@ namespace SmartStore.Web.Controllers
             model.TopicPriorities = ForumTopicTypesList();
             model.IsEdit = true;
             model.Published = topic.Published;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage;
             model.ForumName = topic.Forum.GetLocalized(x => x.Name);
             model.ForumSeName = topic.Forum.GetSeName();
             model.ForumId = topic.Forum.Id;
@@ -1263,7 +1263,7 @@ namespace SmartStore.Web.Controllers
                 ForumTopicId = topic.Id,
                 IsEdit = false,
                 Published = true,
-                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
+                DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage,
                 ForumEditor = _forumSettings.ForumEditor,
                 ForumName = topic.Forum.GetLocalized(x => x.Name),
                 ForumTopicSubject = topic.Subject,
@@ -1328,7 +1328,7 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
+            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage && !captchaValid)
             {
                 ModelState.AddModelError("", T("Common.WrongCaptcha"));
             }
@@ -1402,7 +1402,7 @@ namespace SmartStore.Web.Controllers
             // Redisplay form.
             model.Id = 0;
             model.IsEdit = false;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage;
             model.ForumName = topic.Forum.GetLocalized(x => x.Name);
             model.ForumTopicId = topic.Id;
             model.ForumTopicSubject = topic.Subject;
@@ -1438,7 +1438,7 @@ namespace SmartStore.Web.Controllers
                 Published = post.Published,
                 IsFirstPost = firstPost?.Id == post.Id,
                 ForumTopicId = post.ForumTopic.Id,
-                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
+                DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage,
                 ForumEditor = _forumSettings.ForumEditor,
                 ForumName = post.ForumTopic.Forum.GetLocalized(x => x.Name),
                 ForumTopicSubject = post.ForumTopic.Subject,
@@ -1489,7 +1489,7 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
+            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage && !captchaValid)
             {
                 ModelState.AddModelError("", T("Common.WrongCaptcha"));
             }
@@ -1562,7 +1562,7 @@ namespace SmartStore.Web.Controllers
             // Redisplay form.
             model.IsEdit = true;
             model.Published = post.Published;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage;
             model.ForumName = post.ForumTopic.Forum.GetLocalized(x => x.Name);
             model.ForumTopicId = post.ForumTopic.Id;
             model.ForumTopicSubject = post.ForumTopic.Subject;

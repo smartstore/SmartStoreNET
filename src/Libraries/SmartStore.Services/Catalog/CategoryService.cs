@@ -17,6 +17,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Services.Catalog
 {
@@ -324,8 +325,8 @@ namespace SmartStore.Services.Catalog
 			int pageSize = int.MaxValue,
 			bool showHidden = false,
 			string alias = null,
-			bool ignoreCategoriesWithoutExistingParent = true,
-			int storeId = 0)
+            bool ignoreDetachedCategories = true,
+            int storeId = 0)
         {
 			var query = BuildCategoriesQuery(categoryName, showHidden, alias, storeId);
 
@@ -337,7 +338,7 @@ namespace SmartStore.Services.Catalog
             var unsortedCategories = query.ToList();
 
             // Sort categories
-			var sortedCategories = unsortedCategories.SortCategoryNodesForTree(ignoreCategoriesWithoutExistingParent: ignoreCategoriesWithoutExistingParent);
+			var sortedCategories = unsortedCategories.SortCategoryNodesForTree(ignoreDetachedCategories: ignoreDetachedCategories);
 
             // Paging
             return new PagedList<Category>(sortedCategories, pageIndex, pageSize);
@@ -725,7 +726,8 @@ namespace SmartStore.Services.Catalog
 			}
 
 			var trail = treeNode.Trail;
-			var sb = new StringBuilder(string.Empty, (trail.Count()) * 16);
+            var psb = PooledStringBuilder.Rent();
+            var sb = (StringBuilder)psb;
 
 			foreach (var node in trail)
 			{
@@ -753,7 +755,7 @@ namespace SmartStore.Services.Catalog
 				}
 			}
 
-			var path = sb.ToString();
+			var path = psb.ToStringAndReturn();
 			treeNode.SetThreadMetadata(lookupKey, path);
 			return path;
 		}
@@ -803,44 +805,12 @@ namespace SmartStore.Services.Catalog
 					SubjectToAcl = x.SubjectToAcl
 				});
 
-				var nodes = unsortedNodes.SortCategoryNodesForTree(0, true);
-				var curParent = new TreeNode<ICategoryNode>(new CategoryNode { Name = "Home" });
-				CategoryNode prevNode = null;
+                var nodeMap = unsortedNodes.ToMultimap(x => x.ParentCategoryId, x => x);
+                var curParent = new TreeNode<ICategoryNode>(new CategoryNode { Name = "Home" });
 
-				foreach (var node in nodes)
-				{
-					// Determine parent
-					if (prevNode != null)
-					{
-						if (node.ParentCategoryId != curParent.Value.Id)
-						{
-							if (node.ParentCategoryId == prevNode.Id)
-							{
-								// level +1
-								curParent = curParent.LastChild;
-							}
-							else
-							{
-								// level -x
-								while (!curParent.IsRoot)
-								{
-									if (curParent.Value.Id == node.ParentCategoryId)
-									{
-										break;
-									}
-									curParent = curParent.Parent;
-								}
-							}
-						}
-					}
+                AddChildTreeNodes(curParent, 0, nodeMap);
 
-					// add to parent
-					curParent.Append(node, node.Id);
-
-					prevNode = node;
-			}
-
-				return curParent.Root;
+                return curParent.Root;
 			}, CategoryTreeCacheDuration);
 
 			if (rootCategoryId > 0)
@@ -850,5 +820,29 @@ namespace SmartStore.Services.Catalog
 
 			return root;
 		}
-	}
+
+        private void AddChildTreeNodes(TreeNode<ICategoryNode> parentNode, int parentItemId, Multimap<int, CategoryNode> nodeMap)
+        {
+            if (parentNode == null)
+            {
+                return;
+            }
+
+            var nodes = nodeMap.ContainsKey(parentItemId)
+                ? nodeMap[parentItemId].OrderBy(x => x.DisplayOrder)
+                : Enumerable.Empty<CategoryNode>();
+
+            foreach (var node in nodes)
+            {
+                var newNode = new TreeNode<ICategoryNode>(node)
+                {
+                    Id = node.Id
+                };
+
+                parentNode.Append(newNode);
+
+                AddChildTreeNodes(newNode, node.Id, nodeMap);
+            }
+        }
+    }
 }

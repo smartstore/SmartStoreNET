@@ -22,9 +22,7 @@
 @Html.SmartStore().TabStrip().Name("template-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.Info").Text).Content(TabInfo()).Selected(true);
-	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
     
-    // generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "template-edit", this.Html, this.Model));
 })
 
@@ -72,6 +70,15 @@
 				@Html.ValidationMessageFor(model => model.SendManually)
 			</td>
 		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedStoreIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedStoreIds)
+                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+            </td>
+        </tr>
     </table>
 	@(Html.LocalizedEditor<MessageTemplateModel, MessageTemplateLocalizedModel>("messagetemplate-localized",
     @<table class="adminContent">
@@ -239,9 +246,4 @@
         </tr>
     </table>
     ))
-}
-
-@helper TabStores()
-{
-	@Html.Partial("StoreSelector", Model)
 }

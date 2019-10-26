@@ -3,6 +3,7 @@ using System.Xml;
 using System.Globalization;
 using TimeZone = System.TimeZoneInfo;
 using System.Text.RegularExpressions;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore
 {
@@ -15,6 +16,7 @@ namespace SmartStore
         /// </summary>
         /// <param name="value">The nullable date/time</param>
         /// <returns>The nullable date/time in UTC</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DateTime? ToUniversalTime(this DateTime? value)
         {
             return value.HasValue ? value.Value.ToUniversalTime() : (DateTime?)null;
@@ -25,6 +27,7 @@ namespace SmartStore
         /// </summary>
         /// <param name="value">The nullable UTC date/time</param>
         /// <returns>The nullable UTC date/time as local time</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DateTime? ToLocalTime(this DateTime? value)
         {
             return value.HasValue ? value.Value.ToLocalTime() : (DateTime?)null;
@@ -145,50 +148,55 @@ namespace SmartStore
 			return (value.HasValue ? value.Value.ToEndOfTheDay() : value);
 		}
 
-		/// <summary>
-		/// Epoch time. Number of seconds since midnight (UTC) on 1st January 1970.
-		/// </summary>
-		public static long ToUnixTime(this DateTime value)
+        /// <summary>
+        /// Epoch time. Number of seconds since midnight (UTC) on 1st January 1970.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long ToUnixTime(this DateTime value)
 		{
 			return Convert.ToInt64((value.ToUniversalTime() - BeginOfEpoch).TotalSeconds);
 		}
 
-		/// <summary>
-		/// UTC date based on number of seconds since midnight (UTC) on 1st January 1970.
-		/// </summary>
-		public static DateTime FromUnixTime(this long unixTime)
+        /// <summary>
+        /// UTC date based on number of seconds since midnight (UTC) on 1st January 1970.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static DateTime FromUnixTime(this long unixTime)
 		{
 			return BeginOfEpoch.AddSeconds(unixTime);
 		}
 
-		/// <summary>
-		/// Converts a DateTime to a string with native digits
-		/// </summary>
-		public static string ToNativeString(this DateTime value)
+        /// <summary>
+        /// Converts a DateTime to a string with native digits
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string ToNativeString(this DateTime value)
 		{
 			return value.ToNativeString(null, null);
 		}
 
-		/// <summary>
-		/// Converts a DateTime to a string with native digits
-		/// </summary>
-		public static string ToNativeString(this DateTime value, IFormatProvider provider)
+        /// <summary>
+        /// Converts a DateTime to a string with native digits
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string ToNativeString(this DateTime value, IFormatProvider provider)
 		{
 			return value.ToNativeString(null, provider);
 		}
 
-		/// <summary>
-		/// Converts a DateTime to a string with native digits
-		/// </summary>
-		public static string ToNativeString(this DateTime value, string format)
+        /// <summary>
+        /// Converts a DateTime to a string with native digits
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string ToNativeString(this DateTime value, string format)
 		{
 			return value.ToNativeString(format, null);
 		}
 
-		/// <summary>
-		/// Converts a DateTime to a string with native digits
-		/// </summary>
-		public static string ToNativeString(this DateTime value, string format, IFormatProvider provider)
+        /// <summary>
+        /// Converts a DateTime to a string with native digits
+        /// </summary>
+        public static string ToNativeString(this DateTime value, string format, IFormatProvider provider)
 		{
 			provider = provider ?? CultureInfo.CurrentCulture;
 			return value.ToString(format, provider).ReplaceNativeDigits(provider);

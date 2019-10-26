@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Web.Framework;
@@ -120,6 +121,24 @@ namespace SmartStore.Admin.Models.Catalog
 
             public bool IsPreSelected { get; set; }
         }
+
         #endregion
+    }
+
+    public class ProductVariantAttributeCombinationMapper :
+        IMapper<ProductVariantAttributeCombination, ProductVariantAttributeCombinationModel>,
+        IMapper<ProductVariantAttributeCombinationModel, ProductVariantAttributeCombination>
+    {
+        public void Map(ProductVariantAttributeCombination from, ProductVariantAttributeCombinationModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.AssignedPictureIds = from.GetAssignedPictureIds();
+        }
+
+        public void Map(ProductVariantAttributeCombinationModel from, ProductVariantAttributeCombination to)
+        {
+            MiniMapper.Map(from, to);
+            to.SetAssignedPictureIds(from.AssignedPictureIds);
+        }
     }
 }

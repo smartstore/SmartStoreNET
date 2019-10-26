@@ -1,79 +1,149 @@
-﻿@model CustomerRoleModel
-
-@using Telerik.Web.Mvc.UI;
+﻿@using SmartStore.Collections
+@using SmartStore.Core.Domain.Security
+@using Telerik.Web.Mvc.UI
+@model CustomerRoleModel
 
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
+@Html.SmartStore().TabStrip().Name("customer-role-edit").Style(TabsStyle.Material).Items(x =>
+{
+    x.Add().Text(T("Common.General").Text).Content(TabGeneral()).Selected(true);
+    x.Add().Text(T("Admin.Configuration.ACL").Text).Content(TabPermissions());
+    
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customer-role-edit", this.Html, this.Model));
+})
 
-<table class="adminContent">
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.Name)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.Name)
-            @Html.ValidationMessageFor(model => model.Name)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.SystemName)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.SystemName)
-            @Html.ValidationMessageFor(model => model.SystemName)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.FreeShipping)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.FreeShipping)
-            @Html.ValidationMessageFor(model => model.FreeShipping)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.TaxDisplayType)
-        </td>
-        <td class="adminData">
-            @Html.DropDownListFor(model => model.TaxDisplayType, Model.TaxDisplayTypes, T("Common.PleaseSelect").Text)
-            @Html.ValidationMessageFor(model => model.TaxDisplayType)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.TaxExempt)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.TaxExempt)
-            @Html.ValidationMessageFor(model => model.TaxExempt)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.Active)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.Active)
-            @Html.ValidationMessageFor(model => model.Active)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.IsSystemRole)
-        </td>
-        <td class="adminData">
-			
-			<div class="form-control-plaintext">
-				@T(Model.IsSystemRole ? "Admin.Common.Yes" : "Admin.Common.No")
-			</div>
+@helper TabGeneral()
+{
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Name)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Name)
+                @Html.ValidationMessageFor(model => model.Name)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SystemName)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SystemName)
+                @Html.ValidationMessageFor(model => model.SystemName)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.FreeShipping)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.FreeShipping)
+                @Html.ValidationMessageFor(model => model.FreeShipping)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TaxDisplayType)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.TaxDisplayType, Model.TaxDisplayTypes, T("Common.PleaseSelect").Text)
+                @Html.ValidationMessageFor(model => model.TaxDisplayType)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TaxExempt)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.TaxExempt)
+                @Html.ValidationMessageFor(model => model.TaxExempt)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Active)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Active)
+                @Html.ValidationMessageFor(model => model.Active)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.IsSystemRole)
+            </td>
+            <td class="adminData">			
+			    <div class="form-control-plaintext">
+				    @T(Model.IsSystemRole ? "Admin.Common.Yes" : "Admin.Common.No")
+			    </div>
 
-            @Html.HiddenFor(model => model.IsSystemRole)
-            @Html.ValidationMessageFor(model => model.IsSystemRole)
-        </td>
-    </tr>
-</table>
+                @Html.HiddenFor(model => model.IsSystemRole)
+                @Html.ValidationMessageFor(model => model.IsSystemRole)
+            </td>
+        </tr>
+    </table>
+}
 
-@*Add 'Customers of the role' tab here or allow filtering by customer role on 'Customer list' page*@
+@helper TabPermissions()
+{
+    if (Model.Id > 0)
+    {
+        if (Model.PermissionTree != null && Model.PermissionTree.HasChildren)
+        {
+            <p>
+			    <button id="ExpandCollapseAll" type="button" class="btn btn-sm btn-secondary">
+				    <span>@T("Common.ExpandCollapseAll")</span>
+			    </button>
+            </p>
+            <div id="permission-tree" class="tree">
+                @PermissionNode(Model.PermissionTree)
+            </div>
+        }
+        else
+        {
+	        <div class="alert alert-warning">
+		        @T("Admin.System.Warnings.NoPermissionsDefined")
+	        </div>
+        }        
+    }
+    else
+    {
+		<div class="alert alert-warning">
+			@T("Admin.SaveBeforeEdit")
+		</div>
+    }
+
+    <script>
+        $(function () {
+            // Init permission tree.
+            $('#permission-tree').tree('init', {
+                nodeState: 'on-off',
+                stateTitles: [@T("Common.Allow").JsText, @T("Common.Deny").JsText, @T("Admin.Permissions.AllowInherited").JsText, @T("Admin.Permissions.DenyInherited").JsText]
+            });
+
+            // Expand\collapse all.
+            $('#ExpandCollapseAll').on('click', function () {
+                $('#permission-tree').tree('expandAll');
+            });
+	    });
+    </script>
+}
+
+@helper PermissionNode(TreeNode<IPermissionNode> node)
+{
+    <ul>
+        @foreach (var child in node.Children)
+        {
+            <li data-name="permission-@child.Value.PermissionRecordId" 
+                data-value="@(child.Value.Allow.HasValue ? (child.Value.Allow.Value ? 2 : 1) : 0)" 
+                data-label="@(child.GetMetadata<string>("DisplayName", false))">
+                @if (child.HasChildren)
+                {
+                    @PermissionNode(child)
+                }
+            </li>
+        }
+    </ul>
+}

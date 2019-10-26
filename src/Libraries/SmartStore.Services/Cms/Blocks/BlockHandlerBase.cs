@@ -9,6 +9,7 @@ using System.Web.Mvc.Async;
 using System.Web.Mvc.Html;
 using System.Web.Routing;
 using Newtonsoft.Json;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Localization;
 using SmartStore.Utilities;
@@ -67,7 +68,8 @@ namespace SmartStore.Services.Cms.Blocks
 
 			var settings = new JsonSerializerSettings
 			{
-				TypeNameHandling = TypeNameHandling.Objects,
+                ContractResolver = SmartContractResolver.Instance,
+                TypeNameHandling = TypeNameHandling.Objects,
 				ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
 				ObjectCreationHandling = ObjectCreationHandling.Replace,
 				NullValueHandling = NullValueHandling.Ignore
@@ -273,10 +275,13 @@ namespace SmartStore.Services.Cms.Blocks
                 {
                     case PartialViewResult _:
                     case ContentResult _:
+                    case EmptyResult _:
                         base.InvokeActionResult(controllerContext, actionResult);
                         break;
+                    case HttpNotFoundResult nfr:
+                        throw new InvalidOperationException(nfr.StatusDescription.NullEmpty() ?? $"The resource was not found ({nfr.StatusCode}).");
                     default:
-                        throw new InvalidOperationException($"The action result type of an MVC route block must either be '{nameof(PartialViewResult)}' or '{nameof(ContentResult)}'");
+                        throw new InvalidOperationException($"The action result type of an MVC route block must either be '{nameof(PartialViewResult)}', '{nameof(ContentResult)}' or '{nameof(EmptyResult)}'");
                 }
             }
         }

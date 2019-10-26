@@ -3,9 +3,9 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Directory;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Security;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Security;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
@@ -15,7 +15,7 @@ namespace SmartStore.Admin.Controllers
 {
     [AdminAuthorize]
     public class MeasureController : AdminControllerBase
-	{
+    {
         private readonly IMeasureService _measureService;
         private readonly ILanguageService _languageService;
         private readonly ILocalizedEntityService _localizedEntityService;
@@ -26,85 +26,67 @@ namespace SmartStore.Admin.Controllers
             ILanguageService languageService,
             ILocalizedEntityService localizedEntityService,
             MeasureSettings measureSettings)
-		{
+        {
             _measureService = measureService;
             _languageService = languageService;
             _localizedEntityService = localizedEntityService;
             _measureSettings = measureSettings;
         }
-       
+
         #region Weights
 
+        [Permission(Permissions.Configuration.Measure.Read)]
         public ActionResult Weights()
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-            {
-                return AccessDeniedView();
-            }
-
             return View();
-		}
+        }
 
-		[HttpPost, GridAction(EnableCustomBinding = true)]
+        [HttpPost, GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Configuration.Measure.Read)]
         public ActionResult Weights(GridCommand command)
         {
-			var model = new GridModel<MeasureWeightModel>();
+            var model = new GridModel<MeasureWeightModel>();
 
-			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-			{
-				var weightsModel = _measureService.GetAllMeasureWeights()
-					.Select(x => x.ToModel())
-					.ForCommand(command)
-					.ToList();
+            var weightsModel = _measureService.GetAllMeasureWeights()
+                .Select(x => x.ToModel())
+                .ForCommand(command)
+                .ToList();
 
-				foreach (var wm in weightsModel)
-				{
-					wm.IsPrimaryWeight = wm.Id == _measureSettings.BaseWeightId;
-				}
+            foreach (var wm in weightsModel)
+            {
+                wm.IsPrimaryWeight = wm.Id == _measureSettings.BaseWeightId;
+            }
 
-				model.Data = weightsModel;
-				model.Total = weightsModel.Count;
-			}
-			else
-			{
-				model.Data = Enumerable.Empty<MeasureWeightModel>();
+            model.Data = weightsModel;
+            model.Total = weightsModel.Count;
 
-				NotifyAccessDenied();
-			}
-
-		    return new JsonResult
-			{
-				Data = model
-			};
-		}
+            return new JsonResult
+            {
+                Data = model
+            };
+        }
 
         [GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Configuration.Measure.Delete)]
         public ActionResult DeleteWeight(int id, GridCommand command)
         {
-			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-			{
-				var entity = _measureService.GetMeasureWeightById(id);
+            var entity = _measureService.GetMeasureWeightById(id);
 
-                if (entity.Id == _measureSettings.BaseWeightId)
-                {
-                    NotifyError(T("Admin.Configuration.Measures.Weights.CantDeletePrimary"));
-                }
-                else
-                {
-                    _measureService.DeleteMeasureWeight(entity);
-                }
-			}
+            if (entity.Id == _measureSettings.BaseWeightId)
+            {
+                NotifyError(T("Admin.Configuration.Measures.Weights.CantDeletePrimary"));
+            }
+            else
+            {
+                _measureService.DeleteMeasureWeight(entity);
+            }
 
             return Weights(command);
         }
 
+        [Permission(Permissions.Configuration.Measure.Create)]
         public ActionResult CreateWeightPopup()
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-            {
-                return AccessDeniedPartialView();
-            }
-
             var model = new MeasureWeightModel();
 
             AddLocales(_languageService, model.Locales);
@@ -113,13 +95,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.Configuration.Measure.Create)]
         public ActionResult CreateWeightPopup(string btnId, MeasureWeightModel model)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-            {
-                return AccessDeniedPartialView();
-            }
-
             if (ModelState.IsValid)
             {
                 try
@@ -152,13 +130,9 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
+        [Permission(Permissions.Configuration.Measure.Read)]
         public ActionResult EditWeightPopup(int id)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-            {
-                return AccessDeniedPartialView();
-            }
-
             var entity = _measureService.GetMeasureWeightById(id);
             if (entity == null)
             {
@@ -177,13 +151,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.Configuration.Measure.Update)]
         public ActionResult EditWeightPopup(string btnId, MeasureWeightModel model)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-            {
-                return AccessDeniedPartialView();
-            }
-
             var entity = _measureService.GetMeasureWeightById(model.Id);
             if (entity == null)
             {
@@ -226,42 +196,30 @@ namespace SmartStore.Admin.Controllers
 
         #region Dimensions
 
+        [Permission(Permissions.Configuration.Measure.Read)]
         public ActionResult Dimensions(string id)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-            {
-                return AccessDeniedView();
-            }
-
             return View();
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Configuration.Measure.Read)]
         public ActionResult Dimensions(GridCommand command)
         {
-			var model = new GridModel<MeasureDimensionModel>();
+            var model = new GridModel<MeasureDimensionModel>();
 
-			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-			{
-				var dimensionsModel = _measureService.GetAllMeasureDimensions()
-					.Select(x => x.ToModel())
-					.ForCommand(command)
-					.ToList();
+            var dimensionsModel = _measureService.GetAllMeasureDimensions()
+                .Select(x => x.ToModel())
+                .ForCommand(command)
+                .ToList();
 
-				foreach (var wm in dimensionsModel)
-				{
-					wm.IsPrimaryDimension = wm.Id == _measureSettings.BaseDimensionId;
-				}
+            foreach (var wm in dimensionsModel)
+            {
+                wm.IsPrimaryDimension = wm.Id == _measureSettings.BaseDimensionId;
+            }
 
-				model.Data = dimensionsModel;
-				model.Total = dimensionsModel.Count;
-			}
-			else
-			{
-				model.Data = Enumerable.Empty<MeasureDimensionModel>();
-
-				NotifyAccessDenied();
-			}
+            model.Data = dimensionsModel;
+            model.Total = dimensionsModel.Count;
 
             return new JsonResult
             {
@@ -270,32 +228,26 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Configuration.Measure.Delete)]
         public ActionResult DeleteDimension(int id, GridCommand command)
         {
-			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-			{
-				var entity = _measureService.GetMeasureDimensionById(id);
+            var entity = _measureService.GetMeasureDimensionById(id);
 
-                if (entity.Id == _measureSettings.BaseDimensionId)
-                {
-                    NotifyError(T("Admin.Configuration.Measures.Dimensions.CantDeletePrimary"));
-                }
-                else
-                {
-                    _measureService.DeleteMeasureDimension(entity);
-                }
-			}
+            if (entity.Id == _measureSettings.BaseDimensionId)
+            {
+                NotifyError(T("Admin.Configuration.Measures.Dimensions.CantDeletePrimary"));
+            }
+            else
+            {
+                _measureService.DeleteMeasureDimension(entity);
+            }
 
             return Dimensions(command);
         }
 
+        [Permission(Permissions.Configuration.Measure.Create)]
         public ActionResult CreateDimensionPopup()
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-            {
-                return AccessDeniedPartialView();
-            }
-
             var model = new MeasureDimensionModel();
 
             AddLocales(_languageService, model.Locales);
@@ -304,13 +256,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.Configuration.Measure.Create)]
         public ActionResult CreateDimensionPopup(string btnId, MeasureDimensionModel model)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-            {
-                return AccessDeniedPartialView();
-            }
-
             if (ModelState.IsValid)
             {
                 try
@@ -343,13 +291,9 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
+        [Permission(Permissions.Configuration.Measure.Read)]
         public ActionResult EditDimensionPopup(int id)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-            {
-                return AccessDeniedPartialView();
-            }
-
             var entity = _measureService.GetMeasureDimensionById(id);
             if (entity == null)
             {
@@ -368,13 +312,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.Configuration.Measure.Update)]
         public ActionResult EditDimensionPopup(string btnId, MeasureDimensionModel model)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-            {
-                return AccessDeniedPartialView();
-            }
-
             var entity = _measureService.GetMeasureDimensionById(model.Id);
             if (entity == null)
             {

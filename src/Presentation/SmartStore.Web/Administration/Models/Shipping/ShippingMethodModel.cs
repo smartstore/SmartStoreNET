@@ -1,15 +1,16 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using System.Collections.Generic;
-using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Shipping
 {
     [Validator(typeof(ShippingMethodValidator))]
-    public class ShippingMethodModel : TabbableModel, ILocalizedModel<ShippingMethodLocalizedModel>, IStoreSelector
+    public class ShippingMethodModel : TabbableModel, ILocalizedModel<ShippingMethodLocalizedModel>
 	{
         public ShippingMethodModel()
         {
@@ -35,12 +36,13 @@ namespace SmartStore.Admin.Models.Shipping
 
         public IList<ShippingMethodLocalizedModel> Locales { get; set; }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
-	}
+        // Store mapping
+        [UIHint("Stores"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
+    }
 
 	public class ShippingMethodLocalizedModel : ILocalizedModelLocal
     {

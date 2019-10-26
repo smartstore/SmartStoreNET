@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Hosting;
-using SmartStore.Core;
+using System.Text;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
@@ -45,9 +42,16 @@ namespace SmartStore.Services.Media
 			{
 				var path = BuildPath(cachedImage.Path);
 
-				_fileSystem.WriteAllBytes(path, buffer);
+                if (cachedImage.Extension == "svg")
+                {
+                    _fileSystem.WriteAllText(path, Encoding.UTF8.GetString(buffer));
+                }
+                else
+                {
+                    _fileSystem.WriteAllBytes(path, buffer);
+                }
 
-				cachedImage.Exists = true;
+                cachedImage.Exists = true;
 				cachedImage.File = _fileSystem.GetFile(path);
 			}
 		}
@@ -59,7 +63,14 @@ namespace SmartStore.Services.Media
 				var path = BuildPath(cachedImage.Path);
 
 				// save file
-				await _fileSystem.WriteAllBytesAsync(path, buffer);
+                if (cachedImage.Extension == "svg")
+                {
+                    await _fileSystem.WriteAllTextAsync(path, Encoding.UTF8.GetString(buffer));
+                }
+                else
+                {
+                    await _fileSystem.WriteAllBytesAsync(path, buffer);
+                }		
 
 				// Refresh info
 				cachedImage.Exists = true;
@@ -238,9 +249,8 @@ namespace SmartStore.Services.Media
 		/// <returns></returns>
 		private string GetCachedImagePath(int? pictureId, string seoFileName, string extension, ProcessImageQuery query = null)
         {
-            string imageFileName = null;
-
             string firstPart = "";
+
             if (pictureId.GetValueOrDefault() > 0)
             {
                 firstPart = pictureId.Value.ToString(IdFormatString) + (seoFileName.IsEmpty() ? "" : "-");
@@ -254,14 +264,15 @@ namespace SmartStore.Services.Media
 
             seoFileName = seoFileName.EmptyNull();
 
+            string imageFileName;
             if (query == null || !query.NeedsProcessing())
             {
                 imageFileName = String.Concat(firstPart, seoFileName);
             }
             else
             {
-				imageFileName = String.Concat(firstPart, seoFileName, query.CreateHash());
-			}
+                imageFileName = String.Concat(firstPart, seoFileName, query.CreateHash());
+            }
 
             if (_mediaSettings.MultipleThumbDirectories && imageFileName != null && imageFileName.Length > MaxDirLength)
             {

@@ -73,9 +73,6 @@
       <HintPath>..\..\..\packages\Autofac.Mvc5.4.0.2\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="AutoMapper, Version=8.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\AutoMapper.8.0.0\lib\net461\AutoMapper.dll</HintPath>
-    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -243,7 +240,6 @@
     <Compile Include="Infrastructure\RouteProvider.cs" />
     <Compile Include="MappingExtensions.cs" />
     <Compile Include="Infrastructure\AdminStartupTask.cs" />
-    <Compile Include="Infrastructure\AutoMapperAdminProfile.cs" />
     <Compile Include="Models\Catalog\CategoryTreeModel.cs" />
     <Compile Include="Models\Catalog\ProductAttributeOptionModel.cs" />
     <Compile Include="Models\Catalog\ProductAttributeOptionsSetModel.cs" />
@@ -583,8 +579,6 @@
     <Content Include="Views\Plugin\Partials\LicenseLabel.cshtml" />
     <Content Include="Views\Language\Partials\AvailableLanguages.cshtml" />
     <Content Include="Views\MessageTemplate\Preview.cshtml" />
-    <Content Include="Views\Shared\Partials\StoreSelector.cshtml" />
-    <Content Include="Views\Shared\Partials\AclSelector.cshtml" />
     <Content Include="Views\Order\_Edit.Products.cshtml" />
     <Content Include="Views\Order\_Edit.BillingAndShipment.cshtml" />
     <Content Include="Views\Order\_Edit.Info.cshtml" />
@@ -626,6 +620,8 @@
     <Content Include="Views\QuantityUnit\EditQuantityUnitPopup.cshtml" />
     <Content Include="Views\DeliveryTime\CreateDeliveryTimePopup.cshtml" />
     <Content Include="Views\DeliveryTime\EditDeliveryTimePopup.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Stores.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\CustomerRoles.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />
@@ -1255,9 +1251,6 @@
     <Content Include="Views\Product\EditorTemplates\AttributeControlType.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Product\_CreateOrUpdate.Acl.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.Categories.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -1280,9 +1273,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.SpecificationAttributes.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Product\_CreateOrUpdate.Stores.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.AssociatedProducts.cshtml" />

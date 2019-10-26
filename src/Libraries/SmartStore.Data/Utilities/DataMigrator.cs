@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -18,7 +20,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.IO;
-using SmartStore.Data.Setup;
+using SmartStore.Core.Security;
 using SmartStore.Utilities;
 using EfState = System.Data.Entity.EntityState;
 
@@ -155,7 +157,7 @@ namespace SmartStore.Data.Utilities
 						select new { p.Id, p.MainPictureId };	
 
 			// Key = ProductId, Value = MainPictureId
-			var toUpate = new Dictionary<int, int?>();
+			var toUpdate = new Dictionary<int, int?>();
 
 			// 1st pass
 			int pageIndex = -1;
@@ -176,7 +178,7 @@ namespace SmartStore.Data.Utilities
 					// Update only if fixed PictureId differs from current
 					if (fixedPictureId != p.MainPictureId)
 					{
-						toUpate.Add(p.Id, fixedPictureId);
+						toUpdate.Add(p.Id, fixedPictureId);
 					}
 				}
 
@@ -185,7 +187,7 @@ namespace SmartStore.Data.Utilities
 			}
 
 			// 2nd pass
-			foreach (var chunk in toUpate.Slice(1000))
+			foreach (var chunk in toUpdate.Slice(1000))
 			{
 				using (var tx = ctx.Database.BeginTransaction())
 				{
@@ -199,7 +201,7 @@ namespace SmartStore.Data.Utilities
 				}
 			}
 
-			return toUpate.Count;
+			return toUpdate.Count;
 		}
 
 		private static IDictionary<int, int> GetPoductPictureMap(SmartObjectContext context, IEnumerable<int> productIds)
@@ -595,14 +597,6 @@ namespace SmartStore.Data.Utilities
 
             using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
             {
-                var permissionMigrator = new PermissionMigrator(ctx);
-                permissionMigrator.AddPermission(new PermissionRecord
-                {
-                    Name = "Admin area. Manage Menus",
-                    SystemName = "ManageMenus",
-                    Category = "Content Management"
-                }, new string[] { SystemCustomerRoleNames.Administrators });
-
                 var menuSet = context.Set<MenuRecord>();
                 var menuItemSet = context.Set<MenuItemRecord>();
                 var defaultLang = context.Set<Language>().OrderBy(x => x.DisplayOrder).First();
@@ -927,6 +921,276 @@ namespace SmartStore.Data.Utilities
             }
 
             #endregion
+        }
+
+        #endregion
+
+        #region GranularPermissions (V4.0)
+
+        public static void AddGranularPermissions(IDbContext context)
+        {
+            var ctx = context as SmartObjectContext;
+            if (ctx == null)
+            {
+                throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+            }
+
+            var mappingSet = ctx.Set<PermissionRoleMapping>();
+            var permissionSet = ctx.Set<PermissionRecord>();
+            var allPermissions = permissionSet.ToList();
+            var oldPermissions = GetOldPermissions();
+            var allRoles = ctx.Set<CustomerRole>().ToList();
+            var adminRole = allRoles.FirstOrDefault(x => x.SystemName.IsCaseInsensitiveEqual("Administrators"));
+
+            // Mapping has no entity and no navigation property -> use SQL.
+            var oldMappings = context.SqlQuery<OldPermissionRoleMapping>("select * from [dbo].[PermissionRecord_Role_Mapping]")
+                .ToList()
+                .ToMultimap(x => x.PermissionRecord_Id, x => x.CustomerRole_Id);
+
+            var permissionToRoles = new Multimap<string, int>(StringComparer.OrdinalIgnoreCase);
+            foreach (var permission in allPermissions)
+            {
+                var roleIds = oldMappings.ContainsKey(permission.Id)
+                    ? oldMappings[permission.Id]
+                    : Enumerable.Empty<int>();
+
+                permissionToRoles.AddRange(permission.SystemName, roleIds);
+            }
+
+            using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
+            {
+                // Name and category property cannot be null, exist in database, but not in the domain model -> use SQL.
+                var insertSql = "Insert Into PermissionRecord (SystemName, Name, Category) Values({0}, {1}, {2})";
+                var permissionSystemNames = PermissionHelper.GetPermissions(typeof(Permissions));
+
+                // Delete existing granular permissions to ensure correct order in tree.
+                permissionSet.RemoveRange(permissionSet.Where(x => permissionSystemNames.Contains(x.SystemName)).ToList());
+                scope.Commit();
+
+                // Insert new granular permissions.
+                foreach (var permissionName in permissionSystemNames)
+                {
+                    ctx.Database.ExecuteSqlCommand(insertSql, permissionName, string.Empty, string.Empty);
+                }
+                
+                var newPermissions = permissionSet.Where(x => permissionSystemNames.Contains(x.SystemName))
+                    .ToList()
+                    .ToDictionarySafe(x => x.SystemName, x => x);
+
+                // Migrate mappings of standard permissions (whether the new permission is granted).
+                foreach (var kvp in oldPermissions)
+                {
+                    foreach (var name in kvp.Value)
+                    {
+                        Allow(kvp.Key, newPermissions[name]);
+                    }
+                }
+                // Commit to avoid duplicate mappings!
+                scope.Commit();
+
+                // Add mappings for new permissions.
+                AllowForRole(adminRole,
+                    newPermissions[Permissions.Cart.Read],
+                    newPermissions[Permissions.System.Rule.Self]);
+
+                // Add mappings originally added by old migrations.
+                // We had to remove these migration statementent again because the table does not yet exist at this time.
+                AllowForRole(adminRole,
+                    newPermissions[Permissions.Configuration.Export.Self],
+                    newPermissions[Permissions.Configuration.Import.Self],
+                    newPermissions[Permissions.System.UrlRecord.Self],
+                    newPermissions[Permissions.Cms.Menu.Self]);
+
+                scope.Commit();
+                newPermissions.Clear();
+
+                // Migrate known plugin permissions.
+                var pluginPermissionNames = new Dictionary<string, string>
+                {
+                    { "ManageDebitoor", "SmartStore.Debitoor.Security.DebitoorPermissions, SmartStore.Debitoor" },
+                    { "AccessImportBiz", "SmartStore.BizImporter.Security.BizImporterPermissions, SmartStore.BizImporter" },
+                    { "ManageShopConnector", "SmartStore.ShopConnector.Security.ShopConnectorPermissions, SmartStore.ShopConnector" },
+                    { "ManageNewsImporter", "SmartStore.NewsImporter.Security.NewImporterPermissions, SmartStore.NewsImporter" },
+                    { "ManageWebApi", "SmartStore.WebApi.Security.WebApiPermissions, SmartStore.WebApi" },
+                    { "ManageMegaSearch", "SmartStore.MegaSearch.Security.MegaSearchPermissions, SmartStore.MegaSearch" },
+                    { "ManageErpConnector", "Srt.ErpConnector.Security.ErpConnectorPermissions, Srt.ErpConnector" },
+                    { "ManagePowerBi", "SmartStore.PowerBi.Security.PowerBiPermissions, SmartStore.PowerBi" },
+                    { "ManageWallet", "SmartStore.Wallet.Security.WalletPermissions, SmartStore.Wallet" },
+                    { "ManageStories", "SmartStore.PageBuilder.Services.PageBuilderPermissions, SmartStore.PageBuilder" },
+                    { "ManageDlm", "SmartStore.Dlm.Security.DlmPermissions, SmartStore.Dlm" }
+                };
+
+                var allPluginPermissionNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var kvp in pluginPermissionNames)
+                {
+                    if (permissionToRoles.ContainsKey(kvp.Key))
+                    {
+                        var assemblyName = Type.GetType(kvp.Value)?.AssemblyQualifiedName;
+                        if (assemblyName.HasValue())
+                        {
+                            var type = Type.GetType(assemblyName);
+                            allPluginPermissionNames.AddRange(PermissionHelper.GetPermissions(type));
+                        }
+                        else
+                        {
+                            $"Plugin permission type not found ({kvp.Value}).".Dump();
+                        }
+                    }
+                    else
+                    {
+                        // Ignore unknown permissions. Will be deleted later by another migration.
+                    }
+                }
+
+                // Delete existing granular permissions to ensure correct order in tree.
+                permissionSet.RemoveRange(permissionSet.Where(x => allPluginPermissionNames.Contains(x.SystemName)).ToList());
+                scope.Commit();
+
+                // Insert new granular permissions.
+                foreach (var permissionName in allPluginPermissionNames)
+                {
+                    ctx.Database.ExecuteSqlCommand(insertSql, permissionName, string.Empty, string.Empty);
+                }
+
+                newPermissions = permissionSet.Where(x => allPluginPermissionNames.Contains(x.SystemName))
+                    .ToList()
+                    .ToDictionarySafe(x => x.SystemName, x => x);
+
+                PermissionRecord pr;
+                if (newPermissions.TryGetValue("debitoor", out pr)) Allow("ManageDebitoor", pr);
+                if (newPermissions.TryGetValue("bizimporter", out pr)) Allow("AccessImportBiz", pr);
+                if (newPermissions.TryGetValue("shopconnector", out pr)) Allow("ManageShopConnector", pr);
+                if (newPermissions.TryGetValue("newsimporter", out pr)) Allow("ManageNewsImporter", pr);
+                if (newPermissions.TryGetValue("webapi", out pr)) Allow("ManageWebApi", pr);
+                if (newPermissions.TryGetValue("megasearch", out pr)) Allow("ManageMegaSearch", pr);
+                if (newPermissions.TryGetValue("erpconnector", out pr)) Allow("ManageErpConnector", pr);
+                if (newPermissions.TryGetValue("powerbi", out pr)) Allow("ManagePowerBi", pr);
+                if (newPermissions.TryGetValue("wallet", out pr)) Allow("ManageWallet", pr);
+                if (newPermissions.TryGetValue("pagebuilder", out pr)) Allow("ManageStories", pr);
+                if (newPermissions.TryGetValue("dlm", out pr)) Allow("ManageDlm", pr);
+
+                scope.Commit();
+
+                // Migrate permission names of menu items.
+                var menuItems = ctx.Set<MenuItemRecord>().Where(x => !string.IsNullOrEmpty(x.PermissionNames)).ToList();
+                if (menuItems.Any())
+                {
+                    foreach (var item in menuItems)
+                    {
+                        var newNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                        var names = item.PermissionNames.SplitSafe(",");
+                        foreach (var name in names)
+                        {
+                            if (oldPermissions.ContainsKey(name))
+                            {
+                                oldPermissions[name].Each(x => newNames.Add(x));
+                            }
+                        }
+                        item.PermissionNames = string.Join(",", newNames);
+                    }
+
+                    scope.Commit();
+                }
+            }
+
+            void Allow(string oldSystemName, params PermissionRecord[] permissions)
+            {
+                var appliedRoleIds = permissionToRoles.ContainsKey(oldSystemName)
+                    ? permissionToRoles[oldSystemName]
+                    : Enumerable.Empty<int>();
+
+                foreach (var permission in permissions)
+                {
+                    Guard.NotZero(permission.Id, nameof(permission.Id));
+
+                    foreach (var roleId in appliedRoleIds)
+                    {
+                        mappingSet.Add(new PermissionRoleMapping
+                        {
+                            Allow = true,
+                            PermissionRecordId = permission.Id,
+                            CustomerRoleId = roleId
+                        });
+                    }
+                }
+            }
+
+            void AllowForRole(CustomerRole role, params PermissionRecord[] permissions)
+            {
+                foreach (var permission in permissions)
+                {
+                    if (!mappingSet.Any(x => x.PermissionRecordId == permission.Id && x.CustomerRoleId == role.Id))
+                    {
+                        mappingSet.Add(new PermissionRoleMapping
+                        {
+                            Allow = true,
+                            PermissionRecordId = permission.Id,
+                            CustomerRoleId = role.Id
+                        });
+                    }
+                }
+            }
+
+            Multimap<string, string> GetOldPermissions()
+            {
+                var map = new Multimap<string, string>(StringComparer.OrdinalIgnoreCase);
+                map.Add("AccessAdminPanel", Permissions.System.AccessBackend);
+                map.Add("AllowCustomerImpersonation", Permissions.Customer.Impersonate);
+                map.AddRange("ManageCatalog", new string[] { Permissions.Catalog.Self, Permissions.Cart.CheckoutAttribute.Self });
+                map.Add("ManageCustomers", Permissions.Customer.Self);
+                map.Add("ManageCustomerRoles", Permissions.Customer.Role.Self);
+                map.Add("ManageOrders", Permissions.Order.Self);
+                map.Add("ManageGiftCards", Permissions.Order.GiftCard.Self);
+                map.Add("ManageReturnRequests", Permissions.Order.ReturnRequest.Self);
+                map.Add("ManageAffiliates", Permissions.Promotion.Affiliate.Self);
+                map.Add("ManageCampaigns", Permissions.Promotion.Campaign.Self);
+                map.Add("ManageDiscounts", Permissions.Promotion.Discount.Self);
+                map.Add("ManageNewsletterSubscribers", Permissions.Promotion.Newsletter.Self);
+                map.Add("ManagePolls", Permissions.Cms.Poll.Self);
+                map.Add("ManageNews", Permissions.Cms.News.Self);
+                map.Add("ManageBlog", Permissions.Cms.Blog.Self);
+                map.Add("ManageWidgets", Permissions.Cms.Widget.Self);
+                map.Add("ManageTopics", Permissions.Cms.Topic.Self);
+                map.Add("ManageMenus", Permissions.Cms.Menu.Self);
+                map.Add("ManageForums", Permissions.Cms.Forum.Self);
+                map.Add("ManageMessageTemplates", Permissions.Cms.MessageTemplate.Self);
+                map.Add("ManageCountries", Permissions.Configuration.Country.Self);
+                map.Add("ManageLanguages", Permissions.Configuration.Language.Self);
+                map.Add("ManageSettings", Permissions.Configuration.Setting.Self);
+                map.Add("ManagePaymentMethods", Permissions.Configuration.PaymentMethod.Self);
+                map.Add("ManageExternalAuthenticationMethods", Permissions.Configuration.Authentication.Self);
+                map.Add("ManageTaxSettings", Permissions.Configuration.Tax.Self);
+                map.Add("ManageShippingSettings", Permissions.Configuration.Shipping.Self);
+                map.Add("ManageCurrencies", Permissions.Configuration.Currency.Self);
+                map.Add("ManageDeliveryTimes", Permissions.Configuration.DeliveryTime.Self);
+                map.Add("ManageThemes", Permissions.Configuration.Theme.Self);
+                map.Add("ManageMeasures", Permissions.Configuration.Measure.Self);
+                map.Add("ManageActivityLog", Permissions.Configuration.ActivityLog.Self);
+                map.Add("ManageACL", Permissions.Configuration.Acl.Self);
+                map.Add("ManageEmailAccounts", Permissions.Configuration.EmailAccount.Self);
+                map.Add("ManageStores", Permissions.Configuration.Store.Self);
+                map.Add("ManagePlugins", Permissions.Configuration.Plugin.Self);
+                map.Add("ManageSystemLog", Permissions.System.Log.Self);
+                map.Add("ManageMessageQueue", Permissions.System.Message.Self);
+                map.Add("ManageMaintenance", Permissions.System.Maintenance.Self);
+                map.Add("UploadPictures", Permissions.Media.Self);
+                map.Add("ManageScheduleTasks", Permissions.System.ScheduleTask.Self);
+                map.Add("ManageExports", Permissions.Configuration.Export.Self);
+                map.Add("ManageImports", Permissions.Configuration.Import.Self);
+                map.Add("ManageUrlRecords", Permissions.System.UrlRecord.Self);
+                map.Add("DisplayPrices", Permissions.Catalog.DisplayPrice);
+                map.Add("EnableShoppingCart", Permissions.Cart.AccessShoppingCart);
+                map.Add("EnableWishlist", Permissions.Cart.AccessWishlist);
+                map.Add("PublicStoreAllowNavigation", Permissions.System.AccessShop);
+
+                return map;
+            }
+        }
+
+        public class OldPermissionRoleMapping
+        {
+            public int PermissionRecord_Id { get; set; }
+            public int CustomerRole_Id { get; set; }
         }
 
         #endregion

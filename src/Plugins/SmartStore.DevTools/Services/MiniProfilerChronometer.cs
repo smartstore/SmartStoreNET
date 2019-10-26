@@ -26,33 +26,33 @@ namespace SmartStore.DevTools.Services
 
 		public void StepStart(string key, string message)
 		{
-			if (this.Profiler == null)
-			{
-				return;
-			}
+            if (this.Profiler == null)
+            {
+                return;
+            }
 
-			var stack = _steps.Get(key);
-			if (stack == null)
-			{
-				_steps[key] = stack = new Stack<IDisposable>();
-			}
+            var stack = _steps.Get(key);
+            if (stack == null)
+            {
+                _steps[key] = stack = new Stack<IDisposable>();
+            }
 
-			var step = Profiler.Step(message);
-			stack.Push(step);
-		}
+            var step = Profiler.Step(message);
+            stack.Push(step);
+        }
 
 		public void StepStop(string key)
 		{
-			if (_steps.ContainsKey(key) && _steps[key].Count > 0)
-			{
-				var step = _steps[key].Pop();
-				step.Dispose();
-				if (_steps[key].Count == 0)
-				{
-					_steps.Remove(key);
-				}
-			}
-		}
+            if (_steps.ContainsKey(key) && _steps[key].Count > 0)
+            {
+                var step = _steps[key].Pop();
+                step.Dispose();
+                if (_steps[key].Count == 0)
+                {
+                    _steps.Remove(key);
+                }
+            }
+        }
 
 		private void StopAll()
 		{

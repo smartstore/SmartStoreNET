@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Utilities;
+using SmartStore.Utilities.ObjectPools;
 using EfState = System.Data.Entity.EntityState;
 
 namespace SmartStore.Data
@@ -322,8 +323,10 @@ namespace SmartStore.Data
 
 			private string FormatValidationExceptionMessage(IEnumerable<DbEntityValidationResult> results)
 			{
-				var sb = new StringBuilder();
-				sb.Append("Entity validation failed" + Environment.NewLine);
+                var psb = PooledStringBuilder.Rent();
+                var sb = (StringBuilder)psb;
+
+                sb.Append("Entity validation failed" + Environment.NewLine);
 
 				foreach (var res in results)
 				{
@@ -341,8 +344,8 @@ namespace SmartStore.Data
 					}
 				}
 
-				return sb.ToString();
-			}
+                return psb.ToStringAndReturn();
+            }
 
 			public void Dispose()
 			{

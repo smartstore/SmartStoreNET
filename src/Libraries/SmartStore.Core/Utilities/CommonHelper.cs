@@ -13,6 +13,7 @@ using SmartStore.ComponentModel;
 using System.Text;
 using Newtonsoft.Json;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore.Utilities
 {
@@ -187,6 +188,7 @@ namespace SmartStore.Utilities
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryConvert(object value, Type to, out object convertedValue)
 		{
             return TryConvert(value, to, CultureInfo.InvariantCulture, out convertedValue);
@@ -232,13 +234,6 @@ namespace SmartStore.Utilities
                 if (converter != null && converter.CanConvertTo(to))
                 {
                     convertedValue = converter.ConvertTo(culture, null, value, to);
-                    return true;
-                }
-
-                // Use Convert.ChangeType if both types are IConvertible
-                if (value is IConvertible && typeof(IConvertible).IsAssignableFrom(to))
-                {
-                    convertedValue = System.Convert.ChangeType(value, to, culture);
                     return true;
                 }
             }
@@ -436,7 +431,8 @@ namespace SmartStore.Utilities
 					// Serialization failed or is not supported: make JSON.
 					var json = JsonConvert.SerializeObject(obj, new JsonSerializerSettings
 					{
-						DateFormatHandling = DateFormatHandling.IsoDateFormat,
+                        ContractResolver = SmartContractResolver.Instance,
+                        DateFormatHandling = DateFormatHandling.IsoDateFormat,
 						DateTimeZoneHandling = DateTimeZoneHandling.Utc,
 						MaxDepth = 10,
 						ReferenceLoopHandling = ReferenceLoopHandling.Ignore

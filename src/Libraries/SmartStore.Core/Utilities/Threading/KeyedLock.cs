@@ -43,7 +43,8 @@ namespace SmartStore.Utilities.Threading
 			return _locks.ContainsKey(key);
 		}
 
-		public static IDisposable Lock(object key)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IDisposable Lock(object key)
 		{
 			return Lock(key, _noTimeout);
 		}
@@ -55,7 +56,8 @@ namespace SmartStore.Utilities.Threading
 			return new Releaser(keyedLock);
 		}
 
-		public static Task<IDisposable> LockAsync(object key)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Task<IDisposable> LockAsync(object key)
 		{
 			return LockAsync(key, _noTimeout, CancellationToken.None);
 		}
@@ -65,7 +67,8 @@ namespace SmartStore.Utilities.Threading
 			return LockAsync(key, timeout, CancellationToken.None);
 		}
 
-		public static Task<IDisposable> LockAsync(object key, CancellationToken cancellationToken)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Task<IDisposable> LockAsync(object key, CancellationToken cancellationToken)
 		{
 			return LockAsync(key, _noTimeout, cancellationToken);
 		}

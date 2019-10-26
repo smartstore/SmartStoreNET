@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Security;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Modelling;
@@ -122,7 +123,7 @@ namespace SmartStore.Web.Controllers
 
 			// Is published? Check whether the current user has a "Manage catalog" permission.
 			// It allows him to preview a product before publishing.
-			if (!product.Published && !_services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog))
+			if (!product.Published && !_services.Permissions.Authorize(Permissions.Catalog.Product.Read))
 				return HttpNotFound();
 
 			// ACL (access control list)
@@ -277,9 +278,9 @@ namespace SmartStore.Web.Controllers
 		[ChildActionOnly]
 		public ActionResult ProductTierPrices(int productId)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices))
+			if (!_services.Permissions.Authorize(Permissions.Catalog.DisplayPrice))
 			{
-				return Content("");
+                return new EmptyResult();
 			}	
 
 			var product = _productService.GetProductById(productId);
@@ -290,9 +291,9 @@ namespace SmartStore.Web.Controllers
 			
 			if (!product.HasTierPrices)
 			{
-				// No tier prices
-				return Content(""); 
-			}
+                // No tier prices.
+                return new EmptyResult();
+            }
 
             var model = _helper.CreateTierPriceModel(product);
             
@@ -710,7 +711,7 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
 
 			// validate CAPTCHA
-			if (_captchaSettings.Enabled && _captchaSettings.ShowOnProductReviewPage && !captchaValid)
+			if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnProductReviewPage && !captchaValid)
 			{
 				ModelState.AddModelError("", T("Common.WrongCaptcha"));
 			}
@@ -868,7 +869,7 @@ namespace SmartStore.Web.Controllers
 			model.SenderNameRequired = _privacySettings.Value.FullNameOnProductRequestRequired;
 			model.SenderPhone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone);
 			model.Question = T("Products.AskQuestion.Question.Text").Text.FormatCurrentUI(model.ProductName);
-			model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnAskQuestionPage;
+			model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnAskQuestionPage;
 
 			return View(model);
 		}
@@ -883,7 +884,7 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
 
 			// validate CAPTCHA
-			if (_captchaSettings.Enabled && _captchaSettings.ShowOnAskQuestionPage && !captchaValid)
+			if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnAskQuestionPage && !captchaValid)
 			{
 				ModelState.AddModelError("", T("Common.WrongCaptcha"));
 			}
@@ -915,7 +916,8 @@ namespace SmartStore.Web.Controllers
 			model.Id = product.Id;
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
-			model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnAskQuestionPage;
+			model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnAskQuestionPage;
+
 			return View(model);
 		}
 
@@ -937,7 +939,8 @@ namespace SmartStore.Web.Controllers
 			model.ProductSeName = product.GetSeName();
 			model.YourEmailAddress = _services.WorkContext.CurrentCustomer.Email;
             model.AllowChangedCustomerEmail = _catalogSettings.AllowDifferingEmailAddressForEmailAFriend;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnEmailProductToFriendPage;
+
 			return View(model);
 		}
 
@@ -951,7 +954,7 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
 
 			//validate CAPTCHA
-			if (_captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage && !captchaValid)
+			if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnEmailProductToFriendPage && !captchaValid)
 			{
 				ModelState.AddModelError("", T("Common.WrongCaptcha"));
 			}
@@ -986,7 +989,8 @@ namespace SmartStore.Web.Controllers
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
             model.AllowChangedCustomerEmail = _catalogSettings.AllowDifferingEmailAddressForEmailAFriend;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnEmailProductToFriendPage;
+
 			return View(model);
 		}
 

@@ -24,11 +24,6 @@
 		.Content(TabInfo())
 		.Selected(true);
 
-	x.Add().Text(T("Admin.Common.Stores").Text)
-		//.Icon("fa fa-globe fa-lg fa-fw")
-		.Content(TabStores());
-
-	//generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "currency-edit", this.Html, this.Model));
 })
 
@@ -144,7 +139,15 @@
             @Html.ValidationMessageFor(model => model.DisplayOrder)
         </td>
     </tr>
-    
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SelectedStoreIds)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.SelectedStoreIds)
+            @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+        </td>
+    </tr>
 	@if (Model.Id > 0)
 	{
 		<tr>
@@ -286,11 +289,6 @@
             </td>
         </tr>
     </table>
-}
-
-@helper TabStores()
-{
-	@Html.Partial("StoreSelector", Model)
 }
 
 <script>

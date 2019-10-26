@@ -133,7 +133,7 @@ namespace SmartStore.Services.Seo
 		/// <param name="entity">Entity</param>
 		/// <param name="nameProperty">Name of a property</param>
 		/// <returns>Url record</returns>
-		UrlRecord SaveSlug<T>(T entity, Expression<Func<T, string>> nameProperty) where T : BaseEntity, ISlugSupported;
+		UrlRecord SaveSlug<T>(T entity, Func<T, string> nameProperty) where T : BaseEntity, ISlugSupported;
 
 		/// <summary>
 		/// Get number of slugs per entity

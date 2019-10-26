@@ -43,7 +43,7 @@ namespace SmartStore.DevTools
 			}
 		}
 
-		private static bool MiniProfilerStarted(HttpApplication app)
+		internal static bool MiniProfilerStarted(HttpApplication app)
 		{
 			return app?.Context?.Items != null && app.Context.Items.Contains(MP_KEY);
 		}

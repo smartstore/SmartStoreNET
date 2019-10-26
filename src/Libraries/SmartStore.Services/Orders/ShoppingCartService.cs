@@ -20,6 +20,7 @@ using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Core.Caching;
+using SmartStore.Core.Security;
 
 namespace SmartStore.Services.Orders
 {
@@ -1059,12 +1060,12 @@ namespace SmartStore.Services.Orders
 			if (ctx != null && bundleItem != null && ctx.Warnings.Count > 0)
 				return ctx.Warnings;	// warnings while adding bundle items to cart -> no need for further processing
 
-			if (cartType == ShoppingCartType.ShoppingCart && !_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart, customer))
+			if (cartType == ShoppingCartType.ShoppingCart && !_permissionService.Authorize(Permissions.Cart.AccessShoppingCart, customer))
 			{
 				warnings.Add(T("ShoppingCart.IsDisabled"));
 				return warnings;
 			}
-			if (cartType == ShoppingCartType.Wishlist && !_permissionService.Authorize(StandardPermissionProvider.EnableWishlist, customer))
+			if (cartType == ShoppingCartType.Wishlist && !_permissionService.Authorize(Permissions.Cart.AccessWishlist, customer))
 			{
 				warnings.Add(T("Wishlist.IsDisabled"));
 				return warnings;

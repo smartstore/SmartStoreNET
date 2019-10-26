@@ -43,10 +43,6 @@ h6, .h6 {
     }
 }
 
-.font-weight-light {
-    font-weight: $font-weight-light !important;
-}
-
 .font-weight-medium {
     font-weight: $font-weight-medium !important;
 }
@@ -112,6 +108,48 @@ h6, .h6 {
 }
 
 
+// Long text
+// ======================================
+
+.long-text {
+    font-size: 1.0625rem;
+    line-height: 1.75rem;
+    letter-spacing: .015625rem;
+
+    h2, h3, h4 {
+        font-weight: $font-weight-bold;
+    }
+
+    h5, h6 {
+        font-weight: $font-weight-medium;
+    }
+
+    h2:not(:first-of-type) {
+        margin-top: 4rem;
+    }
+
+    h2 {
+        font-size: $h3-font-size;
+        margin-bottom: 2rem;
+    }
+
+    h3 {
+        font-size: $h4-font-size;
+        margin-top: 3rem;
+        margin-bottom: 1.5rem;
+    }
+
+    h4, h5, h6 {
+        font-size: inherit;
+        margin-top: 2rem;
+    }
+
+    h3, h6 {
+        color: $gray-700;
+    }
+}
+
+
 // Misc typo stuff
 // ======================================
 
@@ -140,12 +178,6 @@ a.pretty-link {
 
 .text-wrap {
     white-space: normal !important;
-}
-
-.text-body {
-    @if $font-size-base < 1rem {
-        font-size: $lead-font-size;
-    }   
 }
 
 code {

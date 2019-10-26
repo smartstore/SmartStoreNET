@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
@@ -17,7 +18,7 @@ namespace SmartStore.Services.Media
 			Guard.NotNull(downloadIdProp, nameof(downloadIdProp));
 
 			var propName = downloadIdProp.ExtractMemberInfo().Name;
-			int currentDownloadId = downloadIdProp.Compile().Invoke(entity);
+			int currentDownloadId = downloadIdProp.CompileFast(PropertyCachingStrategy.EagerCached).Invoke(entity);
 			var rs = EngineContext.Current.Resolve<IRepository<Download>>();
 
 			UpdateTransientStateForEntityInternal(entity, propName, currentDownloadId, rs, null, save);
@@ -29,7 +30,7 @@ namespace SmartStore.Services.Media
 			Guard.NotNull(downloadIdProp, nameof(downloadIdProp));
 
 			var propName = downloadIdProp.ExtractMemberInfo().Name;
-			int currentDownloadId = downloadIdProp.Compile().Invoke(entity).GetValueOrDefault();
+			int currentDownloadId = downloadIdProp.CompileFast(PropertyCachingStrategy.EagerCached).Invoke(entity).GetValueOrDefault();
 			var rs = EngineContext.Current.Resolve<IRepository<Download>>();
 
 			UpdateTransientStateForEntityInternal(entity, propName, currentDownloadId, rs, null, save);
@@ -41,7 +42,7 @@ namespace SmartStore.Services.Media
 			Guard.NotNull(pictureIdProp, nameof(pictureIdProp));
 
 			var propName = pictureIdProp.ExtractMemberInfo().Name;
-			int currentPictureId = pictureIdProp.Compile().Invoke(entity);
+			int currentPictureId = pictureIdProp.CompileFast(PropertyCachingStrategy.EagerCached).Invoke(entity);
 			var rs = EngineContext.Current.Resolve<IRepository<Picture>>();
 
 			UpdateTransientStateForEntityInternal(entity, propName, currentPictureId, rs, GetPictureDeleteAction(), save);
@@ -53,7 +54,7 @@ namespace SmartStore.Services.Media
 			Guard.NotNull(pictureIdProp, nameof(pictureIdProp));
 
 			var propName = pictureIdProp.ExtractMemberInfo().Name;
-			int currentPictureId = pictureIdProp.Compile().Invoke(entity).GetValueOrDefault();
+			int currentPictureId = pictureIdProp.CompileFast(PropertyCachingStrategy.EagerCached).Invoke(entity).GetValueOrDefault();
 			var rs = EngineContext.Current.Resolve<IRepository<Picture>>();
 
 			UpdateTransientStateForEntityInternal(entity, propName, currentPictureId, rs, GetPictureDeleteAction(), save);

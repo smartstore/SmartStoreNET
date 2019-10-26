@@ -6,7 +6,7 @@ using SmartStore.Core.Domain.Common;
 
 namespace SmartStore.Services.Common
 {
-    public static class AddressExtentions
+    public static class AddressExtensions
     {
 		/// <summary>
 		/// Find first occurrence of an address

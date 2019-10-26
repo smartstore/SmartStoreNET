@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore.Core.Localization
 {
@@ -13,6 +14,7 @@ namespace SmartStore.Core.Localization
                 .Select(x => x.IetfLanguageTag)
                 .Where(x => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsValidCultureCode(string locale)
         {
             return locale.HasValue() && _cultureCodes.Contains(locale);

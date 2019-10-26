@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -16,14 +17,14 @@ namespace SmartStore.Web.Framework.UI
 
 		public static IHtmlString Attrs(this HtmlHelper html, IDictionary<string, object> attrs)
 		{
-			var sb = new StringBuilder();
+			var sb = PooledStringBuilder.Rent();
 
 			using (var writer = new StringWriter(sb))
 			{
 				RenderAttrs(html, attrs, writer);
 			}
 
-			return MvcHtmlString.Create(sb.ToString());	
+			return MvcHtmlString.Create(sb.ToStringAndReturn());	
 		}
 
 		public static void RenderAttrs(this HtmlHelper html, IDictionary<string, object> attrs)
@@ -46,11 +47,6 @@ namespace SmartStore.Web.Framework.UI
 			{
 				var value = attrs[key];
 
-				if (value == null)
-				{
-					continue;
-				}
-
 				if (!first)
 				{
 					output.Write(" ");
@@ -58,9 +54,14 @@ namespace SmartStore.Web.Framework.UI
 
 				first = false;
 
-				output.Write(key + "=\"");
-				HttpUtility.HtmlAttributeEncode(value.ToString(), output);
-				output.Write("\"");
+                output.Write(key);
+
+                if (value != null)
+                {
+                    output.Write("=\"");
+                    HttpUtility.HtmlAttributeEncode(value.ToString(), output);
+                    output.Write("\"");
+                }
 			}
 		}
 	}

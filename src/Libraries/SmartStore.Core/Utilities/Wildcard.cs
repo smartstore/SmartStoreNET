@@ -3,6 +3,7 @@ using System.Text;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Utilities
 {
@@ -292,7 +293,9 @@ namespace SmartStore.Utilities
 			{
 				if (IsMetachar(input[i]))
 				{
-					var sb = new StringBuilder("^");
+                    var psb = PooledStringBuilder.Rent("^");
+                    var sb = (StringBuilder)psb;
+
 					char ch = input[i];
 					int lastpos;
 
@@ -341,7 +344,7 @@ namespace SmartStore.Utilities
 					} while (i < input.Length);
 
 					sb.Append('$');
-					return sb.ToString();
+					return psb.ToStringAndReturn();
 				}
 			}
 

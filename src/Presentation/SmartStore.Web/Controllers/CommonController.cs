@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
-using SmartStore.Collections;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -19,6 +18,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
+using SmartStore.Core.Security;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
 using SmartStore.Services.Common;
@@ -30,6 +30,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Utilities;
+using SmartStore.Utilities.ObjectPools;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -328,8 +329,10 @@ namespace SmartStore.Web.Controllers
         {
             var model = PrepareCurrencySelectorModel();
 
-			if (model.AvailableCurrencies.Count < 2)
-				return Content("");
+            if (model.AvailableCurrencies.Count < 2)
+            {
+                return new EmptyResult();
+            }
 
             return PartialView(model);
         }
@@ -365,7 +368,9 @@ namespace SmartStore.Web.Controllers
         public ActionResult JavaScriptDisabledWarning()
         {
             if (!_commonSettings.DisplayJavaScriptDisabledWarning)
-                return Content("");
+            {
+                return new EmptyResult();
+            }
 
             return PartialView();
         }
@@ -382,11 +387,11 @@ namespace SmartStore.Web.Controllers
                 IsAuthenticated = isRegistered,
                 CustomerEmailUsername = isRegistered ? (_customerSettings.CustomerLoginType != CustomerLoginType.Email ? customer.Username : customer.Email) : "",
 				IsCustomerImpersonated = _services.WorkContext.OriginalCustomerIfImpersonated != null,
-				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
-				ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled,
-				WishlistEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist),
+				DisplayAdminLink = _services.Permissions.Authorize(Permissions.System.AccessBackend),
+				ShoppingCartEnabled = _services.Permissions.Authorize(Permissions.Cart.AccessShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled,
+				WishlistEnabled = _services.Permissions.Authorize(Permissions.Cart.AccessWishlist),
                 CompareProductsEnabled = _catalogSettings.CompareProductsEnabled,
-				PublicStoreNavigationAllowed = _services.Permissions.Authorize(StandardPermissionProvider.PublicStoreAllowNavigation)
+				PublicStoreNavigationAllowed = _services.Permissions.Authorize(Permissions.System.AccessShop)
 			};
 
 			return PartialView(model);
@@ -467,7 +472,7 @@ namespace SmartStore.Web.Controllers
                 CustomerEmailUsername = customer.IsRegistered() ? (_customerSettings.CustomerLoginType != CustomerLoginType.Email ? customer.Username : customer.Email) : "",
 				IsCustomerImpersonated = _services.WorkContext.OriginalCustomerIfImpersonated != null,
                 IsAuthenticated = customer.IsRegistered(),
-				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
+				DisplayAdminLink = _services.Permissions.Authorize(Permissions.System.AccessBackend),
 				HasContactUsPage = Url.Topic("ContactUs").ToString().HasValue(),
                 DisplayLoginLink = _customerSettings.UserRegistrationType != UserRegistrationType.Disabled
             };
@@ -485,16 +490,24 @@ namespace SmartStore.Web.Controllers
 
             var model = menu.CreateModel(template, ControllerContext);
 
-			var viewName = (template ?? name);
-			if (viewName[0] != '~' && !viewName.StartsWith("Menus/", StringComparison.OrdinalIgnoreCase))
-			{
-				viewName = "Menus/" + viewName;
-			}
-
-			return this.RootActionPartialView(viewName, model);
+            return Menu(model);
 		}
 
-		[ChildActionOnly]
+        [ChildActionOnly, ActionName("MenuFromModel")]
+        public ActionResult Menu(MenuModel model)
+        {
+            Guard.NotNull(model, nameof(model));
+            
+            var viewName = (model.Template ?? model.Name);
+            if (viewName[0] != '~' && !viewName.StartsWith("Menus/", StringComparison.OrdinalIgnoreCase))
+            {
+                viewName = "Menus/" + viewName;
+            }
+
+            return this.RootActionPartialView(viewName, model);
+        }
+
+        [ChildActionOnly]
 		public ActionResult Breadcrumb()
 		{
 			if (_breadcrumb.Trail == null || _breadcrumb.Trail.Count == 0)
@@ -645,7 +658,7 @@ namespace SmartStore.Web.Controllers
 
 
             const string newLine = "\r\n"; //Environment.NewLine
-            var sb = new StringBuilder();
+            var sb = PooledStringBuilder.Rent();
             sb.Append("User-agent: *");
             sb.Append(newLine);
 			sb.AppendFormat("Sitemap: {0}", Url.RouteUrl("XmlSitemap", (object)null, _services.StoreContext.CurrentStore.ForceSslForAllPages ? "https" : "http"));
@@ -677,7 +690,7 @@ namespace SmartStore.Web.Controllers
             }
 
             Response.ContentType = "text/plain";
-            Response.Write(sb.ToString());
+            Response.Write(sb.ToStringAndReturn());
 
             return null;
         }
@@ -727,10 +740,10 @@ namespace SmartStore.Web.Controllers
             var model = new AccountDropdownModel
             {
                 IsAuthenticated = customer.IsRegistered(),
-				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
-				ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart),
+				DisplayAdminLink = _services.Permissions.Authorize(Permissions.System.AccessBackend),
+				ShoppingCartEnabled = _services.Permissions.Authorize(Permissions.Cart.AccessShoppingCart),
 				//ShoppingCartItems = customer.CountProductsInCart(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id),
-				WishlistEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist),
+				WishlistEnabled = _services.Permissions.Authorize(Permissions.Cart.AccessWishlist),
 				//WishlistItems = customer.CountProductsInCart(ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id),
                 AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
                 UnreadPrivateMessages = unreadMessage,

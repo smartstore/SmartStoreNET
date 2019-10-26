@@ -12,6 +12,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core;
 using System.Web.Mvc;
 using SmartStore.Core.Fakes;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore
 {
@@ -30,11 +31,12 @@ namespace SmartStore
 			new Tuple<string, string>("X-Url-Scheme", "https")
 		};
 
-		/// <summary>
-		/// Tries to get the <see cref="HttpRequestBase"/> instance without throwing exceptions
-		/// </summary>
-		/// <returns>The <see cref="HttpRequestBase"/> instance or <c>null</c>.</returns>
-		public static HttpRequestBase SafeGetHttpRequest(this HttpContext httpContext)
+        /// <summary>
+        /// Tries to get the <see cref="HttpRequestBase"/> instance without throwing exceptions
+        /// </summary>
+        /// <returns>The <see cref="HttpRequestBase"/> instance or <c>null</c>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static HttpRequestBase SafeGetHttpRequest(this HttpContext httpContext)
 		{
 			if (httpContext == null)
 			{
@@ -132,13 +134,14 @@ namespace SmartStore
 			}
 		}
 
-		/// <summary>
-		/// Gets a value which indicates whether the HTTP connection uses secure sockets (HTTPS protocol). 
-		/// Works with Cloud's load balancers.
-		/// </summary>
-		/// <param name="request"></param>
-		/// <returns></returns>
-		public static bool IsSecureConnection(this HttpRequest request)
+        /// <summary>
+        /// Gets a value which indicates whether the HTTP connection uses secure sockets (HTTPS protocol). 
+        /// Works with Cloud's load balancers.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsSecureConnection(this HttpRequest request)
         {
             return IsSecureConnection(new HttpRequestWrapper(request));
         }
@@ -169,13 +172,15 @@ namespace SmartStore
 		}
 
 		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-	    public static void SetFormsAuthenticationCookie(this HttpWebRequest webRequest, HttpRequestBase httpRequest)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetFormsAuthenticationCookie(this HttpWebRequest webRequest, HttpRequestBase httpRequest)
 		{
 			CopyCookie(webRequest, httpRequest, FormsAuthentication.FormsCookieName);
 		}
 
 		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-		public static void SetAnonymousIdentCookie(this HttpWebRequest webRequest, HttpRequestBase httpRequest)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetAnonymousIdentCookie(this HttpWebRequest webRequest, HttpRequestBase httpRequest)
 		{
 			CopyCookie(webRequest, httpRequest, "SMARTSTORE.ANONYMOUS"); 
 		}
@@ -230,7 +235,8 @@ namespace SmartStore
 			return value;
 		}
 
-		public static T GetItem<T>(this HttpContext httpContext, string key, Func<T> factory = null, bool forceCreation = true)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T GetItem<T>(this HttpContext httpContext, string key, Func<T> factory = null, bool forceCreation = true)
 		{
 			return GetItem<T>(new HttpContextWrapper(httpContext), key, factory, forceCreation);
 		}

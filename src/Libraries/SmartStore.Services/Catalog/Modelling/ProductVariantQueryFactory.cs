@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using SmartStore.Collections;
-using SmartStore.Core.Html;
 using SmartStore.Services.Search.Modelling;
 
 namespace SmartStore.Services.Catalog.Modelling
 {
-	public class ProductVariantQueryFactory : IProductVariantQueryFactory
+    public class ProductVariantQueryFactory : IProductVariantQueryFactory
 	{
 		internal static readonly Regex IsVariantKey = new Regex(@"pvari[0-9]+-[0-9]+-[0-9]+-[0-9]+", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		internal static readonly Regex IsVariantAliasKey = new Regex(@"\w+-[0-9]+-[0-9]+-[0-9]+", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -107,6 +106,12 @@ namespace SmartStore.Services.Catalog.Modelling
                 else if (IsVariantAliasKey.IsMatch(item.Key))
                 {
                     ConvertVariantAlias(query, item.Key, item.Value, languageId);
+                }
+                else if (item.Key.IsCaseInsensitiveEqual("pvari") &&
+                    int.TryParse(item.Value.FirstOrDefault()?.NullEmpty() ?? "0", out var variantCombinationId) &&
+                    variantCombinationId != 0)
+                {
+                    query.VariantCombinationId = variantCombinationId;
                 }
                 else
                 {

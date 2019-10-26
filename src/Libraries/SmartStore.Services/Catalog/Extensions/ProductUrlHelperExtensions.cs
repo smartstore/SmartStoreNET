@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Runtime.CompilerServices;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Catalog.Modelling;
@@ -47,14 +48,15 @@ namespace SmartStore.Services.Catalog.Extensions
 			return helper.GetProductUrl(query, productSeName);
 		}
 
-		/// <summary>
-		/// Creates a product URL including variant query string.
-		/// </summary>
-		/// <param name="helper">Product URL helper</param>
-		/// <param name="product">Product entity</param>
-		/// <param name="variantValues">Variant values</param>
-		/// <returns>Product URL</returns>
-		public static string GetProductUrl(
+        /// <summary>
+        /// Creates a product URL including variant query string.
+        /// </summary>
+        /// <param name="helper">Product URL helper</param>
+        /// <param name="product">Product entity</param>
+        /// <param name="variantValues">Variant values</param>
+        /// <returns>Product URL</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string GetProductUrl(
 			this ProductUrlHelper helper,
 			Product product,
 			params ProductVariantAttributeValue[] variantValues)

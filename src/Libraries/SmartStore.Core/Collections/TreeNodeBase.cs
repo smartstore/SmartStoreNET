@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using SmartStore.Core.Infrastructure;
 
@@ -98,7 +99,8 @@ namespace SmartStore.Collections
 			}
 		}
 
-		public void SetMetadata(string key, object value)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetMetadata(string key, object value)
 		{
 			Guard.NotEmpty(key, nameof(key));
 
@@ -532,11 +534,11 @@ namespace SmartStore.Collections
 		/// </summary>
 		/// <param name="predicate">predicate</param>
 		/// <returns>The closest node</returns>
-		public T Closest(Expression<Func<T, bool>> predicate)
+		public T Closest(Func<T, bool> predicate)
 		{
 			Guard.NotNull(predicate, nameof(predicate));
 
-			var test = predicate.Compile();
+			var test = predicate;
 
 			if (test((T)this))
 			{
@@ -557,13 +559,15 @@ namespace SmartStore.Collections
 			return null;
 		}
 
-		public T Append(T value)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T Append(T value)
 		{
 			this.AddChild(value, false, true);
 			return value;
 		}
 
-		public void AppendRange(IEnumerable<T> values)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendRange(IEnumerable<T> values)
 		{
 			values.Each(x => Append(x));
 		}
@@ -576,7 +580,8 @@ namespace SmartStore.Collections
 			}
 		}
 
-		public T Prepend(T value)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T Prepend(T value)
 		{
 			this.AddChild(value, false, false);
 			return value;
@@ -593,7 +598,8 @@ namespace SmartStore.Collections
 			throw new ArgumentOutOfRangeException(nameof(index));
 		}
 
-		public void InsertAfter(T refNode)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void InsertAfter(T refNode)
 		{
 			this.Insert(refNode, true);
 		}
@@ -609,7 +615,8 @@ namespace SmartStore.Collections
 			throw new ArgumentOutOfRangeException(nameof(index));
 		}
 
-		public void InsertBefore(T refNode)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void InsertBefore(T refNode)
 		{
 			this.Insert(refNode, false);
 		}
@@ -627,19 +634,21 @@ namespace SmartStore.Collections
 			AttachTo(refParent, refNode._index + (after ? 1 : 0));
 		}
 
-		public T SelectNode(Expression<Func<T, bool>> predicate, bool includeSelf = false)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T SelectNode(Func<T, bool> predicate, bool includeSelf = false)
 		{
 			Guard.NotNull(predicate, nameof(predicate));
 
 			return this.FlattenNodes(predicate, includeSelf).FirstOrDefault();
 		}
 
-		/// <summary>
-		/// Selects all nodes (recursively) witch match the given <c>predicate</c>
-		/// </summary>
-		/// <param name="predicate">The predicate to match against</param>
-		/// <returns>A readonly collection of node matches</returns>
-		public IEnumerable<T> SelectNodes(Expression<Func<T, bool>> predicate, bool includeSelf = false)
+        /// <summary>
+        /// Selects all nodes (recursively) witch match the given <c>predicate</c>
+        /// </summary>
+        /// <param name="predicate">The predicate to match against</param>
+        /// <returns>A readonly collection of node matches</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IEnumerable<T> SelectNodes(Func<T, bool> predicate, bool includeSelf = false)
 		{
 			Guard.NotNull(predicate, nameof(predicate));
 
@@ -718,12 +727,13 @@ namespace SmartStore.Collections
 			}
 		}
 
-		public IEnumerable<T> FlattenNodes(bool includeSelf = true)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IEnumerable<T> FlattenNodes(bool includeSelf = true)
 		{
 			return this.FlattenNodes(null, includeSelf);
 		}
 
-		protected IEnumerable<T> FlattenNodes(Expression<Func<T, bool>> predicate, bool includeSelf = true)
+		protected IEnumerable<T> FlattenNodes(Func<T, bool> predicate, bool includeSelf = true)
 		{
 			IEnumerable<T> list;
 			if (includeSelf)
@@ -741,13 +751,14 @@ namespace SmartStore.Collections
 			var result = list.Union(_children.SelectMany(x => x.FlattenNodes()));
 			if (predicate != null)
 			{
-				result = result.Where(predicate.Compile());
+				result = result.Where(predicate);
 			}
 
 			return result;
 		}
 
-		public T Clone()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T Clone()
 		{
 			return Clone(true);
 		}

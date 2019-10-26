@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using SmartStore.Collections;
 using SmartStore.Core.Logging;
 
@@ -153,7 +154,8 @@ namespace SmartStore.Core.Data.Hooks
 			return processedHooks;
 		}
 
-		private IEnumerable<IDbSaveHook> GetSaveHookInstancesFor(IHookedEntity entry, HookStage stage, bool importantOnly)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private IEnumerable<IDbSaveHook> GetSaveHookInstancesFor(IHookedEntity entry, HookStage stage, bool importantOnly)
 		{
 			return GetHookInstancesFor<IDbSaveHook>(
 				entry.EntityType,
@@ -164,7 +166,7 @@ namespace SmartStore.Core.Data.Hooks
 				_importantSaveHookTypes);
 		}
 
-		private IEnumerable<THook> GetHookInstancesFor<THook>(
+        private IEnumerable<THook> GetHookInstancesFor<THook>(
 			Type entityType,
 			EntityState entityState,
 			HookStage stage,
@@ -204,6 +206,7 @@ namespace SmartStore.Core.Data.Hooks
 			return hooks.Cast<THook>();
 		}
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private bool HandledAlready(IHookedEntity entry, HookStage stage)
 		{
 			var entity = entry.Entity;
@@ -221,7 +224,8 @@ namespace SmartStore.Core.Data.Hooks
 			return false;
 		}
 
-		private void RegisterVoidHook(IDbHook hook, Type entityType, EntityState entityState, HookStage stage)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void RegisterVoidHook(IDbHook hook, Type entityType, EntityState entityState, HookStage stage)
 		{
 			var hookType = hook.GetType();
 

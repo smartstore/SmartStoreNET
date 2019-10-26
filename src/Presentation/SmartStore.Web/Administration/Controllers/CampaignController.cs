@@ -3,92 +3,81 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Core.Domain.Messages;
+using SmartStore.Core.Security;
 using SmartStore.Services.Messages;
-using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
-using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
-	public class CampaignController : AdminControllerBase
-	{
+    [AdminAuthorize]
+    public class CampaignController : AdminControllerBase
+    {
         private readonly ICampaignService _campaignService;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
-		private readonly IMessageModelProvider _messageModelProvider;
-		private readonly IStoreMappingService _storeMappingService;
+        private readonly IMessageModelProvider _messageModelProvider;
+        private readonly IStoreMappingService _storeMappingService;
 
         public CampaignController(
-			ICampaignService campaignService,
+            ICampaignService campaignService,
             INewsLetterSubscriptionService newsLetterSubscriptionService,
-			IMessageModelProvider messageModelProvider,
-			IStoreMappingService storeMappingService)
-		{
+            IMessageModelProvider messageModelProvider,
+            IStoreMappingService storeMappingService)
+        {
             _campaignService = campaignService;
             _newsLetterSubscriptionService = newsLetterSubscriptionService;
-			_messageModelProvider = messageModelProvider;
-			_storeMappingService = storeMappingService;
-		}
-      
+            _messageModelProvider = messageModelProvider;
+            _storeMappingService = storeMappingService;
+        }
+
         private void PrepareCampaignModel(CampaignModel model, Campaign campaign, bool excludeProperties)
-		{
-			if (!excludeProperties)
-			{
-				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(campaign);
-			}
+        {
+            if (!excludeProperties)
+            {
+                model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(campaign);
+            }
 
-			if (campaign != null)
-			{
-				model.CreatedOn = Services.DateTimeHelper.ConvertToUserTime(campaign.CreatedOnUtc, DateTimeKind.Utc);
-			}
+            if (campaign != null)
+            {
+                model.CreatedOn = Services.DateTimeHelper.ConvertToUserTime(campaign.CreatedOnUtc, DateTimeKind.Utc);
+            }
 
-			model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
-			model.LastModelTree = _messageModelProvider.GetLastModelTree(MessageTemplateNames.SystemCampaign);
-		}
+            model.LastModelTree = _messageModelProvider.GetLastModelTree(MessageTemplateNames.SystemCampaign);
+        }
 
-		public ActionResult Index()
+        public ActionResult Index()
         {
             return RedirectToAction("List");
         }
 
-		public ActionResult List()
+        [Permission(Permissions.Promotion.Campaign.Read)]
+        public ActionResult List()
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageCampaigns))
-                return AccessDeniedView();
+            ViewData["StoreCount"] = Services.StoreService.GetAllStores().Count();
 
-			ViewData["StoreCount"] = Services.StoreService.GetAllStores().Count();
-
-			return View();
-		}
+            return View();
+        }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Promotion.Campaign.Read)]
         public ActionResult List(GridCommand command)
         {
-			var model = new GridModel<CampaignModel>();
+            var model = new GridModel<CampaignModel>();
 
-			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageCampaigns))
-			{
-				var campaigns = _campaignService.GetAllCampaigns();
+            var campaigns = _campaignService.GetAllCampaigns();
 
-				model.Data = campaigns.Select(x =>
-				{
-					var m = x.ToModel();
-					m.CreatedOn = Services.DateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
-					return m;
-				});
+            model.Data = campaigns.Select(x =>
+            {
+                var m = x.ToModel();
+                m.CreatedOn = Services.DateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
+                return m;
+            });
 
-                model.Total = campaigns.Count;
-			}
-			else
-			{
-				model.Data = Enumerable.Empty<CampaignModel>();
-
-				NotifyAccessDenied();
-			}
+            model.Total = campaigns.Count;
 
             return new JsonResult
             {
@@ -96,100 +85,90 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
+        [Permission(Permissions.Promotion.Campaign.Create)]
         public ActionResult Create()
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageCampaigns))
-                return AccessDeniedView();
-
             var model = new CampaignModel();
-			PrepareCampaignModel(model, null, false);
+            PrepareCampaignModel(model, null, false);
             return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [Permission(Permissions.Promotion.Campaign.Create)]
         public ActionResult Create(CampaignModel model, bool continueEditing)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageCampaigns))
-                return AccessDeniedView();
-
             if (ModelState.IsValid)
             {
                 var campaign = model.ToEntity();
                 campaign.CreatedOnUtc = DateTime.UtcNow;
                 _campaignService.InsertCampaign(campaign);
 
-				SaveStoreMappings(campaign, model);
+                SaveStoreMappings(campaign, model.SelectedStoreIds);
 
                 NotifySuccess(T("Admin.Promotions.Campaigns.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = campaign.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
-			PrepareCampaignModel(model, null, true);
+            PrepareCampaignModel(model, null, true);
 
             return View(model);
         }
 
-		public ActionResult Edit(int id)
+        [Permission(Permissions.Promotion.Campaign.Read)]
+        public ActionResult Edit(int id)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageCampaigns))
-                return AccessDeniedView();
-
             var campaign = _campaignService.GetCampaignById(id);
             if (campaign == null)
                 return RedirectToAction("List");
-			
+
             var model = campaign.ToModel();
-			PrepareCampaignModel(model, campaign, false);
+            PrepareCampaignModel(model, campaign, false);
 
             return View(model);
-		}
+        }
 
         [HttpPost]
         [ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
+        [Permission(Permissions.Promotion.Campaign.Update)]
         public ActionResult Edit(CampaignModel model, bool continueEditing)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageCampaigns))
-                return AccessDeniedView();
-
             var campaign = _campaignService.GetCampaignById(model.Id);
             if (campaign == null)
+            {
                 return RedirectToAction("List");
+            }
 
             if (ModelState.IsValid)
             {
                 campaign = model.ToEntity(campaign);
                 _campaignService.UpdateCampaign(campaign);
 
-				SaveStoreMappings(campaign, model);
+                SaveStoreMappings(campaign, model.SelectedStoreIds);
 
                 NotifySuccess(T("Admin.Promotions.Campaigns.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = campaign.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
-			PrepareCampaignModel(model, campaign, true);
+            PrepareCampaignModel(model, campaign, true);
 
             return View(model);
-		}
+        }
 
-		[HttpPost, ActionName("Edit")]
+        [HttpPost, ActionName("Edit")]
         [FormValueRequired("send-mass-email")]
+        [Permission(Permissions.System.Message.Send)]
         public ActionResult SendMassEmail(CampaignModel model)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageCampaigns))
-                return AccessDeniedView();
-
             var campaign = _campaignService.GetCampaignById(model.Id);
             if (campaign == null)
                 return RedirectToAction("List");
 
-			PrepareCampaignModel(model, campaign, false);
+            PrepareCampaignModel(model, campaign, false);
 
             try
             {
-                var subscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(null, 0 , int.MaxValue, false);
+                var subscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(null, 0, int.MaxValue, false);
                 var totalEmailsSent = _campaignService.SendCampaign(campaign, subscriptions);
 
                 NotifySuccess(string.Format(T("Admin.Promotions.Campaigns.MassEmailSentToCustomers"), totalEmailsSent), false);
@@ -204,12 +183,10 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-		[HttpPost, ActionName("Delete")]
-		public ActionResult DeleteConfirmed(int id)
+        [HttpPost, ActionName("Delete")]
+        [Permission(Permissions.Promotion.Campaign.Delete)]
+        public ActionResult DeleteConfirmed(int id)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageCampaigns))
-                return AccessDeniedView();
-
             var campaign = _campaignService.GetCampaignById(id);
             if (campaign == null)
                 return RedirectToAction("List");
@@ -217,13 +194,13 @@ namespace SmartStore.Admin.Controllers
             _campaignService.DeleteCampaign(campaign);
 
             NotifySuccess(T("Admin.Promotions.Campaigns.Deleted"));
-			return RedirectToAction("List");
-		}
+            return RedirectToAction("List");
+        }
 
-		private void DeserializeLastModelTree(MessageTemplate template)
-		{
-			ViewBag.LastModelTreeJson = template.LastModelTree;
-			ViewBag.LastModelTree = _messageModelProvider.GetLastModelTree(template);
-		}
-	}
+        private void DeserializeLastModelTree(MessageTemplate template)
+        {
+            ViewBag.LastModelTreeJson = template.LastModelTree;
+            ViewBag.LastModelTree = _messageModelProvider.GetLastModelTree(template);
+        }
+    }
 }

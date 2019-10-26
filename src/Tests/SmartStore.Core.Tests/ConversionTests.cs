@@ -9,6 +9,8 @@ using System.Reflection;
 using System.Collections.ObjectModel;
 using System.Collections.Concurrent;
 using System.Globalization;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Email;
 
 namespace SmartStore.Core.Tests
 {
@@ -148,35 +150,49 @@ namespace SmartStore.Core.Tests
 		[Test]
 		public void CanConvertEnumerables()
 		{
-			var list = "1,2,3,4,5".Convert<IList<int>>();
-			list.ShouldBe<List<int>>();
-			Assert.AreEqual(5, list.Count);
-			Assert.AreEqual(3, list[2]);
+            var list = "1,2,3,4,5".Convert<IList<int>>();
+            list.ShouldBe<List<int>>();
+            Assert.AreEqual(5, list.Count);
+            Assert.AreEqual(3, list[2]);
 
-			var list2 = "1,0,off,wahr,false,y,n".Convert<ICollection<bool>>();
-			list2.ShouldBe<List<bool>>();
-			Assert.AreEqual(7, list2.Count);
-			Assert.AreEqual(true, list2.ElementAt(3));
+            var list2 = "1,0,off,wahr,false,y,n".Convert<ICollection<bool>>();
+            list2.ShouldBe<List<bool>>();
+            Assert.AreEqual(7, list2.Count);
+            Assert.AreEqual(true, list2.ElementAt(3));
 
-			"1,2,3,4,5".Convert<IReadOnlyCollection<int>>().ShouldBe<ReadOnlyCollection<int>>();
-			"1,2,3,4,5".Convert<IReadOnlyList<int>>().ShouldBe<ReadOnlyCollection<int>>();
-			"1,2,3,4,5".Convert<HashSet<double>>().ShouldBe<HashSet<double>>();
-			"1,2,3,4,5".Convert<Stack<int>>().ShouldBe<Stack<int>>();
-			"1,2,3,4,5".Convert<ISet<int>>().ShouldBe<HashSet<int>>();
-			"1,2,3,4,5".Convert<Queue<int>>().ShouldBe<Queue<int>>();
-			"1,2,3,4,5".Convert<LinkedList<string>>().ShouldBe<LinkedList<string>>();
-			"1,2,3,4,5".Convert<ConcurrentBag<int>>().ShouldBe<ConcurrentBag<int>>();
-			"1,2,3,4,5".Convert<ArraySegment<int>>().ShouldBe<ArraySegment<int>>();
+            "1,2,3,4,5".Convert<IReadOnlyCollection<int>>().ShouldBe<ReadOnlyCollection<int>>();
+            "1,2,3,4,5".Convert<IReadOnlyList<int>>().ShouldBe<ReadOnlyCollection<int>>();
+            "1,2,3,4,5".Convert<HashSet<double>>().ShouldBe<HashSet<double>>();
+            "1,2,3,4,5".Convert<Stack<int>>().ShouldBe<Stack<int>>();
+            "1,2,3,4,5".Convert<ISet<int>>().ShouldBe<HashSet<int>>();
+            "1,2,3,4,5".Convert<Queue<int>>().ShouldBe<Queue<int>>();
+            "1,2,3,4,5".Convert<LinkedList<string>>().ShouldBe<LinkedList<string>>();
+            "1,2,3,4,5".Convert<ConcurrentBag<int>>().ShouldBe<ConcurrentBag<int>>();
+            "1,2,3,4,5".Convert<ArraySegment<int>>().ShouldBe<ArraySegment<int>>();
 
-			var list3 = new List<int>(new int[] { 1,2,3,4,5 });
-			var str = list3.Convert<string>();
-			Assert.AreEqual("1,2,3,4,5", str);
+            var list3 = new List<int>(new int[] { 1,2,3,4,5 });
+            var str = list3.Convert<string>();
+            Assert.AreEqual("1,2,3,4,5", str);
 
-			var list4 = ((double)5).Convert<List<int>>();
-			list4.ShouldBe<List<int>>();
-			Assert.AreEqual(1, list4.Count);
-			Assert.AreEqual(5, list4[0]);
-		}
+            var converter = TypeConverterFactory.GetConverter<double[]>();
+            converter.ShouldBe<EnumerableConverter<double>>();
+
+            var arr3 = list3.Convert<int[]>();
+            arr3.ShouldBe<int[]>();
+            Assert.AreEqual(5, list3.Count);
+            Assert.AreEqual(3, list3[2]);
+
+            var list4 = ((double)5).Convert<List<int>>();
+            list4.ShouldBe<List<int>>();
+            Assert.AreEqual(1, list4.Count);
+            Assert.AreEqual(5, list4[0]);
+
+            var list5 = new List<string>(new string[] { "1", "2", "3", "4", "5" });
+            var arr4 = list5.Convert<float[]>();
+            arr4.ShouldBe<float[]>();
+            Assert.AreEqual(5, list5.Count);
+            Assert.AreEqual("4", list5[3]);
+        }
 
 		[Test]
         public void CanConvertShippingOptions()
@@ -189,34 +205,53 @@ namespace SmartStore.Core.Tests
 				Rate = 1,
 				ShippingRateComputationMethodSystemName = "SystemName"
 			};
-			var soStr = shippingOption.Convert<string>();
-			Assert.IsNotEmpty(soStr);
+            var soStr = shippingOption.Convert<string>();
+            Assert.IsNotEmpty(soStr);
 
-			shippingOption = soStr.Convert<ShippingOption>();
-			Assert.IsNotNull(shippingOption);
-			Assert.AreEqual(shippingOption.ShippingMethodId, 2);
-			Assert.AreEqual(shippingOption.Name, "Name");
-			Assert.AreEqual(shippingOption.Description, "Desc");
-			Assert.AreEqual(shippingOption.Rate, 1);
-			Assert.AreEqual(shippingOption.ShippingRateComputationMethodSystemName, "SystemName");
+            var arr = (new[] { shippingOption.Convert<string>() }).Convert<ShippingOption[]>();
+            arr.ShouldBe<ShippingOption[]>();
+            Assert.AreEqual(1, arr.Length);
+            Assert.AreEqual(arr[0].Name, "Name");
 
-			var shippingOptions = new List<ShippingOption>
-			{
-				new ShippingOption { ShippingMethodId = 1, Name = "Name1", Description = "Desc1" },
-				new ShippingOption { ShippingMethodId = 2, Name = "Name2", Description = "Desc2" }
-			};
-			soStr = shippingOptions.Convert<string>();
-			Assert.IsNotEmpty(soStr);
+            shippingOption = soStr.Convert<ShippingOption>();
+            Assert.IsNotNull(shippingOption);
+            Assert.AreEqual(shippingOption.ShippingMethodId, 2);
+            Assert.AreEqual(shippingOption.Name, "Name");
+            Assert.AreEqual(shippingOption.Description, "Desc");
+            Assert.AreEqual(shippingOption.Rate, 1);
+            Assert.AreEqual(shippingOption.ShippingRateComputationMethodSystemName, "SystemName");
 
-			shippingOptions = soStr.Convert<List<ShippingOption>>();
-			Assert.AreEqual(shippingOptions.Count, 2);
-			Assert.AreEqual(shippingOptions[1].ShippingMethodId, 2);
-			Assert.AreEqual(shippingOptions[1].Description, "Desc2");
+            var shippingOptions = new List<ShippingOption>
+            {
+                new ShippingOption { ShippingMethodId = 1, Name = "Name1", Description = "Desc1" },
+                new ShippingOption { ShippingMethodId = 2, Name = "Name2", Description = "Desc2" }
+            };
+            soStr = shippingOptions.Convert<string>();
+            Assert.IsNotEmpty(soStr);
 
-			var shippingOptions2 = soStr.Convert<IList<ShippingOption>>();
-			Assert.AreEqual(shippingOptions2.Count, 2);
-			Assert.AreEqual(shippingOptions[1].ShippingMethodId, 2);
-			Assert.AreEqual(shippingOptions2.First().Description, "Desc1");
-		}
+            shippingOptions = soStr.Convert<List<ShippingOption>>();
+            Assert.AreEqual(shippingOptions.Count, 2);
+            Assert.AreEqual(shippingOptions[1].ShippingMethodId, 2);
+            Assert.AreEqual(shippingOptions[1].Description, "Desc2");
+
+            var shippingOptions2 = soStr.Convert<IList<ShippingOption>>();
+            Assert.AreEqual(shippingOptions2.Count, 2);
+            Assert.AreEqual(shippingOptions[1].ShippingMethodId, 2);
+            Assert.AreEqual(shippingOptions2.First().Description, "Desc1");
+        }
+
+        [Test]
+        public void CanConvertEmailAddress()
+        {
+            var list = (new[] { new EmailAddress("test@domain.com") }).Convert<IList<string>>();
+            list.ShouldBe<IList<string>>();
+            Assert.AreEqual(1, list.Count);
+            Assert.AreEqual("test@domain.com", list[0]);
+
+            var list2 = (new[] { "test@domain.com", "test2@domain.com" }).Convert<HashSet<EmailAddress>>();
+            list2.ShouldBe<HashSet<EmailAddress>>();
+            Assert.AreEqual(2, list2.Count);
+            Assert.AreEqual("test2@domain.com", list2.ElementAt(1).Address);
+        }
     }
 }

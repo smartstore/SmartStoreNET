@@ -572,15 +572,16 @@ namespace SmartStore.Data.Migrations
                         SystemName = c.String(maxLength: 255),
                     })
                 .PrimaryKey(t => t.Id);
-            
+
+            // Granular permissions. Removed obsolete Name and Category property.
             CreateTable(
                 "dbo.PermissionRecord",
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        Name = c.String(nullable: false, maxLength: 4000),
+                        //Name = c.String(nullable: false, maxLength: 4000),
                         SystemName = c.String(nullable: false, maxLength: 255),
-                        Category = c.String(nullable: false, maxLength: 255),
+                        //Category = c.String(nullable: false, maxLength: 255),
                     })
                 .PrimaryKey(t => t.Id);
             
@@ -1657,20 +1658,21 @@ namespace SmartStore.Data.Migrations
                 .ForeignKey("dbo.Address", t => t.Address_Id, cascadeDelete: true)
                 .Index(t => t.Customer_Id)
                 .Index(t => t.Address_Id);
-            
-            CreateTable(
-                "dbo.PermissionRecord_Role_Mapping",
-                c => new
-                    {
-                        PermissionRecord_Id = c.Int(nullable: false),
-                        CustomerRole_Id = c.Int(nullable: false),
-                    })
-                .PrimaryKey(t => new { t.PermissionRecord_Id, t.CustomerRole_Id })
-                .ForeignKey("dbo.PermissionRecord", t => t.PermissionRecord_Id, cascadeDelete: true)
-                .ForeignKey("dbo.CustomerRole", t => t.CustomerRole_Id, cascadeDelete: true)
-                .Index(t => t.PermissionRecord_Id)
-                .Index(t => t.CustomerRole_Id);
-            
+
+            // Granular permissions. Has been replaced by PermissionRoleMapping entity.
+            //CreateTable(
+            //    "dbo.PermissionRecord_Role_Mapping",
+            //    c => new
+            //        {
+            //            PermissionRecord_Id = c.Int(nullable: false),
+            //            CustomerRole_Id = c.Int(nullable: false),
+            //        })
+            //    .PrimaryKey(t => new { t.PermissionRecord_Id, t.CustomerRole_Id })
+            //    .ForeignKey("dbo.PermissionRecord", t => t.PermissionRecord_Id, cascadeDelete: true)
+            //    .ForeignKey("dbo.CustomerRole", t => t.CustomerRole_Id, cascadeDelete: true)
+            //    .Index(t => t.PermissionRecord_Id)
+            //    .Index(t => t.CustomerRole_Id);
+
             CreateTable(
                 "dbo.Customer_CustomerRole_Mapping",
                 c => new
@@ -1870,8 +1872,8 @@ namespace SmartStore.Data.Migrations
             DropForeignKey("dbo.ExternalAuthenticationRecord", "CustomerId", "dbo.Customer");
             DropForeignKey("dbo.Customer_CustomerRole_Mapping", "CustomerRole_Id", "dbo.CustomerRole");
             DropForeignKey("dbo.Customer_CustomerRole_Mapping", "Customer_Id", "dbo.Customer");
-            DropForeignKey("dbo.PermissionRecord_Role_Mapping", "CustomerRole_Id", "dbo.CustomerRole");
-            DropForeignKey("dbo.PermissionRecord_Role_Mapping", "PermissionRecord_Id", "dbo.PermissionRecord");
+            //DropForeignKey("dbo.PermissionRecord_Role_Mapping", "CustomerRole_Id", "dbo.CustomerRole");
+            //DropForeignKey("dbo.PermissionRecord_Role_Mapping", "PermissionRecord_Id", "dbo.PermissionRecord");
             DropForeignKey("dbo.PollAnswer", "PollId", "dbo.Poll");
             DropForeignKey("dbo.Poll", "LanguageId", "dbo.Language");
             DropForeignKey("dbo.News", "LanguageId", "dbo.Language");
@@ -1968,8 +1970,8 @@ namespace SmartStore.Data.Migrations
             DropIndex("dbo.ExternalAuthenticationRecord", new[] { "CustomerId" });
             DropIndex("dbo.Customer_CustomerRole_Mapping", new[] { "CustomerRole_Id" });
             DropIndex("dbo.Customer_CustomerRole_Mapping", new[] { "Customer_Id" });
-            DropIndex("dbo.PermissionRecord_Role_Mapping", new[] { "CustomerRole_Id" });
-            DropIndex("dbo.PermissionRecord_Role_Mapping", new[] { "PermissionRecord_Id" });
+            //DropIndex("dbo.PermissionRecord_Role_Mapping", new[] { "CustomerRole_Id" });
+            //DropIndex("dbo.PermissionRecord_Role_Mapping", new[] { "PermissionRecord_Id" });
             DropIndex("dbo.PollAnswer", new[] { "PollId" });
             DropIndex("dbo.Poll", new[] { "LanguageId" });
             DropIndex("dbo.News", new[] { "LanguageId" });
@@ -2005,7 +2007,7 @@ namespace SmartStore.Data.Migrations
             DropTable("dbo.ProductReviewHelpfulness");
             DropTable("dbo.Product_ProductTag_Mapping");
             DropTable("dbo.Customer_CustomerRole_Mapping");
-            DropTable("dbo.PermissionRecord_Role_Mapping");
+            //DropTable("dbo.PermissionRecord_Role_Mapping");
             DropTable("dbo.CustomerAddresses");
             DropTable("dbo.ShippingMethodRestrictions");
             DropTable("dbo.Discount_AppliedToProducts");

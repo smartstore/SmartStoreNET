@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using SmartStore.Core;
 
 namespace SmartStore.Services.DataExchange.Import
@@ -113,37 +114,40 @@ namespace SmartStore.Services.DataExchange.Import
 			return result;
 		}
 
-		/// <summary>
-		/// Determines whether the column <c>name[index]</c> exists in the underlying data table.
-		/// </summary>
-		/// <param name="name">The name of the column to find</param>
-		/// <param name="index">The index of the column</param>
-		/// <returns><c>true</c> if the column exists, <c>false</c> otherwise</returns>
-		/// <remarks>
-		///		This method takes mapped column names into account.
-		/// </remarks>
-		public bool HasColumn(string name, string index)
+        /// <summary>
+        /// Determines whether the column <c>name[index]</c> exists in the underlying data table.
+        /// </summary>
+        /// <param name="name">The name of the column to find</param>
+        /// <param name="index">The index of the column</param>
+        /// <returns><c>true</c> if the column exists, <c>false</c> otherwise</returns>
+        /// <remarks>
+        ///		This method takes mapped column names into account.
+        /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool HasColumn(string name, string index)
 		{
 			return _table.HasColumn(_columnMap.GetMapping(name, index).MappedName);
 		}
 
-		/// <summary>
-		/// Indicates whether to ignore the property that is mapped to columnName
-		/// </summary>
-		/// <param name="columnName">The name of the column</param>
-		/// <returns><c>true</c> ignore, <c>false</c> do not ignore</returns>
-		public bool IsIgnored(string columnName)
+        /// <summary>
+        /// Indicates whether to ignore the property that is mapped to columnName
+        /// </summary>
+        /// <param name="columnName">The name of the column</param>
+        /// <returns><c>true</c> ignore, <c>false</c> do not ignore</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsIgnored(string columnName)
 		{
 			return IsIgnored(columnName, null);
 		}
 
-		/// <summary>
-		/// Indicates whether to ignore the property that is mapped to columnName
-		/// </summary>
-		/// <param name="columnName">The name of the column</param>
-		/// <param name="index">The index of the column</param>
-		/// <returns><c>true</c> ignore, <c>false</c> do not ignore</returns>
-		public bool IsIgnored(string columnName, string index)
+        /// <summary>
+        /// Indicates whether to ignore the property that is mapped to columnName
+        /// </summary>
+        /// <param name="columnName">The name of the column</param>
+        /// <param name="index">The index of the column</param>
+        /// <returns><c>true</c> ignore, <c>false</c> do not ignore</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsIgnored(string columnName, string index)
 		{
 			var mapping = _columnMap.GetMapping(columnName, index);
 

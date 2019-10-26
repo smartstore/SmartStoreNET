@@ -179,9 +179,14 @@
     <Compile Include="Collections\TopologicalSorter.cs" />
     <Compile Include="Collections\TreeNodeBase.cs" />
     <Compile Include="ComponentModel\FastInvoker.cs" />
+    <Compile Include="ComponentModel\FastPropertyValueProvider.cs" />
+    <Compile Include="ComponentModel\IMapper.cs" />
+    <Compile Include="ComponentModel\MapperFactory.cs" />
     <Compile Include="ComponentModel\MiniMapper.cs" />
     <Compile Include="Collections\ReferenceEqualityComparer.cs" />
+    <Compile Include="ComponentModel\SmartContractResolver.cs" />
     <Compile Include="ComponentModel\TypeConversion\BooleanConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\JObjectConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\DictionaryConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\EmailAddressConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\EnumerableConverter.cs" />
@@ -191,8 +196,7 @@
     <Compile Include="ComponentModel\TypeConversion\TimeSpanConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\DateTimeConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\ITypeConverter.cs" />
-    <Compile Include="ComponentModel\TypeConversion\TypeConverterAdapter.cs" />
-    <Compile Include="ComponentModel\TypeConversion\TypeConverterBase.cs" />
+    <Compile Include="ComponentModel\TypeConversion\DefaultTypeConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\TypeConverterFactory.cs" />
     <Compile Include="Data\Hooks\HookableAttribute.cs" />
     <Compile Include="Data\Hooks\HookMetadata.cs" />
@@ -247,6 +251,8 @@
     <Compile Include="Domain\Orders\CheckoutEnums.cs" />
     <Compile Include="Domain\Payments\CapturePaymentReason.cs" />
     <Compile Include="Domain\Payments\PaymentMethod.cs" />
+    <Compile Include="Domain\Security\PermissionNode.cs" />
+    <Compile Include="Domain\Security\PermissionRoleMapping.cs" />
     <Compile Include="Domain\Seo\CanonicalHostNameRule.cs" />
     <Compile Include="Domain\Seo\UrlRecordCollection.cs" />
     <Compile Include="Domain\Tasks\ScheduleTaskHistory.cs" />
@@ -263,6 +269,7 @@
     <Compile Include="Events\IConsumerResolver.cs" />
     <Compile Include="Events\IEventPublisher.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
+    <Compile Include="Extensions\ExpressionExtensions.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
     <Compile Include="Extensions\NumericExtensions.cs" />
     <Compile Include="Data\IQueryableExtensions.cs" />
@@ -518,6 +525,11 @@
     <Compile Include="Search\Settings\ForumSearchSettings.cs" />
     <Compile Include="Search\Settings\SearchSettings.cs" />
     <Compile Include="Search\SearchSort.cs" />
+    <Compile Include="Security\IPermissionProvider.cs" />
+    <Compile Include="Security\IPermissionService.cs" />
+    <Compile Include="Security\PermissionAttribute.cs" />
+    <Compile Include="Security\PermissionHelper.cs" />
+    <Compile Include="Security\Permissions.cs" />
     <Compile Include="Security\SmartStorePrincipal.cs" />
     <Compile Include="Templating\DefaultTemplateManager.cs" />
     <Compile Include="Templating\ITemplate.cs" />
@@ -721,6 +733,10 @@
     <Compile Include="Utilities\HashCodeCombiner.cs" />
     <Compile Include="Utilities\Inflector.cs" />
     <Compile Include="Utilities\ObjectDumper.cs" />
+    <Compile Include="Utilities\ObjectPools\LeakTrackingObjectPool.cs" />
+    <Compile Include="Utilities\ObjectPools\ObjectPool.cs" />
+    <Compile Include="Utilities\ObjectPools\IPooledObject.cs" />
+    <Compile Include="Utilities\ObjectPools\PooledStringBuilder.cs" />
     <Compile Include="Utilities\PathHelper.cs" />
     <Compile Include="Utilities\Prettifier.cs" />
     <Compile Include="Utilities\Range.cs" />

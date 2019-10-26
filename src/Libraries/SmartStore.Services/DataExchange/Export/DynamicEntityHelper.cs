@@ -113,8 +113,10 @@ namespace SmartStore.Services.DataExchange.Export
 				// Remove critical characters.
 				if (description.HasValue() && ctx.Projection.RemoveCriticalCharacters)
 				{
-					foreach (var str in ctx.Projection.CriticalCharacters.SplitSafe(","))
-						description = description.Replace(str, "");
+                    foreach (var str in ctx.Projection.CriticalCharacters.SplitSafe(","))
+                    {
+                        description = description.Replace(str, "");
+                    }
 				}
 
 				// Convert to plain text.
@@ -127,7 +129,7 @@ namespace SmartStore.Services.DataExchange.Export
 					description = HtmlUtils.StripTags(HttpUtility.HtmlDecode(description));
 				}
 
-				dynObject.FullDescription = description;
+				dynObject.FullDescription = description.TrimSafe();
 			}
 			catch { }
 		}

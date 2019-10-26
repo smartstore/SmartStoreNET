@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Security;
 using SmartStore.Services.Media;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
@@ -16,9 +17,12 @@ namespace SmartStore.Admin.Controllers
 
         public DownloadController(IDownloadService downloadService)
         {
-            this._downloadService = downloadService;
+            _downloadService = downloadService;
         }
 
+        #region Download
+
+        [Permission(Permissions.Media.Download.Read)]
         public ActionResult DownloadFile(int downloadId)
         {
             var download = _downloadService.GetDownloadById(downloadId);
@@ -49,7 +53,8 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-		public ActionResult SaveDownloadUrl(string downloadUrl, bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
+        [Permission(Permissions.Media.Download.Create)]
+        public ActionResult SaveDownloadUrl(string downloadUrl, bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
         {
 			var download = new Download
 			{
@@ -74,7 +79,8 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-		public ActionResult AsyncUpload(bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
+        [Permission(Permissions.Media.Download.Create)]
+        public ActionResult AsyncUpload(bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
         {
 			var postedFile = Request.ToPostedFileResult();
 			if (postedFile == null)
@@ -110,6 +116,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
+        [Permission(Permissions.Media.Download.Update)]
         public ActionResult AddChangelog(int downloadId, string changelogText)
         {
             var success = false;
@@ -122,17 +129,15 @@ namespace SmartStore.Admin.Controllers
                 success = true;
             }
             
-            return Json(new
-            {
-                success = success
-            });
+            return Json(new { success });
         }
 
         [HttpPost]
+        [Permission(Permissions.Media.Download.Read)]
         public ActionResult GetChangelogText(int downloadId)
         {
             var success = false;
-            var changeLogText = String.Empty;
+            var changeLogText = string.Empty;
 
             var download = _downloadService.GetDownloadById(downloadId);
             if (download != null)
@@ -143,21 +148,24 @@ namespace SmartStore.Admin.Controllers
 
             return Json(new
             {
-                success = success,
+                success,
                 changelog = changeLogText
             });
         }
 
         [HttpPost]
-		public ActionResult DeleteDownload(bool minimalMode = false, string fieldName = null)
+        [Permission(Permissions.Media.Download.Delete)]
+        public ActionResult DeleteDownload(bool minimalMode = false, string fieldName = null)
 		{
-			// We don't actually delete here. We just return the editor in it's init state
-			// so the download entity can be set to transient state and deleted later by a scheduled task.
+			// We don't actually delete here. We just return the editor in it's init state.
+			// So the download entity can be set to transient state and deleted later by a scheduled task.
 			return Json(new
 			{
 				success = true,
-				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, null, new { minimalMode = minimalMode, fieldName = fieldName }),
+				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, null, new { minimalMode, fieldName }),
 			});
 		}
+
+        #endregion
     }
 }

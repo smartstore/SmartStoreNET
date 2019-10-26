@@ -7,6 +7,7 @@ using System.Text;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Data.Caching
 {
@@ -211,8 +212,9 @@ namespace SmartStore.Data.Caching
 				{
 					var commandInfo = objectQuery.GetCommandInfo();
 
-					var sb = new StringBuilder();
-					sb.AppendLine(commandInfo.Sql);
+                    var psb = PooledStringBuilder.Rent();
+                    var sb = (StringBuilder)psb;
+                    sb.AppendLine(commandInfo.Sql);
 
 					foreach (DbParameter parameter in commandInfo.Parameters)
 					{
@@ -222,7 +224,7 @@ namespace SmartStore.Data.Caching
 						sb.AppendLine(";");
 					}
 
-					key = sb.ToString();
+					key = psb.ToStringAndReturn();
 				}
 
 				Key = key;

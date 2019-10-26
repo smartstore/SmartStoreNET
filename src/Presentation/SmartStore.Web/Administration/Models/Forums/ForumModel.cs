@@ -1,11 +1,14 @@
-﻿using FluentValidation;
+﻿using System;
+using System.Collections.Generic;
+using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Forums;
+using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using System;
-using System.Collections.Generic;
-using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Forums
 {
@@ -67,6 +70,16 @@ namespace SmartStore.Admin.Models.Forums
         {
             RuleFor(x => x.Name).NotEmpty();
             RuleFor(x => x.ForumGroupId).NotEmpty();
+        }
+    }
+
+    public class ForumMapper :
+        IMapper<Forum, ForumModel>
+    {
+        public void Map(Forum from, ForumModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.SeName = from.GetSeName(0, true, false);
         }
     }
 }

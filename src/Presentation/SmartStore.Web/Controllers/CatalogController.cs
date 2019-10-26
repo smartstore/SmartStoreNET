@@ -7,6 +7,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Security;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
@@ -107,7 +108,7 @@ namespace SmartStore.Web.Controllers
 
             // Check whether the current user has a "Manage catalog" permission.
             // It allows him to preview a category before publishing.
-            if (!category.Published && !_services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog))
+            if (!category.Published && !_services.Permissions.Authorize(Permissions.Catalog.Category.Read))
 				return HttpNotFound();
 
             // ACL (access control list).
@@ -256,16 +257,16 @@ namespace SmartStore.Web.Controllers
             if (manufacturer == null || manufacturer.Deleted)
 				return HttpNotFound();
 
-            // Check whether the current user has a "Manage catalog" permission
-            // It allows him to preview a manufacturer before publishing
-            if (!manufacturer.Published && !_services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog))
+            // Check whether the current user has a "Manage catalog" permission.
+            // It allows him to preview a manufacturer before publishing.
+            if (!manufacturer.Published && !_services.Permissions.Authorize(Permissions.Catalog.Manufacturer.Read))
 				return HttpNotFound();
 
-			//Store mapping
+			// Store mapping.
 			if (!_storeMappingService.Authorize(manufacturer))
 				return HttpNotFound();
 
-			// 'Continue shopping' URL
+			// 'Continue shopping' URL.
 			if (!_services.WorkContext.CurrentCustomer.IsSystemAccount)
 			{
 				_genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer,
@@ -280,12 +281,11 @@ namespace SmartStore.Web.Controllers
 				model.Description.ChangeValue(string.Empty);
 			}
 
-			// prepare picture model
 			model.PictureModel = _helper.PrepareManufacturerPictureModel(manufacturer, model.Name);
 
 			var customerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
 
-			// Featured products
+			// Featured products.
 			var hideFeaturedProducts = _catalogSettings.IgnoreFeaturedProducts || (query.IsSubPage && !_catalogSettings.IncludeFeaturedProductsInSubPages);
 			if (!hideFeaturedProducts)
 			{
@@ -879,12 +879,12 @@ namespace SmartStore.Web.Controllers
 
 			if (_catalogSettings.ShowManufacturersInOffCanvas == true && 
 				_catalogSettings.ManufacturerItemsToDisplayInOffcanvasMenu > 0 &&
-				_services.Permissions.Authorize(StandardPermissionProvider.PublicStoreAllowNavigation))
+				_services.Permissions.Authorize(Permissions.System.AccessShop))
             {
                 ViewBag.ShowManufacturers = true;
             }
 
-			if (_services.Permissions.Authorize(StandardPermissionProvider.PublicStoreAllowNavigation))
+			if (_services.Permissions.Authorize(Permissions.System.AccessShop))
 			{
 				ViewBag.ShowCategories = true;
 			}

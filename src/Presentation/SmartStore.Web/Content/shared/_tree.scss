@@ -1,0 +1,163 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+$default-state-color: $gray-400;
+
+// Tree
+// ------------------------------
+
+.tree {
+    position: relative;
+
+    :first-child {
+        padding-left: 0;
+    }
+
+    ul {
+        position: relative;
+        list-style: none;
+        padding-left: 24px;
+    }
+
+    li {
+        padding: 3px 0;
+    }
+
+    label {
+        margin: 0;
+    }
+
+    .tree-expander-container {
+        display: inline-block;
+        min-width: 15px;
+    }
+
+    .tree-expander {
+        cursor: pointer;
+    }
+
+    .tree-vline {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 6px;
+        width: 0;
+        border-left: 1px solid $gray-300;
+        height: calc(100% - 12px);
+    }
+
+    .tree-hline li::before {
+        content: "";
+        position: absolute;
+        left: 6px;
+        width: 18px;
+        height: 0;
+        margin-top: 10px;
+        border-top: 1px solid $gray-300;
+    }
+
+    .tree-control {
+        cursor: pointer;
+
+        input[type=checkbox] {
+            position: absolute;
+            opacity: 0;
+            height: 0;
+            width: 0;
+            margin: 0;
+        }
+
+        .tree-state:hover::before {
+            box-shadow: 0 0 4px rgba($warning, 0.8);
+            transition: box-shadow 0.1s linear;
+        }
+    }
+
+    .tree-label {
+        position: relative;
+        user-select: none;
+    }
+
+    .tree-leaf {
+        &.left-align {
+            display: inline-block;
+            flex: 0 0 auto;
+            width: auto;
+            max-width: none;
+        }
+    }
+
+    .tree-noleaf > .tree-inner .tree-text {
+        font-weight: $font-weight-medium;
+    }
+    // State box default style.
+    .tree-state::before {
+        content: "";
+        float: left;
+        height: 18px;
+        width: 18px;
+        border-radius: 5px;
+        border: 2px solid $default-state-color;
+        background-color: #fff;
+        margin: 2px 6px 0 0;
+    }
+
+    .tree-state::after {
+        position: absolute;
+        display: block;
+    }
+    // State indicator 'on' and 'off'.
+    .on:after,
+    .in-on:after {
+        content: "";
+        top: 5px;
+        left: 6px;
+        width: 6px;
+        height: 10px;
+        transform: rotate(45deg);
+        border: 2px solid $default-state-color;
+        border-width: 0 3px 3px 0;
+    }
+
+    .on:before,
+    .on:after,
+    .in-on:before,
+    .in-on:after {
+        border-color: $success;
+    }
+
+    .off:before,
+    .in-off:before {
+        border-color: $danger;
+    }
+
+    .in-on:before,
+    .in-on:after,
+    .in-off:before,
+    .in-off:after {
+        opacity: 0.3;
+    }
+    /*.off:after,
+    .in-off:after {
+        content: '\002D';
+        top: 10px;
+        left: 8px;
+        font: bold 20px helvetica, arial, sans-serif;
+        transform: translate(-50%,-50%) scaleX(1.9);
+    }
+
+    .off:before {
+        border-color: $danger;
+    }
+
+    .off:after {
+        color: $danger;
+    }
+
+    .in-off:after {
+        color: $default-state-color;
+    }*/
+}
+

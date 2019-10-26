@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Directory;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Security;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
@@ -30,48 +29,6 @@ namespace SmartStore.Admin.Controllers
             _languageService = languageService;
         }
 
-        public ActionResult Index()
-        {
-            return RedirectToAction("List");
-        }
-
-        public ActionResult List()
-        {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-            {
-                return AccessDeniedView();
-            }
-
-            return View();
-        }
-
-        [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult List(GridCommand command)
-        {
-            var model = new GridModel<QuantityUnitModel>();
-
-            if (Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-            {
-                var quantityUnitModel = _quantityUnitService.GetAllQuantityUnits()
-                    .Select(x => x.ToModel())
-                    .ToList();
-
-                model.Data = quantityUnitModel;
-                model.Total = quantityUnitModel.Count;
-            }
-            else
-            {
-                model.Data = Enumerable.Empty<QuantityUnitModel>();
-
-                NotifyAccessDenied();
-            }
-
-            return new JsonResult
-            {
-                Data = model
-            };
-        }
-
         // Ajax.
         public ActionResult AllQuantityUnits(string label, int selectedId)
         {
@@ -81,24 +38,51 @@ namespace SmartStore.Admin.Controllers
                 quantityUnits.Insert(0, new QuantityUnit { Name = label, Id = 0 });
             }
 
-            var list = from m in quantityUnits
-                       select new
-                       {
-                           id = m.Id.ToString(),
-                           text = m.Name,
-                           selected = m.Id == selectedId
-                       };
+            var list =
+                from m in quantityUnits
+                select new
+                {
+                    id = m.Id.ToString(),
+                    text = m.Name,
+                    selected = m.Id == selectedId
+                };
 
             return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
+        public ActionResult Index()
+        {
+            return RedirectToAction("List");
+        }
+
+        [Permission(Permissions.Configuration.Measure.Read)]
+        public ActionResult List()
+        {
+            return View();
+        }
+
+        [HttpPost, GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Configuration.Measure.Read)]
+        public ActionResult List(GridCommand command)
+        {
+            var model = new GridModel<QuantityUnitModel>();
+
+            var quantityUnitModel = _quantityUnitService.GetAllQuantityUnits()
+                .Select(x => x.ToModel())
+                .ToList();
+
+            model.Data = quantityUnitModel;
+            model.Total = quantityUnitModel.Count;
+
+            return new JsonResult
+            {
+                Data = model
+            };
+        }
+
+        [Permission(Permissions.Configuration.Measure.Create)]
         public ActionResult CreateQuantityUnitPopup()
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-            {
-                return AccessDeniedPartialView();
-            }
-
             var model = new QuantityUnitModel();
             AddLocales(_languageService, model.Locales);
             
@@ -106,13 +90,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.Configuration.Measure.Create)]
         public ActionResult CreateQuantityUnitPopup(string btnId, QuantityUnitModel model)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-            {
-                return AccessDeniedView();
-            }
-
             if (ModelState.IsValid)
             {
                 try
@@ -138,13 +118,9 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
+        [Permission(Permissions.Configuration.Measure.Read)]
         public ActionResult EditQuantityUnitPopup(int id)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-            {
-                return AccessDeniedPartialView();
-            }
-
             var entity = _quantityUnitService.GetQuantityUnitById(id);
             if (entity == null)
             {
@@ -164,13 +140,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.Configuration.Measure.Update)]
         public ActionResult EditQuantityUnitPopup(string btnId, QuantityUnitModel model)
         {
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
-            {
-                return AccessDeniedPartialView();
-            }
-
             var entity = _quantityUnitService.GetQuantityUnitById(model.Id);
             if (entity == null)
             {
@@ -203,22 +175,20 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Configuration.Measure.Delete)]
         public ActionResult DeleteQuantityUnit(int id, GridCommand command)
         {
-            if (Services.Permissions.Authorize(StandardPermissionProvider.ManageMeasures))
+            var entity = _quantityUnitService.GetQuantityUnitById(id);
+
+            try
             {
-                var entity = _quantityUnitService.GetQuantityUnitById(id);
+                _quantityUnitService.DeleteQuantityUnit(entity);
 
-                try
-                {
-                    _quantityUnitService.DeleteQuantityUnit(entity);
-
-                    NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
-                }
-                catch (Exception ex)
-                {
-                    NotifyError(ex);
-                }
+                NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+            }
+            catch (Exception ex)
+            {
+                NotifyError(ex);
             }
 
             return List(command);

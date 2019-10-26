@@ -34,6 +34,7 @@
 //
 // Cookie Consent
 // -------------------------------------------------
+
 .cookie-consent-panel-message {
     background: $gray-800;
 	z-index: $zindex-fixed + 1;
@@ -47,16 +48,19 @@
 	border-top: 1px solid #222;
 	text-align: center;
 	line-height: 1.5;
-}
-.cookie-consent-panel-message .close {
-    color: #fff !important;
-}
-.cookie-consent-panel-message a {
-	color: inherit;
-	text-decoration: underline;
-}
-.cookie-consent-panel-message .popup {
-	display: none !important;
+
+    .close {
+        color: #fff !important;
+    }
+
+    a {
+	    color: inherit;
+	    text-decoration: underline;
+    }
+
+    .popup {
+	    display: none !important;
+    }
 }
 
 //
@@ -141,6 +145,7 @@
 //
 // Hacks
 // -------------------------------------------------
+
 .ie11 {
     .pd-offer-actions .col,
     .offcanvas-cart-footer-row .col {
@@ -186,4 +191,27 @@
     --body: #{$body-color};
     --muted: #{$text-muted};
     --black: #000;
+
+    @if alpha($body-bg) == 0 {
+        --body-bg: #{$site-bg};
+    }
+    @else {
+        --body-bg: #{$body-bg};
+    }
+}
+
+// admin edit
+.btn-admin-edit {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    background-color: rgba(#fff, 0.5);
+    z-index: 1;
+}
+
+.news-item-page:hover .btn-admin-edit,
+.blogpost-page:hover .btn-admin-edit,
+.pd-section-top:hover .btn-admin-edit {
+    display: inline-block;
 }

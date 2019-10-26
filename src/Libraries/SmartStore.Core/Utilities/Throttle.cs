@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore.Core.Utilities
 {
@@ -8,14 +9,15 @@ namespace SmartStore.Core.Utilities
 	{
 		private readonly static ConcurrentDictionary<string, CheckEntry> _checks = new ConcurrentDictionary<string, CheckEntry>(StringComparer.OrdinalIgnoreCase);
 
-		/// <summary>
-		/// Performs a throttled check.
-		/// </summary>
-		/// <param name="key">Identifier for the check process</param>
-		/// <param name="interval">Interval between actual checks</param>
-		/// <param name="check">The check factory</param>
-		/// <returns>Check result</returns>
-		public static bool Check(string key, TimeSpan interval, Func<bool> check)
+        /// <summary>
+        /// Performs a throttled check.
+        /// </summary>
+        /// <param name="key">Identifier for the check process</param>
+        /// <param name="interval">Interval between actual checks</param>
+        /// <param name="check">The check factory</param>
+        /// <returns>Check result</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool Check(string key, TimeSpan interval, Func<bool> check)
 		{
 			return Check(key, interval, false, check);
 		}

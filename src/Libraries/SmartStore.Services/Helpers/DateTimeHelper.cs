@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Services.Common;
@@ -33,32 +34,36 @@ namespace SmartStore.Services.Helpers
             _customerService = customerService;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual TimeZoneInfo FindTimeZoneById(string id)
         {
             return TimeZoneInfo.FindSystemTimeZoneById(id);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual ReadOnlyCollection<TimeZoneInfo> GetSystemTimeZones()
         {
             return TimeZoneInfo.GetSystemTimeZones();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual DateTime ConvertToUserTime(DateTime dt)
         {
             return ConvertToUserTime(dt, dt.Kind);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual DateTime ConvertToUserTime(DateTime dt, DateTimeKind sourceDateTimeKind)
         {
-            dt = DateTime.SpecifyKind(dt, sourceDateTimeKind);
-            var currentUserTimeZoneInfo = this.CurrentTimeZone;
-            return TimeZoneInfo.ConvertTime(dt, currentUserTimeZoneInfo);
+            return TimeZoneInfo.ConvertTime(
+                DateTime.SpecifyKind(dt, sourceDateTimeKind), 
+                this.CurrentTimeZone);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual DateTime ConvertToUserTime(DateTime dt, TimeZoneInfo sourceTimeZone)
         {
-            var currentUserTimeZoneInfo = this.CurrentTimeZone;
-            return ConvertToUserTime(dt, sourceTimeZone, currentUserTimeZoneInfo);
+            return ConvertToUserTime(dt, sourceTimeZone, this.CurrentTimeZone);
         }
 
         public virtual DateTime ConvertToUserTime(DateTime dt, TimeZoneInfo sourceTimeZone, TimeZoneInfo destinationTimeZone)
@@ -66,11 +71,13 @@ namespace SmartStore.Services.Helpers
             return TimeZoneInfo.ConvertTime(dt, sourceTimeZone, destinationTimeZone);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual DateTime ConvertToUtcTime(DateTime dt)
         {
             return ConvertToUtcTime(dt, dt.Kind);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual DateTime ConvertToUtcTime(DateTime dt, DateTimeKind sourceDateTimeKind)
         {
             dt = DateTime.SpecifyKind(dt, sourceDateTimeKind);

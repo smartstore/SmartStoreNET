@@ -479,7 +479,7 @@ namespace SmartStore.Services.Catalog
 		/// <param name="product">Product</param>
         /// <param name="includeDiscounts">A value indicating whether include discounts or not for final price computation</param>
         /// <returns>Final price</returns>
-		public virtual decimal GetFinalPrice(Product product, bool includeDiscounts)
+        public virtual decimal GetFinalPrice(Product product, bool includeDiscounts)
         {
             var customer = _services.WorkContext.CurrentCustomer;
 			return GetFinalPrice(product, customer, includeDiscounts);
@@ -634,13 +634,16 @@ namespace SmartStore.Services.Catalog
 
             displayFromMessage = isBundlePerItemPricing;
 
-			if (product.LowestAttributeCombinationPrice.HasValue && product.LowestAttributeCombinationPrice.Value < lowestPrice)
-			{
-				lowestPrice = product.LowestAttributeCombinationPrice.Value;
-				displayFromMessage = true;
-			}
+            if (product.LowestAttributeCombinationPrice.HasValue)
+            {
+                if (product.LowestAttributeCombinationPrice.Value < lowestPrice)
+                {
+                    lowestPrice = product.LowestAttributeCombinationPrice.Value;
+                }
+                displayFromMessage = true;
+            }
 
-			if (lowestPrice == decimal.Zero && product.Price == decimal.Zero)
+            if (lowestPrice == decimal.Zero && product.Price == decimal.Zero)
 			{
 				lowestPrice = product.LowestAttributeCombinationPrice ?? decimal.Zero;
 			}
@@ -656,7 +659,7 @@ namespace SmartStore.Services.Catalog
 				var tierPrices = context.TierPrices.GetOrLoad(product.Id)
 					.RemoveDuplicatedQuantities();
 
-				displayFromMessage = (tierPrices.Count > 0 && !(tierPrices.Count == 1 && tierPrices.First().Quantity <= 1));
+				displayFromMessage = tierPrices.Count > 0 && !(tierPrices.Count == 1 && tierPrices.First().Quantity <= 1);
 			}
 
 			return lowestPrice;

@@ -1,16 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.News;
+using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.News
 {
     [Validator(typeof(NewsItemValidator))]
-    public class NewsItemModel : TabbableModel, IStoreSelector
+    public class NewsItemModel : TabbableModel
     {
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Language")]
         public int LanguageId { get; set; }
@@ -19,14 +21,14 @@ namespace SmartStore.Admin.Models.News
         [AllowHtml]
         public string LanguageName { get; set; }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
+        // Store mapping.
+        [UIHint("Stores"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
 
-
-		[SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Title")]
+        [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Title")]
         [AllowHtml]
         public string Title { get; set; }
 
@@ -41,6 +43,14 @@ namespace SmartStore.Admin.Models.News
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Full")]
         [AllowHtml]
         public string Full { get; set; }
+
+        [UIHint("Picture")]
+        [SmartResourceDisplayName("Admin.Catalog.News.NewsItems.Fields.Picture")]
+        public int? PictureId { get; set; }
+
+        [UIHint("Picture")]
+        [SmartResourceDisplayName("Admin.Catalog.News.NewsItems.Fields.PreviewPictureId")]
+        public int? PreviewPictureId { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.AllowComments")]
         public bool AllowComments { get; set; }
@@ -80,6 +90,16 @@ namespace SmartStore.Admin.Models.News
             RuleFor(x => x.Title).NotEmpty();
             RuleFor(x => x.Short).NotEmpty();
             RuleFor(x => x.Full).NotEmpty();
+        }
+    }
+
+    public class NewsItemMapper :
+        IMapper<NewsItem, NewsItemModel>
+    {
+        public void Map(NewsItem from, NewsItemModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.SeName = from.GetSeName(from.LanguageId, true, false);
         }
     }
 }

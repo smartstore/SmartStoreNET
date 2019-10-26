@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
@@ -11,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using SmartStore.ComponentModel;
 using SmartStore.Utilities;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore
 {
@@ -18,61 +20,69 @@ namespace SmartStore
     {
         #region Object
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Convert<T>(this object value)
         {
-            if (CommonHelper.TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
+            if (!CommonHelper.TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
             {
-                return (T)result;
+                return default(T);
             }
 
-            return default(T);
+            return (T)result;
         }
 
-		public static T Convert<T>(this object value, T defaultValue)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T Convert<T>(this object value, T defaultValue)
 		{
-            if (CommonHelper.TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
+            if (!CommonHelper.TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
             {
-                return (T)result;
+                return defaultValue;
             }
 
-            return defaultValue;
+            return (T)result;
         }
 
-		public static T Convert<T>(this object value, CultureInfo culture)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T Convert<T>(this object value, CultureInfo culture)
         {
-            if (CommonHelper.TryConvert(value, typeof(T), culture, out object result))
+            if (!CommonHelper.TryConvert(value, typeof(T), culture, out object result))
             {
-                return (T)result;
+                return default(T);
             }
 
-            return default(T);
+            return (T)result;
         }
 
-		public static T Convert<T>(this object value, T defaultValue, CultureInfo culture)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T Convert<T>(this object value, T defaultValue, CultureInfo culture)
 		{
-            if (CommonHelper.TryConvert(value, typeof(T), culture, out object result))
+            if (!CommonHelper.TryConvert(value, typeof(T), culture, out object result))
             {
-                return (T)result;
+                return defaultValue;
             }
 
-            return defaultValue;
+            return (T)result;
         }
 
-		public static object Convert(this object value, Type to)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static object Convert(this object value, Type to)
         {
             if (!CommonHelper.TryConvert(value, to, CultureInfo.InvariantCulture, out object result))
             {
-                throw Error.InvalidCast(value?.GetType(), to);
+                return null;
+                //throw Error.InvalidCast(value?.GetType(), to);
             }
 
             return result;
         }
 
-		public static object Convert(this object value, Type to, CultureInfo culture)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static object Convert(this object value, Type to, CultureInfo culture)
 		{
             if (!CommonHelper.TryConvert(value, to, culture, out object result))
             {
-                throw Error.InvalidCast(value?.GetType(), to);
+                return null;
+                //throw Error.InvalidCast(value?.GetType(), to);
             }
 
             return result;
@@ -82,6 +92,7 @@ namespace SmartStore
 
         #region int
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static char ToHex(this int value)
         {
             if (value <= 9)
@@ -96,6 +107,7 @@ namespace SmartStore
 
         #region String
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int ToInt(this string value, int defaultValue = 0)
         {
 			if (CommonHelper.TryConvert(value, typeof(int), CultureInfo.InvariantCulture, out object result))
@@ -106,7 +118,8 @@ namespace SmartStore
 			return defaultValue;
         }
 
-		public static char ToChar(this string value, bool unescape = false, char defaultValue = '\0')
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static char ToChar(this string value, bool unescape = false, char defaultValue = '\0')
 		{
 			if (value.HasValue() && char.TryParse(unescape ? Regex.Unescape(value) : value, out char result))
 			{
@@ -116,7 +129,8 @@ namespace SmartStore
 			return defaultValue;
 		}
 
-		public static float ToFloat(this string value, float defaultValue = 0)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float ToFloat(this string value, float defaultValue = 0)
         {
 			if (CommonHelper.TryConvert(value, typeof(float), CultureInfo.InvariantCulture, out object result))
 			{
@@ -126,6 +140,7 @@ namespace SmartStore
 			return defaultValue;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ToBool(this string value, bool defaultValue = false)
         {
 			if (CommonHelper.TryConvert(value, typeof(bool), out object result))
@@ -136,11 +151,13 @@ namespace SmartStore
 			return defaultValue;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DateTime? ToDateTime(this string value, DateTime? defaultValue)
         {
             return value.ToDateTime(null, defaultValue);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DateTime? ToDateTime(this string value, string[] formats, DateTime? defaultValue)
         {
             return value.ToDateTime(formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AllowWhiteSpaces, defaultValue);
@@ -222,7 +239,7 @@ namespace SmartStore
 				using (var streamReader = new MemoryStream())
 				{
 					stream.CopyTo(streamReader);
-					return streamReader.GetBuffer();
+					return streamReader.ToArray();
 				}
 			}
 		}
@@ -251,12 +268,14 @@ namespace SmartStore
 			}
 		}
 
-		public static string AsString(this Stream stream)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string AsString(this Stream stream)
 		{
 			return stream.AsString(Encoding.UTF8);
 		}
 
-		public static Task<string> AsStringAsync(this Stream stream)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Task<string> AsStringAsync(this Stream stream)
 		{
 			return stream.AsStringAsync(Encoding.UTF8);
 		}
@@ -349,7 +368,8 @@ namespace SmartStore
                 }
                 else
                 {
-                    StringBuilder sb = new StringBuilder();
+                    var psb = PooledStringBuilder.Rent();
+                    var sb = (StringBuilder)psb;
 
                     byte[] hashBytes = md5.ComputeHash(value);
                     foreach (byte b in hashBytes)
@@ -357,7 +377,7 @@ namespace SmartStore
                         sb.Append(b.ToString("x2").ToLower());
                     }
 
-                    return sb.ToString();
+                    return psb.ToStringAndReturn();
                 }
             }
         }
@@ -400,11 +420,12 @@ namespace SmartStore
 			}
 		}
 
-		#endregion
+        #endregion
 
-		#region Enumerable: Collections/List/Dictionary...
+        #region Enumerable: Collections/List/Dictionary...
 
-		public static T ToObject<T>(this IDictionary<string, object> values) where T : class
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T ToObject<T>(this IDictionary<string, object> values) where T : class
         {
             return (T)values.ToObject(typeof(T));
         }

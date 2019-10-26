@@ -36,7 +36,7 @@
 
 @helper TabCustomerSettings()
 {
-    <script type="text/javascript">
+    <script>
         $(function () {
         	$('#@Html.FieldIdFor(model => model.CustomerSettings.CustomerNumberMethod)').change(function () {
         		$('#pnlCustomerNumberVisibility').toggle($(this).val() !== '@(CustomerNumberMethod.Disabled.ToString())');

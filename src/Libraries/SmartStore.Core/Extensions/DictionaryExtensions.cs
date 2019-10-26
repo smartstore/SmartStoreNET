@@ -7,6 +7,7 @@ using System.Web.Routing;
 using System.Globalization;
 using System.Dynamic;
 using SmartStore.Utilities;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore
 {
@@ -32,6 +33,7 @@ namespace SmartStore
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Merge(this IDictionary<string, object> instance, object values, bool replaceExisting = true)
         {
 			instance.Merge(CommonHelper.ObjectToDictionary(values), replaceExisting);
@@ -48,11 +50,13 @@ namespace SmartStore
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void AppendInValue(this IDictionary<string, object> instance, string key, string separator, string value)
         {
 			AddInValue(instance, key, separator, value, false);
 		}
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void PrependInValue(this IDictionary<string, object> instance, string key, string separator, string value)
         {
 			AddInValue(instance, key, separator, value, true);
@@ -75,7 +79,8 @@ namespace SmartStore
 			}
 		}
 
-		public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> instance, TKey key)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> instance, TKey key)
 		{
 			if (instance == null)
 				throw new ArgumentNullException(nameof(instance));

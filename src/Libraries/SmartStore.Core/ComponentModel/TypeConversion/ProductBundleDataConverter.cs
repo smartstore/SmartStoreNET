@@ -11,7 +11,7 @@ using SmartStore.Core.Domain.Catalog;
 namespace SmartStore.ComponentModel
 {
 	[SuppressMessage("ReSharper", "TryCastAlwaysSucceeds")]
-	public class ProductBundleDataConverter : TypeConverterBase
+	public class ProductBundleDataConverter : DefaultTypeConverter
 	{
 		private readonly bool _forList;
 

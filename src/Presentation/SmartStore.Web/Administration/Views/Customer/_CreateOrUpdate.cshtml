@@ -1,4 +1,6 @@
-﻿@using SmartStore.Core.Domain.Orders;
+﻿@using SmartStore.Collections
+@using SmartStore.Core.Domain.Security
+@using SmartStore.Core.Domain.Orders;
 @model CustomerModel
 
 @Html.ValidationSummary(false)
@@ -11,10 +13,10 @@
 @Html.SmartStore().TabStrip().Name("customer-edit").OnAjaxSuccess("customerEditTab_onAjaxSuccess").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
 {
 	x.Add().Text(T("Admin.Customers.Customers.Info").Text).Content(TabInfo()).Selected(true);
-	x.Add().Text(T("Admin.Customers.Customers.CustomerRoles").Text).Content(TabCustomerRoles());
 
 	if (Model.Id > 0)
 	{
+        x.Add().Text(T("Admin.Configuration.ACL").Text).Content(TabPermissions());
 		x.Add().Text(T("Admin.Customers.Customers.Orders").Text).Content(TabOrders());
 
 		if (Model.DisplayRewardPointsHistory)
@@ -26,8 +28,6 @@
 		x.Add().Text(T("Admin.Customers.Customers.CurrentCart").Text).Content(TabCurrentShoppingCart());
 		x.Add().Text(T("Admin.Customers.Customers.Impersonate").Text).Content(TabImpersonate());
 	}
-
-	//generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customer-edit", this.Html, this.Model));
 })
 
@@ -329,6 +329,16 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedCustomerRoleIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedCustomerRoleIds, null,
+                    Model.AllowManagingCustomerRoles ? (object)null : new { htmlAttributes = new { disabled = "disabled" } })
+                @Html.ValidationMessageFor(model => model.SelectedCustomerRoleIds)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.IsTaxExempt)
             </td>
             <td class="adminData">
@@ -440,35 +450,65 @@
     </table>
 }
 
-@helper TabCustomerRoles()
+@helper TabPermissions()
 {
-	if (Model.AvailableCustomerRoles != null && Model.AvailableCustomerRoles.Count > 0)
-	{
-		foreach (var customerRole in Model.AvailableCustomerRoles)
-		{
-			<div class="form-check">
-				<input type="checkbox" class="form-check-input" name="SelectedCustomerRoleIds" value="@customerRole.Id" id="customer-role-@customerRole.Id"
-						checked="@(Model.SelectedCustomerRoleIds != null && Model.SelectedCustomerRoleIds.Contains(customerRole.Id))"
-						disabled="@(!Model.AllowManagingCustomerRoles)" />
-				<label class="form-check-label" for="customer-role-@customerRole.Id">@customerRole.Name</label>
-			</div>
-		}
-		
-	if (!Model.AllowManagingCustomerRoles)
-		{
-			<input type="hidden" name="SelectedCustomerRoleIds" value="3" />
-		}
-	}
+    if (Model.PermissionTree != null && Model.PermissionTree.HasChildren)
+    {
+        <div class="alert alert-info">
+            @Html.Raw(T("Admin.Customers.PermissionViewNote", Url.Action("List", "CustomerRole")))
+        </div>
+        <p>
+			<button id="ExpandCollapseAll" type="button" class="btn btn-sm btn-secondary">
+				<span>@T("Common.ExpandCollapseAll")</span>
+			</button>
+        </p>
+        <div id="permission-tree" class="tree">
+            @PermissionNode(Model.PermissionTree)
+        </div>
+    }
     else
     {
-		@T("Admin.Customers.Customers.Fields.CustomerRoles.NoRoles")
-    }
+	    <div class="alert alert-warning">
+		    @T("Admin.System.Warnings.NoPermissionsDefined")
+	    </div>
+    }        
+
+    <script>
+        $(function () {
+            // Init permission tree.
+            $('#permission-tree').tree('init', {
+                readOnly: true,
+                nodeState: 'on-off',
+                stateTitles: [@T("Common.Allow").JsText, @T("Common.Deny").JsText, @T("Admin.Permissions.AllowInherited").JsText, @T("Admin.Permissions.DenyInherited").JsText]
+            });
+
+            // Expand\collapse all.
+            $('#ExpandCollapseAll').on('click', function () {
+                $('#permission-tree').tree('expandAll');
+            });
+	    });
+    </script>
+}
+
+@helper PermissionNode(TreeNode<IPermissionNode> node)
+{
+    <ul>
+        @foreach (var child in node.Children)
+        {
+            <li data-name="permission-@child.Value.PermissionRecordId" 
+                data-value="@(child.Value.Allow.HasValue ? (child.Value.Allow.Value ? 2 : 1) : 0)" 
+                data-label="@(child.GetMetadata<string>("DisplayName", false))">
+                @if (child.HasChildren)
+                {
+                    @PermissionNode(child)
+                }
+            </li>
+        }
+    </ul>
 }
 
 @helper TabOrders()
-{ 
-	var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    
+{   
     @(Html.Telerik().Grid<CustomerModel.OrderModel>()
 		.Name("order-grid")
 		.Columns(columns =>
@@ -476,7 +516,6 @@
 			columns.Bound(x => x.Id)
 				.Template(x => Html.ActionLink(x.Id.ToString(), "Edit", "Order", new { id = x.Id }))
 				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= Id #>\"><#= Id #></a>");
-
 			columns.Bound(x => x.OrderTotal)
 				.RightAlign();
 			columns.Bound(x => x.OrderStatus);
@@ -488,17 +527,15 @@
 				.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Order", new { id = x.Id }, new { @class = "btn btn-secondary" }))
 				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= Id #>\" class=\"btn btn-secondary\">" + T("Admin.Common.View").Text + "</a>")
 				.HtmlAttributes(new { align = "right" })
-				.Title(String.Empty);
-
+				.Title(string.Empty);
 		})
-		.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+		.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 		.DataBinding(dataBinding =>
 		{
 			dataBinding.Ajax().Select("OrderList", "Customer", new { customerId = Model.Id });
 		})
 		.PreserveGridState()
 		.EnableCustomBinding(true))
-        
 }
 
 @helper TabRewardPoints()
@@ -585,7 +622,6 @@
 				</td>
 			</tr>
 		</table>
-
 	</text>)
 	.FooterContent(@<text>
 			<button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">
@@ -601,64 +637,72 @@
 
 @helper TabAddresses()
 {
-    @(Html.Telerik().Grid<AddressModel>().Name("customer-addresses-grid")
-		.DataKeys(keys =>
-		{
-			keys.Add(x => x.Id).RouteKey("addressId");
-		})
-		.DataBinding(binding =>
-		{
-			binding.Ajax()
-				.Select("AddressesSelect", "Customer", new { customerId = Model.Id })
-				.Delete("AddressDelete", "Customer", new { customerId = Model.Id });
-		})
-		.Columns(columns =>
-		{
-			columns.Bound(x => x.FirstName).Width("10%");
-			columns.Bound(x => x.LastName).Width("10%");
-			columns.Bound(x => x.Email).Width("10%");
-			columns.Bound(x => x.PhoneNumber).Width("10%");
-			columns.Bound(x => x.FaxNumber).Width("10%");
-			columns.Bound(x => x.AddressHtml).Width("30%")
-				.Encoded(false);
-			columns.Command(commands =>
-			{
-				commands.Custom("edit-address").Text(T("Common.Edit"));
-				commands.Delete().Localize(T);
-			}).HtmlAttributes(new { align = "right" });
-		})
-		.ToolBar(commands => commands.Template(AddressEditGridCommands)))
-    
+    <div>
+	    <a href="@Url.Action("AddressCreate", new { customerId = Model.Id })" class="btn btn-primary mb-3">
+		    <i class="fa fa-plus"></i>
+		    <span>@T("Account.CustomerAddresses.AddNew")</span>
+	    </a>
+    </div>
+    <div id="customer-addresses" class="row">
+        <div class="card-deck card-cols-sm-1 card-cols-lg-5 col-md-12">
+            @foreach (var address in Model.Addresses)
+            {
+                <div class="card">
+                    <div class="card-body">
+	                    <div class="mb-2">
+		                    @Html.Raw(address.FormattedAddress)
+	                    </div>
+	                    <div class="email">
+		                    @T("Order.Email"): @address.Email
+	                    </div>
+	                    @if (address.PhoneNumber.HasValue())
+	                    {
+		                    <div class="phone">
+			                    @T("Order.Phone"): @address.PhoneNumber
+		                    </div>
+	                    }
+	                    @if (address.FaxNumber.HasValue())
+	                    {
+		                    <div class="fax">
+			                    @T("Order.Fax"): @address.FaxNumber
+		                    </div>
+	                    }
+                    </div>
+                    <div class="d-flex pr-2 pl-2 pb-2">
+				        <a href="@Url.Action("AddressEdit", "Customer", new { customerId = Model.Id, addressId = address.Id })" class="btn btn-sm btn-flat btn-icon btn-lg btn-secondary" title="@T("Common.Edit")">
+					        <i class="far fa-edit"></i>
+				        </a>
+                        <button type="button" class="btn btn-sm btn-flat btn-icon btn-lg btn-danger delete-address" title="@T("Common.Delete")" 
+                                data-url="@Url.Action("AddressDelete", "Customer", new { customerId = Model.Id, addressId = address.Id })">
+                            <i class="far fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
 	<script>
 		$(function() {
-			$('#customer-addresses-grid').on('click', '.t-grid-edit-address', function (e) {
-				e.preventDefault();
-				var grid = $('#customer-addresses-grid').data('tGrid');
-				var tr = $(this).closest('tr');
-				var id = grid.dataItem(tr).Id;
-				var href = '@Url.Content("~/Admin/Customer/AddressEdit?customerId=")' + @Model.Id + '&addressid=' + id;
-				
-				location.replace(href);
-
-				return false;
+            $('#customer-addresses').on('click', 'button.delete-address', function () {
+                var card = $(this).closest('.card');
+                $(this).doAjax({
+                    type: 'POST',
+					ask: @T("Admin.Common.AskToProceed").JsText,
+                    callbackSuccess: function (response) {
+                        if (response.success) {
+                            card.remove();
+                        }
+					}
+				});
 			});
 		});
 	</script>
 }
 
-@helper AddressEditGridCommands(Grid<AddressModel> grid)
-{
-	<button type="button" class="btn btn-below btn-warning" onclick="location.href='@Url.Action("AddressCreate", new { customerId = Model.Id })'">
-		<i class="fa fa-plus"></i>
-		<span>@T("Admin.Customers.Customers.Addresses.AddButton")</span>
-	</button>
-}
-
 @helper TabCurrentShoppingCart()
 {
-
 	<h4 class="mt-3">@T("Admin.Customers.Customers.CurrentShoppingCart")</h4>
-
 	<div class="mt-3">
 		@(Html.Telerik().Grid<ShoppingCartItemModel>()
 			.Name("currentshoppingcart-grid")
@@ -683,7 +727,6 @@
 	</div>
 
 	<h4 class="mt-5">@T("Admin.Customers.Customers.CurrentWishlist")</h4>
-
 	<div class="mt-3">
 		@(Html.Telerik().Grid<ShoppingCartItemModel>()
 			.Name("currentwishlist-grid")

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using SmartStore.Core.Localization;
 
@@ -29,22 +30,26 @@ namespace SmartStore.Core.Logging
 
 	public static class INotifierExtension
 	{
-		public static void Information(this INotifier notifier, LocalizedString message, bool durable = true)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Information(this INotifier notifier, LocalizedString message, bool durable = true)
 		{
 			notifier.Add(NotifyType.Info, message, durable);
 		}
 
-		public static void Success(this INotifier notifier, LocalizedString message, bool durable = true)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Success(this INotifier notifier, LocalizedString message, bool durable = true)
 		{
 			notifier.Add(NotifyType.Success, message, durable);
 		}
 
-		public static void Warning(this INotifier notifier, LocalizedString message, bool durable = true)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Warning(this INotifier notifier, LocalizedString message, bool durable = true)
 		{
 			notifier.Add(NotifyType.Warning, message, durable);
 		}
 
-		public static void Error(this INotifier notifier, LocalizedString message, bool durable = true)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Error(this INotifier notifier, LocalizedString message, bool durable = true)
 		{
 			notifier.Add(NotifyType.Error, message, durable);
 		}

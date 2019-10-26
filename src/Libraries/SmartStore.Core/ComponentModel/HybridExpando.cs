@@ -427,7 +427,7 @@ namespace SmartStore.ComponentModel
 
 			if (_instanceProps == null)
 			{
-				var props = FastProperty.GetProperties(_instance) as IDictionary<string, FastProperty>;
+				var props = FastProperty.GetProperties(_instance.GetType()) as IDictionary<string, FastProperty>;
 
 				if (_optMembers != null)
 				{

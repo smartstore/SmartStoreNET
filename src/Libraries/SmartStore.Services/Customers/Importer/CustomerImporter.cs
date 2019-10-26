@@ -71,9 +71,6 @@ namespace SmartStore.Services.Customers.Importer
 
 		protected override void Import(ImportExecuteContext context)
 		{
-			var customer = _services.WorkContext.CurrentCustomer;
-			var allowManagingCustomerRoles = _services.Permissions.Authorize(StandardPermissionProvider.ManageCustomerRoles, customer);
-
 			var allAffiliateIds = _affiliateService.GetAllAffiliates(true)
 				.Select(x => x.Id)
 				.ToList();
@@ -92,7 +89,7 @@ namespace SmartStore.Services.Customers.Importer
 				.ToDictionarySafe(x => new Tuple<int, string>(x.CountryId, x.Abbreviation), x => x.Id);
 			
 			var allCustomerNumbers = new HashSet<string>(
-				_customerRepository.Table.Where(x => !String.IsNullOrEmpty(x.CustomerNumber)).Select(x => x.CustomerNumber),
+				_customerRepository.Table.Where(x => !string.IsNullOrEmpty(x.CustomerNumber)).Select(x => x.CustomerNumber),
 				StringComparer.OrdinalIgnoreCase);
 
 			var allCustomerRoles = _customerRoleRepository.Table
@@ -121,9 +118,9 @@ namespace SmartStore.Services.Customers.Importer
 					{
 						ProcessCustomers(context, batch, allAffiliateIds, allCustomerNumbers);
 					}
-					catch (Exception exception)
+					catch (Exception ex)
 					{
-						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessCustomers");
+						context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessCustomers");
 					}
 
 					// reduce batch to saved (valid) records.
@@ -142,9 +139,9 @@ namespace SmartStore.Services.Customers.Importer
 						_customerRepository.Context.AutoDetectChangesEnabled = true;
 						ProcessCustomerRoles(context, batch, allCustomerRoles);
 					}
-					catch (Exception exception)
+					catch (Exception ex)
 					{
-						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessCustomerRoles");
+						context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessCustomerRoles");
 					}
 					finally
 					{
@@ -158,9 +155,9 @@ namespace SmartStore.Services.Customers.Importer
 					{
 						ProcessGenericAttributes(context, batch, allCountries, allStateProvinces);
 					}
-					catch (Exception exception)
+					catch (Exception ex)
 					{
-						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessGenericAttributes");
+						context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessGenericAttributes");
 					}
 
 					// ===========================================================================
@@ -172,9 +169,9 @@ namespace SmartStore.Services.Customers.Importer
 						{
 							ProcessAvatars(context, batch);
 						}
-						catch (Exception exception)
+						catch (Exception ex)
 						{
-							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessAvatars");
+							context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessAvatars");
 						}
 					}
 
@@ -186,9 +183,9 @@ namespace SmartStore.Services.Customers.Importer
 						_services.DbContext.AutoDetectChangesEnabled = true;
 						ProcessAddresses(context, batch, allCountries, allStateProvinces);
 					}
-					catch (Exception exception)
+					catch (Exception ex)
 					{
-						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessAddresses");
+						context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessAddresses");
 					}
 					finally
 					{
@@ -444,7 +441,7 @@ namespace SmartStore.Services.Customers.Importer
 			Dictionary<string, int> allCountries,
 			Dictionary<Tuple<int, string>, int> allStateProvinces)
 		{
-			// last name is mandatory for an address to be imported or updated
+			// Last name is mandatory for an address to be imported or updated.
 			if (!row.HasDataValue(fieldPrefix + "LastName"))
 				return;
 
@@ -470,7 +467,7 @@ namespace SmartStore.Services.Customers.Importer
 			childRow.SetProperty(context.Result, fieldPrefix + "CountryId", x => x.CountryId);
 			if (childRow.Entity.CountryId == null)
 			{
-				// try with country code
+				// Try with country code.
 				childRow.SetProperty(context.Result, fieldPrefix + "CountryCode", x => x.CountryId, converter: (val, ci) => CountryCodeToId(allCountries, val.ToString()));
 			}
 
@@ -481,7 +478,7 @@ namespace SmartStore.Services.Customers.Importer
 				childRow.SetProperty(context.Result, fieldPrefix + "StateProvinceId", x => x.StateProvinceId);
 				if (childRow.Entity.StateProvinceId == null)
 				{
-					// try with state abbreviation
+					// Try with state abbreviation.
 					childRow.SetProperty(context.Result, fieldPrefix + "StateAbbreviation", x => x.StateProvinceId, converter: (val, ci) => StateAbbreviationToId(allStateProvinces, countryId, val.ToString()));
 				}
 			}

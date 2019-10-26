@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
@@ -10,20 +11,19 @@ using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Email;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Security;
+using SmartStore.Data.Caching;
 using SmartStore.Services.DataExchange.Csv;
+using SmartStore.Services.DataExchange.Import.Events;
 using SmartStore.Services.DataExchange.Import.Internal;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
-using SmartStore.Services.Security;
-using SmartStore.Utilities;
-using SmartStore.Data.Caching;
 using SmartStore.Services.Seo;
-using System.Collections.Generic;
-using SmartStore.Services.DataExchange.Import.Events;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.DataExchange.Import
 {
-	public partial class DataImporter : IDataImporter
+    public partial class DataImporter : IDataImporter
 	{
 		private readonly ICommonServices _services;
 		private readonly IImportProfileService _importProfileService;
@@ -69,25 +69,20 @@ namespace SmartStore.Services.DataExchange.Import
 
 		private bool HasPermission(DataImporterContext ctx)
 		{
-			if (ctx.Request.HasPermission)
-				return true;
+            if (ctx.Request.HasPermission)
+            {
+                return true;
+            }
 
 			var customer = _services.WorkContext.CurrentCustomer;
 
-			if (customer.SystemName == SystemCustomerNames.BackgroundTask)
-				return true;
+            if (customer.SystemName == SystemCustomerNames.BackgroundTask)
+            {
+                return true;
+            }
 
-			if (ctx.Request.Profile.EntityType == ImportEntityType.Product || ctx.Request.Profile.EntityType == ImportEntityType.Category)
-				return _services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog, customer);
-
-			if (ctx.Request.Profile.EntityType == ImportEntityType.Customer)
-				return _services.Permissions.Authorize(StandardPermissionProvider.ManageCustomers, customer);
-
-			if (ctx.Request.Profile.EntityType == ImportEntityType.NewsLetterSubscription)
-				return _services.Permissions.Authorize(StandardPermissionProvider.ManageNewsletterSubscribers, customer);
-
-			return true;
-		}
+            return _services.Permissions.Authorize(Permissions.Configuration.Import.Execute);
+        }
 
 		private void LogResults(DataImporterContext ctx)
 		{

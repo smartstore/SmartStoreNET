@@ -35,10 +35,10 @@
 			tabContent.find('.tab-pane').addClass('offcanvas-scrollable');
 
 			el.find('.nav .nav-item')
-		        .attr('data-toggle', 'offcanvas')
-		        .attr('data-placement', 'right')
-		        .attr('data-fullscreen', 'true')
-		        .attr('data-disablescrolling', 'true')
+                .attr('data-toggle', 'offcanvas')
+                .attr('data-placement', 'right')
+                .attr('data-fullscreen', 'true')
+                .attr('data-disablescrolling', 'true')
                 .data('target', offcanvas);
 		}
 
@@ -55,11 +55,11 @@
 			el.removeClass('collapsed').removeData('tab-content').removeData('offcanvas');
 
 			el.find('.nav .nav-item')
-		        .removeAttr('data-toggle')
-		        .removeAttr('data-placement')
-		        .removeAttr('data-fullscreen')
-		        .removeAttr('data-disablescrolling')
-		        .removeData('target');
+                .removeAttr('data-toggle')
+                .removeAttr('data-placement')
+                .removeAttr('data-fullscreen')
+                .removeAttr('data-disablescrolling')
+                .removeData('target');
 		}
 
 		function toggleOffCanvas() {
@@ -85,25 +85,24 @@
 		this.initialized = true;
 	}
 
-	ResponsiveNav.prototype = {
-		// [...]
-	}
+    ResponsiveNav.prototype = {
+        // [...]
+    };
 
 	// the global, default plugin options
-	var defaults = {
-		// [...]
-	}
+    var defaults = {
+        // [...]
+    };
 	$[pluginName] = { defaults: defaults };
 
 
-	$.fn[pluginName] = function (options) {
-		return this.each(function () {
-			if (!$.data(this, pluginName)) {
-				options = $.extend({}, $[pluginName].defaults, options);
-				$.data(this, pluginName, new ResponsiveNav(this, options));
-			}
-		});
-
-	}
+    $.fn[pluginName] = function (options) {
+        return this.each(function () {
+            if (!$.data(this, pluginName)) {
+                options = $.extend({}, $[pluginName].defaults, options);
+                $.data(this, pluginName, new ResponsiveNav(this, options));
+            }
+        });
+    };
 
 })(jQuery, window, document);

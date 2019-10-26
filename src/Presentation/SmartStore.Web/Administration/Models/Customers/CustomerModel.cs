@@ -1,12 +1,15 @@
-﻿using FluentValidation;
-using FluentValidation.Attributes;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Modelling;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using FluentValidation;
+using FluentValidation.Attributes;
+using SmartStore.Admin.Models.Common;
+using SmartStore.Collections;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Security;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Customers
 {
@@ -18,7 +21,6 @@ namespace SmartStore.Admin.Models.Customers
             AvailableTimeZones = new List<SelectListItem>();
             SendEmail = new SendEmailModel();
             SendPm = new SendPmModel();
-            AvailableCustomerRoles = new List<CustomerRoleModel>();
             AssociatedExternalAuthRecords = new List<AssociatedExternalAuthModel>();
             AvailableCountries = new List<SelectListItem>();
             AvailableStates = new List<SelectListItem>();
@@ -26,6 +28,7 @@ namespace SmartStore.Admin.Models.Customers
 
         public bool AllowUsersToChangeUsernames { get; set; }
         public bool UsernamesEnabled { get; set; }
+        public int GridPageSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.Username")]
         [AllowHtml]
@@ -126,7 +129,6 @@ namespace SmartStore.Admin.Models.Customers
         public int AffiliateId { get; set; }
 		public string AffiliateFullName { get; set; }
 
-        //time zone
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.TimeZoneId")]
         [AllowHtml]
         public string TimeZoneId { get; set; }
@@ -135,7 +137,6 @@ namespace SmartStore.Admin.Models.Customers
 
         public IList<SelectListItem> AvailableTimeZones { get; set; }
 
-        //EU VAT
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.VatNumber")]
         [AllowHtml]
         public string VatNumber { get; set; }
@@ -144,13 +145,11 @@ namespace SmartStore.Admin.Models.Customers
 
         public bool DisplayVatNumber { get; set; }
 
-        //registration date
         [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.LastActivityDate")]
         public DateTime LastActivityDate { get; set; }
 
-        //IP adderss
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.IPAddress")]
         public string LastIpAddress { get; set; }
 
@@ -158,14 +157,14 @@ namespace SmartStore.Admin.Models.Customers
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.LastVisitedPage")]
         public string LastVisitedPage { get; set; }
 
-        //customer roles
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.CustomerRoles")]
         public string CustomerRoleNames { get; set; }
-        public List<CustomerRoleModel> AvailableCustomerRoles { get; set; }
+        
+        [UIHint("CustomerRoles"), AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
         public int[] SelectedCustomerRoleIds { get; set; }
         public bool AllowManagingCustomerRoles { get; set; }
 
-        //reward points history
         public bool DisplayRewardPointsHistory { get; set; }
 
         [SmartResourceDisplayName("Admin.Customers.Customers.RewardPoints.Fields.AddRewardPointsValue")]
@@ -175,9 +174,7 @@ namespace SmartStore.Admin.Models.Customers
         [AllowHtml]
         public string AddRewardPointsMessage { get; set; }
         
-        //send email model
         public SendEmailModel SendEmail { get; set; }
-        //send PM model
         public SendPmModel SendPm { get; set; }
 
         [SmartResourceDisplayName("Admin.Customers.Customers.AssociatedExternalAuth")]
@@ -185,7 +182,9 @@ namespace SmartStore.Admin.Models.Customers
 
 		public bool Deleted { get; set; }
 
-        
+        public TreeNode<IPermissionNode> PermissionTree { get; set; }
+        public List<AddressModel> Addresses { get; set; }
+
         #region Nested classes
 
         public class AssociatedExternalAuthModel : EntityModelBase

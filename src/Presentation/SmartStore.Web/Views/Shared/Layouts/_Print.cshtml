@@ -19,7 +19,7 @@
 	@Html.SmartCssFiles(this.Url, ResourceLocation.Head)
 	@Html.CustomHead()
 </head>
-<body class="@Html.BodyCssClass()">
+<body @Html.BodyAttributes()>
 	@RenderBody()
 	@Html.SmartCssFiles(this.Url, ResourceLocation.Foot)
 </body>

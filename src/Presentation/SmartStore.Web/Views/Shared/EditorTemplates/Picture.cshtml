@@ -53,7 +53,7 @@
 		@(Html.SmartStore().FileUploader()
             .UploadUrl(Url.Action("AsyncUpload", "Picture", new { isTransient = TransientUpload, validate = ValidatePicture, area = "Admin" }))
             .HtmlAttribute("data-fallback-url", pictureService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
-            .AcceptedFileTypes("gif|jpe?g|png")
+            .AcceptedFileTypes("gif|jpe?g|png|svg")
             .ShowRemoveButton(picture != null)
             .ShowRemoveButtonAfterUpload(true)
             .Compact(ViewData["compact"].Convert<bool?>() == true)

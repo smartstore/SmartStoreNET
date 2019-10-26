@@ -11,7 +11,7 @@
 <nav class="menubar">
     <nav class="menubar-group ml-0">
         @{ 
-			Html.RenderAction("LanguageSelector", "Common");
+			/*Html.RenderAction("LanguageSelector", "Common"); */
 			Html.RenderAction("CurrencySelector", "Common");
         }
     </nav>
@@ -25,7 +25,7 @@
 			<a class="menubar-link" href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a>
 		}
 
-		@{ Html.SmartStore().Menu().Name("HelpAndService").Template("Dropdown").Render(); }
+		@{/* Html.SmartStore().Menu().Name("HelpAndService").Template("Dropdown").Render();*/ }
 
 		@if (Model.IsCustomerImpersonated)
 		{

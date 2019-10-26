@@ -18,11 +18,12 @@ namespace SmartStore.Core.Logging
 		
         public bool IsEnabledFor(LogLevel level)
         {
-            return false;
+            return true;
         }
 
 		public void Log(LogLevel level, Exception exception, string message, object[] args)
 		{
+
 		}
 	}
 

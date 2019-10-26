@@ -70,8 +70,9 @@ namespace SmartStore.Core.Data
 			
 			if (!s_installed.HasValue)
 			{
-				s_installed = Current.IsValid();
-			}
+                s_installed = true;// Current.IsValid();
+                //s_installed = Current.IsValid();
+            }
 
 			return s_installed.Value;
 		}

@@ -176,7 +176,7 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult Index()
         {
-            if (DataSettings.DatabaseIsInstalled())
+           if (DataSettings.DatabaseIsInstalled())
                 return RedirectToRoute("HomePage");
 
             // set page timeout to 10 minutes

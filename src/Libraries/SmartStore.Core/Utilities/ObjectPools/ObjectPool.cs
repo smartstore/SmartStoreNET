@@ -24,8 +24,8 @@ namespace SmartStore.Utilities.ObjectPools
 
         // Storage for the pool objects. The first item is stored in a dedicated field because we
         // expect to be able to satisfy most requests from it.
-        protected T _firstItem;
-        protected readonly ObjectHolder[] _items;
+        internal protected T _firstItem;
+        internal protected readonly ObjectHolder[] _items;
 
         /// <summary>
         /// Creates an instance of <see cref="ObjectPool{T}"/>.
@@ -164,7 +164,7 @@ namespace SmartStore.Utilities.ObjectPools
 
         // PERF: the struct wrapper avoids array-covariance-checks from the runtime when assigning to elements of the array.
         [DebuggerDisplay("{Value}")]
-        private protected struct ObjectHolder
+        internal protected struct ObjectHolder
         {
             public T Value;
         }

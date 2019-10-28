@@ -98,6 +98,11 @@ namespace SmartStore.Admin.Models.Stores
                 .Must(x => x.HasValue() && x.IsWebUrl())
                 .WithMessage(T("Admin.Validation.Url"));
 
+            RuleFor(x => x.SecureUrl)
+                .Must(x => x.HasValue() && x.IsWebUrl())
+                .When(x => x.SslEnabled)
+                .WithMessage(T("Admin.Validation.Url"));
+
             RuleFor(x => x.HtmlBodyId).Matches(@"^([A-Za-z])(\w|\-)*$")
                 .WithMessage(T("Admin.Configuration.Stores.Fields.HtmlBodyId.Validation"));
         }

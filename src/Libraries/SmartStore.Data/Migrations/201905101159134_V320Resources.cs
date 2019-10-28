@@ -190,7 +190,6 @@ namespace SmartStore.Data.Migrations
                 "Admin.Customers.Customers.Fields.Fax.Required",
                 "Admin.Validation.Name",
                 "Admin.Validation.EmailAddress",
-                "Admin.Validation.Url",
                 "Admin.Validation.UsernamePassword",
                 "Admin.DataExchange.Export.FileNamePattern.Validate",
                 "Admin.DataExchange.Export.Partition.Validate",

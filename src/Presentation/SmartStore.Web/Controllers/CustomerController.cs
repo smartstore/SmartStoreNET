@@ -482,7 +482,7 @@ namespace SmartStore.Web.Controllers
 					Services.EventPublisher.Publish(new CustomerLogedInEvent { Customer = customer });
 
 					// Redirect home where redirect to referrer would be confusing.
-					if (returnUrl.IsEmpty() || returnUrl.Contains(@"/login?") || returnUrl.Contains(@"/passwordrecoveryconfirm"))
+					if (returnUrl.IsEmpty() || returnUrl.Contains(@"/login?") || returnUrl.Contains(@"/passwordrecoveryconfirm") || returnUrl.Contains(@"/activation"))
 					{
 						return RedirectToRoute("HomePage");
 					}

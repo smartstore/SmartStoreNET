@@ -167,7 +167,7 @@ namespace SmartStore.Web.Framework.UI
                 return result;
             }
 
-            return default;
+            return default(T);
         }
 
         private bool MenuItemAccessPermitted(MenuItem item)

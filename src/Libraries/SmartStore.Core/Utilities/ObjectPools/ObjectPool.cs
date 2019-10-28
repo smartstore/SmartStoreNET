@@ -24,8 +24,8 @@ namespace SmartStore.Utilities.ObjectPools
 
         // Storage for the pool objects. The first item is stored in a dedicated field because we
         // expect to be able to satisfy most requests from it.
-        private protected T _firstItem;
-        private protected readonly ObjectHolder[] _items;
+        protected T _firstItem;
+        protected readonly ObjectHolder[] _items;
 
         /// <summary>
         /// Creates an instance of <see cref="ObjectPool{T}"/>.

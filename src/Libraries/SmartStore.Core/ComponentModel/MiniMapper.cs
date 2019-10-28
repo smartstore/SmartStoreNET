@@ -95,7 +95,7 @@ namespace SmartStore.ComponentModel
                 var toPropType = toProp.Property.PropertyType;
                 var sourceValue = fromProp.GetValue(from);
 
-                if (isEntityMapping && fromPropType == typeof(int) && toPropType == typeof(int?) && object.Equals(0, sourceValue) && toProp.Name.EndsWith("Id"))
+                if (isEntityMapping && (fromPropType == typeof(int) || fromPropType == typeof(int?)) && toPropType == typeof(int?) && object.Equals(0, sourceValue) && toProp.Name.EndsWith("Id"))
                 {
                     // TODO: This is more a hack than a proper solution. Find a more generic way to convert int FK properties...
                     // Special mapper, that avoids DbUpdate exceptions in cases where

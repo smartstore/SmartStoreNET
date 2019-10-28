@@ -161,8 +161,13 @@ namespace SmartStore.Services.Catalog
                 else
                 {
                     // Stored procedures aren't supported. Use LINQ.
-                    tagCount = _productTagRepository.TableUntracked
-                        .Where(pt => pt.Published)
+                    var query = _productTagRepository.TableUntracked;
+                    if (!includeHidden)
+                    {
+                        query = query.Where(x => x.Published);
+                    }
+
+                    tagCount = query
                         .Select(pt => new ProductTagWithCount
                         {
                             ProductTagId = pt.Id,
@@ -170,9 +175,9 @@ namespace SmartStore.Services.Catalog
                                 (from p in pt.Products
                                  join sm in _storeMappingRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = sm.EntityId, pname = sm.EntityName } into psm
                                  from sm in psm.DefaultIfEmpty()
-                                 where (!p.LimitedToStores || storeId == sm.StoreId) && !p.Deleted && p.Published && (includeHidden || pt.Published)
+                                 where (!p.LimitedToStores || storeId == sm.StoreId) && !p.Deleted && p.VisibleIndividually && p.Published && !p.IsSystemProduct && (includeHidden || pt.Published)
                                  select p).Count() :
-                                pt.Products.Count(p => !p.Deleted && p.Published && pt.Published)
+                                pt.Products.Count(p => !p.Deleted && p.VisibleIndividually && p.Published && !p.IsSystemProduct && (includeHidden || pt.Published))
                         });
                 }
 

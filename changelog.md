@@ -40,6 +40,7 @@
 	* #1691 Manually editing/removing block cols/rows does not refresh grid state correctly.
 * Multistore mapping was ignored for manufacturers in sitemap.
 * PayPal PLUS: fixes rare exception "Unsupported Media Type" (415).
+* #1730 Product tag count should filter also based on VisibleIndividually.
 
 
 ## SmartStore.NET 3.2.2

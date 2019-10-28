@@ -69,6 +69,7 @@ namespace SmartStore.Data.Migrations
                     "	WHERE\r\n" +
                     "		p.[Deleted] = 0\r\n" +
                     "		AND p.Published = 1\r\n" +
+                    "		AND p.VisibleIndividually = 1\r\n" +
                     "		AND (@IncludeHidden = 1 Or pt.Published = 1)\r\n" +
                     "		AND (@StoreId = 0 or (p.LimitedToStores = 0 OR EXISTS (\r\n" +
                     "			SELECT 1 FROM [StoreMapping] sm\r\n" +

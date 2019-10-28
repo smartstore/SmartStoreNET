@@ -42,12 +42,13 @@
             // Move invariant value from slider to an associated hidden field
             // as formatted value. Client validation will fail otherwise.
             var val = slider.val(),
-                bubble = el.find('> .range-value');
+                bubble = el.find('> .range-value'),
+                fmt = el.data('format');
 
             el
                 .css('--slider-value', val)
                 .find('.range-value-inner')
-                .text(el.data('format').format(val));
+                .text(fmt === '{0}' ? fmt.format(val) : eval(fmt.format(val)));
 
             if (self.initialized) {
                 var g = SmartStore.globalization,

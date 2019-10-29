@@ -263,6 +263,9 @@ namespace SmartStore.Services.Security
 
             using (var scope = new DbContextScope(_permissionRepository.Context, autoDetectChanges: false, autoCommit: false))
             {
+                var newPermissions = new List<PermissionRecord>();
+
+                // Add new permissions.
                 foreach (var permission in permissions)
                 {
                     var newPermission = GetPermissionBySystemName(permission.SystemName);
@@ -270,40 +273,48 @@ namespace SmartStore.Services.Security
                     {
                         newPermission = new PermissionRecord { SystemName = permission.SystemName };
 
-                        // Default customer role mappings.
-                        var defaultPermissions = permissionProvider.GetDefaultPermissions();
-                        foreach (var defaultPermission in defaultPermissions)
-                        {
-                            var customerRole = _customerService.Value.GetCustomerRoleBySystemName(defaultPermission.CustomerRoleSystemName);
-                            if (customerRole == null)
-                            {
-                                customerRole = new CustomerRole
-                                {
-                                    Active = true,
-                                    Name = defaultPermission.CustomerRoleSystemName,
-                                    SystemName = defaultPermission.CustomerRoleSystemName
-                                };
-                                _customerService.Value.InsertCustomerRole(customerRole);
-                            }
-
-                            if (defaultPermission.PermissionRecords.Any(x => x.SystemName == newPermission.SystemName))
-                            {
-                                if (!customerRole.PermissionRoleMappings.Where(x => x.PermissionRecord.SystemName == newPermission.SystemName).Select(x => x.PermissionRecord).Any())
-                                {
-                                    newPermission.PermissionRoleMappings.Add(new PermissionRoleMapping
-                                    {
-                                        Allow = true,
-                                        CustomerRoleId = customerRole.Id
-                                    });
-                                }
-                            }
-                        }
-
                         InsertPermission(newPermission);
+                        newPermissions.Add(newPermission);
                     }
                 }
 
                 scope.Commit();
+
+                // Add customer role mappings for default permissions.
+                var defaultPermissions = permissionProvider.GetDefaultPermissions();
+
+                foreach (var newPermission in newPermissions)
+                {
+                    foreach (var defaultPermission in defaultPermissions)
+                    {
+                        var customerRole = _customerService.Value.GetCustomerRoleBySystemName(defaultPermission.CustomerRoleSystemName);
+                        if (customerRole == null)
+                        {
+                            customerRole = new CustomerRole
+                            {
+                                Active = true,
+                                Name = defaultPermission.CustomerRoleSystemName,
+                                SystemName = defaultPermission.CustomerRoleSystemName
+                            };
+                            _customerService.Value.InsertCustomerRole(customerRole);
+                        }
+
+                        if (defaultPermission.PermissionRecords.Any(x => x.SystemName == newPermission.SystemName))
+                        {
+                            if (!customerRole.PermissionRoleMappings.Where(x => x.PermissionRecord.SystemName == newPermission.SystemName).Select(x => x.PermissionRecord).Any())
+                            {
+                                newPermission.PermissionRoleMappings.Add(new PermissionRoleMapping
+                                {
+                                    Allow = true,
+                                    CustomerRoleId = customerRole.Id
+                                });
+                            }
+                        }
+                    }
+                }
+
+                scope.Commit();
+
                 _cacheManager.RemoveByPattern(PERMISSION_TREE_PATTERN_KEY);
             }
         }

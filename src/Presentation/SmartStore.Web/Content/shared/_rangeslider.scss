@@ -61,6 +61,7 @@
         justify-content: space-between;
         font-size: 11px;
         z-index: -5;
+        margin-top: -2px;
     }
 
     .range-tick {
@@ -73,6 +74,7 @@
         border-radius: 1px;
         background-color: $custom-range-track-bg;
         white-space: nowrap;
+        margin-bottom: 12px;
 
         &:after {
             position: absolute;

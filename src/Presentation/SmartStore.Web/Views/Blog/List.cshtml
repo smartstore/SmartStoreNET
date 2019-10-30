@@ -92,7 +92,7 @@
                                 <img class="card-img box-scale" src="@imageUrl" alt="@item.PreviewPictureModel.AlternateText" title="@item.PreviewPictureModel.Title" itemprop="image">
                             </div>
                             <div class="bg-overlay bg-@(item.SectionBg) card-img"></div>
-                            <div class="bg-overlay bg-shade bg-shade-@(item.SectionBg) card-img h-50"></div>
+                            <div class="bg-overlay scrim-linear-gradient gradient-@(item.SectionBg) card-img h-50"></div>
                         }
                         else if(!item.SectionBg.HasValue() && itemHasImage)
                         {

@@ -1,7 +1,6 @@
-﻿/// <reference path="../../../Content/shared/_variables-shared.scss" />
-/// <reference path="../../../Content/shared/_mixins.scss" />
-/// <reference path="_variables.scss" />
-/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
+﻿/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
 
 // Common
 // ------------------------------------
@@ -39,10 +38,9 @@
 // Gradients
 // ------------------------------------
 
-@mixin make-bg-gradient($color, $value, $radial: false, $mode: darken) {
+@mixin make-gradient-vars($color, $value, $mode: darken) {
     $cstart: $value;
     $cend: $value;
-    $cred: red($value);
 
     @if $mode == "hue" or $mode == "hue-rev" {
         $mindeg: 30;
@@ -76,84 +74,114 @@
     --cend-rgb: #{red($cend)}, #{green($cend)}, #{blue($cend)};
 }
 
-[class*="bg-gradient-"] {
-    background: linear-gradient(var(--gdir, to bottom right), var(--cstart) 0%, var(--cend) calc(100% * var(--gsize,1)));
+
+
+// Gradient styles
+// ------------------------------
+
+.linear-gradient {
+    background-image: linear-gradient(
+        var(--gdir, 0deg), 
+        var(--cstart) var(--cstartpos, 0%), 
+        var(--cend) var(--cendpos, 100%));
 }
 
-[class*="bg-gradient-radial-"] {
-    background: radial-gradient(var(--gdir, circle at left top), var(--cstart) 0%, var(--cend) calc(100% * var(--gsize,1)));
+.radial-gradient {
+    background-image: radial-gradient(
+        var(--gdir, circle), 
+        var(--cstart) var(--cstartpos, 0%), 
+        var(--cend) var(--cendpos, 100%));
+}
+
+.repeating-linear-gradient {
+    background-image: repeating-linear-gradient(
+        var(--gdir, 0deg), 
+        var(--cstart) var(--cstartpos, 0%), 
+        var(--cend) var(--cendpos, 100%));
+}
+
+.repeating-radial-gradient {
+    background-image: repeating-radial-gradient(
+        var(--gdir, circle), 
+        var(--cstart) var(--cstartpos, 0%), 
+        var(--cend) var(--cendpos, 100%));
+}
+
+.striped-linear-gradient,
+.striped-radial-gradient {
+    --cp1: var(--cstartpos, 0%);
+    --cp3: var(--cendpos, 100%);
+    --cp2: calc(var(--cp1) + ((var(--cp3) - var(--cp1)) * var(--cmidpos, 0.5)));
+}
+
+.striped-linear-gradient {
+    background-image: repeating-linear-gradient(
+        var(--gdir, 0deg), 
+        var(--cstart) var(--cp1),
+        var(--cstart) var(--cp2),
+        var(--cend) var(--cp2),
+        var(--cend) var(--cp3));
+}
+
+.striped-radial-gradient {
+    background-image: repeating-radial-gradient(
+        var(--gdir, circle), 
+        var(--cstart) var(--cp1),
+        var(--cstart) var(--cp2),
+        var(--cend) var(--cp2),
+        var(--cend) var(--cp3));
+}
+
+.scrim-linear-gradient {
+    background-image: scrim-gradient-generic('var(--gdir, 0deg)', false);
+}
+
+.scrim-radial-gradient {
+    background-image: scrim-gradient-generic('var(--gdir, center)', true);
+}
+
+
+// Gradient colors
+// ------------------------------
+
+.gradient-white {
+    --cstart: #fff;
+    --cstart-rgb: 255,255,255;
+    --cend: #{$gray-100};
+    --cend-rgb: #{red($gray-100)},#{green($gray-100)},#{blue($gray-100)};
+}
+
+.gradient-black {
+    --cstart: #000;
+    --cstart-rgb: 0,0,0;
+    --cend: #{$gray-900};
+    --cend-rgb: #{red($gray-900)},#{green($gray-900)},#{blue($gray-900)};
 }
 
 @each $color, $value in $theme-colors {
-    .bg-gradient-#{$color} {
-        @include make-bg-gradient($color, $value, false, "darken");
+    .gradient-#{$color} {
+        @include make-gradient-vars($color, $value, "darken");
     }
-    .bg-gradient-#{$color}-light {
-        @include make-bg-gradient($color, $value, false, "lighten");
+    .gradient-#{$color}-light {
+        @include make-gradient-vars($color, $value, "lighten");
     }
-    .bg-gradient-#{$color}-hue {
-        @include make-bg-gradient($color, $value, false, "hue");
+    .gradient-#{$color}-hue {
+        @include make-gradient-vars($color, $value, "hue");
     }
-    .bg-gradient-#{$color}-rev {
-        @include make-bg-gradient($color, $value, false, "darken-rev");
+    .gradient-#{$color}-rev {
+        @include make-gradient-vars($color, $value, "darken-rev");
     }
-    .bg-gradient-#{$color}-light-rev {
-        @include make-bg-gradient($color, $value, false, "lighten-rev");
+    .gradient-#{$color}-light-rev {
+        @include make-gradient-vars($color, $value, "lighten-rev");
     }
-    .bg-gradient-#{$color}-hue-rev {
-        @include make-bg-gradient($color, $value, false, "hue-rev");
-    }
-
-    .bg-gradient-radial-#{$color} {
-        @include make-bg-gradient($color, $value, true, "darken");
-    }
-    .bg-gradient-radial-#{$color}-light {
-        @include make-bg-gradient($color, $value, true, "lighten");
-    }
-    .bg-gradient-radial-#{$color}-hue {
-        @include make-bg-gradient($color, $value, true, "hue");
-    }
-    .bg-gradient-radial-#{$color}-rev {
-        @include make-bg-gradient($color, $value, true, "darken-rev");
-    }
-    .bg-gradient-radial-#{$color}-light-rev {
-        @include make-bg-gradient($color, $value, true, "lighten-rev");
-    }
-    .bg-gradient-radial-#{$color}-hue-rev {
-        @include make-bg-gradient($color, $value, true, "hue-rev");
+    .gradient-#{$color}-hue-rev {
+        @include make-gradient-vars($color, $value, "hue-rev");
     } 
 }
 
-
-// Shades
-// ------------------------------------
-
-[class*="bg-shade-"] {
-    background: scrim-gradient-generic('var(--gdir, to right)', false);
-}
-
-[class*="bg-shade-radial"] {
-    background: scrim-gradient-generic('var(--gdir, center at top left)', true);
-}
-
-.bg-shade-white,
-.bg-shade-radial-white {
-    --cstart: #fff;
-    --cstart-rgb: 255,255,255;
-}
-
-.bg-shade-black,
-.bg-shade-radial-black {
-    --cstart: #000;
-    --cstart-rgb: 0,0,0;
-}
-
-@each $color, $value in $theme-colors {
-    .bg-shade-#{$color},
-    .bg-shade-radial-#{$color} {
-        --cstart: #{$value};
-        --cstart-rgb: #{red($value)}, #{green($value)}, #{blue($value)};
-    }
+.gradient-shade {
+    --cend: rgba(var(--cstart-rgb), 0);
+    --cend-rgb: var(--cstart-rgb);
 }
 
 
@@ -189,13 +217,13 @@
     $o2: $o1 - $step;
 
     .bg-tint-#{$size} {
-        .bg-overlay:not(.bg-mask) { opacity: $o1 !important; }
-        &:hover .bg-overlay:not(.bg-mask) { opacity: $o2 !important; }
+        .bg-overlay:not(.bg-divider) { opacity: $o1 !important; }
+        &:hover .bg-overlay:not(.bg-divider) { opacity: $o2 !important; }
     }
 
     .bg-tint-#{$size}-rev {
-        .bg-overlay:not(.bg-mask) { opacity: $o2 !important; }
-        &:hover .bg-overlay:not(.bg-mask) { opacity: $o1 !important; }
+        .bg-overlay:not(.bg-divider) { opacity: $o2 !important; }
+        &:hover .bg-overlay:not(.bg-divider) { opacity: $o1 !important; }
     }
 }
 

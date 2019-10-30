@@ -183,7 +183,7 @@ $scrim-gradient-coords: (
     $stops: ();
 
     @each $colorstop, $alpha in $scrim-gradient-coords {
-        $stop: hsla($hue, $saturation, $lightness, $alpha) calc(#{percentage($colorstop/100)} * var(--gsize,1));
+        $stop: hsla($hue, $saturation, $lightness, $alpha) calc(#{$colorstop / 100} * var(--cendpos,100%));
         $stops: append($stops, $stop, comma);
     }
 
@@ -199,7 +199,7 @@ $scrim-gradient-coords: (
     $stops: ();
 
     @each $colorstop, $alpha in $scrim-gradient-coords {
-        $stop: rgba(var(--cstart-rgb), $alpha) calc(#{percentage($colorstop/100)} * var(--gsize,1));
+        $stop: rgba(var(--cstart-rgb), $alpha) calc(#{$colorstop / 100} * var(--cendpos,100%));
         $stops: append($stops, $stop, comma);
     }
 

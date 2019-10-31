@@ -154,12 +154,13 @@ namespace SmartStore.Services.Blogs
 			string tag,
             int pageIndex, 
 			int pageSize, 
-			bool showHidden = false)
+			bool showHidden = false,
+            DateTime? maxAge = null)
         {
             tag = tag.Trim();
 
             //we laod all records and only then filter them by tag
-			var blogPostsAll = GetAllBlogPosts(storeId, languageId, null, null, 0, int.MaxValue, showHidden);
+			var blogPostsAll = GetAllBlogPosts(storeId, languageId, null, null, 0, int.MaxValue, showHidden, maxAge);
             var taggedBlogPosts = new List<BlogPost>();
             
             foreach (var blogPost in blogPostsAll)

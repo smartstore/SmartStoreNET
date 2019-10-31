@@ -10,7 +10,7 @@ namespace SmartStore.Web.Models.Blogs
         public virtual DateTime? GetParsedMonth()
         {
             DateTime? result = null;
-            if (!String.IsNullOrEmpty(this.Month))
+            if (this.Month.HasValue())
             {
                 string[] tempDate = this.Month.Split(new char[] { '-' });
                 if (tempDate.Length == 2)

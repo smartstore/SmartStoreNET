@@ -12,6 +12,8 @@ namespace SmartStore.Web.Models.Blogs
         }
 
         public int WorkingLanguageId { get; set; }
+        public bool RenderHeading { get; set; }
+        public bool RssToLinkButton { get; set; }
         public BlogPagingFilteringModel PagingFilteringContext { get; set; }
         public IList<BlogPostModel> BlogPosts { get; set; }
     }

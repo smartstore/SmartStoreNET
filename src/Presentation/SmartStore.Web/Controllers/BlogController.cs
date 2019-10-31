@@ -244,6 +244,45 @@ namespace SmartStore.Web.Controllers
             return model;
         }
 
+        [NonAction]
+        protected BlogPostListModel PrepareBlogPostListModel(int? maxPostAmount, int? maxAgeInDays, bool renderHeading, string postsWithTag)
+        {
+            var storeId = _services.StoreContext.CurrentStore.Id;
+            var workingLanguageId = _services.WorkContext.WorkingLanguage.Id;
+            var model = new BlogPostListModel
+            {
+                RenderHeading = renderHeading,
+                RssToLinkButton = renderHeading
+            };
+
+            DateTime? maxAge = null;
+            if (maxAgeInDays.HasValue)
+            {
+                maxAge = DateTime.UtcNow.AddDays(-maxAgeInDays.Value);
+            }
+
+            IPagedList<BlogPost> blogPosts;
+            if (!postsWithTag.IsEmpty())
+            {
+                blogPosts = _blogService.GetAllBlogPostsByTag(storeId, workingLanguageId, postsWithTag, 0, maxPostAmount ?? 100, false, maxAge);
+            }
+            else
+            {
+                blogPosts = _blogService.GetAllBlogPosts(storeId, workingLanguageId, null, null, 0, maxPostAmount ?? 100, false, maxAge);
+            }
+
+            model.BlogPosts = blogPosts
+                .Select(x =>
+                {
+                    var blogPostModel = new BlogPostModel();
+                    PrepareBlogPostModel(blogPostModel, x, false);
+                    return blogPostModel;
+                })
+                .ToList();
+
+            return model;
+        }
+
         #endregion
 
         #region Methods
@@ -255,6 +294,14 @@ namespace SmartStore.Web.Controllers
 
             var model = PrepareBlogPostListModel(command);
             return View("List", model);
+        }
+
+        [ChildActionOnly]
+        public ActionResult BlogSummary(int? maxPostAmount, int? maxAgeInDays, bool renderHeading, string postsWithTag)
+        {
+            var model = PrepareBlogPostListModel(maxPostAmount, maxAgeInDays, renderHeading, postsWithTag);
+
+            return PartialView(model);
         }
 
         public ActionResult BlogByTag(string tag, BlogPagingFilteringModel command)

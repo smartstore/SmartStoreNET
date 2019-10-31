@@ -1836,6 +1836,15 @@
     <Content Include="Content\shared\_box.scss" />
     <Content Include="Content\shared\_sections.scss" />
     <Content Include="Themes\Flex\Content\_news.scss" />
+    <Content Include="Views\Blog\Partials\BlogSummaryList.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Blog\Partials\BlogSummaryHeading.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Blog\Partials\BlogSummary.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -370,7 +370,6 @@ namespace SmartStore.Services.Security
                 var node = tree.SelectNodeById(permissionSystemName);
                 if (node == null)
                 {
-                    Logger.Error(T("Admin.Permissions.UnknownPermission", permissionSystemName));
                     continue;
                 }
 
@@ -443,7 +442,6 @@ namespace SmartStore.Services.Security
                 var node = tree.SelectNodeById(permissionSystemName);
                 if (node == null)
                 {
-                    Logger.Error(T("Admin.Permissions.UnknownPermission", permissionSystemName));
                     continue;
                 }
 

@@ -84,7 +84,6 @@
 
             builder.AddOrUpdate("Admin.Permissions.AllowInherited", "Allow (inherited)", "Erlaubt (geerbt)");
             builder.AddOrUpdate("Admin.Permissions.DenyInherited", "Deny (inherited)", "Verweigert (geerbt)");
-            builder.AddOrUpdate("Admin.Permissions.UnknownPermission", "Unknown permission \"{0}\".", "Unbekanntes Zugriffsrecht \"{0}\".");
 
             builder.AddOrUpdate("Admin.AccessDenied.DetailedDescription",
                 "<div>You do not have permission to perform the selected operation.</div><div>Access right: {0}</div><div>System name: {1}</div>",

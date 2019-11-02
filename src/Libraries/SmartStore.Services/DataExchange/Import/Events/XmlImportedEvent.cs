@@ -10,7 +10,7 @@ namespace SmartStore.Services.DataExchange.Import.Events
         /// </summary>
         /// <param name="data">Additional data</param>
         /// <param name="tagname">Name of the xml node</param>
-        public XmlImportedEvent(Dictionary<int, XPathNavigator> data, string tagname)
+        public XmlImportedEvent(Dictionary<int, AdditionalXmlData> data, string tagname)
         {
             Guard.NotEmpty(data, nameof(data));
             Guard.NotNull(tagname, nameof(tagname));
@@ -22,7 +22,7 @@ namespace SmartStore.Services.DataExchange.Import.Events
         /// <summary>
         /// Additional data
         /// </summary>
-        public Dictionary<int, XPathNavigator> Data
+        public Dictionary<int, AdditionalXmlData> Data
         {
             get;
             set;
@@ -35,6 +35,46 @@ namespace SmartStore.Services.DataExchange.Import.Events
         {
             get;
             set;
+        }
+    }
+
+
+    public class AdditionalXmlData
+    {
+        public AdditionalXmlData(int exportedEntityId, int importedEntityId, XPathNavigator data)
+        {
+            Guard.NotNull(data, nameof(data));
+
+            ExportedEntityId = exportedEntityId;
+            ImportedEntityId = importedEntityId;
+            Data = data;
+        }
+
+        /// <summary>
+        /// The original, exported ID of the entity.
+        /// </summary>
+        public int ExportedEntityId
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// The ID of the imported entity.
+        /// </summary>
+        public int ImportedEntityId
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Additional XML data.
+        /// </summary>
+        public XPathNavigator Data
+        {
+            get;
+            private set;
         }
     }
 }

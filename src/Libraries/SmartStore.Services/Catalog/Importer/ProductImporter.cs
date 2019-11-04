@@ -1287,7 +1287,7 @@ namespace SmartStore.Services.Catalog.Importer
                             // insert attr
                             existingAttr = new SpecificationAttribute
                             {
-                                Name = attrName,
+                                Name = attrName.Truncate(400),
                                 DisplayOrder = 0,
                                 AllowFiltering = false,
                                 ShowOnProductPage = true
@@ -1317,7 +1317,7 @@ namespace SmartStore.Services.Catalog.Importer
                             existingOption = new SpecificationAttributeOption
                             {
                                 SpecificationAttribute = existingAttr,
-                                Name = attrValue,
+                                Name = attrValue.Truncate(400),
                                 DisplayOrder = 0
                             };
 

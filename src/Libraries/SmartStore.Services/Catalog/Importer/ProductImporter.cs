@@ -834,8 +834,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 				if (id != 0 && parentGroupedProductId != 0 && srcToDestId.ContainsKey(id) && srcToDestId.ContainsKey(parentGroupedProductId))
 				{
-					// Only touch relationship if child and parent were inserted.
-					if (srcToDestId[id].Inserted && srcToDestId[parentGroupedProductId].Inserted && srcToDestId[id].DestinationId != 0)
+					if (srcToDestId[id].DestinationId != 0)
 					{
 						var product = _productRepository.GetById(srcToDestId[id].DestinationId);
 						if (product != null)

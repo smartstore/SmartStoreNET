@@ -633,13 +633,6 @@ legend {
 		max-width: 100%;
 	}
 
-	&.adminContent-boxed {
-		.adminTitle, .adminData {
-			padding-left: $grid-gutter-width / 2;
-			padding-right: $grid-gutter-width / 2;
-		}
-	}
-
 	&:not(.adminContent-vertical) > tbody > tr:not(.wide),
 	&:not(.adminContent-vertical) > tr:not(.wide),
 	&:not(.adminContent-vertical) .adminRow:not(.wide) {
@@ -690,6 +683,13 @@ legend {
 					max-width: 100%;
 				}
 			}
+		}
+	}
+
+	&.adminContent-boxed {
+		.adminTitle, .adminData {
+			padding-left: $grid-gutter-width / 2 !important;
+			padding-right: $grid-gutter-width / 2 !important;
 		}
 	}
 }

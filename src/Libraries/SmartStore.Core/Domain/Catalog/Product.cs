@@ -93,6 +93,12 @@ namespace SmartStore.Core.Domain.Catalog
 		public bool VisibleIndividually { get; set; }
 
         /// <summary>
+        /// Gets or sets the visibility level of the product.
+        /// </summary>
+        [DataMember]
+        public ProductVisibility Visibility { get; set; }
+
+        /// <summary>
         /// Gets or sets the name
         /// </summary>
         [DataMember]

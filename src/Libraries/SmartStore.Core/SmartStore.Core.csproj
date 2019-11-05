@@ -211,6 +211,7 @@
     <Compile Include="Domain\Catalog\PriceDisplayStyle.cs" />
     <Compile Include="Domain\Catalog\ProductAttributeOption.cs" />
     <Compile Include="Domain\Catalog\ProductAttributeOptionsSet.cs" />
+    <Compile Include="Domain\Catalog\ProductVisibility.cs" />
     <Compile Include="Domain\Catalog\QuantiyControlType.cs" />
     <Compile Include="Domain\Catalog\IPagingOptions.cs" />
     <Compile Include="Domain\Catalog\PriceDisplayType.cs" />

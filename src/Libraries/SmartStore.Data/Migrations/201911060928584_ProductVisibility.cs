@@ -10,6 +10,7 @@ namespace SmartStore.Data.Migrations
         public override void Up()
         {
             AddColumn("dbo.Product", "Visibility", c => c.Int(nullable: false));
+            CreateIndex("dbo.Product", "Visibility");
 
             if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
             {
@@ -17,9 +18,10 @@ namespace SmartStore.Data.Migrations
                 Sql($"Update [dbo].[Product] Set [Visibility] = {hidden} Where [VisibleIndividually] = 0");
             }
         }
-        
+
         public override void Down()
         {
+            DropIndex("dbo.Product", new[] { "Visibility" });
             DropColumn("dbo.Product", "Visibility");
         }
     }

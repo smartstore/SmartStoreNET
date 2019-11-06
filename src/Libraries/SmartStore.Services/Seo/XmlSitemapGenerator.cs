@@ -725,8 +725,8 @@ namespace SmartStore.Services.Seo
 			{
 				var searchQuery = new CatalogSearchQuery()
 					.VisibleOnly(_services.WorkContext.CurrentCustomer)
-					.VisibleIndividuallyOnly(true)
-					.HasStoreId(storeId);
+                    .WithVisibility(ProductVisibility.Full)
+                    .HasStoreId(storeId);
 
 				holder.Products = _catalogSearchService.PrepareQuery(searchQuery);
 			}

@@ -236,22 +236,28 @@ namespace SmartStore.Services.Tests.Search
 			Assert.That(result.Hits.Count, Is.EqualTo(2));
 		}
 
-		[Test]
-		public void LinqSearch_filter_visible_individually_only()
-		{
-			var products = new List<Product>
-			{
-				new SearchProduct(1),
-				new SearchProduct(2) { VisibleIndividually = false },
-				new SearchProduct(3)
-			};
+        [Test]
+        public void LinqSearch_filter_visibility()
+        {
+            var products = new List<Product>
+            {
+                new SearchProduct(1),
+                new SearchProduct(2) { Visibility = ProductVisibility.Hidden },
+                new SearchProduct(3),
+                new SearchProduct(4) { Visibility = ProductVisibility.SearchResults }
+            };
 
-			var result = Search(new CatalogSearchQuery().VisibleIndividuallyOnly(true), products);
+            var result = Search(new CatalogSearchQuery().WithVisibility(ProductVisibility.Full), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(2));
 
-			Assert.That(result.Hits.Count, Is.EqualTo(2));
-		}
+            result = Search(new CatalogSearchQuery().WithVisibility(ProductVisibility.SearchResults), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(3));
 
-		[Test]
+            result = Search(new CatalogSearchQuery().WithVisibility(ProductVisibility.Hidden), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(1));
+        }
+
+        [Test]
 		public void LinqSearch_filter_homepage_products_only()
 		{
 			var products = new List<Product>
@@ -269,21 +275,20 @@ namespace SmartStore.Services.Tests.Search
 		[Test]
 		public void LinqSearch_filter_has_parent_grouped_product_id()
 		{
-			var products = new List<Product>
-			{
-				new SearchProduct(1),
-				new SearchProduct(2) { ParentGroupedProductId = 16, VisibleIndividually = false },
-				new SearchProduct(3) { ParentGroupedProductId = 36, VisibleIndividually = false },
-				new SearchProduct(4) { ParentGroupedProductId = 9 },
-				new SearchProduct(5) { ParentGroupedProductId = 36 }
-			};
+            var products = new List<Product>
+            {
+                new SearchProduct(1),
+                new SearchProduct(2) { ParentGroupedProductId = 16, Visibility = ProductVisibility.Hidden },
+                new SearchProduct(3) { ParentGroupedProductId = 36, Visibility = ProductVisibility.Hidden },
+                new SearchProduct(4) { ParentGroupedProductId = 9 },
+                new SearchProduct(5) { ParentGroupedProductId = 36 }
+            };
 
-			var result = Search(new CatalogSearchQuery().HasParentGroupedProduct(36), products);
+            var result = Search(new CatalogSearchQuery().HasParentGroupedProduct(36), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(2));
+        }
 
-			Assert.That(result.Hits.Count, Is.EqualTo(2));
-		}
-
-		[Test]
+        [Test]
 		public void LinqSearch_filter_has_store_id()
 		{
 			var products = new List<Product>
@@ -672,7 +677,7 @@ namespace SmartStore.Services.Tests.Search
 				FullDescription = "Enthusiastically utilize compelling systems with vertical collaboration and idea-sharing. Interactively incubate bleeding-edge innovation with future-proof catalysts for change. Distinctively exploit parallel paradigms rather than progressive scenarios. Compellingly synergize visionary ROI after process-centric resources. Objectively negotiate performance based best practices with 24/7 vortals. Globally pontificate reliable processes for innovative services. Monotonectally enable mission - critical information and quality.";
 				Sku = "X-" + id.ToString();
 				Published = true;
-				VisibleIndividually = true;
+                Visibility = ProductVisibility.Full;
 				ProductTypeId = (int)ProductType.SimpleProduct;
 				StockQuantity = 10000;
 				CreatedOnUtc = new DateTime(2016, 8, 24);

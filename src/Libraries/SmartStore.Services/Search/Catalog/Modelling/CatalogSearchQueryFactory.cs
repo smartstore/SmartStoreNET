@@ -101,11 +101,19 @@ namespace SmartStore.Services.Search.Modelling
 				.OriginatesFrom(origin)
 				.WithLanguage(_services.WorkContext.WorkingLanguage)
 				.WithCurrency(_services.WorkContext.WorkingCurrency)
-				.VisibleIndividuallyOnly(true)
 				.BuildFacetMap(!isInstantSearch);
 
 			// Visibility.
 			query.VisibleOnly(!QuerySettings.IgnoreAcl ? _services.WorkContext.CurrentCustomer : null);
+
+            if (isInstantSearch || origin.IsCaseInsensitiveEqual("Search/Search"))
+            {
+                query.WithVisibility(ProductVisibility.SearchResults);
+            }
+            else
+            {
+                query.WithVisibility(ProductVisibility.Full);
+            }
 
 			// Store.
 			if (!QuerySettings.IgnoreMultiStore)

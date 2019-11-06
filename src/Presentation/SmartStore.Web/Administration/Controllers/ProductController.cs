@@ -215,7 +215,7 @@ namespace SmartStore.Admin.Controllers
 			var m = model;
 
 			p.ProductTypeId = m.ProductTypeId;
-			p.VisibleIndividually = m.VisibleIndividually;
+            p.Visibility = m.Visibility;
 			p.ProductTemplateId = m.ProductTemplateId;
 
 			p.Name = m.Name;
@@ -858,7 +858,6 @@ namespace SmartStore.Admin.Controllers
 				model.IsShipEnabled = true;
 				model.AllowCustomerReviews = true;
 				model.Published = true;
-				model.VisibleIndividually = true;
                 model.HasPreviewPicture = false;
 			}
 		}

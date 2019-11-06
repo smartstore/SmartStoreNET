@@ -126,12 +126,12 @@ namespace SmartStore.Services.Search
 			return WithFilter(SearchFilter.ByField("published", value).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
-		public CatalogSearchQuery VisibleIndividuallyOnly(bool value)
-		{
-			return WithFilter(SearchFilter.ByField("visibleindividually", value).Mandatory().ExactMatch().NotAnalyzed());
-		}
+        public CatalogSearchQuery WithVisibility(ProductVisibility value)
+        {
+            return WithFilter(SearchFilter.ByField("visibility", (int)value).Mandatory().ExactMatch().NotAnalyzed());
+        }
 
-		public CatalogSearchQuery HomePageProductsOnly(bool value)
+        public CatalogSearchQuery HomePageProductsOnly(bool value)
 		{
 			return WithFilter(SearchFilter.ByField("showonhomepage", value).Mandatory().ExactMatch().NotAnalyzed());
 		}

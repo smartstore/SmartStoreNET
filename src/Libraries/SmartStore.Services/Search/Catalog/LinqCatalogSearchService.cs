@@ -336,11 +336,20 @@ namespace SmartStore.Services.Search
 						}
 					}
 				}
-				else if (filter.FieldName == "visibleindividually")
-				{
-					query = query.Where(x => x.VisibleIndividually == (bool)filter.Term);
-				}
-				else if (filter.FieldName == "showonhomepage")
+                else if (filter.FieldName == "visibility")
+                {
+                    var visibility = (ProductVisibility)filter.Term;
+                    switch (visibility)
+                    {
+                        case ProductVisibility.SearchResults:
+                            query = query.Where(x => x.Visibility <= visibility);
+                            break;
+                        default:
+                            query = query.Where(x => x.Visibility == visibility);
+                            break;
+                    }
+                }
+                else if (filter.FieldName == "showonhomepage")
 				{
 					query = query.Where(p => p.ShowOnHomePage == (bool)filter.Term);
 				}
@@ -533,7 +542,7 @@ namespace SmartStore.Services.Search
 				}
 			}
 
-			#endregion
+            #endregion
 
 			return query;
 		}

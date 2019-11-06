@@ -96,6 +96,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the visibility level of the product.
         /// </summary>
         [DataMember]
+        [Index]
         public ProductVisibility Visibility { get; set; }
 
         /// <summary>

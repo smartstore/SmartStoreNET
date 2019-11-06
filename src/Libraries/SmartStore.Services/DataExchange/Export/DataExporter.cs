@@ -880,8 +880,8 @@ namespace SmartStore.Services.DataExchange.Export
 				var searchQuery = new CatalogSearchQuery()
 					.WithCurrency(ctx.ContextCurrency)
 					.WithLanguage(ctx.ContextLanguage)
-					.VisibleIndividuallyOnly(true)
-					.HasStoreId(ctx.Request.Profile.PerStore ? ctx.Store.Id : f.StoreId)
+                    .WithVisibility(ProductVisibility.Full)
+                    .HasStoreId(ctx.Request.Profile.PerStore ? ctx.Store.Id : f.StoreId)
 					.PriceBetween(f.PriceMinimum, f.PriceMaximum)
 					.WithStockQuantity(f.AvailabilityMinimum, f.AvailabilityMaximum)
 					.CreatedBetween(createdFrom, createdTo);

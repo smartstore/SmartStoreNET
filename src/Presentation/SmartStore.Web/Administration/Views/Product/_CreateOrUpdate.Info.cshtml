@@ -55,6 +55,32 @@
                     @Html.ValidationMessageFor(model => model.Id)
                 </td>
             </tr>
+		    if(Model.CreatedOn.HasValue)
+		    {
+			    <tr>
+				    <td class="adminTitle">
+					    @Html.SmartLabelFor(model => model.CreatedOn)
+				    </td>
+				    <td class="adminData">
+					    <div class="form-control-plaintext">
+						    @Html.DisplayFor(model => model.CreatedOn)
+					    </div>
+				    </td>
+			    </tr>
+		    }
+		    if(Model.UpdatedOn.HasValue)
+		    {
+			    <tr>
+				    <td class="adminTitle">
+					    @Html.SmartLabelFor(model => model.UpdatedOn)
+				    </td>
+				    <td class="adminData">
+					    <div class="form-control-plaintext">
+						    @Html.DisplayFor(model => model.UpdatedOn)
+					    </div>
+				    </td>
+			    </tr>
+		    }
             <tr>
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.ProductUrl)
@@ -113,13 +139,22 @@
                 @Html.ValidationMessageFor(model => model.ProductTypeId)
             </td>
         </tr>
-        <tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Published)
+			</td>
+			<td class="adminData">
+                @Html.CheckBoxFor(model => model.Published, new { data_toggler_for = "#pnlProductVisibility" })
+				@Html.ValidationMessageFor(model => model.Published)
+			</td>
+		</tr>
+        <tr id="pnlProductVisibility">
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.VisibleIndividually)
+                @Html.SmartLabelFor(model => model.Visibility)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.VisibleIndividually)
-                @Html.ValidationMessageFor(model => model.VisibleIndividually)
+                @Html.DropDownListFor(model => model.Visibility, Model.Visibility.ToSelectList())
+                @Html.ValidationMessageFor(model => model.Visibility)
             </td>
         </tr>
         @if (Model.Id > 0 && Model.AssociatedToProductId > 0)
@@ -322,41 +357,6 @@
 				@Html.ValidationMessageFor(model => model.HomePageDisplayOrder)
 			</td>
 		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.Published)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.Published)
-				@Html.ValidationMessageFor(model => model.Published)
-			</td>
-		</tr>
-		@if(Model.CreatedOn.HasValue)
-		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CreatedOn)
-				</td>
-				<td class="adminData">
-					<div class="form-control-plaintext">
-						@Html.DisplayFor(model => model.CreatedOn)
-					</div>
-				</td>
-			</tr>
-		}
-		@if(Model.UpdatedOn.HasValue)
-		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.UpdatedOn)
-				</td>
-				<td class="adminData">
-					<div class="form-control-plaintext">
-						@Html.DisplayFor(model => model.UpdatedOn)
-					</div>
-				</td>
-			</tr>
-		}
 	</table>
 
 	<table class="adminContent" id="group-required-other-products">

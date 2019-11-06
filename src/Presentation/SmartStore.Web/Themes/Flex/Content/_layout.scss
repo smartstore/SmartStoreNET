@@ -9,13 +9,13 @@
 
 @include media-breakpoint-down(md) {
     html {
-        font-size: 15px;
+        font-size: $font-size-root-md;
     }
 }
 
 @include media-breakpoint-down(sm) {
     html {
-        font-size: 14px;
+        font-size: $font-size-root-sm;
     }
 }
 

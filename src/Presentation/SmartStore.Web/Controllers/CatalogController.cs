@@ -185,8 +185,8 @@ namespace SmartStore.Web.Controllers
 
 				var featuredProductsQuery = new CatalogSearchQuery()
 					.VisibleOnly(customer)
-					.VisibleIndividuallyOnly(true)
-					.WithCategoryIds(true, categoryId)
+                    .WithVisibility(ProductVisibility.Full)
+                    .WithCategoryIds(true, categoryId)
 					.HasStoreId(_services.StoreContext.CurrentStore.Id)
 					.WithLanguage(_services.WorkContext.WorkingLanguage)
 					.WithCurrency(_services.WorkContext.WorkingCurrency);
@@ -297,8 +297,8 @@ namespace SmartStore.Web.Controllers
 
 				var featuredProductsQuery = new CatalogSearchQuery()
 					.VisibleOnly(_services.WorkContext.CurrentCustomer)
-					.VisibleIndividuallyOnly(true)
-					.WithManufacturerIds(true, manufacturerId)
+                    .WithVisibility(ProductVisibility.Full)
+                    .WithManufacturerIds(true, manufacturerId)
 					.HasStoreId(_services.StoreContext.CurrentStore.Id)
 					.WithLanguage(_services.WorkContext.WorkingLanguage)
 					.WithCurrency(_services.WorkContext.WorkingCurrency);

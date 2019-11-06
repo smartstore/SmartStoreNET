@@ -59,10 +59,10 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AssociatedToProductName")]
 		public string AssociatedToProductName { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.VisibleIndividually")]
-		public bool VisibleIndividually { get; set; }
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Visibility")]
+        public ProductVisibility Visibility { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductTemplate")]
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductTemplate")]
 		[AllowHtml]
 		public int ProductTemplateId { get; set; }
 		public IList<SelectListItem> AvailableProductTemplates { get; set; }

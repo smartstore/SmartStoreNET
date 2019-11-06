@@ -111,7 +111,7 @@ namespace SmartStore.Web.Framework.UI
 
                                         var context = new CatalogSearchQuery()
                                             .VisibleOnly()
-                                            .VisibleIndividuallyOnly(true)
+                                            .WithVisibility(ProductVisibility.Full)
                                             .WithCategoryIds(null, categoryIds.ToArray())
                                             .HasStoreId(Services.StoreContext.CurrentStoreIdIfMultiStoreMode)
                                             .BuildFacetMap(false)

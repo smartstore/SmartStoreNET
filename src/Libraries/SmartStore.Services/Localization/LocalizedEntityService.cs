@@ -351,12 +351,12 @@ namespace SmartStore.Services.Localization
             {
                 if (valueStr.IsEmpty())
                 {
-                    // delete
+                    // Delete
                     DeleteLocalizedProperty(prop);
                 }
                 else
                 {
-                    // update
+                    // Update
 					if (prop.LocaleValue != valueStr)
 					{
 						prop.LocaleValue = valueStr;

@@ -72,23 +72,32 @@ namespace SmartStore.Services.Cms.Blocks
 
 		bool IsValid(T block);
 
-		/// <summary>
-		/// Serializes the passed block instance and saves the result in the underlying data storage.
-		/// </summary>
-		/// <param name="block">The block instance to save.</param>
-		/// <param name="entity">
-		/// The corresponding entity record for the block. In most cases <paramref name="block"/> will
-		/// be converted to JSON and assigned to <see cref="IBlockEntity.Model"/> property, which then will be saved in the data storage.
-		/// </param>
-		void Save(T block, IBlockEntity entity);
+        /// <summary>
+        /// Serializes the passed block instance and saves the result in the <see cref="IBlockEntity.Model"/> property.
+        /// </summary>
+        /// <param name="block">The block instance to save.</param>
+        /// <param name="entity">
+        /// The corresponding entity record for the block. In most cases <paramref name="block"/> will
+        /// be converted to JSON and assigned to <see cref="IBlockEntity.Model"/> property, which then will be saved in the data storage.
+        /// </param>
+        void Save(T block, IBlockEntity entity);
 
-		/// <summary>
-		/// Clones <see cref="IBlockEntity.Model"/>. In most cases it is sufficient to directly return the serialized model, but there may be cases
-		/// where the inner data must be cloned first, e.g. if it contains a picture reference.
-		/// </summary>
-		/// <param name="sourceEntity">The source entity.</param>
-		/// <param name="clonedEntity">The target entity clone which is about to be saved in the data storage.</param>
-		/// <returns>The serialized block clone.</returns>
-		string Clone(IBlockEntity sourceEntity, IBlockEntity clonedEntity);
+        /// <summary>
+        /// Called after the entity has been saved to the database to perform operations which require an entity id (e.g. localization stuff).
+        /// </summary>
+        /// <param name="container">The block instance wrapper / model.</param>
+        /// <param name="entity">
+        /// The corresponding entity record for the block.
+        /// </param>
+        void AfterSave(IBlockContainer container, IBlockEntity entity);
+
+        /// <summary>
+        /// Clones <see cref="IBlockEntity.Model"/>. In most cases it is sufficient to directly return the serialized model, but there may be cases
+        /// where the inner data must be cloned first, e.g. if it contains a picture reference.
+        /// </summary>
+        /// <param name="sourceEntity">The source entity.</param>
+        /// <param name="clonedEntity">The target entity clone which is about to be saved in the data storage.</param>
+        /// <returns>The serialized block clone.</returns>
+        string Clone(IBlockEntity sourceEntity, IBlockEntity clonedEntity);
 	}
 }

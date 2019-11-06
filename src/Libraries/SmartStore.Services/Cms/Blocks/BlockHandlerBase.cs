@@ -85,6 +85,11 @@ namespace SmartStore.Services.Cms.Blocks
             }
         }
 
+        public virtual void AfterSave(IBlockContainer container, IBlockEntity entity)
+        {
+            // Default impl does nothing.
+        }
+
         public virtual string Clone(IBlockEntity sourceEntity, IBlockEntity clonedEntity)
 		{
 			return sourceEntity.Model;

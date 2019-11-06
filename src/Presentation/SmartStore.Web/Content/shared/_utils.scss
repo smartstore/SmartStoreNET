@@ -448,19 +448,31 @@ table th {
 
 
 //
-// Flip
+// Flip & Rotate
 // --------------------------------------------------
 
 .flip-h {
-    transform: scale(-1, 1) !important;
+    transform: scale(-1, 1) translate(var(--offset-x, 0), var(--offset-y, 0));
 }
 
 .flip-v {
-    transform: scale(1, -1) !important;
+    transform: scale(1, -1) translate(var(--offset-x, 0), var(--offset-y, 0));
 }
 
 .flip-hv {
-    transform: scale(-1, -1) !important;
+    transform: scale(-1, -1) translate(var(--offset-x, 0), var(--offset-y, 0));
+}
+
+.rotate-90 {
+    transform: rotate(90deg) translate(var(--offset-x, 0), var(--offset-y, 0));
+}
+
+.rotate-180 {
+    transform: rotate(180deg) translate(var(--offset-x, 0), var(--offset-y, 0));
+}
+
+.rotate-270 {
+    transform: rotate(270deg) translate(var(--offset-x, 0), var(--offset-y, 0));
 }
 
 

@@ -329,7 +329,10 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.MergedDataValues, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductBundleItems, mo => mo.Ignore())
 				.ForMember(dest => dest.SampleDownload, mo => mo.Ignore())
-				.ForMember(dest => dest.CountryOfOrigin, mo => mo.Ignore());
+#pragma warning disable 612, 618
+                .ForMember(dest => dest.VisibleIndividually, mo => mo.Ignore())
+#pragma warning restore 612, 618
+                .ForMember(dest => dest.CountryOfOrigin, mo => mo.Ignore());
 			//logs
 			CreateMap<Log, LogModel>()
 				.ForMember(dest => dest.CustomerEmail, mo => mo.Ignore())

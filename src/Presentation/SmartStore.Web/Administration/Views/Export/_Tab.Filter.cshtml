@@ -102,9 +102,17 @@
 				@Html.SmartLabelFor(x => x.Filter.CategoryIds)
 			</td>
 			<td class="adminData">
-				@Html.ListBoxFor(x => x.Filter.CategoryIds,
-					new MultiSelectList(Model.Filter.AvailableCategories, "Value", "Text"),
-					new { multiple = "multiple" })
+                <select id="@Html.FieldIdFor(x => x.Filter.CategoryIds)" name="@Html.FieldNameFor(x => x.Filter.CategoryIds)" 
+                        multiple="multiple" 
+                        placeholder="@T("Common.Unspecified")"
+                        data-select="True" 
+                        data-select-lazy="True" 
+                        data-select-url="@Url.Action("AllCategories", "Category", new { selectedIds = string.Join(",", Model.Filter.SelectedCategories.Select(x => x.Value)) })">
+                    @foreach (var item in Model.Filter.SelectedCategories)
+                    {
+                        <option value="@item.Value" selected="selected">@item.Text</option>
+                    }
+                </select>
 				@Html.ValidationMessageFor(x => x.Filter.CategoryIds)
 			</td>
 		</tr>

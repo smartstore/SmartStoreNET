@@ -244,11 +244,12 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        // Ajax.
-        public ActionResult AllCategories(string label, int selectedId)
+		// Ajax
+		public ActionResult AllCategories(string label, string selectedIds)
         {
             var categoryTree = _categoryService.GetCategoryTree(includeHidden: true);
             var categories = categoryTree.Flatten(false);
+            var selectedArr = selectedIds.ToIntArray();
 
             if (label.HasValue())
             {
@@ -256,14 +257,14 @@ namespace SmartStore.Admin.Controllers
 
             }
 
-            var query =
-                from c in categories
-                select new
-                {
-                    id = c.Id.ToString(),
-                    text = c.GetCategoryPath(_categoryService, aliasPattern: "<span class='badge badge-secondary'>{0}</span>"),
-                    selected = c.Id == selectedId
-                };
+			var query = 
+				from c in categories
+				select new
+				{ 
+					id = c.Id.ToString(),
+					text = c.GetCategoryPath(_categoryService, aliasPattern: "<span class='badge badge-secondary'>{0}</span>"), 
+					selected = selectedArr.Contains(c.Id)
+				};
 
             var mainList = query.ToList();
 

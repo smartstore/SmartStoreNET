@@ -58,9 +58,9 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.CategoryIds")]
 		public int[] CategoryIds { get; set; }
-		public List<SelectListItem> AvailableCategories { get; set; }
+        public List<SelectListItem> SelectedCategories { get; set; }
 
-		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.WithoutCategories")]
+        [SmartResourceDisplayName("Admin.DataExchange.Export.Filter.WithoutCategories")]
 		public bool? WithoutCategories { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.ManufacturerId")]

@@ -559,12 +559,28 @@ namespace SmartStore.Admin.Controllers
                     model.Projection.AvailableAppendDescriptionTexts = new MultiSelectList(projection.AppendDescriptionText.SplitSafe(","));
                     model.Projection.AvailableCriticalCharacters = new MultiSelectList(projection.CriticalCharacters.SplitSafe(","));
 
-                    model.Filter.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
+                    if (model.Filter.CategoryIds?.Any() ?? false)
+                    {
+                        var tree = _categoryService.GetCategoryTree(includeHidden: true);
 
-                    model.Filter.AvailableCategories = _categoryService.GetCategoryTree(includeHidden: true)
-                        .FlattenNodes(false)
-                        .Select(x => new SelectListItem { Text = x.GetCategoryNameIndented(), Value = x.Id.ToString() })
-                        .ToList();
+                        model.Filter.SelectedCategories = model.Filter.CategoryIds
+                            .Where(x => x != 0)
+                            .Select(x =>
+                            {
+                                var node = tree.SelectNodeById(x);
+                                var item = new SelectListItem { Value = x.ToString(), Text = node == null ? x.ToString() : _categoryService.GetCategoryPath(node) };
+                                return item;
+                            })
+                            .ToList();
+                    }
+                    else
+                    {
+                        model.Filter.SelectedCategories = new List<SelectListItem>();
+                    }
+
+					model.Filter.AvailableManufacturers = allManufacturers
+						.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+						.ToList();
 
                     model.Filter.AvailableManufacturers = allManufacturers
                         .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
@@ -886,41 +902,41 @@ namespace SmartStore.Admin.Controllers
                 profile.Projection = XmlHelper.Serialize(projection);
             }
 
-            // Filtering.
-            if (model.Filter != null)
-            {
-                var filter = new ExportFilter
-                {
-                    StoreId = model.Filter.StoreId ?? 0,
-                    CreatedFrom = model.Filter.CreatedFrom,
-                    CreatedTo = model.Filter.CreatedTo,
-                    PriceMinimum = model.Filter.PriceMinimum,
-                    PriceMaximum = model.Filter.PriceMaximum,
-                    AvailabilityMinimum = model.Filter.AvailabilityMinimum,
-                    AvailabilityMaximum = model.Filter.AvailabilityMaximum,
-                    IsPublished = model.Filter.IsPublished,
-                    CategoryIds = model.Filter.CategoryIds,
-                    WithoutCategories = model.Filter.WithoutCategories,
-                    ManufacturerId = model.Filter.ManufacturerId,
-                    WithoutManufacturers = model.Filter.WithoutManufacturers,
-                    ProductTagId = model.Filter.ProductTagId,
-                    FeaturedProducts = model.Filter.FeaturedProducts,
-                    IsActiveCustomer = model.Filter.IsActiveCustomer,
-                    IsTaxExempt = model.Filter.IsTaxExempt,
-                    BillingCountryIds = model.Filter.BillingCountryIds,
-                    ShippingCountryIds = model.Filter.ShippingCountryIds,
-                    LastActivityFrom = model.Filter.LastActivityFrom,
-                    LastActivityTo = model.Filter.LastActivityTo,
-                    HasSpentAtLeastAmount = model.Filter.HasSpentAtLeastAmount,
-                    HasPlacedAtLeastOrders = model.Filter.HasPlacedAtLeastOrders,
-                    ProductType = model.Filter.ProductType,
-                    IdMinimum = model.Filter.IdMinimum,
-                    IdMaximum = model.Filter.IdMaximum,
-                    OrderStatusIds = model.Filter.OrderStatusIds,
-                    PaymentStatusIds = model.Filter.PaymentStatusIds,
-                    ShippingStatusIds = model.Filter.ShippingStatusIds,
-                    CustomerRoleIds = model.Filter.CustomerRoleIds,
-                    IsActiveSubscriber = model.Filter.IsActiveSubscriber,
+			// Filtering.
+			if (model.Filter != null)
+			{
+				var filter = new ExportFilter
+				{
+					StoreId = model.Filter.StoreId ?? 0,
+					CreatedFrom = model.Filter.CreatedFrom,
+					CreatedTo = model.Filter.CreatedTo,
+					PriceMinimum = model.Filter.PriceMinimum,
+					PriceMaximum = model.Filter.PriceMaximum,
+					AvailabilityMinimum = model.Filter.AvailabilityMinimum,
+					AvailabilityMaximum = model.Filter.AvailabilityMaximum,
+					IsPublished = model.Filter.IsPublished,
+					CategoryIds = model.Filter.CategoryIds?.Where(x => x != 0)?.ToArray() ?? new int[0],
+					WithoutCategories = model.Filter.WithoutCategories,
+					ManufacturerId = model.Filter.ManufacturerId,
+					WithoutManufacturers = model.Filter.WithoutManufacturers,
+					ProductTagId = model.Filter.ProductTagId,
+					FeaturedProducts = model.Filter.FeaturedProducts,
+					IsActiveCustomer = model.Filter.IsActiveCustomer,
+					IsTaxExempt = model.Filter.IsTaxExempt,
+					BillingCountryIds = model.Filter.BillingCountryIds,
+					ShippingCountryIds = model.Filter.ShippingCountryIds,
+					LastActivityFrom = model.Filter.LastActivityFrom,
+					LastActivityTo = model.Filter.LastActivityTo,
+					HasSpentAtLeastAmount = model.Filter.HasSpentAtLeastAmount,
+					HasPlacedAtLeastOrders = model.Filter.HasPlacedAtLeastOrders,
+					ProductType = model.Filter.ProductType,
+					IdMinimum = model.Filter.IdMinimum,
+					IdMaximum = model.Filter.IdMaximum,
+					OrderStatusIds = model.Filter.OrderStatusIds,
+					PaymentStatusIds = model.Filter.PaymentStatusIds,
+					ShippingStatusIds = model.Filter.ShippingStatusIds,
+					CustomerRoleIds = model.Filter.CustomerRoleIds,
+					IsActiveSubscriber = model.Filter.IsActiveSubscriber,
                     WorkingLanguageId = model.Filter.WorkingLanguageId,
                     ShoppingCartTypeId = model.Filter.ShoppingCartTypeId
                 };

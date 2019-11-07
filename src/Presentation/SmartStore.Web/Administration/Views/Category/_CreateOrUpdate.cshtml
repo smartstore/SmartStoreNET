@@ -14,76 +14,75 @@
 
 @helper TabInfo()
 {
-	<table class="adminContent mb-2">
-        @if (Model.Id != 0)
-        {
-		    <tr>
-			    <td class="adminTitle">
-				    @Html.SmartLabelFor(model => model.Id)
-			    </td>
-			    <td class="adminData">
-				    @Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
-				    @Html.ValidationMessageFor(model => model.Id)
-			    </td>
-		    </tr>
-        }
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ExternalLink)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.ExternalLink)
-                @Html.ValidationMessageFor(model => model.ExternalLink)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ParentCategoryId)
-            </td>
-            <td class="adminData">
-				@Html.DropDownListFor(model => model.ParentCategoryId,
-				Model.ParentCategoryId == null ? Enumerable.Empty<SelectListItem>() : new List<SelectListItem> {
-					new SelectListItem { Text = Model.ParentCategoryBreadcrumb, Value = Model.ParentCategoryId.ToString() }
-				},
-				new
-				{
-					placeholder = "[" + T("Common.Unspecified") + "]",
-					data_select = true,
-					data_select_lazy = true,
-					data_select_init_text = Model.ParentCategoryBreadcrumb,
-					data_select_url = Url.Action("AllCategories", "Category", new { selectedId = Model.ParentCategoryId })
-				})
-                @Html.ValidationMessageFor(model => model.ParentCategoryId)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Published)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.Published)
-                @Html.ValidationMessageFor(model => model.Published)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowOnHomePage)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.ShowOnHomePage)
-                @Html.ValidationMessageFor(model => model.ShowOnHomePage)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.DisplayOrder)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.DisplayOrder)
-                @Html.ValidationMessageFor(model => model.DisplayOrder)
-            </td>
-        </tr>
-	</table>
+		<table class="adminContent mb-2">
+			@if (Model.Id != 0)
+			{			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Id)
+				</td>
+				<td class="adminData">
+					@Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
+					@Html.ValidationMessageFor(model => model.Id)
+				</td>
+			</tr>
+			}
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.ExternalLink)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.ExternalLink)
+                    @Html.ValidationMessageFor(model => model.ExternalLink)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.ParentCategoryId)
+                </td>
+                <td class="adminData">
+				    @Html.DropDownListFor(model => model.ParentCategoryId,
+				    Model.ParentCategoryId == null ? Enumerable.Empty<SelectListItem>() : new List<SelectListItem> {
+					    new SelectListItem { Text = Model.ParentCategoryBreadcrumb, Value = Model.ParentCategoryId.ToString() }
+				    },
+				    new
+				    {
+					    placeholder = "[" + T("Common.Unspecified") + "]",
+					    data_select = true,
+					    data_select_lazy = true,
+					    data_select_init_text = Model.ParentCategoryBreadcrumb,
+					    data_select_url = Url.Action("AllCategories", "Category", new { selectedIds = Model.ParentCategoryId })
+				    })
+                    @Html.ValidationMessageFor(model => model.ParentCategoryId)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.DisplayOrder)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.DisplayOrder)
+                    @Html.ValidationMessageFor(model => model.DisplayOrder)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Published)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(x => x.Published)
+                    @Html.ValidationMessageFor(model => model.Published)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.ShowOnHomePage)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(x => x.ShowOnHomePage)
+                    @Html.ValidationMessageFor(model => model.ShowOnHomePage)
+                </td>
+            </tr>
+		</table>
 
     @(Html.LocalizedEditor<CategoryModel, CategoryLocalizedModel>("category-info-localized",
 		@<table class="adminContent">

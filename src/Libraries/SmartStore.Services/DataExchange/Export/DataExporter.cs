@@ -316,6 +316,7 @@ namespace SmartStore.Services.DataExchange.Export
             if (ctx.ExecuteContext.Abort == DataExchangeAbortion.Hard && ctx.IsFileBasedExport && path.HasValue())
             {
                 FileSystemHelper.DeleteFile(path);
+                ctx.Log.Info($"The following export file is deleted due to an error: {path}.");
             }
         }
 
@@ -649,7 +650,10 @@ namespace SmartStore.Services.DataExchange.Export
                 if (method == "Execute")
                 {
                     var sb = new StringBuilder();
-                    sb.Append($"Provider reports {context.RecordsSucceeded.ToString("N0")} successfully exported record(s) of type {provider.EntityType.ToString()} to {path.NaIfEmpty()}.");
+                    if (context.Abort != DataExchangeAbortion.Hard)
+                    {
+                        sb.Append($"Provider reports {context.RecordsSucceeded.ToString("N0")} successfully exported record(s) of type {provider.EntityType.ToString()} to {path.NaIfEmpty()}.");
+                    }
 
                     foreach (var unit in context.ExtraDataUnits.Where(x => x.RelatedType.HasValue && x.DataStream != null))
                     {

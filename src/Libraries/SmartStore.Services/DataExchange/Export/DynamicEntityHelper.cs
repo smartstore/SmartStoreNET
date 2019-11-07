@@ -24,6 +24,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Customers;
@@ -488,21 +489,30 @@ namespace SmartStore.Services.DataExchange.Export
                 return null;
             }
 
-			// TODO: (mc) Refactor > GetPictureInfo
-			dynamic result = new DynamicEntity(picture);
-			var pictureInfo = _pictureService.Value.GetPictureInfo(picture);
-			var host = _services.StoreService.GetHost(ctx.Store);
+            try
+            {
+                // TODO: (mc) Refactor > GetPictureInfo
+                dynamic result = new DynamicEntity(picture);
 
-			if (pictureInfo != null)
-			{
-				result._FileName = System.IO.Path.GetFileName(pictureInfo.Path);
-				result._RelativeUrl = _pictureService.Value.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback);
-				result._ThumbImageUrl = _pictureService.Value.GetUrl(pictureInfo, thumbPictureSize, FallbackPictureType.NoFallback, host);
-				result._ImageUrl = _pictureService.Value.GetUrl(pictureInfo, detailsPictureSize, FallbackPictureType.NoFallback, host);
-				result._FullSizeImageUrl = _pictureService.Value.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback, host);
-			}
+                var pictureInfo = _pictureService.Value.GetPictureInfo(picture);
+                var host = _services.StoreService.GetHost(ctx.Store);
 
-			return result;
+                if (pictureInfo != null)
+                {
+                    result._FileName = System.IO.Path.GetFileName(pictureInfo.Path);
+                    result._RelativeUrl = _pictureService.Value.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback);
+                    result._ThumbImageUrl = _pictureService.Value.GetUrl(pictureInfo, thumbPictureSize, FallbackPictureType.NoFallback, host);
+                    result._ImageUrl = _pictureService.Value.GetUrl(pictureInfo, detailsPictureSize, FallbackPictureType.NoFallback, host);
+                    result._FullSizeImageUrl = _pictureService.Value.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback, host);
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                ctx.Log.ErrorFormat(ex, $"Failed to get picture infos for picture with ID {picture.Id}.");
+                return null;
+            }
 		}
 
 		private dynamic ToDynamic(DataExporterContext ctx, ProductVariantAttribute pva)

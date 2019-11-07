@@ -563,7 +563,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("BasePriceBaseAmount", basePriceBaseAmount.HasValue ? basePriceBaseAmount.Value.ToString() : "");
 			_writer.Write("BasePriceHasValue", ((bool)product.BasePriceHasValue).ToString());
 			_writer.Write("BasePriceInfo", (string)product._BasePriceInfo);
-			_writer.Write("VisibleIndividually", entity.VisibleIndividually.ToString());
+            _writer.Write("Visibility", ((int)entity.Visibility).ToString());
 			_writer.Write("DisplayOrder", entity.DisplayOrder.ToString());
 			_writer.Write("IsSystemProduct", entity.IsSystemProduct.ToString());
 			_writer.Write("BundleTitleText", entity.BundleTitleText);

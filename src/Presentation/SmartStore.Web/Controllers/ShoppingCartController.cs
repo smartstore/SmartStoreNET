@@ -231,7 +231,7 @@ namespace SmartStore.Web.Controllers
 				if (picture == null)
 					picture = _pictureService.GetPicturesByProductId(product.Id, 1).FirstOrDefault();
 
-				if (picture == null && !product.VisibleIndividually && product.ParentGroupedProductId > 0)
+				if (picture == null && product.Visibility == ProductVisibility.Hidden && product.ParentGroupedProductId > 0)
 				{
 					//let's check whether this product has some parent "grouped" product
 					picture = _pictureService.GetPicturesByProductId(product.ParentGroupedProductId, 1).FirstOrDefault();
@@ -265,7 +265,7 @@ namespace SmartStore.Web.Controllers
 				ProductId = product.Id,
 				ProductName = product.GetLocalized(x => x.Name),
 				ProductSeName = product.GetSeName(),
-				VisibleIndividually = product.VisibleIndividually,
+				VisibleIndividually = product.Visibility != ProductVisibility.Hidden,
 				EnteredQuantity = item.Quantity,
                 MinOrderAmount = product.OrderMinimumQuantity,
                 MaxOrderAmount = product.OrderMaximumQuantity,
@@ -482,7 +482,7 @@ namespace SmartStore.Web.Controllers
                 QuantityStep = product.QuantityStep > 0 ? product.QuantityStep : 1,
                 ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
-				VisibleIndividually = product.VisibleIndividually,
+				VisibleIndividually = product.Visibility != ProductVisibility.Hidden,
 				CreatedOnUtc = item.UpdatedOnUtc,
 				DisableBuyButton = product.DisableBuyButton
 			};

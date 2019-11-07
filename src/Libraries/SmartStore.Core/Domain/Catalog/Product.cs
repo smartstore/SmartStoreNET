@@ -33,7 +33,7 @@ namespace SmartStore.Core.Domain.Catalog
 			nameof(Product.MinStockQuantity),
 			nameof(Product.Published),
 			nameof(Product.SubjectToAcl),
-			nameof(Product.VisibleIndividually)
+			nameof(Product.Visibility)
 		};
 
 		public static IReadOnlyCollection<string> GetVisibilityAffectingPropertyNames()
@@ -84,13 +84,8 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public int ParentGroupedProductId { get; set; }
 
-		/// <summary>
-		/// Gets or sets the values indicating whether this product is visible in catalog or search results.
-		/// It's used when this product is associated to some "grouped" one
-		/// This way associated products could be accessed/added/etc only from a grouped product details page
-		/// </summary>
-		[DataMember]
-		public bool VisibleIndividually { get; set; }
+        [Obsolete("Use property Visibility instead.")]
+        public bool VisibleIndividually { get; set; }
 
         /// <summary>
         /// Gets or sets the visibility level of the product.

@@ -187,10 +187,11 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			string yes = T("Admin.Common.Yes");
 			string no = T("Admin.Common.No");
 
-			// there's no way to share a context instance across repositories in EF.
-			// so we have to fallback to pure SQL here to get the data paged and filtered.
+            // there's no way to share a context instance across repositories in EF.
+            // so we have to fallback to pure SQL here to get the data paged and filtered.
 
-			var whereClause = new StringBuilder("(NOT ([t2].[Deleted] = 1)) AND ([t2].[VisibleIndividually] = 1)");
+            var hidden = (int)ProductVisibility.Hidden;
+			var whereClause = new StringBuilder($"(NOT ([t2].[Deleted] = 1)) AND ([t2].[Visibility] <> {hidden})");
 
 			if (searchProductName.HasValue())
 			{
@@ -217,7 +218,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 					" FROM (" +
 					"    SELECT COUNT(id) OVER() [TotalCount], ROW_NUMBER() OVER (ORDER BY [t2].[Name]) AS [ROW_NUMBER], [t2].[Id], [t2].[Name], [t2].[SKU], [t2].[ProductTypeId], [t2].[value], [t2].[value2], [t2].[value3], [t2].[value4], [t2].[value5], [t2].[value6], [t2].[value7], [t2].[value8], [t2].[value9], [t2].[value10], [t2].[value11], [t2].[value12], [t2].[value13], [t2].[value14], [t2].[value15], [t2].[value16], [t2].[value17]" +
 					"    FROM (" +
-					"        SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t0].[ProductTypeId], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], COALESCE([t1].[Export],1) AS [value8], COALESCE([t1].[Multipack],0) AS [value9], [t1].[IsBundle] AS [value10], [t1].[IsAdult] AS [value11], [t1].[EnergyEfficiencyClass] AS [value12], [t1].[CustomLabel0] AS [value13], [t1].[CustomLabel1] AS [value14], [t1].[CustomLabel2] AS [value15], [t1].[CustomLabel3] AS [value16], [t1].[CustomLabel4] AS [value17], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched]" +
+                    "        SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t0].[ProductTypeId], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], COALESCE([t1].[Export],1) AS [value8], COALESCE([t1].[Multipack],0) AS [value9], [t1].[IsBundle] AS [value10], [t1].[IsAdult] AS [value11], [t1].[EnergyEfficiencyClass] AS [value12], [t1].[CustomLabel0] AS [value13], [t1].[CustomLabel1] AS [value14], [t1].[CustomLabel2] AS [value15], [t1].[CustomLabel3] AS [value16], [t1].[CustomLabel4] AS [value17], [t0].[Deleted], [t0].[Visibility], [t1].[IsTouched]" +
 					"        FROM [Product] AS [t0]" +
 					"        LEFT OUTER JOIN [GoogleProduct] AS [t1] ON [t0].[Id] = [t1].[ProductId]" +
 					"        ) AS [t2]" +
@@ -232,7 +233,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				sql =
 					"SELECT [t2].[Id], [t2].[Name], [t2].[SKU], [t2].[ProductTypeId], [t2].[value] AS [Taxonomy], [t2].[value2] AS [Gender], [t2].[value3] AS [AgeGroup], [t2].[value4] AS [Color], [t2].[value5] AS [Size], [t2].[value6] AS [Material], [t2].[value7] AS [Pattern], [t2].[value8] AS [Export], [t2].[value9] AS [Multipack], [t2].[value10] AS [IsBundle], [t2].[value11] AS [IsAdult], [t2].[value12] AS [EnergyEfficiencyClass], [t2].[value13] AS [CustomLabel0], [t2].[value14] AS [CustomLabel1], [t2].[value15] AS [CustomLabel2], [t2].[value16] AS [CustomLabel3], [t2].[value17] AS [CustomLabel4]" +
 					" FROM (" +
-					"     SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t0].[ProductTypeId], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], COALESCE([t1].[Export],1) AS [value8], COALESCE([t1].[Multipack],0) AS [value9], [t1].[IsBundle] AS [value10], [t1].[IsAdult] AS [value11], [t1].[EnergyEfficiencyClass] AS [value12], [t1].[CustomLabel0] AS [value13], [t1].[CustomLabel1] AS [value14], [t1].[CustomLabel2] AS [value15], [t1].[CustomLabel3] AS [value16], [t1].[CustomLabel4] AS [value17], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched] AS [IsTouched]" +
+                    "     SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t0].[ProductTypeId], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], COALESCE([t1].[Export],1) AS [value8], COALESCE([t1].[Multipack],0) AS [value9], [t1].[IsBundle] AS [value10], [t1].[IsAdult] AS [value11], [t1].[EnergyEfficiencyClass] AS [value12], [t1].[CustomLabel0] AS [value13], [t1].[CustomLabel1] AS [value14], [t1].[CustomLabel2] AS [value15], [t1].[CustomLabel3] AS [value16], [t1].[CustomLabel4] AS [value17], [t0].[Deleted], [t0].[Visibility], [t1].[IsTouched] AS [IsTouched]" +
 					"     FROM [Product] AS [t0]" +
 					"     LEFT OUTER JOIN [GoogleProduct] AS [t1] ON [t0].[Id] = [t1].[ProductId]" +
 					" ) AS [t2]" +
@@ -243,7 +244,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				sqlCount =
 					"SELECT COUNT(*)" +
 					" FROM (" +
-					"     SELECT [t0].[Id], [t0].[Name], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched] AS [IsTouched]" +
+                    "     SELECT [t0].[Id], [t0].[Name], [t0].[Deleted], [t0].[Visibility], [t1].[IsTouched] AS [IsTouched]" +
 					"     FROM [Product] AS [t0]" +
 					"     LEFT OUTER JOIN [GoogleProduct] AS [t1] ON [t0].[Id] = [t1].[ProductId]" +
 					" ) AS [t2]" +

@@ -968,7 +968,7 @@ namespace SmartStore.Services.DataExchange.Export
                         {
                             foreach (var associatedProduct in associatedProducts[product.Id])
                             {
-                                if (ctx.Projection.OnlyIndividuallyVisibleAssociated && !associatedProduct.VisibleIndividually)
+                                if (ctx.Projection.OnlyIndividuallyVisibleAssociated && associatedProduct.Visibility == ProductVisibility.Hidden)
                                 {
                                     continue;
                                 }

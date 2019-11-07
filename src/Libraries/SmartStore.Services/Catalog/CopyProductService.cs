@@ -119,7 +119,7 @@ namespace SmartStore.Services.Catalog
 					{
 						ProductTypeId = product.ProductTypeId,
 						ParentGroupedProductId = product.ParentGroupedProductId,
-						VisibleIndividually = product.VisibleIndividually,
+                        Visibility = product.Visibility,
 						Name = newName,
 						ShortDescription = product.ShortDescription,
 						FullDescription = product.FullDescription,

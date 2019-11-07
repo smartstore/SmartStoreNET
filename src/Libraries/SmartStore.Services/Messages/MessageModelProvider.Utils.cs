@@ -172,7 +172,7 @@ namespace SmartStore.Services.Messages
 				pictureInfo = pictureService.GetPictureInfo(product.MainPictureId);
 			}
 
-			if (pictureInfo == null && !product.VisibleIndividually && product.ParentGroupedProductId > 0)
+			if (pictureInfo == null && product.Visibility == ProductVisibility.Hidden && product.ParentGroupedProductId > 0)
 			{
 				pictureInfo = pictureService.GetPictureInfo(pictureService.GetPicturesByProductId(product.ParentGroupedProductId, 1).FirstOrDefault());
 			}

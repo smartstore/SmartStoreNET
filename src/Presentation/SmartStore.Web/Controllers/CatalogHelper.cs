@@ -305,7 +305,7 @@ namespace SmartStore.Web.Controllers
 					MetaTitle = product.GetLocalized(x => x.MetaTitle),
 					SeName = product.GetSeName(),
 					ProductType = product.ProductType,
-					VisibleIndividually = product.VisibleIndividually,
+					VisibleIndividually = product.Visibility != ProductVisibility.Hidden,
 					Manufacturers = _catalogSettings.ShowManufacturerInProductDetail 
 						? PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), null, _catalogSettings.ShowManufacturerPicturesInProductDetail)
 						: null,
@@ -864,7 +864,7 @@ namespace SmartStore.Web.Controllers
 						pvaValueModel.Color = pvaValue.Color; // used with "Boxes" attribute type
 						pvaValueModel.IsPreSelected = pvaValue.IsPreSelected;
 
-						if (linkedProduct != null && linkedProduct.VisibleIndividually)
+						if (linkedProduct != null && linkedProduct.Visibility != ProductVisibility.Hidden)
 							pvaValueModel.SeName = linkedProduct.GetSeName();
 
 						// Explicitly selected always discards pre-selected by merchant.

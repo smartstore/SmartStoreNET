@@ -722,7 +722,6 @@ namespace SmartStore.Services.Catalog.Importer
 				}
 
 				row.SetProperty(context.Result, (x) => x.ProductTypeId, (int)ProductType.SimpleProduct);
-				row.SetProperty(context.Result, (x) => x.VisibleIndividually, true);
 				row.SetProperty(context.Result, (x) => x.Name);
 				row.SetProperty(context.Result, (x) => x.ShortDescription);
 				row.SetProperty(context.Result, (x) => x.FullDescription);
@@ -825,6 +824,10 @@ namespace SmartStore.Services.Catalog.Importer
                 if (row.TryGetDataValue("QuantiyControlType", out int qct))
                 {
                     product.QuantiyControlType = (QuantityControlType)qct;
+                }
+                if (row.TryGetDataValue("Visibility", out int visibilityValue))
+                {
+                    product.Visibility = (ProductVisibility)visibilityValue;
                 }
 
 				if (row.TryGetDataValue("ProductTemplateViewPath", out string tvp, row.IsTransient))

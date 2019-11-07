@@ -134,7 +134,7 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
 
 			// Is product individually visible?
-			if (!product.VisibleIndividually)
+            if (product.Visibility == ProductVisibility.Hidden)
 			{
 				// Find parent grouped product.
 				var parentGroupedProduct = _productService.GetProductById(product.ParentGroupedProductId);

@@ -9739,7 +9739,6 @@ namespace SmartStore.Data.Setup
 			var converseAllStar = new Product
 			{
 				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
 				Name = "Converse All Star",
 				MetaTitle = "Converse All Star",
 				ShortDescription = "The classical sneaker!",
@@ -9792,7 +9791,6 @@ namespace SmartStore.Data.Setup
 			var shirtMeccanica = new Product
 			{
 				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
 				Name = "Sleeveless shirt Meccanica",
 				MetaTitle = "Sleeveless shirt Meccanica",
 				ShortDescription = "Woman shirt with trendy imprint",
@@ -9857,7 +9855,6 @@ namespace SmartStore.Data.Setup
 			var ladiesJacket = new Product
 			{
 				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
 				Name = "Ladies Sports Jacket",
 				MetaTitle = "Ladies Sports Jacket",
 				FullDescription = "<p>Lightweight wind and water repellent fabric, lining of soft single jersey knit cuffs on arm and waistband. 2 side pockets with zipper, hood in slightly waisted cut.</p><ul><il>Material: 100% polyamide</il><il>Lining: 65% polyester, 35% cotton</il><il>Lining 2: 100% polyester.</il></ul>",
@@ -9914,7 +9911,6 @@ namespace SmartStore.Data.Setup
 			var clarkJeans = new Product
 			{
 				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
 				Name = "Clark Premium Blue Jeans",
 				MetaTitle = "Clark Premium Blue Jeans",
 				ShortDescription = "Modern Jeans in Easy Comfort Fit",
@@ -9970,7 +9966,6 @@ namespace SmartStore.Data.Setup
             var corbusierTable = new Product
 			{
 				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
 				Name = "Le Corbusier LC 6 dining table (1929)",
 				MetaTitle = "Le Corbusier LC 6 dining table (1929)",
 				ShortDescription = "Dining table LC 6, designer: Le Corbusier, W x H x D: 225 x 69/74 (adjustable) x 85 cm, substructure: steel pipe, glass plate: Clear or sandblasted, 15 or 19 mm, height-adjustable.",
@@ -10040,7 +10035,6 @@ namespace SmartStore.Data.Setup
 			var ballChair = new Product
 			{
 				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
 				Name = "Eero Aarnio Ball Chair (1966)",
 				MetaTitle = "Eero Aarnio Ball Chair (1966)",
 				FullDescription = "<p>The ball chair, or also called the globe chair, is a real masterpiece of the legendary designer Eero Aarnio. The ball chair from the Sixties has written designer history. The egg designed armchair rests on a trumpet foot and is not lastly appreciated due to its shape and the quiet atmosphere inside this furniture. The design of the furniture body allows noise and disturbing outer world elements in the Hintergurnd us. A place as created for resting and relaxing. With its wide range of colours, the eyeball chair fits in every living and working environment. A chair that stands out for its timeless design and always has the modern look. The ball chair is 360° to rotate to change the view of the surroundings. The outer shell in fiberglass white or black. The upholstery is mixed in leather or linen.</p><p>Dimension: Width 102 cm, depth 87 cm, height 124 cm, seat height: 44 cm.</p>",
@@ -10108,7 +10102,6 @@ namespace SmartStore.Data.Setup
 			var loungeChair = new Product
 			{
 				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
 				Name = "Charles Eames Lounge Chair (1956)",
 				MetaTitle = "Charles Eames Lounge Chair (1956)",
 				ShortDescription = "Club lounge chair, designer: Charles Eames, width 80 cm, depth 80 cm, height 60 cm, seat shell: plywood, foot (rotatable): Aluminium casting, cushion (upholstered) with leather cover.",
@@ -10191,7 +10184,6 @@ namespace SmartStore.Data.Setup
 			var cubeChair = new Product
 			{
 				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
 				Name = "Josef Hoffmann cube chair (1910)",
 				MetaTitle = "Josef Hoffmann cube chair (1910)",
 				ShortDescription = "Armchair Cube, Designer: Josef Hoffmann, width 93 cm, depth 72 cm, height 77 cm, basic frame: solid beech wood, upholstery: solid polyurethane foam (shape resistant), Upholstery: leather",
@@ -10271,7 +10263,6 @@ namespace SmartStore.Data.Setup
             //var productJackWolfskinCooGeeLowM = new Product
             //{
             //    ProductType = ProductType.SimpleProduct,
-            //    VisibleIndividually = true,
             //    Name = "COOGEE LOW M",
             //    MetaTitle = "COOGEE LOW M",
             //    ShortDescription = "MÄNNER FREIZEITSCHUHE",
@@ -10309,7 +10300,6 @@ namespace SmartStore.Data.Setup
             //var productAdidasSuperstarSchuh = new Product
             //{
             //    ProductType = ProductType.SimpleProduct,
-            //    VisibleIndividually = true,
             //    Name = "SUPERSTAR SCHUH",
             //    MetaTitle = "SUPERSTAR SCHUH",
             //    ShortDescription = "DER STREETWEAR-KLASSIKER MIT DER SHELL TOE.",
@@ -10352,7 +10342,6 @@ namespace SmartStore.Data.Setup
             var productJackWolfsKinKanukaPoint = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "KANUKA POINT JACKET M",
                 MetaTitle = "KANUKA POINT JACKET M",
                 ShortDescription = "SOFTSHELLJACKE MÄNNER",
@@ -10394,7 +10383,6 @@ namespace SmartStore.Data.Setup
             var productTitleistSM6TourChrome = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Titleist SM6 Tour Chrome",
                 IsEsd = false,
                 ShortDescription = "For golfers who want maximum impact control and feedback.",
@@ -10430,7 +10418,6 @@ namespace SmartStore.Data.Setup
             var productTitleistProV1x = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Titleist Pro V1x",
                 IsEsd = false,
                 ShortDescription = "Golf ball with high ball flight",
@@ -10465,7 +10452,6 @@ namespace SmartStore.Data.Setup
             var productSupremeGolfball = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Supreme Golfball",
                 IsEsd = false,
                 ShortDescription = "Training balls with perfect flying characteristics",
@@ -10501,7 +10487,6 @@ namespace SmartStore.Data.Setup
             var productGBBEpicSubZeroDriver = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "GBB Epic Sub Zero Driver",
                 IsEsd = false,
                 ShortDescription = "Low spin for good golfing!",
@@ -10540,7 +10525,6 @@ namespace SmartStore.Data.Setup
             var productNikeStrikeFootball = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Nike Strike Football",
                 IsEsd = false,
                 ShortDescription = "GREAT TOUCH. HIGH VISIBILITY.",
@@ -10598,7 +10582,6 @@ namespace SmartStore.Data.Setup
             var productNikeEvoPowerBall = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Evopower 5.3 Trainer HS Ball",
                 IsEsd = false,
                 ShortDescription = "Entry level training ball.",
@@ -10650,7 +10633,6 @@ namespace SmartStore.Data.Setup
             var productTorfabrikOfficialGameBall = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Torfabrik official game ball",
                 IsEsd = false,
                 ShortDescription = "Available in different colors",
@@ -10706,7 +10688,6 @@ namespace SmartStore.Data.Setup
             var productAdidasTangoSalaBall = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Adidas TANGO SALA BALL",
                 IsEsd = false,
                 ShortDescription = "In different colors",
@@ -10768,7 +10749,6 @@ namespace SmartStore.Data.Setup
             var productEvolutionHighSchoolGameBasketball = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Evolution High School Game Basketball",
                 IsEsd = false,
                 ShortDescription = "For all positions on all levels, match day and every day",
@@ -10809,7 +10789,6 @@ namespace SmartStore.Data.Setup
             var productAllCourtBasketball = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "All-Court Basketball",
                 IsEsd = false,
                 ShortDescription = "A durable Basketball for all surfaces",
@@ -10848,7 +10827,6 @@ namespace SmartStore.Data.Setup
             var productRayBanTopBar = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Ray-Ban Top Bar RB 3183",
                 IsEsd = false,
                 ShortDescription = "The Ray-Ban Original Wayfarer is the most famous style in the history of sunglasses. With the original design from 1952 the Wayfarer is popular with celebrities, musicians, artists and fashion experts.",
@@ -10885,7 +10863,6 @@ namespace SmartStore.Data.Setup
             var productOriginalWayfarer = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "ORIGINAL WAYFARER AT COLLECTION",
                 IsEsd = false,
                 ShortDescription = "The Ray-Ban Original Wayfarer is the most famous style in the history of sunglasses. With the original design from 1952 the Wayfarer is popular with celebrities, musicians, artists and fashion experts.",
@@ -10925,7 +10902,6 @@ namespace SmartStore.Data.Setup
             var productRadarEVPrizmSportsSunglasses = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Radar EV Prizm Sports Sunglasses",
                 IsEsd = false,
                 ShortDescription = "",
@@ -10960,7 +10936,6 @@ namespace SmartStore.Data.Setup
             var productCustomFlakSunglasses = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Custom Flak Sunglasses",
                 IsEsd = false,
                 ShortDescription = "",
@@ -11046,7 +11021,6 @@ namespace SmartStore.Data.Setup
             var productIphoneplus = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "iPhone Plus",
                 IsEsd = false,
                 ShortDescription = "iPhone 7 dramatically improves the most important aspects of the iPhone experience. It introduces advanced new camera systems. The best performance and battery life ever in an iPhone. Immersive stereo speakers. The brightest, most colorful iPhone display. Splash and water resistance.1 And it looks every bit as powerful as it is. This is iPhone 7.",
@@ -11121,7 +11095,7 @@ namespace SmartStore.Data.Setup
             var productWatchSeries2 = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = false,
+                Visibility = ProductVisibility.Hidden,
                 Name = "Watch Series 2",
                 IsEsd = false,
                 ShortDescription = "Live a better day. Built-in GPS. Water resistance to 50 meters.1 A lightning-fast dual‑core processor. And a display that’s two times brighter than before. Full of features that help you stay active, motivated, and connected, Apple Watch Series 2 is the perfect partner for a healthy life.",
@@ -11185,7 +11159,6 @@ namespace SmartStore.Data.Setup
             var productAirpods = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "AirPods",
                 IsEsd = false,
                 ShortDescription = "Wireless. Effortless. Magical. Just take them out and they’re ready to use with all your devices. Put them in your ears and they connect instantly. Speak into them and your voice sounds clear. Introducing AirPods. Simplicity and technology, together like never before. The result is completely magical.",
@@ -11225,7 +11198,6 @@ namespace SmartStore.Data.Setup
             var productAppleProHipsterBundle = new Product
             {
                 ProductType = ProductType.BundledProduct,
-                VisibleIndividually = true,
                 Name = "Ultimate Apple Pro Hipster Bundle",
                 IsEsd = false,
                 ShortDescription = "Save with this set 5%!",
@@ -11268,7 +11240,6 @@ namespace SmartStore.Data.Setup
             var product97ipad = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "9,7' iPad",
                 IsEsd = false,
                 ShortDescription = "Flat-out fun. Learn, play, surf, create. iPad gives you the incredible display, performance, and apps to do what you love to do. Anywhere. Easily. Magically.",
@@ -11356,7 +11327,6 @@ namespace SmartStore.Data.Setup
             var product10GiftCard = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "$10 Virtual Gift Card",
                 IsEsd = true,
                 ShortDescription = "$10 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
@@ -11387,7 +11357,6 @@ namespace SmartStore.Data.Setup
             var product25GiftCard = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "$25 Virtual Gift Card",
                 IsEsd = true,
                 ShortDescription = "$25 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
@@ -11419,7 +11388,6 @@ namespace SmartStore.Data.Setup
             var product50GiftCard = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "$50 Virtual Gift Card",
                 IsEsd = true,
                 ShortDescription = "$50 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
@@ -11451,7 +11419,6 @@ namespace SmartStore.Data.Setup
             var product100GiftCard = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "$100 Virtual Gift Card",
                 IsEsd = true,
                 ShortDescription = "$100 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
@@ -11487,7 +11454,6 @@ namespace SmartStore.Data.Setup
             var productBooksUberMan = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Überman: The novel",
                 ShortDescription = "(Hardcover)",
                 FullDescription = "<p>From idiots to riches - and back ... Ever since it with my Greek financial advisors were no more delicious cookies to meetings, I should have known something. Was the last cookie it when I bought a Romanian forest funds and leveraged discount certificates on lean hogs - which is sort of a more stringent bet that the price of lean hogs will remain stable, and that's nothing special because it is also available for cattle and cotton and fat pig. Again and again and I joked Kosmas Nikiforos Sarantakos. About all the part-time seer who tremblingly put for fear the euro crisis gold coins under the salami slices of their frozen pizzas And then came the day that revealed to me in almost Sarantakos fraudulent casualness that my plan had not worked out really. 'Why all of a sudden> my plan', 'I heard myself asking yet, but it was in the garage I realized what that really meant minus 211.2 percent in my portfolio report: personal bankruptcy, gutter and Drug Addiction with subsequent loss of the incisors . Not even the study of my friend, I would still be able to finance. The only way out was to me as quickly as secretly again to draw from this unspeakable Greek shit - I had to be Überman! By far the bekloppteste story about 'idiot' Simon Peter! »Tommy Jaud – Deutschlands witzigste Seite.« Alex Dengler, Bild am Sonntag</p>",
@@ -11538,7 +11504,6 @@ namespace SmartStore.Data.Setup
             var productBooksGefangeneDesHimmels = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "The Prisoner of Heaven: A Novel",
                 ShortDescription = "(Hardcover)",
                 FullDescription = "<p>By Shadow of the Wind and The Angel's Game, the new large-Barcelona novel by Carlos Ruiz Zafón. - Barcelona, Christmas 1957th The bookseller Daniel Sempere and his friend Fermín be drawn again into a great adventure. In the continuation of his international success with Carlos Ruiz Zafón takes the reader on a fascinating journey into his Barcelona. Creepy and fascinating, with incredible suction power and humor, the novel, the story of Fermin, who 'rose from the dead, and the key to the future is.' Fermin's life story linking the threads of The Shadow of the Wind with those from The Angel's Game. A masterful puzzle that keeps the reader around the world in thrall. </p> <p> Product Hardcover: 416 pages Publisher: S. Fischer Verlag; 1 edition (October 25, 2012) Language: German ISBN-10: 3,100,954,025 ISBN-13: 978-3100954022 Original title: El prisionero del cielo Size and / or weight: 21.4 x 13.6 cm x 4.4 </p>",
@@ -11594,7 +11559,6 @@ namespace SmartStore.Data.Setup
             var productBooksBestGrillingRecipes = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Best Grilling Recipes",
                 ShortDescription = "More Than 100 Regional Favorites Tested and Perfected for the Outdoor Cook (Hardcover)",
                 FullDescription = "<p> Take a winding cross-country trip and you'll discover barbecue shacks with offerings like tender-smoky Baltimore pit beef and saucy St. Louis pork steaks. To bring you the best of these hidden gems, along with all the classics, the editors of Cook's Country magazine scoured the country, then tested and perfected their favorites. HEre traditions large and small are brought into the backyard, from Hawaii's rotisserie favorite, the golden-hued Huli Huli Chicken, to fall-off-the-bone Chicago Barbecued Ribs. In Kansas City, they're all about the sauce, and for our saucy Kansas City Sticky Ribs, we found a surprise ingredient-root beer. We also tackle all the best sides. </p> <p> Not sure where or how to start? This cookbook kicks off with an easy-to-follow primer that will get newcomers all fired up. Whether you want to entertain a crowd or just want to learn to make perfect burgers, Best Grilling Recipes shows you the way. </p>",
@@ -11649,7 +11613,6 @@ namespace SmartStore.Data.Setup
             var productBooksCookingForTwo = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Cooking for Two",
                 ShortDescription = "More Than 200 Foolproof Recipes for Weeknights and Special Occasions (Hardcover)",
                 FullDescription = "<p>In Cooking for Two, the test kitchen's goal was to take traditional recipes and cut them down to size to serve just twowith tailored cooking techniques and smart shopping tips that will cut down on wasted food and wasted money. Great lasagna starts to lose its luster when you're eating the leftovers for the fourth day in a row. While it may seem obvious that a recipe for four can simply be halved to work, our testing has proved that this is not always the case; cooking with smaller amounts of ingredients often requires different preparation techniques, cooking time, temperature, and the proportion of ingredients. This was especially true as we worked on scaled-down desserts; baking is an unforgiving science in which any changes in recipe amounts often called for changes in baking times and temperatures. </p> <p> Hardcover: 352 pages<br> Publisher: America's Test Kitchen (May 2009)<br> Language: English<br> ISBN-10: 1933615435<br> ISBN-13: 978-1933615431<br> </p>",
@@ -11704,7 +11667,6 @@ namespace SmartStore.Data.Setup
             var productBooksAutosDerSuperlative = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Car of superlatives: the strongest, the first, the most beautiful, the fastest",
                 ShortDescription = "Hardcover",
                 FullDescription = "<p> For some, the car is only a useful means of transportation. For everyone else, there are 'cars - The Ultimate Guide' of art-connoisseur Michael Doerflinger. With authentic images, all important data and a lot of information can be presented to the fastest, most innovative, the strongest, the most unusual and the most successful examples of automotive history. A comprehensive manual for the specific reference and extensive browsing. </p>",
@@ -11759,7 +11721,6 @@ namespace SmartStore.Data.Setup
             var productBooksBildatlasMotorraeder = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Picture Atlas Motorcycles: With more than 350 brilliant images",
                 ShortDescription = "Hardcover",
                 FullDescription = "<p> Motorcycles are like no other means of transportation for the great dream of freedom and adventure. This richly illustrated atlas image portrayed in brilliant color photographs and informative text, the most famous bikes of the world's motorcycle history. From the primitive steam engine under the saddle of the late 19th Century up to the hugely powerful, equipped with the latest electronics and computer technology superbikes of today he is an impressive picture of the development and fabrication of noble and fast-paced motorcycles. The myth of the motorcycle is just as much investigated as a motorcycle as a modern lifestyle product of our time. Country-specific, company-historical background information and interesting stories and History about the people who preceded drove one of the seminal inventions of recent centuries and evolved, make this comprehensive illustrated book an incomparable reference for any motorcycle enthusiast and technology enthusiasts. </p> <p> • Extensive history of the legendary models of all major motorcycle manufacturers worldwide<br> • With more than 350 brilliant color photographs and fascinating background information relating<br> • With informative drawings, stunning detail shots and explanatory info-boxes<br> </p> <p> content • 1817 1913: The beginning of a success story<br> • 1914 1945: mass mobility<br> • 1946 1990: Battle for the World Market<br> • In 1991: The modern motorcycle<br> • motorcycle cult object: From Transportation to Lifestyle<br> </p>",
@@ -11814,7 +11775,6 @@ namespace SmartStore.Data.Setup
             var productBooksAutoBuch = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "The Car Book. The great history with over 1200 models",
                 ShortDescription = "Hardcover",
                 FullDescription = "<p> Makes, models, milestones<br> The car - for some, a utensil for other expression of lifestyle, cult object and passion. Few inventions have changed their lives as well as the good of the automobile 125 years ago - one more reason for this extensive chronicle. The car-book brings the history of the automobile to life. It presents more than 1200 important models - Karl Benz 'Motorwagen about legendary cult car to advanced hybrid vehicles. It explains the milestones in engine technology and portrays the big brands and their designers. Characteristics from small cars to limousines and send racing each era invite you to browse and discover. The most comprehensive and bestbebildert illustrated book on the market - it would be any car lover! </p> <p> Hardcover: 360 pages<br> Publisher: Dorling Kindersley Publishing (September 27, 2012)<br> Language: German<br> ISBN-10: 3,831,022,062<br> ISBN-13: 978-3831022069<br> Size and / or weight: 30.6 x 25.8 x 2.8 cm<br> </p>",
@@ -11869,7 +11829,6 @@ namespace SmartStore.Data.Setup
             var productBooksFastCars = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Fast Cars, Image Calendar 2013",
                 ShortDescription = "spiral bound",
                 FullDescription = "<p> Large Size: 48.5 x 34 cm.<br> This impressive picture calendar with silver ring binding thrilled with impressive photographs of exclusive sports cars. Who understands cars not only as a pure commercial vehicles, will find the most sought-after status symbols at all: fast cars are effectively set to the razor sharp and vivid photos in scene and convey freedom, speed, strength and the highest technical perfection. Starting with the 450-horsepower Maserati GranTurismo MC Stradale on the stylish, luxurious Aston Martin Virage Volante accompany up to the produced only in small numbers Mosler Photon MT900S the fast racer with style and elegance through the months. </p> <p> Besides the calendar draws another picture to look at interesting details. There are the essential information on any sports car in the English language. After this year, the high-quality photos are framed an eye-catcher on the wall of every lover of fast cars. Even as a gift this beautiful years companion is wonderfully suited. 12 calendar pages, neutral and discreet held calendar. Printed on paper from sustainable forests. For lovers of luxury vintage cars also available in ALPHA EDITION: the large format image Classic Cars Calendar 2013: ISBN 9,783,840,733,376th </p> <p> Spiral-bound: 14 pages<br> Publisher: Alpha Edition (June 1, 2012)<br> Language: German<br> ISBN-10: 3,840,733,383<br> ISBN-13: 978-3840733383<br> Size and / or weight: 48.8 x 34.2 x 0.6 cm<br> </p>",
@@ -11924,7 +11883,6 @@ namespace SmartStore.Data.Setup
             var productBooksMotorradAbenteuer = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Motorcycle Adventures: Riding for travel enduros",
                 ShortDescription = "Hardcover",
                 FullDescription = "<p> Modern travel enduro bikes are ideal for adventure travel. Their technique is complex, their weight considerably. The driving behavior changes depending on the load and distance. </p> <p> Before the tour starts, you should definitely attend a training course. This superbly illustrated book presents practical means of many informative series photos the right off-road driving in mud and sand, gravel and rock with and without luggage. In addition to the driving course full of information and tips on choosing the right motorcycle for travel planning and practical issues may be on the way. </p>",
@@ -11983,7 +11941,6 @@ namespace SmartStore.Data.Setup
             var productBooksStoneOfTheWise = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Ebook 'Stone of the Wise' in 'Lorem ipsum'",
                 IsEsd = true,
                 ShortDescription = "E-Book, 465 pages",
@@ -12040,7 +11997,6 @@ namespace SmartStore.Data.Setup
             var productInstantDownloadVivaldi = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Antonio Vivaldi: spring",
                 IsEsd = true,
                 ShortDescription = "MP3, 320 kbit/s",
@@ -12088,7 +12044,6 @@ namespace SmartStore.Data.Setup
             var productInstantDownloadBeethoven = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Ludwig van Beethoven: For Elise",
                 IsEsd = true,
                 ShortDescription = "Ludwig van Beethoven's most popular compositions",
@@ -12141,7 +12096,6 @@ namespace SmartStore.Data.Setup
             var productTRANSOCEANCHRONOGRAPH = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "TRANSOCEAN CHRONOGRAPH",
                 ShortDescription = "The Transocean Chronograph interprets the factual aesthetics of classic chronographs of the 1950s and 1960s in a decidedly contemporary style.",
                 FullDescription = "<p>The Transocean Chronograph interprets the factual aesthetics of classic chronographs of the 1950s and 1960s in a decidedly contemporary style. The high-performance caliber 01, designed and manufactured entirely in the Breitling studios, works in its form, which is reduced to the essentials. </p> <p> </p> <table style='width: 425px;'>   <tbody>     <tr>       <td style='width: 185px;'>Caliber       </td>       <td style='width: 237px;'>Breitling 01 (Manufactory caliber)       </td>     </tr>     <tr>       <td style='width: 185px;'>Movement       </td>       <td style='width: 237px;'>Mechanically, Automatic       </td>     </tr>     <tr>       <td style='width: 185px;'>Power reserve       </td>       <td style='width: 237px;'>Min. 70 hour       </td>     </tr>     <tr>       <td style='width: 185px;'>Chronograph       </td>       <td style='width: 237px;'>1/4-Seconds, 30 Minutes, 12 Hours       </td>     </tr>     <tr>       <td style='width: 185px;'>Half vibrations       </td>       <td style='width: 237px;'>28 800 a/h       </td>     </tr>     <tr>       <td style='width: 185px;'>Rubies       </td>       <td style='width: 237px;'>47 Rubies       </td>     </tr>     <tr>       <td style='width: 185px;'>Calendar       </td>       <td style='width: 237px;'>Window       </td>     </tr>   </tbody> </table> ",
@@ -12240,7 +12194,6 @@ namespace SmartStore.Data.Setup
             var productTissotTTouchExpertSolar = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Tissot T-Touch Expert Solar",
                 ShortDescription = "The beam of the Tissot T-Touch Expert Solar on the dial ensures that the Super-LumiNova®-coated indexes and hands illuminate in the dark, and on the other hand, charges the battery of the watch. This model is a force package in every respect.",
                 FullDescription = "<p>The T-Touch Expert Solar is an important new model in the Tissot range. </p> <p>Tissot’s pioneering spirit is what led to the creation of tactile watches in 1999. </p> <p>Today, it is the first to present a touch-screen watch powered by solar energy, confirming its position as leader in tactile technology in watchmaking. </p> <p>Extremely well designed, it showcases clean lines in both sports and timeless pieces. </p> <p>Powered by solar energy with 25 features including weather forecasting, altimeter, second time zone and a compass it is the perfect travel companion. </p> ",
@@ -12341,7 +12294,6 @@ namespace SmartStore.Data.Setup
             var productSeikoSRPA49K1 = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Seiko Mechanical Automatic SRPA49K1",
                 ShortDescription = "Seiko Mechanical Automatic SRPA49K1",
                 FullDescription = "<p><strong>Seiko 5 Sports Automatic Watch SRPA49K1 SRPA49</strong> </p> <ul>   <li>Unidirectional Rotating Bezel</li>   <li>Day And Date Display</li>   <li>See Through Case Back</li>   <li>100M Water Resistance</li>   <li>Stainless Steel Case</li>   <li>Automatic Movement</li>   <li>24 Jewels</li>   <li>Caliber: 4R36</li> </ul> ",
@@ -12433,7 +12385,6 @@ namespace SmartStore.Data.Setup
             var productWatchesCertinaDSPodiumBigSize = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Name = "Certina DS Podium Big Size",
                 ShortDescription = "C001.617.26.037.00",
                 FullDescription = "<p>Since 1888, Certina has maintained an enviable reputation for its excellent watches and reliable movements. From the time of its integration into the SMH (today's Swatch Group) in the early 1980s, every Certina has been equipped with a high-quality ETA movement.</p><p>In a quartz watch movement, high-frequency oscillations are generated in a tiny synthetic crystal, then divided down electronically to provide the extreme accuracy of the Certina internal clock. A battery supplies the necessary energy.</p><p>The quartz movement is sometimes equipped with an end-of-life (EOL) indicator. When the seconds hand begins moving in four-second increments, the battery should be replaced within two weeks.</p><p>An automatic watch movement is driven by a rotor. Arm and wrist movements spin the rotor, which in turn winds the main spring. Energy is continuously produced, eliminating the need for a battery. The rate precision therefore depends on a rigorous manufacturing process and the original calibration, as well as the lifestyle of the user.</p><p>Most automatic movements are driven by an offset rotor. To earn the title of chronometer, a watch must be equipped with a movement that has obtained an official rate certificate from the COSC (Contrôle Officiel Suisse des Chronomètres). To obtain this, precision tests in different positions and at different temperatures must be carried out. These tests take place over a 15-day period. Thermocompensated means that the effective temperature inside the watch is measured and taken into account when improving precision. This allows fluctuations in the rate precision of a normal quartz watch due to temperature variations to be reduced by several seconds a week. The precision is 20 times more accurate than on a normal quartz watch, i.e. +/- 10 seconds per year (0.07 seconds/day).</p>",
@@ -12536,7 +12487,6 @@ namespace SmartStore.Data.Setup
             var productPs3 = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Sku = "Sony-PS399000",
                 Name = "Playstation 4 Pro",
                 ShortDescription = "The Sony PlayStation 4 Pro is the multi media console for next-generation digital home entertainment. It offers the Blu-ray technology, which enables you to enjoy movies in high definition.",
@@ -12567,7 +12517,6 @@ namespace SmartStore.Data.Setup
             var productDualshock4Controller = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Sku = "Sony-PS399004",
                 Name = "DUALSHOCK 4 Wireless Controller",
                 ShortDescription = "Revolutionary. Intuitive. Precise. A revolutionary controller for a new era of gaming, the DualShock 4 Wireless Controller features familiar PlayStation controls and innovative new additions, such as a touch pad, light bar, and more.",
@@ -12596,7 +12545,6 @@ namespace SmartStore.Data.Setup
             var productMinecraft = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 //Sku = "Ubi-acreed3",
                 Sku = "PD-Minecraft4ps4",
                 Name = "Minecraft - Playstation 4 Edition",
@@ -12627,7 +12575,6 @@ namespace SmartStore.Data.Setup
             var productBundlePs3AssassinCreed = new Product
             {
                 ProductType = ProductType.BundledProduct,
-                VisibleIndividually = true,
                 Sku = "Sony-PS399105",
                 Name = "PlayStation 4 Minecraft Bundle",
                 ShortDescription = "100GB PlayStation®4 system, 2 × DUALSHOCK®4 wireless controller and Minecraft for PS4 Edition.",
@@ -12663,7 +12610,6 @@ namespace SmartStore.Data.Setup
             var productPs4 = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Sku = "Sony-PS410034",
                 //Sku = "PS410037",
 
@@ -12695,7 +12641,6 @@ namespace SmartStore.Data.Setup
             var productPs4Camera = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Sku = "Sony-PS410040",
                 Name = "PlayStation 4 Camera",
                 ShortDescription = "Play, challenge and share your epic gaming moments with PlayStation®Camera and your PS4™. Multiplayer is enhanced through immediate, crystal clear audio and picture-in-picture video sharing.",
@@ -12723,7 +12668,6 @@ namespace SmartStore.Data.Setup
             var productBundlePs4 = new Product
             {
                 ProductType = ProductType.BundledProduct,
-                VisibleIndividually = true,
                 Sku = "Sony-PS410099",
                 Name = "PlayStation 4 Bundle",
                 ShortDescription = "PlayStation®4 system, DUALSHOCK®4 wireless controller and PS4 camera.",
@@ -12757,7 +12701,6 @@ namespace SmartStore.Data.Setup
             var productGroupAccessories = new Product
             {
                 ProductType = ProductType.GroupedProduct,
-                VisibleIndividually = true,
                 Sku = "Sony-GroupAccessories",
                 Name = "Accessories for unlimited gaming experience",
                 ShortDescription = "The future of gaming is now with dynamic, connected gaming, powerful graphics and speed, intelligent personalization, deeply integrated social capabilities, and innovative second-screen features. The brilliant culmination of the most creative minds in the industry, PlayStation®4 delivers a unique gaming environment that will take your breath away.",
@@ -12788,7 +12731,6 @@ namespace SmartStore.Data.Setup
             var productPrinceOfPersia = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 Sku = "Ubi-princepersia",
                 Name = "Prince of Persia \"The Forgotten Sands\"",
                 ShortDescription = "Play the epic story of the heroic Prince as he fights and outwits his enemies in order to save his kingdom.",
@@ -12819,7 +12761,6 @@ namespace SmartStore.Data.Setup
             var productHorizonZeroDown = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 //Sku = "Ubi-princepersia",
                 Sku = "PD-ZeroDown4PS4",
                 Name = "Horizon Zero Dawn - PlayStation 4",
@@ -12852,7 +12793,6 @@ namespace SmartStore.Data.Setup
             var productFifa17 = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
                 //Sku = "Ubi-princepersia",
                 Sku = "PD-Fifa17",
                 Name = "FIFA 17 - PlayStation 4",
@@ -12885,7 +12825,6 @@ namespace SmartStore.Data.Setup
             var productLegoWorlds = new Product
 			{
 				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
                 Sku = "Gaming-Lego-001",
                 Name = "LEGO Worlds - PlayStation 4",
 				ShortDescription = "Experience a galaxy of Worlds made entirely from LEGO bricks.",
@@ -12917,7 +12856,6 @@ namespace SmartStore.Data.Setup
             //var productXBoxOneS = new Product
             //{
             //    ProductType = ProductType.SimpleProduct,
-            //    VisibleIndividually = true,
             //    Sku = "Microsoft-xbox1s",
             //    Name = "Xbox One S 500 GB Konsole",
             //    ShortDescription = "Genieße über 100 Spiele, die es nur für die Konsole gibt, sowie eine ständig größer werdende Bibliothek an Xbox 360-Spielen auf der Xbox One S im neuen Design – der einzigen Konsole mit 4K Ultra HD Blu-ray, 4K-Videostreaming und HDR. Streame deine Lieblingsfilme und -sendungen in atemberaubendem 4K Ultra HD. Spiele Blockbuster wie Gears of War 4 und Battlefield 1 mit Freunden auf Xbox Live, dem schnellsten und zuverlässigsten Gaming-Netzwerk.",

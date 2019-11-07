@@ -17,7 +17,6 @@ namespace SmartStore.Data.Tests.Catalog
             {
 				ProductType = ProductType.GroupedProduct,
 				ParentGroupedProductId = 2,
-				VisibleIndividually = true,
                 Name = "Name 1",
                 ShortDescription = "ShortDescription 1",
                 FullDescription = "FullDescription 1",
@@ -106,7 +105,7 @@ namespace SmartStore.Data.Tests.Catalog
             fromDb.ShouldNotBeNull();
 			fromDb.ProductType.ShouldEqual(ProductType.GroupedProduct);
 			fromDb.ParentGroupedProductId.ShouldEqual(2);
-			fromDb.VisibleIndividually.ShouldEqual(true);
+            fromDb.Visibility.ShouldEqual(ProductVisibility.Full);
             fromDb.Name.ShouldEqual("Name 1");
             fromDb.ShortDescription.ShouldEqual("ShortDescription 1");
             fromDb.FullDescription.ShouldEqual("FullDescription 1");

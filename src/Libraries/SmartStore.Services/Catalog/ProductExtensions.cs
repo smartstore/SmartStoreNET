@@ -456,7 +456,7 @@ namespace SmartStore.Services.Catalog
 				Sku = item.Product.Sku,
 				ProductName = bundleItemName ?? item.Product.GetLocalized(x => x.Name),
 				ProductSeName = item.Product.GetSeName(),
-				VisibleIndividually = item.Product.VisibleIndividually,
+				VisibleIndividually = item.Product.Visibility != ProductVisibility.Hidden,
 				Quantity = item.Quantity,
 				DisplayOrder = item.DisplayOrder,
 				PriceWithDiscount = priceWithDiscount,

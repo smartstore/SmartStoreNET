@@ -11,7 +11,7 @@ using SmartStore.Core.IO;
 
 namespace SmartStore.Services.Media
 {
-	public partial interface IPictureService
+	public partial interface IPictureService : IScopedService
     {
         /// <summary>
         /// Validates input picture dimensions and prevents that the image size exceeds global max size

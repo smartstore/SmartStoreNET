@@ -152,12 +152,6 @@ namespace SmartStore.Services.Media
 		string GetFallbackUrl(int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null);
 
 		/// <summary>
-		/// Clears the url cache completely or for a particular store
-		/// </summary>
-		/// <returns>The total count of removed cache entries</returns>
-		int ClearUrlCache();
-
-		/// <summary>
 		/// Gets a picture
 		/// </summary>
 		/// <param name="pictureId">Picture identifier</param>

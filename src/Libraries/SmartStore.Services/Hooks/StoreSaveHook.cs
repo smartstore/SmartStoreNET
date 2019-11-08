@@ -28,7 +28,7 @@ namespace SmartStore.Services.Hooks
 		{
 			if (entry.IsPropertyModified(nameof(entity.ContentDeliveryNetwork)))
 			{
-				_pictureService.ClearUrlCache();
+				_pictureService.ClearCache();
 			}
 		}
 
@@ -44,7 +44,7 @@ namespace SmartStore.Services.Hooks
 
 		protected override void OnDeleted(Store entity, IHookedEntity entry)
 		{
-			_pictureService.ClearUrlCache();
+			_pictureService.ClearCache();
 			TryChangeSchedulerBaseUrl();
 		}
 

@@ -690,9 +690,9 @@
     <Compile Include="Migrations\201910070948505_EnhancedProductProperties.Designer.cs">
       <DependentUpon>201910070948505_EnhancedProductProperties.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201911060928584_ProductVisibility.cs" />
-    <Compile Include="Migrations\201911060928584_ProductVisibility.Designer.cs">
-      <DependentUpon>201911060928584_ProductVisibility.cs</DependentUpon>
+    <Compile Include="Migrations\201911090805330_ProductVisibility.cs" />
+    <Compile Include="Migrations\201911090805330_ProductVisibility.Designer.cs">
+      <DependentUpon>201911090805330_ProductVisibility.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -1239,8 +1239,8 @@
     <EmbeddedResource Include="Migrations\201910070948505_EnhancedProductProperties.resx">
       <DependentUpon>201910070948505_EnhancedProductProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201911060928584_ProductVisibility.resx">
-      <DependentUpon>201911060928584_ProductVisibility.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201911090805330_ProductVisibility.resx">
+      <DependentUpon>201911090805330_ProductVisibility.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

@@ -726,7 +726,8 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets a value indicating whether the entity is a system product.
 		/// </summary>
 		[DataMember]
-		[Index("IX_Product_SystemName_IsSystemProduct", 2)]
+        [Index]
+        [Index("IX_Product_SystemName_IsSystemProduct", 2)]
         [Index("IX_Product_Published_Deleted_IsSystemProduct", 3)]
 		public bool IsSystemProduct { get; set; }
 

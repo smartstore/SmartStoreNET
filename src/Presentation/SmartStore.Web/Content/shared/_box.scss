@@ -93,23 +93,29 @@
 }
 
 .box-img {
-    display: block;
     width: 100%;
     height: auto;
+    object-fit: cover;
+}
+
+.box-img-left .box-img,
+.box-img-right .box-img {
+    height: 100%;
 }
 
 .box-img-scale,
 .box-img-scale-rev {
-    transition: transform 0.7s $box-transition-timing;
-    //backface-visibility: hidden;
+    transition: transform 0.8s $box-transition-timing;
+    backface-visibility: hidden;
+    will-change: transform;
 }
 
 .box-img-scale {
-    transform: scale(1);
+    transform: scale3d(1, 1, 1);
 }
 
 .box-img-scale-rev {
-    transform: scale($box-scale-factor);
+    transform: scale3d($box-scale-factor, $box-scale-factor, $box-scale-factor);
 }
 
 .box-img-left,

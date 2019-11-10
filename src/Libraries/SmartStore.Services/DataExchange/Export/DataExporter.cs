@@ -45,7 +45,6 @@ using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
-using System.Diagnostics;
 
 namespace SmartStore.Services.DataExchange.Export
 {
@@ -885,11 +884,13 @@ namespace SmartStore.Services.DataExchange.Export
 				var searchQuery = new CatalogSearchQuery()
 					.WithCurrency(ctx.ContextCurrency)
 					.WithLanguage(ctx.ContextLanguage)
-                    .WithVisibility(ProductVisibility.Full)
                     .HasStoreId(ctx.Request.Profile.PerStore ? ctx.Store.Id : f.StoreId)
 					.PriceBetween(f.PriceMinimum, f.PriceMaximum)
 					.WithStockQuantity(f.AvailabilityMinimum, f.AvailabilityMaximum)
 					.CreatedBetween(createdFrom, createdTo);
+
+                if (f.Visibility.HasValue)
+                    searchQuery = searchQuery.WithVisibility(f.Visibility.Value);
 
 				if (f.IsPublished.HasValue)
 					searchQuery = searchQuery.PublishedOnly(f.IsPublished.Value);
@@ -954,10 +955,7 @@ namespace SmartStore.Services.DataExchange.Export
                 return null;
             }
 
-            var watch = Stopwatch.StartNew();
             var products = GetProductQuery(ctx, null, PageSize).ToList();
-            Debug.WriteLine($"Products time elapsed: {watch.ElapsedMilliseconds} ms.");
-
             if (!products.Any())
             {
                 return null;

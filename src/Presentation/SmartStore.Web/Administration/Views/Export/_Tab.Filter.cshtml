@@ -1,4 +1,5 @@
 ﻿@model ExportProfileModel
+@using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Core.Domain.DataExchange;
 @using SmartStore.Admin.Models.DataExchange;
 
@@ -32,6 +33,14 @@
 			<td class="adminData">
 				@Html.EditorFor(x => x.Filter.IsPublished)
 				@Html.ValidationMessageFor(x => x.Filter.IsPublished)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.Visibility)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.Filter.Visibility, ProductVisibility.Full.ToSelectList(false), Model.AllString)
 			</td>
 		</tr>
 		<tr>

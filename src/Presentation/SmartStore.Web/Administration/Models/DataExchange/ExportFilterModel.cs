@@ -38,7 +38,10 @@ namespace SmartStore.Admin.Models.DataExchange
 		public ProductType? ProductType { get; set; }
 		public List<SelectListItem> AvailableProductTypes { get; set; }
 
-		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.IdMinimum")]
+        [SmartResourceDisplayName("Admin.DataExchange.Export.Filter.Visibility")]
+        public ProductVisibility? Visibility { get; set; }
+
+        [SmartResourceDisplayName("Admin.DataExchange.Export.Filter.IdMinimum")]
 		public int? IdMinimum { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.IdMaximum")]

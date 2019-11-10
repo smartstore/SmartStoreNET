@@ -175,9 +175,9 @@ namespace SmartStore.Services.Catalog
                                 (from p in pt.Products
                                  join sm in _storeMappingRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = sm.EntityId, pname = sm.EntityName } into psm
                                  from sm in psm.DefaultIfEmpty()
-                                 where (!p.LimitedToStores || storeId == sm.StoreId) && !p.Deleted && p.VisibleIndividually && p.Published && !p.IsSystemProduct && (includeHidden || pt.Published)
+                                 where (!p.LimitedToStores || storeId == sm.StoreId) && !p.Deleted && p.Visibility == ProductVisibility.Full && p.Published && !p.IsSystemProduct && (includeHidden || pt.Published)
                                  select p).Count() :
-                                pt.Products.Count(p => !p.Deleted && p.VisibleIndividually && p.Published && !p.IsSystemProduct && (includeHidden || pt.Published))
+                                pt.Products.Count(p => !p.Deleted && p.Visibility == ProductVisibility.Full && p.Published && !p.IsSystemProduct && (includeHidden || pt.Published))
                         });
                 }
 

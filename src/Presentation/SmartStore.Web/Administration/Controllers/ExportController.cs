@@ -560,6 +560,8 @@ namespace SmartStore.Admin.Controllers
                     model.Projection.AvailableAppendDescriptionTexts = new MultiSelectList(projection.AppendDescriptionText.SplitSafe(","));
                     model.Projection.AvailableCriticalCharacters = new MultiSelectList(projection.CriticalCharacters.SplitSafe(","));
 
+                    model.Filter.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
+
                     if (model.Filter.CategoryIds?.Any() ?? false)
                     {
                         var tree = _categoryService.GetCategoryTree(includeHidden: true);

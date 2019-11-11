@@ -499,6 +499,8 @@ namespace SmartStore.GoogleMerchantCenter.Providers
                         catch (OutOfMemoryException ex)
                         {
                             context.RecordOutOfMemoryException(ex, entity.Id, T);
+                            context.Abort = DataExchangeAbortion.Hard;
+                            throw;
                         }
                         catch (Exception ex)
 						{

@@ -66,6 +66,23 @@ namespace SmartStore.Data.Migrations
         
         public override void Down()
         {
+            if (DataSettings.Current.IsSqlServer)
+            {
+                Sql("IF EXISTS (SELECT * FROM sys.indexes WHERE name='IX_SeekExport1' AND object_id = OBJECT_ID('[dbo].[Product]')) DROP INDEX [IX_SeekExport1] ON [dbo].[Product];");
+
+                Sql(@"CREATE NONCLUSTERED INDEX [IX_SeekExport1] ON [dbo].[Product]
+                (
+	                [Published] ASC,
+	                [Id] ASC,
+	                [VisibleIndividually] ASC,
+	                [Deleted] ASC,
+	                [IsSystemProduct] ASC,
+	                [AvailableStartDateTimeUtc] ASC,
+	                [AvailableEndDateTimeUtc] ASC
+                )
+                INCLUDE ([UpdatedOnUtc]) WITH (SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY]");
+            }
+
             DropIndex("dbo.Product", new[] { "IsSystemProduct" });
             DropIndex("dbo.Product", new[] { "Visibility" });
             DropColumn("dbo.Product", "Visibility");

@@ -496,7 +496,11 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 
                             ++context.RecordsSucceeded;
 						}
-						catch (Exception ex)
+                        catch (OutOfMemoryException ex)
+                        {
+                            context.RecordOutOfMemoryException(ex, entity.Id, T);
+                        }
+                        catch (Exception ex)
 						{
 							context.RecordException(ex, entity.Id);
 						}

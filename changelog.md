@@ -18,6 +18,7 @@
 	* #1693 Find the grouped product when searching for the SKU, GTIN, MPN of a non individually visible, associated product.
 	* #1711 Find product when searching for GTIN or MPN of an attribute combination.
 * #1714 Direct links to variations on a product.
+* #1733 Add ability to hide products from catalog, but not search.
 
 ### Improvements
 * #1663 Make MeasureDimension and MeasureWeight localizable.

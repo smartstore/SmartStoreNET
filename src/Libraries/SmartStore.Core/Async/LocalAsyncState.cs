@@ -17,7 +17,8 @@ namespace SmartStore.Core.Async
 		{
 			var value = GetStateInfo<T>(name);
 			return value != null && !object.Equals(value.Progress, default(T));
-		}
+
+        }
 
 		public virtual T Get<T>(string name = null)
 		{
@@ -64,10 +65,15 @@ namespace SmartStore.Core.Async
 				var policy = new CacheItemPolicy { SlidingExpiration = duration };
 				var key = BuildKey<T>(name);
 
-				// On expiration or removal: remove corresponding cancel token also.
-				policy.RemovedCallback = (x) => OnRemoveCancelTokenSource(key);
+                // On expiration or removal: remove corresponding cancel token also.
+                policy.RemovedCallback = (x) => OnRemoveCancelTokenSource(key);
+                //policy.RemovedCallback = (x) =>
+                //{
+                //    Console.WriteLine(x.RemovedReason);
+                //    OnRemoveCancelTokenSource(key); 
+                //};
 
-				_states.Set(key, new AsyncStateInfo { Progress = state, Duration = duration }, policy);
+                _states.Set(key, new AsyncStateInfo { Progress = state, Duration = duration }, policy);
 			}
 		}
 

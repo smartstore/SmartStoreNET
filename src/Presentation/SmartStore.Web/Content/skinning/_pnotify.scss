@@ -43,6 +43,7 @@
     .alert-danger &     { @include bubble('right', 'center', 8, $danger, $danger); }
 
     > span {
+        display: none;
         position: absolute;
         left: 0;
         width: 100%;

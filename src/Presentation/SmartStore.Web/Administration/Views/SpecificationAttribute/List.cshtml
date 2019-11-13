@@ -36,10 +36,6 @@
 					columns.Bound(x => x.Name)
 						.ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
 					columns.Bound(x => x.Alias);
-					columns.Bound(x => x.OptionCount)
-						.Filterable(false)
-						.Width(200)
-						.Centered();
 					columns.Bound(x => x.AllowFiltering)
 						.Filterable(false)
 						.Width(200)

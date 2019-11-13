@@ -137,19 +137,12 @@ namespace SmartStore.Admin.Controllers
         {
 			var gridModel = new GridModel<SpecificationAttributeModel>();
 
-			var data = _specificationAttributeService.GetSpecificationAttributes()
-				.Expand(x => x.SpecificationAttributeOptions)
-				.ForCommand(command)
-				.Select(x =>
-				{
-					var model = x.ToModel();
-					model.OptionCount = x.SpecificationAttributeOptions.Count;
+            var data = _specificationAttributeService.GetSpecificationAttributes()
+                .ForCommand(command)
+                .Select(x => x.ToModel())
+                .ToList();
 
-					return model;
-				})
-				.ToList();
-
-			gridModel.Data = data.PagedForCommand(command);
+            gridModel.Data = data.PagedForCommand(command);
 			gridModel.Total = data.Count;
 
             return new JsonResult

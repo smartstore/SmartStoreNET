@@ -85,14 +85,18 @@ namespace SmartStore.Services.Search
                 select p;
         }
 
-        protected virtual IQueryable<Product> ApplySearchTerm(IQueryable<Product> query, CatalogSearchQuery searchQuery)
+        protected virtual IQueryable<Product> ApplySearchTerm(IQueryable<Product> query, CatalogSearchQuery searchQuery, out bool isGroupingRequired)
 		{
+            isGroupingRequired = false;
+
 			var term = searchQuery.Term;
 			var fields = searchQuery.Fields;
 			var languageId = searchQuery.LanguageId ?? 0;
 
 			if (term.HasValue() && fields != null && fields.Length != 0 && fields.Any(x => x.HasValue()))
 			{
+                isGroupingRequired = true;
+
 				// SearchMode.ExactMatch doesn't make sense here
 				if (searchQuery.Mode == SearchMode.StartsWith)
 				{
@@ -136,7 +140,7 @@ namespace SmartStore.Services.Search
 			var query = baseQuery ?? _productRepository.Table;
 
 			query = query.Where(x => !x.Deleted && !x.IsSystemProduct);
-			query = ApplySearchTerm(query, searchQuery);
+			query = ApplySearchTerm(query, searchQuery, out var isGroupingRequired);
 
 			#region Filters
 
@@ -146,12 +150,13 @@ namespace SmartStore.Services.Search
 			var productIds = GetIdList(filters, "id");
 			if (productIds.Any())
 			{
-				query = query.Where(x => productIds.Contains(x.Id));
+                query = query.Where(x => productIds.Contains(x.Id));
 			}
 
 			var categoryIds = GetIdList(filters, "categoryid");
 			if (categoryIds.Any())
 			{
+                isGroupingRequired = true;
                 categoryId = categoryIds.First();
 				if (categoryIds.Count == 1 && categoryId == 0)
 				{
@@ -160,7 +165,7 @@ namespace SmartStore.Services.Search
 				}
 				else
 				{
-					query = QueryCategories(query, categoryIds, null);
+                    query = QueryCategories(query, categoryIds, null);
 				}
 			}
 
@@ -168,11 +173,13 @@ namespace SmartStore.Services.Search
             var notFeaturedCategoryIds = GetIdList(filters, "notfeaturedcategoryid");
             if (featuredCategoryIds.Any())
             {
+                isGroupingRequired = true;
                 categoryId = categoryId == 0 ? featuredCategoryIds.First() : categoryId;
                 query = QueryCategories(query, featuredCategoryIds, true);
             }
             if (notFeaturedCategoryIds.Any())
             {
+                isGroupingRequired = true;
                 categoryId = categoryId == 0 ? notFeaturedCategoryIds.First() : categoryId;
                 query = QueryCategories(query, notFeaturedCategoryIds, false);
             }
@@ -180,6 +187,7 @@ namespace SmartStore.Services.Search
 			var manufacturerIds = GetIdList(filters, "manufacturerid");
 			if (manufacturerIds.Any())
 			{
+                isGroupingRequired = true;
                 manufacturerId = manufacturerIds.First();
 				if (manufacturerIds.Count == 1 && manufacturerId == 0)
 				{
@@ -196,11 +204,13 @@ namespace SmartStore.Services.Search
             var notFeaturedManuIds = GetIdList(filters, "notfeaturedmanufacturerid");
             if (featuredManuIds.Any())
             {
+                isGroupingRequired = true;
                 manufacturerId = manufacturerId == 0 ? featuredManuIds.First() : manufacturerId;
                 query = QueryManufacturers(query, featuredManuIds, true);
             }
             if (notFeaturedManuIds.Any())
             {
+                isGroupingRequired = true;
                 manufacturerId = manufacturerId == 0 ? notFeaturedManuIds.First() : manufacturerId;
                 query = QueryManufacturers(query, notFeaturedManuIds, false);
             }
@@ -208,6 +218,7 @@ namespace SmartStore.Services.Search
 			var tagIds = GetIdList(filters, "tagid");
 			if (tagIds.Any())
 			{
+                isGroupingRequired = true;
                 query =
 					from p in query
 					from pt in p.ProductTags.Where(pt => tagIds.Contains(pt.Id))
@@ -219,6 +230,7 @@ namespace SmartStore.Services.Search
 				var roleIds = GetIdList(filters, "roleid");
 				if (roleIds.Any())
 				{
+                    isGroupingRequired = true;
                     query =
 						from p in query
 						join acl in _aclRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = acl.EntityId, pname = acl.EntityName } into pacl
@@ -231,13 +243,13 @@ namespace SmartStore.Services.Search
 			var deliverTimeIds = GetIdList(filters, "deliveryid");
 			if (deliverTimeIds.Any())
 			{
-				query = query.Where(x => x.DeliveryTimeId != null && deliverTimeIds.Contains(x.DeliveryTimeId.Value));
+                query = query.Where(x => x.DeliveryTimeId != null && deliverTimeIds.Contains(x.DeliveryTimeId.Value));
 			}
 
 			var parentProductIds = GetIdList(filters, "parentid");
 			if (parentProductIds.Any())
 			{
-				query = query.Where(x => parentProductIds.Contains(x.ParentGroupedProductId));
+                query = query.Where(x => parentProductIds.Contains(x.ParentGroupedProductId));
 			}
 
 			foreach (IAttributeSearchFilter filter in filters)
@@ -272,16 +284,18 @@ namespace SmartStore.Services.Search
 				{
 					if (rangeFilter != null && 1 == ((filter.Term as int?) ?? 0) && int.MaxValue == ((rangeFilter.UpperTerm as int?) ?? 0))
 					{
-						// Has any category.
-						query = query.Where(x => x.ProductCategories.Count > 0);
+                        isGroupingRequired = true;
+                        // Has any category.
+                        query = query.Where(x => x.ProductCategories.Count > 0);
 					}
 				}
 				else if (filter.FieldName == "manufacturerid")
 				{
 					if (rangeFilter != null && 1 == ((filter.Term as int?) ?? 0) && int.MaxValue == ((rangeFilter.UpperTerm as int?) ?? 0))
 					{
-						// Has any manufacturer.
-						query = query.Where(x => x.ProductManufacturers.Count > 0);
+                        isGroupingRequired = true;
+                        // Has any manufacturer.
+                        query = query.Where(x => x.ProductManufacturers.Count > 0);
 					}
 				}
 				else if (filter.FieldName == "published")
@@ -292,7 +306,7 @@ namespace SmartStore.Services.Search
 				{
 					if (rangeFilter != null)
 					{
-						var lower = filter.Term as DateTime?;
+                        var lower = filter.Term as DateTime?;
 						var upper = rangeFilter.UpperTerm as DateTime?;
 
 						if (lower.HasValue)
@@ -316,7 +330,7 @@ namespace SmartStore.Services.Search
 				{
 					if (rangeFilter != null)
 					{
-						var lower = filter.Term as DateTime?;
+                        var lower = filter.Term as DateTime?;
 						var upper = rangeFilter.UpperTerm as DateTime?;
 
 						if (lower.HasValue)
@@ -468,6 +482,7 @@ namespace SmartStore.Services.Search
 						var storeId = (int)filter.Term;
 						if (storeId != 0)
 						{
+                            isGroupingRequired = true;
                             query =
 								from p in query
 								join sm in _storeMappingRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = sm.EntityId, pname = sm.EntityName } into psm
@@ -482,11 +497,14 @@ namespace SmartStore.Services.Search
             #endregion
 
             // Grouping is very slow if there are many products.
-            query =
-                from p in query
-                group p by p.Id into grp
-                orderby grp.Key
-                select grp.FirstOrDefault();
+            if (isGroupingRequired)
+            {
+                query =
+                    from p in query
+                    group p by p.Id into grp
+                    orderby grp.Key
+                    select grp.FirstOrDefault();
+            }
 
             #region Sorting
 

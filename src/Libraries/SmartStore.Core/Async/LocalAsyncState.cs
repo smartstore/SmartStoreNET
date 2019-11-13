@@ -94,7 +94,18 @@ namespace SmartStore.Core.Async
 
 		public virtual bool Remove<T>(string name = null)
 		{
-			return OnRemoveStateInfo(BuildKey<T>(name));
+            var key = BuildKey<T>(name);
+
+            if (!OnRemoveStateInfo(key))
+            {
+                // Remove corresponding cancel token (if any).
+                // Because the state does not exist, "RemovedCallBack"
+                // did not run.
+                OnRemoveCancelTokenSource(key);
+                return false;
+            }
+            
+            return true;
 		}
 
 		protected virtual bool OnRemoveStateInfo(string key)

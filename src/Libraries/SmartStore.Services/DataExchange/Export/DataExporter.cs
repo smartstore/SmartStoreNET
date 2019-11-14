@@ -50,8 +50,6 @@ namespace SmartStore.Services.DataExchange.Export
 {
     public partial class DataExporter : IDataExporter
 	{
-		private static readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
-
 		#region Dependencies
 
 		private readonly ICommonServices _services;
@@ -286,14 +284,15 @@ namespace SmartStore.Services.DataExchange.Export
 
                 if (ctx.ProductExportContext != null)
 				{
-					_dbContext.DetachEntities(x =>
-					{
-						return x is Product || x is Discount || x is ProductVariantAttributeCombination || x is ProductVariantAttribute || 
-							   x is Picture || x is ProductBundleItem || x is ProductCategory || x is ProductManufacturer ||
-							   x is ProductPicture || x is ProductTag || x is ProductSpecificationAttribute || x is TierPrice;
-					});
+                    _dbContext.DetachEntities(x =>
+                    {
+                        return x is Product || x is Discount || x is DiscountRequirement || x is ProductVariantAttributeCombination || x is ProductVariantAttribute || x is ProductVariantAttributeValue || x is ProductAttribute ||
+                               x is Picture || x is ProductBundleItem || x is ProductBundleItemAttributeFilter || x is ProductCategory || x is ProductManufacturer || x is Category || x is Manufacturer ||
+                               x is ProductPicture || x is ProductTag || x is ProductSpecificationAttribute || x is SpecificationAttributeOption || x is SpecificationAttribute || x is TierPrice || x is ProductReview ||
+                               x is ProductReviewHelpfulness || x is DeliveryTime || x is QuantityUnit || x is Download || x is MediaStorage || x is GenericAttribute || x is UrlRecord;
+                    });
 
-					ctx.ProductExportContext.Clear();
+                    ctx.ProductExportContext.Clear();
 				}
 
 				if (ctx.OrderExportContext != null)
@@ -529,7 +528,7 @@ namespace SmartStore.Services.DataExchange.Export
         {
             // Related data is data without own export provider or importer. For a flat formatted export
             // they have to be exported together with metadata to know what to be edited.
-            RelatedEntityType[] types = null;
+            RelatedEntityType[] types;
 
             switch (ctx.Request.Provider.Value.EntityType)
             {
@@ -551,6 +550,12 @@ namespace SmartStore.Services.DataExchange.Export
 
             foreach (var type in types)
             {
+                var unit = new ExportDataUnit
+                {
+                    RelatedType = type,
+                    DisplayInFileDialog = true
+                };
+
                 // Convention: Must end with type name because that's how the import identifies the entity.
                 // Be careful in case of accidents with file names. They must not be too long.
                 var fileName = $"{ctx.Store.Id}-{context.FileIndex.ToString("D4")}-{type.ToString()}";
@@ -560,13 +565,10 @@ namespace SmartStore.Services.DataExchange.Export
                     fileName = $"{CommonHelper.GenerateRandomDigitCode(4)}-{fileName}";
                 }
 
-                result.Add(new ExportDataUnit
-                {
-                    RelatedType = type,
-                    DisplayInFileDialog = true,
-                    FileName = fileName + fileExtension,
-                    DataStream = new MemoryStream()
-                });
+                unit.FileName = fileName + fileExtension;
+                unit.DataStream = new ExportFileStream(Path.Combine(context.Folder, unit.FileName));
+
+                result.Add(unit);
             }
 
             return result;
@@ -581,7 +583,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 			try
 			{
-                using (ctx.ExecuteContext.DataStream = new MemoryStream())
+                using (ctx.ExecuteContext.DataStream = new ExportFileStream(ctx.IsFileBasedExport ? path : null))
                 {
                     if (method == "Execute")
                     {
@@ -590,23 +592,6 @@ namespace SmartStore.Services.DataExchange.Export
                     else if (method == "OnExecuted")
                     {
                         ctx.Request.Provider.Value.OnExecuted(ctx.ExecuteContext);
-                    }
-
-                    if (ctx.IsFileBasedExport && path.HasValue() && ctx.ExecuteContext.DataStream.Length > 0)
-                    {
-                        if (!ctx.ExecuteContext.DataStream.CanSeek)
-                        {
-                            ctx.Log.Warn("Data stream seems to be closed!");
-                        }
-
-                        ctx.ExecuteContext.DataStream.Seek(0, SeekOrigin.Begin);
-
-                        using (_rwLock.GetWriteLock())
-                        using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
-                        {
-                            ctx.Log.Info($"Creating file {path}.");
-                            ctx.ExecuteContext.DataStream.CopyTo(fileStream);
-                        }
                     }
                 }
             }
@@ -621,66 +606,43 @@ namespace SmartStore.Services.DataExchange.Export
                 ctx.ExecuteContext.DataStream?.Dispose();
                 ctx.ExecuteContext.DataStream = null;
 
-                if (ctx.ExecuteContext.Abort == DataExchangeAbortion.Hard && ctx.IsFileBasedExport && path.HasValue())
+                if (ctx.ExecuteContext.Abort == DataExchangeAbortion.Hard && ctx.IsFileBasedExport)
                 {
                     FileSystemHelper.DeleteFile(path);
                 }
 
                 if (method == "Execute")
                 {
-                    if (ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard)
-                    {
-                        ctx.Log.Info($"Provider reports {ctx.ExecuteContext.RecordsSucceeded.ToString("N0")} successfully exported record(s) of type {ctx.Request.Provider.Value.EntityType.ToString()} to {path.NaIfEmpty()}.");
-                    }
-
                     var unitFileInfos = new StringBuilder();
-                    foreach (var unit in ctx.ExecuteContext.ExtraDataUnits.Where(x => x.RelatedType.HasValue && x.FileName.HasValue() && x.DataStream != null))
+                    var relatedDataUnits = ctx.ExecuteContext.ExtraDataUnits
+                        .Where(x => x.RelatedType.HasValue && x.FileName.HasValue() && x.DataStream != null)
+                        .ToList();
+
+                    foreach (var unit in relatedDataUnits)
                     {
                         // Set unit.DataStream to null so that providers know that this unit should no longer be written to.
                         // We need these units later for ExportProfile.ResultInfo.
+                        unit.DataStream?.Dispose();
+                        unit.DataStream = null;
+
                         var unitPath = Path.Combine(ctx.ExecuteContext.Folder, unit.FileName);
 
-                        try
+                        if (ctx.ExecuteContext.Abort == DataExchangeAbortion.Hard)
                         {
-                            if (ctx.IsFileBasedExport && unit.DataStream.Length > 0)
+                            if (ctx.IsFileBasedExport)
                             {
-                                if (!unit.DataStream.CanSeek)
-                                {
-                                    ctx.Log.Warn("Data stream seems to be closed!");
-                                }
-
-                                unit.DataStream.Seek(0, SeekOrigin.Begin);
-
-                                using (_rwLock.GetWriteLock())
-                                using (var fileStream = new FileStream(unitPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
-                                {
-                                    unit.DataStream.CopyTo(fileStream);
-                                }
+                                FileSystemHelper.DeleteFile(unitPath);
                             }
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            ctx.ExecuteContext.Abort = DataExchangeAbortion.Hard;
-                            ctx.Log.ErrorFormat(ex, $"Failed to stream file {unitPath}.");
-                            ctx.Result.LastError = ex.ToAllMessages(true);
+                            unitFileInfos.Append($"\r\nProvider reports {unit.RecordsSucceeded.ToString("N0")} successfully exported record(s) of type {unit.RelatedType.Value.ToString()} to {unitPath}.");
                         }
-                        finally
-                        {
-                            unit.DataStream?.Dispose();
-                            unit.DataStream = null;
+                    }
 
-                            if (ctx.ExecuteContext.Abort == DataExchangeAbortion.Hard)
-                            {
-                                if (ctx.IsFileBasedExport)
-                                {
-                                    FileSystemHelper.DeleteFile(unitPath);
-                                }
-                            }
-                            else
-                            {
-                                unitFileInfos.Append($"\r\nProvider reports {unit.RecordsSucceeded.ToString("N0")} successfully exported record(s) of type {unit.RelatedType.Value.ToString()} to {unitPath}.");
-                            }
-                        }
+                    if (ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard)
+                    {
+                        ctx.Log.Info($"Provider reports {ctx.ExecuteContext.RecordsSucceeded.ToString("N0")} successfully exported record(s) of type {ctx.Request.Provider.Value.EntityType.ToString()} to {path.NaIfEmpty()}.");
                     }
 
                     ctx.Log.Info(unitFileInfos.ToString());
@@ -954,6 +916,7 @@ namespace SmartStore.Services.DataExchange.Export
                 // End of data reached.
                 return null;
             }
+
 
             var products = GetProductQuery(ctx, null, PageSize).ToList();
             if (!products.Any())
@@ -1766,6 +1729,7 @@ namespace SmartStore.Services.DataExchange.Export
                         var path = x.FileName.HasValue() ? Path.Combine(context.Folder, x.FileName) : null;
                         if (!x.RelatedType.HasValue)
                         {
+                            // Unit added by provider.
                             calledExecuted = true;
                             success = CallProvider(ctx, "OnExecuted", path);
                         }
@@ -1797,11 +1761,6 @@ namespace SmartStore.Services.DataExchange.Export
 		private void ExportCoreOuter(DataExporterContext ctx)
 		{
             var profile = ctx.Request.Profile;
-            if (profile == null || !profile.Enabled)
-            {
-                return;
-            }
-
 			var logPath = profile.GetExportLogPath();
 			var zipPath = profile.GetExportZipPath();
 
@@ -2011,11 +1970,26 @@ namespace SmartStore.Services.DataExchange.Export
 
 		public DataExportResult Export(DataExportRequest request, CancellationToken cancellationToken)
 		{
-			var ctx = new DataExporterContext(request, cancellationToken);
+            var ctx = new DataExporterContext(request, cancellationToken);
 
-			ExportCoreOuter(ctx);
+            if (!(request?.Profile?.Enabled ?? false))
+            {
+                return ctx.Result;
+            }
+
+            var lockKey = $"dataexporter:profile:{request.Profile.Id}";
+            if (KeyedLock.IsLockHeld(lockKey))
+            {
+                ctx.Result.LastError = $"The execution of the profile \"{request.Profile.Name.NaIfEmpty()}\" (ID {request.Profile.Id}) is locked.";
+                return ctx.Result;
+            }
+
+            using (KeyedLock.Lock(lockKey))
+            {
+                ExportCoreOuter(ctx);
+            }
+
 			cancellationToken.ThrowIfCancellationRequested();
-
 			return ctx.Result;
 		}
 

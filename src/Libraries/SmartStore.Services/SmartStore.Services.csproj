@@ -233,6 +233,7 @@
     <Compile Include="Customers\Rules\TargetGroupService.cs" />
     <Compile Include="DataExchange\Export\Deployment\DataDeploymentResult.cs" />
     <Compile Include="DataExchange\Export\Deployment\PublicFolderPublisher.cs" />
+    <Compile Include="DataExchange\Export\ExportFileStream.cs" />
     <Compile Include="DataExchange\Import\ColumnMapping\ColumnMap.cs" />
     <Compile Include="DataExchange\Import\ColumnMapping\ColumnMapConverter.cs" />
     <Compile Include="DataExchange\Csv\CsvConfigurationConverter.cs" />

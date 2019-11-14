@@ -70,6 +70,7 @@ namespace SmartStore.Admin.Controllers
                 CronExpression = task.CronExpression,
                 CronDescription = CronExpression.GetFriendlyDescription(task.CronExpression),
                 Enabled = task.Enabled,
+                Priority = task.Priority,
                 RunPerMachine = task.RunPerMachine,
                 StopOnError = task.StopOnError,
                 NextRunPretty = nextRunPretty,

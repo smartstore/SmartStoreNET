@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.SessionState;
+using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Stores;

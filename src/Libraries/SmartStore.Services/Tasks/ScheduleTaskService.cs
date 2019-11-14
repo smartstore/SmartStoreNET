@@ -130,6 +130,8 @@ namespace SmartStore.Services.Tasks
                     return x.Task;
                 })
                 .Where(x => x.IsPending)
+                .OrderByDescending(x => x.Priority)
+                .ThenBy(x => x.NextRunUtc.Value)
                 .ToList();
 
             return pendingTasks;

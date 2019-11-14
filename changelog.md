@@ -12,6 +12,7 @@
 * #1683 Menu Builder items: implement support for icon (brand) color.
 * #1584 Show bundle item images in order details like in shopping cart details.
 * SVG support for image uploads.
+* Schedule tasks: new property "Priority" runs tasks with higher priority first when multiple tasks are pending.
 * **MegaSearch**:
 	* Added more text analysis options.
 	* Added tool to display internal information about a search, such as Lucene terms.

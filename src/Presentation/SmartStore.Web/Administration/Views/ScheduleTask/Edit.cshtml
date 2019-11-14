@@ -2,8 +2,8 @@
 @using SmartStore.Core
 @model ScheduleTaskModel
 @{
-	ViewBag.Title = T("Admin.System.ScheduleTasks.EditTask") + " - " + Model.Name;
-	var returnUrl = ((string)ViewBag.ReturnUrl).NullEmpty();
+    ViewBag.Title = T("Admin.System.ScheduleTasks.EditTask") + " - " + Model.Name;
+    var returnUrl = ((string)ViewBag.ReturnUrl).NullEmpty();
 }
 
 @using (Html.BeginForm())
@@ -49,7 +49,14 @@
 
 @helper TabGeneral()
 {
-	<table class="adminContent">
+    var priorities = new[]
+    {
+        new SelectListItem { Value = "-1", Text = T("Admin.System.ScheduleTasks.Priority.Low") },
+        new SelectListItem { Value = "0", Text = T("Admin.System.ScheduleTasks.Priority.Normal") },
+        new SelectListItem { Value = "1", Text = T("Admin.System.ScheduleTasks.Priority.High") }
+    };
+    
+    <table class="adminContent">
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Name)
@@ -76,6 +83,14 @@
 			<td class="adminData">
 				@Html.EditorFor(model => model.Enabled)
 				@Html.ValidationMessageFor(model => model.Enabled)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Priority)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => model.Priority, priorities)
 			</td>
 		</tr>
 		<tr>

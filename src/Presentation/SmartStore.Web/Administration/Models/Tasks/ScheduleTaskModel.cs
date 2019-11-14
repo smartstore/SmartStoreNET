@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Localization;
 using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework;
@@ -23,6 +24,9 @@ namespace SmartStore.Admin.Models.Tasks
 		
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.Enabled")]
         public bool Enabled { get; set; }
+
+        [SmartResourceDisplayName("Admin.System.ScheduleTasks.Priority")]
+        public TaskPriority Priority { get; set; }
 
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.RunPerMachine")]
         public bool RunPerMachine { get; set; }

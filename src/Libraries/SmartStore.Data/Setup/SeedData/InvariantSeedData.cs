@@ -4533,6 +4533,7 @@ namespace SmartStore.Data.Setup
 					Type = "SmartStore.Services.Messages.QueuedMessagesSendTask, SmartStore.Services",
 					Enabled = true,
 					StopOnError = false,
+                    Priority = TaskPriority.High
 				},
 				new ScheduleTask
 				{
@@ -4565,7 +4566,8 @@ namespace SmartStore.Data.Setup
 					Type = "SmartStore.Services.Directory.UpdateExchangeRateTask, SmartStore.Services",
 					Enabled = false,
 					StopOnError = false,
-				},
+                    Priority = TaskPriority.High
+                },
 				new ScheduleTask
 				{
 					Name = "Clear transient uploads",

@@ -208,7 +208,7 @@ namespace SmartStore.Admin.Controllers
 				return View(model);
 			}
 
-			var reloadResult = RedirectToAction("Edit", new { id = model.Id, returnUrl = returnUrl });
+			var reloadResult = RedirectToAction("Edit", new { id = model.Id, returnUrl });
 			var returnResult = returnUrl.HasValue() ? (ActionResult)Redirect(returnUrl) : (ActionResult)RedirectToAction("List");
 
 			var scheduleTask = _scheduleTaskService.GetTaskById(model.Id);
@@ -222,6 +222,7 @@ namespace SmartStore.Admin.Controllers
 			scheduleTask.Enabled = model.Enabled;
 			scheduleTask.StopOnError = model.StopOnError;
 			scheduleTask.CronExpression = model.CronExpression;
+            scheduleTask.Priority = model.Priority;
 			scheduleTask.NextRunUtc = model.Enabled 
 				? _scheduleTaskService.GetNextSchedule(scheduleTask) 
 				: null;

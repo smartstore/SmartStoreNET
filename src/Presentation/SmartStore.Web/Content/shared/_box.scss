@@ -19,6 +19,28 @@
 }
 
 .box-rise {
+    &:hover {
+        transform: translateY(-8px);
+        z-index: 2;
+        box-shadow: $box-shadow-lg !important;
+
+        &.shadow-sm {
+            box-shadow: $box-shadow !important;
+        }
+
+        /*&.shadow {
+            box-shadow: $box-shadow-lg !important;
+        }*/
+
+        &.shadow-lg {
+            box-shadow: 
+                0 3rem 5rem -0.75rem var(--shadow-color-1, rgba(0,0,0, .175)), 
+                0 0.75rem 2rem -1rem var(--shadow-color-2, rgba(0,0,0, .12)) !important;
+        }
+    }
+}
+
+.x-box-rise {
     &:not(.box-flat):not(:hover) {
         &.shadow {
             box-shadow: 0 8px 12px rgba(#32325d, .11),

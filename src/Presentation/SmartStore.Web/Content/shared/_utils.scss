@@ -320,52 +320,29 @@ table th {
 // Shadows
 // --------------------------------------------------
 
-/*.shadow {
-    border-width: 0;
-    box-shadow: 0 15px 35px rgba(#32325d, .1), 0 5px 15px rgba(#000, .07);
-}*/
-
-/*.shadow-lg {
-    border-width: 0;
-    box-shadow: 0 40px 80px rgba(#32325d, .1), 0 15px 35px rgba(#32325d, .15), 0 5px 15px rgba(#000, .1);
-}*/
-
 .shadow {
     --shadow-color-1: rgba(0,0,0, .12);
     --shadow-color-2: rgba(0,0,0, .12);
+    box-shadow: $box-shadow;
 }
 
 .shadow-sm {
     --shadow-color-1: rgba(0,0,0, .12);
     --shadow-color-2: rgba(0,0,0, .07);
-    //box-shadow: $box-shadow-sm !important;
+    box-shadow: $box-shadow-sm;
 }
 
 .shadow-lg {
     --shadow-color-1: rgba(0,0,0, .175);
     --shadow-color-2: rgba(0,0,0, .12);
-    //box-shadow: $box-shadow-lg !important;
-}
-
-[class*="shadow-sm-"] {
-    box-shadow: $box-shadow-sm !important;
-}
-
-[class*="shadow-lg-"] {
-    box-shadow: $box-shadow-lg !important;
+    box-shadow: $box-shadow-lg;
 }
 
 @each $color, $value in $theme-colors {
     @if $color != "secondary" and $color != "light" { 
-        .shadow-#{$color},
-        .shadow-sm-#{$color},
-        .shadow-lg-#{$color} { 
+        .shadow-#{$color} { 
             --shadow-color-1: #{rgba(darken($value, 25%), .15)};
             --shadow-color-2: #{rgba($value, .15)};
-        }
-
-        .shadow-#{$color} { 
-            box-shadow: $box-shadow !important;
         }
     }
 }

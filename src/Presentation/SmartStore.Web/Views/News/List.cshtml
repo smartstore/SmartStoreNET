@@ -34,7 +34,7 @@
                     @if (imageUrl.HasValue())
                     {
                         <figure style="--img-aspect-ratio: 0.5;">
-                            <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" class="newsitem-picture img-center-container shadow-sm-primary">
+                            <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" class="newsitem-picture img-center-container shadow-sm shadow-primary">
                                 <img src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title" itemprop="image">
                             </a>
                         </figure>

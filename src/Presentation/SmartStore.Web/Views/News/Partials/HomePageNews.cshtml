@@ -33,7 +33,7 @@
                     @if (imageUrl.HasValue())
                     {
                         <figure class="col-12 col-md-6" style="--img-aspect-ratio: 0.6;">
-                            <a class="newsitem-picture img-center-container shadow-sm-primary" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
+                            <a class="newsitem-picture img-center-container shadow-sm shadow-primary" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
                                 <img class="img-fluid" src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title" itemprop="image">
                             </a>
                         </figure>
@@ -117,7 +117,7 @@
     if (imageUrl.HasValue())
     {
         <figure class="mb-4">
-            <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" class="newsitem-picture img-center-container shadow-sm-primary">
+            <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" class="newsitem-picture img-center-container shadow-sm shadow-primary">
                 <img class="img-fluid" src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title" itemprop="image">
             </a>
         </figure>
@@ -153,7 +153,7 @@
             @if (imageUrl.HasValue())
             {
                 <div class="col-12 col-md-4">
-                    <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" class="newsitem-picture img-center-container shadow-sm-primary">
+                    <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" class="newsitem-picture img-center-container shadow-sm shadow-primary">
                         <img class="img-fluid" src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title" itemprop="image">
                     </a>
                 </div>

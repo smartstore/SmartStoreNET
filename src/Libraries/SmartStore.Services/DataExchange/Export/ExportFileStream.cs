@@ -4,89 +4,74 @@ namespace SmartStore.Services.DataExchange.Export
 {
     public class ExportFileStream : Stream
     {
-        private const long FLUSH_WRITE_BYTES = 1024 * 1024 * 4;  // Flush to disk each 4 MB.
+        private readonly Stream _stream;
+        private readonly long _flushBytesNumber;
+        private long _bytesCounter;
 
-        private readonly string _filePath;
-        private Stream _stream;
-        private FileStream _fsStream;
-        private long _count;
-
-        public ExportFileStream(string filePath)
+        /// <param name="stream">Stream instance to write to.</param>
+        /// <param name="flushBytesNumber">Number of bytes when to write to the hard disk. Default is each 4 MB.</param>
+        public ExportFileStream(Stream stream, long flushBytesNumber = 4194304)
         {
-            _filePath = filePath;
+            Guard.NotNull(stream, nameof(stream));
+
+            _stream = stream;
+            _flushBytesNumber = flushBytesNumber;
         }
 
-        protected Stream Stream
-        {
-            get
-            {
-                if (_stream == null)
-                {
-                    if (_filePath.HasValue())
-                    {
-                        _stream = _fsStream = new FileStream(_filePath, FileMode.Create, FileAccess.Write);
-                    }
-                    else
-                    {
-                        _stream = new MemoryStream();
-                    }
-                }
+        public override bool CanRead => _stream.CanRead;
 
-                return _stream;
-            }
-        }
+        public override bool CanSeek => _stream.CanSeek;
 
-        public override bool CanRead => Stream.CanRead;
+        public override bool CanWrite => _stream.CanWrite;
 
-        public override bool CanSeek => Stream.CanSeek;
-
-        public override bool CanWrite => Stream.CanWrite;
-
-        public override long Length => Stream.Length;
+        public override long Length => _stream.Length;
 
         public override long Position
         {
-            get => Stream.Position;
-            set => Stream.Position = value;
+            get => _stream.Position;
+            set => _stream.Position = value;
         }
 
         public override void Flush()
         {
-            Stream.Flush();
+            _stream.Flush();
         }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            return Stream.Read(buffer, offset, count);
+            return _stream.Read(buffer, offset, count);
         }
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            return Stream.Seek(offset, origin);
+            return _stream.Seek(offset, origin);
         }
 
         public override void SetLength(long value)
         {
-            Stream.SetLength(value);
+            _stream.SetLength(value);
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            Stream.Write(buffer, offset, count);
+            _stream.Write(buffer, offset, count);
 
-            _count += count;
-
-            if (_count > FLUSH_WRITE_BYTES)
+            if (_flushBytesNumber > 0)
             {
-                _count = 0;
+                _bytesCounter += count;
 
-                if (_fsStream != null)
+                if (_bytesCounter > _flushBytesNumber)
                 {
-                    _fsStream.Flush(true);
-                }
-                else
-                {
-                    Stream.Flush();
+                    _bytesCounter = 0;
+
+                    if (_stream is FileStream fStream)
+                    {
+                        fStream.Flush(true);
+                    }
+                    else
+                    {
+                        _stream.Flush();
+                    }
                 }
             }
         }

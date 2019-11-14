@@ -524,6 +524,16 @@ namespace SmartStore.Services.DataExchange.Export
 			return ctx.ExecuteContext.DataSegmenter as IExportDataSegmenterProvider;
 		}
 
+        private Stream CreateStream(string path)
+        {
+            if (path.HasValue())
+            {
+                return new FileStream(path, FileMode.Create, FileAccess.Write);
+            }
+
+            return new MemoryStream();
+        }
+
         private IEnumerable<ExportDataUnit> GetDataUnitsForRelatedEntities(DataExporterContext ctx)
         {
             // Related data is data without own export provider or importer. For a flat formatted export
@@ -566,7 +576,7 @@ namespace SmartStore.Services.DataExchange.Export
                 }
 
                 unit.FileName = fileName + fileExtension;
-                unit.DataStream = new ExportFileStream(Path.Combine(context.Folder, unit.FileName));
+                unit.DataStream = new ExportFileStream(CreateStream(Path.Combine(context.Folder, unit.FileName)));
 
                 result.Add(unit);
             }
@@ -583,7 +593,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 			try
 			{
-                using (ctx.ExecuteContext.DataStream = new ExportFileStream(ctx.IsFileBasedExport ? path : null))
+                using (ctx.ExecuteContext.DataStream = new ExportFileStream(CreateStream(ctx.IsFileBasedExport ? path : null)))
                 {
                     if (method == "Execute")
                     {

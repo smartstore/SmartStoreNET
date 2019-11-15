@@ -594,92 +594,76 @@ $btn-size-sm: $input-height-sm;
 // 3d Buttons (colorized drop shadows)
 // -----------------------------------------------------
 
-@mixin button-3d-state($color, $state: "normal") {
-    $c: theme-color($color);
-    
-    $c1: mix($c, #000, 40%);
-    $c2: mix($c, #000, 10%);
-    $o1: 0.11;
-    $o2: 0.09;
-
-    @if $color == "secondary" or $color == "light" {
-        $c1: #333;
-        $c2: #000;
-        $o1: 0.11;
-        $o2: 0.08;
-        border-color: $c;
-    }
-
-    @if $state == 'normal' {
-        box-shadow: 0 4px 6px rgba($c1, $o1), 0 1px 3px rgba($c2, $o2);
-    }
-    @else if $state == 'pressed' {
-        @if $color == 'secondary' {
-            background-color: $gray-100;
-            border-color: $gray-100;
-        }
-        box-shadow: 0 2px 4px rgba($c1, $o1 * 1.36), 0 1px 2px rgba($c2, $o2 * 1.25);
-    }
-    @else if $state == 'active' {
-        @if $color == 'secondary' {
-            background-color: #fff;
-        }
-        //box-shadow: 0 7px 14px rgba($c1, $o1 * 0.9), 0 3px 6px rgba($c2, $o2);
-        box-shadow: 0 9px 16px rgba($c1, $o1 * 1.4), 0 3px 6px rgba($c2, $o2);
-    }
-}
-
 .btn-3d {
     transition-property: transform, box-shadow, color, background-color, border-color, opacity;
-    transition-timing-function: cubic-bezier(.2, 1, .22, 1);
     transition-timing-function: cubic-bezier(0.25, 1, 0.33, 1);
     transition-duration: .35s;
     
+    --shadow-color-rgb: 0,0,0;
+    --shadow-color-intensity: 1;
+
+    // NORMAL
+    box-shadow: 0 1px 3px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.08)), 
+                0 4px 6px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.1));
+    box-shadow: 0 1px 1px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.07)),
+                0 2px 4px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.1)),
+                0 4px 8px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.08));
+
+    // ACTIVE
     &:hover, &.hover,
     &:focus, &.focus {
-        transform: translateY(-2px);
+        transform: translateY(-3px);
+        box-shadow: 0 3px 6px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.1)), 
+                    0 9px 16px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.1)) !important;
+        box-shadow: 0 1px 1px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.08)),
+                    0 6px 10px -2px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.12)),
+                    0 12px 24px -8px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.12)) !important;
     }
 
-    &:active, &.active,
-    &:disabled, &.disabled,
-    .show > &.dropdown-toggle {
+    // DISABLED
+    &:disabled, 
+    &.disabled {
+        box-shadow: none !important;  
+    }
+
+    // PRESSED
+    &:active, &:active:focus,
+    &.active, &.active:focus,
+    .show > &.dropdown-toggle, 
+    .show > &.dropdown-toggle:focus {
         transform: translateY(1px);
+        box-shadow: 0 1px 2px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.13)), 
+                    0 2px 4px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.12)) !important;
     }
 }
 
 @each $color, $value in $theme-colors {
-    .btn-3d.btn-#{$color} {
-        @include button-3d-state($color, 'normal');
-    }
-
 	.btn-3d.btn-#{$color},
-    .btn-3d.btn-outline-#{$color} {
-        &:not(:disabled):not(.disabled):hover, 
-        &:not(:disabled):not(.disabled).hover,
-        &:not(:disabled):not(.disabled):focus, 
-        &:not(:disabled):not(.disabled).focus {
-            @include button-3d-state($color, 'active');
+    .btn-3d.btn-outline-#{$color} {  
+        @if $color != "secondary" and $color != "light" {
+            $c: mix($value, #000, 50%);
+            --shadow-color-rgb: #{red($c)}, #{green($c)}, #{blue($c)};
+            --shadow-color-intensity: 1.8;
+        }
+        @else {
+            border-color: $value !important;
         }
 
-        &:disabled, 
-        &.disabled {
-            @if $color == 'secondary' {
-                @include button-3d-state($color, 'pressed');
+        @if $color == 'secondary' {
+            // ACTIVE
+            &:hover, &.hover,
+            &:focus, &.focus {
                 background-color: #fff;
-            }
-            @else {
-                box-shadow: none;
-            }
-            
-        }
+            }        
 
-        &:not(:disabled):not(.disabled):active, 
-        &:not(:disabled):not(.disabled):active:focus,
-        &:not(:disabled):not(.disabled).active, 
-        &:not(:disabled):not(.disabled).active:focus,
-        .show > &.dropdown-toggle, 
-        .show > &.dropdown-toggle:focus {
-            @include button-3d-state($color, 'pressed');
+            // PRESSED
+            &:active, &:active:focus,
+            &.active, &.active:focus,
+            .show > &.dropdown-toggle, 
+            .show > &.dropdown-toggle:focus {
+                background-color: $gray-100;
+                border-color: $gray-100;
+            }
         }
-	}
+    }
 }

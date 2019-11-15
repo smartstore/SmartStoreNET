@@ -320,29 +320,32 @@ table th {
 // Shadows
 // --------------------------------------------------
 
+.shadow,
+.shadow-sm,
+.shadow-lg {
+    --shadow-color-rgb: 0,0,0;
+    --shadow-color-intensity: 1;
+}
+
 .shadow {
-    --shadow-color-1: rgba(0,0,0, .12);
-    --shadow-color-2: rgba(0,0,0, .12);
     box-shadow: $box-shadow;
 }
 
 .shadow-sm {
-    --shadow-color-1: rgba(0,0,0, .12);
-    --shadow-color-2: rgba(0,0,0, .07);
     box-shadow: $box-shadow-sm;
 }
 
 .shadow-lg {
-    --shadow-color-1: rgba(0,0,0, .175);
-    --shadow-color-2: rgba(0,0,0, .12);
     box-shadow: $box-shadow-lg;
 }
 
 @each $color, $value in $theme-colors {
     @if $color != "secondary" and $color != "light" { 
         .shadow-#{$color} { 
-            --shadow-color-1: #{rgba(darken($value, 25%), .15)};
-            --shadow-color-2: #{rgba($value, .15)};
+            $c: mix($value, #000, 50%);
+            --lightness: #{lightness($value)};
+            --shadow-color-intensity: 1.2;
+            --shadow-color-rgb: #{red($c)}, #{green($c)}, #{blue($c)};
         }
     }
 }

@@ -11,67 +11,24 @@
     z-index: 1;
 }
 
-.box-scale {
-    &:hover {
-        transform: scale($box-scale-factor);
-        z-index: 2;
-    }
+.box-scale:hover {
+    transform: scale($box-scale-factor);
+    z-index: 2;
 }
 
-.box-rise {
-    &:hover {
-        transform: translateY(-8px);
-        z-index: 2;
-        box-shadow: $box-shadow-lg !important;
+.box-rise:hover {
+    transform: translateY(-8px);
+    z-index: 2;
+    
+    box-shadow: 0 1px 2px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.1)), 
+                0 12px 16px -10px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.12)), 
+                0 20px 40px -12px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.2)) !important;
 
-        &.shadow-sm {
-            box-shadow: $box-shadow !important;
-        }
-
-        /*&.shadow {
-            box-shadow: $box-shadow-lg !important;
-        }*/
-
-        &.shadow-lg {
-            box-shadow: 
-                0 3rem 5rem -0.75rem var(--shadow-color-1, rgba(0,0,0, .175)), 
-                0 0.75rem 2rem -1rem var(--shadow-color-2, rgba(0,0,0, .12)) !important;
-        }
-    }
-}
-
-.x-box-rise {
-    &:not(.box-flat):not(:hover) {
-        &.shadow {
-            box-shadow: 0 8px 12px rgba(#32325d, .11),
-                        0 2px 8px rgba(#000, .07);
-        }
-
-        @each $color, $value in $theme-colors {
-            &.shadow-#{$color} { 
-                box-shadow: 0 8px 12px rgba($value, .15),
-                            0 2px 8px rgba(darken($value, 30%), .1);
-            }
-        }
-
-        &.shadow-lg {
-            box-shadow: 0 35px 50px rgba(#32325d, .1),
-                        0 8px 12px rgba(#32325d, .18),
-                        0 2px 8px rgba(#000, .09);
-        }  
-
-        @each $color, $value in $theme-colors {
-            &.shadow-#{$color}-lg { 
-                box-shadow: 0 35px 50px rgba($value, .15),
-                            0 8px 12px rgba($value, .22),
-                            0 2px 8px rgba(darken($value, 30%), .12);
-            }
-        }
-    }
-
-    &:hover {
-        transform: translateY(-8px);
-        z-index: 2;
+    &.shadow-lg {
+        box-shadow: 0 1px 2px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.1)), 
+                    0 8px 16px -4px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.1)), 
+                    0 24px 28px -12px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.12)), 
+                    0 38px 56px -12px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.18)) !important;
     }
 }
 

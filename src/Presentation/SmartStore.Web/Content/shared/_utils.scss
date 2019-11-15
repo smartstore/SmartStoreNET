@@ -327,7 +327,7 @@ table th {
     --shadow-color-intensity: 1;
 }
 
-.shadow {
+/*.shadow {
     box-shadow: $box-shadow;
 }
 
@@ -337,7 +337,7 @@ table th {
 
 .shadow-lg {
     box-shadow: $box-shadow-lg;
-}
+}*/
 
 @each $color, $value in $theme-colors {
     @if $color != "secondary" and $color != "light" { 

@@ -23,7 +23,7 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			_writer = writer;
 			_doNotDispose = doNotDispose;
-			_culture = (culture == null ? CultureInfo.InvariantCulture : culture);
+			_culture = culture == null ? CultureInfo.InvariantCulture : culture;
 		}
 		public ExportXmlHelper(Stream stream, XmlWriterSettings settings = null, CultureInfo culture = null)
 		{
@@ -33,7 +33,7 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			_writer = XmlWriter.Create(stream, settings);			
-			_culture = (culture == null ? CultureInfo.InvariantCulture : culture);
+			_culture = culture == null ? CultureInfo.InvariantCulture : culture;
 		}
 
 		public static XmlWriterSettings DefaultSettings
@@ -44,9 +44,9 @@ namespace SmartStore.Services.DataExchange.Export
 				{
 					Encoding = Encoding.UTF8,
 					CheckCharacters = false,
-					Indent = true,
-					IndentChars = "\t"
-				};
+                    Indent = false,
+                    NewLineHandling = NewLineHandling.None
+                };
 			}
 		}
 

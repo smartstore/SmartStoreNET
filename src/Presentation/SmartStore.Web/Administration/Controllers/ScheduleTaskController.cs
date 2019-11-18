@@ -167,7 +167,7 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToReferrer(returnUrl);
 		}
 
-        [Permission(Permissions.System.ScheduleTask.Update)]
+        [Permission(Permissions.System.ScheduleTask.Execute)]
         public ActionResult CancelJob(int id /* scheduleTaskId */, string returnUrl = "")
 		{
 			if (_asyncState.Cancel<ScheduleTask>(id.ToString()))
@@ -293,7 +293,8 @@ namespace SmartStore.Admin.Controllers
                 return new EmptyResult();
             }
 
-            ViewBag.CanUpdate = Services.Permissions.Authorize(Permissions.System.ScheduleTask.Update);
+            ViewBag.CanRead = Services.Permissions.Authorize(Permissions.System.ScheduleTask.Read);
+            ViewBag.CanExecute = Services.Permissions.Authorize(Permissions.System.ScheduleTask.Execute);
             ViewBag.ReturnUrl = returnUrl;
             ViewBag.Cancellable = cancellable;
             ViewBag.ReloadPage = reloadPage;

@@ -3,7 +3,7 @@
     Layout = null;
     var widgetId = "minimal-task-widget-" + Model.Id;
     var returnUrl = (string)ViewBag.ReturnUrl;
-    var canUpdate = ViewBag.CanUpdate == true;
+    var canExecute = ViewBag.CanExecute == true;
     var cancellable = ViewBag.Cancellable == true;
     var reloadPage = ViewBag.ReloadPage == true;
     var isRunning = Model.LastHistoryEntry.IsRunning;
@@ -13,7 +13,7 @@
 		@{ Html.RenderPartial("_MinimalTaskWidget", Model); }
 	</div>
 	<div class='task-progress text-muted col@(isRunning ? "" : " hide")' data-task-id='@Model.Id' data-running='@(isRunning ? "true" : "false")'></div>
-	@if (cancellable && canUpdate)
+	@if (cancellable && canExecute)
     {
 		<div class="col-auto">
 			<a href='@Model.CancelUrl' data-task-id='@Model.Id' class='btn btn-sm btn-danger btn-cancel-task@(!isRunning ? " hide" : "")' onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>

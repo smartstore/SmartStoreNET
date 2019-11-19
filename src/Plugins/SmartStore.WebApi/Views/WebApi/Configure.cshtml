@@ -1,0 +1,183 @@
+﻿@model WebApiConfigModel
+@using SmartStore.WebApi;
+@using SmartStore.WebApi.Models;
+@using SmartStore.Web.Framework;
+@using SmartStore.Web.Framework.WebApi;
+@using Telerik.Web.Mvc.UI;
+@{
+	Layout = "";
+}
+
+<div class="plugin-actions">
+	<button id="SaveConfigButton" type="submit" name="savegeneralsettings" value="savegeneralsettings" class="btn btn-warning">
+		<i class="fa fa-check"></i>
+		<span>@T("Admin.Common.Save")</span>
+	</button>
+</div>
+
+<div class="alert alert-info">
+    @Html.Raw(@T("Plugins.Api.WebApi.AdminInstruction"))
+</div>
+
+@using (Html.BeginForm())
+{
+	@Html.SmartStore().TabStrip().Name("web-api").Style(TabsStyle.Material).Items(x =>
+	{
+		x.Add().Text(T("Plugins.Api.WebApi.UserGridTabTitle").Text).Content(@TabUserGrid()).Selected(true);
+		x.Add().Text(T("Plugins.Api.WebApi.OptionsGridTabTitle").Text).Content(@TabOptions());
+	})
+}
+
+@helper TabUserGrid()
+{
+	<table id="apiuser-grid-container" class="adminContent" data-url="@(Url.Content("~/Plugins/SmartStore.WebApi"))" data-ask="@T("Admin.Common.AskToProceed")">
+		<tr>
+			<td>
+				@(Html.Telerik().Grid<WebApiUserModel>()
+			.Name("apiuser-grid")
+			.DataKeys(keys => keys.Add(x => x.Id).RouteKey("Id"))
+			.Columns(c =>
+			{
+				c.Bound(x => x.Id);
+				c.Bound(x => x.Username);
+				c.Bound(x => x.Email)
+					.ClientTemplate("<div><a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\"><#= Email #></a></div><div class='mt-1'><#= AdminComment #></div>");
+				c.Template(x => Html.GridApiInfo())
+					.ClientTemplate(@Html.GridApiInfo())
+					.Title(T("Plugins.Api.WebApi.ApiAccess"))
+					.Width(500);
+			})
+			.DataBinding(dataBinding =>
+			{
+				dataBinding.Ajax().Select("GridUserData", "WebApi", new { Namespaces = "SmartStore.WebApi.Controllers", area = WebApiGlobal.PluginSystemName });
+			})
+			.Filterable()
+			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+			.ClientEvents(events => events.OnRowDataBound("onRowDataBound_ApiUser"))
+			.PreserveGridState()
+			.EnableCustomBinding(true)
+				)
+			</td>
+		</tr>
+	</table>
+}
+
+@helper TabOptions()
+{
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ApiOdataUrl)
+            </td>
+            <td class="adminData">
+				<div class="form-control-plaintext">
+					<a href="@Model.ApiOdataUrl" target="_blank">@Model.ApiOdataUrl</a>
+				</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ApiOdataMetadataUrl)
+            </td>
+            <td class="adminData">
+				<div class="form-control-plaintext">
+					<a href="@Model.ApiOdataMetadataUrl" target="_blank">@Model.ApiOdataMetadataUrl</a>
+				</div>
+            </td>
+        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SwaggerUrl)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					<a href="@Model.SwaggerUrl" target="_blank">@Model.SwaggerUrl</a>
+				</div>
+			</td>
+		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ValidMinutePeriod)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ValidMinutePeriod, new { postfix = @T("Time.Minutes").Text })
+                @Html.ValidationMessageFor(model => model.ValidMinutePeriod)
+            </td>
+        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.NoRequestTimestampValidation)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.NoRequestTimestampValidation)
+				@Html.ValidationMessageFor(model => model.NoRequestTimestampValidation)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AllowEmptyMd5Hash)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.AllowEmptyMd5Hash)
+				@Html.ValidationMessageFor(model => model.AllowEmptyMd5Hash)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.MaxTop)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.MaxTop)
+				@Html.ValidationMessageFor(model => model.MaxTop)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.MaxExpansionDepth)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.MaxExpansionDepth)
+				@Html.ValidationMessageFor(model => model.MaxExpansionDepth)
+			</td>
+		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.LogUnauthorized)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.LogUnauthorized)
+                @Html.ValidationMessageFor(model => model.LogUnauthorized)
+            </td>
+        </tr>
+    </table>
+}
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+
+		// grid button clicked
+		$('#apiuser-grid').on('click', '.api-grid-button', function () {
+			var container = $('#apiuser-grid-container');
+			var url = container.attr('data-url') + '/' + $(this).attr('name') + '?customerId=' + $(this).parent().attr('data-id');
+
+			container.doAjax({
+				url: url,
+				callbackSuccess: function (resp) {
+
+					var grid = $('#apiuser-grid').data('tGrid');
+					grid.currentPage = 1;
+					grid.ajaxRequest();
+
+				}
+			});
+			return false;
+		});
+
+	});
+
+	function onRowDataBound_ApiUser(e) {
+		if (!e.dataItem.Enabled) {
+			$(e.row).find('td').wrapInner('<span class="muted" />');
+		}
+	}
+</script>

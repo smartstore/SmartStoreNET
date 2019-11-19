@@ -1,0 +1,10 @@
+﻿FriendlyName: SmartStore.NET Web Api
+SystemName: SmartStore.WebApi
+Group: Api
+Version: 3.2.2
+MinAppVersion: 3.2.2
+Author: SmartStore AG
+DisplayOrder: 1
+FileName: SmartStore.WebApi.dll
+ResourceRootKey: Plugins.Api.WebApi
+Url: http://community.smartstore.com/marketplace/file/27-smartstorenet-web-api/

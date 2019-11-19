@@ -20,6 +20,7 @@
 	* #1711 Find product when searching for GTIN or MPN of an attribute combination.
 * #1714 Direct links to variations on a product.
 * #1733 Add ability to hide products from catalog, but not search.
+* #1754 Implement hidden boolean setting that controls which catalog search engine implementation should be used in backend.
 
 ### Improvements
 * #1663 Make MeasureDimension and MeasureWeight localizable.
@@ -43,7 +44,7 @@
 	* #1691 Manually editing/removing block cols/rows does not refresh grid state correctly.
 * Multistore mapping was ignored for manufacturers in sitemap.
 * PayPal PLUS: fixes rare exception "Unsupported Media Type" (415).
-* #1730 Product tag count should filter also based on VisibleIndividually.
+* #1730 Product tag count should filter also based on Visibility.
 
 
 ## SmartStore.NET 3.2.2

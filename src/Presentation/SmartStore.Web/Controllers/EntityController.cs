@@ -146,23 +146,47 @@ namespace SmartStore.Web.Controllers
                             }
                         }
 
+                        List<EntityPickerProduct> products;
                         var skip = model.PageIndex * model.PageSize;
-                        var query = _catalogSearchService.PrepareQuery(searchQuery);
 
-                        var products = query
-                            .Select(x => new
-                            {
-                                x.Id,
-                                x.Sku,
-                                x.Name,
-                                x.Published,
-                                x.ProductTypeId,
-                                x.MainPictureId
-                            })
-                            .OrderBy(x => x.Name)
-                            .Skip(() => skip)
-                            .Take(() => model.PageSize)
-                            .ToList();
+                        if (_searchSettings.UseCatalogSearchInBackend)
+                        {
+                            searchQuery = searchQuery
+                                .Slice(skip, model.PageSize)
+                                .SortBy(ProductSortingEnum.NameAsc);
+
+                            var searchResult = _catalogSearchService.Search(searchQuery);
+                            products = searchResult.Hits
+                                .Select(x => new EntityPickerProduct
+                                {
+                                    Id = x.Id,
+                                    Sku = x.Sku,
+                                    Name = x.Name,
+                                    Published = x.Published,
+                                    ProductTypeId = x.ProductTypeId,
+                                    MainPictureId = x.MainPictureId
+                                })
+                                .ToList();
+                        }
+                        else
+                        {
+                            var query = _catalogSearchService.PrepareQuery(searchQuery);
+
+                            products = query
+                                .Select(x => new EntityPickerProduct
+                                {
+                                    Id = x.Id,
+                                    Sku = x.Sku,
+                                    Name = x.Name,
+                                    Published = x.Published,
+                                    ProductTypeId = x.ProductTypeId,
+                                    MainPictureId = x.MainPictureId
+                                })
+                                .OrderBy(x => x.Name)
+                                .Skip(() => skip)
+                                .Take(() => model.PageSize)
+                                .ToList();
+                        }
 
                         var allPictureIds = products.Select(x => x.MainPictureId.GetValueOrDefault());
                         var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);

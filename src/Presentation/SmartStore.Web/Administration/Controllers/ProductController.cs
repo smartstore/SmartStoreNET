@@ -997,6 +997,7 @@ namespace SmartStore.Admin.Controllers
 
 			var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchProductName)
 				.HasStoreId(model.SearchStoreId)
+                .WithCurrency(_workContext.WorkingCurrency)
 				.WithLanguage(_workContext.WorkingLanguage);
 
 			if (model.SearchIsPublished.HasValue)
@@ -1018,11 +1019,46 @@ namespace SmartStore.Admin.Controllers
 			else if (model.SearchCategoryId != 0)
 				searchQuery = searchQuery.WithCategoryIds(null, model.SearchCategoryId);
 
-			var query = _catalogSearchService.PrepareQuery(searchQuery);
-			query = ApplySorting(query, command);
+            IPagedList<Product> products;
 
-			var products = new PagedList<Product>(query, command.Page - 1, command.PageSize);
-			var pictureInfos = _pictureService.GetPictureInfos(products);
+            if (_searchSettings.UseCatalogSearchInBackend)
+            {
+                searchQuery = searchQuery.Slice((command.Page - 1) * command.PageSize, command.PageSize);
+
+                if (command.SortDescriptors?.Any() ?? false)
+                {
+                    var sort = command.SortDescriptors.First();
+                    switch (sort.Member)
+                    {
+                        case "Name":
+                            searchQuery = searchQuery.SortBy(sort.SortDirection == ListSortDirection.Ascending ? ProductSortingEnum.NameAsc : ProductSortingEnum.NameDesc);
+                            break;
+                        case "Price":
+                            searchQuery = searchQuery.SortBy(sort.SortDirection == ListSortDirection.Ascending ? ProductSortingEnum.PriceAsc : ProductSortingEnum.PriceDesc);
+                            break;
+                        case "CreatedOn":
+                            searchQuery = searchQuery.SortBy(sort.SortDirection == ListSortDirection.Ascending ? ProductSortingEnum.CreatedOnAsc : ProductSortingEnum.CreatedOn);
+                            break;
+                    }
+                }
+
+                if (!searchQuery.Sorting.Any())
+                {
+                    searchQuery = searchQuery.SortBy(ProductSortingEnum.NameAsc);
+                }
+
+                var searchResult = _catalogSearchService.Search(searchQuery);
+                products = searchResult.Hits;
+            }
+            else
+            {
+                var query = _catalogSearchService.PrepareQuery(searchQuery);
+                query = ApplySorting(query, command);
+
+                products = new PagedList<Product>(query, command.Page - 1, command.PageSize);
+            }
+
+            var pictureInfos = _pictureService.GetPictureInfos(products);
 
 			gridModel.Data = products.Select(x =>
 			{

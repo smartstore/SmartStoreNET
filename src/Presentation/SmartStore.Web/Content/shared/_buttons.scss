@@ -603,8 +603,6 @@ $btn-size-sm: $input-height-sm;
     --shadow-color-intensity: 1;
 
     // NORMAL
-    box-shadow: 0 1px 3px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.08)), 
-                0 4px 6px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.1));
     box-shadow: 0 1px 1px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.07)),
                 0 2px 4px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.1)),
                 0 4px 8px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.08));
@@ -613,8 +611,6 @@ $btn-size-sm: $input-height-sm;
     &:hover, &.hover,
     &:focus, &.focus {
         transform: translateY(-3px);
-        box-shadow: 0 3px 6px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.1)), 
-                    0 9px 16px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.1)) !important;
         box-shadow: 0 1px 1px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.08)),
                     0 6px 10px -2px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.12)),
                     0 12px 24px -8px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity) * 0.12)) !important;

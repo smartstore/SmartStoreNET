@@ -327,25 +327,13 @@ table th {
     --shadow-color-intensity: 1;
 }
 
-/*.shadow {
-    box-shadow: $box-shadow;
-}
-
-.shadow-sm {
-    box-shadow: $box-shadow-sm;
-}
-
-.shadow-lg {
-    box-shadow: $box-shadow-lg;
-}*/
-
 @each $color, $value in $theme-colors {
     @if $color != "secondary" and $color != "light" { 
         .shadow-#{$color} { 
             $c: mix($value, #000, 50%);
             --lightness: #{lightness($value)};
-            --shadow-color-intensity: 1.2;
-            --shadow-color-rgb: #{red($c)}, #{green($c)}, #{blue($c)};
+            --shadow-color-intensity: 1.25 !important;
+            --shadow-color-rgb: #{red($c)}, #{green($c)}, #{blue($c)} !important;
         }
     }
 }

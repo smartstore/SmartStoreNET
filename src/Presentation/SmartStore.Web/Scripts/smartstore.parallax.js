@@ -8,65 +8,206 @@
 
     var initialized = false,
         isTouch = Modernizr.touchevents,
-        stages = [],
-        //// to adjust speed on smaller devices
-        //speedRatios = { xs: 0.5, sm: 0.6, md: 0.7, lg: 0.9, xl: 1 },
+        elems = [],
+        blocks = [],
+        scrollTop = 0,
+        winHeight = 0,
+        pause = true,
+        // to adjust speed on smaller devices
+        speedRatios = { xs: 0.3, sm: 0.5, md: 0.65, lg: 0.9, xl: 1 },
         viewport = ResponsiveBootstrapToolkit;
 
-    function update() {
-        _.each(stages, function (item, i) {
-            if (item.type === 'bg' && isTouch) {
-                // Found no proper way to make bg parallax
-                // run reliably on touch devices.
-                return;
-            }            
+    // Check what requestAnimationFrame to use, and if
+    // it's not supported, use the onscroll event
+    var loop = window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        function (callback) { return setTimeout(callback, 1000 / 60); };
 
-            var el = $(item.el);
-            var winHeight = window.innerHeight;
-            var scrollTop = window.pageYOffset;
-            var top = el.offset().top;
-            var height = el.outerHeight(false);
+    // store the id for later use
+    var loopId = null;
 
-            // Check if totally above or totally below viewport
-            var visible = !(top + height < scrollTop || top > scrollTop + winHeight);
-
-            if (!visible)
-                return;
-
-            if (item.filter && !viewport.is(item.filter)) {
-                if (item.initialized) {
-                    // Restore original styling
-                    el.css('background-position', item.originalPosition);
-                    el.css('background-attachment', item.originalAttachment);
-                    el.css(window.Prefixer.css('transform'), '');
-                    item.initialized = false;
-                }
-
-                return;
-            }             
-
-            speed = item.speed; // * speedRatios[viewport.current()];
-
-            if (item.type === 'bg') {
-                if (!item.initialized) {
-                    // for smoother scrolling
-                    el.css('background-attachment', 'fixed');
-                    item.initialized = true;
-                }
-
-                // set bg parallax offset
-                var ypos = Math.round((top - scrollTop) * speed) + (item.offset * -1);
-                el.css('background-position', 'center ' + ypos + "px");
-            }
-            else if (item.type === 'content') {
-                var bottom = top + height,
-                    rate = 100 / (bottom + winHeight - top) * ((scrollTop + winHeight) - top),
-                    ytransform = (rate - 50) * (speed * -6) + item.offset;
-
-                item.initialized = true;
-                el.css(window.Prefixer.css('transform'), 'translate3d(0, ' + ytransform + 'px, 0)');
+    // Test via a getter in the options object to see if the passive property is accessed
+    var supportsPassive = false;
+    try {
+        var opts = Object.defineProperty({}, 'passive', {
+            get: function () {
+                supportsPassive = true;
             }
         });
+        window.addEventListener("testPassive", null, opts);
+        window.removeEventListener("testPassive", null, opts);
+    } catch (e)
+    {
+        //
+    }
+
+    // check what cancelAnimation method to use
+    var clearLoop = window.cancelAnimationFrame || window.mozCancelAnimationFrame || clearTimeout;
+
+    // check which transform property to use
+    var transformProp = window.Prefixer.css('transform');
+
+    function computeBlocks() {
+        for (var i = 0; i < elems.length; i++) {
+            var block = computeBlock(elems[i]);
+            blocks.push(block);
+        }
+    }
+
+    function initialize() {
+        // Reset everything
+        for (var i = 0; i < blocks.length; i++) {
+            elems[i].style.cssText = blocks[i].style;
+        }
+
+        blocks = [];
+        winHeight = window.innerHeight;
+
+        setPosition();
+        computeBlocks();
+        animate();
+
+        // If paused, unpause and set listener for window resizing events
+        if (pause) {
+            window.addEventListener('resize', initialize);
+            pause = false;
+            // Start the loop
+            update();
+        }
+    }
+
+    // We are going to cache the parallax elements'
+    // computed values for performance reasons.
+    function computeBlock(el) {
+        var $el = $(el);
+        var type = $el.data('parallax-type') || 'bg';
+        var filter = $el.data('parallax-filter');
+        var style = el.style.cssText;
+        //var transform = getTransformExpression(style);
+        var transform = $el.css('transform') || '';
+        if (transform === 'none') { transform = ''; }
+
+        // Found no proper way to make bg parallax // run reliably on touch devices.
+        var paused = (type === 'bg' && isTouch) || (filter && !viewport.is(filter));
+
+        if (paused) {
+            return {
+                el: el,
+                type: type,
+                filter: filter,
+                style: style,
+                transform: transform,
+                paused: paused
+            };
+        }
+
+        var speed = toFloat($el.data('parallax-speed'), 0.5);
+        var offset = toFloat($el.data('parallax-offset'), 0);
+
+        // If the element has the percentage attribute, the posY and posX needs to be
+        // the current scroll position's value, so that the elements are still positioned based on HTML layout
+        var wrapperPosY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+
+        var posY = wrapperPosY;
+        var rect = el.getBoundingClientRect();
+        var top = posY + rect.top;
+        var height = el.clientHeight || el.offsetHeight || el.scrollHeight;
+        var bottom = top + height;
+
+        if (type === 'bg') {
+            // for smoother scrolling
+            $el.css('background-attachment', 'fixed');
+        }
+
+        var currentViewport = viewport.current();
+
+        return {
+            el: el,
+            type: type,
+            filter: filter,
+            style: style,
+            transform: transform,
+            paused: paused,
+            speed: speed,
+            offset: offset,
+            top: top,
+            height: height,
+            bottom: bottom,
+            speedRatio: speedRatios[currentViewport]
+        };
+    }
+
+    // Set scroll position (scrollTop)
+    // Returns true if the scroll changed, false if nothing happened
+    function setPosition() {
+        var oldScrollTop = scrollTop;
+        //var oldX = posX;
+        var wrapper = document.documentElement || document.body.parentNode || document.body;
+
+        scrollTop = window.pageYOffset || wrapper.scrollTop; // wrapper.scrollTop || window.pageYOffset;
+
+        if (oldScrollTop !== scrollTop) {
+            // scroll changed, return true
+            return true;
+        }
+
+        // scroll did not change
+        return false;
+    };
+
+    // Remove event listeners and loop again
+    function deferredUpdate() {
+        window.removeEventListener('resize', deferredUpdate);
+        window.removeEventListener('orientationchange', deferredUpdate);
+        window.removeEventListener('scroll', deferredUpdate);
+        document.removeEventListener('touchmove', deferredUpdate);
+
+        // loop again
+        loopId = loop(update);
+    }
+
+    // Loop
+    function update () {
+        if (setPosition() && pause === false) {
+            animate();
+            // loop again
+            loopId = loop(update);
+        } else {
+            loopId = null;
+            // Don't animate until we get a position updating event
+            window.addEventListener('resize', deferredUpdate);
+            window.addEventListener('orientationchange', deferredUpdate);
+            window.addEventListener('scroll', deferredUpdate, supportsPassive ? { passive: true } : false);
+            document.addEventListener('touchmove', deferredUpdate, supportsPassive ? { passive: true } : false);
+        }
+    }
+
+    // Transform on parallax element
+    function animate() {
+        for (var i = 0; i < elems.length; i++) {
+            var block = blocks[i];
+
+            if (block.paused)
+                continue;
+
+            speed = block.speed;
+
+            if (block.type === 'bg') {
+                // set bg parallax offset
+                var ypos = Math.round((block.top - scrollTop) * speed) + (block.offset * -1);
+                elems[i].style['background-position'] = 'center ' + ypos + "px";
+            }
+            else if (block.type === 'content') {
+                var rate = 100 / (block.bottom + winHeight - block.top) * ((scrollTop + winHeight) - block.top);
+                rate = rate * block.speedRatio;
+                var ytransform = (rate - 50) * (speed * -6) + block.offset;
+
+                elems[i].style[transformProp] = 'translate3d(0, ' + ytransform + 'px, 0)' + block.transform;
+            }
+        }
     }
 
     var Parallax = SmartStore.parallax = {
@@ -75,23 +216,10 @@
             var ctx = $(opts.context || document.body);
             var selector = opts.selector || '.parallax';
 
-            stages = _.map(ctx.find(selector).toArray(), function (val, key) {
-                var el = $(val);
-                return {
-                    el: val,
-                    type: el.data('parallax-type') || 'bg',
-                    speed: toFloat(el.data('parallax-speed'), 0.5),
-                    offset: (el.data('parallax-offset') || 0),
-                    filter: el.data('parallax-filter'),
-                    originalPosition: el.css('background-position'),
-                    originalAttachment: el.css('background-attachment'),
-                    initialized: false
-                };
-            });
-
             if (!initialized) {
-                $(window).on('resize scroll', update);
-                update();
+                elems = ctx.find(selector).toArray();
+                initialize();
+                initialized = true;
             }
         }
     };

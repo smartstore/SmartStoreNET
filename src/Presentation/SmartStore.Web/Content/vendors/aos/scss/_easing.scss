@@ -39,6 +39,7 @@ $aos-easing: (
 @each $key, $val in $aos-easing {
     body[data-aos-easing="#{$key}"] [data-aos],
     [data-aos][data-aos][data-aos-easing="#{$key}"] {
+        --aos-easing: #{$val};
         transition-timing-function: $val;
     }
 }

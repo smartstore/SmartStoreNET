@@ -370,7 +370,7 @@ namespace SmartStore.Services.Catalog
 			var applied = false;
 			
 			// Store mapping
-			if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
+			if (!showHidden && storeId > 0 && !QuerySettings.IgnoreMultiStore)
 			{
 				query = from c in query
 						join m in _storeMappingRepository.Table
@@ -405,7 +405,6 @@ namespace SmartStore.Services.Catalog
 						orderby cGroup.Key
 						select cGroup.FirstOrDefault();
 			}
-
 
 			return query;
         }

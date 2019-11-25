@@ -45,6 +45,7 @@
 * Multistore mapping was ignored for manufacturers in sitemap.
 * PayPal PLUS: fixes rare exception "Unsupported Media Type" (415).
 * #1730 Product tag count should filter also based on Visibility.
+* Categories limited to stores were not displayed in tree view.
 
 
 ## SmartStore.NET 3.2.2

@@ -29,19 +29,21 @@
 			columns.Bound(x => x.Id)
 				.Width(50);
 			columns.Bound(x => x.BlogPostTitle)
-				.Width(450)
+				.Width("20%")
 				.Template(x => Html.ActionLink(x.BlogPostTitle, "Edit", "Blog", new { id = x.BlogPostId }, new { }))
 				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Blog/Edit/") + "<#= BlogPostId #>\"><#= BlogPostTitle #></a>");
 			columns.Bound(x => x.CustomerId)
-				.Width(200)
+				.Width("10%")
 				.Template(x => Html.ActionLink(x.CustomerName, "Edit", "Customer", new { id = x.CustomerId }, new { }))
 				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerName #></a>");
 			columns.Bound(x => x.Comment)
+                .Width("50%")
 				.Encoded(false);
 			columns.Bound(x => x.IpAddress)
+                .Width("10%")
 				.Width(100);
 			columns.Bound(x => x.CreatedOn)
-				.Width(150);
+				.Width("10%");
 			columns.Command(commands =>
 			{
 				commands.Delete().Localize(T);

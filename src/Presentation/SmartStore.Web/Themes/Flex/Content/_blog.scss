@@ -4,7 +4,9 @@
 //
 // Blog Styles
 // --------------------------------------------------
-
+.bloglist-item {
+    overflow: hidden;
+}
 .blogpost-tags-overlay,
 .comments-overlay {
     position: absolute;

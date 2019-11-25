@@ -29,7 +29,7 @@
             {
                 var imageUrl = item.PreviewPictureModel.ImageUrl.HasValue() ? item.PreviewPictureModel.ImageUrl : item.PictureModel.ImageUrl;
 
-                <article class="news-preview-lg mb-5 col-12 col-md-6 col-lg-4 d-flex flex-column" itemscope itemtype="http://schema.org/NewsArticle">
+                <article class="newslist-item news-preview-lg mb-5 col-12 col-md-6 col-lg-4 d-flex flex-column" itemscope itemtype="http://schema.org/NewsArticle">
 
                     @if (imageUrl.HasValue())
                     {

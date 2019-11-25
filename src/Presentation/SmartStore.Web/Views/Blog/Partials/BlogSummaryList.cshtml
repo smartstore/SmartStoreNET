@@ -11,7 +11,7 @@
     var imageUrl = item.PreviewPictureModel.ImageUrl;
     var itemHasImage = item.PreviewPictureModel.ImageUrl.HasValue();
     var itemHasBgImage = item.HasBgImage && itemHasImage;
-    var articleClass = "card rounded shadow-sm border-0 box-img-top{0}{1}{2}{3}".FormatWith(
+    var articleClass = "bloglist-item card rounded shadow-sm border-0 box-img-top{0}{1}{2}{3}".FormatWith(
         itemHasBgImage ? " bg-tint-3 has-image-bg" : "",
         item.SectionBg.HasValue() ? " has-section-bg section-" + item.SectionBg : "",
         item.Tags.Count > 0 && item.DisplayTagsInPreview ? " has-tags" : "",

@@ -450,6 +450,7 @@ table th {
 
 .parallax[data-parallax-type=content] {
     will-change: transform;
+    transition: transform 0.1s ease;
 }
 
 

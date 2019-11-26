@@ -50,13 +50,6 @@
     // check which transform property to use
     var transformProp = window.Prefixer.css('transform');
 
-    function computeBlocks() {
-        for (var i = 0; i < elems.length; i++) {
-            var block = computeBlock(elems[i]);
-            blocks.push(block);
-        }
-    }
-
     function initialize() {
         // Reset everything
         for (var i = 0; i < blocks.length; i++) {
@@ -79,15 +72,32 @@
         }
     }
 
+    function computeBlocks() {
+        for (var i = 0; i < elems.length; i++) {
+            var block = computeBlock(elems[i]);
+            blocks.push(block);
+        }
+    }
+
     // We are going to cache the parallax elements'
     // computed values for performance reasons.
     function computeBlock(el) {
         var $el = $(el);
         var type = $el.data('parallax-type') || 'bg';
         var filter = $el.data('parallax-filter');
-        var style = el.style.cssText;
-        //var transform = getTransformExpression(style);
-        var transform = $el.css('transform') || '';
+
+        var originalStyle = $(el).data('original-style');
+        var style = originalStyle || el.style.cssText;
+        if (!originalStyle) {
+            $(el).data('original-style', style);
+        }      
+
+        var originalTransform = $(el).data('original-transform');
+        var transform = originalTransform || $el.css('transform') || '';
+        if (!originalTransform) {
+            $(el).data('original-transform', transform);
+        }  
+
         if (transform === 'none') { transform = ''; }
 
         // Found no proper way to make bg parallax // run reliably on touch devices.

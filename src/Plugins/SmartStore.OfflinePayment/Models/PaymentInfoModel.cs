@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Modelling;
 using FluentValidation;
 using SmartStore.Core.Localization;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Validators;
 
 namespace SmartStore.OfflinePayment.Models
 {
-	public abstract class PaymentInfoModelBase : ModelBase
+    public abstract class PaymentInfoModelBase : ModelBase
     {
 		public string DescriptionText { get; set; }
 		public string ThumbnailUrl { get; set; }
@@ -103,12 +103,13 @@ namespace SmartStore.OfflinePayment.Models
 
     public class PurchaseOrderNumberPaymentInfoModel : PaymentInfoModelBase
 	{
-        [SmartResourceDisplayName("Plugins.Payment.PurchaseOrder.PurchaseOrderNumber")]
+        [SmartResourceDisplayName("Plugins.Payments.PurchaseOrder.PurchaseOrderNumber")]
         [AllowHtml]
         public string PurchaseOrderNumber { get; set; }
 	}
 
-    #region validators 
+
+    #region Validators 
 
     public class DirectDebitPaymentInfoValidator : AbstractValidator<DirectDebitPaymentInfoModel>
     {
@@ -129,6 +130,14 @@ namespace SmartStore.OfflinePayment.Models
             RuleFor(x => x.CardholderName).NotEmpty();
             RuleFor(x => x.CardNumber).CreditCard().WithMessage(T("Payment.CardNumber.Wrong"));
             RuleFor(x => x.CardCode).CreditCardCvvNumber();
+        }
+    }
+
+    public class PurchaseOrderNumberPaymentInfoValidator : AbstractValidator<PurchaseOrderNumberPaymentInfoModel>
+    {
+        public PurchaseOrderNumberPaymentInfoValidator()
+        {
+            RuleFor(x => x.PurchaseOrderNumber).NotEmpty();
         }
     }
 

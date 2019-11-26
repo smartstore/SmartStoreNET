@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Web.Routing;
-using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Plugins;
 using SmartStore.OfflinePayment.Settings;
-using SmartStore.Services.Configuration;
-using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
 
 namespace SmartStore.OfflinePayment
@@ -16,15 +10,6 @@ namespace SmartStore.OfflinePayment
     [DisplayOrder(10)]
     public class PurchaseOrderNumberProvider : OfflinePaymentProviderBase<PurchaseOrderNumberPaymentSettings>, IConfigurable
     {
-        private readonly ISettingService _settingService;
-        private readonly ILocalizationService _localizationService;
-
-        public PurchaseOrderNumberProvider(ISettingService settingService, ILocalizationService localizationService)
-        {
-            _settingService = settingService;
-            _localizationService = localizationService;
-        }
-
         public override ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest)
         {
             var result = new ProcessPaymentResult();
@@ -43,10 +28,8 @@ namespace SmartStore.OfflinePayment
                     result.NewPaymentStatus = PaymentStatus.Paid;
                     break;
                 default:
-                    {
-                        result.AddError(T("Common.Payment.TranactionTypeNotSupported"));
-                        return result;
-                    }
+                    result.AddError(T("Common.Payment.TranactionTypeNotSupported"));
+                    return result;
             }
 
             return result;
@@ -64,6 +47,5 @@ namespace SmartStore.OfflinePayment
         {
             return "PurchaseOrderNumber";
         }
-
     }
 }

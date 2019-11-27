@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using FluentValidation;
+using FluentValidation.Attributes;
 using SmartStore.Rules;
 using SmartStore.Rules.Domain;
 using SmartStore.Web.Framework;
@@ -9,6 +9,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Rules
 {
+    [Validator(typeof(RuleSetValidator))]
     public class RuleSetModel : EntityModelBase
     {
         [SmartResourceDisplayName("Admin.Rules.RuleSet.Fields.Name")]
@@ -23,7 +24,7 @@ namespace SmartStore.Admin.Models.Rules
         [SmartResourceDisplayName("Admin.Rules.RuleSet.Fields.Scope")]
         public RuleScope Scope { get; set; }
 
-        // TODO: show in grid
+        [SmartResourceDisplayName("Admin.Rules.RuleSet.Fields.Scope")]
         public string ScopeName { get; set; }
 
         [SmartResourceDisplayName("Admin.Rules.RuleSet.Fields.IsSubGroup")]
@@ -39,5 +40,14 @@ namespace SmartStore.Admin.Models.Rules
 
         public IRuleExpressionGroup ExpressionGroup { get; set; }
         public IEnumerable<RuleDescriptor> AvailableDescriptors { get; set; }
+    }
+
+    public partial class RuleSetValidator : AbstractValidator<RuleSetModel>
+    {
+        public RuleSetValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty().MaximumLength(200);
+            RuleFor(x => x.Description).MaximumLength(400);
+        }
     }
 }

@@ -153,6 +153,7 @@ namespace SmartStore.Services.Cart.Rules
                 new CartRuleDescriptor
                 {
                     Name = "CartTotal",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.CartTotal"),
                     RuleType = RuleType.Money,
                     Constraints = new IRuleConstraint[0],
                     ProcessorType = typeof(CartTotalRule)
@@ -160,6 +161,7 @@ namespace SmartStore.Services.Cart.Rules
                 new CartRuleDescriptor
                 {
                     Name = "Currency",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.CurrencyId"),
                     RuleType = RuleType.IntArray,
                     ProcessorType = typeof(CurrencyRule),
                     Constraints = new IRuleConstraint[0],
@@ -168,6 +170,7 @@ namespace SmartStore.Services.Cart.Rules
                 new CartRuleDescriptor
                 {
                     Name = "CustomerRole",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.IsInCustomerRole"),
                     RuleType = RuleType.IntArray,
                     ProcessorType = typeof(CustomerRoleRule),
                     Constraints = new IRuleConstraint[0],
@@ -176,6 +179,7 @@ namespace SmartStore.Services.Cart.Rules
                 new CartRuleDescriptor
                 {
                     Name = "Language",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.LanguageId"),
                     RuleType = RuleType.IntArray,
                     ProcessorType = typeof(LanguageRule),
                     Constraints = new IRuleConstraint[0],
@@ -184,6 +188,7 @@ namespace SmartStore.Services.Cart.Rules
                 new CartRuleDescriptor
                 {
                     Name = "Store",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.StoreId"),
                     RuleType = RuleType.IntArray,
                     ProcessorType = typeof(StoreRule),
                     Constraints = new IRuleConstraint[0],
@@ -192,6 +197,7 @@ namespace SmartStore.Services.Cart.Rules
                 new CartRuleDescriptor
                 {
                     Name = "IPCountry",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.IPCountry"),
                     RuleType = RuleType.StringArray,
                     ProcessorType = typeof(IPCountryRule),
                     Constraints = new IRuleConstraint[0],
@@ -200,6 +206,7 @@ namespace SmartStore.Services.Cart.Rules
                 new CartRuleDescriptor
                 {
                     Name = "RuleSet",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.RuleSet"),
                     RuleType = RuleType.Int,
                     ProcessorType = typeof(RuleSetRule),
                     Operators = new[] { RuleOperator.IsEqualTo, RuleOperator.IsNotEqualTo },

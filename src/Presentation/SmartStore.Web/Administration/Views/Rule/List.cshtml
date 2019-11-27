@@ -4,13 +4,13 @@
 @using Telerik.Web.Mvc.UI
 
 @{
-    ViewBag.Title = T("Admin.Configuration.RuleSets").Text;
+    ViewBag.Title = T("Common.Rules").Text;
 }
 
 <div class="section-header">
     <div class="title">
         <i class="far fa-clock"></i>
-        @T("Admin.Configuration.RuleSets")
+        @T("Common.Rules")
     </div>
     <div class="options">
         <a href="@Url.Action("Create")" class="btn btn-primary">
@@ -56,14 +56,14 @@
         {
             columns.Bound(x => x.Name)
                 .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
-            columns.Bound(x => x.Scope)
-                .Centered()
-                .Width(200);
+            columns.Bound(x => x.ScopeName)
+                .Width(300);
             columns.Bound(x => x.IsActive)
                 .ClientTemplate(@Html.SymbolForBool("IsActive"))
                 .Centered()
-                .Width(200);
+                .Width(300);
         })
+        .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
         .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Rule"))
         .PreserveGridState()
         .EnableCustomBinding(true)

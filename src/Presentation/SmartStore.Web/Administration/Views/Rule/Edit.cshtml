@@ -3,7 +3,7 @@
 @using SmartStore.Admin.Models.Rules
 
 @{
-    ViewBag.Title = "Edit Rule " + Model.Id;
+    ViewBag.Title = string.Concat(T("Admin.Rules.EditRule"), " - ", Model.Name);
 }
 
 @using (Html.BeginForm())
@@ -29,5 +29,4 @@
 
     Html.RenderPartial("_CreateOrUpdate", Model);
 }
-
-@*@Html.DeleteConfirmation("delivery-time-delete")*@
+@Html.DeleteConfirmation("rule-delete")

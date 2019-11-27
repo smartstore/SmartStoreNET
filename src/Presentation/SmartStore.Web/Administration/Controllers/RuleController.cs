@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
+using Autofac;
 using SmartStore.Admin.Models.Rules;
 using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Security;
 using SmartStore.Rules;
 using SmartStore.Rules.Domain;
 using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Customers;
+using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -20,22 +23,22 @@ namespace SmartStore.Admin.Controllers
     {
         private readonly IRuleFactory _ruleFactory;
         private readonly IRuleStorage _ruleStorage;
-        private readonly ICartRuleProvider _cartRuleProvider;
         private readonly ITargetGroupService _targetGroupService;
         private readonly Func<RuleScope, IRuleProvider> _ruleProvider;
+        private readonly AdminAreaSettings _adminAreaSettings;
 
         public RuleController(
             IRuleFactory ruleFactory, 
             IRuleStorage ruleStorage,
-            ICartRuleProvider cartRuleProvider,
             ITargetGroupService targetGroupService,
-            Func<RuleScope, IRuleProvider> ruleProvider)
+            Func<RuleScope, IRuleProvider> ruleProvider,
+            AdminAreaSettings adminAreaSettings)
         {
             _ruleFactory = ruleFactory;
             _ruleStorage = ruleStorage;
-            _cartRuleProvider = cartRuleProvider;
             _targetGroupService = targetGroupService;
             _ruleProvider = ruleProvider;
+            _adminAreaSettings = adminAreaSettings;
         }
 
         public ActionResult Index()
@@ -46,7 +49,10 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.System.Rule.Read)]
         public ActionResult List()
         {
-            var model = new RuleSetListModel();
+            var model = new RuleSetListModel
+            {
+                GridPageSize = _adminAreaSettings.GridPageSize
+            };
 
             foreach (var s in Services.StoreService.GetAllStores())
             {
@@ -58,18 +64,16 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.System.Rule.Read)]
-        public ActionResult List(GridCommand command, RuleSetListModel model)
+        public ActionResult List(GridCommand command)
         {
             var gridModel = new GridModel<RuleSetModel>();
-            var ruleSets = _ruleStorage.GetAllRuleSets(false, false);
+            var ruleSets = _ruleStorage.GetAllRuleSets(false, false, null, command.Page - 1, command.PageSize, false, true);
 
             gridModel.Data = ruleSets.Select(x =>
             {
-                var item = new RuleSetModel();
-
-                MiniMapper.Map(x, item);
-
-                return item;
+                var rsModel = MiniMapper.Map<RuleSetEntity, RuleSetModel>(x);
+                rsModel.ScopeName = x.Scope.GetLocalizedEnum(Services.Localization, Services.WorkContext);
+                return rsModel;
             });
 
             gridModel.Total = ruleSets.TotalCount;
@@ -86,31 +90,26 @@ namespace SmartStore.Admin.Controllers
         {
             var model = new RuleSetModel();
 
-            model.ExpressionGroup = _ruleFactory.CreateExpressionGroup(new RuleSetEntity { Scope = RuleScope.Customer }, _targetGroupService);
-            model.AvailableDescriptors = _targetGroupService.RuleDescriptors;
-
             return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [ValidateInput(false)]
         [Permission(Permissions.System.Rule.Create)]
-        public ActionResult Create(RuleSetModel model, bool continueEditing, FormCollection form)
+        public ActionResult Create(RuleSetModel model, bool continueEditing)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var ruleSet = new RuleSetEntity();
-
-            MiniMapper.Map(model, ruleSet);
+            var ruleSet = MiniMapper.Map<RuleSetModel, RuleSetEntity>(model);
 
             _ruleStorage.InsertRuleSet(ruleSet);
 
-            NotifySuccess(T("Admin.ContentManagement.RuleSet.Added"));
+            NotifySuccess(T("Admin.Rules.RuleSet.Added"));
 
-            return continueEditing ? RedirectToAction("Edit", new { id = ruleSet.Id }) : RedirectToAction("List");                        
+            return continueEditing ? RedirectToAction("Edit", new { id = ruleSet.Id }) : RedirectToAction("List");
         }
 
         [Permission(Permissions.System.Rule.Read)]
@@ -122,24 +121,18 @@ namespace SmartStore.Admin.Controllers
                 return HttpNotFound();
             }
 
-            var model = new RuleSetModel();
-            MiniMapper.Map(entity, model);
-
-            model.ExpressionGroup = _ruleFactory.CreateExpressionGroup(entity, _targetGroupService);
+            var model = MiniMapper.Map<RuleSetEntity, RuleSetModel>(entity);
+            var provider = _ruleProvider(entity.Scope);
+            
+            model.ExpressionGroup = _ruleFactory.CreateExpressionGroup(entity, provider);
             model.AvailableDescriptors = _targetGroupService.RuleDescriptors;
-
-            // TODO: delete later. For now there seems to be an error if the scope isn't Customer
-            if (model.ExpressionGroup == null)
-            {
-                model.ExpressionGroup = _ruleFactory.CreateExpressionGroup(new RuleSetEntity { Scope = RuleScope.Customer }, _targetGroupService);
-            }
             
             return View(model);
         }
 
-        [HttpPost]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [Permission(Permissions.System.Rule.Update)]
-        public ActionResult Edit(RuleSetModel model)
+        public ActionResult Edit(RuleSetModel model, bool continueEditing)
         {
             var ruleSet = _ruleStorage.GetRuleSetById(model.Id, true, true);
 
@@ -147,8 +140,25 @@ namespace SmartStore.Admin.Controllers
 
             _ruleStorage.UpdateRuleSet(ruleSet);
 
-            return RedirectToAction("Edit", new { id = model.Id });
+            return continueEditing ? RedirectToAction("Edit", new { id = ruleSet.Id }) : RedirectToAction("List");
         }
+
+        [HttpPost, ActionName("Delete")]
+        [Permission(Permissions.System.Rule.Delete)]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            var ruleSet = _ruleStorage.GetRuleSetById(id, false, false);
+            if (ruleSet == null)
+            {
+                return HttpNotFound();
+            }
+
+            _ruleStorage.DeleteRuleSet(ruleSet);
+
+            NotifySuccess(T("Admin.Rules.RuleSet.Deleted"));
+            return RedirectToAction("List");
+        }
+
 
         [HttpPost]
         [Permission(Permissions.System.Rule.Create)]

@@ -3,6 +3,69 @@
 @using SmartStore.Rules
 @using SmartStore.Admin.Models.Rules
 
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.Scope)
+@Html.HiddenFor(model => model.IsSubGroup)
+@Html.HiddenFor(model => model.CreatedOnUtc)
+@Html.HiddenFor(model => model.UpdatedOnUtc)
+@Html.HiddenFor(model => model.LastProcessedOnUtc)
+
+<div class="adminContent">
+    <div class="adminRow">
+        <div class="adminTitle">
+            @Html.SmartLabelFor(model => model.Name)
+        </div>
+        <div class="adminData">
+            @Html.TextBoxFor(model => model.Name)
+            @Html.ValidationMessageFor(model => model.Name)
+        </div>
+    </div>
+    <div class="adminRow">
+        <div class="adminTitle">
+            @Html.SmartLabelFor(model => model.Description)
+        </div>
+        <div class="adminData">
+            @Html.TextAreaFor(model => model.Description)
+            @Html.ValidationMessageFor(model => model.Description)
+        </div>
+    </div>
+    <div class="adminRow">
+        <div class="adminTitle">
+            @Html.SmartLabelFor(model => model.IsActive)
+        </div>
+        <div class="adminData">
+            @Html.CheckBoxFor(model => model.IsActive)
+            @Html.ValidationMessageFor(model => model.IsActive)
+        </div>
+    </div>
+    <div class="adminRow">
+        <div class="adminTitle">
+            @Html.SmartLabelFor(model => model.Scope)
+        </div>
+        <div class="adminData">
+            @if (Model.Id == 0)
+            {
+                @Html.DropDownListForEnum(model => model.Scope)
+            }
+            else
+            {
+                @Html.TextBoxFor(model => model.Scope, new { @readonly = "readonly" })
+            }
+        </div>
+    </div>
+</div>
+
+@if (Model.Id != 0)
+{
+    <h4 class="my-4">@T("Admin.Rules.Execute", "<a id=\"execute-rules\" class=\"btn btn-primary\" href=\"" + Url.Action("Execute", new { ruleSetId = Model.Id }) + "\">", "</a>")</h4>
+    <div id="excute-result" class="alert alert-warning hide"></div>
+
+    <div class="ruleset-root" data-scope="@((int)Model.Scope)">
+        @{ Html.RenderPartial("_RuleSet", Model.ExpressionGroup); }
+    </div>
+}
+
 <style>
     /*.rule:first-child {
         margin-top: 0 !important;
@@ -280,64 +343,4 @@
                 break;
         }
     }
-
 </script>
-
-<div class="adminContent">
-    <div class="adminRow">
-        <div class="adminTitle">
-            @Html.SmartLabelFor(model => model.Name)
-        </div>
-        <div class="adminData">
-            @Html.TextBoxFor(model => model.Name)
-            @Html.ValidationMessageFor(model => model.Name)
-        </div>
-    </div>
-    <div class="adminRow">
-        <div class="adminTitle">
-            @Html.SmartLabelFor(model => model.Description)
-        </div>
-        <div class="adminData">
-            @Html.TextAreaFor(model => model.Description)
-            @Html.ValidationMessageFor(model => model.Description)
-        </div>
-    </div>
-    <div class="adminRow">
-        <div class="adminTitle">
-            @Html.SmartLabelFor(model => model.IsActive)
-        </div>
-        <div class="adminData">
-            @Html.CheckBoxFor(model => model.IsActive)
-        </div>
-    </div>
-    <div class="adminRow">
-        <div class="adminTitle">
-            @Html.SmartLabelFor(model => model.Scope)
-        </div>
-        <div class="adminData">
-            @if (Model.Id == 0)
-            {
-                @Html.DropDownListForEnum(model => model.Scope)
-            }
-            else
-            {
-                @Html.TextBoxFor(model => model.Scope, new { @readonly = "readonly" })
-            }
-        </div>
-    </div>
-</div>
-
-@Html.HiddenFor(model => model.Id)
-@Html.HiddenFor(model => model.Scope)
-@Html.HiddenFor(model => model.IsSubGroup)
-@Html.HiddenFor(model => model.CreatedOnUtc)
-@Html.HiddenFor(model => model.UpdatedOnUtc)
-@Html.HiddenFor(model => model.LastProcessedOnUtc)
-
-<h4 class="my-4">@T("Admin.Rules.Execute", "<a id=\"execute-rules\" class=\"btn btn-primary\" href=\"" + Url.Action("Execute", new { ruleSetId = Model.Id }) + "\">", "</a>")</h4>
-
-<div id="excute-result" class="alert alert-warning hide"></div>
-
-<div class="ruleset-root" data-scope="@((int)Model.Scope)">
-    @{ Html.RenderPartial("_RuleSet", Model.ExpressionGroup); }
-</div>

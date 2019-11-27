@@ -154,6 +154,10 @@ namespace SmartStore.Rules
                 query = query.Where(x => !x.IsSubGroup);
             }
 
+            query = query
+                .OrderBy(x => x.IsActive)
+                .ThenBy(x => x.Scope);
+
             return new PagedList<RuleSetEntity>(query, pageIndex, pageSize);
         }
 

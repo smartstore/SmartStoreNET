@@ -12,7 +12,9 @@ namespace SmartStore.Admin.Models.Rules
 			AvailableStores = new List<SelectListItem>();
 		}
 
-		[SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
+        public int GridPageSize { get; set; }
+
+        [SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
 		public int SearchStoreId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Rules.SystemName")]

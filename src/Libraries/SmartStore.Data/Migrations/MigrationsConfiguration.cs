@@ -51,6 +51,12 @@
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
+            // FluentValidation splits messages by dot for client validation. Don't use abbrevs.
+            builder.AddOrUpdate("Validation.MinimumLengthValidator")
+                .Value("de", "'{PropertyName}' muss mindestens {MinLength} Zeichen lang sein. Sie haben {TotalLength} Zeichen eingegeben.");
+            builder.AddOrUpdate("Validation.MaximumLengthValidator")
+                .Value("de", "'{PropertyName}' darf maximal {MaxLength} Zeichen lang sein. Sie haben {TotalLength} Zeichen eingegeben.");
+
             builder.AddOrUpdate("Admin.Configuration.Measures.Weights.AddWeight", "Add weight", "Gewicht hinzufügen");
             builder.AddOrUpdate("Admin.Configuration.Measures.Weights.EditWeight", "Edit weight", "Gewicht bearbeiten");
 

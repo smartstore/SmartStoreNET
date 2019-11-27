@@ -158,32 +158,35 @@ namespace SmartStore.Web
 
 		private static void InitializeFluentValidator()
 		{
-			FluentValidationModelValidatorProvider.Configure(x =>
-			{
-				x.ValidatorFactory = new SmartValidatorFactory();
-			});
+            // It sais 'not recommended', but who cares: SAVE RAM!
+            ValidatorOptions.DisableAccessorCache = true;
 
-			// Setup custom resources
-			ValidatorOptions.LanguageManager = new ValidatorLanguageManager();
+            FluentValidationModelValidatorProvider.Configure(x =>
+            {
+                x.ValidatorFactory = new SmartValidatorFactory();
+            });
 
-			// Setup our custom DisplayName handling
-			var originalDisplayNameResolver = ValidatorOptions.DisplayNameResolver;
-			ValidatorOptions.DisplayNameResolver = (type, member, expression) =>
-			{
-				string name = null;
+            // Setup custom resources
+            ValidatorOptions.LanguageManager = new ValidatorLanguageManager();
 
-				if (HostingEnvironment.IsHosted && member != null)
-				{
-					var attr = member.GetAttribute<SmartResourceDisplayName>(true);
-					if (attr != null)
-					{
-						name = attr.DisplayName;
-					}
-				}
+            // Setup our custom DisplayName handling
+            var originalDisplayNameResolver = ValidatorOptions.DisplayNameResolver;
+            ValidatorOptions.DisplayNameResolver = (type, member, expression) =>
+            {
+                string name = null;
 
-				return name ?? originalDisplayNameResolver.Invoke(type, member, expression);
-			};
-		}
+                if (HostingEnvironment.IsHosted && member != null)
+                {
+                    var attr = member.GetAttribute<SmartResourceDisplayName>(true);
+                    if (attr != null)
+                    {
+                        name = attr.DisplayName;
+                    }
+                }
+
+                return name ?? originalDisplayNameResolver.Invoke(type, member, expression);
+            };
+        }
 
 		private void RegisterVirtualPathProviders()
 		{

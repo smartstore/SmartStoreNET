@@ -18,11 +18,21 @@ namespace SmartStore.Web.Framework.Theming
     {
 		private WebViewPageHelper _helper;
 
+        protected string CurrentPageType
+        {
+            get => _helper.CurrentPageType;
+        }
+
+        protected object CurrentPageId
+        {
+            get => _helper.CurrentPageId;
+        }
+
         protected int CurrentCategoryId
         {
             get
             {
-				return _helper.CurrentCategoryId;
+                return _helper.CurrentPageType == "category" ? _helper.CurrentPageId.Convert<int>() : 0;
             }
         }
 
@@ -30,16 +40,24 @@ namespace SmartStore.Web.Framework.Theming
         {
             get
             {
-				return _helper.CurrentManufacturerId;
-			}
+                return _helper.CurrentPageType == "manufacturer" ? _helper.CurrentPageId.Convert<int>() : 0;
+            }
         }
 
         protected int CurrentProductId
         {
             get
             {
-				return _helper.CurrentProductId;
-			}
+                return _helper.CurrentPageType == "product" ? _helper.CurrentPageId.Convert<int>() : 0;
+            }
+        }
+
+        protected int CurrentTopicId
+        {
+            get
+            {
+                return _helper.CurrentPageType == "topic" ? _helper.CurrentPageId.Convert<int>() : 0;
+            }
         }
 
         protected bool IsHomePage

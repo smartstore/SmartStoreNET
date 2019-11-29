@@ -395,7 +395,7 @@
     <Compile Include="UI\Menus\Providers\IMenuItemProvider.cs" />
     <Compile Include="UI\Menus\Providers\MenuItemProviderBase.cs" />
     <Compile Include="UI\Menus\MenuBuiltEvent.cs" />
-    <Compile Include="UI\Menus\UserMenuFilter.cs" />
+    <Compile Include="UI\Menus\MenuFilter.cs" />
     <Compile Include="UI\WidgetZoneModel.cs" />
     <Compile Include="Validators\FluentValidatorExtensions.cs" />
     <Compile Include="Validators\SmartBaseValidator.cs" />

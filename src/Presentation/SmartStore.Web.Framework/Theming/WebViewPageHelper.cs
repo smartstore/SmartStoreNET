@@ -13,6 +13,8 @@ using SmartStore.Core.Domain;
 using SmartStore.Services.Customers;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Services.Cms;
+using System.Web.Routing;
+using System.Globalization;
 
 namespace SmartStore.Web.Framework.Theming
 {
@@ -23,11 +25,10 @@ namespace SmartStore.Web.Framework.Theming
 		private ExpandoObject _themeVars;
 		private ICollection<NotifyEntry> _internalNotifications;
 
-		private int? _currentCategoryId;
-		private int? _currentManufacturerId;
-		private int? _currentProductId;
+        private string _currentPageType;
+        private object _currentPageId;
 
-		private bool? _isHomePage;
+        private bool? _isHomePage;
 		private bool? _isMobileDevice;
         private bool? _isStoreClosed;
 		private bool? _enableHoneypot;
@@ -45,81 +46,67 @@ namespace SmartStore.Web.Framework.Theming
 		public IMobileDeviceHelper MobileDeviceHelper { get; set; }
 		public ILinkResolver LinkResolver { get; set; }
 
-		public void Initialize(ViewContext viewContext)
+		public void Initialize(ControllerContext controllerContext)
 		{
 			if (!_initialized)
 			{
-				_controllerContext = viewContext.GetRootControllerContext();
+				_controllerContext = controllerContext.GetRootControllerContext();
+                IdentifyPage();
 				_initialized = true;
 			}
 		}
 
+        public string CurrentPageType
+        {
+            get => _currentPageType;
+        }
 
-		public int CurrentCategoryId
-		{
-			get
-			{
-				if (!_currentCategoryId.HasValue)
-				{
-					int id = 0;
-					var routeValues = _controllerContext.RequestContext.RouteData.Values;
+        public object CurrentPageId
+        {
+            get => _currentPageId;
+        }
 
-					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog")
-						&& routeValues["action"].ToString().IsCaseInsensitiveEqual("category")
-						&& routeValues.ContainsKey("categoryId"))
-					{
-						id = Convert.ToInt32(routeValues["categoryId"].ToString());
-					}
-					_currentCategoryId = id;
-				}
+        private void IdentifyPage()
+        {
+            var routeData = _controllerContext.RequestContext.RouteData;
+            var controllerName = routeData.GetRequiredString("controller").ToLowerInvariant();
+            var actionName = routeData.GetRequiredString("action").ToLowerInvariant();
 
-				return _currentCategoryId.Value;
-			}
-		}
+            _currentPageType = "system";
+            _currentPageId = controllerName + "." + actionName;
 
-		public int CurrentManufacturerId
-		{
-			get
-			{
-				if (!_currentManufacturerId.HasValue)
-				{
-					var routeValues = _controllerContext.RequestContext.RouteData.Values;
-					int id = 0;
-					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog")
-						&& routeValues["action"].ToString().IsCaseInsensitiveEqual("manufacturer")
-						&& routeValues.ContainsKey("manufacturerId"))
-					{
-						id = Convert.ToInt32(routeValues["manufacturerId"].ToString());
-					}
-					_currentManufacturerId = id;
-				}
+            if (controllerName == "catalog")
+            {
+                if (actionName == "category")
+                {
+                    _currentPageType = "category";
+                    _currentPageId = routeData.Values.Get("categoryId");
+                }
+                else if (actionName == "manufacturer")
+                {
+                    _currentPageType = "manufacturer";
+                    _currentPageId = routeData.Values.Get("manufacturerId");
+                }
+            }
+            else if (controllerName == "product")
+            {
+                if (actionName == "productdetails")
+                {
+                    _currentPageType = "product";
+                    _currentPageId = routeData.Values.Get("productId");
+                }
+            }
+            else if (controllerName == "topic")
+            {
+                if (actionName == "topicdetails")
+                {
+                    _currentPageType = "topic";
+                    _currentPageId = routeData.Values.Get("topicId");
+                }
+            }
+        }
 
-				return _currentManufacturerId.Value;
-			}
-		}
-
-		public int CurrentProductId
-		{
-			get
-			{
-				if (!_currentProductId.HasValue)
-				{
-					var routeValues = _controllerContext.RequestContext.RouteData.Values;
-					int id = 0;
-					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("product")
-						&& routeValues["action"].ToString().IsCaseInsensitiveEqual("productdetails")
-						&& routeValues.ContainsKey("productId"))
-					{
-						id = Convert.ToInt32(routeValues["productId"].ToString());
-					}
-					_currentProductId = id;
-				}
-
-				return _currentProductId.Value;
-			}
-		}
-
-		public bool IsHomePage
+        public bool IsHomePage
 		{
 			get
 			{

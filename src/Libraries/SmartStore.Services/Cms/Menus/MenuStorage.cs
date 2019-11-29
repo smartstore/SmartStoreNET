@@ -110,6 +110,11 @@ namespace SmartStore.Services.Cms
             _services.Cache.RemoveByPattern(MENU_PATTERN_KEY);
         }
 
+        public virtual IEnumerable<string> GetAllMenuSystemNames()
+        {
+            return GetMenuSystemNames(true);
+        }
+
         public virtual IPagedList<MenuRecord> GetAllMenus(
             string systemName = null,
             int storeId = 0,
@@ -296,14 +301,16 @@ namespace SmartStore.Services.Cms
 
         #region Utilities
 
-        private ISet GetMenuSystemNames(bool create)
+        private ISet GetMenuSystemNames(bool ensureCreated)
 		{
-			if (create || _services.Cache.Contains(MENU_ALLSYSTEMNAMES_CACHE_KEY))
+			if (ensureCreated || _services.Cache.Contains(MENU_ALLSYSTEMNAMES_CACHE_KEY))
 			{
 				return _services.Cache.GetHashSet(MENU_ALLSYSTEMNAMES_CACHE_KEY, () =>
 				{
 					return _menuRepository.TableUntracked
 						.Where(x => x.Published)
+                        .OrderByDescending(x => x.IsSystemMenu)
+                        .ThenBy(x => x.Id)
 						.Select(x => x.SystemName)
 						.ToArray();
 				});

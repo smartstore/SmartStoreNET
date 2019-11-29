@@ -76,7 +76,7 @@ namespace SmartStore.Web.Framework.UI
 			var menuItem = new MenuItem
 			{
                 EntityId = entity.Id,
-                EntityName = nameof(MenuItemRecord),
+                EntityName = "MenuItem", // nameof(MenuItemRecord),
                 MenuItemId = entity.Id,
 				Text = title,
                 Summary = shortDescription,

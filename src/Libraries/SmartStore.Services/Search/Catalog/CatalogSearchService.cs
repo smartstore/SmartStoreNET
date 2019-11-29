@@ -230,9 +230,10 @@ namespace SmartStore.Services.Search
 						spellCheckerSuggestions,
 						facets);
 
-					_services.EventPublisher.Publish(new CatalogSearchedEvent(searchQuery, result));
+                    var searchedEvent = new CatalogSearchedEvent(searchQuery, result);
+                    _services.EventPublisher.Publish(searchedEvent);
 
-					return result;
+					return searchedEvent.Result;
 				}
 				else if (searchQuery.Origin.IsCaseInsensitiveEqual("Search/Search"))
 				{

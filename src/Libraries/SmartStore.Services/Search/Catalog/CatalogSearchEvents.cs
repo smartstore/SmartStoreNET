@@ -26,6 +26,6 @@ namespace SmartStore.Services.Search
 		}
 
 		public CatalogSearchQuery Query { get; private set; }
-		public CatalogSearchResult Result { get; private set; }
+		public CatalogSearchResult Result { get; set; }
 	}
 }

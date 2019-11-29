@@ -165,13 +165,19 @@ namespace SmartStore.Core.Search
 
 		public TQuery CheckSpelling(int maxSuggestions, int minQueryLength = 4, int maxHitCount = 3)
 		{
-            Guard.NotNegative(maxSuggestions, nameof(maxSuggestions));
 			Guard.IsPositive(minQueryLength, nameof(minQueryLength));
 			Guard.IsPositive(maxHitCount, nameof(maxHitCount));
 
-			ResultFlags = ResultFlags | SearchResultFlags.WithSuggestions;
+            if (maxSuggestions > 0)
+            {
+                ResultFlags = ResultFlags | SearchResultFlags.WithSuggestions;
+            }
+            else
+            {
+                ResultFlags &= ~SearchResultFlags.WithSuggestions;
+            }
 
-			SpellCheckerMaxSuggestions = maxSuggestions;
+			SpellCheckerMaxSuggestions = Math.Max(maxSuggestions, 0);
 			SpellCheckerMinQueryLength = minQueryLength;
 			SpellCheckerMaxHitCount = maxHitCount;
 

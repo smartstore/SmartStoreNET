@@ -319,7 +319,7 @@ namespace SmartStore.Services.DataExchange.Import
 						var context = ((IObjectContextAdapter)_importProfileRepository.Context).ObjectContext;
 						var container = context.MetadataWorkspace.GetEntityContainer(context.DefaultContainerName, DataSpace.CSpace);
 
-						var allLanguages = _languageService.GetAllLanguages(true);
+                        var allLanguages = _languageService.GetAllLanguages(true);
 						var allLanguageNames = allLanguages.ToDictionarySafe(x => x.UniqueSeoCode, x => LocalizationHelper.GetLanguageNativeName(x.LanguageCulture) ?? x.Name);
 
 						var localizableProperties = new Dictionary<ImportEntityType, string[]>
@@ -357,21 +357,26 @@ namespace SmartStore.Services.DataExchange.Import
 							var dic = entitySet.ElementType.Members
 								.Where(x => !x.Name.IsCaseInsensitiveEqual("Id") && x.BuiltInTypeKind.HasFlag(BuiltInTypeKind.EdmProperty))
 								.Select(x => x.Name)
-								.ToDictionary(x => x, x => "", StringComparer.OrdinalIgnoreCase);
+								.ToDictionarySafe(x => x, x => "", StringComparer.OrdinalIgnoreCase);
 
 							// lack of abstractness?
 							if ((type == ImportEntityType.Product || type == ImportEntityType.Category) && !dic.ContainsKey("SeName"))
 							{
-								dic.Add("SeName", "");
+								dic["SeName"] = "";
 							}
 
-							// shipping and billing address
-							if (type == ImportEntityType.Customer)
+                            if (type == ImportEntityType.Product)
+                            {
+                                dic["Specification"] = "";
+                            }
+
+                            // shipping and billing address
+                            if (type == ImportEntityType.Customer)
 							{
 								foreach (var property in addressProperties)
 								{
-									dic.Add("BillingAddress." + property, "");
-									dic.Add("ShippingAddress." + property, "");
+                                    dic["BillingAddress." + property] = "";
+                                    dic["ShippingAddress." + property] = "";
 								}
 							}
 
@@ -386,21 +391,19 @@ namespace SmartStore.Services.DataExchange.Import
 								{
 									foreach (var language in allLanguages)
 									{
-										dic.Add(
-											"{0}[{1}]".FormatInvariant(key, language.UniqueSeoCode.EmptyNull().ToLower()),
-											"{0} {1}".FormatInvariant(localizedValue.NaIfEmpty(), allLanguageNames[language.UniqueSeoCode])
-										);
+                                        dic["{0}[{1}]".FormatInvariant(key, language.UniqueSeoCode.EmptyNull().ToLower())] =
+                                            "{0} {1}".FormatInvariant(localizedValue.NaIfEmpty(), allLanguageNames[language.UniqueSeoCode]);
 									}
 								}
 							}
 
-							_entityProperties.Add(type, dic);
+							_entityProperties[type] = dic;
 						}
 					}
 				}
 			}
 
-			return (_entityProperties.ContainsKey(entityType) ? _entityProperties[entityType] : null);
+			return _entityProperties.ContainsKey(entityType) ? _entityProperties[entityType] : null;
 		}
 	}
 }

@@ -189,7 +189,7 @@ namespace SmartStore.Admin.Controllers
                 var map = (invalidMap ?? storedMap) ?? new ColumnMap();
 
                 // Property name to localized property name.
-                var allProperties = _importProfileService.GetImportableEntityProperties(profile.EntityType);
+                var allProperties = _importProfileService.GetImportableEntityProperties(profile.EntityType) ?? new Dictionary<string, string>();
 
                 switch (profile.EntityType)
                 {

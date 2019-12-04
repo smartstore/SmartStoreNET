@@ -219,3 +219,12 @@
 .pd-section-top:hover .btn-admin-edit {
     display: inline-block;
 }
+
+// masonary grid
+
+.masonary-grid {
+    display: grid;
+    grid-gap: $list-group-item-padding-x;
+    grid-template-columns: repeat(auto-fill, minmax(350px,1fr));
+    grid-auto-rows: 20px;
+}

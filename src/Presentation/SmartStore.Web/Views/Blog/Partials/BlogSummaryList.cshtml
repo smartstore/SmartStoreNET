@@ -19,59 +19,59 @@
     );
 
     <article class="@articleClass" itemscope itemtype="http://schema.org/BlogPosting">
-
-        @if (itemHasBgImage)
-        {
-            @RenderTags(item, false)
-            @RenderComments(item)
-
-            <div class="box-img-wrapper card-img">
-                <img class="card-img box-scale" src="@imageUrl" alt="@item.PreviewPictureModel.AlternateText" title="@item.PreviewPictureModel.Title" itemprop="image">
-            </div>
-            <div class="bg-overlay bg-@(item.SectionBg) card-img"></div>
-            <div class="bg-overlay bg-shade bg-shade-@(item.SectionBg) card-img h-50"></div>
-        }
-        else if (!item.SectionBg.HasValue() && itemHasImage)
-        {
-            <div class="box-img-wrapper">
-
-                <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })">
-                    <img class="box-img box-scale" src="@imageUrl" alt="@item.PreviewPictureModel.AlternateText" title="@item.PreviewPictureModel.Title" itemprop="image">
-                </a>
-
-                @RenderTags(item, true)
+        <div>
+            @if (itemHasBgImage)
+            {
+                @RenderTags(item, false)
                 @RenderComments(item)
-            </div>
-        }
-        else
-        {
-            @RenderTags(item, false)
-            @RenderComments(item)
-        }
 
-        <div class="@(itemHasBgImage ? "card-img-overlay d-flex flex-column justify-content-end" : "box-img-top")">
-
-            <div class="blogpost-text text-left w-100 p-4">
-                <div class="blogpost-date mb-2 text-muted" itemprop="dateCreated">
-                    @item.CreatedOn.ToNativeString("dd MMMM, yyyy")
+                <div class="box-img-wrapper card-img">
+                    <img class="card-img box-scale" src="@imageUrl" alt="@item.PreviewPictureModel.AlternateText" title="@item.PreviewPictureModel.Title" itemprop="image">
                 </div>
+                <div class="bg-overlay bg-@(item.SectionBg) card-img"></div>
+                <div class="bg-overlay bg-shade bg-shade-@(item.SectionBg) card-img h-50"></div>
+            }
+            else if (!item.SectionBg.HasValue() && itemHasImage)
+            {
+                <div class="box-img-wrapper">
 
-                <h3 class="fs-h6 mb-3 mt-1 font-weight-medium">
-                    <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })" class="blogpost-title" itemprop="headline">
-                        @item.Title
+                    <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })">
+                        <img class="box-img box-scale" src="@imageUrl" alt="@item.PreviewPictureModel.AlternateText" title="@item.PreviewPictureModel.Title" itemprop="image">
                     </a>
-                </h3>
 
-                @if (item.Intro.HasValue())
-                {
-                    <div class="py-1 blogpost-intro" itemprop="description">@Html.Raw(item.Intro)</div>
-                }
+                    @RenderTags(item, true)
+                    @RenderComments(item)
+                </div>
+            }
+            else
+            {
+                @RenderTags(item, false)
+                @RenderComments(item)
+            }
 
-                @{ Html.RenderWidget("bloglist_page_inside_post"); }
+            <div class="@(itemHasBgImage ? "card-img-overlay d-flex flex-column justify-content-end" : "box-img-top")">
 
+                <div class="blogpost-text text-left w-100 p-4">
+                    <div class="blogpost-date mb-2 text-muted" itemprop="dateCreated">
+                        @item.CreatedOn.ToNativeString("dd MMMM, yyyy")
+                    </div>
+
+                    <h3 class="fs-h6 mb-3 mt-1 font-weight-medium">
+                        <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })" class="blogpost-title" itemprop="headline">
+                            @item.Title
+                        </a>
+                    </h3>
+
+                    @if (item.Intro.HasValue())
+                    {
+                        <div class="py-1 blogpost-intro" itemprop="description">@Html.Raw(item.Intro)</div>
+                    }
+
+                    @{ Html.RenderWidget("bloglist_page_inside_post"); }
+
+                </div>
             </div>
         </div>
-
     </article>
 }
 

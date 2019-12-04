@@ -105,9 +105,19 @@
 			return x;
         },
 
-        requestAnimationFrame: window.requestAnimationFrame || function (callback) {
+        requestAnimationFrame: window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||
+            window.oRequestAnimationFrame || function (callback) {
             setTimeout(callback, 10);
-        }
+        },
+
+        cancelAnimationFrame: window.cancelAnimationFrame  ||
+            window.webkitCancelAnimationFrame  ||
+            window.mozCancelAnimationFrame  ||
+            window.msCancelAnimationFrame ||
+            window.oCancelAnimationFrame 
 	});
 	
 	// provide main app namespace

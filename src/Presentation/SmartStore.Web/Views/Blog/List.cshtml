@@ -40,9 +40,7 @@
         @{ Html.RenderWidget("bloglist_page_before_posts"); }
 
         <div class="blogposts mb-4">
-            <div class="card-columns card-cols-sm-1 card-cols-lg-2">
-                @{ Html.RenderPartial("BlogSummaryList", Model); }
-            </div>
+            @{ Html.RenderPartial("BlogSummaryList", Model); }
         </div>
 
         @(Html.SmartStore().Pager(Model.PagingFilteringContext)
@@ -89,3 +87,8 @@
     }
 }
 
+<script>
+    $(function () {
+        $(".blogposts").masonaryGrid(".bloglist-item > div");
+    });
+</script>

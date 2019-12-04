@@ -300,8 +300,47 @@
 					el.append('<a href="#" class="btn-text-expander btn-text-expander--collapse"><i class="fa fa fa-angle-double-up pr-2"></i><span>' + Res['Products.Longdesc.Less'] + '</span></a>');
 				}
 			});
-		}
-	}); // $.fn.extend
+		},
+
+        // Element must be decorated with visibilty:hidden
+        masonaryGrid: function (itemSelector) {
+            return this.each(function () {
+
+                var self = $(this);
+                var grid = self[0];
+                var allItems = self.find(".card");
+
+                self.addClass("masonary-grid");
+
+                resizeAllGridItems();
+
+                self.css("visibility", "visible");
+
+                function resizeGridItem(item) {
+                    var rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
+                    var rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap'));
+                    var rowSpan = Math.ceil((item.querySelector(itemSelector).getBoundingClientRect().height + rowGap) / (rowHeight + rowGap));
+                    item.style.gridRowEnd = "span " + rowSpan;
+                }
+
+                function resizeAllGridItems() {
+                    allItems.each(function () {
+                        resizeGridItem($(this)[0]);
+                    });
+                }
+
+                var timeout;
+
+                $(window).on("resize", function () {
+                    if (timeout) {
+                        window.cancelAnimationFrame(timeout);
+                    }
+
+                    timeout = window.requestAnimationFrame(resizeAllGridItems);
+                });
+            });
+        }
+    }); // $.fn.extend
 
     // Shorter aliases
     $.fn.gap = $.fn.cushioning; 

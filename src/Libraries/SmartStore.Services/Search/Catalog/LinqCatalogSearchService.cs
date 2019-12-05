@@ -766,7 +766,7 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None, bool direct = false)
 		{
-			_eventPublisher.Publish(new CatalogSearchingEvent(searchQuery));
+			_eventPublisher.Publish(new CatalogSearchingEvent(searchQuery, true));
 
 			var totalHits = 0;
 			Func<IList<Product>> hitsFactory = null;

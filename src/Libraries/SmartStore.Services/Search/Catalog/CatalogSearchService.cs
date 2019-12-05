@@ -161,7 +161,7 @@ namespace SmartStore.Services.Search
 					Func<IList<Product>> hitsFactory = null;
 					IDictionary<string, FacetGroup> facets = null;
 
-					_services.EventPublisher.Publish(new CatalogSearchingEvent(searchQuery));
+					_services.EventPublisher.Publish(new CatalogSearchingEvent(searchQuery, false));
 
 					if (searchQuery.Take > 0)
 					{

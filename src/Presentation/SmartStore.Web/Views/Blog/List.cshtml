@@ -39,7 +39,7 @@
 
         @{ Html.RenderWidget("bloglist_page_before_posts"); }
 
-        <div class="blogposts mb-4">
+        <div class="blogposts mb-4" style="visibility: hidden;">
             @{ Html.RenderPartial("BlogSummaryList", Model); }
         </div>
 
@@ -54,7 +54,6 @@
         @{ Html.RenderWidget("bloglist_page_after_posts"); }
     </div>
 </div>
-
 
 @helper RenderTags(BlogPostModel item)
 {

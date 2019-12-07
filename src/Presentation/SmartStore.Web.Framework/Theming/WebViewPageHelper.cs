@@ -75,7 +75,12 @@ namespace SmartStore.Web.Framework.Theming
             _currentPageType = "system";
             _currentPageId = controllerName + "." + actionName;
 
-            if (controllerName == "catalog")
+            if (IsHomePage)
+            {
+                _currentPageType = "home";
+                _currentPageId = 0;
+            }
+            else if (controllerName == "catalog")
             {
                 if (actionName == "category")
                 {
@@ -84,7 +89,7 @@ namespace SmartStore.Web.Framework.Theming
                 }
                 else if (actionName == "manufacturer")
                 {
-                    _currentPageType = "manufacturer";
+                    _currentPageType = "brand";
                     _currentPageId = routeData.Values.Get("manufacturerId");
                 }
             }

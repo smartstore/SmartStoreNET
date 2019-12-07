@@ -162,10 +162,22 @@ namespace SmartStore.Web.Framework.UI
             private set;
         }
 
+        /// <summary>
+        /// Checks whether action/controller or routeName or url has been specified.
+        /// </summary>
 		public bool HasRoute()
 		{
 			return _actionName != null || _routeName != null || _url != null;
 		}
+
+        /// <summary>
+        /// Checks whether url has been specified with '#' or 'javascript:void()' or empty string.
+        /// </summary>
+        public bool IsVoid()
+        {
+            // Perf: order from most to least common
+            return _url != null && (_url == "#" || _url.StartsWith("javascript:void") || _url == string.Empty || _url.IsWhiteSpace());
+        }
 
         public override string ToString()
         {

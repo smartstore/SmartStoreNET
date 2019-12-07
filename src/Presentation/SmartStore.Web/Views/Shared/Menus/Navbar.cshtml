@@ -8,10 +8,6 @@
         return;
     }
 
-    var selectedEntityId = Model.SelectedNode.IsLeaf && Model.SelectedNode.Parent != null 
-        ? Model.SelectedNode.Parent.Value.EntityId
-        : Model.SelectedNode.Value.EntityId;
-
     var renderMoreItem = false;
     var rtl = WorkContext.WorkingLanguage.Rtl;
     var hasIcons = root.Children.Any(x => x.Value.Icon.HasValue());
@@ -50,11 +46,7 @@
 	    <a href="#" class="megamenu-nav-btn btn btn-icon"><i class="far fa-chevron-left"></i></a>
     </div>
 
-    <ul class="navbar-nav flex-row flex-nowrap" id="menu-main" 
-        data-selected-entity-id="@selectedEntityId"
-        data-current-category-id="@CurrentCategoryId" 
-        data-current-product-id="@CurrentProductId"
-        data-current-manufacturer-id="@CurrentManufacturerId">
+    <ul class="navbar-nav flex-row flex-nowrap" id="menu-main">
 
         @foreach (var node in root.Children)
         {

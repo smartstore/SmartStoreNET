@@ -1,0 +1,74 @@
+﻿@model MenuModel
+
+@{ 
+    Layout = "";
+
+    var labelStyle = GetThemeVariable<string>("shopbar-label", "warning");
+    bool allowNavigation = ViewBag.AllowNavigation == true;
+    bool showNodes = allowNavigation && ViewBag.ShowNodes == true;
+    bool showBrands = allowNavigation && ViewBag.ShowBrands == true;
+    bool showTabs = allowNavigation && (showNodes || showBrands);
+}
+
+<div class="ocm-home-layer layer" data-id="0" data-depth="0" data-disallow-navigation="@((!allowNavigation).ToString().ToLower())">
+    <div class="offcanvas-menu-header offcanvas-tabs@(!showTabs ? " d-none" : "")">
+        <ul class="nav nav-tabs nav-tabs-line row no-gutters" role="tablist">
+            @if (showNodes)
+            {
+                <li class="nav-item col">
+                    <a id="ocm-tab-menu" class="nav-link" data-toggle="tab" href="#ocm-menu" role="tab" data-initialized="true">
+                        <span class="title">@T("Offcanvas.Menu.Categories")</span>
+                    </a>
+                </li>
+            }
+            @if (showBrands)
+            {
+                <li class="nav-item col">
+                    <a id="ocm-tab-brands" class="nav-link" data-toggle="tab" href="#ocm-brands" data-url="@Url.Action("OffCanvasBrands", "Menu")" role="tab">
+                        <span class="title">@T("Offcanvas.Menu.Brands")</span>
+                    </a>
+                </li>
+            }
+
+            <li class="nav-item col">
+                <a id="ocm-tab-service" class="nav-link" data-toggle="tab" href="#ocm-service" role="tab">
+                    <span class="title">@T("Offcanvas.Menu.Service")</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tab-content offcanvas-menu-body offcanvas-scrollable">
+		@if (showNodes)
+        {
+			<div class="tab-pane fade" id="ocm-menu" role="tabpanel">
+                @{ 
+                    // Prevent subsequent AJAX call from script by rendering the current submenu (either root level or a submenu)
+                    if (Model != null)
+                    {
+                        Html.RenderPartial("OffCanvas.Menu", Model);
+                    }
+                }
+            </div>
+		}
+        @if (showBrands)
+        {
+            <div class="tab-pane fade" id="ocm-brands" role="tabpanel"></div>
+        }
+        <div class="tab-pane fade" id="ocm-service" role="tabpanel"></div>
+    </div>
+
+    @if (allowNavigation)
+    {
+        <div class="offcanvas-menu-footer d-none">
+            <div class="row xs-gutters justify-content-around">
+                <div id="ocm-currency-selector" class="col d-none">
+                    <select class="form-control skin w-100"></select>
+                </div>
+                <div id="ocm-language-selector" class="col d-none">
+                    <select class="form-control skin"></select>
+                </div>
+            </div>
+        </div>
+    }
+</div>

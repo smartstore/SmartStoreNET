@@ -58,7 +58,17 @@ namespace SmartStore.Web.Framework.UI
 
             var selectedNode = ResolveCurrentNode(filterContext);
 
-            if (selectedNode != null)
+            object nodeData;
+
+            if (selectedNode == null)
+            {
+                nodeData = new
+                {
+                    type = _pageHelper.CurrentPageType,
+                    id = _pageHelper.CurrentPageId
+                };
+            }
+            else
             {
                 var httpContext = filterContext.HttpContext;
 
@@ -70,24 +80,25 @@ namespace SmartStore.Web.Framework.UI
                 object nodeId = selectedNode.Id;
                 if (_pageHelper.IsHomePage)
                 {
-                    nodeId = "home";
+                    nodeId = 0;
                 }
                 else if (nodeType == "system")
                 {
                     nodeId = _pageHelper.CurrentPageId;
                 }
 
-                var nodeData = new
+                nodeData = new
                 {
                     type = nodeType,
                     id = nodeId,
                     menuItemId = selectedNode.Value.MenuItemId,
-                    entityId = selectedNode.Value.EntityId
+                    entityId = selectedNode.Value.EntityId,
+                    parentId = selectedNode.Parent?.IsRoot == true ? 0 : selectedNode.Parent?.Id
                 };
-
-                // Add it as JSON
-                _pageAssetsBuilder.AddCustomHeadParts("<meta property='sm:currentpage' content='{0}' />".FormatInvariant(JsonConvert.SerializeObject(nodeData)));
             }
+
+            // Add it as JSON
+            _pageAssetsBuilder.AddCustomHeadParts("<meta property='sm:pagedata' content='{0}' />".FormatInvariant(JsonConvert.SerializeObject(nodeData)));
         }
 
         private TreeNode<MenuItem> ResolveCurrentNode(ActionExecutedContext filterContext)

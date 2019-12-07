@@ -1,0 +1,79 @@
+﻿@model MenuModel
+
+@using SmartStore.Collections;
+@using SmartStore.Web.Framework.UI;
+
+@{
+    Layout = "";
+
+    // targetNode is the node (with children) which was clicked. Means: we gonna navigate to its children.
+    var targetNode = Model.SelectedNode ?? Model.Root;
+    if (targetNode.IsLeaf && !targetNode.IsRoot)
+    {
+        targetNode = targetNode.Parent;
+    }
+
+    // currentNode represents the current page
+    var currentNode = ViewBag.CurrentNode as TreeNode<MenuItem>;
+}
+
+<div class="ocm-menu" data-depth="@targetNode.Depth">
+	@if (targetNode.Depth > 0)
+	{
+		<div class="ocm-info">
+			<h3 @Html.LanguageAttributes(targetNode.Value.Rtl, WorkContext.WorkingLanguage) class="ocm-name">@targetNode.Value.Text</h3>
+		</div>
+	}
+
+    <ul class="ocm-nav list-unstyled">
+        @if (targetNode.Depth > 0)
+        {
+            <li class="ocm-back ocm-item">
+                <a href="@targetNode.Parent.Value.GenerateUrl(this.Url)" class="ocm-link" data-id="@(targetNode.Parent.IsRoot ? 0 : targetNode.Parent.Id)" data-ajax="true">
+                    <i class="fa fa-angle-left"></i>
+                    <span>@T("Common.Back")</span>
+                </a>
+            </li>
+            
+            if (!targetNode.Value.IsVoid())
+            {
+                <li class="show-current-node ocm-item">
+                    <a href="@targetNode.Value.GenerateUrl(this.Url)" class="ocm-link" data-id="@targetNode.Id" data-ajax="false">
+                        @T("Offcanvas.Menu.ShowCurrentCat", targetNode.Value.Text)
+                    </a>
+                </li>
+            }
+        }
+
+        @foreach (var node in targetNode.Children)
+        {
+            var item = node.Value;
+
+            if (!item.Visible || item.IsGroupHeader)
+            {
+                continue;
+            }
+
+            var attrs = new RouteValueDictionary
+            {
+                ["data-id"] = node.Id
+            };
+
+            if (node.HasChildren)
+            {
+                attrs["data-ajax"] = "true";
+            }
+
+            if (item.ElementsCount > 0)
+            {
+                attrs["data-count"] = item.ElementsCount.ToString();
+            }
+
+            <li class="ocm-item@(node.HasChildren ? " has-children" : "")@(node == currentNode ? " selected" : "")">
+                <a href="@item.GenerateUrl(this.Url)" class="ocm-link has-count" @Html.Attrs(attrs)>
+					<span @Html.LanguageAttributes(item.Rtl, WorkContext.WorkingLanguage)>@item.Text</span>
+                </a>
+            </li>
+        }
+    </ul>
+</div>

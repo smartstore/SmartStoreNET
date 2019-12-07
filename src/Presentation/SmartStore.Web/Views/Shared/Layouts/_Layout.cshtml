@@ -72,7 +72,7 @@
             <section id="content" class="container">
 				@{ 
 					@RenderSection("teaser", required: false);
-					Html.RenderAction("Breadcrumb", "Common", new { area = "" });
+					Html.RenderAction("Breadcrumb", "Menu", new { area = "" });
 					Html.RenderZone("teaser");
 					Html.RenderWidget("teaser");
 				}

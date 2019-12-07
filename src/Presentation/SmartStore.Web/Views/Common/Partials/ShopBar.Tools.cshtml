@@ -109,11 +109,7 @@
 {
 	<aside id="offcanvas-menu" class="offcanvas offcanvas-overlay offcanvas-@(isRtl ? "right" : "left") offcanvas-shadow" data-blocker="true" data-overlay="true">
         <div class="offcanvas-content">
-            <div id="offcanvas-menu-container" 
-                 data-url-home="@(Url.Action("OffCanvasMenu", "Catalog"))" 
-                 data-url-item="@(Url.Action("OffCanvasMenuCategories", "Catalog"))"
-                 data-url-manufacturer="@(Url.Action("OffCanvasMenuManufacturers", "Catalog"))"
-				 data-public-store-navigation-allowed="@Model.PublicStoreNavigationAllowed.ToString().ToLower()">
+            <div id="offcanvas-menu-container" data-url="@(Url.Action("OffCanvas", "Menu"))">
                 <!-- AJAX -->
             </div>
         </div>

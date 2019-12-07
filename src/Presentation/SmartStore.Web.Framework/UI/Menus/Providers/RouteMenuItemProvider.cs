@@ -23,13 +23,15 @@ namespace SmartStore.Web.Framework.UI
 
             if (request.IsEditMode)
             {
-                node.Value.Summary = T("Providers.MenuItems.FriendlyName.Route");
-                node.Value.Icon = "fas fa-directions";
+                var item = node.Value;
 
-                if (!node.Value.HasRoute())
+                item.Summary = T("Providers.MenuItems.FriendlyName.Route");
+                item.Icon = "fas fa-directions";
+
+                if (!item.HasRoute())
                 {
-                    node.Value.Text = null;
-                    node.Value.ResKey = "Admin.ContentManagement.Menus.SpecifyLinkTarget";
+                    item.Text = null;
+                    item.ResKey = "Admin.ContentManagement.Menus.SpecifyLinkTarget";
                 }
             }
         }

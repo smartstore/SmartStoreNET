@@ -259,6 +259,7 @@
     <Compile Include="Controllers\BlogController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\MediaController.cs" />
+    <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\OrderHelper.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ReturnRequestController.cs" />
@@ -1768,8 +1769,8 @@
     <Content Include="Views\Product\Partials\Product.Offer.Actions.Misc.cshtml" />
     <Content Include="Views\Common\Partials\ShopBar.Tools.cshtml" />
     <Content Include="Themes\Flex\Content\_menu.scss" />
-    <Content Include="Views\Catalog\Partials\OffCanvasMenuCategories.cshtml" />
-    <Content Include="Views\Catalog\Partials\OffCanvasMenu.cshtml" />
+    <Content Include="Views\Menu\OffCanvas.Menu.cshtml" />
+    <Content Include="Views\Menu\OffCanvas.Home.cshtml" />
     <Content Include="Views\Product\Partials\Product.CustomerPrice.cshtml" />
     <Content Include="Views\Search\Partials\Filters.cshtml" />
     <Content Include="Views\Search\Partials\Filters.Active.cshtml" />
@@ -1777,8 +1778,8 @@
     <Content Include="Views\Search\FacetTemplates\SingleSelect.cshtml" />
     <Content Include="Views\Search\FacetTemplates\Price.cshtml" />
     <Content Include="Views\Search\FacetTemplates\Rating.cshtml" />
-    <Content Include="Views\Catalog\Partials\OffCanvasMenuManufacturers.cshtml" />
-    <Content Include="Views\Common\Partials\Breadcrumb.cshtml" />
+    <Content Include="Views\Menu\OffCanvas.Brands.cshtml" />
+    <Content Include="Views\Menu\Breadcrumb.cshtml" />
     <Content Include="Views\Shared\Layouts\_Checkout.cshtml" />
     <Content Include="Views\Shared\Layouts\_MyAccount.cshtml" />
     <Content Include="Views\Catalog\Partials\HomepageManufacturers.cshtml" />

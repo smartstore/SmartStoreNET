@@ -232,7 +232,7 @@ namespace SmartStore.Admin.Controllers
                 categoryModel.Breadcrumb = x.GetCategoryPath(
                     _categoryService,
                     languageId: _workContext.WorkingLanguage.Id,
-                    aliasPattern: "<span class='badge badge-secondary'>{0}</span>");
+                    aliasPattern: "<span class='badge badge-secondary'>{0}</span>").NaIfEmpty();
                 return categoryModel;
             });
 

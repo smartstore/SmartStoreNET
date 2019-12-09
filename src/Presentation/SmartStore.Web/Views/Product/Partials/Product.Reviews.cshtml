@@ -31,7 +31,7 @@ else
 
                 <div class="review-meta">
                     <span itemprop="author" itemscope itemtype="https://schema.org/Person">
-                        <span class="review-meta-label pr-1">@T("Reviews.From"):</span>
+                        <span class="review-meta-label">@T("Reviews.From"):</span>
                         @if (review.AllowViewingProfiles)
                         {
                             <a class="review-meta-value" href="@Url.RouteUrl("CustomerProfile", new { id = review.CustomerId })" rel="nofollow" dir="auto" itemprop="name">
@@ -44,7 +44,7 @@ else
                         }
                     </span>
 
-                    <span class="review-meta-label pr-1">@T("Common.Date"):</span>
+                    <span class="review-meta-label">@T("Common.Date"):</span>
                     <span class="review-meta-value" itemprop="datePublished" content="@review.WrittenOn.ToString("yyyy-MM-DD")">@review.WrittenOnStr</span>
                 </div>
 

@@ -83,8 +83,13 @@
 .review-meta {
 	display: flex;
     font-size: 0.8125em;
-    .review-meta-label { font-weight: bold; }
-    .review-meta-value + .review-meta-label { padding-left: 0.5rem; }
+    .review-meta-label {
+        font-weight: bold;
+    }
+    .review-meta-value {
+        padding-left: 0.25rem;
+        padding-right: 0.5rem;
+    }
 }
 
 .review-text {

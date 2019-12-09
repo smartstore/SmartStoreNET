@@ -47,6 +47,7 @@
 * #1730 Product tag count should filter also based on Visibility.
 * Categories limited to stores were not displayed in tree view.
 * Debitoor: avoid errors due to invalid product unitId of 0.
+* Fixed InvalidOperationException in CreatePdfInvoiceAttachment when an order is placed by a guest.
 
 
 ## SmartStore.NET 3.2.2

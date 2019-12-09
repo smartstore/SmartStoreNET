@@ -185,7 +185,14 @@ namespace SmartStore
 			CopyCookie(webRequest, httpRequest, "SMARTSTORE.ANONYMOUS"); 
 		}
 
-		private static void CopyCookie(HttpWebRequest webRequest, HttpRequestBase sourceHttpRequest, string cookieName)
+        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetVisitorCookie(this HttpWebRequest webRequest, HttpRequestBase httpRequest)
+        {
+            CopyCookie(webRequest, httpRequest, "SMARTSTORE.VISITOR");
+        }
+
+        private static void CopyCookie(HttpWebRequest webRequest, HttpRequestBase sourceHttpRequest, string cookieName)
 		{
 			Guard.NotNull(webRequest, nameof(webRequest));
 			Guard.NotNull(sourceHttpRequest, nameof(sourceHttpRequest));

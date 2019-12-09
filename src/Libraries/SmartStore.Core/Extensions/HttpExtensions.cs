@@ -12,6 +12,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core;
 using System.Web.Mvc;
 using SmartStore.Core.Fakes;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore
 {

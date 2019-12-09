@@ -47,6 +47,7 @@
         operator.find(".dropdown-item").on("click", function () {
             operator.data("value", $(this).data("value"));
             operator.find(".btn").text(GetOperatorLabel(operator.data("value")));
+            return false;
         });
     });
 </script>

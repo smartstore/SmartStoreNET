@@ -250,10 +250,10 @@ namespace SmartStore.Admin.Controllers
                 Operator = RuleOperator.IsEqualTo,
                 Value = group.Id.ToString()
             };
-
             _ruleStorage.InsertRule(groupRefRule);
 
             var expression = provider.VisitRuleSet(group);
+            expression.RefRuleId = groupRefRule.Id;
 
             return PartialView("_RuleSet", expression);
         }
@@ -263,7 +263,7 @@ namespace SmartStore.Admin.Controllers
         public ActionResult DeleteGroup(int refRuleId)
         {
             var refRule = _ruleStorage.GetRuleById(refRuleId, true);
-            var ruleSetId = refRule.Value.ToInt();
+            var ruleSetId = refRule?.Value?.ToInt() ?? 0;
 
             var group = _ruleStorage.GetRuleSetById(ruleSetId, true, false);
             if (group == null)

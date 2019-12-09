@@ -137,11 +137,12 @@
 <script>
     $(function () {
         function appendToRuleSetBody(ruleSet, html) {
-            var target = ruleSet.find('.ruleset-body');
+            var target = ruleSet.find('.ruleset-body').first();
             if (target.length === 0) {
                 target = $('<div class="ruleset-body"></div>').appendTo(ruleSet);
             }
             target.append(html);
+            target.find('select').selectWrapper();
         }
 
         $(document).on('click', '.r-add-group', function (e) {
@@ -166,14 +167,16 @@
             var parentSet = $(this).closest('.ruleset');
             var parentSetId = parentSet.data('ruleset-id');
             var operator = $(this).data('value');
+            var allStr = @T("Admin.Rules.Operator.All").JsText;
+            var oneStr = @T("Admin.Rules.Operator.One").JsText;
 
             $.ajax({
                 cache: false,
                 url: "@Url.Action("ChangeOperator")",
                 data: { ruleSetId: parentSetId, op: operator },
 			    type: "POST",
-                success: function (html) {
-                    parentSet.find(".logical-operator").text(operator == "And" ? "ALLE" : "EINE");
+                success: function () {
+                    parentSet.find(".logical-operator").text(operator == "And" ? allStr : oneStr);
                     parentSet.find(".logical-operator-chooser").removeClass("show");
 			    }
             });
@@ -266,7 +269,6 @@
         });
 
         $(document).on('click', '#execute-rules', function (e) {
-
             var ruleSet = $(".ruleset-root > .ruleset")
             var ruleSetId = ruleSet.data('ruleset-id');
 

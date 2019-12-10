@@ -110,7 +110,7 @@ namespace SmartStore
         }
 
 
-		public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> source, TKey key, TValue value, bool updateIfExists = false)
+		public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key, TValue value, bool updateIfExists = false)
 		{
 			if (source == null || key == null)
 			{
@@ -134,22 +134,9 @@ namespace SmartStore
 			return false;
 		}
 
-		public static bool TryRemove<TKey, TValue>(this Dictionary<TKey, TValue> source, TKey key, out TValue value)
-		{
-			value = default(TValue);
-
-			if (source != null && key != null && source.TryGetValue(key, out value))
-			{
-				source.Remove(key);
-				return true;
-			}
-
-			return false;
-		}
-
-        public static bool TryRemove(this RouteValueDictionary source, string key, out object value)
+        public static bool TryRemove<TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key, out TValue value)
         {
-            value = null;
+            value = default(TValue);
 
             if (source != null && key != null && source.TryGetValue(key, out value))
             {

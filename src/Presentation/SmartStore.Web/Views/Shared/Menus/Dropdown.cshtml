@@ -17,13 +17,11 @@
 	}
 
 	var item = root.Value;
-
-	item.LinkHtmlAttributes.PrependCssClass("menubar-link");
 }
 
 <div class="cms-menu cms-menu-dropdown" data-menu-name="@(Model.Name?.ToLower())">
 	<div class="dropdown">
-		<a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#" rel="nofollow" @Html.Attrs(item.LinkHtmlAttributes)>
+		<a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#" rel="nofollow" @Html.Attrs(item.GetCombinedAttributes().PrependCssClass("menubar-link"))>
 			<span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != WorkContext.WorkingLanguage.Rtl)>@root.GetItemText(T)</span>
 			<i class="fal fa-angle-down menubar-caret"></i>
 		</a>
@@ -69,10 +67,9 @@
 				continue;
 			}
 
-            var attributes = new Dictionary<string, object>(item.LinkHtmlAttributes);
-            attributes.PrependCssClass("dropdown-item menu-link");
+            var attrs = item.GetCombinedAttributes().PrependCssClass("dropdown-item menu-link");
 
-			<a href="@itemUrl" @Html.Attrs(attributes)>
+			<a href="@itemUrl" @Html.Attrs(attrs)>
 				@if (hasIcons)
 				{
 					<i class="fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : " fas")"></i>

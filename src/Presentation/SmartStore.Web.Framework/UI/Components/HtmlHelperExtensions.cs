@@ -15,24 +15,24 @@ namespace SmartStore.Web.Framework.UI
             return new ComponentFactory<TModel>(helper);
         }
 
-		public static IHtmlString Attrs(this HtmlHelper html, IDictionary<string, object> attrs)
+		public static IHtmlString Attrs(this HtmlHelper html, IDictionary<string, object> attrs, params string[] exclude)
 		{
 			var sb = PooledStringBuilder.Rent();
 
 			using (var writer = new StringWriter(sb))
 			{
-				RenderAttrs(html, attrs, writer);
+				RenderAttrs(attrs, writer, exclude);
 			}
 
 			return MvcHtmlString.Create(sb.ToStringAndReturn());	
 		}
 
-		public static void RenderAttrs(this HtmlHelper html, IDictionary<string, object> attrs)
+		public static void RenderAttrs(this HtmlHelper html, IDictionary<string, object> attrs, params string[] exclude)
 		{
-			RenderAttrs(html, attrs, html.ViewContext.Writer);
+			RenderAttrs(attrs, html.ViewContext.Writer, exclude);
 		}
 
-		private static void RenderAttrs(HtmlHelper html, IDictionary<string, object> attrs, TextWriter output)
+		private static void RenderAttrs(IDictionary<string, object> attrs, TextWriter output, params string[] exclude)
 		{
 			Guard.NotNull(attrs, nameof(attrs));
 
@@ -43,10 +43,11 @@ namespace SmartStore.Web.Framework.UI
 
 			var first = true;
 
-			foreach (var key in attrs.Keys)
+			foreach (var kvp in attrs)
 			{
-				var value = attrs[key];
-
+                if (exclude.Contains(kvp.Key))
+                    continue;
+                
 				if (!first)
 				{
 					output.Write(" ");
@@ -54,12 +55,12 @@ namespace SmartStore.Web.Framework.UI
 
 				first = false;
 
-                output.Write(key);
+                output.Write(kvp.Key);
 
-                if (value != null)
+                if (kvp.Value != null)
                 {
                     output.Write("=\"");
-                    HttpUtility.HtmlAttributeEncode(value.ToString(), output);
+                    HttpUtility.HtmlAttributeEncode(kvp.Value.ToString(), output);
                     output.Write("\"");
                 }
 			}

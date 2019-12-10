@@ -48,8 +48,9 @@
 		var itemUrl = item.GenerateUrl(this.Url);
 		var itemState = node.GetNodePathState(Model.Path);
 		
-        <a class='dropdown-item@((itemState & NodePathState.Selected) == NodePathState.Selected ? " selected" : "")' 
-           href="@itemUrl" id="dropdown-item-@item.Id" data-id="@item.Id">
+        var attrs = item.GetCombinedAttributes().PrependCssClass("dropdown-item" + ((itemState & NodePathState.Selected) == NodePathState.Selected ? " selected" : ""));
+
+        <a href="@itemUrl" id="dropdown-item-@item.Id" data-id="@item.Id" @Html.Attrs(attrs, "id")>
             <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != WorkContext.WorkingLanguage.Rtl)>@item.Text</span>
         </a>
     }

@@ -29,10 +29,10 @@
                 var itemText = node.GetItemText(T);
                 var itemUrl = item.GenerateUrl(this.ViewContext.RequestContext);
 
-                var attributes = new Dictionary<string, object>(item.LinkHtmlAttributes);
-                attributes.PrependCssClass("list-group-item list-group-item-action menu-link" + ((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : ""));
+                var attrs = item.GetCombinedAttributes();
+                attrs.PrependCssClass("list-group-item list-group-item-action menu-link" + ((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : ""));
 
-			    <a href="@item.Url" @Html.Attrs(attributes)>
+			    <a href="@item.Url" @Html.Attrs(attrs)>
 		            @if (hasIcons)
                     {
 			            <i class="fal fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : " fas") list-group-item-icon"></i>

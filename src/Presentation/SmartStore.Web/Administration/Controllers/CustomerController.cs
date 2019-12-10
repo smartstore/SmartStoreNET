@@ -1478,7 +1478,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [ChildActionOnly]
-        [Permission(Permissions.Customer.Read)]
+        [Permission(Permissions.Customer.Read, false)]
         public ActionResult ReportRegisteredCustomers()
         {
             var model = GetReportRegisteredCustomersModel();

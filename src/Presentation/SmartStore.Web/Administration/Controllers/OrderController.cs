@@ -2491,7 +2491,7 @@ namespace SmartStore.Admin.Controllers
             return model;
         }
 
-        [Permission(Permissions.Order.Read)]
+        [Permission(Permissions.Order.Read, false)]
         public ActionResult BestsellersBriefReportByQuantity()
         {
             var model = GetBestsellersBriefReportModel(5, 1);
@@ -2515,7 +2515,7 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        [Permission(Permissions.Order.Read)]
+        [Permission(Permissions.Order.Read, false)]
         public ActionResult BestsellersBriefReportByAmount()
         {
             var model = GetBestsellersBriefReportModel(5, 2);
@@ -2695,7 +2695,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [ChildActionOnly]
-        [Permission(Permissions.Order.Read)]
+        [Permission(Permissions.Order.Read, false)]
         public ActionResult OrderAverageReport()
         {
 			var model = GetOrderAverageReportModel();
@@ -2758,7 +2758,7 @@ namespace SmartStore.Admin.Controllers
         }
 
 		[ChildActionOnly]
-        [Permission(Permissions.Order.Read)]
+        [Permission(Permissions.Order.Read, false)]
         public ActionResult OrderIncompleteReport()
         {
             var model = GetOrderIncompleteReportModel();

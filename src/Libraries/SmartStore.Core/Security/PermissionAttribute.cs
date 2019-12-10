@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web.Mvc;
-using SmartStore.Core.Localization;
 
 namespace SmartStore.Core.Security
 {
@@ -17,15 +16,15 @@ namespace SmartStore.Core.Security
         /// e.g. [Permission(PermissionSystemNames.Customer.Read)]
         /// </summary>
         /// <param name="systemName">The system name of the permission.</param>
-        /// <param name="addMessageHeader">Whether to show an unauthorization message for AJAX operations.</param>
-        public PermissionAttribute(string systemName, bool addMessageHeader = true)
+        /// <param name="showUnauthorizedMessage">Whether to show an unauthorization message.</param>
+        public PermissionAttribute(
+            string systemName,
+            bool showUnauthorizedMessage = true)
         {
             Guard.NotEmpty(systemName, nameof(systemName));
 
             SystemName = systemName;
-            AddMessageHeader = addMessageHeader;
-
-            T = NullLocalizer.Instance;
+            ShowUnauthorizedMessage = showUnauthorizedMessage;
         }
 
         /// <summary>
@@ -34,11 +33,10 @@ namespace SmartStore.Core.Security
         public string SystemName { get; private set; }
 
         /// <summary>
-        /// Whether to show an unauthorization message for AJAX operations.
+        /// Whether to show an unauthorization message.
         /// </summary>
-        public bool AddMessageHeader { get; private set; }
+        public bool ShowUnauthorizedMessage { get; private set; }
 
-        public Localizer T { get; set; }
         public IWorkContext WorkContext { get; set; }
         public IPermissionService PermissionService { get; set; }
 
@@ -71,11 +69,13 @@ namespace SmartStore.Core.Security
                 return;
             }
 
-            var message = PermissionService.GetUnauthorizedMessage(SystemName);
+            var message = ShowUnauthorizedMessage
+                ? PermissionService.GetUnauthorizedMessage(SystemName)
+                : string.Empty;
 
             if (request.IsAjaxRequest())
             {
-                if (AddMessageHeader)
+                if (message.HasValue())
                 {
                     httpContext.Response.AddHeader("X-Message-Type", "error");
                     httpContext.Response.AddHeader("X-Message", message);
@@ -120,9 +120,11 @@ namespace SmartStore.Core.Security
 
         protected virtual ActionResult AccessDeniedResult(string message)
         {
+            var content = message.HasValue() ? $"<div class=\"alert alert-danger\">{message}</div>" : string.Empty;
+
             return new ContentResult
             {
-                Content = "<div class=\"alert alert-danger\">{0}</div>".FormatInvariant(message),
+                Content = content,
                 ContentType = "text/html",
                 ContentEncoding = Encoding.UTF8
             };

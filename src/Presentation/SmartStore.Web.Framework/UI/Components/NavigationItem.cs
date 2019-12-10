@@ -31,6 +31,27 @@ namespace SmartStore.Web.Framework.UI
 
         public IDictionary<string, object> LinkHtmlAttributes { get; set; }
 
+        /// <summary>
+        /// Merges attributes of <see cref="HtmlAttributes"/> and <see cref="LinkHtmlAttributes"/> into one combined dictionary.
+        /// </summary>
+        /// <returns>New dictionary instance with combined attributes.</returns>
+        public IDictionary<string, object> GetCombinedAttributes()
+        {
+            if (HtmlAttributes == null && LinkHtmlAttributes == null)
+            {
+                return null;
+            }
+
+            var combined = new RouteValueDictionary(HtmlAttributes ?? LinkHtmlAttributes);
+
+            if (HtmlAttributes != null && LinkHtmlAttributes != null)
+            {
+                combined.Merge(LinkHtmlAttributes);
+            }
+            
+            return combined;
+        }
+
         public string ImageUrl { get; set; }
 
 		public int? ImageId { get; set; }

@@ -54,23 +54,36 @@
                 continue;
             }
 
-            var attrs = new RouteValueDictionary
+            // LI attributes
+            var cssClass = "ocm-item";
+            if (node.HasChildren)
+            {
+                cssClass += " has-children";
+            }
+            if (node == currentNode)
+            {
+                cssClass += " selected";
+            }
+            var attrs = new RouteValueDictionary(item.HtmlAttributes).PrependCssClass(cssClass);
+
+            // A attributes
+            var linkAttrs = new RouteValueDictionary(item.LinkHtmlAttributes)
             {
                 ["data-id"] = node.Id
-            };
+            }.PrependCssClass("ocm-link has-count");
 
             if (node.HasChildren)
             {
-                attrs["data-ajax"] = "true";
+                linkAttrs["data-ajax"] = "true";
             }
 
             if (item.ElementsCount > 0)
             {
-                attrs["data-count"] = item.ElementsCount.ToString();
+                linkAttrs["data-count"] = item.ElementsCount.ToString();
             }
 
-            <li class="ocm-item@(node.HasChildren ? " has-children" : "")@(node == currentNode ? " selected" : "")">
-                <a href="@item.GenerateUrl(this.Url)" class="ocm-link has-count" @Html.Attrs(attrs)>
+            <li @Html.Attrs(attrs)>
+                <a href="@item.GenerateUrl(this.Url)" @Html.Attrs(linkAttrs)>
 					<span @Html.LanguageAttributes(item.Rtl, WorkContext.WorkingLanguage)>@item.Text</span>
                 </a>
             </li>

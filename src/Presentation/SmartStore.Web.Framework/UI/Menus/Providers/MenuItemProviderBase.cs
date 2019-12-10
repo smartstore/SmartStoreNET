@@ -85,10 +85,25 @@ namespace SmartStore.Web.Framework.UI
                 PermissionNames = entity.PermissionNames
             };
 
+            // Common attributes
+
             if (shortDescription.HasValue())
             {
-                menuItem.LinkHtmlAttributes.Add("title", shortDescription);
+                menuItem.HtmlAttributes.Add("title", shortDescription);
             }
+
+            if (entity.CssClass.HasValue())
+            {
+                menuItem.HtmlAttributes.Add("class", entity.CssClass);
+            }
+
+            if (entity.HtmlId.HasValue())
+            {
+                menuItem.HtmlAttributes.Add("id", entity.HtmlId);
+                menuItem.Id = entity.HtmlId;
+            }
+
+            // Link attributes
 
             if (entity.NoFollow)
             {
@@ -100,16 +115,7 @@ namespace SmartStore.Web.Framework.UI
                 menuItem.LinkHtmlAttributes.Add("target", "_blank");
             }
 
-            if (entity.CssClass.HasValue())
-            {
-                menuItem.LinkHtmlAttributes.Add("class", entity.CssClass);
-            }
-
-            if (entity.HtmlId.HasValue())
-            {
-                menuItem.LinkHtmlAttributes.Add("id", entity.HtmlId);
-                menuItem.Id = entity.HtmlId;
-            }
+            // Icon
 
             if (entity.Icon.HasValue() && !request.IsEditMode)
             {

@@ -38,6 +38,7 @@
 * **MegaSearch**:
 	* Fixed the preset sorting order of products on a manufacturer page may be wrong depending on catalog settings.
 	* #1716 Price facet filter bypasses Call for Pricing and shows the approximate price of a product.
+	* The number of hits for product review facets was wrong in some cases.
 
 * **Page Builder**:
 	* #1689 Block with z-index < 0 can not be selected in story view - Block tools can reduce z-index below 0.

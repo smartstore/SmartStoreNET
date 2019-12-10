@@ -46,13 +46,8 @@ namespace SmartStore.Admin.Infrastructure
 {
 	public class AutoMapperAdminProfile : Profile
 	{
-		class OptionalFkConverter : ITypeConverter<int?, int?>, ITypeConverter<int, int?>
+		class OptionalFkConverter : ITypeConverter<int, int?>
 		{
-            public int? Convert(int? source, int? destination, ResolutionContext context)
-            {
-                return source;
-            }
-
             public int? Convert(int source, int? destination, ResolutionContext context)
 			{
                 return source == 0 ? (int?)null : source;
@@ -66,9 +61,7 @@ namespace SmartStore.Admin.Infrastructure
             // special mapper, that avoids DbUpdate exceptions in cases where
             // optional (nullable) int FK properties are 0 instead of null 
             // after mapping model > entity.
-            // if type is nullable source value shouldn't be touched
             var fkConverter = new OptionalFkConverter();
-            CreateMap<int?, int?>().ConvertUsing(fkConverter);
             CreateMap<int, int?>().ConvertUsing(fkConverter);
 
             //address
@@ -512,13 +505,12 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.EndDateUtc, mo => mo.Ignore());
 			//customer roles
 			CreateMap<CustomerRole, CustomerRoleModel>()
-				.ForMember(dest => dest.TaxDisplayTypes, mo => mo.Ignore());
-			/*.ForMember(dest => dest.TaxDisplayType, mo => mo.MapFrom((src) => src.TaxDisplayType))*/
-			;
+				.ForMember(dest => dest.TaxDisplayTypes, mo => mo.Ignore())
+                .AfterMap((src, dest) => dest.TaxDisplayType = src.TaxDisplayType == 0 ? 0 : dest.TaxDisplayType);
+
 			CreateMap<CustomerRoleModel, CustomerRole>()
-				.ForMember(dest => dest.PermissionRecords, mo => mo.Ignore());
-			/*.ForMember(dest => dest.TaxDisplayType, mo => mo.MapFrom((src) => src.TaxDisplayType))*/
-			;
+				.ForMember(dest => dest.PermissionRecords, mo => mo.Ignore())
+                .AfterMap((src, dest) => dest.TaxDisplayType = src.TaxDisplayType == 0 ? 0 : dest.TaxDisplayType);
 
 			//product attributes
 			CreateMap<ProductAttribute, ProductAttributeModel>()

@@ -180,9 +180,11 @@
     <Compile Include="Filters\Samples\SampleActionFilter.cs" />
     <Compile Include="DevToolsPlugin.cs" />
     <Compile Include="Models\BackendExtensionModel.cs" />
+    <Compile Include="Models\ConfigurationModel.cs" />
     <Compile Include="ProfilerHttpModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteProvider.cs" />
+    <Compile Include="Security\DevToolsPermissionProvider.cs" />
     <Compile Include="Services\MiniProfilerChronometer.cs" />
     <Compile Include="Settings\ProfilerSettings.cs" />
     <Compile Include="Starter.cs" />

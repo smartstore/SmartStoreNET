@@ -49,6 +49,7 @@
 * Categories limited to stores were not displayed in tree view.
 * Debitoor: avoid errors due to invalid product unitId of 0.
 * Fixed InvalidOperationException in CreatePdfInvoiceAttachment when an order is placed by a guest.
+* The ShowDescriptionInSubPages setting should also be applied to the bottom category description.
 
 
 ## SmartStore.NET 3.2.2

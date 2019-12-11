@@ -121,7 +121,8 @@ namespace SmartStore.Web.Controllers
 			if (query.IsSubPage && !_catalogSettings.ShowDescriptionInSubPages)
 			{
 				model.Description.ChangeValue(string.Empty);
-			}
+                model.BottomDescription.ChangeValue(string.Empty);
+            }
 
 			Services.DisplayControl.Announce(category);
 

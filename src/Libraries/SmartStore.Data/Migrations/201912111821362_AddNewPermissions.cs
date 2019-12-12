@@ -31,7 +31,8 @@ namespace SmartStore.Data.Migrations
             // TODO: more plugins to come...
             var pluginTypeNames = new Dictionary<string, string>
             {
-                { "SmartStore.DevTools", "SmartStore.DevTools.Security.DevToolsPermissions, SmartStore.DevTools" }                
+                { "SmartStore.DevTools", "SmartStore.DevTools.Security.DevToolsPermissions, SmartStore.DevTools" },
+                { "SmartStore.OutputCache", "SmartStore.OutputCache.Security.OutputCachePermissions, SmartStore.OutputCache" },
             };
 
             foreach (var pluginTypeName in pluginTypeNames)

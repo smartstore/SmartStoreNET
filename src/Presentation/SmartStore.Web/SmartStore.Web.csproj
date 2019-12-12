@@ -1060,6 +1060,8 @@
     <Content Include="App_Data\icons.json" />
     <Content Include="App_Data\GeoLite2\GeoLite2-Country.mmdb" />
     <Content Include="Content\shared\_tree.scss" />
+    <Content Include="Content\bs4\scss\bootstrap-head.scss" />
+    <Content Include="Content\bs4\scss\bootstrap-main.scss" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />

@@ -1,0 +1,8 @@
+/*!
+    Custom SmartStore file that contains only the declaration part.
+    Purpose: between both includes "bootstrap-head" and "bootstrap-main" we
+    could put our custom variables. This way we gain more flexibility.
+ */
+
+@import "functions";
+@import "variables";

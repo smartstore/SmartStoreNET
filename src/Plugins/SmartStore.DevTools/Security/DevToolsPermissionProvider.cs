@@ -6,6 +6,11 @@ using SmartStore.Core.Security;
 
 namespace SmartStore.DevTools.Security
 {
+    /// <summary>
+    /// All permissions provided by this plugin.
+    /// "devtools" is the root permission (by convention, doesn't contain any dot). Localization key is "Plugins.Permissions.DisplayName.DevTools".
+    /// "devtools.read" and "devtools.update" do not need localization because they are contained in core, <see cref="PermissionService._displayNameResourceKeys"/>.
+    /// </summary>
     public static class DevToolsPermissions
     {
         public const string Self = "devtools";
@@ -14,10 +19,15 @@ namespace SmartStore.DevTools.Security
     }
 
 
+    /// <summary>
+    /// Call <see cref="IPermissionService.InstallPermissions(IPermissionProvider)"/> or 
+    /// <see cref="IPermissionService.UninstallPermissions(IPermissionProvider)"/> when installing or uninstalling the plugin.
+    /// </summary>
     public class DevToolsPermissionProvider : IPermissionProvider
     {
         public IEnumerable<PermissionRecord> GetPermissions()
         {
+            // Get all permissions from above static class.
             var permissionSystemNames = PermissionHelper.GetPermissions(typeof(DevToolsPermissions));
             var permissions = permissionSystemNames.Select(x => new PermissionRecord { SystemName = x });
 
@@ -26,6 +36,7 @@ namespace SmartStore.DevTools.Security
 
         public IEnumerable<DefaultPermissionRecord> GetDefaultPermissions()
         {
+            // Allow root permission for admin by default.
             return new[]
             {
                 new DefaultPermissionRecord

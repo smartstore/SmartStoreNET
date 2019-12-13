@@ -43,8 +43,10 @@
 * **Page Builder**:
 	* #1689 Block with z-index < 0 can not be selected in story view - Block tools can reduce z-index below 0.
 	* #1691 Manually editing/removing block cols/rows does not refresh grid state correctly.
+* **PayPal**:
+	* Fixes rare exception "Unsupported Media Type" (415) in PayPal PLUS.
+	* Only process a partially refund IPN when the order refunded amount is zero. Otherwise the order refunded amount will be wrong.
 * Multistore mapping was ignored for manufacturers in sitemap.
-* PayPal PLUS: fixes rare exception "Unsupported Media Type" (415).
 * #1730 Product tag count should filter also based on Visibility.
 * Categories limited to stores were not displayed in tree view.
 * Debitoor: avoid errors due to invalid product unitId of 0.

@@ -118,7 +118,7 @@ body {
     position: relative;
     display: grid;
     grid-template-columns: 100%;
-    grid-template-rows: 72px 72px minmax(calc(100vh - 122px), auto);
+    grid-template-rows: 72px 72px minmax(calc(100vh - 144px), auto);
 }
 
 #header {

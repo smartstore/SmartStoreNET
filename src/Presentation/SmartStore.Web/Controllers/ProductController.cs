@@ -676,41 +676,53 @@ namespace SmartStore.Web.Controllers
 
 		#region Product reviews
 
-		[ActionName("Reviews")]
 		[RewriteUrl(SslRequirement.No)]
 		[GdprConsent]
 		public ActionResult Reviews(int id)
 		{
 			var product = _productService.GetProductById(id);
-			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !product.AllowCustomerReviews)
-				return HttpNotFound();
+            if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !product.AllowCustomerReviews)
+            {
+                return HttpNotFound();
+            }
 
-			var model = new ProductReviewsModel();
-			_helper.PrepareProductReviewsModel(model, product);
+            var model = new ProductReviewsModel
+            {
+                Rating = _catalogSettings.DefaultProductRatingValue
+            };
 
-			// only registered users can leave reviews
-			if (_services.WorkContext.CurrentCustomer.IsGuest() && !_catalogSettings.AllowAnonymousUsersToReviewProduct)
+            _helper.PrepareProductReviewsModel(model, product);
+
+            model.SuccessfullyAdded = (TempData["SuccessfullyAdded"] as bool?) ?? false;
+            if (model.SuccessfullyAdded)
+            {
+                model.Result = T(_catalogSettings.ProductReviewsMustBeApproved
+                    ? "Reviews.SeeAfterApproving"
+                    : "Reviews.SuccessfullyAdded");
+            }
+
+            // Only registered users can leave reviews.
+            if (_services.WorkContext.CurrentCustomer.IsGuest() && !_catalogSettings.AllowAnonymousUsersToReviewProduct)
 			{
 				ModelState.AddModelError("", T("Reviews.OnlyRegisteredUsersCanWriteReviews"));
 			}
-				
-			// default value
-			model.Rating = _catalogSettings.DefaultProductRatingValue;
+
 			return View(model);
 		}
 
 		[HttpPost, ActionName("Reviews")]
-		[FormValueRequired("add-review")]
 		[ValidateCaptcha]
 		[ValidateAntiForgeryToken]
 		[GdprConsent]
 		public ActionResult ReviewsAdd(int id, ProductReviewsModel model, bool captchaValid)
 		{
 			var product = _productService.GetProductById(id);
-			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !product.AllowCustomerReviews)
-				return HttpNotFound();
+            if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !product.AllowCustomerReviews)
+            {
+                return HttpNotFound();
+            }
 
-			// validate CAPTCHA
+			// Validate CAPTCHA.
 			if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnProductReviewPage && !captchaValid)
 			{
 				ModelState.AddModelError("", T("Common.WrongCaptcha"));
@@ -723,12 +735,13 @@ namespace SmartStore.Web.Controllers
 
 			if (ModelState.IsValid)
 			{
-				//save review
-				int rating = model.Rating;
-				if (rating < 1 || rating > 5)
-					rating = _catalogSettings.DefaultProductRatingValue;
+				var rating = model.Rating;
+                if (rating < 1 || rating > 5)
+                {
+                    rating = _catalogSettings.DefaultProductRatingValue;
+                }
 
-				bool isApproved = !_catalogSettings.ProductReviewsMustBeApproved;
+				var isApproved = !_catalogSettings.ProductReviewsMustBeApproved;
 				var customer = _services.WorkContext.CurrentCustomer;
 
 				var productReview = new ProductReview
@@ -745,33 +758,28 @@ namespace SmartStore.Web.Controllers
 				};
 				_customerContentService.InsertCustomerContent(productReview);
 
-				// update product totals
 				_productService.UpdateProductReviewTotals(product);
 
-				// notify store owner
-				if (_catalogSettings.NotifyStoreOwnerAboutNewProductReviews)
-					Services.MessageFactory.SendProductReviewNotificationMessage(productReview, _localizationSettings.DefaultAdminLanguageId);
+                if (_catalogSettings.NotifyStoreOwnerAboutNewProductReviews)
+                {
+                    Services.MessageFactory.SendProductReviewNotificationMessage(productReview, _localizationSettings.DefaultAdminLanguageId);
+                }
 
-				// activity log
 				_services.CustomerActivity.InsertActivity("PublicStore.AddProductReview", T("ActivityLog.PublicStore.AddProductReview"), product.Name);
 
-				if (isApproved)
-					_customerService.RewardPointsForProductReview(customer, product, true);
+                if (isApproved)
+                {
+                    _customerService.RewardPointsForProductReview(customer, product, true);
+                }
 
 				_helper.PrepareProductReviewsModel(model, product);
-				model.Title = null;
-				model.ReviewText = null;
 
-				model.SuccessfullyAdded = true;
-				if (!isApproved)
-					model.Result = T("Reviews.SeeAfterApproving");
-				else
-					model.Result = T("Reviews.SuccessfullyAdded");
+                TempData["SuccessfullyAdded"] = true;
 
-				return View(model);
+                return RedirectToAction("Reviews");
 			}
 
-			// If we got this far, something failed, redisplay form
+			// If we got this far, something failed, redisplay form.
 			_helper.PrepareProductReviewsModel(model, product);
 			return View(model);
 		}

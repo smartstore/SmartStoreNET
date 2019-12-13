@@ -1222,7 +1222,8 @@ namespace SmartStore.PayPal.Services
                     }
 					break;
 				case PaymentStatus.PartiallyRefunded:
-                    if (_orderProcessingService.CanPartiallyRefundOffline(order, Math.Abs(total)))
+                    // We could only process it once cause otherwise order.RefundedAmount would getting wrong.
+                    if (order.RefundedAmount == decimal.Zero && _orderProcessingService.CanPartiallyRefundOffline(order, Math.Abs(total)))
                     {
                         _orderProcessingService.PartiallyRefundOffline(order, Math.Abs(total));
                     }

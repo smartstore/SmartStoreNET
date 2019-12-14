@@ -298,7 +298,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost, ActionName("NewsItem")]
-        [FormValueRequired("add-comment")]
         [ValidateCaptcha]
 		[GdprConsent]
 		public ActionResult NewsCommentAdd(int newsItemId, NewsItemModel model, string captchaError)
@@ -322,7 +321,7 @@ namespace SmartStore.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                var comment = new NewsComment()
+                var comment = new NewsComment
                 {
                     NewsItemId = newsItem.Id,
                     CustomerId = _services.WorkContext.CurrentCustomer.Id,
@@ -333,14 +332,14 @@ namespace SmartStore.Web.Controllers
                 };
                 _customerContentService.InsertCustomerContent(comment);
 
-                //update totals
                 _newsService.UpdateCommentTotals(newsItem);
 
-                //notify a store owner;
+                // Notify a store owner.
                 if (_newsSettings.NotifyAboutNewNewsComments)
+                {
                     Services.MessageFactory.SendNewsCommentNotificationMessage(comment, _localizationSettings.DefaultAdminLanguageId);
+                }
 
-                //activity log
                 _customerActivityService.InsertActivity("PublicStore.AddNewsComment", T("ActivityLog.PublicStore.AddNewsComment"));
 
 				NotifySuccess(T("News.Comments.SuccessfullyAdded"));
@@ -348,7 +347,7 @@ namespace SmartStore.Web.Controllers
                 return RedirectToRoute("NewsItem", new { SeName = newsItem.GetSeName(newsItem.LanguageId, ensureTwoPublishedLanguages: false) });
             }
 
-            //If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
             PrepareNewsItemModel(model, newsItem, true);
             return View(model);
         }

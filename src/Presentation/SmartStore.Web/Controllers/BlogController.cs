@@ -397,7 +397,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost, ActionName("BlogPost")]
-        [FormValueRequired("add-comment")]
         [ValidateCaptcha]
 		[GdprConsent]
 		public ActionResult BlogCommentAdd(int blogPostId, BlogPostModel model, string captchaError)
@@ -432,14 +431,14 @@ namespace SmartStore.Web.Controllers
                 };
                 _customerContentService.InsertCustomerContent(comment);
 
-                // update totals
                 _blogService.UpdateCommentTotals(blogPost);
 
-                // notify a store owner
+                // Notify a store owner.
                 if (_blogSettings.NotifyAboutNewBlogComments)
+                {
                     Services.MessageFactory.SendBlogCommentNotificationMessage(comment, _localizationSettings.DefaultAdminLanguageId);
+                }
 
-                //activity log
                 _customerActivityService.InsertActivity("PublicStore.AddBlogComment", T("ActivityLog.PublicStore.AddBlogComment"));
 
 				NotifySuccess(T("Blog.Comments.SuccessfullyAdded"));
@@ -452,7 +451,7 @@ namespace SmartStore.Web.Controllers
                     hostName: null,
                     fragment: "new-comment",
                     routeValues: new RouteValueDictionary(new { blogPostId = blogPost.Id, SeName = blogPost.GetSeName(blogPost.LanguageId, ensureTwoPublishedLanguages: false) }),
-                    routeCollection: System.Web.Routing.RouteTable.Routes,
+                    routeCollection: RouteTable.Routes,
                     requestContext: this.ControllerContext.RequestContext,
                     includeImplicitMvcValues: true /*helps fill in the nulls above*/
                 );
@@ -460,7 +459,7 @@ namespace SmartStore.Web.Controllers
                 return Redirect(url);
             }
 
-            // If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
             PrepareBlogPostModel(model, blogPost, true);
             return View(model);
         }

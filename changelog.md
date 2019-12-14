@@ -52,7 +52,7 @@
 * Debitoor: avoid errors due to invalid product unitId of 0.
 * Fixed InvalidOperationException in CreatePdfInvoiceAttachment when an order is placed by a guest.
 * The ShowDescriptionInSubPages setting should also be applied to the bottom category description.
-* #1774 Recaptcha: doesn't work for product reviews if hidden captcha is activated.
+* #1774 Recaptcha: doesn't work for product reviews, blog and news comments if hidden captcha is activated.
 
 
 ## SmartStore.NET 3.2.2

@@ -20,8 +20,8 @@ namespace SmartStore.Web.Framework.Security
 			Logger = NullLogger.Instance;
 		}
 
-		public Lazy<CaptchaSettings> CaptchaSettings { get; set; }
-		public ILogger Logger { get; set; }
+        public ILogger Logger { get; set; }
+        public Lazy<CaptchaSettings> CaptchaSettings { get; set; }
 		public Lazy<ILocalizationService> LocalizationService { get; set; }
 
 		public override void OnActionExecuting(ActionExecutingContext filterContext)
@@ -71,6 +71,10 @@ namespace SmartStore.Web.Framework.Security
 
 			// This will push the result value into a parameter in our Action.
 			filterContext.ActionParameters["captchaValid"] = valid;
+
+            filterContext.ActionParameters["captchaError"] = !valid && CaptchaSettings.Value.CanDisplayCaptcha
+                ? LocalizationService.Value.GetResource(CaptchaSettings.Value.UseInvisibleReCaptcha ? "Common.WrongInvisibleCaptcha" : "Common.WrongCaptcha")
+                : null;
 
             base.OnActionExecuting(filterContext);
         }

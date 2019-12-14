@@ -160,6 +160,10 @@
             builder.AddOrUpdate("Admin.ContentManagement.News.Heading.Publish", "Publishing", "Veröffentlichung");
 
             builder.AddOrUpdate("Admin.Validation.Url", "Please enter a valid URL.", "Bitte geben Sie eine gültige URL ein.");
+            
+            builder.AddOrUpdate("Common.WrongInvisibleCaptcha",
+                "The reCAPTCHA failed. Please try it again.",
+                "reCAPTCHA ist fehlgeschlagen. Bitte versuchen Sie es erneut.");
 
             builder.AddOrUpdate("Admin.Catalog.Products.Fields.Visibility",
                 "Visibility",

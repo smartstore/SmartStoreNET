@@ -67,12 +67,11 @@ namespace SmartStore.Web.Controllers
 		[HttpPost, ActionName("ContactUs")]
 		[ValidateCaptcha, ValidateHoneypot]
 		[GdprConsent]
-		public ActionResult ContactUsSend(ContactUsModel model, bool captchaValid)
+		public ActionResult ContactUsSend(ContactUsModel model, string captchaError)
 		{
-			// Validate CAPTCHA
-			if (_captchaSettings.Value.CanDisplayCaptcha && _captchaSettings.Value.ShowOnContactUsPage && !captchaValid)
+			if (_captchaSettings.Value.ShowOnContactUsPage && captchaError.HasValue())
 			{
-				ModelState.AddModelError("", T("Common.WrongCaptcha"));
+				ModelState.AddModelError("", captchaError);
 			}
 
 			if (ModelState.IsValid)
@@ -83,14 +82,13 @@ namespace SmartStore.Web.Controllers
 				var subject = T("ContactUs.EmailSubject", Services.StoreContext.CurrentStore.Name);
 				var body = Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.Enquiry.HtmlEncode());
 
-				// Required for some SMTP servers
+				// Required for some SMTP servers.
 				EmailAddress sender = null;
 				if (!_commonSettings.Value.UseSystemEmailForContactUsForm)
 				{
 					sender = new EmailAddress(email, fullName);
 				}
 
-				// email
 				var msg = Services.MessageFactory.SendContactUsMessage(customer, email, fullName, subject, body, sender);
 
 				if (msg?.Email?.Id != null)

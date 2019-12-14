@@ -400,7 +400,7 @@ namespace SmartStore.Web.Controllers
         [FormValueRequired("add-comment")]
         [ValidateCaptcha]
 		[GdprConsent]
-		public ActionResult BlogCommentAdd(int blogPostId, BlogPostModel model, bool captchaValid)
+		public ActionResult BlogCommentAdd(int blogPostId, BlogPostModel model, string captchaError)
         {
             if (!_blogSettings.Enabled)
 				return HttpNotFound();
@@ -415,10 +415,9 @@ namespace SmartStore.Web.Controllers
                 ModelState.AddModelError("", T("Blog.Comments.OnlyRegisteredUsersLeaveComments"));
             }
 
-            //validate CAPTCHA
-            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnBlogCommentPage && !captchaValid)
+            if (_captchaSettings.ShowOnBlogCommentPage && captchaError.HasValue())
             {
-                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+                ModelState.AddModelError("", captchaError);
             }
 
             if (ModelState.IsValid)

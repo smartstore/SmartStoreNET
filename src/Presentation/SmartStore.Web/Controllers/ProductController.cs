@@ -714,7 +714,7 @@ namespace SmartStore.Web.Controllers
 		[ValidateCaptcha]
 		[ValidateAntiForgeryToken]
 		[GdprConsent]
-		public ActionResult ReviewsAdd(int id, ProductReviewsModel model, bool captchaValid)
+		public ActionResult ReviewsAdd(int id, ProductReviewsModel model, string captchaError)
 		{
 			var product = _productService.GetProductById(id);
             if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !product.AllowCustomerReviews)
@@ -722,10 +722,9 @@ namespace SmartStore.Web.Controllers
                 return HttpNotFound();
             }
 
-			// Validate CAPTCHA.
-			if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnProductReviewPage && !captchaValid)
+			if (_captchaSettings.ShowOnProductReviewPage && captchaError.HasValue())
 			{
-				ModelState.AddModelError("", T("Common.WrongCaptcha"));
+				ModelState.AddModelError("", captchaError);
 			}
 
 			if (_services.WorkContext.CurrentCustomer.IsGuest() && !_catalogSettings.AllowAnonymousUsersToReviewProduct)
@@ -885,21 +884,19 @@ namespace SmartStore.Web.Controllers
 		[HttpPost, ActionName("AskQuestion")]
 		[ValidateCaptcha, ValidateHoneypot]
 		[GdprConsent]
-		public ActionResult AskQuestionSend(ProductAskQuestionModel model, bool captchaValid)
+		public ActionResult AskQuestionSend(ProductAskQuestionModel model, string captchaError)
 		{
 			var product = _productService.GetProductById(model.Id);
 			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !_catalogSettings.AskQuestionEnabled)
 				return HttpNotFound();
 
-			// validate CAPTCHA
-			if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnAskQuestionPage && !captchaValid)
+			if (_captchaSettings.ShowOnAskQuestionPage && captchaError.HasValue())
 			{
-				ModelState.AddModelError("", T("Common.WrongCaptcha"));
+				ModelState.AddModelError("", captchaError);
 			}
 
 			if (ModelState.IsValid)
 			{
-				// email
 				var msg = Services.MessageFactory.SendProductQuestionMessage(
 					_services.WorkContext.CurrentCustomer,
 					product,
@@ -910,7 +907,7 @@ namespace SmartStore.Web.Controllers
 
 				if (msg?.Email?.Id != null)
 				{
-					this.NotifySuccess(T("Products.AskQuestion.Sent"), true);
+					NotifySuccess(T("Products.AskQuestion.Sent"), true);
 					return RedirectToRoute("Product", new { SeName = product.GetSeName() });
 				}
 				else
@@ -919,7 +916,7 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
-			// If we got this far, something failed, redisplay form
+			// If we got this far, something failed, redisplay form.
 			var customer = _services.WorkContext.CurrentCustomer;
 			model.Id = product.Id;
 			model.ProductName = product.GetLocalized(x => x.Name);
@@ -955,19 +952,18 @@ namespace SmartStore.Web.Controllers
 		[HttpPost, ActionName("EmailAFriend")]
 		[ValidateCaptcha]
 		[GdprConsent]
-		public ActionResult EmailAFriendSend(ProductEmailAFriendModel model, int id, bool captchaValid)
+		public ActionResult EmailAFriendSend(ProductEmailAFriendModel model, int id, string captchaError)
 		{
 			var product = _productService.GetProductById(id);
 			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !_catalogSettings.EmailAFriendEnabled)
 				return HttpNotFound();
 
-			//validate CAPTCHA
-			if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnEmailProductToFriendPage && !captchaValid)
+			if (_captchaSettings.ShowOnEmailProductToFriendPage && captchaError.HasValue())
 			{
-				ModelState.AddModelError("", T("Common.WrongCaptcha"));
+				ModelState.AddModelError("", captchaError);
 			}
 
-			//check whether the current customer is guest and ia allowed to email a friend
+			// Check whether the current customer is guest and ia allowed to email a friend.
 			if (_services.WorkContext.CurrentCustomer.IsGuest() && !_catalogSettings.AllowAnonymousUsersToEmailAFriend)
 			{
 				ModelState.AddModelError("", T("Products.EmailAFriend.OnlyRegisteredUsers"));
@@ -992,7 +988,7 @@ namespace SmartStore.Web.Controllers
 				return RedirectToRoute("Product", new { SeName = model.ProductSeName });
 			}
 
-			//If we got this far, something failed, redisplay form
+			// If we got this far, something failed, redisplay form.
 			model.ProductId = product.Id;
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();

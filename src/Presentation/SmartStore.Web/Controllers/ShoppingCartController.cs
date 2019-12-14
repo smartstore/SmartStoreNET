@@ -2533,7 +2533,7 @@ namespace SmartStore.Web.Controllers
         [FormValueRequired("send-email")]
         [ValidateCaptcha]
 		[GdprConsent]
-		public ActionResult EmailWishlistSend(WishlistEmailAFriendModel model, bool captchaValid)
+		public ActionResult EmailWishlistSend(WishlistEmailAFriendModel model, string captchaError)
         {
             if (!_shoppingCartSettings.EmailWishlistEnabled || !_permissionService.Authorize(Permissions.Cart.AccessWishlist))
                 return RedirectToRoute("HomePage");
@@ -2543,13 +2543,12 @@ namespace SmartStore.Web.Controllers
             if (cart.Count == 0)
                 return RedirectToRoute("HomePage");
 
-            //validate CAPTCHA
-            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnEmailWishlistToFriendPage && !captchaValid)
+            if (_captchaSettings.ShowOnEmailWishlistToFriendPage && captchaError.HasValue())
             {
-                ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptcha"));
+                ModelState.AddModelError("", captchaError);
             }
 
-            //check whether the current customer is guest and ia allowed to email wishlist
+            // Check whether the current customer is guest and ia allowed to email wishlist.
             if (_workContext.CurrentCustomer.IsGuest() && !_shoppingCartSettings.AllowAnonymousUsersToEmailWishlist)
             {
                 ModelState.AddModelError("", _localizationService.GetResource("Wishlist.EmailAFriend.OnlyRegisteredUsers"));
@@ -2557,12 +2556,11 @@ namespace SmartStore.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                //email
                 Services.MessageFactory.SendShareWishlistMessage(
 					_workContext.CurrentCustomer,
 					model.YourEmailAddress,
                     model.FriendEmail, 
-					Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.PersonalMessage.HtmlEncode()));
+					HtmlUtils.ConvertPlainTextToHtml(model.PersonalMessage.HtmlEncode()));
 
                 model.SuccessfullySent = true;
                 model.Result = _localizationService.GetResource("Wishlist.EmailAFriend.SuccessfullySent");

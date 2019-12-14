@@ -301,7 +301,7 @@ namespace SmartStore.Web.Controllers
         [FormValueRequired("add-comment")]
         [ValidateCaptcha]
 		[GdprConsent]
-		public ActionResult NewsCommentAdd(int newsItemId, NewsItemModel model, bool captchaValid)
+		public ActionResult NewsCommentAdd(int newsItemId, NewsItemModel model, string captchaError)
         {
             if (!_newsSettings.Enabled)
 				return HttpNotFound();
@@ -310,10 +310,9 @@ namespace SmartStore.Web.Controllers
             if (newsItem == null || !newsItem.Published || !newsItem.AllowComments)
 				return HttpNotFound();
 
-            //validate CAPTCHA
-            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnNewsCommentPage && !captchaValid)
+            if (_captchaSettings.ShowOnNewsCommentPage && captchaError.HasValue())
             {
-                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+                ModelState.AddModelError("", captchaError);
             }
 
             if (_services.WorkContext.CurrentCustomer.IsGuest() && !_newsSettings.AllowNotRegisteredUsersToLeaveComments)

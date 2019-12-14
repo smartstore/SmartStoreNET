@@ -420,12 +420,11 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost]
         [ValidateCaptcha]
-        public ActionResult Login(LoginModel model, string returnUrl, bool captchaValid)
+        public ActionResult Login(LoginModel model, string returnUrl, string captchaError)
         {
-            // Validate CAPTCHA.
-            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnLoginPage && !captchaValid)
+            if (_captchaSettings.ShowOnLoginPage && captchaError.HasValue())
             {
-                ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptcha"));
+                ModelState.AddModelError("", captchaError);
             }
 
             if (ModelState.IsValid)
@@ -578,9 +577,9 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
 		[GdprConsent]
 		[ValidateAntiForgeryToken, ValidateCaptcha, ValidateHoneypot]
-		public ActionResult Register(RegisterModel model, string returnUrl, bool captchaValid)
+		public ActionResult Register(RegisterModel model, string returnUrl, string captchaError)
         {
-            //check whether registration is allowed
+            // Check whether registration is allowed.
             if (_customerSettings.UserRegistrationType == UserRegistrationType.Disabled)
                 return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled });
             
@@ -589,16 +588,15 @@ namespace SmartStore.Web.Controllers
                 // Already registered customer. 
                 _authenticationService.SignOut();
                 
-                // Save a new record
+                // Save a new record.
                 _workContext.CurrentCustomer = null;
             }
 
             var customer = _workContext.CurrentCustomer;
 
-            // validate CAPTCHA
-            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnRegistrationPage && !captchaValid)
+            if (_captchaSettings.ShowOnRegistrationPage && captchaError.HasValue())
             {
-                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+                ModelState.AddModelError("", captchaError);
             }
             
             if (ModelState.IsValid)

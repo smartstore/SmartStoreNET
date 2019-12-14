@@ -919,7 +919,7 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         [ValidateCaptcha]
         [GdprConsent]
-		public ActionResult TopicCreate(EditForumTopicModel model, bool captchaValid)
+		public ActionResult TopicCreate(EditForumTopicModel model, string captchaError)
         {
             if (!_forumSettings.ForumsEnabled)
             {
@@ -937,9 +937,9 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage && !captchaValid)
+            if (_captchaSettings.ShowOnForumPage && captchaError.HasValue())
             {
-                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+                ModelState.AddModelError("", captchaError);
             }
 
             if (ModelState.IsValid)
@@ -1083,7 +1083,7 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost]
         [ValidateCaptcha]
-        public ActionResult TopicEdit(EditForumTopicModel model, bool captchaValid)
+        public ActionResult TopicEdit(EditForumTopicModel model, string captchaError)
         {
             if (!_forumSettings.ForumsEnabled)
             {
@@ -1102,9 +1102,9 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage && !captchaValid)
+            if (_captchaSettings.ShowOnForumPage && captchaError.HasValue())
             {
-                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+                ModelState.AddModelError("", captchaError);
             }
 
             if (ModelState.IsValid)
@@ -1309,7 +1309,7 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         [ValidateCaptcha]
         [GdprConsent]
-		public ActionResult PostCreate(EditForumPostModel model, bool captchaValid)
+		public ActionResult PostCreate(EditForumPostModel model, string captchaError)
         {
             if (!_forumSettings.ForumsEnabled)
             {
@@ -1328,9 +1328,9 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage && !captchaValid)
+            if (_captchaSettings.ShowOnForumPage && captchaError.HasValue())
             {
-                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+                ModelState.AddModelError("", captchaError);
             }
 
             if (ModelState.IsValid)
@@ -1470,7 +1470,7 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost]
         [ValidateCaptcha]
-        public ActionResult PostEdit(EditForumPostModel model, bool captchaValid)
+        public ActionResult PostEdit(EditForumPostModel model, string captchaError)
         {
             if (!_forumSettings.ForumsEnabled)
             {
@@ -1489,9 +1489,9 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            if (_captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage && !captchaValid)
+            if (_captchaSettings.ShowOnForumPage && captchaError.HasValue())
             {
-                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+                ModelState.AddModelError("", captchaError);
             }
 
             if (ModelState.IsValid)

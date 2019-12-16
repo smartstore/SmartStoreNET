@@ -6,8 +6,7 @@ using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Core
 {
-
-	public class SmartStoreIdentity : ClaimsIdentity
+    public class SmartStoreIdentity : ClaimsIdentity
 	{
 		[SecuritySafeCritical]
 		public SmartStoreIdentity(int customerId, string name, string type) 
@@ -26,12 +25,12 @@ namespace SmartStore.Core
 	{
 		public SmartStorePrincipal(Customer customer, string type)
 		{
-			this.Identity = new SmartStoreIdentity(customer.Id, customer.Username, type);
+			Identity = new SmartStoreIdentity(customer.Id, customer.Username.NullEmpty() ?? customer.Email, type);
 		}
 
 		public bool IsInRole(string role)
 		{
-			return (Identity != null && Identity.IsAuthenticated && role.HasValue() && Roles.IsUserInRole(Identity.Name, role));
+			return Identity != null && Identity.IsAuthenticated && role.HasValue() && Roles.IsUserInRole(Identity.Name, role);
 		}
 
 		public IIdentity Identity { get; private set; }

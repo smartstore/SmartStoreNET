@@ -44,7 +44,7 @@
 	* #1689 Block with z-index < 0 can not be selected in story view - Block tools can reduce z-index below 0.
 	* #1691 Manually editing/removing block cols/rows does not refresh grid state correctly.
 * **PayPal**:
-	* Fixes rare exception "Unsupported Media Type" (415) in PayPal PLUS.
+	* Fixed rare exception "Unsupported Media Type" (415) in PayPal PLUS.
 	* Only process a partially refund IPN when the order refunded amount is zero. Otherwise the order refunded amount will be wrong.
 * Multistore mapping was ignored for manufacturers in sitemap.
 * #1730 Product tag count should filter also based on Visibility.
@@ -54,6 +54,7 @@
 * The ShowDescriptionInSubPages setting should also be applied to the bottom category description.
 * #1774 Recaptcha: doesn't work for product reviews, blog and news comments if hidden captcha is activated.
 * #1766 Customer FullName is not populated after registration.
+* #1765 Web-API: fixed authentication error "Value cannot be null. Parameter name: name" when login type is email.
 
 
 ## SmartStore.NET 3.2.2

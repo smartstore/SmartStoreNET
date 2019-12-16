@@ -35,7 +35,7 @@ namespace SmartStore.Web.Framework.UI
             {
                 if (_id == null)
                 {
-                    _id = CommonHelper.GenerateRandomDigitCode(10);
+                    _id = CommonHelper.GenerateRandomDigitCode(10).TrimStart('0');
                 }
 
                 return _id;

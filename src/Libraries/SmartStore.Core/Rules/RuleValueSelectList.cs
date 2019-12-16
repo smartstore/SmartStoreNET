@@ -45,7 +45,7 @@ namespace SmartStore.Rules
             Guard.NotEmpty(dataSource, nameof(dataSource));
 
             DataSource = dataSource;
-    }
+        }
 
         public string DataSource { get; set; }
     }

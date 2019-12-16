@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartStore.Rules
 {
@@ -53,7 +50,7 @@ namespace SmartStore.Rules
                 yield return RuleOperator.IsNotEqualTo;
             }
 
-            if (nonNullableType == typeof(int) || nonNullableType == typeof(float) || nonNullableType == typeof(DateTime))
+            if (nonNullableType == typeof(int) || nonNullableType == typeof(float) || nonNullableType == typeof(DateTime) || nonNullableType == typeof(decimal))
             {
                 yield return RuleOperator.GreaterThanOrEqualTo;
                 yield return RuleOperator.GreaterThan;

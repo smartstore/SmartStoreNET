@@ -2,6 +2,11 @@
 
 @using SmartStore.Rules
 
+@{
+    var templateSelector = ViewBag.TemplateSelector as IRuleTemplateSelector;
+    var templateInfo = templateSelector.GetValueTemplateInfo(Model.Descriptor);
+}
+
 <div class="rule row xs-gutters" data-rule-id="@Model.Id">
     <div class="col-2">
         @{ Html.RenderPartial("_Rule.Descriptor", Model); }
@@ -10,6 +15,29 @@
         @{ Html.RenderPartial("_Rule.Operator", Model); }
     </div>
     <div class="col-8">
-        @{ Html.RenderPartial("_Rule.Value", Model); }
+        <div class="input-group">
+            @{ 
+                try
+                {
+                    Html.RenderPartial(templateInfo.TemplateName, Model);
+                }
+                catch (Exception ex)
+                {
+                    <text><div class="badge badge-danger text-left">
+                        <div>@T("Common.CannotDisplayView", templateInfo.TemplateName.NaIfEmpty())</div>
+                        <div class="mt-1">@(ex.Message.Truncate(400, "…"))</div>
+                    </div></text>
+                }
+            }
+
+            <div class="input-group-append">
+                <button class="btn btn-light r-save-rule" type="button">
+                    <i class="fa fa-save"></i>
+                </button>
+                <button class="btn btn-light btn-to-danger r-delete-rule" type="button">
+                    <i class="fa fa-trash-alt"></i>
+                </button>
+            </div>
+        </div>
     </div>
 </div>

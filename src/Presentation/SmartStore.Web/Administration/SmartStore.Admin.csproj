@@ -609,7 +609,6 @@
     <Content Include="Views\Rule\_Rule.cshtml" />
     <Content Include="Views\Rule\_Rule.Descriptor.cshtml" />
     <Content Include="Views\Rule\_Rule.Operator.cshtml" />
-    <Content Include="Views\Rule\_Rule.Value.cshtml" />
     <Content Include="Views\Measure\CreateWeightPopup.cshtml" />
     <Content Include="Views\Measure\EditWeightPopup.cshtml" />
     <Content Include="Views\Measure\_CreateOrUpdateWeight.cshtml" />
@@ -622,6 +621,8 @@
     <Content Include="Views\DeliveryTime\EditDeliveryTimePopup.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Stores.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\CustomerRoles.cshtml" />
+    <Content Include="Views\Rule\ValueTemplates\TextBox.cshtml" />
+    <Content Include="Views\Rule\ValueTemplates\Boolean.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

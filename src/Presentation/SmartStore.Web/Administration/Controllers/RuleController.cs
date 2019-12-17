@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
-using Autofac;
 using SmartStore.Admin.Models.Rules;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Security;
 using SmartStore.Rules;
 using SmartStore.Rules.Domain;
-using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Controllers;
@@ -24,6 +22,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IRuleFactory _ruleFactory;
         private readonly IRuleStorage _ruleStorage;
         private readonly ITargetGroupService _targetGroupService;
+        private readonly IRuleTemplateSelector _ruleTemplateSelector;
         private readonly Func<RuleScope, IRuleProvider> _ruleProvider;
         private readonly AdminAreaSettings _adminAreaSettings;
 
@@ -31,12 +30,14 @@ namespace SmartStore.Admin.Controllers
             IRuleFactory ruleFactory, 
             IRuleStorage ruleStorage,
             ITargetGroupService targetGroupService,
+            IRuleTemplateSelector ruleTemplateSelector,
             Func<RuleScope, IRuleProvider> ruleProvider,
             AdminAreaSettings adminAreaSettings)
         {
             _ruleFactory = ruleFactory;
             _ruleStorage = ruleStorage;
             _targetGroupService = targetGroupService;
+            _ruleTemplateSelector = ruleTemplateSelector;
             _ruleProvider = ruleProvider;
             _adminAreaSettings = adminAreaSettings;
         }
@@ -90,6 +91,8 @@ namespace SmartStore.Admin.Controllers
         {
             var model = new RuleSetModel();
 
+            ViewBag.TemplateSelector = _ruleTemplateSelector;
+
             return View(model);
         }
 
@@ -126,7 +129,9 @@ namespace SmartStore.Admin.Controllers
             
             model.ExpressionGroup = _ruleFactory.CreateExpressionGroup(entity, provider);
             model.AvailableDescriptors = _targetGroupService.RuleDescriptors;
-            
+
+            ViewBag.TemplateSelector = _ruleTemplateSelector;
+
             return View(model);
         }
 
@@ -177,6 +182,8 @@ namespace SmartStore.Admin.Controllers
             _ruleStorage.InsertRule(rule);
 
             var expression = provider.VisitRule(rule);
+
+            ViewBag.TemplateSelector = _ruleTemplateSelector;
 
             return PartialView("_Rule", expression);
         }

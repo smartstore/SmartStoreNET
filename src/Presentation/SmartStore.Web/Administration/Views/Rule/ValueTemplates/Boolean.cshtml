@@ -1,0 +1,18 @@
+﻿@using SmartStore.Rules
+@model IRuleExpression
+@{
+    var value = Model.Value as bool?;
+    var name = string.Concat(Model.Descriptor.Name, CommonHelper.GenerateRandomInteger());
+
+    var listItems = new List<SelectListItem>
+    {
+        new SelectListItem { Text = T("Common.Yes").ToString(), Value = "true", Selected = value.HasValue && value.Value },
+        new SelectListItem { Text = T("Common.No").ToString(), Value = "false", Selected = value.HasValue && !value.Value }
+    };
+
+    if (Model.Descriptor.RuleType.ClrType == typeof(bool?))
+    {
+        listItems.Insert(0, new SelectListItem { Text = T("Common.Unspecified").ToString(), Value = string.Empty, Selected = !value.HasValue });
+    }
+}
+@Html.DropDownList(name, listItems, new { @class = "form-control list-box" })

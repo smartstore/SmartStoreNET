@@ -165,6 +165,10 @@
                 "The reCAPTCHA failed. Please try it again.",
                 "reCAPTCHA ist fehlgeschlagen. Bitte versuchen Sie es erneut.");
 
+            builder.AddOrUpdate("Common.CannotDisplayView",
+                "The view \"{0}\" could not be displayed.",
+                "Die Ansicht \"{0}\" konnte nicht angezeigt werden.");
+
             builder.AddOrUpdate("Admin.Catalog.Products.Fields.Visibility",
                 "Visibility",
                 "Sichtbarkeit",

@@ -15,4 +15,4 @@
         listItems.Insert(0, new SelectListItem { Text = T("Common.Unspecified").ToString(), Value = string.Empty, Selected = !value.HasValue });
     }
 }
-@Html.DropDownList(name, listItems, new { @class = "form-control list-box" })
+@Html.DropDownList(name, listItems, new { @class = "form-control list-box rule-value" })

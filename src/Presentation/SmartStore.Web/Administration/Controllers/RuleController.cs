@@ -195,8 +195,8 @@ namespace SmartStore.Admin.Controllers
             var rule = _ruleStorage.GetRuleById(ruleId, true);
             if (rule == null)
             {
-                // TODO: message/notify
-                return Json(new { Success = false, Message = "" });
+                NotifyError(T("Admin.Rules.NotFound", ruleId));
+                return Json(new { Success = false });
             }
 
             rule.Operator = op;
@@ -214,8 +214,8 @@ namespace SmartStore.Admin.Controllers
             var rule = _ruleStorage.GetRuleById(ruleId, true);
             if (rule == null)
             {
-                // TODO: message/notify
-                return Json(new { Success = false, Message = "" });
+                NotifyError(T("Admin.Rules.NotFound", ruleId));
+                return Json(new { Success = false });
             }
 
             _ruleStorage.DeleteRule(rule);
@@ -275,8 +275,8 @@ namespace SmartStore.Admin.Controllers
             var group = _ruleStorage.GetRuleSetById(ruleSetId, true, false);
             if (group == null)
             {
-                // TODO: message/notify
-                return Json(new { Success = false, Message = "" });
+                NotifyError(T("Admin.Rules.GroupNotFound", ruleSetId));
+                return Json(new { Success = false });
             }
 
             _ruleStorage.DeleteRule(refRule);

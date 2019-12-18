@@ -1438,6 +1438,75 @@ table.payment-method-features td {
     }
 }
 
+//
+// Rules
+// --------------------------------------------------------------
+/*.rule:first-child {
+    margin-top: 0 !important;
+}
+
+.rule:last-child {
+    margin-bottom: 0 !important;
+}*/
+
+.rule,
+.ruleset {
+    margin: 1rem;
+}
+
+.ruleset-root > .ruleset {
+    margin: 0;
+    margin-top: 1rem;
+}
+
+.ruleset {
+    border: 1px solid rgba(0,0,0, 0.15);
+    border-radius: 6px;
+    border-left: 3px solid var(--warning);
+    background-color: #fff;
+}
+
+/*.ruleset .ruleset {
+    background-color: rgba(0,0,0, 0.03);
+}*/
+
+.ruleset .ruleset {
+    border-left-color: var(--primary);
+    background-color: rgba(0,0,0, 0.04);
+    box-shadow: 0 1rem 2.25rem rgba(50, 50, 93, 0.03), 0 0.3125rem 1rem rgba(0, 0, 0, 0.12) !important;
+}
+
+.ruleset .ruleset .ruleset {
+    border-left-color: var(--success);
+    background-color: #fff;
+}
+
+.ruleset .ruleset .ruleset .ruleset {
+    border-left-color: var(--indigo);
+    background-color: rgba(0,0,0, 0.04);
+}
+
+.ruleset .ruleset .ruleset .ruleset .ruleset {
+    border-left-color: var(--info);
+    background-color: #fff;
+}
+
+.ruleset .ruleset .ruleset .ruleset .ruleset {
+    border-left-color: var(--gray);
+    background-color: rgba(0,0,0, 0.04);
+}
+
+.ruleset-header {
+    padding: 0.5rem 1rem;
+    background-color: rgba(0,0,0, 0.03);
+    border-radius: 6px 6px 0 0;
+    border-bottom: 1px solid rgba(0,0,0, 0.15);
+}
+
+.ruleset-footer {
+    margin: 1rem;
+}
+
 
 //
 // Misc

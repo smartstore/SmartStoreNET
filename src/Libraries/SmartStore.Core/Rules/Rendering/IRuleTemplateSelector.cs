@@ -7,6 +7,6 @@
         /// </summary>
         /// <param name="descriptor">Rule descriptor.</param>
         /// <returns>Rule value template infos.</returns>
-        RuleTemplateInfo GetValueTemplateInfo(RuleDescriptor descriptor);
+        RuleTemplateInfo GetTemplate(RuleDescriptor descriptor);
     }
 }

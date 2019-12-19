@@ -2,7 +2,7 @@
 {
     public class RuleTemplateSelector : IRuleTemplateSelector
     {
-        public RuleTemplateInfo GetValueTemplateInfo(RuleDescriptor descriptor)
+        public RuleTemplateInfo GetTemplate(RuleDescriptor descriptor)
         {
             Guard.NotNull(descriptor, nameof(descriptor));
 

@@ -88,18 +88,27 @@
 		},
 
 		toInt: function(val) {
-			var defVal = typeof arguments[1] === "number" ? arguments[1] : 0;
 			var x = parseInt(val);
-			if (isNaN(x)) {
+            if (isNaN(x)) {
+                var defVal = 0;
+                if (arguments.length > 1) {
+                    var arg = arguments[1];
+                    defVal = arg === null || typeof arg === "number" ? arg : 0;
+                }
 				return defVal;	
-			}
+            }
+
 			return x;
 		},
 			
 		toFloat: function(val) {
-			var defVal = typeof arguments[1] === "number" ? arguments[1] : 0;
 			var x = parseFloat(val);
-			if (isNaN(x)) {
+            if (isNaN(x)) {
+                var defVal = 0;
+                if (arguments.length > 1) {
+                    var arg = arguments[1];
+                    defVal = arg === null || typeof arg === "number" ? arg : 0;
+                }
 				return defVal;	
 			}
 			return x;

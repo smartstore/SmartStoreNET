@@ -47,6 +47,18 @@ namespace SmartStore.Web.Framework.UI
             return Y.HasValue && Y == other.Y;
         }
 
+        public Spacing Difference(Spacing other)
+        {
+            var result = this;
+
+            if (Left == other.Left) result.Left = null;
+            if (Right == other.Right) result.Right = null;
+            if (Top == other.Top) result.Top = null;
+            if (Bottom == other.Bottom) result.Bottom = null;
+
+            return result;
+        }
+
         public override bool Equals(object obj)
         {
             if (obj is Spacing other)

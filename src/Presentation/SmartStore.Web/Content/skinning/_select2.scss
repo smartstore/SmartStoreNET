@@ -372,7 +372,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
             right: 1px;
             border: 0 solid $input-border-color;
             border-left-width: 1px;
-            width: $s2sm-caret-width;
+            width: calc(#{$s2sm-caret-width} - 2px);
             background-color: $s2sm-shade-bg;
 
             b {
@@ -492,7 +492,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
         padding: $s2bs-padding-small-vertical $s2bs-padding-small-horizontal + $s2bs-caret-width-base*3 $s2bs-padding-small-vertical $s2bs-padding-small-horizontal;
         /* 2 */
         .select2-selection__arrow {
-            width: calc(#{$input-height-sm} - 1px);
+            width: calc(#{$input-height-sm} - 2px);
         }
     }
 
@@ -537,7 +537,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
         padding-left: $s2bs-padding-large-horizontal;
         /* 1 */
         .select2-selection__arrow {
-            width: $input-height-lg;
+            width: calc(#{$input-height-lg} - 2px);
         }
     }
 

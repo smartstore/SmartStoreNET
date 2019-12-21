@@ -452,7 +452,7 @@ table th {
     will-change: transform;
 
     &.parallax-smooth {
-        transition: transform 0.1s ease;
+        transition: transform 0.15s cubic-bezier(.25,.57,.63,.8);
     }
 }
 

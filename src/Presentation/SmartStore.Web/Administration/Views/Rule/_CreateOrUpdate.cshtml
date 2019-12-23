@@ -137,9 +137,10 @@
         $(document).on('click', '.r-save-rule', function (e) {
             var rule = $(this).closest('.rule');
             var ruleId = rule.data('rule-id');
-
-            var value = rule.find(".rule-value").val();
             var op = rule.find(".rule-operator").data("value");
+
+            var control = rule.find(':input[name="' + rule.data('control-id') + '"]');
+            var value = control.val();
 
             $.ajax({
                 cache: false,

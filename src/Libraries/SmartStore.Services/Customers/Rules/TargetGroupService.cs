@@ -130,7 +130,7 @@ namespace SmartStore.Services.Customers
 
         protected override IEnumerable<RuleDescriptor> LoadDescriptors()
         {
-            return new List<FilterDescriptor>
+            var descriptors = new List<FilterDescriptor>
             {
                 new FilterDescriptor<Customer, bool>(x => x.IsTaxExempt)
                 {
@@ -391,6 +391,12 @@ namespace SmartStore.Services.Customers
                     Constraints = new IRuleConstraint[0]
                 },
             };
+
+            descriptors
+                .Where(x => x.RuleType.ClrType == typeof(decimal))
+                .Each(x => x.Metadata["postfix"] = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode);
+
+            return descriptors;
         }
     }
 }

@@ -1,0 +1,20 @@
+﻿@using SmartStore.Rules
+@model IRuleExpression
+@{
+    var metadata = Model.Descriptor.Metadata;
+    var min = metadata.Get("min") as int?;
+    var max = metadata.Get("max") as int?;
+    var step = metadata.Get("step") as int?;
+}
+<div class="numerictextbox-group flex-grow-1">
+	@(Html.Telerik().IntegerTextBox()
+        .Name(Model.Descriptor.ControlId)
+        .EmptyMessage(T("Common.EnterValue"))
+        .ButtonTitleUp(T("Common.IncreaseValue"))
+        .ButtonTitleDown(T("Common.DecreaseValue"))
+        .MinValue(min)
+        .MaxValue(max)
+        .IncrementStep(step ?? 1)
+        .Value(Model.Value as int?)
+	)
+</div>

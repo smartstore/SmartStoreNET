@@ -100,7 +100,7 @@ namespace SmartStore.Core.Tests.Rules.Filters
             // TODO
             public static FilterDescriptor AverageOrderItemPrice = new FilterDescriptor<Customer, decimal>(x => x.Orders.SelectMany(o => o.OrderItems.Where(oi => true)).Average(y => y.PriceInclTax))
             {
-                RuleType = RuleType.Float,
+                RuleType = RuleType.Money,
                 Name = "AverageOrderItemPrice"
             };
             public static FilterDescriptor TotalPurchasedUnits = new FilterDescriptor<Customer, int>(x => x.Orders.SelectMany(o => o.OrderItems.Where(oi => true)).Sum(y => y.Quantity))

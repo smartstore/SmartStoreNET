@@ -4,10 +4,10 @@
 
 @{
     var templateSelector = ViewBag.TemplateSelector as IRuleTemplateSelector;
-    var templateInfo = templateSelector.GetValueTemplateInfo(Model.Descriptor);
+    var templateInfo = templateSelector.GetTemplate(Model.Descriptor);
 }
 
-<div class="rule row xs-gutters" data-rule-id="@Model.Id">
+<div class="rule row xs-gutters" data-rule-id="@Model.Id" data-control-id="@Model.Descriptor.ControlId">
     <div class="col-2">
         @{ Html.RenderPartial("_Rule.Descriptor", Model); }
     </div>

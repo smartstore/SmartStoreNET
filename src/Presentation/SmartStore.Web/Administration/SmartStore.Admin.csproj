@@ -623,6 +623,10 @@
     <Content Include="Views\Shared\EditorTemplates\CustomerRoles.cshtml" />
     <Content Include="Views\Rule\ValueTemplates\TextBox.cshtml" />
     <Content Include="Views\Rule\ValueTemplates\Boolean.cshtml" />
+    <Content Include="Views\Rule\ValueTemplates\Int32.cshtml" />
+    <Content Include="Views\Rule\ValueTemplates\Float.cshtml" />
+    <Content Include="Views\Rule\ValueTemplates\Decimal.cshtml" />
+    <Content Include="Views\Rule\ValueTemplates\DateTime.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

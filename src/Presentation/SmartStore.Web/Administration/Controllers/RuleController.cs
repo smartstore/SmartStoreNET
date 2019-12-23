@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Rules;
@@ -27,7 +28,7 @@ namespace SmartStore.Admin.Controllers
         private readonly AdminAreaSettings _adminAreaSettings;
 
         public RuleController(
-            IRuleFactory ruleFactory, 
+            IRuleFactory ruleFactory,
             IRuleStorage ruleStorage,
             ITargetGroupService targetGroupService,
             IRuleTemplateSelector ruleTemplateSelector,
@@ -126,7 +127,7 @@ namespace SmartStore.Admin.Controllers
 
             var model = MiniMapper.Map<RuleSetEntity, RuleSetModel>(entity);
             var provider = _ruleProvider(entity.Scope);
-            
+
             model.ExpressionGroup = _ruleFactory.CreateExpressionGroup(entity, provider);
             model.AvailableDescriptors = _targetGroupService.RuleDescriptors;
 
@@ -198,6 +199,38 @@ namespace SmartStore.Admin.Controllers
                 NotifyError(T("Admin.Rules.NotFound", ruleId));
                 return Json(new { Success = false });
             }
+
+            // TODO? Ugly. There should be a better way. Do not store culture variant values.
+            if (value.HasValue())
+            {
+                var provider = _ruleProvider(rule.RuleSet.Scope);
+                var descriptor = provider.RuleDescriptors.FindDescriptor(rule.RuleType);
+                var type = descriptor.RuleType.ClrType;
+
+                if (type == typeof(decimal) || type == typeof(decimal?))
+                {
+                    value = value.Convert<decimal>(CultureInfo.CurrentCulture).ToString(CultureInfo.InvariantCulture);
+                }
+                else if (type == typeof(float) || type == typeof(float?))
+                {
+                    value = value.Convert<float>(CultureInfo.CurrentCulture).ToString(CultureInfo.InvariantCulture);
+                }
+                else if (type == typeof(DateTime) || type == typeof(DateTime?))
+                {
+                    value = value.Convert<DateTime>(CultureInfo.CurrentCulture).ToString(CultureInfo.InvariantCulture);
+                }
+            }
+            //if (value?.Contains(',') ?? false)
+            //{
+            //    var provider = _ruleProvider(rule.RuleSet.Scope);
+            //    var descriptor = provider.RuleDescriptors.FindDescriptor(rule.RuleType);
+            //    var floatingPointTypes = new Type[] { typeof(decimal), typeof(decimal?), typeof(float), typeof(float?), typeof(double), typeof(double?) };
+
+            //    if (floatingPointTypes.Contains(descriptor.RuleType.ClrType))
+            //    {
+            //        value = value.Replace(",", ".");
+            //    }
+            //}
 
             rule.Operator = op;
             rule.Value = value;

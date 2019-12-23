@@ -148,7 +148,7 @@ namespace SmartStore.Services.Cart.Rules
 
         protected override IEnumerable<RuleDescriptor> LoadDescriptors()
         {
-            return new List<CartRuleDescriptor>
+            var descriptors = new List<CartRuleDescriptor>
             {
                 new CartRuleDescriptor
                 {
@@ -212,8 +212,23 @@ namespace SmartStore.Services.Cart.Rules
                     Operators = new[] { RuleOperator.IsEqualTo, RuleOperator.IsNotEqualTo },
                     Constraints = new IRuleConstraint[0],
                     SelectList = new RemoteRuleValueSelectList("CartRule"),
+                },
+                new CartRuleDescriptor
+                {
+                    Name = "DateTime Tester",
+                    DisplayName = "DateTime Tester",
+                    RuleType = RuleType.DateTime,
+                    ProcessorType = typeof(RuleSetRule),
+                    Operators = new[] { RuleOperator.IsEqualTo, RuleOperator.IsNotEqualTo },
+                    Constraints = new IRuleConstraint[0]
                 }
             };
+
+            descriptors
+                .Where(x => x.RuleType.ClrType == typeof(decimal))
+                .Each(x => x.Metadata["postfix"] = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode);
+
+            return descriptors;
         }
     }
 }

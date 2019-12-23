@@ -2,7 +2,6 @@
 @model IRuleExpression
 @{
     var value = Model.Value as bool?;
-    var name = string.Concat(Model.Descriptor.Name, CommonHelper.GenerateRandomInteger());
 
     var listItems = new List<SelectListItem>
     {
@@ -15,4 +14,4 @@
         listItems.Insert(0, new SelectListItem { Text = T("Common.Unspecified").ToString(), Value = string.Empty, Selected = !value.HasValue });
     }
 }
-@Html.DropDownList(name, listItems, new { @class = "form-control list-box rule-value" })
+@Html.DropDownList(Model.Descriptor.ControlId, listItems, new { @class = "form-control list-box" })

@@ -71,13 +71,9 @@ namespace SmartStore.Web.Framework.Controllers
         /// <typeparam name="T">Entity type</typeparam>
         /// <param name="entity">The entity</param>
         /// <param name="model">Model representation of ACL selection</param>
-        protected virtual void SaveAclMappings<T>(T entity, int[] selectedCustomerRoleIds) where T : BaseEntity, IAclSupported
+        protected virtual void SaveAclMappings<T>(T entity, params int[] selectedCustomerRoleIds) where T : BaseEntity, IAclSupported
         {
-            entity.SubjectToAcl = (selectedCustomerRoleIds?.Length ?? 0) == 1 && selectedCustomerRoleIds[0] == 0
-                ? false
-                : selectedCustomerRoleIds?.Any() ?? false;                
-
-            Services.Resolve<IAclService>().SaveAclMappings(entity, selectedCustomerRoleIds);
+            Services.Resolve<IAclService>().SaveAclMappings(entity, selectedCustomerRoleIds ?? Array.Empty<int>());
         }
 
         /// <summary>

@@ -91,12 +91,15 @@ namespace SmartStore.Services.Security
 			return aclRecords;
 		}
 
-		public virtual void SaveAclMappings<T>(T entity, int[] selectedCustomerRoleIds) where T : BaseEntity, IAclSupported
+		public virtual void SaveAclMappings<T>(T entity, params int[] selectedCustomerRoleIds) where T : BaseEntity, IAclSupported
 		{
 			var existingAclRecords = GetAclRecords(entity);
 			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
+            entity.SubjectToAcl = selectedCustomerRoleIds.Length == 1 && selectedCustomerRoleIds[0] == 0
+                ? false
+                : selectedCustomerRoleIds.Any();
 
-			foreach (var customerRole in allCustomerRoles)
+            foreach (var customerRole in allCustomerRoles)
 			{
 				if (selectedCustomerRoleIds != null && selectedCustomerRoleIds.Contains(customerRole.Id))
 				{
@@ -112,6 +115,11 @@ namespace SmartStore.Services.Security
 						DeleteAclRecord(aclRecordToDelete);
 				}
 			}
+
+            if (_aclRecordRepository.Context.TryGetModifiedProperty(entity, nameof(entity.SubjectToAcl), out _)) 
+            {
+                _aclRecordRepository.Context.SaveChanges();
+            }
 		}
 
 		public virtual void InsertAclRecord(AclRecord aclRecord)

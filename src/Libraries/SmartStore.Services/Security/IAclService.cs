@@ -52,7 +52,7 @@ namespace SmartStore.Services.Security
 		/// <typeparam name="T">Entity type</typeparam>
 		/// <param name="entity">The entity</param>
 		/// <param name="selectedCustomerRoleIds">Array of selected customer role ids with access to the passed entity</param>
-		void SaveAclMappings<T>(T entity, int[] selectedCustomerRoleIds) where T : BaseEntity, IAclSupported;
+		void SaveAclMappings<T>(T entity, params int[] selectedCustomerRoleIds) where T : BaseEntity, IAclSupported;
 
 		/// <summary>
 		/// Inserts an ACL record

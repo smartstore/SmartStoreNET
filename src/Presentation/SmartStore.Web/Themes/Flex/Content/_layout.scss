@@ -50,7 +50,10 @@ body {
 
 #page {
     // INFO: Sticky elements won't work anymore with overflow-x: hidden on #page element
-    //overflow-x: hidden;  
+    // INFO 2: apparently without 'overflow-x: hidden' #page gets very glitchy on mobile. Observe this and leave it active for now.
+    .touchevents & {
+        overflow-x: hidden;  
+    }
 }
 
 #header {

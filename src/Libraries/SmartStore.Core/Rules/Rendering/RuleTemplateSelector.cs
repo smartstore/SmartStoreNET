@@ -27,29 +27,29 @@ namespace SmartStore.Rules
             }
 
             string templateName;
-            var type = descriptor.RuleType.ClrType;
+            var type = descriptor.RuleType;
 
-            if (type == typeof(bool) || type == typeof(bool?))
+            if (type == RuleType.Boolean || type == RuleType.NullableBoolean)
             {
                 templateName = "Boolean";
             }
-            else if (type == typeof(int) || type == typeof(int?))
+            else if (type == RuleType.Int || type == RuleType.NullableInt)
             {
                 templateName = "Int32";
             }
-            else if (type == typeof(float) || type == typeof(float?))
+            else if (type == RuleType.Float || type == RuleType.NullableFloat)
             {
                 templateName = "Float";
             }
-            else if (type == typeof(decimal))
+            else if (type == RuleType.Money)
             {
                 templateName = "Decimal";
             }
-            else if (type == typeof(DateTime) || type == typeof(DateTime?))
+            else if (type == RuleType.DateTime || type == RuleType.NullableDateTime)
             {
                 templateName = "DateTime";
             }
-            else if (type == typeof(List<int>) || type == typeof(List<float>) || type == typeof(List<string>))
+            else if (type == RuleType.IntArray || type == RuleType.FloatArray || type == RuleType.StringArray)
             {
                 templateName = "Dropdown";
             }

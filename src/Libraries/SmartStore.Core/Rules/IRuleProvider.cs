@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SmartStore.Rules.Domain;
 
 namespace SmartStore.Rules
@@ -33,9 +30,17 @@ namespace SmartStore.Rules
             Guard.NotNull(expression, nameof(expression));
 
             var descriptor = RuleDescriptors.FindDescriptor(entity.RuleType);
-            if (descriptor == null || descriptor.Scope != this.Scope)
+            if (descriptor == null)
             {
-                // TODO: ErrHandling and EmptynessCheck
+                descriptor = new InvalidRuleDescriptor(Scope)
+                {
+                    Name = entity.RuleType,
+                    DisplayName = entity.RuleType
+                };
+            }
+            else if (descriptor.Scope != Scope)
+            {
+                throw new SmartException($"Differing rule scope {descriptor.Scope}. Expected {Scope}.");
             }
 
             expression.Id = entity.Id;

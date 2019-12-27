@@ -627,6 +627,7 @@
     <Content Include="Views\Rule\ValueTemplates\Float.cshtml" />
     <Content Include="Views\Rule\ValueTemplates\Decimal.cshtml" />
     <Content Include="Views\Rule\ValueTemplates\DateTime.cshtml" />
+    <Content Include="Views\Rule\ValueTemplates\Dropdown.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

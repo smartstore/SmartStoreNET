@@ -1,0 +1,74 @@
+﻿@using SmartStore.Rules
+@model IRuleExpression
+@{
+    var id = string.Concat("rule-value-", Model.Id);
+    var list = Model.Descriptor.SelectList;
+    var isRemote = list is RemoteRuleValueSelectList;
+    var values = Model.RawValue.SplitSafe(",");
+}
+<select id="@id" name="@id" @Html.Attr("multiple", "multiple", list.Multiple)>
+    @if (isRemote)
+    {
+        @*TODO: selected values & labels. "Local" and "Remote" has selected options to be rendered!*@
+        foreach (var val in values)
+        {
+            <option value="@val" selected="selected">@val</option>
+        }
+    }
+    else
+    {
+        foreach (var option in ((LocalRuleValueSelectList)list).Options)
+        {
+            var strValue = option.Value?.ToString() ?? string.Empty;
+            <option value="@strValue" @Html.Attr("selected", "selected", values.Contains(strValue))>@option.Text</option>
+        }
+    }
+</select>
+
+<script>
+    $(function () {
+        var options = {
+            width: 'style',
+            dropdownAutoWidth: true,
+            allowClear: true,
+            theme: 'bootstrap',
+            closeOnSelect: true,
+            placeholder: '',
+            @*multiple: @(list.Multiple.ToString().ToLower()),*@
+            language: '@ViewBag.LanguageSeoCode'
+        };
+
+        @if (isRemote)
+        {<text>
+            options.ajax = {
+                delay: 300,
+                cache: true,
+                dataType: 'json',
+                type: 'GET',
+                url: '@Html.Raw(Url.Action("RuleValues", "Rule", new {
+                     dataSource = ((RemoteRuleValueSelectList)list).DataSource,
+                     ruleType = Model.Descriptor.RuleType.Name,
+                     selected = Model.RawValue
+                }))',
+                data: function (params) {
+                    var query = {
+                        search: params.term,
+                        page: params.page || 1
+                    }
+                    return query;
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.results,
+                        pagination: {
+                            more: data.hasMoreItems
+                        }
+                    };
+                }
+            }
+        </text>}
+
+        $('#@id').selectWrapper(options);
+	});
+</script>

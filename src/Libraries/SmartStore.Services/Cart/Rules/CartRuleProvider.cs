@@ -106,7 +106,7 @@ namespace SmartStore.Services.Cart.Rules
             }
             else
             {
-                group = new RuleExpressionGroup() { LogicalOperator = logicalOperator };
+                group = new RuleExpressionGroup { LogicalOperator = logicalOperator };
                 group.AddExpressions(expressions);
             }
 
@@ -212,20 +212,11 @@ namespace SmartStore.Services.Cart.Rules
                     Operators = new[] { RuleOperator.IsEqualTo, RuleOperator.IsNotEqualTo },
                     Constraints = new IRuleConstraint[0],
                     SelectList = new RemoteRuleValueSelectList("CartRule"),
-                },
-                new CartRuleDescriptor
-                {
-                    Name = "DateTime Tester",
-                    DisplayName = "DateTime Tester",
-                    RuleType = RuleType.DateTime,
-                    ProcessorType = typeof(RuleSetRule),
-                    Operators = new[] { RuleOperator.IsEqualTo, RuleOperator.IsNotEqualTo },
-                    Constraints = new IRuleConstraint[0]
                 }
             };
 
             descriptors
-                .Where(x => x.RuleType.ClrType == typeof(decimal))
+                .Where(x => x.RuleType == RuleType.Money)
                 .Each(x => x.Metadata["postfix"] = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode);
 
             return descriptors;

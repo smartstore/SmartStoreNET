@@ -393,7 +393,7 @@ namespace SmartStore.Services.Customers
             };
 
             descriptors
-                .Where(x => x.RuleType.ClrType == typeof(decimal))
+                .Where(x => x.RuleType == RuleType.Money)
                 .Each(x => x.Metadata["postfix"] = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode);
 
             return descriptors;

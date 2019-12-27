@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartStore.Rules
 {
@@ -29,7 +26,12 @@ namespace SmartStore.Rules
 
         public RuleDescriptor FindDescriptor(string name)
         {
-            return this[name];
+            if (name != null && Contains(name))
+            {
+                return this[name];
+            }
+
+            return null;
         }
     }
 }

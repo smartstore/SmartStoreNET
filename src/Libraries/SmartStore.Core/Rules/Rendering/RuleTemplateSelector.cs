@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SmartStore.Rules
 {
@@ -28,7 +29,6 @@ namespace SmartStore.Rules
             string templateName;
             var type = descriptor.RuleType.ClrType;
 
-            // TODO: get more template names.
             if (type == typeof(bool) || type == typeof(bool?))
             {
                 templateName = "Boolean";
@@ -48,6 +48,10 @@ namespace SmartStore.Rules
             else if (type == typeof(DateTime) || type == typeof(DateTime?))
             {
                 templateName = "DateTime";
+            }
+            else if (type == typeof(List<int>) || type == typeof(List<float>) || type == typeof(List<string>))
+            {
+                templateName = "Dropdown";
             }
             else
             {

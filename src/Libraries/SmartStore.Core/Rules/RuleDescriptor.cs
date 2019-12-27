@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Utilities;
 
 namespace SmartStore.Rules
 {
     public abstract class RuleDescriptor
     {
         private RuleOperator[] _operators;
-        private string _controlId;
 
         protected RuleDescriptor(RuleScope scope)
         {
@@ -20,16 +18,11 @@ namespace SmartStore.Rules
         public string DisplayName { get; set; }
         public string Description { get; set; }
 
-        public string ControlId
+        public bool IsValid
         {
             get
             {
-                if (_controlId == null)
-                {
-                    _controlId = string.Concat("rule-value-", CommonHelper.GenerateRandomInteger());
-                }
-
-                return _controlId;
+                return false == (this is InvalidRuleDescriptor);
             }
         }
 
@@ -42,6 +35,17 @@ namespace SmartStore.Rules
         {
             get => _operators ?? (_operators = RuleType.GetValidOperators().ToArray());
             set => _operators = value;
+        }
+    }
+
+
+    public class InvalidRuleDescriptor : RuleDescriptor
+    {
+        public InvalidRuleDescriptor(RuleScope scope) 
+            : base(scope)
+        {
+            RuleType = RuleType.String;
+            Constraints = new IRuleConstraint[0];
         }
     }
 }

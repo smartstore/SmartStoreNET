@@ -139,8 +139,11 @@
             var ruleId = rule.data('rule-id');
             var op = rule.find(".rule-operator").data("value");
 
-            var control = rule.find(':input[name="' + rule.data('control-id') + '"]');
+            var control = rule.find(':input[name="rule-value-' + ruleId + '"]');
             var value = control.val();
+            if (Array.isArray(value)) {
+                value = value.join(',');
+            }
 
             $.ajax({
                 cache: false,

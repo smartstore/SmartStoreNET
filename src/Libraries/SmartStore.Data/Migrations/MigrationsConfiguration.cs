@@ -117,6 +117,7 @@
             builder.AddOrUpdate("Common.Notify", "Notify", "Benachrichtigen");
             builder.AddOrUpdate("Common.Approve", "Approve", "Genehmigen");
             builder.AddOrUpdate("Common.Rules", "Rules", "Regeln");
+            builder.AddOrUpdate("Common.Invalid", "Invalid", "Ungültig");
 
             builder.AddOrUpdate("Common.Allow", "Allow", "Erlaubt");
             builder.AddOrUpdate("Common.Deny", "Deny", "Verweigert");

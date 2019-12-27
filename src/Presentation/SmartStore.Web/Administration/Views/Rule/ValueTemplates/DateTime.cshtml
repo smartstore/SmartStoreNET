@@ -2,7 +2,7 @@
 @model IRuleExpression
 @{
     var metadata = Model.Descriptor.Metadata;
-    var id = Model.Descriptor.ControlId;
+    var id = string.Concat("rule-value-", Model.Id);
 
     var pickTime = (metadata.Get("picktime") as bool?) ?? true;
 	var format = pickTime ? "L LT" : "L";
@@ -22,7 +22,7 @@
 	</div>
 </div>
 
-<script data-origin="RuleDateTime">
+<script>
     $(function () {
         $('#@(id)-parent').datetimepicker({ format: '@(format)', useCurrent: false, locale: moment.locale() });
 	});

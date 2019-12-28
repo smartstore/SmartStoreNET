@@ -46,26 +46,26 @@
                         </a>
                     </h4>
 
-                    <div class="newsitem-date" itemprop="datePublished">
+                    <div class="newsitem-date rfs" itemprop="datePublished">
                         @item.CreatedOn.ToNativeString("D")
                     </div>
                     
                     <meta itemprop="dateModified" content="@item.CreatedOn.ToNativeString("D")">
 
-                    <p class="newsitem-description my-3 flex-grow-1" itemprop="description">
+                    <p class="newsitem-description rfs my-3 flex-grow-1" itemprop="description">
                         @Html.Raw(item.Short.Truncate(160, "..."))
                     </p>
 
                     <div class="d-flex flex-row">
                         <div class="flex-grow-1">
-                            <a class="btn btn-outline-gray" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
+                            <a class="btn btn-outline-gray rfs" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
                                 @T("Common.Cms.ReadMore")
                             </a>
                         </div>
                         
                         @if (item.Comments.AllowComments)
                         {
-                            <a class="align-self-end btn btn-gray btn-flat@(item.Comments.NumberOfComments > 0 ? " vivid" : "")"
+                            <a class="rfs align-self-end btn btn-gray btn-flat@(item.Comments.NumberOfComments > 0 ? " vivid" : "")"
                                href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })"
                                title="@string.Format(@T("Blog.CommentsLink").Text, item.Comments.NumberOfComments)">
                                 <i class="far fa-comment-alt"></i>

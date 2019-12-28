@@ -45,14 +45,14 @@
                                 @item.Title.Truncate(60, "...")
                             </a>
                         </h4>
-                        <div class="newsitem-date" itemprop="dateCreated">
+                        <div class="newsitem-date rfs" itemprop="dateCreated">
                             @item.CreatedOn.ToNativeString("D")
                         </div>
-                        <p class="newsitem-description my-3" itemprop="description">
+                        <p class="newsitem-description rfs my-3" itemprop="description">
                             @Html.Raw(item.Short)
                         </p>
                         <div>
-                            <a class="btn btn-primary" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
+                            <a class="btn btn-primary rfs" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
                                 @T("Common.Cms.ReadMore")
                             </a>
                         </div>
@@ -165,7 +165,7 @@
 
                 @if (!isMinimal)
                 {
-                    <div class="newsitem-date mb-1" itemprop="datePublished">
+                    <div class="newsitem-date rfs mb-1" itemprop="datePublished">
                         @item.CreatedOn.ToNativeString("D")
                     </div>
                 }
@@ -206,7 +206,7 @@
         titleTag = description;
     }
 
-    <p class="newsitem-description pt-1 @(isMinimal ? "fs-sm" : "fs-h6")" itemprop="description" @Html.Attr("title", titleTag, titleTag.HasValue())>
+    <p class="newsitem-description rfs pt-1 @(isMinimal ? "fs-sm" : "fs-h6")" itemprop="description" @Html.Attr("title", titleTag, titleTag.HasValue())>
         @Html.Raw(description.Truncate(maxLength, "..."))
     </p>
 }

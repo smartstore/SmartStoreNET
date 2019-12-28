@@ -25,6 +25,23 @@
 .fs-xs,
 .fs-xs a        { font-size: $font-size-xs !important; }
 
+@include media-breakpoint-only(xs) {
+    .rfs {
+        font-size: 14px;
+    } 
+}
+
+@include media-breakpoint-only(sm) {
+    .rfs {
+        font-size: 15px;
+    } 
+}
+
+@include media-breakpoint-down(md) {
+    .rfs {
+        word-break: break-word;
+    } 
+}
 
 // Font weight Helpers
 // ======================================

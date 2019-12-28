@@ -52,7 +52,7 @@
             <div class="@(itemHasBgImage ? "card-img-overlay d-flex flex-column justify-content-end" : "box-img-top")">
 
                 <div class="blogpost-text text-left w-100 p-4">
-                    <div class="blogpost-date mb-2 text-muted" itemprop="dateCreated">
+                    <div class="blogpost-date rfs mb-2 text-muted" itemprop="dateCreated">
                         @item.CreatedOn.ToNativeString("dd MMMM, yyyy")
                     </div>
 
@@ -64,7 +64,7 @@
 
                     @if (item.Intro.HasValue())
                     {
-                        <div class="py-1 blogpost-intro" itemprop="description">@Html.Raw(item.Intro)</div>
+                        <div class="py-1 blogpost-intro rfs" itemprop="description">@Html.Raw(item.Intro)</div>
                     }
 
                     @{ Html.RenderWidget("bloglist_page_inside_post"); }

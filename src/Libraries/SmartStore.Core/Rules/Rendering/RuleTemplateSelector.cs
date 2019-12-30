@@ -29,7 +29,11 @@ namespace SmartStore.Rules
             string templateName;
             var type = descriptor.RuleType;
 
-            if (type == RuleType.Boolean || type == RuleType.NullableBoolean)
+            if (descriptor.SelectList != null || type == RuleType.IntArray || type == RuleType.FloatArray || type == RuleType.StringArray)
+            {
+                templateName = "Dropdown";
+            }
+            else if (type == RuleType.Boolean || type == RuleType.NullableBoolean)
             {
                 templateName = "Boolean";
             }
@@ -48,10 +52,6 @@ namespace SmartStore.Rules
             else if (type == RuleType.DateTime || type == RuleType.NullableDateTime)
             {
                 templateName = "DateTime";
-            }
-            else if (type == RuleType.IntArray || type == RuleType.FloatArray || type == RuleType.StringArray)
-            {
-                templateName = "Dropdown";
             }
             else
             {

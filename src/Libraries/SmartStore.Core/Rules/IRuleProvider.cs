@@ -32,6 +32,7 @@ namespace SmartStore.Rules
             var descriptor = RuleDescriptors.FindDescriptor(entity.RuleType);
             if (descriptor == null)
             {
+                // A descriptor for this entity data does not exist. Allow deletion of it.
                 descriptor = new InvalidRuleDescriptor(Scope)
                 {
                     Name = entity.RuleType,

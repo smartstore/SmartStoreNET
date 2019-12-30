@@ -188,14 +188,16 @@ namespace SmartStore.Services.Customers
                     Name = "HasPurchasedProduct",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.HasPurchasedProduct"),
                     RuleType = RuleType.IntArray,
-                    Constraints = new IRuleConstraint[0]
+                    Constraints = new IRuleConstraint[0],
+                    SelectList = new RemoteRuleValueSelectList("Product") { Multiple = true }
                 },
                 new AllFilterDescriptor<Customer, OrderItem, int>(x => x.Orders.SelectMany(o => o.OrderItems), oi => oi.ProductId)
                 {
                     Name = "HasPurchasedAllProducts",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.HasPurchasedAllProducts"),
                     RuleType = RuleType.IntArray,
-                    Constraints = new IRuleConstraint[0]
+                    Constraints = new IRuleConstraint[0],
+                    SelectList = new RemoteRuleValueSelectList("Product") { Multiple = true }
                 },
 
                 new TargetGroupFilterDescriptor(_ruleFactory, this)

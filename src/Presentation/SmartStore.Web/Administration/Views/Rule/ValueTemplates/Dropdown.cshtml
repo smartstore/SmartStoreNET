@@ -3,24 +3,54 @@
 @{
     var id = string.Concat("rule-value-", Model.Id);
     var list = Model.Descriptor.SelectList;
-    var isRemote = list is RemoteRuleValueSelectList;
-    var values = Model.RawValue.SplitSafe(",");
-}
-<select id="@id" name="@id" @Html.Attr("multiple", "multiple", list.Multiple)>
-    @if (isRemote)
+    var selectedValues = Model.RawValue.SplitSafe(",");
+    var remoteUrl = string.Empty;
+
+    if (list is RemoteRuleValueSelectList remoteList)
     {
-        @*TODO: selected values & labels. "Local" and "Remote" has selected options to be rendered!*@
-        foreach (var val in values)
+        remoteUrl = Url.Action("RuleValues", "Rule", new
         {
-            <option value="@val" selected="selected">@val</option>
+            dataSource = remoteList.DataSource,
+            ruleSetId = (int)ViewBag.RuleSetId,
+            ruleType = Model.Descriptor.RuleType.Name,
+            selected = Model.RawValue
+        });
+    }
+}
+<select id="@id" name="@id" 
+        data-placeholder="@T("Common.Unspecified")" 
+        @Html.Attr("multiple", "multiple", list.Multiple)>
+    @if (remoteUrl.HasValue())
+    {
+        var names = Model.Metadata.TryGetValue("SelectedDisplayNames", out var objNames)
+            ? (Dictionary<string, string>)objNames
+            : new Dictionary<string, string>();
+
+        foreach (var value in selectedValues)
+        {
+            <option value="@value" selected="selected">@(names.TryGetValue(value, out var name) && name.HasValue() ? name : value)</option>
         }
     }
     else
     {
-        foreach (var option in ((LocalRuleValueSelectList)list).Options)
+        if (!selectedValues.Any() && !list.Multiple)
         {
-            var strValue = option.Value?.ToString() ?? string.Empty;
-            <option value="@strValue" @Html.Attr("selected", "selected", values.Contains(strValue))>@option.Text</option>
+            <option></option>
+        }
+        foreach (var grp in ((LocalRuleValueSelectList)list).Options.OrderBy(x => x.Group?.Order ?? 0).GroupBy(x => x.Group?.Name ?? ""))
+        {
+            if (grp.Key.HasValue())
+            {
+                @Html.Raw("<optgroup label=\"{0}\">".FormatInvariant(grp.Key))
+            }
+            foreach (var option in grp)
+            {
+                <option value="@option.Value" @Html.Attr("selected", "selected", selectedValues.Contains(option.Value))>@option.Text</option>
+            }
+            if (grp.Key.HasValue())
+            {
+                @Html.Raw("</optgroup>")
+            }
         }
     }
 </select>
@@ -28,37 +58,27 @@
 <script>
     $(function () {
         var options = {
-            width: 'style',
-            dropdownAutoWidth: true,
             allowClear: true,
-            theme: 'bootstrap',
-            closeOnSelect: true,
-            placeholder: '',
-            @*multiple: @(list.Multiple.ToString().ToLower()),*@
-            language: '@ViewBag.LanguageSeoCode'
+            minimumResultsForSearch: 16
         };
 
-        @if (isRemote)
+        @if (remoteUrl.HasValue())
         {<text>
             options.ajax = {
                 delay: 300,
                 cache: true,
                 dataType: 'json',
                 type: 'GET',
-                url: '@Html.Raw(Url.Action("RuleValues", "Rule", new {
-                     dataSource = ((RemoteRuleValueSelectList)list).DataSource,
-                     ruleType = Model.Descriptor.RuleType.Name,
-                     selected = Model.RawValue
-                }))',
+                url: '@Html.Raw(remoteUrl)',
                 data: function (params) {
                     var query = {
                         search: params.term,
-                        page: params.page || 1
+                        page: params.page || 0
                     }
                     return query;
                 },
                 processResults: function (data, params) {
-                    params.page = params.page || 1;
+                    params.page = params.page || 0;
                     return {
                         results: data.results,
                         pagination: {

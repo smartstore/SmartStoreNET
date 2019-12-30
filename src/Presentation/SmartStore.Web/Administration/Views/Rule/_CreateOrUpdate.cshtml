@@ -73,9 +73,9 @@
                 target = $('<div class="ruleset-body"></div>').appendTo(ruleSet);
             }
             target.append(html);
-            target.find('select').selectWrapper();
         }
 
+        // Add group.
         $(document).on('click', '.r-add-group', function (e) {
             var parentSet = $(this).closest('.ruleset');
             var parentSetId = parentSet.data('ruleset-id');
@@ -94,6 +94,7 @@
             return false;
         });
 
+        // Change rule operator.
         $(document).on('click', '.ruleset-operator .dropdown-item', function (e) {
             var parentSet = $(this).closest('.ruleset');
             var parentSetId = parentSet.data('ruleset-id');
@@ -115,6 +116,7 @@
             return false;
         });
 
+        // Delete group.
         $(document).on('click', '.r-delete-group', function (e) {
             var parentSet = $(this).closest('.ruleset');
             var refRuleId = parentSet.data('refrule-id');
@@ -134,6 +136,7 @@
             return false;
         });
 
+        // Save rule.
         $(document).on('click', '.r-save-rule', function (e) {
             var rule = $(this).closest('.rule');
             var ruleId = rule.data('rule-id');
@@ -160,6 +163,7 @@
             return false;
         });
 
+        // Add rule.
         $(document).on('change', '.r-add-rule', function (e) {
             var select = $(this);
             var ruleType = select.val();
@@ -184,6 +188,7 @@
             return false;
         });
 
+        // Delete rule.
         $(document).on('click', '.r-delete-rule', function (e) {
             var rule = $(this).closest('.rule');
             var ruleId = rule.data('rule-id');

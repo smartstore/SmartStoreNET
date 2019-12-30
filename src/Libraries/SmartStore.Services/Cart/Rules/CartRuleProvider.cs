@@ -148,6 +148,10 @@ namespace SmartStore.Services.Cart.Rules
 
         protected override IEnumerable<RuleDescriptor> LoadDescriptors()
         {
+            var stores = _services.StoreService.GetAllStores()
+                .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.Name })
+                .ToArray();
+
             var descriptors = new List<CartRuleDescriptor>
             {
                 new CartRuleDescriptor
@@ -192,7 +196,8 @@ namespace SmartStore.Services.Cart.Rules
                     RuleType = RuleType.IntArray,
                     ProcessorType = typeof(StoreRule),
                     Constraints = new IRuleConstraint[0],
-                    SelectList = new RemoteRuleValueSelectList("Store") { Multiple = true }
+                    SelectList = new LocalRuleValueSelectList(stores) { Multiple = true }
+                    //SelectList = new RemoteRuleValueSelectList("Store") { Multiple = true }
                 },
                 new CartRuleDescriptor
                 {

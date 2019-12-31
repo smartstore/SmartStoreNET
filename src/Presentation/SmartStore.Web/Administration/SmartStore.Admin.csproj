@@ -290,6 +290,7 @@
     <Compile Include="Models\Polls\PollVotingRecordModel.cs" />
     <Compile Include="Models\Rules\RuleSetModel.cs" />
     <Compile Include="Models\Rules\RuleSetListModel.cs" />
+    <Compile Include="Models\Rules\RuleValueSelectItem.cs" />
     <Compile Include="Models\Settings\ForumSearchSettingsModel.cs" />
     <Compile Include="Models\Settings\PaymentSettingsModel.cs" />
     <Compile Include="Models\Settings\SearchSettingsModel.cs" />

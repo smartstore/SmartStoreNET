@@ -1,13 +1,17 @@
 ﻿@using SmartStore.Rules
+@using SmartStore.Admin.Models.Rules
 @model IRuleExpression
 @{
     var id = string.Concat("rule-value-", Model.Id);
     var list = Model.Descriptor.SelectList;
-    var selectedValues = Model.RawValue.SplitSafe(",");
+    var values = Model.RawValue.SplitSafe(",");
+    var hasSubTitles = false;
     var remoteUrl = string.Empty;
 
     if (list is RemoteRuleValueSelectList remoteList)
     {
+        hasSubTitles = remoteList.DataSource.IsCaseInsensitiveEqual("Product");
+
         remoteUrl = Url.Action("RuleValues", "Rule", new
         {
             dataSource = remoteList.DataSource,
@@ -17,23 +21,22 @@
         });
     }
 }
-<select id="@id" name="@id" 
-        data-placeholder="@T("Common.Unspecified")" 
-        @Html.Attr("multiple", "multiple", list.Multiple)>
+<select id="@id" name="@id" data-placeholder="@T("Common.Unspecified")" @Html.Attr("multiple", "multiple", list.Multiple)>
     @if (remoteUrl.HasValue())
     {
-        var names = Model.Metadata.TryGetValue("SelectedDisplayNames", out var objNames)
-            ? (Dictionary<string, string>)objNames
-            : new Dictionary<string, string>();
+        var selectedItems = Model.Metadata.TryGetValue("SelectedItems", out var objSelectedItems)
+            ? (Dictionary<string, RuleValueSelectItem>)objSelectedItems
+            : new Dictionary<string, RuleValueSelectItem>();
 
-        foreach (var value in selectedValues)
+        foreach (var value in values)
         {
-            <option value="@value" selected="selected">@(names.TryGetValue(value, out var name) && name.HasValue() ? name : value)</option>
+            selectedItems.TryGetValue(value, out var selectedItem);
+            <option value="@value" selected="selected" @Html.Attr("data-subtitle", selectedItem?.subtitle.EmptyNull(), hasSubTitles)>@(selectedItem?.text ?? value)</option>
         }
     }
     else
     {
-        if (!selectedValues.Any() && !list.Multiple)
+        if (!values.Any() && !list.Multiple)
         {
             <option></option>
         }
@@ -45,7 +48,7 @@
             }
             foreach (var option in grp)
             {
-                <option value="@option.Value" @Html.Attr("selected", "selected", selectedValues.Contains(option.Value))>@option.Text</option>
+                <option value="@option.Value" @Html.Attr("selected", "selected", values.Contains(option.Value))>@option.Text</option>
             }
             if (grp.Key.HasValue())
             {
@@ -61,6 +64,61 @@
             allowClear: true,
             minimumResultsForSearch: 16
         };
+
+        @if (hasSubTitles)
+        {<text>
+            function truncatedText(str, classes, maxLength) {
+                if (!str.length) {
+                    return '';
+                }
+                else if (str.length > maxLength) {
+                    return '<span class="' + classes + '" title="' + $('<div/>').text(str).html() + '">' + str.substring(0, maxLength) + '…</span>';
+                }
+                else {
+                    return '<span class="' + classes + '">' + str + '</span>';
+                }
+            }
+
+            options.templateSelection = function (item, container) {
+                try {
+                    if (item.text.length > 0) {
+                        if (item.subtitle === undefined) {
+                            item.subtitle = $(item.element).data('subtitle');
+                        }
+
+                        var text = item.text;
+                        if (text.length > 100) {
+                            text = text.substring(0, 100) + '…';
+                        }
+
+                        var title = item.text;
+                        if (item.subtitle.length > 0) {
+                            title += ' [' + item.subtitle + ']';
+                        }
+
+                        return $('<span title="' + $('<div/>').text(title).html() + '">' + text + '</span>');
+                    }
+			    }
+                catch (e) { }
+
+                return item.text;
+            };
+
+            options.templateResult = function (item, container) {
+                try {
+                    if (item.text.length > 0) {
+                        var html = '<div class="select2-option">';
+                        html += truncatedText(item.text, '', 200);
+                        html += truncatedText(item.subtitle, 'float-right muted', 100);
+                        html += '</div>';
+                        return $(html);
+                    }
+			    }
+                catch (e) { }
+
+                return item.text;
+            };
+        </text>}
 
         @if (remoteUrl.HasValue())
         {<text>

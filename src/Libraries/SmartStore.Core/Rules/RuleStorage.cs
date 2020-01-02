@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
-using System.Threading.Tasks;
+using System.Linq;
 using SmartStore.Core;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Rules.Domain;
-using SmartStore.Core.Caching;
 
 namespace SmartStore.Rules
 {
@@ -170,7 +167,9 @@ namespace SmartStore.Rules
                 ? _rsRules.Table
                 : _rsRules.TableUntracked;
 
-            return table.FirstOrDefault(x => x.Id == id);
+            return table
+                .Include(x => x.RuleSet)
+                .FirstOrDefault(x => x.Id == id);
         }
 
         #endregion

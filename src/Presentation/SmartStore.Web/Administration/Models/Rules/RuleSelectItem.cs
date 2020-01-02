@@ -1,10 +1,10 @@
 ﻿namespace SmartStore.Admin.Models.Rules
 {
     /// <summary>
-    /// Represents rule value data for a select2 control.
-    /// Properties must be in lower case to be recognized by select2.
+    /// Represents rule option for a select control.
+    /// Properties must be in lower case to be recognized by select control.
     /// </summary>
-    public class RuleValueSelectItem
+    public class RuleSelectItem
     {
         /// <summary>
         /// Value.

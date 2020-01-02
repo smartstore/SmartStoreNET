@@ -469,8 +469,10 @@
     <Compile Include="Rules\Filters\FilterDescriptor.cs" />
     <Compile Include="Rules\Filters\FilterExpression.cs" />
     <Compile Include="Rules\Rendering\IRuleTemplateSelector.cs" />
+    <Compile Include="Rules\Rendering\IRuleOptionsProvider.cs" />
     <Compile Include="Rules\Rendering\RuleTemplateInfo.cs" />
     <Compile Include="Rules\Rendering\RuleTemplateSelector.cs" />
+    <Compile Include="Rules\Rendering\RuleOptionsResult.cs" />
     <Compile Include="Rules\RuleModule.cs" />
     <Compile Include="Rules\RuleDescriptorCollection.cs" />
     <Compile Include="Rules\RuleScope.cs" />

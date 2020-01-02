@@ -11,22 +11,15 @@
     if (list is RemoteRuleValueSelectList remoteList)
     {
         hasSubTitles = remoteList.DataSource.IsCaseInsensitiveEqual("Product");
-
-        remoteUrl = Url.Action("RuleValues", "Rule", new
-        {
-            dataSource = remoteList.DataSource,
-            ruleSetId = (int)ViewBag.RuleSetId,
-            ruleType = Model.Descriptor.RuleType.Name,
-            selected = Model.RawValue
-        });
+        remoteUrl = Url.Action("RuleValues", "Rule", new { ruleId = Model.Id, rootRuleSetId = (int)ViewBag.RootRuleSetId });
     }
 }
 <select id="@id" name="@id" data-placeholder="@T("Common.Unspecified")" @Html.Attr("multiple", "multiple", list.Multiple)>
     @if (remoteUrl.HasValue())
     {
         var selectedItems = Model.Metadata.TryGetValue("SelectedItems", out var objSelectedItems)
-            ? (Dictionary<string, RuleValueSelectItem>)objSelectedItems
-            : new Dictionary<string, RuleValueSelectItem>();
+            ? (Dictionary<string, RuleSelectItem>)objSelectedItems
+            : new Dictionary<string, RuleSelectItem>();
 
         foreach (var value in values)
         {
@@ -83,7 +76,7 @@
                 try {
                     if (item.text.length > 0) {
                         if (item.subtitle === undefined) {
-                            item.subtitle = $(item.element).data('subtitle');
+                            item.subtitle = $(item.element).attr('data-subtitle');
                         }
 
                         var text = item.text;
@@ -140,7 +133,7 @@
                     return {
                         results: data.results,
                         pagination: {
-                            more: data.hasMoreItems
+                            more: data.hasMoreData
                         }
                     };
                 }

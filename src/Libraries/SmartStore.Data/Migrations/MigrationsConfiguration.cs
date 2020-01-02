@@ -242,7 +242,7 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.BirthDate", "Birthdate", "Geburtstag");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Gender", "Gender", "Gender");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ZipPostalCode", "Zip postal code", "PLZ");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.VatNumberStatusId", "Vat number status", "USt-IdNr.");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.VatNumberStatusId", "Vat number status", "Steuernummerstatus");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.TimeZoneId", "Time zone", "Zeitzone");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.TaxDisplayTypeId", "Tax display type", "Steueranzeigetyp");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.IPCountry", "IP associated with country", "IP gehört zu Land");
@@ -259,8 +259,8 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderTotal", "Order total", "Gesamtbetrag der Bestellung");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderSubtotalInclTax", "Order subtotal incl. tax", "Gesamtbetrag der Bestellung (Brutto)");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderSubtotalExclTax", "Order subtotal excl tax", "Gesamtbetrag der Bestellung (Netto)");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.PaymentMethodSystemName", "Payment method systemname", "Systemname der Zahlart");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingRateComputationMethodSystemName", "Shipping rate computation method Systemname", "Systemname der Versandart");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.PaymentMethodSystemName", "Payment method (systemname)", "Zahlart (Systemname)");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingRateComputationMethodSystemName", "Shipping rate computation method (systemname)", "Berechnungsmethoden für Versandkosten (Systemname)");
 
             // Rule operators
             builder.AddOrUpdate("Admin.Rules.RuleOperator.Contains", "Contains", "Enthält");

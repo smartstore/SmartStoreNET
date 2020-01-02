@@ -67,6 +67,7 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Pdf;
 using SmartStore.Services.Polls;
+using SmartStore.Services.Rules;
 using SmartStore.Services.Search;
 using SmartStore.Services.Search.Extensions;
 using SmartStore.Services.Search.Modelling;
@@ -1216,6 +1217,8 @@ namespace SmartStore.Web.Framework
                 .As<ITargetGroupService>()
                 .Keyed<IRuleProvider>(RuleScope.Customer)
                 .InstancePerRequest();
+
+            builder.RegisterType<DefaultRuleOptionsProvider>().As<IRuleOptionsProvider>().InstancePerRequest();
 
             base.Load(builder);
         }

@@ -11,7 +11,7 @@
     if (list is RemoteRuleValueSelectList remoteList)
     {
         hasSubTitles = remoteList.DataSource.IsCaseInsensitiveEqual("Product");
-        remoteUrl = Url.Action("RuleValues", "Rule", new { ruleId = Model.Id, rootRuleSetId = (int)ViewBag.RootRuleSetId });
+        remoteUrl = Url.Action("RuleOptions", "Rule", new { ruleId = Model.Id, rootRuleSetId = (int)ViewBag.RootRuleSetId });
     }
 }
 <select id="@id" name="@id" data-placeholder="@T("Common.Unspecified")" @Html.Attr("multiple", "multiple", list.Multiple)>
@@ -24,7 +24,7 @@
         foreach (var value in values)
         {
             selectedItems.TryGetValue(value, out var selectedItem);
-            <option value="@value" selected="selected" @Html.Attr("data-subtitle", selectedItem?.subtitle.EmptyNull(), hasSubTitles)>@(selectedItem?.text ?? value)</option>
+            <option value="@value" selected="selected" @Html.Attr("data-subtitle", selectedItem?.SubTitle.EmptyNull(), hasSubTitles)>@(selectedItem?.Text.NullEmpty() ?? value)</option>
         }
     }
     else
@@ -41,7 +41,7 @@
             }
             foreach (var option in grp)
             {
-                <option value="@option.Value" @Html.Attr("selected", "selected", values.Contains(option.Value))>@option.Text</option>
+                <option value="@option.Value" @Html.Attr("selected", "selected", values.Contains(option.Value))>@(option.Text.NullEmpty() ?? option.Value)</option>
             }
             if (grp.Key.HasValue())
             {

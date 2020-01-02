@@ -197,7 +197,6 @@ namespace SmartStore.Services.Cart.Rules
                     ProcessorType = typeof(StoreRule),
                     Constraints = new IRuleConstraint[0],
                     SelectList = new LocalRuleValueSelectList(stores) { Multiple = true }
-                    //SelectList = new RemoteRuleValueSelectList("Store") { Multiple = true }
                 },
                 new CartRuleDescriptor
                 {

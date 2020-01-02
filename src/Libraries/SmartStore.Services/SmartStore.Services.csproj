@@ -568,6 +568,7 @@
     <Compile Include="Customers\ChangePasswordRequest.cs" />
     <Compile Include="Customers\PasswordChangeResult.cs" />
     <Compile Include="Hooks\AclEntityHook.cs" />
+    <Compile Include="Rules\DefaultRuleOptionsProvider.cs" />
     <Compile Include="ScopedServiceBase.cs" />
     <Compile Include="Search\Catalog\CatalogSearchQuery.cs" />
     <Compile Include="Search\Extensions\FacetUtility.cs" />

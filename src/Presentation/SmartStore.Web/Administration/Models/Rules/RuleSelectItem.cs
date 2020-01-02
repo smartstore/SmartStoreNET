@@ -1,29 +1,34 @@
-﻿namespace SmartStore.Admin.Models.Rules
+﻿using Newtonsoft.Json;
+
+namespace SmartStore.Admin.Models.Rules
 {
     /// <summary>
-    /// Represents rule option for a select control.
-    /// Properties must be in lower case to be recognized by select control.
+    /// Represents a select list option for rules.
     /// </summary>
     public class RuleSelectItem
     {
         /// <summary>
         /// Value.
         /// </summary>
-        public string id { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
 
         /// <summary>
         /// Displayed text.
         /// </summary>
-        public string text { get; set; }
-        
+        [JsonProperty("text")]
+        public string Text { get; set; }
+
         /// <summary>
         /// Option subtitle, e.g. the product SKU.
         /// </summary>
-        public string subtitle { get; set; }
+        [JsonProperty("subtitle")]
+        public string SubTitle { get; set; }
 
         /// <summary>
         /// Whether the item is selected.
         /// </summary>
-        public bool selected { get; set; }
+        [JsonProperty("selected")]
+        public bool Selected { get; set; }
     }
 }

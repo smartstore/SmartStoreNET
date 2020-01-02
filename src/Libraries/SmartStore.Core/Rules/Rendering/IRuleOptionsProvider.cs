@@ -1,20 +1,26 @@
 ﻿namespace SmartStore.Rules
 {
     /// <summary>
-    /// Allows to provide custom rule options to be diplayed in a remote select list. <seealso cref="RemoteRuleValueSelectList"/>.
-    /// Use named registration like RegisterType<MyProvider>().Named<IRuleValueProvider>("MyProviderName")
-    /// where "MyProviderName" equals <see cref="RemoteRuleValueSelectList.DataProviderName"/>.
+    /// Interface to provide select list options (remote only) for rules. <seealso cref="RemoteRuleValueSelectList"/>.
     /// </summary>
     public partial interface IRuleOptionsProvider
     {
+        /// <summary>
+        /// Indicates whether this provider can provide select list options for a rule expression.
+        /// </summary>
+        /// <param name="dataSource">Name of the data source.</param>
+        /// <returns><c>true</c> can provide options otherwise <c>false</c>.</returns>
+        bool Matches(string dataSource);
+
         /// <summary>
         /// Gets options for a rule.
         /// </summary>
         /// <param name="reason">The reason for the request.</param>
         /// <param name="expression">Rule expression</param>
         /// <param name="pageIndex">Page index if provided options are paged.</param>
+        /// <param name="pageSize">Page size if provided options are paged.</param>
         /// <param name="searchTerm">Optional search term entered by user in select control.</param>
         /// <returns>Rule options result.</returns>
-        RuleOptionsResult GetOptions(RuleOptionsReason reason, IRuleExpression expression, int pageIndex, string searchTerm);
+        RuleOptionsResult GetOptions(RuleOptionsRequestReason reason, IRuleExpression expression, int pageIndex, int pageSize, string searchTerm);
     }
 }

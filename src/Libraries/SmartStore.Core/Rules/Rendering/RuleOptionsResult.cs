@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace SmartStore.Rules
 {
-    public enum RuleOptionsReason
+    public enum RuleOptionsRequestReason
     {
         /// <summary>
         /// Get options for select list.
@@ -28,7 +28,7 @@ namespace SmartStore.Rules
         }
 
         /// <summary>
-        /// Select list options or display names of selected values, depending on <see cref="RuleOptionsReason"/>.
+        /// Select list options or display names of selected values, depending on <see cref="RuleOptionsRequestReason"/>.
         /// </summary>
         public IList<RuleValueSelectListOption> Options { get; protected set; }
 

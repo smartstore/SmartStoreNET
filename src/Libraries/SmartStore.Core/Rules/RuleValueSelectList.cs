@@ -12,6 +12,7 @@ namespace SmartStore.Rules
     {
         public string Value { get; set; }
         public string Text { get; set; }
+        public string SubTitle { get; set; }
         public RuleValueSelectListGroup Group { get; set; }
     }
 
@@ -37,23 +38,16 @@ namespace SmartStore.Rules
 
     public class RemoteRuleValueSelectList : RuleValueSelectList
     {
-        public RemoteRuleValueSelectList(string dataSource, string dataProviderName = null)
+        public RemoteRuleValueSelectList(string dataSource)
         {
             Guard.NotEmpty(dataSource, nameof(dataSource));
 
             DataSource = dataSource;
-            DataProviderName = dataProviderName;
         }
 
         /// <summary>
         /// Name of the data source.
         /// </summary>
         public string DataSource { get; protected set; }
-
-        /// <summary>
-        /// Service name of the data provider. <see cref="IRuleOptionsProvider"/>.
-        /// Optional. Allows to provide custom remote select list options.
-        /// </summary>
-        public string DataProviderName { get; protected set; }
     }
 }

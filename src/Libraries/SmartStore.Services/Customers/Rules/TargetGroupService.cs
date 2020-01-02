@@ -12,6 +12,8 @@ using SmartStore.Rules.Domain;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Tax;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Customers
 {
@@ -130,6 +132,18 @@ namespace SmartStore.Services.Customers
 
         protected override IEnumerable<RuleDescriptor> LoadDescriptors()
         {
+            var stores = _services.StoreService.GetAllStores()
+                .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.Name })
+                .ToArray();
+
+            var vatNumberStatus = ((VatNumberStatus[])Enum.GetValues(typeof(VatNumberStatus)))
+                .Select(x => new RuleValueSelectListOption { Value = ((int)x).ToString(), Text = x.GetLocalizedEnum(_services.Localization) })
+                .ToArray();
+
+            var taxDisplayTypes = ((TaxDisplayType[])Enum.GetValues(typeof(TaxDisplayType)))
+                .Select(x => new RuleValueSelectListOption { Value = ((int)x).ToString(), Text = x.GetLocalizedEnum(_services.Localization) })
+                .ToArray();
+
             var descriptors = new List<FilterDescriptor>
             {
                 new FilterDescriptor<Customer, bool>(x => x.IsTaxExempt)
@@ -278,15 +292,6 @@ namespace SmartStore.Services.Customers
                     RuleType = RuleType.String,
                     Constraints = new IRuleConstraint[0]
                 },
-
-                // TODO: handle status
-                new FilterDescriptor<Customer, int>(x => x.VatNumberStatusId)
-                {
-                    Name = "VatNumberStatusId",
-                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.VatNumberStatusId"),
-                    RuleType = RuleType.Int,
-                    Constraints = new IRuleConstraint[0]
-                },
                 new FilterDescriptor<Customer, string>(x => x.TimeZoneId)
                 {
                     Name = "TimeZoneId",
@@ -294,12 +299,21 @@ namespace SmartStore.Services.Customers
                     RuleType = RuleType.String,
                     Constraints = new IRuleConstraint[0]
                 },
+                new FilterDescriptor<Customer, int>(x => x.VatNumberStatusId)
+                {
+                    Name = "VatNumberStatusId",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.VatNumberStatusId"),
+                    RuleType = RuleType.Int,
+                    Constraints = new IRuleConstraint[0],
+                    SelectList = new LocalRuleValueSelectList(vatNumberStatus)
+                },
                 new FilterDescriptor<Customer, int>(x => x.TaxDisplayTypeId)
                 {
                     Name = "TaxDisplayTypeId",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.TaxDisplayTypeId"),
                     RuleType = RuleType.Int,
-                    Constraints = new IRuleConstraint[0]
+                    Constraints = new IRuleConstraint[0],
+                    SelectList = new LocalRuleValueSelectList(taxDisplayTypes)
                 },
 
                 // TODO: later
@@ -320,13 +334,13 @@ namespace SmartStore.Services.Customers
                 //    Constraints = new IRuleConstraint[0]
                 //},
 
-                // customer roles
                 new AllFilterDescriptor<Customer, CustomerRole, int>(x => x.CustomerRoles, cr => cr.Id)
                 {
                     Name = "IsInCustomerRole",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.IsInCustomerRole"),
                     RuleType = RuleType.IntArray,
-                    Constraints = new IRuleConstraint[0]
+                    Constraints = new IRuleConstraint[0],
+                    SelectList = new RemoteRuleValueSelectList("CustomerRole") { Multiple = true }
                 },
 
                 // Orders > StoreId, LastOrderDate (CreatedOnUtc), AcceptThirdPartyEmailHandOver, OrderTotal, OrderSubtotalInclTax, OrderSubtotalExclTax
@@ -339,7 +353,8 @@ namespace SmartStore.Services.Customers
                     Name = "OrderCountInStore",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.OrderCountInStore"),
                     RuleType = RuleType.IntArray,
-                    Constraints = new IRuleConstraint[0]
+                    Constraints = new IRuleConstraint[0],
+                    SelectList = new LocalRuleValueSelectList(stores) { Multiple = true }
                 },
                 new FilterDescriptor<Customer, int?>(x => DbFunctions.DiffDays(x.Orders.Max(y => y.CreatedOnUtc), DateTime.UtcNow))
                 {
@@ -385,6 +400,7 @@ namespace SmartStore.Services.Customers
                     RuleType = RuleType.String,
                     Constraints = new IRuleConstraint[0]
                 },
+                // TODO: x.ShippingMethod
                 new FilterDescriptor<Order, string>(x => x.ShippingRateComputationMethodSystemName)
                 {
                     Name = "ShippingRateComputationMethodSystemName",

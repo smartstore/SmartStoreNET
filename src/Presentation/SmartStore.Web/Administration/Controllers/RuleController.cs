@@ -1,28 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Rules;
 using SmartStore.ComponentModel;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Search;
 using SmartStore.Core.Security;
 using SmartStore.Rules;
 using SmartStore.Rules.Domain;
 using SmartStore.Services.Customers;
-using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Search;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
-using SmartStore.Services.Catalog;
-using SmartStore.Services;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -34,17 +26,8 @@ namespace SmartStore.Admin.Controllers
         private readonly ITargetGroupService _targetGroupService;
         private readonly IRuleTemplateSelector _ruleTemplateSelector;
         private readonly Func<RuleScope, IRuleProvider> _ruleProvider;
+        private readonly IEnumerable<IRuleOptionsProvider> _ruleOptionsProviders;
         private readonly AdminAreaSettings _adminAreaSettings;
-
-        private readonly Lazy<ICurrencyService> _currencyService;
-        private readonly Lazy<ICustomerService> _customerService;
-        private readonly Lazy<ILanguageService> _languageService;
-        private readonly Lazy<ICountryService> _countryService;
-        private readonly Lazy<ICatalogSearchService> _catalogSearchService;
-        private readonly Lazy<IProductService> _productService;
-        private readonly Lazy<ICategoryService> _categoryService;
-        private readonly Lazy<IManufacturerService> _manufacturerService;
-        private readonly Lazy<SearchSettings> _searchSettings;
 
         public RuleController(
             IRuleFactory ruleFactory,
@@ -52,33 +35,16 @@ namespace SmartStore.Admin.Controllers
             ITargetGroupService targetGroupService,
             IRuleTemplateSelector ruleTemplateSelector,
             Func<RuleScope, IRuleProvider> ruleProvider,
-            AdminAreaSettings adminAreaSettings,
-            Lazy<ICurrencyService> currencyService,
-            Lazy<ICustomerService> customerService,
-            Lazy<ILanguageService> languageService,
-            Lazy<ICountryService> countryService,
-            Lazy<ICatalogSearchService> catalogSearchService,
-            Lazy<IProductService> productService,
-            Lazy<ICategoryService> categoryService,
-            Lazy<IManufacturerService> manufacturerService,
-            Lazy<SearchSettings> searchSettings)
+            IEnumerable<IRuleOptionsProvider> ruleOptionsProviders,
+            AdminAreaSettings adminAreaSettings)
         {
             _ruleFactory = ruleFactory;
             _ruleStorage = ruleStorage;
             _targetGroupService = targetGroupService;
             _ruleTemplateSelector = ruleTemplateSelector;
             _ruleProvider = ruleProvider;
+            _ruleOptionsProviders = ruleOptionsProviders;
             _adminAreaSettings = adminAreaSettings;
-
-            _currencyService = currencyService;
-            _customerService = customerService;
-            _languageService = languageService;
-            _countryService = countryService;
-            _catalogSearchService = catalogSearchService;
-            _productService = productService;
-            _categoryService = categoryService;
-            _manufacturerService = manufacturerService;
-            _searchSettings = searchSettings;
         }
 
         public ActionResult Index()
@@ -169,7 +135,7 @@ namespace SmartStore.Admin.Controllers
             model.ExpressionGroup = _ruleFactory.CreateExpressionGroup(entity, provider);
             model.AvailableDescriptors = _targetGroupService.RuleDescriptors;
 
-            PrepareExpressions(model.ExpressionGroup, entity);
+            PrepareExpressions(model.ExpressionGroup);
             PrepareTemplateViewBag(entity.Id);
 
             return View(model);
@@ -372,12 +338,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         // Ajax.
-        public ActionResult RuleValues(int ruleId, int rootRuleSetId, string search, int? page)
+        public ActionResult RuleOptions(int ruleId, int rootRuleSetId, string search, int? page)
         {
-            List<RuleSelectItem> data = null;
-            var language = Services.WorkContext.WorkingLanguage;
             var rule = _ruleStorage.GetRuleById(ruleId, false);
-
             if (rule == null)
             {
                 throw new SmartException(T("Admin.Rules.NotFound", ruleId));
@@ -386,109 +349,41 @@ namespace SmartStore.Admin.Controllers
             var provider = _ruleProvider(rule.RuleSet.Scope);
             var expression = provider.VisitRule(rule);
 
-            // Load all data by default.
-            const int pageSize = 200;
-            var isPaged = false;
-            var hasMoreData = false;
+            Func<RuleValueSelectListOption, bool> optionsPredicate = x => true;
+            RuleOptionsResult options = null;
 
             if (expression.Descriptor.SelectList is RemoteRuleValueSelectList list)
             {
-                switch (list.DataSource)
+                var optionsProvider = _ruleOptionsProviders.FirstOrDefault(x => x.Matches(list.DataSource));
+                if (optionsProvider != null)
                 {
-                    case "Country":
-                        var byId = expression.Descriptor.RuleType == RuleType.Int || expression.Descriptor.RuleType == RuleType.IntArray;
-                        data = _countryService.Value.GetAllCountries(true)
-                            .Select(x => new RuleSelectItem { id = byId ? x.Id.ToString() : x.TwoLetterIsoCode, text = x.GetLocalized(y => y.Name, language, true, false) })
-                            .ToList();
-                        break;
-                    case "Currency":
-                        data = _currencyService.Value.GetAllCurrencies(true)
-                            .Select(x => new RuleSelectItem { id = x.Id.ToString(), text = x.GetLocalized(y => y.Name, language, true, false) })
-                            .ToList();
-                        break;
-                    case "CustomerRole":
-                        data = _customerService.Value.GetAllCustomerRoles(true)
-                            .Select(x => new RuleSelectItem { id = x.Id.ToString(), text = x.Name })
-                            .ToList();
-                        break;
-                    case "Language":
-                        data = _languageService.Value.GetAllLanguages(true)
-                            .Select(x => new RuleSelectItem { id = x.Id.ToString(), text = GetCultureDisplayName(x) ?? x.Name })
-                            .ToList();
-                        break;
-                    case "Store":
-                        data = Services.StoreService.GetAllStores()
-                            .Select(x => new RuleSelectItem { id = x.Id.ToString(), text = x.Name.NaIfEmpty() })
-                            .ToList();
-                        break;
-                    case "CartRule":
-                    case "TargetGroup":
-                        // This can only work if the other rule set is of the same scope as the current.
-                        var ruleSets = _ruleStorage.GetAllRuleSets(false, false, rule.RuleSet.Scope, page ?? 0, pageSize, includeHidden: true);
-                        isPaged = true;
-                        hasMoreData = ruleSets.HasNextPage;
-                        data = ruleSets
-                            .Where(x => x.Id != rootRuleSetId)
-                            .Select(x => new RuleSelectItem { id = x.Id.ToString(), text = x.Name.NaIfEmpty() })
-                            .ToList();
-                        break;
-                    case "Product":
-                        isPaged = true;
-                        data = SearchProducts(search, (page ?? 0) * pageSize, pageSize, out hasMoreData);
-                        break;
-                    case "Category":
-                        var categories = _categoryService.Value.GetCategoryTree(0, true).Flatten(false);
-                        data = categories
-                            .Select(x => new RuleSelectItem { id = x.Id.ToString(), text = x.GetCategoryPath(_categoryService.Value, aliasPattern: "<span class='badge badge-secondary'>{0}</span>") })
-                            .ToList();
-                        break;
-                    case "Manufacturer":
-                        data = _manufacturerService.Value.GetAllManufacturers(true)
-                            .Select(x => new RuleSelectItem { id = x.Id.ToString(), text = x.GetLocalized(y => y.Name, language, true, false) })
-                            .ToList();
-                        break;
-                    default:
-                        if (list.DataProviderName.HasValue())
-                        {
-                            var dataProvider = Services.ResolveNamed<IRuleOptionsProvider>(list.DataProviderName);
-                            if (dataProvider != null)
-                            {
-                                var options = dataProvider.GetOptions(RuleOptionsReason.SelectListOptions, expression, page ?? 0, search);
-                                if (options?.Options?.Any() ?? false)
-                                {
-                                    // TODO: grouping.
-                                    isPaged = options.IsPaged;
-                                    hasMoreData = options.HasMoreData;
-                                    data = options.Options
-                                        .Select(x => new RuleSelectItem { id = x.Value, text = x.Text })
-                                        .ToList();
-                                }
-                            }
-                        }
-
-                        if (data == null)
-                        {
-                            data = new List<RuleSelectItem>();
-                        }
-                        break;
-                }
-
-                // Mark selected items.
-                var selectedValues = expression.RawValue.SplitSafe(",");
-                data.Each(x => x.selected = selectedValues.Contains(x.id));
-
-                // Apply search term if data is not paged.
-                if (!isPaged && search.HasValue() && data.Any())
-                {
-                    data = data.Where(x => (x.text?.IndexOf(search, 0, StringComparison.CurrentCultureIgnoreCase) ?? -1) != -1).ToList();
+                    options = optionsProvider.GetOptions(RuleOptionsRequestReason.SelectListOptions, expression, page ?? 0, 200, search);
+                    if (list.DataSource == "CartRule" || list.DataSource == "TargetGroup")
+                    {
+                        optionsPredicate = x => x.Value != rootRuleSetId.ToString();
+                    }
                 }
             }
+
+            if (options == null)
+            {
+                options = new RuleOptionsResult();
+            }
+
+            var data = options.Options
+                .Where(optionsPredicate)
+                .Select(x => new RuleSelectItem { Id = x.Value, Text = x.Text, SubTitle = x.SubTitle })
+                .ToList();
+
+            // Mark selected items.
+            var selectedValues = expression.RawValue.SplitSafe(",");
+            data.Each(x => x.Selected = selectedValues.Contains(x.Id));
 
             return new JsonResult
             {
                 Data = new
                 {
-                    hasMoreData,
+                    hasMoreData = options.HasMoreData,
                     results = data
                 },
                 MaxJsonLength = int.MaxValue,
@@ -496,34 +391,32 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        #region Rule template and value helpers
-
-        private void PrepareExpressions(IRuleExpressionGroup expressionGroup, RuleSetEntity ruleSet)
+        private void PrepareExpressions(IRuleExpressionGroup group)
         {
-            // Load all display names for certain entities in one go.
-            var displayNamesLookup = new Dictionary<string, Dictionary<string, string>>();
-
-            PrepareGroup(expressionGroup);
-
-            void PrepareGroup(IRuleExpressionGroup group)
+            if (group == null)
             {
-                if (group == null)
+                return;
+            }
+
+            foreach (var expression in group.Expressions)
+            {
+                if (expression is IRuleExpressionGroup subGroup)
                 {
-                    return;
+                    PrepareExpressions(subGroup);
+                    continue;
                 }
 
-                foreach (var expression in group.Expressions)
+                // Load name and subtitle (e.g. SKU) for selected options.
+                if (expression.Descriptor.SelectList is RemoteRuleValueSelectList list)
                 {
-                    if (expression is IRuleExpressionGroup subGroup)
+                    var optionsProvider = _ruleOptionsProviders.FirstOrDefault(x => x.Matches(list.DataSource));
+                    if (optionsProvider != null)
                     {
-                        PrepareGroup(subGroup);
-                        continue;
-                    }
+                        var options = optionsProvider.GetOptions(RuleOptionsRequestReason.SelectedDisplayNames, expression, 0, int.MaxValue, null);
 
-                    // Load name and subtitle (e.g. SKU) for selected items.
-                    if (expression.Descriptor.SelectList is RemoteRuleValueSelectList list)
-                    {
-                        expression.Metadata["SelectedItems"] = GetSelectedItems(expression, displayNamesLookup);
+                        expression.Metadata["SelectedItems"] = options.Options.ToDictionarySafe(
+                            x => x.Value,
+                            x => new RuleSelectItem { Text = x.Text, SubTitle = x.SubTitle });
                     }
                 }
             }
@@ -535,175 +428,5 @@ namespace SmartStore.Admin.Controllers
             ViewBag.TemplateSelector = _ruleTemplateSelector;
             //ViewBag.LanguageSeoCode = Services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower();
         }
-
-        private string GetCultureDisplayName(Language language)
-        {
-            if (language?.LanguageCulture?.HasValue() ?? false)
-            {
-                try
-                {
-                    return new CultureInfo(language.LanguageCulture).DisplayName;
-                }
-                catch { }
-            }
-
-            return null;
-        }
-
-        private Dictionary<string, RuleSelectItem> GetSelectedItems(IRuleExpression expression, Dictionary<string, Dictionary<string, string>> displayNamesLookup)
-        {
-            var result = new Dictionary<string, RuleSelectItem>();
-
-            if (expression.RawValue.IsEmpty())
-            {
-                return result;
-            }
-
-            Dictionary<string, string> names = null;
-            var language = Services.WorkContext.WorkingLanguage;
-            var values = expression.RawValue.SplitSafe(",");
-            var type = expression.Descriptor.RuleType;
-            var list = expression.Descriptor.SelectList as RemoteRuleValueSelectList;
-
-            // First process entities with subtitles.
-            if (list.DataSource == "Product")
-            {
-                var entities = _productService.Value.GetProductsByIds(expression.RawValue.ToIntArray()).ToDictionary(x => x.Id.ToString());
-
-                foreach (var value in values)
-                {
-                    if (entities.TryGetValue(value, out var entity))
-                    {
-                        result[value] = new RuleSelectItem { text = entity.GetLocalized(x => x.Name, language, true, false), subtitle = entity.Sku };
-                    }
-                }
-            }
-            else
-            {
-                switch (list.DataSource)
-                {
-                    case "Country":
-                        var byId = expression.Descriptor.RuleType == RuleType.Int || expression.Descriptor.RuleType == RuleType.IntArray;
-                        names = displayNamesLookup[byId ? "CountryById" : "CountryByIsoCode"] = _countryService.Value.GetAllCountries(true)
-                            .ToDictionary(x => byId ? x.Id.ToString() : x.TwoLetterIsoCode, x => x.GetLocalized(y => y.Name, language, true, false).Value);
-                        break;
-                    case "Currency":
-                        names = displayNamesLookup[list.DataSource] = _currencyService.Value.GetAllCurrencies(true)
-                            .ToDictionary(x => x.Id.ToString(), x => x.GetLocalized(y => y.Name, language, true, false).Value);
-                        break;
-                    case "CustomerRole":
-                        names = displayNamesLookup[list.DataSource] = _customerService.Value.GetAllCustomerRoles(true)
-                            .ToDictionary(x => x.Id.ToString(), x => x.Name);
-                        break;
-                    case "Language":
-                        names = displayNamesLookup[list.DataSource] = _languageService.Value.GetAllLanguages(true)
-                            .ToDictionary(x => x.Id.ToString(), x => GetCultureDisplayName(x) ?? x.Name);
-                        break;
-                    case "Store":
-                        names = displayNamesLookup[list.DataSource] = Services.StoreService.GetAllStores()
-                            .ToDictionary(x => x.Id.ToString(), x => x.Name);
-                        break;
-                    case "CartRule":
-                    case "TargetGroup":
-                        names = _ruleStorage.GetRuleSetsByIds(expression.RawValue.ToIntArray(), false)
-                            .ToDictionary(x => x.Id.ToString(), x => x.Name);
-                        break;
-                    case "Category":
-                        names = _categoryService.Value.GetCategoriesByIds(expression.RawValue.ToIntArray())
-                            .ToDictionary(x => x.Id.ToString(), x => x.GetCategoryPath(_categoryService.Value).NullEmpty() ?? x.Name);
-                        break;
-                    case "Manufacturer":
-                        names = _manufacturerService.Value.GetManufacturersByIds(expression.RawValue.ToIntArray())
-                            .ToDictionary(x => x.Id.ToString(), x => x.GetLocalized(y => y.Name, language, true, false).Value);
-                        break;
-                    default:
-                        if (list.DataProviderName.HasValue())
-                        {
-                            var dataProvider = Services.ResolveNamed<IRuleOptionsProvider>(list.DataProviderName);
-                            if (dataProvider != null)
-                            {
-                                var options = dataProvider.GetOptions(RuleOptionsReason.SelectedDisplayNames, expression, 0, null);
-                                if (options?.Options?.Any() ?? false)
-                                {
-                                    names = options.Options.ToDictionarySafe(x => x.Value, x => x.Text);
-                                }
-                            }
-                        }
-                        break;
-                }
-
-                if (names?.Any() ?? false)
-                {
-                    foreach (var value in values)
-                    {
-                        if (names.TryGetValue(value, out var name))
-                        {
-                            result[value] = new RuleSelectItem { text = name };
-                        }
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        private List<RuleSelectItem> SearchProducts(string term, int skip, int take, out bool hasMoreItems)
-        {
-            List<RuleSelectItem> products;
-            var fields = new List<string> { "name" };
-
-            if (_searchSettings.Value.SearchFields.Contains("sku"))
-            {
-                fields.Add("sku");
-            }
-            if (_searchSettings.Value.SearchFields.Contains("shortdescription"))
-            {
-                fields.Add("shortdescription");
-            }
-
-            var searchQuery = new CatalogSearchQuery(fields.ToArray(), term);
-
-            if (_searchSettings.Value.UseCatalogSearchInBackend)
-            {
-                searchQuery = searchQuery
-                    .Slice(skip, take)
-                    .SortBy(ProductSortingEnum.NameAsc);
-
-                var searchResult = _catalogSearchService.Value.Search(searchQuery);
-                hasMoreItems = searchResult.Hits.HasNextPage;
-
-                products = searchResult.Hits
-                    .Select(x => new RuleSelectItem
-                    {
-                        id = x.Id.ToString(),
-                        text = x.Name,
-                        subtitle = x.Sku
-                    })
-                    .ToList();
-            }
-            else
-            {
-                var query = _catalogSearchService.Value.PrepareQuery(searchQuery);
-                
-                var pageIndex = take == 0 ? 0 : Math.Max(skip / take, 0);
-                hasMoreItems = (pageIndex + 1) * take < query.Count();
-
-                products = query
-                    .Select(x => new RuleSelectItem
-                    {
-                        id = x.Id.ToString(),
-                        text = x.Name,
-                        subtitle = x.Sku
-                    })
-                    .OrderBy(x => x.text)
-                    .Skip(() => skip)
-                    .Take(() => take)
-                    .ToList();
-            }
-
-            return products;
-        }
-
-        #endregion
     }
 }

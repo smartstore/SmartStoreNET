@@ -12,7 +12,7 @@ namespace SmartStore.Rules
     {
         public string Value { get; set; }
         public string Text { get; set; }
-        public string SubTitle { get; set; }
+        public string Hint { get; set; }
         public RuleValueSelectListGroup Group { get; set; }
     }
 

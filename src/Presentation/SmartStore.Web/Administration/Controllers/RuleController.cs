@@ -372,7 +372,7 @@ namespace SmartStore.Admin.Controllers
 
             var data = options.Options
                 .Where(optionsPredicate)
-                .Select(x => new RuleSelectItem { Id = x.Value, Text = x.Text, SubTitle = x.SubTitle })
+                .Select(x => new RuleSelectItem { Id = x.Value, Text = x.Text, Hint = x.Hint })
                 .ToList();
 
             // Mark selected items.
@@ -416,7 +416,7 @@ namespace SmartStore.Admin.Controllers
 
                         expression.Metadata["SelectedItems"] = options.Options.ToDictionarySafe(
                             x => x.Value,
-                            x => new RuleSelectItem { Text = x.Text, SubTitle = x.SubTitle });
+                            x => new RuleSelectItem { Text = x.Text, Hint = x.Hint });
                     }
                 }
             }

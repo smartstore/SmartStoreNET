@@ -20,10 +20,10 @@ namespace SmartStore.Admin.Models.Rules
         public string Text { get; set; }
 
         /// <summary>
-        /// Option subtitle, e.g. the product SKU.
+        /// Option hint, e.g. the product SKU.
         /// </summary>
-        [JsonProperty("subtitle")]
-        public string SubTitle { get; set; }
+        [JsonProperty("hint")]
+        public string Hint { get; set; }
 
         /// <summary>
         /// Whether the item is selected.

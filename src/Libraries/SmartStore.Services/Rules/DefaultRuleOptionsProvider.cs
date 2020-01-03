@@ -100,7 +100,7 @@ namespace SmartStore.Services.Rules
                     if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
                     {
                         options = _productService.Value.GetProductsByIds(expression.RawValue.ToIntArray())
-                            .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false), SubTitle = x.Sku })
+                            .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false), Hint = x.Sku })
                             .ToList();
                     }
                     else
@@ -238,7 +238,7 @@ namespace SmartStore.Services.Rules
                     {
                         Value = x.Id.ToString(),
                         Text = x.Name,
-                        SubTitle = x.Sku
+                        Hint = x.Sku
                     })
                     .ToList();
             }
@@ -254,7 +254,7 @@ namespace SmartStore.Services.Rules
                     {
                         Value = x.Id.ToString(),
                         Text = x.Name,
-                        SubTitle = x.Sku
+                        Hint = x.Sku
                     })
                     .OrderBy(x => x.Text)
                     .Skip(() => skip)

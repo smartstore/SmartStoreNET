@@ -175,25 +175,47 @@
                 firstOption.text("");
             }
 
+            function attr(name, value) {
+                if (value.length > 0) {
+                    return ' ' + name + '="' + $('<div/>').text(value).html() + '"';
+                }
+                return '';
+            }
+
             function renderSelectItem(item, isResult) {
                 try {
                     var option = $(item.element),
                         imageUrl = option.data('imageurl'),
                         color = option.data('color'),
-                        hint = option.data('hint'),
-                        icon = option.data('icon');
+                        text = item.text,
+                        title = '',
+                        hint = item.hint || option.attr('data-hint'),
+                        icon = option.data('icon'),
+                        truncateText = options.maxTextLength > 0 && text.length > options.maxTextLength,
+                        appendHint = !isResult && hint && hint.length > 0;
+
+                    if (truncateText || appendHint) {
+                        title = text;
+                        if (appendHint) {
+                            title += ' [' + hint + ']';
+                        }
+                    }
+
+                    if (truncateText) {
+                        text = text.substring(0, options.maxTextLength) + '…';
+                    }
                     
                     if (imageUrl) {
-                        return $('<span class="choice-item"><img class="choice-item-img" src="' + imageUrl + '" />' + item.text + '</span>');
+                        return $('<span class="choice-item"' + attr('title', title) + '><img class="choice-item-img" src="' + imageUrl + '" />' + text + '</span>');
                     }
                     else if (color) {
-                        return $('<span class="choice-item"><span class="choice-item-color" style="background-color: ' + color + '"></span>' + item.text + '</span>');
+                        return $('<span class="choice-item"' + attr('title', title) + '><span class="choice-item-color" style="background-color: ' + color + '"></span>' + text + '</span>');
                     }
                     else if (hint && isResult) {
-                        return $('<span class="select2-option"><span>' + item.text + '</span><span class="option-hint muted float-right">' + hint + '</span></span>');
+                        return $('<span class="select2-option"><span' + attr('title', title) + '>' + text + '</span><span class="option-hint muted float-right">' + hint + '</span></span>');
                     }
                     else if (icon) {
-                        var html = ['<span class="choice-item">'];
+                        var html = ['<span class="choice-item"' + attr('title', title) + '>'];
                         var icons = _.isArray(icon) ? icon : [icon];
                         var len = (isResult ? 2 : 0) || icons.length;
 
@@ -202,16 +224,18 @@
                             html.push('<i class="' + iconClass + '" />');
                         }
 
-                        html.push(item.text);
+                        html.push(text);
                         html.push('</span>');
 
                         return html;
                     }
                     else {
-                        return $('<span class="select2-option">' + item.text + '</span>');
+                        return $('<span class="select2-option"' + attr('title', title) + '>' + text + '</span>');
                     }
                 }
-                catch (e) { }
+                catch (e) {
+                    console.log(e);
+                }
 
                 return item.text;
             }

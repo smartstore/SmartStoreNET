@@ -260,7 +260,8 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderSubtotalInclTax", "Order subtotal incl. tax", "Gesamtbetrag der Bestellung (Brutto)");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderSubtotalExclTax", "Order subtotal excl tax", "Gesamtbetrag der Bestellung (Netto)");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.PaymentMethodSystemName", "Payment method (systemname)", "Zahlart (Systemname)");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingRateComputationMethodSystemName", "Shipping rate computation method (systemname)", "Berechnungsmethoden für Versandkosten (Systemname)");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingRateComputationMethodSystemName", "Shipping rate computation method (systemname)", "Berechnungsmethode für Versandkosten (Systemname)");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingMethod", "Shipping method", "Versandart");
 
             // Rule operators
             builder.AddOrUpdate("Admin.Rules.RuleOperator.Contains", "Contains", "Enthält");

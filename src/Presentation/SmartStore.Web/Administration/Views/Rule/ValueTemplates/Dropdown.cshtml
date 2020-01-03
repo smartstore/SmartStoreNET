@@ -5,12 +5,10 @@
     var id = string.Concat("rule-value-", Model.Id);
     var list = Model.Descriptor.SelectList;
     var values = Model.RawValue.SplitSafe(",");
-    var hasHints = false;
     var remoteUrl = string.Empty;
 
     if (list is RemoteRuleValueSelectList remoteList)
     {
-        hasHints = remoteList.DataSource.IsCaseInsensitiveEqual("Product");
         remoteUrl = Url.Action("RuleOptions", "Rule", new { ruleId = Model.Id, rootRuleSetId = (int)ViewBag.RootRuleSetId });
     }
 }
@@ -24,7 +22,9 @@
         foreach (var value in values)
         {
             selectedItems.TryGetValue(value, out var selectedItem);
-            <option value="@value" selected="selected" @Html.Attr("data-hint", selectedItem?.Hint.EmptyNull(), hasHints)>@(selectedItem?.Text.NullEmpty() ?? value)</option>
+            <option value="@value" selected="selected" 
+                    @Html.Attr("data-hint", selectedItem?.Hint, selectedItem?.Hint?.HasValue() ?? false)>
+            @(selectedItem?.Text.NullEmpty() ?? value)</option>
         }
     }
     else
@@ -41,7 +41,10 @@
             }
             foreach (var option in grp)
             {
-                <option value="@option.Value" @Html.Attr("selected", "selected", values.Contains(option.Value))>@(option.Text.NullEmpty() ?? option.Value)</option>
+                <option value="@option.Value" 
+                        @Html.Attr("selected", "selected", values.Contains(option.Value)) 
+                        @Html.Attr("data-hint", option.Hint, option.Hint.HasValue())>
+                @(option.Text.NullEmpty() ?? option.Value)</option>
             }
             if (grp.Key.HasValue())
             {

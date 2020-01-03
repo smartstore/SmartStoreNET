@@ -398,15 +398,24 @@ namespace SmartStore.Services.Customers
                     Name = "PaymentMethodSystemName",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.PaymentMethodSystemName"),
                     RuleType = RuleType.String,
-                    Constraints = new IRuleConstraint[0]
+                    Constraints = new IRuleConstraint[0],
+                    SelectList = new RemoteRuleValueSelectList("PaymentMethod")
                 },
-                // TODO: x.ShippingMethod
+                new FilterDescriptor<Order, string>(x => x.ShippingMethod)
+                {
+                    Name = "ShippingMethod",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.ShippingMethod"),
+                    RuleType = RuleType.String,
+                    Constraints = new IRuleConstraint[0],
+                    SelectList = new RemoteRuleValueSelectList("ShippingMethod")
+                },
                 new FilterDescriptor<Order, string>(x => x.ShippingRateComputationMethodSystemName)
                 {
                     Name = "ShippingRateComputationMethodSystemName",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.ShippingRateComputationMethodSystemName"),
                     RuleType = RuleType.String,
-                    Constraints = new IRuleConstraint[0]
+                    Constraints = new IRuleConstraint[0],
+                    SelectList = new RemoteRuleValueSelectList("ShippingRateComputationMethod")
                 },
             };
 

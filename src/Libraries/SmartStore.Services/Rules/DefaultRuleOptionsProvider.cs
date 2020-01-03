@@ -5,13 +5,16 @@ using System.Globalization;
 using System.Linq;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Plugins;
 using SmartStore.Core.Search;
 using SmartStore.Rules;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Payments;
 using SmartStore.Services.Search;
+using SmartStore.Services.Shipping;
 
 namespace SmartStore.Services.Rules
 {
@@ -26,7 +29,9 @@ namespace SmartStore.Services.Rules
         protected readonly Lazy<IProductService> _productService;
         protected readonly Lazy<ICategoryService> _categoryService;
         protected readonly Lazy<IManufacturerService> _manufacturerService;
+        protected readonly IShippingService _shippingService;
         protected readonly Lazy<IRuleStorage> _ruleStorage;
+        protected readonly Lazy<IProviderManager> _providerManager;
         protected readonly Lazy<SearchSettings> _searchSettings;
 
         public DefaultRuleOptionsProvider(
@@ -39,7 +44,9 @@ namespace SmartStore.Services.Rules
             Lazy<IProductService> productService,
             Lazy<ICategoryService> categoryService,
             Lazy<IManufacturerService> manufacturerService,
+            IShippingService shippingService,
             Lazy<IRuleStorage> ruleStorage,
+            Lazy<IProviderManager> providerManager,
             Lazy<SearchSettings> searchSettings)
         {
             _services = services;
@@ -51,7 +58,9 @@ namespace SmartStore.Services.Rules
             _productService = productService;
             _categoryService = categoryService;
             _manufacturerService = manufacturerService;
+            _shippingService = shippingService;
             _ruleStorage = ruleStorage;
+            _providerManager = providerManager;
             _searchSettings = searchSettings;
         }
 
@@ -66,7 +75,10 @@ namespace SmartStore.Services.Rules
                 case "CustomerRole":
                 case "Language":
                 case "Manufacturer":
+                case "PaymentMethod":
                 case "Product":
+                case "ShippingMethod":
+                case "ShippingRateComputationMethod":
                 case "TargetGroup":
                     return true;
                 default:
@@ -92,6 +104,7 @@ namespace SmartStore.Services.Rules
             }
 
             var language = _services.WorkContext.WorkingLanguage;
+            var byId = expression.Descriptor.RuleType == RuleType.Int || expression.Descriptor.RuleType == RuleType.IntArray;
             List<RuleValueSelectListOption> options = null;
 
             switch (list.DataSource)
@@ -110,7 +123,6 @@ namespace SmartStore.Services.Rules
                     }
                     break;
                 case "Country":
-                    var byId = expression.Descriptor.RuleType == RuleType.Int || expression.Descriptor.RuleType == RuleType.IntArray;
                     options = _countryService.Value.GetAllCountries(true)
                         .Select(x => new RuleValueSelectListOption { Value = byId ? x.Id.ToString() : x.TwoLetterIsoCode, Text = x.GetLocalized(y => y.Name, language, true, false) })
                         .ToList();
@@ -164,6 +176,25 @@ namespace SmartStore.Services.Rules
                         .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false) })
                         .ToList();
                     break;
+                case "PaymentMethod":
+                    options = _providerManager.Value.GetAllProviders<IPaymentMethod>()
+                        .Select(x => x.Metadata)
+                        .Select(x => new RuleValueSelectListOption { Value = x.SystemName, Text = GetLocalized(x, "FriendlyName") ?? x.FriendlyName.NullEmpty() ?? x.SystemName, Hint = x.SystemName })
+                        .OrderBy(x => x.Text)
+                        .ToList();
+                    break;
+                case "ShippingRateComputationMethod":
+                    options = _providerManager.Value.GetAllProviders<IShippingRateComputationMethod>()
+                        .Select(x => x.Metadata)
+                        .Select(x => new RuleValueSelectListOption { Value = x.SystemName, Text = GetLocalized(x, "FriendlyName") ?? x.FriendlyName.NullEmpty() ?? x.SystemName, Hint = x.SystemName })
+                        .OrderBy(x => x.Text)
+                        .ToList();
+                    break;
+                case "ShippingMethod":
+                    options = _shippingService.GetAllShippingMethods()
+                        .Select(x => new RuleValueSelectListOption { Value = byId ? x.Id.ToString() : x.Name, Text = byId ? x.GetLocalized(y => y.Name, language, true, false) : x.Name })
+                        .ToList();
+                    break;
                 default:
                     throw new SmartException($"Unknown data source \"{list.DataSource.NaIfEmpty()}\".");
             }
@@ -206,6 +237,13 @@ namespace SmartStore.Services.Rules
             }
 
             return null;
+        }
+
+        protected virtual string GetLocalized(ProviderMetadata metadata, string propertyName)
+        {
+            var resourceName = metadata.ResourceKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
+
+            return _services.Localization.GetResource(resourceName, _services.WorkContext.WorkingLanguage.Id, false, "", true).NullEmpty();
         }
 
         protected virtual List<RuleValueSelectListOption> SearchProducts(RuleOptionsResult result, string term, int skip, int take)

@@ -221,7 +221,7 @@
 
                         for (i = 0; i < len; i++) {
                             var iconClass = (i < icons.length ? icons[i] + " " : "far ") + "fa-fw mr-2 fs-h6";
-                            html.push('<i class="' + iconClass + '" />');
+                            html.push('<i class="' + iconClass + '" style="width: unset;" />');
                         }
 
                         html.push(text);

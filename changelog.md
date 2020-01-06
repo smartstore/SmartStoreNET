@@ -54,7 +54,8 @@
 * #1774 Recaptcha: doesn't work for product reviews, blog and news comments if hidden captcha is activated.
 * #1766 Customer FullName is not populated after registration.
 * #1765 Web-API: fixed authentication error "Value cannot be null. Parameter name: name" when login type is email.
-* Payone: fixes wrong hash value if redirecting option is activated.
+* Payone: fixed wrong hash value if redirecting option is activated.
+* Azure: opening the configuration page resulted in an error.
 
 
 ## SmartStore.NET 3.2.2

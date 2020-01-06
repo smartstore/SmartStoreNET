@@ -184,6 +184,8 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Blogs\BlogMessageFactoryExtensions.cs" />
+    <Compile Include="Cart\Rules\Impl\CartSubtotalRule.cs" />
+    <Compile Include="Cart\Rules\Impl\ShippingMethodRule.cs" />
     <Compile Include="Cart\Rules\Impl\IPCountryRule.cs" />
     <Compile Include="Catalog\CategoryTreeChangeHandler.cs" />
     <Compile Include="Catalog\CatalogMessageFactoryExtensions.cs" />

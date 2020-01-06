@@ -157,7 +157,7 @@ namespace SmartStore.Services.Rules
                     }
                     else
                     {
-                        var ruleSets = _ruleStorage.Value.GetAllRuleSets(false, false, expression.Descriptor.Scope, pageIndex, pageSize, includeHidden: true);
+                        var ruleSets = _ruleStorage.Value.GetAllRuleSets(false, false, expression.Descriptor.Scope, pageIndex, pageSize, false, true);
                         result.IsPaged = true;
                         result.HasMoreData = ruleSets.HasNextPage;
 

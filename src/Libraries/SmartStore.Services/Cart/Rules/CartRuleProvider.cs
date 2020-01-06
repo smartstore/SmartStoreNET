@@ -164,12 +164,20 @@ namespace SmartStore.Services.Cart.Rules
                 },
                 new CartRuleDescriptor
                 {
-                    Name = "Currency",
-                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.CurrencyId"),
-                    RuleType = RuleType.IntArray,
-                    ProcessorType = typeof(CurrencyRule),
+                    Name = "CartSubtotal",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.CartSubtotal"),
+                    RuleType = RuleType.Money,
                     Constraints = new IRuleConstraint[0],
-                    SelectList = new RemoteRuleValueSelectList("Currency") { Multiple = true }
+                    ProcessorType = typeof(CartSubtotalRule)
+                },
+                new CartRuleDescriptor
+                {
+                    Name = "CartShippingMethod",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.ShippingMethod"),
+                    RuleType = RuleType.IntArray,
+                    Constraints = new IRuleConstraint[0],
+                    ProcessorType = typeof(ShippingMethodRule),
+                    SelectList = new RemoteRuleValueSelectList("ShippingMethod")
                 },
                 new CartRuleDescriptor
                 {
@@ -179,6 +187,15 @@ namespace SmartStore.Services.Cart.Rules
                     ProcessorType = typeof(CustomerRoleRule),
                     Constraints = new IRuleConstraint[0],
                     SelectList = new RemoteRuleValueSelectList("CustomerRole") { Multiple = true }
+                },
+                new CartRuleDescriptor
+                {
+                    Name = "Currency",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.CurrencyId"),
+                    RuleType = RuleType.IntArray,
+                    ProcessorType = typeof(CurrencyRule),
+                    Constraints = new IRuleConstraint[0],
+                    SelectList = new RemoteRuleValueSelectList("Currency") { Multiple = true }
                 },
                 new CartRuleDescriptor
                 {

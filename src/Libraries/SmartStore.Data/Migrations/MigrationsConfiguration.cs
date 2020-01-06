@@ -212,19 +212,29 @@
             builder.AddOrUpdate("Admin.Rules.NotFound", "The rule with ID {0} was not found.", "Die Regel mit der ID {0} wurde nicht gefunden.");
             builder.AddOrUpdate("Admin.Rules.GroupNotFound", "The group with ID {0} was not found.", "Die Gruppe mit der ID {0} wurde nicht gefunden.");
 
+            builder.AddOrUpdate("Admin.Rules.Execute.MatchCustomers",
+                "<b class=\"font-weight-medium\">{0}</b> customers match the rule conditions.",
+                "<b class=\"font-weight-medium\">{0}</b> Kunden entsprechen den Regelbedingungen.");
+            builder.AddOrUpdate("Admin.Rules.Execute.MatchCart",
+                "The rule conditions are <b class=\"font-weight-medium\">true</b> for the current customer {0}.",
+                "Die Regelbedingungen sind für den aktuellen Kunden {0} <b class=\"font-weight-medium\">wahr</b>.");
+            builder.AddOrUpdate("Admin.Rules.Execute.DoesNotMatchCart",
+                "The rule conditions are <b class=\"font-weight-medium\">false</b> for the current customer {0}.",
+                "Die Regelbedingungen sind für den aktuellen Kunden {0} <b class=\"font-weight-medium\">falsch</b>.");
+
             // Rule fields
             builder.AddOrUpdate("Admin.Rules.RuleSet.Fields.Name", "Name", "Name");
             builder.AddOrUpdate("Admin.Rules.RuleSet.Fields.Description", "Description", "Beschreibung");
             builder.AddOrUpdate("Admin.Rules.RuleSet.Fields.IsActive", "Is active", "Ist aktiv");
             builder.AddOrUpdate("Admin.Rules.RuleSet.Fields.Scope", "Scope", "Art");
-            builder.AddOrUpdate("Admin.Rules.RuleSet.Fields.IsSubGroup", "Is sub group", "Titel");
+            builder.AddOrUpdate("Admin.Rules.RuleSet.Fields.IsSubGroup", "Is sub group", "Ist Untergruppe");
             builder.AddOrUpdate("Admin.Rules.RuleSet.Fields.LogicalOperator", "Logical operator", "Logischer Operator");
 
             // Rule descriptors
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.TaxExempt", "Tax exempt", "Steuerbefreit");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.BillingCountry", "Billing country", "Rechnungsland");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingCountry", "Shipping country", "Lieferland");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.LastActivityDays", "Last activity days", "Tage seit letztem Besuch");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.LastActivityDays", "Days since last activity", "Tage seit letztem Besuch");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CompletedOrderCount", "Completed order count", "Anzahl abgeschlossener Bestellungen");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CancelledOrderCount", "Cancelled order count", "Anzahl stornierter Bestellungen");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.NewOrderCount", "New order count", "Anzahl neuer Bestellungen");
@@ -233,14 +243,14 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.HasPurchasedAllProducts", "Has purchased all products", "Hat alle folgenden Produkte gekauft");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.RuleSet", "Other rule set", "Anderer Regelsatz");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Active", "Is active", "Ist aktiv");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.LastLoginDays", "Last login days", "Tage seit letztem Login");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CreatedDays", "Created days", "Tage seit Registrierung");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.LastLoginDays", "Days since last login", "Tage seit letztem Login");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CreatedDays", "Days since registration", "Tage seit Registrierung");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Salutation", "Salutation", "Anrede");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Title", "Title", "Titel");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Company", "Company", "Firma");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CustomerNumber", "Customer number", "Kundennummer");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.BirthDate", "Birthdate", "Geburtstag");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Gender", "Gender", "Gender");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.BirthDate", "Days since date of birth", "Tage seit dem Geburtsdatum");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Gender", "Gender", "Geschlecht");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ZipPostalCode", "Zip postal code", "PLZ");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.VatNumberStatusId", "Vat number status", "Steuernummerstatus");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.TimeZoneId", "Time zone", "Zeitzone");
@@ -249,18 +259,19 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CountryId", "Country", "Land");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CurrencyId", "Currency", "Währung");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.LanguageId", "Language", "Sprache");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.LastForumVisit", "Last forum visit days", "Tage seit letztem Forenbesuch");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.LastForumVisit", "Days since last forum visit", "Tage seit letztem Forenbesuch");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.LastUserAgent", "Last user agent", "Zuletzt genutzter User-Agent");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.IsInCustomerRole", "In customer role", "In Kundengruppe");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.StoreId", "Store", "Shop");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.LastOrderDateDays", "Last order date days", "Tage seit letzter Bestellung");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.LastOrderDateDays", "Days since last order", "Tage seit letzter Bestellung");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.AcceptThirdPartyEmailHandOver", "Accept third party email handover", "Akzeptiert Weitergabe der E-Mail Adresse an Dritte");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CartTotal", "Amount of cart", "Betrag des Warenkorbes");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CartTotal", "Total amount of cart", "Gesamtbetrag des Warenkorbes");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CartSubtotal", "Subtotal amount of cart", "Zwischensumme des Warenkorbes");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderTotal", "Order total", "Gesamtbetrag der Bestellung");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderSubtotalInclTax", "Order subtotal incl. tax", "Gesamtbetrag der Bestellung (Brutto)");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderSubtotalExclTax", "Order subtotal excl tax", "Gesamtbetrag der Bestellung (Netto)");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.PaymentMethodSystemName", "Payment method (systemname)", "Zahlart (Systemname)");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingRateComputationMethodSystemName", "Shipping rate computation method (systemname)", "Berechnungsmethode für Versandkosten (Systemname)");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.PaymentMethodSystemName", "Payment method (system name)", "Zahlart (Systemname)");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingRateComputationMethodSystemName", "Shipping rate computation method (system name)", "Berechnungsmethode für Versandkosten (Systemname)");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingMethod", "Shipping method", "Versandart");
 
             // Rule operators

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SmartStore.Rules;
+﻿using SmartStore.Rules;
 
 namespace SmartStore.Services.Cart.Rules.Impl
 {
@@ -32,7 +27,7 @@ namespace SmartStore.Services.Cart.Rules.Impl
                 return false; // TBD: really?!
 
             var otherRule = _cartRuleProvider.GetProcessor(otherExpression);
-            var otherMatch = otherRule.Match(context, otherExpression);
+            //var otherMatch = otherRule.Match(context, otherExpression);
 
             //return expression.Operator.Match(otherMatch, true);
 

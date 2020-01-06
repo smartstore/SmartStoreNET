@@ -5,10 +5,13 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Rules;
 using SmartStore.ComponentModel;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
 using SmartStore.Rules;
 using SmartStore.Rules.Domain;
+using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Controllers;
@@ -130,8 +133,9 @@ namespace SmartStore.Admin.Controllers
             }
 
             var model = MiniMapper.Map<RuleSetEntity, RuleSetModel>(entity);
-            var provider = _ruleProvider(entity.Scope);
+            model.ScopeName = entity.Scope.GetLocalizedEnum(Services.Localization, Services.WorkContext);
 
+            var provider = _ruleProvider(entity.Scope);
             model.ExpressionGroup = _ruleFactory.CreateExpressionGroup(entity, provider);
             model.AvailableDescriptors = _targetGroupService.RuleDescriptors;
 
@@ -326,15 +330,41 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.System.Rule.Execute)]
         public ActionResult Execute(int ruleSetId)
         {
-            var result = _targetGroupService.ProcessFilter(new[] { ruleSetId }, 0, 500);
+            var success = true;
+            var message = string.Empty;
+
+            try
+            {
+                var entity = _ruleStorage.GetRuleSetById(ruleSetId, false, false);
+
+                switch (entity.Scope)
+                {
+                    case RuleScope.Customer:
+                        var result = _targetGroupService.ProcessFilter(new[] { entity.Id }, 0, 500);
+
+                        message = T("Admin.Rules.Execute.MatchCustomers", result.TotalCount.ToString("N0"));
+                        break;
+                    case RuleScope.Cart:
+                        var customer = Services.WorkContext.CurrentCustomer;
+                        var provider = _ruleProvider(entity.Scope) as ICartRuleProvider;
+                        var match = provider.RuleMatches(new int[] { entity.Id }, 0);
+
+                        message = T(match ? "Admin.Rules.Execute.MatchCart" : "Admin.Rules.Execute.DoesNotMatchCart", customer.Username.NullEmpty() ?? customer.Email);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                success = false;
+                message = ex.Message;
+                Logger.Error(ex);
+            }
 
             return Json(new
             {
-                Success = true,
-                Message = $"{result.TotalCount} Kunden entsprechen dem Filter."
+                Success = success,
+                Message = message.NaIfEmpty()
             });
-
-            //return Content($"{result.TotalCount} Kunden entsprechen dem Filter.");
         }
 
         // Ajax.

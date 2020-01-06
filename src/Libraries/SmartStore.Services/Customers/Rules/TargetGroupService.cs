@@ -161,7 +161,7 @@ namespace SmartStore.Services.Customers
                     Constraints = new IRuleConstraint[0],
                     SelectList = new RemoteRuleValueSelectList("Country") { Multiple = true }
                 },
-                new FilterDescriptor<Customer, int?>(x => x.ShippingAddress.CountryId)
+                new FilterDescriptor<Customer, int?>(x => x.ShippingAddress != null ? x.ShippingAddress.CountryId : 0)
                 {
                     Name = "ShippingCountry",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.ShippingCountry"),
@@ -246,6 +246,14 @@ namespace SmartStore.Services.Customers
                     RuleType = RuleType.NullableInt,
                     Constraints = new IRuleConstraint[0]
                 },
+                new FilterDescriptor<Customer, int?>(x => DbFunctions.DiffDays(x.BirthDate, DateTime.UtcNow))
+                {
+                    Name = "BirthDateDays",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.BirthDate"),
+                    RuleType = RuleType.NullableInt,
+                    Constraints = new IRuleConstraint[0]
+                },
+
                 new FilterDescriptor<Customer, string>(x => x.Salutation)
                 {
                     Name = "Salutation",
@@ -274,15 +282,6 @@ namespace SmartStore.Services.Customers
                     RuleType = RuleType.String,
                     Constraints = new IRuleConstraint[0]
                 },
-
-                // TODO
-                //new FilterDescriptor<Customer, int?>(x => DbFunctions.DiffDays(x.BirthDate, DateTime.UtcNow))
-                //{
-                //    Name = "BirthDate",
-                //    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.BirthDate"),
-                //    RuleType = RuleType.NullableInt,
-                //    Constraints = new IRuleConstraint[0]
-                //},
 
                 // Moved from Customer attrs > Gender, VatNumberStatusId, TimeZoneId, TaxDisplayTypeId
                 new FilterDescriptor<Customer, string>(x => x.Gender)
@@ -316,23 +315,20 @@ namespace SmartStore.Services.Customers
                     SelectList = new LocalRuleValueSelectList(taxDisplayTypes)
                 },
 
-                // TODO: later
-                //new FilterDescriptor<Customer, int?>(x => DbFunctions.DiffDays(x.LastForumVisit, DateTime.UtcNow))
-                //{
-                //    Name = "LastForumVisit",
-                //    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.LastForumVisit"),
-                //    RuleType = RuleType.NullableInt,
-                //    Constraints = new IRuleConstraint[0]
-                //},
-
-                // TODO: must be in order table
-                //new FilterDescriptor<Customer, string>(x => x.LastUserAgent)
-                //{
-                //    Name = "LastUserAgent",
-                //    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.LastUserAgent"),
-                //    RuleType = RuleType.String,
-                //    Constraints = new IRuleConstraint[0]
-                //},
+                new FilterDescriptor<Customer, int?>(x => DbFunctions.DiffDays(x.LastForumVisit, DateTime.UtcNow))
+                {
+                    Name = "LastForumVisitDays",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.LastForumVisit"),
+                    RuleType = RuleType.NullableInt,
+                    Constraints = new IRuleConstraint[0]
+                },
+                new FilterDescriptor<Customer, string>(x => x.LastUserAgent)
+                {
+                    Name = "LastUserAgent",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.LastUserAgent"),
+                    RuleType = RuleType.String,
+                    Constraints = new IRuleConstraint[0]
+                },
 
                 new AllFilterDescriptor<Customer, CustomerRole, int>(x => x.CustomerRoles, cr => cr.Id)
                 {

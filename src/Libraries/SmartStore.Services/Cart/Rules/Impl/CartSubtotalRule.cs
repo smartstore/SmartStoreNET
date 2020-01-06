@@ -4,12 +4,12 @@ using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Cart.Rules.Impl
 {
-    public class CartTotalRule : IRule
+    public class CartSubtotalRule : IRule
     {
         private readonly IShoppingCartService _shoppingCartService;
         private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 
-        public CartTotalRule(
+        public CartSubtotalRule(
             IShoppingCartService shoppingCartService,
             IOrderTotalCalculationService orderTotalCalculationService)
         {
@@ -20,14 +20,14 @@ namespace SmartStore.Services.Cart.Rules.Impl
         public bool Match(CartRuleContext context, RuleExpression expression)
         {
             var cart = _shoppingCartService.GetCartItems(context.Customer, ShoppingCartType.ShoppingCart, context.Store.Id);
-
-            var cartTotal = ((decimal?)_orderTotalCalculationService.GetShoppingCartTotal(cart)) ?? decimal.Zero;
+            
+            _orderTotalCalculationService.GetShoppingCartSubTotal(cart, out _, out _, out var cartSubtotal, out _);
 
             // Currency values must be rounded, otherwise unexpected results may occur.
-            var money = new Money(cartTotal, context.WorkContext.WorkingCurrency);
-            cartTotal = money.RoundedAmount;
+            var money = new Money(cartSubtotal, context.WorkContext.WorkingCurrency);
+            cartSubtotal = money.RoundedAmount;
 
-            return expression.Operator.Match(cartTotal, expression.Value);
+            return expression.Operator.Match(cartSubtotal, expression.Value);
         }
     }
 }

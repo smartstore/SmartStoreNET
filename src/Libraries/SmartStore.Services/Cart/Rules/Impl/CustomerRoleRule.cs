@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SmartStore.Core.Domain.Customers;
 using SmartStore.Rules;
 
 namespace SmartStore.Services.Cart.Rules.Impl
@@ -18,7 +14,10 @@ namespace SmartStore.Services.Cart.Rules.Impl
                 return true;
             }
 
-            var currentRoleIds = context.Customer.CustomerRoles.Select(x => x.Id);
+            var currentRoleIds = context.Customer.CustomerRoles
+                .Where(x => x.Active)
+                .Select(x => x.Id);
+
             return currentRoleIds.All(x => expression.Operator.Match(x, list));
         }
     }

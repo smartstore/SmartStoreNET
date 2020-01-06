@@ -49,7 +49,8 @@
             }
             else
             {
-                @Html.TextBoxFor(model => model.Scope, new { @readonly = "readonly" })
+                @Html.HiddenFor(model => model.Scope)
+                @Html.TextBoxFor(model => model.ScopeName, new { @readonly = "readonly" })
             }
         </div>
     </div>
@@ -208,6 +209,7 @@
             return false;
         });
 
+        // Execute rule.
         $(document).on('click', '#execute-rules', function (e) {
             var ruleSet = $(".ruleset-root > .ruleset")
             var ruleSetId = ruleSet.data('ruleset-id');
@@ -217,10 +219,11 @@
                 url: "@Url.Action("Execute")",
                 data: { ruleSetId: ruleSetId },
 			    type: "POST",
-			    success: function (result) {
-                    if (result.Success) {
-                        $("#excute-result").text(result.Message).removeClass("hide");
-                    }
+                success: function (result) {
+                    $('#excute-result')
+                        .html(result.Message)
+                        .removeClass('hide alert-warning alert-danger')
+                        .addClass(result.Success ? 'alert-warning' : 'alert-danger');
 			    }
             });
 

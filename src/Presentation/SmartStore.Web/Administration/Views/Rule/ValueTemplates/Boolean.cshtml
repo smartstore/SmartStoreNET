@@ -16,3 +16,8 @@
     }
 }
 @Html.DropDownList(id, listItems, new { @class = "form-control list-box" })
+<script>
+    $(function () {
+        $('#@id').selectWrapper();
+	});
+</script>

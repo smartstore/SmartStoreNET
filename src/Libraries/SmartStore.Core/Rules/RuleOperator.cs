@@ -161,10 +161,11 @@ namespace SmartStore.Rules
             if (targetType == right.Type)
                 return true;
 
-            var leftIsNullable = targetType.IsNullable(out var leftType);
+            var leftIsNullable = targetType.IsNullable(out _);
             var rightIsNullObj = ExpressionHelper.IsNullObjectConstantExpression(right);
             var rightIsList = false;
-            if (!rightIsNullObj)
+
+            if (!rightIsNullObj && right.Type.IsGenericType)
             {
                 rightIsList = right.Type.GetGenericTypeDefinition() == typeof(List<>);
             }

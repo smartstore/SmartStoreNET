@@ -330,7 +330,7 @@ namespace SmartStore.Services.Customers
                     Constraints = new IRuleConstraint[0]
                 },
 
-                new AllFilterDescriptor<Customer, CustomerRole, int>(x => x.CustomerRoles, cr => cr.Id)
+                new AnyFilterDescriptor<Customer, CustomerRole, int>(x => x.CustomerRoles, cr => cr.Id)
                 {
                     Name = "IsInCustomerRole",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.IsInCustomerRole"),

@@ -181,13 +181,20 @@ namespace SmartStore.Admin.Controllers
         {
             var provider = _ruleProvider(scope);
             var descriptor = provider.RuleDescriptors.FindDescriptor(ruleType);
+            var op = descriptor.Operators.First();
 
             var rule = new RuleEntity
             {
                 RuleSetId = ruleSetId,
                 RuleType = ruleType,
-                Operator = descriptor.Operators.First().Operator
+                Operator = op.Operator
             };
+
+            if (op == RuleOperator.In || op == RuleOperator.NotIn)
+            {
+                // Avoid ArgumentException "The 'In' operator only supports non-null instances from types that implement 'ICollection<T>'."
+                rule.Value = string.Empty;
+            }
 
             _ruleStorage.InsertRule(rule);
 

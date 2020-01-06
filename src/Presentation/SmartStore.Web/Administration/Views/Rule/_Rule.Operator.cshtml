@@ -36,7 +36,7 @@
     <div class="dropdown-menu">
         @foreach (var op in Model.Descriptor.Operators)
         {
-            <a href="#" class="dropdown-item" data-value="@op.Operator">@GetOperatorLabel(op)</a>
+            <a href="javascript:void(0)" class="dropdown-item" data-value="@op.Operator">@GetOperatorLabel(op)</a>
         }
     </div>
 </div>
@@ -47,14 +47,7 @@
         operator.find(".dropdown-item").on("click", function () {
             operator.data("value", $(this).data("value"));
             operator.find(".btn").text(GetOperatorLabel(operator.data("value")));
-            return false;
+            enableRuleValueControl($(this));
         });
     });
 </script>
-
-@*<select class="form-control">
-    @foreach (var op in Model.Descriptor.Operators)
-    {
-        <option value="@op.Operator" @(op == Model.Operator ? " selected" : "")>@op.Operator</option>
-    }
-</select>*@

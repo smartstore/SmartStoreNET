@@ -61,7 +61,7 @@
     <h4 class="my-4">@T("Admin.Rules.Execute", "<a id=\"execute-rules\" class=\"btn btn-primary\" href=\"" + Url.Action("Execute", new { ruleSetId = Model.Id }) + "\">", "</a>")</h4>
     <div id="excute-result" class="alert alert-warning hide"></div>
 
-    <div class="ruleset-root" data-scope="@((int)Model.Scope)">
+    <div id="ruleset-root" class="ruleset-root" data-scope="@((int)Model.Scope)">
         @{ Html.RenderPartial("_RuleSet", Model.ExpressionGroup); }
     </div>
 }
@@ -74,7 +74,14 @@
                 target = $('<div class="ruleset-body"></div>').appendTo(ruleSet);
             }
             target.append(html);
+            enableRuleValueControl(target.find('.rule:last'));
+            $('#excute-result').addClass('hide');
         }
+
+        // Initialize.
+        $('#ruleset-root').find('.rule').each(function() {
+            enableRuleValueControl($(this));
+        });
 
         // Add group.
         $(document).on('click', '.r-add-group', function (e) {
@@ -95,7 +102,7 @@
             return false;
         });
 
-        // Change rule operator.
+        // Change rule set operator.
         $(document).on('click', '.ruleset-operator .dropdown-item', function (e) {
             var parentSet = $(this).closest('.ruleset');
             var parentSetId = parentSet.data('ruleset-id');
@@ -232,6 +239,25 @@
 
     });
 
+    function enableRuleValueControl(el) {
+        var rule = el.closest('.rule');
+        var ruleId = rule.data('rule-id');
+        var op = rule.find('.rule-operator').data('value');
+        var disable = false;
+
+        switch (op) {
+            case "@Html.Raw(RuleOperator.IsEmpty)":
+            case "@Html.Raw(RuleOperator.IsNotEmpty)":
+            case "@Html.Raw(RuleOperator.IsNotNull)":
+            case "@Html.Raw(RuleOperator.IsNull)":
+                disable = true;
+                break;
+        }
+
+        rule.find(':input[name="rule-value-' + ruleId + '"]').prop('disabled', disable);
+        rule.find('button.r-save-rule').prop('disabled', disable);
+    }
+
     function GetOperatorLabel(op) {
         switch (op) {
             case "@Html.Raw(RuleOperator.Contains)":
@@ -282,7 +308,6 @@
             case "@Html.Raw(RuleOperator.StartsWith)":
                 return @T("Admin.Rules.RuleOperator.StartsWith").JsText;
                 break;
-
             default:
                 return "ERROR";
                 break;

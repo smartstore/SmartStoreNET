@@ -3,6 +3,7 @@ using System.Data.Entity.Migrations;
 using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
@@ -11,60 +12,48 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Shipping.Tracking;
 using SmartStore.Services.Tax;
-using SmartStore.ShippingByWeight.Data;
 using SmartStore.ShippingByWeight.Data.Migrations;
 using SmartStore.ShippingByWeight.Services;
-using SmartStore.Core.Domain.Tax;
 
 namespace SmartStore.ShippingByWeight
 {
-	public class ByWeightShippingComputationMethod : BasePlugin, IShippingRateComputationMethod, IConfigurable
+    public class ByWeightShippingComputationMethod : BasePlugin, IShippingRateComputationMethod, IConfigurable
     {
-        #region Fields
-
         private readonly IShippingService _shippingService;
 		private readonly IStoreContext _storeContext;
         private readonly IShippingByWeightService _shippingByWeightService;
         private readonly IPriceCalculationService _priceCalculationService;
         private readonly ShippingByWeightSettings _shippingByWeightSettings;
-        private readonly ShippingByWeightObjectContext _objectContext;
         private readonly ILocalizationService _localizationService;
         private readonly IPriceFormatter _priceFormatter;
         private readonly ICommonServices _services;
 		private readonly ITaxService _taxService;
         
-        #endregion
-
-        #region Ctor
-
-        public ByWeightShippingComputationMethod(IShippingService shippingService,
+        public ByWeightShippingComputationMethod(
+            IShippingService shippingService,
 			IStoreContext storeContext,
             IShippingByWeightService shippingByWeightService,
             IPriceCalculationService priceCalculationService, 
             ShippingByWeightSettings shippingByWeightSettings,
-            ShippingByWeightObjectContext objectContext,
             ILocalizationService localizationService,
             IPriceFormatter priceFormatter,
             ICommonServices services,
 			ITaxService taxService)
         {
-            this._shippingService = shippingService;
-			this._storeContext = storeContext;
-            this._shippingByWeightService = shippingByWeightService;
-            this._priceCalculationService = priceCalculationService;
-            this._shippingByWeightSettings = shippingByWeightSettings;
-            this._objectContext = objectContext;
-            this._localizationService = localizationService;
-            this._priceFormatter = priceFormatter;
-            this._services = services;
+            _shippingService = shippingService;
+			_storeContext = storeContext;
+            _shippingByWeightService = shippingByWeightService;
+            _priceCalculationService = priceCalculationService;
+            _shippingByWeightSettings = shippingByWeightSettings;
+            _localizationService = localizationService;
+            _priceFormatter = priceFormatter;
+            _services = services;
 			_taxService = taxService;
 
 			T = NullLocalizer.Instance;
 		}
 
 		public Localizer T { get; set; }
-
-		#endregion
 
 		#region Utilities
 
@@ -183,21 +172,21 @@ namespace SmartStore.ShippingByWeight
 
                     if (record != null && record.SmallQuantityThreshold > currentSubTotal)
                     {
-                        shippingOption.Description = shippingMethod.GetLocalized(x => x.Description)
-                            + _localizationService.GetResource("Plugin.Shipping.ByWeight.SmallQuantitySurchargeNotReached").FormatWith(
-                                _priceFormatter.FormatPrice(record.SmallQuantitySurcharge),
-                                _priceFormatter.FormatPrice(record.SmallQuantityThreshold));
+                        string surchargeHint = T("Plugins.Shipping.ByWeight.SmallQuantitySurchargeNotReached",
+                            _priceFormatter.FormatPrice(record.SmallQuantitySurcharge),
+                            _priceFormatter.FormatPrice(record.SmallQuantityThreshold));
 
+                        shippingOption.Description = shippingMethod.GetLocalized(x => x.Description) + surchargeHint;
                         shippingOption.Rate = rate.Value + record.SmallQuantitySurcharge;
                     }
-                    else {
+                    else
+                    {
                         shippingOption.Description = shippingMethod.GetLocalized(x => x.Description);
                         shippingOption.Rate = rate.Value;
                     }
                     response.ShippingOptions.Add(shippingOption);
                 }
             }
-
 
             return response;
         }

@@ -56,6 +56,7 @@
 * #1765 Web-API: fixed authentication error "Value cannot be null. Parameter name: name" when login type is email.
 * Payone: fixed wrong hash value if redirecting option is activated.
 * Azure: opening the configuration page resulted in an error.
+* Shipping by weight: the surcharge hint was not displayed correctly.
 
 
 ## SmartStore.NET 3.2.2

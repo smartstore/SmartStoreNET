@@ -137,6 +137,7 @@
 			    success: function (result) {
                     if (result.Success) {
                         parentSet.remove();
+                        $('#excute-result').addClass('hide');
                     }
 			    }
             });
@@ -209,6 +210,7 @@
 			    success: function (result) {
                     if (result.Success) {
                         rule.remove();
+                        $('#excute-result').addClass('hide');
                     }
 			    }
             });
@@ -255,7 +257,6 @@
         }
 
         rule.find(':input[name="rule-value-' + ruleId + '"]').prop('disabled', disable);
-        rule.find('button.r-save-rule').prop('disabled', disable);
     }
 
     function GetOperatorLabel(op) {

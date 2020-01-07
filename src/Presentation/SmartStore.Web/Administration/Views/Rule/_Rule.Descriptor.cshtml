@@ -1,9 +1,8 @@
 ﻿@model IRuleExpression
 
 @using SmartStore.Rules
-@using SmartStore.Utilities;
 
-<div class="rule-descriptor font-weight-medium form-control-plaintext text-truncate text-gray" title="@Model.Descriptor.Name">
+<div class="rule-descriptor font-weight-medium form-control-plaintext text-truncate text-gray" title="@Model.Descriptor.DisplayName (@(Model.Descriptor.Name))">
     @Model.Descriptor.DisplayName
     @if (!Model.Descriptor.IsValid)
     {

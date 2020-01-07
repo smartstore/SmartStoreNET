@@ -15,11 +15,11 @@ namespace SmartStore.Web.Framework
             Guard.NotEmpty(expression, nameof(expression));
             Guard.NotNull(value, nameof(value));
 
-            var style = expression + ": " + Convert.ToString(value, CultureInfo.InvariantCulture) + ";";
+            var style = expression + ": " + Convert.ToString(value, CultureInfo.InvariantCulture);
 
             if (builder.Attributes.TryGetValue("style", out var str))
             {
-                builder.Attributes["style"] = style.EnsureEndsWith("; ") + str;
+                builder.Attributes["style"] = style + "; " + str;
             }
             else
             {

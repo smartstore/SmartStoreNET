@@ -176,28 +176,28 @@ namespace SmartStore.Services.Customers
                     RuleType = RuleType.NullableInt,
                     Constraints = new IRuleConstraint[0]
                 },
-                new FilterDescriptor<Customer, int>(x => x.Orders.Count(y => y.OrderStatusId == 30))
+                new FilterDescriptor<Customer, int>(x => x.Orders.Count(o => !o.Deleted && o.OrderStatusId == 30))
                 {
                     Name = "CompletedOrderCount",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.CompletedOrderCount"),
                     RuleType = RuleType.Int,
                     Constraints = new IRuleConstraint[0]
                 },
-                new FilterDescriptor<Customer, int>(x => x.Orders.Count(y => y.OrderStatusId == 40))
+                new FilterDescriptor<Customer, int>(x => x.Orders.Count(o => !o.Deleted && o.OrderStatusId == 40))
                 {
                     Name = "CancelledOrderCount",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.CancelledOrderCount"),
                     RuleType = RuleType.Int,
                     Constraints = new IRuleConstraint[0]
                 },
-                new FilterDescriptor<Customer, int>(x => x.Orders.Count(y => y.OrderStatusId == 10 || y.OrderStatusId == 20))
+                new FilterDescriptor<Customer, int>(x => x.Orders.Count(o => !o.Deleted && (o.OrderStatusId == 10 || o.OrderStatusId == 20)))
                 {
                     Name = "NewOrderCount",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.NewOrderCount"),
                     RuleType = RuleType.Int,
                     Constraints = new IRuleConstraint[0]
                 },
-                new AnyFilterDescriptor<Customer, OrderItem, int>(x => x.Orders.SelectMany(o => o.OrderItems), oi => oi.ProductId)
+                new AnyFilterDescriptor<Customer, OrderItem, int>(x => x.Orders.Where(o => !o.Deleted).SelectMany(o => o.OrderItems), oi => oi.ProductId)
                 {
                     Name = "HasPurchasedProduct",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.HasPurchasedProduct"),
@@ -205,7 +205,7 @@ namespace SmartStore.Services.Customers
                     Constraints = new IRuleConstraint[0],
                     SelectList = new RemoteRuleValueSelectList("Product") { Multiple = true }
                 },
-                new AllFilterDescriptor<Customer, OrderItem, int>(x => x.Orders.SelectMany(o => o.OrderItems), oi => oi.ProductId)
+                new AllFilterDescriptor<Customer, OrderItem, int>(x => x.Orders.Where(o => !o.Deleted).SelectMany(o => o.OrderItems), oi => oi.ProductId)
                 {
                     Name = "HasPurchasedAllProducts",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.HasPurchasedAllProducts"),
@@ -282,8 +282,6 @@ namespace SmartStore.Services.Customers
                     RuleType = RuleType.String,
                     Constraints = new IRuleConstraint[0]
                 },
-
-                // Moved from Customer attrs > Gender, VatNumberStatusId, TimeZoneId, TaxDisplayTypeId
                 new FilterDescriptor<Customer, string>(x => x.Gender)
                 {
                     Name = "Gender",
@@ -344,52 +342,51 @@ namespace SmartStore.Services.Customers
                 //          PaymentMethodSystemName, ShippingRateComputationMethodSystemName
                 //          CustomerCurrencyCode, CustomerLanguageId, CustomerTaxDisplayTypeId (TODO: Really??? from customer, order or both?)
 
-                new AnyFilterDescriptor<Customer, Order, int>(x => x.Orders, o => o.StoreId)
+                new AnyFilterDescriptor<Customer, Order, int>(x => x.Orders.Where(o => !o.Deleted), o => o.StoreId)
                 {
-                    Name = "OrderCountInStore",
-                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.OrderCountInStore"),
+                    Name = "OrderInStore",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.OrderInStore"),
                     RuleType = RuleType.IntArray,
                     Constraints = new IRuleConstraint[0],
                     SelectList = new LocalRuleValueSelectList(stores) { Multiple = true }
                 },
-                new FilterDescriptor<Customer, int?>(x => DbFunctions.DiffDays(x.Orders.Max(y => y.CreatedOnUtc), DateTime.UtcNow))
+                new FilterDescriptor<Customer, int?>(x => DbFunctions.DiffDays(x.Orders.Where(o => !o.Deleted).Max(o => o.CreatedOnUtc), DateTime.UtcNow))
                 {
                     Name = "LastOrderDateDays",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.LastOrderDateDays"),
                     RuleType = RuleType.NullableInt,
                     Constraints = new IRuleConstraint[0]
                 },
-                new AnyFilterDescriptor<Customer, Order, bool>(x => x.Orders, o => o.AcceptThirdPartyEmailHandOver)
+
+                new AnyFilterDescriptor<Customer, Order, bool>(x => x.Orders.Where(o => !o.Deleted), o => o.AcceptThirdPartyEmailHandOver)
                 {
                     Name = "AcceptThirdPartyEmailHandOver",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.AcceptThirdPartyEmailHandOver"),
                     RuleType = RuleType.Boolean,
                     Constraints = new IRuleConstraint[0]
                 },
-
-                // TODO: customer
-                new FilterDescriptor<Order, decimal>(x => x.OrderTotal)
+                new AnyFilterDescriptor<Customer, Order, decimal>(x => x.Orders.Where(o => !o.Deleted), o => o.OrderTotal)
                 {
                     Name = "OrderTotal",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.OrderTotal"),
                     RuleType = RuleType.Money,
                     Constraints = new IRuleConstraint[0]
                 },
-                new FilterDescriptor<Order, decimal>(x => x.OrderSubtotalInclTax)
+                new AnyFilterDescriptor<Customer, Order, decimal>(x => x.Orders.Where(o => !o.Deleted), o => o.OrderSubtotalInclTax)
                 {
                     Name = "OrderSubtotalInclTax",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.OrderSubtotalInclTax"),
                     RuleType = RuleType.Money,
                     Constraints = new IRuleConstraint[0]
                 },
-                new FilterDescriptor<Order, decimal>(x => x.OrderSubtotalExclTax)
+                new AnyFilterDescriptor<Customer, Order, decimal>(x => x.Orders.Where(o => !o.Deleted), o => o.OrderSubtotalExclTax)
                 {
                     Name = "OrderSubtotalExclTax",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.OrderSubtotalExclTax"),
                     RuleType = RuleType.Money,
                     Constraints = new IRuleConstraint[0]
                 },
-                new FilterDescriptor<Order, string>(x => x.PaymentMethodSystemName)
+                new AnyFilterDescriptor<Customer, Order, string>(x => x.Orders.Where(o => !o.Deleted), o => o.PaymentMethodSystemName)
                 {
                     Name = "PaymentMethodSystemName",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.PaymentMethodSystemName"),
@@ -397,7 +394,7 @@ namespace SmartStore.Services.Customers
                     Constraints = new IRuleConstraint[0],
                     SelectList = new RemoteRuleValueSelectList("PaymentMethod")
                 },
-                new FilterDescriptor<Order, string>(x => x.ShippingMethod)
+                new AnyFilterDescriptor<Customer, Order, string>(x => x.Orders.Where(o => !o.Deleted), o => o.ShippingMethod)
                 {
                     Name = "ShippingMethod",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.ShippingMethod"),
@@ -405,7 +402,7 @@ namespace SmartStore.Services.Customers
                     Constraints = new IRuleConstraint[0],
                     SelectList = new RemoteRuleValueSelectList("ShippingMethod")
                 },
-                new FilterDescriptor<Order, string>(x => x.ShippingRateComputationMethodSystemName)
+                new AnyFilterDescriptor<Customer, Order, string>(x => x.Orders.Where(o => !o.Deleted), o => o.ShippingRateComputationMethodSystemName)
                 {
                     Name = "ShippingRateComputationMethodSystemName",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.ShippingRateComputationMethodSystemName"),

@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace SmartStore.Rules.Filters
 {
@@ -125,7 +122,10 @@ namespace SmartStore.Rules.Filters
                     }
                     else if (value is IConvertible)
                     {
-                        value = Convert.ChangeType(value, nonNullableType, culture ?? CultureInfo.InvariantCulture);
+                        if (typeof(IConvertible).IsAssignableFrom(nonNullableType))
+                        {
+                            value = Convert.ChangeType(value, nonNullableType, culture ?? CultureInfo.InvariantCulture);
+                        }
                     }
                 }
             }

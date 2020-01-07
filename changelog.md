@@ -57,6 +57,7 @@
 * Payone: fixed wrong hash value if redirecting option is activated.
 * Azure: opening the configuration page resulted in an error.
 * Shipping by weight: the surcharge hint was not displayed correctly.
+* Off-canvas menu shows wrong product count for brand menu items.
 
 
 ## SmartStore.NET 3.2.2

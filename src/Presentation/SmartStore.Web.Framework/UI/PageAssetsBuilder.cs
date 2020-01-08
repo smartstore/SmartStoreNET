@@ -79,8 +79,7 @@ namespace SmartStore.Web.Framework.UI
             {
                 list = new List<T>(parts);
             }
-            
-            if (parts.Any())
+            else if (parts.Any())
             {
                 if (prepend)
                 {

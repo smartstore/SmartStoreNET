@@ -275,22 +275,22 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingMethod", "Shipping method", "Versandart");
 
             // Rule operators
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.Contains", "Contains", "Enthält");
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.EndsWith", "Ends with", "Endet auf");
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.GreaterThan", "Greater than", "Größer als");
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.GreaterThanOrEqualTo", "Greater than or equal to", "Größer oder gleich");
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.In", "In", "Ist eine von");
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.IsEmpty", "Is empty", "Ist leer");
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.IsEqualTo", "Is equal to", "Gleich");
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.IsNotEmpty", "Is not empty", "Ist nicht leer");
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.IsNotEqualTo", "Is not equal to", "Ungleich");
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.IsNotNull", "Is not null", "Ist nicht NULL");
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.IsNull", "Is null", "Ist NULL");
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.LessThan", "Less than", "Kleiner als");
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.LessThanOrEqualTo", "Less than or equal to", "Kleiner oder gleich");
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.NotContains", "Not contains", "Enthält nicht");
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.NotIn", "Not in", "Ist KEINE von");
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.StartsWith", "Starts with", "Beginnt mit");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.ContainsOperator", "Contains", "Enthält");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.EndsWithOperator", "Ends with", "Endet auf");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.GreaterThanOperator", "Greater than", "Größer als");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.GreaterThanOrEqualOperator", "Greater than or equal to", "Größer oder gleich");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.InOperator", "In", "Ist eine von");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.IsEmptyOperator", "Is empty", "Ist leer");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.EqualOperator", "Is equal to", "Gleich");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.IsNotEmptyOperator", "Is not empty", "Ist nicht leer");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.NotEqualOperator", "Is not equal to", "Ungleich");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.IsNotNullOperator", "Is not null", "Ist nicht NULL");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.IsNullOperator", "Is null", "Ist NULL");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.LessThanOperator", "Less than", "Kleiner als");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.LessThanOrEqualOperator", "Less than or equal to", "Kleiner oder gleich");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.NotContainsOperator", "Not contains", "Enthält nicht");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.NotInOperator", "Not in", "Ist KEINE von");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.StartsWithOperator", "Starts with", "Beginnt mit");
 
             builder.AddOrUpdate("Enums.SmartStore.Rules.RuleScope.Cart", "Cart", "Warenkorb");
             builder.AddOrUpdate("Enums.SmartStore.Rules.RuleScope.OrderItem", "Order item", "Bestellposition");

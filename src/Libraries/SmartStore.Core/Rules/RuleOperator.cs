@@ -46,6 +46,14 @@ namespace SmartStore.Rules
 
         public string Operator { get; set; }
 
+        public string ResourceKey
+        {
+            get
+            {
+                return "Admin.Rules.RuleOperator." + GetType().Name;
+            }
+        }
+
         public override string ToString() => Operator;
 
         public static implicit operator string(RuleOperator obj) => obj.Operator;

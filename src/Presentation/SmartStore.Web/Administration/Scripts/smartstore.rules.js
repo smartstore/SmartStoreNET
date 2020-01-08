@@ -43,11 +43,12 @@
 
         $.ajax({
             cache: false,
-            url: $('#ruleset-root').data('addgroup-url'),
+            url: $('#ruleset-root').data('url-addgroup'),
             data: { ruleSetId: parentSetId, scope: scope },
             type: "POST",
             success: function (html) {
                 appendToRuleSetBody(parentSet, html);
+                parentSet.find('.ruleset:last select.r-add-rule').selectWrapper();
             }
         });
 
@@ -61,7 +62,7 @@
 
         $.ajax({
             cache: false,
-            url: $('#ruleset-root').data('deletegroup-url'),
+            url: $('#ruleset-root').data('url-deletegroup'),
             data: { refRuleId: refRuleId },
             type: "POST",
             success: function (result) {
@@ -88,7 +89,7 @@
             data: { ruleSetId: parentSetId, op: op },
             type: "POST",
             success: function () {
-                operator.find(".logical-operator").text(operator.data(op == 'And' ? 'all' : 'one'));
+                operator.find(".logical-operator").text(operator.data(op == 'And' ? 'res-all' : 'res-one'));
                 operator.find(".logical-operator-chooser").removeClass("show");
             }
         });
@@ -119,7 +120,7 @@
 
         $.ajax({
             cache: false,
-            url: $('#ruleset-root').data('updaterule-url'),
+            url: $('#ruleset-root').data('url-updaterule'),
             data: { ruleId: ruleId, op: op, value: value },
             type: "POST",
             success: function (result) {
@@ -145,7 +146,7 @@
 
         $.ajax({
             cache: false,
-            url: $('#ruleset-root').data('addrule-url'),
+            url: $('#ruleset-root').data('url-addrule'),
             data: { ruleSetId: parentSetId, scope: scope, ruleType: ruleType },
             type: "POST",
             success: function (html) {
@@ -164,7 +165,7 @@
 
         $.ajax({
             cache: false,
-            url: $('#ruleset-root').data('deleterule-url'),
+            url: $('#ruleset-root').data('url-deleterule'),
             data: { ruleId: ruleId },
             type: "POST",
             success: function (result) {

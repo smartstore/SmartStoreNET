@@ -66,11 +66,11 @@
 
     <div id="ruleset-root" class="ruleset-root" 
          data-scope="@((int)Model.Scope)" 
-         data-addgroup-url="@Url.Action("AddGroup")" 
-         data-deletegroup-url="@Url.Action("DeleteGroup")"
-         data-updaterule-url="@Url.Action("UpdateRule")"
-         data-addrule-url="@Url.Action("AddRule")"
-         data-deleterule-url="@Url.Action("DeleteRule")">
+         data-url-addgroup="@Url.Action("AddGroup")" 
+         data-url-deletegroup="@Url.Action("DeleteGroup")"
+         data-url-updaterule="@Url.Action("UpdateRule")"
+         data-url-addrule="@Url.Action("AddRule")"
+         data-url-deleterule="@Url.Action("DeleteRule")">
         @{ Html.RenderPartial("_RuleSet", Model.ExpressionGroup); }
     </div>
 }

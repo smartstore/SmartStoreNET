@@ -6,8 +6,8 @@
 <div class="ruleset" data-ruleset-id="@Model.Id" data-refrule-id="@Model.RefRuleId">
     <div class="ruleset-header">
         <div class="ruleset-operator d-flex align-items-center justify-content-stretch" 
-             data-all="@T("Admin.Rules.Operator.All")"
-             data-one="@T("Admin.Rules.Operator.One")"
+             data-res-all="@T("Admin.Rules.Operator.All")"
+             data-res-one="@T("Admin.Rules.Operator.One")"
              data-url="@Url.Action("ChangeOperator")">
             @Html.Raw(T("Admin.Rules.OneOrAllConditions", OneOrAllConditionsButton()))
         </div>

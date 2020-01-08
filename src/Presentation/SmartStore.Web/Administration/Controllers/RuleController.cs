@@ -347,14 +347,14 @@ namespace SmartStore.Admin.Controllers
                 switch (entity.Scope)
                 {
                     case RuleScope.Customer:
-                        var result = _targetGroupService.ProcessFilter(new[] { entity.Id }, 0, 500);
+                        var result = _targetGroupService.ProcessFilter(new[] { entity.Id }, LogicalRuleOperator.And, 0, 500);
 
                         message = T("Admin.Rules.Execute.MatchCustomers", result.TotalCount.ToString("N0"));
                         break;
                     case RuleScope.Cart:
                         var customer = Services.WorkContext.CurrentCustomer;
                         var provider = _ruleProvider(entity.Scope) as ICartRuleProvider;
-                        var match = provider.RuleMatches(new int[] { entity.Id }, 0);
+                        var match = provider.RuleMatches(new int[] { entity.Id }, LogicalRuleOperator.And);
 
                         message = T(match ? "Admin.Rules.Execute.MatchCart" : "Admin.Rules.Execute.DoesNotMatchCart", customer.Username.NullEmpty() ?? customer.Email);
                         break;

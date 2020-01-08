@@ -24,7 +24,10 @@ namespace SmartStore.Services.Cart.Rules.Impl
         {
             var otherExpression = GetOtherExpression(expression);
             if (otherExpression == null)
-                return false; // TBD: really?!
+            {
+                // Skip\ignore expression.
+                return true;
+            }
 
             var otherRule = _cartRuleProvider.GetProcessor(otherExpression);
             //var otherMatch = otherRule.Match(context, otherExpression);

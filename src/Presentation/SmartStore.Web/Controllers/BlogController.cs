@@ -245,14 +245,16 @@ namespace SmartStore.Web.Controllers
         }
 
         [NonAction]
-        protected BlogPostListModel PrepareBlogPostListModel(int? maxPostAmount, int? maxAgeInDays, bool renderHeading, string postsWithTag)
+        protected BlogPostListModel PrepareBlogPostListModel(int? maxPostAmount, int? maxAgeInDays, bool renderHeading, string blogHeading, bool disableCommentCount, string postsWithTag)
         {
             var storeId = _services.StoreContext.CurrentStore.Id;
             var workingLanguageId = _services.WorkContext.WorkingLanguage.Id;
             var model = new BlogPostListModel
             {
+                BlogHeading = blogHeading,
                 RenderHeading = renderHeading,
-                RssToLinkButton = renderHeading
+                RssToLinkButton = renderHeading,
+                DisableCommentCount = disableCommentCount
             };
 
             DateTime? maxAge = null;
@@ -297,9 +299,9 @@ namespace SmartStore.Web.Controllers
         }
 
         [ChildActionOnly]
-        public ActionResult BlogSummary(int? maxPostAmount, int? maxAgeInDays, bool renderHeading, string postsWithTag)
+        public ActionResult BlogSummary(int? maxPostAmount, int? maxAgeInDays, bool renderHeading, string blogHeading, bool disableCommentCount, string postsWithTag)
         {
-            var model = PrepareBlogPostListModel(maxPostAmount, maxAgeInDays, renderHeading, postsWithTag);
+            var model = PrepareBlogPostListModel(maxPostAmount, maxAgeInDays, renderHeading, blogHeading, disableCommentCount, postsWithTag);
 
             return PartialView(model);
         }

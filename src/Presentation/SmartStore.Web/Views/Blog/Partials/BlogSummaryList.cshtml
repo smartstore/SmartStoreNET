@@ -93,7 +93,7 @@
 
 @helper RenderComments(BlogPostModel item)
 {
-    if (item.Comments.AllowComments)
+    if (item.Comments.AllowComments && !Model.DisableCommentCount)
     {
         <div class="comments-overlay">
             <a class="fs-xs m-2 btn btn-secondary btn-circle@(item.Comments.NumberOfComments > 0 ? " vivid" : "")"

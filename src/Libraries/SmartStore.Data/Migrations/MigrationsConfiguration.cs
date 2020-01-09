@@ -300,6 +300,9 @@
             builder.AddOrUpdate("Enums.SmartStore.Rules.RuleScope.OrderItem", "Order item", "Bestellposition");
             builder.AddOrUpdate("Enums.SmartStore.Rules.RuleScope.Customer", "Customer", "Kunde");
             builder.AddOrUpdate("Enums.SmartStore.Rules.RuleScope.Product", "Product", "Produkt");
+
+            builder.AddOrUpdate("Admin.SmartStore.Blog.Button", "Visit our blog", "Zum Blog");
+            builder.AddOrUpdate("Admin.SmartStore.Blog.Button.Hint", "Click here to be forwarded to our blog", "Klicken Sie hier um zu unserem Blog weitergeleitet zu werden");                       
         }
     }
 }

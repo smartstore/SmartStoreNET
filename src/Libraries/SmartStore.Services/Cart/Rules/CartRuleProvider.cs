@@ -276,6 +276,24 @@ namespace SmartStore.Services.Cart.Rules
                 },
                 new CartRuleDescriptor
                 {
+                    Name = "CartPaymentMethod",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.PaymentMethodSystemName"),
+                    RuleType = RuleType.StringArray,
+                    Constraints = new IRuleConstraint[0],
+                    ProcessorType = typeof(PaymentMethodRule),
+                    SelectList = new RemoteRuleValueSelectList("PaymentMethod") { Multiple = true }
+                },
+                new CartRuleDescriptor
+                {
+                    Name = "CartPaidBy",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.PaidBy"),
+                    RuleType = RuleType.StringArray,
+                    Constraints = new IRuleConstraint[0],
+                    ProcessorType = typeof(PaidByRule),
+                    SelectList = new RemoteRuleValueSelectList("PaymentMethod") { Multiple = true }
+                },
+                new CartRuleDescriptor
+                {
                     Name = "RuleSet",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.RuleSet"),
                     RuleType = RuleType.Int,

@@ -275,6 +275,7 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderCount", "Number of orders", "Anzahl der Aufträge");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.SpentAmount", "Amount spent", "Ausgegebener Betrag");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.PaymentMethodSystemName", "Payment method (system name)", "Zahlart (Systemname)");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.PaidBy", "Paid by", "Bezahlt mit");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingRateComputationMethodSystemName", "Shipping rate computation method (system name)", "Berechnungsmethode für Versandkosten (Systemname)");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingMethod", "Shipping method", "Versandart");
 

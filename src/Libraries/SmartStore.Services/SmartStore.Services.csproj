@@ -184,8 +184,10 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Blogs\BlogMessageFactoryExtensions.cs" />
+    <Compile Include="Cart\Rules\Impl\PaidByRule.cs" />
     <Compile Include="Cart\Rules\Impl\PurchasedFromManufacturerRule.cs" />
     <Compile Include="Cart\Rules\Impl\PurchasedProductsRule.cs" />
+    <Compile Include="Cart\Rules\Impl\PaymentMethodRule.cs" />
     <Compile Include="Cart\Rules\Impl\SpentAmountRule.cs" />
     <Compile Include="Cart\Rules\Impl\OrderCountRule.cs" />
     <Compile Include="Cart\Rules\Impl\ShippingCountryRule.cs" />

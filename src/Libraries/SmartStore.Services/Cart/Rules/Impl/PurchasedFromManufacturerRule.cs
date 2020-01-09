@@ -26,13 +26,13 @@ namespace SmartStore.Services.Cart.Rules.Impl
             if (expression.Operator == RuleOperator.In)
             {
                 return _orderItemRepository.TableUntracked
-                    .Any(oi => oi.Order.CustomerId == context.Customer.Id && oi.Product.ProductManufacturers.Any(pm => manuIds.Contains(pm.ManufacturerId)));
+                    .Any(oi => oi.Order.CustomerId == context.Customer.Id && !oi.Order.Deleted && oi.Product.ProductManufacturers.Any(pm => manuIds.Contains(pm.ManufacturerId)));
             }
 
             if (expression.Operator == RuleOperator.NotIn)
             {
                 return _orderItemRepository.TableUntracked
-                    .Any(oi => oi.Order.CustomerId == context.Customer.Id && oi.Product.ProductManufacturers.Any(pm => !manuIds.Contains(pm.ManufacturerId)));
+                    .Any(oi => oi.Order.CustomerId == context.Customer.Id && !oi.Order.Deleted && oi.Product.ProductManufacturers.Any(pm => !manuIds.Contains(pm.ManufacturerId)));
             }
 
             throw new InvalidRuleOperatorException(expression);

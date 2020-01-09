@@ -1,21 +1,24 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SmartStore.Rules;
 
 namespace SmartStore.Services.Cart.Rules
 {
     public abstract class ListRuleBase<T> : IRule
     {
+        protected readonly IEqualityComparer<T> _comparer;
+
+        protected ListRuleBase(IEqualityComparer<T> comparer = null)
+        {
+            _comparer = comparer;
+        }
+
         protected abstract T GetValue(CartRuleContext context);
 
         public bool Match(CartRuleContext context, RuleExpression expression)
         {
             var list = expression.Value as List<T>;
-            if (list == null || list.Count == 0)
+            if (!(list?.Any() ?? false))
             {
                 return true;
             }
@@ -28,11 +31,11 @@ namespace SmartStore.Services.Cart.Rules
             }
             if (expression.Operator == RuleOperator.In)
             {
-                return list.Contains(value);
+                return list.Contains(value, _comparer);
             }
             if (expression.Operator == RuleOperator.NotIn)
             {
-                return !list.Contains(value);
+                return !list.Contains(value, _comparer);
             }
 
             throw new InvalidRuleOperatorException(expression);

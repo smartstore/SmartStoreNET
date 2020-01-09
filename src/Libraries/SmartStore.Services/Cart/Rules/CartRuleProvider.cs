@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autofac;
 using SmartStore.Rules;
 using SmartStore.Rules.Domain;
@@ -83,6 +80,7 @@ namespace SmartStore.Services.Cart.Rules
 
             var expressions = ruleSetIds
                 .Select(id => _ruleFactory.CreateExpressionGroup(id, this))
+                .Where(x => x != null)
                 .Cast<RuleExpression>()
                 .ToArray();
 
@@ -98,7 +96,7 @@ namespace SmartStore.Services.Cart.Rules
                 return true;
             }
 
-            RuleExpressionGroup group = null;
+            RuleExpressionGroup group;
 
             if (expressions.Length == 1 && expressions[0] is RuleExpressionGroup group2)
             {

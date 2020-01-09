@@ -11,6 +11,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
 using SmartStore.Rules;
 using SmartStore.Rules.Domain;
+using SmartStore.Rules.Filters;
 using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
@@ -136,7 +137,7 @@ namespace SmartStore.Admin.Controllers
             model.ScopeName = entity.Scope.GetLocalizedEnum(Services.Localization, Services.WorkContext);
 
             var provider = _ruleProvider(entity.Scope);
-            model.ExpressionGroup = _ruleFactory.CreateExpressionGroup(entity, provider);
+            model.ExpressionGroup = _ruleFactory.CreateExpressionGroup(entity, provider, true);
             model.AvailableDescriptors = _targetGroupService.RuleDescriptors;
 
             PrepareExpressions(model.ExpressionGroup);
@@ -342,21 +343,30 @@ namespace SmartStore.Admin.Controllers
 
             try
             {
-                var entity = _ruleStorage.GetRuleSetById(ruleSetId, false, false);
+                var entity = _ruleStorage.GetRuleSetById(ruleSetId, false, true);
 
                 switch (entity.Scope)
                 {
                     case RuleScope.Customer:
-                        var result = _targetGroupService.ProcessFilter(new[] { entity.Id }, LogicalRuleOperator.And, 0, 500);
+                        {
+                            var provider = _ruleProvider(entity.Scope) as ITargetGroupService;
+                            var expression = _ruleFactory.CreateExpressionGroup(entity, provider, true) as FilterExpression;
 
-                        message = T("Admin.Rules.Execute.MatchCustomers", result.TotalCount.ToString("N0"));
+                            var result = _targetGroupService.ProcessFilter(new[] { expression }, LogicalRuleOperator.And, 0, 500);
+
+                            message = T("Admin.Rules.Execute.MatchCustomers", result.TotalCount.ToString("N0"));
+                        }
                         break;
                     case RuleScope.Cart:
-                        var customer = Services.WorkContext.CurrentCustomer;
-                        var provider = _ruleProvider(entity.Scope) as ICartRuleProvider;
-                        var match = provider.RuleMatches(new int[] { entity.Id }, LogicalRuleOperator.And);
+                        {
+                            var customer = Services.WorkContext.CurrentCustomer;
+                            var provider = _ruleProvider(entity.Scope) as ICartRuleProvider;
+                            var expression = _ruleFactory.CreateExpressionGroup(entity, provider, true) as RuleExpression;
 
-                        message = T(match ? "Admin.Rules.Execute.MatchCart" : "Admin.Rules.Execute.DoesNotMatchCart", customer.Username.NullEmpty() ?? customer.Email);
+                            var match = provider.RuleMatches(new[] { expression }, LogicalRuleOperator.And);
+
+                            message = T(match ? "Admin.Rules.Execute.MatchCart" : "Admin.Rules.Execute.DoesNotMatchCart", customer.Username.NullEmpty() ?? customer.Email);
+                        }
                         break;
                 }
             }

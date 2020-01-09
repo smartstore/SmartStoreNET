@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data.Entity;
+using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
-using SmartStore.Rules;
-using SmartStore.Rules.Filters;
-using SmartStore.Rules.Domain;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Rules;
+using SmartStore.Rules.Domain;
+using SmartStore.Rules.Filters;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Customers
@@ -87,6 +84,7 @@ namespace SmartStore.Services.Customers
 
             var filters = ruleSetIds
                 .Select(id => _ruleFactory.CreateExpressionGroup(id, this))
+                .Where(x => x != null)
                 .Cast<FilterExpression>()
                 .ToArray();
 

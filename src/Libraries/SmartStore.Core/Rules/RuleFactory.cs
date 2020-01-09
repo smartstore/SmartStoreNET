@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Autofac;
 using SmartStore.Rules.Domain;
-using SmartStore.Collections;
-using SmartStore.Core.Caching;
-using SmartStore.Core.Data;
 
 namespace SmartStore.Rules
 {
     public interface IRuleFactory
     {
-        IRuleExpressionGroup CreateExpressionGroup(int ruleSetId, IRuleVisitor visitor);
-        IRuleExpressionGroup CreateExpressionGroup(RuleSetEntity ruleSet, IRuleVisitor visitor);
+        IRuleExpressionGroup CreateExpressionGroup(int ruleSetId, IRuleVisitor visitor, bool includeHidden = false);
+        IRuleExpressionGroup CreateExpressionGroup(RuleSetEntity ruleSet, IRuleVisitor visitor, bool includeHidden = false);
     }
 
     public partial class RuleFactory : IRuleFactory
@@ -26,7 +19,7 @@ namespace SmartStore.Rules
             _storage = storage;
         }
 
-        public IRuleExpressionGroup CreateExpressionGroup(int ruleSetId, IRuleVisitor visitor)
+        public IRuleExpressionGroup CreateExpressionGroup(int ruleSetId, IRuleVisitor visitor, bool includeHidden = false)
         {
             if (ruleSetId <= 0)
                 return null;
@@ -40,14 +33,18 @@ namespace SmartStore.Rules
                 return null;
             }
 
-            return CreateExpressionGroup(ruleSet, visitor);
+            return CreateExpressionGroup(ruleSet, visitor, includeHidden);
         }
 
-        public virtual IRuleExpressionGroup CreateExpressionGroup(RuleSetEntity ruleSet, IRuleVisitor visitor)
+        public virtual IRuleExpressionGroup CreateExpressionGroup(RuleSetEntity ruleSet, IRuleVisitor visitor, bool includeHidden = false)
         {
             if (ruleSet.Scope != visitor.Scope)
             {
-                // TODO: ErrHandling (ruleSet is for a different scope)
+                throw new SmartException($"Differing rule scope {ruleSet.Scope}. Expected {visitor.Scope}.");
+            }
+
+            if (!includeHidden && !ruleSet.IsActive)
+            {
                 return null;
             }
 
@@ -63,29 +60,29 @@ namespace SmartStore.Rules
             return group;
         }
 
-        private IRuleExpressionGroup CreateExpressionGroup(RuleSetEntity ruleSet, RuleEntity refRule, IRuleVisitor visitor)
-        {
-            if (ruleSet.Scope != visitor.Scope)
-            {
-                // TODO: ErrHandling (ruleSet is for a different scope)
-                return null;
-            }
+        //private IRuleExpressionGroup CreateExpressionGroup(RuleSetEntity ruleSet, RuleEntity refRule, IRuleVisitor visitor)
+        //{
+        //    if (ruleSet.Scope != visitor.Scope)
+        //    {
+        //        // TODO: ErrHandling (ruleSet is for a different scope)
+        //        return null;
+        //    }
 
-            var group = visitor.VisitRuleSet(ruleSet);
-            if (refRule != null)
-            {
-                group.RefRuleId = refRule.Id;
-            }
+        //    var group = visitor.VisitRuleSet(ruleSet);
+        //    if (refRule != null)
+        //    {
+        //        group.RefRuleId = refRule.Id;
+        //    }
 
-            var expressions = ruleSet.Rules
-                .Select(x => CreateExpression(x, visitor))
-                .Where(x => x != null)
-                .ToArray();
+        //    var expressions = ruleSet.Rules
+        //        .Select(x => CreateExpression(x, visitor))
+        //        .Where(x => x != null)
+        //        .ToArray();
 
-            group.AddExpressions(expressions);
+        //    group.AddExpressions(expressions);
 
-            return group;
-        }
+        //    return group;
+        //}
 
         private IRuleExpression CreateExpression(RuleEntity ruleEntity, IRuleVisitor visitor)
         {
@@ -94,9 +91,12 @@ namespace SmartStore.Rules
                 return visitor.VisitRule(ruleEntity);
             }
 
-            // It's a group, do recursive call
+            // It's a group, do recursive call.
             var group = CreateExpressionGroup(ruleEntity.Value.Convert<int>(), visitor);
-            group.RefRuleId = ruleEntity.Id;
+            if (group != null)
+            {
+                group.RefRuleId = ruleEntity.Id;
+            }
 
             return group;
         }

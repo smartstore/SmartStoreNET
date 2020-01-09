@@ -167,12 +167,22 @@ namespace SmartStore.Services.Rules
                     }
                     break;
                 case "Category":
-                    options = _categoryService.Value.GetCategoriesByIds(expression.RawValue.ToIntArray())
-                        .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetCategoryPath(_categoryService.Value).NullEmpty() ?? x.Name })
-                        .ToList();
+                    if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
+                    {
+                        options = _categoryService.Value.GetCategoriesByIds(expression.RawValue.ToIntArray())
+                            .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetCategoryPath(_categoryService.Value).NullEmpty() ?? x.Name })
+                            .ToList();
+                    }
+                    else
+                    {
+                        var categories = _categoryService.Value.GetCategoryTree(0, true).Flatten(false);
+                        options = categories
+                            .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetCategoryPath(_categoryService.Value).NullEmpty() ?? x.Name })
+                            .ToList();
+                    }
                     break;
                 case "Manufacturer":
-                    options = _manufacturerService.Value.GetManufacturersByIds(expression.RawValue.ToIntArray())
+                    options = _manufacturerService.Value.GetAllManufacturers(true)
                         .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false) })
                         .ToList();
                     break;

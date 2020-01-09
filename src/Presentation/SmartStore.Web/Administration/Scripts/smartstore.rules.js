@@ -98,7 +98,7 @@
     });
 
     // Change rule operator.
-    $('div.rule-operator').on('click', '.dropdown-item', function () {
+    $(document).on('click', 'div.rule-operator .dropdown-item', function () {
         var item = $(this);
         var operator = item.closest('.rule-operator');
         operator.data("value", item.data("value"));

@@ -151,7 +151,7 @@ namespace SmartStore.Services.Customers
                     RuleType = RuleType.Boolean,
                     Constraints = new IRuleConstraint[0]
                 },
-                new FilterDescriptor<Customer, int?>(x => x.BillingAddress.CountryId)
+                new FilterDescriptor<Customer, int?>(x => x.BillingAddress != null ? x.BillingAddress.CountryId : 0)
                 {
                     Name = "BillingCountry",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.BillingCountry"),

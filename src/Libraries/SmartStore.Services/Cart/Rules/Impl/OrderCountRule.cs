@@ -15,7 +15,7 @@ namespace SmartStore.Services.Cart.Rules.Impl
 
         public bool Match(CartRuleContext context, RuleExpression expression)
         {
-            var orderCount = _orderService.GetOrders(0, context.Customer.Id, null, null, null, null, null, null, null, null).Count();
+            var orderCount = _orderService.GetOrders(context.Store.Id, context.Customer.Id, null, null, null, null, null, null, null, null).Count();
 
             return expression.Operator.Match(orderCount, expression.Value);
         }

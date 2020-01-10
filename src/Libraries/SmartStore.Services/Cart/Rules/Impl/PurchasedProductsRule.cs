@@ -1,18 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core.Data;
-using SmartStore.Core.Domain.Orders;
 using SmartStore.Rules;
+using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Cart.Rules.Impl
 {
     public class PurchasedProductsRule : IRule
     {
-        private readonly IRepository<OrderItem> _orderItemRepository;
+        private readonly IOrderService _orderService;
 
-        public PurchasedProductsRule(IRepository<OrderItem> orderItemRepository)
+        public PurchasedProductsRule(IOrderService orderService)
         {
-            _orderItemRepository = orderItemRepository;
+            _orderService = orderService;
         }
 
         public bool Match(CartRuleContext context, RuleExpression expression)
@@ -23,19 +22,23 @@ namespace SmartStore.Services.Cart.Rules.Impl
                 return true;
             }
 
+            var query = _orderService.GetOrders(context.Store.Id, context.Customer.Id, null, null, null, null, null, null, null, null, null)
+                .SelectMany(o => o.OrderItems);
+
             if (expression.Operator == RuleOperator.In)
             {
-                return _orderItemRepository.TableUntracked
-                    .Any(oi => oi.Order.CustomerId == context.Customer.Id && !oi.Order.Deleted && productIds.Contains(oi.ProductId));
+                query = query.Where(oi => productIds.Contains(oi.ProductId));
             }
-
-            if (expression.Operator == RuleOperator.NotIn)
+            else if (expression.Operator == RuleOperator.NotIn)
             {
-                return _orderItemRepository.TableUntracked
-                    .Any(oi => oi.Order.CustomerId == context.Customer.Id && !oi.Order.Deleted && !productIds.Contains(oi.ProductId));
+                query = query.Where(oi => !productIds.Contains(oi.ProductId));
+            }
+            else
+            {
+                throw new InvalidRuleOperatorException(expression);
             }
 
-            throw new InvalidRuleOperatorException(expression);
+            return query.Count() > 0;
         }
     }
 }

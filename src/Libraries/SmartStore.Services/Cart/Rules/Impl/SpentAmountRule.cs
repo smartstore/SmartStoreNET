@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Rules;
 using SmartStore.Services.Orders;
 
@@ -15,7 +16,7 @@ namespace SmartStore.Services.Cart.Rules.Impl
 
         public bool Match(CartRuleContext context, RuleExpression expression)
         {
-            var orderTotals = _orderService.GetOrders(0, context.Customer.Id, null, null, null, null, null, null, null, null)
+            var orderTotals = _orderService.GetOrders(context.Store.Id, context.Customer.Id, null, null, new int[] { (int)OrderStatus.Complete }, null, null, null, null, null)
                 .Select(x => x.OrderTotal)
                 .ToList();
 

@@ -1,18 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core.Data;
-using SmartStore.Core.Domain.Orders;
 using SmartStore.Rules;
+using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Cart.Rules.Impl
 {
     public class PaidByRule :  IRule
     {
-        private readonly IRepository<Order> _orderRepository;
+        private readonly IOrderService _orderService;
 
-        public PaidByRule(IRepository<Order> orderRepository)
+        public PaidByRule(IOrderService orderService)
         {
-            _orderRepository = orderRepository;
+            _orderService = orderService;
         }
 
         public bool Match(CartRuleContext context, RuleExpression expression)
@@ -23,17 +22,22 @@ namespace SmartStore.Services.Cart.Rules.Impl
                 return true;
             }
 
+            var query = _orderService.GetOrders(context.Store.Id, context.Customer.Id, null, null, null, null, null, null, null, null, null);
+
             if (expression.Operator == RuleOperator.In)
             {
-                return _orderRepository.TableUntracked.Any(o => o.CustomerId == context.Customer.Id && !o.Deleted && paymentMethods.Contains(o.PaymentMethodSystemName));
+                query = query.Where(o => paymentMethods.Contains(o.PaymentMethodSystemName));
             }
-
-            if (expression.Operator == RuleOperator.NotIn)
+            else if (expression.Operator == RuleOperator.NotIn)
             {
-                return _orderRepository.TableUntracked.Any(o => o.CustomerId == context.Customer.Id && !o.Deleted && !paymentMethods.Contains(o.PaymentMethodSystemName));
+                query = query.Where(o => !paymentMethods.Contains(o.PaymentMethodSystemName));
+            }
+            else
+            {
+                throw new InvalidRuleOperatorException(expression);
             }
 
-            throw new InvalidRuleOperatorException(expression);
+            return query.Count() > 0;
         }
     }
 }

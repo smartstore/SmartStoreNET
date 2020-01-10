@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Orders;
 
@@ -13,11 +14,10 @@ namespace SmartStore.Services.Cart.Rules.Impl
             _shoppingCartService = shoppingCartService;
         }
 
-        protected override object GetValue(CartRuleContext context)
+        protected override IEnumerable<int> GetValues(CartRuleContext context)
         {
             var cartProductIds = _shoppingCartService.GetCartItems(context.Customer, ShoppingCartType.ShoppingCart, context.Store.Id)
-                .Select(x => x.Item.ProductId)
-                .ToList();
+                .Select(x => x.Item.ProductId);
 
             return cartProductIds;
         }

@@ -11,7 +11,7 @@ namespace SmartStore.Services.Cart.Rules.Impl
         {
         }
 
-        protected override object GetValue(CartRuleContext context)
+        protected override string GetValue(CartRuleContext context)
         {
             var paymentMethod = context.Customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, context.Store.Id);
 

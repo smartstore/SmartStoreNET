@@ -150,6 +150,18 @@ namespace SmartStore.Services.Cart.Rules
                 .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.Name })
                 .ToArray();
 
+            var listComparingOperators = new RuleOperator[]
+            {
+                RuleOperator.IsEqualTo,
+                RuleOperator.IsNotEqualTo,
+                RuleOperator.Contains,
+                RuleOperator.NotContains,
+                RuleOperator.In,
+                RuleOperator.NotIn,
+                RuleOperator.AllIn,
+                RuleOperator.NotAllIn
+            };
+
             var descriptors = new List<CartRuleDescriptor>
             {
                 new CartRuleDescriptor
@@ -195,7 +207,8 @@ namespace SmartStore.Services.Cart.Rules
                     RuleType = RuleType.IntArray,
                     ProcessorType = typeof(CustomerRoleRule),
                     Constraints = new IRuleConstraint[0],
-                    SelectList = new RemoteRuleValueSelectList("CustomerRole") { Multiple = true }
+                    SelectList = new RemoteRuleValueSelectList("CustomerRole") { Multiple = true },
+                    Operators = listComparingOperators
                 },
 
                 new CartRuleDescriptor
@@ -222,8 +235,7 @@ namespace SmartStore.Services.Cart.Rules
                     Constraints = new IRuleConstraint[0],
                     ProcessorType = typeof(ProductInCartRule),
                     SelectList = new RemoteRuleValueSelectList("Product") { Multiple = true },
-                    Operators = new RuleOperator[] { RuleOperator.IsEqualTo, RuleOperator.IsNotEqualTo, RuleOperator.Contains, RuleOperator.NotContains,
-                        RuleOperator.In, RuleOperator.NotIn, RuleOperator.AllIn, RuleOperator.NotAllIn }
+                    Operators = listComparingOperators
                 },
                 new CartRuleDescriptor
                 {

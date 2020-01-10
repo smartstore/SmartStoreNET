@@ -13,7 +13,9 @@ namespace SmartStore.Services.Cart.Rules
             _comparer = comparer;
         }
 
-        protected abstract object GetValue(CartRuleContext context);
+        protected virtual T GetValue(CartRuleContext context) => default;
+
+        protected virtual IEnumerable<T> GetValues(CartRuleContext context) => default;
 
         public bool Match(CartRuleContext context, RuleExpression expression)
         {
@@ -23,15 +25,28 @@ namespace SmartStore.Services.Cart.Rules
                 return true;
             }
 
-            var value = GetValue(context);
+            var values = GetValues(context);
 
-            if (value is IEnumerable<T> values)
+            if (values == null)
             {
-                if (values == null)
+                var value = GetValue(context);
+
+                if (object.Equals(value, default(T)))
                 {
                     return false;
                 }
 
+                if (expression.Operator == RuleOperator.In)
+                {
+                    return list.Contains(value, _comparer);
+                }
+                if (expression.Operator == RuleOperator.NotIn)
+                {
+                    return !list.Contains(value, _comparer);
+                }
+            }
+            else
+            {
                 if (expression.Operator == RuleOperator.IsEqualTo)
                 {
                     return !list.Except(values).Any();
@@ -65,22 +80,6 @@ namespace SmartStore.Services.Cart.Rules
                 else if (expression.Operator == RuleOperator.NotAllIn)
                 {
                     return values.All(x => !list.Contains(x));
-                }
-            }
-            else
-            {
-                if (object.Equals(value, default(T)))
-                {
-                    return false;
-                }
-
-                if (expression.Operator == RuleOperator.In)
-                {
-                    return list.Contains((T)value, _comparer);
-                }
-                if (expression.Operator == RuleOperator.NotIn)
-                {
-                    return !list.Contains((T)value, _comparer);
                 }
             }
 

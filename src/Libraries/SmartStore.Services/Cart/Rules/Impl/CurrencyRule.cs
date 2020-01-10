@@ -2,7 +2,7 @@
 {
     public class CurrencyRule : ListRuleBase<int>
     {
-        protected override object GetValue(CartRuleContext context)
+        protected override int GetValue(CartRuleContext context)
         {
             return context.WorkContext.WorkingCurrency.Id;
         }

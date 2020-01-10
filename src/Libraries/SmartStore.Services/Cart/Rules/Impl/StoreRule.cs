@@ -2,7 +2,7 @@
 {
     public class StoreRule : ListRuleBase<int>
     {
-        protected override object GetValue(CartRuleContext context)
+        protected override int GetValue(CartRuleContext context)
         {
             return context.Store.Id;
         }

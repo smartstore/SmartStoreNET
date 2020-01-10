@@ -14,7 +14,7 @@ namespace SmartStore.Services.Cart.Rules.Impl
             _webHelper = webHelper;
         }
 
-        protected override object GetValue(CartRuleContext context)
+        protected override string GetValue(CartRuleContext context)
         {
             var country = _countryLookup.LookupCountry(_webHelper.GetCurrentIpAddress());
             return country?.IsoCode ?? string.Empty;

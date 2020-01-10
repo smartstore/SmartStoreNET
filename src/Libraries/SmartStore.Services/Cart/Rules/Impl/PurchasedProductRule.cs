@@ -5,11 +5,11 @@ using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Cart.Rules.Impl
 {
-    public class PurchasedProductsRule : IRule
+    public class PurchasedProductRule : IRule
     {
         private readonly IOrderService _orderService;
 
-        public PurchasedProductsRule(IOrderService orderService)
+        public PurchasedProductRule(IOrderService orderService)
         {
             _orderService = orderService;
         }

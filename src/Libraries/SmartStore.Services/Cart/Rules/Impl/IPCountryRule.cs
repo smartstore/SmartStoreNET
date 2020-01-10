@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SmartStore.Core;
+﻿using SmartStore.Core;
 using SmartStore.Services.Directory;
 
 namespace SmartStore.Services.Cart.Rules.Impl
@@ -19,7 +14,7 @@ namespace SmartStore.Services.Cart.Rules.Impl
             _webHelper = webHelper;
         }
 
-        protected override string GetValue(CartRuleContext context)
+        protected override object GetValue(CartRuleContext context)
         {
             var country = _countryLookup.LookupCountry(_webHelper.GetCurrentIpAddress());
             return country?.IsoCode ?? string.Empty;

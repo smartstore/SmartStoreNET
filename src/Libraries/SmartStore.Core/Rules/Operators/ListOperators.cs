@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
 using SmartStore.Rules.Filters;
 
 namespace SmartStore.Rules.Operators
@@ -56,5 +54,33 @@ namespace SmartStore.Rules.Operators
 
         //    return null;
         //}
+    }
+
+
+    internal class NotAllInOperator : AllInOperator
+    {
+        internal NotAllInOperator()
+            : base("NotAllIn", true) { }
+    }
+
+    internal class AllInOperator : RuleOperator
+    {
+        internal AllInOperator()
+            : base("AllIn")
+        {
+        }
+
+        protected AllInOperator(string op, bool negate)
+            : base(op)
+        {
+            Negate = negate;
+        }
+
+        private bool Negate { get; set; }
+
+        protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

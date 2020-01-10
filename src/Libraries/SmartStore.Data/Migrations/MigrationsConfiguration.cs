@@ -239,7 +239,7 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CancelledOrderCount", "Cancelled order count", "Anzahl stornierter Bestellungen");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.NewOrderCount", "New order count", "Anzahl neuer Bestellungen");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderInStore", "Orders in store", "Bestellungen im Shop");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.PurchasedProducts", "Purchased products", "Gekaufte Produkte");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.PurchasedProduct", "Purchased product", "Gekauftes Produkt");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.PurchasedFromManufacturer", "Purchased from manufacturer", "Gekauft von Hersteller");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.HasPurchasedProduct", "Has purchased product", "Hat eines der folgenden Produkte gekauft");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.HasPurchasedAllProducts", "Has purchased all products", "Hat alle folgenden Produkte gekauft");
@@ -269,6 +269,7 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.AcceptThirdPartyEmailHandOver", "Accept third party email handover", "Akzeptiert Weitergabe der E-Mail Adresse an Dritte");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CartTotal", "Total amount of cart", "Gesamtbetrag des Warenkorbes");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CartSubtotal", "Subtotal amount of cart", "Zwischensumme des Warenkorbes");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductInCart", "Product in cart", "Produkt im Warenkorb");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderTotal", "Order total", "Gesamtbetrag der Bestellung");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderSubtotalInclTax", "Order subtotal incl. tax", "Gesamtbetrag der Bestellung (Brutto)");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderSubtotalExclTax", "Order subtotal excl tax", "Gesamtbetrag der Bestellung (Netto)");
@@ -284,7 +285,6 @@
             builder.AddOrUpdate("Admin.Rules.RuleOperator.EndsWithOperator", "Ends with", "Endet auf");
             builder.AddOrUpdate("Admin.Rules.RuleOperator.GreaterThanOperator", "Greater than", "Größer als");
             builder.AddOrUpdate("Admin.Rules.RuleOperator.GreaterThanOrEqualOperator", "Greater than or equal to", "Größer oder gleich");
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.InOperator", "In", "Ist eine von");
             builder.AddOrUpdate("Admin.Rules.RuleOperator.IsEmptyOperator", "Is empty", "Ist leer");
             builder.AddOrUpdate("Admin.Rules.RuleOperator.EqualOperator", "Is equal to", "Gleich");
             builder.AddOrUpdate("Admin.Rules.RuleOperator.IsNotEmptyOperator", "Is not empty", "Ist nicht leer");
@@ -294,8 +294,11 @@
             builder.AddOrUpdate("Admin.Rules.RuleOperator.LessThanOperator", "Less than", "Kleiner als");
             builder.AddOrUpdate("Admin.Rules.RuleOperator.LessThanOrEqualOperator", "Less than or equal to", "Kleiner oder gleich");
             builder.AddOrUpdate("Admin.Rules.RuleOperator.NotContainsOperator", "Not contains", "Enthält nicht");
-            builder.AddOrUpdate("Admin.Rules.RuleOperator.NotInOperator", "Not in", "Ist KEINE von");
             builder.AddOrUpdate("Admin.Rules.RuleOperator.StartsWithOperator", "Starts with", "Beginnt mit");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.InOperator", "In", "Ist eine von");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.NotInOperator", "Not in", "Ist KEINE von");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.AllInOperator", "All in", "Sind alle von");
+            builder.AddOrUpdate("Admin.Rules.RuleOperator.NotAllInOperator", "Not all in", "Sind nicht alle von");
 
             builder.AddOrUpdate("Enums.SmartStore.Rules.RuleScope.Cart", "Cart", "Warenkorb");
             builder.AddOrUpdate("Enums.SmartStore.Rules.RuleScope.OrderItem", "Order item", "Bestellposition");

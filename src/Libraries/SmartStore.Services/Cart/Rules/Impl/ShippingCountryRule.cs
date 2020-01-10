@@ -2,7 +2,7 @@
 {
     public class ShippingCountryRule : ListRuleBase<int>
     {
-        protected override int GetValue(CartRuleContext context)
+        protected override object GetValue(CartRuleContext context)
         {
             return context.Customer?.ShippingAddress?.CountryId ?? 0;
         }

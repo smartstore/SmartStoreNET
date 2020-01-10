@@ -34,6 +34,8 @@ namespace SmartStore.Rules
         public readonly static RuleOperator IsNotEmpty = new IsNotEmptyOperator();
         public readonly static RuleOperator In = new InOperator();
         public readonly static RuleOperator NotIn = new NotInOperator();
+        public readonly static RuleOperator AllIn = new AllInOperator();
+        public readonly static RuleOperator NotAllIn = new NotAllInOperator();
         //public readonly static string All = new RuleOperator(); // TODO
 
         protected RuleOperator(string op)

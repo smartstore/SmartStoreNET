@@ -5,7 +5,6 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Stores;
 
@@ -22,7 +21,6 @@ namespace SmartStore.Services.Messages
 		private readonly ILanguageService _languageService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly ILocalizedEntityService _localizedEntityService;
-        private readonly IEventPublisher _eventPublisher;
         private readonly IRequestCache _requestCache;
 
         public MessageTemplateService(
@@ -31,8 +29,7 @@ namespace SmartStore.Services.Messages
 			ILanguageService languageService,
 			ILocalizedEntityService localizedEntityService,
 			IStoreMappingService storeMappingService,
-            IRepository<MessageTemplate> messageTemplateRepository,
-            IEventPublisher eventPublisher)
+            IRepository<MessageTemplate> messageTemplateRepository)
         {
 			_requestCache = requestCache;
 			_storeMappingRepository = storeMappingRepository;
@@ -40,7 +37,6 @@ namespace SmartStore.Services.Messages
 			_localizedEntityService = localizedEntityService;
 			_storeMappingService = storeMappingService;
 			_messageTemplateRepository = messageTemplateRepository;
-			_eventPublisher = eventPublisher;
 
 			QuerySettings = DbQuerySettings.Default;
 		}

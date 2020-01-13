@@ -16,11 +16,8 @@ namespace SmartStore.Services.Cart.Rules.Impl
 
         public bool Match(CartRuleContext context, RuleExpression expression)
         {
-            var orderTotals = _orderService.GetOrders(context.Store.Id, context.Customer.Id, null, null, new int[] { (int)OrderStatus.Complete }, null, null, null, null, null)
-                .Select(x => x.OrderTotal)
-                .ToList();
-
-            var spentAmount = orderTotals.Any() ? orderTotals.Sum() : decimal.Zero;
+            var query = _orderService.GetOrders(context.Store.Id, context.Customer.Id, null, null, new int[] { (int)OrderStatus.Complete }, null, null, null, null, null);
+            var spentAmount = query.Sum(x => (decimal?)x.OrderTotal) ?? decimal.Zero;
 
             var money = new Money(spentAmount, context.WorkContext.WorkingCurrency);
             spentAmount = money.RoundedAmount;

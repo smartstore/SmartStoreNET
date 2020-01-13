@@ -17,7 +17,7 @@ namespace SmartStore.Services.Cart.Rules
 
         protected virtual IEnumerable<T> GetValues(CartRuleContext context) => default;
 
-        public bool Match(CartRuleContext context, RuleExpression expression)
+        public virtual bool Match(CartRuleContext context, RuleExpression expression)
         {
             var list = expression.Value as List<T>;
             if (!(list?.Any() ?? false))

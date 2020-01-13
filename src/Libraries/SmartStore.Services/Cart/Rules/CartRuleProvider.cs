@@ -152,14 +152,14 @@ namespace SmartStore.Services.Cart.Rules
 
             var listComparingOperators = new RuleOperator[]
             {
-                RuleOperator.IsEqualTo,
-                RuleOperator.IsNotEqualTo,
-                RuleOperator.Contains,
-                RuleOperator.NotContains,
                 RuleOperator.In,
                 RuleOperator.NotIn,
                 RuleOperator.AllIn,
-                RuleOperator.NotAllIn
+                RuleOperator.NotAllIn,
+                RuleOperator.Contains,
+                RuleOperator.NotContains,
+                RuleOperator.IsEqualTo,
+                RuleOperator.IsNotEqualTo
             };
 
             var descriptors = new List<CartRuleDescriptor>
@@ -239,6 +239,32 @@ namespace SmartStore.Services.Cart.Rules
                 },
                 new CartRuleDescriptor
                 {
+                    Name = "ProductInWishlist",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.ProductOnWishlist"),
+                    RuleType = RuleType.IntArray,
+                    Constraints = new IRuleConstraint[0],
+                    ProcessorType = typeof(ProductOnWishlistRule),
+                    SelectList = new RemoteRuleValueSelectList("Product") { Multiple = true },
+                    Operators = listComparingOperators
+                },
+                new CartRuleDescriptor
+                {
+                    Name = "ProductReviewCount",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.ProductReviewCount"),
+                    RuleType = RuleType.Int,
+                    Constraints = new IRuleConstraint[0],
+                    ProcessorType = typeof(ProductReviewCountRule)
+                },
+                new CartRuleDescriptor
+                {
+                    Name = "RewardPointsBalance",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.RewardPointsBalance"),
+                    RuleType = RuleType.Int,
+                    Constraints = new IRuleConstraint[0],
+                    ProcessorType = typeof(RewardPointsBalanceRule)
+                },
+                new CartRuleDescriptor
+                {
                     Name = "CartBillingCountry",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.BillingCountry"),
                     RuleType = RuleType.IntArray,
@@ -287,7 +313,8 @@ namespace SmartStore.Services.Cart.Rules
                     RuleType = RuleType.IntArray,
                     Constraints = new IRuleConstraint[0],
                     ProcessorType = typeof(PurchasedProductRule),
-                    SelectList = new RemoteRuleValueSelectList("Product") { Multiple = true }
+                    SelectList = new RemoteRuleValueSelectList("Product") { Multiple = true },
+                    Operators = listComparingOperators
                 },
                 new CartRuleDescriptor
                 {
@@ -296,12 +323,13 @@ namespace SmartStore.Services.Cart.Rules
                     RuleType = RuleType.IntArray,
                     Constraints = new IRuleConstraint[0],
                     ProcessorType = typeof(PurchasedFromManufacturerRule),
-                    SelectList = new RemoteRuleValueSelectList("Manufacturer") { Multiple = true }
+                    SelectList = new RemoteRuleValueSelectList("Manufacturer") { Multiple = true },
+                    Operators = listComparingOperators
                 },
                 new CartRuleDescriptor
                 {
                     Name = "CartPaymentMethod",
-                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.PaymentMethodSystemName"),
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.PaymentMethod"),
                     RuleType = RuleType.StringArray,
                     Constraints = new IRuleConstraint[0],
                     ProcessorType = typeof(PaymentMethodRule),
@@ -314,7 +342,8 @@ namespace SmartStore.Services.Cart.Rules
                     RuleType = RuleType.StringArray,
                     Constraints = new IRuleConstraint[0],
                     ProcessorType = typeof(PaidByRule),
-                    SelectList = new RemoteRuleValueSelectList("PaymentMethod") { Multiple = true }
+                    SelectList = new RemoteRuleValueSelectList("PaymentMethod") { Multiple = true },
+                    Operators = listComparingOperators
                 },
                 new CartRuleDescriptor
                 {

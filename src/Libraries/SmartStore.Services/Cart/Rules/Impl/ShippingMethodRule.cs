@@ -8,9 +8,9 @@ namespace SmartStore.Services.Cart.Rules.Impl
     {
         protected override int GetValue(CartRuleContext context)
         {
-            var shippingMethodId = context.Customer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, context.Store.Id)?.ShippingMethodId ?? 0;
+            var shippingMethod = context.Customer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, context.Store.Id);
 
-            return shippingMethodId;
+            return shippingMethod?.ShippingMethodId ?? 0;
         }
     }
 }

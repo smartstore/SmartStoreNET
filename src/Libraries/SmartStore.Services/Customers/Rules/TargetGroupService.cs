@@ -386,8 +386,8 @@ namespace SmartStore.Services.Customers
                 },
                 new AnyFilterDescriptor<Customer, Order, string>(x => x.Orders.Where(o => !o.Deleted), o => o.PaymentMethodSystemName)
                 {
-                    Name = "PaymentMethodSystemName",
-                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.PaymentMethodSystemName"),
+                    Name = "PaymentMethod",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.PaidBy"),
                     RuleType = RuleType.String,
                     Constraints = new IRuleConstraint[0],
                     SelectList = new RemoteRuleValueSelectList("PaymentMethod")
@@ -402,8 +402,8 @@ namespace SmartStore.Services.Customers
                 },
                 new AnyFilterDescriptor<Customer, Order, string>(x => x.Orders.Where(o => !o.Deleted), o => o.ShippingRateComputationMethodSystemName)
                 {
-                    Name = "ShippingRateComputationMethodSystemName",
-                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.ShippingRateComputationMethodSystemName"),
+                    Name = "ShippingRateComputationMethod",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.ShippingRateComputationMethod"),
                     RuleType = RuleType.String,
                     Constraints = new IRuleConstraint[0],
                     SelectList = new RemoteRuleValueSelectList("ShippingRateComputationMethod")

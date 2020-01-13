@@ -270,14 +270,17 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CartTotal", "Total amount of cart", "Gesamtbetrag des Warenkorbes");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CartSubtotal", "Subtotal amount of cart", "Zwischensumme des Warenkorbes");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductInCart", "Product in cart", "Produkt im Warenkorb");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductOnWishlist", "Product on wishlist", "Produkt auf der Wunschliste");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductReviewCount", "Number of product reviews", "Anzahl der Produkt Rezensionen");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.RewardPointsBalance", "Number of reward points", "Anzahl der Bonuspunkte");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderTotal", "Order total", "Gesamtbetrag der Bestellung");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderSubtotalInclTax", "Order subtotal incl. tax", "Gesamtbetrag der Bestellung (Brutto)");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderSubtotalExclTax", "Order subtotal excl tax", "Gesamtbetrag der Bestellung (Netto)");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderCount", "Number of orders", "Anzahl der Aufträge");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.SpentAmount", "Amount spent", "Ausgegebener Betrag");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.PaymentMethodSystemName", "Payment method (system name)", "Zahlart (Systemname)");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.PaymentMethod", "Selected payment method", "Gewählte Zahlart");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.PaidBy", "Paid by", "Bezahlt mit");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingRateComputationMethodSystemName", "Shipping rate computation method (system name)", "Berechnungsmethode für Versandkosten (Systemname)");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingRateComputationMethod", "Shipping rate computation method", "Berechnungsmethode für Versandkosten");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingMethod", "Shipping method", "Versandart");
 
             // Rule operators

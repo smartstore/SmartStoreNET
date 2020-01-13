@@ -15,7 +15,7 @@ namespace SmartStore.Services.Cart.Rules.Impl
         {
             var paymentMethod = context.Customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, context.Store.Id);
 
-            return paymentMethod;
+            return paymentMethod.NullEmpty();
         }
     }
 }

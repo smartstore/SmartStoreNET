@@ -129,7 +129,7 @@ namespace SmartStore.Services.Rules
                     break;
                 case "Currency":
                     options = _currencyService.Value.GetAllCurrencies(true)
-                        .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false) })
+                        .Select(x => new RuleValueSelectListOption { Value = byId ? x.Id.ToString() : x.CurrencyCode, Text = x.GetLocalized(y => y.Name, language, true, false) })
                         .ToList();
                     break;
                 case "CustomerRole":

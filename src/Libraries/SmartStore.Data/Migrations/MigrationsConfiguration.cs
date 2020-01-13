@@ -254,17 +254,16 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.BirthDate", "Days since date of birth", "Tage seit dem Geburtsdatum");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Gender", "Gender", "Geschlecht");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ZipPostalCode", "Zip postal code", "PLZ");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.VatNumberStatusId", "Vat number status", "Steuernummerstatus");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.TimeZoneId", "Time zone", "Zeitzone");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.TaxDisplayTypeId", "Tax display type", "Steueranzeigetyp");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.VatNumberStatus", "Vat number status", "Steuernummerstatus");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.TimeZone", "Time zone", "Zeitzone");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.TaxDisplayType", "Tax display type", "Steueranzeigetyp");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.IPCountry", "IP associated with country", "IP gehört zu Land");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CountryId", "Country", "Land");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CurrencyId", "Currency", "Währung");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.LanguageId", "Language", "Sprache");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Currency", "Currency", "Währung");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Language", "Language", "Sprache");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.LastForumVisit", "Days since last forum visit", "Tage seit letztem Forenbesuch");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.LastUserAgent", "Last user agent", "Zuletzt genutzter User-Agent");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.IsInCustomerRole", "In customer role", "In Kundengruppe");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.StoreId", "Store", "Shop");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Store", "Store", "Shop");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.LastOrderDateDays", "Days since last order", "Tage seit letzter Bestellung");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.AcceptThirdPartyEmailHandOver", "Accept third party email handover", "Akzeptiert Weitergabe der E-Mail Adresse an Dritte");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CartTotal", "Total amount of cart", "Gesamtbetrag des Warenkorbes");
@@ -279,9 +278,11 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OrderCount", "Number of orders", "Anzahl der Aufträge");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.SpentAmount", "Amount spent", "Ausgegebener Betrag");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.PaymentMethod", "Selected payment method", "Gewählte Zahlart");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.PaymentStatus", "Payment status", "Zahlungsstatus");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.PaidBy", "Paid by", "Bezahlt mit");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingRateComputationMethod", "Shipping rate computation method", "Berechnungsmethode für Versandkosten");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingMethod", "Shipping method", "Versandart");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingStatus", "Shipping status", "Lieferstatus");
 
             // Rule operators
             builder.AddOrUpdate("Admin.Rules.RuleOperator.ContainsOperator", "Contains", "Enthält");

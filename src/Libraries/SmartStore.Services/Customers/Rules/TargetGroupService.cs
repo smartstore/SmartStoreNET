@@ -284,6 +284,7 @@ namespace SmartStore.Services.Customers
                     RuleType = RuleType.String,
                     Constraints = new IRuleConstraint[0]
                 },
+
                 new AnyFilterDescriptor<Customer, CustomerRole, int>(x => x.CustomerRoles, cr => cr.Id)
                 {
                     Name = "IsInCustomerRole",
@@ -291,6 +292,13 @@ namespace SmartStore.Services.Customers
                     RuleType = RuleType.IntArray,
                     Constraints = new IRuleConstraint[0],
                     SelectList = new RemoteRuleValueSelectList("CustomerRole") { Multiple = true }
+                },
+                new FilterDescriptor<Customer, int>(x => x.ReturnRequests.Count())
+                {
+                    Name = "ReturnRequestCount",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.ReturnRequestCount"),
+                    RuleType = RuleType.Int,
+                    Constraints = new IRuleConstraint[0]
                 },
 
                 new FilterDescriptor<Customer, int>(x => x.Orders.Count(o => !o.Deleted && o.OrderStatusId == 30))

@@ -105,6 +105,24 @@
 					</div>
                 </td>
             </tr>
+            if (Model.MenuLinks.Any())
+            {
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.MenuLinks)
+                    </td>
+                    <td class="adminData">
+					    <div class="form-control-plaintext">
+                            @foreach (var link in Model.MenuLinks)
+                            {
+                                <div>
+                                    <a href="@link.Key" target="_blank">@link.Value</a>
+                                </div>
+                            }
+					    </div>
+                    </td>
+                </tr>
+            }
         }
         <tr>
             <td colspan="2">

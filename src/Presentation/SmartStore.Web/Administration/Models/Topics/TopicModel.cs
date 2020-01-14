@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web.Mvc;
@@ -21,7 +22,8 @@ namespace SmartStore.Admin.Models.Topics
         {
 			WidgetWrapContent = true;
 			Locales = new List<TopicLocalizedModel>();
-            AvailableTitleTags = new List<SelectListItem>(); 
+            AvailableTitleTags = new List<SelectListItem>();
+            MenuLinks = new Dictionary<string, string>();
             AvailableTitleTags.Add(new SelectListItem { Text = "h1", Value = "h1" });
             AvailableTitleTags.Add(new SelectListItem { Text = "h2", Value = "h2" });
             AvailableTitleTags.Add(new SelectListItem { Text = "h3", Value = "h3" });
@@ -131,6 +133,9 @@ namespace SmartStore.Admin.Models.Topics
 		public IList<SelectListItem> AvailableTitleTags { get; private set; }
 
         public IList<TopicLocalizedModel> Locales { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.MenuLinks")]
+        public Dictionary<string, string> MenuLinks { get; set; }
     }
 
     public class TopicLocalizedModel : ILocalizedModelLocal

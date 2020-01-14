@@ -2,16 +2,17 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Topics;
+using SmartStore.Core;
+using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
-using SmartStore.Services.Customers;
+using SmartStore.Services.Cms;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Topics;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
@@ -28,17 +29,19 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizedEntityService _localizedEntityService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly IUrlRecordService _urlRecordService;
-		private readonly IAclService _aclService;
-		private readonly ICustomerService _customerService;
+        private readonly IAclService _aclService;
+        private readonly IMenuStorage _menuStorage;
+        private readonly ILinkResolver _linkResolver;
 
-		public TopicController(
+        public TopicController(
 			ITopicService topicService, 
 			ILanguageService languageService,
             ILocalizedEntityService localizedEntityService, 
             IStoreMappingService storeMappingService, 
 			IUrlRecordService urlRecordService,
-			IAclService aclService,
-			ICustomerService customerService)
+            IAclService aclService,
+            IMenuStorage menuStorage,
+            ILinkResolver linkResolver)
         {
             _topicService = topicService;
             _languageService = languageService;
@@ -46,8 +49,9 @@ namespace SmartStore.Admin.Controllers
 			_storeMappingService = storeMappingService;
 			_urlRecordService = urlRecordService;
 			_aclService = aclService;
-			_customerService = customerService;
-		}
+            _menuStorage = menuStorage;
+            _linkResolver = linkResolver;
+        }
 
         private void UpdateLocales(Topic topic, TopicModel model)
         {
@@ -249,8 +253,9 @@ namespace SmartStore.Admin.Controllers
 
             var model = topic.ToModel();
 			model.Url = GetTopicUrl(topic);
-			
-			PrepareStoresMappingModel(model, topic, false);
+            model.WidgetZone = topic.WidgetZone.SplitSafe(",");
+
+            PrepareStoresMappingModel(model, topic, false);
 			PrepareAclModel(model, topic, false);
 
 			AddLocales(_languageService, model.Locales, (locale, languageId) =>
@@ -265,9 +270,36 @@ namespace SmartStore.Admin.Controllers
 				locale.SeName = topic.GetSeName(languageId, false, false);
             });
 
-			model.WidgetZone = topic.WidgetZone.SplitSafe(",");
+            // Get menu links.
+            IPagedList<MenuRecord> menus = null;
+            var pageIndex = 0;
 
-			return View(model);
+            do
+            {
+                menus = _menuStorage.GetAllMenus(null, 0, true, pageIndex++, 500);
+
+                foreach (var menu in menus)
+                {
+                    foreach (var item in menu.Items.Where(x => x.ProviderName != null && x.ProviderName == "entity"))
+                    {
+                        var link = _linkResolver.Resolve(item.Model);
+                        if (link.Type == LinkType.Topic && link.Id == topic.Id)
+                        {
+                            var url = Url.Action("EditItem", "Menu", new { id = item.Id, area = "Admin" });
+
+                            var label = string.Concat(
+                                menu.Title.NullEmpty() ?? menu.SystemName.NullEmpty() ?? "".NaIfEmpty(),
+                                " » ",
+                                item.Title.NullEmpty() ?? link.Label.NullEmpty() ?? "".NaIfEmpty());
+
+                            model.MenuLinks[url] = label;
+                        }
+                    }
+                }
+            }
+            while (menus.HasNextPage);
+
+            return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]

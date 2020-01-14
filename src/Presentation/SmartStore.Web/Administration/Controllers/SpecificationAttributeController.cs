@@ -9,6 +9,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -299,7 +300,13 @@ namespace SmartStore.Admin.Controllers
 			var gridModel = new GridModel<SpecificationAttributeOptionModel>();
 			var options = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(specificationAttributeId);
 
-			gridModel.Data = options.Select(x => x.ToModel());
+			gridModel.Data = options.Select(x =>
+            {
+                var model = x.ToModel();
+                model.NameString = Server.HtmlEncode(x.Color.IsEmpty() ? x.Name : $"{x.Name} - {x.Color}");
+
+                return model;
+            });
 			gridModel.Total = options.Count();
 
             return new JsonResult
@@ -311,8 +318,11 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Catalog.Attribute.EditOption)]
         public ActionResult OptionCreatePopup(int specificationAttributeId)
         {
-            var model = new SpecificationAttributeOptionModel();
-            model.SpecificationAttributeId = specificationAttributeId;
+            var model = new SpecificationAttributeOptionModel
+            {
+                SpecificationAttributeId = specificationAttributeId,
+                Color = "",
+            };
 
             AddLocales(_languageService, model.Locales);
 
@@ -344,7 +354,9 @@ namespace SmartStore.Admin.Controllers
 				{
 					var sao = model.ToEntity();
 
-					try
+                    MediaHelper.UpdatePictureTransientStateFor(sao, m => m.PictureId);
+
+                    try
 					{
 						_specificationAttributeService.InsertSpecificationAttributeOption(sao);
 					}
@@ -380,6 +392,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             var model = sao.ToModel();
+            model.NameString = Server.HtmlEncode(sao.Color.IsEmpty() ? sao.Name : $"{sao.Name} - {sao.Color}");
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
@@ -404,7 +417,9 @@ namespace SmartStore.Admin.Controllers
             {
                 sao = model.ToEntity(sao);
 
-				try
+                MediaHelper.UpdatePictureTransientStateFor(sao, m => m.PictureId);
+
+                try
 				{
 					_specificationAttributeService.UpdateSpecificationAttributeOption(sao);
 

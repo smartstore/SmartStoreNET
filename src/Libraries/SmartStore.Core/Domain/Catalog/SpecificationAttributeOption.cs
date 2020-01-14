@@ -43,10 +43,22 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public decimal NumberValue { get; set; }
 
-		/// <summary>
-		/// Gets or sets the specification attribute
-		/// </summary>
+        /// <summary>
+        /// Gets or sets the picture id.
+        /// </summary>
 		[DataMember]
+        public int PictureId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the color RGB value.
+        /// </summary>
+		[DataMember]
+        public string Color { get; set; }
+
+        /// <summary>
+        /// Gets or sets the specification attribute
+        /// </summary>
+        [DataMember]
 		public virtual SpecificationAttribute SpecificationAttribute { get; set; }
 
         /// <summary>

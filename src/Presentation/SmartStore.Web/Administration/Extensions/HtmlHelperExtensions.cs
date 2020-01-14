@@ -23,7 +23,20 @@ namespace SmartStore.Admin.Extensions
 			return result;
 		}
 
-		public static MvcHtmlString ProviderList<TModel>(this HtmlHelper<IEnumerable<TModel>> html, 
+        public static string AttributeOptionName<T>(this HtmlHelper<T> helper)
+        {
+            var result =
+                "<# if(Color && Color.length > 0) {#>" +
+                "<span class=\"color-container\"><span class=\"color\" style=\"background:<#= Color #>\">&nbsp;</span></span>" +
+                "<span><#= NameString #></span>" +
+                "<# } else { #>" +
+                "<span><#= NameString #></span>" +
+                "<# } #>";
+
+            return result;
+        }
+
+        public static MvcHtmlString ProviderList<TModel>(this HtmlHelper<IEnumerable<TModel>> html, 
 			IEnumerable<TModel> model,
 			params Func<TModel, object>[] extraColumns) where TModel : ProviderModel
 		{

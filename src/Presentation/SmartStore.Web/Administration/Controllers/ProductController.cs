@@ -3121,6 +3121,8 @@ namespace SmartStore.Admin.Controllers
 
                 pvav.LinkedProductId = pvav.ValueType == ProductVariantAttributeValueType.Simple ? 0 : model.LinkedProductId;
 
+                MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.PictureId);
+
                 try
 				{
 					_productAttributeService.InsertProductVariantAttributeValue(pvav);
@@ -3130,8 +3132,6 @@ namespace SmartStore.Admin.Controllers
 					ModelState.AddModelError("", ex.Message);
 					return View(model);
 				}
-
-				MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.PictureId);
 
                 try
                 {

@@ -311,7 +311,19 @@
             builder.AddOrUpdate("Enums.SmartStore.Rules.RuleScope.Product", "Product", "Produkt");
 
             builder.AddOrUpdate("SmartStore.Blog.Button", "Visit our blog", "Zum Blog");
-            builder.AddOrUpdate("SmartStore.Blog.Button.Hint", "Click here to be forwarded to our blog", "Klicken Sie hier um zu unserem Blog weitergeleitet zu werden");                       
+            builder.AddOrUpdate("SmartStore.Blog.Button.Hint", "Click here to be forwarded to our blog", "Klicken Sie hier um zu unserem Blog weitergeleitet zu werden");
+
+            builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.ColorSquaresRgb",
+                "RGB color",
+                "RGB-Farbe",
+                "Specifies a color for the color squares control.",
+                "Legt eine Farbe für das Farbquadrat-Steuerelement fest.");
+
+            builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Picture",
+                "Picture",
+                "Bild",
+                "Specifies an image as the selector element.",
+                "Legt ein Bild als Auswahlelement fest.");
         }
     }
 }

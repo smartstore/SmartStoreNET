@@ -7,14 +7,15 @@ namespace SmartStore.Data.Mapping.Catalog
     {
         public SpecificationAttributeOptionMap()
         {
-            this.ToTable("SpecificationAttributeOption");
-            this.HasKey(sao => sao.Id);
-            this.Property(sao => sao.Name).IsRequired();
-			this.Property(sao => sao.Alias).HasMaxLength(30);
+            ToTable("SpecificationAttributeOption");
+            HasKey(sao => sao.Id);
+            Property(sao => sao.Name).IsRequired();
+			Property(sao => sao.Alias).HasMaxLength(30);
+            Property(sao => sao.Color).HasMaxLength(100);
 
-			Property(soa => soa.NumberValue).HasPrecision(18, 4);
+            Property(soa => soa.NumberValue).HasPrecision(18, 4);
 
-			this.HasRequired(sao => sao.SpecificationAttribute)
+			HasRequired(sao => sao.SpecificationAttribute)
                 .WithMany(sa => sa.SpecificationAttributeOptions)
                 .HasForeignKey(sao => sao.SpecificationAttributeId);
         }

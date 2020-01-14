@@ -855,7 +855,9 @@ namespace SmartStore.Services.DataExchange.Export
 					_writer.Write("Id", entitySao.Id.ToString());
 					_writer.Write("SpecificationAttributeId", entitySao.SpecificationAttributeId.ToString());
 					_writer.Write("DisplayOrder", entitySao.DisplayOrder.ToString());
-					_writer.Write("Name", (string)option.Name);
+                    _writer.Write("NumberValue", ((decimal)option.NumberValue).ToString(_culture));
+                    _writer.Write("Color", (string)option.Color);
+                    _writer.Write("Name", (string)option.Name);
 					_writer.Write("Alias", (string)option.Alias);
 
 					WriteLocalized(option);

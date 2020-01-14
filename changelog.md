@@ -21,6 +21,7 @@
 * #1714 Direct links to variations on a product.
 * #1733 Add ability to hide products from catalog, but not search.
 * #1754 Implement hidden boolean setting that controls which catalog search engine implementation should be used in backend.
+* #1776 Enable images and color values for search filters to be stored for specification attribute options.
 
 ### Improvements
 * #1663 Make MeasureDimension and MeasureWeight localizable.
@@ -58,6 +59,7 @@
 * Azure: opening the configuration page resulted in an error.
 * Shipping by weight: the surcharge hint was not displayed correctly.
 * Off-canvas menu shows wrong product count for brand menu items.
+* Images of newly added variants could be deleted automatically due to wrong image transient state.
 
 
 ## SmartStore.NET 3.2.2

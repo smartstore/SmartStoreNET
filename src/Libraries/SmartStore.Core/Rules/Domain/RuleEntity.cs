@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SmartStore.Core;
 
@@ -30,7 +25,7 @@ namespace SmartStore.Rules.Domain
         //public string Member { get; set; }
 
         [DataMember]
-        [Required, StringLength(10)]
+        [Required, StringLength(20)]
         public string Operator { get; set; }
 
         [DataMember]

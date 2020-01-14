@@ -3,8 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Logging;
 using SmartStore.Utilities;
 
 namespace SmartStore.Core.Logging

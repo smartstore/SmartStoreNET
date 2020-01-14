@@ -21,7 +21,18 @@ namespace SmartStore.Core.Logging
         /// Maximum number of suffixes recorded before a cleanup happens to recycle memory.
         /// </summary>
         private const int MaxSuffixes = 100;
-		
+
+        /// <summary>
+        /// Prevents empty log files.
+        /// The sequence from log4Net source is as below:
+        /// - The first call to OpenFile() is because of ActivateOptions() called from FileAppender's constructor.
+        /// - When log message is generated, AppenderSkeleton's DoAppend() calls PreAppendCheck()
+        /// - PreAppendCheck() is overridden in TextWriterAppender, the base of FileAppender.
+        /// - The overridden PreAppendCheck() calls virtual PrepareWriter if the file is not yet open.
+        /// - PrepareWriter() of FileAppender calls SafeOpenFile() which inturn calls OpenFile()
+        /// </summary>
+        private bool _isFirstCall = true;
+
         /// <summary>
         /// Opens the log file adding an incremental suffix to the filename if required due to an opening failure (usually, locking).
         /// </summary>
@@ -29,6 +40,12 @@ namespace SmartStore.Core.Logging
         /// <param name="append">Boolean flag indicating weather the log file should be appended if it already exists.</param>
         protected override void OpenFile(string fileName, bool append)
         {
+            if (_isFirstCall)
+            {
+                _isFirstCall = false;
+                return;
+            }
+
             lock (this)
             {
                 bool fileOpened = false;

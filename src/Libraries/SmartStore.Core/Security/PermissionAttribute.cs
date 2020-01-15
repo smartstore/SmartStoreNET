@@ -96,7 +96,7 @@ namespace SmartStore.Core.Security
                             success = false,
                             controller = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName,
                             action = filterContext.ActionDescriptor.ActionName,
-                            message
+                            //message
                         }
                     };
                 }

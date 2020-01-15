@@ -1,9 +1,10 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
-    
-    public partial class SpecificationAttributeColorAndPicture : DbMigration
+    using SmartStore.Core.Plugins;
+    using SmartStore.Data.Setup;
+
+    public partial class SpecificationAttributeColorAndPicture : DbMigration, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {
@@ -17,6 +18,20 @@ namespace SmartStore.Data.Migrations
             AlterColumn("dbo.Rule", "Operator", c => c.String(nullable: false, maxLength: 10));
             DropColumn("dbo.SpecificationAttributeOption", "Color");
             DropColumn("dbo.SpecificationAttributeOption", "PictureId");
+        }
+
+        public bool RollbackOnFailure => true;
+
+        public void Seed(SmartObjectContext context)
+        {
+            // Save newly added permissions to the database.
+            var descriptor = PluginFinder.Current.GetPluginDescriptorBySystemName("SmartStore.PageBuilder");
+            if (descriptor != null)
+            {
+                var migrator = new PermissionMigrator(context);
+                migrator.AddPluginPermissions("SmartStore.PageBuilder.Services.PageBuilderPermissions, SmartStore.PageBuilder");
+                // Mappings are not required because admin permissions are already granted through root permission.
+            }
         }
     }
 }

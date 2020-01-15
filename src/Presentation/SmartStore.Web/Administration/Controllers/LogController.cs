@@ -34,7 +34,7 @@ namespace SmartStore.Admin.Controllers
             { LogLevel.Error, "danger" },
             { LogLevel.Warning, "warning" },
             { LogLevel.Information, "info" },
-            { LogLevel.Debug, "default" }
+            { LogLevel.Debug, "secondary" }
         };
 
         #endregion

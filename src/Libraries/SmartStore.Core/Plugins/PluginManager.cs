@@ -17,13 +17,13 @@ using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
 using SmartStore.Core.Data;
 using System.Threading.Tasks;
+using SmartStore.Core.Logging;
 
 // Contributor: Umbraco (http://www.umbraco.com). Thanks a lot!
 // SEE THIS POST for full details of what this does
 //http://shazwazza.com/post/Developing-a-plugin-framework-in-ASPNET-with-medium-trust.aspx
 
 [assembly: PreApplicationStartMethod(typeof(PluginManager), "Initialize")]
-
 namespace SmartStore.Core.Plugins
 {
     /// <summary>
@@ -35,23 +35,32 @@ namespace SmartStore.Core.Plugins
 		private static extern bool SetDllDirectory(string lpPathName);
 
 		private static readonly object _lock = new object();
-        private static readonly string _pluginsPath = "~/Plugins";
-		private static DirectoryInfo _shadowCopyDir;
+        private static DirectoryInfo _shadowCopyDir;
 		private static readonly ConcurrentDictionary<string, PluginDescriptor> _referencedPlugins = new ConcurrentDictionary<string, PluginDescriptor>(StringComparer.OrdinalIgnoreCase);
         private static HashSet<Assembly> _inactiveAssemblies = new HashSet<Assembly>();
 
-		/// <summary>
-		/// Returns the virtual path of the plugins folder relative to the application
-		/// </summary>
-		public static string PluginsLocation
-		{
-			get { return _pluginsPath; }
-		}
+        private static ILogger Logger { get; set; } = NullLogger.Instance;
 
-		/// <summary> 
-		/// Returns a collection of all referenced plugin assemblies that have been shadow copied
-		/// </summary>
-		public static IEnumerable<PluginDescriptor> ReferencedPlugins
+        private static IDisposable ActivateLogger()
+        {
+            var logger = new TraceLogger();
+            Logger = logger;
+            return new ActionDisposable(() => 
+            {
+                logger.Dispose();
+                Logger = NullLogger.Instance;
+            });
+        }
+
+        /// <summary>
+        /// Returns the virtual path of the plugins folder relative to the application
+        /// </summary>
+        public static string PluginsLocation { get; } = "~/Plugins";
+
+        /// <summary> 
+        /// Returns a collection of all referenced plugin assemblies that have been shadow copied
+        /// </summary>
+        public static IEnumerable<PluginDescriptor> ReferencedPlugins
 		{
 			get
 			{
@@ -85,144 +94,156 @@ namespace SmartStore.Core.Plugins
         /// </summary>
         public static void Initialize()
         {
-			var isFullTrust = WebHelper.GetTrustLevel() == AspNetHostingPermissionLevel.Unrestricted;
-			if (!isFullTrust)
-			{
-				throw new ApplicationException("SmartStore.NET requires Full Trust mode. Please enable Full Trust for your web site or contact your hosting provider.");
-			}
-
-			using (var updater = new AppUpdater())
-			{
-				// update from NuGet package, if it exists and is valid
-				if (updater.TryUpdateFromPackage())
-				{
-					// [...]
-				}
-
-				// execute migrations
-				updater.ExecuteMigrations();
-			}
-			
-			// adding a process-specific environment path (either bin/x86 or bin/x64)
-			// ensures that unmanaged native dependencies can be resolved successfully.
-			SetNativeDllPath();
-
-			DynamicModuleUtility.RegisterModule(typeof(AutofacRequestLifetimeHttpModule));
-
-			var incompatiblePlugins = (new HashSet<string>(StringComparer.OrdinalIgnoreCase)).AsSynchronized();
-			var inactiveAssemblies = _inactiveAssemblies.AsSynchronized();
-			var dirty = false;
-
-			var watch = Stopwatch.StartNew();
-
-			_shadowCopyDir = new DirectoryInfo(AppDomain.CurrentDomain.DynamicDirectory);
-
-			var plugins = LoadPluginDescriptors().ToArray();
-			var compatiblePlugins = plugins.Where(x => !x.Incompatible).ToArray();
-
-			var ms = watch.ElapsedMilliseconds;
-			Debug.WriteLine("INIT PLUGINS (LoadPluginDescriptors). Time elapsed: {0} ms.".FormatCurrentUI(ms));
-
-			// If plugins state is dirty, we copy files over to the dynamic folder,
-			// otherwise we just reference the previously copied file.
-			dirty = DetectAndCleanStalePlugins(compatiblePlugins);
-
-			// Perf: Initialize/probe all plugins in parallel
-			plugins.AsParallel().ForAll(x => 
-			{
-				// Deploy to ASP.NET dynamic folder.
-				DeployPlugin(x, dirty);
-
-				// Finalize
-				FinalizePlugin(x);
-			});
-
-			//// Retry when failed, because during parallel execution assembly loading MAY fail.
-			//// Therefore we retry initialization for failed plugins, but sequentially this time.
-			//foreach (var p in plugins)
-			//{
-			//	// INFO: this seems redundant, but it's ok: 
-			//	// DeployPlugin() only probes assemblies that are not loaded yet.
-			//	DeployPlugin(p, dirty);
-
-			//	// Finalize
-			//	FinalizePlugin(p);
-			//}
-
-			if (dirty && DataSettings.DatabaseIsInstalled())
-			{
-				// Save current hash of all deployed plugins to disk
-				var hash = ComputePluginsHash(_referencedPlugins.Values.OrderBy(x => x.FolderName).ToArray());
-				SavePluginsHash(hash);
-
-				// Save names of all deployed assemblies to disk (so we can nuke them later)
-				SavePluginsAssemblies(_referencedPlugins.Values);
-			}
-
-			IncompatiblePlugins = incompatiblePlugins.AsReadOnly();
-
-			ms = watch.ElapsedMilliseconds;
-			Debug.WriteLine("INIT PLUGINS (Deployment complete). Time elapsed: {0} ms.".FormatCurrentUI(ms));
-
-			void DeployPlugin(PluginDescriptor p, bool shadowCopy)
-			{
-				if (p.Incompatible)
-				{
-					// Do nothing if plugin is incompatible
-					return;
-				}
-				
-				// First copy referenced local assemblies (if any)
-				for (int i = 0; i < p.ReferencedLocalAssemblies.Length; ++i)
-				{
-					var refAr = p.ReferencedLocalAssemblies[i];
-					if (refAr.Assembly == null)
-					{
-						Probe(refAr, p, shadowCopy);
-					}
-				}
-
-				// Then copy main plugin assembly
-				var ar = p.Assembly;
-				if (ar.Assembly == null)
-				{
-					Probe(ar, p, shadowCopy);
-					if (ar.Assembly != null)
-					{
-						// Activate (even if uninstalled): Find IPlugin, IPreApplicationStart, IConfigurable etc.
-						ActivatePlugin(p);
-					}
-				}
-			}
-
-			void FinalizePlugin(PluginDescriptor p)
-			{
-				_referencedPlugins[p.SystemName] = p;
-
-				if (p.Incompatible)
-				{
-					incompatiblePlugins.Add(p.SystemName);
-					return;
-				}
-
-				var firstFailedAssembly = p.ReferencedLocalAssemblies.FirstOrDefault(x => x.ActivationException != null);
-				if (firstFailedAssembly == null && p.Assembly.ActivationException != null)
-				{
-					firstFailedAssembly = p.Assembly;
-				}
-				if (firstFailedAssembly != null)
-				{
-					Debug.WriteLine(firstFailedAssembly.ActivationException.Message);
-					p.Incompatible = true;
-					incompatiblePlugins.Add(p.SystemName);
-				}
-
-				if ((!p.Installed || firstFailedAssembly != null) && p.Assembly.Assembly != null)
-				{
-					inactiveAssemblies.Add(p.Assembly.Assembly);
-				}
-			}
+            using (ActivateLogger())
+            {
+                Logger.Debug("===================== APPINIT START");
+                InitializeCore();
+                Logger.Debug("===================== APPINIT END");
+            }      
 		}
+
+        private static void InitializeCore()
+        {
+            var isFullTrust = WebHelper.GetTrustLevel() == AspNetHostingPermissionLevel.Unrestricted;
+            if (!isFullTrust)
+            {
+                throw new ApplicationException("SmartStore.NET requires Full Trust mode. Please enable Full Trust for your web site or contact your hosting provider.");
+            }
+
+            using (var updater = new AppUpdater())
+            {
+                // update from NuGet package, if it exists and is valid
+                if (updater.TryUpdateFromPackage())
+                {
+                    // [...]
+                }
+
+                // execute migrations
+                updater.ExecuteMigrations();
+            }
+
+            // adding a process-specific environment path (either bin/x86 or bin/x64)
+            // ensures that unmanaged native dependencies can be resolved successfully.
+            SetNativeDllPath();
+
+            DynamicModuleUtility.RegisterModule(typeof(AutofacRequestLifetimeHttpModule));
+
+            var incompatiblePlugins = (new HashSet<string>(StringComparer.OrdinalIgnoreCase)).AsSynchronized();
+            var inactiveAssemblies = _inactiveAssemblies.AsSynchronized();
+            var dirty = false;
+
+            var watch = Stopwatch.StartNew();
+
+            _shadowCopyDir = new DirectoryInfo(AppDomain.CurrentDomain.DynamicDirectory);
+
+            var plugins = LoadPluginDescriptors().ToArray();
+            var compatiblePlugins = plugins.Where(x => !x.Incompatible).ToArray();
+
+            Logger.DebugFormat("Loaded plugin descriptors. {0} total, {1} incompatible.", plugins.Length, plugins.Length - compatiblePlugins.Length);
+
+            var ms = watch.ElapsedMilliseconds;
+            Logger.DebugFormat("INIT PLUGINS (LoadPluginDescriptors). Time elapsed: {0} ms.", ms);
+
+            // If plugins state is dirty, we copy files over to the dynamic folder,
+            // otherwise we just reference the previously copied file.
+            dirty = DetectAndCleanStalePlugins(compatiblePlugins);
+
+            // Perf: Initialize/probe all plugins in parallel
+            plugins.AsParallel().ForAll(x =>
+            {
+                // Deploy to ASP.NET dynamic folder.
+                DeployPlugin(x, dirty);
+
+                // Finalize
+                FinalizePlugin(x);
+            });
+
+            //// Retry when failed, because during parallel execution assembly loading MAY fail.
+            //// Therefore we retry initialization for failed plugins, but sequentially this time.
+            //foreach (var p in plugins)
+            //{
+            //	// INFO: this seems redundant, but it's ok: 
+            //	// DeployPlugin() only probes assemblies that are not loaded yet.
+            //	DeployPlugin(p, dirty);
+
+            //	// Finalize
+            //	FinalizePlugin(p);
+            //}
+
+            if (dirty && DataSettings.DatabaseIsInstalled())
+            {
+                // Save current hash of all deployed plugins to disk
+                var hash = ComputePluginsHash(_referencedPlugins.Values.OrderBy(x => x.FolderName).ToArray());
+                SavePluginsHash(hash);
+
+                // Save names of all deployed assemblies to disk (so we can nuke them later)
+                SavePluginsAssemblies(_referencedPlugins.Values);
+            }
+
+            IncompatiblePlugins = incompatiblePlugins.AsReadOnly();
+
+            ms = watch.ElapsedMilliseconds;
+            Logger.DebugFormat("INIT PLUGINS (Deployment complete). Time elapsed: {0} ms.", ms);
+
+            void DeployPlugin(PluginDescriptor p, bool shadowCopy)
+            {
+                if (p.Incompatible)
+                {
+                    // Do nothing if plugin is incompatible
+                    return;
+                }
+
+                // First copy referenced local assemblies (if any)
+                for (int i = 0; i < p.ReferencedLocalAssemblies.Length; ++i)
+                {
+                    var refAr = p.ReferencedLocalAssemblies[i];
+                    if (refAr.Assembly == null)
+                    {
+                        Probe(refAr, p, shadowCopy);
+                    }
+                }
+
+                // Then copy main plugin assembly
+                var ar = p.Assembly;
+                if (ar.Assembly == null)
+                {
+                    Probe(ar, p, shadowCopy);
+                    if (ar.Assembly != null)
+                    {
+                        // Activate (even if uninstalled): Find IPlugin, IPreApplicationStart, IConfigurable etc.
+                        ActivatePlugin(p);
+                    }
+                }
+            }
+
+            void FinalizePlugin(PluginDescriptor p)
+            {
+                _referencedPlugins[p.SystemName] = p;
+
+                if (p.Incompatible)
+                {
+                    incompatiblePlugins.Add(p.SystemName);
+                    return;
+                }
+
+                var firstFailedAssembly = p.ReferencedLocalAssemblies.FirstOrDefault(x => x.ActivationException != null);
+                if (firstFailedAssembly == null && p.Assembly.ActivationException != null)
+                {
+                    firstFailedAssembly = p.Assembly;
+                }
+                if (firstFailedAssembly != null)
+                {
+                    Logger.ErrorFormat("Assembly probing failed for '{0}': {1}", firstFailedAssembly.File.Name, firstFailedAssembly.ActivationException.Message);
+                    p.Incompatible = true;
+                    incompatiblePlugins.Add(p.SystemName);
+                }
+
+                if ((!p.Installed || firstFailedAssembly != null) && p.Assembly.Assembly != null)
+                {
+                    inactiveAssemblies.Add(p.Assembly.Assembly);
+                }
+            }
+        }
 
 		/// <summary>
 		/// Loads and parses the descriptors of all installed plugins
@@ -233,7 +254,7 @@ namespace SmartStore.Core.Plugins
 			// TODO: Add verbose exception handling / raising here since this is happening on app startup and could
 			// prevent app from starting altogether
 
-			var pluginsDir = new DirectoryInfo(CommonHelper.MapPath(_pluginsPath));
+			var pluginsDir = new DirectoryInfo(CommonHelper.MapPath(PluginsLocation));
 
 			if (!pluginsDir.Exists)
 			{
@@ -319,7 +340,7 @@ namespace SmartStore.Core.Plugins
 				throw new SmartException("The plugin descriptor '{0}' does not define a plugin assembly file name. Try assigning the plugin a file name and recompile.".FormatInvariant(descriptionFile.FullName));
 			}
 
-			descriptor.VirtualPath = _pluginsPath + "/" + descriptor.FolderName;
+			descriptor.VirtualPath = PluginsLocation + "/" + descriptor.FolderName;
 
 			// Set 'Installed' property
 			descriptor.Installed = installedPluginSystemNames.Contains(descriptor.SystemName);
@@ -564,6 +585,8 @@ namespace SmartStore.Core.Plugins
 			var privateBinPath = currentDomain.SetupInformation.PrivateBinPath.NullEmpty() ?? currentDomain.BaseDirectory;
 			var dir = Path.Combine(privateBinPath, Environment.Is64BitProcess ? "x64" : "x86");
 
+            Logger.DebugFormat("Setting native DLL path to '{0}'.", dir);
+
 			SetDllDirectory(dir);
 		}
 
@@ -604,9 +627,11 @@ namespace SmartStore.Core.Plugins
 
 				ar.ActivationException = null;
 			}
-			catch (UnauthorizedAccessException)
+			catch (UnauthorizedAccessException ex)
 			{
-				// Throw the exception if its UnauthorizedAccessException as this will 
+                Logger.Error(ex.Message);
+
+                // Throw the exception if its UnauthorizedAccessException as this will 
 				// be because we most likely cannot copy to the dynamic folder.
 				throw;
 			}
@@ -664,7 +689,7 @@ namespace SmartStore.Core.Plugins
 			}
 			catch (IOException)
             {
-                Debug.WriteLine(probedDll.FullName + " is locked, attempting to rename");
+                Logger.WarnFormat("'{0}' is locked, attempting to rename.", probedDll.FullName);
 
                 // This occurs when the files are locked,
                 // For some reason devenv locks plugin files some times and for another crazy reason you are allowed to rename them

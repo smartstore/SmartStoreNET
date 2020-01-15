@@ -12,11 +12,25 @@ namespace SmartStore.Core.Logging
 		private readonly TraceSource _traceSource;
 		private readonly StreamWriter _streamWriter;
 
-		public TraceLogger() : this(CommonHelper.MapPath("~/App_Data/SmartStore.log"))
+		public TraceLogger() : this(GetDefaultFileName())
 		{
 		}
 
-		public TraceLogger(string fileName)
+        private static string GetDefaultFileName()
+        {
+            var di = new DirectoryInfo(CommonHelper.MapPath("~/App_Data/Logs"));
+            if (!di.Exists)
+            {
+                di.Create();
+            }
+
+            var datePart = DateTime.Now.ToString("yyyy-MM");
+            var fileName = "SmartStore-{0}.log".FormatInvariant(datePart);
+
+            return Path.Combine(di.FullName, fileName);
+        }
+
+        public TraceLogger(string fileName)
 		{
 			Guard.NotEmpty(fileName, nameof(fileName));
 
@@ -24,17 +38,25 @@ namespace SmartStore.Core.Logging
 			_traceSource.Switch = new SourceSwitch("LogSwitch", "Error");
 			_traceSource.Listeners.Remove("Default");
 
-			var console = new ConsoleTraceListener(false);
-			console.Filter = new EventTypeFilter(SourceLevels.All);
-			console.Name = "console";
+            if (CommonHelper.IsDevEnvironment)
+            {
+                var defaultListener = new DefaultTraceListener()
+                {
+                    Name = "Debugger",
+                    Filter = new EventTypeFilter(SourceLevels.All),
+                    TraceOutputOptions = TraceOptions.DateTime
+                };
+                _traceSource.Listeners.Add(defaultListener);
+            }
 
-			_traceSource.Listeners.Add(console);
+            var textListener = new TextWriterTraceListener(fileName)
+            {
+                Name = "File",
+                Filter = new EventTypeFilter(SourceLevels.All),
+                TraceOutputOptions = TraceOptions.DateTime
+            };
 
-			var textListener = new TextWriterTraceListener(fileName);
-			textListener.Filter = new EventTypeFilter(SourceLevels.All);
-			textListener.TraceOutputOptions = TraceOptions.DateTime;
-
-			try
+            try
 			{
 				// force UTF-8 encoding (even if the text just contains ANSI characters)
 				var append = File.Exists(fileName);
@@ -60,7 +82,7 @@ namespace SmartStore.Core.Logging
 
 		public bool IsEnabledFor(LogLevel level)
 		{
-			return true;
+            return _traceSource.Switch.ShouldTrace(LogLevelToEventType(level));
 		}
 
 		public void Log(LogLevel level, Exception exception, string message, object[] args)
@@ -75,11 +97,11 @@ namespace SmartStore.Core.Logging
 			if (message.HasValue())
 			{
 				var msg = args != null && args.Any()
-					? message.FormatInvariant(args)
+					? message.FormatCurrent(args)
 					: message;
 
-				_traceSource.TraceEvent(type, (int)type, "{0}: {1}".FormatCurrent(type.ToString().ToUpper(), msg));
-			}
+				_traceSource.TraceEvent(type, (int)type, msg);
+            }
 		}
 
 		private TraceEventType LogLevelToEventType(LogLevel level)
@@ -99,7 +121,24 @@ namespace SmartStore.Core.Logging
 			}
 		}
 
-		public void Flush()
+        private LogLevel EventTypeToLogLevel(TraceEventType eventType)
+        {
+            switch (eventType)
+            {
+                case TraceEventType.Verbose:
+                    return LogLevel.Debug;
+                case TraceEventType.Error:
+                    return LogLevel.Error;
+                case TraceEventType.Critical:
+                    return LogLevel.Fatal;
+                case TraceEventType.Warning:
+                    return LogLevel.Warning;
+                default:
+                    return LogLevel.Information;
+            }
+        }
+
+        public void Flush()
 		{
 			_traceSource.Flush();
 		}

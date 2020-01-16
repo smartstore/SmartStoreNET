@@ -85,7 +85,7 @@ h6, .h6 {
     .heading-title {
         position: relative;
         display: inline-block;
-        background: $body-bg;
+        background: var(--body-bg, #fff);
         padding-right: 1rem;
         font-weight: $font-weight-light;
     }

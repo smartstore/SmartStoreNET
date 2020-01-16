@@ -117,7 +117,7 @@
     }
 }
 
-@each $breakpoint in (xs, sm, md, lg, xl) {
+@each $breakpoint in (sm, md, lg, xl) {
     @include media-breakpoint-up($breakpoint) {
         @include card-deck-responsive($breakpoint); 
         @include card-group-responsive($breakpoint);

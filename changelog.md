@@ -47,6 +47,11 @@
 * **PayPal**:
 	* Fixed rare exception "Unsupported Media Type" (415) in PayPal PLUS.
 	* Only process a partially refund IPN when the order refunded amount is zero. Otherwise the order refunded amount will be wrong.
+* ** Customer import **:
+	* VatNumber and other fields were ignored.
+	* Customer roles sometimes inserted several times.
+	* Changed billing\shipping address was added instead of updating the existing one.
+	* Region assigned to an address was not updated.
 * Multistore mapping was ignored for manufacturers in sitemap.
 * #1730 Product tag count should filter also based on Visibility.
 * Categories limited to stores were not displayed in tree view.

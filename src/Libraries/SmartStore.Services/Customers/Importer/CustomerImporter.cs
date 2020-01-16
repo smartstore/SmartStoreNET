@@ -9,6 +9,8 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Security;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Common;
 using SmartStore.Services.DataExchange.Import;
@@ -38,8 +40,10 @@ namespace SmartStore.Services.Customers.Importer
 		private readonly CustomerSettings _customerSettings;
 		private readonly DateTimeSettings _dateTimeSettings;
 		private readonly ForumSettings _forumSettings;
+        private readonly TaxSettings _taxSettings;
+        private readonly PrivacySettings _privacySettings;
 
-		public CustomerImporter(
+        public CustomerImporter(
 			IRepository<Customer> customerRepository,
 			IRepository<CustomerRole> customerRoleRepository,
 			IRepository<Picture> pictureRepository,
@@ -52,7 +56,9 @@ namespace SmartStore.Services.Customers.Importer
 			FileDownloadManager fileDownloadManager,
 			CustomerSettings customerSettings,
 			DateTimeSettings dateTimeSettings,
-			ForumSettings forumSettings)
+			ForumSettings forumSettings,
+            TaxSettings taxSettings,
+            PrivacySettings privacySettings)
 		{
 			_customerRepository = customerRepository;
 			_customerRoleRepository = customerRoleRepository;
@@ -67,11 +73,16 @@ namespace SmartStore.Services.Customers.Importer
 			_customerSettings = customerSettings;
 			_dateTimeSettings = dateTimeSettings;
 			_forumSettings = forumSettings;
+            _taxSettings = taxSettings;
+            _privacySettings = privacySettings;
 		}
 
 		protected override void Import(ImportExecuteContext context)
 		{
-			var allAffiliateIds = _affiliateService.GetAllAffiliates(true)
+            var customer = _services.WorkContext.CurrentCustomer;
+            var allowManagingCustomerRoles = _services.Permissions.Authorize(Permissions.Customer.EditRole, customer);
+
+            var allAffiliateIds = _affiliateService.GetAllAffiliates(true)
 				.Select(x => x.Id)
 				.ToList();
 
@@ -91,10 +102,6 @@ namespace SmartStore.Services.Customers.Importer
 			var allCustomerNumbers = new HashSet<string>(
 				_customerRepository.Table.Where(x => !string.IsNullOrEmpty(x.CustomerNumber)).Select(x => x.CustomerNumber),
 				StringComparer.OrdinalIgnoreCase);
-
-			var allCustomerRoles = _customerRoleRepository.Table
-				.Where(x => !string.IsNullOrEmpty(x.SystemName))
-				.ToDictionarySafe(x => x.SystemName, StringComparer.OrdinalIgnoreCase);
 
 			using (var scope = new DbContextScope(ctx: _services.DbContext, hooksEnabled: false, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
 			{
@@ -136,8 +143,11 @@ namespace SmartStore.Services.Customers.Importer
 					// ===========================================================================
 					try
 					{
-						_customerRepository.Context.AutoDetectChangesEnabled = true;
-						ProcessCustomerRoles(context, batch, allCustomerRoles);
+                        _customerRepository.AutoCommitEnabled = true;
+                        if (allowManagingCustomerRoles)
+                        {
+                            ProcessCustomerRoles(context, batch);
+                        }
 					}
 					catch (Exception ex)
 					{
@@ -145,8 +155,8 @@ namespace SmartStore.Services.Customers.Importer
 					}
 					finally
 					{
-						_customerRepository.Context.AutoDetectChangesEnabled = false;
-					}
+                        _customerRepository.AutoCommitEnabled = false;
+                    }
 
 					// ===========================================================================
 					// Process generic attributes
@@ -214,8 +224,9 @@ namespace SmartStore.Services.Customers.Importer
 				Customer customer = null;
 				var id = row.GetDataValue<int>("Id");
 				var email = row.GetDataValue<string>("Email");
+                var userName = row.GetDataValue<string>("Username");
 
-				foreach (var keyName in context.KeyFieldNames)
+                foreach (var keyName in context.KeyFieldNames)
 				{
 					switch (keyName)
 					{
@@ -240,7 +251,6 @@ namespace SmartStore.Services.Customers.Importer
 							}
 							break;
 						case "Username":
-							var userName = row.GetDataValue<string>("Username");
 							if (userName.HasValue())
 							{
 								customer = customerQuery.FirstOrDefault(x => x.Username == userName);
@@ -279,10 +289,12 @@ namespace SmartStore.Services.Customers.Importer
 				row.SetProperty(context.Result, (x) => x.CustomerGuid);
 				row.SetProperty(context.Result, (x) => x.Username);
 				row.SetProperty(context.Result, (x) => x.Email);
-				row.SetProperty(context.Result, (x) => x.FirstName);
+                row.SetProperty(context.Result, (x) => x.Salutation);
+                row.SetProperty(context.Result, (x) => x.FullName);
+                row.SetProperty(context.Result, (x) => x.FirstName);
 				row.SetProperty(context.Result, (x) => x.LastName);
 
-				if (_customerSettings.TitleEnabled)
+                if (_customerSettings.TitleEnabled)
 					row.SetProperty(context.Result, (x) => x.Title);
 
 				if (_customerSettings.CompanyEnabled)
@@ -291,7 +303,10 @@ namespace SmartStore.Services.Customers.Importer
 				if (_customerSettings.DateOfBirthEnabled)
 					row.SetProperty(context.Result, (x) => x.BirthDate);
 
-				if (email.HasValue() && currentCustomer.Email.IsCaseInsensitiveEqual(email))
+                if (_privacySettings.StoreLastIpAddress)
+                    row.SetProperty(context.Result, (x) => x.LastIpAddress);
+
+                if (email.HasValue() && currentCustomer.Email.IsCaseInsensitiveEqual(email))
 				{
 					context.Result.AddInfo("Security. Ignored password of current customer (who started this import).", row.GetRowInfo(), "Password");
 				}
@@ -309,6 +324,8 @@ namespace SmartStore.Services.Customers.Importer
 				row.SetProperty(context.Result, (x) => x.CreatedOnUtc, UtcNow);
 				row.SetProperty(context.Result, (x) => x.LastActivityDateUtc, UtcNow);
 
+                if (_taxSettings.EuVatEnabled)
+                    row.SetProperty(context.Result, (x) => x.VatNumberStatusId);
 
                 if (_dateTimeSettings.AllowCustomersToSetTimeZone)
                     row.SetProperty(context.Result, (x) => x.TimeZoneId);
@@ -321,17 +338,23 @@ namespace SmartStore.Services.Customers.Importer
                 
 				string customerNumber = null;
 
-				if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.AutomaticallySet && row.IsTransient)
-					customerNumber = row.Entity.Id.ToString();
-				else if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.Enabled && !row.IsTransient && row.HasDataValue("CustomerNumber"))
-					customerNumber = row.GetDataValue<string>("CustomerNumber");
+                if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.AutomaticallySet && row.IsTransient)
+                {
+                    customerNumber = row.Entity.Id.ToString();
+                }
+                else if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.Enabled && !row.IsTransient && row.HasDataValue("CustomerNumber"))
+                {
+                    customerNumber = row.GetDataValue<string>("CustomerNumber");
+                }
 				
 				if (customerNumber.HasValue() || !allCustomerNumbers.Contains(customerNumber))
 				{
 					row.Entity.CustomerNumber = customerNumber;
 
-					if (!customerNumber.IsEmpty())
-						allCustomerNumbers.Add(customerNumber);
+                    if (!customerNumber.IsEmpty())
+                    {
+                        allCustomerNumbers.Add(customerNumber);
+                    }
 				}
 
 				if (row.IsTransient)
@@ -350,39 +373,22 @@ namespace SmartStore.Services.Customers.Importer
 
 		protected virtual int ProcessCustomerRoles(
 			ImportExecuteContext context,
-			IEnumerable<ImportRow<Customer>> batch,
-			Dictionary<string, CustomerRole> allCustomerRoles)
+			IEnumerable<ImportRow<Customer>> batch)
 		{
+            var num = 0;
 			CustomerRole role = null;
-			var hasCustomerRoleSystemNames = context.DataSegmenter.HasColumn("CustomerRoleSystemNames");
-
-			// Deprecated fields. Still processed for backward compatibility. Use "CustomerRoleSystemNames" instead.
-			var hasIsGuest = context.DataSegmenter.HasColumn("IsGuest");
-			var hasIsRegistered = context.DataSegmenter.HasColumn("IsRegistered");
-			var hasIsForumModerator = context.DataSegmenter.HasColumn("IsForumModerator");
+            Dictionary<string, CustomerRole> allCustomerRoles = null;
+            var hasCustomerRoleSystemNames = context.DataSegmenter.HasColumn("CustomerRoleSystemNames");
 
 			foreach (var row in batch)
 			{
 				var customer = row.Entity;
 
-				// Deprecated customer role fields.
-				if (hasIsGuest)
-				{
-					UpsertRole(customer, row.GetDataValue<bool>("IsGuest"), allCustomerRoles, SystemCustomerRoleNames.Guests);
-				}
-				if (hasIsRegistered)
-				{
-					UpsertRole(customer, row.GetDataValue<bool>("IsRegistered"), allCustomerRoles, SystemCustomerRoleNames.Registered);
-				}
-				if (hasIsForumModerator)
-				{
-					UpsertRole(customer, row.GetDataValue<bool>("IsForumModerator"), allCustomerRoles, SystemCustomerRoleNames.ForumModerators);
-				}
-
 				// New customer role field.
 				if (hasCustomerRoleSystemNames)
 				{
-					var importRoleSystemNames = row.GetDataValue<List<string>>("CustomerRoleSystemNames");
+                    var updateCustomer = false;
+                    var importRoleSystemNames = row.GetDataValue<List<string>>("CustomerRoleSystemNames");
 					var assignedRoles = customer.CustomerRoles.ToDictionarySafe(x => x.SystemName, StringComparer.OrdinalIgnoreCase);
 
 					// Roles to remove.
@@ -394,6 +400,7 @@ namespace SmartStore.Services.Customers.Importer
 							!importRoleSystemNames.Contains(systemName))
 						{
 							customer.CustomerRoles.Remove(customerRole.Value);
+                            updateCustomer = true;
 						}
 					}
 
@@ -405,18 +412,34 @@ namespace SmartStore.Services.Customers.Importer
 						{
 							context.Result.AddInfo("Security. Ignored administrator role.", row.GetRowInfo(), "CustomerRoleSystemNames");
 						}
-						else if (!assignedRoles.ContainsKey(systemName) && allCustomerRoles.TryGetValue(systemName, out role))
+						else if (!assignedRoles.ContainsKey(systemName))
 						{
-							// Never insert roles!
-							context.Services.DbContext.SetToUnchanged(role);
+                            // Add role mapping, never insert roles.
+                            // Be careful not to insert the roles several times!
+                            if (allCustomerRoles == null)
+                            {
+                                allCustomerRoles = _customerRoleRepository.Table
+                                    .Where(x => !string.IsNullOrEmpty(x.SystemName))
+                                    .ToDictionarySafe(x => x.SystemName, StringComparer.OrdinalIgnoreCase);
+                            }
 
-							customer.CustomerRoles.Add(role);
-						}
+                            if (allCustomerRoles?.TryGetValue(systemName, out role) ?? false)
+                            {
+                                customer.CustomerRoles.Add(role);
+                                updateCustomer = true;
+                            }
+                        }
 					}
+
+                    if (updateCustomer)
+                    {
+                        _customerRepository.Update(customer);
+                        ++num;
+                    }
 				}
 			}
 
-			return context.Services.DbContext.SaveChanges();
+            return num;
 		}
 
 		protected virtual int ProcessAddresses(
@@ -441,20 +464,30 @@ namespace SmartStore.Services.Customers.Importer
 			Dictionary<string, int> allCountries,
 			Dictionary<Tuple<int, string>, int> allStateProvinces)
 		{
-			// Last name is mandatory for an address to be imported or updated.
-			if (!row.HasDataValue(fieldPrefix + "LastName"))
-				return;
+            // Last name is mandatory for an address to be imported or updated.
+            if (!row.HasDataValue(fieldPrefix + "LastName"))
+            {
+                return;
+            }
 
-			var address = new Address
-			{
-				CreatedOnUtc = UtcNow
-			};
+            Address address = null;
+
+            if (fieldPrefix == "BillingAddress.")
+            {
+                address = row.Entity.BillingAddress ?? new Address { CreatedOnUtc = UtcNow };
+            }
+            else if (fieldPrefix == "ShippingAddress.")
+            {
+                address = row.Entity.ShippingAddress ?? new Address { CreatedOnUtc = UtcNow };
+            }
 
 			var childRow = new ImportRow<Address>(row.Segmenter, row.DataRow, row.Position);
 			childRow.Initialize(address, row.EntityDisplayName);
 
-			childRow.SetProperty(context.Result, fieldPrefix + "LastName", x => x.LastName);
-			childRow.SetProperty(context.Result, fieldPrefix + "FirstName", x => x.FirstName);
+            childRow.SetProperty(context.Result, fieldPrefix + "Salutation", x => x.Salutation);
+            childRow.SetProperty(context.Result, fieldPrefix + "Title", x => x.Title);
+            childRow.SetProperty(context.Result, fieldPrefix + "FirstName", x => x.FirstName);
+            childRow.SetProperty(context.Result, fieldPrefix + "LastName", x => x.LastName);
 			childRow.SetProperty(context.Result, fieldPrefix + "Email", x => x.Email);
 			childRow.SetProperty(context.Result, fieldPrefix + "Company", x => x.Company);
 			childRow.SetProperty(context.Result, fieldPrefix + "City", x => x.City);
@@ -471,17 +504,19 @@ namespace SmartStore.Services.Customers.Importer
 				childRow.SetProperty(context.Result, fieldPrefix + "CountryCode", x => x.CountryId, converter: (val, ci) => CountryCodeToId(allCountries, val.ToString()));
 			}
 
-			var countryId = childRow.Entity.CountryId;
-
+            var countryId = childRow.Entity.CountryId;
 			if (countryId.HasValue)
 			{
-				childRow.SetProperty(context.Result, fieldPrefix + "StateProvinceId", x => x.StateProvinceId);
-				if (childRow.Entity.StateProvinceId == null)
-				{
-					// Try with state abbreviation.
-					childRow.SetProperty(context.Result, fieldPrefix + "StateAbbreviation", x => x.StateProvinceId, converter: (val, ci) => StateAbbreviationToId(allStateProvinces, countryId, val.ToString()));
-				}
-			}
+                if (row.HasDataValue(fieldPrefix + "StateProvinceId"))
+                {
+                    childRow.SetProperty(context.Result, fieldPrefix + "StateProvinceId", x => x.StateProvinceId);
+                }
+                else
+                {
+                    // Try with state abbreviation.
+                    childRow.SetProperty(context.Result, fieldPrefix + "StateAbbreviation", x => x.StateProvinceId, converter: (val, ci) => StateAbbreviationToId(allStateProvinces, countryId, val.ToString()));
+                }
+            }
 
 			if (!childRow.IsDirty)
 			{
@@ -489,24 +524,22 @@ namespace SmartStore.Services.Customers.Importer
 				return;
 			}
 
-			var appliedAddress = row.Entity.Addresses.FindAddress(address);
+            if (childRow.Entity.Id == 0)
+            {
+                // Map address to customer.
+                if (fieldPrefix == "BillingAddress.")
+                {
+                    row.Entity.BillingAddress = childRow.Entity;
+                }
+                else if (fieldPrefix == "ShippingAddress.")
+                {
+                    row.Entity.ShippingAddress = childRow.Entity;
+                }
 
-			if (appliedAddress == null)
-			{
-				appliedAddress = address;
-				row.Entity.Addresses.Add(appliedAddress);
-			}
+                row.Entity.Addresses.Add(childRow.Entity);
+            }
 
-			if (fieldPrefix == "BillingAddress.")
-			{
-				row.Entity.BillingAddress = appliedAddress;
-			}
-			else if (fieldPrefix == "ShippingAddress.")
-			{
-				row.Entity.ShippingAddress = appliedAddress;
-			}
-
-			_customerRepository.Update(row.Entity);
+            _customerRepository.Update(row.Entity);
 		}
 
 		protected virtual int ProcessGenericAttributes(
@@ -517,7 +550,12 @@ namespace SmartStore.Services.Customers.Importer
 		{
 			foreach (var row in batch)
 			{
-                if (_customerSettings.StreetAddressEnabled)
+                if (_taxSettings.EuVatEnabled)
+                {
+                    SaveAttribute(row, SystemCustomerAttributeNames.VatNumber);
+                }
+
+				if (_customerSettings.StreetAddressEnabled)
 					SaveAttribute(row, SystemCustomerAttributeNames.StreetAddress);
 
 				if (_customerSettings.StreetAddress2Enabled)
@@ -639,7 +677,7 @@ namespace SmartStore.Services.Customers.Importer
 		{
 			get
 			{
-				return new string[] { "Email" };
+				return new string[] { "Email", "CustomerGuid" };
 			}
 		}
 
@@ -688,27 +726,6 @@ namespace SmartStore.Services.Customers.Importer
 			if (row.IsNew || value != null)
 			{
 				_genericAttributeService.SaveAttribute(row.Entity.Id, key, _attributeKeyGroup, value);
-			}
-		}
-
-		private void UpsertRole(Customer customer, bool value, Dictionary<string, CustomerRole> allRoles, string customerRoleSystemName)
-		{
-			CustomerRole role = null;
-			if (allRoles.TryGetValue(customerRoleSystemName, out role))
-			{
-				var hasRole = customer.CustomerRoles.Any(x => x.SystemName == role.SystemName);
-
-				if (value && !hasRole)
-				{
-					// Never insert roles!
-					_services.DbContext.SetToUnchanged(role);
-
-					customer.CustomerRoles.Add(role);
-				}
-				else if (!value && hasRole)
-				{
-					customer.CustomerRoles.Remove(role);
-				}
 			}
 		}
 

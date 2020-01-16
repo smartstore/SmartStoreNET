@@ -947,7 +947,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("CreatedOnUtc", entity.CreatedOnUtc.ToString(_culture));
 			_writer.Write("LastLoginDateUtc", entity.LastLoginDateUtc.HasValue ? entity.LastLoginDateUtc.Value.ToString(_culture) : "");
 			_writer.Write("LastActivityDateUtc", entity.LastActivityDateUtc.ToString(_culture));
-            //_writer.Write("Salutation", entity.Salutation); // TODO: marked as "for future use"
+            _writer.Write("Salutation", entity.Salutation);
             _writer.Write("Title", entity.Title);
             _writer.Write("FirstName", entity.FirstName);
             _writer.Write("LastName", entity.LastName);

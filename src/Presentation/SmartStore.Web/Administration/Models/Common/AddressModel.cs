@@ -20,7 +20,7 @@ namespace SmartStore.Admin.Models.Common
             AvailableStates = new List<SelectListItem>();
         }
 
-		[SmartResourceDisplayName("Admin.Customers.Customers.Fields.Title")]
+		[SmartResourceDisplayName("Address.Fields.Title")]
 		public string Title { get; set; }
 
 		[SmartResourceDisplayName("Admin.Address.Fields.FirstName")]

@@ -18,14 +18,14 @@ namespace SmartStore.PayPal
 			{
 				builder.RegisterType<PayPalExpressCheckoutFilter>().AsActionFilterFor<CheckoutController>(x => x.PaymentMethod()).InstancePerRequest();
 
-				builder.RegisterType<PayPalExpressWidgetZoneFilter>().AsActionFilterFor<ShoppingCartController>(x => x.OffCanvasShoppingCart()).InstancePerRequest();
+				builder.RegisterType<PayPalExpressWidgetZoneFilter>().AsResultFilterFor<ShoppingCartController>(x => x.OffCanvasShoppingCart()).InstancePerRequest();
 
 				builder.RegisterType<PayPalPlusCheckoutFilter>()
 					.AsActionFilterFor<CheckoutController>(x => x.PaymentMethod())
 					.InstancePerRequest();
 
 				builder.RegisterType<PayPalPlusWidgetZoneFilter>()
-					.AsActionFilterFor<CheckoutController>(x => x.Completed())
+					.AsResultFilterFor<CheckoutController>(x => x.Completed())
 					.InstancePerRequest();
 
                 builder.RegisterType<PayPalInstalmentsCheckoutFilter>()

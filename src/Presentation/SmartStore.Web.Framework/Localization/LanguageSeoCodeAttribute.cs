@@ -12,13 +12,13 @@ namespace SmartStore.Web.Framework.Localization
     /// <summary>
     /// Attribute which ensures that store URL contains a language SEO code if "SEO friendly URLs with multiple languages" setting is enabled
     /// </summary>
-    public class LanguageSeoCodeAttribute : FilterAttribute, IActionFilter
+    public class LanguageSeoCodeAttribute : FilterAttribute, IAuthorizationFilter
     {
 		public Lazy<IWorkContext> WorkContext { get; set; }
 		public Lazy<ILanguageService> LanguageService { get; set; }
 		public Lazy<LocalizationSettings> LocalizationSettings { get; set; }
 
-		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
+		public virtual void OnAuthorization(AuthorizationContext filterContext)
         {
             var request = filterContext?.HttpContext?.Request;
             if (request == null)
@@ -101,9 +101,5 @@ namespace SmartStore.Web.Framework.Localization
             helper.PrependSeoCode(workingLanguage.UniqueSeoCode);
             filterContext.Result = new RedirectResult(helper.GetAbsolutePath());
         }
-
-		public virtual void OnActionExecuted(ActionExecutedContext filterContext)
-		{
-		}
 	}
 }

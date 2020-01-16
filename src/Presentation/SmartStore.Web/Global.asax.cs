@@ -152,7 +152,7 @@ namespace SmartStore.Web
 				// app not installed
 
 				// Install filter
-				GlobalFilters.Filters.Add(new HandleInstallFilter(), -1000);
+				GlobalFilters.Filters.Add(new HandleInstallFilter());
 			}
 		}
 

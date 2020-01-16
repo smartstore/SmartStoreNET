@@ -8,7 +8,7 @@ using SmartStore.Web.Models.ShoppingCart;
 
 namespace SmartStore.PayPal.Filters
 {
-	public class PayPalExpressWidgetZoneFilter : IActionFilter, IResultFilter
+	public class PayPalExpressWidgetZoneFilter : IResultFilter
 	{
 		private readonly Lazy<IWidgetProvider> _widgetProvider;
 		private readonly Lazy<IPaymentService> _paymentService;
@@ -25,14 +25,6 @@ namespace SmartStore.PayPal.Filters
 			_paymentService = paymentService;
 			_services = services;
 			_payPalExpressSettings = payPalExpressSettings;
-		}
-
-		public void OnActionExecuting(ActionExecutingContext filterContext)
-		{
-		}
-
-		public void OnActionExecuted(ActionExecutedContext filterContext)
-		{
 		}
 
 		public void OnResultExecuting(ResultExecutingContext filterContext)

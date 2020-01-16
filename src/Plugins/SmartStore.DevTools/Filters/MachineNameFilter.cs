@@ -24,7 +24,7 @@ namespace SmartStore.DevTools.Filters
 
 		public void OnResultExecuting(ResultExecutingContext filterContext)
 		{
-			if (!_profilerSettings.DisplayMachineName)
+            if (!_profilerSettings.DisplayMachineName)
 				return;
 
 			if (filterContext.IsChildAction)

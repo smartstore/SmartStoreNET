@@ -14,7 +14,7 @@ using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class HomeController : PublicControllerBase
+    public partial class HomeController : PublicControllerBase
 	{
 		private readonly Lazy<ITopicService> _topicService;
 		private readonly Lazy<CaptchaSettings> _captchaSettings;

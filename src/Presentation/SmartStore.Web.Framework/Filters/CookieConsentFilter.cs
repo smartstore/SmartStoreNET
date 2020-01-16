@@ -35,9 +35,6 @@ namespace SmartStore.Web.Framework.Filters
 			if (filterContext?.ActionDescriptor == null || filterContext?.HttpContext?.Request == null)
 				return;
 
-			string actionName = filterContext.ActionDescriptor.ActionName;
-			string controllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
-
 			var viewBag = filterContext.Controller.ViewBag;
 			viewBag.AskCookieConsent = true;
 			viewBag.HasCookieConsent = false;
@@ -98,7 +95,6 @@ namespace SmartStore.Web.Framework.Filters
 
 		public void OnActionExecuted(ActionExecutedContext filterContext)
 		{
-
 		}
 
 		public void OnResultExecuting(ResultExecutingContext filterContext)

@@ -696,12 +696,19 @@ namespace SmartStore.Web.Framework
 
 			var pageHelperRegistration = builder.RegisterType<WebViewPageHelper>().InstancePerRequest();
 
-			// global exception handling
+			// Global exception handling
 			if (DataSettings.DatabaseIsInstalled())
 			{
 				pageHelperRegistration.PropertiesAutowired(PropertyWiringOptions.None);
-				builder.RegisterType<HandleExceptionFilter>().AsActionFilterFor<SmartController>(-100);
-				builder.RegisterType<CookieConsentFilter>().AsActionFilterFor<PublicControllerBase>().InstancePerRequest();
+
+				builder.RegisterType<HandleExceptionFilter>()
+                    .AsExceptionFilterFor<SmartController>(-100)
+                    .AsActionFilterFor<SmartController>(int.MaxValue)
+                    .InstancePerRequest();
+
+				builder.RegisterType<CookieConsentFilter>()
+                    .AsActionFilterFor<PublicControllerBase>()
+                    .InstancePerRequest();
 			}
 		}
 

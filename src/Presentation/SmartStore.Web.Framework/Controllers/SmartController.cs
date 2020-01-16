@@ -10,10 +10,10 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Framework.Controllers
 {
-	[SetWorkingCulture(Order = -1)]
-	[JsonNet(Order = -1)]
-	[Notify(Order = 100)]
-	public abstract partial class SmartController : Controller
+	[SetWorkingCulture(Order = 2)]
+    [JsonNet(Order = 1000)] // Run first (OnActionExecuted)
+    [Notify(Order = 1000)] // Run last (OnResultExecuting)
+    public abstract partial class SmartController : Controller
 	{
 		protected SmartController()
 		{

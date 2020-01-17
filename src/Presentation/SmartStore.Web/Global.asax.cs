@@ -144,8 +144,8 @@ namespace SmartStore.Web
 				// Bundles
 				RegisterBundles(BundleTable.Bundles, engine);
 
-				// "throw-away" filter for task scheduler initialization (the filter removes itself when processed)
-				GlobalFilters.Filters.Add(new InitializeSchedulerFilter(), int.MinValue);
+				// "throw-away" filter for post startup initialization (the filter removes itself when processed)
+				GlobalFilters.Filters.Add(new PostApplicationStartFilter(), int.MinValue);
 			}
 			else
 			{

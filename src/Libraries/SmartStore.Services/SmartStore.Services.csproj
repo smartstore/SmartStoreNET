@@ -651,7 +651,6 @@
     <Compile Include="Stores\StoreMappingService.cs" />
     <Compile Include="Stores\StoreService.cs" />
     <Compile Include="Tasks\CronExpression.cs" />
-    <Compile Include="Tasks\InitializeSchedulerFilter.cs" />
     <Compile Include="Tasks\ITaskExecutor.cs" />
     <Compile Include="Tasks\ITaskScheduler.cs" />
     <Compile Include="Tasks\ScheduleTaskService.cs" />
@@ -661,6 +660,7 @@
     <Compile Include="Tasks\TaskExecutor.cs" />
     <Compile Include="Tasks\TaskExtensions.cs" />
     <Compile Include="Tasks\TaskScheduler.cs" />
+    <Compile Include="Tasks\TaskSchedulerStarter.cs" />
     <Compile Include="Tax\CalculateTaxRequest.cs" />
     <Compile Include="Tax\CalculateTaxResult.cs" />
     <Compile Include="Tax\FreeTaxProvider.cs" />

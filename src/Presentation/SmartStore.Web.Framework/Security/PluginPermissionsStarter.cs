@@ -18,11 +18,11 @@ namespace SmartStore.Web.Framework.Security
     /// <summary>
     /// Checks for missing plugin permissions and adds them to the database.
     /// </summary>
-    public class PluginPermissionsStarter : IStartupTask
+    public class PluginPermissionsStarter : IApplicationStart
     {
         public int Order => 0;
 
-        public void Execute()
+        public void Start()
         {
             // TODO: work in progress.
             return;

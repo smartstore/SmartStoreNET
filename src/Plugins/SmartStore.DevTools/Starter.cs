@@ -1,6 +1,6 @@
 ﻿using Microsoft.Web.Infrastructure.DynamicModuleHelper;
+using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Plugins;
 using SmartStore.Web.Framework;
 using StackExchange.Profiling;
 using StackExchange.Profiling.Storage;
@@ -18,9 +18,9 @@ namespace SmartStore.DevTools
 		}
 	}
 
-	public class ProfilerStartupTask : IStartupTask
+	public class ProfilerStartupTask : IApplicationStart
 	{
-		public void Execute()
+		public void Start()
 		{
 			StackExchange.Profiling.MiniProfiler.Settings.MaxUnviewedProfiles = 5;
             StackExchange.Profiling.MiniProfiler.Settings.Storage = new HttpRuntimeCacheStorage(TimeSpan.FromMinutes(1));

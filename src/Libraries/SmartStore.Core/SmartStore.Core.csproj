@@ -618,7 +618,6 @@
     <Compile Include="Infrastructure\Guard.cs" />
     <Compile Include="Infrastructure\ICloneable.cs" />
     <Compile Include="Infrastructure\IOrdered.cs" />
-    <Compile Include="Infrastructure\IStartupTask.cs" />
     <Compile Include="Infrastructure\RegularExpressions.cs" />
     <Compile Include="IWebHelper.cs" />
     <Compile Include="Domain\Security\DefaultPermissionRecord.cs" />
@@ -685,7 +684,7 @@
     <Compile Include="Linq\LinqContainsPredicateBuilder.cs" />
     <Compile Include="Linq\PredicateBuilder.cs" />
     <Compile Include="Plugins\BasePlugin.cs" />
-    <Compile Include="Plugins\IPreApplicationStart.cs" />
+    <Compile Include="Infrastructure\ApplicationStart.cs" />
     <Compile Include="Plugins\PluginFileParser.cs" />
     <Compile Include="Plugins\PluginManager.cs" />
     <Compile Include="Plugins\PluginDescriptor.cs" />

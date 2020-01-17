@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Web;
 using System.Web.Compilation;
 using System.Runtime.InteropServices;
@@ -14,10 +13,9 @@ using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Packaging;
 using SmartStore.Utilities;
-using SmartStore.Utilities.Threading;
 using SmartStore.Core.Data;
-using System.Threading.Tasks;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Infrastructure;
 
 // Contributor: Umbraco (http://www.umbraco.com). Thanks a lot!
 // SEE THIS POST for full details of what this does

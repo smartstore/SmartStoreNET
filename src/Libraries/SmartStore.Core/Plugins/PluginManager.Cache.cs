@@ -16,6 +16,11 @@ namespace SmartStore.Core.Plugins
 		private static int? _lastPluginsHash;
 		private static ICollection<string> _lastPluginAssemblies;
 
+        /// <summary>
+        /// <c>true</c> when any plugin file has been changed since previous application start.
+        /// </summary>
+        public static bool PluginChangeDetected { get; private set; }
+
 		/// <summary>
 		/// This checks if any of our plugins have changed, if so it will go 
 		/// </summary>
@@ -30,6 +35,7 @@ namespace SmartStore.Core.Plugins
 			// Check if anything has been changed, or if we are in debug mode then always perform cleanup
 			if (currentHash != lastHash)
 			{
+                PluginChangeDetected = true;
                 Logger.DebugFormat("Plugin changes detected in hash.");
 
                 var lastAssemblies = GetLastPluginsAssemblies();

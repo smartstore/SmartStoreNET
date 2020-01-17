@@ -10,7 +10,6 @@ namespace SmartStore.Web.Controllers
 	// Keep this very simple: no dependencies at all!
 	public class ErrorController : Controller
 	{
-
 		[MapLegacyRoutes]
 		public ActionResult NotFound()
 		{

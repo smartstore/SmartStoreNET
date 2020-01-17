@@ -10,10 +10,10 @@ namespace SmartStore.Web.Framework.Controllers
     [PublicStoreAllowNavigation]
     [RewriteUrl(SslRequirement.Retain, Order = 0)]
     [LanguageSeoCode(Order = 1)]
-    [CustomerLastActivity(Order = 1000)]
-	[StoreIpAddress(Order = 1000)]
-	[StoreLastVisitedPage(Order = 1000)]
-	[CheckAffiliate(Order = 1000)]
+    [CustomerLastActivity]
+	[StoreIpAddress]
+	[StoreLastVisitedPage]
+	[CheckAffiliate]
 	public abstract partial class PublicControllerBase : SmartController
     {
 	}

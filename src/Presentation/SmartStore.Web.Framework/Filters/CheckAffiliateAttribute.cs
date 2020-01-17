@@ -15,14 +15,11 @@ namespace SmartStore.Web.Framework.Filters
 		
 		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (filterContext == null || filterContext.HttpContext == null)
+            if (filterContext?.HttpContext?.Request == null)
                 return;
 
-            HttpRequestBase request = filterContext.HttpContext.Request;
-            if (request == null)
-                return;
+            var request = filterContext.HttpContext.Request;
 
-            //don't apply filter to child methods
             if (filterContext.IsChildAction)
                 return;
 

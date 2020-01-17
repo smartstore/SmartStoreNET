@@ -560,13 +560,7 @@ namespace SmartStore.Web.Controllers
 					dbContext.Database.Initialize(true);
 
                     // Register default permissions.
-                    var permissionProviders = new List<Type>();
-                    permissionProviders.Add(typeof(StandardPermissionProvider));
-                    foreach (var providerType in permissionProviders)
-                    {
-                        dynamic provider = Activator.CreateInstance(providerType);
-                        scope.Resolve<IPermissionService>().InstallPermissions(provider);
-                    }
+                    scope.Resolve<IPermissionService>().InstallPermissions(new StandardPermissionProvider());
 
                     // Install plugins.
                     PluginManager.MarkAllPluginsAsUninstalled();

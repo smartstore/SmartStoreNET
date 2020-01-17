@@ -5,8 +5,9 @@
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
+
 @Html.SmartStore().TabStrip().Name("blog-post-edit").Style(TabsStyle.Material).Items(x =>
-{
+{   
     x.Add().Text(T("Admin.ContentManagement.Blog.BlogPosts.Info").Text)
         .Content(TabInfo())
         .Selected(true);
@@ -155,18 +156,16 @@
                 @Html.SmartLabelFor(model => model.SectionBg)
             </td>
             <td class="adminData">
-                @Html.DropDownListFor(model => model.SectionBg,
-                    new List<SelectListItem> {
-                        new SelectListItem {  Text = "primary", Value = "primary" },
-                        new SelectListItem {  Text = "secondary", Value = "secondary" },
-                        new SelectListItem {  Text = "success", Value = "success" },
-                        new SelectListItem {  Text = "danger", Value = "danger" },
-                        new SelectListItem {  Text = "warning", Value = "warning" },
-                        new SelectListItem {  Text = "info", Value = "info" },
-                        new SelectListItem {  Text = "light", Value = "light" },
-                        new SelectListItem {  Text = "dark", Value = "dark" }
-                    }, T("Common.Unspecified"))
+                @{ 
+                    var brandColors = GetThemeVariable("brand-colors")
+                        .Trim()
+                        .SplitSafe(",")
+                        .Select(x => x.TrimSafe())
+                        .Select(x => new SelectListItem { Text = x, Value = x })
+                        .ToList();
+                }
 
+                @Html.DropDownListFor(model => model.SectionBg, brandColors, T("Common.Unspecified"))
                 @Html.ValidationMessageFor(model => model.SectionBg)
             </td>
         </tr>

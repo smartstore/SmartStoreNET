@@ -9,34 +9,45 @@
 @foreach (var item in Model.BlogPosts)
 {
     var imageUrl = item.PreviewPictureModel.ImageUrl;
-    var itemHasImage = item.PreviewPictureModel.ImageUrl.HasValue();
-    var itemHasBgImage = item.HasBgImage && itemHasImage;
-    var articleClass = "bloglist-item card rounded shadow-sm border-0 box-img-top{0}{1}{2}{3}".FormatWith(
-        itemHasBgImage ? " bg-tint-3 has-image-bg" : "",
-        item.SectionBg.HasValue() ? " has-section-bg section-" + item.SectionBg : "",
-        item.Tags.Count > 0 && item.DisplayTagsInPreview ? " has-tags" : "",
-        itemHasImage ? " has-image" : ""
-    );
+    var hasImage = item.PreviewPictureModel.ImageUrl.HasValue();
+    var hasBgImage = item.HasBgImage && hasImage;
 
-    <article class="@articleClass" itemscope itemtype="http://schema.org/BlogPosting">
-        <div>
-            @if (itemHasBgImage)
+    var cssClass = (new[] { "bloglist-item-root", "card", "rounded", "shadow-sm", "border-0", "mb-3 mb-md-2" }).ToList();
+    if (hasBgImage)
+    {
+        cssClass.Add("bg-tint-3 has-image-bg");
+    }
+    if (item.SectionBg.HasValue())
+    {
+        cssClass.Add("has-section-bg section-" + item.SectionBg + " shadow-" + item.SectionBg);
+    }
+    if (item.Tags.Count > 0 && item.DisplayTagsInPreview)
+    {
+        cssClass.Add("has-tags");
+    }
+    if (hasImage)
+    {
+        cssClass.Add("has-image");
+    }
+
+    <article class="@string.Join(" ", cssClass)" itemscope itemtype="http://schema.org/BlogPosting">
+        <div class="bloglist-item d-flex flex-row flex-nowrap d-md-block">
+            @if (hasBgImage)
             {
                 @RenderTags(item, false)
                 @RenderComments(item)
 
-                <div class="box-img-wrapper card-img">
+                <div class="card-img">
                     <img class="card-img box-scale" src="@imageUrl" alt="@item.PreviewPictureModel.AlternateText" title="@item.PreviewPictureModel.Title" itemprop="image">
                 </div>
-                <div class="bg-overlay bg-@(item.SectionBg) card-img"></div>
-                <div class="bg-overlay bg-shade bg-shade-@(item.SectionBg) card-img h-50"></div>
+                <div class="bg-overlay bg-@(item.SectionBg)"></div>
+                <div class="bg-overlay gradient-black scrim-linear-gradient bg-shade-@(item.SectionBg)" style="--cendpos: 50%"></div>
             }
-            else if (!item.SectionBg.HasValue() && itemHasImage)
+            else if (!item.SectionBg.HasValue() && hasImage)
             {
-                <div class="box-img-wrapper">
-
-                    <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })">
-                        <img class="box-img box-scale" src="@imageUrl" alt="@item.PreviewPictureModel.AlternateText" title="@item.PreviewPictureModel.Title" itemprop="image">
+                <div class="bloglist-item-header">
+                    <a class="d-block h-100" href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })">
+                        <img class="bloglist-item-img box-scale" src="@imageUrl" alt="@item.PreviewPictureModel.AlternateText" title="@item.PreviewPictureModel.Title" itemprop="image">
                     </a>
 
                     @RenderTags(item, true)
@@ -49,8 +60,7 @@
                 @RenderComments(item)
             }
 
-            <div class="@(itemHasBgImage ? "card-img-overlay d-flex flex-column justify-content-end" : "box-img-top")">
-
+            <div class="@(hasBgImage ? "card-img-overlay d-flex flex-column justify-content-end p-0" : "bloglist-item-body")">
                 <div class="blogpost-text text-left w-100 p-4">
                     <div class="blogpost-date rfs mb-2 text-muted" itemprop="dateCreated">
                         @item.CreatedOn.ToNativeString("dd MMMM, yyyy")
@@ -79,7 +89,7 @@
 {
     if (item.Tags.Count > 0 && item.DisplayTagsInPreview)
     {
-        <div class="blogpost-tags-overlay mb-3 mb-md-0 @(hasBgImage ? "p-2" : "pb-2 pt-4 px-4")">
+        <div class="blogpost-tags-overlay d-none d-md-block @(hasBgImage ? "p-2" : "p-4")">
             @for (int i = 0, length = item.Tags.Count; i < length; i++)
             {
                 var tag = item.Tags[i];

@@ -30,8 +30,8 @@ namespace SmartStore.Services.Security
         public ILogger Logger { get; set; }
 
         public int Order => 0;
-        public bool ThrowOnError => false;
-        public int MaxAttempts => 3;
+        public bool ThrowOnError => true;
+        public int MaxAttempts => 1;
 
         public void Start(HttpContextBase httpContext)
         {
@@ -70,14 +70,6 @@ namespace SmartStore.Services.Security
 
         public void OnFail(Exception exception, bool willRetry)
         {
-            if (willRetry)
-            {
-                Logger.Error(exception, "Error while installing new permissions.");
-            }
-            else
-            {
-                Logger.Warn($"Stopped trying to install new permissions: too many failed attempts in succession ({MaxAttempts}+).");
-            }
         }
     }
 }

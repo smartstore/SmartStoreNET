@@ -559,9 +559,6 @@ namespace SmartStore.Web.Controllers
 					// ===>>> actually performs the installation by calling "InstallDataSeeder.Seed()" internally.
 					dbContext.Database.Initialize(true);
 
-                    // Register default permissions.
-                    scope.Resolve<IPermissionService>().InstallPermissions(new StandardPermissionProvider());
-
                     // Install plugins.
                     PluginManager.MarkAllPluginsAsUninstalled();
 					var pluginFinder = scope.Resolve<IPluginFinder>();

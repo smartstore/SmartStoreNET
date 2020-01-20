@@ -34,7 +34,6 @@ namespace SmartStore.WebApi
 
 		public override void Install()
 		{
-			_permissionService.InstallPermissions(new WebApiPermissionProvider());
 			_settingService.SaveSetting(new WebApiSettings());
 			_localizationService.ImportPluginResourcesFromXml(PluginDescriptor);
 
@@ -50,10 +49,8 @@ namespace SmartStore.WebApi
 			WebApiCachingUserData.Remove();
 
 			_settingService.DeleteSetting<WebApiSettings>();
-			_permissionService.UninstallPermissions(new WebApiPermissionProvider());
 
 			base.Uninstall();
 		}
-
 	}
 }

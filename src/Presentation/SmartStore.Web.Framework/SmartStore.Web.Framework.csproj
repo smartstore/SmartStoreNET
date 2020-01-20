@@ -235,7 +235,6 @@
     <Compile Include="Security\Honeypot\HtmlHoneypotExtensions.cs" />
     <Compile Include="Security\Honeypot\ValidateHoneypotAttribute.cs" />
     <Compile Include="Security\Honeypot\Honeypot.cs" />
-    <Compile Include="Security\PluginPermissionsStarter.cs" />
     <Compile Include="Security\SanitizeHtmlAttribute.cs" />
     <Compile Include="Settings\SaveSettingAttribute.cs" />
     <Compile Include="Settings\LoadSettingAttribute.cs" />

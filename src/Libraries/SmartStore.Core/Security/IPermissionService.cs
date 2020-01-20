@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
@@ -82,16 +83,11 @@ namespace SmartStore.Core.Security
 
 
         /// <summary>
-        /// Install permissions.
+        /// Installs permissions. Permissions are automatically installed by <see cref="InstallPermissionsStarter"/>.
         /// </summary>
-        /// <param name="permissionProvider">Permission provider.</param>
-        void InstallPermissions(IPermissionProvider permissionProvider);
-
-        /// <summary>
-        /// Uninstall permissions.
-        /// </summary>
-        /// <param name="permissionProvider">Permission provider.</param>
-        void UninstallPermissions(IPermissionProvider permissionProvider);
+        /// <param name="permissionProviders">Providers whose permissions are to be installed.</param>
+        /// <param name="removeUnusedPermissions">Whether to remove permissions no longer supported by the providers.</param>
+        void InstallPermissions(IPermissionProvider[] permissionProviders, bool removeUnusedPermissions = false);
 
 
         /// <summary>

@@ -56,7 +56,6 @@ namespace SmartStore.DevTools
             // Example for how to add a route to the output cache
             //_cacheableRouteRegistrar.RegisterCacheableRoute("SmartStore.DevTools/DevTools/PublicInfo");
 
-            _services.Permissions.InstallPermissions(new DevToolsPermissionProvider());
             _services.Settings.SaveSetting(new ProfilerSettings());
 
 			base.Install();
@@ -69,7 +68,6 @@ namespace SmartStore.DevTools
             // Example for how to remove a route from the output cache
             //_cacheableRouteRegistrar.RemoveCacheableRoute("SmartStore.DevTools/DevTools/PublicInfo");
 
-            _services.Permissions.UninstallPermissions(new DevToolsPermissionProvider());
             _services.Settings.DeleteSetting<ProfilerSettings>();
 
 			base.Uninstall();

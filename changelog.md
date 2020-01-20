@@ -5,6 +5,9 @@
 * (NEW) **Granular permissions**: Extensive permission management based on customer groups via tree view. Supports inheritance to allow or deny entire permission ranges.
 * (NEW) **Granular permissions**: All permissions of a customer directly visible on the customer edit page.
 
+### Breaking changes
+* Install\UninstallPermissions has been removed from IPermissionService. No longer needs to be called by plugins. Permissions are now automatically installed\uninstalled.
+
 ### New Features
 * #1598 Add published property to ProductTag entity.
 * #1669 Apply percentage discounts also on tier prices.

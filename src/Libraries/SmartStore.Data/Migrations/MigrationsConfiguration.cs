@@ -128,6 +128,14 @@
                 "The view shows the permissions that apply to this customer based on the customer roles assigned to him. To change permissions, switch to the relevant <a class=\"alert-link\" href=\"{0}\">customer role</a>.",
                 "Die Ansicht zeigt die Rechte, die für diesen Kunden auf Basis der ihm zugeordneten Kundengruppen gelten. Um Rechte zu ändern, wechseln Sie bitte zur betreffenden <a class=\"alert-link\" href=\"{0}\">Kundengruppe</a>.");
 
+            builder.AddOrUpdate("Admin.Permissions.AddedPermissions",
+                "Added permissions: {0}",
+                "Hinzugefügte Zugriffsrechte: {0}");
+
+            builder.AddOrUpdate("Admin.Permissions.RemovedPermissions",
+                "Permissions have been removed: {0}",
+                "Zugriffsrechte wurden entfernt: {0}");
+
             builder.AddOrUpdate("Permissions.DisplayName.DisplayPrice", "Display prices", "Preise anzeigen");
             builder.AddOrUpdate("Permissions.DisplayName.AccessShop", "Access shop", "Zugang zum Shop");
             builder.AddOrUpdate("Permissions.DisplayName.AccessShoppingCart", "Access shoppping cart", "Auf Warenkorb zugreifen");

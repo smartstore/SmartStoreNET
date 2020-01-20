@@ -19,10 +19,6 @@ namespace SmartStore.DevTools.Security
     }
 
 
-    /// <summary>
-    /// Call <see cref="IPermissionService.InstallPermissions(IPermissionProvider)"/> or 
-    /// <see cref="IPermissionService.UninstallPermissions(IPermissionProvider)"/> when installing or uninstalling the plugin.
-    /// </summary>
     public class DevToolsPermissionProvider : IPermissionProvider
     {
         public IEnumerable<PermissionRecord> GetPermissions()

@@ -15,10 +15,14 @@ namespace SmartStore.Services.Security
     public sealed class InstallPermissionsStarter : IPostApplicationStart
     {
         private readonly IPermissionService _permissionService;
+        private readonly ITypeFinder _typeFinder;
 
-        public InstallPermissionsStarter(IPermissionService permissionService)
+        public InstallPermissionsStarter(
+            IPermissionService permissionService,
+            ITypeFinder typeFinder)
         {
             _permissionService = permissionService;
+            _typeFinder = typeFinder;
 
             Logger = NullLogger.Instance;
         }
@@ -32,35 +36,31 @@ namespace SmartStore.Services.Security
         public void Start(HttpContextBase httpContext)
         {
             var removeUnusedPermissions = true;
-            var providers = new List<IPermissionProvider>
-            {
-                new StandardPermissionProvider()
-            };
+            var providers = new List<IPermissionProvider>();
 
-            // Plugin permissions.
             if (PluginManager.PluginChangeDetected)
             {
-                var pluginDescriptors = PluginFinder.Current.GetPluginDescriptors();
-                foreach (var descriptor in pluginDescriptors)
+                // Standard permission provider and all plugin providers.
+                var types = _typeFinder.FindClassesOfType<IPermissionProvider>(ignoreInactivePlugins: true).ToList();
+                foreach (var type in types)
                 {
-                    var exportedTypes = descriptor.Assembly.Assembly.GetExportedTypes();
-                    foreach (var t in exportedTypes.Where(t => typeof(IPermissionProvider).IsAssignableFrom(t) && !t.IsInterface && t.IsClass && !t.IsAbstract))
+                    var provider = Activator.CreateInstance(type) as IPermissionProvider;
+                    if (provider != null)
                     {
-                        var provider = Activator.CreateInstance(t) as IPermissionProvider;
-                        if (provider != null)
-                        {
-                            providers.Add(provider);
-                        }
-                        else
-                        {
-                            removeUnusedPermissions = false;
-                            Logger.Warn($"Cannot create instance of IPermissionProvider {t.Name.NaIfEmpty()}.");
-                        }
+                        providers.Add(provider);
+                    }
+                    else
+                    {
+                        removeUnusedPermissions = false;
+                        Logger.Warn($"Cannot create instance of IPermissionProvider {type.Name.NaIfEmpty()}.");
                     }
                 }
             }
             else
             {
+                // Always check standard permission provider.
+                providers.Add(new StandardPermissionProvider());
+
                 // Keep unused permissions in database (has no negative effects) as long as at least one plugin changed.
                 removeUnusedPermissions = false;
             }

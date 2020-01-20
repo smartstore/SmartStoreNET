@@ -257,11 +257,11 @@ namespace SmartStore.Services.Security
                 return;
             }
 
+            var clearCache = false;
             var allPermissionNames = _permissionRepository.TableUntracked.Select(x => x.SystemName).ToList();
             var existing = new HashSet<string>(allPermissionNames, StringComparer.InvariantCultureIgnoreCase);
             var added = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
             var providerPermissions = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
-            var clearCache = false;
             Dictionary<string, CustomerRole> existingRoles = null;
 
             var permissionsMigrated = existing.Contains(Permissions.System.AccessShop) && !existing.Contains("PublicStoreAllowNavigation");
@@ -271,104 +271,110 @@ namespace SmartStore.Services.Security
                 return;
             }
 
-            using (var scope = new DbContextScope(_permissionRepository.Context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
+            try
             {
-                // Add new permissions.
-                foreach (var provider in permissionProviders)
+                using (var scope = new DbContextScope(_permissionRepository.Context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
                 {
-                    try
+                    // Add new permissions.
+                    foreach (var provider in permissionProviders)
                     {
-                        var systemNames = provider.GetPermissions().Select(x => x.SystemName);
-                        var missingSystemNames = systemNames.Except(existing);
-
-                        if (removeUnusedPermissions)
+                        try
                         {
-                            providerPermissions.AddRange(systemNames);
-                        }
+                            var systemNames = provider.GetPermissions().Select(x => x.SystemName);
+                            var missingSystemNames = systemNames.Except(existing);
 
-                        if (missingSystemNames.Any())
-                        {
-                            var defaultPermissions = provider.GetDefaultPermissions();
-                            foreach (var systemName in missingSystemNames)
+                            if (removeUnusedPermissions)
                             {
-                                var roleNames = defaultPermissions
-                                    .Where(x => x.PermissionRecords.Any(y => y.SystemName == systemName))
-                                    .Select(x => x.CustomerRoleSystemName);
+                                providerPermissions.AddRange(systemNames);
+                            }
 
-                                var newPermission = new PermissionRecord { SystemName = systemName };
-
-                                foreach (var roleName in new HashSet<string>(roleNames, StringComparer.InvariantCultureIgnoreCase))
+                            if (missingSystemNames.Any())
+                            {
+                                var defaultPermissions = provider.GetDefaultPermissions();
+                                foreach (var systemName in missingSystemNames)
                                 {
-                                    if (existingRoles == null)
-                                    {
-                                        var allRoles = _customerService.Value.GetAllCustomerRoles(true);
+                                    var roleNames = defaultPermissions
+                                        .Where(x => x.PermissionRecords.Any(y => y.SystemName == systemName))
+                                        .Select(x => x.CustomerRoleSystemName);
 
-                                        existingRoles = allRoles
-                                            .Where(x => !string.IsNullOrEmpty(x.SystemName))
-                                            .ToDictionarySafe(x => x.SystemName, x => x);
-                                    }
+                                    var newPermission = new PermissionRecord { SystemName = systemName };
 
-                                    if (!existingRoles.TryGetValue(roleName, out var role))
+                                    foreach (var roleName in new HashSet<string>(roleNames, StringComparer.InvariantCultureIgnoreCase))
                                     {
-                                        role = new CustomerRole
+                                        if (existingRoles == null)
                                         {
-                                            Active = true,
-                                            Name = roleName,
-                                            SystemName = roleName
-                                        };
+                                            var allRoles = _customerService.Value.GetAllCustomerRoles(true);
 
-                                        _customerService.Value.InsertCustomerRole(role);
-                                        scope.Commit();
-                                        existingRoles[roleName] = role;
+                                            existingRoles = allRoles
+                                                .Where(x => !string.IsNullOrEmpty(x.SystemName))
+                                                .ToDictionarySafe(x => x.SystemName, x => x);
+                                        }
+
+                                        if (!existingRoles.TryGetValue(roleName, out var role))
+                                        {
+                                            role = new CustomerRole
+                                            {
+                                                Active = true,
+                                                Name = roleName,
+                                                SystemName = roleName
+                                            };
+
+                                            _customerService.Value.InsertCustomerRole(role);
+                                            scope.Commit();
+                                            existingRoles[roleName] = role;
+                                        }
+
+                                        newPermission.PermissionRoleMappings.Add(new PermissionRoleMapping
+                                        {
+                                            Allow = true,
+                                            CustomerRoleId = role.Id
+                                        });
                                     }
 
-                                    newPermission.PermissionRoleMappings.Add(new PermissionRoleMapping
-                                    {
-                                        Allow = true,
-                                        CustomerRoleId = role.Id
-                                    });
+                                    _permissionRepository.Insert(newPermission);
+
+                                    clearCache = true;
+                                    added.Add(newPermission.SystemName);
+                                    existing.Add(newPermission.SystemName);
                                 }
-
-                                _permissionRepository.Insert(newPermission);
-
-                                added.Add(newPermission.SystemName);
-                                existing.Add(newPermission.SystemName);
                             }
                         }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex);
+                        }
                     }
-                    catch (Exception ex)
+
+                    scope.Commit();
+
+                    if (added.Any())
                     {
-                        Logger.Error(ex);
+                        Logger.Info(T("Admin.Permissions.AddedPermissions", string.Join(", ", added)));
                     }
-                }
 
-                scope.Commit();
-
-                if (added.Any())
-                {
-                    clearCache = true;
-                    Logger.Info(T("Admin.Permissions.AddedPermissions", string.Join(", ", added)));
-                }
-
-                // Remove permissions no longer supported by providers.
-                if (removeUnusedPermissions)
-                {
-                    var toDelete = existing.Except(providerPermissions);
-                    if (toDelete.Any())
+                    // Remove permissions no longer supported by providers.
+                    if (removeUnusedPermissions)
                     {
-                        var entities = _permissionRepository.Table.Where(x => toDelete.Contains(x.SystemName)).ToList();
-                        entities.Each(x => _permissionRepository.Delete(x));
-                        scope.Commit();
+                        var toDelete = existing.Except(providerPermissions);
+                        if (toDelete.Any())
+                        {
+                            clearCache = true;
 
-                        clearCache = true;
-                        Logger.Info(T("Admin.Permissions.RemovedPermissions", string.Join(", ", toDelete)));
+                            var entities = _permissionRepository.Table.Where(x => toDelete.Contains(x.SystemName)).ToList();
+                            entities.Each(x => _permissionRepository.Delete(x));
+                            scope.Commit();
+
+                            Logger.Info(T("Admin.Permissions.RemovedPermissions", string.Join(", ", toDelete)));
+                        }
                     }
                 }
             }
-
-            if (clearCache)
+            finally
             {
-                _cacheManager.RemoveByPattern(PERMISSION_TREE_PATTERN_KEY);
+                if (clearCache)
+                {
+                    _cacheManager.RemoveByPattern(PERMISSION_TREE_PATTERN_KEY);
+                }
             }
         }
 

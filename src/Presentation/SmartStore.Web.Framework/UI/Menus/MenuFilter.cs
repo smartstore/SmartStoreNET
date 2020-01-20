@@ -1,35 +1,29 @@
-﻿using System;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using Newtonsoft.Json;
 using SmartStore.Collections;
-using SmartStore.Core.Themes;
 using SmartStore.Services.Cms;
 using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Web.Framework.UI
 {
-    public class MenuFilter : IActionFilter, IResultFilter
+    public class MenuActionFilter : IActionFilter
     {
-		private readonly IWidgetProvider _widgetProvider;
 		private readonly IMenuStorage _menuStorage;
         private readonly IMenuService _menuService;
         private readonly WebViewPageHelper _pageHelper;
         private readonly IPageAssetsBuilder _pageAssetsBuilder;
 
-        public MenuFilter(
-            IWidgetProvider widgetProvider, 
+        public MenuActionFilter(
             IMenuStorage menuStorage, 
             IMenuService menuService,
             WebViewPageHelper pageHelper,
             IPageAssetsBuilder pageAssetsBuilder)
         {
-            _widgetProvider = widgetProvider;
 			_menuStorage = menuStorage;
             _menuService = menuService;
             _pageHelper = pageHelper;
             _pageAssetsBuilder = pageAssetsBuilder;
         }
-
 
         public void OnActionExecuting(ActionExecutingContext filterContext)
         {
@@ -122,38 +116,53 @@ namespace SmartStore.Web.Framework.UI
 
             return null;
         }
+    }
+
+
+    public class MenuResultFilter : IResultFilter
+    {
+        private readonly IWidgetProvider _widgetProvider;
+        private readonly IMenuStorage _menuStorage;
+
+        public MenuResultFilter(
+            IWidgetProvider widgetProvider,
+            IMenuStorage menuStorage)
+        {
+            _widgetProvider = widgetProvider;
+            _menuStorage = menuStorage;
+        }
 
         public void OnResultExecuting(ResultExecutingContext filterContext)
         {
-			if (filterContext.IsChildAction || !filterContext.Result.IsHtmlViewResult())
-			{
-				return;
-			}
+            if (filterContext.IsChildAction || !filterContext.Result.IsHtmlViewResult())
+            {
+                return;
+            }
 
             ProcessUserMenus();
-		}
+        }
 
         public void OnResultExecuted(ResultExecutedContext filterContext)
         {
             // Noop
         }
 
-		/// <summary>
-		/// Registers actions to render user menus in widget zones.
-		/// </summary>
-		private void ProcessUserMenus()
-		{
-			var menusInfo = _menuStorage.GetUserMenuInfos();
+        /// <summary>
+        /// Registers actions to render user menus in widget zones.
+        /// </summary>
+        private void ProcessUserMenus()
+        {
+            var menusInfo = _menuStorage.GetUserMenuInfos();
 
-			foreach (var info in menusInfo)
-			{
-				_widgetProvider.RegisterAction(
-					info.WidgetZones,
-					"Menu",
-					"Menu",
-					new { area = "", name = info.SystemName, template = info.Template },
-					info.DisplayOrder);
-			}
-		}
+            foreach (var info in menusInfo)
+            {
+                _widgetProvider.RegisterAction(
+                    info.WidgetZones,
+                    "Menu",
+                    "Menu",
+                    new { area = "", name = info.SystemName, template = info.Template },
+                    info.DisplayOrder);
+            }
+        }
     }
 }

@@ -859,9 +859,9 @@ namespace SmartStore.Web.Framework
 
             if (DataSettings.DatabaseIsInstalled())
             {
-                builder.RegisterType<MenuFilter>()
-                    .AsActionFilterFor<SmartController>(0)
-                    .AsResultFilterFor<SmartController>(0);
+                // We have to register two classes, otherwise the filters would be called twice.
+                builder.RegisterType<MenuActionFilter>().AsActionFilterFor<SmartController>(0);
+                builder.RegisterType<MenuResultFilter>().AsResultFilterFor<SmartController>(0);
             }
         }
 	}

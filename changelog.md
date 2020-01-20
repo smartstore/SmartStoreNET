@@ -50,7 +50,7 @@
 * **PayPal**:
 	* Fixed rare exception "Unsupported Media Type" (415) in PayPal PLUS.
 	* Only process a partially refund IPN when the order refunded amount is zero. Otherwise the order refunded amount will be wrong.
-* ** Customer import **:
+* **Customer import**:
 	* VatNumber and other fields were ignored.
 	* Customer roles sometimes inserted several times.
 	* Changed billing\shipping address was added instead of updating the existing one.
@@ -69,6 +69,7 @@
 * Shipping by weight: the surcharge hint was not displayed correctly.
 * Off-canvas menu shows wrong product count for brand menu items.
 * Images of newly added variants could be deleted automatically due to wrong image transient state.
+* #1794 Menu display order is ignored for widget zone header_menu_special_after.
 
 
 ## SmartStore.NET 3.2.2

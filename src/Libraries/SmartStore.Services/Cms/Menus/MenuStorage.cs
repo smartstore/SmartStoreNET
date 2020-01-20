@@ -142,7 +142,7 @@ namespace SmartStore.Services.Cms
 
             var userMenusInfo = _services.Cache.Get(cacheKey, () =>
             {
-                var query = BuildMenuQuery(0, storeId, null, false, false, true, false, true);
+                var query = BuildMenuQuery(0, storeId, null, false, false, true, true, true);
 
                 var data = query.Select(x => new
                 {
@@ -389,7 +389,10 @@ namespace SmartStore.Services.Cms
 
             if (sort)
             {
-                query = query.OrderBy(x => x.SystemName).ThenBy(x => x.Title);
+                query = query
+                    .OrderBy(x => x.DisplayOrder)
+                    .ThenBy(x => x.SystemName)
+                    .ThenBy(x => x.Title);
             }
 
             return query;

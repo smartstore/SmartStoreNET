@@ -50,6 +50,8 @@
 				columns.Bound(x => x.Published)
 					.ClientTemplate(@Html.SymbolForBool("Published"))
 					.Centered();
+                columns.Bound(x => x.DisplayOrder)
+                    .Centered();
 				columns.Bound(x => x.LimitedToStores)
 					.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
 					.Hidden(Model.AvailableStores.Count <= 1)

@@ -138,7 +138,8 @@
         {
             <li data-name="permission-@child.Value.PermissionRecordId" 
                 data-value="@(child.Value.Allow.HasValue ? (child.Value.Allow.Value ? 2 : 1) : 0)" 
-                data-label="@(child.GetMetadata<string>("DisplayName", false))">
+                data-label="@(child.GetMetadata<string>("DisplayName", false))"
+                title="@child.Value.SystemName">
                 @if (child.HasChildren)
                 {
                     @PermissionNode(child)

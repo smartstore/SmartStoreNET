@@ -68,11 +68,15 @@ namespace SmartStore.Services.DataExchange.Import
 					key = "Admin.Common.Store.LimitedTo";
 					break;
 				case "DisplayOrder":
-					key = "Common.DisplayOrder";
+                case "HomePageDisplayOrder":
+                    key = "Common.DisplayOrder";
 					break;
 				case "Deleted":
 					key = "Admin.Common.Deleted";
 					break;
+                case "WorkingLanguageId":
+                    key = "Common.Language";
+                    break;
 				case "CreatedOnUtc":
 				case "BillingAddress.CreatedOnUtc":
 				case "ShippingAddress.CreatedOnUtc":

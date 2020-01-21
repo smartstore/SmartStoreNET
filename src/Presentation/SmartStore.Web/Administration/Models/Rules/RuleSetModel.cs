@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Rules;
-using SmartStore.Rules.Domain;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -36,7 +35,6 @@ namespace SmartStore.Admin.Models.Rules
         public DateTime CreatedOnUtc { get; set; }
         public DateTime UpdatedOnUtc { get; set; }
         public DateTime? LastProcessedOnUtc { get; set; }
-        public ICollection<RuleEntity> Rules { get; set; }
 
         public IRuleExpressionGroup ExpressionGroup { get; set; }
         public IEnumerable<RuleDescriptor> AvailableDescriptors { get; set; }

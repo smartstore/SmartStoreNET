@@ -175,7 +175,46 @@ namespace SmartStore.WebApi.Controllers.OData
 			return Request.CreateResponseForEntity(productManufacturer, relatedKey);
 		}
 
-		[WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditPicture)]
+        public HttpResponseMessage NavigationProductPictures(int key, int relatedKey)
+        {
+            ProductPicture productPicture = null;
+            var productPictures = Service.GetProductPicturesByProductId(key);
+
+            if (Request.Method == HttpMethod.Delete)
+            {
+                if (relatedKey == 0)
+                {
+                    productPictures.Each(x => Service.DeleteProductPicture(x));
+                }
+                else if ((productPicture = productPictures.FirstOrDefault(x => x.PictureId == relatedKey)) != null)
+                {
+                    Service.DeleteProductPicture(productPicture);
+                }
+
+                return Request.CreateResponse(HttpStatusCode.NoContent);
+            }
+
+            productPicture = productPictures.FirstOrDefault(x => x.PictureId == relatedKey);
+
+            if (Request.Method == HttpMethod.Post)
+            {
+                if (productPicture == null)
+                {
+                    productPicture = ReadContent<ProductPicture>() ?? new ProductPicture();
+                    productPicture.ProductId = key;
+                    productPicture.PictureId = relatedKey;
+
+                    Service.InsertProductPicture(productPicture);
+
+                    return Request.CreateResponse(HttpStatusCode.Created, productPicture);
+                }
+            }
+
+            return Request.CreateResponseForEntity(productPicture, relatedKey);
+        }
+
+        [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.DeliveryTime.Read)]
         public SingleResult<DeliveryTime> GetDeliveryTime(int key)
 		{

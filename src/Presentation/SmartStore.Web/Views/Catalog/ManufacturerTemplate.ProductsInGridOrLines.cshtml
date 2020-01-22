@@ -87,6 +87,13 @@
             }
 		</div>
 
+		@if (Model.BottomDescription.Value.HasValue())
+		{
+			<div @Html.LanguageAttributes(Model.BottomDescription) class="manufacturer-description lead html-editor-content">
+				@Html.Raw(Html.CollapsedText(Model.BottomDescription))
+			</div>
+		}
+
 		@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
 		@{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
 

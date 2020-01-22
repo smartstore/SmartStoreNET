@@ -53,6 +53,7 @@ namespace SmartStore.Web
                 Id = entity.Id,
                 Name = entity.GetLocalized(x => x.Name),
                 Description = entity.GetLocalized(x => x.Description, detectEmptyHtml: true),
+                BottomDescription = entity.GetLocalized(x => x.BottomDescription, detectEmptyHtml: true),
                 MetaKeywords = entity.GetLocalized(x => x.MetaKeywords),
                 MetaDescription = entity.GetLocalized(x => x.MetaDescription),
                 MetaTitle = entity.GetLocalized(x => x.MetaTitle),

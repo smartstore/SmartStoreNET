@@ -428,7 +428,8 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("Name", (string)manufacturer.Name);
 			_writer.Write("SeName", (string)manufacturer.SeName);
 			_writer.Write("Description", (string)manufacturer.Description);
-			_writer.Write("ManufacturerTemplateId", entity.ManufacturerTemplateId.ToString());
+            _writer.Write("BottomDescription", (string)manufacturer.BottomDescription);
+            _writer.Write("ManufacturerTemplateId", entity.ManufacturerTemplateId.ToString());
 			_writer.Write("MetaKeywords", (string)manufacturer.MetaKeywords);
 			_writer.Write("MetaDescription", (string)manufacturer.MetaDescription);
 			_writer.Write("MetaTitle", (string)manufacturer.MetaTitle);

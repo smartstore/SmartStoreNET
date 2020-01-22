@@ -7,14 +7,15 @@ namespace SmartStore.Data.Mapping.Catalog
     {
         public ManufacturerMap()
         {
-            this.ToTable("Manufacturer");
-            this.HasKey(m => m.Id);
-            this.Property(m => m.Name).IsRequired().HasMaxLength(400);
-			this.Property(m => m.Description).IsMaxLength();
-            this.Property(m => m.MetaKeywords).HasMaxLength(400);
-            this.Property(m => m.MetaTitle).HasMaxLength(400);
-            this.Property(m => m.PageSizeOptions).HasMaxLength(200).IsOptional();
-			this.HasOptional(p => p.Picture)
+            ToTable("Manufacturer");
+            HasKey(m => m.Id);
+            Property(m => m.Name).IsRequired().HasMaxLength(400);
+			Property(m => m.Description).IsMaxLength();
+            Property(c => c.BottomDescription).IsMaxLength();
+            Property(m => m.MetaKeywords).HasMaxLength(400);
+            Property(m => m.MetaTitle).HasMaxLength(400);
+            Property(m => m.PageSizeOptions).HasMaxLength(200).IsOptional();
+			HasOptional(p => p.Picture)
 				.WithMany()
 				.HasForeignKey(p => p.PictureId)
 				.WillCascadeOnDelete(false);

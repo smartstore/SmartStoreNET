@@ -33,6 +33,10 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string Description { get; set; }
 
+        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.BottomDescription")]
+        [AllowHtml]
+        public string BottomDescription { get; set; }
+
         [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.ManufacturerTemplate")]
         [AllowHtml]
         public int ManufacturerTemplateId { get; set; }
@@ -138,7 +142,11 @@ namespace SmartStore.Admin.Models.Catalog
 
         [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.Description")]
         [AllowHtml]
-        public string Description {get;set;}
+        public string Description { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.BottomDescription")]
+        [AllowHtml]
+        public string BottomDescription { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.MetaKeywords")]
         [AllowHtml]

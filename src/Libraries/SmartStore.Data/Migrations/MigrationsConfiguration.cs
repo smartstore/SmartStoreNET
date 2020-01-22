@@ -332,6 +332,12 @@
                 "Bild",
                 "Specifies an image as the selector element.",
                 "Legt ein Bild als Auswahlelement fest.");
+
+            builder.AddOrUpdate("Admin.Catalog.Manufacturers.Fields.BottomDescription",
+                "Bottom description",
+                "Untere Beschreibung",
+                "Optional second description displayed below products on the category page.",
+                "Optionale zweite Beschreibung, die auf der Herstellerseite unterhalb der Produkte angezeigt wird.");
         }
     }
 }

@@ -32,6 +32,12 @@ namespace SmartStore.Core.Domain.Catalog
 		public string Description { get; set; }
 
         /// <summary>
+        /// Gets or sets a description displayed at the bottom of the manufacturer page.
+        /// </summary>
+        [DataMember]
+        public string BottomDescription { get; set; }
+
+        /// <summary>
         /// Gets or sets a value of used manufacturer template identifier
         /// </summary>
 		[DataMember]

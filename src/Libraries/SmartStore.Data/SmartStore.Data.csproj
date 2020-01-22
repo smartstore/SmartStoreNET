@@ -746,6 +746,10 @@
     <Compile Include="Migrations\202001141118171_SpecificationAttributeColorAndPicture.Designer.cs">
       <DependentUpon>202001141118171_SpecificationAttributeColorAndPicture.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202001221054109_ManufacturerBottomDescription.cs" />
+    <Compile Include="Migrations\202001221054109_ManufacturerBottomDescription.Designer.cs">
+      <DependentUpon>202001221054109_ManufacturerBottomDescription.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -1331,6 +1335,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202001141118171_SpecificationAttributeColorAndPicture.resx">
       <DependentUpon>202001141118171_SpecificationAttributeColorAndPicture.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202001221054109_ManufacturerBottomDescription.resx">
+      <DependentUpon>202001221054109_ManufacturerBottomDescription.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

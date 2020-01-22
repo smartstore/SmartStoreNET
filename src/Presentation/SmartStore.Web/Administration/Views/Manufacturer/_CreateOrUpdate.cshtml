@@ -61,13 +61,22 @@
                     @Html.ValidationMessageFor(model => model.Locales[item].Name)
                 </td>
             </tr>
-            <tr>
+            <tr class="description-container">
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.Locales[item].Description)
                 </td>
                 <td class="adminData wide">
                     @Html.EditorFor(model => model.Locales[item].Description, "Html")
                     @Html.ValidationMessageFor(model => model.Locales[item].Description)
+                </td>
+            </tr>
+            <tr class="description-container d-none">
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Locales[item].BottomDescription)
+                </td>
+                <td class="adminData wide">
+                    @Html.EditorFor(model => model.Locales[item].BottomDescription, "Html")
+                    @Html.ValidationMessageFor(model => model.Locales[item].BottomDescription)
                 </td>
             </tr>
         </table>
@@ -82,7 +91,7 @@
                     @Html.ValidationMessageFor(model => model.Name)
                 </td>
             </tr>
-            <tr>
+            <tr class="description-container">
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.Description)
                 </td>
@@ -91,6 +100,24 @@
                     @Html.ValidationMessageFor(model => model.Description)
                 </td>
             </tr>
+            <tr class="description-container d-none">
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.BottomDescription)
+                </td>
+                <td class="adminData wide">
+                    @Html.EditorFor(x => x.BottomDescription, "Html")
+                    @Html.ValidationMessageFor(model => model.BottomDescription)
+                </td>
+            </tr>
+			<tr>
+				<td class="adminTitle"></td>
+				<td class="adminData">
+					<button type="button" class="btn btn-secondary description-toggle-button">
+						<i class="fa fa-exchange-alt"></i>
+						<span>@T("Admin.Catalog.Categories.DescriptionToggle")</span>
+					</button>
+				</td>
+			</tr>
         </table>
     ))
 
@@ -360,7 +387,12 @@
 <script type="text/javascript">
 	$(function () {
         $("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").change(togglePageSize);
-		togglePageSize();
+        togglePageSize();
+
+		// Toggle top\bottom description.
+		$('.description-toggle-button').click(function() {
+			$('.description-container').toggleClass('d-none');
+		});
     });
 
 	function PickProducts_Completed(ids) {

@@ -586,14 +586,16 @@ namespace SmartStore.Services.DataExchange.Export
 			{
 				result.SeName = ctx.UrlRecords[nameof(Manufacturer)].GetSlug(ctx.LanguageId, manufacturer.Id);
                 result.Description = translations.GetValue(ctx.LanguageId, manufacturer.Id, nameof(manufacturer.Description)) ?? manufacturer.Description;
-				result.MetaKeywords = translations.GetValue(ctx.LanguageId, manufacturer.Id, nameof(manufacturer.MetaKeywords)) ?? manufacturer.MetaKeywords;
+                result.BottomDescription = translations.GetValue(ctx.LanguageId, manufacturer.Id, nameof(manufacturer.BottomDescription)) ?? manufacturer.BottomDescription;
+                result.MetaKeywords = translations.GetValue(ctx.LanguageId, manufacturer.Id, nameof(manufacturer.MetaKeywords)) ?? manufacturer.MetaKeywords;
 				result.MetaDescription = translations.GetValue(ctx.LanguageId, manufacturer.Id, nameof(manufacturer.MetaDescription)) ?? manufacturer.MetaDescription;
 				result.MetaTitle = translations.GetValue(ctx.LanguageId, manufacturer.Id, nameof(manufacturer.MetaTitle)) ?? manufacturer.MetaTitle;
 
 				result._Localized = GetLocalized(ctx, translations, urlRecords, manufacturer,
 					x => x.Name,
 					x => x.Description,
-					x => x.MetaKeywords,
+                    x => x.BottomDescription,
+                    x => x.MetaKeywords,
 					x => x.MetaDescription,
 					x => x.MetaTitle);
 			}

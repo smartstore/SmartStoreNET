@@ -269,7 +269,8 @@ namespace SmartStore.Web.Controllers
 			if (query.IsSubPage && !_catalogSettings.ShowDescriptionInSubPages)
 			{
 				model.Description.ChangeValue(string.Empty);
-			}
+                model.BottomDescription.ChangeValue(string.Empty);
+            }
 
 			model.PictureModel = _helper.PrepareManufacturerPictureModel(manufacturer, model.Name);
 

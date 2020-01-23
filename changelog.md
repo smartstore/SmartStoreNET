@@ -72,6 +72,7 @@
 * Off-canvas menu shows wrong product count for brand menu items.
 * Images of newly added variants could be deleted automatically due to wrong image transient state.
 * #1794 Menu display order is ignored for widget zone header_menu_special_after.
+* #1451 RTL: Manage categories tree view.
 
 
 ## SmartStore.NET 3.2.2

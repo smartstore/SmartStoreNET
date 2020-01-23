@@ -277,4 +277,25 @@
 		left: $input-height;
 		right: auto;
 	}
+
+    .t-treeview .t-plus, .t-treeview .t-minus, .t-treeview .t-plus-disabled, .t-treeview .t-minus-disabled {
+        margin-left: inherit;
+        float: none;
+    }
+
+    .t-treeview .t-sprite, .t-treeview .t-image {
+        margin-left: 3px;
+    }
+
+    .t-treeview .t-item {
+        padding: 0 16px 0 16px;
+    }
+
+    .t-treeview .t-in {
+        padding: 2px 12px 2px 3px;
+    }
+
+    .t-treeview .t-state-hover, .t-treeview .t-state-selected {
+        padding: 1px 11px 1px 2px;
+    }
 }

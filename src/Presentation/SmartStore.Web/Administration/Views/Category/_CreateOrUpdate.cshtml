@@ -7,7 +7,6 @@
 	x.Add().Text(T("Admin.Catalog.Categories.Info").Text).Icon("fa fa-pencil-alt fa-lg fa-fw").Content(TabInfo()).Selected(true);
 	x.Add().Text(T("Admin.Common.SEO").Text).Icon("fa fa-search fa-lg fa-fw").Content(TabSeo());
 	x.Add().Text(T("Admin.Catalog.Categories.Products").Text).Icon("fa fa-cube fa-lg fa-fw").Content(TabProducts());
-	x.Add().Text(T("Admin.Catalog.Categories.Discounts").Text).Icon("fa fa-percent fa-lg fa-fw").Content(TabDiscounts());
 
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "category-edit", this.Html, this.Model));
 })
@@ -286,6 +285,15 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedDiscountIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedDiscountIds)
+                @Html.ValidationMessageFor(model => model.SelectedDiscountIds)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SelectedStoreIds)
             </td>
             <td class="adminData">
@@ -496,27 +504,6 @@
 		.HtmlAttribute("class", "t-button t-grid-add")
 		.Caption(T("Admin.Catalog.Categories.Products.AddNew").Text.EncodeJsString('\'', false))
 		.OnSelectionCompleted("PickProducts_Completed"))
-}
-
-@helper TabDiscounts()
-{
-	if (Model.AvailableDiscounts != null && Model.AvailableDiscounts.Count > 0)
-	{
-		foreach (var discount in Model.AvailableDiscounts)
-		{
-			<div class="custom-control custom-checkbox mb-1">
-				<input type="checkbox" name="SelectedDiscountIds" id="discount-@discount.Id"
-					   class="custom-control-input" value="@discount.Id" checked="@(Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id))">
-				<label class="custom-control-label" for="discount-@discount.Id">@discount.Name</label>	
-			</div>
-		}
-	}
-	else
-	{
-		<div class="alert alert-info">
-			@T("Admin.Promotions.Discounts.NoDiscountsAvailable")
-		</div>
-	}
 }
 
 <script>

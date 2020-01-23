@@ -18,7 +18,6 @@
         x.Add().Text(T("Admin.Promotions.Discounts.History").Text).Content(TabHistory());
     }
     
-    //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "discount-edit", this.Html, this.Model));
 })
 
@@ -108,37 +107,25 @@
                 @Html.SmartLabelFor(model => model.AppliedToCategoryModels)
             </td>
             <td class="adminData form-control-plaintext">
-                @if (Model.AppliedToCategoryModels.Count > 0)
-                {
-                    for (int i = 0; i < Model.AppliedToCategoryModels.Count; i++)
-                    {
-                        var categoryId = Model.AppliedToCategoryModels[i].CategoryId;
-                        var categoryName = Model.AppliedToCategoryModels[i].Name;
-                        <a href="@Url.Action("Edit", "Category", new { id = categoryId })">@categoryName</a>
-                        if (i != Model.AppliedToCategoryModels.Count - 1)
-                        {
-                            <text>, </text>
-						}
-					}
-				}
-				else
+				@if (!Model.AppliedToCategoryModels.Any())
 				{
-					<div class="form-control-plaintext">
-						@T("Admin.Promotions.Discounts.NoObjectsAssigned")
-					</div>
-                }
+					<div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
+				}
+				@foreach (var category in Model.AppliedToCategoryModels)
+				{
+					if (Model.AppliedToCategoryModels.IndexOf(category) != 0) {	<text>, </text>	}
+					<a href="@Url.Action("Edit", "Category", new { id = category.CategoryId })">@category.Name</a>
+				}
             </td>
         </tr>
 		<tr id="pnlAppliedToManufacturers">
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.AppliedToManufacturerModels)
 			</td>
-			<td class="adminData">
+			<td class="adminData form-control-plaintext">
 				@if (!Model.AppliedToManufacturerModels.Any())
 				{
-					<div class="form-control-plaintext">
-						@T("Admin.Promotions.Discounts.NoObjectsAssigned")
-					</div>
+					<div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
 				}
 				@foreach (var manu in Model.AppliedToManufacturerModels)
 				{
@@ -152,25 +139,15 @@
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AppliedToProductModels)
             </td>
-            <td class="adminData">
-                @if (Model.AppliedToProductModels.Count > 0)
-                {
-                    for (int i = 0; i < Model.AppliedToProductModels.Count; i++)
-                    {
-                        var productId = Model.AppliedToProductModels[i].ProductId;
-                        var productName = Model.AppliedToProductModels[i].ProductName;
-                        <a href="@Url.Action("Edit", "Product", new { id = productId })">@productName</a>
-                        if (i != Model.AppliedToProductModels.Count - 1)
-                        {
-                            <text>, </text>
-						}
-					}
-				}
-				else
+            <td class="adminData form-control-plaintext">
+				@if (!Model.AppliedToProductModels.Any())
 				{
-					<div class="form-control-plaintext">
-						@T("Admin.Promotions.Discounts.NoObjectsAssigned")
-					</div>
+					<div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
+				}
+				@foreach (var product in Model.AppliedToProductModels)
+				{
+					if (Model.AppliedToProductModels.IndexOf(product) != 0) {	<text>, </text>	}
+					<a href="@Url.Action("Edit", "Product", new { id = product.ProductId })">@product.ProductName</a>
 				}
             </td>
         </tr>

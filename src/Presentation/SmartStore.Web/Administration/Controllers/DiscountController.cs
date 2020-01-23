@@ -135,6 +135,29 @@ namespace SmartStore.Admin.Controllers
 
         #region Discounts
 
+        // Ajax.
+        public ActionResult AllDiscounts(string label, string selectedIds, DiscountType? type)
+        {
+            var discounts = _discountService.GetAllDiscounts(type, null, true).ToList();
+            var selectedArr = selectedIds.ToIntArray();
+
+            if (label.HasValue())
+            {
+                discounts.Insert(0, new Discount { Name = label, Id = 0 });
+            }
+
+            var data = discounts
+                .Select(x => new
+                {
+                    id = x.Id.ToString(),
+                    text = x.Name,
+                    selected = selectedArr.Contains(x.Id)
+                })
+                .ToList();
+
+            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
+
         public ActionResult Index()
         {
             return RedirectToAction("List");

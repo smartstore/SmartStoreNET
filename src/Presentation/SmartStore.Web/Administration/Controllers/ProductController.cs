@@ -257,6 +257,22 @@ namespace SmartStore.Admin.Controllers
 
 			p.AvailableEndDateTimeUtc = p.AvailableEndDateTimeUtc.ToEndOfTheDay();
 			p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();
+
+            // Discounts.
+            var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToSkus, null, true);
+            foreach (var discount in allDiscounts)
+            {
+                if (model.SelectedDiscountIds != null && model.SelectedDiscountIds.Contains(discount.Id))
+                {
+                    if (product.AppliedDiscounts.Count(d => d.Id == discount.Id) == 0)
+                        product.AppliedDiscounts.Add(discount);
+                }
+                else
+                {
+                    if (product.AppliedDiscounts.Count(d => d.Id == discount.Id) > 0)
+                        product.AppliedDiscounts.Remove(discount);
+                }
+            }
         }
 
         [NonAction]
@@ -493,29 +509,6 @@ namespace SmartStore.Admin.Controllers
 
             p.HasPreviewPicture = m.HasPreviewPicture;
         }
-
-        [NonAction]
-		protected void UpdateProductDiscounts(Product product, ProductModel model)
-		{
-			var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToSkus, null, true);
-			foreach (var discount in allDiscounts)
-			{
-				if (model.SelectedDiscountIds != null && model.SelectedDiscountIds.Contains(discount.Id))
-				{
-					//new role
-					if (product.AppliedDiscounts.Count(d => d.Id == discount.Id) == 0)
-						product.AppliedDiscounts.Add(discount);
-				}
-				else
-				{
-					//removed role
-					if (product.AppliedDiscounts.Count(d => d.Id == discount.Id) > 0)
-						product.AppliedDiscounts.Remove(discount);
-				}
-			}
-			_productService.UpdateProduct(product);
-			_productService.UpdateHasDiscountsApplied(product);
-		}
 
 		[NonAction]
 		private void UpdateLocales(ProductTag productTag, ProductTagModel model)
@@ -780,9 +773,6 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
-			// Discounts.
-			var discounts = _discountService.GetAllDiscounts(DiscountType.AssignedToSkus, null, true);
-			model.AvailableDiscounts = discounts.ToList();
 			if (product != null && !excludeProperties)
 			{
 				model.SelectedDiscountIds = product.AppliedDiscounts.Select(d => d.Id).ToArray();
@@ -1182,6 +1172,8 @@ namespace SmartStore.Admin.Controllers
 
 				UpdateDataOfExistingProduct(product, model, false);
 
+                _productService.UpdateHasDiscountsApplied(product);
+
                 _customerActivityService.InsertActivity("AddNewProduct", T("ActivityLog.AddNewProduct"), product.Name);
 
 				if (continueEditing)
@@ -1275,6 +1267,8 @@ namespace SmartStore.Admin.Controllers
 				MapModelToProduct(model, product, form);
 				UpdateDataOfExistingProduct(product, model, true);
 
+                _productService.UpdateHasDiscountsApplied(product);
+
                 _customerActivityService.InsertActivity("EditProduct", _localizationService.GetResource("ActivityLog.EditProduct"), product.Name);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.Products.Updated"));
@@ -1311,9 +1305,6 @@ namespace SmartStore.Admin.Controllers
 						break;
 					case "price":
 						UpdateProductPrice(product, model);
-						break;
-					case "discounts":
-						UpdateProductDiscounts(product, model);
 						break;
                     case "downloads":
                         UpdateProductDownloads(product, model);

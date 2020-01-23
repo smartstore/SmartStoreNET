@@ -95,8 +95,9 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
         public bool LimitedToStores { get; set; }
 
-		public List<Discount> AvailableDiscounts { get; set; }
-		public int[] SelectedDiscountIds { get; set; }
+        [UIHint("Discounts"), AdditionalMetadata("multiple", true), AdditionalMetadata("discountType", DiscountType.AssignedToManufacturers)]
+        [SmartResourceDisplayName("Admin.Promotions.Discounts.AppliedDiscounts")]
+        public int[] SelectedDiscountIds { get; set; }
 
 		#region Nested classes
 

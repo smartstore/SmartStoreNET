@@ -8,8 +8,7 @@
     x.Add().Text(T("Admin.Catalog.Manufacturers.Info").Text).Content(TabInfo()).Selected(true);
     x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
     x.Add().Text(T("Admin.Catalog.Manufacturers.Products").Text).Content(TabProducts());
-	x.Add().Text(T("Admin.Promotions.Discounts").Text).Content(TabDiscounts());
-    
+
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "manufacturer-edit", this.Html, this.Model));
 })
 @helper TabInfo()
@@ -136,7 +135,7 @@
                 @Html.SmartLabelFor(model => model.AllowCustomersToSelectPageSize)
             </td>
             <td class="adminData">
-                @Html.EditorFor(x => x.AllowCustomersToSelectPageSize)
+                @Html.EditorFor(model => model.AllowCustomersToSelectPageSize)
                 @Html.ValidationMessageFor(model => model.AllowCustomersToSelectPageSize)
             </td>
         </tr>
@@ -145,7 +144,7 @@
                 @Html.SmartLabelFor(model => model.PageSize)
             </td>
             <td class="adminData">
-                @Html.EditorFor(x => x.PageSize)
+                @Html.EditorFor(model => model.PageSize)
                 @Html.ValidationMessageFor(model => model.PageSize)
             </td>
         </tr>
@@ -154,7 +153,7 @@
                 @Html.SmartLabelFor(model => model.PageSizeOptions)
             </td>
             <td class="adminData">
-                @Html.EditorFor(x => x.PageSizeOptions)
+                @Html.EditorFor(model => model.PageSizeOptions)
                 @Html.ValidationMessageFor(model => model.PageSizeOptions)
             </td>
         </tr>
@@ -165,6 +164,15 @@
             <td class="adminData">
                 @Html.DropDownListFor(model => model.ManufacturerTemplateId, Model.AvailableManufacturerTemplates)
                 @Html.ValidationMessageFor(model => model.ManufacturerTemplateId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedDiscountIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedDiscountIds)
+                @Html.ValidationMessageFor(model => model.SelectedDiscountIds)
             </td>
         </tr>
         <tr>
@@ -361,27 +369,6 @@
 		.DialogTitle(T("Admin.Catalog.Manufacturers.Products.AddNew").Text.EncodeJsString('\'', false))
 		.Caption(T("Admin.Catalog.Manufacturers.Products.AddNew").Text.EncodeJsString('\'', false))
 		.OnSelectionCompleted("PickProducts_Completed"))
-}
-
-@helper TabDiscounts()
-{
-	if (Model.AvailableDiscounts != null && Model.AvailableDiscounts.Any())
-	{
-		foreach (var discount in Model.AvailableDiscounts)
-		{
-			<div class="custom-control custom-checkbox mb-1">
-				<input type="checkbox" name="SelectedDiscountIds" id="discount-@discount.Id"
-					   class="custom-control-input" value="@discount.Id" checked="@(Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id))">
-				<label class="custom-control-label" for="discount-@discount.Id">@discount.Name</label>	
-			</div>
-		}
-	}
-	else
-	{
-		<div class="alert alert-info">
-			@T("Admin.Promotions.Discounts.NoDiscountsAvailable")
-		</div>
-	}
 }
 
 <script type="text/javascript">

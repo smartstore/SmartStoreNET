@@ -143,11 +143,10 @@ namespace SmartStore.Admin.Controllers
                 model.CreatedOn = _dateTimeHelper.ConvertToUserTime(manufacturer.CreatedOnUtc, DateTimeKind.Utc);
                 model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(manufacturer.UpdatedOnUtc, DateTimeKind.Utc);
                 model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(manufacturer);
+                model.SelectedDiscountIds = manufacturer.AppliedDiscounts.Select(d => d.Id).ToArray();
             }
 
             model.GridPageSize = _adminAreaSettings.GridPageSize;
-            model.AvailableDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToManufacturers, null, true).ToList();
-            model.SelectedDiscountIds = manufacturer != null ? manufacturer.AppliedDiscounts.Select(d => d.Id).ToArray() : new int[0];
         }
 
         #endregion

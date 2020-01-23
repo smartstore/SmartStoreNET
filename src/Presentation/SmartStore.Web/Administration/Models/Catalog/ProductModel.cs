@@ -373,20 +373,18 @@ namespace SmartStore.Admin.Models.Catalog
         public int NumberOfAvailableManufacturers { get; set; }
 		public int NumberOfAvailableProductAttributes { get; set; }
 
-        //pictures
+        //Pictures.
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.HasPreviewPicture")]
         public bool HasPreviewPicture { get; set; }
         public ProductPictureModel AddPictureModel { get; set; }
         public IList<ProductPictureModel> ProductPictureModels { get; set; }
         
-        //discounts
-        public List<Discount> AvailableDiscounts { get; set; }
-		public int[] SelectedDiscountIds { get; set; }
+        [UIHint("Discounts"), AdditionalMetadata("multiple", true), AdditionalMetadata("discountType", DiscountType.AssignedToSkus)]
+        [SmartResourceDisplayName("Admin.Promotions.Discounts.AppliedDiscounts")]
+        public int[] SelectedDiscountIds { get; set; }
 
-		//add specification attribute model
         public AddProductSpecificationAttributeModel AddSpecificationAttributeModel { get; set; }
 
-        //copy product
         public CopyProductModel CopyProductModel { get; set; }
 
 		//BasePrice

@@ -153,9 +153,6 @@ namespace SmartStore.Admin.Controllers
         {
             Guard.NotNull(model, nameof(model));
 
-            var discounts = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories, null, true);
-
-            model.AvailableDiscounts = discounts.ToList();
             model.GridPageSize = _adminAreaSettings.GridPageSize;
 
             if (category != null)

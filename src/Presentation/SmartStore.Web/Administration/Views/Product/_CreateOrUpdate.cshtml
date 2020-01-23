@@ -60,13 +60,6 @@
             .Ajax();
     }
 
-    x.Add().Text(T("Admin.Catalog.Products.Discounts").Text)
-        .Name("tab-discounts")
-        .Visible(!(Model.ProductTypeId == (int)ProductType.BundledProduct && Model.BundlePerItemPricing))
-        .Icon("fa fa-percent fa-lg fa-fw")
-        .LinkHtmlAttributes(new { data_tab_name = "Discounts" })
-        .Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Discounts" })
-        .Ajax();
     x.Add().Text(T("Admin.Catalog.Products.Pictures").Text)
         .Icon("far fa-image fa-lg fa-fw")
         .LinkHtmlAttributes(new { data_tab_name = "Pictures" })

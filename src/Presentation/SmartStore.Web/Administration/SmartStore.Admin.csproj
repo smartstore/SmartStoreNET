@@ -630,6 +630,7 @@
     <Content Include="Views\Rule\ValueTemplates\Decimal.cshtml" />
     <Content Include="Views\Rule\ValueTemplates\DateTime.cshtml" />
     <Content Include="Views\Rule\ValueTemplates\Dropdown.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Discounts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />
@@ -1260,9 +1261,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.Categories.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Product\_CreateOrUpdate.Discounts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.Info.cshtml" />

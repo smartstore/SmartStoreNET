@@ -197,7 +197,8 @@
 
             builder.Delete(
                 "Admin.Catalog.Products.Fields.VisibleIndividually",
-                "Admin.Catalog.Products.Fields.VisibleIndividually.Hint");
+                "Admin.Catalog.Products.Fields.VisibleIndividually.Hint",
+                "Admin.Promotions.Discounts.NoDiscountsAvailable");
 
             // Rule
             builder.AddOrUpdate("Admin.Rules.SystemName", "System name", "Systemname");
@@ -338,6 +339,12 @@
                 "Untere Beschreibung",
                 "Optional second description displayed below products on the category page.",
                 "Optionale zweite Beschreibung, die auf der Herstellerseite unterhalb der Produkte angezeigt wird.");
+
+            builder.AddOrUpdate("Admin.Promotions.Discounts.AppliedDiscounts",
+                "Discounts",
+                "Rabatte",
+                "Specifies discounts to be applied to the object.",
+                "Legt auf das Objekt anzuwendende Rabatte fest.");
         }
     }
 }

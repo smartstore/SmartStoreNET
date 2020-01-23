@@ -132,8 +132,8 @@ namespace SmartStore.Admin.Models.Catalog
 
         public string ParentCategoryBreadcrumb { get; set; }
 
-        // discounts
-        public List<Discount> AvailableDiscounts { get; set; }
+        [UIHint("Discounts"), AdditionalMetadata("multiple", true), AdditionalMetadata("discountType", DiscountType.AssignedToCategories)]
+        [SmartResourceDisplayName("Admin.Promotions.Discounts.AppliedDiscounts")]
         public int[] SelectedDiscountIds { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultViewMode")]

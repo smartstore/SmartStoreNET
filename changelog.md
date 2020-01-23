@@ -36,6 +36,7 @@
 * #1718 Activated ReCaptcha without keys can cause the merchant to lock himself out of the shop.
 * #1752 Export: let a provider directly export to a file stream instead of a memory stream.
 * #1763 Topic editor should display all menu item nodes that reference the current topic.
+* #1665 UI: ACL, discount and store selection should be done via multiple select2.
 
 ### Bugfixes
 * Export: Fixed KeyNotFoundException when batch size was 1.

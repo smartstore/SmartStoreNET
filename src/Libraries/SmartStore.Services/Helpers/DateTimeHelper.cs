@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 
@@ -13,7 +12,6 @@ namespace SmartStore.Services.Helpers
     public partial class DateTimeHelper : IDateTimeHelper
     {
         private readonly IWorkContext _workContext;
-		private readonly IGenericAttributeService _genericAttributeService;
         private readonly ISettingService _settingService;
         private readonly DateTimeSettings _dateTimeSettings;
         private readonly ICustomerService _customerService;
@@ -22,13 +20,11 @@ namespace SmartStore.Services.Helpers
 
         public DateTimeHelper(
 			IWorkContext workContext,
-			IGenericAttributeService genericAttributeService,
             ISettingService settingService, 
             DateTimeSettings dateTimeSettings,
             ICustomerService customerService)
         {
             _workContext = workContext;
-			_genericAttributeService = genericAttributeService;
             _settingService = settingService;
             _dateTimeSettings = dateTimeSettings;
             _customerService = customerService;

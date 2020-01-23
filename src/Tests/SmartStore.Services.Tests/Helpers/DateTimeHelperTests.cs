@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using Rhino.Mocks;
 using SmartStore.Core;
+using SmartStore.Core.Caching;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Events;
+using SmartStore.Core.Fakes;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
@@ -17,21 +23,29 @@ namespace SmartStore.Services.Tests.Helpers
     [TestFixture]
     public class DateTimeHelperTests : ServiceTest
     {
+        IRepository<Customer> _customerRepo;
+        IRepository<CustomerRole> _customerRoleRepo;
+        IRepository<GenericAttribute> _genericAttributeRepo;
+        IRepository<RewardPointsHistory> _rewardPointsHistoryRepo;
+        IRepository<ShoppingCartItem> _shoppingCartItemRepo;
+        IGenericAttributeService _genericAttributeService;
+        IEventPublisher _eventPublisher;
         IWorkContext _workContext;
 		IStoreContext _storeContext;
-		IGenericAttributeService _genericAttributeService;
         ISettingService _settingService;
         ICustomerService _customerService;
+        ICommonServices _services;
         DateTimeSettings _dateTimeSettings;
+        RewardPointsSettings _rewardPointsSettings;
         IDateTimeHelper _dateTimeHelper;
 		Store _store;
+        IUserAgent _userAgent;
+        Lazy<IGdprTool> _gdprTool;
 
         [SetUp]
         public new void SetUp()
         {
-			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
             _settingService = MockRepository.GenerateMock<ISettingService>();
-            _customerService = MockRepository.GenerateMock<ICustomerService>();
             _workContext = MockRepository.GenerateMock<IWorkContext>();
 
 			_store = new Store { Id = 1 };
@@ -44,7 +58,52 @@ namespace SmartStore.Services.Tests.Helpers
                 DefaultStoreTimeZoneId = ""
             };
 
-			_dateTimeHelper = new DateTimeHelper(_workContext, _genericAttributeService, _settingService, _dateTimeSettings, _customerService);
+            _rewardPointsSettings = new RewardPointsSettings
+            {
+                Enabled = false,
+            };
+
+            var customer1 = new Customer
+            {
+                Id = 1,
+                TimeZoneId = "Russian Standard Time"    // (GMT+03:00) Moscow, St. Petersburg, Volgograd
+            };
+
+            _customerRepo = MockRepository.GenerateMock<IRepository<Customer>>();
+            _customerRepo.Expect(x => x.Table).Return(new List<Customer> { customer1 }.AsQueryable());
+
+            _customerRoleRepo = MockRepository.GenerateMock<IRepository<CustomerRole>>();
+            _genericAttributeRepo = MockRepository.GenerateMock<IRepository<GenericAttribute>>();
+            _rewardPointsHistoryRepo = MockRepository.GenerateMock<IRepository<RewardPointsHistory>>();
+            _shoppingCartItemRepo = MockRepository.GenerateMock<IRepository<ShoppingCartItem>>();
+            _userAgent = MockRepository.GenerateMock<IUserAgent>();
+            _genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
+            _gdprTool = MockRepository.GenerateMock<Lazy<IGdprTool>>();
+
+            _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
+            _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
+
+            _services = MockRepository.GenerateMock<ICommonServices>();
+            _services.Expect(x => x.StoreContext).Return(_storeContext);
+            _services.Expect(x => x.RequestCache).Return(NullRequestCache.Instance);
+            _services.Expect(x => x.Cache).Return(NullCache.Instance);
+            _services.Expect(x => x.EventPublisher).Return(_eventPublisher);
+
+            _customerService = new CustomerService(
+                _customerRepo,
+                _customerRoleRepo,
+                _genericAttributeRepo,
+                _rewardPointsHistoryRepo,
+                _shoppingCartItemRepo,
+                _genericAttributeService,
+                _rewardPointsSettings,
+                _services,
+                new FakeHttpContext("~/"),
+                _userAgent,
+                new CustomerSettings(),
+                _gdprTool);
+
+            _dateTimeHelper = new DateTimeHelper(_workContext, _settingService, _dateTimeSettings, _customerService);
         }
 
         [Test]
@@ -69,12 +128,7 @@ namespace SmartStore.Services.Tests.Helpers
             _dateTimeSettings.AllowCustomersToSetTimeZone = true;
             _dateTimeSettings.DefaultStoreTimeZoneId = "E. Europe Standard Time"; // (GMT+02:00) Minsk;
 
-            var customer = new Customer
-            {
-				Id = 10
-            };
-
-            customer.Expect(x => x.TimeZoneId).Return("Russian Standard Time");   // (GMT+03:00) Moscow, St. Petersburg, Volgograd
+            var customer = _customerService.GetCustomerById(1);
             
             var timeZone = _dateTimeHelper.GetCustomerTimeZone(customer);
             timeZone.ShouldNotBeNull();
@@ -87,12 +141,7 @@ namespace SmartStore.Services.Tests.Helpers
             _dateTimeSettings.AllowCustomersToSetTimeZone = false;
             _dateTimeSettings.DefaultStoreTimeZoneId = "E. Europe Standard Time"; //(GMT+02:00) Minsk;
 
-            var customer = new Customer()
-            {
-				Id = 10
-            };
-
-            customer.Expect(x => x.TimeZoneId).Return("Russian Standard Time");   // (GMT+03:00) Moscow, St. Petersburg, Volgograd
+            var customer = _customerService.GetCustomerById(1);
 
             var timeZone = _dateTimeHelper.GetCustomerTimeZone(customer);
             timeZone.ShouldNotBeNull();

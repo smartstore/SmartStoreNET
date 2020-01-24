@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -40,26 +41,39 @@ namespace SmartStore.Core.IO
 
 		private static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
 
-		public static bool IsSymbolicLink(FileSystemInfo fsi)
-		{
-			Guard.NotNull(fsi, nameof(fsi));
+        public static bool IsSymbolicLink(FileSystemInfo fsi, out string finalPathName)
+        {
+            Guard.NotNull(fsi, nameof(fsi));
 
-			if (!fsi.Exists)
-				return false;
+            finalPathName = null;
 
-			if (fsi.Attributes.HasFlag(FileAttributes.ReparsePoint))
-			{
-				var target = GetFinalPathName(fsi.FullName);
-				if (target.HasValue())
-				{
-					return !string.Equals(target.TrimEnd('\\'), fsi.FullName.TrimEnd('\\'), StringComparison.OrdinalIgnoreCase);
-				}
-			}
+            // FileSystemInfo.Exists has some problems with symbolic links
+            var exists = (fsi is DirectoryInfo) 
+                ? Directory.Exists(fsi.FullName) 
+                : File.Exists(fsi.FullName);
 
-			return false;
-		}
+            if (!exists)
+                return false;
 
-		public static string GetFinalPathName(string path)
+            if (fsi.Attributes.HasFlag(FileAttributes.ReparsePoint))
+            {
+                var target = GetFinalPathName(fsi.FullName);
+                if (target.HasValue())
+                {
+                    if (!string.Equals(target.TrimEnd('\\'), fsi.FullName.TrimEnd('\\'), StringComparison.OrdinalIgnoreCase))
+                    {
+                        finalPathName = target;
+                        return true;
+                    }
+
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        public static string GetFinalPathName(string path)
 		{
 			Guard.NotEmpty(path, nameof(path));
 

@@ -46,10 +46,10 @@ namespace SmartStore.Core.Themes
 
 			var themeDirectory = new DirectoryInfo(themePath);
 
-			var isSymLink = themeDirectory.IsSymbolicLink();
+			var isSymLink = themeDirectory.IsSymbolicLink(out var finalPathName);
 			if (isSymLink)
 			{
-				themeDirectory = new DirectoryInfo(themeDirectory.GetFinalPathName());
+				themeDirectory = new DirectoryInfo(finalPathName);
 			}
 
 			var themeConfigFile = new FileInfo(System.IO.Path.Combine(themeDirectory.FullName, "theme.config"));

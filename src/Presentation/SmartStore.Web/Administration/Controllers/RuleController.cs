@@ -5,7 +5,6 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Rules;
 using SmartStore.ComponentModel;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
@@ -49,6 +48,29 @@ namespace SmartStore.Admin.Controllers
             _ruleProvider = ruleProvider;
             _ruleOptionsProviders = ruleOptionsProviders;
             _adminAreaSettings = adminAreaSettings;
+        }
+
+        // Ajax.
+        public ActionResult AllRuleSets(string label, string selectedIds, RuleScope? scope)
+        {
+            var ruleSets = _ruleStorage.GetAllRuleSets(false, false, scope, includeHidden: true);
+            var selectedArr = selectedIds.ToIntArray();
+
+            if (label.HasValue())
+            {
+                ruleSets.Insert(0, new RuleSetEntity { Name = label, Id = 0 });
+            }
+
+            var data = ruleSets
+                .Select(x => new
+                {
+                    id = x.Id.ToString(),
+                    text = x.Name,
+                    selected = selectedArr.Contains(x.Id)
+                })
+                .ToList();
+
+            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
         public ActionResult Index()

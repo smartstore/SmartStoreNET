@@ -345,6 +345,10 @@
                 "Rabatte",
                 "Specifies discounts to be applied to the object.",
                 "Legt auf das Objekt anzuwendende Rabatte fest.");
+
+            builder.AddOrUpdate("Admin.Promotions.Discounts.Requirements.Hint",
+                "Specifies requirements for the applying of the discount. The discount is applied when one of the requirements is satisfied.",
+                "Legt Voraussetzungen für die Anwendung des Rabatts fest. Der Rabatt wird gewährt, wenn eine der Voraussetzungen erfüllt ist.");
         }
     }
 }

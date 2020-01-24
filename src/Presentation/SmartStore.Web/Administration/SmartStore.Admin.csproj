@@ -631,6 +631,7 @@
     <Content Include="Views\Rule\ValueTemplates\DateTime.cshtml" />
     <Content Include="Views\Rule\ValueTemplates\Dropdown.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Discounts.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\RuleSets.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

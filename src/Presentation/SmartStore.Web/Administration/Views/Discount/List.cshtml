@@ -1,6 +1,4 @@
-﻿@model Telerik.Web.Mvc.GridModel<DiscountModel>
-@using Telerik.Web.Mvc.UI
-@{
+﻿@{
     ViewBag.Title = T("Admin.Promotions.Discounts").Text;
 }
 <div class="section-header">
@@ -20,26 +18,29 @@
 </div>
 
 <div>
-	@(Html.Telerik().Grid<DiscountModel>(Model.Data)
+	@(Html.Telerik().Grid<DiscountModel>()
 		.Name("discounts-grid")
 		.Columns(columns =>
 		{
 			columns.Bound(x => x.Name)
 				.Width(500)
-				.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-				.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
+				.ClientTemplate(
+                    "<div><a href=\"Edit/<#= Id #>\"><#= Name #></a></div>" + 
+                    "<div class='muted'><#= DiscountTypeName #></div>");
 			columns.Bound(x => x.DiscountRequirementsCount)
                 .Centered();
 			columns.Bound(x => x.StartDateUtc);
 			columns.Bound(x => x.EndDateUtc);
 			columns.Bound(x => x.UsePercentage)
-				.Template(x => @Html.SymbolForBool(x.UsePercentage))
-				.ClientTemplate(@Html.SymbolForBool("UsePercentage"))
+				.ClientTemplate(Html.SymbolForBool("UsePercentage"))
 				.Centered();
 			columns.Bound(x => x.FormattedDiscountPercentage)
 				.Centered();
 			columns.Bound(x => x.FormattedDiscountAmount)
 				.RightAlign();
+            columns.Bound(x => x.RequiresCouponCode)
+				.ClientTemplate(Html.SymbolForBool("RequiresCouponCode"))
+				.Centered();
 		})
 		.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Discount"))
 		.EnableCustomBinding(true))

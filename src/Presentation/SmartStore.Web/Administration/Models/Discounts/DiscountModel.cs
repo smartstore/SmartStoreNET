@@ -1,11 +1,12 @@
-﻿using FluentValidation;
-using FluentValidation.Attributes;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Modelling;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using FluentValidation;
+using FluentValidation.Attributes;
+using SmartStore.Rules;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Discounts
 {
@@ -14,9 +15,9 @@ namespace SmartStore.Admin.Models.Discounts
     {
         public DiscountModel()
         {
-            AppliedToCategoryModels = new List<AppliedToCategoryModel>();
-			AppliedToManufacturerModels = new List<AppliedToManufacturerModel>();
-            AppliedToProductModels = new List<AppliedToProductModel>();
+            AppliedToCategories = new List<AppliedToEntityModel>();
+			AppliedToManufacturers = new List<AppliedToEntityModel>();
+            AppliedToProducts = new List<AppliedToEntityModel>();
             AvailableDiscountRequirementRules = new List<SelectListItem>();
             DiscountRequirementMetaInfos = new List<DiscountRequirementMetaInfo>();
         }
@@ -27,6 +28,7 @@ namespace SmartStore.Admin.Models.Discounts
 
         [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.DiscountType")]
         public int DiscountTypeId { get; set; }
+        public string DiscountTypeName { get; set; }
 
         [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.UsePercentage")]
         public bool UsePercentage { get; set; }
@@ -53,20 +55,9 @@ namespace SmartStore.Admin.Models.Discounts
 		public string PrimaryStoreCurrencyCode { get; set; }
 
 		[SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.DiscountAmount")]
-		public string FormattedDiscountAmount
-		{
-			get
-			{
-				if (!UsePercentage)
-				{
-					return string.Format("{0:0.00}", DiscountAmount);
-				}
+		public string FormattedDiscountAmount { get; set; }
 
-				return string.Empty;
-			}
-		}
-
-		[SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.StartDate")]
+        [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.StartDate")]
         public DateTime? StartDateUtc { get; set; }
 
         [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.EndDate")]
@@ -87,13 +78,18 @@ namespace SmartStore.Admin.Models.Discounts
 
 
         [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.AppliedToCategories")]
-        public IList<AppliedToCategoryModel> AppliedToCategoryModels { get; set; }
+        public IList<AppliedToEntityModel> AppliedToCategories { get; set; }
 
 		[SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.AppliedToManufacturers")]
-		public IList<AppliedToManufacturerModel> AppliedToManufacturerModels { get; set; }
+		public IList<AppliedToEntityModel> AppliedToManufacturers { get; set; }
 
 		[SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.AppliedToProducts")]
-        public IList<AppliedToProductModel> AppliedToProductModels { get; set; }
+        public IList<AppliedToEntityModel> AppliedToProducts { get; set; }
+
+
+        [UIHint("RuleSets"), AdditionalMetadata("multiple", true), AdditionalMetadata("scope", RuleScope.Cart)]
+        [SmartResourceDisplayName("Admin.Promotions.Discounts.Requirements")]
+        public int[] SelectedRuleSetIds { get; set; }
 
 
         [SmartResourceDisplayName("Admin.Promotions.Discounts.Requirements.DiscountRequirementType")]
@@ -127,26 +123,10 @@ namespace SmartStore.Admin.Models.Discounts
             public DateTime CreatedOn { get; set; }
         }
 
-        public class AppliedToCategoryModel : ModelBase
+        public class AppliedToEntityModel : EntityModelBase
         {
-            public int CategoryId { get; set; }
-
             public string Name { get; set; }
         }
-
-        public class AppliedToManufacturerModel : ModelBase
-        {
-            public int ManufacturerId { get; set; }
-
-            public string ManufacturerName { get; set; }
-        }
-
-		public class AppliedToProductModel : ModelBase
-		{
-			public int ProductId { get; set; }
-
-			public string ProductName { get; set; }
-		}
 
 		#endregion
 	}

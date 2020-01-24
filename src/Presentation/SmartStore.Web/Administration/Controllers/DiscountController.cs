@@ -21,8 +21,6 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class DiscountController : AdminControllerBase
     {
-        #region Fields
-
         private readonly IDiscountService _discountService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly ICustomerActivityService _customerActivityService;
@@ -31,10 +29,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IProductService _productService;
         private readonly PluginMediator _pluginMediator;
         private readonly ICommonServices _services;
-
-        #endregion
-
-        #region Constructors
+        private readonly IPriceFormatter _priceFormatter;
 
         public DiscountController(
             IDiscountService discountService,
@@ -44,19 +39,19 @@ namespace SmartStore.Admin.Controllers
             IDateTimeHelper dateTimeHelper,
             ICustomerActivityService customerActivityService,
             PluginMediator pluginMediator,
-            ICommonServices services)
+            ICommonServices services,
+            IPriceFormatter priceFormatter)
         {
-            this._discountService = discountService;
-            this._categoryService = categoryService;
-            this._manufacturerService = manufacturerService;
-            this._productService = productService;
-            this._dateTimeHelper = dateTimeHelper;
-            this._customerActivityService = customerActivityService;
-            this._pluginMediator = pluginMediator;
-            this._services = services;
+            _discountService = discountService;
+            _categoryService = categoryService;
+            _manufacturerService = manufacturerService;
+            _productService = productService;
+            _dateTimeHelper = dateTimeHelper;
+            _customerActivityService = customerActivityService;
+            _pluginMediator = pluginMediator;
+            _services = services;
+            _priceFormatter = priceFormatter;
         }
-
-        #endregion
 
         #region Utilities
 
@@ -74,15 +69,12 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         private void PrepareDiscountModel(DiscountModel model, Discount discount)
         {
-            if (model == null)
-                throw new ArgumentNullException("model");
+            Guard.NotNull(model, nameof(model));
 
             var language = _services.WorkContext.WorkingLanguage;
 
             model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
-            model.AvailableDiscountRequirementRules.Add(
-                new SelectListItem { Text = _services.Localization.GetResource("Admin.Promotions.Discounts.Requirements.DiscountRequirementType.Select"), Value = "" }
-            );
+            model.AvailableDiscountRequirementRules.Add(new SelectListItem { Text = T("Admin.Promotions.Discounts.Requirements.DiscountRequirementType.Select"), Value = "" });
 
             var discountRules = _discountService.LoadAllDiscountRequirementRules();
             foreach (var discountRule in discountRules)
@@ -96,25 +88,21 @@ namespace SmartStore.Admin.Controllers
 
             if (discount != null)
             {
-                // applied to categories
-                model.AppliedToCategoryModels = discount.AppliedToCategories
+                model.AppliedToCategories = discount.AppliedToCategories
                     .Where(x => x != null && !x.Deleted)
-                    .Select(x => new DiscountModel.AppliedToCategoryModel { CategoryId = x.Id, Name = x.GetLocalized(y => y.Name, language) })
+                    .Select(x => new DiscountModel.AppliedToEntityModel { Id = x.Id, Name = x.GetLocalized(y => y.Name, language) })
                     .ToList();
 
-                // applied to manufacturers
-                model.AppliedToManufacturerModels = discount.AppliedToManufacturers
+                model.AppliedToManufacturers = discount.AppliedToManufacturers
                     .Where(x => x != null && !x.Deleted)
-                    .Select(x => new DiscountModel.AppliedToManufacturerModel { ManufacturerId = x.Id, ManufacturerName = x.GetLocalized(y => y.Name, language) })
+                    .Select(x => new DiscountModel.AppliedToEntityModel { Id = x.Id, Name = x.GetLocalized(y => y.Name, language) })
                     .ToList();
 
-                // applied to products
-                model.AppliedToProductModels = discount.AppliedToProducts
+                model.AppliedToProducts = discount.AppliedToProducts
                     .Where(x => x != null && !x.Deleted)
-                    .Select(x => new DiscountModel.AppliedToProductModel { ProductId = x.Id, ProductName = x.GetLocalized(y => y.Name, language) })
+                    .Select(x => new DiscountModel.AppliedToEntityModel { Id = x.Id, Name = x.GetLocalized(y => y.Name, language) })
                     .ToList();
 
-                // requirements
                 foreach (var dr in discount.DiscountRequirements.OrderBy(dr => dr.Id))
                 {
                     var drr = _discountService.LoadDiscountRequirementRuleBySystemName(dr.DiscountRequirementRuleSystemName);
@@ -166,19 +154,7 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Promotion.Discount.Read)]
         public ActionResult List()
         {
-            var discounts = _discountService.GetAllDiscounts(null, null, true);
-            var gridModel = new GridModel<DiscountModel>
-            {
-                Data = discounts.Select(x =>
-                {
-                    var discountModel = x.ToModel();
-                    discountModel.DiscountRequirementsCount = x.DiscountRequirements.Count;
-                    return discountModel;
-                }),
-                Total = discounts.Count()
-            };
-
-            return View(gridModel);
+            return View();
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
@@ -186,15 +162,22 @@ namespace SmartStore.Admin.Controllers
         public ActionResult List(GridCommand command)
         {
             var model = new GridModel<DiscountModel>();
-
             var discounts = _discountService.GetAllDiscounts(null, null, true);
 
-            model.Data = discounts.Select(x =>
-            {
-                var discountModel = x.ToModel();
-                discountModel.DiscountRequirementsCount = x.DiscountRequirements.Count;
-                return discountModel;
-            });
+            model.Data = discounts
+                .OrderBy(x => x.Name)
+                .Select(x =>
+                {
+                    var discountModel = x.ToModel();
+                    discountModel.DiscountRequirementsCount = x.DiscountRequirements.Count;
+                    discountModel.DiscountTypeName = x.DiscountType.GetLocalizedEnum(Services.Localization, Services.WorkContext);
+
+                    discountModel.FormattedDiscountAmount = !x.UsePercentage
+                        ? _priceFormatter.FormatPrice(x.DiscountAmount, true, false)
+                        : string.Empty;
+
+                    return discountModel;
+                });
 
             model.Total = discounts.Count();
 

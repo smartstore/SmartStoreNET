@@ -104,51 +104,39 @@
         </tr>
         <tr id="pnlAppliedToCategories">
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AppliedToCategoryModels)
+                @Html.SmartLabelFor(model => model.AppliedToCategories)
             </td>
-            <td class="adminData form-control-plaintext">
-				@if (!Model.AppliedToCategoryModels.Any())
+            <td class="adminData form-control-plaintext wide">
+				@if (!Model.AppliedToCategories.Any())
 				{
 					<div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
 				}
-				@foreach (var category in Model.AppliedToCategoryModels)
-				{
-					if (Model.AppliedToCategoryModels.IndexOf(category) != 0) {	<text>, </text>	}
-					<a href="@Url.Action("Edit", "Category", new { id = category.CategoryId })">@category.Name</a>
-				}
+                @Html.Raw(string.Join(" · ", Model.AppliedToCategories.Select(x => $"<a href='{Url.Action("Edit", "Category", new { id = x.Id })}'>{x.Name}</a>")))
             </td>
         </tr>
 		<tr id="pnlAppliedToManufacturers">
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AppliedToManufacturerModels)
+				@Html.SmartLabelFor(model => model.AppliedToManufacturers)
 			</td>
-			<td class="adminData form-control-plaintext">
-				@if (!Model.AppliedToManufacturerModels.Any())
+			<td class="adminData form-control-plaintext wide">
+				@if (!Model.AppliedToManufacturers.Any())
 				{
 					<div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
 				}
-				@foreach (var manu in Model.AppliedToManufacturerModels)
-				{
-					if (Model.AppliedToManufacturerModels.IndexOf(manu) != 0) {	<text>, </text>	}
-					<a href="@Url.Action("Edit", "Manufacturer", new { id = manu.ManufacturerId })">@manu.ManufacturerName</a>
-				}
+                @Html.Raw(string.Join(" · ", Model.AppliedToManufacturers.Select(x => $"<a href='{Url.Action("Edit", "Manufacturer", new { id = x.Id })}'>{x.Name}</a>")))
 			</td>
 		</tr>
 
         <tr id="pnlAppliedToProducts">
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AppliedToProductModels)
+                @Html.SmartLabelFor(model => model.AppliedToProducts)
             </td>
-            <td class="adminData form-control-plaintext">
-				@if (!Model.AppliedToProductModels.Any())
+            <td class="adminData form-control-plaintext wide">
+				@if (!Model.AppliedToProducts.Any())
 				{
 					<div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
 				}
-				@foreach (var product in Model.AppliedToProductModels)
-				{
-					if (Model.AppliedToProductModels.IndexOf(product) != 0) {	<text>, </text>	}
-					<a href="@Url.Action("Edit", "Product", new { id = product.ProductId })">@product.ProductName</a>
-				}
+                @Html.Raw(string.Join(" · ", Model.AppliedToProducts.Select(x => $"<a href='{Url.Action("Edit", "Product", new { id = x.Id })}'>{x.Name}</a>")))
             </td>
         </tr>
         <tr>
@@ -230,6 +218,15 @@
             <td class="adminData">
                 @Html.EditorFor(model => model.LimitationTimes, new { postfix = T("Admin.Promotions.Discounts.Fields.LimitationTimes.Times").Text })
                 @Html.ValidationMessageFor(model => model.LimitationTimes) 
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedRuleSetIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedRuleSetIds)
+                @Html.ValidationMessageFor(model => model.SelectedRuleSetIds)
             </td>
         </tr>
     </table>

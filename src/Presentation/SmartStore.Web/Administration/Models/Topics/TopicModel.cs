@@ -35,16 +35,20 @@ namespace SmartStore.Admin.Models.Topics
         }
 
         // Store mapping.
-        [UIHint("Stores"), AdditionalMetadata("multiple", true)]
+        [UIHint("Stores")]
+        [AdditionalMetadata("multiple", true)]
         [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
         public int[] SelectedStoreIds { get; set; }
+
         [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
         public bool LimitedToStores { get; set; }
 
         // ACL.
-        [UIHint("CustomerRoles"), AdditionalMetadata("multiple", true)]
+        [UIHint("CustomerRoles")]
+        [AdditionalMetadata("multiple", true)]
         [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
         public int[] SelectedCustomerRoleIds { get; set; }
+
         [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
         public bool SubjectToAcl { get; set; }
 

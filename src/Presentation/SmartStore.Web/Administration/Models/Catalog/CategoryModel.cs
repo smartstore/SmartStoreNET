@@ -117,22 +117,28 @@ namespace SmartStore.Admin.Models.Catalog
         public string Breadcrumb { get; set; }
 
         // ACL.
-        [UIHint("CustomerRoles"), AdditionalMetadata("multiple", true)]
+        [UIHint("CustomerRoles")]
+        [AdditionalMetadata("multiple", true)]
         [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
         public int[] SelectedCustomerRoleIds { get; set; }
+
         [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
         public bool SubjectToAcl { get; set; }
 
         // Store mapping.
-        [UIHint("Stores"), AdditionalMetadata("multiple", true)]
+        [UIHint("Stores")]
+        [AdditionalMetadata("multiple", true)]
         [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
         public int[] SelectedStoreIds { get; set; }
+
         [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
         public bool LimitedToStores { get; set; }
 
         public string ParentCategoryBreadcrumb { get; set; }
 
-        [UIHint("Discounts"), AdditionalMetadata("multiple", true), AdditionalMetadata("discountType", DiscountType.AssignedToCategories)]
+        [UIHint("Discounts")]
+        [AdditionalMetadata("multiple", true)]
+        [AdditionalMetadata("discountType", DiscountType.AssignedToCategories)]
         [SmartResourceDisplayName("Admin.Promotions.Discounts.AppliedDiscounts")]
         public int[] SelectedDiscountIds { get; set; }
 

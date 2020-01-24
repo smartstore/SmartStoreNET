@@ -89,13 +89,17 @@ namespace SmartStore.Admin.Models.Catalog
         public IList<ManufacturerLocalizedModel> Locales { get; set; }
 
         // Store mapping.
-        [UIHint("Stores"), AdditionalMetadata("multiple", true)]
+        [UIHint("Stores")]
+        [AdditionalMetadata("multiple", true)]
         [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
         public int[] SelectedStoreIds { get; set; }
+
         [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
         public bool LimitedToStores { get; set; }
 
-        [UIHint("Discounts"), AdditionalMetadata("multiple", true), AdditionalMetadata("discountType", DiscountType.AssignedToManufacturers)]
+        [UIHint("Discounts")]
+        [AdditionalMetadata("multiple", true)]
+        [AdditionalMetadata("discountType", DiscountType.AssignedToManufacturers)]
         [SmartResourceDisplayName("Admin.Promotions.Discounts.AppliedDiscounts")]
         public int[] SelectedDiscountIds { get; set; }
 

@@ -160,7 +160,8 @@ namespace SmartStore.Admin.Models.Customers
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.CustomerRoles")]
         public string CustomerRoleNames { get; set; }
         
-        [UIHint("CustomerRoles"), AdditionalMetadata("multiple", true)]
+        [UIHint("CustomerRoles")]
+        [AdditionalMetadata("multiple", true)]
         [SmartResourceDisplayName("Admin.Customers.CustomerRoles")]
         public int[] SelectedCustomerRoleIds { get; set; }
         public bool AllowManagingCustomerRoles { get; set; }

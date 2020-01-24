@@ -53,9 +53,11 @@ namespace SmartStore.Admin.Models.Orders
         
         public IList<CheckoutAttributeLocalizedModel> Locales { get; set; }
 
-        [UIHint("Stores"), AdditionalMetadata("multiple", true)]
+        [UIHint("Stores")]
+        [AdditionalMetadata("multiple", true)]
         [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
         public int[] SelectedStoreIds { get; set; }
+
         [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
 	}

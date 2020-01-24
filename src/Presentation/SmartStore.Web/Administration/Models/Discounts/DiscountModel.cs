@@ -87,7 +87,9 @@ namespace SmartStore.Admin.Models.Discounts
         public IList<AppliedToEntityModel> AppliedToProducts { get; set; }
 
 
-        [UIHint("RuleSets"), AdditionalMetadata("multiple", true), AdditionalMetadata("scope", RuleScope.Cart)]
+        [UIHint("RuleSets")]
+        [AdditionalMetadata("multiple", true)]
+        [AdditionalMetadata("scope", RuleScope.Cart)]
         [SmartResourceDisplayName("Admin.Promotions.Discounts.Requirements")]
         public int[] SelectedRuleSetIds { get; set; }
 

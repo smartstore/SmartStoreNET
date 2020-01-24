@@ -173,14 +173,12 @@ namespace SmartStore.Core.IO
 
 		public IFile GetFile(string path)
 		{
-			var fileInfo = new FileInfo(MapStorage(path));
-			return new LocalFile(Fix(path), fileInfo);
+			return new LocalFile(path, MapStorage(path));
 		}
 
 		public IFolder GetFolder(string path)
 		{
-			var directoryInfo = new DirectoryInfo(MapStorage(path));
-			return new LocalFolder(Fix(path), directoryInfo);
+			return new LocalFolder(path, MapStorage(path));
 		}
 
 		public IFolder GetFolderForFile(string path)
@@ -199,7 +197,7 @@ namespace SmartStore.Core.IO
 			// get relative path of the folder
 			var folderPath = Path.GetDirectoryName(path);
 
-			return new LocalFolder(Fix(folderPath), fileInfo.Directory);
+			return new LocalFolder(folderPath, fileInfo.Directory);
 		}
 
 		public long CountFiles(string path, string pattern, Func<string, bool> predicate, bool deep = true)
@@ -237,7 +235,7 @@ namespace SmartStore.Core.IO
 			return directoryInfo
 				.EnumerateFiles()
 				.Where(fi => !IsHidden(fi))
-				.Select<FileInfo, IFile>(fi => new LocalFile(Path.Combine(Fix(path), fi.Name), fi));
+				.Select<FileInfo, IFile>(fi => new LocalFile(Path.Combine(path, fi.Name), fi));
 		}
 
 		public IEnumerable<IFolder> ListFolders(string path)
@@ -263,7 +261,7 @@ namespace SmartStore.Core.IO
 			return directoryInfo
 				.EnumerateDirectories()
 				.Where(di => !IsHidden(di))
-				.Select<DirectoryInfo, IFolder>(di => new LocalFolder(Path.Combine(Fix(path), di.Name), di));
+				.Select<DirectoryInfo, IFolder>(di => new LocalFolder(Path.Combine(path, di.Name), di));
 		}
 
 		private static bool IsHidden(FileSystemInfo di)
@@ -330,7 +328,8 @@ namespace SmartStore.Core.IO
 
 			File.WriteAllBytes(fileInfo.FullName, new byte[0]);
 
-			return new LocalFile(Fix(path), fileInfo);
+            fileInfo.Refresh();
+			return new LocalFile(path, fileInfo);
 		}
 
 		public async Task<IFile> CreateFileAsync(string path)
@@ -354,7 +353,8 @@ namespace SmartStore.Core.IO
 				await stream.WriteAsync(new byte[0], 0, 0);
 			}
 
-			return new LocalFile(Fix(path), fileInfo);
+            fileInfo.Refresh();
+			return new LocalFile(path, fileInfo);
 		}
 
 		public void DeleteFile(string path)
@@ -477,150 +477,204 @@ namespace SmartStore.Core.IO
 			return mappedPath;
 		}
 
+        private class LocalFile : IFile
+        {
+            private readonly string _localPath;
+            private readonly string _relativePath;
+            private string _name;
+            private FileInfo _fileInfo;
+            private Size? _dimensions;
 
-		private class LocalFile : IFile
-		{
-			private readonly string _path;
-			private readonly FileInfo _fileInfo;
-			private Size? _dimensions;
+            public LocalFile(string relativePath, string localPath)
+            {
+                _relativePath = Fix(relativePath);
+                _localPath = localPath;
+            }
 
-			public LocalFile(string path, FileInfo fileInfo)
-			{
-				_path = path;
-				_fileInfo = fileInfo;
-			}
+            public LocalFile(string relativePath, FileInfo fileInfo)
+            {
+                _relativePath = Fix(relativePath);
+                _localPath = fileInfo.FullName;
+                _fileInfo = fileInfo;
+            }
 
-			public string Path
-			{
-				get { return _path; }
-			}
+            private FileInfo GetFileInfo()
+            {
+                return _fileInfo ?? (_fileInfo = new FileInfo(_localPath));
+            }
 
-			public string Directory
-			{
-				get { return _path.Substring(0, _path.Length - Name.Length); }
-			}
+            public string Path
+            {
+                get { return _relativePath; }
+            }
 
-			public string Name
-			{
-				get { return _fileInfo.Name; }
-			}
+            public string Directory
+            {
+                get { return _relativePath.Substring(0, _relativePath.Length - Name.Length); }
+            }
 
-			public string Title
-			{
-				get { return System.IO.Path.GetFileNameWithoutExtension(_fileInfo.Name); }
-			}
+            public string Name
+            {
+                get { return _fileInfo?.Name ?? _name ?? (_name = System.IO.Path.GetFileName(_localPath)); }
+            }
 
-			public long Size
-			{
-				get { return _fileInfo.Length; }
-			}
+            public string Title
+            {
+                get { return System.IO.Path.GetFileNameWithoutExtension(_localPath); }
+            }
 
-			public DateTime LastUpdated
-			{
-				get { return _fileInfo.LastWriteTimeUtc; }
-			}
+            public long Size
+            {
+                get  { return GetFileInfo().Length; }
+            }
 
-			public string Extension
-			{
-				get { return _fileInfo.Extension; }
-			}
+            public DateTime LastUpdated
+            {
+                get { return GetFileInfo().LastWriteTimeUtc; }
+            }
 
-			public Size Dimensions
-			{
-				get
-				{
-					if (_dimensions == null)
-					{
-						try
-						{
-							var mime = MimeTypes.MapNameToMimeType(_fileInfo.Name);
-							_dimensions = ImageHeader.GetDimensions(OpenRead(), mime, false);
-						}
-						catch
-						{
-							_dimensions = new Size();
-						}
-					}
+            public string Extension
+            {
+                get { return _fileInfo?.Extension ?? System.IO.Path.GetExtension(_localPath); }
+            }
 
-					return _dimensions.Value;
-				}
-			}
+            public Size Dimensions
+            {
+                get
+                {
+                    if (_dimensions == null)
+                    {
+                        try
+                        {
+                            var mime = MimeTypes.MapNameToMimeType(Name);
+                            _dimensions = ImageHeader.GetDimensions(OpenRead(), mime, false);
+                        }
+                        catch
+                        {
+                            _dimensions = new Size();
+                        }
+                    }
 
-			public bool Exists
-			{
-				get { return _fileInfo.Exists; }
-			}
+                    return _dimensions.Value;
+                }
+            }
 
-			public Stream OpenRead()
-			{
-				return new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true);
-			}
+            public bool Exists
+            {
+                get 
+                { 
+                    if (_fileInfo != null)
+                        return _fileInfo.Exists;
 
-			public Stream OpenWrite()
-			{
-				return new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
-			}
+                    return System.IO.File.Exists(_localPath); 
+                }
+            }
 
-			public Stream CreateFile()
-			{
-				return new FileStream(_fileInfo.FullName, FileMode.Truncate, FileAccess.ReadWrite, FileShare.Read, bufferSize: 4096, useAsync: true);
-			}
+            public Stream OpenRead()
+            {
+                return new FileStream(_localPath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true);
+            }
 
-			public Task<Stream> CreateFileAsync()
-			{
-				return Task.Run(() => CreateFile());
-			}
-		}
+            public Stream OpenWrite()
+            {
+                return new FileStream(_localPath, FileMode.Open, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
+            }
+
+            public Stream CreateFile()
+            {
+                return new FileStream(_localPath, FileMode.Truncate, FileAccess.ReadWrite, FileShare.Read, bufferSize: 4096, useAsync: true);
+            }
+
+            public Task<Stream> CreateFileAsync()
+            {
+                return Task.Run(() => CreateFile());
+            }
+        }
 
 		private class LocalFolder : IFolder
 		{
-			private readonly string _path;
-			private readonly DirectoryInfo _directoryInfo;
+            private readonly string _localPath;
+            private readonly string _relativePath;
+            private string _name;
+            private DirectoryInfo _dirInfo;
 
-			public LocalFolder(string path, DirectoryInfo directoryInfo)
-			{
-				_path = path;
-				_directoryInfo = directoryInfo;
-			}
+            public LocalFolder(string relativePath, string localPath)
+            {
+                _relativePath = Fix(relativePath);
+                _localPath = localPath;
+            }
 
-			public string Path
+            public LocalFolder(string relativePath, DirectoryInfo dirInfo)
+            {
+                _relativePath = Fix(relativePath);
+                _localPath = dirInfo.FullName;
+                _dirInfo = dirInfo;
+            }
+
+            private DirectoryInfo GetDirInfo()
+            {
+                return _dirInfo ?? (_dirInfo = new DirectoryInfo(_localPath));
+            }
+
+            public string Path
 			{
-				get { return _path; }
+				get { return _relativePath; }
 			}
 
 			public string Name
 			{
-				get { return _directoryInfo.Name; }
+				get { return _dirInfo?.Name ?? _name ?? (_name = GetDirName(_relativePath)); }
 			}
 
 			public DateTime LastUpdated
 			{
-				get { return _directoryInfo.LastWriteTimeUtc; }
+				get { return GetDirInfo().LastWriteTimeUtc; }
 			}
 
 			public long Size
 			{
-				get { return GetDirectorySize(_directoryInfo); }
+				get { return GetDirectorySize(GetDirInfo()); }
 			}
 
-			public bool Exists
-			{
-				get { return _directoryInfo.Exists; }
-			}
+            public bool Exists
+            {
+                get
+                {
+                    if (_dirInfo != null)
+                        return _dirInfo.Exists;
 
-			public IFolder Parent
+                    return System.IO.Directory.Exists(_localPath);
+                }
+            }
+
+            public IFolder Parent
 			{
 				get
 				{
-					if (_directoryInfo.Parent != null)
+                    var parent = GetDirInfo().Parent;
+                    
+                    if (parent != null)
 					{
-						return new LocalFolder(System.IO.Path.GetDirectoryName(_path), _directoryInfo.Parent);
+						return new LocalFolder(System.IO.Path.GetDirectoryName(_relativePath), parent);
 					}
-					throw new ArgumentException("Directory " + _directoryInfo.Name + " does not have a parent directory");
+					throw new ArgumentException("Directory " + _dirInfo.Name + " does not have a parent directory");
 				}
 			}
 
-			private static long GetDirectorySize(DirectoryInfo directoryInfo)
+            private static string GetDirName(string fullPath)
+            {
+                if (fullPath.Length > 3)
+                {
+                    string path = fullPath.TrimEnd(System.IO.Path.DirectorySeparatorChar);
+                    return System.IO.Path.GetFileName(path);
+                }
+
+                return fullPath;
+            }
+
+
+
+            private static long GetDirectorySize(DirectoryInfo directoryInfo)
 			{
 				long size = 0;
 

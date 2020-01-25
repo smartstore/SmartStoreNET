@@ -5,13 +5,7 @@
     var strValue = Value;
     var url = Url.Action("AllCustomerRoles", "CustomerRole", new { selectedIds = strValue, area = "admin" });
 
-    var htmlAttributes = new RouteValueDictionary(ViewData["htmlAttributes"] ?? new object());
-    var attributes = new RouteValueDictionary();
-
-    foreach (var item in htmlAttributes)
-    {
-        attributes[item.Key.StartsWith("data_") ? item.Key.Replace("_", "-") : item.Key] = item.Value;
-    }
+    var attributes = CommonHelper.ObjectToDictionary(ViewData["htmlAttributes"] ?? new object());
     if (!attributes.ContainsKey("data-placeholder"))
     {
         attributes["data-placeholder"] = T("Admin.Catalog.Products.TierPrices.Fields.CustomerRole.AllRoles").Text;

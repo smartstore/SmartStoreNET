@@ -7,13 +7,7 @@
     var discountType = TryGetMetadata<DiscountType>("discountType", out var type) ? type : (DiscountType?)null;
     var url = Url.Action("AllDiscounts", "Discount", new { selectedIds = strValue, type = discountType, area = "admin" });
 
-    var htmlAttributes = new RouteValueDictionary(ViewData["htmlAttributes"] ?? new object());
-    var attributes = new RouteValueDictionary();
-
-    foreach (var item in htmlAttributes)
-    {
-        attributes[item.Key.StartsWith("data_") ? item.Key.Replace("_", "-") : item.Key] = item.Value;
-    }
+    var attributes = CommonHelper.ObjectToDictionary(ViewData["htmlAttributes"] ?? new object());
     if (!attributes.ContainsKey("data-placeholder"))
     {
         attributes["data-placeholder"] = T("Common.Unspecified").Text;

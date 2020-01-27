@@ -303,18 +303,29 @@
 		},
 
         // Element must be decorated with visibilty:hidden
-        masonaryGrid: function (itemSelector) {
+        masonaryGrid: function (itemSelector, callback) {
             return this.each(function () {
 
                 var self = $(this);
                 var grid = self[0];
                 var allItems = self.find(".card");
 
-                self.addClass("masonary-grid");
+                self.addClass("masonary-grid");    
 
+                // first call so aos can be initialized correctly
                 resizeAllGridItems();
+                
+                self.imagesLoaded(function () {
+                    // second call to get correct size if pictures weren't loaded on the first call
+                    resizeAllGridItems();
+                    self.css("visibility", "visible");
 
-                self.css("visibility", "visible");
+                    if (typeof callback === 'function') {
+                        _.defer(function () {
+                            callback.call(this);
+                        });
+                    }
+                });
 
                 function resizeGridItem(item) {
                     var rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));

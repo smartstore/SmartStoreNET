@@ -7,12 +7,14 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Discounts;
 
 namespace SmartStore.Rules.Domain
 {
     public partial class RuleSetEntity : BaseEntity, IAuditable
     {
         private ICollection<RuleEntity> _rules;
+        private ICollection<Discount> _discounts;
 
         [DataMember]
         [StringLength(200)]
@@ -47,6 +49,12 @@ namespace SmartStore.Rules.Domain
         {
             get { return _rules ?? (_rules = new HashSet<RuleEntity>()); }
             protected internal set { _rules = value; }
+        }
+
+        public virtual ICollection<Discount> Discounts
+        {
+            get { return _discounts ?? (_discounts = new HashSet<Discount>()); }
+            protected set { _discounts = value; }
         }
     }
 }

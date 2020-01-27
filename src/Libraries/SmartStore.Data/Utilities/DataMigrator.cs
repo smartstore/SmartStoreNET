@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using Newtonsoft.Json;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
@@ -15,12 +16,15 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.IO;
 using SmartStore.Core.Security;
+using SmartStore.Rules;
+using SmartStore.Rules.Domain;
 using SmartStore.Utilities;
 using EfState = System.Data.Entity.EntityState;
 
@@ -1191,6 +1195,142 @@ namespace SmartStore.Data.Utilities
         {
             public int PermissionRecord_Id { get; set; }
             public int CustomerRole_Id { get; set; }
+        }
+
+        public static void AddRuleSets(IDbContext context)
+        {
+            var ctx = context as SmartObjectContext;
+            if (ctx == null)
+            {
+                throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+            }
+
+            using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
+            {
+                var defaultLang = context.Set<Language>().OrderBy(x => x.DisplayOrder).First();
+                var isGerman = defaultLang.UniqueSeoCode.IsCaseInsensitiveEqual("de");
+                var ruleSetName = isGerman ? "Regel für Rabatt {0}" : "Rule for discount {0}";
+                var ruleSets = context.Set<RuleSetEntity>();
+                var hasRuleSets = ruleSets.Any();
+                var utcNow = DateTime.UtcNow;
+
+                // Create rule sets for discount requirements.
+                if (!hasRuleSets)
+                {
+                    var allDiscounts = ctx.Set<Discount>().AsNoTracking()
+                        .ToList()
+                        .ToDictionary(x => x.Id, x => x);
+
+                    var allRequirements = context.SqlQuery<OldDiscountRequirement>("select * from [dbo].[DiscountRequirement]")
+                        .ToList()
+                        .ToMultimap(x => x.DiscountId, x => x);
+
+                    foreach (var discountId in allRequirements.Keys)
+                    {
+                        var discount = allRequirements[discountId].First().Discount;
+
+                        // All discount requirements must be fulfilled for a discount to be applied.
+                        // Try to combine requirements to one single rule if possible.
+                        var ruleSet = new RuleSetEntity
+                        {
+                            Name = ruleSetName.FormatInvariant(discount.Name.NaIfEmpty()).Truncate(195, "…"),
+                            IsActive = true,
+                            Scope = RuleScope.Cart,
+                            LogicalOperator = LogicalRuleOperator.And,
+                            CreatedOnUtc = utcNow,
+                            UpdatedOnUtc = utcNow
+                        };
+
+                        var requirements = allRequirements[discountId]
+                            .ToMultimap(x => x.DiscountRequirementRuleSystemName, x => x, StringComparer.OrdinalIgnoreCase);
+
+                        foreach (var requirementName in requirements.Keys)
+                        {
+                            if (requirementName.IsCaseInsensitiveEqual("DiscountRequirement.BillingCountryIs"))
+                            {
+                                foreach (var requirement in requirements[requirementName].Where(x => x.BillingCountryId != 0))
+                                {
+                                    ruleSet.Rules.Add(new RuleEntity
+                                    {
+                                        RuleType = "CartBillingCountry",
+                                        Operator = RuleOperator.In,
+                                        Value = requirement.BillingCountryId.ToString()
+                                    });
+                                }
+                            }
+                            else if (requirementName.IsCaseInsensitiveEqual("DiscountRequirement.MustBeAssignedToCustomerRole"))
+                            {
+                                var roleIds = new HashSet<int>(requirements[requirementName]
+                                    .Select(x => x.RestrictedToCustomerRoleId ?? 0)
+                                    .Where(x => x != 0));
+
+                                ruleSet.Rules.Add(new RuleEntity
+                                {
+                                    RuleType = "CustomerRole",
+                                    Operator = RuleOperator.Contains,
+                                    Value = string.Join(",", roleIds)
+                                });
+                            }
+                            else if (requirementName.IsCaseInsensitiveEqual("DiscountRequirement.HadSpentAmount"))
+                            {
+                                foreach (var requirement in requirements[requirementName].Where(x => x.SpentAmount != decimal.Zero))
+                                {
+                                    var limitToCurrentBasketSubTotal = GetExtraData<bool>(requirement, "LimitToCurrentBasketSubTotal");
+
+                                    ruleSet.Rules.Add(new RuleEntity
+                                    {
+                                        RuleType = limitToCurrentBasketSubTotal ? "CartSubtotal" : "CartSpentAmount",
+                                        Operator = RuleOperator.GreaterThanOrEqualTo,
+                                        Value = requirement.SpentAmount.ToString(CultureInfo.InvariantCulture)
+                                    });
+                                }
+                            }
+                        }
+
+                        //ruleSets.Add(ruleSet);
+                    }
+
+                    //scope.Commit();
+                }
+            }
+
+            static T GetExtraData<T>(OldDiscountRequirement req, string name)
+            {
+                try
+                {
+                    if (req?.ExtraData?.HasValue() ?? false)
+                    {
+                        var extraData = JsonConvert.DeserializeObject<Dictionary<string, object>>(req.ExtraData);
+                        if (extraData.TryGetValue(name, out var obj))
+                        {
+                            return obj.Convert<T>(CultureInfo.InvariantCulture);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ex.Dump();
+                }
+
+                return default(T);
+            }
+        }
+
+        public class OldDiscountRequirement
+        {
+            public int Id { get; set; }
+            public int DiscountId { get; set; }
+            public string DiscountRequirementRuleSystemName { get; set; }
+            public decimal SpentAmount { get; set; }
+            public int BillingCountryId { get; set; }
+            public int ShippingCountryId { get; set; }
+            public int? RestrictedToCustomerRoleId { get; set; }
+            public string RestrictedProductIds { get; set; }
+            public string RestrictedPaymentMethods { get; set; }
+            public string RestrictedShippingOptions { get; set; }
+            public int? RestrictedToStoreId { get; set; }
+            public string ExtraData { get; set; }
+            public virtual Discount Discount { get; set; }
         }
 
         #endregion

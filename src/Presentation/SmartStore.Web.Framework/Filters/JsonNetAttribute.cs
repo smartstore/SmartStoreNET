@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Web.Mvc;
-using Newtonsoft.Json;
-using SmartStore.ComponentModel;
 using SmartStore.Core.Data;
 using SmartStore.Services.Helpers;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Framework.Filters
 {
-	public class JsonNetAttribute : FilterAttribute, IResultFilter
+	public class JsonNetAttribute : FilterAttribute, IActionFilter
 	{
 		public Lazy<IDateTimeHelper> DateTimeHelper { get; set; }
 
-        public void OnResultExecuting(ResultExecutingContext filterContext)
+        public void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+        }
+
+        public void OnActionExecuted(ActionExecutedContext filterContext)
         {
             if (!DataSettings.DatabaseIsInstalled())
                 return;
@@ -39,10 +41,6 @@ namespace SmartStore.Web.Framework.Filters
                 MaxJsonLength = jsonResult.MaxJsonLength,
                 RecursionLimit = jsonResult.RecursionLimit
             };
-        }
-
-        public void OnResultExecuted(ResultExecutedContext filterContext)
-        {
         }
     }
 

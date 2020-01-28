@@ -329,18 +329,15 @@ table th {
 }
 
 .shadow {
-    --box-shadow: #{$box-shadow};
-    box-shadow: var(--box-shadow) !important;
+    --box-shadow: #{$box-shadow-var};
 }
 
 .shadow-sm {
-    --box-shadow: #{$box-shadow-sm};
-    box-shadow: var(--box-shadow) !important;
+    --box-shadow: #{$box-shadow-sm-var};
 }
 
 .shadow-lg {
-    --box-shadow: #{$box-shadow-lg};
-    box-shadow: var(--box-shadow) !important;
+    --box-shadow: #{$box-shadow-lg-var};
 }
 
 @each $color, $value in $theme-colors {

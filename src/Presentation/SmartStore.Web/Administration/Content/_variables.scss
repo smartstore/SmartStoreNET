@@ -115,13 +115,13 @@ $headings-font-weight:			400;
 
 // Shadows
 
-$box-shadow-sm:                 0 0 .625rem 0 rgba(#000, .05);
-$box-shadow:                    0 1rem 2.25rem rgba(#32325d, .03), 0 0.3125rem 1rem rgba(#000, .12);
-$box-shadow-lg:                 0 1rem 3rem rgba(#000, .125);
+$box-shadow-sm-var:             0 0 .625rem 0 rgba(#000, .05);
+$box-shadow-var:                0 1rem 2.25rem rgba(#32325d, .03), 0 0.3125rem 1rem rgba(#000, .12);
+$box-shadow-lg-var:             0 1rem 3rem rgba(#000, .125);
 
-$box-shadow-sm-var:             $box-shadow-sm;
-$box-shadow-var:                $box-shadow;
-$box-shadow-lg-var:             $box-shadow-lg;
+$box-shadow-sm:                 var(--box-shadow);
+$box-shadow:                    var(--box-shadow);
+$box-shadow-lg:                 var(--box-shadow);
 
 // Tables
 

@@ -15,11 +15,13 @@ using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.IO;
 using SmartStore.Core.Security;
@@ -1207,13 +1209,21 @@ namespace SmartStore.Data.Utilities
 
             using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
             {
-                var defaultLang = context.Set<Language>().OrderBy(x => x.DisplayOrder).First();
+                var defaultLang = context.Set<Language>()
+                    .AsNoTracking()
+                    .OrderBy(x => x.DisplayOrder)
+                    .First();
 
-                AddRuleSetsForDiscountRequirements(scope, defaultLang);
+                var existingRuleSets = scope.DbContext.Set<RuleSetEntity>()
+                    .Where(x => !string.IsNullOrEmpty(x.Name))
+                    .ToDictionarySafe(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);
+
+                AddRuleSetsForDiscountRequirements(scope, existingRuleSets, defaultLang);
+                AddRuleSetsForShippingFilters(scope, existingRuleSets, defaultLang);
             }
         }
 
-        private static void AddRuleSetsForDiscountRequirements(DbContextScope scope, Language language)
+        private static void AddRuleSetsForDiscountRequirements(DbContextScope scope, Dictionary<string, RuleSetEntity> existingRuleSets, Language language)
         {
             var allRequirements = scope.DbContext.SqlQuery<OldDiscountRequirement>("select * from [dbo].[DiscountRequirement]")
                 .ToList()
@@ -1225,7 +1235,6 @@ namespace SmartStore.Data.Utilities
             }
 
             var discountIds = allRequirements.Select(x => x.Key).ToList();
-
             var discounts = scope.DbContext.Set<Discount>()
                 .Where(x => discountIds.Contains(x.Id))
                 .ToList();
@@ -1235,152 +1244,163 @@ namespace SmartStore.Data.Utilities
                 return;
             }
 
-            var ruleSetName = language.UniqueSeoCode.IsCaseInsensitiveEqual("de") ? "Regel für Rabatt \"{0}\"" : "Rule for discount \"{0}\"";
+            var nameTemplate = language.UniqueSeoCode.IsCaseInsensitiveEqual("de") ? "Regel für Rabatt \"{0}\"" : "Rule for discount \"{0}\"";
             var utcNow = DateTime.UtcNow;
 
             foreach (var discount in discounts)
             {
-                // All requirements must be fulfilled for a discount to be applied.
-                var ruleSet = new RuleSetEntity
-                {
-                    Name = ruleSetName.FormatInvariant(discount.Name.NaIfEmpty()).Truncate(195, "…"),
-                    IsActive = true,
-                    Scope = RuleScope.Cart,
-                    LogicalOperator = LogicalRuleOperator.And,
-                    CreatedOnUtc = utcNow,
-                    UpdatedOnUtc = utcNow
-                };
+                var discountName = discount.Name.NullEmpty() ?? discount.Id.ToString();
+                var ruleSetName = nameTemplate.FormatInvariant(discountName).Truncate(195, "…");
 
-                // Try to combine requirements to one single rule, if possible.
-                var requirements = allRequirements[discount.Id]
-                    .ToMultimap(x => x.DiscountRequirementRuleSystemName.EmptyNull().ToLower(), x => x, StringComparer.OrdinalIgnoreCase);
-
-                foreach (var name in requirements.Keys)
+                // Avoid adding rule sets multiple times.
+                if (!existingRuleSets.TryGetValue(ruleSetName, out var ruleSet))
                 {
-                    switch (name)
+                    // All requirements must be fulfilled for a discount to be applied.
+                    ruleSet = new RuleSetEntity
                     {
-                        case "discountrequirement.billingcountryis":
-                            foreach (var requirement in requirements[name].Where(x => x.BillingCountryId != 0))
-                            {
-                                ruleSet.Rules.Add(new RuleEntity
-                                {
-                                    RuleType = "CartBillingCountry",
-                                    Operator = RuleOperator.In,
-                                    Value = requirement.BillingCountryId.ToString()
-                                });
-                            }
-                            break;
-                        case "discountrequirement.shippingcountryis":
-                            foreach (var requirement in requirements[name].Where(x => x.ShippingCountryId != 0))
-                            {
-                                ruleSet.Rules.Add(new RuleEntity
-                                {
-                                    RuleType = "CartShippingCountry",
-                                    Operator = RuleOperator.In,
-                                    Value = requirement.ShippingCountryId.ToString()
-                                });
-                            }
-                            break;
-                        case "discountrequirement.mustbeassignedtocustomerrole":
-                            var roleIds = new HashSet<int>(requirements[name]
-                                .Select(x => x.RestrictedToCustomerRoleId ?? 0)
-                                .Where(x => x != 0));
+                        Name = ruleSetName,
+                        IsActive = true,
+                        Scope = RuleScope.Cart,
+                        LogicalOperator = LogicalRuleOperator.And,
+                        CreatedOnUtc = utcNow,
+                        UpdatedOnUtc = utcNow
+                    };
 
-                            if (roleIds.Any())
-                            {
-                                ruleSet.Rules.Add(new RuleEntity
-                                {
-                                    RuleType = "CustomerRole",
-                                    Operator = RuleOperator.Contains,
-                                    Value = string.Join(",", roleIds)
-                                });
-                            }
-                            break;
-                        case "discountrequirement.hadspentamount":
-                            foreach (var requirement in requirements[name].Where(x => x.SpentAmount != decimal.Zero))
-                            {
-                                var limitToCurrentBasketSubTotal = GetExtraData<bool>(requirement, "LimitToCurrentBasketSubTotal");
+                    // Try to combine requirements to one single rule, if possible.
+                    var requirements = allRequirements[discount.Id]
+                        .ToMultimap(x => x.DiscountRequirementRuleSystemName.EmptyNull().ToLower(), x => x, StringComparer.OrdinalIgnoreCase);
 
-                                ruleSet.Rules.Add(new RuleEntity
+                    foreach (var name in requirements.Keys)
+                    {
+                        switch (name)
+                        {
+                            case "discountrequirement.billingcountryis":
+                                foreach (var requirement in requirements[name].Where(x => x.BillingCountryId != 0))
                                 {
-                                    RuleType = limitToCurrentBasketSubTotal ? "CartSubtotal" : "CartSpentAmount",
-                                    Operator = RuleOperator.GreaterThanOrEqualTo,
-                                    Value = requirement.SpentAmount.ToString(CultureInfo.InvariantCulture)
-                                });
-                            }
-                            break;
-                        case "discountrequirement.hasallproducts":
-                        case "discountrequirement.hasoneproduct":
-                        case "discountrequirement.purchasedallproducts":
-                        case "discountrequirement.purchasedoneproduct":
-                            var productIds = new HashSet<int>();
-                            foreach (var requirement in requirements[name].Where(x => x.RestrictedProductIds.HasValue()))
-                            {
-                                productIds.AddRange(requirement.RestrictedProductIds.ToIntArray());
-                            }
+                                    ruleSet.Rules.Add(new RuleEntity
+                                    {
+                                        RuleType = "CartBillingCountry",
+                                        Operator = RuleOperator.In,
+                                        Value = requirement.BillingCountryId.ToString()
+                                    });
+                                }
+                                break;
+                            case "discountrequirement.shippingcountryis":
+                                foreach (var requirement in requirements[name].Where(x => x.ShippingCountryId != 0))
+                                {
+                                    ruleSet.Rules.Add(new RuleEntity
+                                    {
+                                        RuleType = "CartShippingCountry",
+                                        Operator = RuleOperator.In,
+                                        Value = requirement.ShippingCountryId.ToString()
+                                    });
+                                }
+                                break;
+                            case "discountrequirement.mustbeassignedtocustomerrole":
+                                var roleIds = new HashSet<int>(requirements[name]
+                                    .Select(x => x.RestrictedToCustomerRoleId ?? 0)
+                                    .Where(x => x != 0));
 
-                            if (productIds.Any())
-                            {
-                                ruleSet.Rules.Add(new RuleEntity
+                                if (roleIds.Any())
                                 {
-                                    RuleType = name == "discountrequirement.hasallproducts" || name == "discountrequirement.hasoneproduct" ? "ProductInCart" : "CartPurchasedProduct",
-                                    Operator = name == "discountrequirement.hasallproducts" || name == "discountrequirement.purchasedallproducts" ? RuleOperator.Contains : RuleOperator.In,
-                                    Value = string.Join(",", productIds)
-                                });
-                            }
-                            break;
-                        case "discountrequirement.store":
-                            foreach (var requirement in requirements[name].Where(x => x.RestrictedToStoreId != 0))
-                            {
-                                ruleSet.Rules.Add(new RuleEntity
+                                    ruleSet.Rules.Add(new RuleEntity
+                                    {
+                                        RuleType = "CustomerRole",
+                                        Operator = RuleOperator.Contains,
+                                        Value = string.Join(",", roleIds)
+                                    });
+                                }
+                                break;
+                            case "discountrequirement.hadspentamount":
+                                foreach (var requirement in requirements[name].Where(x => x.SpentAmount != decimal.Zero))
                                 {
-                                    RuleType = "Store",
-                                    Operator = RuleOperator.In,
-                                    Value = requirement.RestrictedToStoreId.ToString()
-                                });
-                            }
-                            break;
-                        case "discountrequirement.haspaymentmethod":
-                            var paymentMethods = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                            foreach (var requirement in requirements[name].Where(x => x.RestrictedPaymentMethods.HasValue()))
-                            {
-                                paymentMethods.AddRange(requirement.RestrictedPaymentMethods.SplitSafe(","));
-                            }
+                                    var limitToCurrentBasketSubTotal = GetExtraData<bool>(requirement, "LimitToCurrentBasketSubTotal");
 
-                            if (paymentMethods.Any())
-                            {
-                                ruleSet.Rules.Add(new RuleEntity
+                                    ruleSet.Rules.Add(new RuleEntity
+                                    {
+                                        RuleType = limitToCurrentBasketSubTotal ? "CartSubtotal" : "CartSpentAmount",
+                                        Operator = RuleOperator.GreaterThanOrEqualTo,
+                                        Value = requirement.SpentAmount.ToString(CultureInfo.InvariantCulture)
+                                    });
+                                }
+                                break;
+                            case "discountrequirement.hasallproducts":
+                            case "discountrequirement.hasoneproduct":
+                            case "discountrequirement.purchasedallproducts":
+                            case "discountrequirement.purchasedoneproduct":
+                                var productIds = new HashSet<int>();
+                                foreach (var requirement in requirements[name].Where(x => x.RestrictedProductIds.HasValue()))
                                 {
-                                    RuleType = "CartPaymentMethod",
-                                    Operator = RuleOperator.In,
-                                    Value = string.Join(",", paymentMethods)
-                                });
-                            }
-                            break;
-                        case "discountrequirement.hasshippingoption":
-                            var shippingMethodIds = new HashSet<int>();
-                            foreach (var requirement in requirements[name].Where(x => x.RestrictedShippingOptions.HasValue()))
-                            {
-                                shippingMethodIds.AddRange(requirement.RestrictedShippingOptions.ToIntArray());
-                            }
+                                    productIds.AddRange(requirement.RestrictedProductIds.ToIntArray());
+                                }
 
-                            if (shippingMethodIds.Any())
-                            {
-                                ruleSet.Rules.Add(new RuleEntity
+                                if (productIds.Any())
                                 {
-                                    RuleType = "CartShippingMethod",
-                                    Operator = RuleOperator.In,
-                                    Value = string.Join(",", shippingMethodIds)
-                                });
-                            }
-                            break;
-                        default:
-                            $"Cannot add rule set for unknown discount requirement type ({name}).".Dump();
-                            break;
+                                    ruleSet.Rules.Add(new RuleEntity
+                                    {
+                                        RuleType = name == "discountrequirement.hasallproducts" || name == "discountrequirement.hasoneproduct" ? "ProductInCart" : "CartPurchasedProduct",
+                                        Operator = name == "discountrequirement.hasallproducts" || name == "discountrequirement.purchasedallproducts" ? RuleOperator.Contains : RuleOperator.In,
+                                        Value = string.Join(",", productIds)
+                                    });
+                                }
+                                break;
+                            case "discountrequirement.store":
+                                foreach (var requirement in requirements[name].Where(x => x.RestrictedToStoreId != 0))
+                                {
+                                    ruleSet.Rules.Add(new RuleEntity
+                                    {
+                                        RuleType = "Store",
+                                        Operator = RuleOperator.In,
+                                        Value = requirement.RestrictedToStoreId.ToString()
+                                    });
+                                }
+                                break;
+                            case "discountrequirement.haspaymentmethod":
+                                var paymentMethods = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                                foreach (var requirement in requirements[name].Where(x => x.RestrictedPaymentMethods.HasValue()))
+                                {
+                                    paymentMethods.AddRange(requirement.RestrictedPaymentMethods.SplitSafe(","));
+                                }
+
+                                if (paymentMethods.Any())
+                                {
+                                    ruleSet.Rules.Add(new RuleEntity
+                                    {
+                                        RuleType = "CartPaymentMethod",
+                                        Operator = RuleOperator.In,
+                                        Value = string.Join(",", paymentMethods)
+                                    });
+                                }
+                                break;
+                            case "discountrequirement.hasshippingoption":
+                                var shippingMethodIds = new HashSet<int>();
+                                foreach (var requirement in requirements[name].Where(x => x.RestrictedShippingOptions.HasValue()))
+                                {
+                                    shippingMethodIds.AddRange(requirement.RestrictedShippingOptions.ToIntArray());
+                                }
+
+                                if (shippingMethodIds.Any())
+                                {
+                                    ruleSet.Rules.Add(new RuleEntity
+                                    {
+                                        RuleType = "CartShippingMethod",
+                                        Operator = RuleOperator.In,
+                                        Value = string.Join(",", shippingMethodIds)
+                                    });
+                                }
+                                break;
+                            default:
+                                $"Cannot add rule set for unknown discount requirement type ({name}).".Dump();
+                                break;
+                        }
                     }
                 }
 
-                discount.RuleSets.Add(ruleSet);                
+                if (ruleSet.Rules.Any())
+                {
+                    // Map rule set to discount.
+                    discount.RuleSets.Add(ruleSet);
+                }
             }
 
             scope.Commit();
@@ -1407,7 +1427,113 @@ namespace SmartStore.Data.Utilities
             }
         }
 
+        private static void AddRuleSetsForShippingFilters(DbContextScope scope, Dictionary<string, RuleSetEntity> existingRuleSets, Language language)
+        {
+            var syncMappings = scope.DbContext.Set<SyncMapping>()
+                .AsNoTracking()
+                .Where(x => x.ContextName == "SmartStore.ShippingFilter" && x.EntityName == "ShippingMethod")
+                .ToList()
+                .ToDictionarySafe(x => x.EntityId, x => x);
 
+            if (!syncMappings.Any())
+            {
+                return;
+            }
+
+            var shippingMethodIds = syncMappings.Select(x => x.Key).ToList();
+            var shippingMethods = scope.DbContext.Set<ShippingMethod>()
+                .Where(x => shippingMethodIds.Contains(x.Id))
+                .ToList();
+
+            if (!shippingMethods.Any())
+            {
+                return;
+            }
+
+            var nameTemplate = language.UniqueSeoCode.IsCaseInsensitiveEqual("de") ? "Regel für Versandart \"{0}\"" : "Rule for shipping method \"{0}\"";
+            var utcNow = DateTime.UtcNow;
+
+            foreach (var shippingMethod in shippingMethods)
+            {
+                var shippingMethodName = shippingMethod.Name.NullEmpty() ?? shippingMethod.Id.ToString();
+                var ruleSetName = nameTemplate.FormatInvariant(shippingMethodName).Truncate(195, "…");
+
+                // Avoid adding rule sets multiple times.
+                if (!existingRuleSets.TryGetValue(ruleSetName, out var ruleSet))
+                {
+                    ruleSet = new RuleSetEntity
+                    {
+                        Name = ruleSetName,
+                        IsActive = true,
+                        Scope = RuleScope.Cart,
+                        LogicalOperator = LogicalRuleOperator.And,
+                        CreatedOnUtc = utcNow,
+                        UpdatedOnUtc = utcNow
+                    };
+
+                    if (syncMappings.TryGetValue(shippingMethod.Id, out var syncMapping) && syncMapping.CustomString.HasValue())
+                    {
+                        var model = XmlHelper.Deserialize<FilterOutShippingMethodModel>(syncMapping.CustomString);
+
+                        // Customer role filter.
+                        if (model.ExcludedCustomerRoles?.Any() ?? false)
+                        {
+                            var excludedRoleIds = model.ExcludedCustomerRoles.Where(x => x != 0).ToArray();
+                            if (excludedRoleIds.Any())
+                            {
+                                if (model.FilterIfRoleIsAssigned)
+                                {
+                                    ruleSet.Rules.Add(new RuleEntity
+                                    {
+                                        RuleType = "CustomerRole",
+                                        Operator = RuleOperator.NotContains,
+                                        Value = string.Join(",", excludedRoleIds)
+                                    });
+                                }
+                                else
+                                {
+                                    // There's no operator for this filter. We have to "translate" it.
+                                    var allRoleIds = scope.DbContext.Set<CustomerRole>().Select(x => x.Id).ToList();
+                                    var includedRoleIds = allRoleIds.Except(excludedRoleIds).ToArray();
+
+                                    if (includedRoleIds.Any())
+                                    {
+                                        ruleSet.Rules.Add(new RuleEntity
+                                        {
+                                            RuleType = "CustomerRole",
+                                            Operator = RuleOperator.In,
+                                            Value = string.Join(",", includedRoleIds)
+                                        });
+                                    }
+                                }
+                            }
+                        }
+
+                        // Address country filter.
+                        if (model.ExcludedCountries?.Any() ?? false)
+                        {
+                            var excludedCountryIds = model.ExcludedCountries.Where(x => x != 0).ToArray();
+                            if (excludedCountryIds.Any())
+                            {
+                                ruleSet.Rules.Add(new RuleEntity
+                                {
+                                    RuleType = model.CountryContext.IsCaseInsensitiveEqual("BillingAddress") ? "CartBillingCountry" : "CartShippingCountry",
+                                    Operator = RuleOperator.NotIn,
+                                    Value = string.Join(",", excludedCountryIds)
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (ruleSet.Rules.Any())
+                {
+                    // Map rule set to shipping method.
+                }
+            }
+
+            scope.Commit();
+        }
 
         public class OldDiscountRequirement
         {
@@ -1423,6 +1549,15 @@ namespace SmartStore.Data.Utilities
             public string RestrictedShippingOptions { get; set; }
             public int? RestrictedToStoreId { get; set; }
             public string ExtraData { get; set; }
+        }
+
+        [Serializable]
+        public class FilterOutShippingMethodModel
+        {
+            public int[] ExcludedCustomerRoles { get; set; }
+            public bool FilterIfRoleIsAssigned { get; set; }
+            public int[] ExcludedCountries { get; set; }
+            public string CountryContext { get; set; }
         }
 
         #endregion

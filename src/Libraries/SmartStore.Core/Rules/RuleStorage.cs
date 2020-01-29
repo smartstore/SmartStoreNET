@@ -152,7 +152,7 @@ namespace SmartStore.Rules
             }
 
             query = query
-                .OrderBy(x => x.IsActive)
+                .OrderByDescending(x => x.IsActive)
                 .ThenBy(x => x.Scope);
 
             return new PagedList<RuleSetEntity>(query, pageIndex, pageSize);

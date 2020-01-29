@@ -161,6 +161,10 @@ namespace SmartStore.Admin.Controllers
             model.ExpressionGroup = _ruleFactory.CreateExpressionGroup(entity, provider, true);
             model.AvailableDescriptors = _targetGroupService.RuleDescriptors;
 
+            model.AssignedToDiscounts = entity.Discounts
+                .Select(x => new RuleSetModel.AssignedToEntityModel { Id = x.Id, Name = x.Name })
+                .ToList();
+
             PrepareExpressions(model.ExpressionGroup);
             PrepareTemplateViewBag(entity.Id);
 

@@ -349,6 +349,12 @@
             builder.AddOrUpdate("Admin.Promotions.Discounts.Requirements.Hint",
                 "Specifies requirements for the applying of the discount. The discount is applied when one of the requirements is satisfied.",
                 "Legt Voraussetzungen für die Anwendung des Rabatts fest. Der Rabatt wird gewährt, wenn eine der Voraussetzungen erfüllt ist.");
+
+            builder.AddOrUpdate("Admin.Rules.RuleSet.Fields.AssignedToDiscounts",
+                "Assigned to discounts",
+                "Rabatten zugeordnet",
+                "A list of discounts to which the rule is assigned. The assignment can be made on the discount details page.",
+                "Eine Liste von Rabatten, denen die Regel zugeordnet ist. Die Zuordnung kann auf der Rabattdetailseite vorgenommen werden.");
         }
     }
 }

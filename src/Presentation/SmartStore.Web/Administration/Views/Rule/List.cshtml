@@ -65,6 +65,7 @@
         })
         .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
         .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Rule"))
+        .ClientEvents(events => events.OnRowDataBound("onRowDataBound"))
         .PreserveGridState()
         .EnableCustomBinding(true)
     )
@@ -79,5 +80,11 @@
 			grid.ajaxRequest();
 			return false;
 		});
-	});
+    });
+
+    function onRowDataBound(e) {
+	    if (!e.dataItem.IsActive) {
+		    $(e.row).find('td').wrapInner('<span class="muted" />');
+	    }
+    }
 </script>

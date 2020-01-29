@@ -284,10 +284,10 @@ namespace SmartStore.Web.Infrastructure
                 new[] { "SmartStore.Web.Controllers" });
 
 
-			/* Misc
+            /* Misc
 			----------------------------------------*/
 
-			routes.MapLocalizedRoute("RegisterResult",
+            routes.MapLocalizedRoute("RegisterResult",
 				"registerresult/{resultId}",
 				new { controller = "Customer", action = "RegisterResult" },
 				new { resultId = idConstraint },

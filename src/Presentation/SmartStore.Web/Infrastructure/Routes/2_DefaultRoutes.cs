@@ -59,15 +59,27 @@ namespace SmartStore.Web.Infrastructure
 		
 		public bool Match(HttpContextBase httpContext, Route route, string parameterName, RouteValueDictionary values, RouteDirection routeDirection)
 		{
-			object value;
-			if (values.TryGetValue(parameterName, out value))
+            if (values.TryGetValue(parameterName, out var value))
 			{
 				var requestedController = Convert.ToString(value);
 				if (s_knownControllers.Contains(requestedController))
 				{
-					return true;
+                    if (requestedController.IsCaseInsensitiveEqual("download"))
+                    {
+                        // Special case for '~/download'. We have a known controller called "Download", which unfortunately blocks
+                        // the usage of the url '~/download' (without action). To be able to use '/download' as a SEO slug,
+                        // we check here whether the requested route has an action name other than the default (empty or 'Index').
+                        var action = Convert.ToString(values["action"]);
+                        if (action.IsEmpty() || string.Equals(action, Convert.ToString(route.Defaults["action"]), StringComparison.OrdinalIgnoreCase))
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
 				}
 			}
+
 			return false;
 		}
 	}

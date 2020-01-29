@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
@@ -9,12 +10,12 @@ using SmartStore.Core.Html;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.Controllers;
-using System.Linq;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class DownloadController : PublicControllerBase
+    public partial class DownloadController : PublicControllerBase
 	{
 		private readonly IDownloadService _downloadService;
 		private readonly IProductService _productService;
@@ -30,11 +31,11 @@ namespace SmartStore.Web.Controllers
 			IWorkContext workContext,
 			CustomerSettings customerSettings)
 		{
-			this._downloadService = downloadService;
-			this._productService = productService;
-			this._orderService = orderService;
-			this._workContext = workContext;
-			this._customerSettings = customerSettings;
+			_downloadService = downloadService;
+			_productService = productService;
+			_orderService = orderService;
+			_workContext = workContext;
+			_customerSettings = customerSettings;
 		}
 
 		private ActionResult GetFileContentResultFor(Download download, Product product, byte[] data)
@@ -68,14 +69,14 @@ namespace SmartStore.Web.Controllers
 			if (!product.HasSampleDownload)
             {
                 NotifyError(T("Common.Download.HasNoSample"));
-                return RedirectToAction("ProductDetails", "Product", new { productId = productId });
+                return RedirectToRoute("Product", new { SeName = product.GetSeName() });
             }
             
 			var download = _downloadService.GetDownloadById(product.SampleDownloadId.GetValueOrDefault());
             if (download == null)
             {
                 NotifyError(T("Common.Download.SampleNotAvailable"));
-                return RedirectToAction("ProductDetails", "Product", new { productId = productId });
+                return RedirectToRoute("Product", new { SeName = product.GetSeName() });
             }
 
             if (download.UseDownloadUrl)

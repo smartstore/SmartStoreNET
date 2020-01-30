@@ -48,14 +48,11 @@ body {
     }
 }
 
-@supports not (-webkit-overflow-scrolling: touch) {
+.touchevents body:not(.has-sticky-content) #page {
     // INFO: Sticky elements won't work anymore with overflow-x: hidden on #page element
     // INFO 2: apparently without 'overflow-x: hidden' #page gets very glitchy on mobile. Observe this and leave it active for now.
-    // INFO 3: on iOS Safari overflow-x: hidden does cancel stickyness, so we do this only for non-iOS devices.
-    .touchevents #page {
-        overflow-x: hidden;
-    }   
-}
+    overflow-x: hidden;
+}  
 
 #header {
     background-color: $header-bg;

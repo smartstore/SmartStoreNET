@@ -304,12 +304,19 @@
 
         // Element must be decorated with visibilty:hidden
         masonaryGrid: function (itemSelector, callback) {
+            
             return this.each(function () {
 
                 var self = $(this);
                 var grid = self[0];
                 var allItems = self.find(".card");
 
+                var viewport = ResponsiveBootstrapToolkit;
+                if (viewport.is('<=sm')) {
+                    self.css("visibility", "visible");
+                    return false;
+                }
+                
                 self.addClass("masonary-grid");    
 
                 // first call so aos can be initialized correctly

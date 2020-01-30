@@ -750,9 +750,9 @@
     <Compile Include="Migrations\202001221054109_ManufacturerBottomDescription.Designer.cs">
       <DependentUpon>202001221054109_ManufacturerBottomDescription.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202001271136037_DiscountRuleSets.cs" />
-    <Compile Include="Migrations\202001271136037_DiscountRuleSets.Designer.cs">
-      <DependentUpon>202001271136037_DiscountRuleSets.cs</DependentUpon>
+    <Compile Include="Migrations\202001301039020_DiscountRuleSets.cs" />
+    <Compile Include="Migrations\202001301039020_DiscountRuleSets.Designer.cs">
+      <DependentUpon>202001301039020_DiscountRuleSets.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -1343,8 +1343,8 @@
     <EmbeddedResource Include="Migrations\202001221054109_ManufacturerBottomDescription.resx">
       <DependentUpon>202001221054109_ManufacturerBottomDescription.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001271136037_DiscountRuleSets.resx">
-      <DependentUpon>202001271136037_DiscountRuleSets.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202001301039020_DiscountRuleSets.resx">
+      <DependentUpon>202001301039020_DiscountRuleSets.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

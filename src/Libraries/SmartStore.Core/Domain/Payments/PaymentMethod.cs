@@ -1,6 +1,8 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Rules.Domain;
 
 namespace SmartStore.Core.Domain.Payments
 {
@@ -8,12 +10,14 @@ namespace SmartStore.Core.Domain.Payments
 	/// Represents a payment method
 	/// </summary>
 	[DataContract]
-	public partial class PaymentMethod : BaseEntity, ILocalizedEntity, IStoreMappingSupported
-	{
-		/// <summary>
-		/// Gets or sets the payment method system name
-		/// </summary>
-		[DataMember]
+	public partial class PaymentMethod : BaseEntity, ILocalizedEntity, IStoreMappingSupported, IRuleSetsSupported
+    {
+        private ICollection<RuleSetEntity> _ruleSets;
+
+        /// <summary>
+        /// Gets or sets the payment method system name
+        /// </summary>
+        [DataMember]
 		public string PaymentMethodSystemName { get; set; }
 
 		/// <summary>
@@ -34,5 +38,14 @@ namespace SmartStore.Core.Domain.Payments
 		/// </summary>
 		[DataMember]
 		public bool LimitedToStores { get; set; }
-	}
+
+        /// <summary>
+        /// Gets or sets assigned rule sets.
+        /// </summary>
+        public virtual ICollection<RuleSetEntity> RuleSets
+        {
+            get { return _ruleSets ?? (_ruleSets = new HashSet<RuleSetEntity>()); }
+            protected set { _ruleSets = value; }
+        }
+    }
 }

@@ -12,7 +12,7 @@ namespace SmartStore.Core.Domain.Discounts
 	/// </summary>
 	[DataContract]
 	[DebuggerDisplay("{Name} - {DiscountType}")]
-	public partial class Discount : BaseEntity
+	public partial class Discount : BaseEntity, IRuleSetsSupported
     {
         private ICollection<DiscountRequirement> _discountRequirements;
         private ICollection<RuleSetEntity> _ruleSets;
@@ -128,7 +128,7 @@ namespace SmartStore.Core.Domain.Discounts
         }
 
         /// <summary>
-        /// Gets or sets rule sets.
+        /// Gets or sets assigned rule sets.
         /// </summary>
         public virtual ICollection<RuleSetEntity> RuleSets
         {

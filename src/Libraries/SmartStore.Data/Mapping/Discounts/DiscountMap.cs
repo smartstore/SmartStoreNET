@@ -23,7 +23,7 @@ namespace SmartStore.Data.Mapping.Discounts
 
             HasMany(d => d.RuleSets)
                 .WithMany(rs => rs.Discounts)
-                .Map(m => m.ToTable("Discount_RuleSet_Mapping"));
+                .Map(m => m.ToTable("RuleSet_Discount_Mapping"));
 
             HasMany(dr => dr.AppliedToCategories)
                 .WithMany(c => c.AppliedDiscounts)

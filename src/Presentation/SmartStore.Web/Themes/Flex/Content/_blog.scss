@@ -7,6 +7,10 @@
 
 .bloglist-item-root {
     overflow: hidden;
+
+    &:nth-child(n+4) {
+        display: none;
+    }
 }
 
 .bloglist-item-header {
@@ -31,6 +35,10 @@
 }
 
 @include media-breakpoint-up(md) {
+    .bloglist-item-root:nth-child(n+4) {
+        display: initial;
+    }
+
     .bloglist-item-header {
         width: 100% !important;
     }

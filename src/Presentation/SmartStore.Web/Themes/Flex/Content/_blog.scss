@@ -36,7 +36,7 @@
 
 @include media-breakpoint-up(md) {
     .bloglist-item-root:nth-child(n+4) {
-        display: initial;
+        display: block;
     }
 
     .bloglist-item-header {

@@ -46,7 +46,7 @@
             }
 
             &:not(.collapsed) {
-                background-color: $success;
+                background-color: $danger;
                 color: #fff;
 
                 .collapse-chevron {

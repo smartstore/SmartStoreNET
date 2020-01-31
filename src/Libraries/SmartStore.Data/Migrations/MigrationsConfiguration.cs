@@ -349,6 +349,8 @@
             builder.AddOrUpdate("Admin.Promotions.Discounts.Requirements.Hint",
                 "Specifies requirements for the applying of the discount. The discount is applied when one of the requirements is satisfied.",
                 "Legt Voraussetzungen für die Anwendung des Rabatts fest. Der Rabatt wird gewährt, wenn eine der Voraussetzungen erfüllt ist.");
+
+            builder.AddOrUpdate("Admin.Common.IsPublished", "Published", "Veröffentlicht");
         }
     }
 }

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 using Newtonsoft.Json;
 using SmartStore.Collections;
 using SmartStore.Core;
@@ -1212,18 +1213,15 @@ namespace SmartStore.Data.Utilities
             var isGerman = defaultLang.UniqueSeoCode.IsCaseInsensitiveEqual("de");
             var discountNameTemplate = isGerman ? "Regel für Rabatt \"{0}\"" : "Rule for discount \"{0}\"";
             var shippingNameTemplate = isGerman ? "Regel für Versandart \"{0}\"" : "Rule for shipping method \"{0}\"";
-            var paymentNameTemplate = isGerman ? "Regel für Zahlart \"{0}\"" : "Rule for payment method \"{0}\"";
+            var paymentNameTemplate = isGerman ? "Regel für Zahlart \"{0} ({1})\"" : "Rule for payment method \"{0} ({1})\"";
             var utcNow = DateTime.UtcNow;
 
-            var allRuleSets = ctx.Set<RuleSetEntity>()
-                .Where(x => !x.IsSubGroup)
+            var cartRules = ctx.Set<RuleSetEntity>()
+                .Include(x => x.Rules)
+                .Where(x => x.Scope == RuleScope.Cart && !x.IsSubGroup)
                 .ToList();
 
-            var existingRuleSetNames = new HashSet<string>(
-                allRuleSets.Select(x => x.Name).Where(x => x.HasValue()), StringComparer.OrdinalIgnoreCase);
-
-            // TODO
-            var existingRuleSets = allRuleSets
+            var existingRuleSets = cartRules
                 .Where(x => x.Name.HasValue())
                 .ToDictionarySafe(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);
 
@@ -1262,7 +1260,7 @@ namespace SmartStore.Data.Utilities
 
                 foreach (var discount in discounts)
                 {
-                    var ruleSetName = CreateRuleSetName(discountNameTemplate, discount.Name.NullEmpty() ?? discount.Id.ToString());
+                    var ruleSetName = discountNameTemplate.FormatInvariant(discount.Name.NullEmpty() ?? discount.Id.ToString()).Truncate(195, "…");
 
                     // Avoid adding rule sets multiple times.
                     if (!existingRuleSets.TryGetValue(ruleSetName, out var ruleSet))
@@ -1441,7 +1439,7 @@ namespace SmartStore.Data.Utilities
 
                 foreach (var shippingMethod in shippingMethods)
                 {
-                    var ruleSetName = CreateRuleSetName(shippingNameTemplate, shippingMethod.Name.NullEmpty() ?? shippingMethod.Id.ToString());
+                    var ruleSetName = shippingNameTemplate.FormatInvariant(shippingMethod.Name.NullEmpty() ?? shippingMethod.Id.ToString()).Truncate(195, "…");
 
                     // Avoid adding rule sets multiple times.
                     if (!existingRuleSets.TryGetValue(ruleSetName, out var ruleSet))
@@ -1456,58 +1454,10 @@ namespace SmartStore.Data.Utilities
                             UpdatedOnUtc = utcNow
                         };
 
-                        if (syncMappings.TryGetValue(shippingMethod.Id, out var syncMapping) && syncMapping.CustomString.HasValue())
+                        var model = GetFilterData(syncMappings, shippingMethod.Id, "FilterOutShippingMethodModel");
+                        if (model != null)
                         {
-                            var model = XmlHelper.Deserialize<FilterOutShippingMethodModel>(syncMapping.CustomString);
-
-                            // Customer role filter.
-                            if (model.ExcludedCustomerRoles?.Any() ?? false)
-                            {
-                                var excludedRoleIds = model.ExcludedCustomerRoles.Where(x => x != 0).ToArray();
-                                if (excludedRoleIds.Any())
-                                {
-                                    if (model.FilterIfRoleIsAssigned)
-                                    {
-                                        ruleSet.Rules.Add(new RuleEntity
-                                        {
-                                            RuleType = "CustomerRole",
-                                            Operator = RuleOperator.NotContains,
-                                            Value = string.Join(",", excludedRoleIds)
-                                        });
-                                    }
-                                    else
-                                    {
-                                        // There's no operator for this filter. We have to "translate" it.
-                                        var allRoleIds = ctx.Set<CustomerRole>().Select(x => x.Id).ToList();
-                                        var includedRoleIds = allRoleIds.Except(excludedRoleIds).ToArray();
-
-                                        if (includedRoleIds.Any())
-                                        {
-                                            ruleSet.Rules.Add(new RuleEntity
-                                            {
-                                                RuleType = "CustomerRole",
-                                                Operator = RuleOperator.In,
-                                                Value = string.Join(",", includedRoleIds)
-                                            });
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Address country filter.
-                            if (model.ExcludedCountries?.Any() ?? false)
-                            {
-                                var excludedCountryIds = model.ExcludedCountries.Where(x => x != 0).ToArray();
-                                if (excludedCountryIds.Any())
-                                {
-                                    ruleSet.Rules.Add(new RuleEntity
-                                    {
-                                        RuleType = model.CountryContext.IsCaseInsensitiveEqual("BillingAddress") ? "CartBillingCountry" : "CartShippingCountry",
-                                        Operator = RuleOperator.NotIn,
-                                        Value = string.Join(",", excludedCountryIds)
-                                    });
-                                }
-                            }
+                            AddRulesForCommonFilters(ctx, ruleSet, model, "SmartStore.ShippingFilter");
                         }
                     }
 
@@ -1553,19 +1503,89 @@ namespace SmartStore.Data.Utilities
                         .FirstOrDefault()
                         .NullEmpty();
 
-                    var ruleSetName = CreateRuleSetName(paymentNameTemplate, friendlyName ?? paymentMethod.PaymentMethodSystemName ?? paymentMethod.Id.ToString());
-                }
-            }
+                    var ruleSetName = paymentNameTemplate.FormatInvariant(friendlyName ?? "?", paymentMethod.PaymentMethodSystemName ?? paymentMethod.Id.ToString()).Truncate(195, "…");
 
-            string CreateRuleSetName(string template, string name)
-            {
-                var str = template.FormatInvariant(name);
-                var nameCount = existingRuleSetNames.Count(x => x.StartsWith(str));
-                if (nameCount > 0)
-                {
-                    str = string.Concat(str, " ", nameCount + 1);
+                    // Avoid adding rule sets multiple times.
+                    if (!existingRuleSets.TryGetValue(ruleSetName, out var ruleSet))
+                    {
+                        ruleSet = new RuleSetEntity
+                        {
+                            Name = ruleSetName,
+                            IsActive = true,
+                            Scope = RuleScope.Cart,
+                            LogicalOperator = LogicalRuleOperator.And,
+                            CreatedOnUtc = utcNow,
+                            UpdatedOnUtc = utcNow
+                        };
+
+                        var model = GetFilterData(syncMappings, paymentMethod.Id, "FilterOutPaymentMethodModel");
+                        if (model != null)
+                        {
+                            AddRulesForCommonFilters(ctx, ruleSet, model, "SmartStore.PaymentFilter");
+
+                            // Order number.
+                            if (model.HasLessThanOrders.HasValue)
+                            {
+                                ruleSet.Rules.Add(new RuleEntity
+                                {
+                                    RuleType = "CartOrderCount",
+                                    Operator = RuleOperator.GreaterThanOrEqualTo,
+                                    Value = model.HasLessThanOrders.Value.ToString()
+                                });
+                            }
+
+                            // Spent amount.
+                            if (model.HasLessThanTotalAmount.HasValue)
+                            {
+                                ruleSet.Rules.Add(new RuleEntity
+                                {
+                                    RuleType = "CartSpentAmount",
+                                    Operator = RuleOperator.GreaterThanOrEqualTo,
+                                    Value = model.HasLessThanTotalAmount.Value.ToString(CultureInfo.InvariantCulture)
+                                });
+                            }
+
+                            // Shipping method.
+                            if (model.ExcludedShippingMethods?.Any() ?? false)
+                            {
+                                ruleSet.Rules.Add(new RuleEntity
+                                {
+                                    RuleType = "CartShippingMethod",
+                                    Operator = RuleOperator.NotIn,
+                                    Value = string.Join(",", model.ExcludedShippingMethods)
+                                });
+                            }
+
+                            // Minimum cart amount.
+                            if (model.MinimumOrderAmount.HasValue)
+                            {
+                                ruleSet.Rules.Add(new RuleEntity
+                                {
+                                    RuleType = model.AmountContext.IsCaseInsensitiveEqual("TotalAmount") ? "CartTotal" : "CartSubtotal",
+                                    Operator = RuleOperator.GreaterThanOrEqualTo,
+                                    Value = model.MinimumOrderAmount.Value.ToString(CultureInfo.InvariantCulture)
+                                });
+                            }
+
+                            // Maximum cart amount.
+                            if (model.MaximumOrderAmount.HasValue)
+                            {
+                                ruleSet.Rules.Add(new RuleEntity
+                                {
+                                    RuleType = model.AmountContext.IsCaseInsensitiveEqual("TotalAmount") ? "CartTotal" : "CartSubtotal",
+                                    Operator = RuleOperator.LessThanOrEqualTo,
+                                    Value = model.MaximumOrderAmount.Value.ToString(CultureInfo.InvariantCulture)
+                                });
+                            }
+                        }
+                    }
+
+                    if (ruleSet.Rules.Any())
+                    {
+                        // Map rule set to payment method.
+                        paymentMethod.RuleSets.Add(ruleSet);
+                    }
                 }
-                return str.Truncate(195, "…");
             }
 
             static T GetExtraData<T>(OldDiscountRequirement req, string name)
@@ -1588,6 +1608,100 @@ namespace SmartStore.Data.Utilities
 
                 return default(T);
             }
+
+            static PluginFilterConfigModel GetFilterData(Dictionary<int, SyncMapping> syncMappings, int entityId, string rootNodeName)
+            {
+                try
+                {
+                    if (syncMappings.TryGetValue(entityId, out var syncMapping) && syncMapping.CustomString.HasValue())
+                    {
+                        using (var reader = new StringReader(syncMapping.CustomString))
+                        {
+                            var serializer = new XmlSerializer(typeof(PluginFilterConfigModel), new XmlRootAttribute(rootNodeName));
+                            return serializer.Deserialize(reader) as PluginFilterConfigModel;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ex.Dump();
+                }
+
+                return null;
+            }
+
+            static void AddRulesForCommonFilters(SmartObjectContext ctx, RuleSetEntity ruleSet, PluginFilterConfigModel model, string pluginSystemName)
+            {
+                // Store id (if plugin is limited to stores).
+                var settingName = $"PluginSetting.{pluginSystemName}.LimitedToStores";
+                var limitedToStoresValue = ctx.Set<Setting>()
+                    .Where(x => x.Name == settingName)
+                    .Select(x => x.Value)
+                    .FirstOrDefault();
+
+                if (limitedToStoresValue.HasValue())
+                {
+                    var storeIds = limitedToStoresValue.ToIntArray();
+                    if (storeIds.Any())
+                    {
+                        ruleSet.Rules.Add(new RuleEntity
+                        {
+                            RuleType = "Store",
+                            Operator = RuleOperator.In,
+                            Value = string.Join(",", storeIds)
+                        });
+                    }
+                }
+
+                // Customer role.
+                if (model?.ExcludedCustomerRoles?.Any() ?? false)
+                {
+                    var excludedRoleIds = model.ExcludedCustomerRoles.Where(x => x != 0).ToArray();
+                    if (excludedRoleIds.Any())
+                    {
+                        if (model.FilterIfRoleIsAssigned)
+                        {
+                            ruleSet.Rules.Add(new RuleEntity
+                            {
+                                RuleType = "CustomerRole",
+                                Operator = RuleOperator.NotContains,
+                                Value = string.Join(",", excludedRoleIds)
+                            });
+                        }
+                        else
+                        {
+                            // There's no operator for this filter. We have to turn him around logically.
+                            var allRoleIds = ctx.Set<CustomerRole>().Select(x => x.Id).ToList();
+                            var includedRoleIds = allRoleIds.Except(excludedRoleIds).ToArray();
+
+                            if (includedRoleIds.Any())
+                            {
+                                ruleSet.Rules.Add(new RuleEntity
+                                {
+                                    RuleType = "CustomerRole",
+                                    Operator = RuleOperator.In,
+                                    Value = string.Join(",", includedRoleIds)
+                                });
+                            }
+                        }
+                    }
+                }
+
+                // Address country.
+                if (model.ExcludedCountries?.Any() ?? false)
+                {
+                    var excludedCountryIds = model.ExcludedCountries.Where(x => x != 0).ToArray();
+                    if (excludedCountryIds.Any())
+                    {
+                        ruleSet.Rules.Add(new RuleEntity
+                        {
+                            RuleType = model.CountryContext.IsCaseInsensitiveEqual("BillingAddress") ? "CartBillingCountry" : "CartShippingCountry",
+                            Operator = RuleOperator.NotIn,
+                            Value = string.Join(",", excludedCountryIds)
+                        });
+                    }
+                }
+            }
         }
 
         public class OldDiscountRequirement
@@ -1607,12 +1721,21 @@ namespace SmartStore.Data.Utilities
         }
 
         [Serializable]
-        public class FilterOutShippingMethodModel
+        public class PluginFilterConfigModel
         {
+            // Values for payment and shipping filter.
             public int[] ExcludedCustomerRoles { get; set; }
             public bool FilterIfRoleIsAssigned { get; set; }
             public int[] ExcludedCountries { get; set; }
             public string CountryContext { get; set; }
+
+            // Values for payment filter.
+            public int[] ExcludedShippingMethods { get; set; }
+            public decimal? MinimumOrderAmount { get; set; }
+            public decimal? MaximumOrderAmount { get; set; }
+            public string AmountContext { get; set; }
+            public int? HasLessThanOrders { get; set; }
+            public decimal? HasLessThanTotalAmount { get; set; }
         }
 
         #endregion

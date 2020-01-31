@@ -355,6 +355,18 @@
                 "Rabatten zugeordnet",
                 "A list of discounts to which the rule is assigned. The assignment can be made on the discount details page.",
                 "Eine Liste von Rabatten, denen die Regel zugeordnet ist. Die Zuordnung kann auf der Rabattdetailseite vorgenommen werden.");
+
+            builder.AddOrUpdate("Admin.Rules.RuleSet.Fields.AssignedToShippingMethods",
+                "Assigned to shipping methods",
+                "Versandarten zugeordnet",
+                "A list of shipping methods to which the rule is assigned. The assignment can be made on the shipping method details page.",
+                "Eine Liste von Versandarten, denen die Regel zugeordnet ist. Die Zuordnung kann auf der Detailseite der Versandart vorgenommen werden.");
+
+            builder.AddOrUpdate("Admin.Rules.RuleSet.Fields.AssignedToPaymentMethods",
+                "Assigned to payment methods",
+                "Zahlarten zugeordnet",
+                "A list of payment methods to which the rule is assigned. The assignment can be made on the payment method details page.",
+                "Eine Liste von Zahlarten, denen die Regel zugeordnet ist. Die Zuordnung kann auf der Detailseite der Zahlart vorgenommen werden.");
         }
     }
 }

@@ -57,14 +57,36 @@
             }
         </div>
     </div>
-    @if (Model.AssignedToDiscounts.Any())
+    @if (Model.AssignedToDiscounts?.Any() ?? false)
     {
         <div class="adminRow">
             <div class="adminTitle">
                 @Html.SmartLabelFor(model => model.AssignedToDiscounts)
             </div>
             <div class="adminData form-control-plaintext wide">
-                @Html.Raw(string.Join(" · ", Model.AssignedToDiscounts.Select(x => $"<a href='{Url.Action("Edit", "Discount", new { id = x.Id })}'>{x.Name}</a>")))
+                @Html.Raw(string.Join(" · ", Model.AssignedToDiscounts.Select(x => $"<a href='{Url.Action("Edit", "Discount", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
+            </div>
+        </div>
+    }
+    @if (Model.AssignedToShippingMethods?.Any() ?? false)
+    {
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.AssignedToShippingMethods)
+            </div>
+            <div class="adminData form-control-plaintext wide">
+                @Html.Raw(string.Join(" · ", Model.AssignedToShippingMethods.Select(x => $"<a href='{Url.Action("EditMethod", "Shipping", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
+            </div>
+        </div>
+    }
+    @if (Model.AssignedToPaymentMethods?.Any() ?? false)
+    {
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.AssignedToPaymentMethods)
+            </div>
+            <div class="adminData form-control-plaintext wide">
+                @Html.Raw(string.Join(" · ", Model.AssignedToPaymentMethods.Select(x => $"<a href='{Url.Action("Edit", "Payment", new { systemName = x.SystemName })}' title='{x.SystemName.HtmlEncode()}'>{x.Name.HtmlEncode()}</a>")))
             </div>
         </div>
     }
@@ -72,7 +94,7 @@
 
 @if (Model.Id != 0)
 {
-    <h4 class="my-4">@T("Admin.Rules.Execute", "<a id=\"execute-rules\" class=\"btn btn-primary ml-2\" href=\"" + Url.Action("Execute") + "\">", "</a>")</h4>
+    <h4 class="my-4">@T("Admin.Rules.Execute", "<a id=\"execute-rules\" class=\"btn btn-sm btn-primary align-top\" href=\"" + Url.Action("Execute") + "\">", "</a>")</h4>
     <div id="excute-result" class="alert alert-warning hide"></div>
 
     <div id="ruleset-root" class="ruleset-root" 

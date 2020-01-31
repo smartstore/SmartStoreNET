@@ -39,12 +39,19 @@ namespace SmartStore.Admin.Models.Rules
         [SmartResourceDisplayName("Admin.Rules.RuleSet.Fields.AssignedToDiscounts")]
         public IList<AssignedToEntityModel> AssignedToDiscounts { get; set; }
 
+        [SmartResourceDisplayName("Admin.Rules.RuleSet.Fields.AssignedToShippingMethods")]
+        public IList<AssignedToEntityModel> AssignedToShippingMethods { get; set; }
+
+        [SmartResourceDisplayName("Admin.Rules.RuleSet.Fields.AssignedToPaymentMethods")]
+        public IList<AssignedToEntityModel> AssignedToPaymentMethods { get; set; }
+
         public IRuleExpressionGroup ExpressionGroup { get; set; }
         public IEnumerable<RuleDescriptor> AvailableDescriptors { get; set; }
 
         public class AssignedToEntityModel : EntityModelBase
         {
             public string Name { get; set; }
+            public string SystemName { get; set; }
         }
     }
 

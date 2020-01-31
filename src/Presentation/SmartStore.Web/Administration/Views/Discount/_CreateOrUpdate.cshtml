@@ -111,7 +111,7 @@
 				{
 					<div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
 				}
-                @Html.Raw(string.Join(" · ", Model.AppliedToCategories.Select(x => $"<a href='{Url.Action("Edit", "Category", new { id = x.Id })}'>{x.Name}</a>")))
+                @Html.Raw(string.Join(" · ", Model.AppliedToCategories.Select(x => $"<a href='{Url.Action("Edit", "Category", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
             </td>
         </tr>
 		<tr id="pnlAppliedToManufacturers">
@@ -123,10 +123,9 @@
 				{
 					<div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
 				}
-                @Html.Raw(string.Join(" · ", Model.AppliedToManufacturers.Select(x => $"<a href='{Url.Action("Edit", "Manufacturer", new { id = x.Id })}'>{x.Name}</a>")))
+                @Html.Raw(string.Join(" · ", Model.AppliedToManufacturers.Select(x => $"<a href='{Url.Action("Edit", "Manufacturer", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
 			</td>
 		</tr>
-
         <tr id="pnlAppliedToProducts">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AppliedToProducts)
@@ -136,7 +135,7 @@
 				{
 					<div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
 				}
-                @Html.Raw(string.Join(" · ", Model.AppliedToProducts.Select(x => $"<a href='{Url.Action("Edit", "Product", new { id = x.Id })}'>{x.Name}</a>")))
+                @Html.Raw(string.Join(" · ", Model.AppliedToProducts.Select(x => $"<a href='{Url.Action("Edit", "Product", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
             </td>
         </tr>
         <tr>

@@ -14,8 +14,10 @@ using SmartStore.Rules.Filters;
 using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Payments;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
@@ -30,6 +32,8 @@ namespace SmartStore.Admin.Controllers
         private readonly IRuleTemplateSelector _ruleTemplateSelector;
         private readonly Func<RuleScope, IRuleProvider> _ruleProvider;
         private readonly IEnumerable<IRuleOptionsProvider> _ruleOptionsProviders;
+        private readonly Lazy<IPaymentService> _paymentService;
+        private readonly Lazy<PluginMediator> _pluginMediator;
         private readonly AdminAreaSettings _adminAreaSettings;
 
         public RuleController(
@@ -39,6 +43,8 @@ namespace SmartStore.Admin.Controllers
             IRuleTemplateSelector ruleTemplateSelector,
             Func<RuleScope, IRuleProvider> ruleProvider,
             IEnumerable<IRuleOptionsProvider> ruleOptionsProviders,
+            Lazy<IPaymentService> paymentService,
+            Lazy<PluginMediator> pluginMediator,
             AdminAreaSettings adminAreaSettings)
         {
             _ruleFactory = ruleFactory;
@@ -47,6 +53,8 @@ namespace SmartStore.Admin.Controllers
             _ruleTemplateSelector = ruleTemplateSelector;
             _ruleProvider = ruleProvider;
             _ruleOptionsProviders = ruleOptionsProviders;
+            _paymentService = paymentService;
+            _pluginMediator = pluginMediator;
             _adminAreaSettings = adminAreaSettings;
         }
 
@@ -162,8 +170,36 @@ namespace SmartStore.Admin.Controllers
             model.AvailableDescriptors = _targetGroupService.RuleDescriptors;
 
             model.AssignedToDiscounts = entity.Discounts
-                .Select(x => new RuleSetModel.AssignedToEntityModel { Id = x.Id, Name = x.Name })
+                .Select(x => new RuleSetModel.AssignedToEntityModel { Id = x.Id, Name = x.Name.NullEmpty() ?? x.Id.ToString() })
                 .ToList();
+
+            model.AssignedToShippingMethods = entity.ShippingMethods
+                .Select(x => new RuleSetModel.AssignedToEntityModel { Id = x.Id, Name = x.GetLocalized(y => y.Name) })
+                .ToList();
+
+            var paymentMethods = entity.PaymentMethods;
+            if (paymentMethods.Any())
+            {
+                var paymentProviders = _paymentService.Value.LoadAllPaymentMethods().ToDictionarySafe(x => x.Metadata.SystemName);
+
+                model.AssignedToPaymentMethods = paymentMethods
+                    .Select(x =>
+                    {
+                        string friendlyName = null;
+                        if (paymentProviders.TryGetValue(x.PaymentMethodSystemName, out var paymentProvider))
+                        {
+                            friendlyName = _pluginMediator.Value.GetLocalizedFriendlyName(paymentProvider.Metadata);
+                        }
+
+                        return new RuleSetModel.AssignedToEntityModel
+                        {
+                            Id = x.Id,
+                            Name = friendlyName.NullEmpty() ?? x.PaymentMethodSystemName,
+                            SystemName = x.PaymentMethodSystemName
+                        };
+                    })
+                    .ToList();
+            }
 
             PrepareExpressions(model.ExpressionGroup);
             PrepareTemplateViewBag(entity.Id);

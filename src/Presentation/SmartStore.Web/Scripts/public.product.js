@@ -104,7 +104,7 @@
             var self = this;
             var opts = this.options;
 
-            gallery = $('#pd-gallery').smartGallery({
+            this.gallery = $('#pd-gallery').smartGallery({
                 startIndex: startIndex || 0,
                 zoom: {
                     enabled: opts.enableZoom

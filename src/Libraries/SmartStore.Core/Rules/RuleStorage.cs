@@ -23,6 +23,8 @@ namespace SmartStore.Rules
             bool includeSubGroups = false,
             bool includeHidden = false);
 
+        bool ApplyRuleSetMappings<T>(T entity, int[] selectedRuleSetIds) where T : BaseEntity, IRuleSetsSupported;
+
         void InsertRuleSet(RuleSetEntity ruleSet);
         void UpdateRuleSet(RuleSetEntity ruleSet);
         void DeleteRuleSet(RuleSetEntity ruleSet);
@@ -170,6 +172,33 @@ namespace SmartStore.Rules
             return table
                 .Include(x => x.RuleSet)
                 .FirstOrDefault(x => x.Id == id);
+        }
+
+        public virtual bool ApplyRuleSetMappings<T>(T entity, int[] selectedRuleSetIds) where T : BaseEntity, IRuleSetsSupported
+        {
+            Guard.NotNull(entity, nameof(entity));
+
+            var updated = false;
+            var allRuleSets = GetAllRuleSets(true, false, includeHidden: true).ToDictionary(x => x.Id);
+
+            foreach (var ruleSetId in allRuleSets.Keys)
+            {
+                if (selectedRuleSetIds?.Contains(ruleSetId) ?? false)
+                {
+                    if (!entity.RuleSets.Any(x => x.Id == ruleSetId))
+                    {
+                        entity.RuleSets.Add(allRuleSets[ruleSetId]);
+                        updated = true;
+                    }
+                }
+                else if (entity.RuleSets.Any(x => x.Id == ruleSetId))
+                {
+                    entity.RuleSets.Remove(allRuleSets[ruleSetId]);
+                    updated = false;
+                }
+            }
+
+            return updated;
         }
 
         #endregion

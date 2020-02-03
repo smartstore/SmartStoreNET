@@ -9,6 +9,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Common;
 using SmartStore.Services.Discounts;
 using SmartStore.Tests;
@@ -24,7 +25,8 @@ namespace SmartStore.Services.Tests.Discounts
 		IGenericAttributeService _genericAttributeService;
         IDiscountService _discountService;
 		IStoreContext _storeContext;
-        
+        ICartRuleProvider _cartRuleProvider;
+
         [SetUp]
         public new void SetUp()
         {
@@ -66,9 +68,10 @@ namespace SmartStore.Services.Tests.Discounts
             _discountRequirementRepo = MockRepository.GenerateMock<IRepository<DiscountRequirement>>();
             _discountUsageHistoryRepo = MockRepository.GenerateMock<IRepository<DiscountUsageHistory>>();
 			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
+            _cartRuleProvider = MockRepository.GenerateMock<ICartRuleProvider>();
 
 			_discountService = new DiscountService(NullRequestCache.Instance, _discountRepo, _discountRequirementRepo,
-				_discountUsageHistoryRepo, _storeContext, _genericAttributeService, ProviderManager);
+				_discountUsageHistoryRepo, _storeContext, _genericAttributeService, ProviderManager, _cartRuleProvider);
         }
 
         [Test]

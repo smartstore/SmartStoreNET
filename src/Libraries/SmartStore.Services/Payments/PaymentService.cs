@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
@@ -10,6 +11,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Payments
@@ -19,15 +21,19 @@ namespace SmartStore.Services.Payments
     /// </summary>
     public partial class PaymentService : IPaymentService
     {
-		private readonly static object _lock = new object();
+        private const string PAYMENT_METHODS_ALL_KEY = "SmartStore.paymentmethod.all-{0}-";
+        private const string PAYMENT_METHODS_PATTERN_KEY = "SmartStore.paymentmethod.*";
+
+        private readonly static object _lock = new object();
 		private static IList<Type> _paymentMethodFilterTypes = null;
 
 		private readonly IRepository<PaymentMethod> _paymentMethodRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly PaymentSettings _paymentSettings;
-        private readonly ShoppingCartSettings _shoppingCartSettings;
-		private readonly IProviderManager _providerManager;
+        private readonly ICartRuleProvider _cartRuleProvider;
+        private readonly IRequestCache _requestCache;
+        private readonly IProviderManager _providerManager;
 		private readonly ICommonServices _services;
 		private readonly ITypeFinder _typeFinder;
 
@@ -36,8 +42,9 @@ namespace SmartStore.Services.Payments
 			IRepository<StoreMapping> storeMappingRepository,
 			IStoreMappingService storeMappingService,
 			PaymentSettings paymentSettings, 
-            ShoppingCartSettings shoppingCartSettings,
-			IProviderManager providerManager,
+            ICartRuleProvider cartRuleProvider,
+            IRequestCache requestCache,
+            IProviderManager providerManager,
 			ICommonServices services,
 			ITypeFinder typeFinder)
         {
@@ -45,7 +52,8 @@ namespace SmartStore.Services.Payments
 			_storeMappingRepository = storeMappingRepository;
 			_storeMappingService = storeMappingService;
 			_paymentSettings = paymentSettings;
-            _shoppingCartSettings = shoppingCartSettings;
+            _cartRuleProvider = cartRuleProvider;
+            _requestCache = requestCache;
 			_providerManager = providerManager;
 			_services = services;
 			_typeFinder = typeFinder;
@@ -199,27 +207,32 @@ namespace SmartStore.Services.Payments
 
 		public virtual IList<PaymentMethod> GetAllPaymentMethods(int storeId = 0)
 		{
-			var query = _paymentMethodRepository.TableUntracked;
+            var result = _requestCache.Get(PAYMENT_METHODS_ALL_KEY.FormatInvariant(storeId), () =>
+            {
+                var query = _paymentMethodRepository.TableUntracked;
 
-			if (!QuerySettings.IgnoreMultiStore && storeId > 0)
-			{
-				query = 
-					from x in query
-					join sm in _storeMappingRepository.TableUntracked
-					on new { c1 = x.Id, c2 = "PaymentMethod" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
-					from sm in m_sm.DefaultIfEmpty()
-					where !x.LimitedToStores || storeId == sm.StoreId
-					select x;
+                if (!QuerySettings.IgnoreMultiStore && storeId > 0)
+                {
+                    query =
+                        from x in query
+                        join sm in _storeMappingRepository.TableUntracked
+                        on new { c1 = x.Id, c2 = "PaymentMethod" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
+                        from sm in m_sm.DefaultIfEmpty()
+                        where !x.LimitedToStores || storeId == sm.StoreId
+                        select x;
 
-				query = 
-					from x in query
-					group x by x.Id into mGroup
-					orderby mGroup.Key
-					select mGroup.FirstOrDefault();
-			}
+                    query =
+                        from x in query
+                        group x by x.Id into mGroup
+                        orderby mGroup.Key
+                        select mGroup.FirstOrDefault();
+                }
 
-			var methods = query.ToList();
-			return methods;
+                var methods = query.ToList();
+                return methods;
+            });
+
+            return result;
 		}
 
 		/// <summary>
@@ -243,11 +256,12 @@ namespace SmartStore.Services.Payments
 		/// <param name="paymentMethod">Payment method</param>
 		public virtual void InsertPaymentMethod(PaymentMethod paymentMethod)
 		{
-			if (paymentMethod == null)
-				throw new ArgumentNullException("paymentMethod");
+            Guard.NotNull(paymentMethod, nameof(paymentMethod));
 
 			_paymentMethodRepository.Insert(paymentMethod);
-		}
+
+            _requestCache.RemoveByPattern(PAYMENT_METHODS_PATTERN_KEY);
+        }
 
 		/// <summary>
 		/// Updates payment method extra data
@@ -255,11 +269,12 @@ namespace SmartStore.Services.Payments
 		/// <param name="paymentMethod">Payment method</param>
 		public virtual void UpdatePaymentMethod(PaymentMethod paymentMethod)
 		{
-			if (paymentMethod == null)
-				throw new ArgumentNullException("paymentMethod");
+            Guard.NotNull(paymentMethod, nameof(paymentMethod));
 
 			_paymentMethodRepository.Update(paymentMethod);
-		}
+
+            _requestCache.RemoveByPattern(PAYMENT_METHODS_PATTERN_KEY);
+        }
 
 		/// <summary>
 		/// Delete payment method extra data
@@ -267,11 +282,13 @@ namespace SmartStore.Services.Payments
 		/// <param name="paymentMethod">Payment method</param>
 		public virtual void DeletePaymentMethod(PaymentMethod paymentMethod)
 		{
-			if (paymentMethod == null)
-				throw new ArgumentNullException("paymentMethod");
+            if (paymentMethod != null)
+            {
+                _paymentMethodRepository.Delete(paymentMethod);
 
-			_paymentMethodRepository.Delete(paymentMethod);
-		}
+                _requestCache.RemoveByPattern(PAYMENT_METHODS_PATTERN_KEY);
+            }
+        }
 
 
 		/// <summary>

@@ -17,6 +17,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
@@ -69,6 +70,7 @@ namespace SmartStore.Services.Tests.Orders
 		Store _store;
         Currency _currency;
         ITypeFinder _typeFinder;
+        ICartRuleProvider _cartRuleProvider;
 
         [SetUp]
         public new void SetUp()
@@ -105,6 +107,7 @@ namespace SmartStore.Services.Tests.Orders
             
 			_settingService = MockRepository.GenerateMock<ISettingService>();
 			_typeFinder = MockRepository.GenerateMock<ITypeFinder>();
+            _cartRuleProvider = MockRepository.GenerateMock<ICartRuleProvider>();
 
             //shipping
             _shippingSettings = new ShippingSettings();
@@ -121,12 +124,11 @@ namespace SmartStore.Services.Tests.Orders
                 _checkoutAttributeParser,
 				_genericAttributeService,
                 _shippingSettings,
-                _eventPublisher,
-				_shoppingCartSettings,
 				_settingService,
 				this.ProviderManager,
 				_typeFinder,
-				_services);
+				_services,
+                _cartRuleProvider);
 
 			_providerManager = MockRepository.GenerateMock<IProviderManager>();
             _checkoutAttributeParser = MockRepository.GenerateMock<ICheckoutAttributeParser>();

@@ -19,8 +19,11 @@ namespace SmartStore.Services.Cart.Rules.Impl
 
         public bool Match(CartRuleContext context, RuleExpression expression)
         {
+            // TODO: stack overflow! This rule calls itself through IDiscountService, which must be prevented.
+            return true;
+
             var cart = _shoppingCartService.GetCartItems(context.Customer, ShoppingCartType.ShoppingCart, context.Store.Id);
-            
+
             _orderTotalCalculationService.GetShoppingCartSubTotal(cart, out _, out _, out var cartSubtotal, out _);
 
             // Currency values must be rounded, otherwise unexpected results may occur.

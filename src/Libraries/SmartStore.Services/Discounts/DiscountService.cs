@@ -9,6 +9,8 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Plugins;
+using SmartStore.Rules;
+using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 
@@ -26,7 +28,8 @@ namespace SmartStore.Services.Discounts
 		private readonly IStoreContext _storeContext;
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly IProviderManager _providerManager;
-		private readonly IDictionary<DiscountKey, bool> _discountValidityCache;
+        private readonly ICartRuleProvider _cartRuleProvider;
+        private readonly IDictionary<DiscountKey, bool> _discountValidityCache;
 
         public DiscountService(
             IRequestCache requestCache,
@@ -35,7 +38,8 @@ namespace SmartStore.Services.Discounts
             IRepository<DiscountUsageHistory> discountUsageHistoryRepository,
 			IStoreContext storeContext,
 			IGenericAttributeService genericAttributeService,
-			IProviderManager providerManager)
+			IProviderManager providerManager,
+            ICartRuleProvider cartRuleProvider)
         {
             _requestCache = requestCache;
             _discountRepository = discountRepository;
@@ -44,6 +48,7 @@ namespace SmartStore.Services.Discounts
 			_storeContext = storeContext;
 			_genericAttributeService = genericAttributeService;
 			_providerManager = providerManager;
+            _cartRuleProvider = cartRuleProvider;
 			_discountValidityCache = new Dictionary<DiscountKey, bool>();
 		}
 
@@ -230,7 +235,7 @@ namespace SmartStore.Services.Discounts
 
             // Check date range
             var now = DateTime.UtcNow;
-			var store = _storeContext.CurrentStore;
+			//var store = _storeContext.CurrentStore;
 
             if (discount.StartDateUtc.HasValue)
             {
@@ -252,29 +257,35 @@ namespace SmartStore.Services.Discounts
 			// better not to apply discounts if there are gift cards in the cart cause the customer could "earn" money through that.
 			if (discount.DiscountType == DiscountType.AssignedToOrderTotal || discount.DiscountType == DiscountType.AssignedToOrderSubTotal)
 			{
-				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
+				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 				if (cart.Any(x => x.Item?.Product != null && x.Item.Product.IsGiftCard))
 					return Cached(false);
 			}
 
-			// discount requirements
-			var requirements = discount.DiscountRequirements;
-            foreach (var req in requirements)
+            // Rule sets.
+            if (!_cartRuleProvider.RuleMatches(discount, LogicalRuleOperator.Or))
             {
-				var requirementRule = LoadDiscountRequirementRuleBySystemName(req.DiscountRequirementRuleSystemName, store.Id);
-                if (requirementRule == null)
-                    continue;
-				
-				var request = new CheckDiscountRequirementRequest
-                {
-                    DiscountRequirement = req,
-                    Customer = customer,
-					Store = store
-                };
-
-				if (!requirementRule.Value.CheckRequirement(request))
-                    return Cached(false);
+                return Cached(false);
             }
+
+            // discount requirements
+            //var requirements = discount.DiscountRequirements;
+            //foreach (var req in requirements)
+            //{
+            //    var requirementRule = LoadDiscountRequirementRuleBySystemName(req.DiscountRequirementRuleSystemName, store.Id);
+            //    if (requirementRule == null)
+            //        continue;
+
+            //    var request = new CheckDiscountRequirementRequest
+            //    {
+            //        DiscountRequirement = req,
+            //        Customer = customer,
+            //        Store = store
+            //    };
+
+            //    if (!requirementRule.Value.CheckRequirement(request))
+            //        return Cached(false);
+            //}
 
             return Cached(true);
 

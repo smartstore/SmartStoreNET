@@ -19,6 +19,9 @@ namespace SmartStore.Services.Cart.Rules.Impl
 
         public bool Match(CartRuleContext context, RuleExpression expression)
         {
+            // TODO: stack overflow! This rule calls itself through IDiscountService, which must be prevented.
+            return true;
+
             var cart = _shoppingCartService.GetCartItems(context.Customer, ShoppingCartType.ShoppingCart, context.Store.Id);
 
             var cartTotal = ((decimal?)_orderTotalCalculationService.GetShoppingCartTotal(cart)) ?? decimal.Zero;

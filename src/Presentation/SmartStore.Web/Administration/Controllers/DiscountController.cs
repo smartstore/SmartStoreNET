@@ -250,22 +250,7 @@ namespace SmartStore.Admin.Controllers
                 discount = model.ToEntity(discount);
 
                 // Add\remove assigned rule sets.
-                var allRuleSets = _ruleStorage.GetAllRuleSets(true, false, includeHidden: true).ToDictionary(x => x.Id);
-
-                foreach (var ruleSetId in allRuleSets.Keys)
-                {
-                    if (model.SelectedRuleSetIds?.Contains(ruleSetId) ?? false)
-                    {
-                        if (!discount.RuleSets.Any(x => x.Id == ruleSetId))
-                        {
-                            discount.RuleSets.Add(allRuleSets[ruleSetId]);
-                        }
-                    }
-                    else if (discount.RuleSets.Any(x => x.Id == ruleSetId))
-                    {
-                        discount.RuleSets.Remove(allRuleSets[ruleSetId]);
-                    }
-                }
+                _ruleStorage.ApplyRuleSetMappings(discount, model.SelectedRuleSetIds);
 
                 _discountService.UpdateDiscount(discount);
 

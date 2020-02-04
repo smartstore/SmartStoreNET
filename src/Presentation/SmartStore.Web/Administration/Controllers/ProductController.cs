@@ -204,7 +204,7 @@ namespace SmartStore.Admin.Controllers
 		#region Update[...]
 
 		[NonAction]
-		protected void UpdateProductGeneralInfo(Product product, ProductModel model)
+		protected void UpdateProductGeneralInfo(Product product, ProductModel model, out bool nameChanged)
 		{
 			var p = product;
 			var m = model;
@@ -212,6 +212,8 @@ namespace SmartStore.Admin.Controllers
 			p.ProductTypeId = m.ProductTypeId;
             p.Visibility = m.Visibility;
 			p.ProductTemplateId = m.ProductTemplateId;
+
+			nameChanged = !string.Equals(p.Name, m.Name, StringComparison.CurrentCultureIgnoreCase);
 
 			p.Name = m.Name;
 			p.ShortDescription = m.ShortDescription;
@@ -539,13 +541,12 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[NonAction]
-		private void UpdateDataOfExistingProduct(Product product, ProductModel model, bool editMode)
+		private void UpdateDataOfExistingProduct(Product product, ProductModel model, bool editMode, bool nameChanged)
 		{
 			var p = product;
 			var m = model;
 
-			var nameChanged = editMode ? _dbContext.IsPropertyModified(p, x => x.Name) : false;
-			var seoTabLoaded = m.LoadedTabs.Contains("SEO", StringComparer.OrdinalIgnoreCase);
+			//var seoTabLoaded = m.LoadedTabs.Contains("SEO", StringComparer.OrdinalIgnoreCase);
 
             // Handle Download transiency
             var download = _downloadService.GetDownloadsFor(p).FirstOrDefault();
@@ -1152,7 +1153,7 @@ namespace SmartStore.Admin.Controllers
             {
 				var product = new Product();
 
-                MapModelToProduct(model, product, form);
+                MapModelToProduct(model, product, form, out _);
 
 				product.StockQuantity = 10000;
 				product.OrderMinimumQuantity = 1;
@@ -1170,7 +1171,7 @@ namespace SmartStore.Admin.Controllers
 
                 _productService.InsertProduct(product);
 
-				UpdateDataOfExistingProduct(product, model, false);
+				UpdateDataOfExistingProduct(product, model, false, false);
 
                 _productService.UpdateHasDiscountsApplied(product);
 
@@ -1264,8 +1265,8 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-				MapModelToProduct(model, product, form);
-				UpdateDataOfExistingProduct(product, model, true);
+				MapModelToProduct(model, product, form, out var nameChanged);
+				UpdateDataOfExistingProduct(product, model, true, nameChanged);
 
                 _productService.UpdateHasDiscountsApplied(product);
 
@@ -1283,19 +1284,21 @@ namespace SmartStore.Admin.Controllers
         }
 
 		[NonAction]
-		protected void MapModelToProduct(ProductModel model, Product product, FormCollection form)
+		protected void MapModelToProduct(ProductModel model, Product product, FormCollection form, out bool nameChanged)
 		{
 			if (model.LoadedTabs == null || model.LoadedTabs.Length == 0)
 			{
 				model.LoadedTabs = new string[] { "Info" };
 			}
 
+			nameChanged = false;
+
 			foreach (var tab in model.LoadedTabs)
 			{
                 switch (tab.ToLowerInvariant())
 				{
 					case "info":
-						UpdateProductGeneralInfo(product, model);
+						UpdateProductGeneralInfo(product, model, out nameChanged);
 						break;
 					case "inventory":
 						UpdateProductInventory(product, model);

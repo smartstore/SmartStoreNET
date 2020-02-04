@@ -10,8 +10,8 @@ namespace SmartStore.Web.Framework.Filters
 
 		public override void OnActionExecuting(ActionExecutingContext filterContext)
 		{
-			var response = HttpContext.Current.Response;
-			var acceptEncoding = HttpContext.Current.Request.Headers["Accept-Encoding"].EmptyNull().ToLower();
+			var response = filterContext.HttpContext.Response;
+			var acceptEncoding = filterContext.HttpContext.Request.Headers["Accept-Encoding"].EmptyNull().ToLower();
 
 			if (acceptEncoding.Contains("gzip") && !(PreferDeflate && acceptEncoding.Contains("deflate")))
 			{

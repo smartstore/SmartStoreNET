@@ -60,10 +60,6 @@ namespace SmartStore.Web.Framework.Filters
 			if (!IsProcessableRequest(filterContext))
 				return;
 
-			var viewBag = filterContext.Controller.ViewBag;
-			viewBag.AskCookieConsent = true;
-			viewBag.HasCookieConsent = false;
-
 			var request = filterContext.HttpContext.Request;
 
 			// Check if the user has a consent cookie
@@ -76,15 +72,13 @@ namespace SmartStore.Web.Framework.Filters
 				// If we receive a DNT header, we accept its value and do not ask the user anymore
 				if (!String.IsNullOrEmpty(dnt))
 				{
-					viewBag.AskCookieConsent = false;
-					viewBag.HasCookieConsent = dnt == "0";
-				}
+                    _consentLevel = ConsentLevel.Asked;
+                }
 				else
 				{
 					if (_userAgent.IsBot)
 					{
 						// don't ask consent from search engines, also don't set cookies
-						viewBag.AskCookieConsent = false;
 						_consentLevel = ConsentLevel.Consented;
 					}
 					else
@@ -100,25 +94,22 @@ namespace SmartStore.Web.Framework.Filters
 			else
 			{
 				// we received a consent cookie
-				viewBag.AskCookieConsent = false;
+
 				if (consentCookie.Value == "asked")
 				{
 					// consent has been asked for
 					consentCookie.Expires = DateTime.UtcNow.AddYears(1);
 					filterContext.HttpContext.Response.Cookies.Set(consentCookie);
 					_consentLevel = ConsentLevel.Asked;
-					//viewBag.HasCookieConsent = true;
 				}
 				else if (consentCookie.Value == "true")
 				{
 					// Consent has been explicitly given
-					viewBag.HasCookieConsent = true;
 					_consentLevel = ConsentLevel.Consented;
 				}
 				else
 				{
 					// assume consent denied
-					viewBag.HasCookieConsent = false;
 					_consentLevel = ConsentLevel.Asked;
 				}
 			}
@@ -162,16 +153,6 @@ namespace SmartStore.Web.Framework.Filters
 			consentCookie.Value = consent ? "true" : "false";
 			consentCookie.Expires = DateTime.UtcNow.AddYears(1);
 			response.Cookies.Set(consentCookie);
-		}
-
-		public static bool AskCookieConsent(ViewContext context)
-		{
-			return context.ViewBag.AskCookieConsent ?? false;
-		}
-
-		public static bool HasCookieConsent(ViewContext context)
-		{
-			return context.ViewBag.HasCookieConsent ?? false;
 		}
 	}
 }

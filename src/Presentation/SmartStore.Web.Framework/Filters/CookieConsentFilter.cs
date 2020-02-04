@@ -10,10 +10,19 @@ namespace SmartStore.Web.Framework.Filters
 {
     public class CookieConsentFilter : IActionFilter, IResultFilter
 	{
+		enum ConsentLevel
+		{
+			Unasked = -1,
+			Asked = 0,
+			Consented = 1
+		}
+		
 		private readonly IUserAgent _userAgent;
 		private readonly ICommonServices _services;
 		private readonly Lazy<IWidgetProvider> _widgetProvider;
 		private readonly PrivacySettings _privacySettings;
+
+		private ConsentLevel _consentLevel;
 
 		public CookieConsentFilter(
 			IUserAgent userAgent,
@@ -25,14 +34,30 @@ namespace SmartStore.Web.Framework.Filters
 			_services = services;
 			_widgetProvider = widgetProvider;
 			_privacySettings = privacySettings;
+
+			_consentLevel = ConsentLevel.Unasked;
+		}
+
+		private bool IsProcessableRequest(ControllerContext controllerContext)
+		{
+			if (!_privacySettings.EnableCookieConsent)
+				return false;
+
+			if (controllerContext.IsChildAction)
+				return false;
+
+			if (controllerContext.HttpContext?.Request == null)
+				return false;
+
+			if (!String.Equals(controllerContext.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
+				return false;
+
+			return true;
 		}
 
 		public void OnActionExecuting(ActionExecutingContext filterContext)
 		{
-			if (!_privacySettings.EnableCookieConsent)
-				return;
-
-			if (filterContext?.ActionDescriptor == null || filterContext?.HttpContext?.Request == null)
+			if (!IsProcessableRequest(filterContext))
 				return;
 
 			var viewBag = filterContext.Controller.ViewBag;
@@ -60,6 +85,7 @@ namespace SmartStore.Web.Framework.Filters
 					{
 						// don't ask consent from search engines, also don't set cookies
 						viewBag.AskCookieConsent = false;
+						_consentLevel = ConsentLevel.Consented;
 					}
 					else
 					{
@@ -67,6 +93,7 @@ namespace SmartStore.Web.Framework.Filters
 						consentCookie = new HttpCookie(CookieConsent.CONSENT_COOKIE_NAME);
 						consentCookie.Value = "asked";
 						filterContext.HttpContext.Response.Cookies.Add(consentCookie);
+						_consentLevel = ConsentLevel.Asked;
 					}
 				}
 			}
@@ -76,19 +103,23 @@ namespace SmartStore.Web.Framework.Filters
 				viewBag.AskCookieConsent = false;
 				if (consentCookie.Value == "asked")
 				{
-					// consent is implicitly given
+					// consent has been asked for
 					consentCookie.Expires = DateTime.UtcNow.AddYears(1);
 					filterContext.HttpContext.Response.Cookies.Set(consentCookie);
-					viewBag.HasCookieConsent = true;
+					_consentLevel = ConsentLevel.Asked;
+					//viewBag.HasCookieConsent = true;
 				}
 				else if (consentCookie.Value == "true")
 				{
+					// Consent has been explicitly given
 					viewBag.HasCookieConsent = true;
+					_consentLevel = ConsentLevel.Consented;
 				}
 				else
 				{
 					// assume consent denied
 					viewBag.HasCookieConsent = false;
+					_consentLevel = ConsentLevel.Asked;
 				}
 			}
 		}
@@ -99,23 +130,21 @@ namespace SmartStore.Web.Framework.Filters
 
 		public void OnResultExecuting(ResultExecutingContext filterContext)
 		{
-			if (!_privacySettings.EnableCookieConsent)
+			if (!IsProcessableRequest(filterContext))
 				return;
 
-			if (filterContext.IsChildAction)
+			// Should only run on a full view rendering result or HTML ContentResult
+			if (!filterContext.Result.IsHtmlViewResult())
 				return;
 
-			var result = filterContext.Result;
-
-			// should only run on a full view rendering result or HTML ContentResult
-			if (!result.IsHtmlViewResult())
-				return;
-			
-			_widgetProvider.Value.RegisterAction(
-				new[] { "body_end_html_tag_before" },
-				"CookieConsentBadge",
-				"Common",
-				new { area = "" });
+			if (_consentLevel < ConsentLevel.Consented)
+			{
+				_widgetProvider.Value.RegisterAction(
+					new[] { "body_end_html_tag_before" },
+					"CookieConsentBadge",
+					"Common",
+					new { area = "" });
+			}
 		}
 
 		public void OnResultExecuted(ResultExecutedContext filterContext)

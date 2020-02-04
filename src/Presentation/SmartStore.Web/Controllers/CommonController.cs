@@ -784,9 +784,9 @@ namespace SmartStore.Web.Controllers
 			if (!_privacySettings.EnableCookieConsent)
 			{
 				return new EmptyResult();
-			}
-			
-			var model = new CookieConsentModel();
+			}    
+
+            var model = new CookieConsentModel();
 
 			if (!_privacySettings.CookieConsentBadgetext.HasValue())
 			{
@@ -797,10 +797,6 @@ namespace SmartStore.Web.Controllers
 			{
 				model.BadgeText = _privacySettings.GetLocalized(x => x.CookieConsentBadgetext).Value.FormatWith(Services.StoreContext.CurrentStore.Name, Url.Topic("PrivacyInfo"));
 			}
-			
-			var consentCookie = this.Request.Cookies[CookieConsent.CONSENT_COOKIE_NAME];
-			if (consentCookie != null && consentCookie.Value == "true")
-				return new EmptyResult();
 
 			return PartialView(model);
 		}

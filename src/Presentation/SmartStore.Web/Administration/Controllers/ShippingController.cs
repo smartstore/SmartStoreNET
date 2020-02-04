@@ -138,7 +138,12 @@ namespace SmartStore.Admin.Controllers
         public ActionResult Methods()
         {
             var shippingMethodsModel = _shippingService.GetAllShippingMethods()
-                .Select(x => x.ToModel())
+                .Select(x =>
+                {
+                    var smm = x.ToModel();
+                    smm.NumberOfRules = x.RuleSets.Count;
+                    return smm;
+                })
                 .ToList();
 
             var model = new GridModel<ShippingMethodModel>
@@ -157,8 +162,13 @@ namespace SmartStore.Admin.Controllers
 			var model = new GridModel<ShippingMethodModel>();
 
 			var shippingMethodsModel = _shippingService.GetAllShippingMethods()
-				.Select(x => x.ToModel())
-				.ForCommand(command)
+                .Select(x =>
+                {
+                    var smm = x.ToModel();
+                    smm.NumberOfRules = x.RuleSets.Count;
+                    return smm;
+                })
+                .ForCommand(command)
 				.ToList();
 
 			model.Data = shippingMethodsModel;
@@ -189,7 +199,14 @@ namespace SmartStore.Admin.Controllers
                 var sm = model.ToEntity();
                 _shippingService.InsertShippingMethod(sm);
 
-				SaveStoreMappings(sm, model.SelectedStoreIds);
+                if (model.SelectedRuleSetIds?.Any() ?? false)
+                {
+                    _ruleStorage.ApplyRuleSetMappings(sm, model.SelectedRuleSetIds);
+
+                    _shippingService.UpdateShippingMethod(sm);
+                }
+
+                SaveStoreMappings(sm, model.SelectedStoreIds);
 				UpdateLocales(sm, model);
 
                 NotifySuccess(T("Admin.Configuration.Shipping.Methods.Added"));

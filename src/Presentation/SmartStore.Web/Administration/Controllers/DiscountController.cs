@@ -171,7 +171,8 @@ namespace SmartStore.Admin.Controllers
                 .Select(x =>
                 {
                     var discountModel = x.ToModel();
-                    discountModel.DiscountRequirementsCount = x.DiscountRequirements.Count;
+
+                    discountModel.NumberOfRules = x.RuleSets.Count;
                     discountModel.DiscountTypeName = x.DiscountType.GetLocalizedEnum(Services.Localization, Services.WorkContext);
 
                     discountModel.FormattedDiscountAmount = !x.UsePercentage
@@ -207,6 +208,13 @@ namespace SmartStore.Admin.Controllers
             {
                 var discount = model.ToEntity();
                 _discountService.InsertDiscount(discount);
+
+                if (model.SelectedRuleSetIds?.Any() ?? false)
+                {
+                    _ruleStorage.ApplyRuleSetMappings(discount, model.SelectedRuleSetIds);
+
+                    _discountService.UpdateDiscount(discount);
+                }
 
                 _customerActivityService.InsertActivity("AddNewDiscount", T("ActivityLog.AddNewDiscount"), discount.Name);
 

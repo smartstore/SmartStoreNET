@@ -51,6 +51,9 @@ namespace SmartStore.Admin.Models.Shipping
         [AdditionalMetadata("scope", RuleScope.Cart)]
         [SmartResourceDisplayName("Admin.Configuration.Shipping.Methods.Fields.Requirements")]
         public int[] SelectedRuleSetIds { get; set; }
+
+        [SmartResourceDisplayName("Admin.Rules.NumberOfRules")]
+        public int NumberOfRules { get; set; }
     }
 
 	public class ShippingMethodLocalizedModel : ILocalizedModelLocal

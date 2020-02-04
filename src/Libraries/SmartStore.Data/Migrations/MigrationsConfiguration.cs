@@ -78,10 +78,6 @@
                 "Specifies whether to show product images of bundle items.",
                 "Legt fest, ob Produktbilder von Bundle-Bestandteilen angezeigt werden sollen.");
 
-            builder.AddOrUpdate("Admin.Promotions.Discounts.DiscountRequirementsCount",
-                "Number of requirements",
-                "Anzahl an Voraussetzungen");
-
             builder.AddOrUpdate("Admin.Common.CustomerRole.LimitedTo",
                 "Limited to customer roles",
                 "Auf Kundengruppen begrenzt",
@@ -220,6 +216,7 @@
 
             builder.AddOrUpdate("Admin.Rules.NotFound", "The rule with ID {0} was not found.", "Die Regel mit der ID {0} wurde nicht gefunden.");
             builder.AddOrUpdate("Admin.Rules.GroupNotFound", "The group with ID {0} was not found.", "Die Gruppe mit der ID {0} wurde nicht gefunden.");
+            builder.AddOrUpdate("Admin.Rules.NumberOfRules", "Number of rules", "Anzahl an Regeln");
 
             builder.AddOrUpdate("Admin.Rules.Execute.MatchCustomers",
                 "<b class=\"font-weight-medium\">{0}</b> customers match the rule conditions.",

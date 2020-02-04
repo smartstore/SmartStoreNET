@@ -174,12 +174,17 @@ namespace SmartStore.Admin.Controllers
             paymentMethod.RoundOrderTotalEnabled = model.RoundOrderTotalEnabled;
 			paymentMethod.LimitedToStores = model.LimitedToStores;
 
+            var updateEntity = paymentMethod.Id != 0;
+
             if (paymentMethod.Id == 0)
             {
                 // In this case the update permission is sufficient.
                 _paymentService.InsertPaymentMethod(paymentMethod);
+
+                updateEntity = model.SelectedRuleSetIds?.Any() ?? false;
             }
-            else
+            
+            if (updateEntity)
             {
                 // Add\remove assigned rule sets.
                 _ruleStorage.ApplyRuleSetMappings(paymentMethod, model.SelectedRuleSetIds);

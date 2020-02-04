@@ -27,7 +27,7 @@
 				.ClientTemplate(
                     "<div><a href=\"Edit/<#= Id #>\"><#= Name #></a></div>" + 
                     "<div class='muted'><#= DiscountTypeName #></div>");
-			columns.Bound(x => x.DiscountRequirementsCount)
+			columns.Bound(x => x.NumberOfRules)
                 .Centered();
 			columns.Bound(x => x.StartDateUtc);
 			columns.Bound(x => x.EndDateUtc);

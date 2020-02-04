@@ -11,6 +11,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
+using SmartStore.Rules;
 using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Stores;
 
@@ -111,7 +112,9 @@ namespace SmartStore.Services.Payments
                 ? LoadAllPaymentMethods(storeId).Where(x => types.Contains(x.Value.PaymentMethodType))
                 : LoadAllPaymentMethods(storeId);
 
-			var activeProviders = allProviders
+            var paymentMethods = GetAllPaymentMethods(storeId).ToDictionarySafe(x => x.PaymentMethodSystemName, StringComparer.InvariantCultureIgnoreCase);
+
+            var activeProviders = allProviders
 				.Where(p =>
 				{
                     try
@@ -120,6 +123,15 @@ namespace SmartStore.Services.Payments
                         if (!p.Value.IsActive || !_paymentSettings.ActivePaymentMethodSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase))
                         {
                             return false;
+                        }
+
+                        // Rule sets.
+                        if (paymentMethods.TryGetValue(p.Metadata.SystemName, out var pm))
+                        {
+                            if (!_cartRuleProvider.RuleMatches(pm, LogicalRuleOperator.Or))
+                            {
+                                return false;
+                            }
                         }
 
                         filterRequest.PaymentMethod = p;

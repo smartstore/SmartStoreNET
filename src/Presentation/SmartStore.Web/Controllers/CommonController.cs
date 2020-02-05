@@ -804,7 +804,7 @@ namespace SmartStore.Web.Controllers
 		[HttpPost]
 		public ActionResult SetCookieConsentBadge(CookieConsentModel model)
 		{
-			CookieConsent.SetCookieConsent(Response, true);
+			CookieConsent.SetCookie(Response, CookieConsentStatus.Consented);
 
 			if (!HttpContext.Request.IsAjaxRequest() && !ControllerContext.IsChildAction)
 			{

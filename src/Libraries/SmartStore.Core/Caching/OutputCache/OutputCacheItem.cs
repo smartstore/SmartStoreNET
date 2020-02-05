@@ -17,6 +17,7 @@ namespace SmartStore.Core.Caching
 		public string QueryString { get; set; }
 		public int Duration { get; set; }
 		public string[] Tags { get; set; }
+		public string ETag { get; set; }
 
 		public string Theme { get; set; }
 		public int StoreId { get; set; }

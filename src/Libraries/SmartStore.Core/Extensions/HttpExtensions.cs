@@ -86,6 +86,8 @@ namespace SmartStore
 				return false;
 			}
 
+			url = url.Trim();
+
 			if (url.StartsWith("~/"))
 			{
 				return true;
@@ -96,22 +98,28 @@ namespace SmartStore
 				return false;
 			}
 
-			// at this point when the url starts with "/" it is local
+			// At this point when the url starts with "/" it is local
 			if (url.StartsWith("/"))
 			{
 				return true;
 			}
 
-			// at this point, check for a fully qualified url
+			// At this point, check for a fully qualified url
 			try
 			{
 				var uri = new Uri(url);
+
+				if (!uri.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase) && !uri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+				{
+					return false;
+				}
+
 				if (uri.Authority.Equals(request.Headers["Host"], StringComparison.OrdinalIgnoreCase))
 				{
 					return true;
 				}
 
-				// finally, check the base url from the settings
+				// Finally, check the base url from the settings
 				var storeContext = EngineContext.Current.Resolve<IStoreContext>();
 				if (storeContext != null)
 				{

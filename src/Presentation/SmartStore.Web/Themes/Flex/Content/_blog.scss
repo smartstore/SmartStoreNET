@@ -7,10 +7,6 @@
 
 .bloglist-item-root {
     overflow: hidden;
-
-    &:nth-child(n+4) {
-        display: none;
-    }
 }
 
 .bloglist-item-header {
@@ -34,8 +30,12 @@
     height: 100%;
 }
 
+.blog-summary > .bloglist-item-root:nth-child(n+4) {
+    display: none;
+}
+
 @include media-breakpoint-up(md) {
-    .bloglist-item-root:nth-child(n+4) {
+    .blog-summary > .bloglist-item-root:nth-child(n+4) {
         display: block;
     }
 
@@ -51,8 +51,6 @@
         height: auto;
     }
 }
-
-
 
 .blogpost-tags-overlay,
 .comments-overlay {
@@ -95,9 +93,11 @@
     .blogpost-date {
         color: var(--section-color-4) !important;
     }
+
     .blogpost-title {
         color: var(--section-color-1) !important;
     }
+
     .blogpost-intro {
         color: var(--section-color-2) !important;
     }

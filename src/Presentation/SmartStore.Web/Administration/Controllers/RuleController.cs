@@ -446,7 +446,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         // Ajax.
-        public ActionResult RuleOptions(int ruleId, int rootRuleSetId, string search, int? page)
+        public ActionResult RuleOptions(int ruleId, int rootRuleSetId, string term, int? page)
         {
             var rule = _ruleStorage.GetRuleById(ruleId, false);
             if (rule == null)
@@ -465,7 +465,7 @@ namespace SmartStore.Admin.Controllers
                 var optionsProvider = _ruleOptionsProviders.FirstOrDefault(x => x.Matches(list.DataSource));
                 if (optionsProvider != null)
                 {
-                    options = optionsProvider.GetOptions(RuleOptionsRequestReason.SelectListOptions, expression, page ?? 0, 200, search);
+                    options = optionsProvider.GetOptions(RuleOptionsRequestReason.SelectListOptions, expression, page ?? 0, 100, term);
                     if (list.DataSource == "CartRule" || list.DataSource == "TargetGroup")
                     {
                         optionsPredicate = x => x.Value != rootRuleSetId.ToString();

@@ -123,7 +123,71 @@
 
 			return LazyAdapter;
 		}
-	);
+    );
+
+    $.fn.select2.amd.define('select2/data/remoteAdapter', [ 'select2/data/array', 'select2/utils' ],
+        function (ArrayData, Utils) {
+
+            function RemoteAdapter($element, options) {
+                this._url = options.get('remoteUrl');
+                this._global = options.get('remoteGlobal') || false;
+                this._cachedPage = null;
+                this._load = true;
+
+                RemoteAdapter.__super__.constructor.call(this, $element, options);
+            }
+
+            Utils.Extend(RemoteAdapter, ArrayData);
+
+            RemoteAdapter.prototype.query = function (params, callback) {
+                params.page = params.page || 0;
+                params.term = params.term || '';
+
+                if (this._load || params.term.length > 0) {
+
+                    // Avoid loading first page multiple times.
+                    if (params.page === 0 && params.term.length === 0 && this._cachedPage) {
+                        callback({
+                            results: this._cachedPage,
+                            pagination: { more: true }
+                        });
+                        return;
+                    }
+
+                    var self = this;
+
+                    $.ajax({
+                        type: 'GET',
+                        url: this._url,
+                        global: this._global,
+                        dataType: 'json',
+                        cache: false,
+                        timeout: 5000,
+                        data: { page: params.page, term: params.term },
+                        success: function (data, status, jqXHR) {
+                            self._load = data.hasMoreData || params.term.length > 0;
+                            self._cachedPage = null;
+
+                            if (data.hasMoreData && params.page === 0 && params.term.length === 0) {
+                                self._cachedPage = data.results;
+                            }
+
+                            callback({
+                                results: data.results,
+                                pagination: { more: data.hasMoreData }
+                            });
+                        }
+                    });
+                }
+                else {
+                    // No more data. Remove "Search..." list item.
+                    this.container.$results.find('.loading-results').remove();
+                }
+            };
+
+            return RemoteAdapter;
+        }
+    );
 
     $.fn.selectWrapper = function (options) {
         if (options && !_.str.isBlank(options.resetDataUrl) && lists[options.resetDataUrl]) {
@@ -307,6 +371,10 @@
             if (opts.lazy && opts.lazy.url) {
                 // url specified: load data remotely (lazily on first open)...
                 opts.dataAdapter = $.fn.select2.amd.require('select2/data/lazyAdapter');
+            }
+            else if (!opts.remote && sel.data('remote-url')) {
+                opts.ajax = {};
+                opts.dataAdapter = $.fn.select2.amd.require('select2/data/remoteAdapter');
             }
             else if (opts.ajax && opts.init && opts.init.text && sel.find('option[value="' + opts.init.text + '"]').length === 0) {
                 // In AJAX mode: add initial option when missing

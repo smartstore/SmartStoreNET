@@ -116,10 +116,11 @@ namespace SmartStore.Services.Security
 				}
 			}
 
-            if (_aclRecordRepository.Context.TryGetModifiedProperty(entity, nameof(entity.SubjectToAcl), out _)) 
-            {
+            // TODO: Find a way to detect the context of the entity. Until then we don't check for modified props
+            //if (_aclRecordRepository.Context.TryGetModifiedProperty(entity, nameof(entity.SubjectToAcl), out _)) 
+            //{
                 _aclRecordRepository.Context.SaveChanges();
-            }
+            //}
 		}
 
 		public virtual void InsertAclRecord(AclRecord aclRecord)
@@ -189,7 +190,7 @@ namespace SmartStore.Services.Security
 			if (entityId <= 0)
 				return false;
 
-			if (!HasActiveAcl)
+            if (!HasActiveAcl)
 				return true;
 
 			if (roles == null)

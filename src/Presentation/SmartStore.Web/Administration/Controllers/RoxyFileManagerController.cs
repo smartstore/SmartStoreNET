@@ -210,7 +210,7 @@ namespace SmartStore.Admin.Controllers
 
 			using (var result = _imageProcessor.Value.ProcessImage(query))
 			{
-				buffer = result.OutputStream.GetBuffer();
+				buffer = result.OutputStream.ToArray();
 				System.IO.File.WriteAllBytes(dest, buffer);
 			}
 		}

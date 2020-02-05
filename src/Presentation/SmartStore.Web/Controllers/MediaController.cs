@@ -351,7 +351,8 @@ namespace SmartStore.Web.Controllers
 
 				using (var result = _imageProcessor.ProcessImage(processQuery))
 				{
-					var outBuffer = result.OutputStream.GetBuffer();
+					var outBuffer = result.OutputStream.ToArray();
+
 					await _imageCache.PutAsync(cachedImage, outBuffer);
 
 					if (cachedImage.Extension != result.FileExtension)

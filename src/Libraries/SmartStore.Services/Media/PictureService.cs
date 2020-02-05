@@ -207,7 +207,7 @@ namespace SmartStore.Services.Media
 			using (var result = _imageProcessor.ProcessImage(query))
 			{
 				size = new Size(result.Width, result.Height);
-				var buffer = result.OutputStream.GetBuffer();
+				var buffer = result.OutputStream.ToArray();
 				return buffer;
 			}
 		}

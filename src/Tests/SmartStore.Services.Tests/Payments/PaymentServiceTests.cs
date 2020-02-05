@@ -35,13 +35,17 @@ namespace SmartStore.Services.Tests.Payments
             _paymentSettings.ActivePaymentMethodSystemNames = new List<string>();
             _paymentSettings.ActivePaymentMethodSystemNames.Add("Payments.TestMethod");
 
-			_paymentMethodRepository = MockRepository.GenerateMock<IRepository<PaymentMethod>>();
 			_storeMappingRepository = MockRepository.GenerateMock<IRepository<StoreMapping>>();
 			_storeMappingService = MockRepository.GenerateMock<IStoreMappingService>();
 			_services = MockRepository.GenerateMock<ICommonServices>();
             _cartRuleProvider = MockRepository.GenerateMock<ICartRuleProvider>();
 
-			_typeFinder = MockRepository.GenerateMock<ITypeFinder>();
+            var paymentMethods = new List<PaymentMethod> { new PaymentMethod { PaymentMethodSystemName = "Payments.TestMethod" } };
+
+            _paymentMethodRepository = MockRepository.GenerateMock<IRepository<PaymentMethod>>();
+            _paymentMethodRepository.Expect(x => x.TableUntracked).Return(paymentMethods.AsQueryable());
+
+            _typeFinder = MockRepository.GenerateMock<ITypeFinder>();
 			_typeFinder.Expect(x => x.FindClassesOfType((Type)null, null, true)).IgnoreArguments().Return(Enumerable.Empty<Type>()).Repeat.Any();
 
 			var localizationService = MockRepository.GenerateMock<ILocalizationService>();
@@ -49,14 +53,6 @@ namespace SmartStore.Services.Tests.Payments
 
 			_paymentService = new PaymentService(_paymentMethodRepository, _storeMappingRepository, _storeMappingService, _paymentSettings, _cartRuleProvider,
                 NullRequestCache.Instance, this.ProviderManager, _services, _typeFinder);
-        }
-
-        [Test]
-        public void Can_load_paymentMethods()
-        {
-            var srcm = _paymentService.LoadActivePaymentMethods();
-            srcm.ShouldNotBeNull();
-            (srcm.Any()).ShouldBeTrue();
         }
 
         [Test]
@@ -71,7 +67,7 @@ namespace SmartStore.Services.Tests.Payments
         {
             var srcm = _paymentService.LoadActivePaymentMethods();
             srcm.ShouldNotBeNull();
-            (srcm.Any()).ShouldBeTrue();
+            srcm.Any().ShouldBeTrue();
         }
 
         [Test]

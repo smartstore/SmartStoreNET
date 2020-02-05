@@ -26,7 +26,20 @@
 				callback(data);
 			}
 		});
-	}
+    }
+
+    function initLoad(select, url) {
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            success: function (data) {
+                _.each(data, function (item) {
+                    var option = new Option(item.text, item.id, item.selected, item.selected);
+                    select.append(option);
+                });
+            }
+        });
+    }
 
 	$.fn.select2.amd.define('select2/data/lazyAdapter', [
 			'select2/data/array',
@@ -369,11 +382,20 @@
             }
 
             if (opts.lazy && opts.lazy.url) {
-                // url specified: load data remotely (lazily on first open)...
+                if (opts.initLoad || sel.data('select-init-load')) {
+                    initLoad(sel, opts.lazy.url);
+                }
+
+                // url specified: load data remotely (lazily on first open)...               
                 opts.dataAdapter = $.fn.select2.amd.require('select2/data/lazyAdapter');
             }
-            else if (!opts.remote && sel.data('remote-url')) {
+            else if (sel.data('remote-url')) {
                 opts.ajax = {};
+
+                if (opts.initLoad || sel.data('select-init-load')) {
+                    initLoad(sel, sel.data('remote-url'));
+                }
+
                 opts.dataAdapter = $.fn.select2.amd.require('select2/data/remoteAdapter');
             }
             else if (opts.ajax && opts.init && opts.init.text && sel.find('option[value="' + opts.init.text + '"]').length === 0) {

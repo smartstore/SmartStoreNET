@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
@@ -33,7 +32,6 @@ namespace SmartStore.Services.Payments
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly PaymentSettings _paymentSettings;
         private readonly ICartRuleProvider _cartRuleProvider;
-        private readonly IRequestCache _requestCache;
         private readonly IProviderManager _providerManager;
 		private readonly ICommonServices _services;
 		private readonly ITypeFinder _typeFinder;
@@ -44,7 +42,6 @@ namespace SmartStore.Services.Payments
 			IStoreMappingService storeMappingService,
 			PaymentSettings paymentSettings, 
             ICartRuleProvider cartRuleProvider,
-            IRequestCache requestCache,
             IProviderManager providerManager,
 			ICommonServices services,
 			ITypeFinder typeFinder)
@@ -54,7 +51,6 @@ namespace SmartStore.Services.Payments
 			_storeMappingService = storeMappingService;
 			_paymentSettings = paymentSettings;
             _cartRuleProvider = cartRuleProvider;
-            _requestCache = requestCache;
 			_providerManager = providerManager;
 			_services = services;
 			_typeFinder = typeFinder;
@@ -112,7 +108,7 @@ namespace SmartStore.Services.Payments
                 ? LoadAllPaymentMethods(storeId).Where(x => types.Contains(x.Value.PaymentMethodType))
                 : LoadAllPaymentMethods(storeId);
 
-            var paymentMethods = GetAllPaymentMethods(storeId).ToDictionarySafe(x => x.PaymentMethodSystemName, StringComparer.InvariantCultureIgnoreCase);
+            var paymentMethods = GetAllPaymentMethods(storeId);
 
             var activeProviders = allProviders
 				.Where(p =>
@@ -202,14 +198,12 @@ namespace SmartStore.Services.Payments
 
 			if (providers.Any() && !QuerySettings.IgnoreMultiStore && storeId > 0)
 			{
-				var unauthorizedMethods = _paymentMethodRepository.TableUntracked
-					.Where(x => x.LimitedToStores)
-					.ToList();
+                var paymentMethods = GetAllPaymentMethods(storeId);
 
-				var unauthorizedMethodNames = unauthorizedMethods
-					.Where(x => !_storeMappingService.Authorize(x, storeId))
-					.Select(x => x.PaymentMethodSystemName)
-					.ToList();
+                var unauthorizedMethodNames = paymentMethods.Values
+                    .Where(x => x.LimitedToStores && !_storeMappingService.Authorize(x, storeId))
+                    .Select(x => x.PaymentMethodSystemName)
+                    .ToList();
 
 				return providers.Where(x => !unauthorizedMethodNames.Contains(x.Metadata.SystemName));
 			}
@@ -217,9 +211,9 @@ namespace SmartStore.Services.Payments
 			return providers;
         }
 
-		public virtual IList<PaymentMethod> GetAllPaymentMethods(int storeId = 0)
-		{
-            var result = _requestCache.Get(PAYMENT_METHODS_ALL_KEY.FormatInvariant(storeId), () =>
+        public virtual IDictionary<string, PaymentMethod> GetAllPaymentMethods(int storeId = 0)
+        {
+            var result = _services.RequestCache.Get(PAYMENT_METHODS_ALL_KEY.FormatInvariant(storeId), () =>
             {
                 var query = _paymentMethodRepository.TableUntracked;
 
@@ -240,12 +234,15 @@ namespace SmartStore.Services.Payments
                         select mGroup.FirstOrDefault();
                 }
 
-                var methods = query.ToList();
+                var methods = query
+                    .ToList()
+                    .ToDictionarySafe(x => x.PaymentMethodSystemName.EmptyNull(), x => x, StringComparer.OrdinalIgnoreCase);
+
                 return methods;
             });
 
             return result;
-		}
+        }
 
 		/// <summary>
 		/// Gets payment method extra data by system name
@@ -272,7 +269,7 @@ namespace SmartStore.Services.Payments
 
 			_paymentMethodRepository.Insert(paymentMethod);
 
-            _requestCache.RemoveByPattern(PAYMENT_METHODS_PATTERN_KEY);
+            _services.RequestCache.RemoveByPattern(PAYMENT_METHODS_PATTERN_KEY);
         }
 
 		/// <summary>
@@ -285,7 +282,7 @@ namespace SmartStore.Services.Payments
 
 			_paymentMethodRepository.Update(paymentMethod);
 
-            _requestCache.RemoveByPattern(PAYMENT_METHODS_PATTERN_KEY);
+            _services.RequestCache.RemoveByPattern(PAYMENT_METHODS_PATTERN_KEY);
         }
 
 		/// <summary>
@@ -298,7 +295,7 @@ namespace SmartStore.Services.Payments
             {
                 _paymentMethodRepository.Delete(paymentMethod);
 
-                _requestCache.RemoveByPattern(PAYMENT_METHODS_PATTERN_KEY);
+                _services.RequestCache.RemoveByPattern(PAYMENT_METHODS_PATTERN_KEY);
             }
         }
 

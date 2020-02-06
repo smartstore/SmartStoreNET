@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Rhino.Mocks;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Stores;
@@ -52,7 +51,7 @@ namespace SmartStore.Services.Tests.Payments
 			localizationService.Expect(ls => ls.GetResource(null)).IgnoreArguments().Return("NotSupported").Repeat.Any();
 
 			_paymentService = new PaymentService(_paymentMethodRepository, _storeMappingRepository, _storeMappingService, _paymentSettings, _cartRuleProvider,
-                NullRequestCache.Instance, this.ProviderManager, _services, _typeFinder);
+                this.ProviderManager, _services, _typeFinder);
         }
 
         [Test]

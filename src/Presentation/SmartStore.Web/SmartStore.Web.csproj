@@ -910,6 +910,7 @@
     <Content Include="Content\vendors\colorpicker\js\bootstrap-colorpicker.js" />
     <Content Include="Content\vendors\datetimepicker\js\tempusdominus-bootstrap-4.js" />
     <Content Include="Content\vendors\datetimepicker\js\tempusdominus-bootstrap-4.min.js" />
+    <Content Include="Content\vendors\imagesloaded\imagesloaded.pkgd.min.js" />
     <Content Include="Content\vendors\moment\locale\ar-dz.js" />
     <Content Include="Content\vendors\moment\locale\ar-kw.js" />
     <Content Include="Content\vendors\moment\locale\ar-ly.js" />

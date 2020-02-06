@@ -11,7 +11,7 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult WidgetsByZone(WidgetZoneModel zoneModel)
         {
-			return PartialView(zoneModel);
+            return PartialView(zoneModel);
         }
 
         [ChildActionOnly]

@@ -376,6 +376,8 @@
                 "Voraussetzungen",
                 "Specifies requirements for the availability of the payment method. The payment method is offered if one of the selected rules is fulfilled.",
                 "Legt Voraussetzungen für die Verfügbarkeit der Zahlart fest. Die Zahlart wird angeboten, wenn eine der ausgewählten Regeln erfüllt ist.");
+
+            builder.AddOrUpdate("Admin.Common.IsPublished", "Published", "Veröffentlicht");
         }
     }
 }

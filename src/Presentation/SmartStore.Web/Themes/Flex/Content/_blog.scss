@@ -30,7 +30,15 @@
     height: 100%;
 }
 
+.blog-summary > .bloglist-item-root:nth-child(n+4) {
+    display: none;
+}
+
 @include media-breakpoint-up(md) {
+    .blog-summary > .bloglist-item-root:nth-child(n+4) {
+        display: block;
+    }
+
     .bloglist-item-header {
         width: 100% !important;
     }
@@ -43,8 +51,6 @@
         height: auto;
     }
 }
-
-
 
 .blogpost-tags-overlay,
 .comments-overlay {
@@ -87,9 +93,11 @@
     .blogpost-date {
         color: var(--section-color-4) !important;
     }
+
     .blogpost-title {
         color: var(--section-color-1) !important;
     }
+
     .blogpost-intro {
         color: var(--section-color-2) !important;
     }

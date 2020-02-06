@@ -77,6 +77,7 @@ namespace SmartStore.Collections
                 string[] split = keyValuePair.Split('=');
                 base.Add(split[0], split.Length == 2 ? (urlDecode ? HttpUtility.UrlDecode(split[1]) : split[1]) : "");
             }
+
             return this;
         }
 

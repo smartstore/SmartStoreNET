@@ -34,6 +34,13 @@
     }
 }
 
+@supports (-webkit-overflow-scrolling: touch) {
+    /* CSS specific to iOS devices (only iOS supports -webkit-overflow-scrolling: touch) */
+    .bg-img {
+        background-attachment: initial !important;
+    }   
+}
+
 
 // Gradients
 // ------------------------------------

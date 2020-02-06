@@ -18,6 +18,8 @@
         T("Metadesc.Blog.Month").Text.FormatWith(parsedMonth.Value.ToNativeString("MMMM", CultureInfo.InvariantCulture) + " " + parsedMonth.Value.Year) :
         T("Metadesc.Blog.Tag").Text.FormatWith(Model.PagingFilteringContext.Tag)
     );
+
+    Html.AppendScriptParts(true, "~/Content/vendors/imagesloaded/imagesloaded.pkgd.min.js");
 }
 
 @section right {

@@ -21,6 +21,7 @@
 	* Added tool to display internal information about a search, such as Lucene terms.
 	* #1693 Find the grouped product when searching for the SKU, GTIN, MPN of a non individually visible, associated product.
 	* #1711 Find product when searching for GTIN or MPN of an attribute combination.
+	* Perf. Added option to ignore attribute filtering property on product level.
 * #1714 Direct links to variations on a product.
 * #1733 Add ability to hide products from catalog, but not search.
 * #1754 Implement hidden boolean setting that controls which catalog search engine implementation should be used in backend.

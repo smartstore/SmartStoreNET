@@ -37,18 +37,21 @@ namespace SmartStore.DevTools.Controllers
             return RedirectToConfiguration("SmartStore.DevTools");
         }
 
+        [ChildActionOnly]
         public ActionResult MiniProfiler()
         {
             return View();
         }
 
+        [ChildActionOnly]
         public ActionResult MachineName()
         {
             ViewBag.EnvironmentIdentifier = Services.ApplicationEnvironment.EnvironmentIdentifier;
 
             return View();
         }
-        
+
+        [ChildActionOnly]
         public ActionResult WidgetZone(string widgetZone)
         {
 			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);

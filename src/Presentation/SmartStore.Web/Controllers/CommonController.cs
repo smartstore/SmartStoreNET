@@ -785,22 +785,23 @@ namespace SmartStore.Web.Controllers
 			{
 				return new EmptyResult();
 			}
-			
-			var model = new CookieConsentModel();
+
+            if (CookieConsent.GetStatus(this.ControllerContext.ParentActionViewContext) != CookieConsentStatus.Asked)
+            {
+                return new EmptyResult();
+            }
+
+            var model = new CookieConsentModel();
 
 			if (!_privacySettings.CookieConsentBadgetext.HasValue())
 			{
-				// loads default value if it's empty (must be done this way as localized values can't be initial values of settings)
+				// Loads default value if it's empty (must be done this way as localized values can't be initial values of settings)
 				model.BadgeText = T("CookieConsent.BadgeText", Services.StoreContext.CurrentStore.Name, Url.Topic("PrivacyInfo"));
 			}
 			else
 			{
 				model.BadgeText = _privacySettings.GetLocalized(x => x.CookieConsentBadgetext).Value.FormatWith(Services.StoreContext.CurrentStore.Name, Url.Topic("PrivacyInfo"));
 			}
-			
-			var consentCookie = this.Request.Cookies[CookieConsent.CONSENT_COOKIE_NAME];
-			if (consentCookie != null && consentCookie.Value == "true")
-				return new EmptyResult();
 
 			return PartialView(model);
 		}
@@ -808,7 +809,7 @@ namespace SmartStore.Web.Controllers
 		[HttpPost]
 		public ActionResult SetCookieConsentBadge(CookieConsentModel model)
 		{
-			CookieConsent.SetCookieConsent(Response, true);
+			CookieConsent.SetCookie(Response, CookieConsentStatus.Consented);
 
 			if (!HttpContext.Request.IsAjaxRequest() && !ControllerContext.IsChildAction)
 			{

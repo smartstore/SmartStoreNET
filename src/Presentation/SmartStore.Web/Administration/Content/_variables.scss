@@ -115,10 +115,13 @@ $headings-font-weight:			400;
 
 // Shadows
 
-$box-shadow-sm:               0 0 .625rem 0 rgba(#000, .05);
-$box-shadow:                  0 1rem 2.25rem rgba(#32325d, .03), 0 0.3125rem 1rem rgba(#000, .12);
-$box-shadow-lg:               0 1rem 3rem rgba(#000, .125);
+$box-shadow-sm-var:             0 0 .625rem 0 rgba(#000, .05);
+$box-shadow-var:                0 1rem 2.25rem rgba(#32325d, .03), 0 0.3125rem 1rem rgba(#000, .12);
+$box-shadow-lg-var:             0 1rem 3rem rgba(#000, .125);
 
+$box-shadow-sm:                 var(--box-shadow);
+$box-shadow:                    var(--box-shadow);
+$box-shadow-lg:                 var(--box-shadow);
 
 // Tables
 
@@ -159,7 +162,7 @@ $btn-border-radius-lg:          $input-border-radius-lg; //.1875rem;
 $btn-border-radius-sm:          $input-border-radius-sm; //.125rem;
 $btn-disabled-opacity:			0.5;
 
-$dropdown-box-shadow:			$box-shadow; // 0 3px 12px rgba(27,31,35, 0.15); //0 2px 6px rgba(#000, .15);
+$dropdown-box-shadow:			$box-shadow-var; // 0 3px 12px rgba(27,31,35, 0.15); //0 2px 6px rgba(#000, .15);
 $dropdown-border-color:			rgba(#000, 0.05); 
 $dropdown-link-color:			$body-color; //$gray-800;
 $dropdown-link-hover-color:		darken($dropdown-link-color, 5%);

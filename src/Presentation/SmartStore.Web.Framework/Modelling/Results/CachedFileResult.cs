@@ -127,7 +127,7 @@ namespace SmartStore.Web.Framework.Modelling
 
 		public DateTime LastModifiedUtc { get; set; }
 
-		public TimeSpan MaxAge { get; set; } = TimeSpan.FromDays(1);
+		public TimeSpan MaxAge { get; set; } = TimeSpan.FromDays(7);
 
 		/// <summary>
 		/// If not set, will be auto-generated based on <see cref="LastModifiedUtc"/> property.

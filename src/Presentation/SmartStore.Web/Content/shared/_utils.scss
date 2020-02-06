@@ -328,6 +328,18 @@ table th {
     --shadow-color-intensity: 1;
 }
 
+.shadow {
+    --box-shadow: #{$box-shadow-var};
+}
+
+.shadow-sm {
+    --box-shadow: #{$box-shadow-sm-var};
+}
+
+.shadow-lg {
+    --box-shadow: #{$box-shadow-lg-var};
+}
+
 @each $color, $value in $theme-colors {
     @if $color != "secondary" and $color != "light" { 
         .shadow-#{$color} { 
@@ -448,7 +460,7 @@ table th {
 // Parallax stuff
 // ------------------------------------------------------
 
-.parallax[data-parallax-type=content] {
+html:not(.edge) .parallax[data-parallax-type=content] {
     will-change: transform;
 
     &.parallax-smooth {

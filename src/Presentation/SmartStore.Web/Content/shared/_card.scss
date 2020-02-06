@@ -14,7 +14,7 @@
 
 .card-shadow {
     // shim for .shadow-sm
-	box-shadow: $box-shadow-sm;
+	box-shadow: $box-shadow-sm-var;
 }
 
 .card-body > p:last-child {

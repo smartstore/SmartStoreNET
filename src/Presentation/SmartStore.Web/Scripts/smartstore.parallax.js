@@ -51,6 +51,10 @@
     var transformProp = window.Prefixer.css('transform');
 
     function initialize() {
+        // Suppressed smooth-parallax for edge per CSS. Observe and leave this commented for now.
+        //if ($('html').hasClass('edge'))
+        //    return;
+
         // Reset everything
         for (var i = 0; i < blocks.length; i++) {
             elems[i].style.cssText = blocks[i].style;

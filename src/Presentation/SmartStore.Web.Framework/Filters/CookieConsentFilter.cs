@@ -135,7 +135,7 @@ namespace SmartStore.Web.Framework.Filters
 				}
 			}
 
-			filterContext.Controller.ViewBag.CookieConsentStatus = _consentStatus;
+			filterContext.HttpContext.Items[CookieConsent.ConsentCookieName] = _consentStatus;
 		}
 
 		public void OnActionExecuted(ActionExecutedContext filterContext)
@@ -151,14 +151,12 @@ namespace SmartStore.Web.Framework.Filters
 			if (!filterContext.Result.IsHtmlViewResult())
 				return;
 
-			if (_consentStatus < CookieConsentStatus.Consented)
-			{
-				_widgetProvider.Value.RegisterAction(
-					new[] { "body_end_html_tag_before" },
-					"CookieConsentBadge",
-					"Common",
-					new { area = "" });
-			}
+			// Always render the child action because of output caching
+			_widgetProvider.Value.RegisterAction(
+				new[] { "body_end_html_tag_before" },
+				"CookieConsentBadge",
+				"Common",
+				new { area = "" });
 		}
 
 		public void OnResultExecuted(ResultExecutedContext filterContext)
@@ -186,9 +184,20 @@ namespace SmartStore.Web.Framework.Filters
 			response.Cookies.Set(consentCookie);
 		}
 
-		public static CookieConsentStatus GetStatus(ViewContext context)
+		public static CookieConsentStatus GetStatus(ControllerContext context)
 		{
-			return context.ViewBag.CookieConsentStatus ?? CookieConsentStatus.Unset;
+			if (context.HttpContext.Items.Contains(ConsentCookieName))
+			{
+				return context.HttpContext.GetItem<CookieConsentStatus>(ConsentCookieName);
+			}
+
+			var cookie = context.HttpContext.Request.Cookies[ConsentCookieName];
+			if (cookie != null && int.TryParse(cookie.Value, out var i))
+			{
+				return (CookieConsentStatus)i;
+			}
+
+			return CookieConsentStatus.Unset;
 		}
 	}
 }

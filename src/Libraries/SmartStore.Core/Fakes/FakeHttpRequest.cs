@@ -32,19 +32,10 @@ namespace SmartStore.Core.Fakes
         {
             _httpMethod = method;
             _relativeUrl = relativeUrl;
-            _formParams = formParams;
-            _queryStringParams = queryStringParams;
-            _cookies = cookies;
-            _serverVariables = serverVariables;
-            //ensure collections are not null
-            if (_formParams == null)
-                _formParams = new NameValueCollection();
-            if (_queryStringParams == null)
-                _queryStringParams = new NameValueCollection();
-            if (_cookies == null)
-                _cookies = new HttpCookieCollection();
-            if (_serverVariables == null)
-                _serverVariables = new NameValueCollection();
+            _formParams = formParams ?? new NameValueCollection();
+            _queryStringParams = queryStringParams ?? new SmartStore.Collections.QueryString().FillFromString(relativeUrl);
+            _cookies = cookies ?? new HttpCookieCollection();
+            _serverVariables = serverVariables ?? new NameValueCollection();
         }
 
 

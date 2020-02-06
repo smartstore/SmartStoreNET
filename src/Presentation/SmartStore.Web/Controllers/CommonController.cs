@@ -784,13 +784,18 @@ namespace SmartStore.Web.Controllers
 			if (!_privacySettings.EnableCookieConsent)
 			{
 				return new EmptyResult();
-			}    
+			}
+
+            if (CookieConsent.GetStatus(this.ControllerContext.ParentActionViewContext) != CookieConsentStatus.Asked)
+            {
+                return new EmptyResult();
+            }
 
             var model = new CookieConsentModel();
 
 			if (!_privacySettings.CookieConsentBadgetext.HasValue())
 			{
-				// loads default value if it's empty (must be done this way as localized values can't be initial values of settings)
+				// Loads default value if it's empty (must be done this way as localized values can't be initial values of settings)
 				model.BadgeText = T("CookieConsent.BadgeText", Services.StoreContext.CurrentStore.Name, Url.Topic("PrivacyInfo"));
 			}
 			else

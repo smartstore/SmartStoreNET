@@ -15,7 +15,7 @@ namespace SmartStore.Services.Cart.Rules
 
         bool RuleMatches(RuleExpression expression);
         bool RuleMatches(int[] ruleSetIds, LogicalRuleOperator logicalOperator);
-        bool RuleMatches(IRuleSetsSupported entity, LogicalRuleOperator logicalOperator);
+        bool RuleMatches(IRuleSetsSupported entity, LogicalRuleOperator logicalOperator = LogicalRuleOperator.Or);
         bool RuleMatches(RuleExpression[] expressions, LogicalRuleOperator logicalOperator);
     }
 
@@ -88,7 +88,7 @@ namespace SmartStore.Services.Cart.Rules
             return RuleMatches(expressions, logicalOperator);
         }
 
-        public bool RuleMatches(IRuleSetsSupported entity, LogicalRuleOperator logicalOperator)
+        public bool RuleMatches(IRuleSetsSupported entity, LogicalRuleOperator logicalOperator = LogicalRuleOperator.Or)
         {
             Guard.NotNull(entity, nameof(entity));
 

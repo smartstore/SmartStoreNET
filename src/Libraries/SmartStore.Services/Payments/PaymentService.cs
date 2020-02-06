@@ -124,7 +124,7 @@ namespace SmartStore.Services.Payments
                         // Rule sets.
                         if (paymentMethods.TryGetValue(p.Metadata.SystemName, out var pm))
                         {
-                            if (!_cartRuleProvider.RuleMatches(pm, LogicalRuleOperator.Or))
+                            if (!_cartRuleProvider.RuleMatches(pm))
                             {
                                 return false;
                             }

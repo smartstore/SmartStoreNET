@@ -263,7 +263,7 @@ namespace SmartStore.Services.Discounts
 			}
 
             // Rule sets.
-            if (!_cartRuleProvider.RuleMatches(discount, LogicalRuleOperator.Or))
+            if (!_cartRuleProvider.RuleMatches(discount))
             {
                 return Cached(false);
             }

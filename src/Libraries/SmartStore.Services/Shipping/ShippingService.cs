@@ -200,7 +200,7 @@ namespace SmartStore.Services.Shipping
 			var activeShippingMethods = allMethods.Where(s =>
 			{
                 // Rule sets.
-                if (!_cartRuleProvider.RuleMatches(s, LogicalRuleOperator.Or))
+                if (!_cartRuleProvider.RuleMatches(s))
                 {
                     return false;
                 }

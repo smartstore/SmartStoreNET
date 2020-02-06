@@ -126,7 +126,7 @@ namespace SmartStore.Services.Tests.Discounts
             _genericAttributeService.Expect(x => x.GetAttribute<string>(nameof(Customer), customer.Id, SystemCustomerAttributeNames.DiscountCouponCode, 0))
                 .Return("CouponCode 1");
 
-            _cartRuleProvider.Expect(x => x.RuleMatches(discount, LogicalRuleOperator.Or)).Return(true);
+            _cartRuleProvider.Expect(x => x.RuleMatches(discount)).Return(true);
 
             var result1 = _discountService.IsDiscountValid(discount, customer);
             result1.ShouldEqual(true);
@@ -203,7 +203,7 @@ namespace SmartStore.Services.Tests.Discounts
                 DiscountLimitation = DiscountLimitationType.Unlimited,
             };
 
-            _cartRuleProvider.Expect(x => x.RuleMatches(discount1, LogicalRuleOperator.Or)).Return(true);
+            _cartRuleProvider.Expect(x => x.RuleMatches(discount1)).Return(true);
 
             var result1 = _discountService.IsDiscountValid(discount1, customer);
 			result1.ShouldEqual(true);

@@ -94,11 +94,6 @@ namespace SmartStore.Admin.Controllers
                 GridPageSize = _adminAreaSettings.GridPageSize
             };
 
-            foreach (var s in Services.StoreService.GetAllStores())
-            {
-                model.AvailableStores.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
-            }
-
             return View(model);
         }
 

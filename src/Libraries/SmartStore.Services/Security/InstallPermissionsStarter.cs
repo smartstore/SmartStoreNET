@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
@@ -14,13 +16,16 @@ namespace SmartStore.Services.Security
     /// </summary>
     public sealed class InstallPermissionsStarter : IPostApplicationStart
     {
+        private readonly IRepository<PermissionRecord> _permissionRepository;
         private readonly IPermissionService _permissionService;
         private readonly ITypeFinder _typeFinder;
 
         public InstallPermissionsStarter(
+            IRepository<PermissionRecord> permissionRepository,
             IPermissionService permissionService,
             ITypeFinder typeFinder)
         {
+            _permissionRepository = permissionRepository;
             _permissionService = permissionService;
             _typeFinder = typeFinder;
 
@@ -38,7 +43,7 @@ namespace SmartStore.Services.Security
             var removeUnusedPermissions = true;
             var providers = new List<IPermissionProvider>();
 
-            if (PluginManager.PluginChangeDetected)
+            if (PluginManager.PluginChangeDetected || !_permissionRepository.TableUntracked.Any())
             {
                 // Standard permission provider and all plugin providers.
                 var types = _typeFinder.FindClassesOfType<IPermissionProvider>(ignoreInactivePlugins: true).ToList();

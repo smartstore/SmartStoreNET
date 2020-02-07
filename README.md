@@ -12,7 +12,6 @@
 </h1>
 <p align="center"><strong>Ready. Sell. Grow.</strong></p>
 
-
 <p align="center">
 	<img alt="GitHub release" src="https://img.shields.io/github/release/smartstore/SmartStoreNET.svg?color=%2344b284">
 	<img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/smartstore/SmartStoreNET/total.svg?color=%23f7a833">
@@ -39,9 +38,8 @@ A comprehensive set of tools for CRM & CMS, sales, marketing, payment & shipping
 
 <br/>
 <p align="center">
-  <img src="assets/smnet3-devices-sm.png" alt="Smartstore.NET Demoshop" />
+  <img src="assets/sm4-devices.png" alt="Smartstore.NET Demoshop" />
 </p>
-<br/>
 
 **Smartstore.NET delivers a beautiful and configurable shop front-end out-of-the-box**, built with a design approach on the highest level, including components like `Bootstrap 4`, `Sass` and others. The supplied theme _Flex_ is modern, clean and fully responsive, giving buyers the best possible shopping experience on any device. 
 
@@ -54,7 +52,6 @@ The state-of-the-art architecture of Smartstore.NET - with `ASP.NET 4.5` + `MVC 
 * **Documentation:** [Smartstore.NET Documentation in English](http://docs.smartstore.com/display/SMNET/SmartStore.NET+Documentation+Home)
 
 <p>&nbsp;</p>
-
 
 ## Highlights
 

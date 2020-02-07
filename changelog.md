@@ -74,6 +74,7 @@
 * Images of newly added variants could be deleted automatically due to wrong image transient state.
 * #1794 Menu display order is ignored for widget zone header_menu_special_after.
 * #1451 RTL: Manage categories tree view.
+* Biz-Importer: If the TaxRate table was missing, the assignment of the tax category to the product was not set.
 
 
 ## SmartStore.NET 3.2.2

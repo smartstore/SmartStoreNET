@@ -59,6 +59,13 @@ namespace SmartStore.Web.Framework.Security
                                 {
                                     valid = result.Success;
                                 }
+                                else
+                                {
+                                    foreach (var error in result.ErrorCodes)
+                                    {
+                                        Logger.Error(error);
+                                    }
+                                }
                             }
                         }
                     }

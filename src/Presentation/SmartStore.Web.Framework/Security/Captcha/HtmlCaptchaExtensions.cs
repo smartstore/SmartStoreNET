@@ -25,7 +25,7 @@ namespace SmartStore.Web.Framework.Security
                     widgetUrl,
                     callbackName,
                     workContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower()
-                );
+                ); 
 
                 var script = new[]
                 {
@@ -34,7 +34,7 @@ namespace SmartStore.Web.Framework.Security
                     "		renderGoogleRecaptcha('{0}', '{1}', {2});".FormatInvariant(elementId, siteKey, captchaSettings.UseInvisibleReCaptcha.ToString().ToLower()),
                     "	};",
                     "</script>",
-                    "<div id='{0}' class='g-recaptcha'></div>".FormatInvariant(elementId, siteKey),
+                    "<div id='{0}' class='g-recaptcha' data-sitekey='{1}'></div>".FormatInvariant(elementId, siteKey),
                     "<script src='{0}' async defer></script>".FormatInvariant(url),
                 }.StrJoin("");
 

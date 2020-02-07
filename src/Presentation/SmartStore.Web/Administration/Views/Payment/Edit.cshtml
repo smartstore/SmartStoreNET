@@ -126,6 +126,15 @@
                 @Html.ValidationMessageFor(model => model.SelectedStoreIds)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedRuleSetIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedRuleSetIds)
+                @Html.ValidationMessageFor(model => model.SelectedRuleSetIds)
+            </td>
+        </tr>
     </table>
 }
 

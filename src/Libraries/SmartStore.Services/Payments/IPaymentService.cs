@@ -53,13 +53,12 @@ namespace SmartStore.Services.Payments
         /// <returns>Payment providers</returns>
 		IEnumerable<Provider<IPaymentMethod>> LoadAllPaymentMethods(int storeId = 0);
 
-
-		/// <summary>
-		/// Gets all payment method extra data
-		/// </summary>
-		/// <param name="storeId">Load records allowed only in specified store; pass 0 to load all records</param>
-		/// <returns>List of payment method objects</returns>
-		IList<PaymentMethod> GetAllPaymentMethods(int storeId = 0);
+        /// <summary>
+        /// Gets all payment methods.
+        /// </summary>
+        /// <param name="storeId">Load records allowed only in specified store; pass 0 to load all records.</param>
+        /// <returns>Dictionary of payment methods. Key is the payment method system name.</returns>
+        IDictionary<string, PaymentMethod> GetAllPaymentMethods(int storeId = 0);
 
 		/// <summary>
 		/// Gets payment method extra data by system name

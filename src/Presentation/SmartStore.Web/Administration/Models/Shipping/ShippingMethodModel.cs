@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.Rules;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
@@ -44,6 +45,15 @@ namespace SmartStore.Admin.Models.Shipping
 
         [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
         public bool LimitedToStores { get; set; }
+
+        [UIHint("RuleSets")]
+        [AdditionalMetadata("multiple", true)]
+        [AdditionalMetadata("scope", RuleScope.Cart)]
+        [SmartResourceDisplayName("Admin.Configuration.Shipping.Methods.Fields.Requirements")]
+        public int[] SelectedRuleSetIds { get; set; }
+
+        [SmartResourceDisplayName("Admin.Rules.NumberOfRules")]
+        public int NumberOfRules { get; set; }
     }
 
 	public class ShippingMethodLocalizedModel : ILocalizedModelLocal

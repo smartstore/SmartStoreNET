@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using SmartStore.Admin.Models.Shipping;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Security;
+using SmartStore.Rules;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Stores;
@@ -26,14 +27,16 @@ namespace SmartStore.Admin.Controllers
         private readonly ILanguageService _languageService;
 		private readonly PluginMediator _pluginMediator;
 		private readonly IStoreMappingService _storeMappingService;
+        private readonly IRuleStorage _ruleStorage;
 
-		public ShippingController(
+        public ShippingController(
 			IShippingService shippingService,
 			ShippingSettings shippingSettings,
             ILocalizedEntityService localizedEntityService,
 			ILanguageService languageService,
 			PluginMediator pluginMediator,
-			IStoreMappingService storeMappingService)
+			IStoreMappingService storeMappingService,
+            IRuleStorage ruleStorage)
 		{
             _shippingService = shippingService;
             _shippingSettings = shippingSettings;
@@ -41,6 +44,7 @@ namespace SmartStore.Admin.Controllers
             _languageService = languageService;
 			_pluginMediator = pluginMediator;
 			_storeMappingService = storeMappingService;
+            _ruleStorage = ruleStorage;
 		}
         
         #region Utilities
@@ -58,7 +62,9 @@ namespace SmartStore.Admin.Controllers
 		{
 			if (shippingMethod != null)
 			{
-				var allFilters = _shippingService.GetAllShippingMethodFilters();
+                model.SelectedRuleSetIds = shippingMethod.RuleSets.Select(x => x.Id).ToArray();
+
+                var allFilters = _shippingService.GetAllShippingMethodFilters();
 				var configUrls = allFilters
 					.Select(x => x.GetConfigurationUrl(shippingMethod.Id))
 					.Where(x => x.HasValue())
@@ -132,7 +138,12 @@ namespace SmartStore.Admin.Controllers
         public ActionResult Methods()
         {
             var shippingMethodsModel = _shippingService.GetAllShippingMethods()
-                .Select(x => x.ToModel())
+                .Select(x =>
+                {
+                    var smm = x.ToModel();
+                    smm.NumberOfRules = x.RuleSets.Count;
+                    return smm;
+                })
                 .ToList();
 
             var model = new GridModel<ShippingMethodModel>
@@ -151,8 +162,13 @@ namespace SmartStore.Admin.Controllers
 			var model = new GridModel<ShippingMethodModel>();
 
 			var shippingMethodsModel = _shippingService.GetAllShippingMethods()
-				.Select(x => x.ToModel())
-				.ForCommand(command)
+                .Select(x =>
+                {
+                    var smm = x.ToModel();
+                    smm.NumberOfRules = x.RuleSets.Count;
+                    return smm;
+                })
+                .ForCommand(command)
 				.ToList();
 
 			model.Data = shippingMethodsModel;
@@ -183,7 +199,14 @@ namespace SmartStore.Admin.Controllers
                 var sm = model.ToEntity();
                 _shippingService.InsertShippingMethod(sm);
 
-				SaveStoreMappings(sm, model.SelectedStoreIds);
+                if (model.SelectedRuleSetIds?.Any() ?? false)
+                {
+                    _ruleStorage.ApplyRuleSetMappings(sm, model.SelectedRuleSetIds);
+
+                    _shippingService.UpdateShippingMethod(sm);
+                }
+
+                SaveStoreMappings(sm, model.SelectedStoreIds);
 				UpdateLocales(sm, model);
 
                 NotifySuccess(T("Admin.Configuration.Shipping.Methods.Added"));
@@ -214,19 +237,23 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ValidateInput(false), ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
         [Permission(Permissions.Configuration.Shipping.Update)]
         public ActionResult EditMethod(ShippingMethodModel model, bool continueEditing, FormCollection form)
         {
             var sm = _shippingService.GetShippingMethodById(model.Id);
             if (sm == null)
             {
-                return RedirectToAction("Methods");
+                return HttpNotFound();
             }
 
             if (ModelState.IsValid)
             {
                 sm = model.ToEntity(sm);
+
+                // Add\remove assigned rule sets.
+                _ruleStorage.ApplyRuleSetMappings(sm, model.SelectedRuleSetIds);
+
                 _shippingService.UpdateShippingMethod(sm);
 
 				SaveStoreMappings(sm, model.SelectedStoreIds);

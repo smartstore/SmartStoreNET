@@ -31,6 +31,8 @@
 					.Template(x => Html.ActionLink(x.Name, "EditMethod", new { id = x.Id }))
 					.ClientTemplate("<a href=\"EditMethod/<#= Id #>\"><#= Name #></a>");
 				columns.Bound(x => x.Description);
+			    columns.Bound(x => x.NumberOfRules)
+                    .Centered();
 				columns.Bound(x => x.LimitedToStores)
 					.Template(item => @Html.SymbolForBool(item.LimitedToStores))
 					.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))

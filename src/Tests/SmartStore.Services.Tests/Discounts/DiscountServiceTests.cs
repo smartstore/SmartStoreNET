@@ -9,6 +9,8 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Rules;
+using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Common;
 using SmartStore.Services.Discounts;
 using SmartStore.Tests;
@@ -24,7 +26,8 @@ namespace SmartStore.Services.Tests.Discounts
 		IGenericAttributeService _genericAttributeService;
         IDiscountService _discountService;
 		IStoreContext _storeContext;
-        
+        ICartRuleProvider _cartRuleProvider;
+
         [SetUp]
         public new void SetUp()
         {
@@ -66,9 +69,10 @@ namespace SmartStore.Services.Tests.Discounts
             _discountRequirementRepo = MockRepository.GenerateMock<IRepository<DiscountRequirement>>();
             _discountUsageHistoryRepo = MockRepository.GenerateMock<IRepository<DiscountUsageHistory>>();
 			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
+            _cartRuleProvider = MockRepository.GenerateMock<ICartRuleProvider>();
 
-			_discountService = new DiscountService(NullRequestCache.Instance, _discountRepo, _discountRequirementRepo,
-				_discountUsageHistoryRepo, _storeContext, _genericAttributeService, ProviderManager);
+            _discountService = new DiscountService(NullRequestCache.Instance, _discountRepo, _discountRequirementRepo,
+				_discountUsageHistoryRepo, _storeContext, _genericAttributeService, ProviderManager, _cartRuleProvider);
         }
 
         [Test]
@@ -121,6 +125,8 @@ namespace SmartStore.Services.Tests.Discounts
 
             _genericAttributeService.Expect(x => x.GetAttribute<string>(nameof(Customer), customer.Id, SystemCustomerAttributeNames.DiscountCouponCode, 0))
                 .Return("CouponCode 1");
+
+            _cartRuleProvider.Expect(x => x.RuleMatches(discount)).Return(true);
 
             var result1 = _discountService.IsDiscountValid(discount, customer);
             result1.ShouldEqual(true);
@@ -196,6 +202,8 @@ namespace SmartStore.Services.Tests.Discounts
                 RequiresCouponCode = false,
                 DiscountLimitation = DiscountLimitationType.Unlimited,
             };
+
+            _cartRuleProvider.Expect(x => x.RuleMatches(discount1)).Return(true);
 
             var result1 = _discountService.IsDiscountValid(discount1, customer);
 			result1.ShouldEqual(true);

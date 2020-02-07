@@ -266,18 +266,12 @@
         <tr class="round-order-total">
             <td class="adminTitle">
             </td>
-            <td class="adminData">
-                
+            <td class="adminData">                
                 @if (Model.RoundOrderTotalPaymentMethods.Any())
                 {
                     <div class="alert alert-info">
                         <span>@T("Admin.Configuration.Currencies.PaymentMethodsEnabledRoundingList"):</span>
-                        @foreach (var paymentMethod in Model.RoundOrderTotalPaymentMethods)
-                        {
-                            <span class="pr-1">
-                                <a href="@Url.Action("Edit", "Payment", new { systemName = paymentMethod.Key })">@paymentMethod.Value</a>
-                            </span>
-                        }
+                        @Html.Raw(string.Join(" · ", Model.RoundOrderTotalPaymentMethods.Select(x => $"<a href='{Url.Action("Edit", "Payment", new { systemName = x.Key })}'>{x.Value.HtmlEncode()}</a>")))
                     </div>
                 }
                 else

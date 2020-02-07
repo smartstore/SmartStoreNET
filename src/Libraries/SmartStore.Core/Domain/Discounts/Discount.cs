@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Rules.Domain;
 
 namespace SmartStore.Core.Domain.Discounts
 {
@@ -11,9 +12,10 @@ namespace SmartStore.Core.Domain.Discounts
 	/// </summary>
 	[DataContract]
 	[DebuggerDisplay("{Name} - {DiscountType}")]
-	public partial class Discount : BaseEntity
+	public partial class Discount : BaseEntity, IRuleSetsSupported
     {
         private ICollection<DiscountRequirement> _discountRequirements;
+        private ICollection<RuleSetEntity> _ruleSets;
         private ICollection<Category> _appliedToCategories;
 		private ICollection<Manufacturer> _appliedToManufacturers;
 		private ICollection<Product> _appliedToProducts;
@@ -126,10 +128,19 @@ namespace SmartStore.Core.Domain.Discounts
         }
 
         /// <summary>
+        /// Gets or sets assigned rule sets.
+        /// </summary>
+        public virtual ICollection<RuleSetEntity> RuleSets
+        {
+            get { return _ruleSets ?? (_ruleSets = new HashSet<RuleSetEntity>()); }
+            protected set { _ruleSets = value; }
+        }
+
+        /// <summary>
         /// Gets or sets the categories
         /// </summary>
 		[DataMember]
-		public virtual ICollection<Category> AppliedToCategories
+        public virtual ICollection<Category> AppliedToCategories
         {
 			get { return _appliedToCategories ?? (_appliedToCategories = new HashSet<Category>()); }
             protected set { _appliedToCategories = value; }

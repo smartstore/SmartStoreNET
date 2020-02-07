@@ -15,6 +15,7 @@ namespace SmartStore.Services.Cart.Rules
 
         bool RuleMatches(RuleExpression expression);
         bool RuleMatches(int[] ruleSetIds, LogicalRuleOperator logicalOperator);
+        bool RuleMatches(IRuleSetsSupported entity, LogicalRuleOperator logicalOperator = LogicalRuleOperator.Or);
         bool RuleMatches(RuleExpression[] expressions, LogicalRuleOperator logicalOperator);
     }
 
@@ -80,6 +81,25 @@ namespace SmartStore.Services.Cart.Rules
 
             var expressions = ruleSetIds
                 .Select(id => _ruleFactory.CreateExpressionGroup(id, this))
+                .Where(x => x != null)
+                .Cast<RuleExpression>()
+                .ToArray();
+
+            return RuleMatches(expressions, logicalOperator);
+        }
+
+        public bool RuleMatches(IRuleSetsSupported entity, LogicalRuleOperator logicalOperator = LogicalRuleOperator.Or)
+        {
+            Guard.NotNull(entity, nameof(entity));
+
+            var ruleSets = entity.RuleSets.Where(x => x.Scope == RuleScope.Cart).ToArray();
+            if (!ruleSets.Any())
+            {
+                return true;
+            }
+
+            var expressions = ruleSets
+                .Select(x => _ruleFactory.CreateExpressionGroup(x, this))
                 .Where(x => x != null)
                 .Cast<RuleExpression>()
                 .ToArray();

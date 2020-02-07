@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using SmartStore.Rules;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
@@ -44,6 +45,12 @@ namespace SmartStore.Admin.Models.Payments
 
         [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
         public bool LimitedToStores { get; set; }
+
+        [UIHint("RuleSets")]
+        [AdditionalMetadata("multiple", true)]
+        [AdditionalMetadata("scope", RuleScope.Cart)]
+        [SmartResourceDisplayName("Admin.Configuration.Payment.Methods.Requirements")]
+        public int[] SelectedRuleSetIds { get; set; }
     }
 
 

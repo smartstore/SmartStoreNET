@@ -12,7 +12,7 @@
         remoteUrl = Url.Action("RuleOptions", "Rule", new { ruleId = Model.Id, rootRuleSetId = (int)ViewBag.RootRuleSetId });
     }
 }
-<select id="@id" name="@id" data-placeholder="@T("Common.Unspecified")" @Html.Attr("multiple", "multiple", list.Multiple)>
+<select id="@id" name="@id" data-placeholder="@T("Common.Unspecified")" @Html.Attr("multiple", "multiple", list.Multiple) @Html.Attr("data-remote-url", remoteUrl, remoteUrl.HasValue())>
     @if (remoteUrl.HasValue())
     {
         var selectedItems = Model.Metadata.TryGetValue("SelectedItems", out var objSelectedItems)
@@ -53,42 +53,8 @@
         }
     }
 </select>
-
 <script>
     $(function () {
-        var options = {
-            allowClear: true,
-            minimumResultsForSearch: 16,
-            maxTextLength: 200
-        };
-
-        @if (remoteUrl.HasValue())
-        {<text>
-            options.ajax = {
-                delay: 300,
-                cache: true,
-                dataType: 'json',
-                type: 'GET',
-                url: '@Html.Raw(remoteUrl)',
-                data: function (params) {
-                    var query = {
-                        search: params.term,
-                        page: params.page || 0
-                    }
-                    return query;
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 0;
-                    return {
-                        results: data.results,
-                        pagination: {
-                            more: data.hasMoreData
-                        }
-                    };
-                }
-            }
-        </text>}
-
-        $('#@id').selectWrapper(options);
+        $('#@id').selectWrapper();
 	});
 </script>

@@ -8,11 +8,12 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
+using SmartStore.Rules;
+using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
@@ -20,7 +21,7 @@ using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Shipping
 {
-	public partial class ShippingService : IShippingService
+    public partial class ShippingService : IShippingService
     {
 		private readonly static object _lock = new object();
 		private static IList<Type> _shippingMethodFilterTypes = null;
@@ -32,12 +33,11 @@ namespace SmartStore.Services.Shipping
         private readonly ICheckoutAttributeParser _checkoutAttributeParser;
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly ShippingSettings _shippingSettings;
-        private readonly IEventPublisher _eventPublisher;
-        private readonly ShoppingCartSettings _shoppingCartSettings;
 		private readonly ISettingService _settingService;
 		private readonly IProviderManager _providerManager;
 		private readonly ITypeFinder _typeFinder;
 		private readonly ICommonServices _services;
+        private readonly ICartRuleProvider _cartRuleProvider;
 
         public ShippingService(
             IRepository<ShippingMethod> shippingMethodRepository,
@@ -47,12 +47,11 @@ namespace SmartStore.Services.Shipping
             ICheckoutAttributeParser checkoutAttributeParser,
 			IGenericAttributeService genericAttributeService,
             ShippingSettings shippingSettings,
-            IEventPublisher eventPublisher,
-            ShoppingCartSettings shoppingCartSettings,
 			ISettingService settingService,
 			IProviderManager providerManager,
 			ITypeFinder typeFinder,
-			ICommonServices services)
+			ICommonServices services,
+            ICartRuleProvider cartRuleProvider)
         {
             _shippingMethodRepository = shippingMethodRepository;
 			_storeMappingRepository = storeMappingRepository;
@@ -61,12 +60,11 @@ namespace SmartStore.Services.Shipping
             _checkoutAttributeParser = checkoutAttributeParser;
 			_genericAttributeService = genericAttributeService;
             _shippingSettings = shippingSettings;
-            _eventPublisher = eventPublisher;
-            _shoppingCartSettings = shoppingCartSettings;
 			_settingService = settingService;
 			_providerManager = providerManager;
 			_typeFinder = typeFinder;
 			_services = services;
+            _cartRuleProvider = cartRuleProvider;
 
 			T = NullLocalizer.Instance;
 			Logger = NullLogger.Instance;
@@ -201,8 +199,14 @@ namespace SmartStore.Services.Shipping
 
 			var activeShippingMethods = allMethods.Where(s =>
 			{
-				// Shipping method filtering.
-				if (allFilters == null)
+                // Rule sets.
+                if (!_cartRuleProvider.RuleMatches(s))
+                {
+                    return false;
+                }
+
+                // Shipping method filtering.
+                if (allFilters == null)
 					allFilters = GetAllShippingMethodFilters();
 
 				filterRequest.ShippingMethod = s;

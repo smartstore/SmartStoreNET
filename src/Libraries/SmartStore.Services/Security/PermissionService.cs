@@ -257,18 +257,22 @@ namespace SmartStore.Services.Security
                 return;
             }
 
-            var clearCache = false;
+            Dictionary<string, CustomerRole> existingRoles = null;
             var allPermissionNames = _permissionRepository.TableUntracked.Select(x => x.SystemName).ToList();
             var existing = new HashSet<string>(allPermissionNames, StringComparer.InvariantCultureIgnoreCase);
             var added = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
             var providerPermissions = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
-            Dictionary<string, CustomerRole> existingRoles = null;
+            var log = existing.Any();
+            var clearCache = false;
 
-            var permissionsMigrated = existing.Contains(Permissions.System.AccessShop) && !existing.Contains("PublicStoreAllowNavigation");
-            if (!permissionsMigrated)
+            if (existing.Any())
             {
-                // Migrations must have been completed before permissions can be added or deleted.
-                return;
+                var permissionsMigrated = existing.Contains(Permissions.System.AccessShop) && !existing.Contains("PublicStoreAllowNavigation");
+                if (!permissionsMigrated)
+                {
+                    // Migrations must have been completed before permissions can be added or deleted.
+                    return;
+                }
             }
 
             try
@@ -347,7 +351,7 @@ namespace SmartStore.Services.Security
 
                     scope.Commit();
 
-                    if (added.Any())
+                    if (log && added.Any())
                     {
                         Logger.Info(T("Admin.Permissions.AddedPermissions", string.Join(", ", added)));
                     }
@@ -364,7 +368,10 @@ namespace SmartStore.Services.Security
                             entities.Each(x => _permissionRepository.Delete(x));
                             scope.Commit();
 
-                            Logger.Info(T("Admin.Permissions.RemovedPermissions", string.Join(", ", toDelete)));
+                            if (log)
+                            {
+                                Logger.Info(T("Admin.Permissions.RemovedPermissions", string.Join(", ", toDelete)));
+                            }
                         }
                     }
                 }

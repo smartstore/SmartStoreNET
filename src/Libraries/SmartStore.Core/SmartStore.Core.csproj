@@ -461,6 +461,7 @@
     <Compile Include="Caching\ICacheManager.cs" />
     <Compile Include="Caching\NullCache.cs" />
     <Compile Include="Plugins\LoadPluginResult.cs" />
+    <Compile Include="Rules\Domain\IRuleSetsSupported.cs" />
     <Compile Include="Rules\IRuleVisitor.cs" />
     <Compile Include="Rules\Domain\RuleEntity.cs" />
     <Compile Include="Rules\Domain\RuleSetEntity.cs" />

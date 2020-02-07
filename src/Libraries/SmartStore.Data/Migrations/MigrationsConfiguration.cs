@@ -78,10 +78,6 @@
                 "Specifies whether to show product images of bundle items.",
                 "Legt fest, ob Produktbilder von Bundle-Bestandteilen angezeigt werden sollen.");
 
-            builder.AddOrUpdate("Admin.Promotions.Discounts.DiscountRequirementsCount",
-                "Number of requirements",
-                "Anzahl an Voraussetzungen");
-
             builder.AddOrUpdate("Admin.Common.CustomerRole.LimitedTo",
                 "Limited to customer roles",
                 "Auf Kundengruppen begrenzt",
@@ -220,6 +216,7 @@
 
             builder.AddOrUpdate("Admin.Rules.NotFound", "The rule with ID {0} was not found.", "Die Regel mit der ID {0} wurde nicht gefunden.");
             builder.AddOrUpdate("Admin.Rules.GroupNotFound", "The group with ID {0} was not found.", "Die Gruppe mit der ID {0} wurde nicht gefunden.");
+            builder.AddOrUpdate("Admin.Rules.NumberOfRules", "Number of rules", "Anzahl an Regeln");
 
             builder.AddOrUpdate("Admin.Rules.Execute.MatchCustomers",
                 "<b class=\"font-weight-medium\">{0}</b> customers match the rule conditions.",
@@ -347,8 +344,38 @@
                 "Legt auf das Objekt anzuwendende Rabatte fest.");
 
             builder.AddOrUpdate("Admin.Promotions.Discounts.Requirements.Hint",
-                "Specifies requirements for the applying of the discount. The discount is applied when one of the requirements is satisfied.",
-                "Legt Voraussetzungen für die Anwendung des Rabatts fest. Der Rabatt wird gewährt, wenn eine der Voraussetzungen erfüllt ist.");
+                "Specifies requirements for the applying of the discount. The discount is applied when one of the selected rules is fulfilled.",
+                "Legt Voraussetzungen für die Anwendung des Rabatts fest. Der Rabatt wird gewährt, wenn eine der ausgewählten Regeln erfüllt ist.");
+
+            builder.AddOrUpdate("Admin.Rules.RuleSet.Fields.AssignedToDiscounts",
+                "Assigned to discounts",
+                "Rabatten zugeordnet",
+                "A list of discounts to which the rule is assigned. The assignment can be made on the discount details page.",
+                "Eine Liste von Rabatten, denen die Regel zugeordnet ist. Die Zuordnung kann auf der Rabattdetailseite vorgenommen werden.");
+
+            builder.AddOrUpdate("Admin.Rules.RuleSet.Fields.AssignedToShippingMethods",
+                "Assigned to shipping methods",
+                "Versandarten zugeordnet",
+                "A list of shipping methods to which the rule is assigned. The assignment can be made on the shipping method details page.",
+                "Eine Liste von Versandarten, denen die Regel zugeordnet ist. Die Zuordnung kann auf der Detailseite der Versandart vorgenommen werden.");
+
+            builder.AddOrUpdate("Admin.Rules.RuleSet.Fields.AssignedToPaymentMethods",
+                "Assigned to payment methods",
+                "Zahlarten zugeordnet",
+                "A list of payment methods to which the rule is assigned. The assignment can be made on the payment method details page.",
+                "Eine Liste von Zahlarten, denen die Regel zugeordnet ist. Die Zuordnung kann auf der Detailseite der Zahlart vorgenommen werden.");
+
+            builder.AddOrUpdate("Admin.Configuration.Shipping.Methods.Fields.Requirements",
+                "Requirements",
+                "Voraussetzungen",
+                "Specifies requirements for the availability of the shipping method. The shipping method is offered if one of the selected rules is fulfilled.",
+                "Legt Voraussetzungen für die Verfügbarkeit der Versandart fest. Die Versandart wird angeboten, wenn eine der ausgewählten Regeln erfüllt ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Payment.Methods.Requirements",
+                "Requirements",
+                "Voraussetzungen",
+                "Specifies requirements for the availability of the payment method. The payment method is offered if one of the selected rules is fulfilled.",
+                "Legt Voraussetzungen für die Verfügbarkeit der Zahlart fest. Die Zahlart wird angeboten, wenn eine der ausgewählten Regeln erfüllt ist.");
 
             builder.AddOrUpdate("Admin.Common.IsPublished", "Published", "Veröffentlicht");
         }

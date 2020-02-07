@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using SmartStore.Admin.Models.Payments;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Security;
+using SmartStore.Rules;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Stores;
@@ -24,14 +25,16 @@ namespace SmartStore.Admin.Controllers
 		private readonly ILanguageService _languageService;
 		private readonly ILocalizedEntityService _localizedEntityService;
 		private readonly IStoreMappingService _storeMappingService;
+        private readonly IRuleStorage _ruleStorage;
 
-		public PaymentController(
+        public PaymentController(
 			IPaymentService paymentService, 
 			PaymentSettings paymentSettings,
 			PluginMediator pluginMediator,
 			ILanguageService languageService,
 			ILocalizedEntityService localizedEntityService,
-			IStoreMappingService storeMappingService)
+			IStoreMappingService storeMappingService,
+            IRuleStorage ruleStorage)
 		{
             _paymentService = paymentService;
             _paymentSettings = paymentSettings;
@@ -39,31 +42,8 @@ namespace SmartStore.Admin.Controllers
 			_languageService = languageService;
 			_localizedEntityService = localizedEntityService;
 			_storeMappingService = storeMappingService;
+            _ruleStorage = ruleStorage;
 		}
-
-		private void PreparePaymentMethodEditModel(PaymentMethodEditModel model, PaymentMethod paymentMethod)
-		{
-			var allFilters = _paymentService.GetAllPaymentMethodFilters();
-			var configUrls = allFilters
-				.Select(x => x.GetConfigurationUrl(model.SystemName))
-				.Where(x => x.HasValue())
-				.ToList();
-
-			model.FilterConfigurationUrls = configUrls
-				.Select(x => string.Concat("'", x, "'"))
-				.OrderBy(x => x)
-				.ToList();
-
-			if (paymentMethod != null)
-			{
-				model.Id = paymentMethod.Id;
-				model.FullDescription = paymentMethod.FullDescription;
-                model.RoundOrderTotalEnabled = paymentMethod.RoundOrderTotalEnabled;
-				model.LimitedToStores = paymentMethod.LimitedToStores;
-			}
-
-            model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(paymentMethod);
-        }
 
         [Permission(Permissions.Configuration.PaymentMethod.Read)]
         public ActionResult Providers()
@@ -128,8 +108,18 @@ namespace SmartStore.Admin.Controllers
 			model.IconUrl = providerModel.IconUrl;
 			model.FriendlyName = providerModel.FriendlyName;
 			model.Description = providerModel.Description;
+            model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(paymentMethod);
 
-			AddLocales(_languageService, model.Locales, (locale, languageId) =>
+            if (paymentMethod != null)
+            {
+                model.Id = paymentMethod.Id;
+                model.FullDescription = paymentMethod.FullDescription;
+                model.RoundOrderTotalEnabled = paymentMethod.RoundOrderTotalEnabled;
+                model.LimitedToStores = paymentMethod.LimitedToStores;
+                model.SelectedRuleSetIds = paymentMethod.RuleSets.Select(x => x.Id).ToArray();
+            }
+
+            AddLocales(_languageService, model.Locales, (locale, languageId) =>
 			{
 				locale.FriendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata, languageId, false);
 				locale.Description = _pluginMediator.GetLocalizedDescription(provider.Metadata, languageId, false);
@@ -145,9 +135,18 @@ namespace SmartStore.Admin.Controllers
 				}
 			});
 
-			PreparePaymentMethodEditModel(model, paymentMethod);
+            var allFilters = _paymentService.GetAllPaymentMethodFilters();
+            var configUrls = allFilters
+                .Select(x => x.GetConfigurationUrl(model.SystemName))
+                .Where(x => x.HasValue())
+                .ToList();
 
-			ViewBag.Title = pageTitle;
+            model.FilterConfigurationUrls = configUrls
+                .Select(x => string.Concat("'", x, "'"))
+                .OrderBy(x => x)
+                .ToList();
+
+            ViewBag.Title = pageTitle;
 
 			return View(model);
 		}
@@ -175,13 +174,21 @@ namespace SmartStore.Admin.Controllers
             paymentMethod.RoundOrderTotalEnabled = model.RoundOrderTotalEnabled;
 			paymentMethod.LimitedToStores = model.LimitedToStores;
 
+            var updateEntity = paymentMethod.Id != 0;
+
             if (paymentMethod.Id == 0)
             {
-                // Update permission sufficient here.
+                // In this case the update permission is sufficient.
                 _paymentService.InsertPaymentMethod(paymentMethod);
+
+                updateEntity = model.SelectedRuleSetIds?.Any() ?? false;
             }
-            else
+            
+            if (updateEntity)
             {
+                // Add\remove assigned rule sets.
+                _ruleStorage.ApplyRuleSetMappings(paymentMethod, model.SelectedRuleSetIds);
+
                 _paymentService.UpdatePaymentMethod(paymentMethod);
             }
 

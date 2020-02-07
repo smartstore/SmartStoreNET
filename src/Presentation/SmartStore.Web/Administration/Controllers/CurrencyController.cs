@@ -6,7 +6,6 @@ using System.Web.Mvc;
 using SmartStore.Admin.Models.Directory;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Plugins;
 using SmartStore.Core.Security;
 using SmartStore.Services;
 using SmartStore.Services.Directory;
@@ -14,7 +13,6 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Stores;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
@@ -84,24 +82,22 @@ namespace SmartStore.Admin.Controllers
         {
             Guard.NotNull(model, nameof(model));
 
-            var allStores = _services.StoreService.GetAllStores();
             var paymentMethods = _paymentService.GetAllPaymentMethods();
-            var paymentProviders = _paymentService.LoadAllPaymentMethods().ToDictionarySafe(x => x.Metadata.SystemName);
+            var paymentProviders = _paymentService.LoadAllPaymentMethods();
 
-            foreach (var paymentMethod in paymentMethods.Where(x => x.RoundOrderTotalEnabled))
+            foreach (var provider in paymentProviders)
             {
-                string friendlyName = null;
-                Provider<IPaymentMethod> provider;
-                if (paymentProviders.TryGetValue(paymentMethod.PaymentMethodSystemName, out provider))
+                if (paymentMethods.TryGetValue(provider.Metadata.SystemName, out var paymentMethod) && paymentMethod.RoundOrderTotalEnabled)
                 {
-                    friendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata);
+                    var friendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata);
+                    model.RoundOrderTotalPaymentMethods[provider.Metadata.SystemName] = friendlyName ?? provider.Metadata.SystemName;
                 }
-
-                model.RoundOrderTotalPaymentMethods[paymentMethod.PaymentMethodSystemName] = friendlyName ?? paymentMethod.PaymentMethodSystemName;
             }
 
             if (currency != null)
             {
+                var allStores = _services.StoreService.GetAllStores();
+
                 model.PrimaryStoreCurrencyStores = allStores
                     .Where(x => x.PrimaryStoreCurrencyId == currency.Id)
                     .Select(x => new SelectListItem

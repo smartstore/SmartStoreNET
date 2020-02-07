@@ -101,9 +101,8 @@ namespace SmartStore.Admin.Models.Discounts
 
         public IList<DiscountRequirementMetaInfo> DiscountRequirementMetaInfos { get; set; }
 
-        [SmartResourceDisplayName("Admin.Promotions.Discounts.DiscountRequirementsCount")]
-        public int DiscountRequirementsCount { get; set; }
-
+        [SmartResourceDisplayName("Admin.Rules.NumberOfRules")]
+        public int NumberOfRules { get; set; }
 
         #region Nested classes
 

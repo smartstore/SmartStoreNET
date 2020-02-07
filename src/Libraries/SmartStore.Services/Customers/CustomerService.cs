@@ -308,7 +308,8 @@ namespace SmartStore.Services.Customers
 		{
 			return query
 				.Expand(x => x.ShoppingCartItems.Select(y => y.BundleItem))
-				.Expand(x => x.ShoppingCartItems.Select(y => y.Product.AppliedDiscounts.Select(z => z.DiscountRequirements)));
+				.Expand(x => x.ShoppingCartItems.Select(y => y.Product.AppliedDiscounts.Select(z => z.DiscountRequirements)))
+                .Expand(x => x.ShoppingCartItems.Select(y => y.Product.AppliedDiscounts.Select(z => z.RuleSets)));
 		}
 
         public virtual IList<Customer> GetCustomersByIds(int[] customerIds)

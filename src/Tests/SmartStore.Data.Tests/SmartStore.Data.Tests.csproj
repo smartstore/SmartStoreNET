@@ -143,7 +143,6 @@
     <Compile Include="Shipping\ShippingMethodPersistenceTests.cs" />
     <Compile Include="Orders\ShoppingCartItemPeristenceTests.cs" />
     <Compile Include="Tax\TaxCategoryPersistenceTests.cs" />
-    <Compile Include="Discounts\DiscountRequirementPersistenceTests.cs" />
     <Compile Include="Discounts\DiscountPersistenceTests.cs" />
     <Compile Include="Customers\CustomerRolePersistenceTests.cs" />
     <Compile Include="Directory\MeasureWeightPersistenceTests.cs" />

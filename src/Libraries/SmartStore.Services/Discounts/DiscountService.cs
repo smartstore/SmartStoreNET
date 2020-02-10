@@ -20,7 +20,6 @@ namespace SmartStore.Services.Discounts
         private const string DISCOUNTS_PATTERN_KEY = "SmartStore.discount.*";
 
         private readonly IRepository<Discount> _discountRepository;
-        private readonly IRepository<DiscountRequirement> _discountRequirementRepository;
         private readonly IRepository<DiscountUsageHistory> _discountUsageHistoryRepository;
         private readonly IRequestCache _requestCache;
 		private readonly IStoreContext _storeContext;
@@ -31,7 +30,6 @@ namespace SmartStore.Services.Discounts
         public DiscountService(
             IRequestCache requestCache,
             IRepository<Discount> discountRepository,
-            IRepository<DiscountRequirement> discountRequirementRepository,
             IRepository<DiscountUsageHistory> discountUsageHistoryRepository,
 			IStoreContext storeContext,
 			IGenericAttributeService genericAttributeService,
@@ -39,7 +37,6 @@ namespace SmartStore.Services.Discounts
         {
             _requestCache = requestCache;
             _discountRepository = discountRepository;
-            _discountRequirementRepository = discountRequirementRepository;
             _discountUsageHistoryRepository = discountUsageHistoryRepository;
 			_storeContext = storeContext;
 			_genericAttributeService = genericAttributeService;
@@ -166,14 +163,6 @@ namespace SmartStore.Services.Discounts
 			Guard.NotNull(discount, nameof(discount));
 
             _discountRepository.Update(discount);
-            _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
-        }
-
-        public virtual void DeleteDiscountRequirement(DiscountRequirement discountRequirement)
-        {
-			Guard.NotNull(discountRequirement, nameof(discountRequirement));
-
-			_discountRequirementRepository.Delete(discountRequirement);
             _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
         }
 

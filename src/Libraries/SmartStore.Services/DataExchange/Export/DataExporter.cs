@@ -286,7 +286,7 @@ namespace SmartStore.Services.DataExchange.Export
 				{
                     _dbContext.DetachEntities(x =>
                     {
-                        return x is Product || x is Discount || x is DiscountRequirement || x is ProductVariantAttributeCombination || x is ProductVariantAttribute || x is ProductVariantAttributeValue || x is ProductAttribute ||
+                        return x is Product || x is Discount || x is ProductVariantAttributeCombination || x is ProductVariantAttribute || x is ProductVariantAttributeValue || x is ProductAttribute ||
                                x is Picture || x is ProductBundleItem || x is ProductBundleItemAttributeFilter || x is ProductCategory || x is ProductManufacturer || x is Category || x is Manufacturer ||
                                x is ProductPicture || x is ProductTag || x is ProductSpecificationAttribute || x is SpecificationAttributeOption || x is SpecificationAttribute || x is TierPrice || x is ProductReview ||
                                x is ProductReviewHelpfulness || x is DeliveryTime || x is QuantityUnit || x is Download || x is MediaStorage || x is GenericAttribute || x is UrlRecord;

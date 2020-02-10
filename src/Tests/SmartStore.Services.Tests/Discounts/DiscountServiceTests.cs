@@ -20,7 +20,6 @@ namespace SmartStore.Services.Tests.Discounts
     public class DiscountServiceTests : ServiceTest
     {
         IRepository<Discount> _discountRepo;
-        IRepository<DiscountRequirement> _discountRequirementRepo;
         IRepository<DiscountUsageHistory> _discountUsageHistoryRepo;
 		IGenericAttributeService _genericAttributeService;
         IDiscountService _discountService;
@@ -65,13 +64,11 @@ namespace SmartStore.Services.Tests.Discounts
 				Name = "MyStore"
 			});
 
-            _discountRequirementRepo = MockRepository.GenerateMock<IRepository<DiscountRequirement>>();
             _discountUsageHistoryRepo = MockRepository.GenerateMock<IRepository<DiscountUsageHistory>>();
 			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
             _cartRuleProvider = MockRepository.GenerateMock<ICartRuleProvider>();
 
-            _discountService = new DiscountService(NullRequestCache.Instance, _discountRepo, _discountRequirementRepo,
-				_discountUsageHistoryRepo, _storeContext, _genericAttributeService, _cartRuleProvider);
+            _discountService = new DiscountService(NullRequestCache.Instance, _discountRepo, _discountUsageHistoryRepo, _storeContext, _genericAttributeService, _cartRuleProvider);
         }
 
         [Test]

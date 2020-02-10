@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
+using SmartStore.Rules;
+using SmartStore.Rules.Domain;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Discounts
 {
@@ -14,19 +16,19 @@ namespace SmartStore.Data.Tests.Discounts
         public void Can_save_and_load_discount()
         {
             var discount = new Discount
-                               {
-                                   DiscountType = DiscountType.AssignedToCategories,
-                                   Name = "Discount 1",
-                                   UsePercentage = true,
-                                   DiscountPercentage = 1.1M,
-                                   DiscountAmount = 2.1M,
-                                   StartDateUtc = new DateTime(2010, 01, 01),
-                                   EndDateUtc = new DateTime(2010, 01, 02),
-                                   RequiresCouponCode = true,
-                                   CouponCode = "SecretCode",
-                                   DiscountLimitation = DiscountLimitationType.Unlimited,
-                                   LimitationTimes = 3,
-                               };
+            {
+                DiscountType = DiscountType.AssignedToCategories,
+                Name = "Discount 1",
+                UsePercentage = true,
+                DiscountPercentage = 1.1M,
+                DiscountAmount = 2.1M,
+                StartDateUtc = new DateTime(2010, 01, 01),
+                EndDateUtc = new DateTime(2010, 01, 02),
+                RequiresCouponCode = true,
+                CouponCode = "SecretCode",
+                DiscountLimitation = DiscountLimitationType.Unlimited,
+                LimitationTimes = 3
+            };
 
             var fromDb = SaveAndLoadEntity(discount);
             fromDb.ShouldNotBeNull();
@@ -44,7 +46,7 @@ namespace SmartStore.Data.Tests.Discounts
         }
 
         [Test]
-        public void Can_save_and_load_discount_with_discountRequirements()
+        public void Can_save_and_load_discount_with_ruleset()
         {
             var discount = new Discount
             {
@@ -60,23 +62,23 @@ namespace SmartStore.Data.Tests.Discounts
                 DiscountLimitation = DiscountLimitationType.Unlimited,
                 LimitationTimes = 3
             };
-            discount.DiscountRequirements.Add
-                (
-                     new DiscountRequirement()
-                     {
-                         DiscountRequirementRuleSystemName = "BillingCountryIs",
-                         SpentAmount = 1,
-                         BillingCountryId = 2,
-                         ShippingCountryId = 3,
-                     }
-                );
+
+            discount.RuleSets.Add(new RuleSetEntity
+            {
+                Name = "My discount rule set",
+                IsActive = true,
+                Scope = RuleScope.Cart,
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+                UpdatedOnUtc = new DateTime(2010, 01, 01)
+            });
+
             var fromDb = SaveAndLoadEntity(discount);
             fromDb.ShouldNotBeNull();
             fromDb.Name.ShouldEqual("Discount 1");
-            
-            fromDb.DiscountRequirements.ShouldNotBeNull();
-            (fromDb.DiscountRequirements.Count == 1).ShouldBeTrue();
-            fromDb.DiscountRequirements.First().DiscountRequirementRuleSystemName.ShouldEqual("BillingCountryIs");
+
+            fromDb.RuleSets.ShouldNotBeNull();
+            (fromDb.RuleSets.Count == 1).ShouldBeTrue();
+            fromDb.RuleSets.First().Name.ShouldEqual("My discount rule set");
         }
 
         [Test]
@@ -96,6 +98,7 @@ namespace SmartStore.Data.Tests.Discounts
                 DiscountLimitation = DiscountLimitationType.Unlimited,
                 LimitationTimes = 3
             };
+
 			discount.AppliedToProducts.Add(GetTestProduct());
             var fromDb = SaveAndLoadEntity(discount);
             fromDb.ShouldNotBeNull();
@@ -122,6 +125,7 @@ namespace SmartStore.Data.Tests.Discounts
                 DiscountLimitation = DiscountLimitationType.Unlimited,
                 LimitationTimes = 3
             };
+
             discount.AppliedToCategories.Add(GetTestCategory());
             var fromDb = SaveAndLoadEntity(discount);
             fromDb.ShouldNotBeNull();
@@ -129,8 +133,6 @@ namespace SmartStore.Data.Tests.Discounts
             fromDb.AppliedToCategories.ShouldNotBeNull();
             (fromDb.AppliedToCategories.Count == 1).ShouldBeTrue();
             fromDb.AppliedToCategories.First().Name.ShouldEqual("Books");
-
-
         }
 
 		protected Product GetTestProduct()
@@ -139,7 +141,7 @@ namespace SmartStore.Data.Tests.Discounts
 			{
 				Name = "Product name 1",
 				CreatedOnUtc = new DateTime(2010, 01, 03),
-				UpdatedOnUtc = new DateTime(2010, 01, 04),
+				UpdatedOnUtc = new DateTime(2010, 01, 04)
 			};
 		}
 
@@ -153,14 +155,13 @@ namespace SmartStore.Data.Tests.Discounts
                 MetaDescription = "Meta description",
                 MetaTitle = "Meta title",
                 ParentCategoryId = 2,
-                //PictureId = 3,
                 PageSize = 4,
                 ShowOnHomePage = false,
                 Published = true,
                 Deleted = false,
                 DisplayOrder = 5,
                 CreatedOnUtc = new DateTime(2010, 01, 01),
-                UpdatedOnUtc = new DateTime(2010, 01, 02),
+                UpdatedOnUtc = new DateTime(2010, 01, 02)
             };
         }
     }

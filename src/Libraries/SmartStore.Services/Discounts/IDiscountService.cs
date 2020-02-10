@@ -44,13 +44,6 @@ namespace SmartStore.Services.Discounts
         void UpdateDiscount(Discount discount);
 
         /// <summary>
-        /// Delete discount requirement
-        /// </summary>
-        /// <param name="discountRequirement">Discount requirement</param>
-        void DeleteDiscountRequirement(DiscountRequirement discountRequirement);
-
-
-        /// <summary>
         /// Get discount by coupon code
         /// </summary>
         /// <param name="couponCode">CouponCode</param>

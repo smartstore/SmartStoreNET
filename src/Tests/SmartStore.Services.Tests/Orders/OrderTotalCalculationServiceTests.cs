@@ -15,7 +15,6 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Catalog;
@@ -32,7 +31,7 @@ using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Orders
 {
-	[TestFixture]
+    [TestFixture]
     public class OrderTotalCalculationServiceTests : ServiceTest
     {
         IWorkContext _workContext;
@@ -69,7 +68,6 @@ namespace SmartStore.Services.Tests.Orders
 		IGeoCountryLookup _geoCountryLookup;
 		Store _store;
         Currency _currency;
-        ITypeFinder _typeFinder;
         ICartRuleProvider _cartRuleProvider;
 
         [SetUp]
@@ -106,7 +104,6 @@ namespace SmartStore.Services.Tests.Orders
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
             
 			_settingService = MockRepository.GenerateMock<ISettingService>();
-			_typeFinder = MockRepository.GenerateMock<ITypeFinder>();
             _cartRuleProvider = MockRepository.GenerateMock<ICartRuleProvider>();
 
             //shipping
@@ -126,7 +123,6 @@ namespace SmartStore.Services.Tests.Orders
                 _shippingSettings,
 				_settingService,
 				this.ProviderManager,
-				_typeFinder,
 				_services,
                 _cartRuleProvider);
 

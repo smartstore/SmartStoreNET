@@ -6,10 +6,10 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Shipping
 {
-	/// <summary>
-	/// Shipping service interface
-	/// </summary>
-	public partial interface IShippingService
+    /// <summary>
+    /// Shipping service interface
+    /// </summary>
+    public partial interface IShippingService
     {
         /// <summary>
         /// Load active shipping rate computation methods
@@ -31,8 +31,6 @@ namespace SmartStore.Services.Shipping
 		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Shipping rate computation methods</returns>
 		IEnumerable<Provider<IShippingRateComputationMethod>> LoadAllShippingRateComputationMethods(int storeId = 0);
-
-
 
 
         /// <summary>
@@ -112,11 +110,5 @@ namespace SmartStore.Services.Shipping
         /// <returns>Shipping options</returns>
 		GetShippingOptionResponse GetShippingOptions(IList<OrganizedShoppingCartItem> cart, Address shippingAddress,
 			string allowedShippingRateComputationMethodSystemName = "", int storeId = 0);
-
-		/// <summary>
-		/// Gets all shipping method filters
-		/// </summary>
-		/// <returns>List of shipping method filters</returns>
-		IList<IShippingMethodFilter> GetAllShippingMethodFilters();
     }
 }

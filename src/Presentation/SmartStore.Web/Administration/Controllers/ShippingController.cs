@@ -63,21 +63,6 @@ namespace SmartStore.Admin.Controllers
 			if (shippingMethod != null)
 			{
                 model.SelectedRuleSetIds = shippingMethod.RuleSets.Select(x => x.Id).ToArray();
-
-                var allFilters = _shippingService.GetAllShippingMethodFilters();
-				var configUrls = allFilters
-					.Select(x => x.GetConfigurationUrl(shippingMethod.Id))
-					.Where(x => x.HasValue())
-					.ToList();
-
-				model.FilterConfigurationUrls = configUrls
-					.Select(x => string.Concat("'", x, "'"))
-					.OrderBy(x => x)
-					.ToList();
-			}
-			else
-			{
-				model.FilterConfigurationUrls = new List<string>();
 			}
 
             model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(shippingMethod);

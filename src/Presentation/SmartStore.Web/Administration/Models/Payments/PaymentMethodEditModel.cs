@@ -13,12 +13,10 @@ namespace SmartStore.Admin.Models.Payments
 		public PaymentMethodEditModel()
 		{
 			Locales = new List<PaymentMethodLocalizedModel>();
-			FilterConfigurationUrls = new List<string>();
 		}
 
 		public IList<PaymentMethodLocalizedModel> Locales { get; set; }
 		public string IconUrl { get; set; }
-		public IList<string> FilterConfigurationUrls { get; set; }
 
 		[SmartResourceDisplayName("Common.SystemName")]
 		public string SystemName { get; set; }

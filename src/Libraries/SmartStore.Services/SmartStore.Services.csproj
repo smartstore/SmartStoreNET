@@ -635,7 +635,6 @@
     <Compile Include="Seo\UrlRecordService.cs" />
     <Compile Include="ServiceCacheBuster.cs" />
     <Compile Include="Shipping\IShipmentService.cs" />
-    <Compile Include="Shipping\IShippingMethodFilter.cs" />
     <Compile Include="Shipping\ShipmentService.cs" />
     <Compile Include="Shipping\ShippingExtentions.cs" />
     <Compile Include="Shipping\IShippingService.cs" />

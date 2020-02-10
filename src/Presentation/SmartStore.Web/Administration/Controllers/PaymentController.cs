@@ -135,17 +135,6 @@ namespace SmartStore.Admin.Controllers
 				}
 			});
 
-            var allFilters = _paymentService.GetAllPaymentMethodFilters();
-            var configUrls = allFilters
-                .Select(x => x.GetConfigurationUrl(model.SystemName))
-                .Where(x => x.HasValue())
-                .ToList();
-
-            model.FilterConfigurationUrls = configUrls
-                .Select(x => string.Concat("'", x, "'"))
-                .OrderBy(x => x)
-                .ToList();
-
             ViewBag.Title = pageTitle;
 
 			return View(model);

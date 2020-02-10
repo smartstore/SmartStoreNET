@@ -63,7 +63,6 @@ namespace SmartStore.Services.Tests.Orders
         IOrderTotalCalculationService _orderTotalCalcService;
         IAddressService _addressService;
         ShippingSettings _shippingSettings;
-        ILogger _logger;
         IRepository<ShippingMethod> _shippingMethodRepository;
 		IRepository<StoreMapping> _storeMappingRepository;
 		IOrderService _orderService;
@@ -96,7 +95,6 @@ namespace SmartStore.Services.Tests.Orders
 		HttpRequestBase _httpRequestBase;
 		IGeoCountryLookup _geoCountryLookup;
 		Store _store;
-		ITypeFinder _typeFinder;
         ICartRuleProvider _cartRuleProvider;
 
         [SetUp]
@@ -126,7 +124,6 @@ namespace SmartStore.Services.Tests.Orders
 
             _localizationService = MockRepository.GenerateMock<ILocalizationService>();
 			_settingService = MockRepository.GenerateMock<ISettingService>();
-			_typeFinder = MockRepository.GenerateMock<ITypeFinder>();
             _cartRuleProvider = MockRepository.GenerateMock<ICartRuleProvider>();
 
             //shipping
@@ -135,7 +132,6 @@ namespace SmartStore.Services.Tests.Orders
             _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add("FixedRateTestShippingRateComputationMethod");
             _shippingMethodRepository = MockRepository.GenerateMock<IRepository<ShippingMethod>>();
 			_storeMappingRepository = MockRepository.GenerateMock<IRepository<StoreMapping>>();
-            _logger = new NullLogger();
 
             _shippingService = new ShippingService(
                 _shippingMethodRepository,
@@ -147,7 +143,6 @@ namespace SmartStore.Services.Tests.Orders
                 _shippingSettings,
 				_settingService,
 				this.ProviderManager,
-				_typeFinder,
 				_services,
                 _cartRuleProvider);
 

@@ -16,10 +16,7 @@ namespace SmartStore.Admin.Models.Shipping
         public ShippingMethodModel()
         {
             Locales = new List<ShippingMethodLocalizedModel>();
-			FilterConfigurationUrls = new List<string>();
         }
-
-		public IList<string> FilterConfigurationUrls { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Shipping.Methods.Fields.Name")]
         [AllowHtml]

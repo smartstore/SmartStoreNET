@@ -34,7 +34,6 @@
 	@Html.SmartStore().TabStrip().Name("payment-method-edit").Style(TabsStyle.Material).Items(x =>
 	{
 		x.Add().Text(T("Admin.Common.General").Text).Content(TabGeneral()).Selected(true);
-		x.Add().Text(T("Admin.Common.Restrictions").Text).Content(TabRestrictions());
 
 		EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "payment-method-edit", this.Html, this.Model));
 	})
@@ -137,44 +136,3 @@
         </tr>
     </table>
 }
-
-@helper TabRestrictions()
-{
-	if (Model.FilterConfigurationUrls.Count == 0)
-	{
-		<div class="alert alert-info">
-			@T("Admin.Configuration.Payment.Methods.RestrictionNote")
-		</div>
-	}
-
-	<div>
-		<div id="FilterOutPaymentMethodContainer"></div>
-	</div>
-}
-
-<script type="text/javascript">
-	$(document).ready(function () {
-		var configUrls = [@Html.Raw(string.Join(", ", Model.FilterConfigurationUrls))],
-			i = 0;
-
-		if (configUrls.length > 0) {
-			getFilterConfiguration(configUrls[0], $('#FilterOutPaymentMethodContainer'));
-		}
-
-		function getFilterConfiguration(url, container) {
-			$.ajax({
-				url: url,
-				cache: false,
-				dataType: 'html',
-				success: function (html) {
-					container.append(html);
-					if (++i < configUrls.length)
-					{
-						getFilterConfiguration(configUrls[i], container);
-					}
-					applyCommonPlugins(container);
-				}
-			});
-		}
-    });
-</script>

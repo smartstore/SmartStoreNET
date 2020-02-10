@@ -63,7 +63,7 @@ namespace SmartStore.Web.Framework.Security
                                 {
                                     foreach (var error in result.ErrorCodes)
                                     {
-                                        Logger.Error(error);
+                                        Logger.Error("Error while getting Google Recaptcha response: " + error);
                                     }
                                 }
                             }

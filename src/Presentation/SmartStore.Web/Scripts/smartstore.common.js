@@ -295,23 +295,26 @@
             size: invisible ? 'invisible' : undefined,
             badge: 'bottomleft',
             callback: function (token) {
-
-                if (invisible && frm.data("ajax-submit") === "true") {
-                    frm.find("#g-recaptcha-response").val(token);
-                }
-                else if (invisible && frm) {
-                    frm[0].submit();
+                if (invisible) {
+                    if (frm.data('ajax')) {
+                        frm.find("#g-recaptcha-response").val(token);
+                    }
+                    else if (frm) {
+                        frm[0].submit();
+                    }
                 }
             }
         });
 
         if (invisible) {
 
-            frm.on('ajaxsubmit', function (e) {
-                frm.data("ajax-submit", "true");
-                grecaptcha.execute(holderId);
-            });
-
+            // if form has attr data-ajax
+            if (frm.data('ajax')) {
+                frm.on('ajaxsubmit', function (e) {
+                    grecaptcha.execute(holderId);
+                });
+            }
+            
             frm.on('submit', function (e) {
                 if ($.validator === undefined || frm.valid() == true) {
                     e.preventDefault();

@@ -7,7 +7,7 @@
 
 ### Breaking changes
 * Install\UninstallPermissions has been removed from IPermissionService. No longer needs to be called by plugins. Permissions are now automatically installed\uninstalled.
-* IShippingMethodFilter has been removed. Shipping methods can now be filtered via rule sets.
+* IDiscountRequirementRule and IShippingMethodFilter has been removed. Discounts and shipping methods can now be filtered by rule sets.
 
 ### New Features
 * #1598 Add published property to ProductTag entity.

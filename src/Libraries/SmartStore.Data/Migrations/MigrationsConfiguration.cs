@@ -343,7 +343,9 @@
                 "Specifies discounts to be applied to the object.",
                 "Legt auf das Objekt anzuwendende Rabatte fest.");
 
-            builder.AddOrUpdate("Admin.Promotions.Discounts.Requirements.Hint",
+            builder.AddOrUpdate("Admin.Promotions.Discounts.RuleSetRequirements",
+                "Requirements",
+                "Voraussetzungen",
                 "Specifies requirements for the applying of the discount. The discount is applied when one of the selected rules is fulfilled.",
                 "Legt Voraussetzungen für die Anwendung des Rabatts fest. Der Rabatt wird gewährt, wenn eine der ausgewählten Regeln erfüllt ist.");
 

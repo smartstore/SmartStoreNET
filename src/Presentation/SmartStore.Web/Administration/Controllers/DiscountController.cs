@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Discounts;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
@@ -12,7 +13,6 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
-using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
@@ -27,9 +27,9 @@ namespace SmartStore.Admin.Controllers
         private readonly ICategoryService _categoryService;
         private readonly IManufacturerService _manufacturerService;
         private readonly IProductService _productService;
-        private readonly PluginMediator _pluginMediator;
         private readonly IRuleStorage _ruleStorage;
         private readonly IPriceFormatter _priceFormatter;
+        private readonly AdminAreaSettings _adminAreaSettings;
 
         public DiscountController(
             IDiscountService discountService,
@@ -38,9 +38,9 @@ namespace SmartStore.Admin.Controllers
             IProductService productService,
             IDateTimeHelper dateTimeHelper,
             ICustomerActivityService customerActivityService,
-            PluginMediator pluginMediator,
             IRuleStorage ruleStorage,
-            IPriceFormatter priceFormatter)
+            IPriceFormatter priceFormatter,
+            AdminAreaSettings adminAreaSettings)
         {
             _discountService = discountService;
             _categoryService = categoryService;
@@ -48,22 +48,9 @@ namespace SmartStore.Admin.Controllers
             _productService = productService;
             _dateTimeHelper = dateTimeHelper;
             _customerActivityService = customerActivityService;
-            _pluginMediator = pluginMediator;
             _ruleStorage = ruleStorage;
             _priceFormatter = priceFormatter;
-        }
-
-        #region Utilities
-
-        [NonAction]
-        public string GetRequirementUrlInternal(IDiscountRequirementRule discountRequirementRule, Discount discount, int? discountRequirementId)
-        {
-            Guard.NotNull(discountRequirementRule, nameof(discountRequirementRule));
-            Guard.NotNull(discount, nameof(discount));
-
-            var url = string.Format("{0}{1}", Services.WebHelper.GetStoreLocation(), discountRequirementRule.GetConfigurationUrl(discount.Id, discountRequirementId));
-
-            return url;
+            _adminAreaSettings = adminAreaSettings;
         }
 
         [NonAction]
@@ -73,18 +60,8 @@ namespace SmartStore.Admin.Controllers
 
             var language = Services.WorkContext.WorkingLanguage;
 
+            model.GridPageSize = _adminAreaSettings.GridPageSize;
             model.PrimaryStoreCurrencyCode = Services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
-            model.AvailableDiscountRequirementRules.Add(new SelectListItem { Text = T("Admin.Promotions.Discounts.Requirements.DiscountRequirementType.Select"), Value = "" });
-
-            var discountRules = _discountService.LoadAllDiscountRequirementRules();
-            foreach (var discountRule in discountRules)
-            {
-                model.AvailableDiscountRequirementRules.Add(new SelectListItem
-                {
-                    Text = _pluginMediator.GetLocalizedFriendlyName(discountRule.Metadata),
-                    Value = discountRule.Metadata.SystemName
-                });
-            }
 
             if (discount != null)
             {
@@ -104,24 +81,8 @@ namespace SmartStore.Admin.Controllers
                     .Where(x => x != null && !x.Deleted)
                     .Select(x => new DiscountModel.AppliedToEntityModel { Id = x.Id, Name = x.GetLocalized(y => y.Name, language) })
                     .ToList();
-
-                foreach (var dr in discount.DiscountRequirements.OrderBy(dr => dr.Id))
-                {
-                    var drr = _discountService.LoadDiscountRequirementRuleBySystemName(dr.DiscountRequirementRuleSystemName);
-                    if (drr != null)
-                    {
-                        model.DiscountRequirementMetaInfos.Add(new DiscountModel.DiscountRequirementMetaInfo
-                        {
-                            DiscountRequirementId = dr.Id,
-                            RuleName = _pluginMediator.GetLocalizedFriendlyName(drr.Metadata),
-                            ConfigurationUrl = GetRequirementUrlInternal(drr.Value, discount, dr.Id)
-                        });
-                    }
-                }
             }
         }
-
-        #endregion
 
         #region Discounts
 
@@ -195,8 +156,8 @@ namespace SmartStore.Admin.Controllers
         {
             var model = new DiscountModel();
             PrepareDiscountModel(model, null);
-            //default values
             model.LimitationTimes = 1;
+
             return View(model);
         }
 
@@ -325,66 +286,6 @@ namespace SmartStore.Admin.Controllers
 
             NotifySuccess(T("Admin.Promotions.Discounts.Deleted"));
             return RedirectToAction("List");
-        }
-
-        #endregion
-
-        #region Discount requirements
-
-        [AcceptVerbs(HttpVerbs.Get)]
-        [Permission(Permissions.Promotion.Discount.Read)]
-        public ActionResult GetDiscountRequirementConfigurationUrl(string systemName, int discountId, int? discountRequirementId)
-        {
-            if (string.IsNullOrEmpty(systemName))
-                throw new ArgumentNullException("systemName");
-
-            var discountRequirementRule = _discountService.LoadDiscountRequirementRuleBySystemName(systemName);
-            if (discountRequirementRule == null)
-                throw new ArgumentException("Discount requirement rule could not be loaded");
-
-            var discount = _discountService.GetDiscountById(discountId);
-            if (discount == null)
-                throw new ArgumentException("Discount could not be loaded");
-
-            string url = GetRequirementUrlInternal(discountRequirementRule.Value, discount, discountRequirementId);
-            return Json(new { url }, JsonRequestBehavior.AllowGet);
-        }
-
-        [Permission(Permissions.Promotion.Discount.Read)]
-        public ActionResult GetDiscountRequirementMetaInfo(int discountRequirementId, int discountId)
-        {
-            var discount = _discountService.GetDiscountById(discountId);
-            if (discount == null)
-                throw new ArgumentException("Discount could not be loaded");
-
-            var discountRequirement = discount.DiscountRequirements.Where(dr => dr.Id == discountRequirementId).FirstOrDefault();
-            if (discountRequirement == null)
-                throw new ArgumentException("Discount requirement could not be loaded");
-
-            var discountRequirementRule = _discountService.LoadDiscountRequirementRuleBySystemName(discountRequirement.DiscountRequirementRuleSystemName);
-            if (discountRequirementRule == null)
-                throw new ArgumentException("Discount requirement rule could not be loaded");
-
-            string url = GetRequirementUrlInternal(discountRequirementRule.Value, discount, discountRequirementId);
-            string ruleName = _pluginMediator.GetLocalizedFriendlyName(discountRequirementRule.Metadata);
-
-            return Json(new { url, ruleName }, JsonRequestBehavior.AllowGet);
-        }
-
-        [Permission(Permissions.Promotion.Discount.Update)]
-        public ActionResult DeleteDiscountRequirement(int discountRequirementId, int discountId)
-        {
-            var discount = _discountService.GetDiscountById(discountId);
-            if (discount == null)
-                throw new ArgumentException("Discount could not be loaded");
-
-            var discountRequirement = discount.DiscountRequirements.Where(dr => dr.Id == discountRequirementId).FirstOrDefault();
-            if (discountRequirement == null)
-                throw new ArgumentException("Discount requirement could not be loaded");
-
-            _discountService.DeleteDiscountRequirement(discountRequirement);
-
-            return Json(new { Result = true }, JsonRequestBehavior.AllowGet);
         }
 
         #endregion

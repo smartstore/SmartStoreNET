@@ -516,7 +516,6 @@
     <Content Include="Scripts\smartstore.rules.js" />
     <Content Include="Scripts\smartstore.iconchooser.js" />
     <Content Include="Scripts\smartstore.download.js" />
-    <Content Include="Scripts\smartstore.discountrules.js" />
     <Content Include="Content\theme-rtl.scss" />
     <Content Include="Content\_rtl.scss" />
     <None Include="Scripts\_references.js" />

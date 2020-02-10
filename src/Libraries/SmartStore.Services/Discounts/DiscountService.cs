@@ -8,8 +8,6 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Plugins;
-using SmartStore.Rules;
 using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -27,7 +25,6 @@ namespace SmartStore.Services.Discounts
         private readonly IRequestCache _requestCache;
 		private readonly IStoreContext _storeContext;
 		private readonly IGenericAttributeService _genericAttributeService;
-		private readonly IProviderManager _providerManager;
         private readonly ICartRuleProvider _cartRuleProvider;
         private readonly IDictionary<DiscountKey, bool> _discountValidityCache;
 
@@ -38,7 +35,6 @@ namespace SmartStore.Services.Discounts
             IRepository<DiscountUsageHistory> discountUsageHistoryRepository,
 			IStoreContext storeContext,
 			IGenericAttributeService genericAttributeService,
-			IProviderManager providerManager,
             ICartRuleProvider cartRuleProvider)
         {
             _requestCache = requestCache;
@@ -47,7 +43,6 @@ namespace SmartStore.Services.Discounts
             _discountUsageHistoryRepository = discountUsageHistoryRepository;
 			_storeContext = storeContext;
 			_genericAttributeService = genericAttributeService;
-			_providerManager = providerManager;
             _cartRuleProvider = cartRuleProvider;
 			_discountValidityCache = new Dictionary<DiscountKey, bool>();
 		}
@@ -182,16 +177,6 @@ namespace SmartStore.Services.Discounts
             _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
         }
 
-		public virtual Provider<IDiscountRequirementRule> LoadDiscountRequirementRuleBySystemName(string systemName, int storeId = 0)
-        {
-			return _providerManager.GetProvider<IDiscountRequirementRule>(systemName, storeId);
-        }
-
-		public virtual IEnumerable<Provider<IDiscountRequirementRule>> LoadAllDiscountRequirementRules(int storeId = 0)
-        {
-			return _providerManager.GetAllProviders<IDiscountRequirementRule>(storeId);
-        }
-
         public virtual Discount GetDiscountByCouponCode(string couponCode, bool showHidden = false)
         {
             if (String.IsNullOrWhiteSpace(couponCode))
@@ -223,7 +208,7 @@ namespace SmartStore.Services.Discounts
 				return result;
 			}
 
-			// Check coupon code
+			// Check coupon code.
 			if (discount.RequiresCouponCode)
             {
                 if (discount.CouponCode.IsEmpty())
@@ -233,9 +218,8 @@ namespace SmartStore.Services.Discounts
                     return Cached(false);
             }
 
-            // Check date range
+            // Check date range.
             var now = DateTime.UtcNow;
-			//var store = _storeContext.CurrentStore;
 
             if (discount.StartDateUtc.HasValue)
             {
@@ -254,7 +238,7 @@ namespace SmartStore.Services.Discounts
             if (!CheckDiscountLimitations(discount, customer))
                 return Cached(false);
 
-			// better not to apply discounts if there are gift cards in the cart cause the customer could "earn" money through that.
+			// Better not to apply discounts if there are gift cards in the cart cause the customer could "earn" money through that.
 			if (discount.DiscountType == DiscountType.AssignedToOrderTotal || discount.DiscountType == DiscountType.AssignedToOrderSubTotal)
 			{
 				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
@@ -267,25 +251,6 @@ namespace SmartStore.Services.Discounts
             {
                 return Cached(false);
             }
-
-            // discount requirements
-            //var requirements = discount.DiscountRequirements;
-            //foreach (var req in requirements)
-            //{
-            //    var requirementRule = LoadDiscountRequirementRuleBySystemName(req.DiscountRequirementRuleSystemName, store.Id);
-            //    if (requirementRule == null)
-            //        continue;
-
-            //    var request = new CheckDiscountRequirementRequest
-            //    {
-            //        DiscountRequirement = req,
-            //        Customer = customer,
-            //        Store = store
-            //    };
-
-            //    if (!requirementRule.Value.CheckRequirement(request))
-            //        return Cached(false);
-            //}
 
             return Cached(true);
 

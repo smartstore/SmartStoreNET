@@ -9,7 +9,6 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Rules;
 using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Common;
 using SmartStore.Services.Discounts;
@@ -57,7 +56,7 @@ namespace SmartStore.Services.Tests.Discounts
                 LimitationTimes = 3,
             };
 
-            _discountRepo.Expect(x => x.Table).Return(new List<Discount>() { discount1, discount2 }.AsQueryable());
+            _discountRepo.Expect(x => x.Table).Return(new List<Discount> { discount1, discount2 }.AsQueryable());
 
 			_storeContext = MockRepository.GenerateMock<IStoreContext>();
 			_storeContext.Expect(x => x.CurrentStore).Return(new Store 
@@ -72,7 +71,7 @@ namespace SmartStore.Services.Tests.Discounts
             _cartRuleProvider = MockRepository.GenerateMock<ICartRuleProvider>();
 
             _discountService = new DiscountService(NullRequestCache.Instance, _discountRepo, _discountRequirementRepo,
-				_discountUsageHistoryRepo, _storeContext, _genericAttributeService, ProviderManager, _cartRuleProvider);
+				_discountUsageHistoryRepo, _storeContext, _genericAttributeService, _cartRuleProvider);
         }
 
         [Test]
@@ -81,21 +80,6 @@ namespace SmartStore.Services.Tests.Discounts
             var discounts = _discountService.GetAllDiscounts(null);
             discounts.ShouldNotBeNull();
             (discounts.Count() > 0).ShouldBeTrue();
-        }
-
-        [Test]
-        public void Can_load_discountRequirementRules()
-        {
-            var rules = _discountService.LoadAllDiscountRequirementRules();
-            rules.ShouldNotBeNull();
-            (rules.Any()).ShouldBeTrue();
-        }
-
-        [Test]
-        public void Can_load_discountRequirementRuleBySystemKeyword()
-        {
-            var rule = _discountService.LoadDiscountRequirementRuleBySystemName("TestDiscountRequirementRule");
-            rule.ShouldNotBeNull();
         }
 
         [Test]

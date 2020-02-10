@@ -947,9 +947,8 @@ namespace SmartStore.Web.Framework
 					m.For(em => em.ExportFeatures, exportFeature);
 				});
 
-				// register specific provider type
+				// Register specific provider type.
 				RegisterAsSpecificProvider<ITaxProvider>(type, systemName, registration);
-				RegisterAsSpecificProvider<IDiscountRequirementRule>(type, systemName, registration);
 				RegisterAsSpecificProvider<IExchangeRateProvider>(type, systemName, registration);
 				RegisterAsSpecificProvider<IShippingRateComputationMethod>(type, systemName, registration);
 				RegisterAsSpecificProvider<IWidget>(type, systemName, registration);
@@ -1081,10 +1080,6 @@ namespace SmartStore.Web.Framework
 			if (typeof(ITaxProvider).IsAssignableFrom(implType))
 			{
 				return "Tax";
-			}
-			else if (typeof(IDiscountRequirementRule).IsAssignableFrom(implType))
-			{
-				return "Marketing";
 			}
 			else if (typeof(IExchangeRateProvider).IsAssignableFrom(implType))
 			{

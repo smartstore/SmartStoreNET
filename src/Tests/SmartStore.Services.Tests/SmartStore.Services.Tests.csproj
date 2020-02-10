@@ -116,7 +116,6 @@
     <Compile Include="Directory\MeasureServiceTests.cs" />
     <Compile Include="Discounts\DiscountExtensionsTests.cs" />
     <Compile Include="Discounts\DiscountServiceTests.cs" />
-    <Compile Include="Discounts\TestDiscountRequirementRule.cs" />
     <Compile Include="Events\ConsumerRegistryTests.cs" />
     <Compile Include="Events\TestConsumers.cs" />
     <Compile Include="Helpers\DateTimeHelperTests.cs" />

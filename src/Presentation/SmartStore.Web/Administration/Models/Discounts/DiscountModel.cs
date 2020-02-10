@@ -18,9 +18,9 @@ namespace SmartStore.Admin.Models.Discounts
             AppliedToCategories = new List<AppliedToEntityModel>();
 			AppliedToManufacturers = new List<AppliedToEntityModel>();
             AppliedToProducts = new List<AppliedToEntityModel>();
-            AvailableDiscountRequirementRules = new List<SelectListItem>();
-            DiscountRequirementMetaInfos = new List<DiscountRequirementMetaInfo>();
         }
+
+        public int GridPageSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.Name")]
         [AllowHtml]
@@ -90,28 +90,13 @@ namespace SmartStore.Admin.Models.Discounts
         [UIHint("RuleSets")]
         [AdditionalMetadata("multiple", true)]
         [AdditionalMetadata("scope", RuleScope.Cart)]
-        [SmartResourceDisplayName("Admin.Promotions.Discounts.Requirements")]
+        [SmartResourceDisplayName("Admin.Promotions.Discounts.RuleSetRequirements")]
         public int[] SelectedRuleSetIds { get; set; }
-
-
-        [SmartResourceDisplayName("Admin.Promotions.Discounts.Requirements.DiscountRequirementType")]
-        public string AddDiscountRequirement { get; set; }
-
-        public IList<SelectListItem> AvailableDiscountRequirementRules { get; set; }
-
-        public IList<DiscountRequirementMetaInfo> DiscountRequirementMetaInfos { get; set; }
 
         [SmartResourceDisplayName("Admin.Rules.NumberOfRules")]
         public int NumberOfRules { get; set; }
 
         #region Nested classes
-
-        public class DiscountRequirementMetaInfo : ModelBase
-        {
-            public int DiscountRequirementId { get; set; }
-            public string RuleName { get; set; }
-            public string ConfigurationUrl { get; set; }
-        }
 
         public class DiscountUsageHistoryModel : EntityModelBase
         {

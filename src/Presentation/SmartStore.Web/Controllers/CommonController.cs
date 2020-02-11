@@ -659,7 +659,7 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult GenericUrl()
         {
-            // seems that no entity was found
+            // Seems that no entity was found
             return HttpNotFound();
         }
 

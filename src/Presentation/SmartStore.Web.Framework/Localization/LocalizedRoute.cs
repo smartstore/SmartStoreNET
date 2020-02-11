@@ -119,18 +119,27 @@ namespace SmartStore.Web.Framework.Localization
         /// </returns>
         public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values)
         {
-            VirtualPathData data = base.GetVirtualPath(requestContext, values);
+            var data = base.GetVirtualPath(requestContext, values);
 
             if (data != null && DataSettings.DatabaseIsInstalled() && SeoFriendlyUrlsForLanguagesEnabled)
             {
                 var helper = new LocalizedUrlHelper(requestContext.HttpContext.Request, true);
 				if (helper.IsLocalizedUrl(out string cultureCode))
 				{
-					if (!requestContext.RouteData.Values.ContainsKey("StripInvalidSeoCode"))
-					{
-						data.VirtualPath = String.Concat(cultureCode, "/", data.VirtualPath).TrimEnd('/');
-					}
-				}
+                    if (requestContext.RouteData.DataTokens.Get("InvalidSeoCodeReplacement") is string seoCodeReplacement)
+                    {
+                        // The LanguageSeoCode filter detected a localized URL, but the locale does not exist or is inactive.
+                        // The routing system is therefore about to render the "NotFound" view. Here we ensure that generated links
+                        // in NotFound page do not contain the invalid seo code anymore: Either we strip it off or we replace it
+                        // with the default language's seo code (according to "LocalizationSettings.DefaultLanguageRedirectBehaviour" setting).
+                        cultureCode = seoCodeReplacement;
+                    }
+
+                    if (cultureCode.HasValue())
+                    {
+                        data.VirtualPath = String.Concat(cultureCode, "/", data.VirtualPath).TrimEnd('/');
+                    }
+                }
 			}
 
             return data;

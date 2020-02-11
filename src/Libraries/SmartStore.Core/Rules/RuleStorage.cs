@@ -23,7 +23,7 @@ namespace SmartStore.Rules
             bool includeSubGroups = false,
             bool includeHidden = false);
 
-        bool ApplyRuleSetMappings<T>(T entity, int[] selectedRuleSetIds) where T : BaseEntity, IRuleSetsSupported;
+        bool ApplyRuleSetMappings<T>(T entity, int[] selectedRuleSetIds) where T : BaseEntity, IRulesContainer;
 
         void InsertRuleSet(RuleSetEntity ruleSet);
         void UpdateRuleSet(RuleSetEntity ruleSet);
@@ -174,7 +174,7 @@ namespace SmartStore.Rules
                 .FirstOrDefault(x => x.Id == id);
         }
 
-        public virtual bool ApplyRuleSetMappings<T>(T entity, int[] selectedRuleSetIds) where T : BaseEntity, IRuleSetsSupported
+        public virtual bool ApplyRuleSetMappings<T>(T entity, int[] selectedRuleSetIds) where T : BaseEntity, IRulesContainer
         {
             Guard.NotNull(entity, nameof(entity));
 

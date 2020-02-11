@@ -380,6 +380,19 @@
                 "Legt Voraussetzungen für die Verfügbarkeit der Zahlart fest. Die Zahlart wird angeboten, wenn eine der ausgewählten Regeln erfüllt ist.");
 
             builder.AddOrUpdate("Admin.Common.IsPublished", "Published", "Veröffentlicht");
+
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Discounts.DiscountType.AssignedToOrderTotal")
+                .Value("de", "Bezogen auf Gesamtsumme");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Discounts.DiscountType.AssignedToSkus")
+                .Value("de", "Bezogen auf Produkte");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Discounts.DiscountType.AssignedToCategories")
+                .Value("de", "Bezogen auf Warengruppen");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Discounts.DiscountType.AssignedToManufacturers")
+                .Value("de", "Bezogen auf Hersteller");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Discounts.DiscountType.AssignedToShipping")
+                .Value("de", "Bezogen auf Versandkosten");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Discounts.DiscountType.AssignedToOrderSubTotal")
+                .Value("de", "Bezogen auf Zwischensumme");
         }
     }
 }

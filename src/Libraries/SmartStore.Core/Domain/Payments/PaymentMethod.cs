@@ -10,7 +10,7 @@ namespace SmartStore.Core.Domain.Payments
 	/// Represents a payment method
 	/// </summary>
 	[DataContract]
-	public partial class PaymentMethod : BaseEntity, ILocalizedEntity, IStoreMappingSupported, IRuleSetsSupported
+	public partial class PaymentMethod : BaseEntity, ILocalizedEntity, IStoreMappingSupported, IRulesContainer
     {
         private ICollection<RuleSetEntity> _ruleSets;
 

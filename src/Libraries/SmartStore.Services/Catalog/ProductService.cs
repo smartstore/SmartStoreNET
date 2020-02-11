@@ -660,7 +660,6 @@ namespace SmartStore.Services.Catalog
             }
 
             var query = _productRepository.Table // .TableUntracked does not seem to eager load
-				.Expand(x => x.AppliedDiscounts.Select(y => y.DiscountRequirements))
                 .Expand(x => x.AppliedDiscounts.Select(y => y.RuleSets))
 				.Where(x => productIds.Contains(x.Id))
 				.Select(x => new

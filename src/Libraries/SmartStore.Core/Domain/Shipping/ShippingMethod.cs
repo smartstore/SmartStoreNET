@@ -10,7 +10,7 @@ namespace SmartStore.Core.Domain.Shipping
 	/// Represents a shipping method (used for offline shipping rate computation methods)
 	/// </summary>
 	[DataContract]
-	public partial class ShippingMethod : BaseEntity, ILocalizedEntity, IStoreMappingSupported, IRuleSetsSupported
+	public partial class ShippingMethod : BaseEntity, ILocalizedEntity, IStoreMappingSupported, IRulesContainer
     {
         private ICollection<RuleSetEntity> _ruleSets;
 

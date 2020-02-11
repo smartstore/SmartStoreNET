@@ -118,7 +118,9 @@ namespace SmartStore.Web.Framework.Theming
 				if (!_isHomePage.HasValue)
 				{
 					var routeData = _controllerContext.RequestContext.RouteData;
-					_isHomePage = routeData.GetRequiredString("controller").IsCaseInsensitiveEqual("Home") &&
+					var response = _controllerContext.RequestContext.HttpContext.Response;
+					_isHomePage = response.StatusCode != 404 &&
+						routeData.GetRequiredString("controller").IsCaseInsensitiveEqual("Home") &&
 						routeData.GetRequiredString("action").IsCaseInsensitiveEqual("Index");
 				}
 

@@ -16,6 +16,8 @@
         var webHelper = EngineContext.Current.Resolve<IWebHelper>();
         registerUrl = webHelper.ModifyQueryString(registerUrl, "returnUrl=" + HttpUtility.UrlEncode(this.Context.Request.QueryString["returnUrl"]), null);
     }
+
+    Html.AddCustomHeadParts("<meta name=\"robots\" content=\"noindex\">");
 }
 
 <div class="page login-page">

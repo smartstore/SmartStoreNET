@@ -7,6 +7,7 @@
 	Layout = "_Checkout";
 	Html.AddTitleParts(T("PageTitle.Checkout").Text);
 	Html.AddBodyCssClass("no-offcanvas-cart");
+    Html.AddCustomHeadParts("<meta name=\"robots\" content=\"noindex\">");
 
 	var termsLinkTemplate = "<a class='terms-trigger read' href='{0}' data-toggle='modal' data-target='#terms-of-service-modal'>";
 	var termsLink = termsLinkTemplate.FormatInvariant(Url.Topic("conditionsofuse", true));

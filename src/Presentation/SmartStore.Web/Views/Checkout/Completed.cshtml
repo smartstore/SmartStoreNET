@@ -4,6 +4,7 @@
     Layout = "_Checkout";
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
     Html.AddBodyCssClass("no-offcanvas-cart");
+    Html.AddCustomHeadParts("<meta name=\"robots\" content=\"noindex\">");
 }
 
 @section orderProgress{

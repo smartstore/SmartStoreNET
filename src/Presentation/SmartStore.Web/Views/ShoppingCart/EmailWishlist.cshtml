@@ -4,8 +4,8 @@
 
 @{
     Layout = "_Layout";
-
     Html.AddTitleParts(T("PageTitle.WishlistEmailAFriend").Text);
+    Html.AddCustomHeadParts("<meta name=\"robots\" content=\"noindex\">");
 }
 
 <div class="page email-a-friend-page">

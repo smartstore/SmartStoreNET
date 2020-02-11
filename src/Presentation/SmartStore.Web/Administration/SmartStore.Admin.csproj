@@ -288,6 +288,7 @@
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Plugins\ProviderModelList.cs" />
     <Compile Include="Models\Polls\PollVotingRecordModel.cs" />
+    <Compile Include="Models\Rules\RuleEditItem.cs" />
     <Compile Include="Models\Rules\RuleSetModel.cs" />
     <Compile Include="Models\Rules\RuleSetListModel.cs" />
     <Compile Include="Models\Rules\RuleSelectItem.cs" />

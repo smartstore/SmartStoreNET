@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
+using Newtonsoft.Json;
 using SmartStore.Admin.Models.Rules;
 using SmartStore.ComponentModel;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
@@ -212,6 +214,20 @@ namespace SmartStore.Admin.Controllers
 
             _ruleStorage.UpdateRuleSet(ruleSet);
 
+            if (model.RawRuleData.HasValue())
+            {
+                try
+                {
+                    var ruleData = JsonConvert.DeserializeObject<RuleEditItem[]>(model.RawRuleData);
+
+                    SaveRuleData(ruleData, model.Scope);
+                }
+                catch (Exception ex)
+                {
+                    // TODO
+                }
+            }
+
             return continueEditing ? RedirectToAction("Edit", new { id = ruleSet.Id }) : RedirectToAction("List");
         }
 
@@ -264,50 +280,17 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [Permission(Permissions.System.Rule.Update)]
-        public ActionResult UpdateRule(int ruleId, string op, string value)
+        public ActionResult UpdateRules(RuleEditItem[] ruleData, RuleScope ruleScope)
         {
-            var rule = _ruleStorage.GetRuleById(ruleId, true);
-            if (rule == null)
+            try
             {
-                NotifyError(T("Admin.Rules.NotFound", ruleId));
+                SaveRuleData(ruleData, ruleScope);
+            }
+            catch (Exception ex)
+            {
+                // TODO: error handling
                 return Json(new { Success = false });
             }
-
-            // TODO? Ugly. There should be a better way. Do not store culture variant values.
-            if (value.HasValue())
-            {
-                var provider = _ruleProvider(rule.RuleSet.Scope);
-                var descriptor = provider.RuleDescriptors.FindDescriptor(rule.RuleType);
-
-                if (descriptor.RuleType == RuleType.Money)
-                {
-                    value = value.Convert<decimal>(CultureInfo.CurrentCulture).ToString(CultureInfo.InvariantCulture);
-                }
-                else if (descriptor.RuleType == RuleType.Float || descriptor.RuleType == RuleType.NullableFloat)
-                {
-                    value = value.Convert<float>(CultureInfo.CurrentCulture).ToString(CultureInfo.InvariantCulture);
-                }
-                else if (descriptor.RuleType == RuleType.DateTime || descriptor.RuleType == RuleType.NullableDateTime)
-                {
-                    value = value.Convert<DateTime>(CultureInfo.CurrentCulture).ToString(CultureInfo.InvariantCulture);
-                }
-            }
-            //if (value?.Contains(',') ?? false)
-            //{
-            //    var provider = _ruleProvider(rule.RuleSet.Scope);
-            //    var descriptor = provider.RuleDescriptors.FindDescriptor(rule.RuleType);
-            //    var floatingPointTypes = new Type[] { typeof(decimal), typeof(decimal?), typeof(float), typeof(float?), typeof(double), typeof(double?) };
-
-            //    if (floatingPointTypes.Contains(descriptor.RuleType.ClrType))
-            //    {
-            //        value = value.Replace(",", ".");
-            //    }
-            //}
-
-            rule.Operator = op;
-            rule.Value = value;
-
-            _ruleStorage.UpdateRule(rule);
 
             return Json(new { Success = true });
         }
@@ -530,6 +513,64 @@ namespace SmartStore.Admin.Controllers
             ViewBag.RootRuleSetId = rootRuleSetId;
             ViewBag.TemplateSelector = _ruleTemplateSelector;
             //ViewBag.LanguageSeoCode = Services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower();
+        }
+
+        private void SaveRuleData(RuleEditItem[] ruleData, RuleScope ruleScope)
+        {
+            var rules = _ruleStorage.GetRulesByIds(ruleData?.Select(x => x.RuleId)?.ToArray(), true);
+            if (!rules.Any())
+            {
+                return;
+            }
+
+            using (var scope = new DbContextScope(ctx: Services.DbContext, autoCommit: false))
+            {
+                var rulesDic = rules.ToDictionarySafe(x => x.Id);
+                var provider = _ruleProvider(ruleScope);
+
+                foreach (var data in ruleData)
+                {
+                    if (rulesDic.TryGetValue(data.RuleId, out var entity))
+                    {
+                        // TODO? Ugly. There should be a better way. Do not store culture variant values.
+                        if (data.Value.HasValue())
+                        {
+                            var descriptor = provider.RuleDescriptors.FindDescriptor(entity.RuleType);
+
+                            if (descriptor.RuleType == RuleType.Money)
+                            {
+                                data.Value = data.Value.Convert<decimal>(CultureInfo.CurrentCulture).ToString(CultureInfo.InvariantCulture);
+                            }
+                            else if (descriptor.RuleType == RuleType.Float || descriptor.RuleType == RuleType.NullableFloat)
+                            {
+                                data.Value = data.Value.Convert<float>(CultureInfo.CurrentCulture).ToString(CultureInfo.InvariantCulture);
+                            }
+                            else if (descriptor.RuleType == RuleType.DateTime || descriptor.RuleType == RuleType.NullableDateTime)
+                            {
+                                data.Value = data.Value.Convert<DateTime>(CultureInfo.CurrentCulture).ToString(CultureInfo.InvariantCulture);
+                            }
+                        }
+                        //if (data.Value?.Contains(',') ?? false)
+                        //{
+                        //    var provider = _ruleProvider(ruleScope);
+                        //    var descriptor = provider.RuleDescriptors.FindDescriptor(entity.RuleType);
+                        //    var floatingPointTypes = new Type[] { typeof(decimal), typeof(decimal?), typeof(float), typeof(float?), typeof(double), typeof(double?) };
+
+                        //    if (floatingPointTypes.Contains(descriptor.RuleType.ClrType))
+                        //    {
+                        //        data.Value = data.Value.Replace(",", ".");
+                        //    }
+                        //}
+
+                        entity.Operator = data.Op;
+                        entity.Value = data.Value;
+
+                        _ruleStorage.UpdateRule(entity);
+                    }
+                }
+
+                scope.Commit();
+            }
         }
     }
 }

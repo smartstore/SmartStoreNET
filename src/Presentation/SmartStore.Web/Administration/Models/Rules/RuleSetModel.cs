@@ -48,6 +48,8 @@ namespace SmartStore.Admin.Models.Rules
         public IRuleExpressionGroup ExpressionGroup { get; set; }
         public IEnumerable<RuleDescriptor> AvailableDescriptors { get; set; }
 
+        public string RawRuleData { get; set; }
+
         public class AssignedToEntityModel : EntityModelBase
         {
             public string Name { get; set; }

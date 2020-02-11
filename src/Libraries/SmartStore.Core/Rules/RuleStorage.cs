@@ -30,6 +30,8 @@ namespace SmartStore.Rules
         void DeleteRuleSet(RuleSetEntity ruleSet);
 
         RuleEntity GetRuleById(int id, bool forEdit);
+        IList<RuleEntity> GetRulesByIds(int[] ids, bool forEdit);
+
         void InsertRule(RuleEntity rule);
         void UpdateRule(RuleEntity rule);
         void DeleteRule(RuleEntity rule);
@@ -172,6 +174,24 @@ namespace SmartStore.Rules
             return table
                 .Include(x => x.RuleSet)
                 .FirstOrDefault(x => x.Id == id);
+        }
+
+        public IList<RuleEntity> GetRulesByIds(int[] ids, bool forEdit)
+        {
+            if (ids == null || !ids.Any())
+            {
+                return new List<RuleEntity>();
+            }
+
+            var table = forEdit
+                ? _rsRules.Table
+                : _rsRules.TableUntracked;
+
+            var entities = table.Include(x => x.RuleSet)
+                .Where(x => ids.Contains(x.Id))
+                .ToList();
+
+            return entities;
         }
 
         public virtual bool ApplyRuleSetMappings<T>(T entity, int[] selectedRuleSetIds) where T : BaseEntity, IRulesContainer

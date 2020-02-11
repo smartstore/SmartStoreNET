@@ -21,6 +21,7 @@
         .MaxValue(max)
         .IncrementStep(step ?? 1)
         .DecimalDigits(4)
+        .ClientEvents(x => x.OnChange("onRuleValueChanged"))
         .Value(value)
 	)
 </div>

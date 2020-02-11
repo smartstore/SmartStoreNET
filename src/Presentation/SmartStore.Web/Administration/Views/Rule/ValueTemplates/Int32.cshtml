@@ -16,6 +16,7 @@
         .MinValue(min)
         .MaxValue(max)
         .IncrementStep(step ?? 1)
+        .ClientEvents(x => x.OnChange("onRuleValueChanged"))
         .Value(Model.Value as int?)
 	)
 </div>

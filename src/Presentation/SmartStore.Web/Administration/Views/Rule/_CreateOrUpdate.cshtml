@@ -12,6 +12,7 @@
 @Html.HiddenFor(model => model.CreatedOnUtc)
 @Html.HiddenFor(model => model.UpdatedOnUtc)
 @Html.HiddenFor(model => model.LastProcessedOnUtc)
+@Html.HiddenFor(model => model.RawRuleData)
 
 <div class="adminContent">
     <div class="adminRow">
@@ -98,10 +99,11 @@
     <div id="excute-result" class="alert alert-warning hide"></div>
 
     <div id="ruleset-root" class="ruleset-root" 
+         data-dirty="false"
          data-scope="@((int)Model.Scope)" 
          data-url-addgroup="@Url.Action("AddGroup")" 
          data-url-deletegroup="@Url.Action("DeleteGroup")"
-         data-url-updaterule="@Url.Action("UpdateRule")"
+         data-url-updaterules="@Url.Action("UpdateRules", new { ruleScope = (int)Model.Scope })"
          data-url-addrule="@Url.Action("AddRule")"
          data-url-deleterule="@Url.Action("DeleteRule")">
         @{ Html.RenderPartial("_RuleSet", Model.ExpressionGroup); }

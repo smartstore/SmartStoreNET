@@ -4,13 +4,21 @@
 @using SmartStore.Admin.Models.Rules
 
 <div class="ruleset" data-ruleset-id="@Model.Id" data-refrule-id="@Model.RefRuleId">
-    <div class="ruleset-header">
+    <div class="ruleset-header d-flex justify-content-between">
         <div class="ruleset-operator d-flex align-items-center justify-content-stretch" 
              data-res-all="@T("Admin.Rules.Operator.All")"
              data-res-one="@T("Admin.Rules.Operator.One")"
              data-url="@Url.Action("ChangeOperator")">
             @Html.Raw(T("Admin.Rules.OneOrAllConditions", OneOrAllConditionsButton()))
         </div>
+        @if (Model.RefRuleId == 0)
+        {
+            <div class="d-flex align-items-center">
+                <button type="button" class="btn btn-light ruleset-save" title="@T("Admin.Rules.SaveConditions")" disabled>
+                    <i class="fa fa-save"></i>
+                </button>
+            </div>
+        }
     </div>
 
     <div class="ruleset-body">
@@ -52,6 +60,15 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Called by Telerik rule value controls and smartstore.rules.js.
+    function onRuleValueChanged() {
+        var root = $('#ruleset-root');
+        root.find('.ruleset-save:first').prop('disabled', false);
+        root.data('dirty', true);
+    }
+</script>
 
 @helper OneOrAllConditionsButton()
 {

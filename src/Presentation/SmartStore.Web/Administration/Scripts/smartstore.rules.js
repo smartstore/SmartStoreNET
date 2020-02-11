@@ -28,10 +28,40 @@
         $('#excute-result').addClass('hide');
     }
 
+    function getRuleData() {
+        var data = [];
+
+        $('#ruleset-root').find('.rule').each(function () {
+            var rule = $(this);
+            var ruleId = rule.data('rule-id');
+            var op = rule.find(".rule-operator").data("value");
+
+            var value = rule.find(':input[name="rule-value-' + ruleId + '"]').val();
+            if (Array.isArray(value)) {
+                value = value.join(',');
+            }
+
+            data.push({ ruleId: ruleId, op: op, value: value });
+        });
+
+        return data;
+    }
+
 
     // Initialize.
     $('#ruleset-root').find('.rule').each(function () {
         enableRuleValueControl($(this));
+    });
+
+
+    // Save rule set.
+    $(document).on('click', 'button[name="save"]', function (e) {
+        var strData = $('#ruleset-root').data('dirty')
+            ? JSON.stringify(getRuleData())
+            : '';
+
+        $('#RawRuleData').val(strData);
+        return true;
     });
 
 
@@ -104,25 +134,25 @@
         operator.data("value", item.data("value"));
         operator.find(".btn").text(item.text());
         enableRuleValueControl(item);
+        onRuleValueChanged();
     });
 
-    // Save rule.
-    $(document).on('click', '.r-save-rule', function () {
-        var rule = $(this).closest('.rule');
-        var ruleId = rule.data('rule-id');
-        var op = rule.find(".rule-operator").data("value");
+    // Change state of save rules button.
+    $(document).on('change', ':input[name^="rule-value-"]', function () {
+        onRuleValueChanged();
+    });
 
-        var control = rule.find(':input[name="rule-value-' + ruleId + '"]');
-        var value = control.val();
-        if (Array.isArray(value)) {
-            value = value.join(',');
-        }
+    // Save rules.
+    $(document).on('click', 'button.ruleset-save', function () {
+        var data = getRuleData();
 
         $.ajax({
             cache: false,
-            url: $('#ruleset-root').data('url-updaterule'),
-            data: { ruleId: ruleId, op: op, value: value },
-            type: "POST",
+            url: $('#ruleset-root').data('url-updaterules'),
+            data: JSON.stringify(data),
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json;charset=utf-8',
             success: function (result) {
                 if (result.Success) {
                     location.reload();

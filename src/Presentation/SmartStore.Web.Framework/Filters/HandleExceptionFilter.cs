@@ -30,28 +30,17 @@ namespace SmartStore.Web.Framework.Filters
         
         public virtual void OnActionExecuted(ActionExecutedContext filterContext)
         {
-            if (!filterContext.IsChildAction && filterContext.Result is HttpNotFoundResult)
+            if (filterContext.IsChildAction)
+                return;
+            
+            if (filterContext.Result is HttpStatusCodeResult statusCodeResult && statusCodeResult.StatusCode == 404)
 			{
 				// Handle not found (404) from within the MVC pipeline (only called when HttpNotFoundResult is returned from actions)
-                var controllerName = filterContext.RouteData.GetRequiredString("controller");
-                var actionName = filterContext.RouteData.GetRequiredString("action");
+                filterContext.Result = Create404Result(filterContext);
 
-                filterContext.Result = new ViewResult
-				{
-					ViewName = "NotFound",
-					MasterName = (string)null,
-					ViewData = new ViewDataDictionary<HandleErrorInfo>(new HandleErrorInfo(new HttpException(404, "The resource does not exist."), actionName, controllerName)),
-					TempData = filterContext.Controller.TempData
-				};
+                _workContext.Value.IsAdmin = false;
 
-				_workContext.Value.IsAdmin = false;
-
-                var response = filterContext.RequestContext.HttpContext.Response;
-
-                //response.Clear();
-                response.StatusCode = (int)HttpStatusCode.NotFound;
-                response.TrySkipIisCustomErrors = true;
-			}
+            }
         }
 
         public void OnException(ExceptionContext filterContext)
@@ -107,6 +96,26 @@ namespace SmartStore.Web.Framework.Filters
                 response.StatusCode = 500;
                 response.TrySkipIisCustomErrors = true;
             }
+        }
+
+        protected internal static ActionResult Create404Result(ControllerContext context)
+        {
+            var controllerName = context.RouteData.GetRequiredString("controller");
+            var actionName = context.RouteData.GetRequiredString("action");
+
+            var response = context.RequestContext.HttpContext.Response;
+
+            //response.Clear();
+            response.StatusCode = (int)HttpStatusCode.NotFound;
+            response.TrySkipIisCustomErrors = true;
+
+            return new ViewResult
+            {
+                ViewName = "NotFound",
+                MasterName = (string)null,
+                ViewData = new ViewDataDictionary<HandleErrorInfo>(new HandleErrorInfo(new HttpException(404, "The resource does not exist."), actionName, controllerName)),
+                TempData = context.Controller.TempData
+            };
         }
 
         protected void LogException(Exception exception, ControllerContext context)

@@ -17,21 +17,19 @@ namespace SmartStore.Web.Framework.Controllers
 	{
 		protected SmartController()
 		{
-			this.Logger = NullLogger.Instance;
-			this.T = NullLocalizer.Instance;
 		}
 
 		public ILogger Logger
 		{
 			get;
 			set;
-		}
+		} = NullLogger.Instance;
 
 		public Localizer T
 		{
 			get;
 			set;
-		}
+		} = NullLocalizer.Instance;
 
 		public ICommonServices Services
 		{

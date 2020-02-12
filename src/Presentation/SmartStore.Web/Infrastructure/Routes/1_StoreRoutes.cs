@@ -336,13 +336,7 @@ namespace SmartStore.Web.Infrastructure
 
         }
 
-        public int Priority
-        {
-            get
-            {
-                return 0;
-            }
-        }
-    }
+		public int Priority { get; } = 0;
+	}
 
 }

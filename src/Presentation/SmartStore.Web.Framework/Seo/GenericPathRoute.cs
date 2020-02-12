@@ -21,8 +21,10 @@ namespace SmartStore.Web.Framework.Seo
 
         // Key = Prefix, Value = EntityType
         private static readonly Multimap<string, string> _urlPrefixes = new Multimap<string, string>(StringComparer.OrdinalIgnoreCase);
-		
-		/// <summary>
+
+        private static readonly Dictionary<string, GenericPath> _paths = new Dictionary<string, GenericPath>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
         /// Initializes a new instance of the System.Web.Routing.Route class, using the specified URL pattern and handler class.
         /// </summary>
         /// <param name="url">The URL pattern for the route.</param>
@@ -68,6 +70,31 @@ namespace SmartStore.Web.Framework.Seo
             : base(url, defaults, constraints, dataTokens, routeHandler)
         {
         }
+
+        public static void RegisterPaths(params GenericPath[] paths)
+        {
+            foreach (var path in paths)
+            {
+                if (path.EntityName.IsEmpty())
+                {
+                    throw new ArgumentException($"'{nameof(path)}.{nameof(path.EntityName)}' is required.", nameof(paths));
+                }
+
+                if (path.IdParamName.IsEmpty())
+                {
+                    throw new ArgumentException($"'{nameof(path)}.{nameof(path.IdParamName)}' is required.", nameof(paths));
+                }
+
+                if (path.Route == null)
+                {
+                    throw new ArgumentException($"'{nameof(path)}.{nameof(path.Route)}' is required.", nameof(paths));
+                }
+
+                _paths[path.EntityName] = path;
+            }
+        }
+
+        public static IEnumerable<GenericPath> Paths { get; } = _paths.Values.OrderBy(x => x.Order);
 
 		public static void RegisterUrlPrefix(string prefix, params string[] entityNames)
 		{
@@ -150,62 +177,19 @@ namespace SmartStore.Web.Framework.Seo
 				data.DataTokens["UrlRecord"] = urlRecord;
 				data.Values["SeName"] = slug;
 
-				string controller, action, paramName;
+				//string controller, action, paramName;
 
-                switch (urlRecord.EntityName.ToLowerInvariant())
+                if (!_paths.TryGetValue(urlRecord.EntityName, out var path))
                 {
-                    case "product":
-                        {
-							controller = "Product";
-							action = "ProductDetails";
-							paramName = "productid";
-                        }
-                        break;
-                    case "category":
-                        {
-							controller = "Catalog";
-							action = "Category";
-							paramName = "categoryid";
-                        }
-                        break;
-                    case "manufacturer":
-                        {
-							controller = "Catalog";
-							action = "Manufacturer";
-							paramName = "manufacturerid";
-                        }
-                        break;
-					case "topic":
-						{
-							controller = "Topic";
-							action = "TopicDetails";
-							paramName = "topicId";
-						}
-						break;
-					case "newsitem":
-                        {
-							controller = "News";
-							action = "NewsItem";
-							paramName = "newsItemId";
-                        }
-                        break;
-                    case "blogpost":
-                        {
-							controller = "Blog";
-							action = "BlogPost";
-							paramName = "blogPostId";
-                        }
-                        break;
-                    default:
-                        {
-                            throw new SmartException(string.Format("Unsupported EntityName for UrlRecord: {0}", urlRecord.EntityName));
-                        }
+                    throw new SmartException(string.Format("Unsupported EntityName for UrlRecord: {0}", urlRecord.EntityName));
                 }
 
-				data.Values["controller"] = controller;
-				data.Values["action"] = action;
-				data.Values[paramName] = urlRecord.EntityId;
-			}
+                var route = path.Route;
+
+                data.Values["controller"] = route.Defaults["controller"];
+                data.Values["action"] = route.Defaults["action"];
+                data.Values[path.IdParamName ?? "id"] = urlRecord.EntityId;
+            }
 
             return data;
         }

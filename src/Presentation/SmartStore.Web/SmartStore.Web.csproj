@@ -295,6 +295,7 @@
     <Compile Include="Infrastructure\Menus\MainMenuInvalidator.cs" />
     <Compile Include="Infrastructure\Menus\MyAccountMenu.cs" />
     <Compile Include="Infrastructure\Routes\2_DefaultRoutes.cs" />
+    <Compile Include="Infrastructure\Routes\4_LastRoutes.cs" />
     <Compile Include="Infrastructure\Routes\3_GenericRoutes.cs" />
     <Compile Include="Infrastructure\Installation\DeDESeedData.cs" />
     <Compile Include="Infrastructure\Installation\EnUSSeedData.cs" />

@@ -33,14 +33,8 @@ namespace SmartStore.Web.Framework.Seo
 
         public static Route MapGenericPathRoute(this RouteCollection routes, string name, string url, object defaults, object constraints, string[] namespaces)
         {
-            if (routes == null)
-            {
-                throw new ArgumentNullException("routes");
-            }
-            if (url == null)
-            {
-                throw new ArgumentNullException("url");
-            }
+            Guard.NotNull(routes, nameof(routes));
+            Guard.NotNull(url, nameof(url));
 
             var route = new GenericPathRoute(url, new MvcRouteHandler())
             {

@@ -33,11 +33,8 @@ namespace SmartStore.Web.Infrastructure
 			);
 		}
 
-		public int Priority
-		{
-			get { return -999; }
-		}
-    }
+		public int Priority { get; } = -999;
+	}
 
 	internal class IsKnownController : IRouteConstraint
 	{

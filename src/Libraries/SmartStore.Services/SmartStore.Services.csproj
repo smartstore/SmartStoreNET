@@ -623,6 +623,7 @@
     <Compile Include="Security\InstallPermissionsStarter.cs" />
     <Compile Include="Security\StandardPermissionProvider.cs" />
     <Compile Include="Seo\IUrlRecordService.cs" />
+    <Compile Include="Seo\NamedEntity.cs" />
     <Compile Include="Seo\SeoExtensions.cs" />
     <Compile Include="Seo\IXmlSitemapGenerator.cs" />
     <Compile Include="Seo\XmlSitemapBuildContext.cs" />
@@ -742,9 +743,7 @@
       <CachedSettingsPropName>Nop_Services_EuropaCheckVatService_checkVatService</CachedSettingsPropName>
     </WebReferenceUrl>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Seo\Hooks\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Cart\Readme.txt">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>

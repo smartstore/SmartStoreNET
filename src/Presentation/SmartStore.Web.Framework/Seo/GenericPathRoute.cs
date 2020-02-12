@@ -17,8 +17,10 @@ namespace SmartStore.Web.Framework.Seo
     /// </summary>
     public class GenericPathRoute : LocalizedRoute
     {
-		// Key = Prefix, Value = EntityType
-		private static readonly Multimap<string, string> _urlPrefixes = new Multimap<string, string>(StringComparer.OrdinalIgnoreCase);
+        const string SlugKey = "generic_se_name";
+
+        // Key = Prefix, Value = EntityType
+        private static readonly Multimap<string, string> _urlPrefixes = new Multimap<string, string>(StringComparer.OrdinalIgnoreCase);
 		
 		/// <summary>
         /// Initializes a new instance of the System.Web.Routing.Route class, using the specified URL pattern and handler class.
@@ -97,7 +99,7 @@ namespace SmartStore.Web.Framework.Seo
 
             if (data != null && DataSettings.DatabaseIsInstalled())
             {
-                var slug = data.Values["generic_se_name"] as string;
+                var slug = NormalizeSlug(data.Values);
 
 				if (TryResolveUrlPrefix(slug, out var urlPrefix, out var actualSlug, out var entityNames))
 				{
@@ -208,7 +210,20 @@ namespace SmartStore.Web.Framework.Seo
             return data;
         }
 
-		private RouteData NotFound(RouteData data)
+        private string NormalizeSlug(RouteValueDictionary routeValues)
+        {
+            var slug = routeValues[SlugKey] as string;
+            var lastChar = slug[slug.Length - 1];
+            if (lastChar == '/' || lastChar == '\\')
+            {
+                slug = slug.TrimEnd('/', '\\');
+                routeValues[SlugKey] = slug;
+            }
+
+            return slug;
+        }
+
+        private RouteData NotFound(RouteData data)
 		{
 			data.Values["controller"] = "Error";
 			data.Values["action"] = "NotFound";

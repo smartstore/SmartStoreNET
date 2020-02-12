@@ -146,36 +146,39 @@ namespace SmartStore.Core
 			if (httpRequest == null)
                 return url;
 
-            if (includeQueryString)
-            {
-				string storeHost = GetStoreHost(useSsl, out bool appPathPossiblyAppended).TrimEnd('/');
+			var authority = httpRequest.Url.GetLeftPart(UriPartial.Authority);
+			var path = httpRequest.RawUrl;
+			var schemeChanges = useSsl != IsCurrentConnectionSecured();
 
-				string rawUrl;
-                if (appPathPossiblyAppended)
-                {
-                    rawUrl = httpRequest.AppRelativeCurrentExecutionFilePath.TrimStart('~');
+			if (!schemeChanges && includeQueryString)
+			{
+				// Return as is
+				return authority + path;
+			}
 
-					if (httpRequest.Url != null && httpRequest.Url.Query != null)
+			if (schemeChanges)
+			{
+				authority = GetStoreHost(useSsl, out bool appPathPossiblyAppended).TrimEnd('/');
+				if (appPathPossiblyAppended)
+				{
+					path = _httpContext.GetOriginalAppRelativePath().TrimStart('~');
+					if (includeQueryString && httpRequest.Url?.Query != null)
 					{
-						rawUrl += httpRequest.Url.Query;
+						path += httpRequest.Url.Query;
 					}
 				}
-                else
-                {
-                    rawUrl = httpRequest.RawUrl;
-                }
-                
-                url = storeHost + rawUrl;
-            }
-            else
-            {
-				if (httpRequest.Url != null)
-				{
-					url = httpRequest.Url.GetLeftPart(UriPartial.Path);
-				}
-            }
+			}
 
-            return url;
+			if (!includeQueryString)
+			{
+				var queryIndex = path.IndexOf('?');
+				if (queryIndex > -1)
+				{
+					path = path.Substring(0, queryIndex);
+				}
+			}
+
+			return authority + path;
         }
 
         public virtual bool IsCurrentConnectionSecured()
@@ -339,7 +342,7 @@ namespace SmartStore.Core
                 {
                     // in a shared ssl scenario the user defined https url could contain
                     // the app path already. In this case we must not append.
-                    result = result + appPath;
+                    result += appPath;
                 }           
             }
 

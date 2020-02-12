@@ -89,6 +89,8 @@ namespace SmartStore.Web.Framework.Localization
                 var helper = new LocalizedUrlHelper(httpContext.Request);
                 if (helper.IsLocalizedUrl())
                 {
+                    httpContext.RememberAppRelativePath();
+
                     helper.StripSeoCode();
                     httpContext.RewritePath("~/" + helper.RelativePath, true);
                 }

@@ -7,7 +7,7 @@ using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Fakes;
-using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Seo;
 
 namespace SmartStore.Web.MVC.Tests.Framework.Controllers
 {

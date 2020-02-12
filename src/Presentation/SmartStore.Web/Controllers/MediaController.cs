@@ -18,9 +18,8 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
-using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Seo;
 
 namespace SmartStore.Web.Controllers
 {

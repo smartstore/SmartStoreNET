@@ -12,7 +12,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Seo;
 using SmartStore.Web.Models.Order;
 
 namespace SmartStore.Web.Controllers

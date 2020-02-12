@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Seo;
 using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Web.Framework.Controllers

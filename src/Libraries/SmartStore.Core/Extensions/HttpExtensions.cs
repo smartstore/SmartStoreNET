@@ -18,7 +18,8 @@ namespace SmartStore
 {
 	public static class HttpExtensions
 	{
-		private const string CACHE_REGION_NAME = "SmartStoreNET:";
+		const string CacheRegionName = "SmartStoreNET:";
+		const string RememberPathKey = "AppRelativeCurrentExecutionFilePath.Original";
 
 		private static readonly List<Tuple<string, string>> _sslHeaders = new List<Tuple<string, string>>
 		{
@@ -222,7 +223,7 @@ namespace SmartStore
 
 		public static string BuildScopedKey(this Cache cache, string key)
 		{
-			return key.HasValue() ? CACHE_REGION_NAME + key : null;
+			return key.HasValue() ? CacheRegionName + key : null;
 		}
 
 		public static T GetOrAdd<T>(this Cache cache, string key, Func<T> acquirer, TimeSpan? duration = null)
@@ -250,7 +251,19 @@ namespace SmartStore
 			return value;
 		}
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void RememberAppRelativePath(this HttpContextBase httpContext)
+		{
+			httpContext.Items[RememberPathKey] = httpContext.Request.AppRelativeCurrentExecutionFilePath;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static string GetOriginalAppRelativePath(this HttpContextBase httpContext)
+		{
+			return GetItem<string>(httpContext, RememberPathKey, forceCreation: false) ?? httpContext.Request.AppRelativeCurrentExecutionFilePath;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T GetItem<T>(this HttpContext httpContext, string key, Func<T> factory = null, bool forceCreation = true)
 		{
 			return GetItem<T>(new HttpContextWrapper(httpContext), key, factory, forceCreation);
@@ -296,7 +309,7 @@ namespace SmartStore
 
 		public static string[] AllKeys(this Cache cache, string pattern)
 		{
-			pattern = pattern == "*" ? CACHE_REGION_NAME : pattern;
+			pattern = pattern == "*" ? CacheRegionName : pattern;
 
 			var keys = from entry in HttpRuntime.Cache.AsParallel().Cast<DictionaryEntry>()
 					   let key = entry.Key.ToString()
@@ -335,5 +348,5 @@ namespace SmartStore
 
             return false;
         }
-    }
+	}
 }

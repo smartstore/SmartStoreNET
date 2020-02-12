@@ -13,7 +13,7 @@ using SmartStore.Services.Search.Modelling;
 using SmartStore.Services.Search.Rendering;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Seo;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Search;
 

@@ -404,8 +404,8 @@
     <Compile Include="Validators\SmartValidatorFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Modelling\Results\RssActionResult.cs" />
-    <Compile Include="Security\SslRequirement.cs" />
-    <Compile Include="Security\RewriteUrlAttribute.cs" />
+    <Compile Include="Seo\SslRequirement.cs" />
+    <Compile Include="Seo\RewriteUrlAttribute.cs" />
     <Compile Include="Localization\TelerikLocalizationService.cs" />
     <Compile Include="Localization\TelerikLocalizationServiceFactory.cs" />
     <Compile Include="Theming\ThemeableVirtualPathProviderViewEngine.cs" />

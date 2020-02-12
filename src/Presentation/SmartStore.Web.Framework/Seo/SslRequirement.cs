@@ -1,6 +1,5 @@
-﻿namespace SmartStore.Web.Framework.Security
+﻿namespace SmartStore.Web.Framework.Seo
 {
-    
     public enum SslRequirement
     {
         /// <summary>

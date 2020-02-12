@@ -5,11 +5,13 @@
 
 <div class="ruleset" data-ruleset-id="@Model.Id" data-refrule-id="@Model.RefRuleId">
     <div class="ruleset-header d-flex justify-content-between">
-        <div class="ruleset-operator d-flex align-items-center justify-content-stretch" 
-             data-res-all="@T("Admin.Rules.Operator.All")"
-             data-res-one="@T("Admin.Rules.Operator.One")"
-             data-url="@Url.Action("ChangeOperator")">
-            @Html.Raw(T("Admin.Rules.OneOrAllConditions", OneOrAllConditionsButton()))
+        <div class="ruleset-operator" data-url="@Url.Action("ChangeOperator")">
+            <div class="ruleset-op-one align-items-center justify-content-stretch @(Model.LogicalOperator == LogicalRuleOperator.And ? "hide" : "d-flex")">
+                @Html.Raw(T("Admin.Rules.OneCondition", RuleSetConditionsButton(LogicalRuleOperator.Or)))
+            </div>
+            <div class="ruleset-op-all align-items-center justify-content-stretch @(Model.LogicalOperator == LogicalRuleOperator.And ? "d-flex" : "hide")">
+                @Html.Raw(T("Admin.Rules.AllConditions", RuleSetConditionsButton(LogicalRuleOperator.And)))
+            </div>
         </div>
         @if (Model.RefRuleId == 0)
         {
@@ -70,13 +72,11 @@
     }
 </script>
 
-@helper OneOrAllConditionsButton()
+@helper RuleSetConditionsButton(LogicalRuleOperator op)
 {
     <div class="btn-group" role="group">
-        <button type="button" 
-                class="btn btn-secondary btn-sm btn-flat font-weight-medium dropdown-toggle mx-1 px-1 no-chevron"
-                data-toggle="dropdown">
-            <span class="logical-operator">@T(Model.LogicalOperator == LogicalRuleOperator.And ? "Admin.Rules.Operator.All" : "Admin.Rules.Operator.One")</span>
+        <button type="button" class="btn btn-secondary btn-sm btn-flat font-weight-medium dropdown-toggle mx-1 px-1 no-chevron" data-toggle="dropdown">
+            <span class="logical-operator">@T(op == LogicalRuleOperator.And ? "Admin.Rules.Operator.All" : "Admin.Rules.Operator.One")</span>
         </button>
         <div class="dropdown-menu logical-operator-chooser">
             <a href="#" class="dropdown-item" data-value="And">@T("Admin.Rules.Operator.All")</a>

@@ -47,10 +47,28 @@
         return data;
     }
 
+    //function showRuleError(ruleId, error) {
+    //    var rule = $('#ruleset-root').find('[data-rule-id=' + ruleId + ']');
+    //    var errorContainer = rule.find('.r-rule-error');
+    //    var hasError = !_.isEmpty(error);
+
+    //    errorContainer.toggleClass('hide', !hasError);
+    //    errorContainer.find('.field-validation-error').text(error || '');
+
+    //    rule.find('.btn-rule-operator')
+    //        .toggleClass('btn-info', !hasError)
+    //        .toggleClass('btn-danger', hasError);
+    //}
+
 
     // Initialize.
     $('#ruleset-root').find('.rule').each(function () {
-        enableRuleValueControl($(this));
+        var rule = $(this);
+        enableRuleValueControl(rule);
+
+        if (rule.data('has-error')) {
+            rule.find(':input[name^="rule-value-"]').addClass('input-validation-error');
+        }
     });
 
 
@@ -119,8 +137,9 @@
             data: { ruleSetId: parentSetId, op: op },
             type: "POST",
             success: function () {
-                operator.find(".logical-operator").text(operator.data(op == 'And' ? 'res-all' : 'res-one'));
-                operator.find(".logical-operator-chooser").removeClass("show");
+                operator.find('.logical-operator-chooser').removeClass('show');
+                operator.find('.ruleset-op-one').toggleClass('hide', op == 'And').toggleClass('d-flex', op != 'And');
+                operator.find('.ruleset-op-all').toggleClass('hide', op != 'And').toggleClass('d-flex', op == 'And');
             }
         });
 
@@ -156,6 +175,9 @@
             success: function (result) {
                 if (result.Success) {
                     location.reload();
+                }
+                else if (!_.isEmpty(result.Message)) {
+                    displayNotification(result.Message, 'error');
                 }
             }
         });

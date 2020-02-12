@@ -1,13 +1,12 @@
-﻿@model IRuleExpression
-@using SmartStore.Rules
-
+﻿@using SmartStore.Rules
+@model IRuleExpression
 @{
     var templateSelector = ViewBag.TemplateSelector as IRuleTemplateSelector;
     var templateInfo = templateSelector.GetTemplate(Model.Descriptor);
-    var isValid = Model.Descriptor.IsValid;
+    var error = Model.Metadata.TryGetValue("Error", out var errorObj) ? errorObj.ToString() : string.Empty;
 }
 
-<div class="rule row xs-gutters" data-rule-id="@Model.Id">
+<div class="rule row xs-gutters" data-rule-id="@Model.Id" data-has-error="@error.HasValue().ToString().ToLower()">
     <div class="col-2">
         @{ Html.RenderPartial("_Rule.Descriptor", Model); }
     </div>
@@ -23,9 +22,8 @@
                 }
                 catch (Exception ex)
                 {
-                    isValid = false;
                     <div class="d-flex flex-grow-1 w-75">
-                        <div class="badge badge-danger text-truncate" title="@ex.Message">
+                        <div class="alert alert-danger text-truncate w-100 mb-0" title="@ex.Message" style="padding-top: 0.6rem; padding-bottom: 0.6rem;">
                             @T("Common.CannotDisplayView", templateInfo.TemplateName.NaIfEmpty())
                             @(ex.Message.Truncate(300, "…"))
                         </div>
@@ -38,6 +36,9 @@
                     </button>
                 </div>
             }
+        </div>
+        <div class="r-rule-error@(error.HasValue() ? "" : " hide")">
+            <span class="field-validation-error">@error</span>
         </div>
     </div>
 </div>

@@ -12,5 +12,8 @@ namespace SmartStore.Admin.Models.Rules
 
         [JsonProperty("value")]
         public string Value { get; set; }
+
+        [JsonProperty("error")]
+        public string Error { get; set; }
     }
 }

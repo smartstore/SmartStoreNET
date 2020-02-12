@@ -113,7 +113,6 @@
             builder.AddOrUpdate("Common.Notify", "Notify", "Benachrichtigen");
             builder.AddOrUpdate("Common.Approve", "Approve", "Genehmigen");
             builder.AddOrUpdate("Common.Rules", "Rules", "Regeln");
-            builder.AddOrUpdate("Common.Invalid", "Invalid", "Ungültig");
 
             builder.AddOrUpdate("Common.Allow", "Allow", "Erlaubt");
             builder.AddOrUpdate("Common.Deny", "Deny", "Verweigert");
@@ -211,13 +210,22 @@
             builder.AddOrUpdate("Admin.Rules.RuleSet.Deleted", "The rule has been successfully deleted.", "Die Regel wurde erfolgreich gelöscht.");
             builder.AddOrUpdate("Admin.Rules.Operator.All", "ALL", "ALLE");
             builder.AddOrUpdate("Admin.Rules.Operator.One", "ONE", "EINE");
-            builder.AddOrUpdate("Admin.Rules.OneOrAllConditions",
+
+            builder.AddOrUpdate("Admin.Rules.OneCondition",
                 "<span>If at least</span> {0} <span>of the following conditions is true.</span>",
                 "<span>Wenn mindestens</span> {0} <span>der folgenden Bedingungen zutrifft.</span>");
+
+            builder.AddOrUpdate("Admin.Rules.AllConditions",
+                "<span>If</span> {0} <span>of the following conditions are true.</span>",
+                "<span>Wenn</span> {0} <span>der folgenden Bedingungen erfüllt sind.</span>");
 
             builder.AddOrUpdate("Admin.Rules.NotFound", "The rule with ID {0} was not found.", "Die Regel mit der ID {0} wurde nicht gefunden.");
             builder.AddOrUpdate("Admin.Rules.GroupNotFound", "The group with ID {0} was not found.", "Die Gruppe mit der ID {0} wurde nicht gefunden.");
             builder.AddOrUpdate("Admin.Rules.NumberOfRules", "Number of rules", "Anzahl an Regeln");
+
+            builder.AddOrUpdate("Admin.Rules.InvalidDescriptor",
+                "Invalid rule. This rule is no longer supported and should be deleted.",
+                "Ungültige Regel. Diese Regel wird nicht mehr unterstützt und sollte gelöscht werden.");
 
             builder.AddOrUpdate("Admin.Rules.Execute.MatchCustomers",
                 "<b class=\"font-weight-medium\">{0}</b> customers match the rule conditions.",

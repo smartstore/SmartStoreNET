@@ -224,7 +224,7 @@ namespace SmartStore.Admin.Controllers
                 }
                 catch (Exception ex)
                 {
-                    // TODO
+                    NotifyError(ex);
                 }
             }
 
@@ -288,8 +288,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception ex)
             {
-                // TODO: error handling
-                return Json(new { Success = false });
+                return Json(new { Success = false, ex.Message });
             }
 
             return Json(new { Success = true });
@@ -486,6 +485,11 @@ namespace SmartStore.Admin.Controllers
 
             foreach (var expression in group.Expressions)
             {
+                if (!expression.Descriptor.IsValid)
+                {
+                    expression.Metadata["Error"] = T("Admin.Rules.InvalidDescriptor").Text;
+                }
+
                 if (expression is IRuleExpressionGroup subGroup)
                 {
                     PrepareExpressions(subGroup);

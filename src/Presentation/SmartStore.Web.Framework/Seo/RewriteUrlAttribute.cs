@@ -23,6 +23,7 @@ namespace SmartStore.Web.Framework.Seo
 		public Lazy<SecuritySettings> SecuritySettings { get; set; }
 		public Lazy<IStoreContext> StoreContext { get; set; }
 		public Lazy<IWebHelper> WebHelper { get; set; }
+		public Lazy<IWorkContext> WorkContext { get; set; }
 
 		public SslRequirement SslRequirement { get; set; }
 		public bool AppendTrailingSlash { get; set; }
@@ -52,7 +53,8 @@ namespace SmartStore.Web.Framework.Seo
 				OriginalUrl = originalUrl,
 				IsLoopback = uri.IsLoopback || filterContext.HttpContext.Request.IsLocal,
 				CurrentStore = currentStore,
-				SecurityMode = currentStore.GetSecurityMode()
+				SecurityMode = currentStore.GetSecurityMode(),
+				IsAdmin = WorkContext.Value.IsAdmin
 			};
 
 			// Applies HTTP protocol rule
@@ -170,6 +172,9 @@ namespace SmartStore.Web.Framework.Seo
 		/// </summary>
 		private bool TryRewritePath(RewriteContext context)
 		{
+			if (context.IsAdmin)
+				return false;
+			
 			bool rewritten = false;
 
 			var url = context.Url ?? context.OriginalUrl.ToString();
@@ -250,6 +255,7 @@ namespace SmartStore.Web.Framework.Seo
 			public HttpSecurityMode SecurityMode { get; set; }
 			public ControllerContext ControllerContext { get; set; }
 			public Store CurrentStore { get; set; }
+			public bool IsAdmin { get; set; }
 
 			public string Url { get; set; }
 			public bool? Permanent { get; set; }

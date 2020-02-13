@@ -28,7 +28,7 @@ namespace SmartStore.Web.Framework.Controllers
 	}
 
 	[AdminValidateIpAddress]
-	[RewriteUrl(SslRequirement.Yes, Order = 0)]
+	[RewriteUrl(SslRequirement.Yes, Order = 0, AppendTrailingSlash = false, LowercaseUrls = false)]
     [CustomerLastActivity(Order = int.MaxValue)]
     [StoreIpAddress(Order = int.MaxValue)]
 	[AdminThemed]

@@ -65,7 +65,7 @@
 					.Width(100)
 					.Centered();
 				columns.Bound(x => x.Slug)
-					.ClientTemplate("<a href='Edit/<#= Id #>'><#= Slug #></a>");
+					.ClientTemplate("<a href=\"" + @Url.Content("~/admin/urlrecord/edit/") + "<#= Id #>/\"><#= Slug #></a>");
 				columns.Bound(x => x.SlugsPerEntity)
 					.Centered()
 					.Width(180)

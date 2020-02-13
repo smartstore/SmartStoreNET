@@ -1,53 +1,31 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.News;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Events;
+using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.News
 {
-    /// <summary>
-    /// News service
-    /// </summary>
-    public partial class NewsService : INewsService
+    public partial class NewsService : INewsService, IXmlSitemapPublisher
     {
-        #region Fields
-
         private readonly IRepository<NewsItem> _newsItemRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
-		private readonly ICommonServices _services;
-
-		private readonly NewsSettings _newsSettings;
-
-        #endregion
-
-        #region Ctor
 
         public NewsService(IRepository<NewsItem> newsItemRepository,
-			IRepository<StoreMapping> storeMappingRepository, 
-			ICommonServices services,
-			NewsSettings newsSettings)
+			IRepository<StoreMapping> storeMappingRepository)
         {
             _newsItemRepository = newsItemRepository;
 			_storeMappingRepository = storeMappingRepository;
-			_services = services;
-			_newsSettings = newsSettings;
 
 			this.QuerySettings = DbQuerySettings.Default;
 		}
 
 		public DbQuerySettings QuerySettings { get; set; }
 
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// Deletes a news
-        /// </summary>
-        /// <param name="newsItem">News item</param>
         public virtual void DeleteNews(NewsItem newsItem)
         {
             if (newsItem == null)
@@ -56,11 +34,6 @@ namespace SmartStore.Services.News
             _newsItemRepository.Delete(newsItem);
         }
 
-        /// <summary>
-        /// Gets a news
-        /// </summary>
-        /// <param name="newsId">The news identifier</param>
-        /// <returns>News</returns>
         public virtual NewsItem GetNewsById(int newsId)
         {
             if (newsId == 0)
@@ -69,11 +42,6 @@ namespace SmartStore.Services.News
             return _newsItemRepository.GetById(newsId);
         }
 
-		/// <summary>
-		/// Get news by identifiers
-		/// </summary>
-		/// <param name="newsIds">News identifiers</param>
-		/// <returns>News query</returns>
 		public virtual IQueryable<NewsItem> GetNewsByIds(int[] newsIds)
 		{
 			if (newsIds == null || newsIds.Length == 0)
@@ -87,16 +55,6 @@ namespace SmartStore.Services.News
 			return query;
 		}
 
-        /// <summary>
-        /// Gets all news
-        /// </summary>
-        /// <param name="languageId">Language identifier; 0 if you want to get all records</param>
-		/// <param name="storeId">Store identifier; 0 if you want to get all records</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-		/// <param name="maxAge">The maximum age of returned news</param>
-        /// <returns>News items</returns>
 		public virtual IPagedList<NewsItem> GetAllNews(int languageId, int storeId, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null)
         {
             var query = _newsItemRepository.Table;
@@ -144,10 +102,6 @@ namespace SmartStore.Services.News
             return news;
         }
 
-        /// <summary>
-        /// Inserts a news item
-        /// </summary>
-        /// <param name="news">News item</param>
         public virtual void InsertNews(NewsItem news)
         {
             if (news == null)
@@ -156,10 +110,6 @@ namespace SmartStore.Services.News
             _newsItemRepository.Insert(news);
         }
 
-        /// <summary>
-        /// Updates the news item
-        /// </summary>
-        /// <param name="news">News item</param>
         public virtual void UpdateNews(NewsItem news)
         {
             if (news == null)
@@ -168,10 +118,6 @@ namespace SmartStore.Services.News
             _newsItemRepository.Update(news);
         }
         
-        /// <summary>
-        /// Update news item comment totals
-        /// </summary>
-        /// <param name="newsItem">News item</param>
         public virtual void UpdateCommentTotals(NewsItem newsItem)
         {
             if (newsItem == null)
@@ -191,6 +137,38 @@ namespace SmartStore.Services.News
             newsItem.ApprovedCommentCount = approvedCommentCount;
             newsItem.NotApprovedCommentCount = notApprovedCommentCount;
             UpdateNews(newsItem);
+        }
+
+        #region XML Sitemap
+
+        public XmlSitemapResult PublishXmlSitemap(XmlSitemapBuildContext context)
+        {
+            if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesNews)
+                return null;
+
+            var query = GetAllNews(0, context.RequestStoreId, 0, int.MaxValue).SourceQuery;
+            return new NewsXmlSitemapResult { Query = query };
+        }
+
+        class NewsXmlSitemapResult : XmlSitemapResult
+        {
+            public IQueryable<NewsItem> Query { get; set; }
+
+            public override int GetTotalCount()
+            {
+                return Query.Count();
+            }
+
+            public override IEnumerable<NamedEntity> Enlist()
+            {
+                var topics = Query.Select(x => new { x.Id, x.CreatedOnUtc, x.LanguageId }).ToList();
+                foreach (var x in topics)
+                {
+                    yield return new NamedEntity { EntityName = "NewsItem", Id = x.Id, LastMod = x.CreatedOnUtc, LanguageId = x.LanguageId };
+                }
+            }
+
+            public override int Order => 100;
         }
 
         #endregion

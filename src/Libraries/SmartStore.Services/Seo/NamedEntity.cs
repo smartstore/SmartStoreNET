@@ -8,6 +8,7 @@ namespace SmartStore.Services.Seo
 	{
 		public string EntityName { get; set; }
 		public DateTime LastMod { get; set; }
+		public int? LanguageId { get; set; }
 
 		public override string GetEntityName()
 		{

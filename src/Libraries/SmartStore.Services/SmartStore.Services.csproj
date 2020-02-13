@@ -623,6 +623,7 @@
     <Compile Include="Security\InstallPermissionsStarter.cs" />
     <Compile Include="Security\StandardPermissionProvider.cs" />
     <Compile Include="Seo\IUrlRecordService.cs" />
+    <Compile Include="Seo\IXmlSitemapPublisher.cs" />
     <Compile Include="Seo\NamedEntity.cs" />
     <Compile Include="Seo\SeoExtensions.cs" />
     <Compile Include="Seo\IXmlSitemapGenerator.cs" />

@@ -10,10 +10,12 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Data.Caching;
+using SmartStore.Services.Seo;
+using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Services.Catalog
 {
-	public partial class ManufacturerService : IManufacturerService
+	public partial class ManufacturerService : IManufacturerService, IXmlSitemapPublisher
     {
         private const string PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY = "productmanufacturer:allbymanufacturerid-{0}-{1}-{2}-{3}-{4}";
         private const string PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY = "productmanufacturer:allbyproductid-{0}-{1}-{2}";
@@ -340,5 +342,39 @@ namespace SmartStore.Services.Catalog
             _requestCache.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
             _requestCache.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
         }
-    }
+
+		#region XML Sitemap
+
+		public XmlSitemapResult PublishXmlSitemap(XmlSitemapBuildContext context)
+		{
+			if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesManufacturers)
+				return null;
+
+			var query = GetManufacturers(false, context.RequestStoreId).OrderBy(x => x.DisplayOrder).ThenBy(x => x.Name);
+			return new ManufacturerXmlSitemapResult { Query = query };
+		}
+
+		class ManufacturerXmlSitemapResult : XmlSitemapResult
+		{
+			public IQueryable<Manufacturer> Query { get; set; }
+
+			public override int GetTotalCount()
+			{
+				return Query.Count();
+			}
+
+			public override IEnumerable<NamedEntity> Enlist()
+			{
+				var topics = Query.Select(x => new { x.Id, x.UpdatedOnUtc }).ToList();
+				foreach (var x in topics)
+				{
+					yield return new NamedEntity { EntityName = "Manufacturer", Id = x.Id, LastMod = x.UpdatedOnUtc };
+				}
+			}
+
+			public override int Order => int.MinValue + 100;
+		}
+
+		#endregion
+	}
 }

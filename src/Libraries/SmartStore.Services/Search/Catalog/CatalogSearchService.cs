@@ -2,18 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using System.Data.Entity;
 using Autofac;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.Search
 {
-    public partial class CatalogSearchService : SearchServiceBase, ICatalogSearchService
-    {
+    public partial class CatalogSearchService : SearchServiceBase, ICatalogSearchService, IXmlSitemapPublisher
+	{
 		private readonly ICommonServices _services;
 		private readonly IIndexManager _indexManager;
 		private readonly Lazy<IProductService> _productService;
@@ -249,5 +252,72 @@ namespace SmartStore.Services.Search
 			var linqCatalogSearchService = _services.Container.ResolveNamed<ICatalogSearchService>("linq");
 			return linqCatalogSearchService.PrepareQuery(searchQuery, baseQuery);
 		}
+
+		#region XML Sitemap
+
+		public XmlSitemapResult PublishXmlSitemap(XmlSitemapBuildContext context)
+		{
+			if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesProducts)
+				return null;
+
+			var searchQuery = new CatalogSearchQuery()
+				.VisibleOnly(_services.WorkContext.CurrentCustomer)
+				.WithVisibility(ProductVisibility.Full)
+				.HasStoreId(context.RequestStoreId);
+
+			var query = PrepareQuery(searchQuery);
+
+			return new ProductXmlSitemapResult { Query = query, Context = context };
+		}
+
+		class ProductXmlSitemapResult : XmlSitemapResult
+		{
+			public IQueryable<Product> Query { get; set; }
+			public XmlSitemapBuildContext Context { get; set; }
+
+			public override int GetTotalCount()
+			{
+				return Query.Count();
+			}
+
+			public override IEnumerable<NamedEntity> Enlist()
+			{
+				var query = Query.AsNoTracking();
+				var maxId = int.MaxValue;
+
+				//var limit = 0;
+				while (maxId > 1)
+				{
+					var products = query
+						.Where(x => x.Id < maxId)
+						.OrderByDescending(x => x.Id)
+						.Take(() => Context.MaximumNodeCount)
+						.Select(x => new { x.Id, x.UpdatedOnUtc })
+						.ToList();
+
+					//limit++;
+					//if (limit >= 100)
+					//{
+					//	break;
+					//}
+
+					if (products.Count == 0)
+					{
+						break;
+					}
+
+					maxId = products.Last().Id;
+
+					foreach (var x in products)
+					{
+						yield return new NamedEntity { EntityName = "Product", Id = x.Id, LastMod = x.UpdatedOnUtc };
+					}
+				}
+			}
+
+			public override int Order => int.MaxValue;
+		}
+
+		#endregion
 	}
 }

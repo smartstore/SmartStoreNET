@@ -48,7 +48,7 @@ namespace SmartStore.Web
 
 		public static void RegisterRoutes(RouteCollection routes, IEngine engine, bool databaseInstalled = true)
 		{
-			routes.AppendTrailingSlash = true;
+			//routes.AppendTrailingSlash = true;
 			routes.LowercaseUrls = true;
 			
 			//routes.IgnoreRoute("favicon.ico");

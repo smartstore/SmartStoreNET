@@ -90,6 +90,9 @@ namespace SmartStore.Core.Domain.Seo
 		public bool XmlSitemapIncludesManufacturers { get; set; } = true;
 		public bool XmlSitemapIncludesProducts { get; set; } = true;
 		public bool XmlSitemapIncludesTopics { get; set; } = true;
+		public bool XmlSitemapIncludesBlog { get; set; } = true;
+		public bool XmlSitemapIncludesNews { get; set; } = true;
+		public bool XmlSitemapIncludesForum { get; set; } = true;
 
 		#endregion
 	}

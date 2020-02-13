@@ -61,10 +61,10 @@ namespace SmartStore.Web.Framework.Localization
                         filterContext.Result = HandleExceptionFilter.Create404Result(filterContext);
 
                         var seoCodeReplacement = localizationSettings.DefaultLanguageRedirectBehaviour == DefaultLanguageRedirectBehaviour.PrependSeoCodeAndRedirect 
-                            ? workingLanguage.UniqueSeoCode 
+                            ? workingLanguage.GetTwoLetterISOLanguageName()
                             : string.Empty;
 
-                        filterContext.RequestContext.RouteData.DataTokens["InvalidSeoCodeReplacement"] = seoCodeReplacement;
+                        filterContext.RequestContext.RouteData.DataTokens["SeoCodeReplacement"] = seoCodeReplacement;
                     }
                     else if (localizationSettings.InvalidLanguageRedirectBehaviour == InvalidLanguageRedirectBehaviour.FallbackToWorkingLanguage)
                     {

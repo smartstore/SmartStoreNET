@@ -20,6 +20,7 @@ using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Seo;
+using SmartStore.Web.Framework.Localization;
 
 namespace SmartStore.Web.Controllers
 {
@@ -72,7 +73,9 @@ namespace SmartStore.Web.Controllers
 
 		#region XML sitemap
 
-		[RewriteUrl(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No, AppendTrailingSlash = false)]
+		[LanguageSeoCode(Order = 1)]
+		[SetWorkingCulture(Order = 2)]
 		public async Task<ActionResult> XmlSitemap(int? index = null)
 		{
 			if (!_seoSettings.Value.XmlSitemapEnabled)

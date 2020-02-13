@@ -10,9 +10,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Events;
 using SmartStore.Data.Caching;
-using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Catalog
@@ -1133,6 +1131,6 @@ namespace SmartStore.Services.Catalog
             return result;
         }
 
-        #endregion
-    }
+		#endregion
+	}
 }

@@ -128,7 +128,7 @@ namespace SmartStore.Web.Framework.Localization
                 var helper = new LocalizedUrlHelper(requestContext.HttpContext.Request, true);
 				if (helper.IsLocalizedUrl(out string cultureCode))
 				{
-                    if (requestContext.RouteData.DataTokens.Get("InvalidSeoCodeReplacement") is string seoCodeReplacement)
+                    if (requestContext.RouteData.DataTokens.Get("SeoCodeReplacement") is string seoCodeReplacement)
                     {
                         // The LanguageSeoCode filter detected a localized URL, but the locale does not exist or is inactive.
                         // The routing system is therefore about to render the "NotFound" view. Here we ensure that generated links

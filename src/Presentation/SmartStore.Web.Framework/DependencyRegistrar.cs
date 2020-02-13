@@ -167,9 +167,10 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<WebStoreContext>().As<IStoreContext>().InstancePerRequest();
 
 			// services
-			builder.RegisterType<CategoryService>().As<ICategoryService>().InstancePerRequest();
+			builder.RegisterType<CategoryService>().As<ICategoryService>().As<IXmlSitemapPublisher>().InstancePerRequest();
 
 			builder.RegisterType<ManufacturerService>().As<IManufacturerService>()
+				.As<IXmlSitemapPublisher>()
 				.WithNullCache()
 				.InstancePerRequest();
 
@@ -254,9 +255,9 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<ForumService>().As<IForumService>().InstancePerRequest();
 
 			builder.RegisterType<PollService>().As<IPollService>().InstancePerRequest();
-			builder.RegisterType<BlogService>().As<IBlogService>().InstancePerRequest();
-			builder.RegisterType<TopicService>().As<ITopicService>().InstancePerRequest();
-			builder.RegisterType<NewsService>().As<INewsService>().InstancePerRequest();
+			builder.RegisterType<BlogService>().As<IBlogService>().As<IXmlSitemapPublisher>().InstancePerRequest();
+			builder.RegisterType<TopicService>().As<ITopicService>().As<IXmlSitemapPublisher>().InstancePerRequest();
+			builder.RegisterType<NewsService>().As<INewsService>().As<IXmlSitemapPublisher>().InstancePerRequest();
 
             builder.RegisterType<WidgetService>().As<IWidgetService>().InstancePerRequest();
             builder.RegisterType<MenuStorage>().As<IMenuStorage>().InstancePerRequest();
@@ -588,7 +589,7 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<FacetTemplateProvider>().As<IFacetTemplateProvider>().InstancePerRequest();
 
             // Catalog.
-            builder.RegisterType<CatalogSearchService>().As<ICatalogSearchService>().InstancePerRequest();
+            builder.RegisterType<CatalogSearchService>().As<ICatalogSearchService>().As<IXmlSitemapPublisher>().InstancePerRequest();
             builder.RegisterType<LinqCatalogSearchService>().Named<ICatalogSearchService>("linq").InstancePerRequest();
             builder.RegisterType<CatalogSearchQueryFactory>().As<ICatalogSearchQueryFactory>().InstancePerRequest();
             builder.RegisterType<CatalogSearchQueryAliasMapper>().As<ICatalogSearchQueryAliasMapper>().InstancePerRequest();

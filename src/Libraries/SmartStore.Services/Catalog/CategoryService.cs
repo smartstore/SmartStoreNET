@@ -18,11 +18,13 @@ using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Utilities.ObjectPools;
+using SmartStore.Services.Seo;
+using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Services.Catalog
 {
-	public partial class CategoryService : ICategoryService
-    {
+	public partial class CategoryService : ICategoryService, IXmlSitemapPublisher
+	{
 		internal static TimeSpan CategoryTreeCacheDuration = TimeSpan.FromHours(6);
 
 		// {0} = IncludeHidden, {1} = CustomerRoleIds, {2} = StoreId
@@ -843,5 +845,39 @@ namespace SmartStore.Services.Catalog
                 AddChildTreeNodes(newNode, node.Id, nodeMap);
             }
         }
-    }
+
+		#region XML Sitemap
+
+		public XmlSitemapResult PublishXmlSitemap(XmlSitemapBuildContext context)
+		{
+			if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesCategories)
+				return null;
+
+			var query = BuildCategoriesQuery(showHidden: false, storeId: context.RequestStoreId);
+			return new CategoryXmlSitemapResult { Query = query };
+		}
+
+		class CategoryXmlSitemapResult : XmlSitemapResult
+		{
+			public IQueryable<Category> Query { get; set; }
+
+			public override int GetTotalCount()
+			{
+				return Query.Count();
+			}
+
+			public override IEnumerable<NamedEntity> Enlist()
+			{
+				var topics = Query.Select(x => new { x.Id, x.UpdatedOnUtc }).ToList();
+				foreach (var x in topics)
+				{
+					yield return new NamedEntity { EntityName = "Category", Id = x.Id, LastMod = x.UpdatedOnUtc };
+				}
+			}
+
+			public override int Order => int.MinValue;
+		}
+
+		#endregion
+	}
 }

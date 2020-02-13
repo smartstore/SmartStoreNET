@@ -172,9 +172,14 @@ namespace SmartStore.Web.Framework.Seo
 		/// </summary>
 		private bool TryRewritePath(RewriteContext context)
 		{
+			// Be tolerant in backend
 			if (context.IsAdmin)
 				return false;
-			
+
+			// Don't try to fix root path
+			if (context.ControllerContext.HttpContext.Request.RawUrl == "/")
+				return false;
+
 			bool rewritten = false;
 
 			var url = context.Url ?? context.OriginalUrl.ToString();

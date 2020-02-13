@@ -848,7 +848,7 @@ namespace SmartStore.Services.Catalog
 
 		#region XML Sitemap
 
-		public XmlSitemapResult PublishXmlSitemap(XmlSitemapBuildContext context)
+		public XmlSitemapProvider PublishXmlSitemap(XmlSitemapBuildContext context)
 		{
 			if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesCategories)
 				return null;
@@ -857,7 +857,7 @@ namespace SmartStore.Services.Catalog
 			return new CategoryXmlSitemapResult { Query = query };
 		}
 
-		class CategoryXmlSitemapResult : XmlSitemapResult
+		class CategoryXmlSitemapResult : XmlSitemapProvider
 		{
 			public IQueryable<Category> Query { get; set; }
 

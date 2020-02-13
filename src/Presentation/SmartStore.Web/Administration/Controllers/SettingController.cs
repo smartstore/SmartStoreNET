@@ -1101,7 +1101,15 @@ namespace SmartStore.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return GeneralCommon();
+                foreach (var kvp in ModelState)
+				{
+					if (kvp.Value.Errors.Count > 0)
+					{
+						var key = kvp.Key;
+					}
+				}
+
+				return GeneralCommon();
             }
 
             ModelState.Clear();
@@ -1137,7 +1145,7 @@ namespace SmartStore.Admin.Controllers
 			// Company information.
 			var companySettings = Services.Settings.LoadSetting<CompanyInformationSettings>(storeScope);
 			MiniMapper.Map(model.CompanyInformationSettings, companySettings);
-			companySettings.CountryName = _countryService.GetCountryById(model.CompanyInformationSettings.CountryId)?.Name;
+			companySettings.CountryName = _countryService.GetCountryById(model.CompanyInformationSettings.CountryId ?? 0)?.Name;
 
 			// Contact data.
 			var contactDataSettings = Services.Settings.LoadSetting<ContactDataSettings>(storeScope);

@@ -345,7 +345,7 @@ namespace SmartStore.Services.Catalog
 
 		#region XML Sitemap
 
-		public XmlSitemapResult PublishXmlSitemap(XmlSitemapBuildContext context)
+		public XmlSitemapProvider PublishXmlSitemap(XmlSitemapBuildContext context)
 		{
 			if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesManufacturers)
 				return null;
@@ -354,7 +354,7 @@ namespace SmartStore.Services.Catalog
 			return new ManufacturerXmlSitemapResult { Query = query };
 		}
 
-		class ManufacturerXmlSitemapResult : XmlSitemapResult
+		class ManufacturerXmlSitemapResult : XmlSitemapProvider
 		{
 			public IQueryable<Manufacturer> Query { get; set; }
 

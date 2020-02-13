@@ -1,10 +1,12 @@
 ﻿@using SmartStore.Web.Models.Boards;
+
 @model ForumGroupModel
 @{
     Layout = "_Layout";
 
     Html.AddTitleParts(Model.Name);
 }
+
 <div class="page forum-group-page">
     <div class="mt-2 mb-4 w-75">
         @{ Html.RenderAction("SearchBox", "Boards"); }

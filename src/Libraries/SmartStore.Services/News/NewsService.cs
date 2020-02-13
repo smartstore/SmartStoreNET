@@ -141,16 +141,16 @@ namespace SmartStore.Services.News
 
         #region XML Sitemap
 
-        public XmlSitemapResult PublishXmlSitemap(XmlSitemapBuildContext context)
+        public XmlSitemapProvider PublishXmlSitemap(XmlSitemapBuildContext context)
         {
-            if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesNews)
+            if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesNews || !context.LoadSetting<NewsSettings>().Enabled)
                 return null;
 
             var query = GetAllNews(0, context.RequestStoreId, 0, int.MaxValue).SourceQuery;
             return new NewsXmlSitemapResult { Query = query };
         }
 
-        class NewsXmlSitemapResult : XmlSitemapResult
+        class NewsXmlSitemapResult : XmlSitemapProvider
         {
             public IQueryable<NewsItem> Query { get; set; }
 

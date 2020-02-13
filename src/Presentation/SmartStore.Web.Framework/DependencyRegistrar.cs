@@ -252,7 +252,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<TaxCategoryService>().As<ITaxCategoryService>().InstancePerRequest();
 			builder.RegisterType<TaxService>().As<ITaxService>().InstancePerRequest();
 
-			builder.RegisterType<ForumService>().As<IForumService>().InstancePerRequest();
+			builder.RegisterType<ForumService>().As<IForumService>().As<IXmlSitemapPublisher>().InstancePerRequest();
 
 			builder.RegisterType<PollService>().As<IPollService>().InstancePerRequest();
 			builder.RegisterType<BlogService>().As<IBlogService>().As<IXmlSitemapPublisher>().InstancePerRequest();

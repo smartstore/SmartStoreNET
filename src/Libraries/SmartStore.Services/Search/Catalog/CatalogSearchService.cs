@@ -255,7 +255,7 @@ namespace SmartStore.Services.Search
 
 		#region XML Sitemap
 
-		public XmlSitemapResult PublishXmlSitemap(XmlSitemapBuildContext context)
+		public XmlSitemapProvider PublishXmlSitemap(XmlSitemapBuildContext context)
 		{
 			if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesProducts)
 				return null;
@@ -270,7 +270,7 @@ namespace SmartStore.Services.Search
 			return new ProductXmlSitemapResult { Query = query, Context = context };
 		}
 
-		class ProductXmlSitemapResult : XmlSitemapResult
+		class ProductXmlSitemapResult : XmlSitemapProvider
 		{
 			public IQueryable<Product> Query { get; set; }
 			public XmlSitemapBuildContext Context { get; set; }
@@ -288,6 +288,11 @@ namespace SmartStore.Services.Search
 				//var limit = 0;
 				while (maxId > 1)
 				{
+					if (Context.CancellationToken.IsCancellationRequested)
+					{
+						break;
+					}
+					
 					var products = query
 						.Where(x => x.Id < maxId)
 						.OrderByDescending(x => x.Id)

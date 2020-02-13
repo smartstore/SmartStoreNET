@@ -193,9 +193,9 @@ namespace SmartStore.Services.Blogs
 
         #region XML Sitemap
 
-        public XmlSitemapResult PublishXmlSitemap(XmlSitemapBuildContext context)
+        public XmlSitemapProvider PublishXmlSitemap(XmlSitemapBuildContext context)
         {
-            if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesBlog)
+            if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesBlog || !context.LoadSetting<BlogSettings>().Enabled)
                 return null;
             
             var query = GetAllBlogPosts(context.RequestStoreId, 0, null, null, 0, int.MaxValue).SourceQuery;
@@ -203,7 +203,7 @@ namespace SmartStore.Services.Blogs
             return new BlogPostXmlSitemapResult { Query = query };
         }
 
-        class BlogPostXmlSitemapResult : XmlSitemapResult
+        class BlogPostXmlSitemapResult : XmlSitemapProvider
         {
             public IQueryable<BlogPost> Query { get; set; }
 

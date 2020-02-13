@@ -249,7 +249,7 @@ namespace SmartStore.Admin.Models.Settings
             public string City { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.Country")]
-            public int CountryId { get; set; }
+            public int? CountryId { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.Country")]
             [AllowHtml]

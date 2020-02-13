@@ -8,7 +8,6 @@ using System.Web.Mvc;
 using System.Xml.Linq;
 using System.IO;
 using System.Threading.Tasks;
-using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Seo;
@@ -20,7 +19,6 @@ using SmartStore.Utilities;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Localization;
-
 
 namespace SmartStore.Services.Seo
 {
@@ -281,7 +279,7 @@ namespace SmartStore.Services.Seo
 
 					using (new DbContextScope(autoDetectChanges: false, forceNoTracking: true, proxyCreation: false, lazyLoading: false))
 					{
-						var entities = EnumerateProviders(providers);
+						var entities = EnlistEntities(providers);
 
 						foreach (var batch in entities.Slice(MaximumSiteMapNodeCount))
 						{
@@ -294,7 +292,7 @@ namespace SmartStore.Services.Seo
 							numProcessed = segment * MaximumSiteMapNodeCount;
 							ctx.ProgressCallback?.Invoke(numProcessed, total, "{0} / {1}".FormatCurrent(numProcessed, total));
 
-							var slugs = GetUrlRecordCollectionsForBatch(batch, languageIds);
+							var slugs = GetUrlRecordCollectionsForBatch(batch.Select(x => x.Entry), languageIds);
 
 							foreach (var data in languageData.Values)
 							{
@@ -303,13 +301,9 @@ namespace SmartStore.Services.Seo
 
 								// Create all node entries for this segment
 								var entries = batch
-									.Where(x => x.LanguageId.GetValueOrDefault() == 0 || x.LanguageId.Value == language.Id)
-									.Select(x => new XmlSitemapNode
-									{
-										LastMod = x.LastMod,
-										Loc = BuildNodeUrl(baseUrl, x, slugs[x.EntityName], language)
-									});
-								sitemaps[language.Id].AddRange(entries);
+									.Where(x => x.Entry.LanguageId.GetValueOrDefault() == 0 || x.Entry.LanguageId.Value == language.Id)
+									.Select(x => x.Provider.CreateNode(_urlHelper, baseUrl, x.Entry, slugs[x.Entry.EntityName], language));
+								sitemaps[language.Id].AddRange(entries.Where(x => x != null));
 
 								// Create index node for this segment/language combination
 								if (hasIndex)
@@ -418,14 +412,6 @@ namespace SmartStore.Services.Seo
 			return host;
 		}
 
-		private string BuildNodeUrl(string baseUrl, NamedEntity entity, UrlRecordCollection slugs, Language language)
-		{
-			var slug = slugs.GetSlug(language.Id, entity.Id, true);
-			var path = _urlHelper.RouteUrl(entity.EntityName, new { SeName = slug }).TrimStart('/');
-
-			return baseUrl + path;
-		}
-
 		private async Task SaveTempAsync(List<string> documents, LanguageData data, int start)
 		{
 			for (int i = 0; i < documents.Count; i++)
@@ -463,12 +449,12 @@ namespace SmartStore.Services.Seo
 			}
 		}
 
-		private IEnumerable<NamedEntity> EnumerateProviders(XmlSitemapResult[] providers)
+		private IEnumerable<NodeEntry> EnlistEntities(XmlSitemapProvider[] providers)
 		{
-			var result = Enumerable.Empty<NamedEntity>();
+			var result = Enumerable.Empty<NodeEntry>();
 			foreach (var provider in providers)
 			{
-				result = result.Concat(provider.Enlist());
+				result = result.Concat(provider.Enlist().Select(x => new NodeEntry { Entry = x, Provider = provider }));
 			}
 
 			return result;
@@ -624,7 +610,7 @@ namespace SmartStore.Services.Seo
 			return baseUrl + url;
 		}
 
-		private XmlSitemapResult[] CreateProviders(XmlSitemapBuildContext context)
+		private XmlSitemapProvider[] CreateProviders(XmlSitemapBuildContext context)
 		{
 			return _publishers
 				.Select(x => x.Value.PublishXmlSitemap(context))
@@ -635,6 +621,7 @@ namespace SmartStore.Services.Seo
 
 		protected void ProcessCustomNodes(XmlSitemapBuildContext ctx, Multimap<int, XmlSitemapNode> sitemaps)
 		{
+			// For inheritors
 		}
 
 		/// <summary>
@@ -688,6 +675,12 @@ namespace SmartStore.Services.Seo
 		}
 
 		#region Nested classes
+
+		struct NodeEntry
+		{
+			public NamedEntity Entry { get; set; }
+			public XmlSitemapProvider Provider { get; set; }
+		}
 
 		class LanguageData
 		{

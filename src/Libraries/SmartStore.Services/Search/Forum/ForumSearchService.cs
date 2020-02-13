@@ -12,7 +12,7 @@ using SmartStore.Services.Forums;
 namespace SmartStore.Services.Search
 {
     public partial class ForumSearchService : SearchServiceBase, IForumSearchService
-    {
+	{
 		private readonly ICommonServices _services;
 		private readonly IIndexManager _indexManager;
         private readonly Lazy<IForumService> _forumService;

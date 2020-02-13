@@ -146,7 +146,7 @@ namespace SmartStore.Services.Topics
 
         #region XML Sitemap
 
-        public XmlSitemapResult PublishXmlSitemap(XmlSitemapBuildContext context)
+        public XmlSitemapProvider PublishXmlSitemap(XmlSitemapBuildContext context)
 		{
 			if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesTopics)
 				return null;
@@ -159,7 +159,7 @@ namespace SmartStore.Services.Topics
 			return new TopicXmlSitemapResult { Query = query };
 		}
 
-		class TopicXmlSitemapResult : XmlSitemapResult
+		class TopicXmlSitemapResult : XmlSitemapProvider
 		{
 			public IQueryable<Topic> Query { get; set; }
 

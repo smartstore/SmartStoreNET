@@ -253,7 +253,7 @@
             }
 
             function attr(name, value) {
-                if (value.length > 0) {
+                if (value && value.length > 0) {
                     return ' ' + name + '="' + $('<div/>').text(value).html() + '"';
                 }
                 return '';
@@ -266,6 +266,8 @@
                         color = option.data('color'),
                         text = item.text,
                         title = '',
+                        preHtml = '',
+                        classes = '',
                         hint = item.hint || option.attr('data-hint'),
                         icon = option.data('icon'),
                         truncateText = options.maxTextLength > 0 && text.length > options.maxTextLength,
@@ -281,18 +283,32 @@
                     if (truncateText) {
                         text = text.substring(0, options.maxTextLength) + '…';
                     }
+
+                    if (isResult && !_.isEmpty(item.id) && !_.isEmpty(item.url)) {
+                        if (item.id === '-1') {
+                            // Item is a link to open add-entity page.
+                            classes += ' select2-item-link prevent-selection';
+                        }
+                        else {
+                            // Add small item button to open detail page.
+                            preHtml += '<span class="select2-item-btn float-right">';
+                            preHtml += '<a href="' + item.url.replace('__id__', item.id) + '" class="btn btn-flat btn-icon btn-light prevent-selection"' + attr('title', item.urlTitle) + '>';
+                            preHtml += '<i class="fa fa-link fa-fw prevent-selection" /></a>';
+                            preHtml += '</span>';
+                        }
+                    }                    
                     
                     if (imageUrl) {
-                        return $('<span class="choice-item"' + attr('title', title) + '><img class="choice-item-img" src="' + imageUrl + '" />' + text + '</span>');
+                        return $(preHtml + '<span class="choice-item' + classes + '"' + attr('title', title) + '><img class="choice-item-img" src="' + imageUrl + '" />' + text + '</span>');
                     }
                     else if (color) {
-                        return $('<span class="choice-item"' + attr('title', title) + '><span class="choice-item-color" style="background-color: ' + color + '"></span>' + text + '</span>');
+                        return $(preHtml + '<span class="choice-item' + classes + '"' + attr('title', title) + '><span class="choice-item-color" style="background-color: ' + color + '"></span>' + text + '</span>');
                     }
                     else if (hint && isResult) {
-                        return $('<span class="select2-option"><span' + attr('title', title) + '>' + text + '</span><span class="option-hint muted float-right">' + hint + '</span></span>');
+                        return $(preHtml + '<span class="select2-option' + classes + '"><span' + attr('title', title) + '>' + text + '</span><span class="option-hint muted float-right">' + hint + '</span></span>');
                     }
                     else if (icon) {
-                        var html = ['<span class="choice-item"' + attr('title', title) + '>'];
+                        var html = ['<span class="choice-item' + classes + '"' + attr('title', title) + '>'];
                         var icons = _.isArray(icon) ? icon : [icon];
                         var len = (isResult ? 2 : 0) || icons.length;
 
@@ -307,7 +323,7 @@
                         return html;
                     }
                     else {
-                        return $('<span class="select2-option"' + attr('title', title) + '>' + text + '</span>');
+                        return $(preHtml + '<span class="select2-option' + classes + '"' + attr('title', title) + '>' + text + '</span>');
                     }
                 }
                 catch (e) {
@@ -410,6 +426,25 @@
                 // so we are able to omit min-width per css
                 sel.data("select2").$container.addClass("autowidth");
             }
+
+            sel.on('select2:selecting', function (e) {
+                try {
+                    // Prevent selection when for example a link has been clicked.
+                    if ($(e.params.args.originalEvent.target).hasClass('prevent-selection')) {
+                        var data = e.params.args.data;
+
+                        if (data.id === '-1' && !_.isEmpty(data.url)) {
+                            window.location = data.url;
+                        }
+
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+                catch (e) {
+                    console.log(e);
+                }
+            });
 
             function getPlaceholder() {
                 return options.placeholder ||

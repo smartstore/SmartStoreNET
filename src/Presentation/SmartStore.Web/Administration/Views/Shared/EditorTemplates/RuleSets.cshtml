@@ -5,6 +5,7 @@
     var name = ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
     var strValue = Value;
     var ruleScope = TryGetMetadata<RuleScope>("scope", out var scope) ? scope : (RuleScope?)null;
+    var url = Url.Action("Edit", "Rule", new { id = "__id__", area = "Admin" });
 
     var attributes = CommonHelper.ObjectToDictionary(ViewData["htmlAttributes"] ?? new object());
     attributes["data-select-url"] = Url.Action("AllRuleSets", "Rule", new { selectedIds = strValue, scope = ruleScope, area = "admin" });

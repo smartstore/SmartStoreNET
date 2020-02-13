@@ -61,22 +61,23 @@ namespace SmartStore.Admin.Controllers
         }
 
         // Ajax.
-        public ActionResult AllRuleSets(string label, string selectedIds, RuleScope? scope)
+        public ActionResult AllRuleSets(string selectedIds, RuleScope? scope)
         {
             var ruleSets = _ruleStorage.GetAllRuleSets(false, false, scope, includeHidden: true);
             var selectedArr = selectedIds.ToIntArray();
 
-            if (label.HasValue())
-            {
-                ruleSets.Insert(0, new RuleSetEntity { Name = label, Id = 0 });
-            }
+            ruleSets.Add(new RuleSetEntity { Id = -1, Name = T("Admin.Rules.AddRule").Text + "…" });
 
             var data = ruleSets
                 .Select(x => new
                 {
                     id = x.Id.ToString(),
                     text = x.Name,
-                    selected = selectedArr.Contains(x.Id)
+                    selected = selectedArr.Contains(x.Id),
+                    urlTitle = x.Id == -1 ? string.Empty : T("Admin.Rules.OpenRule").Text,
+                    url = x.Id == -1
+                        ? Url.Action("Create", "Rule", new { area = "admin" })
+                        : Url.Action("Edit", "Rule", new { id = x.Id, area = "admin" })
                 })
                 .ToList();
 

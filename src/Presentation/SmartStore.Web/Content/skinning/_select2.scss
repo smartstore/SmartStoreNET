@@ -611,6 +611,33 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
         &[aria-selected=true] > .select2-option:before {
             visibility: visible;
         }
+
+        .select2-item-btn {
+            position: relative;
+            top: -3px;
+            opacity: 0.0;
+            transition: opacity 0.05s linear;
+
+            > a.btn {
+                color: unset;
+                width: 25px;
+                height: 25px;
+
+                > i {
+                    width: unset;
+                }
+            }
+        }
+
+        &:hover .select2-item-btn {
+            opacity: 1;
+        }
+
+        .select2-item-link {
+            font-weight: 600;
+            font-size: $s2bs-dropdown-header-font-size;
+            line-height: $s2bs-line-height-base;
+        }
     }
 
     .select2-results__option:last-child {

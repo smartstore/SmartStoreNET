@@ -203,6 +203,7 @@
             builder.AddOrUpdate("Admin.Rules.DeleteGroup", "Delete group", "Gruppe löschen");
             builder.AddOrUpdate("Admin.Rules.AddCondition", "Add condition", "Bedingung hinzufügen");
             builder.AddOrUpdate("Admin.Rules.SaveConditions", "Save all conditions", "Alle Bedingungen speichern");
+            builder.AddOrUpdate("Admin.Rules.OpenRule", "Open rule", "Regel öffnen");
 
             builder.AddOrUpdate("Admin.Rules.EditRule", "Edit rule", "Regel bearbeiten");
             builder.AddOrUpdate("Admin.Rules.AddRule", "Add rule", "Regel hinzufügen");

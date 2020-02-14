@@ -6,8 +6,8 @@
 * (NEW) **Granular permissions**: All permissions of a customer directly visible on the customer edit page.
 
 ### Breaking changes
-* Install\UninstallPermissions has been removed from IPermissionService. No longer needs to be called by plugins. Permissions are now automatically installed\uninstalled.
-* IDiscountRequirementRule and IShippingMethodFilter has been removed. Discounts and shipping methods can now be filtered by rule sets.
+* *Install\UninstallPermissions* has been removed from *IPermissionService*. No longer needs to be called by plugins. Permissions are now automatically installed\uninstalled.
+* *IDiscountRequirementRule* and *IShippingMethodFilter* has been removed. Discounts and shipping methods can now be filtered by rule sets.
 
 ### New Features
 * #1598 Add published property to ProductTag entity.
@@ -15,6 +15,8 @@
 * #1618 Implement ACL and multistore capability on menu item level.
 * #1683 Menu Builder items: implement support for icon (brand) color.
 * #1584 Show bundle item images in order details like in shopping cart details.
+* SEO: XML Sitemap now includes blog, news and forum
+* SEO: do 301 redirect to URL without trailing slash
 * SVG support for image uploads.
 * Schedule tasks: new property "Priority" runs tasks with higher priority first when multiple tasks are pending.
 * **MegaSearch**:
@@ -39,6 +41,8 @@
 * #1752 Export: let a provider directly export to a file stream instead of a memory stream.
 * #1763 Topic editor should display all menu item nodes that reference the current topic.
 * #1665 UI: ACL, discount and store selection should be done via multiple select2.
+* Updated UserAgent Parser
+* TinyImage: updated WebP detection patterns
 
 ### Bugfixes
 * Export: Fixed KeyNotFoundException when batch size was 1.

@@ -151,7 +151,9 @@
         var item = $(this);
         var operator = item.closest('.rule-operator');
         operator.data("value", item.data("value"));
-        operator.find(".btn").text(item.text());
+        operator.find(".btn")
+            .html('<span class="text-truncate">' + item.text() + '</span>')
+            .attr('title', item.text());
         enableRuleValueControl(item);
         onRuleValueChanged();
     });

@@ -19,15 +19,15 @@ namespace SmartStore.Services.Cart.Rules
 
         public virtual bool Match(CartRuleContext context, RuleExpression expression)
         {
-            var list = expression.Value as List<T>;
-            if (!(list?.Any() ?? false))
+            var right = expression.Value as List<T>;
+            if (!(right?.Any() ?? false))
             {
                 return true;
             }
 
-            var values = GetValues(context);
+            var left = GetValues(context);
 
-            if (values == null)
+            if (left == null)
             {
                 var value = GetValue(context);
 
@@ -38,48 +38,48 @@ namespace SmartStore.Services.Cart.Rules
 
                 if (expression.Operator == RuleOperator.In)
                 {
-                    return list.Contains(value, _comparer);
+                    return right.Contains(value, _comparer);
                 }
                 if (expression.Operator == RuleOperator.NotIn)
                 {
-                    return !list.Contains(value, _comparer);
+                    return !right.Contains(value, _comparer);
                 }
             }
             else
             {
                 if (expression.Operator == RuleOperator.IsEqualTo)
                 {
-                    return !list.Except(values).Any();
+                    return !right.Except(left, _comparer).Any();
                 }
                 else if (expression.Operator == RuleOperator.IsNotEqualTo)
                 {
-                    return list.Except(values).Any();
+                    return right.Except(left, _comparer).Any();
                 }
                 else if (expression.Operator == RuleOperator.Contains)
                 {
-                    // FALSE for list { 0,1,2,3 } and values { 3,2,1 }
-                    return list.All(x => values.Contains(x));
+                    // FALSE for left { 3,2,1 } and right { 0,1,2,3 }.
+                    return right.All(x => left.Contains(x, _comparer));
                 }
                 else if (expression.Operator == RuleOperator.NotContains)
                 {
-                    return list.All(x => !values.Contains(x));
+                    return right.All(x => !left.Contains(x, _comparer));
                 }
                 else if (expression.Operator == RuleOperator.In)
                 {
-                    return values.Any(x => list.Contains(x));
+                    return left.Any(x => right.Contains(x, _comparer));
                 }
                 else if (expression.Operator == RuleOperator.NotIn)
                 {
-                    return values.Any(x => !list.Contains(x));
+                    return left.Any(x => !right.Contains(x, _comparer));
                 }
                 else if (expression.Operator == RuleOperator.AllIn)
                 {
-                    // TRUE for list { 0,1,2,3 } and values { 3,2,1 }
-                    return values.All(x => list.Contains(x));
+                    // TRUE for left { 3,2,1 } and right { 0,1,2,3 }.
+                    return left.All(x => right.Contains(x, _comparer));
                 }
                 else if (expression.Operator == RuleOperator.NotAllIn)
                 {
-                    return values.All(x => !list.Contains(x));
+                    return left.All(x => !right.Contains(x, _comparer));
                 }
             }
 

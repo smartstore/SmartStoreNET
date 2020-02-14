@@ -28,12 +28,18 @@ namespace SmartStore.Rules
 
         public RuleType RuleType { get; set; }
         public RuleValueSelectList SelectList { get; set; }
+
+        /// <summary>
+        /// Indicates whether the rule compares the values of two sequences.
+        /// </summary>
+        public bool IsComparingSequences { get; set; }
+
         public IEnumerable<IRuleConstraint> Constraints { get; set; }
         public IDictionary<string, object> Metadata { get; }
 
         public RuleOperator[] Operators
         {
-            get => _operators ?? (_operators = RuleType.GetValidOperators().ToArray());
+            get => _operators ?? (_operators = RuleType.GetValidOperators(IsComparingSequences).ToArray());
             set => _operators = value;
         }
     }

@@ -427,25 +427,6 @@
                 sel.data("select2").$container.addClass("autowidth");
             }
 
-            sel.on('select2:selecting', function (e) {
-                try {
-                    // Prevent selection when for example a link has been clicked.
-                    if ($(e.params.args.originalEvent.target).hasClass('prevent-selection')) {
-                        var data = e.params.args.data;
-
-                        if (data.id === '-1' && !_.isEmpty(data.url)) {
-                            window.location = data.url;
-                        }
-
-                        e.preventDefault();
-                        return false;
-                    }
-                }
-                catch (e) {
-                    console.log(e);
-                }
-            });
-
             function getPlaceholder() {
                 return options.placeholder ||
                     sel.attr("placeholder") ||

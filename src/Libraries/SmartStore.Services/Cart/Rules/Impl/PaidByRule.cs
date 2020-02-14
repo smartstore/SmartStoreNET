@@ -13,6 +13,7 @@ namespace SmartStore.Services.Cart.Rules.Impl
         private readonly IOrderService _orderService;
 
         public PaidByRule(IOrderService orderService)
+            : base(StringComparer.InvariantCultureIgnoreCase)
         {
             _orderService = orderService;
         }

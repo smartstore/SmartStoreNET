@@ -33,9 +33,9 @@ namespace SmartStore.Rules
         public string Name { get; set; }
         public Type ClrType { get; set; }
 
-        public IEnumerable<RuleOperator> GetValidOperators()
+        public IEnumerable<RuleOperator> GetValidOperators(bool isComparingSequences = false)
         {
-            bool isComparable = typeof(IComparable).IsAssignableFrom(ClrType);
+            var isComparable = typeof(IComparable).IsAssignableFrom(ClrType);
             var isNullable = ClrType.IsNullable(out var nonNullableType);
 
             if (isNullable)
@@ -70,8 +70,22 @@ namespace SmartStore.Rules
 
             if (nonNullableType == typeof(List<int>) || nonNullableType == typeof(List<float>) || nonNullableType == typeof(List<string>))
             {
-                yield return RuleOperator.In;
-                yield return RuleOperator.NotIn;
+                if (isComparingSequences)
+                {
+                    yield return RuleOperator.In;
+                    yield return RuleOperator.NotIn;
+                    yield return RuleOperator.Contains;
+                    yield return RuleOperator.NotContains;
+                    yield return RuleOperator.AllIn;
+                    yield return RuleOperator.NotAllIn;
+                    yield return RuleOperator.IsEqualTo;
+                    yield return RuleOperator.IsNotEqualTo;
+                }
+                else
+                {
+                    yield return RuleOperator.In;
+                    yield return RuleOperator.NotIn;
+                }
             }
         }
     }

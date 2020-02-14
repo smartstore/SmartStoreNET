@@ -1,14 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using SmartStore.Core.Utilities;
 using SmartStore.Rules.Filters;
 using SmartStore.Rules.Operators;
 
@@ -47,14 +40,6 @@ namespace SmartStore.Rules
         }
 
         public string Operator { get; set; }
-
-        public string ResourceKey
-        {
-            get
-            {
-                return "Admin.Rules.RuleOperator." + GetType().Name;
-            }
-        }
 
         public override string ToString() => Operator;
 

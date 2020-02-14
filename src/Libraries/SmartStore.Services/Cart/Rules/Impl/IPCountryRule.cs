@@ -1,4 +1,5 @@
-﻿using SmartStore.Core;
+﻿using System;
+using SmartStore.Core;
 using SmartStore.Services.Directory;
 
 namespace SmartStore.Services.Cart.Rules.Impl
@@ -9,6 +10,7 @@ namespace SmartStore.Services.Cart.Rules.Impl
         private readonly IWebHelper _webHelper;
 
         public IPCountryRule(IGeoCountryLookup countryLookup, IWebHelper webHelper)
+            : base(StringComparer.InvariantCultureIgnoreCase)
         {
             _countryLookup = countryLookup;
             _webHelper = webHelper;

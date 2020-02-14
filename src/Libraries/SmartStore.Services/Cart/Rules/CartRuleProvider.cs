@@ -170,18 +170,6 @@ namespace SmartStore.Services.Cart.Rules
                 .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.Name })
                 .ToArray();
 
-            var listComparingOperators = new RuleOperator[]
-            {
-                RuleOperator.In,
-                RuleOperator.NotIn,
-                RuleOperator.AllIn,
-                RuleOperator.NotAllIn,
-                RuleOperator.Contains,
-                RuleOperator.NotContains,
-                RuleOperator.IsEqualTo,
-                RuleOperator.IsNotEqualTo
-            };
-
             var descriptors = new List<CartRuleDescriptor>
             {
                 new CartRuleDescriptor
@@ -236,7 +224,7 @@ namespace SmartStore.Services.Cart.Rules
                     ProcessorType = typeof(CustomerRoleRule),
                     Constraints = new IRuleConstraint[0],
                     SelectList = new RemoteRuleValueSelectList("CustomerRole") { Multiple = true },
-                    Operators = listComparingOperators
+                    IsComparingSequences = true
                 },
 
                 new CartRuleDescriptor
@@ -263,7 +251,7 @@ namespace SmartStore.Services.Cart.Rules
                     Constraints = new IRuleConstraint[0],
                     ProcessorType = typeof(ProductInCartRule),
                     SelectList = new RemoteRuleValueSelectList("Product") { Multiple = true },
-                    Operators = listComparingOperators
+                    IsComparingSequences = true
                 },
                 new CartRuleDescriptor
                 {
@@ -273,7 +261,7 @@ namespace SmartStore.Services.Cart.Rules
                     Constraints = new IRuleConstraint[0],
                     ProcessorType = typeof(ProductOnWishlistRule),
                     SelectList = new RemoteRuleValueSelectList("Product") { Multiple = true },
-                    Operators = listComparingOperators
+                    IsComparingSequences = true
                 },
                 new CartRuleDescriptor
                 {
@@ -342,7 +330,7 @@ namespace SmartStore.Services.Cart.Rules
                     Constraints = new IRuleConstraint[0],
                     ProcessorType = typeof(PurchasedProductRule),
                     SelectList = new RemoteRuleValueSelectList("Product") { Multiple = true },
-                    Operators = listComparingOperators
+                    IsComparingSequences = true
                 },
                 new CartRuleDescriptor
                 {
@@ -352,7 +340,7 @@ namespace SmartStore.Services.Cart.Rules
                     Constraints = new IRuleConstraint[0],
                     ProcessorType = typeof(PurchasedFromManufacturerRule),
                     SelectList = new RemoteRuleValueSelectList("Manufacturer") { Multiple = true },
-                    Operators = listComparingOperators
+                    IsComparingSequences = true
                 },
                 new CartRuleDescriptor
                 {
@@ -371,7 +359,7 @@ namespace SmartStore.Services.Cart.Rules
                     Constraints = new IRuleConstraint[0],
                     ProcessorType = typeof(PaidByRule),
                     SelectList = new RemoteRuleValueSelectList("PaymentMethod") { Multiple = true },
-                    Operators = listComparingOperators
+                    IsComparingSequences = true
                 },
                 new CartRuleDescriptor
                 {

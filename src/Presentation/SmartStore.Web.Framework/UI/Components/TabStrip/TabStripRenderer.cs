@@ -309,13 +309,14 @@ namespace SmartStore.Web.Framework.UI
 			writer.RenderBeginTag("li");
 			{
 				var itemId = "#" + BuildItemId(item, index);
-                
-                if (item.Content != null)
+
+				writer.AddAttribute("class", "nav-link" + (item.Selected ? " active" : ""));
+
+				if (item.Content != null)
 				{
 					writer.AddAttribute("href", itemId);
 					writer.AddAttribute("data-toggle", "tab");
 					writer.AddAttribute("data-loaded", "true");
-                    writer.AddAttribute("class", "nav-link" + (item.Selected ? " active" : ""));
 					loadedTabName = GetTabName(item) ?? itemId;
 				}
 				else
@@ -334,7 +335,6 @@ namespace SmartStore.Web.Framework.UI
 							writer.AddAttribute("href", itemId);
 							writer.AddAttribute("data-ajax-url", url);
 							writer.AddAttribute("data-toggle", "tab");
-                            writer.AddAttribute("class", "nav-link" + (item.Selected ? " active" : ""));
                         }
 						else
 						{

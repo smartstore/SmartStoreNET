@@ -73,7 +73,7 @@ namespace SmartStore.Web.Controllers
 
 		#region XML sitemap
 
-		[RewriteUrl(SslRequirement.No, AppendTrailingSlash = false)]
+		[RewriteUrl(SslRequirement.No)]
 		[LanguageSeoCode(Order = 1)]
 		[SetWorkingCulture(Order = 2)]
 		public async Task<ActionResult> XmlSitemap(int? index = null)

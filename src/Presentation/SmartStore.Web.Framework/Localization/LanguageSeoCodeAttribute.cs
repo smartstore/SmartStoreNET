@@ -19,7 +19,7 @@ namespace SmartStore.Web.Framework.Localization
 		public Lazy<ILanguageService> LanguageService { get; set; }
 		public Lazy<LocalizationSettings> LocalizationSettings { get; set; }
 
-		public virtual void OnAuthorization(AuthorizationContext filterContext)
+        public virtual void OnAuthorization(AuthorizationContext filterContext)
         {
             var request = filterContext?.HttpContext?.Request;
             if (request == null)
@@ -69,7 +69,7 @@ namespace SmartStore.Web.Framework.Localization
                     else if (localizationSettings.InvalidLanguageRedirectBehaviour == InvalidLanguageRedirectBehaviour.FallbackToWorkingLanguage)
                     {
                         helper.StripSeoCode();
-                        filterContext.Result = new RedirectResult(helper.GetAbsolutePath(), true);
+                        filterContext.Result = new RedirectResult(helper.GetAbsolutePath(), !request.IsLocal);
                     }
                 }
                 else
@@ -78,7 +78,7 @@ namespace SmartStore.Web.Framework.Localization
                     if (seoCode == defaultSeoCode && localizationSettings.DefaultLanguageRedirectBehaviour == DefaultLanguageRedirectBehaviour.StripSeoCode)
                     {
                         helper.StripSeoCode();
-                        filterContext.Result = new RedirectResult(helper.GetAbsolutePath(), true);
+                        filterContext.Result = new RedirectResult(helper.GetAbsolutePath(), !request.IsLocal);
                     }
                 }
 
@@ -96,5 +96,5 @@ namespace SmartStore.Web.Framework.Localization
             helper.PrependSeoCode(workingLanguage.UniqueSeoCode);
             filterContext.Result = new RedirectResult(helper.GetAbsolutePath());
         }
-	}
+    }
 }

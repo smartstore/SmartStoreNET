@@ -1,8 +1,11 @@
 ﻿@model BlogSettingsModel
 @using Telerik.Web.Mvc.UI;
+
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.Blog").Text;
+    Layout = "_SettingLayout";
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">

@@ -238,6 +238,7 @@
     <Compile Include="Infrastructure\DependencyRegistrar.cs" />
     <Compile Include="Infrastructure\PreviewModeFilter.cs" />
     <Compile Include="Infrastructure\RouteProvider.cs" />
+    <Compile Include="Infrastructure\SettingsMenu.cs" />
     <Compile Include="MappingExtensions.cs" />
     <Compile Include="Infrastructure\AdminStartupTask.cs" />
     <Compile Include="Models\Catalog\CategoryTreeModel.cs" />
@@ -632,6 +633,8 @@
     <Content Include="Views\Rule\ValueTemplates\Dropdown.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Discounts.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\RuleSets.cshtml" />
+    <Content Include="Views\Shared\Layouts\_SettingLayout.cshtml" />
+    <Content Include="Views\Shared\Menus\Settings.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

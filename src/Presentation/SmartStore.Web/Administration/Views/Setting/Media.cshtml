@@ -1,7 +1,10 @@
 ﻿@model MediaSettingsModel
+
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.Media").Text;
+    Layout = "_SettingLayout";
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">

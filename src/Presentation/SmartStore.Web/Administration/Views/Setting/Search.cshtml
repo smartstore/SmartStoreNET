@@ -1,8 +1,12 @@
 ﻿@using SmartStore.Core.Search;
+
 @model SearchSettingsModel
+
 @{
+    Layout = "_SettingLayout";
     ViewBag.Title = T("Search.Title").Text;
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">

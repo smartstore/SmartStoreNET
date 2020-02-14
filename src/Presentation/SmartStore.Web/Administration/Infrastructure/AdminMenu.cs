@@ -25,6 +25,9 @@ namespace SmartStore.Admin.Infrastructure
             xmlSiteMap.LoadFrom("~/Administration/sitemap.config");
 
             var rootNode = ConvertSitemapNodeToMenuItemNode(xmlSiteMap.RootNode);
+
+            Services.EventPublisher.Publish(new MenuBuiltEvent(Name, rootNode));
+
             return rootNode;
         }
 
@@ -90,8 +93,6 @@ namespace SmartStore.Admin.Infrastructure
                 var childTreeNode = ConvertSitemapNodeToMenuItemNode(childNode);
                 root.Append(childTreeNode);
             }
-
-            Services.EventPublisher.Publish(new MenuBuiltEvent(Name, root));
 
             return root;
         }

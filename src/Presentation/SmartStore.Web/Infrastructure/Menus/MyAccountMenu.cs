@@ -90,13 +90,12 @@ namespace SmartStore.Web.Infrastructure
         public IDictionary<string, TreeNode<MenuItem>> GetAllCachedMenus()
         {
             // No caching.
-            throw new NotImplementedException();
+            return new Dictionary<string, TreeNode<MenuItem>>();
         }
 
         public void ClearCache()
         {
             // No caching.
-            throw new NotImplementedException();
         }
 
         protected virtual TreeNode<MenuItem> BuildMenu()

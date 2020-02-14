@@ -3,6 +3,7 @@
 @model GeneralCommonSettingsModel
 
 @{
+    Layout = "_SettingLayout";
     ViewBag.Title = T("Admin.Configuration.Settings.GeneralCommon").Text;
 }
 
@@ -10,7 +11,7 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="fa fa-cogs"></i>
+            <i class="fa fa-sliders-h"></i>
             @T("Admin.Configuration.Settings.GeneralCommon")
         </div>
         <div class="options">

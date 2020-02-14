@@ -4,28 +4,9 @@
     Layout = "_AdminLayout";
 }
 
-@Html.SmartStore().TabStrip().Name("settings").Style(TabsStyle.Pills).Position(TabsPosition.Left).Items(x =>
+@section SideBarLeft 
 {
-    x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon"))
-        .Icon("fa fa-cog fa-lg fa-fw")
-        .Action("GeneralCommon", "Setting", new { area = "admin" })
-        .Content("dgdf")
-        .Selected(true);
-
-    x.Add().Text(T("Admin.Configuration.Settings.Catalog"))
-        .Icon("fa fa-cog fa-lg fa-fw")
-        .Action("Catalog", "Setting", new { area = "admin" })
-        .Content("gdgdf")
-        .Selected(false);
-
-    x.Add().Text(T("Search.Title"))
-        .Icon("fa fa-cog fa-lg fa-fw")
-        .Action("Search", "Setting", new { area = "admin" })
-        .Content("gdfgfd")
-        .Selected(false);
-
-    // generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "settings", this.Html, this.Model));
-}).SmartTabSelection(true)
+    @Html.SmartStore().Menu().Name("Settings")
+}
 
 @RenderBody()

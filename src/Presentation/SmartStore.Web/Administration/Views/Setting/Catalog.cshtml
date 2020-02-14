@@ -1,7 +1,10 @@
 ﻿@model CatalogSettingsModel
+
 @{
+    Layout = "_SettingLayout";
 	ViewBag.Title = T("Admin.Configuration.Settings.Catalog").Text;
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">

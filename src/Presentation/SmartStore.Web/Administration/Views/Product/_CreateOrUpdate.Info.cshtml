@@ -319,15 +319,6 @@
 				@Html.ValidationMessageFor(model => model.HomePageDisplayOrder)
 			</td>
 		</tr>
-        <tr @(Html.Raw(Model.ProductTypeId == (int)ProductType.BundledProduct && Model.BundlePerItemPricing ? "class='d-none'" : ""))>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SelectedDiscountIds)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SelectedDiscountIds)
-                @Html.ValidationMessageFor(model => model.SelectedDiscountIds)
-            </td>
-        </tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.SelectedStoreIds)

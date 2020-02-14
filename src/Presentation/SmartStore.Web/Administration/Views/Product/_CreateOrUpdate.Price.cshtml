@@ -1,5 +1,5 @@
-﻿@model ProductModel
-@using Telerik.Web.Mvc.UI;
+﻿@using SmartStore.Core.Domain.Catalog;
+@model ProductModel
 
 <script>
 
@@ -99,6 +99,15 @@
             <div class="adminData">
                 @Html.EditorFor(model => model.SpecialPriceEndDateTimeUtc, new { pickTime = true })
                 @Html.ValidationMessageFor(model => model.SpecialPriceEndDateTimeUtc)
+            </div>
+        </div>
+        <div class="adminRow" @(Html.Raw(Model.ProductTypeId == (int)ProductType.BundledProduct && Model.BundlePerItemPricing ? "class='d-none'" : ""))>
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedDiscountIds)
+            </div>
+            <div class="adminData">
+                @Html.EditorFor(model => model.SelectedDiscountIds)
+                @Html.ValidationMessageFor(model => model.SelectedDiscountIds)
             </div>
         </div>
         <div class="adminRow">

@@ -259,22 +259,6 @@ namespace SmartStore.Admin.Controllers
 
 			p.AvailableEndDateTimeUtc = p.AvailableEndDateTimeUtc.ToEndOfTheDay();
 			p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();
-
-            // Discounts.
-            var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToSkus, null, true);
-            foreach (var discount in allDiscounts)
-            {
-                if (model.SelectedDiscountIds != null && model.SelectedDiscountIds.Contains(discount.Id))
-                {
-                    if (product.AppliedDiscounts.Count(d => d.Id == discount.Id) == 0)
-                        product.AppliedDiscounts.Add(discount);
-                }
-                else
-                {
-                    if (product.AppliedDiscounts.Count(d => d.Id == discount.Id) > 0)
-                        product.AppliedDiscounts.Remove(discount);
-                }
-            }
         }
 
         [NonAction]
@@ -481,9 +465,25 @@ namespace SmartStore.Admin.Controllers
 			p.BasePriceBaseAmount = m.BasePriceBaseAmount;
 			p.BasePriceAmount = m.BasePriceAmount;
             p.BasePriceMeasureUnit = m.BasePriceMeasureUnit;
-		}
 
-		[NonAction]
+            // Discounts.
+            var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToSkus, null, true);
+            foreach (var discount in allDiscounts)
+            {
+                if (model.SelectedDiscountIds != null && model.SelectedDiscountIds.Contains(discount.Id))
+                {
+                    if (product.AppliedDiscounts.Count(d => d.Id == discount.Id) == 0)
+                        product.AppliedDiscounts.Add(discount);
+                }
+                else
+                {
+                    if (product.AppliedDiscounts.Count(d => d.Id == discount.Id) > 0)
+                        product.AppliedDiscounts.Remove(discount);
+                }
+            }
+        }
+
+        [NonAction]
 		protected void UpdateProductSeo(Product product, ProductModel model)
 		{
 			var p = product;

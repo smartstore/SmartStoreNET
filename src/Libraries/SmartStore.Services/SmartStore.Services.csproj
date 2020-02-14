@@ -199,6 +199,7 @@
     <Compile Include="Cart\Rules\Impl\ShippingMethodRule.cs" />
     <Compile Include="Cart\Rules\Impl\IPCountryRule.cs" />
     <Compile Include="Cart\Rules\Impl\BillingCountryRule.cs" />
+    <Compile Include="Cart\Rules\Impl\UserAgentRule.cs" />
     <Compile Include="Catalog\CategoryTreeChangeHandler.cs" />
     <Compile Include="Catalog\CatalogMessageFactoryExtensions.cs" />
     <Compile Include="Catalog\Extensions\ProductUrlHelper.cs" />

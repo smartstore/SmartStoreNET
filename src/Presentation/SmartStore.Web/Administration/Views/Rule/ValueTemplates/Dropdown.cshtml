@@ -4,15 +4,24 @@
 @{
     var id = string.Concat("rule-value-", Model.Id);
     var list = Model.Descriptor.SelectList;
+    var isMultiple = list?.Multiple ?? true;
     var values = Model.RawValue.SplitSafe(",");
-    var remoteUrl = string.Empty;
+    string remoteUrl = null;
 
     if (list is RemoteRuleValueSelectList remoteList)
     {
         remoteUrl = Url.Action("RuleOptions", "Rule", new { ruleId = Model.Id, rootRuleSetId = (int)ViewBag.RootRuleSetId });
     }
+
+    var attributes = new Dictionary<string, object>
+    {
+        { "data-placeholder", T("Common.Unspecified").Text },
+        { "data-remote-url", remoteUrl },
+        { "data-tags", list == null },
+        { "multiple", isMultiple }
+    };
 }
-<select id="@id" name="@id" data-placeholder="@T("Common.Unspecified")" @Html.Attr("multiple", "multiple", list.Multiple) @Html.Attr("data-remote-url", remoteUrl, remoteUrl.HasValue())>
+<select id="@id" name="@id" @Html.Attrs(attributes)>
     @if (remoteUrl.HasValue())
     {
         var selectedItems = Model.Metadata.TryGetValue("SelectedItems", out var objSelectedItems)
@@ -22,14 +31,13 @@
         foreach (var value in values)
         {
             selectedItems.TryGetValue(value, out var selectedItem);
-            <option value="@value" selected="selected" 
-                    @Html.Attr("data-hint", selectedItem?.Hint, selectedItem?.Hint?.HasValue() ?? false)>
+            <option value="@value" selected="selected" @Html.Attr("data-hint", selectedItem?.Hint, selectedItem?.Hint?.HasValue() ?? false)>
             @(selectedItem?.Text.NullEmpty() ?? value)</option>
         }
     }
-    else
+    else if (list != null)
     {
-        if (!values.Any() && !list.Multiple)
+        if (!values.Any() && !isMultiple)
         {
             <option></option>
         }
@@ -50,6 +58,13 @@
             {
                 @Html.Raw("</optgroup>")
             }
+        }
+    }
+    else
+    {
+        foreach (var value in values)
+        {
+            <option value="@value" selected="selected">@value</option>
         }
     }
 </select>

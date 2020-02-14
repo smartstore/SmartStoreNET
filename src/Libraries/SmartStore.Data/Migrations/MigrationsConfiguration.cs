@@ -274,6 +274,7 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.TimeZone", "Time zone", "Zeitzone");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.TaxDisplayType", "Tax display type", "Steueranzeigetyp");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.IPCountry", "IP associated with country", "IP gehört zu Land");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.UserAgent", "User agent", "User-Agent");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Currency", "Currency", "Währung");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Language", "Language", "Sprache");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.LastForumVisit", "Days since last forum visit", "Tage seit letztem Forenbesuch");

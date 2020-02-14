@@ -222,6 +222,14 @@ namespace SmartStore.Services.Cart.Rules
                 },
                 new CartRuleDescriptor
                 {
+                    Name = "UserAgent",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.UserAgent"),
+                    RuleType = RuleType.String,
+                    Constraints = new IRuleConstraint[0],
+                    ProcessorType = typeof(UserAgentRule)
+                },
+                new CartRuleDescriptor
+                {
                     Name = "CustomerRole",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.IsInCustomerRole"),
                     RuleType = RuleType.IntArray,

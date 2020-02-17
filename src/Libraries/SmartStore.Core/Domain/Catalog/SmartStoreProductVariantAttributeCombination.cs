@@ -61,7 +61,7 @@ namespace SmartStore.Core.Domain.Catalog
 		public bool IsActive { get; set; }
 		//public bool IsDefaultCombination { get; set; }
 
-        public int[] GetAssignedPictureIds()
+        public int[] GetAssignedMediaIds()
         {
             if (string.IsNullOrEmpty(this.AssignedPictureIds))
             {
@@ -76,7 +76,7 @@ namespace SmartStore.Core.Domain.Catalog
             return query.Distinct().ToArray();
         }
 
-        public void SetAssignedPictureIds(int[] ids)
+        public void SetAssignedMediaIds(int[] ids)
         {
             if (ids == null || ids.Length == 0)
             {

@@ -223,7 +223,7 @@ namespace SmartStore.Web.Controllers
 
 				if (combination != null)
 				{
-					var picturesIds = combination.GetAssignedPictureIds();
+					var picturesIds = combination.GetAssignedMediaIds();
 					if (picturesIds != null && picturesIds.Length > 0)
 						picture = _pictureService.GetPictureById(picturesIds[0]);
 				}

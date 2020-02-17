@@ -16,7 +16,7 @@ namespace SmartStore.Web
 			if (model != null && model.SelectedCombination != null)
 			{
 				Picture picture = null;
-				var combiAssignedImages = model.SelectedCombination.GetAssignedPictureIds();
+				var combiAssignedImages = model.SelectedCombination.GetAssignedMediaIds();
 
 				if (combiAssignedImages.Length > 0)
 				{

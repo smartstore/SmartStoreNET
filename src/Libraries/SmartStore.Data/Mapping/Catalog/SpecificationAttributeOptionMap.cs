@@ -12,6 +12,7 @@ namespace SmartStore.Data.Mapping.Catalog
             Property(sao => sao.Name).IsRequired();
 			Property(sao => sao.Alias).HasMaxLength(30);
             Property(sao => sao.Color).HasMaxLength(100);
+            Property(sao => sao.PictureId).HasColumnName("MediaFileId");
 
             Property(soa => soa.NumberValue).HasPrecision(18, 4);
 

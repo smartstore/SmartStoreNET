@@ -7,7 +7,7 @@ namespace SmartStore.Data.Mapping.Media
     {
         public PictureMap()
         {
-            this.ToTable("Picture");
+            this.ToTable("MediaFile");
             this.HasKey(p => p.Id);
 
 #pragma warning disable 612, 618
@@ -15,7 +15,7 @@ namespace SmartStore.Data.Mapping.Media
 #pragma warning restore 612, 618
 
 			this.Property(p => p.MimeType).IsRequired().HasMaxLength(40);
-            this.Property(p => p.SeoFilename).HasMaxLength(300);
+            this.Property(p => p.SeoFilename).HasMaxLength(300).HasColumnName("Name");
 
 			HasOptional(x => x.MediaStorage)
 				.WithMany()

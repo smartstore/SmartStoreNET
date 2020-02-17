@@ -3478,7 +3478,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				var combination = model.ToEntity();
 				combination.AttributesXml = attributeXml;
-				combination.SetAssignedPictureIds(model.AssignedPictureIds);
+				combination.SetAssignedMediaIds(model.AssignedPictureIds);
 
 				_productAttributeService.InsertProductVariantAttributeCombination(combination);
 
@@ -3540,7 +3540,7 @@ namespace SmartStore.Admin.Controllers
 				var attributeXml = combination.AttributesXml;
 				combination = model.ToEntity(combination);
 				combination.AttributesXml = attributeXml;
-				combination.SetAssignedPictureIds(model.AssignedPictureIds);
+				combination.SetAssignedMediaIds(model.AssignedPictureIds);
 
 				_productAttributeService.UpdateProductVariantAttributeCombination(combination);
 

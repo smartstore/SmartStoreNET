@@ -12,6 +12,7 @@ namespace SmartStore.Data.Mapping.Catalog
 			Property(x => x.Name).HasMaxLength(4000);
 			Property(x => x.Alias).HasMaxLength(100);
 			Property(x => x.Color).HasMaxLength(100);
+			Property(x => x.PictureId).HasColumnName("MediaFileId");
 
 			Property(x => x.PriceAdjustment).HasPrecision(18, 4);
 			Property(x => x.WeightAdjustment).HasPrecision(18, 4);

@@ -159,7 +159,7 @@ namespace SmartStore.Services.Messages
 
 				if (combination != null)
 				{
-					var picturesIds = combination.GetAssignedPictureIds();
+					var picturesIds = combination.GetAssignedMediaIds();
 					if (picturesIds != null && picturesIds.Length > 0)
 					{
 						pictureInfo = pictureService.GetPictureInfo(picturesIds[0]);

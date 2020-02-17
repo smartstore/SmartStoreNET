@@ -36,7 +36,7 @@ namespace SmartStore.Core.Domain.Media
 		public int? Height { get; set; }
 
 		/// <summary>
-		/// Gets or sets the SEO friednly filename of the picture
+		/// Gets or sets the SEO friendly name of the media file
 		/// </summary>
 		[DataMember]
 		public string SeoFilename { get; set; }

@@ -915,12 +915,12 @@ namespace SmartStore.Services.Catalog
 
 			foreach (var c in combinations)
 			{
-				var ids = c.GetAssignedPictureIds().ToList();
+				var ids = c.GetAssignedMediaIds().ToList();
 				if (ids.Contains(picId))
 				{
 					ids.Remove(picId);
 					//c.AssignedPictureIds = ids.Count > 0 ? String.Join<int>(",", ids) : null;
-					c.SetAssignedPictureIds(ids.ToArray());
+					c.SetAssignedMediaIds(ids.ToArray());
 					touched = true;
 					// we will save after we're done. It's faster.
 				}

@@ -745,7 +745,7 @@ namespace SmartStore.Services.DataExchange.Export
 
             if (productContext.Combination != null)
             {
-                var pictureIds = productContext.Combination.GetAssignedPictureIds();
+                var pictureIds = productContext.Combination.GetAssignedMediaIds();
 				if (pictureIds.Any())
 				{
 					productPictures = productPictures.Where(x => pictureIds.Contains(x.PictureId));
@@ -881,7 +881,7 @@ namespace SmartStore.Services.DataExchange.Export
 						dynamic dyn = ToDynamic(ctx, x);
 						var assignedPictures = new List<dynamic>();
 
-						foreach (int pictureId in x.GetAssignedPictureIds().Take(numberOfPictures))
+						foreach (int pictureId in x.GetAssignedMediaIds().Take(numberOfPictures))
 						{
 							var assignedPicture = productPictures.FirstOrDefault(y => y.PictureId == pictureId);
 							if (assignedPicture != null && assignedPicture.Picture != null)

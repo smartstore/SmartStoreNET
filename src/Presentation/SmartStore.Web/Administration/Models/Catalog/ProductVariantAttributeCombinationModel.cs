@@ -132,13 +132,13 @@ namespace SmartStore.Admin.Models.Catalog
         public void Map(ProductVariantAttributeCombination from, ProductVariantAttributeCombinationModel to)
         {
             MiniMapper.Map(from, to);
-            to.AssignedPictureIds = from.GetAssignedPictureIds();
+            to.AssignedPictureIds = from.GetAssignedMediaIds();
         }
 
         public void Map(ProductVariantAttributeCombinationModel from, ProductVariantAttributeCombination to)
         {
             MiniMapper.Map(from, to);
-            to.SetAssignedPictureIds(from.AssignedPictureIds);
+            to.SetAssignedMediaIds(from.AssignedPictureIds);
         }
     }
 }

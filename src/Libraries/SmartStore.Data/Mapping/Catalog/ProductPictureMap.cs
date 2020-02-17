@@ -7,15 +7,15 @@ namespace SmartStore.Data.Mapping.Catalog
     {
         public ProductPictureMap()
         {
-            this.ToTable("Product_Picture_Mapping");
-            this.HasKey(pp => pp.Id);
+            ToTable("Product_MediaFile_Mapping");
+            HasKey(pp => pp.Id);
+            Property(pp => pp.PictureId).HasColumnName("MediaFileId");
             
-            this.HasRequired(pp => pp.Picture)
+            HasRequired(pp => pp.Picture)
                 .WithMany(p => p.ProductPictures)
                 .HasForeignKey(pp => pp.PictureId);
 
-
-            this.HasRequired(pp => pp.Product)
+            HasRequired(pp => pp.Product)
                 .WithMany(p => p.ProductPictures)
                 .HasForeignKey(pp => pp.ProductId);
         }

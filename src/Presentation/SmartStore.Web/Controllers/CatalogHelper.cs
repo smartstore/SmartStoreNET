@@ -643,7 +643,7 @@ namespace SmartStore.Web.Controllers
 			model.AlternateText = T("Media.Product.ImageAlternateTextFormat", model.Name);
 
 			Picture defaultPicture = null;
-			var combiAssignedImages = (combination == null ? null : combination.GetAssignedPictureIds());
+			var combiAssignedImages = (combination == null ? null : combination.GetAssignedMediaIds());
 			int defaultPictureSize;
 
 			if (isAssociatedProduct)

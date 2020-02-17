@@ -12,7 +12,7 @@ namespace SmartStore.Core.Domain.Catalog
 		string Name { get; }
         string ExternalLink { get; }
         string Alias { get; }
-		int? PictureId { get; }
+		int? MediaFileId { get; }
 		bool Published { get; }
 		int DisplayOrder { get; }
 		DateTime UpdatedOnUtc { get; }
@@ -28,7 +28,7 @@ namespace SmartStore.Core.Domain.Catalog
 		public string Name { get; set; }
         public string ExternalLink { get; set; }
         public string Alias { get; set; }
-		public int? PictureId { get; set; }
+		public int? MediaFileId { get; set; }
 		public bool Published { get; set; }
 		public int DisplayOrder { get; set; }
 		public DateTime UpdatedOnUtc { get; set; }

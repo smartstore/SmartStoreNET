@@ -754,6 +754,14 @@
     <Compile Include="Migrations\202001301039020_DiscountRuleSets.Designer.cs">
       <DependentUpon>202001301039020_DiscountRuleSets.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202002172101120_PictureMediaRename.cs" />
+    <Compile Include="Migrations\202002172101120_PictureMediaRename.Designer.cs">
+      <DependentUpon>202002172101120_PictureMediaRename.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202002172118020_PictureMediaRename1.cs" />
+    <Compile Include="Migrations\202002172118020_PictureMediaRename1.Designer.cs">
+      <DependentUpon>202002172118020_PictureMediaRename1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\202002191252074_RemoveDiscountRequirements.cs" />
     <Compile Include="Migrations\202002191252074_RemoveDiscountRequirements.Designer.cs">
       <DependentUpon>202002191252074_RemoveDiscountRequirements.cs</DependentUpon>
@@ -1364,6 +1372,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202001301039020_DiscountRuleSets.resx">
       <DependentUpon>202001301039020_DiscountRuleSets.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002172101120_PictureMediaRename.resx">
+      <DependentUpon>202002172101120_PictureMediaRename.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002172118020_PictureMediaRename1.resx">
+      <DependentUpon>202002172118020_PictureMediaRename1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202002191252074_RemoveDiscountRequirements.resx">
       <DependentUpon>202002191252074_RemoveDiscountRequirements.cs</DependentUpon>

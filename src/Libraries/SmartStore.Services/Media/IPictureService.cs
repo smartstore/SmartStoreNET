@@ -37,7 +37,7 @@ namespace SmartStore.Services.Media
 		/// <param name="pictures">The sequence of pictures to seek within for duplicates</param>
 		/// <param name="equalPictureId">Id of equal picture if any</param>
 		/// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
-		byte[] FindEqualPicture(byte[] pictureBinary, IEnumerable<Picture> pictures, out int equalPictureId);
+		byte[] FindEqualPicture(byte[] pictureBinary, IEnumerable<MediaFile> pictures, out int equalPictureId);
 
 		/// <summary>
 		/// Get picture SEO friendly name
@@ -52,28 +52,28 @@ namespace SmartStore.Services.Media
 		/// <param name="pictureId">The picture identifier</param>
 		/// <param name="seoFilename">The SEO filename</param>
 		/// <returns>Picture</returns>
-		Picture SetSeoFilename(int pictureId, string seoFilename);
+		MediaFile SetSeoFilename(int pictureId, string seoFilename);
 
 		/// <summary>
 		/// Opens the picture stream from the underlying storage provider for reading
 		/// </summary>
 		/// <param name="picture">Picture</param>
 		/// <returns>Picture stream</returns>
-		Stream OpenPictureStream(Picture picture);
+		Stream OpenPictureStream(MediaFile picture);
 
 		/// <summary>
 		/// Loads the picture binary from the underlying storage provider
 		/// </summary>
 		/// <param name="picture">Picture</param>
 		/// <returns>Picture binary</returns>
-		byte[] LoadPictureBinary(Picture picture);
+		byte[] LoadPictureBinary(MediaFile picture);
 
 		/// <summary>
 		/// Asynchronously loads the picture binary from the underlying storage provider
 		/// </summary>
 		/// <param name="picture">Picture</param>
 		/// <returns>Picture binary</returns>
-		Task<byte[]> LoadPictureBinaryAsync(Picture picture);
+		Task<byte[]> LoadPictureBinaryAsync(MediaFile picture);
 
 		/// <summary>
 		/// Gets the size of a picture
@@ -110,7 +110,7 @@ namespace SmartStore.Services.Media
 		/// <param name="host"></param>
 		/// <param name="fallbackType"></param>
 		/// <returns></returns>
-		PictureInfo GetPictureInfo(Picture picture);
+		PictureInfo GetPictureInfo(MediaFile picture);
 
 		/// <summary>
 		/// Builds a url for a given <see cref="pictureId"/>. 
@@ -123,14 +123,14 @@ namespace SmartStore.Services.Media
 		string GetUrl(int pictureId, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null);
 
 		/// <summary>
-		/// Builds a url for a given <see cref="Picture"/> instance. 
+		/// Builds a url for a given <see cref="MediaFile"/> instance. 
 		/// </summary>
 		/// <param name="picture">Picture instance</param>
 		/// <param name="targetSize">The target picture size (longest side)</param>
 		/// <param name="host">Store location URL; null to use determine the current store location automatically</param>
 		/// <param name="fallbackType">Specifies the kind of fallback url to return if the <paramref name="picture"/> argument is null.</param>
 		/// <returns>Picture URL</returns>
-		string GetUrl(Picture picture, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null);
+		string GetUrl(MediaFile picture, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null);
 
 		/// <summary>
 		/// Builds a url for a given <see cref="PictureInfo"/> instance. 
@@ -156,7 +156,7 @@ namespace SmartStore.Services.Media
 		/// </summary>
 		/// <param name="pictureId">Picture identifier</param>
 		/// <returns>Picture</returns>
-		Picture GetPictureById(int pictureId);
+		MediaFile GetPictureById(int pictureId);
 
         /// <summary>
         /// Gets a collection of pictures
@@ -164,7 +164,7 @@ namespace SmartStore.Services.Media
         /// <param name="pageIndex">Current page</param>
         /// <param name="pageSize">Items on each page</param>
         /// <returns>Paged list of pictures</returns>
-        IPagedList<Picture> GetPictures(int pageIndex, int pageSize);
+        IPagedList<MediaFile> GetPictures(int pageIndex, int pageSize);
 
         /// <summary>
         /// Gets pictures by product identifier
@@ -172,7 +172,7 @@ namespace SmartStore.Services.Media
         /// <param name="productId">Product identifier</param>
         /// <param name="recordsToReturn">Number of records to return. 0 if you want to get all items</param>
         /// <returns>Pictures</returns>
-        IList<Picture> GetPicturesByProductId(int productId, int recordsToReturn = 0);
+        IList<MediaFile> GetPicturesByProductId(int productId, int recordsToReturn = 0);
 
 		/// <summary>
 		/// Gets a pictures map by product identifiers
@@ -181,7 +181,7 @@ namespace SmartStore.Services.Media
 		/// <param name="maxPicturesPerProduct">Max number of pictures to retrieve per product, <c>null</c> to load all pictures</param>
 		/// <param name="withBlobs">Whether the blob in MediaStorage table should be eager loaded</param>
 		/// <returns>A lookup map of product ids and pictures</returns>
-		Multimap<int, Picture> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = null, bool withBlobs = false);
+		Multimap<int, MediaFile> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = null, bool withBlobs = false);
 
 		/// <summary>
 		/// Gets pictures by picture identifier
@@ -189,13 +189,13 @@ namespace SmartStore.Services.Media
 		/// <param name="pictureIds">Picture identifier</param>
 		/// <param name="withBlobs">Whether the blob in MediaStorage table should be eager loaded</param>
 		/// <returns>Pictures</returns>
-		IList<Picture> GetPicturesByIds(int[] pictureIds, bool withBlobs = false);
+		IList<MediaFile> GetPicturesByIds(int[] pictureIds, bool withBlobs = false);
 
 		/// <summary>
 		/// Deletes a picture
 		/// </summary>
 		/// <param name="picture">Picture</param>
-		void DeletePicture(Picture picture);
+		void DeletePicture(MediaFile picture);
 
 		/// <summary>
 		/// Inserts a picture
@@ -208,7 +208,7 @@ namespace SmartStore.Services.Media
 		/// <param name="height">Picture height</param>
 		/// <param name="isTransient">A value indicating whether the picture is initially in transient state</param>
 		/// <returns>Picture</returns>
-		Picture InsertPicture(
+		MediaFile InsertPicture(
 			byte[] pictureBinary,
 			string mimeType,
 			string seoFilename,
@@ -227,7 +227,7 @@ namespace SmartStore.Services.Media
 		/// <param name="isTransient">A value indicating whether the picture is initially in transient state</param>
 		/// <param name="validateBinary">A value indicating whether to validated provided picture binary</param>
 		/// <returns>Picture</returns>
-		Picture InsertPicture(byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool isTransient = true, bool validateBinary = true);
+		MediaFile InsertPicture(byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool isTransient = true, bool validateBinary = true);
 
 		/// <summary>
 		/// Updates the picture
@@ -238,12 +238,12 @@ namespace SmartStore.Services.Media
 		/// <param name="seoFilename">The SEO filename</param>
 		/// <param name="isNew">A value indicating whether the picture is new</param>
 		/// <param name="validateBinary">A value indicating whether to validated provided picture binary</param>
-		void UpdatePicture(Picture picture, byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool validateBinary = true);
+		void UpdatePicture(MediaFile picture, byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool validateBinary = true);
 	}
 
 	public static class IPictureServiceExtensions
 	{
-		public static Picture UpdatePicture(this IPictureService pictureService, 
+		public static MediaFile UpdatePicture(this IPictureService pictureService, 
 			int pictureId, 
 			byte[] pictureBinary, 
 			string mimeType, 
@@ -261,7 +261,7 @@ namespace SmartStore.Services.Media
 			return picture;
 		}
 
-		public static Size GetPictureSize(this IPictureService pictureService, Picture picture)
+		public static Size GetPictureSize(this IPictureService pictureService, MediaFile picture)
 		{
 			return ImageHeader.GetDimensions(pictureService.OpenPictureStream(picture), picture.MimeType, false);
 		}
@@ -300,7 +300,7 @@ namespace SmartStore.Services.Media
 		/// <param name="host">The host (including scheme) to prepend to the url.</param>
 		/// <param name="fallback">Specifies whether to return a fallback url if the picture does not exist in the storage (default: true).</param>
 		/// <returns>Generated url which can be processed by the media middleware controller</returns>
-		public static string GetUrl(this IPictureService pictureService, Picture picture, int targetSize, bool fallback, string host = null)
+		public static string GetUrl(this IPictureService pictureService, MediaFile picture, int targetSize, bool fallback, string host = null)
 		{
 			var fallbackType = fallback ? FallbackPictureType.Entity : FallbackPictureType.NoFallback;
 			return pictureService.GetUrl(picture, targetSize, fallbackType, host);

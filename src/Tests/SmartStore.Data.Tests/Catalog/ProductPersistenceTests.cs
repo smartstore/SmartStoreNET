@@ -296,10 +296,10 @@ namespace SmartStore.Data.Tests.Catalog
                 UpdatedOnUtc = new DateTime(2010, 01, 02)
             };
 
-            product.ProductPictures.Add(new ProductPicture
+            product.ProductPictures.Add(new ProductMediaFile
 			{
 				DisplayOrder = 1,
-				Picture = new Picture
+				MediaFile = new MediaFile
 				{
 					MediaStorage = new MediaStorage
 					{
@@ -319,8 +319,8 @@ namespace SmartStore.Data.Tests.Catalog
             (fromDb.ProductPictures.Count == 1).ShouldBeTrue();
             fromDb.ProductPictures.First().DisplayOrder.ShouldEqual(1);
 
-            fromDb.ProductPictures.First().Picture.ShouldNotBeNull();
-            fromDb.ProductPictures.First().Picture.MimeType.ShouldEqual("image/pjpeg");
+            fromDb.ProductPictures.First().MediaFile.ShouldNotBeNull();
+            fromDb.ProductPictures.First().MediaFile.MimeType.ShouldEqual("image/pjpeg");
         }
 
         [Test]

@@ -56,14 +56,14 @@ namespace SmartStore.WebApi
 			m.EntitySet<Order>(WebApiOdataEntitySet.Orders);
 			m.EntitySet<OrderItem>(WebApiOdataEntitySet.OrderItems);
 			m.EntitySet<PaymentMethod>(WebApiOdataEntitySet.PaymentMethods);
-			m.EntitySet<Picture>(WebApiOdataEntitySet.Pictures);
+			m.EntitySet<MediaFile>(WebApiOdataEntitySet.Pictures);
 			m.EntitySet<ProductAttribute>(WebApiOdataEntitySet.ProductAttributes);
 			m.EntitySet<ProductAttributeOption>(WebApiOdataEntitySet.ProductAttributeOptions);
 			m.EntitySet<ProductAttributeOptionsSet>(WebApiOdataEntitySet.ProductAttributeOptionsSets);
 			m.EntitySet<ProductBundleItem>(WebApiOdataEntitySet.ProductBundleItems);
 			m.EntitySet<ProductCategory>(WebApiOdataEntitySet.ProductCategories);
 			m.EntitySet<ProductManufacturer>(WebApiOdataEntitySet.ProductManufacturers);
-			m.EntitySet<ProductPicture>(WebApiOdataEntitySet.ProductPictures);
+			m.EntitySet<ProductMediaFile>(WebApiOdataEntitySet.ProductPictures);
 			m.EntitySet<Product>(WebApiOdataEntitySet.Products);
 			m.EntitySet<ProductSpecificationAttribute>(WebApiOdataEntitySet.ProductSpecificationAttributes);
 			m.EntitySet<ProductTag>(WebApiOdataEntitySet.ProductTags);

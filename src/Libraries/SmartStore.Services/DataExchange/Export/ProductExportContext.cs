@@ -13,16 +13,16 @@ namespace SmartStore.Services.DataExchange.Export
     /// </summary>
     public class ProductExportContext : PriceCalculationContext
 	{
-		private Func<int[], Multimap<int, ProductPicture>> _funcProductPictures;
+		private Func<int[], Multimap<int, ProductMediaFile>> _funcProductPictures;
 		private Func<int[], Multimap<int, ProductTag>> _funcProductTags;
 		private Func<int[], Multimap<int, ProductSpecificationAttribute>> _funcSpecificationAttributes;
-		private Func<int[], Multimap<int, Picture>> _funcPictures;
+		private Func<int[], Multimap<int, MediaFile>> _funcPictures;
         private Func<int[], Multimap<int, Download>> _funcDownloads;
 
-        private LazyMultimap<ProductPicture> _productPictures;
+        private LazyMultimap<ProductMediaFile> _productPictures;
 		private LazyMultimap<ProductTag> _productTags;
 		private LazyMultimap<ProductSpecificationAttribute> _specificationAttributes;
-		private LazyMultimap<Picture> _pictures;
+		private LazyMultimap<MediaFile> _pictures;
         private LazyMultimap<Download> _downloads;
 
         public ProductExportContext(
@@ -36,8 +36,8 @@ namespace SmartStore.Services.DataExchange.Export
 			Func<int[], Multimap<int, Discount>> appliedDiscounts,
 			Func<int[], Multimap<int, ProductBundleItem>> productBundleItems,
             Func<int[], Multimap<int, Product>> associatedProducts,
-            Func<int[], Multimap<int, Picture>> pictures,
-			Func<int[], Multimap<int, ProductPicture>> productPictures,
+            Func<int[], Multimap<int, MediaFile>> pictures,
+			Func<int[], Multimap<int, ProductMediaFile>> productPictures,
 			Func<int[], Multimap<int, ProductTag>> productTags,
             Func<int[], Multimap<int, Download>> downloads)
 			: base(products,
@@ -68,25 +68,25 @@ namespace SmartStore.Services.DataExchange.Export
 			base.Clear();
 		}
 
-		public LazyMultimap<Picture> Pictures
+		public LazyMultimap<MediaFile> Pictures
 		{
 			get
 			{
 				if (_pictures == null)
 				{
-					_pictures = new LazyMultimap<Picture>(keys => _funcPictures(keys), _productIds);
+					_pictures = new LazyMultimap<MediaFile>(keys => _funcPictures(keys), _productIds);
 				}
 				return _pictures;
 			}
 		}
 
-		public LazyMultimap<ProductPicture> ProductPictures
+		public LazyMultimap<ProductMediaFile> ProductPictures
 		{
 			get
 			{
 				if (_productPictures == null)
 				{
-					_productPictures = new LazyMultimap<ProductPicture>(keys => _funcProductPictures(keys), _productIds);
+					_productPictures = new LazyMultimap<ProductMediaFile>(keys => _funcProductPictures(keys), _productIds);
 				}
 				return _productPictures;
 			}

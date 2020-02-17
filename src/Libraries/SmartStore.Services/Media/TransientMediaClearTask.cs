@@ -16,13 +16,13 @@ namespace SmartStore.Services.Media
     {
 		private readonly IPictureService _pictureService;
         private readonly IDownloadService _downloadService;
-		private readonly IRepository<Picture> _pictureRepository;
+		private readonly IRepository<MediaFile> _pictureRepository;
 		private readonly IRepository<Download> _downloadRepository;
 
 		public TransientMediaClearTask(
 			IPictureService pictureService,
             IDownloadService downloadService,
-            IRepository<Picture> pictureRepository, 
+            IRepository<MediaFile> pictureRepository, 
 			IRepository<Download> downloadRepository)
         {
 			_pictureService = pictureService;

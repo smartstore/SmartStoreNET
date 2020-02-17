@@ -139,7 +139,7 @@ namespace SmartStore.WebApi.Controllers.Api
 			var displayOrder = 0;
 			var result = new List<UploadImage>();
 			var storeUrl = _storeService.Value.GetHost(_storeContext.Value.CurrentStore);
-			var pictures = entity.ProductPictures.Select(x => x.Picture);
+			var pictures = entity.ProductPictures.Select(x => x.MediaFile);
 
 			if (entity.ProductPictures.Count > 0)
 				displayOrder = entity.ProductPictures.Max(x => x.DisplayOrder);
@@ -172,9 +172,9 @@ namespace SmartStore.WebApi.Controllers.Api
                             
 							if (newPicture != null)
 							{
-								_productService.Value.InsertProductPicture(new ProductPicture
+								_productService.Value.InsertProductPicture(new ProductMediaFile
 								{
-									PictureId = newPicture.Id,
+									MediaFileId = newPicture.Id,
 									ProductId = entity.Id,
 									DisplayOrder = ++displayOrder
 								});

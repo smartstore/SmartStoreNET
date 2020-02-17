@@ -3,7 +3,7 @@ using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Data.Mapping.Media
 {
-    public partial class PictureMap : EntityTypeConfiguration<Picture>
+    public partial class PictureMap : EntityTypeConfiguration<MediaFile>
     {
         public PictureMap()
         {
@@ -15,7 +15,7 @@ namespace SmartStore.Data.Mapping.Media
 #pragma warning restore 612, 618
 
 			this.Property(p => p.MimeType).IsRequired().HasMaxLength(40);
-            this.Property(p => p.SeoFilename).HasMaxLength(300).HasColumnName("Name");
+            this.Property(p => p.Name).HasMaxLength(300).HasColumnName("Name");
 
 			HasOptional(x => x.MediaStorage)
 				.WithMany()

@@ -337,7 +337,7 @@ namespace SmartStore.Services.DataExchange.Export
 			if (picture == null)
 				return;
 
-			Picture entity = picture.Entity;
+			MediaFile entity = picture.Entity;
 
 			if (node.HasValue())
 			{
@@ -385,7 +385,7 @@ namespace SmartStore.Services.DataExchange.Export
 				_writer.Write("MetaTitle", (string)category.MetaTitle);
 				_writer.Write("SeName", (string)category.SeName);
 				_writer.Write("ParentCategoryId", entity.ParentCategoryId.ToString());
-				_writer.Write("PictureId", entity.PictureId.ToString());
+				_writer.Write("PictureId", entity.MediaFileId.ToString());
 				_writer.Write("PageSize", entity.PageSize.ToString());
 				_writer.Write("AllowCustomersToSelectPageSize", entity.AllowCustomersToSelectPageSize.ToString());
 				_writer.Write("PageSizeOptions", entity.PageSizeOptions);
@@ -433,7 +433,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("MetaKeywords", (string)manufacturer.MetaKeywords);
 			_writer.Write("MetaDescription", (string)manufacturer.MetaDescription);
 			_writer.Write("MetaTitle", (string)manufacturer.MetaTitle);
-			_writer.Write("PictureId", entity.PictureId.ToString());
+			_writer.Write("PictureId", entity.MediaFileId.ToString());
 			_writer.Write("PageSize", entity.PageSize.ToString());
 			_writer.Write("AllowCustomersToSelectPageSize", entity.AllowCustomersToSelectPageSize.ToString());
 			_writer.Write("PageSizeOptions", entity.PageSizeOptions);
@@ -759,7 +759,7 @@ namespace SmartStore.Services.DataExchange.Export
 					_writer.Write("Height", entityPvac.Height.HasValue ? entityPvac.Height.Value.ToString(_culture) : "");
 					_writer.Write("BasePriceAmount", entityPvac.BasePriceAmount.HasValue ? entityPvac.BasePriceAmount.Value.ToString(_culture) : "");
 					_writer.Write("BasePriceBaseAmount", entityPvac.BasePriceBaseAmount.HasValue ? entityPvac.BasePriceBaseAmount.Value.ToString() : "");
-					_writer.Write("AssignedPictureIds", entityPvac.AssignedPictureIds);
+					_writer.Write("AssignedPictureIds", entityPvac.AssignedMediaFileIds);
 					_writer.Write("IsActive", entityPvac.IsActive.ToString());
 
 					WriteDeliveryTime(combination.DeliveryTime, "DeliveryTime");
@@ -783,7 +783,7 @@ namespace SmartStore.Services.DataExchange.Export
 				_writer.WriteStartElement("ProductPictures");
 				foreach (dynamic productPicture in product.ProductPictures)
 				{
-					ProductPicture entityProductPicture = productPicture.Entity;
+					ProductMediaFile entityProductPicture = productPicture.Entity;
 
 					_writer.WriteStartElement("ProductPicture");
 					_writer.Write("Id", entityProductPicture.Id.ToString());

@@ -54,9 +54,9 @@ namespace SmartStore.Data.Setup
 
 		#region Mandatory data creators
 
-		public IList<Picture> Pictures()
+		public IList<MediaFile> Pictures()
 		{
-			var entities = new List<Picture>
+			var entities = new List<MediaFile>
 			{
 				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "company_logo.png"), "image/png", GetSeName("company-logo")),
 
@@ -78,7 +78,7 @@ namespace SmartStore.Data.Setup
 		public IList<Store> Stores()
 		{
 			var seName = GetSeName("company-logo");
-			var imgCompanyLogo = _ctx.Set<Picture>().Where(x => x.SeoFilename == seName).FirstOrDefault();
+			var imgCompanyLogo = _ctx.Set<MediaFile>().Where(x => x.Name == seName).FirstOrDefault();
 			
 			var currency = _ctx.Set<Currency>().FirstOrDefault(x => x.CurrencyCode == "EUR");
 			if (currency == null)
@@ -93,7 +93,7 @@ namespace SmartStore.Data.Setup
 					Hosts = "yourstore.com,www.yourstore.com",
 					SslEnabled = false,
 					DisplayOrder = 1,
-					LogoPictureId = imgCompanyLogo.Id,
+					LogoMediaFileId = imgCompanyLogo.Id,
 					PrimaryStoreCurrencyId = currency.Id,
 					PrimaryExchangeRateCurrencyId = currency.Id
 				}
@@ -6155,7 +6155,7 @@ namespace SmartStore.Data.Setup
             #region wayfarer
 
             var productWayfarer = _ctx.Set<Product>().First(x => x.Sku == "P-3003");
-            var wayfarerFramePictures = _ctx.Set<Picture>().Where(x => x.SeoFilename.StartsWith("wayfarer_")).ToList();
+            var wayfarerFramePictures = _ctx.Set<MediaFile>().Where(x => x.Name.StartsWith("wayfarer_")).ToList();
 
             var attributeWayfarerLenscolor = new ProductVariantAttribute()
             {
@@ -6218,7 +6218,7 @@ namespace SmartStore.Data.Setup
                 AttributeControlType = AttributeControlType.Boxes
             };
 
-            var wayfarerFramePicture = wayfarerFramePictures.First(x => x.SeoFilename.EndsWith("_rayban_black"));
+            var wayfarerFramePicture = wayfarerFramePictures.First(x => x.Name.EndsWith("_rayban_black"));
 
             attributeWayfarerFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
@@ -6229,10 +6229,10 @@ namespace SmartStore.Data.Setup
                 Quantity = 1,
                 ValueType = ProductVariantAttributeValueType.Simple,
                 //Color = "#3e4659"
-                PictureId = wayfarerFramePicture.Id
+                MediaFileId = wayfarerFramePicture.Id
             });
 
-            wayfarerFramePicture = wayfarerFramePictures.First(x => x.SeoFilename.EndsWith("_havana_black"));
+            wayfarerFramePicture = wayfarerFramePictures.First(x => x.Name.EndsWith("_havana_black"));
             attributeWayfarerFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
                 Name = "Havana; Black",
@@ -6241,10 +6241,10 @@ namespace SmartStore.Data.Setup
                 Quantity = 1,
                 ValueType = ProductVariantAttributeValueType.Simple,
                 //Color = "#3e4659"
-                PictureId = wayfarerFramePicture.Id
+                MediaFileId = wayfarerFramePicture.Id
             });
 
-            wayfarerFramePicture = wayfarerFramePictures.First(x => x.SeoFilename.EndsWith("_havana"));
+            wayfarerFramePicture = wayfarerFramePictures.First(x => x.Name.EndsWith("_havana"));
             attributeWayfarerFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
                 Name = "Havana",
@@ -6253,7 +6253,7 @@ namespace SmartStore.Data.Setup
                 Quantity = 1,
                 ValueType = ProductVariantAttributeValueType.Simple,
                 //Color = "#727377",
-                PictureId = wayfarerFramePicture.Id
+                MediaFileId = wayfarerFramePicture.Id
             });
 
 
@@ -6831,7 +6831,7 @@ namespace SmartStore.Data.Setup
 
 			var productAllStar = _ctx.Set<Product>().First(x => x.Sku == "Fashion-112355");
 			var allStarColors = new string[] { "Charcoal", "Maroon", "Navy", "Purple", "White" };
-			var allStarPictures = _ctx.Set<Picture>().Where(x => x.SeoFilename.StartsWith("all-star-")).ToList();
+			var allStarPictures = _ctx.Set<MediaFile>().Where(x => x.Name.StartsWith("all-star-")).ToList();
 
 			var attrAllStarColor = new ProductVariantAttribute
 			{
@@ -6844,14 +6844,14 @@ namespace SmartStore.Data.Setup
 
 			for (var i = 0; i < allStarColors.Length; ++i)
 			{
-				var allStarPicture = allStarPictures.First(x => x.SeoFilename.EndsWith(allStarColors[i].ToLower()));
+				var allStarPicture = allStarPictures.First(x => x.Name.EndsWith(allStarColors[i].ToLower()));
 				attrAllStarColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
 				{
 					Name = allStarColors[i],
 					Alias = allStarColors[i].ToLower(),
 					DisplayOrder = i + 1,
 					Quantity = 1,
-					PictureId = allStarPicture.Id
+					MediaFileId = allStarPicture.Id
 				});
 			}
 			entities.Add(attrAllStarColor);
@@ -7516,8 +7516,8 @@ namespace SmartStore.Data.Setup
             #region ORIGINAL WAYFARER AT COLLECTION
 
             var productWayfarer = _ctx.Set<Product>().First(x => x.Sku == "P-3003");
-            var wayfarerPictureIds = productWayfarer.ProductPictures.Select(pp => pp.PictureId).ToList();
-            var picturesWayfarer = _ctx.Set<Picture>().Where(x => wayfarerPictureIds.Contains(x.Id)).ToList();
+            var wayfarerPictureIds = productWayfarer.ProductPictures.Select(pp => pp.MediaFileId).ToList();
+            var picturesWayfarer = _ctx.Set<MediaFile>().Where(x => wayfarerPictureIds.Contains(x.Id)).ToList();
 
             //var attributeColorIphone7Plus = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productIphone7Plus.Id && x.ProductAttributeId == attrColor.Id);
 
@@ -7541,7 +7541,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = true,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-blue-gray-classic-black-1").Id.ToString()
+                AssignedMediaFileIds = picturesWayfarer.First(x => x.Name == "wayfarer-blue-gray-classic-black-1").Id.ToString()
             });
 
             #endregion blue-gray-classic-black
@@ -7560,7 +7560,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = true,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-gray-course-black").Id.ToString()
+                AssignedMediaFileIds = picturesWayfarer.First(x => x.Name == "wayfarer-gray-course-black").Id.ToString()
             });
 
             #endregion gray-course-black
@@ -7579,7 +7579,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = true,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-brown-course-havana").Id.ToString()
+                AssignedMediaFileIds = picturesWayfarer.First(x => x.Name == "wayfarer-brown-course-havana").Id.ToString()
             });
 
             #endregion brown-course-havana
@@ -7598,7 +7598,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = true,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-green-classic-havana-black").Id.ToString()
+                AssignedMediaFileIds = picturesWayfarer.First(x => x.Name == "wayfarer-green-classic-havana-black").Id.ToString()
             });
 
             #endregion green-classic-havana-black
@@ -7619,7 +7619,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = false,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-blue-gray-classic-black-1").Id.ToString()
+                AssignedMediaFileIds = picturesWayfarer.First(x => x.Name == "wayfarer-blue-gray-classic-black-1").Id.ToString()
             });
 
             #endregion green-classic-havana-black
@@ -7638,7 +7638,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = false,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-blue-gray-classic-black-1").Id.ToString()
+                AssignedMediaFileIds = picturesWayfarer.First(x => x.Name == "wayfarer-blue-gray-classic-black-1").Id.ToString()
             });
 
             #endregion green-classic-rayban-black
@@ -7658,7 +7658,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = true,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-gray-course-black").Id.ToString()
+                AssignedMediaFileIds = picturesWayfarer.First(x => x.Name == "wayfarer-gray-course-black").Id.ToString()
             });
 
             #endregion gray-course-havana-black
@@ -7677,7 +7677,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = false,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-gray-course-black").Id.ToString()
+                AssignedMediaFileIds = picturesWayfarer.First(x => x.Name == "wayfarer-gray-course-black").Id.ToString()
             });
 
             #endregion gray-course-rayban-black
@@ -7696,7 +7696,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = false,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-green-classic-havana-black").Id.ToString()
+                AssignedMediaFileIds = picturesWayfarer.First(x => x.Name == "wayfarer-green-classic-havana-black").Id.ToString()
             });
 
             #endregion green-classic-rayban-black
@@ -7715,7 +7715,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = false,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-green-classic-havana-black").Id.ToString()
+                AssignedMediaFileIds = picturesWayfarer.First(x => x.Name == "wayfarer-green-classic-havana-black").Id.ToString()
             });
 
             #endregion gray-course-rayban-black
@@ -7735,7 +7735,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = false,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-brown-course-havana").Id.ToString()
+                AssignedMediaFileIds = picturesWayfarer.First(x => x.Name == "wayfarer-brown-course-havana").Id.ToString()
             });
 
             #endregion brown-course-havana-black
@@ -7754,7 +7754,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = false,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-brown-course-havana").Id.ToString()
+                AssignedMediaFileIds = picturesWayfarer.First(x => x.Name == "wayfarer-brown-course-havana").Id.ToString()
             });
 
             #endregion brown-course-rayban-black
@@ -7764,8 +7764,8 @@ namespace SmartStore.Data.Setup
             #region Custom Flak
 
             var productFlak = _ctx.Set<Product>().First(x => x.Sku == "P-3002");
-            var flakPictureIds = productFlak.ProductPictures.Select(pp => pp.PictureId).ToList();
-            var picturesFlak = _ctx.Set<Picture>().Where(x => flakPictureIds.Contains(x.Id)).ToList();
+            var flakPictureIds = productFlak.ProductPictures.Select(pp => pp.MediaFileId).ToList();
+            var picturesFlak = _ctx.Set<MediaFile>().Where(x => flakPictureIds.Contains(x.Id)).ToList();
 
             //var attributeColorIphone7Plus = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productIphone7Plus.Id && x.ProductAttributeId == attrColor.Id);
 
@@ -7797,7 +7797,7 @@ namespace SmartStore.Data.Setup
                                     AllowOutOfStockOrders = true,
                                     IsActive = true,
                             
-                                    AssignedPictureIds = picturesFlak.First(x => x.SeoFilename.Contains(framecolorValue.Alias + "_" + lenscolorValue.Alias)).Id.ToString(),
+                                    AssignedMediaFileIds = picturesFlak.First(x => x.Name.Contains(framecolorValue.Alias + "_" + lenscolorValue.Alias)).Id.ToString(),
                             
                                     //Price = ballChairPrice
                             });
@@ -7818,8 +7818,8 @@ namespace SmartStore.Data.Setup
             #region ps3
 
             var productPs3 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000");
-			var ps3PictureIds = productPs3.ProductPictures.Select(pp => pp.PictureId).ToList();
-			var picturesPs3 = _ctx.Set<Picture>().Where(x => ps3PictureIds.Contains(x.Id)).ToList();
+			var ps3PictureIds = productPs3.ProductPictures.Select(pp => pp.MediaFileId).ToList();
+			var picturesPs3 = _ctx.Set<MediaFile>().Where(x => ps3PictureIds.Contains(x.Id)).ToList();
 
 			var productAttributeColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productPs3.Id && x.ProductAttributeId == attrController.Id);
 			var attributeColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == productAttributeColor.Id).ToList();
@@ -7832,7 +7832,7 @@ namespace SmartStore.Data.Setup
 				StockQuantity = 10000,
 				AllowOutOfStockOrders = true,
 				IsActive = true,
-				AssignedPictureIds = picturesPs3.First(x => x.SeoFilename.EndsWith("-controller")).Id.ToString()
+				AssignedMediaFileIds = picturesPs3.First(x => x.Name.EndsWith("-controller")).Id.ToString()
 			});
 
 			entities.Add(new ProductVariantAttributeCombination()
@@ -7843,7 +7843,7 @@ namespace SmartStore.Data.Setup
 				StockQuantity = 10000,
 				AllowOutOfStockOrders = true,
 				IsActive = true,
-				AssignedPictureIds = picturesPs3.First(x => x.SeoFilename.EndsWith("-single")).Id.ToString()
+				AssignedMediaFileIds = picturesPs3.First(x => x.Name.EndsWith("-single")).Id.ToString()
 			});
 
             #endregion ps3
@@ -7851,8 +7851,8 @@ namespace SmartStore.Data.Setup
             #region Apple Airpod
 
             var productAirpod = _ctx.Set<Product>().First(x => x.Sku == "P-2003");
-            var airpodPictureIds = productAirpod.ProductPictures.Select(pp => pp.PictureId).ToList();
-            var picturesAirpod = _ctx.Set<Picture>().Where(x => airpodPictureIds.Contains(x.Id)).ToList();
+            var airpodPictureIds = productAirpod.ProductPictures.Select(pp => pp.MediaFileId).ToList();
+            var picturesAirpod = _ctx.Set<MediaFile>().Where(x => airpodPictureIds.Contains(x.Id)).ToList();
 
             var airpodAttributeColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productAirpod.Id && x.ProductAttributeId == attrColor.Id);
             var airpodAttributeColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == airpodAttributeColor.Id).ToList();
@@ -7865,7 +7865,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesAirpod.First(x => x.SeoFilename.EndsWith("-gold")).Id.ToString()
+                AssignedMediaFileIds = picturesAirpod.First(x => x.Name.EndsWith("-gold")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -7876,7 +7876,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesAirpod.First(x => x.SeoFilename.EndsWith("-rose")).Id.ToString()
+                AssignedMediaFileIds = picturesAirpod.First(x => x.Name.EndsWith("-rose")).Id.ToString()
             });
             entities.Add(new ProductVariantAttributeCombination()
             {
@@ -7886,7 +7886,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesAirpod.First(x => x.SeoFilename.EndsWith("-mint")).Id.ToString()
+                AssignedMediaFileIds = picturesAirpod.First(x => x.Name.EndsWith("-mint")).Id.ToString()
             });
             entities.Add(new ProductVariantAttributeCombination()
             {
@@ -7896,7 +7896,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesAirpod.First(x => x.SeoFilename.EndsWith("-lightblue")).Id.ToString()
+                AssignedMediaFileIds = picturesAirpod.First(x => x.Name.EndsWith("-lightblue")).Id.ToString()
             });
             entities.Add(new ProductVariantAttributeCombination()
             {
@@ -7906,7 +7906,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesAirpod.First(x => x.SeoFilename.EndsWith("-turquoise")).Id.ToString()
+                AssignedMediaFileIds = picturesAirpod.First(x => x.Name.EndsWith("-turquoise")).Id.ToString()
             });
             entities.Add(new ProductVariantAttributeCombination()
             {
@@ -7916,7 +7916,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesAirpod.First(x => x.SeoFilename.EndsWith("-white")).Id.ToString()
+                AssignedMediaFileIds = picturesAirpod.First(x => x.Name.EndsWith("-white")).Id.ToString()
             });
 
             #endregion Apple Airpod
@@ -7924,8 +7924,8 @@ namespace SmartStore.Data.Setup
             #region 9,7 Ipad
 
             var productiPad97 = _ctx.Set<Product>().First(x => x.Sku == "P-2004");
-            var iPad97PictureIds = productiPad97.ProductPictures.Select(pp => pp.PictureId).ToList();
-            var picturesiPad97 = _ctx.Set<Picture>().Where(x => iPad97PictureIds.Contains(x.Id)).ToList();
+            var iPad97PictureIds = productiPad97.ProductPictures.Select(pp => pp.MediaFileId).ToList();
+            var picturesiPad97 = _ctx.Set<MediaFile>().Where(x => iPad97PictureIds.Contains(x.Id)).ToList();
 
             //var attributeColorIphone7Plus = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productIphone7Plus.Id && x.ProductAttributeId == attrColor.Id);
 
@@ -7949,7 +7949,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = true,
                 Price = 299M,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-silver")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-silver")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -7964,7 +7964,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-silver")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-silver")).Id.ToString()
             });
 
             #endregion silver
@@ -7982,7 +7982,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-gold")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-gold")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -7997,7 +7997,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-gold")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-gold")).Id.ToString()
             });
             #endregion gold
 
@@ -8014,7 +8014,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-spacegray")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-spacegray")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -8029,7 +8029,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-spacegray")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-spacegray")).Id.ToString()
             });
             #endregion spacegray
 
@@ -8046,7 +8046,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-rose")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-rose")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -8061,7 +8061,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-rose")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-rose")).Id.ToString()
             });
             #endregion rose
 
@@ -8078,7 +8078,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-mint")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-mint")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -8093,7 +8093,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-mint")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-mint")).Id.ToString()
             });
             #endregion mint
 
@@ -8110,7 +8110,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-purple")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-purple")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -8125,7 +8125,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-purple")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-purple")).Id.ToString()
             });
             #endregion purple
 
@@ -8142,7 +8142,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-lightblue")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-lightblue")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -8157,7 +8157,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-lightblue")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-lightblue")).Id.ToString()
             });
             #endregion lightblue
 
@@ -8174,7 +8174,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-yellow")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-yellow")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -8189,7 +8189,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-yellow")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-yellow")).Id.ToString()
             });
             #endregion yellow
 
@@ -8206,7 +8206,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-turquoise")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-turquoise")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -8221,7 +8221,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-turquoise")).Id.ToString()
+                AssignedMediaFileIds = picturesiPad97.First(x => x.Name.EndsWith("-turquoise")).Id.ToString()
             });
             #endregion turquoise
 
@@ -8230,8 +8230,8 @@ namespace SmartStore.Data.Setup
             #region Iphone 7 plus
 
             var productIphone7Plus = _ctx.Set<Product>().First(x => x.Sku == "P-2001");
-            var Iphone7PlusPictureIds = productIphone7Plus.ProductPictures.Select(pp => pp.PictureId).ToList();
-            var picturesIphone7Plus = _ctx.Set<Picture>().Where(x => Iphone7PlusPictureIds.Contains(x.Id)).ToList();
+            var Iphone7PlusPictureIds = productIphone7Plus.ProductPictures.Select(pp => pp.MediaFileId).ToList();
+            var picturesIphone7Plus = _ctx.Set<MediaFile>().Where(x => Iphone7PlusPictureIds.Contains(x.Id)).ToList();
 
             //var attributeColorIphone7Plus = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productIphone7Plus.Id && x.ProductAttributeId == attrColor.Id);
 
@@ -8254,7 +8254,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-black")).Id.ToString()
+                AssignedMediaFileIds = picturesIphone7Plus.First(x => x.Name.EndsWith("-black")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -8269,7 +8269,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-black")).Id.ToString()
+                AssignedMediaFileIds = picturesIphone7Plus.First(x => x.Name.EndsWith("-black")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -8282,7 +8282,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-red")).Id.ToString()
+                AssignedMediaFileIds = picturesIphone7Plus.First(x => x.Name.EndsWith("-red")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -8295,7 +8295,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-red")).Id.ToString()
+                AssignedMediaFileIds = picturesIphone7Plus.First(x => x.Name.EndsWith("-red")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -8308,7 +8308,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-silver")).Id.ToString()
+                AssignedMediaFileIds = picturesIphone7Plus.First(x => x.Name.EndsWith("-silver")).Id.ToString()
             });
 
 
@@ -8322,7 +8322,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-silver")).Id.ToString()
+                AssignedMediaFileIds = picturesIphone7Plus.First(x => x.Name.EndsWith("-silver")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -8335,7 +8335,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-rose")).Id.ToString()
+                AssignedMediaFileIds = picturesIphone7Plus.First(x => x.Name.EndsWith("-rose")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -8348,7 +8348,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-rose")).Id.ToString()
+                AssignedMediaFileIds = picturesIphone7Plus.First(x => x.Name.EndsWith("-rose")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -8361,7 +8361,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-gold")).Id.ToString()
+                AssignedMediaFileIds = picturesIphone7Plus.First(x => x.Name.EndsWith("-gold")).Id.ToString()
             });
 
             entities.Add(new ProductVariantAttributeCombination()
@@ -8374,7 +8374,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
-                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-gold")).Id.ToString()
+                AssignedMediaFileIds = picturesIphone7Plus.First(x => x.Name.EndsWith("-gold")).Id.ToString()
             });
 
             #endregion Iphone 7 plus
@@ -8382,8 +8382,8 @@ namespace SmartStore.Data.Setup
 			#region Fashion - Converse All Star
 
 			var productAllStar = _ctx.Set<Product>().First(x => x.Sku == "Fashion-112355");
-			var allStarPictureIds = productAllStar.ProductPictures.Select(x => x.PictureId).ToList();
-			var allStarPictures = _ctx.Set<Picture>().Where(x => allStarPictureIds.Contains(x.Id)).ToList();
+			var allStarPictureIds = productAllStar.ProductPictures.Select(x => x.MediaFileId).ToList();
+			var allStarPictures = _ctx.Set<MediaFile>().Where(x => allStarPictureIds.Contains(x.Id)).ToList();
 
 			var allStarColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productAllStar.Id && x.ProductAttributeId == attrColor.Id);
 			var allStarColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == allStarColor.Id).ToList();
@@ -8423,7 +8423,7 @@ namespace SmartStore.Data.Setup
 					StockQuantity = 10000,
 					AllowOutOfStockOrders = true,
 					IsActive = true,
-					AssignedPictureIds = allStarPictures.First(x => x.SeoFilename.EndsWith(lowerColor)).Id.ToString()
+					AssignedMediaFileIds = allStarPictures.First(x => x.Name.EndsWith(lowerColor)).Id.ToString()
 				});
 			}
 
@@ -8432,8 +8432,8 @@ namespace SmartStore.Data.Setup
 			#region Fashion - Shirt Meccanica
 
 			var productShirtMeccanica = _ctx.Set<Product>().First(x => x.Sku == "Fashion-987693502");
-			var shirtMeccanicaPictureIds = productShirtMeccanica.ProductPictures.Select(x => x.PictureId).ToList();
-			var shirtMeccanicaPictures = _ctx.Set<Picture>().Where(x => shirtMeccanicaPictureIds.Contains(x.Id)).ToList();
+			var shirtMeccanicaPictureIds = productShirtMeccanica.ProductPictures.Select(x => x.MediaFileId).ToList();
+			var shirtMeccanicaPictures = _ctx.Set<MediaFile>().Where(x => shirtMeccanicaPictureIds.Contains(x.Id)).ToList();
 
 			var shirtMeccanicaColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productShirtMeccanica.Id && x.ProductAttributeId == attrColor.Id);
 			var shirtMeccanicaColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == shirtMeccanicaColor.Id).ToList();
@@ -8459,7 +8459,7 @@ namespace SmartStore.Data.Setup
 			{
 				var lowerColor = comb.Color.ToLower();
 				var lowerSize = comb.Size.ToLower();
-				var pictureIds = shirtMeccanicaPictures.Where(x => x.SeoFilename.Contains($"_{lowerColor}_")).Select(x => x.Id);
+				var pictureIds = shirtMeccanicaPictures.Where(x => x.Name.Contains($"_{lowerColor}_")).Select(x => x.Id);
 
 				entities.Add(new ProductVariantAttributeCombination
 				{
@@ -8471,7 +8471,7 @@ namespace SmartStore.Data.Setup
 					StockQuantity = 10000,
 					AllowOutOfStockOrders = true,
 					IsActive = true,
-					AssignedPictureIds = string.Join(",", pictureIds)
+					AssignedMediaFileIds = string.Join(",", pictureIds)
 				});
 			}
 
@@ -8480,8 +8480,8 @@ namespace SmartStore.Data.Setup
 			#region Fashion - Ladies Jacket
 
 			var productLadiesJacket = _ctx.Set<Product>().First(x => x.Sku == "Fashion-JN1107");
-			var ladiesJacketPictureIds = productLadiesJacket.ProductPictures.Select(x => x.PictureId).ToList();
-			var ladiesJacketPictures = _ctx.Set<Picture>().Where(x => ladiesJacketPictureIds.Contains(x.Id)).ToList();
+			var ladiesJacketPictureIds = productLadiesJacket.ProductPictures.Select(x => x.MediaFileId).ToList();
+			var ladiesJacketPictures = _ctx.Set<MediaFile>().Where(x => ladiesJacketPictureIds.Contains(x.Id)).ToList();
 
 			var ladiesJacketColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productLadiesJacket.Id && x.ProductAttributeId == attrColor.Id);
 			var ladiesJacketColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == ladiesJacketColor.Id).ToList();
@@ -8543,7 +8543,7 @@ namespace SmartStore.Data.Setup
 					StockQuantity = 10000,
 					AllowOutOfStockOrders = true,
 					IsActive = true,
-					AssignedPictureIds = ladiesJacketPictures.First(x => x.SeoFilename.EndsWith(lowerColor)).Id.ToString()
+					AssignedMediaFileIds = ladiesJacketPictures.First(x => x.Name.EndsWith(lowerColor)).Id.ToString()
 				});
 			}
 
@@ -8613,8 +8613,8 @@ namespace SmartStore.Data.Setup
             #region Soccer Adidas TANGO SALA BALL
 
             var productAdidasTANGOSALABALL = _ctx.Set<Product>().First(x => x.Sku == "P-5001");
-            var adidasTANGOSALABALLPictureIds = productAdidasTANGOSALABALL.ProductPictures.Select(x => x.PictureId).ToList();
-            var adidasTANGOSALABALLJacketPictures = _ctx.Set<Picture>().Where(x => adidasTANGOSALABALLPictureIds.Contains(x.Id)).ToList();
+            var adidasTANGOSALABALLPictureIds = productAdidasTANGOSALABALL.ProductPictures.Select(x => x.MediaFileId).ToList();
+            var adidasTANGOSALABALLJacketPictures = _ctx.Set<MediaFile>().Where(x => adidasTANGOSALABALLPictureIds.Contains(x.Id)).ToList();
 
             var adidasTANGOSALABALLColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productAdidasTANGOSALABALL.Id && x.ProductAttributeId == attrColor.Id);
             var adidasTANGOSALABALLColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == adidasTANGOSALABALLColor.Id).ToList();
@@ -8669,7 +8669,7 @@ namespace SmartStore.Data.Setup
                     StockQuantity = 10000,
                     AllowOutOfStockOrders = true,
                     IsActive = true,
-                    AssignedPictureIds = adidasTANGOSALABALLJacketPictures.First(x => x.SeoFilename.EndsWith(lowerColor)).Id.ToString()
+                    AssignedMediaFileIds = adidasTANGOSALABALLJacketPictures.First(x => x.Name.EndsWith(lowerColor)).Id.ToString()
                 });
             }
 
@@ -8678,8 +8678,8 @@ namespace SmartStore.Data.Setup
             #region Soccer Torfabrik official game ball
 
             var productTorfabrikBall = _ctx.Set<Product>().First(x => x.Sku == "P-5002");
-            var torfabrikBallPictureIds = productTorfabrikBall.ProductPictures.Select(x => x.PictureId).ToList();
-            var torfabrikBallPictures = _ctx.Set<Picture>().Where(x => torfabrikBallPictureIds.Contains(x.Id)).ToList();
+            var torfabrikBallPictureIds = productTorfabrikBall.ProductPictures.Select(x => x.MediaFileId).ToList();
+            var torfabrikBallPictures = _ctx.Set<MediaFile>().Where(x => torfabrikBallPictureIds.Contains(x.Id)).ToList();
 
             var torfabrikBallColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productTorfabrikBall.Id && x.ProductAttributeId == attrColor.Id);
             var torfabrikBallColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == torfabrikBallColor.Id).ToList();
@@ -8726,7 +8726,7 @@ namespace SmartStore.Data.Setup
                     StockQuantity = 10000,
                     AllowOutOfStockOrders = true,
                     IsActive = true,
-                    AssignedPictureIds = torfabrikBallPictures.First(x => x.SeoFilename.EndsWith(lowerColor)).Id.ToString()
+                    AssignedMediaFileIds = torfabrikBallPictures.First(x => x.Name.EndsWith(lowerColor)).Id.ToString()
                 });
             }
 
@@ -8735,8 +8735,8 @@ namespace SmartStore.Data.Setup
 			#region Furniture - Ball chair
 
 			var productBallChair = _ctx.Set<Product>().First(x => x.Sku == "Furniture-ball-chair");
-			var ballChairPictureIds = productBallChair.ProductPictures.Select(x => x.PictureId).ToList();
-			var ballChairPictures = _ctx.Set<Picture>().Where(x => ballChairPictureIds.Contains(x.Id)).ToList();
+			var ballChairPictureIds = productBallChair.ProductPictures.Select(x => x.MediaFileId).ToList();
+			var ballChairPictures = _ctx.Set<MediaFile>().Where(x => ballChairPictureIds.Contains(x.Id)).ToList();
 
 			var ballChairMaterial = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productBallChair.Id && x.ProductAttributeId == attrMaterial.Id);
 			var ballChairMaterialValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == ballChairMaterial.Id).ToList();
@@ -8772,7 +8772,7 @@ namespace SmartStore.Data.Setup
 							StockQuantity = 10000,
 							AllowOutOfStockOrders = true,
 							IsActive = true,
-							AssignedPictureIds = ballChairPictures.First(x => x.SeoFilename.EndsWith(colorValue.Alias)).Id.ToString(),
+							AssignedMediaFileIds = ballChairPictures.First(x => x.Name.EndsWith(colorValue.Alias)).Id.ToString(),
 							Price = ballChairPrice
 						});
 					}
@@ -8912,7 +8912,7 @@ namespace SmartStore.Data.Setup
                 Name = "Furniture",
                 Alias = "Furniture",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_furniture.jpg"), "image/jpeg", GetSeName("Furniture")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_furniture.jpg"), "image/jpeg", GetSeName("Furniture")),
                 Published = true,
                 DisplayOrder = 1,
                 MetaTitle = "Furniture",
@@ -8924,7 +8924,7 @@ namespace SmartStore.Data.Setup
                 Name = "Apple",
                 Alias = "Apple",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_apple.png"), "image/png", GetSeName("Apple")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_apple.png"), "image/png", GetSeName("Apple")),
                 Published = true,
                 DisplayOrder = 1,
                 MetaTitle = "Apple",
@@ -8936,7 +8936,7 @@ namespace SmartStore.Data.Setup
                 Name = "Sports",
                 Alias = "Sports",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_sports.jpg"), "image/jpeg", GetSeName("Sports")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_sports.jpg"), "image/jpeg", GetSeName("Sports")),
                 Published = true,
                 DisplayOrder = 1,
                 MetaTitle = "Sports",
@@ -8948,7 +8948,7 @@ namespace SmartStore.Data.Setup
 				Name = "Books",
                 Alias = "Books",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "emblem_library.png"), "image/jpeg", GetSeName("Books")),
+				MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "emblem_library.png"), "image/jpeg", GetSeName("Books")),
 				Published = true,
 				DisplayOrder = 1,
 				MetaTitle = "Books"
@@ -8970,7 +8970,7 @@ namespace SmartStore.Data.Setup
                 Name = "Fashion",
                 Alias = "Fashion",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_fashion.jpg"), "image/png", GetSeName("Fashion")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_fashion.jpg"), "image/png", GetSeName("Fashion")),
                 Published = true,
                 DisplayOrder = 2,
                 MetaTitle = "Fashion",
@@ -8984,7 +8984,7 @@ namespace SmartStore.Data.Setup
 				Name = "Gaming",
 				Alias = "Gaming",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ps4_bundle_minecraft.jpg"), "image/png", GetSeName("Gaming")),
+				MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ps4_bundle_minecraft.jpg"), "image/png", GetSeName("Gaming")),
 				Published = true,
 				DisplayOrder = 3,
                 ShowOnHomePage = true,
@@ -9008,7 +9008,7 @@ namespace SmartStore.Data.Setup
 				Name = "Digital Products",
                 Alias = "Digital Products",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_digitalproducts.jpg"), "image/jpeg", GetSeName("Digital Products")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_digitalproducts.jpg"), "image/jpeg", GetSeName("Digital Products")),
 				Published = true,
 				DisplayOrder = 6,
 				MetaTitle = "Digital Products",
@@ -9020,7 +9020,7 @@ namespace SmartStore.Data.Setup
 				Name = "Gift Cards",
                 Alias = "Gift Cards",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gift-cards.png"), "image/png", GetSeName("Gift Cards")),
+				MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gift-cards.png"), "image/png", GetSeName("Gift Cards")),
 				Published = true,
 				DisplayOrder = 12,
 				MetaTitle = "Gift cards",
@@ -9032,7 +9032,7 @@ namespace SmartStore.Data.Setup
 				Name = "Watches",
                 Alias = "Watches",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_watches.png"), "image/png", GetSeName("Watches")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_watches.png"), "image/png", GetSeName("Watches")),
 				Published = true,
 				DisplayOrder = 10,
 				MetaTitle = "Watches",
@@ -9067,7 +9067,7 @@ namespace SmartStore.Data.Setup
                 Name = "Jackets",
                 Alias = "Jackets",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_jackets.jpg"), "image/png", GetSeName("Jackets")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_jackets.jpg"), "image/png", GetSeName("Jackets")),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
                 DisplayOrder = 1,
@@ -9080,7 +9080,7 @@ namespace SmartStore.Data.Setup
                 Name = "Leather jackets",
                 Alias = "Leather jackets",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_leather_jackets.jpg"), "image/png", GetSeName("Leather jackets")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_leather_jackets.jpg"), "image/png", GetSeName("Leather jackets")),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
                 DisplayOrder = 1,
@@ -9093,7 +9093,7 @@ namespace SmartStore.Data.Setup
                 Name = "Shoes",
                 Alias = "Shoes",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_shoes.png"), "image/png", GetSeName("Shoes")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_shoes.png"), "image/png", GetSeName("Shoes")),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
                 DisplayOrder = 1,
@@ -9106,7 +9106,7 @@ namespace SmartStore.Data.Setup
                 Name = "Trousers",
                 Alias = "Pants",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_trousers.png"), "image/png", GetSeName("Trousers")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_trousers.png"), "image/png", GetSeName("Trousers")),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
                 DisplayOrder = 1,
@@ -9119,7 +9119,7 @@ namespace SmartStore.Data.Setup
                 Name = "Tracksuits",
                 Alias = "Tracksuits",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_tracksuit.png"), "image/png", GetSeName("Tracksuits")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_tracksuit.png"), "image/png", GetSeName("Tracksuits")),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
                 DisplayOrder = 1,
@@ -9136,7 +9136,7 @@ namespace SmartStore.Data.Setup
                 Name = "Golf",
                 Alias = "Golf",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_golf.jpg"), "image/png", GetSeName("Golf")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_golf.jpg"), "image/png", GetSeName("Golf")),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Sports").First().Id,
                 DisplayOrder = 1,
@@ -9149,7 +9149,7 @@ namespace SmartStore.Data.Setup
                 Name = "Sunglasses",
                 Alias = "Sunglasses",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_glasses.png"), "image/png", GetSeName("Sunglasses")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_glasses.png"), "image/png", GetSeName("Sunglasses")),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
                 DisplayOrder = 1,
@@ -9162,7 +9162,7 @@ namespace SmartStore.Data.Setup
                 Name = "Soccer",
                 Alias = "Soccer",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_soccer.png"), "image/png", GetSeName("Soccer")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_soccer.png"), "image/png", GetSeName("Soccer")),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Sports").First().Id,
                 DisplayOrder = 1,
@@ -9175,7 +9175,7 @@ namespace SmartStore.Data.Setup
                 Name = "Basketball",
                 Alias = "Basketball",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_basketball.png"), "image/png", GetSeName("Basketball")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_basketball.png"), "image/png", GetSeName("Basketball")),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Sports").First().Id,
                 DisplayOrder = 1,
@@ -9188,7 +9188,7 @@ namespace SmartStore.Data.Setup
 				Name = "SPIEGEL-Bestseller",
                 Alias = "SPIEGEL-Bestseller",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000930_spiegel-bestseller.png"), "image/png", GetSeName("SPIEGEL-Bestseller")),
+				MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000930_spiegel-bestseller.png"), "image/png", GetSeName("SPIEGEL-Bestseller")),
 				Published = true,
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Books").First().Id,
 				DisplayOrder = 1,
@@ -9200,7 +9200,7 @@ namespace SmartStore.Data.Setup
 				Name = "Cook and enjoy",
                 Alias = "Cook and enjoy",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000936_kochen-geniesen.jpeg"), "image/jpeg", GetSeName("Cook and enjoy")),
+				MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000936_kochen-geniesen.jpeg"), "image/jpeg", GetSeName("Cook and enjoy")),
 				Published = true,
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Books").First().Id,
 				DisplayOrder = 2,
@@ -9237,7 +9237,7 @@ namespace SmartStore.Data.Setup
 				Alias = "Gaming Accessories",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming_accessories.png"), "image/png", GetSeName("Gaming Accessories")),
+				MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming_accessories.png"), "image/png", GetSeName("Gaming Accessories")),
 				Published = true,
 				DisplayOrder = 2,
 				MetaTitle = "Gaming Accessories"
@@ -9249,7 +9249,7 @@ namespace SmartStore.Data.Setup
 				Alias = "Games",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_games.jpg"), "image/png", GetSeName("Games")),
+				MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_games.jpg"), "image/png", GetSeName("Games")),
 				Published = true,
 				DisplayOrder = 3,
 				MetaTitle = "Games"
@@ -9287,7 +9287,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Jack-Wolfskin",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_Jack_Wolfskin.png"), "image/png", GetSeName("Jack Wolfskin")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_Jack_Wolfskin.png"), "image/png", GetSeName("Jack Wolfskin")),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9300,7 +9300,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Mey-And-Edlich",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_MeyAndEdlich.jpg"), "image/png", GetSeName("Mey Edlich")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_MeyAndEdlich.jpg"), "image/png", GetSeName("Mey Edlich")),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9313,7 +9313,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "EA Sports",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_EA_Sports.png"), "image/png", GetSeName("EA Sports")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_EA_Sports.png"), "image/png", GetSeName("EA Sports")),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9326,7 +9326,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Warner Home Video Games",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_wb.png"), "image/png", GetSeName("Warner Home Video Games")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_wb.png"), "image/png", GetSeName("Warner Home Video Games")),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9339,7 +9339,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Breitling",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_breitling.png"), "image/png", GetSeName("Breitling")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_breitling.png"), "image/png", GetSeName("Breitling")),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9352,7 +9352,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Tissot",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_Tissot.png"), "image/png", GetSeName("Tissot")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_Tissot.png"), "image/png", GetSeName("Tissot")),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9365,7 +9365,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Seiko",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_seiko.png"), "image/png", GetSeName("Seiko")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_seiko.png"), "image/png", GetSeName("Seiko")),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9378,7 +9378,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Titleist",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_titleist.png"), "image/png", GetSeName("Titleist")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_titleist.png"), "image/png", GetSeName("Titleist")),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9391,7 +9391,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Puma",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_puma.jpg"), "image/png", GetSeName("Puma")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_puma.jpg"), "image/png", GetSeName("Puma")),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9404,7 +9404,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Nike",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_nike.png"), "image/png", GetSeName("Nike")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_nike.png"), "image/png", GetSeName("Nike")),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9417,7 +9417,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Wilson",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_wilson.png"), "image/png", GetSeName("Wilson")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_wilson.png"), "image/png", GetSeName("Wilson")),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9430,7 +9430,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Adidas",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_adidas.png"), "image/png", GetSeName("Adidas")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_adidas.png"), "image/png", GetSeName("Adidas")),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9443,7 +9443,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Ray-Ban",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_ray-ban.jpg"), "image/png", GetSeName("Ray-Ban")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_ray-ban.jpg"), "image/png", GetSeName("Ray-Ban")),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9456,7 +9456,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Oakley",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_oakley.png"), "image/png", GetSeName("Oakley")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_oakley.png"), "image/png", GetSeName("Oakley")),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9469,7 +9469,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Apple",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_apple.png"), "image/png", GetSeName("Apple")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_apple.png"), "image/png", GetSeName("Apple")),
 				Published = true,
 				DisplayOrder = 1
 			};
@@ -9482,7 +9482,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Android",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-android.png"), "image/png", GetSeName("Android")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-android.png"), "image/png", GetSeName("Android")),
                 Published = true,
                 DisplayOrder = 2
             };
@@ -9495,7 +9495,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "LG",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-lg.png"), "image/png", GetSeName("LG")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-lg.png"), "image/png", GetSeName("LG")),
                 Published = true,
                 DisplayOrder = 3
             };
@@ -9508,7 +9508,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Dell",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-dell.png"), "image/png", GetSeName("Dell")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-dell.png"), "image/png", GetSeName("Dell")),
                 Published = true,
                 DisplayOrder = 4
             };
@@ -9521,7 +9521,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "HP",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-hp.png"), "image/png", GetSeName("HP")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-hp.png"), "image/png", GetSeName("HP")),
                 Published = true,
                 DisplayOrder = 5
             };
@@ -9534,7 +9534,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Microsoft",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-microsoft.png"), "image/png", GetSeName("Microsoft")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-microsoft.png"), "image/png", GetSeName("Microsoft")),
                 Published = true,
                 DisplayOrder = 6
             };
@@ -9547,7 +9547,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Samsung",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-samsung.png"), "image/png", GetSeName("Samsung")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-samsung.png"), "image/png", GetSeName("Samsung")),
 				Published = true,
 				DisplayOrder = 7
 			};
@@ -9560,7 +9560,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Acer",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "acer-logo.jpg"), "image/pjpeg", GetSeName("Acer")),
+				MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "acer-logo.jpg"), "image/pjpeg", GetSeName("Acer")),
 				Published = true,
 				DisplayOrder = 8
 			};
@@ -9573,7 +9573,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "TrekStor",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-trekstor.png"), "image/png", GetSeName("TrekStor")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-trekstor.png"), "image/png", GetSeName("TrekStor")),
 				Published = true,
 				DisplayOrder = 9
 			};
@@ -9586,7 +9586,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Western Digital",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-westerndigital.png"), "image/png", GetSeName("Western Digital")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-westerndigital.png"), "image/png", GetSeName("Western Digital")),
 				Published = true,
 				DisplayOrder = 10
 			};
@@ -9599,7 +9599,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "MSI",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-msi.png"), "image/png", GetSeName("MSI")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-msi.png"), "image/png", GetSeName("MSI")),
 				Published = true,
 				DisplayOrder = 11
 			};
@@ -9612,7 +9612,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Canon",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-canon.png"), "image/png", GetSeName("Canon")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-canon.png"), "image/png", GetSeName("Canon")),
 				Published = true,
 				DisplayOrder = 12
 			};
@@ -9625,7 +9625,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Casio",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-casio.png"), "image/png", GetSeName("Casio")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-casio.png"), "image/png", GetSeName("Casio")),
 				Published = true,
 				DisplayOrder = 13
 			};
@@ -9638,7 +9638,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Panasonic",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-panasonic.png"), "image/png", GetSeName("Panasonic")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-panasonic.png"), "image/png", GetSeName("Panasonic")),
 				Published = true,
 				DisplayOrder = 14
 			};
@@ -9651,7 +9651,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "BlackBerry",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-blackberry.png"), "image/png", GetSeName("BlackBerry")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-blackberry.png"), "image/png", GetSeName("BlackBerry")),
 				Published = true,
 				DisplayOrder = 15
 			};
@@ -9664,7 +9664,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "HTC",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-htc.png"), "image/png", GetSeName("HTC")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-htc.png"), "image/png", GetSeName("HTC")),
 				Published = true,
 				DisplayOrder = 16
 			};
@@ -9677,7 +9677,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Festina",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_festina.png"), "image/png", GetSeName("Festina")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_festina.png"), "image/png", GetSeName("Festina")),
 				Published = true,
 				DisplayOrder = 17
 			};
@@ -9690,7 +9690,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Certina",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-certina.png"), "image/png", GetSeName("Certina")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-certina.png"), "image/png", GetSeName("Certina")),
 				Published = true,
 				DisplayOrder = 18
 			};
@@ -9703,7 +9703,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Sony",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_sony.png"), "image/png", GetSeName("Sony")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_sony.png"), "image/png", GetSeName("Sony")),
 				Published = true,
 				DisplayOrder = 19
 			};
@@ -9716,7 +9716,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Ubisoft",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_ubisoft.png"), "image/png", GetSeName("Ubisoft")),
+                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_ubisoft.png"), "image/png", GetSeName("Ubisoft")),
 				Published = true,
 				DisplayOrder = 20
 			};
@@ -9780,9 +9780,9 @@ namespace SmartStore.Data.Setup
 
 			for (var i = 0; i < allStarImages.Length; ++i)
 			{
-				converseAllStar.ProductPictures.Add(new ProductPicture
+				converseAllStar.ProductPictures.Add(new ProductMediaFile
 				{
-					Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + allStarImages[i]), "image/jpeg", allStarImages[i].Replace("product_", "").Replace(".jpg", "")),
+					MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + allStarImages[i]), "image/jpeg", allStarImages[i].Replace("product_", "").Replace(".jpg", "")),
 					DisplayOrder = i + 1
 				});
 			}
@@ -9844,9 +9844,9 @@ namespace SmartStore.Data.Setup
 
 			for (var i = 0; i < shirtMeccanicaImages.Length; ++i)
 			{
-				shirtMeccanica.ProductPictures.Add(new ProductPicture
+				shirtMeccanica.ProductPictures.Add(new ProductMediaFile
 				{
-					Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + shirtMeccanicaImages[i]), "image/jpeg", shirtMeccanicaImages[i].Replace("product_", "").Replace(".jpg", "")),
+					MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + shirtMeccanicaImages[i]), "image/jpeg", shirtMeccanicaImages[i].Replace("product_", "").Replace(".jpg", "")),
 					DisplayOrder = i + 1
 				});
 			}
@@ -9900,9 +9900,9 @@ namespace SmartStore.Data.Setup
 
 			for (var i = 0; i < ladiesJacketImages.Length; ++i)
 			{
-				ladiesJacket.ProductPictures.Add(new ProductPicture
+				ladiesJacket.ProductPictures.Add(new ProductMediaFile
 				{
-					Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + ladiesJacketImages[i]), "image/jpeg", ladiesJacketImages[i].Replace("product_", "").Replace(".jpg", "")),
+					MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + ladiesJacketImages[i]), "image/jpeg", ladiesJacketImages[i].Replace("product_", "").Replace(".jpg", "")),
 					DisplayOrder = i + 1
 				});
 			}
@@ -9946,9 +9946,9 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 1
 			});
 
-			clarkJeans.ProductPictures.Add(new ProductPicture
+			clarkJeans.ProductPictures.Add(new ProductMediaFile
 			{
-				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_clark_premium_jeans.jpg"), "image/jpeg", "clark_premium_jeans"),
+				MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_clark_premium_jeans.jpg"), "image/jpeg", "clark_premium_jeans"),
 				DisplayOrder = 1
 			});
 
@@ -10006,9 +10006,9 @@ namespace SmartStore.Data.Setup
 
 			for (var i = 0; i < corbusierTableImages.Length; ++i)
 			{
-				corbusierTable.ProductPictures.Add(new ProductPicture
+				corbusierTable.ProductPictures.Add(new ProductMediaFile
 				{
-					Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + corbusierTableImages[i]), "image/jpeg", corbusierTableImages[i].Replace("product_", "").Replace(".jpg", "")),
+					MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + corbusierTableImages[i]), "image/jpeg", corbusierTableImages[i].Replace("product_", "").Replace(".jpg", "")),
 					DisplayOrder = i + 1
 				});
 			}
@@ -10069,14 +10069,14 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 1
 			});
 
-			ballChair.ProductPictures.Add(new ProductPicture
+			ballChair.ProductPictures.Add(new ProductMediaFile
 			{
-				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_ball_chair_white.jpg"), "image/jpeg", "ball_chair_white"),
+				MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_ball_chair_white.jpg"), "image/jpeg", "ball_chair_white"),
 				DisplayOrder = 1
 			});
-			ballChair.ProductPictures.Add(new ProductPicture
+			ballChair.ProductPictures.Add(new ProductMediaFile
 			{
-				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_ball_chair_black.jpg"), "image/jpeg", "ball_chair_black"),
+				MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_ball_chair_black.jpg"), "image/jpeg", "ball_chair_black"),
 				DisplayOrder = 2
 			});
 
@@ -10139,14 +10139,14 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 1
 			});
 
-			loungeChair.ProductPictures.Add(new ProductPicture
+			loungeChair.ProductPictures.Add(new ProductMediaFile
 			{
-				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_charles_eames_lounge_chair_white.jpg"), "image/jpeg", "charles_eames_lounge_chair_white"),
+				MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_charles_eames_lounge_chair_white.jpg"), "image/jpeg", "charles_eames_lounge_chair_white"),
 				DisplayOrder = 1
 			});
-			loungeChair.ProductPictures.Add(new ProductPicture
+			loungeChair.ProductPictures.Add(new ProductMediaFile
 			{
-				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_charles_eames_lounge_chair_black.jpg"), "image/jpeg", "charles_eames_lounge_chair_black"),
+				MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_charles_eames_lounge_chair_black.jpg"), "image/jpeg", "charles_eames_lounge_chair_black"),
 				DisplayOrder = 2
 			});
 
@@ -10220,9 +10220,9 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 1
 			});
 
-			cubeChair.ProductPictures.Add(new ProductPicture
+			cubeChair.ProductPictures.Add(new ProductMediaFile
 			{
-				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_hoffmann_cube_chair_black.jpg"), "image/jpeg", "hoffmann_cube_chair_black"),
+				MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_hoffmann_cube_chair_black.jpg"), "image/jpeg", "hoffmann_cube_chair_black"),
 				DisplayOrder = 1
 			});
 
@@ -13562,7 +13562,7 @@ namespace SmartStore.Data.Setup
 		{
 		}
 
-		protected virtual void Alter(IList<Picture> entities)
+		protected virtual void Alter(IList<MediaFile> entities)
 		{
 		}
 
@@ -13767,14 +13767,14 @@ namespace SmartStore.Data.Setup
 			return null;
 		}
 
-		protected Picture CreatePicture(byte[] pictureBinary, string mimeType, string seoFilename)
+		protected MediaFile CreatePicture(byte[] pictureBinary, string mimeType, string seoFilename)
 		{
 			mimeType = mimeType.EmptyNull().Truncate(20);
 			seoFilename = seoFilename.Truncate(100);
 
-			var picture = _ctx.Set<Picture>().Create();
+			var picture = _ctx.Set<MediaFile>().Create();
 			picture.MimeType = mimeType;
-			picture.SeoFilename = seoFilename;
+			picture.Name = seoFilename;
 			picture.UpdatedOnUtc = DateTime.UtcNow;
 			
 			picture.MediaStorage = new MediaStorage
@@ -13801,9 +13801,9 @@ namespace SmartStore.Data.Setup
                 mimeType = "image/gif";
             }
 
-            product.ProductPictures.Add(new ProductPicture
+            product.ProductPictures.Add(new ProductMediaFile
             {
-                Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + imageName), mimeType ?? "image/jpeg", seName ?? GetSeName(product.Name)),
+                MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + imageName), mimeType ?? "image/jpeg", seName ?? GetSeName(product.Name)),
                 DisplayOrder = displayOrder
             });
         }

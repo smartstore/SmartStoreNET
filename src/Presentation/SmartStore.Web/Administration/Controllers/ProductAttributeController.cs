@@ -419,7 +419,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				var entity = model.ToEntity();
 
-				MediaHelper.UpdatePictureTransientStateFor(entity, m => m.PictureId);
+				MediaHelper.UpdatePictureTransientStateFor(entity, m => m.MediaFileId);
 
 				try
 				{
@@ -475,7 +475,7 @@ namespace SmartStore.Admin.Controllers
 				entity = model.ToEntity(entity);
 				entity.LinkedProductId = entity.ValueType == ProductVariantAttributeValueType.Simple ? 0 : model.LinkedProductId;
 
-				MediaHelper.UpdatePictureTransientStateFor(entity, m => m.PictureId);
+				MediaHelper.UpdatePictureTransientStateFor(entity, m => m.MediaFileId);
 
 				try
 				{

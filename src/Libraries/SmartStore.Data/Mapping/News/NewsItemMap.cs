@@ -14,8 +14,8 @@ namespace SmartStore.Data.Mapping.News
             Property(x => x.Full).IsRequired().IsMaxLength();
             Property(x => x.MetaKeywords).HasMaxLength(400);
             Property(x => x.MetaTitle).HasMaxLength(400);
-            Property(x => x.PictureId).HasColumnName("MediaFileId");
-            Property(x => x.PreviewPictureId).HasColumnName("PreviewMediaFileId");
+            Property(x => x.MediaFileId).HasColumnName("MediaFileId");
+            Property(x => x.PreviewMediaFileId).HasColumnName("PreviewMediaFileId");
 
             HasRequired(x => x.Language)
                 .WithMany()

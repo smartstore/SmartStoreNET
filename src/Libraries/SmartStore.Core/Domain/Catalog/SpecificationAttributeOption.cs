@@ -44,10 +44,10 @@ namespace SmartStore.Core.Domain.Catalog
 		public decimal NumberValue { get; set; }
 
         /// <summary>
-        /// Gets or sets the picture id.
+        /// Gets or sets the media file id.
         /// </summary>
 		[DataMember]
-        public int PictureId { get; set; }
+        public int MediaFileId { get; set; }
 
         /// <summary>
         /// Gets or sets the color RGB value.

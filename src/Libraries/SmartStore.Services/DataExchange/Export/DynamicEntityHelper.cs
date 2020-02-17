@@ -482,7 +482,7 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 		}
 
-		private dynamic ToDynamic(DataExporterContext ctx, Picture picture, int thumbPictureSize, int detailsPictureSize)
+		private dynamic ToDynamic(DataExporterContext ctx, MediaFile picture, int thumbPictureSize, int detailsPictureSize)
 		{
             if (picture == null)
             {
@@ -722,10 +722,10 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			product.MergeWithCombination(productContext.Combination);
 
-			var numberOfPictures = ctx.Projection.NumberOfPictures ?? int.MaxValue;
+			var numberOfPictures = ctx.Projection.NumberOfMediaFiles ?? int.MaxValue;
 			var productDetailsPictureSize = ctx.Projection.PictureSize > 0 ? ctx.Projection.PictureSize : _mediaSettings.Value.ProductDetailsPictureSize;
 
-			IEnumerable<ProductPicture> productPictures = ctx.ProductExportContext.ProductPictures.GetOrLoad(product.Id);
+			IEnumerable<ProductMediaFile> productPictures = ctx.ProductExportContext.ProductPictures.GetOrLoad(product.Id);
 			var productManufacturers = ctx.ProductExportContext.ProductManufacturers.GetOrLoad(product.Id);
 			var productCategories = ctx.ProductExportContext.ProductCategories.GetOrLoad(product.Id);
 			var productAttributes = ctx.ProductExportContext.Attributes.GetOrLoad(product.Id);
@@ -748,7 +748,7 @@ namespace SmartStore.Services.DataExchange.Export
                 var pictureIds = productContext.Combination.GetAssignedMediaIds();
 				if (pictureIds.Any())
 				{
-					productPictures = productPictures.Where(x => pictureIds.Contains(x.PictureId));
+					productPictures = productPictures.Where(x => pictureIds.Contains(x.MediaFileId));
 				}
 
                 attributesXml = productContext.Combination.AttributesXml;
@@ -827,7 +827,7 @@ namespace SmartStore.Services.DataExchange.Export
 				{
 					dynamic dyn = new DynamicEntity(x);
 
-					dyn.Picture = ToDynamic(ctx, x.Picture, _mediaSettings.Value.ProductThumbPictureSize, productDetailsPictureSize);
+					dyn.Picture = ToDynamic(ctx, x.MediaFile, _mediaSettings.Value.ProductThumbPictureSize, productDetailsPictureSize);
 
 					return dyn;
 				})
@@ -841,8 +841,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 					dyn.Manufacturer = ToDynamic(ctx, x.Manufacturer);
 
-					dyn.Manufacturer.Picture = x.Manufacturer != null && x.Manufacturer.PictureId.HasValue
-						? ToDynamic(ctx, x.Manufacturer.Picture, _mediaSettings.Value.ManufacturerThumbPictureSize, _mediaSettings.Value.ManufacturerThumbPictureSize)
+					dyn.Manufacturer.Picture = x.Manufacturer != null && x.Manufacturer.MediaFileId.HasValue
+						? ToDynamic(ctx, x.Manufacturer.MediaFile, _mediaSettings.Value.ManufacturerThumbPictureSize, _mediaSettings.Value.ManufacturerThumbPictureSize)
 						: null;
 
 					return dyn;
@@ -857,8 +857,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 					dyn.Category = ToDynamic(ctx, x.Category);
 
-					if (x.Category != null && x.Category.PictureId.HasValue)
-						dyn.Category.Picture = ToDynamic(ctx, x.Category.Picture, _mediaSettings.Value.CategoryThumbPictureSize, _mediaSettings.Value.CategoryThumbPictureSize);
+					if (x.Category != null && x.Category.MediaFileId.HasValue)
+						dyn.Category.Picture = ToDynamic(ctx, x.Category.MediaFile, _mediaSettings.Value.CategoryThumbPictureSize, _mediaSettings.Value.CategoryThumbPictureSize);
 
 					if (dynObject._CategoryName == null)
 						dynObject._CategoryName = (string)dyn.Category.Name;
@@ -883,10 +883,10 @@ namespace SmartStore.Services.DataExchange.Export
 
 						foreach (int pictureId in x.GetAssignedMediaIds().Take(numberOfPictures))
 						{
-							var assignedPicture = productPictures.FirstOrDefault(y => y.PictureId == pictureId);
-							if (assignedPicture != null && assignedPicture.Picture != null)
+							var assignedPicture = productPictures.FirstOrDefault(y => y.MediaFileId == pictureId);
+							if (assignedPicture != null && assignedPicture.MediaFile != null)
 							{
-								assignedPictures.Add(ToDynamic(ctx, assignedPicture.Picture, _mediaSettings.Value.ProductThumbPictureSize, productDetailsPictureSize));
+								assignedPictures.Add(ToDynamic(ctx, assignedPicture.MediaFile, _mediaSettings.Value.ProductThumbPictureSize, productDetailsPictureSize));
 							}
 						}
 
@@ -1003,7 +1003,7 @@ namespace SmartStore.Services.DataExchange.Export
 			{
 				if (productPictures != null && productPictures.Any())
 				{
-					var firstPicture = productPictures.First().Picture;
+					var firstPicture = productPictures.First().MediaFile;
 					dynObject._MainPictureUrl = _pictureService.Value.GetUrl(firstPicture, ctx.Projection.PictureSize, host: _services.StoreService.GetHost(ctx.Store));
 					dynObject._MainPictureRelativeUrl = _pictureService.Value.GetUrl(firstPicture, ctx.Projection.PictureSize);
 				}
@@ -1408,10 +1408,10 @@ namespace SmartStore.Services.DataExchange.Export
 
 			dynamic dynObject = ToDynamic(ctx, manufacturer);
 
-			if (manufacturer.PictureId.HasValue)
+			if (manufacturer.MediaFileId.HasValue)
 			{
-				var numberOfPictures = (ctx.Projection.NumberOfPictures ?? int.MaxValue);
-				var pictures = ctx.ManufacturerExportContext.Pictures.GetOrLoad(manufacturer.PictureId.Value).Take(numberOfPictures);
+				var numberOfPictures = (ctx.Projection.NumberOfMediaFiles ?? int.MaxValue);
+				var pictures = ctx.ManufacturerExportContext.Pictures.GetOrLoad(manufacturer.MediaFileId.Value).Take(numberOfPictures);
 
 				if (pictures.Any())
 					dynObject.Picture = ToDynamic(ctx, pictures.First(), _mediaSettings.Value.ManufacturerThumbPictureSize, _mediaSettings.Value.ManufacturerThumbPictureSize);
@@ -1448,10 +1448,10 @@ namespace SmartStore.Services.DataExchange.Export
 
 			dynamic dynObject = ToDynamic(ctx, category);
 
-			if (category.PictureId.HasValue)
+			if (category.MediaFileId.HasValue)
 			{
-				var numberOfPictures = (ctx.Projection.NumberOfPictures ?? int.MaxValue);
-				var pictures = ctx.CategoryExportContext.Pictures.GetOrLoad(category.PictureId.Value).Take(numberOfPictures);
+				var numberOfPictures = (ctx.Projection.NumberOfMediaFiles ?? int.MaxValue);
+				var pictures = ctx.CategoryExportContext.Pictures.GetOrLoad(category.MediaFileId.Value).Take(numberOfPictures);
 
 				if (pictures.Any())
 					dynObject.Picture = ToDynamic(ctx, pictures.First(), _mediaSettings.Value.CategoryThumbPictureSize, _mediaSettings.Value.CategoryThumbPictureSize);

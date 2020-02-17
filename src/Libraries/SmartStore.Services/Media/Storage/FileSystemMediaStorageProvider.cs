@@ -30,7 +30,7 @@ namespace SmartStore.Services.Media.Storage
 		{
 			var fileName = media.GetFileName();
 
-			var picture = media.Entity as Picture;
+			var picture = media.Entity as MediaFile;
 			if (picture != null)
 			{
 				var subfolder = fileName.Substring(0, ImageCache.MaxDirLength);

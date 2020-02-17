@@ -52,7 +52,7 @@ namespace SmartStore.Services.Hooks
 
             if (type == typeof(ProductAttributeOption))
             {
-                var pictureId = ((ProductAttributeOption)entry.Entity).PictureId;
+                var pictureId = ((ProductAttributeOption)entry.Entity).MediaFileId;
                 if (pictureId != 0)
                 {
                     _toDelete.Add(pictureId);
@@ -61,21 +61,21 @@ namespace SmartStore.Services.Hooks
             else if (type == typeof(ProductAttributeOptionsSet))
             {
                 var options = _productAttributeService.Value.GetProductAttributeOptionsByOptionsSetId(entity.Id);
-                _toDelete.AddRange(options.Where(x => x.PictureId != 0).Select(x => x.PictureId));
+                _toDelete.AddRange(options.Where(x => x.MediaFileId != 0).Select(x => x.MediaFileId));
             }
             else if (type == typeof(ProductAttribute))
             {
                 var options = _productAttributeService.Value.GetProductAttributeOptionsByAttributeId(entity.Id);
-                _toDelete.AddRange(options.Where(x => x.PictureId != 0).Select(x => x.PictureId));
+                _toDelete.AddRange(options.Where(x => x.MediaFileId != 0).Select(x => x.MediaFileId));
             }
             else if (type == typeof(ProductVariantAttribute))
             {
                 var options = _productAttributeService.Value.GetProductVariantAttributeValues(entity.Id);
-                _toDelete.AddRange(options.Where(x => x.PictureId != 0).Select(x => x.PictureId));
+                _toDelete.AddRange(options.Where(x => x.MediaFileId != 0).Select(x => x.MediaFileId));
             }
             else if (type == typeof(ProductVariantAttributeValue))
             {
-                var pictureId = ((ProductVariantAttributeValue)entry.Entity).PictureId;
+                var pictureId = ((ProductVariantAttributeValue)entry.Entity).MediaFileId;
                 if (pictureId != 0)
                 {
                     _toDelete.Add(pictureId);
@@ -84,11 +84,11 @@ namespace SmartStore.Services.Hooks
             else if (type == typeof(SpecificationAttribute))
             {
                 var options = _specificationAttributeService.Value.GetSpecificationAttributeOptionsBySpecificationAttribute(entity.Id);
-                _toDelete.AddRange(options.Where(x => x.PictureId != 0).Select(x => x.PictureId));
+                _toDelete.AddRange(options.Where(x => x.MediaFileId != 0).Select(x => x.MediaFileId));
             }
             else if (type == typeof(SpecificationAttributeOption))
             {
-                var pictureId = ((SpecificationAttributeOption)entry.Entity).PictureId;
+                var pictureId = ((SpecificationAttributeOption)entry.Entity).MediaFileId;
                 if (pictureId != 0)
                 {
                     _toDelete.Add(pictureId);

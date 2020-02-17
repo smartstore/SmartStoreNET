@@ -63,16 +63,16 @@ namespace SmartStore.Core.Domain.Catalog
 		public string MetaTitle { get; set; }
 
         /// <summary>
-        /// Gets or sets the parent picture identifier
+        /// Gets or sets the parent media file identifier
         /// </summary>
 		[DataMember]
-		public int? PictureId { get; set; }
+		public int? MediaFileId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the picture
+		/// Gets or sets the media file
 		/// </summary>
 		[DataMember]
-		public virtual Picture Picture { get; set; }
+		public virtual MediaFile MediaFile { get; set; }
 
         /// <summary>
         /// Gets or sets the page size

@@ -19,7 +19,7 @@ namespace SmartStore.Services.Catalog.Importer
     public class CategoryImporter : EntityImporterBase
 	{
 		private readonly IRepository<Category> _categoryRepository;
-		private readonly IRepository<Picture> _pictureRepository;
+		private readonly IRepository<MediaFile> _pictureRepository;
 		private readonly ICategoryTemplateService _categoryTemplateService;
 		private readonly IPictureService _pictureService;
 		private readonly ILocalizedEntityService _localizedEntityService;
@@ -38,7 +38,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 		public CategoryImporter(
 			IRepository<Category> categoryRepository,
-			IRepository<Picture> pictureRepository,
+			IRepository<MediaFile> pictureRepository,
 			ICategoryTemplateService categoryTemplateService,
 			IPictureService pictureService,
 			ILocalizedEntityService localizedEntityService,
@@ -205,8 +205,8 @@ namespace SmartStore.Services.Catalog.Importer
 
                         if (pictureBinary != null && pictureBinary.Length > 0)
                         {
-                            var currentPictures = new List<Picture>();
-                            var pictureId = row.Entity.PictureId ?? 0;
+                            var currentPictures = new List<MediaFile>();
+                            var pictureId = row.Entity.MediaFileId ?? 0;
                             if (pictureId != 0)
                             {
                                 var picture = _pictureRepository.TableUntracked.Expand(x => x.MediaStorage).FirstOrDefault(x => x.Id == pictureId);
@@ -223,7 +223,7 @@ namespace SmartStore.Services.Catalog.Importer
                                 var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false);
                                 if (picture != null)
                                 {
-                                    row.Entity.PictureId = picture.Id;
+                                    row.Entity.MediaFileId = picture.Id;
                                     _categoryRepository.Update(row.Entity);
                                 }
                             }

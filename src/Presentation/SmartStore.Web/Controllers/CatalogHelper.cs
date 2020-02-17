@@ -173,7 +173,7 @@ namespace SmartStore.Web.Controllers
             Guard.NotNull(categories, nameof(categories));
 
             var pictureFallbackType = _catalogSettings.HideCategoryDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
-            var allPictureInfos = _pictureService.GetPictureInfos(categories.Select(x => x.PictureId.GetValueOrDefault()));
+            var allPictureInfos = _pictureService.GetPictureInfos(categories.Select(x => x.MediaFileId.GetValueOrDefault()));
 
             return categories
                 .Select(c => 
@@ -203,7 +203,7 @@ namespace SmartStore.Web.Controllers
                     }          
 
                     // Prepare picture model.
-                    var pictureInfo = allPictureInfos.Get(c.PictureId.GetValueOrDefault());
+                    var pictureInfo = allPictureInfos.Get(c.MediaFileId.GetValueOrDefault());
 
                     model.PictureModel = new PictureModel
                     {
@@ -572,7 +572,7 @@ namespace SmartStore.Web.Controllers
 			model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnProductReviewPage;
 		}
 
-		private PictureModel CreatePictureModel(ProductDetailsPictureModel model, Picture picture, int pictureSize)
+		private PictureModel CreatePictureModel(ProductDetailsPictureModel model, MediaFile picture, int pictureSize)
 		{
 			var info = _pictureService.GetPictureInfo(picture);
 
@@ -630,7 +630,7 @@ namespace SmartStore.Web.Controllers
 
 		public void PrepareProductDetailsPictureModel(
 			ProductDetailsPictureModel model, 
-			IList<Picture> pictures, 
+			IList<MediaFile> pictures, 
 			string name, 
 			IList<int> allCombinationImageIds,
 			bool isAssociatedProduct, 
@@ -642,7 +642,7 @@ namespace SmartStore.Web.Controllers
 			model.PictureZoomType = _mediaSettings.PictureZoomType;
 			model.AlternateText = T("Media.Product.ImageAlternateTextFormat", model.Name);
 
-			Picture defaultPicture = null;
+			MediaFile defaultPicture = null;
 			var combiAssignedImages = (combination == null ? null : combination.GetAssignedMediaIds());
 			int defaultPictureSize;
 
@@ -920,9 +920,9 @@ namespace SmartStore.Web.Controllers
                                 pvaValueModel.ImageUrl = _pictureService.GetUrl(linkagePicture, _mediaSettings.VariantValueThumbPictureSize, false);
                             }
 						}
-                        else if (pvaValue.PictureId != 0)
+                        else if (pvaValue.MediaFileId != 0)
                         {
-                            pvaValueModel.ImageUrl = _pictureService.GetUrl(pvaValue.PictureId, _mediaSettings.VariantValueThumbPictureSize, false);
+                            pvaValueModel.ImageUrl = _pictureService.GetUrl(pvaValue.MediaFileId, _mediaSettings.VariantValueThumbPictureSize, false);
                         }
 
 						pvaModel.Values.Add(pvaValueModel);
@@ -1481,11 +1481,11 @@ namespace SmartStore.Web.Controllers
         {
             var model = new PictureModel();
 			var pictureSize = _mediaSettings.ManufacturerThumbPictureSize;
-			var pictureInfo = _pictureService.GetPictureInfo(manufacturer.PictureId);
+			var pictureInfo = _pictureService.GetPictureInfo(manufacturer.MediaFileId);
 
 			model = new PictureModel
 			{
-				PictureId = manufacturer.PictureId.GetValueOrDefault(),
+				PictureId = manufacturer.MediaFileId.GetValueOrDefault(),
 				Size = pictureSize,
 				//FullSizeImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault()),
 				ImageUrl = _pictureService.GetUrl(pictureInfo, pictureSize, !_catalogSettings.HideManufacturerDefaultPictures),
@@ -1528,9 +1528,9 @@ namespace SmartStore.Web.Controllers
                         Name = manufacturer.GetLocalized(x => x.Name),
                         SeName = manufacturer.GetSeName(),
                         DisplayOrder = manufacturer.DisplayOrder,
-						PictureId = manufacturer.PictureId,
-						PictureUrl = _pictureService.GetUrl(manufacturer.PictureId.GetValueOrDefault(), _mediaSettings.ManufacturerThumbPictureSize, !_catalogSettings.HideManufacturerDefaultPictures),
-						HasPicture = manufacturer.PictureId != null
+						PictureId = manufacturer.MediaFileId,
+						PictureUrl = _pictureService.GetUrl(manufacturer.MediaFileId.GetValueOrDefault(), _mediaSettings.ManufacturerThumbPictureSize, !_catalogSettings.HideManufacturerDefaultPictures),
+						HasPicture = manufacturer.MediaFileId != null
                     };
                     model.Manufacturers.Add(modelMan);
                 }

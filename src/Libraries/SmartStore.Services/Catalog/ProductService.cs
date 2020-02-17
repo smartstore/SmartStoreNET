@@ -21,7 +21,7 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<RelatedProduct> _relatedProductRepository;
         private readonly IRepository<CrossSellProduct> _crossSellProductRepository;
         private readonly IRepository<TierPrice> _tierPriceRepository;
-        private readonly IRepository<ProductPicture> _productPictureRepository;
+        private readonly IRepository<ProductMediaFile> _productPictureRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository;
 		private readonly IRepository<ProductBundleItem> _productBundleItemRepository;
 		private readonly IRepository<ShoppingCartItem> _shoppingCartItemRepository;
@@ -36,7 +36,7 @@ namespace SmartStore.Services.Catalog
             IRepository<RelatedProduct> relatedProductRepository,
             IRepository<CrossSellProduct> crossSellProductRepository,
             IRepository<TierPrice> tierPriceRepository,
-            IRepository<ProductPicture> productPictureRepository,
+            IRepository<ProductMediaFile> productPictureRepository,
             IRepository<ProductVariantAttributeCombination> productVariantAttributeCombinationRepository,
 			IRepository<ProductBundleItem> productBundleItemRepository,
 			IRepository<ShoppingCartItem> shoppingCartItemRepository,
@@ -894,7 +894,7 @@ namespace SmartStore.Services.Catalog
 
         #region Product pictures
 
-        public virtual void DeleteProductPicture(ProductPicture productPicture)
+        public virtual void DeleteProductPicture(ProductMediaFile productPicture)
         {
 			Guard.NotNull(productPicture, nameof(productPicture));
 
@@ -903,14 +903,14 @@ namespace SmartStore.Services.Catalog
             _productPictureRepository.Delete(productPicture);
         }
 
-        private void UnassignDeletedPictureFromVariantCombinations(ProductPicture productPicture)
+        private void UnassignDeletedPictureFromVariantCombinations(ProductMediaFile productPicture)
         {
             var picId = productPicture.Id;
             bool touched = false;
 
 			var combinations =
 				from c in this._productVariantAttributeCombinationRepository.Table
-				where c.ProductId == productPicture.Product.Id && !String.IsNullOrEmpty(c.AssignedPictureIds)
+				where c.ProductId == productPicture.Product.Id && !String.IsNullOrEmpty(c.AssignedMediaFileIds)
 				select c;
 
 			foreach (var c in combinations)
@@ -933,7 +933,7 @@ namespace SmartStore.Services.Catalog
             }
         }
 
-        public virtual IList<ProductPicture> GetProductPicturesByProductId(int productId)
+        public virtual IList<ProductMediaFile> GetProductPicturesByProductId(int productId)
         {
             var query = from pp in _productPictureRepository.Table
                         where pp.ProductId == productId
@@ -943,17 +943,17 @@ namespace SmartStore.Services.Catalog
             return productPictures;
         }
 
-		public virtual Multimap<int, ProductPicture> GetProductPicturesByProductIds(int[] productIds, bool onlyFirstPicture = false)
+		public virtual Multimap<int, ProductMediaFile> GetProductPicturesByProductIds(int[] productIds, bool onlyFirstPicture = false)
 		{
             Guard.NotNull(productIds, nameof(productIds));
 
             if (!productIds.Any())
             {
-                return new Multimap<int, ProductPicture>();
+                return new Multimap<int, ProductMediaFile>();
             }
 
             var query = 
-				from pp in _productPictureRepository.TableUntracked.Expand(x => x.Picture)
+				from pp in _productPictureRepository.TableUntracked.Expand(x => x.MediaFile)
 				where productIds.Contains(pp.ProductId)
 				orderby pp.ProductId, pp.DisplayOrder
 				select pp;
@@ -977,7 +977,7 @@ namespace SmartStore.Services.Catalog
 			}
 		}
 
-        public virtual ProductPicture GetProductPictureById(int productPictureId)
+        public virtual ProductMediaFile GetProductPictureById(int productPictureId)
         {
             if (productPictureId == 0)
                 return null;
@@ -986,7 +986,7 @@ namespace SmartStore.Services.Catalog
             return pp;
         }
 
-        public virtual void InsertProductPicture(ProductPicture productPicture)
+        public virtual void InsertProductPicture(ProductMediaFile productPicture)
         {
 			Guard.NotNull(productPicture, nameof(productPicture));
 
@@ -997,7 +997,7 @@ namespace SmartStore.Services.Catalog
         /// Updates a product picture
         /// </summary>
         /// <param name="productPicture">Product picture</param>
-        public virtual void UpdateProductPicture(ProductPicture productPicture)
+        public virtual void UpdateProductPicture(ProductMediaFile productPicture)
         {
 			Guard.NotNull(productPicture, nameof(productPicture));
 

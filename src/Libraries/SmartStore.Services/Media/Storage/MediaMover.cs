@@ -14,14 +14,14 @@ namespace SmartStore.Services.Media.Storage
 	{
 		private const int PAGE_SIZE = 100;
 
-		private readonly IRepository<Picture> _pictureRepository;
+		private readonly IRepository<MediaFile> _pictureRepository;
 		private readonly IRepository<Download> _downloadRepository;
 		private readonly IRepository<QueuedEmailAttachment> _queuedEmailAttachmentRepository;
 		private readonly ICommonServices _services;
 		private readonly ILogger _logger;
 
 		public MediaMover(
-			IRepository<Picture> pictureRepository,
+			IRepository<MediaFile> pictureRepository,
 			IRepository<Download> downloadRepository,
 			IRepository<QueuedEmailAttachment> queuedEmailAttachmentRepository,
 			ICommonServices services,

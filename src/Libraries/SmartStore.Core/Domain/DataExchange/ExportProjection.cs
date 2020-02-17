@@ -103,7 +103,7 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// <summary>
 		/// Number of images per object to be exported
 		/// </summary>
-		public int? NumberOfPictures { get; set; }
+		public int? NumberOfMediaFiles { get; set; }
 
 		/// <summary>
 		/// Picture size

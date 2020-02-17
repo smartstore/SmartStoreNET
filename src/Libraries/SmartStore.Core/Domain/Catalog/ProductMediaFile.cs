@@ -4,10 +4,10 @@ using SmartStore.Core.Domain.Media;
 namespace SmartStore.Core.Domain.Catalog
 {
     /// <summary>
-    /// Represents a product picture mapping
+    /// Represents a product media file mapping
     /// </summary>
 	[DataContract]
-	public partial class ProductPicture : BaseEntity
+	public partial class ProductMediaFile : BaseEntity
     {
         /// <summary>
         /// Gets or sets the product identifier
@@ -19,7 +19,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the picture identifier
         /// </summary>
 		[DataMember]
-		public int PictureId { get; set; }
+		public int MediaFileId { get; set; }
 
         /// <summary>
         /// Gets or sets the display order
@@ -28,10 +28,9 @@ namespace SmartStore.Core.Domain.Catalog
 		public int DisplayOrder { get; set; }
 
         /// <summary>
-        /// Gets the picture
+        /// Gets the media file
         /// </summary>
-        [DataMember]
-        public virtual Picture Picture { get; set; }
+        public virtual MediaFile MediaFile { get; set; }
 
         /// <summary>
         /// Gets the product

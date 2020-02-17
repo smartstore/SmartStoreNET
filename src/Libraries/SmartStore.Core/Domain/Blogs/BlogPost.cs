@@ -46,10 +46,10 @@ namespace SmartStore.Core.Domain.Blogs
         public int? PictureId { get; set; }
 
         /// <summary>
-        /// Gets or sets the preview picture identifier
+        /// Gets or sets the preview media file identifier
         /// </summary>
         [DataMember]
-        public int? PreviewPictureId { get; set; }
+        public int? PreviewMediaFileId { get; set; }
 
         /// <summary>
         /// Gets or sets background for the blog post

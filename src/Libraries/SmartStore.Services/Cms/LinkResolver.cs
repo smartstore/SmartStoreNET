@@ -132,7 +132,7 @@ namespace SmartStore.Services.Cms
 								Deleted = x.Deleted,
 								SubjectToAcl = x.SubjectToAcl,
 								LimitedToStores = x.LimitedToStores,
-                                PictureId = x.PictureId
+                                PictureId = x.MediaFileId
 							});
 							break;
 						case LinkType.Manufacturer:
@@ -142,7 +142,7 @@ namespace SmartStore.Services.Cms
                                 Published = x.Published,
 								Deleted = x.Deleted,
 								LimitedToStores = x.LimitedToStores,
-                                PictureId = x.PictureId
+                                PictureId = x.MediaFileId
 							});
 							break;
 						case LinkType.Topic:

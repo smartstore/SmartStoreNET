@@ -94,7 +94,7 @@ namespace SmartStore.Web.Controllers
         {
             Guard.NotNull(product, nameof(product));
 
-            Picture picture = null;
+            MediaFile picture = null;
             var combination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, attributesXml);
 
             if (combination != null)

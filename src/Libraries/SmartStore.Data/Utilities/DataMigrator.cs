@@ -99,7 +99,7 @@ namespace SmartStore.Data.Utilities
         /// <param name="entities">When <c>null</c>, Product.ProductPictures gets called.</param>
         /// <param name="product">Product to fix</param>
         /// <returns><c>true</c> when value was fixed</returns>
-        public static bool FixProductMainPictureId(IDbContext context, Product product, IEnumerable<ProductPicture> entities = null)
+        public static bool FixProductMainPictureId(IDbContext context, Product product, IEnumerable<ProductMediaFile> entities = null)
 		{
 			Guard.NotNull(product, nameof(product));
 
@@ -127,7 +127,7 @@ namespace SmartStore.Data.Utilities
 				// Added/transient entities must be appended
 				.Concat(transientEntities.OrderBy(x => x.DisplayOrder));
 
-			var newMainPictureId = sortedEntities.FirstOrDefault()?.PictureId;
+			var newMainPictureId = sortedEntities.FirstOrDefault()?.MediaFileId;
 
 			if (newMainPictureId != product.MainPictureId)
 			{
@@ -216,7 +216,7 @@ namespace SmartStore.Data.Utilities
 		{
 			var map = new Dictionary<int, int>();
 
-			var query = from pp in context.Set<ProductPicture>().AsNoTracking()
+			var query = from pp in context.Set<ProductMediaFile>().AsNoTracking()
 						where productIds.Contains(pp.ProductId)
 						group pp by pp.ProductId into g
 						select new
@@ -224,7 +224,7 @@ namespace SmartStore.Data.Utilities
 							ProductId = g.Key,
 							PictureIds = g.OrderBy(x => x.DisplayOrder).ThenBy(x => x.Id)
 								.Take(1)
-								.Select(x => x.PictureId)
+								.Select(x => x.MediaFileId)
 						};
 
 			map = query.ToList().ToDictionary(x => x.ProductId, x => x.PictureIds.First());

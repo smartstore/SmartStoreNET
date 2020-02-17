@@ -467,7 +467,7 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(part, nameof(part));
 
 			var host = messageContext.BaseUri.ToString();
-			var logoInfo = _services.PictureService.GetPictureInfo(messageContext.Store.LogoPictureId);
+			var logoInfo = _services.PictureService.GetPictureInfo(messageContext.Store.LogoMediaFileId);
 
 			// Issue: https://github.com/smartstore/SmartStoreNET/issues/1321
 

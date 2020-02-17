@@ -24,7 +24,7 @@ namespace SmartStore.Services.Catalog.Importer
 {
     public class ProductImporter : EntityImporterBase
     {
-        private readonly IRepository<ProductPicture> _productPictureRepository;
+        private readonly IRepository<ProductMediaFile> _productPictureRepository;
         private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
         private readonly IRepository<ProductCategory> _productCategoryRepository;
         private readonly IRepository<ProductTag> _productTagRepository;
@@ -53,7 +53,7 @@ namespace SmartStore.Services.Catalog.Importer
         };
 
         public ProductImporter(
-            IRepository<ProductPicture> productPictureRepository,
+            IRepository<ProductMediaFile> productPictureRepository,
             IRepository<ProductManufacturer> productManufacturerRepository,
             IRepository<ProductCategory> productCategoryRepository,
             IRepository<ProductTag> productTagRepository,
@@ -135,7 +135,7 @@ namespace SmartStore.Services.Catalog.Importer
                 {
                     return x is Product || x is UrlRecord || x is StoreMapping || x is ProductVariantAttribute || x is LocalizedProperty ||
                             x is ProductBundleItem || x is ProductCategory || x is ProductManufacturer || x is Category || x is Manufacturer ||
-                            x is ProductPicture || x is Picture || x is ProductTag || x is TierPrice;
+                            x is ProductMediaFile || x is MediaFile || x is ProductTag || x is TierPrice;
                 });
                 //_productRepository.Context.DetachAll(true);
 
@@ -574,7 +574,7 @@ namespace SmartStore.Services.Catalog.Importer
                         row.SetProperty(context.Result, (x) => x.Height);
                         row.SetProperty(context.Result, (x) => x.BasePriceAmount);
                         row.SetProperty(context.Result, (x) => x.BasePriceBaseAmount);
-                        row.SetProperty(context.Result, (x) => x.AssignedPictureIds);
+                        row.SetProperty(context.Result, (x) => x.AssignedMediaFileIds);
                         row.SetProperty(context.Result, (x) => x.IsActive, true);
                         row.SetProperty(context.Result, (x) => x.AllowOutOfStockOrders);
                         row.SetProperty(context.Result, (x) => x.DeliveryTimeId);
@@ -910,12 +910,12 @@ namespace SmartStore.Services.Catalog.Importer
 							if (pictureBinary != null && pictureBinary.Length > 0)
 							{
 								var currentProductPictures = _productPictureRepository.TableUntracked
-									.Expand(x => x.Picture.MediaStorage)
+									.Expand(x => x.MediaFile.MediaStorage)
 									.Where(x => x.ProductId == row.Entity.Id)
 									.ToList();
 
 								var currentPictures = currentProductPictures
-									.Select(x => x.Picture)
+									.Select(x => x.MediaFile)
 									.ToList();
 
 								if (displayOrder == -1)
@@ -931,10 +931,10 @@ namespace SmartStore.Services.Catalog.Importer
 
                                     if (newPicture != null)
 									{
-										var mapping = new ProductPicture
+										var mapping = new ProductMediaFile
 										{
 											ProductId = row.Entity.Id,
-											PictureId = newPicture.Id,
+											MediaFileId = newPicture.Id,
 											DisplayOrder = ++displayOrder
 										};
 

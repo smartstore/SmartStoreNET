@@ -203,11 +203,11 @@ namespace SmartStore.Web.Controllers
 						var m = x.Manufacturer.ToModel();
 						if (preparePictureModel)
 						{
-							m.PictureModel.ImageUrl = _pictureService.GetUrl(x.Manufacturer.PictureId.GetValueOrDefault(), 0, !_catalogSettings.HideManufacturerDefaultPictures);
-							var pictureUrl = _pictureService.GetUrl(x.Manufacturer.PictureId.GetValueOrDefault());
+							m.PictureModel.ImageUrl = _pictureService.GetUrl(x.Manufacturer.MediaFileId.GetValueOrDefault(), 0, !_catalogSettings.HideManufacturerDefaultPictures);
+							var pictureUrl = _pictureService.GetUrl(x.Manufacturer.MediaFileId.GetValueOrDefault());
 							if (pictureUrl != null)
 							{
-								m.PictureModel.PictureId = x.Manufacturer.PictureId.GetValueOrDefault();
+								m.PictureModel.PictureId = x.Manufacturer.MediaFileId.GetValueOrDefault();
 								m.PictureModel.Title = string.Format(T("Media.Product.ImageLinkTitleFormat"), m.Name);
 								m.PictureModel.AlternateText = string.Format(T("Media.Product.ImageAlternateTextFormat"), m.Name);
 							}

@@ -43,7 +43,7 @@ namespace SmartStore.Services.Media
 
 			var propName = pictureIdProp.ExtractMemberInfo().Name;
 			int currentPictureId = pictureIdProp.CompileFast(PropertyCachingStrategy.EagerCached).Invoke(entity);
-			var rs = EngineContext.Current.Resolve<IRepository<Picture>>();
+			var rs = EngineContext.Current.Resolve<IRepository<MediaFile>>();
 
 			UpdateTransientStateForEntityInternal(entity, propName, currentPictureId, rs, GetPictureDeleteAction(), save);
 		}
@@ -55,7 +55,7 @@ namespace SmartStore.Services.Media
 
 			var propName = pictureIdProp.ExtractMemberInfo().Name;
 			int currentPictureId = pictureIdProp.CompileFast(PropertyCachingStrategy.EagerCached).Invoke(entity).GetValueOrDefault();
-			var rs = EngineContext.Current.Resolve<IRepository<Picture>>();
+			var rs = EngineContext.Current.Resolve<IRepository<MediaFile>>();
 
 			UpdateTransientStateForEntityInternal(entity, propName, currentPictureId, rs, GetPictureDeleteAction(), save);
 		}
@@ -74,13 +74,13 @@ namespace SmartStore.Services.Media
 
 		public static void UpdatePictureTransientState(int? prevPictureId, int? currentPictureId, bool save = false)
 		{
-			var rs = EngineContext.Current.Resolve<IRepository<Picture>>();
+			var rs = EngineContext.Current.Resolve<IRepository<MediaFile>>();
 			UpdateTransientStateCore(prevPictureId.GetValueOrDefault(), currentPictureId.GetValueOrDefault(), rs, GetPictureDeleteAction(), save);
 		}
 
 		public static void UpdatePictureTransientState(int prevPictureId, int currentPictureId, bool save = false)
 		{
-			var rs = EngineContext.Current.Resolve<IRepository<Picture>>();
+			var rs = EngineContext.Current.Resolve<IRepository<MediaFile>>();
 			UpdateTransientStateCore(prevPictureId, currentPictureId, rs, GetPictureDeleteAction(), save);
 		}
 
@@ -89,7 +89,7 @@ namespace SmartStore.Services.Media
 			Action<object> deleteAction = pic =>
 			{
 				var svc = EngineContext.Current.Resolve<IPictureService>();
-				svc.DeletePicture((Picture)pic);
+				svc.DeletePicture((MediaFile)pic);
 			};
 
 			return deleteAction;

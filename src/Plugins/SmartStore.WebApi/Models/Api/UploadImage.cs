@@ -53,6 +53,6 @@ namespace SmartStore.WebApi.Models.Api
 		/// The picture entity. Can be <c>null</c>.
 		/// </summary>
 		[DataMember]
-		public Picture Picture { get; set; }
+		public MediaFile Picture { get; set; }
 	}
 }

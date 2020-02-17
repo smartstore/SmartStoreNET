@@ -354,7 +354,7 @@ namespace SmartStore.Admin.Controllers
 				{
 					var sao = model.ToEntity();
 
-                    MediaHelper.UpdatePictureTransientStateFor(sao, m => m.PictureId);
+                    MediaHelper.UpdatePictureTransientStateFor(sao, m => m.MediaFileId);
 
                     try
 					{
@@ -417,7 +417,7 @@ namespace SmartStore.Admin.Controllers
             {
                 sao = model.ToEntity(sao);
 
-                MediaHelper.UpdatePictureTransientStateFor(sao, m => m.PictureId);
+                MediaHelper.UpdatePictureTransientStateFor(sao, m => m.MediaFileId);
 
                 try
 				{

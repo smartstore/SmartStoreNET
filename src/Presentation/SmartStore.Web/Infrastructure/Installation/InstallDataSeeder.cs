@@ -371,7 +371,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				var mediaStorages = _ctx.Set<MediaStorage>();
 
 				// pictures
-				var pics = _ctx.Set<Picture>()
+				var pics = _ctx.Set<MediaFile>()
 					.Expand(x => x.MediaStorage)
 					.Where(x => x.MediaStorageId != null)
 					.ToList();

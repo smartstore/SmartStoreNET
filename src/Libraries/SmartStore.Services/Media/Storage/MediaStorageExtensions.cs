@@ -13,7 +13,7 @@ namespace SmartStore.Services.Media.Storage
 		/// </summary>
 		/// <param name="picture">Picture entity</param>
 		/// <returns>Media storage item</returns>
-		public static MediaItem ToMedia(this Picture picture)
+		public static MediaItem ToMedia(this MediaFile picture)
 		{
 			Guard.NotNull(picture, nameof(picture));
 

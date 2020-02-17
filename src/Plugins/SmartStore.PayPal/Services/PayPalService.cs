@@ -994,7 +994,7 @@ namespace SmartStore.PayPal.Services
 		{
 			PayPalResponse result;
 			var name = store.Name;
-			var logo = _pictureService.Value.GetPictureById(store.LogoPictureId);
+			var logo = _pictureService.Value.GetPictureById(store.LogoMediaFileId);
 			var path = "/v1/payment-experience/web-profiles";
 
 			var data = new Dictionary<string, object>();

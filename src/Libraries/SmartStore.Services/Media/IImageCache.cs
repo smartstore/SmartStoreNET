@@ -59,10 +59,10 @@ namespace SmartStore.Services.Media
 		Stream Open(CachedImageResult cachedImage);
 
 		/// <summary>
-		/// Deletes all cached images for the given <see cref="Picture"/>
+		/// Deletes all cached images for the given <see cref="MediaFile"/>
 		/// </summary>
-		/// <param name="picture">The <see cref="Picture"/> for which to delete cached images</param>
-		void Delete(Picture picture);
+		/// <param name="picture">The <see cref="MediaFile"/> for which to delete cached images</param>
+		void Delete(MediaFile picture);
 
 		/// <summary>
 		/// Deletes all cached images for the given <see cref="IFile"/>

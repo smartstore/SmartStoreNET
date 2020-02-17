@@ -11,11 +11,11 @@ namespace SmartStore.Web
 {
 	public static class ProductDetailsExtensions
 	{		
-		public static Picture GetAssignedPicture(this ProductDetailsModel model, IPictureService pictureService, IList<Picture> pictures, int productId = 0)
+		public static MediaFile GetAssignedPicture(this ProductDetailsModel model, IPictureService pictureService, IList<MediaFile> pictures, int productId = 0)
 		{
 			if (model != null && model.SelectedCombination != null)
 			{
-				Picture picture = null;
+				MediaFile picture = null;
 				var combiAssignedImages = model.SelectedCombination.GetAssignedMediaIds();
 
 				if (combiAssignedImages.Length > 0)

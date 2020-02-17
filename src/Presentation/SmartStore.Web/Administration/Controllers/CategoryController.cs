@@ -128,7 +128,7 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected void UpdatePictureSeoNames(Category category)
         {
-            _pictureService.SetSeoFilename(category.PictureId.GetValueOrDefault(), _pictureService.GetPictureSeName(category.Name));
+            _pictureService.SetSeoFilename(category.MediaFileId.GetValueOrDefault(), _pictureService.GetPictureSeName(category.Name));
         }
 
         [NonAction]
@@ -448,7 +448,7 @@ namespace SmartStore.Admin.Controllers
             {
                 var category = model.ToEntity();
 
-                MediaHelper.UpdatePictureTransientStateFor(category, c => c.PictureId);
+                MediaHelper.UpdatePictureTransientStateFor(category, c => c.MediaFileId);
 
                 _categoryService.InsertCategory(category);
 
@@ -560,7 +560,7 @@ namespace SmartStore.Admin.Controllers
                 category = model.ToEntity(category);
                 category.ParentCategoryId = model.ParentCategoryId ?? 0;
 
-                MediaHelper.UpdatePictureTransientStateFor(category, c => c.PictureId);
+                MediaHelper.UpdatePictureTransientStateFor(category, c => c.MediaFileId);
 
                 _categoryService.UpdateCategory(category);
 

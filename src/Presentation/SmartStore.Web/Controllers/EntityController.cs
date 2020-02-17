@@ -246,7 +246,7 @@ namespace SmartStore.Web.Controllers
                     else if (model.EntityType.IsCaseInsensitiveEqual("category"))
                     {
                         var categories = _categoryService.GetAllCategories(model.SearchTerm, showHidden: true);
-                        var allPictureIds = categories.Select(x => x.PictureId.GetValueOrDefault());
+                        var allPictureIds = categories.Select(x => x.MediaFileId.GetValueOrDefault());
                         var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
 
                         model.SearchResult = categories
@@ -271,11 +271,11 @@ namespace SmartStore.Web.Controllers
                                     item.LabelClassName = "badge-secondary";
                                 }
 
-                                var pictureInfo = allPictureInfos.Get(x.PictureId.GetValueOrDefault());
+                                var pictureInfo = allPictureInfos.Get(x.MediaFileId.GetValueOrDefault());
                                 var fallbackType = _catalogSettings.HideProductDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
 
                                 item.ImageUrl = _pictureService.GetUrl(
-                                    allPictureInfos.Get(x.PictureId.GetValueOrDefault()),
+                                    allPictureInfos.Get(x.MediaFileId.GetValueOrDefault()),
                                     _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage,
                                     fallbackType);
 
@@ -286,7 +286,7 @@ namespace SmartStore.Web.Controllers
                     else if (model.EntityType.IsCaseInsensitiveEqual("manufacturer"))
                     {
                         var manufacturers = _manufacturerService.GetAllManufacturers(model.SearchTerm, model.PageIndex, model.PageSize, showHidden: true);
-                        var allPictureIds = manufacturers.Select(x => x.PictureId.GetValueOrDefault());
+                        var allPictureIds = manufacturers.Select(x => x.MediaFileId.GetValueOrDefault());
                         var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
 
                         model.SearchResult = manufacturers
@@ -302,11 +302,11 @@ namespace SmartStore.Web.Controllers
                                     Disable = disableIds.Contains(x.Id)
                                 };
 
-                                var pictureInfo = allPictureInfos.Get(x.PictureId.GetValueOrDefault());
+                                var pictureInfo = allPictureInfos.Get(x.MediaFileId.GetValueOrDefault());
                                 var fallbackType = _catalogSettings.HideProductDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
 
                                 item.ImageUrl = _pictureService.GetUrl(
-                                    allPictureInfos.Get(x.PictureId.GetValueOrDefault()),
+                                    allPictureInfos.Get(x.MediaFileId.GetValueOrDefault()),
                                     _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage,
                                     fallbackType);
 

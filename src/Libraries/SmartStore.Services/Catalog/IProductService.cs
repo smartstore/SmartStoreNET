@@ -319,14 +319,14 @@ namespace SmartStore.Services.Catalog
         /// Deletes a product picture
         /// </summary>
         /// <param name="productPicture">Product picture</param>
-        void DeleteProductPicture(ProductPicture productPicture);
+        void DeleteProductPicture(ProductMediaFile productPicture);
 
         /// <summary>
         /// Gets a product pictures by product identifier
         /// </summary>
         /// <param name="productId">The product identifier</param>
         /// <returns>Product pictures</returns>
-        IList<ProductPicture> GetProductPicturesByProductId(int productId);
+        IList<ProductMediaFile> GetProductPicturesByProductId(int productId);
 
 		/// <summary>
 		/// Get product pictures by product identifiers
@@ -334,26 +334,26 @@ namespace SmartStore.Services.Catalog
 		/// <param name="productIds">Product identifiers</param>
 		/// <param name="onlyFirstPicture">Whether to only load the first picture for each product</param>
 		/// <returns>Product pictures</returns>
-		Multimap<int, ProductPicture> GetProductPicturesByProductIds(int[] productIds, bool onlyFirstPicture = false);
+		Multimap<int, ProductMediaFile> GetProductPicturesByProductIds(int[] productIds, bool onlyFirstPicture = false);
 
         /// <summary>
         /// Gets a product picture
         /// </summary>
         /// <param name="productPictureId">Product picture identifier</param>
         /// <returns>Product picture</returns>
-        ProductPicture GetProductPictureById(int productPictureId);
+        ProductMediaFile GetProductPictureById(int productPictureId);
 
         /// <summary>
         /// Inserts a product picture
         /// </summary>
         /// <param name="productPicture">Product picture</param>
-        void InsertProductPicture(ProductPicture productPicture);
+        void InsertProductPicture(ProductMediaFile productPicture);
 
         /// <summary>
         /// Updates a product picture
         /// </summary>
         /// <param name="productPicture">Product picture</param>
-        void UpdateProductPicture(ProductPicture productPicture);
+        void UpdateProductPicture(ProductMediaFile productPicture);
 
         #endregion
 

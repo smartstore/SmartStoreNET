@@ -30,10 +30,10 @@ namespace SmartStore.Core.Domain.Catalog
 		public string Name { get; set; }
 
 		/// <summary>
-		/// Gets or sets the Picture Id
+		/// Gets or sets the media file id
 		/// </summary>
 		[DataMember]
-		public int PictureId { get; set; }
+		public int MediaFileId { get; set; }
 
 		/// <summary>
 		/// Gets or sets the color RGB value (used with "Boxes" attribute type)
@@ -110,7 +110,7 @@ namespace SmartStore.Core.Domain.Catalog
 			var value = new ProductVariantAttributeValue();
 			value.Alias = Alias;
 			value.Name = Name;
-			value.PictureId = PictureId;
+			value.MediaFileId = MediaFileId;
 			value.Color = Color;
 			value.PriceAdjustment = PriceAdjustment;
 			value.WeightAdjustment = WeightAdjustment;

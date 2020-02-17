@@ -45,8 +45,8 @@ namespace SmartStore.Services.Media
 		private const string MEDIACACHE_LOOKUP_KEY = "media:info-{0}";
 		private const string MEDIACACHE_LOOKUP_KEY_PATTERN = "media:info-*";
 
-		private readonly IRepository<Picture> _pictureRepository;
-        private readonly IRepository<ProductPicture> _productPictureRepository;
+		private readonly IRepository<MediaFile> _pictureRepository;
+        private readonly IRepository<ProductMediaFile> _productPictureRepository;
         private readonly ISettingService _settingService;
         private readonly IEventPublisher _eventPublisher;
         private readonly MediaSettings _mediaSettings;
@@ -69,8 +69,8 @@ namespace SmartStore.Services.Media
 		}
 
 		public PictureService(
-            IRepository<Picture> pictureRepository,
-            IRepository<ProductPicture> productPictureRepository,
+            IRepository<MediaFile> pictureRepository,
+            IRepository<ProductMediaFile> productPictureRepository,
             ISettingService settingService, 
             IEventPublisher eventPublisher,
             MediaSettings mediaSettings,
@@ -212,7 +212,7 @@ namespace SmartStore.Services.Media
 			}
 		}
 
-		public virtual byte[] FindEqualPicture(byte[] pictureBinary, IEnumerable<Picture> pictures, out int equalPictureId)
+		public virtual byte[] FindEqualPicture(byte[] pictureBinary, IEnumerable<MediaFile> pictures, out int equalPictureId)
 		{
 			equalPictureId = 0;
 
@@ -246,21 +246,21 @@ namespace SmartStore.Services.Media
 			}
 		}
 
-		public virtual Stream OpenPictureStream(Picture picture)
+		public virtual Stream OpenPictureStream(MediaFile picture)
 		{
 			Guard.NotNull(picture, nameof(picture));
 
 			return _storageProvider.Value.OpenRead(picture.ToMedia());
 		}
 
-		public virtual byte[] LoadPictureBinary(Picture picture)
+		public virtual byte[] LoadPictureBinary(MediaFile picture)
         {
 			Guard.NotNull(picture, nameof(picture));
 
 			return _storageProvider.Value.Load(picture.ToMedia());
         }
 
-		public virtual Task<byte[]> LoadPictureBinaryAsync(Picture picture)
+		public virtual Task<byte[]> LoadPictureBinaryAsync(MediaFile picture)
 		{
 			Guard.NotNull(picture, nameof(picture));
 
@@ -287,7 +287,7 @@ namespace SmartStore.Services.Media
 
 			var result = new Dictionary<int, PictureInfo>(allRequestedInfos.Count);
 			var uncachedPictureIds = allRequestedInfos.Where(x => x.Info == null).Select(x => x.PictureId).ToArray();
-			var uncachedPictures = new Dictionary<int, Picture>();
+			var uncachedPictures = new Dictionary<int, MediaFile>();
 
 			if (uncachedPictureIds.Length > 0)
 			{
@@ -331,7 +331,7 @@ namespace SmartStore.Services.Media
             return info;
 		}
 
-		public PictureInfo GetPictureInfo(Picture picture)
+		public PictureInfo GetPictureInfo(MediaFile picture)
 		{
 			if (picture == null)
 				return null;
@@ -353,7 +353,7 @@ namespace SmartStore.Services.Media
 			return GetUrl(GetPictureInfo(pictureId), targetSize, fallbackType, host);
 		}
 
-		public virtual string GetUrl(Picture picture, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
+		public virtual string GetUrl(MediaFile picture, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
 		{
 			return GetUrl(GetPictureInfo(picture), targetSize, fallbackType, host);
 		}
@@ -396,7 +396,7 @@ namespace SmartStore.Services.Media
 		/// </summary>
 		/// <param name="picture"></param>
 		/// <returns></returns>
-		protected virtual PictureInfo CreatePictureInfo(Picture picture)
+		protected virtual PictureInfo CreatePictureInfo(MediaFile picture)
 		{
 			if (picture == null)
 				return null;
@@ -407,7 +407,7 @@ namespace SmartStore.Services.Media
 			var path = "{0}{1}/{2}.{3}".FormatInvariant(
 				_processedImagesRootPath,
 				picture.Id,
-				picture.SeoFilename.NullEmpty() ?? picture.Id.ToString(ImageCache.IdFormatString),
+				picture.Name.NullEmpty() ?? picture.Id.ToString(ImageCache.IdFormatString),
 				extension);
 
 			// Do some maintenance stuff
@@ -422,7 +422,7 @@ namespace SmartStore.Services.Media
 					picture,
 					null,
 					picture.MimeType,
-					picture.SeoFilename,
+					picture.Name,
 					false,
 					false);
 			}
@@ -476,7 +476,7 @@ namespace SmartStore.Services.Media
 			return url;
 		}
 
-		private void EnsurePictureSizeResolved(Picture picture, bool saveOnResolve)
+		private void EnsurePictureSizeResolved(MediaFile picture, bool saveOnResolve)
 		{
 			if (picture.Width == null && picture.Height == null)
 			{
@@ -536,12 +536,12 @@ namespace SmartStore.Services.Media
 			return SeoHelper.GetSeName(name, true, false, false);
 		}
 
-		public virtual Picture SetSeoFilename(int pictureId, string seoFilename)
+		public virtual MediaFile SetSeoFilename(int pictureId, string seoFilename)
 		{
 			var picture = GetPictureById(pictureId);
 
 			// update if it has been changed
-			if (picture != null && seoFilename != picture.SeoFilename)
+			if (picture != null && seoFilename != picture.Name)
 			{
 				UpdatePicture(picture, null, picture.MimeType, seoFilename, true, false);
 			}
@@ -549,7 +549,7 @@ namespace SmartStore.Services.Media
 			return picture;
 		}
 
-		public virtual Picture GetPictureById(int pictureId)
+		public virtual MediaFile GetPictureById(int pictureId)
 		{
 			if (pictureId == 0)
 				return null;
@@ -558,23 +558,23 @@ namespace SmartStore.Services.Media
 			return picture;
 		}
 
-		public virtual IPagedList<Picture> GetPictures(int pageIndex, int pageSize)
+		public virtual IPagedList<MediaFile> GetPictures(int pageIndex, int pageSize)
 		{
 			var query = from p in _pictureRepository.Table
 						orderby p.Id descending
 						select p;
 
-			var pics = new PagedList<Picture>(query, pageIndex, pageSize);
+			var pics = new PagedList<MediaFile>(query, pageIndex, pageSize);
 			return pics;
 		}
 
-		public virtual IList<Picture> GetPicturesByProductId(int productId, int recordsToReturn = 0)
+		public virtual IList<MediaFile> GetPicturesByProductId(int productId, int recordsToReturn = 0)
 		{
 			if (productId == 0)
-				return new List<Picture>();
+				return new List<MediaFile>();
 
 			var query = from p in _pictureRepository.Table
-						join pp in _productPictureRepository.Table on p.Id equals pp.PictureId
+						join pp in _productPictureRepository.Table on p.Id equals pp.MediaFileId
 						orderby pp.DisplayOrder
 						where pp.ProductId == productId
 						select p;
@@ -586,7 +586,7 @@ namespace SmartStore.Services.Media
 			return pics;
 		}
 
-		public virtual Multimap<int, Picture> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = null, bool withBlobs = false)
+		public virtual Multimap<int, MediaFile> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = null, bool withBlobs = false)
 		{
 			Guard.NotNull(productIds, nameof(productIds));
 
@@ -595,7 +595,7 @@ namespace SmartStore.Services.Media
 				Guard.IsPositive(maxPicturesPerProduct.Value, nameof(maxPicturesPerProduct));
 			}
 
-			var map = new Multimap<int, Picture>();
+			var map = new Multimap<int, MediaFile>();
 
 			if (!productIds.Any())
 				return map;
@@ -610,7 +610,7 @@ namespace SmartStore.Services.Media
 							ProductId = g.Key,
 							Pictures = g.OrderBy(x => x.DisplayOrder)
 								.Take(take)
-								.Select(x => new { x.PictureId, x.ProductId })
+								.Select(x => new { x.MediaFileId, x.ProductId })
 						};
 
 			var groupingResult = query.ToDictionary(x => x.ProductId, x => x.Pictures);
@@ -618,14 +618,14 @@ namespace SmartStore.Services.Media
 			using (var scope = new DbContextScope(ctx: _pictureRepository.Context, forceNoTracking: null))
 			{
 				// EF doesn't support eager loading with grouped queries. We must hack a little bit.
-				var pictureIds = groupingResult.SelectMany(x => x.Value).Select(x => x.PictureId).Distinct().ToArray();
+				var pictureIds = groupingResult.SelectMany(x => x.Value).Select(x => x.MediaFileId).Distinct().ToArray();
 				var pictures = GetPicturesByIds(pictureIds, withBlobs).ToDictionarySafe(x => x.Id);
 
 				foreach (var p in groupingResult.SelectMany(x => x.Value))
 				{
-					if (pictures.ContainsKey(p.PictureId))
+					if (pictures.ContainsKey(p.MediaFileId))
 					{
-						map.Add(p.ProductId, pictures[p.PictureId]);
+						map.Add(p.ProductId, pictures[p.MediaFileId]);
 					}
 				}
 			}
@@ -633,7 +633,7 @@ namespace SmartStore.Services.Media
 			return map;
 		}
 
-		public virtual IList<Picture> GetPicturesByIds(int[] pictureIds, bool withBlobs = false)
+		public virtual IList<MediaFile> GetPicturesByIds(int[] pictureIds, bool withBlobs = false)
 		{
 			Guard.NotNull(pictureIds, nameof(pictureIds));
 
@@ -648,7 +648,7 @@ namespace SmartStore.Services.Media
 			return query.ToList();
 		}
 
-		public virtual void DeletePicture(Picture picture)
+		public virtual void DeletePicture(MediaFile picture)
 		{
 			Guard.NotNull(picture, nameof(picture));
 
@@ -666,7 +666,7 @@ namespace SmartStore.Services.Media
 			_pictureRepository.Delete(picture);
 		}
 
-		public virtual Picture InsertPicture(
+		public virtual MediaFile InsertPicture(
 			byte[] pictureBinary,
 			string mimeType,
 			string seoFilename,
@@ -677,7 +677,7 @@ namespace SmartStore.Services.Media
 		{
 			var picture = _pictureRepository.Create();
 			picture.MimeType = mimeType.EmptyNull().Truncate(20);
-			picture.SeoFilename = seoFilename.Truncate(100);
+			picture.Name = seoFilename.Truncate(100);
 			picture.IsNew = isNew;
 			picture.IsTransient = isTransient;
 			picture.UpdatedOnUtc = DateTime.UtcNow;
@@ -696,7 +696,7 @@ namespace SmartStore.Services.Media
 			return picture;
 		}
 
-		public virtual Picture InsertPicture(
+		public virtual MediaFile InsertPicture(
 			byte[] pictureBinary,
 			string mimeType,
 			string seoFilename,
@@ -715,7 +715,7 @@ namespace SmartStore.Services.Media
 		}
 
 		public virtual void UpdatePicture(
-			Picture picture,
+			MediaFile picture,
 			byte[] pictureBinary,
 			string mimeType,
 			string seoFilename,
@@ -736,7 +736,7 @@ namespace SmartStore.Services.Media
 			}
 
 			// delete old thumbs if a picture has been changed
-			if (seoFilename != picture.SeoFilename)
+			if (seoFilename != picture.Name)
 			{
 				_imageCache.Delete(picture);
 
@@ -746,7 +746,7 @@ namespace SmartStore.Services.Media
             }
 
 			picture.MimeType = mimeType;
-			picture.SeoFilename = seoFilename;
+			picture.Name = seoFilename;
 			picture.IsNew = isNew;
 			picture.UpdatedOnUtc = DateTime.UtcNow;
 

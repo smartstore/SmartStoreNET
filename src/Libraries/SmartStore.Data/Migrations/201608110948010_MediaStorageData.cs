@@ -129,7 +129,7 @@ namespace SmartStore.Data.Migrations
 
 				if (storeMediaInDb)
 				{
-					PageEntities(context, mediaStorages, context.Set<Picture>().OrderBy(x => x.Id), picture =>
+					PageEntities(context, mediaStorages, context.Set<MediaFile>().OrderBy(x => x.Id), picture =>
 					{
 
 						if (picture.PictureBinary != null && picture.PictureBinary.LongLength > 0)

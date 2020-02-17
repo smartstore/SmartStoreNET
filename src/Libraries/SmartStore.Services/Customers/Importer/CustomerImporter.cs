@@ -29,7 +29,7 @@ namespace SmartStore.Services.Customers.Importer
 
 		private readonly IRepository<Customer> _customerRepository;
 		private readonly IRepository<CustomerRole> _customerRoleRepository;
-		private readonly IRepository<Picture> _pictureRepository;
+		private readonly IRepository<MediaFile> _pictureRepository;
 		private readonly ICommonServices _services;
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly IPictureService _pictureService;
@@ -46,7 +46,7 @@ namespace SmartStore.Services.Customers.Importer
         public CustomerImporter(
 			IRepository<Customer> customerRepository,
 			IRepository<CustomerRole> customerRoleRepository,
-			IRepository<Picture> pictureRepository,
+			IRepository<MediaFile> pictureRepository,
 			ICommonServices services,
 			IGenericAttributeService genericAttributeService,
 			IPictureService pictureService,
@@ -616,7 +616,7 @@ namespace SmartStore.Services.Customers.Importer
 					continue;
 
 				var equalPictureId = 0;
-				var currentPictures = new List<Picture>();
+				var currentPictures = new List<MediaFile>();
 				var seoName = _pictureService.GetPictureSeName(row.EntityDisplayName);
 
 				var image = CreateDownloadImage(context, urlOrPath, seoName, 1);

@@ -151,7 +151,7 @@ namespace SmartStore.Web.Controllers
             }
             else  if (blogPost.PreviewDisplayType == PreviewDisplayType.Preview || blogPost.PreviewDisplayType == PreviewDisplayType.PreviewSectionBg)
             {
-                model.PreviewPictureModel = PrepareBlogPostPictureModel(blogPost, blogPost.PreviewPictureId);
+                model.PreviewPictureModel = PrepareBlogPostPictureModel(blogPost, blogPost.PreviewMediaFileId);
             }
 
             if (blogPost.PreviewDisplayType == PreviewDisplayType.Preview || 

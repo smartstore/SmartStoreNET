@@ -585,7 +585,7 @@ namespace SmartStore.Services.Catalog
 				orderby pc.DisplayOrder
 				select pc;
 
-			query = query.Include(x => x.Category.Picture);
+			query = query.Include(x => x.Category.MediaFile);
 
 			if (hasDiscountsApplied.HasValue)
 			{
@@ -779,7 +779,7 @@ namespace SmartStore.Services.Catalog
 								x.Name,
                                 x.ExternalLink,
 								x.Alias,
-								x.PictureId,
+								PictureId=x.MediaFileId,
 								x.Published,
 								x.DisplayOrder,
 								x.UpdatedOnUtc,
@@ -790,13 +790,13 @@ namespace SmartStore.Services.Catalog
 							};
 
 				var unsortedNodes = query.ToList().Select(x => new CategoryNode
-				{
+                {
 					Id = x.Id,
 					ParentCategoryId = x.ParentCategoryId,
 					Name = x.Name,
                     ExternalLink = x.ExternalLink,
 					Alias = x.Alias,
-					PictureId = x.PictureId,
+					MediaFileId = x.PictureId,
 					Published = x.Published,
 					DisplayOrder = x.DisplayOrder,
 					UpdatedOnUtc = x.UpdatedOnUtc,

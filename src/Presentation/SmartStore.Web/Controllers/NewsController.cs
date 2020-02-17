@@ -121,8 +121,8 @@ namespace SmartStore.Web.Controllers
 			model.CreatedOn = _dateTimeHelper.ConvertToUserTime(newsItem.CreatedOnUtc, DateTimeKind.Utc);
             model.AddNewComment.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnNewsCommentPage;
             model.DisplayAdminLink = _services.Permissions.Authorize(Permissions.System.AccessBackend, _services.WorkContext.CurrentCustomer);
-            model.PictureModel = PrepareNewsItemPictureModel(newsItem, newsItem.PictureId);
-            model.PreviewPictureModel = PrepareNewsItemPictureModel(newsItem, newsItem.PreviewPictureId);
+            model.PictureModel = PrepareNewsItemPictureModel(newsItem, newsItem.MediaFileId);
+            model.PreviewPictureModel = PrepareNewsItemPictureModel(newsItem, newsItem.PreviewMediaFileId);
 
             model.Comments.AllowComments = newsItem.AllowComments;
             model.Comments.NumberOfComments = newsItem.ApprovedCommentCount;
@@ -373,7 +373,7 @@ namespace SmartStore.Web.Controllers
 
             var pictureModel = new PictureModel
             {
-                PictureId = newsItem.PictureId.GetValueOrDefault(),
+                PictureId = newsItem.MediaFileId.GetValueOrDefault(),
                 Size = 512,
                 ImageUrl = _pictureService.GetUrl(pictureInfo, 512, false),
                 FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, false),

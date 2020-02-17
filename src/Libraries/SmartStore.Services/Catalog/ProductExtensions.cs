@@ -100,8 +100,8 @@ namespace SmartStore.Services.Catalog
 			if (combinations != null)
 			{
 				var data = combinations
-					.Where(x => x.IsActive && x.AssignedPictureIds != null)
-					.Select(x => x.AssignedPictureIds)
+					.Where(x => x.IsActive && x.AssignedMediaFileIds != null)
+					.Select(x => x.AssignedMediaFileIds)
 					.ToList();
 
 				if (data.Count > 0)

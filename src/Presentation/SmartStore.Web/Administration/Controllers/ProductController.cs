@@ -537,7 +537,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			foreach (var pp in product.ProductPictures)
 			{
-				_pictureService.SetSeoFilename(pp.PictureId, _pictureService.GetPictureSeName(product.Name));
+				_pictureService.SetSeoFilename(pp.MediaFileId, _pictureService.GetPictureSeName(product.Name));
 			}
 		}
 
@@ -2189,14 +2189,14 @@ namespace SmartStore.Admin.Controllers
                 throw new ArgumentException(T("Products.NotFound", productId));
             }
 
-			var productPicture = new ProductPicture
+			var productPicture = new ProductMediaFile
             {
-                PictureId = pictureId,
+                MediaFileId = pictureId,
                 ProductId = productId,
                 DisplayOrder = displayOrder,
             };
 
-			MediaHelper.UpdatePictureTransientStateFor(productPicture, pp => pp.PictureId);
+			MediaHelper.UpdatePictureTransientStateFor(productPicture, pp => pp.MediaFileId);
 
             _productService.InsertProductPicture(productPicture);
 
@@ -2219,13 +2219,13 @@ namespace SmartStore.Admin.Controllers
 					{
 						Id = x.Id,
 						ProductId = x.ProductId,
-						PictureId = x.PictureId,
+						PictureId = x.MediaFileId,
 						DisplayOrder = x.DisplayOrder
 					};
 
                     try
                     {
-                        pictureModel.PictureUrl = _pictureService.GetUrl(x.PictureId);
+                        pictureModel.PictureUrl = _pictureService.GetUrl(x.MediaFileId);
                     }
                     catch (Exception ex)
                     {
@@ -2271,7 +2271,7 @@ namespace SmartStore.Admin.Controllers
 				_productService.DeleteProductPicture(productPicture);
 			}
 
-			var picture = _pictureService.GetPictureById(productPicture.PictureId);
+			var picture = _pictureService.GetPictureById(productPicture.MediaFileId);
 			if (picture != null)
 			{
 				_pictureService.DeletePicture(picture);
@@ -3018,7 +3018,7 @@ namespace SmartStore.Admin.Controllers
 					NameString = Server.HtmlEncode(x.Color.IsEmpty() ? x.Name : string.Format("{0} - {1}", x.Name, x.Color)),
 					Alias = x.Alias,
 					Color = x.Color,
-                    PictureId = x.PictureId,
+                    PictureId = x.MediaFileId,
 					PriceAdjustment = x.PriceAdjustment,
 					PriceAdjustmentString = x.ValueType == ProductVariantAttributeValueType.Simple ? x.PriceAdjustment.ToString("G29") : "",
 					WeightAdjustment = x.WeightAdjustment,
@@ -3105,7 +3105,7 @@ namespace SmartStore.Admin.Controllers
 					Name = model.Name,
 					Alias = model.Alias,
 					Color = model.Color,
-                    PictureId = model.PictureId,
+                    MediaFileId = model.PictureId,
 					PriceAdjustment = model.PriceAdjustment,
 					WeightAdjustment = model.WeightAdjustment,
 					IsPreSelected = model.IsPreSelected,
@@ -3116,7 +3116,7 @@ namespace SmartStore.Admin.Controllers
 
                 pvav.LinkedProductId = pvav.ValueType == ProductVariantAttributeValueType.Simple ? 0 : model.LinkedProductId;
 
-                MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.PictureId);
+                MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.MediaFileId);
 
                 try
 				{
@@ -3162,7 +3162,7 @@ namespace SmartStore.Admin.Controllers
 				Name = pvav.Name,
 				Alias = pvav.Alias,
 				Color = pvav.Color,
-                PictureId = pvav.PictureId,
+                PictureId = pvav.MediaFileId,
 				IsListTypeAttribute = pvav.ProductVariantAttribute.IsListTypeAttribute(),
 				PriceAdjustment = pvav.PriceAdjustment,
 				WeightAdjustment = pvav.WeightAdjustment,
@@ -3222,7 +3222,7 @@ namespace SmartStore.Admin.Controllers
 				pvav.Name = model.Name;
 				pvav.Alias = model.Alias;
 				pvav.Color = model.Color;
-                pvav.PictureId = model.PictureId;
+                pvav.MediaFileId = model.PictureId;
 				pvav.PriceAdjustment = model.PriceAdjustment;
 				pvav.WeightAdjustment = model.WeightAdjustment;
 				pvav.IsPreSelected = model.IsPreSelected;
@@ -3231,7 +3231,7 @@ namespace SmartStore.Admin.Controllers
 				pvav.Quantity = model.Quantity;
                 pvav.LinkedProductId = pvav.ValueType == ProductVariantAttributeValueType.Simple ? 0 : model.LinkedProductId;
 
-				MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.PictureId);
+				MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.MediaFileId);
 
 				try
 				{

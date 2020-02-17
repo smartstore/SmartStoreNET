@@ -45,7 +45,7 @@ namespace SmartStore.Core.Domain.Catalog
 
 		private ICollection<ProductCategory> _productCategories;
         private ICollection<ProductManufacturer> _productManufacturers;
-        private ICollection<ProductPicture> _productPictures;
+        private ICollection<ProductMediaFile> _productPictures;
         private ICollection<ProductReview> _productReviews;
         private ICollection<ProductSpecificationAttribute> _productSpecificationAttributes;
         private ICollection<ProductTag> _productTags;
@@ -1061,9 +1061,9 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the collection of ProductPicture
         /// </summary>
 		[DataMember]
-		public virtual ICollection<ProductPicture> ProductPictures
+		public virtual ICollection<ProductMediaFile> ProductPictures
         {
-            get { return _productPictures ?? (_productPictures = new List<ProductPicture>()); }
+            get { return _productPictures ?? (_productPictures = new List<ProductMediaFile>()); }
             protected set { _productPictures = value; }
         }
 

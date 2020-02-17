@@ -13,15 +13,15 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 		protected List<int> _pictureIds;
 
 		private Func<int[], Multimap<int, ProductCategory>> _funcProductCategories;
-		private Func<int[], IList<Picture>> _funcPictures;
+		private Func<int[], IList<MediaFile>> _funcPictures;
 
 		private LazyMultimap<ProductCategory> _productCategories;
-		private LazyMultimap<Picture> _pictures;
+		private LazyMultimap<MediaFile> _pictures;
 
 		public CategoryExportContext(
 			IEnumerable<Category> categories,
 			Func<int[], Multimap<int, ProductCategory>> productCategories,
-			Func<int[], IList<Picture>> pictures)
+			Func<int[], IList<MediaFile>> pictures)
 		{
 			if (categories == null)
 			{
@@ -31,7 +31,7 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 			else
 			{
 				_categoryIds = new List<int>(categories.Select(x => x.Id));
-				_pictureIds = new List<int>(categories.Where(x => (x.PictureId ?? 0) != 0).Select(x => x.PictureId ?? 0));
+				_pictureIds = new List<int>(categories.Where(x => (x.MediaFileId ?? 0) != 0).Select(x => x.MediaFileId ?? 0));
 			}
 
 			_funcProductCategories = productCategories;
@@ -61,13 +61,13 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 			}
 		}
 
-		public LazyMultimap<Picture> Pictures
+		public LazyMultimap<MediaFile> Pictures
 		{
 			get
 			{
 				if (_pictures == null)
 				{
-					_pictures = new LazyMultimap<Picture>(keys => _funcPictures(keys).ToMultimap(x => x.Id, x => x), _pictureIds);
+					_pictures = new LazyMultimap<MediaFile>(keys => _funcPictures(keys).ToMultimap(x => x.Id, x => x), _pictureIds);
 				}
 				return _pictures;
 			}

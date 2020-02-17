@@ -58,7 +58,7 @@ namespace SmartStore.Utilities
 			return item;
 		}
 
-		public bool AddEnclosure(SyndicationItem item, Picture picture, string pictureUrl)
+		public bool AddEnclosure(SyndicationItem item, MediaFile picture, string pictureUrl)
 		{
 			if (picture != null && pictureUrl.HasValue())
 			{

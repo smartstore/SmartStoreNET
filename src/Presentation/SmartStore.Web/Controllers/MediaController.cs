@@ -103,7 +103,7 @@ namespace SmartStore.Web.Controllers
 			string nameWithoutExtension = null;
 			string mime = null;
 			string extension = null;
-			Picture picture = null;
+			MediaFile picture = null;
 
 			if (name.HasValue())
 			{
@@ -119,7 +119,7 @@ namespace SmartStore.Web.Controllers
 				if (picture == null) return NotFound(mime ?? "text/html");
 
 				mime = picture.MimeType;
-				nameWithoutExtension = picture.SeoFilename;
+				nameWithoutExtension = picture.Name;
 				extension = MimeTypes.MapMimeTypeToExtension(mime);
 				name = String.Concat(nameWithoutExtension, ".", extension);
 			}
@@ -171,9 +171,9 @@ namespace SmartStore.Web.Controllers
 
 						// When Picture has SeoFileName, it must match requested name
 						// When Picture has NO SeoFileName, requested name must match Id
-						if (picture.SeoFilename.HasValue() && !picture.SeoFilename.IsCaseInsensitiveEqual(nameWithoutExtension))
+						if (picture.Name.HasValue() && !picture.Name.IsCaseInsensitiveEqual(nameWithoutExtension))
 							return null;
-						else if (picture.SeoFilename.IsEmpty() && picture.Id.ToString(ImageCache.IdFormatString) != nameWithoutExtension)
+						else if (picture.Name.IsEmpty() && picture.Id.ToString(ImageCache.IdFormatString) != nameWithoutExtension)
 							return null;
 
 						source = await _pictureService.LoadPictureBinaryAsync(picture);

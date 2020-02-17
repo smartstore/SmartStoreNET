@@ -178,7 +178,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditPicture)]
         public HttpResponseMessage NavigationProductPictures(int key, int relatedKey)
         {
-            ProductPicture productPicture = null;
+            ProductMediaFile productPicture = null;
             var productPictures = Service.GetProductPicturesByProductId(key);
 
             if (Request.Method == HttpMethod.Delete)
@@ -187,7 +187,7 @@ namespace SmartStore.WebApi.Controllers.OData
                 {
                     productPictures.Each(x => Service.DeleteProductPicture(x));
                 }
-                else if ((productPicture = productPictures.FirstOrDefault(x => x.PictureId == relatedKey)) != null)
+                else if ((productPicture = productPictures.FirstOrDefault(x => x.MediaFileId == relatedKey)) != null)
                 {
                     Service.DeleteProductPicture(productPicture);
                 }
@@ -195,15 +195,15 @@ namespace SmartStore.WebApi.Controllers.OData
                 return Request.CreateResponse(HttpStatusCode.NoContent);
             }
 
-            productPicture = productPictures.FirstOrDefault(x => x.PictureId == relatedKey);
+            productPicture = productPictures.FirstOrDefault(x => x.MediaFileId == relatedKey);
 
             if (Request.Method == HttpMethod.Post)
             {
                 if (productPicture == null)
                 {
-                    productPicture = ReadContent<ProductPicture>() ?? new ProductPicture();
+                    productPicture = ReadContent<ProductMediaFile>() ?? new ProductMediaFile();
                     productPicture.ProductId = key;
-                    productPicture.PictureId = relatedKey;
+                    productPicture.MediaFileId = relatedKey;
 
                     Service.InsertProductPicture(productPicture);
 
@@ -258,7 +258,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductPicture> GetProductPictures(int key)
+        public IQueryable<ProductMediaFile> GetProductPictures(int key)
 		{
 			return GetRelatedCollection(key, x => x.ProductPictures);
 		}

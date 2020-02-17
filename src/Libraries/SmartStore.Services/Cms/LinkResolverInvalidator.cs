@@ -29,7 +29,7 @@ namespace SmartStore.Services.Cms
             nameof(Product.Deleted),
             nameof(Product.MainPictureId),
             nameof(Category.Published),
-            nameof(Category.PictureId),
+            nameof(Category.MediaFileId),
             nameof(StoreMapping.StoreId),
 			nameof(UrlRecord.IsActive),
 			nameof(UrlRecord.Slug)

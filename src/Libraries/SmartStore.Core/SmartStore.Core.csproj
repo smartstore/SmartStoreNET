@@ -592,7 +592,7 @@
     <Compile Include="Domain\Forums\PrivateMessage.cs" />
     <Compile Include="Domain\Localization\LocalizationSettings.cs" />
     <Compile Include="Domain\Media\Download.cs" />
-    <Compile Include="Domain\Media\PictureType.cs" />
+    <Compile Include="Domain\Media\Enums.cs" />
     <Compile Include="Domain\Messages\EmailAccountSettings.cs" />
     <Compile Include="Domain\Messages\EmailAccount.cs" />
     <Compile Include="Domain\Messages\MessageTemplate.cs" />
@@ -707,12 +707,12 @@
     <Compile Include="Domain\Catalog\LowStockActivity.cs" />
     <Compile Include="Domain\Catalog\ManageInventoryMethod.cs" />
     <Compile Include="Domain\Catalog\Manufacturer.cs" />
-    <Compile Include="Domain\Media\Picture.cs" />
+    <Compile Include="Domain\Media\MediaFile.cs" />
     <Compile Include="Domain\Catalog\Product.cs" />
     <Compile Include="Domain\Catalog\ProductAttribute.cs" />
     <Compile Include="Domain\Catalog\ProductCategory.cs" />
     <Compile Include="Domain\Catalog\ProductManufacturer.cs" />
-    <Compile Include="Domain\Catalog\ProductPicture.cs" />
+    <Compile Include="Domain\Catalog\ProductMediaFile.cs" />
     <Compile Include="Domain\Catalog\ProductSpecificationAttribute.cs" />
     <Compile Include="Domain\Catalog\ProductVariantAttribute.cs" />
     <Compile Include="Domain\Catalog\ProductVariantAttributeCombination.cs" />

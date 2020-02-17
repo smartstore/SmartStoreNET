@@ -29,7 +29,7 @@ namespace SmartStore.Data.Migrations
 			// Some users have disabled the "TransientMediaClearTask" due to a bug.
 			// When the task is enabled again, it would delete media files, which are marked as transient
 			// but are permanent actually. To avoid this, we have to set IsTransient to false.
-			var transientPictures = context.Set<Picture>().Where(x => x.IsTransient == true).ToList();
+			var transientPictures = context.Set<MediaFile>().Where(x => x.IsTransient == true).ToList();
 			transientPictures.Each(x => x.IsTransient = false);
 
 			var transientDownloads = context.Set<Download>().Where(x => x.IsTransient == true).ToList();

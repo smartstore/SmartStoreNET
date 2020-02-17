@@ -43,7 +43,7 @@ namespace SmartStore.Core.Domain.Catalog
 		public int? BasePriceBaseAmount { get; set; }
 
 		[DataMember]
-        public string AssignedPictureIds { get; set; }
+        public string AssignedMediaFileIds { get; set; }
 
 		[DataMember]
         public int? DeliveryTimeId { get; set; }
@@ -63,12 +63,12 @@ namespace SmartStore.Core.Domain.Catalog
 
         public int[] GetAssignedMediaIds()
         {
-            if (string.IsNullOrEmpty(this.AssignedPictureIds))
+            if (string.IsNullOrEmpty(this.AssignedMediaFileIds))
             {
                 return new int[] { };
             }
 
-            var query = from id in this.AssignedPictureIds.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+            var query = from id in this.AssignedMediaFileIds.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                         let idx = id.ToInt()
                         where idx > 0
                         select idx;
@@ -80,11 +80,11 @@ namespace SmartStore.Core.Domain.Catalog
         {
             if (ids == null || ids.Length == 0)
             {
-                this.AssignedPictureIds = null;
+                this.AssignedMediaFileIds = null;
             }
             else
             {
-                this.AssignedPictureIds = String.Join<int>(",", ids);
+                this.AssignedMediaFileIds = String.Join<int>(",", ids);
             }
         }
     }

@@ -173,7 +173,7 @@ namespace SmartStore.Services.Media
 			cachedImage.Exists = file.Exists && file.Size > 0;
 		}
 
-		public virtual void Delete(Picture picture)
+		public virtual void Delete(MediaFile picture)
         {
             var filter = string.Format("{0}*.*", picture.Id.ToString(IdFormatString));
 

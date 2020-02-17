@@ -293,7 +293,7 @@ namespace SmartStore.Services.Catalog
 				where !pm.Manufacturer.Deleted && productIds.Contains(pm.ProductId)
 				select pm;
 
-			query = query.Include(x => x.Manufacturer.Picture);
+			query = query.Include(x => x.Manufacturer.MediaFile);
 
 			var map = query
 				.OrderBy(x => x.ProductId)

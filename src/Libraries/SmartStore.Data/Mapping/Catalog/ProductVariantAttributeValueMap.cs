@@ -12,7 +12,7 @@ namespace SmartStore.Data.Mapping.Catalog
             Property(pvav => pvav.Alias).HasMaxLength(100);
             Property(pvav => pvav.Name);
             Property(pvav => pvav.Color).HasMaxLength(100);
-            Property(pvav => pvav.PictureId).HasColumnName("MediaFileId");
+            Property(pvav => pvav.MediaFileId).HasColumnName("MediaFileId");
 
             Property(pvav => pvav.PriceAdjustment).HasPrecision(18, 4);
             Property(pvav => pvav.WeightAdjustment).HasPrecision(18, 4);

@@ -466,9 +466,9 @@ namespace SmartStore.Services.Catalog
 				.Select(x => x.Name)
 				.ToList());
 
-			Picture picture = null;
+			MediaFile picture = null;
 			ProductVariantAttributeValue productVariantAttributeValue = null;
-			var pictureIds = attributeOptions.Where(x => x.PictureId != 0).Select(x => x.PictureId).Distinct().ToArray();
+			var pictureIds = attributeOptions.Where(x => x.MediaFileId != 0).Select(x => x.MediaFileId).Distinct().ToArray();
 			var pictures = _pictureService.GetPicturesByIds(pictureIds, true).ToDictionarySafe(x => x.Id);
 
 			using (_localizedEntityService.BeginScope())
@@ -479,25 +479,25 @@ namespace SmartStore.Services.Catalog
 						continue;
 
 					productVariantAttributeValue = option.Clone();
-					productVariantAttributeValue.PictureId = 0;
+					productVariantAttributeValue.MediaFileId = 0;
 					productVariantAttributeValue.ProductVariantAttributeId = productVariantAttribute.Id;
 
 					// Copy picture.
-					if (option.PictureId != 0 && pictures.TryGetValue(option.PictureId, out picture))
+					if (option.MediaFileId != 0 && pictures.TryGetValue(option.MediaFileId, out picture))
 					{
 						var pictureBinary = _pictureService.LoadPictureBinary(picture);
 
 						var newPicture = _pictureService.InsertPicture(
 							pictureBinary,
 							picture.MimeType,
-							picture.SeoFilename,
+							picture.Name,
 							picture.IsNew,
 							picture.Width ?? 0,
 							picture.Height ?? 0,
 							picture.IsTransient
 						);
 
-						productVariantAttributeValue.PictureId = newPicture.Id;
+						productVariantAttributeValue.MediaFileId = newPicture.Id;
 					}
 
 					// No scope commit, we need new entity id.
@@ -643,8 +643,8 @@ namespace SmartStore.Services.Catalog
 						where
 							pvac.ProductId == productId
 							&& pvac.IsActive
-							&& !String.IsNullOrEmpty(pvac.AssignedPictureIds)
-						select pvac.AssignedPictureIds;
+							&& !String.IsNullOrEmpty(pvac.AssignedMediaFileIds)
+						select pvac.AssignedMediaFileIds;
 
 			var data = query.ToList();
 			if (data.Any())

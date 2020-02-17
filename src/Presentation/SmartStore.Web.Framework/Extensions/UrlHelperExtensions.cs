@@ -46,7 +46,7 @@ namespace SmartStore.Web.Framework
 			return pictureService.GetUrl(pictureId.GetValueOrDefault(), targetSize, fallbackType, host);
 		}
 
-		public static string Picture(this UrlHelper urlHelper, Picture picture, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
+		public static string Picture(this UrlHelper urlHelper, MediaFile picture, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
 		{
 			var pictureService = EngineContext.Current.Resolve<IPictureService>();
 			return pictureService.GetUrl(picture, targetSize, fallbackType, host);

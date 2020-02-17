@@ -11,7 +11,7 @@ namespace SmartStore.Data.Tests.Media
         [Test]
         public void Can_save_and_load_picture()
         {
-            var picture = new Picture
+            var picture = new MediaFile
             {
 				MediaStorage = new MediaStorage
 				{
@@ -19,7 +19,7 @@ namespace SmartStore.Data.Tests.Media
 				},
 				UpdatedOnUtc = DateTime.UtcNow,
 				MimeType = "image/pjpeg",
-                SeoFilename = "seo filename 1",
+                Name = "seo filename 1",
                 IsNew = true
             };
 
@@ -27,7 +27,7 @@ namespace SmartStore.Data.Tests.Media
             fromDb.ShouldNotBeNull();
             fromDb.MediaStorage.Data.ShouldEqual(new byte[] { 1, 2, 3 });
             fromDb.MimeType.ShouldEqual("image/pjpeg");
-            fromDb.SeoFilename.ShouldEqual("seo filename 1");
+            fromDb.Name.ShouldEqual("seo filename 1");
             fromDb.IsNew.ShouldEqual(true);
         }
     }

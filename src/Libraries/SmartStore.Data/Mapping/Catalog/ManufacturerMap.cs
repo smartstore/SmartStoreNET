@@ -15,10 +15,10 @@ namespace SmartStore.Data.Mapping.Catalog
             Property(m => m.MetaKeywords).HasMaxLength(400);
             Property(m => m.MetaTitle).HasMaxLength(400);
             Property(m => m.PageSizeOptions).HasMaxLength(200).IsOptional();
-            Property(m => m.PictureId).HasColumnName("MediaFileId");
-            HasOptional(p => p.Picture)
+            Property(m => m.MediaFileId).HasColumnName("MediaFileId");
+            HasOptional(p => p.MediaFile)
 				.WithMany()
-				.HasForeignKey(p => p.PictureId)
+				.HasForeignKey(p => p.MediaFileId)
 				.WillCascadeOnDelete(false);
         }
     }

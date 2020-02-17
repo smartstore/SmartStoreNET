@@ -219,7 +219,7 @@ namespace SmartStore.Web.Controllers
 			// TODO: (mc) refactor > GetPictureInfos()
             var model = _cacheManager.Get(pictureCacheKey, () =>
             {
-				Picture picture = null;
+				MediaFile picture = null;
 
 				if (combination != null)
 				{

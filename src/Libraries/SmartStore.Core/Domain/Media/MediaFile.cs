@@ -7,9 +7,9 @@ using SmartStore.Core.Domain.Catalog;
 namespace SmartStore.Core.Domain.Media
 {
 	[DataContract]
-	public partial class Picture : BaseEntity, ITransient, IHasMedia
+	public partial class MediaFile : BaseEntity, ITransient, IHasMedia
 	{
-		private ICollection<ProductPicture> _productPictures;
+		private ICollection<ProductMediaFile> _productMediaFiles;
 
 		/// <summary>
 		/// Gets or sets the picture binary
@@ -39,7 +39,7 @@ namespace SmartStore.Core.Domain.Media
 		/// Gets or sets the SEO friendly name of the media file
 		/// </summary>
 		[DataMember]
-		public string SeoFilename { get; set; }
+		public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the picture is new
@@ -76,10 +76,10 @@ namespace SmartStore.Core.Domain.Media
 		/// Gets or sets the product pictures
 		/// </summary>
 		[DataMember]
-		public virtual ICollection<ProductPicture> ProductPictures
+		public virtual ICollection<ProductMediaFile> ProductPictures
         {
-			get { return _productPictures ?? (_productPictures = new HashSet<ProductPicture>()); }
-            protected set { _productPictures = value; }
+			get { return _productMediaFiles ?? (_productMediaFiles = new HashSet<ProductMediaFile>()); }
+            protected set { _productMediaFiles = value; }
         }
     }
 }

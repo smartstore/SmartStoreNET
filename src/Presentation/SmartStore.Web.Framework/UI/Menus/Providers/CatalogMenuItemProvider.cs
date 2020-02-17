@@ -94,7 +94,7 @@ namespace SmartStore.Web.Framework.UI
                 BadgeText = node.Id > 0 ? node.GetLocalized(x => x.BadgeText) : null,
                 BadgeStyle = (BadgeStyle)node.BadgeStyle,
                 RouteName = node.Id > 0 ? "Category" : "HomePage",
-                ImageId = node.PictureId
+                ImageId = node.MediaFileId
             };
 
             // Handle external link
@@ -121,9 +121,9 @@ namespace SmartStore.Web.Framework.UI
             }
             
             // Picture
-            if (node.Id > 0 && node.ParentCategoryId == 0 && node.Published && node.PictureId != null)
+            if (node.Id > 0 && node.ParentCategoryId == 0 && node.Published && node.MediaFileId != null)
             {
-                menuItem.ImageId = node.PictureId;
+                menuItem.ImageId = node.MediaFileId;
             }
 
             // Apply inheritable properties.

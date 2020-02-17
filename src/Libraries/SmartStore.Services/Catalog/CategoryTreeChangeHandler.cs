@@ -147,7 +147,7 @@ namespace SmartStore.Services.Catalog
 									value.Name = category.Name;
                                     value.ExternalLink = category.ExternalLink;
 									value.Alias = category.Alias;
-									value.PictureId = category.PictureId;
+									value.MediaFileId = category.MediaFileId;
 									value.BadgeText = category.BadgeText;
 									value.BadgeStyle = category.BadgeStyle;
 

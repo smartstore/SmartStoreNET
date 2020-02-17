@@ -14,7 +14,7 @@ namespace SmartStore.Data.Mapping.Stores
 			Property(s => s.ContentDeliveryNetwork).HasMaxLength(400);
 			Property(s => s.SecureUrl).HasMaxLength(400);
 			Property(s => s.Hosts).HasMaxLength(1000);
-			Property(x => x.LogoPictureId).HasColumnName("LogoMediaFileId");
+			Property(x => x.LogoMediaFileId).HasColumnName("LogoMediaFileId");
 
 			HasRequired(s => s.PrimaryStoreCurrency)
 				.WithMany()

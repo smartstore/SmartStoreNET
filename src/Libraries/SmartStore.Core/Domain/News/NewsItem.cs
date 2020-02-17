@@ -39,14 +39,14 @@ namespace SmartStore.Core.Domain.News
         public bool Published { get; set; }
 
         /// <summary>
-        /// Gets or sets the picture identifier
+        /// Gets or sets the media file identifier
         /// </summary>
-        public int? PictureId { get; set; }
+        public int? MediaFileId { get; set; }
 
         /// <summary>
-        /// Gets or sets the preview picture identifier
+        /// Gets or sets the preview media file identifier
         /// </summary>
-        public int? PreviewPictureId { get; set; }
+        public int? PreviewMediaFileId { get; set; }
 
         /// <summary>
         /// Gets or sets the news item start date and time

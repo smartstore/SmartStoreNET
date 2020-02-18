@@ -247,6 +247,7 @@
     <Compile Include="Domain\Localization\LocalizedPropertyCollection.cs" />
     <Compile Include="Domain\Media\MediaStorage.cs" />
     <Compile Include="Domain\Media\IHasMedia.cs" />
+    <Compile Include="Domain\Media\MediaTag.cs" />
     <Compile Include="Domain\Messages\EmailAttachmentStorageLocation.cs" />
     <Compile Include="Domain\Messages\MessageTemplateNames.cs" />
     <Compile Include="Domain\Messages\QueuedEmailAttachment.cs" />

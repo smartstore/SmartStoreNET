@@ -39,7 +39,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		[WebApiQueryable]
         public IQueryable<ProductMediaFile> GetProductPictures(int key)
 		{
-			return GetRelatedCollection(key, x => x.ProductPictures);
+			return GetRelatedCollection(key, x => x.ProductMediaFiles);
 		}
 	}
 }

@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Data.Entity.Migrations.Infrastructure;
 using System.Linq;
+using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Data.Migrations;
@@ -146,17 +147,23 @@ namespace SmartStore.Data.Setup
 					throw new DbMigrationException(lastSuccessfulMigration, migrationId, ex.InnerException ?? ex, false);
 				}
 
+				var migrationName = MigratorUtils.GetMigrationClassName(migrationId);
+
 				if (coreSeeder != null)
-					coreSeeders.Add(new SeederEntry { 
+					coreSeeders.Add(new SeederEntry 
+					{ 
 						DataSeeder = coreSeeder, 
 						MigrationId = migrationId,
+						MigrationName = migrationName,
  						PreviousMigrationId = lastSuccessfulMigration,
 					});
 
 				if (externalSeeder != null)
-					externalSeeders.Add(new SeederEntry { 
+					externalSeeders.Add(new SeederEntry 
+					{ 
 						DataSeeder = externalSeeder, 
 						MigrationId = migrationId,
+						MigrationName = migrationName,
 						PreviousMigrationId = lastSuccessfulMigration,
 					});
 
@@ -189,7 +196,16 @@ namespace SmartStore.Data.Setup
 
 				try
 				{
+					var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
+					
+					// Pre seed event
+					eventPublisher.Publish(new SeedingDbMigrationEvent { MigrationName = seederEntry.MigrationName, DbContext = ctx });
+
+					// Seed
 					seeder.Seed(ctx);
+
+					// Post seed event
+					eventPublisher.Publish(new SeededDbMigrationEvent { MigrationName = seederEntry.MigrationName, DbContext = ctx });
 				}
 				catch (Exception ex)
 				{
@@ -215,6 +231,7 @@ namespace SmartStore.Data.Setup
 		{
 			public string PreviousMigrationId { get; set; }
 			public string MigrationId { get; set; }
+			public string MigrationName { get; set; }
 			public object DataSeeder { get; set; }
 		}
 	}

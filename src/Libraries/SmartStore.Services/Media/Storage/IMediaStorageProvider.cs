@@ -7,6 +7,12 @@ namespace SmartStore.Services.Media.Storage
 	public interface IMediaStorageProvider : IProvider
 	{
 		/// <summary>
+		/// Gets the size of the media item in bytes.
+		/// </summary>
+		/// <param name="media">Media storage item</param>
+		long GetSize(MediaItem media);
+		
+		/// <summary>
 		/// Opens the media item for reading
 		/// </summary>
 		/// <param name="media">Media storage item</param>

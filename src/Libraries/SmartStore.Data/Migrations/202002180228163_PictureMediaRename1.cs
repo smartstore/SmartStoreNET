@@ -7,7 +7,7 @@ namespace SmartStore.Data.Migrations
     {
         public override void Up()
         {
-            // Created by EF after class and property name refactoring
+            // A cumbersome but necessary step to prevent EF from dropping renamed tables.
         }
         
         public override void Down()

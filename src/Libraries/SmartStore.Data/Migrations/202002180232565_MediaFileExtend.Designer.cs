@@ -7,13 +7,13 @@ namespace SmartStore.Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class PictureMediaRename1 : IMigrationMetadata
+    public sealed partial class MediaFileExtend : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(PictureMediaRename1));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(MediaFileExtend));
         
         string IMigrationMetadata.Id
         {
-            get { return "202002172118020_PictureMediaRename1"; }
+            get { return "202002180232565_MediaFileExtend"; }
         }
         
         string IMigrationMetadata.Source

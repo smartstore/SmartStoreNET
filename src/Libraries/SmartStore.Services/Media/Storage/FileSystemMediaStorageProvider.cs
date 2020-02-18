@@ -40,17 +40,26 @@ namespace SmartStore.Services.Media.Storage
 			return _fileSystem.Combine(media.Path, fileName);
 		}
 
+		public long GetSize(MediaItem media)
+		{
+			Guard.NotNull(media, nameof(media));
+
+			var file = _fileSystem.GetFile(GetPath(media));
+			return file.Exists ? (int)file.Size : 0;
+		}
+
 		public Stream OpenRead(MediaItem media)
 		{
-			var file = _fileSystem.GetFile(GetPath(media));
+			Guard.NotNull(media, nameof(media));
 
+			var file = _fileSystem.GetFile(GetPath(media));
 			return file.Exists ? file.OpenRead() : null;
 		}
 
 		public byte[] Load(MediaItem media)
 		{
 			Guard.NotNull(media, nameof(media));
-
+			
 			var filePath = GetPath(media);
 			return _fileSystem.ReadAllBytes(filePath) ?? new byte[0];
 		}

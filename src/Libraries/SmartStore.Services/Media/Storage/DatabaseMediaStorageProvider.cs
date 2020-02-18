@@ -28,6 +28,11 @@ namespace SmartStore.Services.Media.Storage
 			get { return "MediaStorage.SmartStoreDatabase"; }
 		}
 
+		public long GetSize(MediaItem media)
+		{
+			return media.Entity?.MediaStorage?.Data?.LongLength ?? 0;
+		}
+
 		public Stream OpenRead(MediaItem media)
 		{
 			Guard.NotNull(media, nameof(media));

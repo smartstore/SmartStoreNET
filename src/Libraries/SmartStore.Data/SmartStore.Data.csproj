@@ -758,9 +758,13 @@
     <Compile Include="Migrations\202002172101120_PictureMediaRename.Designer.cs">
       <DependentUpon>202002172101120_PictureMediaRename.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202002172118020_PictureMediaRename1.cs" />
-    <Compile Include="Migrations\202002172118020_PictureMediaRename1.Designer.cs">
-      <DependentUpon>202002172118020_PictureMediaRename1.cs</DependentUpon>
+    <Compile Include="Migrations\202002180228163_PictureMediaRename1.cs" />
+    <Compile Include="Migrations\202002180228163_PictureMediaRename1.Designer.cs">
+      <DependentUpon>202002180228163_PictureMediaRename1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202002180232565_MediaFileExtend.cs" />
+    <Compile Include="Migrations\202002180232565_MediaFileExtend.Designer.cs">
+      <DependentUpon>202002180232565_MediaFileExtend.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\202002191252074_RemoveDiscountRequirements.cs" />
     <Compile Include="Migrations\202002191252074_RemoveDiscountRequirements.Designer.cs">
@@ -786,6 +790,7 @@
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
+    <Compile Include="Setup\SeedDbMigrationEvent.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
     <Compile Include="Extensions\IDbContextExtensions.cs" />
     <Compile Include="Extensions\DataReaderExtensions.cs" />
@@ -889,7 +894,7 @@
     <Compile Include="Mapping\Catalog\ProductVariantAttributeValueMap.cs" />
     <Compile Include="Mapping\Catalog\ProductVariantAttributeCombinationMap.cs" />
     <Compile Include="Mapping\Catalog\ProductVariantAttributeMap.cs" />
-    <Compile Include="Mapping\Media\PictureMap.cs" />
+    <Compile Include="Mapping\Media\MediaFileMap.cs" />
     <Compile Include="Mapping\Catalog\ProductPictureMap.cs" />
     <Compile Include="Mapping\Catalog\ManufacturerMap.cs" />
     <Compile Include="Mapping\Catalog\ProductManufacturerMap.cs" />
@@ -908,6 +913,7 @@
     <Compile Include="EfRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\DataMigrator.cs" />
+    <Compile Include="Utilities\FastPager.cs" />
     <Compile Include="Utilities\MessageTemplateConverter.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -1376,8 +1382,11 @@
     <EmbeddedResource Include="Migrations\202002172101120_PictureMediaRename.resx">
       <DependentUpon>202002172101120_PictureMediaRename.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202002172118020_PictureMediaRename1.resx">
-      <DependentUpon>202002172118020_PictureMediaRename1.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202002180228163_PictureMediaRename1.resx">
+      <DependentUpon>202002180228163_PictureMediaRename1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002180232565_MediaFileExtend.resx">
+      <DependentUpon>202002180232565_MediaFileExtend.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202002191252074_RemoveDiscountRequirements.resx">
       <DependentUpon>202002191252074_RemoveDiscountRequirements.cs</DependentUpon>

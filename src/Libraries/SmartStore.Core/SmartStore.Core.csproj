@@ -644,7 +644,6 @@
     <Compile Include="Domain\Catalog\ProductReview.cs" />
     <Compile Include="Domain\Customers\CustomerContent.cs" />
     <Compile Include="Domain\Discounts\DiscountUsageHistory.cs" />
-    <Compile Include="Domain\Discounts\DiscountRequirement.cs" />
     <Compile Include="Domain\Discounts\Discount.cs" />
     <Compile Include="Domain\Discounts\DiscountLimitationType.cs" />
     <Compile Include="Domain\Discounts\DiscountType.cs" />

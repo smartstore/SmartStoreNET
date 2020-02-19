@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Rhino.Mocks;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Stores;
@@ -36,8 +37,10 @@ namespace SmartStore.Services.Tests.Payments
 
 			_storeMappingRepository = MockRepository.GenerateMock<IRepository<StoreMapping>>();
 			_storeMappingService = MockRepository.GenerateMock<IStoreMappingService>();
-			_services = MockRepository.GenerateMock<ICommonServices>();
             _cartRuleProvider = MockRepository.GenerateMock<ICartRuleProvider>();
+
+            _services = MockRepository.GenerateMock<ICommonServices>();
+            _services.Expect(x => x.RequestCache).Return(NullRequestCache.Instance);
 
             var paymentMethods = new List<PaymentMethod> { new PaymentMethod { PaymentMethodSystemName = "Payments.TestMethod" } };
 

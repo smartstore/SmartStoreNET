@@ -754,6 +754,10 @@
     <Compile Include="Migrations\202001301039020_DiscountRuleSets.Designer.cs">
       <DependentUpon>202001301039020_DiscountRuleSets.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202002191252074_RemoveDiscountRequirements.cs" />
+    <Compile Include="Migrations\202002191252074_RemoveDiscountRequirements.Designer.cs">
+      <DependentUpon>202002191252074_RemoveDiscountRequirements.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -818,7 +822,6 @@
     <Compile Include="Mapping\Directory\CountryMap.cs" />
     <Compile Include="Mapping\Discounts\DiscountUsageHistoryMap.cs" />
     <Compile Include="Mapping\Discounts\DiscountMap.cs" />
-    <Compile Include="Mapping\Discounts\DiscountRequirementMap.cs" />
     <Compile Include="Mapping\Forums\ForumGroupMap.cs" />
     <Compile Include="Mapping\Forums\ForumMap.cs" />
     <Compile Include="Mapping\Forums\ForumPostMap.cs" />
@@ -1345,6 +1348,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202001301039020_DiscountRuleSets.resx">
       <DependentUpon>202001301039020_DiscountRuleSets.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002191252074_RemoveDiscountRequirements.resx">
+      <DependentUpon>202002191252074_RemoveDiscountRequirements.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

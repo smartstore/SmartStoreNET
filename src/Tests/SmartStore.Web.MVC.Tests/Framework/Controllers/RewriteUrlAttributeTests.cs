@@ -142,7 +142,10 @@ namespace SmartStore.Web.MVC.Tests.Framework.Controllers
 			storeContext.Expect(x => x.CurrentStore).Return(store);
 			attr.StoreContext = new Lazy<IStoreContext>(() => storeContext);
 
-			var httpContext = new FakeHttpContext("~/", "GET");
+            var workContext = MockRepository.GenerateMock<IWorkContext>();
+            attr.WorkContext = new Lazy<IWorkContext>(() => workContext);
+
+            var httpContext = new FakeHttpContext("~/", "GET");
 			var httpRequest = new FakeHttpRequest("~/", new Uri(requestUrl), null);
 			httpContext.SetRequest(httpRequest);
 

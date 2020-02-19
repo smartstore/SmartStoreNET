@@ -7,14 +7,13 @@ using SmartStore.Rules.Domain;
 
 namespace SmartStore.Core.Domain.Discounts
 {
-	/// <summary>
-	/// Represents a discount
-	/// </summary>
-	[DataContract]
+    /// <summary>
+    /// Represents a discount
+    /// </summary>
+    [DataContract]
 	[DebuggerDisplay("{Name} - {DiscountType}")]
 	public partial class Discount : BaseEntity, IRulesContainer
     {
-        private ICollection<DiscountRequirement> _discountRequirements;
         private ICollection<RuleSetEntity> _ruleSets;
         private ICollection<Category> _appliedToCategories;
 		private ICollection<Manufacturer> _appliedToManufacturers;
@@ -116,15 +115,6 @@ namespace SmartStore.Core.Domain.Discounts
             {
                 this.DiscountLimitationId = (int)value;
             }
-        }
-
-        /// <summary>
-        /// Gets or sets the discount requirement
-        /// </summary>
-        public virtual ICollection<DiscountRequirement> DiscountRequirements
-        {
-			get { return _discountRequirements ?? (_discountRequirements = new HashSet<DiscountRequirement>()); }
-            protected set { _discountRequirements = value; }
         }
 
         /// <summary>

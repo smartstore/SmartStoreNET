@@ -3,8 +3,15 @@ namespace SmartStore.Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class MediaFileExtend : DbMigration
+    public partial class MediaFileExtend : DbMigration, IDataSeeder<SmartObjectContext>
     {
+        public bool RollbackOnFailure => true;
+
+        public void Seed(SmartObjectContext context)
+        {
+            // Empty, but we need the events in SmartStore.Services
+        }
+
         public override void Up()
         {
             DropIndex("dbo.MediaFile", "IX_UpdatedOn_IsTransient");

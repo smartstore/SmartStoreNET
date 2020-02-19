@@ -274,8 +274,13 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.TimeZone", "Time zone", "Zeitzone");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.TaxDisplayType", "Tax display type", "Steueranzeigetyp");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.IPCountry", "IP associated with country", "IP gehört zu Land");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.UserAgent", "User agent", "User-Agent");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Currency", "Currency", "Währung");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.MobileDevice", "Mobile device", "Mobiles Endgerät");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.DeviceFamily", "Device family", "Endgerätefamilie");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.OperatingSystem", "Operating system", "Betriebssystem");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.BrowserName", "Browser name", "Browser Name");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.BrowserMajorVersion", "Browser major version", "Browser Hauptversionsnummer");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.BrowserMinorVersion", "Browser minor version", "Browser Nebenversionsnummer");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Language", "Language", "Sprache");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.LastForumVisit", "Days since last forum visit", "Tage seit letztem Forenbesuch");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.LastUserAgent", "Last user agent", "Zuletzt genutzter User-Agent");

@@ -199,7 +199,12 @@
     <Compile Include="Cart\Rules\Impl\ShippingMethodRule.cs" />
     <Compile Include="Cart\Rules\Impl\IPCountryRule.cs" />
     <Compile Include="Cart\Rules\Impl\BillingCountryRule.cs" />
-    <Compile Include="Cart\Rules\Impl\UserAgentRule.cs" />
+    <Compile Include="Cart\Rules\Impl\UserAgent\BrowserMinorVersionRule.cs" />
+    <Compile Include="Cart\Rules\Impl\UserAgent\BrowserMajorVersionRule.cs" />
+    <Compile Include="Cart\Rules\Impl\UserAgent\BrowserRule.cs" />
+    <Compile Include="Cart\Rules\Impl\UserAgent\OSRule.cs" />
+    <Compile Include="Cart\Rules\Impl\UserAgent\DeviceRule.cs" />
+    <Compile Include="Cart\Rules\Impl\UserAgent\IsMobileRule.cs" />
     <Compile Include="Catalog\CategoryTreeChangeHandler.cs" />
     <Compile Include="Catalog\CatalogMessageFactoryExtensions.cs" />
     <Compile Include="Catalog\Extensions\ProductUrlHelper.cs" />

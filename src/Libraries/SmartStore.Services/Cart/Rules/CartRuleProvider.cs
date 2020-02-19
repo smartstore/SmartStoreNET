@@ -210,12 +210,53 @@ namespace SmartStore.Services.Cart.Rules
                 },
                 new CartRuleDescriptor
                 {
-                    Name = "UserAgent",
-                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.UserAgent"),
-                    RuleType = RuleType.String,
+                    Name = "UserAgent.IsMobile",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.MobileDevice"),
+                    RuleType = RuleType.Boolean,
                     Constraints = new IRuleConstraint[0],
-                    ProcessorType = typeof(UserAgentRule)
+                    ProcessorType = typeof(IsMobileRule)
                 },
+                new CartRuleDescriptor
+                {
+                    Name = "UserAgent.Device",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.DeviceFamily"),
+                    RuleType = RuleType.StringArray,
+                    Constraints = new IRuleConstraint[0],
+                    ProcessorType = typeof(DeviceRule)
+                },
+                new CartRuleDescriptor
+                {
+                    Name = "UserAgent.OS",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.OperatingSystem"),
+                    RuleType = RuleType.StringArray,
+                    Constraints = new IRuleConstraint[0],
+                    ProcessorType = typeof(OSRule)
+                },
+                new CartRuleDescriptor
+                {
+                    Name = "UserAgent.Browser",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.BrowserName"),
+                    RuleType = RuleType.StringArray,
+                    Constraints = new IRuleConstraint[0],
+                    ProcessorType = typeof(BrowserRule)
+                },
+                new CartRuleDescriptor
+                {
+                    Name = "UserAgent.BrowserMajorVersion",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.BrowserMajorVersion"),
+                    RuleType = RuleType.Int,
+                    Constraints = new IRuleConstraint[0],
+                    ProcessorType = typeof(BrowserMajorVersionRule)
+                },
+                new CartRuleDescriptor
+                {
+                    Name = "UserAgent.BrowserMinorVersion",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.BrowserMinorVersion"),
+                    RuleType = RuleType.Int,
+                    Constraints = new IRuleConstraint[0],
+                    ProcessorType = typeof(BrowserMinorVersionRule)
+                },
+
                 new CartRuleDescriptor
                 {
                     Name = "CustomerRole",
@@ -226,7 +267,6 @@ namespace SmartStore.Services.Cart.Rules
                     SelectList = new RemoteRuleValueSelectList("CustomerRole") { Multiple = true },
                     IsComparingSequences = true
                 },
-
                 new CartRuleDescriptor
                 {
                     Name = "CartTotal",

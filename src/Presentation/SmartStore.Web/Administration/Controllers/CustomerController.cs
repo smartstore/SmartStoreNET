@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Admin.Models.Customers;
 using SmartStore.Admin.Models.ShoppingCart;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
@@ -17,8 +16,6 @@ using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Email;
-using SmartStore.Core.Events;
-using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Authentication.External;
@@ -31,7 +28,6 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
-using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
@@ -46,15 +42,11 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public partial class CustomerController : AdminControllerBase
     {
-        #region Fields
-
         private readonly ICustomerService _customerService;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly ICustomerRegistrationService _customerRegistrationService;
         private readonly ICustomerReportService _customerReportService;
-        private readonly IDateTimeHelper _dateTimeHelper;
-        private readonly ILocalizationService _localizationService;
         private readonly DateTimeSettings _dateTimeSettings;
         private readonly TaxSettings _taxSettings;
         private readonly RewardPointsSettings _rewardPointsSettings;
@@ -63,13 +55,9 @@ namespace SmartStore.Admin.Controllers
         private readonly IAddressService _addressService;
         private readonly CustomerSettings _customerSettings;
         private readonly ITaxService _taxService;
-        private readonly IWorkContext _workContext;
-        private readonly IStoreContext _storeContext;
         private readonly IPriceFormatter _priceFormatter;
         private readonly IOrderService _orderService;
-        private readonly ICustomerActivityService _customerActivityService;
         private readonly IPriceCalculationService _priceCalculationService;
-        private readonly IPermissionService _permissionService;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly IQueuedEmailService _queuedEmailService;
         private readonly IEmailAccountService _emailAccountService;
@@ -77,39 +65,34 @@ namespace SmartStore.Admin.Controllers
         private readonly IForumService _forumService;
         private readonly IOpenAuthenticationService _openAuthenticationService;
         private readonly AddressSettings _addressSettings;
-        private readonly IStoreService _storeService;
-        private readonly IEventPublisher _eventPublisher;
         private readonly PluginMediator _pluginMediator;
         private readonly IAffiliateService _affiliateService;
         private readonly Lazy<IGdprTool> _gdprTool;
-
-        #endregion
-
-        #region Constructors
 
         public CustomerController(
             ICustomerService customerService,
             INewsLetterSubscriptionService newsLetterSubscriptionService,
             IGenericAttributeService genericAttributeService,
             ICustomerRegistrationService customerRegistrationService,
-            ICustomerReportService customerReportService, IDateTimeHelper dateTimeHelper,
-            ILocalizationService localizationService, DateTimeSettings dateTimeSettings,
-            TaxSettings taxSettings, RewardPointsSettings rewardPointsSettings,
-            ICountryService countryService, IStateProvinceService stateProvinceService,
+            ICustomerReportService customerReportService, 
+            DateTimeSettings dateTimeSettings,
+            TaxSettings taxSettings, 
+            RewardPointsSettings rewardPointsSettings,
+            ICountryService countryService, 
+            IStateProvinceService stateProvinceService,
             IAddressService addressService,
-            CustomerSettings customerSettings, ITaxService taxService,
-            IWorkContext workContext, IStoreContext storeContext,
+            CustomerSettings customerSettings, 
+            ITaxService taxService,
             IPriceFormatter priceFormatter,
             IOrderService orderService,
-            ICustomerActivityService customerActivityService,
             IPriceCalculationService priceCalculationService,
-            IPermissionService permissionService,
             AdminAreaSettings adminAreaSettings,
             IQueuedEmailService queuedEmailService,
-            IEmailAccountService emailAccountService, ForumSettings forumSettings,
-            IForumService forumService, IOpenAuthenticationService openAuthenticationService,
-            AddressSettings addressSettings, IStoreService storeService,
-            IEventPublisher eventPublisher,
+            IEmailAccountService emailAccountService, 
+            ForumSettings forumSettings,
+            IForumService forumService, 
+            IOpenAuthenticationService openAuthenticationService,
+            AddressSettings addressSettings, 
             PluginMediator pluginMediator,
             IAffiliateService affiliateService,
             Lazy<IGdprTool> gdprTool)
@@ -119,8 +102,6 @@ namespace SmartStore.Admin.Controllers
             _genericAttributeService = genericAttributeService;
             _customerRegistrationService = customerRegistrationService;
             _customerReportService = customerReportService;
-            _dateTimeHelper = dateTimeHelper;
-            _localizationService = localizationService;
             _dateTimeSettings = dateTimeSettings;
             _taxSettings = taxSettings;
             _rewardPointsSettings = rewardPointsSettings;
@@ -129,13 +110,9 @@ namespace SmartStore.Admin.Controllers
             _addressService = addressService;
             _customerSettings = customerSettings;
             _taxService = taxService;
-            _workContext = workContext;
-            _storeContext = storeContext;
             _priceFormatter = priceFormatter;
             _orderService = orderService;
-            _customerActivityService = customerActivityService;
             _priceCalculationService = priceCalculationService;
-            _permissionService = permissionService;
             _adminAreaSettings = adminAreaSettings;
             _queuedEmailService = queuedEmailService;
             _emailAccountService = emailAccountService;
@@ -143,14 +120,10 @@ namespace SmartStore.Admin.Controllers
             _forumService = forumService;
             _openAuthenticationService = openAuthenticationService;
             _addressSettings = addressSettings;
-            _storeService = storeService;
-            _eventPublisher = eventPublisher;
             _pluginMediator = pluginMediator;
             _affiliateService = affiliateService;
             _gdprTool = gdprTool;
         }
-
-        #endregion
 
         #region Utilities
 
@@ -216,7 +189,7 @@ namespace SmartStore.Admin.Controllers
                     Id = record.Id,
                     Email = record.Email,
                     ExternalIdentifier = record.ExternalIdentifier,
-                    AuthMethodName = _pluginMediator.GetLocalizedFriendlyName(method.Metadata, _workContext.WorkingLanguage.Id)
+                    AuthMethodName = _pluginMediator.GetLocalizedFriendlyName(method.Metadata, Services.WorkContext.WorkingLanguage.Id)
                 });
             }
 
@@ -238,14 +211,14 @@ namespace SmartStore.Admin.Controllers
                 Active = customer.Active,
                 Phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone),
                 CustomerRoleNames = GetCustomerRolesNames(customer.CustomerRoles.ToList()),
-                CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc),
-                LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc),
+                CreatedOn = Services.DateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc),
+                LastActivityDate = Services.DateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc),
             };
         }
 
         protected virtual void PrepareCustomerModelForCreate(CustomerModel model)
         {
-            string timeZoneId = model.TimeZoneId.HasValue() ? model.TimeZoneId : _dateTimeHelper.DefaultStoreTimeZone.Id;
+            string timeZoneId = model.TimeZoneId.HasValue() ? model.TimeZoneId : Services.DateTimeHelper.DefaultStoreTimeZone.Id;
 
             model.GridPageSize = _adminAreaSettings.GridPageSize;
             model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
@@ -253,7 +226,7 @@ namespace SmartStore.Admin.Controllers
             model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
             model.DisplayVatNumber = false;
 
-            foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
+            foreach (var tzi in Services.DateTimeHelper.GetSystemTimeZones())
             {
                 model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = tzi.Id == timeZoneId });
             }
@@ -264,7 +237,7 @@ namespace SmartStore.Admin.Controllers
                 model.SelectedCustomerRoleIds = new int[] { role.Id };
             }
 
-            model.AllowManagingCustomerRoles = _permissionService.Authorize(Permissions.Customer.EditRole);
+            model.AllowManagingCustomerRoles = Services.Permissions.Authorize(Permissions.Customer.EditRole);
 
             // Form fields
             model.TitleEnabled = _customerSettings.TitleEnabled;
@@ -317,15 +290,15 @@ namespace SmartStore.Admin.Controllers
             model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
             model.Deleted = customer.Deleted;
 
-            foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
+            foreach (var tzi in Services.DateTimeHelper.GetSystemTimeZones())
             {
                 model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = tzi.Id == model.TimeZoneId });
             }
 
             model.DisplayVatNumber = _taxSettings.EuVatEnabled;
-            model.VatNumberStatusNote = ((VatNumberStatus)customer.VatNumberStatusId).GetLocalizedEnum(_localizationService, _workContext);
-            model.CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc);
-            model.LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc);
+            model.VatNumberStatusNote = ((VatNumberStatus)customer.VatNumberStatusId).GetLocalizedEnum(Services.Localization, Services.WorkContext);
+            model.CreatedOn = Services.DateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc);
+            model.LastActivityDate = Services.DateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc);
             model.LastIpAddress = model.LastIpAddress;
             model.LastVisitedPage = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
 
@@ -376,7 +349,7 @@ namespace SmartStore.Admin.Controllers
                 }
             }
 
-            model.AllowManagingCustomerRoles = _permissionService.Authorize(Permissions.Customer.EditRole);
+            model.AllowManagingCustomerRoles = Services.Permissions.Authorize(Permissions.Customer.EditRole);
             model.DisplayRewardPointsHistory = _rewardPointsSettings.Enabled;
             model.AddRewardPointsValue = 0;
             model.AssociatedExternalAuthRecords = GetAssociatedExternalAuthRecords(customer);
@@ -536,7 +509,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             // Validate customer roles.
-            var allowManagingCustomerRoles = _permissionService.Authorize(Permissions.Customer.EditRole);
+            var allowManagingCustomerRoles = Services.Permissions.Authorize(Permissions.Customer.EditRole);
             var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
             var newCustomerRoles = new List<CustomerRole>();
 
@@ -585,7 +558,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     customer.CustomerNumber = null;
                     // Let any NumberFormatter plugin handle this
-                    _eventPublisher.Publish(new CustomerRegisteredEvent { Customer = customer });
+                    Services.EventPublisher.Publish(new CustomerRegisteredEvent { Customer = customer });
                 }
                 else if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.Enabled && model.CustomerNumber.HasValue())
                 {
@@ -648,9 +621,9 @@ namespace SmartStore.Admin.Controllers
                     _customerService.UpdateCustomer(customer);
                 }
 
-                _eventPublisher.Publish(new ModelBoundEvent(model, customer, form));
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, customer, form));
 
-                _customerActivityService.InsertActivity("AddNewCustomer", T("ActivityLog.AddNewCustomer"), customer.Id);
+                Services.CustomerActivity.InsertActivity("AddNewCustomer", T("ActivityLog.AddNewCustomer"), customer.Id);
 
                 NotifySuccess(T("Admin.Customers.Customers.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = customer.Id }) : RedirectToAction("List");
@@ -725,7 +698,7 @@ namespace SmartStore.Admin.Controllers
 
             // Validate customer roles.
             var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-            var allowManagingCustomerRoles = _permissionService.Authorize(Permissions.Customer.EditRole);
+            var allowManagingCustomerRoles = Services.Permissions.Authorize(Permissions.Customer.EditRole);
 
             if (allowManagingCustomerRoles)
             {
@@ -866,8 +839,8 @@ namespace SmartStore.Admin.Controllers
 
                     _customerService.UpdateCustomer(customer);
 
-                    _eventPublisher.Publish(new ModelBoundEvent(model, customer, form));
-                    _customerActivityService.InsertActivity("EditCustomer", T("ActivityLog.EditCustomer"), customer.Id);
+                    Services.EventPublisher.Publish(new ModelBoundEvent(model, customer, form));
+                    Services.CustomerActivity.InsertActivity("EditCustomer", T("ActivityLog.EditCustomer"), customer.Id);
 
                     NotifySuccess(T("Admin.Customers.Customers.Updated"));
                     return continueEditing ? RedirectToAction("Edit", customer.Id) : RedirectToAction("List");
@@ -958,7 +931,7 @@ namespace SmartStore.Admin.Controllers
 
                 if (customer.Email.HasValue())
                 {
-                    foreach (var store in _storeService.GetAllStores())
+                    foreach (var store in Services.StoreService.GetAllStores())
                     {
                         var subscription = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email, store.Id);
                         if (subscription != null)
@@ -968,7 +941,7 @@ namespace SmartStore.Admin.Controllers
                     }
                 }
 
-                _customerActivityService.InsertActivity("DeleteCustomer", T("ActivityLog.DeleteCustomer", customer.Id));
+                Services.CustomerActivity.InsertActivity("DeleteCustomer", T("ActivityLog.DeleteCustomer", customer.Id));
 
                 NotifySuccess(T("Admin.Customers.Customers.Deleted"));
 
@@ -992,13 +965,13 @@ namespace SmartStore.Admin.Controllers
 
             // ensure that a non-admin user cannot impersonate as an administrator
             // otherwise, that user can simply impersonate as an administrator and gain additional administrative privileges
-            if (!_workContext.CurrentCustomer.IsAdmin() && customer.IsAdmin())
+            if (!Services.WorkContext.CurrentCustomer.IsAdmin() && customer.IsAdmin())
             {
                 NotifyError("A non-admin user cannot impersonate as an administrator");
                 return RedirectToAction("Edit", customer.Id);
             }
 
-            _genericAttributeService.SaveAttribute<int?>(_workContext.CurrentCustomer,
+            _genericAttributeService.SaveAttribute<int?>(Services.WorkContext.CurrentCustomer,
                 SystemCustomerAttributeNames.ImpersonatedCustomerId, customer.Id);
 
             return RedirectToAction("Index", "Home", new { area = "" });
@@ -1068,9 +1041,9 @@ namespace SmartStore.Admin.Controllers
 
                 var privateMessage = new PrivateMessage
                 {
-                    StoreId = _storeContext.CurrentStore.Id,
+                    StoreId = Services.StoreContext.CurrentStore.Id,
                     ToCustomerId = customer.Id,
-                    FromCustomerId = _workContext.CurrentCustomer.Id,
+                    FromCustomerId = Services.WorkContext.CurrentCustomer.Id,
                     Subject = model.SendPm.Subject,
                     Text = model.SendPm.Message,
                     IsDeletedByAuthor = false,
@@ -1110,7 +1083,7 @@ namespace SmartStore.Admin.Controllers
                     Points = rph.Points,
                     PointsBalance = rph.PointsBalance,
                     Message = rph.Message,
-                    CreatedOn = _dateTimeHelper.ConvertToUserTime(rph.CreatedOnUtc, DateTimeKind.Utc)
+                    CreatedOn = Services.DateTimeHelper.ConvertToUserTime(rph.CreatedOnUtc, DateTimeKind.Utc)
                 });
             }
             var gridModel = new GridModel<CustomerModel.RewardPointsHistoryModel>
@@ -1344,16 +1317,16 @@ namespace SmartStore.Admin.Controllers
             model.Data = orders.PagedForCommand(command)
                 .Select(order =>
                 {
-                    var store = _storeService.GetStoreById(order.StoreId);
+                    var store = Services.StoreService.GetStoreById(order.StoreId);
                     var orderModel = new CustomerModel.OrderModel()
                     {
                         Id = order.Id,
-                        OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
-                        PaymentStatus = order.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext),
-                        ShippingStatus = order.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext),
+                        OrderStatus = order.OrderStatus.GetLocalizedEnum(Services.Localization, Services.WorkContext),
+                        PaymentStatus = order.PaymentStatus.GetLocalizedEnum(Services.Localization, Services.WorkContext),
+                        ShippingStatus = order.ShippingStatus.GetLocalizedEnum(Services.Localization, Services.WorkContext),
                         OrderTotal = _priceFormatter.FormatPrice(order.OrderTotal, true, false),
                         StoreName = store != null ? store.Name : "".NaIfEmpty(),
-                        CreatedOn = _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc),
+                        CreatedOn = Services.DateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc),
                     };
                     return orderModel;
                 });
@@ -1395,10 +1368,10 @@ namespace SmartStore.Admin.Controllers
         public ActionResult ReportBestCustomersByOrderTotalList(GridCommand command, BestCustomersReportModel model)
         {
             DateTime? startDateValue = (model.StartDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
+                            : (DateTime?)Services.DateTimeHelper.ConvertToUtcTime(model.StartDate.Value, Services.DateTimeHelper.CurrentTimeZone);
 
             DateTime? endDateValue = (model.EndDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+                            : (DateTime?)Services.DateTimeHelper.ConvertToUtcTime(model.EndDate.Value, Services.DateTimeHelper.CurrentTimeZone).AddDays(1);
 
             OrderStatus? orderStatus = model.OrderStatusId > 0 ? (OrderStatus?)(model.OrderStatusId) : null;
             PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)(model.PaymentStatusId) : null;
@@ -1438,11 +1411,13 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Customer.Read)]
         public ActionResult ReportBestCustomersByNumberOfOrdersList(GridCommand command, BestCustomersReportModel model)
         {
-            DateTime? startDateValue = (model.StartDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
+            DateTime? startDateValue = (model.StartDate == null) 
+                ? null
+                : (DateTime?)Services.DateTimeHelper.ConvertToUtcTime(model.StartDate.Value, Services.DateTimeHelper.CurrentTimeZone);
 
-            DateTime? endDateValue = (model.EndDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+            DateTime? endDateValue = (model.EndDate == null)
+                ? null
+                : (DateTime?)Services.DateTimeHelper.ConvertToUtcTime(model.EndDate.Value, Services.DateTimeHelper.CurrentTimeZone).AddDays(1);
 
             OrderStatus? orderStatus = model.OrderStatusId > 0 ? (OrderStatus?)(model.OrderStatusId) : null;
             PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)(model.PaymentStatusId) : null;
@@ -1471,6 +1446,7 @@ namespace SmartStore.Admin.Controllers
                 }),
                 Total = items.Count
             };
+
             return new JsonResult
             {
                 Data = gridModel
@@ -1519,7 +1495,7 @@ namespace SmartStore.Admin.Controllers
                 Data = cart.Select(sci =>
                 {
                     decimal taxRate;
-                    var store = _storeService.GetStoreById(sci.Item.StoreId);
+                    var store = Services.StoreService.GetStoreById(sci.Item.StoreId);
 
                     var sciModel = new ShoppingCartItemModel
                     {
@@ -1528,11 +1504,11 @@ namespace SmartStore.Admin.Controllers
                         ProductId = sci.Item.ProductId,
                         Quantity = sci.Item.Quantity,
                         ProductName = sci.Item.Product.Name,
-                        ProductTypeName = sci.Item.Product.GetProductTypeLabel(_localizationService),
+                        ProductTypeName = sci.Item.Product.GetProductTypeLabel(Services.Localization),
                         ProductTypeLabelHint = sci.Item.Product.ProductTypeLabelHint,
                         UnitPrice = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate)),
                         Total = _priceFormatter.FormatPrice(_taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetSubTotal(sci, true), out taxRate)),
-                        UpdatedOn = _dateTimeHelper.ConvertToUserTime(sci.Item.UpdatedOnUtc, DateTimeKind.Utc)
+                        UpdatedOn = Services.DateTimeHelper.ConvertToUserTime(sci.Item.UpdatedOnUtc, DateTimeKind.Utc)
                     };
                     return sciModel;
                 }),
@@ -1553,7 +1529,7 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Configuration.ActivityLog.Read)]
         public JsonResult ListActivityLog(GridCommand command, int customerId)
         {
-            var activityLog = _customerActivityService.GetAllActivities(null, null, customerId, 0, command.Page - 1, command.PageSize);
+            var activityLog = Services.CustomerActivity.GetAllActivities(null, null, customerId, 0, command.Page - 1, command.PageSize);
 
             var gridModel = new GridModel<CustomerModel.ActivityLogModel>
             {
@@ -1564,7 +1540,7 @@ namespace SmartStore.Admin.Controllers
                         Id = x.Id,
                         ActivityLogTypeName = x.ActivityLogType.Name,
                         Comment = x.Comment,
-                        CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc)
+                        CreatedOn = Services.DateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc)
                     };
                     return m;
                 }),

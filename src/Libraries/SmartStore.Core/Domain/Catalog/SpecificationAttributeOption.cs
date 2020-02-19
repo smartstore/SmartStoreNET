@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Search;
 
 namespace SmartStore.Core.Domain.Catalog
@@ -49,9 +50,9 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
         public int MediaFileId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the color RGB value.
-        /// </summary>
+		/// <summary>
+		/// Gets or sets the color RGB value.
+		/// </summary>
 		[DataMember]
         public string Color { get; set; }
 

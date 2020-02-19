@@ -16,6 +16,7 @@ namespace SmartStore.Data.Mapping.Catalog
             Property(m => m.MetaTitle).HasMaxLength(400);
             Property(m => m.PageSizeOptions).HasMaxLength(200).IsOptional();
             Property(m => m.MediaFileId).HasColumnName("MediaFileId");
+
             HasOptional(p => p.MediaFile)
 				.WithMany()
 				.HasForeignKey(p => p.MediaFileId)

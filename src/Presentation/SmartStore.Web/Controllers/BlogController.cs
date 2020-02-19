@@ -112,7 +112,7 @@ namespace SmartStore.Web.Controllers
             var pictureInfo = _pictureService.GetPictureInfo(pictureId);
 
             var pictureModel = new PictureModel {
-                PictureId = blogPost.PictureId.GetValueOrDefault(),
+                PictureId = blogPost.MediaFileId.GetValueOrDefault(),
                 Size = 512,
                 ImageUrl = _pictureService.GetUrl(pictureInfo, 512, false),
                 FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, false),
@@ -143,11 +143,11 @@ namespace SmartStore.Web.Controllers
 
             model.HasBgImage = blogPost.PreviewDisplayType == PreviewDisplayType.DefaultSectionBg || blogPost.PreviewDisplayType == PreviewDisplayType.PreviewSectionBg;
 
-            model.PictureModel = PrepareBlogPostPictureModel(blogPost, blogPost.PictureId);
+            model.PictureModel = PrepareBlogPostPictureModel(blogPost, blogPost.MediaFileId);
 
             if (blogPost.PreviewDisplayType == PreviewDisplayType.Default || blogPost.PreviewDisplayType == PreviewDisplayType.DefaultSectionBg)
             {
-                model.PreviewPictureModel = PrepareBlogPostPictureModel(blogPost, blogPost.PictureId);
+                model.PreviewPictureModel = PrepareBlogPostPictureModel(blogPost, blogPost.MediaFileId);
             }
             else  if (blogPost.PreviewDisplayType == PreviewDisplayType.Preview || blogPost.PreviewDisplayType == PreviewDisplayType.PreviewSectionBg)
             {

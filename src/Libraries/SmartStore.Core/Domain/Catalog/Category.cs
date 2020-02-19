@@ -104,7 +104,7 @@ namespace SmartStore.Core.Domain.Catalog
         public int? MediaFileId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the picture
+		/// Gets or sets the media file
 		/// </summary>
 		[DataMember]
 		public virtual MediaFile MediaFile { get; set; }

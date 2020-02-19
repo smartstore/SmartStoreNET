@@ -3,9 +3,9 @@ using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Data.Mapping.Catalog
 {
-    public partial class ProductPictureMap : EntityTypeConfiguration<ProductMediaFile>
+    public partial class ProductMediaFileMap : EntityTypeConfiguration<ProductMediaFile>
     {
-        public ProductPictureMap()
+        public ProductMediaFileMap()
         {
             ToTable("Product_MediaFile_Mapping");
             HasKey(pp => pp.Id);
@@ -13,11 +13,13 @@ namespace SmartStore.Data.Mapping.Catalog
             
             HasRequired(pp => pp.MediaFile)
                 .WithMany(p => p.ProductMediaFiles)
-                .HasForeignKey(pp => pp.MediaFileId);
+                .HasForeignKey(pp => pp.MediaFileId)
+                .WillCascadeOnDelete(true);
 
             HasRequired(pp => pp.Product)
                 .WithMany(p => p.ProductPictures)
-                .HasForeignKey(pp => pp.ProductId);
+                .HasForeignKey(pp => pp.ProductId)
+                .WillCascadeOnDelete(true);
         }
     }
 }

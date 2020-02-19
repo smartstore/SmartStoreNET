@@ -401,14 +401,11 @@ namespace SmartStore.Services.Media
 			if (picture == null)
 				return null;
 
-			var extension = MimeTypes.MapMimeTypeToExtension(picture.MimeType);
-
-			// Build virtual path with pattern "media/image/{id}/{SeoFileName}.{extension}"
-			var path = "{0}{1}/{2}.{3}".FormatInvariant(
+			// Build virtual path with pattern "media/image/{id}/{Name}"
+			var path = "{0}{1}/{2}".FormatInvariant(
 				_processedImagesRootPath,
 				picture.Id,
-				picture.Name.NullEmpty() ?? picture.Id.ToString(ImageCache.IdFormatString),
-				extension);
+				picture.Name.NullEmpty() ?? picture.Id.ToString(ImageCache.IdFormatString));
 
 			// Do some maintenance stuff
 			EnsurePictureSizeResolved(picture, true);
@@ -426,7 +423,9 @@ namespace SmartStore.Services.Media
 					false,
 					false);
 			}
-			
+
+			var extension = (Path.GetExtension(picture.Name).NullEmpty() ?? MimeTypes.MapMimeTypeToExtension(picture.MimeType)).TrimStart('.');
+
 			return new PictureInfo
 			{
 				Id = picture.Id,

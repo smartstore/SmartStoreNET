@@ -12,6 +12,7 @@ using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Seo;
+using SmartStore.Data.Utilities;
 
 namespace SmartStore.Services.Search
 {
@@ -282,36 +283,14 @@ namespace SmartStore.Services.Search
 
 			public override IEnumerable<NamedEntity> Enlist()
 			{
-				var query = Query.AsNoTracking();
-				var maxId = int.MaxValue;
+				var pager = new FastPager<Product>(Query.AsNoTracking(), Context.MaximumNodeCount);
 
-				//var limit = 0;
-				while (maxId > 1)
+				while (pager.ReadNextPage(x => new { x.Id, x.UpdatedOnUtc }, x => x.Id, out var products))
 				{
 					if (Context.CancellationToken.IsCancellationRequested)
 					{
 						break;
 					}
-					
-					var products = query
-						.Where(x => x.Id < maxId)
-						.OrderByDescending(x => x.Id)
-						.Take(() => Context.MaximumNodeCount)
-						.Select(x => new { x.Id, x.UpdatedOnUtc })
-						.ToList();
-
-					//limit++;
-					//if (limit >= 100)
-					//{
-					//	break;
-					//}
-
-					if (products.Count == 0)
-					{
-						break;
-					}
-
-					maxId = products.Last().Id;
 
 					foreach (var x in products)
 					{

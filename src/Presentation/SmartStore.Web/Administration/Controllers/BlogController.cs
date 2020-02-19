@@ -146,7 +146,7 @@ namespace SmartStore.Admin.Controllers
             {
                 var blogPost = model.ToEntity();
                 
-                MediaHelper.UpdatePictureTransientStateFor(blogPost, c => c.PictureId);
+                MediaHelper.UpdatePictureTransientStateFor(blogPost, c => c.MediaFileId);
                 MediaHelper.UpdatePictureTransientStateFor(blogPost, c => c.PreviewMediaFileId);
 
                 blogPost.CreatedOnUtc = model.CreatedOnUtc;
@@ -214,7 +214,7 @@ namespace SmartStore.Admin.Controllers
             {
                 blogPost = model.ToEntity(blogPost);
 
-                MediaHelper.UpdatePictureTransientStateFor(blogPost, c => c.PictureId);
+                MediaHelper.UpdatePictureTransientStateFor(blogPost, c => c.MediaFileId);
                 MediaHelper.UpdatePictureTransientStateFor(blogPost, c => c.PreviewMediaFileId);
 
                 blogPost.CreatedOnUtc = model.CreatedOnUtc;

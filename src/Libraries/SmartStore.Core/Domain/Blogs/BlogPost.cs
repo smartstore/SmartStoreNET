@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
 
@@ -40,21 +41,21 @@ namespace SmartStore.Core.Domain.Blogs
         public PreviewDisplayType PreviewDisplayType { get; set; }
 
         /// <summary>
-        /// Gets or sets the picture identifier
+        /// Gets or sets the media file identifier
         /// </summary>
         [DataMember]
-        public int? PictureId { get; set; }
+        public int? MediaFileId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the preview media file identifier
-        /// </summary>
-        [DataMember]
+		/// <summary>
+		/// Gets or sets the preview media file identifier
+		/// </summary>
+		[DataMember]
         public int? PreviewMediaFileId { get; set; }
 
-        /// <summary>
-        /// Gets or sets background for the blog post
-        /// </summary>
-        [DataMember]
+		/// <summary>
+		/// Gets or sets background for the blog post
+		/// </summary>
+		[DataMember]
         public string SectionBg { get; set; }
 
         /// <summary>

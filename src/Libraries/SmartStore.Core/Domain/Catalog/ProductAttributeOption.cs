@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Search;
 
 namespace SmartStore.Core.Domain.Catalog

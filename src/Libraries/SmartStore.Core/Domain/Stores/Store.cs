@@ -1,5 +1,6 @@
 ﻿using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Core.Domain.Stores
 {

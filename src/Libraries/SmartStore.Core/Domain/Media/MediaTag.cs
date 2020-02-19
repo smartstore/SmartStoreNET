@@ -15,8 +15,6 @@ namespace SmartStore.Core.Domain.Media
         /// Gets or sets the media tag name.
         /// </summary>
         [DataMember]
-        [Required, MaxLength(100)]
-        [Index("IX_MediaTag_Name")]
         public string Name { get; set; }
 
         /// <summary>

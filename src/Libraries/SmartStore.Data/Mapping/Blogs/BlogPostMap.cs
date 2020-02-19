@@ -13,12 +13,13 @@ namespace SmartStore.Data.Mapping.Blogs
             Property(bp => bp.Body).IsRequired().IsMaxLength();
             Property(bp => bp.MetaKeywords).HasMaxLength(400);
             Property(bp => bp.MetaTitle).HasMaxLength(400);
-            Property(bp => bp.PictureId).HasColumnName("MediaFileId");
+            Property(bp => bp.MediaFileId).HasColumnName("MediaFileId");
             Property(bp => bp.PreviewMediaFileId).HasColumnName("PreviewMediaFileId");
 
-            this.HasRequired(bp => bp.Language)
+            HasRequired(bp => bp.Language)
                 .WithMany()
-                .HasForeignKey(bp => bp.LanguageId).WillCascadeOnDelete(true);
+                .HasForeignKey(bp => bp.LanguageId)
+                .WillCascadeOnDelete(true);
         }
     }
 }

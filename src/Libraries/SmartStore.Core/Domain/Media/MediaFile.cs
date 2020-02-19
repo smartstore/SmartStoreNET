@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Catalog;
@@ -9,7 +8,7 @@ using SmartStore.Core.Domain.Localization;
 namespace SmartStore.Core.Domain.Media
 {
 	[DataContract]
-	public partial class MediaFile : BaseEntity, ITransient, IHasMedia, IAuditable, ILocalizedEntity
+	public partial class MediaFile : BaseEntity, ITransient, IHasMedia, IAuditable, ISoftDeletable, ILocalizedEntity
 	{
 		private ICollection<ProductMediaFile> _productMediaFiles;
 		private ICollection<MediaTag> _tags;
@@ -25,17 +24,27 @@ namespace SmartStore.Core.Domain.Media
 		#endregion
 
 		/// <summary>
+		/// Gets or sets the associated folder identifier.
+		/// </summary>
+		[DataMember]
+		public int? FolderId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the associated folder.
+		/// </summary>
+		[DataMember]
+		public virtual MediaFolder Folder { get; set; }
+
+		/// <summary>
 		/// Gets or sets the SEO friendly name of the media file including file extension
 		/// </summary>
 		[DataMember]
-		[Index("IX_Name")]
 		public string Name { get; set; }
 
 		/// <summary>
 		/// Gets or sets the localizable image ALT text
 		/// </summary>
 		[DataMember]
-		[Index("IX_Alt")]
 		public string Alt { get; set; }
 
 		/// <summary>
@@ -48,35 +57,30 @@ namespace SmartStore.Core.Domain.Media
 		/// Gets or sets the file extension
 		/// </summary>
 		[DataMember]
-		[Index("IX_Extension")]
 		public string Extension { get; set; }
 
 		/// <summary>
 		/// Gets or sets the file MIME type
 		/// </summary>
 		[DataMember]
-		[Index("IX_MimeType")]
 		public string MimeType { get; set; }
 
 		/// <summary>
 		/// Gets or sets the file media type (image, video, audio, document etc.)
 		/// </summary>
 		[DataMember]
-		[Index("IX_MediaType")]
 		public string MediaType { get; set; }
 
 		/// <summary>
 		/// Gets or sets the file size in bytes
 		/// </summary>
 		[DataMember]
-		[Index("IX_Size")]
 		public int Size { get; set; }
 
 		/// <summary>
 		/// Gets or sets the total pixel size of an image (width * height)
 		/// </summary>
 		[DataMember]
-		[Index("IX_PixelSize")]
 		public int? PixelSize { get; set; }
 
 		/// <summary>
@@ -114,7 +118,6 @@ namespace SmartStore.Core.Domain.Media
 		/// Gets or sets the date and time of instance update
 		/// </summary>
 		[DataMember]
-		//[Index("IX_UpdatedOn_IsTransient", 0)]
 		public DateTime UpdatedOnUtc { get; set; }
 
 		/// <summary>
@@ -123,6 +126,16 @@ namespace SmartStore.Core.Domain.Media
 		[DataMember]
 		[Index("IX_CreatedOn_IsTransient", 1)]
 		public bool IsTransient { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the file has been soft deleted
+		/// </summary>
+		public bool Deleted { get; set; }
+
+		/// <summary>
+		/// Internally used for migration stuff only
+		/// </summary>
+		public int Version { get; set; }
 
 		/// <summary>
 		/// Gets or sets the media storage identifier
@@ -153,6 +166,6 @@ namespace SmartStore.Core.Domain.Media
         {
 			get { return _productMediaFiles ?? (_productMediaFiles = new HashSet<ProductMediaFile>()); }
             protected set { _productMediaFiles = value; }
-        }
+        } 
     }
 }

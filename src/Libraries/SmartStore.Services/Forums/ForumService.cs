@@ -15,6 +15,7 @@ using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Localization;
 using System.Web.Mvc;
 using System;
+using SmartStore.Data.Utilities;
 
 namespace SmartStore.Services.Forums
 {
@@ -1082,38 +1083,23 @@ namespace SmartStore.Services.Forums
                 }
 
                 // Enlist topics
-                var query = _topicsQuery.AsNoTracking();
-                var maxId = int.MaxValue;
+                var pager = new FastPager<ForumTopic>(_topicsQuery.AsNoTracking(), _context.MaximumNodeCount);
 
-                while (maxId > 1)
+                while (pager.ReadNextPage(x => new { x.Id, x.UpdatedOnUtc, x.Subject }, x => x.Id, out var topics)) 
                 {
                     if (_context.CancellationToken.IsCancellationRequested)
                     {
                         break;
                     }
 
-                    var topics = query
-                        .Where(x => x.Id < maxId)
-                        .OrderByDescending(x => x.Id)
-                        .Take(() => _context.MaximumNodeCount)
-                        .Select(x => new { x.Id, x.UpdatedOnUtc, x.Subject })
-                        .ToList();
-
-                    if (topics.Count == 0)
-                    {
-                        break;
-                    }
-
-                    maxId = topics.Last().Id;
-
                     foreach (var x in topics)
                     {
-                        yield return new NamedEntity 
-                        { 
+                        yield return new NamedEntity
+                        {
                             EntityName = nameof(ForumTopic),
                             Slug = (new ForumTopic { Subject = x.Subject }).GetSeName(),
-                            Id = x.Id, 
-                            LastMod = x.UpdatedOnUtc 
+                            Id = x.Id,
+                            LastMod = x.UpdatedOnUtc
                         };
                     }
                 }

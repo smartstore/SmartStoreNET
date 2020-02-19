@@ -19,6 +19,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Media;
 using SmartStore.Services.Stores;
+using SmartStore.Services.Tasks;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
 using SmartStore.Web.Framework.WebApi;
@@ -33,26 +34,35 @@ namespace SmartStore.WebApi.Controllers.Api
 	{
 		private static readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
 
-		private readonly Lazy<IProductService> _productService;
+        private readonly Lazy<IProductService> _productService;
 		private readonly Lazy<IPictureService> _pictureService;
 		private readonly Lazy<IImportProfileService> _importProfileService;
-		private readonly Lazy<IStoreContext> _storeContext;
-		private readonly Lazy<IStoreService> _storeService;
+        private readonly Lazy<IStoreService> _storeService;
+        private readonly Lazy<IPermissionService> _permissionService;
+        private readonly Lazy<ITaskScheduler> _taskScheduler;
+        private readonly Lazy<IWorkContext> _workContext;
+        private readonly Lazy<IStoreContext> _storeContext;
 		private readonly Lazy<MediaSettings> _mediaSettings;
 
 		public UploadsController(
 			Lazy<IProductService> productService,
 			Lazy<IPictureService> pictureService,
 			Lazy<IImportProfileService> importProfileService,
-			Lazy<IStoreContext> storeContext,
-			Lazy<IStoreService> storeService,
+            Lazy<IStoreService> storeService,
+            Lazy<IPermissionService> permissionService,
+            Lazy<ITaskScheduler> taskScheduler,
+            Lazy<IWorkContext> workContext,
+            Lazy<IStoreContext> storeContext,
 			Lazy<MediaSettings> mediaSettings)
 		{
 			_productService = productService;
 			_pictureService = pictureService;
 			_importProfileService = importProfileService;
-			_storeContext = storeContext;
-			_storeService = storeService;
+            _storeService = storeService;
+            _permissionService = permissionService;
+            _taskScheduler = taskScheduler;
+            _workContext = workContext;
+            _storeContext = storeContext;
 			_mediaSettings = mediaSettings;
 		}
 
@@ -238,8 +248,9 @@ namespace SmartStore.WebApi.Controllers.Api
 				throw this.ExceptionNotFound(WebApiGlobal.Error.EntityNotFound.FormatInvariant(identifier.NaIfEmpty()));
 			}
 
-			var deleteExisting = false;
-			var result = new List<UploadImportFile>();
+            var startImport = false;
+            var deleteExisting = false;
+            var result = new List<UploadImportFile>();
 			var unzippedFiles = new List<MultipartFileData>();
 			var importFolder = profile.GetImportFolder(true, true);
 			var csvTypes = new string[] { ".csv", ".txt", ".tab" };
@@ -247,8 +258,14 @@ namespace SmartStore.WebApi.Controllers.Api
 			if (provider.FormData.AllKeys.Contains("deleteExisting"))
 			{
 				var strDeleteExisting = provider.FormData.GetValues("deleteExisting").FirstOrDefault();
-				deleteExisting = (strDeleteExisting.HasValue() && strDeleteExisting.ToBool());
+				deleteExisting = strDeleteExisting.HasValue() && strDeleteExisting.ToBool();
 			}
+
+            if (provider.FormData.AllKeys.Contains("startImport"))
+            {
+                var strStartImport = provider.FormData.GetValues("startImport").FirstOrDefault();
+                startImport = strStartImport.HasValue() && strStartImport.ToBool();
+            }
 
 			// Unzip files.
 			foreach (var file in provider.FileData)
@@ -308,6 +325,21 @@ namespace SmartStore.WebApi.Controllers.Api
 			}
 
 			FileSystemHelper.ClearDirectory(tempDir, true);
+
+            if (startImport)
+            {
+                var customer = _workContext.Value.CurrentCustomer;
+
+                if (_permissionService.Value.Authorize(Permissions.System.ScheduleTask.Execute, customer))
+                {
+                    _taskScheduler.Value.RunSingleTask(profile.SchedulingTaskId, new Dictionary<string, string>
+                    {
+                        { TaskExecutor.CurrentCustomerIdParamName, customer.Id.ToString() },
+                        { TaskExecutor.CurrentStoreIdParamName, _storeContext.Value.CurrentStore.Id.ToString() }
+                    });
+                }
+            }
+
 			return result.AsQueryable();
 		}
 	}

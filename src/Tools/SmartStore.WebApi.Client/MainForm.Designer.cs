@@ -71,6 +71,8 @@
             this.txtPictureId = new System.Windows.Forms.TextBox();
             this.lblPictureId = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.txtMoreData = new System.Windows.Forms.TextBox();
+            this.lblMoreData = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -400,7 +402,7 @@
             // 
             this.txtFile.Location = new System.Drawing.Point(84, 122);
             this.txtFile.Name = "txtFile";
-            this.txtFile.Size = new System.Drawing.Size(423, 21);
+            this.txtFile.Size = new System.Drawing.Size(282, 21);
             this.txtFile.TabIndex = 33;
             // 
             // txtVersion
@@ -424,7 +426,7 @@
             // btnFileOpen
             // 
             this.btnFileOpen.AutoSize = true;
-            this.btnFileOpen.Location = new System.Drawing.Point(510, 120);
+            this.btnFileOpen.Location = new System.Drawing.Point(367, 120);
             this.btnFileOpen.Name = "btnFileOpen";
             this.btnFileOpen.Size = new System.Drawing.Size(43, 24);
             this.btnFileOpen.TabIndex = 35;
@@ -438,15 +440,15 @@
             // 
             // txtIdentfier1
             // 
-            this.txtIdentfier1.Location = new System.Drawing.Point(595, 122);
+            this.txtIdentfier1.Location = new System.Drawing.Point(450, 122);
             this.txtIdentfier1.Name = "txtIdentfier1";
-            this.txtIdentfier1.Size = new System.Drawing.Size(61, 21);
+            this.txtIdentfier1.Size = new System.Drawing.Size(51, 21);
             this.txtIdentfier1.TabIndex = 36;
             // 
             // lblIdentifier1
             // 
             this.lblIdentifier1.AutoSize = true;
-            this.lblIdentifier1.Location = new System.Drawing.Point(571, 125);
+            this.lblIdentifier1.Location = new System.Drawing.Point(428, 125);
             this.lblIdentifier1.Name = "lblIdentifier1";
             this.lblIdentifier1.Size = new System.Drawing.Size(18, 13);
             this.lblIdentifier1.TabIndex = 37;
@@ -454,15 +456,15 @@
             // 
             // txtIdentfier2
             // 
-            this.txtIdentfier2.Location = new System.Drawing.Point(751, 123);
+            this.txtIdentfier2.Location = new System.Drawing.Point(590, 123);
             this.txtIdentfier2.Name = "txtIdentfier2";
-            this.txtIdentfier2.Size = new System.Drawing.Size(200, 21);
+            this.txtIdentfier2.Size = new System.Drawing.Size(128, 21);
             this.txtIdentfier2.TabIndex = 38;
             // 
             // lblIdentfier2
             // 
             this.lblIdentfier2.AutoSize = true;
-            this.lblIdentfier2.Location = new System.Drawing.Point(668, 126);
+            this.lblIdentfier2.Location = new System.Drawing.Point(507, 126);
             this.lblIdentfier2.Name = "lblIdentfier2";
             this.lblIdentfier2.Size = new System.Drawing.Size(82, 13);
             this.lblIdentfier2.TabIndex = 39;
@@ -470,7 +472,7 @@
             // 
             // txtPictureId
             // 
-            this.txtPictureId.Location = new System.Drawing.Point(1045, 123);
+            this.txtPictureId.Location = new System.Drawing.Point(780, 123);
             this.txtPictureId.Name = "txtPictureId";
             this.txtPictureId.Size = new System.Drawing.Size(61, 21);
             this.txtPictureId.TabIndex = 40;
@@ -478,17 +480,35 @@
             // lblPictureId
             // 
             this.lblPictureId.AutoSize = true;
-            this.lblPictureId.Location = new System.Drawing.Point(989, 126);
+            this.lblPictureId.Location = new System.Drawing.Point(726, 126);
             this.lblPictureId.Name = "lblPictureId";
             this.lblPictureId.Size = new System.Drawing.Size(50, 13);
             this.lblPictureId.TabIndex = 41;
             this.lblPictureId.Text = "PictureId";
             // 
+            // txtMoreData
+            // 
+            this.txtMoreData.Location = new System.Drawing.Point(910, 123);
+            this.txtMoreData.Name = "txtMoreData";
+            this.txtMoreData.Size = new System.Drawing.Size(234, 21);
+            this.txtMoreData.TabIndex = 42;
+            // 
+            // lblMoreData
+            // 
+            this.lblMoreData.AutoSize = true;
+            this.lblMoreData.Location = new System.Drawing.Point(852, 126);
+            this.lblMoreData.Name = "lblMoreData";
+            this.lblMoreData.Size = new System.Drawing.Size(56, 13);
+            this.lblMoreData.TabIndex = 43;
+            this.lblMoreData.Text = "More data";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1154, 812);
+            this.ClientSize = new System.Drawing.Size(1154, 811);
+            this.Controls.Add(this.txtMoreData);
+            this.Controls.Add(this.lblMoreData);
             this.Controls.Add(this.txtPictureId);
             this.Controls.Add(this.lblPictureId);
             this.Controls.Add(this.txtIdentfier2);
@@ -588,6 +608,8 @@
 		private System.Windows.Forms.TextBox txtPictureId;
 		private System.Windows.Forms.Label lblPictureId;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private System.Windows.Forms.TextBox txtMoreData;
+        private System.Windows.Forms.Label lblMoreData;
     }
 }
 

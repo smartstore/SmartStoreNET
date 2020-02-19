@@ -22,7 +22,7 @@ namespace SmartStore.Data.Utilities
             Guard.NotNull(query, nameof(query));
             Guard.IsPositive(pageSize, nameof(pageSize));
 
-            _query = query.OrderByDescending(x => x.Id);
+            _query = query;
             _pageSize = pageSize;
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using Autofac;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Services.Media.Migration;
 using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Services.Media
@@ -16,11 +17,14 @@ namespace SmartStore.Services.Media
 
         protected override void Load(ContainerBuilder builder)
         {
+            // Migration utils
+            builder.RegisterType<MediaMigrator>().InstancePerRequest();
+
             builder.RegisterType<DownloadService>().As<IDownloadService>().InstancePerRequest();
             builder.RegisterType<ImageCache>().As<IImageCache>().InstancePerRequest();
             builder.RegisterType<DefaultImageProcessor>().As<IImageProcessor>().InstancePerRequest();
             builder.RegisterType<PictureService>().As<IPictureService>().InstancePerRequest();
-            builder.RegisterType<MediaMover>().As<IMediaMover>().InstancePerRequest();
+            builder.RegisterType<MediaMover>().As<IMediaMover>().InstancePerRequest(); 
         }
     }
 }

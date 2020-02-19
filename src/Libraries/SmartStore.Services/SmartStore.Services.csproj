@@ -356,6 +356,7 @@
     <Compile Include="Media\TransientMediaClearTask.cs" />
     <Compile Include="Media\v4\MediaModule.cs" />
     <Compile Include="Media\v4\MediaType.cs" />
+    <Compile Include="Media\v4\Migration\MediaMigrator.cs" />
     <Compile Include="Media\v4\Migration\SeedingDbMigrationConsumer.cs" />
     <Compile Include="Messages\Importer\NewsLetterSubscriptionImporter.cs" />
     <Compile Include="Messages\Events.cs" />

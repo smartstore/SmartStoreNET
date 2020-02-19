@@ -109,6 +109,7 @@ namespace SmartStore.Web.Framework
 
 			// modules
 			builder.RegisterModule(new CoreModule(typeFinder));
+			builder.RegisterModule(new MediaModule(typeFinder));
 			builder.RegisterModule(new DbModule(typeFinder));
 			builder.RegisterModule(new CachingModule());
 			builder.RegisterModule(new SearchModule());
@@ -222,12 +223,6 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<DiscountService>().As<IDiscountService>().InstancePerRequest();
 
 			builder.RegisterType<SettingService>().As<ISettingService>().InstancePerRequest();
-
-			builder.RegisterType<DownloadService>().As<IDownloadService>().InstancePerRequest();
-			builder.RegisterType<ImageCache>().As<IImageCache>().InstancePerRequest();
-			builder.RegisterType<DefaultImageProcessor>().As<IImageProcessor>().InstancePerRequest();
-			builder.RegisterType<PictureService>().As<IPictureService>().InstancePerRequest();
-			builder.RegisterType<MediaMover>().As<IMediaMover>().InstancePerRequest();
 
 			builder.RegisterType<CheckoutAttributeFormatter>().As<ICheckoutAttributeFormatter>().InstancePerRequest();
 			builder.RegisterType<CheckoutAttributeParser>().As<ICheckoutAttributeParser>().InstancePerRequest();

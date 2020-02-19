@@ -18,8 +18,6 @@ namespace SmartStore.Data.Mapping.Media
                 .WithMany(x => x.Children)
                 .HasForeignKey(x => x.ParentId)
                 .WillCascadeOnDelete(false);
-
-            //Map<MediaFolder>(m => m.Requires("FolderType").HasValue(1).HasColumnType("int"));
         }
     }
 
@@ -30,31 +28,6 @@ namespace SmartStore.Data.Mapping.Media
             Property(c => c.ResKey).HasMaxLength(255);
             Property(c => c.Icon).HasMaxLength(100);
             Property(c => c.Color).HasMaxLength(100);
-
-            //Map<MediaRegion>(m => m.Requires("FolderType").HasValue(0).HasColumnType("int"));
         }
     }
-
-    //public partial class MediaFolderMap : EntityTypeConfiguration<MediaRegion>
-    //{
-    //    public MediaFolderMap()
-    //    {
-    //        ToTable("MediaFolder");
-    //        HasKey(c => c.Id);
-    //        Property(c => c.Name).IsRequired().HasMaxLength(100);
-    //        Property(c => c.Slug).HasMaxLength(100);
-    //        Property(c => c.Metadata).IsMaxLength();
-    //        Property(c => c.ResKey).HasMaxLength(255);
-    //        Property(c => c.Icon).HasMaxLength(100);
-    //        Property(c => c.Color).HasMaxLength(100);
-
-    //        HasOptional(x => x.Parent)
-    //            .WithMany(x => x.Children)
-    //            .HasForeignKey(x => x.ParentId)
-    //            .WillCascadeOnDelete(false);
-
-    //        Map<MediaFolder>(m => m.Requires("FolderType").HasValue(1).HasColumnType("int"));
-    //        Map<MediaRegion>(m => m.Requires("FolderType").HasValue(0).HasColumnType("int"));
-    //    }
-    //}
 }

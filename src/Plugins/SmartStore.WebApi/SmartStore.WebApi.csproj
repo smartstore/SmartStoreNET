@@ -234,6 +234,9 @@
     <Compile Include="Controllers\OData\OrderNotesController.cs" />
     <Compile Include="Controllers\OData\OrderItemsController.cs" />
     <Compile Include="Controllers\OData\OrdersController.cs" />
+    <Compile Include="Controllers\OData\ProductManufacturersController.cs" />
+    <Compile Include="Controllers\OData\ProductCategoriesController.cs" />
+    <Compile Include="Controllers\OData\ProductPicturesController.cs" />
     <Compile Include="Controllers\OData\PicturesController.cs" />
     <Compile Include="Controllers\OData\ProductAttributeOptionsController.cs" />
     <Compile Include="Controllers\OData\ProductAttributeOptionsSetsController.cs" />

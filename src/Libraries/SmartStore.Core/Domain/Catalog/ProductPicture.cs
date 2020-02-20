@@ -1,5 +1,5 @@
-using SmartStore.Core.Domain.Media;
 using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Core.Domain.Catalog
 {
@@ -26,16 +26,17 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
 		[DataMember]
 		public int DisplayOrder { get; set; }
-        
+
         /// <summary>
         /// Gets the picture
         /// </summary>
+        [DataMember]
         public virtual Picture Picture { get; set; }
 
         /// <summary>
         /// Gets the product
         /// </summary>
+        [DataMember]
         public virtual Product Product { get; set; }
     }
-
 }

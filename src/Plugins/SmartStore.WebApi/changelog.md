@@ -1,5 +1,10 @@
 ﻿#Release Notes
 
+##Web Api 4.0.0.0
+###New Features
+* #1809 Added a parameter to start an import after uploading import files.
+* #1801 Added endpoints for ProductPicture, ProductCategory, ProductManufacturer to allow to update DisplayOrder.
+
 ##Web Api 3.1.5.1
 ###New Features
 * Added endpoints for ProductSpecificationAttribute.

@@ -24,7 +24,7 @@
 
 <div class="menu-settings tabbable tabs-left ml-2 my-2">
 	<nav class="nav-aside">
-		<ul class="nav nav-tabs nav-tabs-line flex-row flex-lg-column" data-menu-name="settings">
+		<ul class="nav nav-tabs nav-tabs-line flex-column" data-menu-name="settings">
 			@{
 				var isCurrent = false;
 				foreach (var node in Model.Root.Children)
@@ -49,7 +49,7 @@
 					var icon = item.Icon.NullEmpty() ?? "fas fa-fw fa-lg";
 
 					<li class="nav-item">
-						<a class="nav-link@(isSelected ? " active" : "")" href="@itemUrl">
+						<a class="nav-link@(isSelected ? " active" : "") text-left" href="@itemUrl">
 							<i class="@icon"></i>
 							<span class="tab-caption">@itemText</span>
 						</a>

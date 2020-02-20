@@ -532,16 +532,15 @@ namespace SmartStore.Web.Controllers
                         first = first.AddMonths(1);
                     }
 
-
                     int current = 0;
-                    foreach (var kvp in months)
+                    foreach (var kvp in months.Reverse())
                     {
                         var date = kvp.Key;
                         var blogPostCount = kvp.Value;
                         if (current == 0)
                             current = date.Year;
 
-                        if (date.Year > current || model.Count == 0)
+                        if (date.Year < current || model.Count == 0)
                         {
                             var yearModel = new BlogPostYearModel()
                             {

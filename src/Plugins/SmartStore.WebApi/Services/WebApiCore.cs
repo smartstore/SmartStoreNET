@@ -20,7 +20,8 @@ namespace SmartStore.WebApi.Services
 
 		public IList<ManageAttributeValue> Values { get; set; }
 
-		public class ManageAttributeValue
+        [Serializable]
+        public class ManageAttributeValue
 		{
 			public string Name { get; set; }
 			public string Alias { get; set; }

@@ -404,68 +404,70 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
         public IQueryable<ProductVariantAttribute> ManageAttributes(int key, ODataActionParameters parameters)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductVariantAttribute>>(key, x => x.ProductVariantAttributes);
+			var entity = GetExpandedEntity(key, x => x.ProductVariantAttributes);
 			var result = new List<ProductVariantAttributeValue>();
 
 			this.ProcessEntity(() =>
 			{
 				var synchronize = parameters.GetValueSafe<bool>("Synchronize");
-				var data = (parameters["Attributes"] as IEnumerable<ManageAttributeType>).Where(x => x.Name.HasValue()).ToList();
+				var data = (parameters["Attributes"] as IEnumerable<ManageAttributeType>)
+                    .Where(x => x.Name.HasValue())
+                    .ToList();
 
 				var allAttributes = _productAttributeService.Value.GetAllProductAttributes();
+                var allAttributesDic = allAttributes.ToDictionarySafe(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);
 
-				foreach (var srcAttr in data)
+                foreach (var srcAttr in data)
 				{
-					var productAttribute = allAttributes.FirstOrDefault(x => x.Name.IsCaseInsensitiveEqual(srcAttr.Name));
+                    if (!allAttributesDic.TryGetValue(srcAttr.Name, out var attribute))
+                    {
+                        attribute = new ProductAttribute { Name = srcAttr.Name };
+                        _productAttributeService.Value.InsertProductAttribute(attribute);
+                    }
 
+					var productAttribute = entity.ProductVariantAttributes.FirstOrDefault(x => x.ProductAttribute.Name.IsCaseInsensitiveEqual(srcAttr.Name));
 					if (productAttribute == null)
 					{
-						productAttribute = new ProductAttribute() { Name = srcAttr.Name };
-						_productAttributeService.Value.InsertProductAttribute(productAttribute);
-					}
-
-					var attribute = entity.ProductVariantAttributes.FirstOrDefault(x => x.ProductAttribute.Name.IsCaseInsensitiveEqual(srcAttr.Name));
-
-					if (attribute == null)
-					{
-						attribute = new ProductVariantAttribute()
+						productAttribute = new ProductVariantAttribute
 						{
 							ProductId = entity.Id,
-							ProductAttributeId = productAttribute.Id,
+							ProductAttributeId = attribute.Id,
 							AttributeControlTypeId = srcAttr.ControlTypeId,
 							DisplayOrder = entity.ProductVariantAttributes.OrderByDescending(x => x.DisplayOrder).Select(x => x.DisplayOrder).FirstOrDefault() + 1,
 							IsRequired = srcAttr.IsRequired
 						};
 
-						entity.ProductVariantAttributes.Add(attribute);
+						entity.ProductVariantAttributes.Add(productAttribute);
 						Service.UpdateProduct(entity);
 					}
 					else if (synchronize)
 					{
-						if (srcAttr.Values.Count <= 0 && attribute.ShouldHaveValues())
+						if (srcAttr.Values.Count <= 0 && productAttribute.ShouldHaveValues())
 						{
-							_productAttributeService.Value.DeleteProductVariantAttribute(attribute);
+							_productAttributeService.Value.DeleteProductVariantAttribute(productAttribute);
 						}
 						else
 						{
-							attribute.AttributeControlTypeId = srcAttr.ControlTypeId;
-							attribute.IsRequired = srcAttr.IsRequired;
+							productAttribute.AttributeControlTypeId = srcAttr.ControlTypeId;
+							productAttribute.IsRequired = srcAttr.IsRequired;
 
 							Service.UpdateProduct(entity);
 						}
 					}
 
-					int maxDisplayOrder = attribute.ProductVariantAttributeValues.OrderByDescending(x => x.DisplayOrder).Select(x => x.DisplayOrder).FirstOrDefault();
+					var maxDisplayOrder = productAttribute.ProductVariantAttributeValues
+                        .OrderByDescending(x => x.DisplayOrder)
+                        .Select(x => x.DisplayOrder)
+                        .FirstOrDefault();
 
 					foreach (var srcVal in srcAttr.Values.Where(x => x.Name.HasValue()))
 					{
-						var value = attribute.ProductVariantAttributeValues.FirstOrDefault(x => x.Name.IsCaseInsensitiveEqual(srcVal.Name));
-
+						var value = productAttribute.ProductVariantAttributeValues.FirstOrDefault(x => x.Name.IsCaseInsensitiveEqual(srcVal.Name));
 						if (value == null)
 						{
-							value = new ProductVariantAttributeValue()
+							value = new ProductVariantAttributeValue
 							{
-								ProductVariantAttributeId = attribute.Id,
+								ProductVariantAttributeId = productAttribute.Id,
 								Name = srcVal.Name,
 								Alias = srcVal.Alias,
 								Color = srcVal.Color,
@@ -475,7 +477,7 @@ namespace SmartStore.WebApi.Controllers.OData
 								DisplayOrder = ++maxDisplayOrder
 							};
 
-							attribute.ProductVariantAttributeValues.Add(value);
+							productAttribute.ProductVariantAttributeValues.Add(value);
 							Service.UpdateProduct(entity);
 						}
 						else if (synchronize)
@@ -492,10 +494,12 @@ namespace SmartStore.WebApi.Controllers.OData
 
 					if (synchronize)
 					{
-						foreach (var dstVal in attribute.ProductVariantAttributeValues.ToList())
+						foreach (var dstVal in productAttribute.ProductVariantAttributeValues.ToList())
 						{
-							if (!srcAttr.Values.Any(x => x.Name.IsCaseInsensitiveEqual(dstVal.Name)))
-								_productAttributeService.Value.DeleteProductVariantAttributeValue(dstVal);
+                            if (!srcAttr.Values.Any(x => x.Name.IsCaseInsensitiveEqual(dstVal.Name)))
+                            {
+                                _productAttributeService.Value.DeleteProductVariantAttributeValue(dstVal);
+                            }
 						}
 					}
 				}

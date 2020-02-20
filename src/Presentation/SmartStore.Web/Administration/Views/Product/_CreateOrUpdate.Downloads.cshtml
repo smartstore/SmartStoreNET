@@ -222,7 +222,7 @@
                 },
                 dataType: 'json',
                 success: function (data) {
-                    changelogElem.summernote('editor.pasteHTML', data.changelog);
+                    changelogElem.summernote('editor.pasteHTML', data.changelog ? data.changelog : "&nbsp;");
                     dialog.modal();
                 },
                 error: function (xhr, ajaxOptions, thrownError) {

@@ -362,8 +362,8 @@
 		},
 
 		destroyZoom: function (currentIndex) {
-			currentIndex = currentIndex || self.currentIndex;
-			var img = self.gallery.find('.gal-item').eq(currentIndex).find('img');
+            currentIndex = currentIndex || this.currentIndex;
+			var img = this.gallery.find('.gal-item').eq(currentIndex).find('img');
 			var drift = img.data("drift");
 			if (drift) {
 				drift.disable();
@@ -371,9 +371,7 @@
 			}
 		},
 
-		reset: function () {
-			var self = this;
-			
+		reset: function () {	
 			this.nav.removeClass('gal-initialized');
 
 			if (this.gallery) {

@@ -1003,7 +1003,7 @@ namespace SmartStore.Web.Controllers
 							product, 
 							attributeXml, 
 							customer,
-							serapator: ", ",
+							separator: ", ",
 							renderPrices: false, 
 							renderGiftCardAttributes: false, 
 							allowHyperlinks: false);

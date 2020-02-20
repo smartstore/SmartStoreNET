@@ -1082,7 +1082,7 @@ namespace SmartStore.Web.Controllers
                             product, 
                             item.AttributesXml, 
                             null,
-                            serapator: ", ", 
+                            separator: ", ", 
                             //htmlEncode: false,
                             renderPrices: false, 
                             renderGiftCardAttributes: false, 
@@ -2238,7 +2238,7 @@ namespace SmartStore.Web.Controllers
                         sci.Item.AttributesXml,
                         null,
                         htmlEncode: false,
-                        serapator: ", ",
+                        separator: ", ",
                         renderPrices: false,
                         renderGiftCardAttributes: false,
                         allowHyperlinks: false);

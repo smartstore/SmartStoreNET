@@ -13,10 +13,10 @@ using SmartStore.Services.Tax;
 
 namespace SmartStore.Services.Catalog
 {
-	/// <summary>
-	/// Product attribute formatter
-	/// </summary>
-	public partial class ProductAttributeFormatter : IProductAttributeFormatter
+    /// <summary>
+    /// Product attribute formatter
+    /// </summary>
+    public partial class ProductAttributeFormatter : IProductAttributeFormatter
     {
         private readonly IWorkContext _workContext;
         private readonly IProductAttributeService _productAttributeService;
@@ -59,111 +59,127 @@ namespace SmartStore.Services.Catalog
         }
 
         /// <summary>
-        /// Formats attributes
+        /// Formats attributes.
         /// </summary>
 		/// <param name="product">Product</param>
         /// <param name="attributes">Attributes</param>
-        /// <returns>Attributes</returns>
+        /// <returns>Formatted attributes.</returns>
 		public string FormatAttributes(Product product, string attributes)
         {
-            var customer = _workContext.CurrentCustomer;
-            return FormatAttributes(product, attributes, customer);
+            return FormatAttributes(product, attributes, _workContext.CurrentCustomer);
         }
 
         /// <summary>
-        /// Formats attributes
+        /// Formats attributes.
         /// </summary>
 		/// <param name="product">Product</param>
         /// <param name="attributes">Attributes</param>
         /// <param name="customer">Customer</param>
-        /// <param name="serapator">Serapator</param>
+        /// <param name="separator">Separator</param>
         /// <param name="htmlEncode">A value indicating whether to encode (HTML) values</param>
         /// <param name="renderPrices">A value indicating whether to render prices</param>
         /// <param name="renderProductAttributes">A value indicating whether to render product attributes</param>
         /// <param name="renderGiftCardAttributes">A value indicating whether to render gift card attributes</param>
-        /// <param name="allowHyperlinks">A value indicating whether to HTML hyperink tags could be rendered (if required)</param>
-        /// <returns>Attributes</returns>
-        public string FormatAttributes(Product product, string attributes,
-            Customer customer, string serapator = "<br />", bool htmlEncode = true, bool renderPrices = true,
-            bool renderProductAttributes = true, bool renderGiftCardAttributes = true,
+        /// <param name="allowHyperlinks">A value indicating whether to render HTML hyperlinks</param>
+        /// <returns>Formatted attributes.</returns>
+        public string FormatAttributes(
+            Product product,
+            string attributes,
+            Customer customer,
+            string separator = "<br />",
+            bool htmlEncode = true,
+            bool renderPrices = true,
+            bool renderProductAttributes = true,
+            bool renderGiftCardAttributes = true,
             bool allowHyperlinks = true)
         {
             var result = new StringBuilder();
-			var languageId = _workContext.WorkingLanguage.Id;
 
-            // Attributes
+            // Attributes.
             if (renderProductAttributes)
             {
+                var languageId = _workContext.WorkingLanguage.Id;
                 var pvaCollection = _productAttributeParser.ParseProductVariantAttributes(attributes);
-                for (int i = 0; i < pvaCollection.Count; i++)
+
+                for (var i = 0; i < pvaCollection.Count; ++i)
                 {
                     var pva = pvaCollection[i];
                     var valuesStr = _productAttributeParser.ParseValues(attributes, pva.Id);
-                    for (int j = 0; j < valuesStr.Count; j++)
+
+                    for (var j = 0; j < valuesStr.Count; ++j)
                     {
-                        string valueStr = valuesStr[j];
-                        string pvaAttribute = string.Empty;
+                        var valueStr = valuesStr[j];
+                        var pvaAttribute = string.Empty;
+
                         if (!pva.ShouldHaveValues())
                         {
-                            //no values
+                            // No values.
                             if (pva.AttributeControlType == AttributeControlType.MultilineTextbox)
                             {
-                                //multiline textbox
+                                // Multiline textbox.
                                 string attributeName = pva.ProductAttribute.GetLocalized(a => a.Name, languageId);
-                                //encode (if required)
+
                                 if (htmlEncode)
+                                {
                                     attributeName = HttpUtility.HtmlEncode(attributeName);
+                                }
+
                                 pvaAttribute = string.Format("{0}: {1}", attributeName, HtmlUtils.ConvertPlainTextToHtml(valueStr.HtmlEncode()));
-                                //we never encode multiline textbox input
+                                // We never encode multiline textbox input.
                             }
                             else if (pva.AttributeControlType == AttributeControlType.FileUpload)
                             {
-                                //file upload
-                                Guid downloadGuid;
-                                Guid.TryParse(valueStr, out downloadGuid);
+                                Guid.TryParse(valueStr, out var downloadGuid);
                                 var download = _downloadService.GetDownloadByGuid(downloadGuid);
+
                                 if (download != null)
                                 {
-                                    //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-                                    string attributeText = "";
+                                    //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs).
+                                    var attributeText = "";
                                     var fileName = string.Format("{0}{1}",
                                         download.Filename ?? download.DownloadGuid.ToString(),
                                         download.Extension);
-                                    //encode (if required)
+
                                     if (htmlEncode)
+                                    {
                                         fileName = HttpUtility.HtmlEncode(fileName);
+                                    }
+
                                     if (allowHyperlinks)
                                     {
-                                        //hyperlinks are allowed
                                         var downloadLink = string.Format("{0}download/getfileupload/?downloadId={1}", _webHelper.GetStoreLocation(false), download.DownloadGuid);
                                         attributeText = string.Format("<a href=\"{0}\" class=\"fileuploadattribute\">{1}</a>", downloadLink, fileName);
                                     }
                                     else
                                     {
-                                        //hyperlinks aren't allowed
-                                        attributeText = fileName;
+                                        attributeText
+                                            = fileName;
                                     }
                                     string attributeName = pva.ProductAttribute.GetLocalized(a => a.Name, languageId);
-                                    //encode (if required)
+
                                     if (htmlEncode)
+                                    {
                                         attributeName = HttpUtility.HtmlEncode(attributeName);
+                                    }
+
                                     pvaAttribute = string.Format("{0}: {1}", attributeName, attributeText);
                                 }
                             }
                             else
                             {
-                                //other attributes (textbox, datepicker)
+                                // Other attributes (textbox, datepicker).
                                 pvaAttribute = string.Format("{0}: {1}", pva.ProductAttribute.GetLocalized(a => a.Name, languageId), valueStr);
-                                //encode (if required)
+
                                 if (htmlEncode)
+                                {
                                     pvaAttribute = HttpUtility.HtmlEncode(pvaAttribute);
+                                }
                             }
                         }
                         else
                         {
                             // Attributes with values.
-                            int pvaId = 0;
-                            if (int.TryParse(valueStr, out pvaId))
+                            if (int.TryParse(valueStr, out var pvaId))
                             {
                                 var pvaValue = _productAttributeService.GetProductVariantAttributeValueById(pvaId);
                                 if (pvaValue != null)
@@ -174,12 +190,12 @@ namespace SmartStore.Services.Catalog
 
                                     if (renderPrices)
                                     {
-                                        decimal taxRate = decimal.Zero;
-										decimal attributeValuePriceAdjustment = _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(pvaValue, product, customer, null, 1);
-										decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, customer, out taxRate);
-                                        decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, _workContext.WorkingCurrency);
+										var attributeValuePriceAdjustment = _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(pvaValue, product, customer, null, 1);
+										var priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, customer, out var taxRate);
+                                        var priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, _workContext.WorkingCurrency);
 
-										if (_shoppingCartSettings.ShowLinkedAttributeValueQuantity && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage &&
+										if (_shoppingCartSettings.ShowLinkedAttributeValueQuantity && 
+                                            pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage &&
 											pvaValue.Quantity > 1)
 										{
 											pvaAttribute += string.Format(" × {0}", pvaValue.Quantity);
@@ -199,7 +215,6 @@ namespace SmartStore.Services.Catalog
                                     }
                                 }
 
-								// Encode (if required)
 								if (htmlEncode)
 								{
 									pvaAttribute = HttpUtility.HtmlEncode(pvaAttribute);
@@ -207,54 +222,52 @@ namespace SmartStore.Services.Catalog
                             }
                         }
 
-                        if (!String.IsNullOrEmpty(pvaAttribute))
+                        if (!string.IsNullOrEmpty(pvaAttribute))
                         {
                             if (i != 0 || j != 0)
-                                result.Append(serapator);
+                            {
+                                result.Append(separator);
+                            }
                             result.Append(pvaAttribute);
                         }
                     }
                 }
             }
 
-            //gift cards
+            // Gift cards.
             if (renderGiftCardAttributes)
             {
                 if (product.IsGiftCard)
                 {
-                    string giftCardRecipientName = "";
-                    string giftCardRecipientEmail = "";
-                    string giftCardSenderName = "";
-                    string giftCardSenderEmail = "";
-                    string giftCardMessage = "";
-                    _productAttributeParser.GetGiftCardAttribute(attributes, out giftCardRecipientName, out giftCardRecipientEmail,
-                        out giftCardSenderName, out giftCardSenderEmail, out giftCardMessage);
+                    _productAttributeParser.GetGiftCardAttribute(attributes, out var giftCardRecipientName, out var giftCardRecipientEmail,
+                        out var giftCardSenderName, out var giftCardSenderEmail, out var giftCardMessage);
 
-                    //sender
-                    var giftCardFrom = product.GiftCardType == GiftCardType.Virtual ?
-                        string.Format(_localizationService.GetResource("GiftCardAttribute.From.Virtual"), giftCardSenderName, giftCardSenderEmail) :
-                        string.Format(_localizationService.GetResource("GiftCardAttribute.From.Physical"), giftCardSenderName);
-                    //recipient
-                    var giftCardFor = product.GiftCardType == GiftCardType.Virtual ?
-                        string.Format(_localizationService.GetResource("GiftCardAttribute.For.Virtual"), giftCardRecipientName, giftCardRecipientEmail) :
-                        string.Format(_localizationService.GetResource("GiftCardAttribute.For.Physical"), giftCardRecipientName);
+                    // Sender.
+                    var giftCardFrom = product.GiftCardType == GiftCardType.Virtual
+                        ? string.Format(_localizationService.GetResource("GiftCardAttribute.From.Virtual"), giftCardSenderName, giftCardSenderEmail)
+                        : string.Format(_localizationService.GetResource("GiftCardAttribute.From.Physical"), giftCardSenderName);
 
-                    //encode (if required)
+                    // Recipient.
+                    var giftCardFor = product.GiftCardType == GiftCardType.Virtual
+                        ? string.Format(_localizationService.GetResource("GiftCardAttribute.For.Virtual"), giftCardRecipientName, giftCardRecipientEmail)
+                        : string.Format(_localizationService.GetResource("GiftCardAttribute.For.Physical"), giftCardRecipientName);
+
                     if (htmlEncode)
                     {
                         giftCardFrom = HttpUtility.HtmlEncode(giftCardFrom);
                         giftCardFor = HttpUtility.HtmlEncode(giftCardFor);
                     }
 
-                    if (!String.IsNullOrEmpty(result.ToString()))
+                    if (!string.IsNullOrEmpty(result.ToString()))
                     {
-                        result.Append(serapator);
+                        result.Append(separator);
                     }
                     result.Append(giftCardFrom);
-                    result.Append(serapator);
+                    result.Append(separator);
                     result.Append(giftCardFor);
                 }
             }
+
             return result.ToString();
         }
     }

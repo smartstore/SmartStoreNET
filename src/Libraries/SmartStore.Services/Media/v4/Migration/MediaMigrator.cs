@@ -8,26 +8,67 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Plugins;
 using SmartStore.Data.Utilities;
+using SmartStore.Data.Setup;
 using SmartStore.Services.Media.Storage;
 using SmartStore.Core.IO;
+using SmartStore.Data;
 
 namespace SmartStore.Services.Media.Migration
 {
     public class MediaMigrator
     {
+        internal static bool Executed;
+        
         private readonly ICommonServices _services;
         private readonly IProviderManager _providerManager;
+        private readonly IMediaTypeResolver _mediaTypeResolver;
+        private readonly IMediaFolderService _mediaFolderService;
 
-        public MediaMigrator(ICommonServices services, IProviderManager providerManager)
+        public MediaMigrator(
+            ICommonServices services, 
+            IProviderManager providerManager,
+            IMediaTypeResolver mediaTypeResolver,
+            IMediaFolderService mediaFolderService)
         {
             _services = services;
             _providerManager = providerManager;
+            _mediaTypeResolver = mediaTypeResolver;
+            _mediaFolderService = mediaFolderService;
         }
 
         public void Migrate()
         {
-            var ctx = _services.DbContext;
+            var ctx = _services.DbContext as SmartObjectContext;
 
+            CreateAlbums();
+            CreateSettings(ctx);
+            MigratePictures(ctx);
+
+            Executed = true;
+        }
+
+        private void CreateSettings(SmartObjectContext ctx)
+        {
+            var prefix = nameof(MediaSettings) + ".";
+
+            ctx.MigrateSettings(x =>
+            {
+                x.Add(prefix + nameof(MediaSettings.ImageTypes), MediaType.Image.DefaultExtensions);
+                x.Add(prefix + nameof(MediaSettings.VideoTypes), MediaType.Video.DefaultExtensions);
+                x.Add(prefix + nameof(MediaSettings.AudioTypes), MediaType.Audio.DefaultExtensions);
+                x.Add(prefix + nameof(MediaSettings.DocumentTypes), MediaType.Document.DefaultExtensions);
+                x.Add(prefix + nameof(MediaSettings.TextTypes), MediaType.Text.DefaultExtensions);
+            });
+        }
+
+        private void CreateAlbums()
+        {
+            var providers = _mediaFolderService.LoadAlbumProviders();
+            _mediaFolderService.InstallAlbums(providers);
+        }
+
+        private void MigratePictures(SmartObjectContext ctx)
+        {
             var storageProviderSystemName = _services.Settings.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
             var mediaStorageProvider = _providerManager.GetProvider<IMediaStorageProvider>(storageProviderSystemName).Value;
 
@@ -47,19 +88,20 @@ namespace SmartStore.Services.Media.Migration
 
                         file.Extension = MimeTypes.MapMimeTypeToExtension(file.MimeType);
                         file.Name = file.Name + "." + file.Extension;
-                        file.MediaType = MediaType.Image;
                         file.CreatedOnUtc = file.UpdatedOnUtc;
 
                         if (file.Size == 0)
                         {
                             file.Size = mediaStorageProvider.GetSize(mediaItem).Convert<int>();
-                        }         
+                        }
 
                         if (file.Width.HasValue && file.Height.HasValue)
                         {
                             file.PixelSize = file.Width.Value * file.Height.Value;
                             // TODO: Metadata JSON
                         }
+
+                        file.MediaType = _mediaTypeResolver.Resolve(file);
 
                         file.Version = 1;
                     }

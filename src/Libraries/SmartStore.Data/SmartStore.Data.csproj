@@ -150,6 +150,7 @@
     <Compile Include="Mapping\DataExchange\ExportProfileMap.cs" />
     <Compile Include="Mapping\Forums\ForumPostVoteMap.cs" />
     <Compile Include="Mapping\Media\MediaFolderMap.cs" />
+    <Compile Include="Mapping\Media\MediaRelationMap.cs" />
     <Compile Include="Mapping\Media\MediaTagMap.cs" />
     <Compile Include="Mapping\Rules\RuleEntityMap.cs" />
     <Compile Include="Mapping\Media\MediaStorageMap.cs" />
@@ -764,9 +765,9 @@
     <Compile Include="Migrations\202002180228163_PictureMediaRename1.Designer.cs">
       <DependentUpon>202002180228163_PictureMediaRename1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202002190129243_MediaFileExtend.cs" />
-    <Compile Include="Migrations\202002190129243_MediaFileExtend.Designer.cs">
-      <DependentUpon>202002190129243_MediaFileExtend.cs</DependentUpon>
+    <Compile Include="Migrations\202002200229128_MediaFileExtend.cs" />
+    <Compile Include="Migrations\202002200229128_MediaFileExtend.Designer.cs">
+      <DependentUpon>202002200229128_MediaFileExtend.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\202002191252074_RemoveDiscountRequirements.cs" />
     <Compile Include="Migrations\202002191252074_RemoveDiscountRequirements.Designer.cs">
@@ -1387,8 +1388,8 @@
     <EmbeddedResource Include="Migrations\202002180228163_PictureMediaRename1.resx">
       <DependentUpon>202002180228163_PictureMediaRename1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202002190129243_MediaFileExtend.resx">
-      <DependentUpon>202002190129243_MediaFileExtend.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202002200229128_MediaFileExtend.resx">
+      <DependentUpon>202002200229128_MediaFileExtend.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202002191252074_RemoveDiscountRequirements.resx">
       <DependentUpon>202002191252074_RemoveDiscountRequirements.cs</DependentUpon>

@@ -45,10 +45,19 @@ namespace SmartStore.Core.Domain.News
         /// </summary>
         public int? MediaFileId { get; set; }
 
+        /// Gets or sets the media file.
+        /// </summary>
+        public virtual MediaFile MediaFile { get; set; }
+
         /// <summary>
         /// Gets or sets the preview media file identifier
         /// </summary>
         public int? PreviewMediaFileId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the preview media file.
+        /// </summary>
+        public virtual MediaFile PreviewMediaFile { get; set; }
 
         /// <summary>
         /// Gets or sets the news item start date and time

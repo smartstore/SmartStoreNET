@@ -76,7 +76,8 @@
 				EngineContext.Current.Resolve<ICacheManager>().Clear();
 			}
 
-			context.MigrateSettings(x => {
+			context.MigrateSettings(x => 
+			{
 				x.DeleteGroup("ContentSlider");
 			});
 

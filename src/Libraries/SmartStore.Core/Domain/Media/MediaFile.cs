@@ -12,6 +12,7 @@ namespace SmartStore.Core.Domain.Media
 	{
 		private ICollection<ProductMediaFile> _productMediaFiles;
 		private ICollection<MediaTag> _tags;
+		private ICollection<MediaRelation> _relations;
 
 		#region Obsolete
 
@@ -54,7 +55,7 @@ namespace SmartStore.Core.Domain.Media
 		public string Title { get; set; }
 
 		/// <summary>
-		/// Gets or sets the file extension
+		/// Gets or sets the (dotless) file extension
 		/// </summary>
 		[DataMember]
 		public string Extension { get; set; }
@@ -133,6 +134,11 @@ namespace SmartStore.Core.Domain.Media
 		public bool Deleted { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the file is hidden
+		/// </summary>
+		public bool Hidden { get; set; }
+
+		/// <summary>
 		/// Internally used for migration stuff only
 		/// </summary>
 		public int Version { get; set; }
@@ -149,13 +155,23 @@ namespace SmartStore.Core.Domain.Media
 		public virtual MediaStorage MediaStorage { get; set; }
 
 		/// <summary>
-		/// Gets or sets the associated tags
+		/// Gets the associated tags
 		/// </summary>
 		[DataMember]
 		public virtual ICollection<MediaTag> Tags
 		{
 			get { return _tags ?? (_tags = new HashSet<MediaTag>()); }
 			protected set { _tags = value; }
+		}
+
+		/// <summary>
+		/// Gets the related entities
+		/// </summary>
+		[DataMember]
+		public virtual ICollection<MediaRelation> Relations
+		{
+			get { return _relations ?? (_relations = new HashSet<MediaRelation>()); }
+			protected set { _relations = value; }
 		}
 
 		/// <summary>

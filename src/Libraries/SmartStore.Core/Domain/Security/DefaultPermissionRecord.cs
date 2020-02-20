@@ -9,7 +9,7 @@ namespace SmartStore.Core.Domain.Security
     {
         public DefaultPermissionRecord() 
         {
-            this.PermissionRecords = new List<PermissionRecord>();
+            PermissionRecords = new List<PermissionRecord>();
         }
 
         /// <summary>

@@ -66,9 +66,20 @@ namespace SmartStore.Web.Infrastructure.Installation
 			_logger = logger;
         }
 
-        #endregion Ctor
+		#endregion Ctor
 
-        #region Populate
+		#region Populate
+
+		private void PopulateMediaAlbums()
+		{
+			var mediaFolderService = new MediaFolderService(
+				new EfRepository<MediaAlbum>(_ctx),
+				null, 
+				null, 
+				NullCache.Instance);
+
+			mediaFolderService.InstallAlbums(new[] { new SystemMediaAlbumProvider() });
+		}
 
 		private void PopulateStores()
 		{
@@ -543,6 +554,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				x.Add("Media.Storage.Provider", _config.StoreMediaInDB ? DatabaseMediaStorageProvider.SystemName : FileSystemMediaStorageProvider.SystemName);
 			});
 
+			Populate("PopulateMediaAlbums", PopulateMediaAlbums);
 			Populate("PopulatePictures", _data.Pictures());
 			Populate("PopulateCurrencies", PopulateCurrencies);
 			Populate("PopulateStores", PopulateStores);

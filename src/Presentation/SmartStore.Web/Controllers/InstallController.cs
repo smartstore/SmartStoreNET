@@ -18,12 +18,10 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
-using SmartStore.Core.Security;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Hooks;
-using SmartStore.Services.Security;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Infrastructure.Installation;
@@ -417,7 +415,7 @@ namespace SmartStore.Web.Controllers
 						}
 						else
 						{
-							//values
+							// values
 							connectionString = CreateConnectionString(
 								model.SqlAuthenticationType == "windowsauthentication",
 								model.SqlServerName, model.SqlDatabaseName,
@@ -454,7 +452,7 @@ namespace SmartStore.Web.Controllers
 						}
 						else
 						{
-							//check whether database exists
+							// check whether database exists
 							if (!SqlServerDatabaseExists(connectionString))
 							{
 								return UpdateResult(x =>

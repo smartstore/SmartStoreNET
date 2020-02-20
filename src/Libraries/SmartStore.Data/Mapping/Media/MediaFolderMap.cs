@@ -21,13 +21,11 @@ namespace SmartStore.Data.Mapping.Media
         }
     }
 
-    public partial class MediaRegionMap : EntityTypeConfiguration<MediaRegion>
+    public partial class MediaAlbumMap : EntityTypeConfiguration<MediaAlbum>
     {
-        public MediaRegionMap()
+        public MediaAlbumMap()
         {
             Property(c => c.ResKey).HasMaxLength(255);
-            Property(c => c.Icon).HasMaxLength(100);
-            Property(c => c.Color).HasMaxLength(100);
         }
     }
 }

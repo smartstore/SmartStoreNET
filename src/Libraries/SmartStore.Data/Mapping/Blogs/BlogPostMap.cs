@@ -20,6 +20,16 @@ namespace SmartStore.Data.Mapping.Blogs
                 .WithMany()
                 .HasForeignKey(bp => bp.LanguageId)
                 .WillCascadeOnDelete(true);
+
+            HasOptional(bp => bp.MediaFile)
+                .WithMany()
+                .HasForeignKey(bp => bp.MediaFileId)
+                .WillCascadeOnDelete(false);
+
+            HasOptional(bp => bp.PreviewMediaFile)
+                .WithMany()
+                .HasForeignKey(bp => bp.PreviewMediaFileId)
+                .WillCascadeOnDelete(false);
         }
     }
 }

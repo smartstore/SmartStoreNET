@@ -13,7 +13,7 @@ namespace SmartStore.Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202002190129243_MediaFileExtend"; }
+            get { return "202002200229128_MediaFileExtend"; }
         }
         
         string IMigrationMetadata.Source

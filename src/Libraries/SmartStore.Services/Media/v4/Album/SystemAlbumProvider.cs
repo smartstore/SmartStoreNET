@@ -13,11 +13,11 @@ using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Services.Media
 {
-    public partial class SystemMediaAlbumProvider : IMediaAlbumProvider, IMediaRelationDetector
+    public partial class SystemAlbumProvider : IAlbumProvider, IMediaRelationDetector
     {
         private readonly IDbContext _dbContext;
         
-        public SystemMediaAlbumProvider(IDbContext dbContext)
+        public SystemAlbumProvider(IDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -307,6 +307,20 @@ namespace SmartStore.Services.Media
                         {
                             yield return new MediaRelation { EntityId = x.EntityId, EntityName = name, MediaFileId = id };
                         }
+                    }
+                }
+            }
+
+            // Downloads
+            if (albumName == Downloads)
+            {
+                var name = nameof(Download);
+                var p = new FastPager<Download>(ctx.Set<Download>().AsNoTracking().Where(x => x.MediaFileId.HasValue));
+                while (p.ReadNextPage(x => new { x.Id, x.MediaFileId }, x => x.Id, out var list))
+                {
+                    foreach (var x in list)
+                    {
+                        yield return new MediaRelation { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
                     }
                 }
             }

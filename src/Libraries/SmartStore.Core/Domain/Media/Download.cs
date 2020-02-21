@@ -76,11 +76,23 @@ namespace SmartStore.Core.Domain.Media
 		[Index("IX_UpdatedOn_IsTransient", 0)]
 		public DateTime UpdatedOnUtc { get; set; }
 
-		/// <summary>
-		/// Gets or sets the media storage identifier
-		/// </summary>
-		[DataMember]
-		public int? MediaStorageId { get; set; }
+        /// <summary>
+        /// Gets or sets the media file identifier
+        /// </summary>
+        [DataMember]
+        public int? MediaFileId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the media file
+        /// </summary>
+        [DataMember]
+        public virtual MediaFile MediaFile { get; set; }
+
+        /// <summary>
+        /// Gets or sets the media storage identifier
+        /// </summary>
+        [DataMember]
+		public int? MediaStorageId { get; set; } // TODO: (mm) migrate and remove later
 
 		/// <summary>
 		/// Gets or sets the media storage

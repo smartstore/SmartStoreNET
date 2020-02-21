@@ -9,6 +9,11 @@ namespace SmartStore.Data.Utilities
 {
     /// <summary>
     /// Ensures stable and consistent paging performance over very large datasets.
+    /// Other than LINQs Skip(x).Take(y) approach the entity set is sorted 
+    /// descending by id and a specified amount of records are returned.
+    /// The FastPager remembers the last (lowest) returned id and uses
+    /// it for the next batches' WHERE clause. This way Skip() can be avoided which
+    /// is known for performing really bad on large tables.
     /// </summary>
     public sealed class FastPager<T> where T : BaseEntity, new()
     {

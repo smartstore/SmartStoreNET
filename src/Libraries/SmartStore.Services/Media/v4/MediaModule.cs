@@ -30,10 +30,10 @@ namespace SmartStore.Services.Media
             builder.RegisterType<MediaMover>().As<IMediaMover>().InstancePerRequest();
 
             // Register all album providers
-            var albumProviderTypes = _typeFinder.FindClassesOfType<IMediaAlbumProvider>(ignoreInactivePlugins: true);
+            var albumProviderTypes = _typeFinder.FindClassesOfType<IAlbumProvider>(ignoreInactivePlugins: true);
             foreach (var type in albumProviderTypes)
             {
-                builder.RegisterType(type).Keyed<IMediaAlbumProvider>(type).InstancePerRequest();
+                builder.RegisterType(type).Keyed<IAlbumProvider>(type).InstancePerRequest();
             }
         }
     }

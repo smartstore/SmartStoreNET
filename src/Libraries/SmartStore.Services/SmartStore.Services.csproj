@@ -354,13 +354,13 @@
     <Compile Include="Media\Storage\MediaItem.cs" />
     <Compile Include="Media\Storage\MediaMover.cs" />
     <Compile Include="Media\TransientMediaClearTask.cs" />
-    <Compile Include="Media\v4\Folders\IMediaAlbumProvider.cs" />
-    <Compile Include="Media\v4\Folders\IMediaFolderService.cs" />
-    <Compile Include="Media\v4\Folders\IMediaFolderServiceExtensions.cs" />
-    <Compile Include="Media\v4\Folders\MediaAlbumDisplayHint.cs" />
-    <Compile Include="Media\v4\Folders\MediaFolderNode.cs" />
-    <Compile Include="Media\v4\Folders\MediaFolderService.cs" />
-    <Compile Include="Media\v4\Folders\SystemMediaAlbumProvider.cs" />
+    <Compile Include="Media\v4\Album\IAlbumProvider.cs" />
+    <Compile Include="Media\v4\Album\IMediaFolderService.cs" />
+    <Compile Include="Media\v4\Album\IMediaFolderServiceExtensions.cs" />
+    <Compile Include="Media\v4\Album\MediaAlbumDisplayHint.cs" />
+    <Compile Include="Media\v4\Album\MediaFolderNode.cs" />
+    <Compile Include="Media\v4\Album\MediaFolderService.cs" />
+    <Compile Include="Media\v4\Album\SystemAlbumProvider.cs" />
     <Compile Include="Media\v4\MediaModule.cs" />
     <Compile Include="Media\v4\MediaStarter.cs" />
     <Compile Include="Media\v4\MediaTypes\MediaType.cs" />
@@ -766,7 +766,9 @@
       <CachedSettingsPropName>Nop_Services_EuropaCheckVatService_checkVatService</CachedSettingsPropName>
     </WebReferenceUrl>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Media\v4\Tracking\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Cart\Readme.txt">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>

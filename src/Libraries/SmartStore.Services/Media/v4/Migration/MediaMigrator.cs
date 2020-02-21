@@ -118,20 +118,26 @@ namespace SmartStore.Services.Media.Migration
 
         private void DetectRelations(SmartObjectContext ctx)
         {
+            // Get all installed album names...
             var albumNames = _mediaFolderService.GetAlbumNames(true);
 
             using (var scope = new DbContextScope(ctx, validateOnSave: false, hooksEnabled: false))
             {
                 foreach (var albumName in albumNames)
                 {
+                    // get the id for an album (necessary later to set FolderId)
                     var albumId = _mediaFolderService.GetAlbumIdByName(albumName);
+
+                    // load corresponding detector provider for current album...
                     var provider = _mediaFolderService.LoadAlbumProvider(albumName) as IMediaRelationDetector;
 
-                    // INFO: Potentially a very long process
+                    // >>>>> DO detection (potentially a very long process)...
                     var relations = provider.DetectAllRelations(albumName);
 
+                    // (perf) batch result data...
                     foreach (var batch in relations.Slice(500))
                     {
+                        // process the batch
                         ProcessRelationsBatch(ctx, batch, albumId, albumName);
                     }
                 }
@@ -140,23 +146,33 @@ namespace SmartStore.Services.Media.Migration
 
         private void ProcessRelationsBatch(SmartObjectContext ctx, IEnumerable<MediaRelation> batch, int albumId, string albumName)
         {
+            // Get distinct ids of all detected files...
             var mediaFileIds = batch.Select(x => x.MediaFileId).Distinct().ToArray();
+
+            // fetch these files from database...
             var files = ctx.Set<MediaFile>()
                 .Where(x => mediaFileIds.Contains(x.Id))
                 .Include(x => x.Relations)
                 .ToDictionary(x => x.Id);
 
+            // for each media file relation to an entity...
             foreach (var relation in batch)
             {
+                // fetch the file from local dictionary by its id...
                 if (files.TryGetValue(relation.MediaFileId, out var file))
                 {
+                    // set album id as folder id (during initial migration there are no sub-folders)
                     file.FolderId = albumId;
+
+                    // set album name...
                     relation.Album = albumName;
+
+                    // add the relation to the file entity
                     file.Relations.Add(relation);
                 }
             }
 
-            // Save batch to DB
+            // Save whole batch to database
             ctx.SaveChanges();
 
             // Breathe

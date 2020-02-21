@@ -15,13 +15,13 @@ namespace SmartStore.Services.Media
     /// </summary>
     public sealed class MediaStarter : IPostApplicationStart
     {
-        private readonly IRepository<MediaAlbum> _mediaAlbumRepository;
-        private readonly IMediaFolderService _mediaFolderService;
+        private readonly IRepository<MediaAlbum> _albumRepository;
+        private readonly IMediaFolderService _albumService;
 
-        public MediaStarter(IRepository<MediaAlbum> mediaAlbumRepository, IMediaFolderService mediaFolderService)
+        public MediaStarter(IRepository<MediaAlbum> albumRepository, IMediaFolderService albumService)
         {
-            _mediaAlbumRepository = mediaAlbumRepository;
-            _mediaFolderService = mediaFolderService;
+            _albumRepository = albumRepository;
+            _albumService = albumService;
         }
 
         public int Order => 0;
@@ -36,19 +36,19 @@ namespace SmartStore.Services.Media
                 return;
             }
    
-            var providers = new List<IMediaAlbumProvider>();
+            var providers = new List<IAlbumProvider>();
             
-            if (PluginManager.PluginChangeDetected || !_mediaAlbumRepository.TableUntracked.Any())
+            if (PluginManager.PluginChangeDetected || !_albumRepository.TableUntracked.Any())
             {
-                providers.AddRange(_mediaFolderService.LoadAllAlbumProviders());
+                providers.AddRange(_albumService.LoadAllAlbumProviders());
             }
             else
             {
                 // Always execute system provider.
-                providers.Add(_mediaFolderService.LoadAlbumProvider<SystemMediaAlbumProvider>());
+                providers.Add(_albumService.LoadAlbumProvider<SystemAlbumProvider>());
             }
 
-            _mediaFolderService.InstallAlbums(providers);
+            _albumService.InstallAlbums(providers);
         }
 
         public void OnFail(Exception exception, bool willRetry)

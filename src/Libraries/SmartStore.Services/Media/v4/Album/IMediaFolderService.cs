@@ -7,11 +7,11 @@ namespace SmartStore.Services.Media
 {
     public interface IMediaFolderService
     {
-        T LoadAlbumProvider<T>() where T : IMediaAlbumProvider;
-        IMediaAlbumProvider LoadAlbumProvider(string albumName);
-        IMediaAlbumProvider[] LoadAllAlbumProviders();
+        T LoadAlbumProvider<T>() where T : IAlbumProvider;
+        IAlbumProvider LoadAlbumProvider(string albumName);
+        IAlbumProvider[] LoadAllAlbumProviders();
 
-        void InstallAlbums(IEnumerable<IMediaAlbumProvider> albumProviders);
+        void InstallAlbums(IEnumerable<IAlbumProvider> albumProviders);
         void DeleteAlbum(string name);
         IEnumerable<string> GetAlbumNames(bool withRelationDetectors = false);
         int GetAlbumIdByName(string name);

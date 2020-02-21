@@ -22,8 +22,8 @@ namespace SmartStore.Services.Media
         private readonly IRepository<MediaAlbum> _albumRepository;
         private readonly IRepository<MediaFolder> _folderRepository;
         private readonly ICacheManager _cache;
-        private readonly IEnumerable<Lazy<IMediaAlbumProvider>> _albumProviders;
-        private readonly IIndex<Type, IMediaAlbumProvider> _albumProvider;
+        private readonly IEnumerable<Lazy<IAlbumProvider>> _albumProviders;
+        private readonly IIndex<Type, IAlbumProvider> _albumProvider;
 
         private readonly static ConcurrentDictionary<string, AlbumProviderInfo> _albumProviderInfoCache = new ConcurrentDictionary<string, AlbumProviderInfo>();
         class AlbumProviderInfo
@@ -39,8 +39,8 @@ namespace SmartStore.Services.Media
             IRepository<MediaAlbum> albumRepository,
             IRepository<MediaFolder> folderRepository,
             ICacheManager cache,
-            IEnumerable<Lazy<IMediaAlbumProvider>> albumProviders,
-            IIndex<Type, IMediaAlbumProvider> albumProvider)
+            IEnumerable<Lazy<IAlbumProvider>> albumProviders,
+            IIndex<Type, IAlbumProvider> albumProvider)
         {
             _albumRepository = albumRepository;
             _folderRepository = folderRepository;
@@ -51,12 +51,12 @@ namespace SmartStore.Services.Media
 
         #region Albums
 
-        public T LoadAlbumProvider<T>() where T : IMediaAlbumProvider
+        public T LoadAlbumProvider<T>() where T : IAlbumProvider
         {
             return (T)_albumProvider[typeof(T)];
         }
 
-        public IMediaAlbumProvider LoadAlbumProvider(string albumName)
+        public IAlbumProvider LoadAlbumProvider(string albumName)
         {
             Guard.NotEmpty(albumName, nameof(albumName));
 
@@ -68,12 +68,12 @@ namespace SmartStore.Services.Media
             return null;
         }
 
-        public IMediaAlbumProvider[] LoadAllAlbumProviders()
+        public IAlbumProvider[] LoadAllAlbumProviders()
         {
             return _albumProviders.Select(x => x.Value).ToArray();
         }
 
-        public void InstallAlbums(IEnumerable<IMediaAlbumProvider> albumProviders)
+        public void InstallAlbums(IEnumerable<IAlbumProvider> albumProviders)
         {
             Guard.NotNull(albumProviders, nameof(albumProviders));
 

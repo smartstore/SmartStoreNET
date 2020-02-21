@@ -79,7 +79,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				null, 
 				null);
 
-			mediaFolderService.InstallAlbums(new[] { new SystemMediaAlbumProvider(_ctx) });
+			mediaFolderService.InstallAlbums(new[] { new SystemAlbumProvider(_ctx) });
 		}
 
 		private void PopulateStores()

@@ -14,7 +14,12 @@ namespace SmartStore.Data.Mapping.Media
 			this.Property(p => p.DownloadBinary).IsMaxLength();
 #pragma warning restore 612, 618
 
-			HasOptional(x => x.MediaStorage)
+            HasOptional(x => x.MediaFile)
+                .WithMany()
+                .HasForeignKey(x => x.MediaFileId)
+                .WillCascadeOnDelete(false);
+
+            HasOptional(x => x.MediaStorage)
 				.WithMany()
 				.HasForeignKey(x => x.MediaStorageId)
 				.WillCascadeOnDelete(false);

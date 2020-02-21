@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
@@ -62,8 +63,8 @@ namespace SmartStore.Admin.Models.Blogs
         public bool DisplayTagsInPreview { get; set; } = true;
 
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Tags")]
-        [AllowHtml]
-        public string Tags { get; set; }
+        public string[] Tags { get; set; }
+        public MultiSelectList AvailableTags { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Comments")]
         public int Comments { get; set; }

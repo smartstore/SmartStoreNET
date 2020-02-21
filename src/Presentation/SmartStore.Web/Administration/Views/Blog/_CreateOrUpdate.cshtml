@@ -53,7 +53,7 @@
                 @Html.SmartLabelFor(model => model.Tags)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Tags)
+                @Html.ListBoxFor(model => model.Tags, Model.AvailableTags, new { multiple = "multiple", data_tags = "true" })
                 @Html.ValidationMessageFor(model => model.Tags)
             </td>
         </tr>

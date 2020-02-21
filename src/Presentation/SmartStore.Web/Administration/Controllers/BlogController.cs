@@ -125,6 +125,10 @@ namespace SmartStore.Admin.Controllers
             var model = new BlogPostModel();
             model.CreatedOnUtc = DateTime.UtcNow;
 
+            // Tags
+            var allTags = _blogService.GetAllBlogPostTags(0, 0, true).Select(x => x.Name).ToList();
+            model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
+
             //Stores
             PrepareStoresMappingModel(model, null, false);
 
@@ -148,7 +152,7 @@ namespace SmartStore.Admin.Controllers
                 blogPost.CreatedOnUtc = model.CreatedOnUtc;
                 blogPost.StartDateUtc = model.StartDate;
                 blogPost.EndDateUtc = model.EndDate;
-
+                
                 _blogService.InsertBlogPost(blogPost);
 
                 // Search engine name.
@@ -165,6 +169,10 @@ namespace SmartStore.Admin.Controllers
 
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
 
+            // Tags
+            var allTags = _blogService.GetAllBlogPostTags(0, 0, true).Select(x => x.Name).ToList();
+            model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
+            
             PrepareStoresMappingModel(model, null, true);
 
             return View(model);
@@ -183,6 +191,11 @@ namespace SmartStore.Admin.Controllers
             model.CreatedOnUtc = blogPost.CreatedOnUtc;
             model.StartDate = blogPost.StartDateUtc;
             model.EndDate = blogPost.EndDateUtc;
+
+            // Tags
+            var allTags = _blogService.GetAllBlogPostTags(0, 0, true).Select( x => x.Name).ToList();
+            model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
+            model.Tags = blogPost.Tags.SplitSafe(",");
 
             // Store
             PrepareStoresMappingModel(model, blogPost, false);
@@ -223,6 +236,11 @@ namespace SmartStore.Admin.Controllers
             }
 
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
+
+            // Tags
+            var allTags = _blogService.GetAllBlogPostTags(0, 0, true).Select(x => x.Name).ToList();
+            model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
+            model.Tags = blogPost.Tags.SplitSafe(",");
 
             PrepareStoresMappingModel(model, blogPost, true);
 

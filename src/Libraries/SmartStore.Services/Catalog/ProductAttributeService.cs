@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data.Entity;
+using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -9,7 +9,6 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
-using SmartStore.Core.Events;
 using SmartStore.Core.Localization;
 using SmartStore.Data.Caching;
 using SmartStore.Services.Localization;
@@ -17,7 +16,7 @@ using SmartStore.Services.Media;
 
 namespace SmartStore.Services.Catalog
 {
-	public partial class ProductAttributeService : IProductAttributeService
+    public partial class ProductAttributeService : IProductAttributeService
     {
 		// 0 = ProductId, 1 = PageIndex, 2 = PageSize
 		private const string PRODUCTVARIANTATTRIBUTES_COMBINATIONS_BY_ID_KEY = "SmartStore.productvariantattribute.combinations.id-{0}-{1}-{2}";
@@ -35,7 +34,6 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<ProductVariantAttributeValue> _productVariantAttributeValueRepository;
 		private readonly IRepository<ProductBundleItemAttributeFilter> _productBundleItemAttributeFilterRepository;
 		private readonly ILocalizedEntityService _localizedEntityService;
-		private readonly IEventPublisher _eventPublisher;
         private readonly IRequestCache _requestCache;
 		private readonly IPictureService _pictureService;
 
@@ -49,7 +47,6 @@ namespace SmartStore.Services.Catalog
             IRepository<ProductVariantAttributeValue> productVariantAttributeValueRepository,
 			IRepository<ProductBundleItemAttributeFilter> productBundleItemAttributeFilterRepository,
 			ILocalizedEntityService localizedEntityService,
-			IEventPublisher eventPublisher,
 			IPictureService pictureService)
         {
             _requestCache = requestCache;
@@ -61,7 +58,6 @@ namespace SmartStore.Services.Catalog
             _productVariantAttributeValueRepository = productVariantAttributeValueRepository;
 			_productBundleItemAttributeFilterRepository = productBundleItemAttributeFilterRepository;
 			_localizedEntityService = localizedEntityService;
-            _eventPublisher = eventPublisher;
 			_pictureService = pictureService;
 
 			T = NullLocalizer.Instance;
@@ -107,14 +103,15 @@ namespace SmartStore.Services.Catalog
 			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
         }
 
-        public virtual IList<ProductAttribute> GetAllProductAttributes()
+        public virtual IPagedList<ProductAttribute> GetAllProductAttributes(int pageIndex, int pageSize, bool untracked = true)
         {
-			var query = from pa in _productAttributeRepository.Table
-						orderby pa.DisplayOrder, pa.Name
-						select pa;
-			var productAttributes = query.ToListCached("db.prodattrs.all");
-			return productAttributes;
-		}
+            var query =
+                from x in untracked ? _productAttributeRepository.TableUntracked : _productAttributeRepository.Table
+                orderby x.DisplayOrder
+                select x;
+
+            return new PagedList<ProductAttribute>(query, pageIndex, pageSize);
+        }
 
         public virtual ProductAttribute GetProductAttributeById(int productAttributeId)
         {

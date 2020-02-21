@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
@@ -109,23 +110,40 @@ namespace SmartStore.Admin.Controllers
         // Ajax.
         public ActionResult AllProductAttributes(string label, int selectedId)
         {
-            var attributes = _productAttributeService.GetAllProductAttributes();
+            var language = Services.WorkContext.WorkingLanguage;
+            var allAttributes = new Dictionary<int, string>();
+
+            for (var pageIndex = 0; pageIndex < 9999999; ++pageIndex)
+            {
+                var attributes = _productAttributeService.GetAllProductAttributes(pageIndex, 500);
+
+                foreach (var attribute in attributes)
+                {
+                    allAttributes[attribute.Id] = attribute.GetLocalized(x => x.Name, language.Id, true, false).Value;
+                }
+
+                if (!attributes.HasNextPage)
+                {
+                    break;
+                }
+            }
+
+            var data = allAttributes
+                .Where(x => x.Value.HasValue())
+                .Select(x => new
+                {
+                    id = x.Key,
+                    text = x.Value,
+                    selected = x.Key == selectedId
+                })
+                .ToList();
 
             if (label.HasValue())
             {
-                attributes.Insert(0, new ProductAttribute { Name = label, Id = 0 });
+                data.Insert(0, new { id = 0, text = label, selected = false });
             }
 
-            var query =
-                from attr in attributes
-                select new
-                {
-                    id = attr.Id.ToString(),
-                    text = attr.Name,
-                    selected = attr.Id == selectedId
-                };
-
-            return new JsonResult { Data = query.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
         public ActionResult Index()
@@ -146,15 +164,11 @@ namespace SmartStore.Admin.Controllers
         public ActionResult List(GridCommand command)
         {
 			var gridModel = new GridModel<ProductAttributeModel>();
-			var productAttributes = _productAttributeService.GetAllProductAttributes();
+			var productAttributes = _productAttributeService.GetAllProductAttributes(0, 1);
 
-			var data = productAttributes
+			var data = productAttributes.SourceQuery
 				.ForCommand(command)
-				.Select(x =>
-				{
-					var model = x.ToModel();
-					return model;
-				})
+                .Select(x => x.ToModel())
 				.ToList();
 
 			gridModel.Data = data.PagedForCommand(command);

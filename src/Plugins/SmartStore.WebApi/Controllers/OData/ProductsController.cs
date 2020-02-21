@@ -414,24 +414,35 @@ namespace SmartStore.WebApi.Controllers.OData
                     .Where(x => x.Name.HasValue())
                     .ToList();
 
-				var allAttributes = _productAttributeService.Value.GetAllProductAttributes();
-                var allAttributesDic = allAttributes.ToDictionarySafe(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);
+                var attributeNames = new HashSet<string>(data.Select(x => x.Name), StringComparer.InvariantCultureIgnoreCase);
+                var pagedAttributes = _productAttributeService.Value.GetAllProductAttributes(0, 1);
+                var attributesData = pagedAttributes.SourceQuery
+                    .Where(x => attributeNames.Contains(x.Name))
+                    .Select(x => new { x.Id, x.Name })
+                    .ToList();
+                var allAttributesDic = attributesData.ToDictionarySafe(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);
 
                 foreach (var srcAttr in data)
 				{
-                    if (!allAttributesDic.TryGetValue(srcAttr.Name, out var attribute))
+                    var attributeId = 0;
+                    if (allAttributesDic.TryGetValue(srcAttr.Name, out var attributeData))
                     {
-                        attribute = new ProductAttribute { Name = srcAttr.Name };
+                        attributeId = attributeData.Id;
+                    }
+                    else
+                    {
+                        var attribute = new ProductAttribute { Name = srcAttr.Name };
                         _productAttributeService.Value.InsertProductAttribute(attribute);
+                        attributeId = attribute.Id;
                     }
 
-					var productAttribute = entity.ProductVariantAttributes.FirstOrDefault(x => x.ProductAttribute.Name.IsCaseInsensitiveEqual(srcAttr.Name));
+                    var productAttribute = entity.ProductVariantAttributes.FirstOrDefault(x => x.ProductAttribute.Name.IsCaseInsensitiveEqual(srcAttr.Name));
 					if (productAttribute == null)
 					{
 						productAttribute = new ProductVariantAttribute
 						{
 							ProductId = entity.Id,
-							ProductAttributeId = attribute.Id,
+							ProductAttributeId = attributeId,
 							AttributeControlTypeId = srcAttr.ControlTypeId,
 							DisplayOrder = entity.ProductVariantAttributes.OrderByDescending(x => x.DisplayOrder).Select(x => x.DisplayOrder).FirstOrDefault() + 1,
 							IsRequired = srcAttr.IsRequired

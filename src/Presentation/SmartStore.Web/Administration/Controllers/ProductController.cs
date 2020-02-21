@@ -652,7 +652,7 @@ namespace SmartStore.Admin.Controllers
 			model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.GetLocalized(x => x.Name) ?? string.Empty;
 			model.BaseDimensionIn = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId)?.GetLocalized(x => x.Name) ?? string.Empty;
 
-			model.NumberOfAvailableProductAttributes = _productAttributeService.GetAllProductAttributes().Count;
+            model.NumberOfAvailableProductAttributes = _productAttributeService.GetAllProductAttributes(0, 1).TotalCount;
 			model.NumberOfAvailableManufacturers = _manufacturerService.GetAllManufacturers("",	pageIndex: 0, pageSize: 1, showHidden: true).TotalCount;
 			model.NumberOfAvailableCategories = _categoryService.GetAllCategories(pageIndex: 0, pageSize: 1, showHidden: true).TotalCount;
 

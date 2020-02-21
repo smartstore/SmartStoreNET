@@ -9,7 +9,6 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Events;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
@@ -19,7 +18,7 @@ using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Catalog
 {
-	[TestFixture]
+    [TestFixture]
     public class ProductAttributeParserTests : ServiceTest
     {
         IRepository<ProductAttribute> _productAttributeRepo;
@@ -33,7 +32,6 @@ namespace SmartStore.Services.Tests.Catalog
 		IProductAttributeService _productAttributeService;
         IProductAttributeParser _productAttributeParser;
 		IPriceCalculationService _priceCalculationService;
-        IEventPublisher _eventPublisher;
         IPictureService _pictureService;
 
         IWorkContext _workContext;
@@ -177,9 +175,6 @@ namespace SmartStore.Services.Tests.Catalog
 			_productBundleItemAttributeFilter = MockRepository.GenerateMock<IRepository<ProductBundleItemAttributeFilter>>();
 			_localizedEntityService = MockRepository.GenerateMock<ILocalizedEntityService>();
 
-            _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
-            _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
-
             _pictureService = MockRepository.GenerateMock<IPictureService>();
 
             var cacheManager = new NullCache();
@@ -194,7 +189,6 @@ namespace SmartStore.Services.Tests.Catalog
                 _productVariantAttributeValueRepo,
 				_productBundleItemAttributeFilter,
 				_localizedEntityService,
-                _eventPublisher,
                 _pictureService);
 			
             _productAttributeParser = new ProductAttributeParser(_productAttributeService, new MemoryRepository<ProductVariantAttributeCombination>(), NullRequestCache.Instance);

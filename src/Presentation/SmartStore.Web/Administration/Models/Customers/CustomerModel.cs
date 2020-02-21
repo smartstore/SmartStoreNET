@@ -217,21 +217,25 @@ namespace SmartStore.Admin.Models.Customers
         }
 
         public class SendEmailModel : ModelBase
-        {
-            [SmartResourceDisplayName("Admin.Customers.Customers.SendEmail.Subject")]
+        {   
             [AllowHtml]
+            [Required]
+            [SmartResourceDisplayName("Admin.Customers.Customers.SendEmail.Subject")]
             public string Subject { get; set; }
 
-            [SmartResourceDisplayName("Admin.Customers.Customers.SendEmail.Body")]
             [AllowHtml]
+            [Required]
+            [SmartResourceDisplayName("Admin.Customers.Customers.SendEmail.Body")]
             public string Body { get; set; }
         }
 
         public class SendPmModel : ModelBase
         {
+            [Required]
             [SmartResourceDisplayName("Admin.Customers.Customers.SendPM.Subject")]
             public string Subject { get; set; }
 
+            [Required]
             [SmartResourceDisplayName("Admin.Customers.Customers.SendPM.Message")]
             public string Message { get; set; }
         }

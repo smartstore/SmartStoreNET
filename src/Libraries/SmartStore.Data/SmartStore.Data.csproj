@@ -758,6 +758,10 @@
     <Compile Include="Migrations\202002191252074_RemoveDiscountRequirements.Designer.cs">
       <DependentUpon>202002191252074_RemoveDiscountRequirements.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202002211011108_GenericMessageTemplate.cs" />
+    <Compile Include="Migrations\202002211011108_GenericMessageTemplate.Designer.cs">
+      <DependentUpon>202002211011108_GenericMessageTemplate.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -1351,6 +1355,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202002191252074_RemoveDiscountRequirements.resx">
       <DependentUpon>202002191252074_RemoveDiscountRequirements.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002211011108_GenericMessageTemplate.resx">
+      <DependentUpon>202002211011108_GenericMessageTemplate.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

@@ -17,6 +17,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Email;
 using SmartStore.Core.Security;
+using SmartStore.Services;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Catalog;
@@ -42,6 +43,7 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public partial class CustomerController : AdminControllerBase
     {
+        private readonly ICommonServices _services;
         private readonly ICustomerService _customerService;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
         private readonly IGenericAttributeService _genericAttributeService;
@@ -70,6 +72,7 @@ namespace SmartStore.Admin.Controllers
         private readonly Lazy<IGdprTool> _gdprTool;
 
         public CustomerController(
+            ICommonServices services,
             ICustomerService customerService,
             INewsLetterSubscriptionService newsLetterSubscriptionService,
             IGenericAttributeService genericAttributeService,
@@ -97,6 +100,7 @@ namespace SmartStore.Admin.Controllers
             IAffiliateService affiliateService,
             Lazy<IGdprTool> gdprTool)
         {
+            _services = services;
             _customerService = customerService;
             _newsLetterSubscriptionService = newsLetterSubscriptionService;
             _genericAttributeService = genericAttributeService;
@@ -986,30 +990,24 @@ namespace SmartStore.Admin.Controllers
 
             try
             {
-                if (String.IsNullOrWhiteSpace(customer.Email))
-                    throw new SmartException("Customer email is empty");
-                if (!customer.Email.IsEmail())
-                    throw new SmartException("Customer email is not valid");
-                if (String.IsNullOrWhiteSpace(model.SendEmail.Subject))
-                    throw new SmartException("Email subject is empty");
-                if (String.IsNullOrWhiteSpace(model.SendEmail.Body))
-                    throw new SmartException("Email body is empty");
+                if (!customer.Email.HasValue() || !customer.Email.IsEmail())
+                    throw new SmartException(T("Admin.Customers.Customers.SendEmail.EmailNotValid"));
 
                 var emailAccount = _emailAccountService.GetDefaultEmailAccount();
                 if (emailAccount == null)
                     throw new SmartException(T("Common.Error.NoEmailAccount"));
 
-                var email = new QueuedEmail
+                var messageContext = MessageContext.Create("System.Generic", customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId));
+
+                var customModel = new NamedModelPart("Generic")
                 {
-                    EmailAccountId = emailAccount.Id,
-                    From = emailAccount.ToEmailAddress(),
-                    To = new EmailAddress(customer.Email, customer.GetFullName()),
-                    Subject = model.SendEmail.Subject,
-                    Body = model.SendEmail.Body,
-                    CreatedOnUtc = DateTime.UtcNow,
+                    ["ReplyTo"] = emailAccount.ToEmailAddress(),
+                    ["Email"] = customer.Email,
+                    ["Subject"] = model.SendEmail.Subject,
+                    ["Body"] = model.SendEmail.Body
                 };
 
-                _queuedEmailService.InsertQueuedEmail(email);
+                _services.MessageFactory.CreateMessage(messageContext, true, customer, _services.StoreContext.CurrentStore, customModel);
 
                 NotifySuccess(T("Admin.Customers.Customers.SendEmail.Queued"));
             }
@@ -1034,11 +1032,7 @@ namespace SmartStore.Admin.Controllers
                     throw new SmartException(T("PrivateMessages.Disabled"));
                 if (customer.IsGuest())
                     throw new SmartException(T("Common.MethodNotSupportedForGuests"));
-                if (String.IsNullOrWhiteSpace(model.SendPm.Subject))
-                    throw new SmartException(T("Admin.Customers.Customers.SendPM.Subject.Hint"));
-                if (String.IsNullOrWhiteSpace(model.SendPm.Message))
-                    throw new SmartException(T("Admin.Customers.Customers.SendPM.Message.Hint"));
-
+                
                 var privateMessage = new PrivateMessage
                 {
                     StoreId = Services.StoreContext.CurrentStore.Id,
@@ -1053,6 +1047,7 @@ namespace SmartStore.Admin.Controllers
                 };
 
                 _forumService.InsertPrivateMessage(privateMessage);
+
                 NotifySuccess(T("Admin.Customers.Customers.SendPM.Sent"));
             }
             catch (Exception exc)

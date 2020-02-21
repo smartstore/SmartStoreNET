@@ -461,6 +461,7 @@
     <Content Include="App_Data\EmailTemplates\de\Service.EmailAFriend.xml" />
     <Content Include="App_Data\EmailTemplates\de\ShipmentDelivered.CustomerNotification.xml" />
     <Content Include="App_Data\EmailTemplates\de\ShipmentSent.CustomerNotification.xml" />
+    <Content Include="App_Data\EmailTemplates\de\System.Generic.xml" />
     <Content Include="App_Data\EmailTemplates\de\System.Campaign.xml" />
     <Content Include="App_Data\EmailTemplates\de\System.ContactUs.xml" />
     <Content Include="App_Data\EmailTemplates\de\Wishlist.EmailAFriend.xml" />
@@ -492,6 +493,7 @@
     <Content Include="App_Data\EmailTemplates\en\Service.EmailAFriend.xml" />
     <Content Include="App_Data\EmailTemplates\en\ShipmentDelivered.CustomerNotification.xml" />
     <Content Include="App_Data\EmailTemplates\en\ShipmentSent.CustomerNotification.xml" />
+    <Content Include="App_Data\EmailTemplates\en\System.Generic.xml" />
     <Content Include="App_Data\EmailTemplates\en\System.Campaign.xml" />
     <Content Include="App_Data\EmailTemplates\en\System.ContactUs.xml" />
     <Content Include="App_Data\EmailTemplates\en\Wishlist.EmailAFriend.xml" />

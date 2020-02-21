@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Generic.Email }}</To>
+	<Subject>{{ Generic.Subject }}</Subject>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+{{ Generic.Body }}
+{% endblock %}]]></Body>
+</MessageTemplate>

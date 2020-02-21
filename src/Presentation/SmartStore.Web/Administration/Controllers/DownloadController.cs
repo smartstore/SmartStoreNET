@@ -20,8 +20,6 @@ namespace SmartStore.Admin.Controllers
             _downloadService = downloadService;
         }
 
-        #region Download
-
         [Permission(Permissions.Media.Download.Read)]
         public ActionResult DownloadFile(int downloadId)
         {
@@ -88,6 +86,7 @@ namespace SmartStore.Admin.Controllers
 				throw new ArgumentException(T("Common.NoFileUploaded"));
 			}
 
+            // TODO: (mm) migrate
             var download = new Download
             {
                 EntityId = entityId,
@@ -165,7 +164,5 @@ namespace SmartStore.Admin.Controllers
 				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, null, new { minimalMode, fieldName }),
 			});
 		}
-
-        #endregion
     }
 }

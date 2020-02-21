@@ -139,9 +139,10 @@ namespace SmartStore.Core.Domain.Media
 		public bool Hidden { get; set; }
 
 		/// <summary>
-		/// Internally used for migration stuff only
+		/// Internally used for migration stuff only.
+		/// 0 = needs migration 'cause existed in previous versions already, 1 = was migrated by migrator, 2 = relations has been detected
 		/// </summary>
-		public int Version { get; set; }
+		public int Version { get; set; } = 2;
 
 		/// <summary>
 		/// Gets or sets the media storage identifier

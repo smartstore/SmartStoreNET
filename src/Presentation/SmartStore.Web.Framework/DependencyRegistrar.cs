@@ -954,7 +954,6 @@ namespace SmartStore.Web.Framework
 				RegisterAsSpecificProvider<IOutputCacheProvider>(type, systemName, registration);
 				RegisterAsSpecificProvider<IMediaStorageProvider>(type, systemName, registration);
 			}
-
 		}
 
 		#region Helpers

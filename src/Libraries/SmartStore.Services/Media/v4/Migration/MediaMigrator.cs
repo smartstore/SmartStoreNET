@@ -43,6 +43,7 @@ namespace SmartStore.Services.Media.Migration
             CreateAlbums();
             CreateSettings(ctx);
             MigratePictures(ctx);
+            DetectRelations(ctx);
 
             Executed = true;
         }
@@ -63,7 +64,7 @@ namespace SmartStore.Services.Media.Migration
 
         private void CreateAlbums()
         {
-            var providers = _mediaFolderService.LoadAlbumProviders();
+            var providers = _mediaFolderService.LoadAllAlbumProviders();
             _mediaFolderService.InstallAlbums(providers);
         }
 
@@ -113,6 +114,53 @@ namespace SmartStore.Services.Media.Migration
                     ctx.DetachEntities(x => x is MediaFile || x is MediaStorage, false);
                 }
             }
+        }
+
+        private void DetectRelations(SmartObjectContext ctx)
+        {
+            var albumNames = _mediaFolderService.GetAlbumNames(true);
+
+            using (var scope = new DbContextScope(ctx, validateOnSave: false, hooksEnabled: false))
+            {
+                foreach (var albumName in albumNames)
+                {
+                    var albumId = _mediaFolderService.GetAlbumIdByName(albumName);
+                    var provider = _mediaFolderService.LoadAlbumProvider(albumName) as IMediaRelationDetector;
+
+                    // INFO: Potentially a very long process
+                    var relations = provider.DetectAllRelations(albumName);
+
+                    foreach (var batch in relations.Slice(500))
+                    {
+                        ProcessRelationsBatch(ctx, batch, albumId, albumName);
+                    }
+                }
+            }
+        }
+
+        private void ProcessRelationsBatch(SmartObjectContext ctx, IEnumerable<MediaRelation> batch, int albumId, string albumName)
+        {
+            var mediaFileIds = batch.Select(x => x.MediaFileId).Distinct().ToArray();
+            var files = ctx.Set<MediaFile>()
+                .Where(x => mediaFileIds.Contains(x.Id))
+                .Include(x => x.Relations)
+                .ToDictionary(x => x.Id);
+
+            foreach (var relation in batch)
+            {
+                if (files.TryGetValue(relation.MediaFileId, out var file))
+                {
+                    file.FolderId = albumId;
+                    relation.Album = albumName;
+                    file.Relations.Add(relation);
+                }
+            }
+
+            // Save batch to DB
+            ctx.SaveChanges();
+
+            // Breathe
+            ctx.DetachEntities(x => x is MediaFile || x is MediaRelation, false);
         }
     }
 }

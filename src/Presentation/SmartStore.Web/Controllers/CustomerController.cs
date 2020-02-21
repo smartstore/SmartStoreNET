@@ -1591,7 +1591,7 @@ namespace SmartStore.Web.Controllers
 						_pictureService.DeletePicture(customerAvatar);
 					}
 
-					customerAvatar = _pictureService.InsertPicture(uploadedFile.Buffer, uploadedFile.ContentType, null, true, false);
+					customerAvatar = _pictureService.InsertPicture(uploadedFile.Buffer, uploadedFile.ContentType, null, true, false, album: "customer");
 
 					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, customerAvatar.Id);
 

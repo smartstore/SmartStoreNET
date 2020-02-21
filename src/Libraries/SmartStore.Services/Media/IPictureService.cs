@@ -215,7 +215,8 @@ namespace SmartStore.Services.Media
 			bool isNew,
 			int width = 0,
 			int height = 0,
-			bool isTransient = true);
+			bool isTransient = true,
+			string album = null);
 
 		/// <summary>
 		/// Inserts a picture
@@ -227,7 +228,14 @@ namespace SmartStore.Services.Media
 		/// <param name="isTransient">A value indicating whether the picture is initially in transient state</param>
 		/// <param name="validateBinary">A value indicating whether to validated provided picture binary</param>
 		/// <returns>Picture</returns>
-		MediaFile InsertPicture(byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool isTransient = true, bool validateBinary = true);
+		MediaFile InsertPicture(
+			byte[] pictureBinary, 
+			string mimeType, 
+			string seoFilename, 
+			bool isNew, bool 
+			isTransient = true, 
+			bool validateBinary = true,
+			string album = null);
 
 		/// <summary>
 		/// Updates the picture
@@ -238,7 +246,13 @@ namespace SmartStore.Services.Media
 		/// <param name="seoFilename">The SEO filename</param>
 		/// <param name="isNew">A value indicating whether the picture is new</param>
 		/// <param name="validateBinary">A value indicating whether to validated provided picture binary</param>
-		void UpdatePicture(MediaFile picture, byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool validateBinary = true);
+		void UpdatePicture(
+			MediaFile picture, 
+			byte[] pictureBinary, 
+			string mimeType, 
+			string seoFilename, 
+			bool isNew, 
+			bool validateBinary = true);
 	}
 
 	public static class IPictureServiceExtensions

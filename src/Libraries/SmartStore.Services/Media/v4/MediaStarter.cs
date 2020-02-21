@@ -40,12 +40,12 @@ namespace SmartStore.Services.Media
             
             if (PluginManager.PluginChangeDetected || !_mediaAlbumRepository.TableUntracked.Any())
             {
-                providers.AddRange(_mediaFolderService.LoadAlbumProviders());
+                providers.AddRange(_mediaFolderService.LoadAllAlbumProviders());
             }
             else
             {
                 // Always execute system provider.
-                providers.Add(new SystemMediaAlbumProvider());
+                providers.Add(_mediaFolderService.LoadAlbumProvider<SystemMediaAlbumProvider>());
             }
 
             _mediaFolderService.InstallAlbums(providers);

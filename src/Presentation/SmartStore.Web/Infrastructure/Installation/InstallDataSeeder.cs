@@ -74,11 +74,12 @@ namespace SmartStore.Web.Infrastructure.Installation
 		{
 			var mediaFolderService = new MediaFolderService(
 				new EfRepository<MediaAlbum>(_ctx),
+				null,
+				NullCache.Instance,
 				null, 
-				null, 
-				NullCache.Instance);
+				null);
 
-			mediaFolderService.InstallAlbums(new[] { new SystemMediaAlbumProvider() });
+			mediaFolderService.InstallAlbums(new[] { new SystemMediaAlbumProvider(_ctx) });
 		}
 
 		private void PopulateStores()

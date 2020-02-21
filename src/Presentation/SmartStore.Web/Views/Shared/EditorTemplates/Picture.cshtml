@@ -8,9 +8,7 @@
 	{
 		get
 		{
-			if (ViewData.ContainsKey("transientUpload"))
-				return ViewData["transientUpload"].Convert<bool>();
-			return false;
+			return GetMetadata<bool>("transientUpload");
 		}
 	}
 
@@ -18,9 +16,7 @@
 	{
 		get
 		{
-			if (ViewData.ContainsKey("validate"))
-				return ViewData["validate"].Convert<bool>();
-			return true;
+			return GetMetadata<bool>("validate", true);
 		}
 	}
 
@@ -28,7 +24,15 @@
 	{
 		get
 		{
-			return ViewData["compact"].Convert<bool?>() == true;
+			return GetMetadata<bool>("compact");
+		}
+	}
+
+	private string Album
+	{
+		get
+		{
+			return GetMetadata<string>("album");
 		}
 	}
 }
@@ -51,7 +55,7 @@
 
 	<div class="fileupload-controls">
 		@(Html.SmartStore().FileUploader()
-            .UploadUrl(Url.Action("AsyncUpload", "Picture", new { isTransient = TransientUpload, validate = ValidatePicture, area = "Admin" }))
+            .UploadUrl(Url.Action("AsyncUpload", "Picture", new { isTransient = TransientUpload, validate = ValidatePicture, album = Album, area = "Admin" }))
             .HtmlAttribute("data-fallback-url", pictureService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
             .AcceptedFileTypes("gif|jpe?g|png|svg")
             .ShowRemoveButton(picture != null)

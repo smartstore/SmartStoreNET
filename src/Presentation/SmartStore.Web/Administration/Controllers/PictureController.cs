@@ -24,7 +24,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [Permission(Permissions.Media.Upload)]
-        public ActionResult AsyncUpload(bool isTransient = false, bool validate = true)
+        public ActionResult AsyncUpload(bool isTransient = false, bool validate = true, string album = null)
         {
 			var postedFile = Request.ToPostedFileResult();
 			if (postedFile == null)
@@ -32,7 +32,7 @@ namespace SmartStore.Admin.Controllers
 				return Json(new { success = false });
 			}
             
-            var picture = _pictureService.InsertPicture(postedFile.Buffer, postedFile.ContentType, null, true, isTransient, validate);
+            var picture = _pictureService.InsertPicture(postedFile.Buffer, postedFile.ContentType, null, true, isTransient, validate, album);
 
             return Json(new
 			{

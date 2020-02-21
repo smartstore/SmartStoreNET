@@ -459,6 +459,7 @@
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Discounts.DiscountType.AssignedToOrderSubTotal")
                 .Value("de", "Bezogen auf Zwischensumme");
 
+
             builder.AddOrUpdate("ActivityLog.EditSettings", 
                 "The setting {0} has been changed. The new value is {1}.",
                 "Die Einstellung {0} wurde geändert. Der neue Wert ist {1}.");
@@ -494,6 +495,9 @@
                 "Tracking-URL",
                 "Specifies the URL for tracking the shipment.",
                 "Legt die URL zur Sendungsverfolgung fest.");
+
+            builder.AddOrUpdate("Admin.Media.Album.Message", "Messages", "Nachrichten");
+            builder.AddOrUpdate("Admin.Media.Album.File", "Files", "Dateien");
         }
     }
 }

@@ -81,7 +81,7 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Parent")]
         public int? ParentCategoryId { get; set; }
 
-        [UIHint("Picture")]
+        [UIHint("Picture"), AdditionalMetadata("album", "category")]
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Picture")]
         public int? PictureId { get; set; }
 

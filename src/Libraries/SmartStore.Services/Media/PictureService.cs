@@ -47,7 +47,9 @@ namespace SmartStore.Services.Media
 
 		private readonly IRepository<MediaFile> _pictureRepository;
         private readonly IRepository<ProductMediaFile> _productPictureRepository;
-        private readonly ISettingService _settingService;
+		private readonly IMediaFolderService _mediaFolderService;
+		private readonly IMediaTypeResolver _mediaTypeResolver;
+		private readonly ISettingService _settingService;
         private readonly IEventPublisher _eventPublisher;
         private readonly MediaSettings _mediaSettings;
         private readonly IImageProcessor _imageProcessor;
@@ -71,7 +73,9 @@ namespace SmartStore.Services.Media
 		public PictureService(
             IRepository<MediaFile> pictureRepository,
             IRepository<ProductMediaFile> productPictureRepository,
-            ISettingService settingService, 
+			IMediaFolderService mediaFolderService,
+			IMediaTypeResolver mediaTypeResolver,
+			ISettingService settingService, 
             IEventPublisher eventPublisher,
             MediaSettings mediaSettings,
             IImageProcessor imageProcessor,
@@ -83,6 +87,8 @@ namespace SmartStore.Services.Media
         {
             _pictureRepository = pictureRepository;
             _productPictureRepository = productPictureRepository;
+			_mediaFolderService = mediaFolderService;
+			_mediaTypeResolver = mediaTypeResolver;
             _settingService = settingService;
             _eventPublisher = eventPublisher;
             _mediaSettings = mediaSettings;
@@ -688,38 +694,9 @@ namespace SmartStore.Services.Media
 			string mimeType,
 			string seoFilename,
 			bool isNew,
-			int width,
-			int height,
-			bool isTransient = true)
-		{
-			var picture = _pictureRepository.Create();
-			picture.MimeType = mimeType.EmptyNull().Truncate(20);
-			picture.Name = seoFilename.Truncate(100);
-			picture.IsNew = isNew;
-			picture.IsTransient = isTransient;
-			picture.UpdatedOnUtc = DateTime.UtcNow;
-
-			if (width > 0 && height > 0)
-			{
-				picture.Width = width;
-				picture.Height = height;
-			}
-
-			_pictureRepository.Insert(picture);
-
-			// Save to storage.
-			_storageProvider.Value.Save(picture.ToMedia(), pictureBinary);
-
-			return picture;
-		}
-
-		public virtual MediaFile InsertPicture(
-			byte[] pictureBinary,
-			string mimeType,
-			string seoFilename,
-			bool isNew,
 			bool isTransient = true,
-			bool validateBinary = true)
+			bool validateBinary = true,
+			string album = null)
 		{
 			var size = Size.Empty;
 
@@ -729,6 +706,56 @@ namespace SmartStore.Services.Media
 			}
 
 			return InsertPicture(pictureBinary, mimeType, seoFilename, isNew, size.Width, size.Height, isTransient);
+		}
+
+		public virtual MediaFile InsertPicture(
+			byte[] pictureBinary,
+			string mimeType,
+			string seoFilename,
+			bool isNew,
+			int width,
+			int height,
+			bool isTransient = true,
+			string album = null)
+		{
+			var mime = mimeType.EmptyNull().Truncate(40);
+			var ext = MimeTypes.MapMimeTypeToExtension(mime);
+			var name = seoFilename.Truncate(100);
+
+			var picture = new MediaFile
+			{
+				MimeType = mime,
+				Extension = ext,
+				Name = name + (ext.HasValue() ? "." + ext : ""),
+				Size = pictureBinary != null ? pictureBinary.Length : 0,
+				IsNew = isNew,
+				IsTransient = isTransient
+			};
+
+			picture.MediaType = _mediaTypeResolver.Resolve(picture);
+
+			if (width > 0 && height > 0)
+			{
+				picture.PixelSize = width * height;
+				picture.Width = width;
+				picture.Height = height;
+			}
+
+			if (album.HasValue())
+			{
+				var albumId = _mediaFolderService.GetAlbumIdByName(album);
+				if (albumId > 0)
+				{
+					picture.FolderId = albumId;
+				}
+			}
+
+			_pictureRepository.Insert(picture);
+
+			// Save to storage.
+			_storageProvider.Value.Save(picture.ToMedia(), pictureBinary);
+
+			return picture;
 		}
 
 		public virtual void UpdatePicture(
@@ -742,7 +769,7 @@ namespace SmartStore.Services.Media
 			if (picture == null)
 				return;
 
-			mimeType = mimeType.EmptyNull().Truncate(20);
+			mimeType = mimeType.EmptyNull().Truncate(40);
 			seoFilename = seoFilename.Truncate(100);
 
 			var size = Size.Empty;
@@ -750,6 +777,7 @@ namespace SmartStore.Services.Media
 			if (validateBinary && pictureBinary != null)
 			{
 				pictureBinary = ValidatePicture(pictureBinary, mimeType, out size);
+				picture.Size = pictureBinary.Length;
 			}
 
 			// delete old thumbs if a picture has been changed
@@ -762,16 +790,21 @@ namespace SmartStore.Services.Media
                 HasChanges = true;
             }
 
+			var ext = MimeTypes.MapMimeTypeToExtension(mimeType);
+
+			picture.Extension = ext;
 			picture.MimeType = mimeType;
-			picture.Name = seoFilename;
+			picture.Name = seoFilename + (ext.HasValue() ? "." + ext : "");
 			picture.IsNew = isNew;
-			picture.UpdatedOnUtc = DateTime.UtcNow;
 
 			if (!size.IsEmpty)
 			{
 				picture.Width = size.Width;
 				picture.Height = size.Height;
+				picture.PixelSize = size.Width * size.Height;
 			}
+
+			picture.MediaType = _mediaTypeResolver.Resolve(picture);
 
 			_pictureRepository.Update(picture);
 

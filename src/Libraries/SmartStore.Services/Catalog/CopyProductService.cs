@@ -436,7 +436,8 @@ namespace SmartStore.Services.Catalog
 					true,
 					picture.Width ?? 0,
 					picture.Height ?? 0,
-					false);
+					false,
+					"pagebuilder");
 
 				return clone;
 			}	

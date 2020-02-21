@@ -356,6 +356,7 @@
     <Compile Include="Media\TransientMediaClearTask.cs" />
     <Compile Include="Media\v4\Folders\IMediaAlbumProvider.cs" />
     <Compile Include="Media\v4\Folders\IMediaFolderService.cs" />
+    <Compile Include="Media\v4\Folders\IMediaFolderServiceExtensions.cs" />
     <Compile Include="Media\v4\Folders\MediaAlbumDisplayHint.cs" />
     <Compile Include="Media\v4\Folders\MediaFolderNode.cs" />
     <Compile Include="Media\v4\Folders\MediaFolderService.cs" />
@@ -367,6 +368,7 @@
     <Compile Include="Media\v4\MediaTypes\MediaTypeResolver.cs" />
     <Compile Include="Media\v4\Migration\MediaMigrator.cs" />
     <Compile Include="Media\v4\Migration\SeedingDbMigrationConsumer.cs" />
+    <Compile Include="Media\v4\Relations\IMediaRelationDetector.cs" />
     <Compile Include="Media\v4\Relations\IMediaRelationTracker.cs" />
     <Compile Include="Messages\Importer\NewsLetterSubscriptionImporter.cs" />
     <Compile Include="Messages\Events.cs" />

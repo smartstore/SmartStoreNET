@@ -35,7 +35,7 @@ namespace SmartStore.Admin.Models.Catalog
 		public string Color { get; set; }
 		public bool IsListTypeAttribute { get; set; }
 
-		[UIHint("Picture")]
+		[UIHint("Picture"), AdditionalMetadata("album", "product")]
 		[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Picture")]
 		public int PictureId { get; set; }
 

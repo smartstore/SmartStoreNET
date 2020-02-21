@@ -354,6 +354,23 @@ namespace SmartStore.Web.Framework.Theming
 		/// </summary>
 		/// <typeparam name="T">Actual type of value</typeparam>
 		/// <param name="name">Name of entry</param>
+		/// <param name="defaultValue">The default value to return if item does not exist.</param>
+		/// <returns>Result</returns>
+		public T GetMetadata<T>(string name, T defaultValue)
+		{
+			if (TryGetMetadata<T>(name, out var value))
+			{
+				return value;
+			}
+
+			return defaultValue;
+		}
+
+		/// <summary>
+		/// Looks up an entry in ViewData dictionary first, then in ViewData.ModelMetadata.AdditionalValues dictionary
+		/// </summary>
+		/// <typeparam name="T">Actual type of value</typeparam>
+		/// <param name="name">Name of entry</param>
 		/// <returns><c>true</c> if the entry exists in any of the dictionaries, <c>false</c> otherwise</returns>
 		public bool TryGetMetadata<T>(string name, out T value)
 		{

@@ -494,7 +494,8 @@ namespace SmartStore.Services.Catalog
 							picture.IsNew,
 							picture.Width ?? 0,
 							picture.Height ?? 0,
-							picture.IsTransient
+							picture.IsTransient,
+							"product"
 						);
 
 						productVariantAttributeValue.MediaFileId = newPicture.Id;

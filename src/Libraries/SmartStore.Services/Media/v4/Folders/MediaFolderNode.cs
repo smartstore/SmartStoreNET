@@ -4,8 +4,24 @@ namespace SmartStore.Services.Media
 {
     public class MediaFolderNode
     {
+        /// <summary>
+        /// Whether the folder is a root album node
+        /// </summary>
         public bool IsAlbum { get; set; }
+
+        /// <summary>
+        /// The root album name
+        /// </summary>
+        public string AlbumName { get; set; }
+
+        /// <summary>
+        /// Entity Id
+        /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Folder name
+        /// </summary>
         public string Name { get; set; }
         public string Slug { get; set; }
         public bool CanTrackRelations { get; set; }

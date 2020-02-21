@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Autofac.Features.Indexed;
 using SmartStore.Collections;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -19,57 +21,98 @@ namespace SmartStore.Services.Media
 
         private readonly IRepository<MediaAlbum> _albumRepository;
         private readonly IRepository<MediaFolder> _folderRepository;
-        private readonly ITypeFinder _typeFinder;
         private readonly ICacheManager _cache;
+        private readonly IEnumerable<Lazy<IMediaAlbumProvider>> _albumProviders;
+        private readonly IIndex<Type, IMediaAlbumProvider> _albumProvider;
 
-        private IMediaAlbumProvider[] _albumProviders;
+        private readonly static ConcurrentDictionary<string, AlbumProviderInfo> _albumProviderInfoCache = new ConcurrentDictionary<string, AlbumProviderInfo>();
+        class AlbumProviderInfo
+        {
+            public int Id { get; set; } 
+            public string Name { get; set; }
+            public Type ProviderType { get; set; }
+            public bool IsRelationDetector { get; set; }
+            public MediaAlbumDisplayHint DisplayHint { get; set; }
+        }
 
         public MediaFolderService(
             IRepository<MediaAlbum> albumRepository,
             IRepository<MediaFolder> folderRepository,
-            ITypeFinder typeFinder,
-            ICacheManager cache)
+            ICacheManager cache,
+            IEnumerable<Lazy<IMediaAlbumProvider>> albumProviders,
+            IIndex<Type, IMediaAlbumProvider> albumProvider)
         {
             _albumRepository = albumRepository;
             _folderRepository = folderRepository;
-            _typeFinder = typeFinder;
             _cache = cache;
+            _albumProviders = albumProviders;
+            _albumProvider = albumProvider;
         }
 
-        public IMediaAlbumProvider[] LoadAlbumProviders()
+        #region Albums
+
+        public T LoadAlbumProvider<T>() where T : IMediaAlbumProvider
         {
-            if (_albumProviders == null)
+            return (T)_albumProvider[typeof(T)];
+        }
+
+        public IMediaAlbumProvider LoadAlbumProvider(string albumName)
+        {
+            Guard.NotEmpty(albumName, nameof(albumName));
+
+            if (_albumProviderInfoCache.TryGetValue(albumName, out var info))
             {
-                _albumProviders = _typeFinder
-                    .FindClassesOfType<IMediaAlbumProvider>(ignoreInactivePlugins: true)
-                    .Select(x => Activator.CreateInstance(x))
-                    .Cast<IMediaAlbumProvider>()
-                    .ToArray();
+                return _albumProvider[info.ProviderType];
             }
-            
-            return _albumProviders;
+
+            return null;
+        }
+
+        public IMediaAlbumProvider[] LoadAllAlbumProviders()
+        {
+            return _albumProviders.Select(x => x.Value).ToArray();
         }
 
         public void InstallAlbums(IEnumerable<IMediaAlbumProvider> albumProviders)
         {
             Guard.NotNull(albumProviders, nameof(albumProviders));
 
-            var albums = albumProviders.SelectMany(x => x.GetAlbums()).DistinctBy(x => x.Name);
-            var dbAlbumNames = new HashSet<string>(_albumRepository.Table.Select(x => x.Name).ToList(), StringComparer.OrdinalIgnoreCase);
+            var dbAlbums = _albumRepository.Table.Select(x => new { x.Id, x.Name }).ToDictionary(x => x.Name);
             var hasChanges = false;
 
-            using (var scope = new DbContextScope(_albumRepository.Context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
+            using (var scope = new DbContextScope(_albumRepository.Context, 
+                validateOnSave: false, 
+                hooksEnabled: false, 
+                autoCommit: true))
             {
-                foreach (var album in albums)
+                foreach (var provider in albumProviders)
                 {
-                    if (!dbAlbumNames.Contains(album.Name))
+                    var albums = provider.GetAlbums().DistinctBy(x => x.Name).ToArray();
+
+                    foreach (var album in albums)
                     {
-                        _albumRepository.Insert(album);
-                        hasChanges = true;
+                        var info = new AlbumProviderInfo 
+                        { 
+                            Name = album.Name,
+                            ProviderType = provider.GetType(),
+                            IsRelationDetector = provider is IMediaRelationDetector,
+                            DisplayHint = provider.GetDisplayHint(album) ?? new MediaAlbumDisplayHint()
+                        };
+
+                        if (dbAlbums.TryGetValue(album.Name, out var dbAlbum))
+                        {
+                            info.Id = dbAlbum.Id;
+                        }
+                        else
+                        {
+                            _albumRepository.Insert(album);
+                            hasChanges = true;
+                            info.Id = album.Id;
+                        }
+
+                        _albumProviderInfoCache.AddOrUpdate(album.Name, info, (key, val) => info);
                     }
                 }
-
-                scope.Commit();
             }
 
             if (hasChanges)
@@ -78,15 +121,49 @@ namespace SmartStore.Services.Media
             }
         }
 
+        public int GetAlbumIdByName(string name)
+        {
+            if (_albumProviderInfoCache.TryGetValue(name, out var info))
+            {
+                return info.Id;
+            }
+            
+            return 0;
+        }
+
         public void DeleteAlbum(string name)
         {
+            Guard.NotEmpty(name, nameof(name));
+
+            _albumProviderInfoCache.TryRemove(name, out _);
+
+            // TODO
             throw new NotImplementedException();
+
+            //ClearCache();
         }
+
+        public IEnumerable<string> GetAlbumNames(bool withRelationDetectors = false)
+        {
+            if (!withRelationDetectors)
+            {
+                return _albumProviderInfoCache.Keys;
+            }
+
+            return _albumProviderInfoCache.Where(x => x.Value.IsRelationDetector).Select(x => x.Key).ToArray();
+        }
+
+        #endregion
+
+        #region Folders
 
         public void DeleteFolder(MediaFolder folder)
         {
+            // TODO
             throw new NotImplementedException();
         }
+
+        #endregion
 
         #region Tree
 
@@ -95,14 +172,26 @@ namespace SmartStore.Services.Media
             _cache.Remove(FolderTreeKey);
         }
 
+        public TreeNode<MediaFolderNode> FindAlbum(MediaFile mediaFile)
+        {
+            if (mediaFile?.FolderId == null)
+                return null;
+            
+            var node = GetFolderTree(mediaFile.FolderId.Value);
+            if (node != null)
+            {
+                return node.Closest(x => x.Value.IsAlbum);
+            }
+
+            return null;
+        }
+
         public TreeNode<MediaFolderNode> GetFolderTree(int rootFolderId = 0)
         {
             var cacheKey = FolderTreeKey;
 
             var root = _cache.Get(cacheKey, () => 
             {
-                var providers = LoadAlbumProviders();
-
                 var query = from x in _folderRepository.TableUntracked
                             orderby x.ParentId, x.Name
                             select x;
@@ -122,13 +211,14 @@ namespace SmartStore.Services.Media
                     if (x is MediaAlbum album)
                     {
                         item.IsAlbum = true;
+                        item.AlbumName = album.Name;
                         item.ResKey = album.ResKey;
                         item.IncludePath = album.IncludePath;
                         item.Order = album.Order ?? 0;
 
-                        var displayHint = providers.Select(x => x.GetDisplayHint(album)).FirstOrDefault();
-                        if (displayHint != null)
+                        if (_albumProviderInfoCache.TryGetValue(album.Name, out var info))
                         {
+                            var displayHint = info.DisplayHint;
                             item.Color = displayHint.Color;
                             item.OverlayColor = displayHint.OverlayColor;
                             item.OverlayIcon = displayHint.OverlayIcon;
@@ -139,13 +229,14 @@ namespace SmartStore.Services.Media
                 });
 
                 var nodeMap = unsortedNodes.ToMultimap(x => x.ParentId ?? 0, x => x);
-                var curParent = new TreeNode<MediaFolderNode>(new MediaFolderNode { Name = "Root" });
+                var curParent = new TreeNode<MediaFolderNode>(new MediaFolderNode { Name = "Root", Id = 0 });
 
                 AddChildTreeNodes(curParent, 0, nodeMap);
 
-                curParent.Root.Traverse(x => 
+                var root = curParent.Root;
+                root.Traverse(x => 
                 {
-                    // Handle inheritable/chainable properties (Slug, CanTrackRelations, IncludePath)
+                    // Handle inheritable/chainable properties (AlbumName, Slug, CanTrackRelations, IncludePath)
 
                     if (x.IsLeaf)
                     {
@@ -154,7 +245,7 @@ namespace SmartStore.Services.Media
                     }
                 });
 
-                return curParent.Root;
+                return root;
             }, FolderTreeCacheDuration);
 
             if (rootFolderId > 0)

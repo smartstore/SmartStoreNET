@@ -168,7 +168,7 @@ namespace SmartStore.WebApi.Controllers.Api
 						if (pictureBinary != null)
 						{
 							var seoName = _pictureService.Value.GetPictureSeName(Path.GetFileNameWithoutExtension(image.FileName));
-                            var newPicture = _pictureService.Value.InsertPicture(pictureBinary, image.MediaType, seoName, true, false, false);
+                            var newPicture = _pictureService.Value.InsertPicture(pictureBinary, image.MediaType, seoName, true, false, false, "product");
                             
 							if (newPicture != null)
 							{

@@ -9,10 +9,15 @@ namespace SmartStore.Data.Mapping.Media
         public MediaRelationMap()
         {
             ToTable("MediaRelation");
-            HasKey(c => c.Id);
+            HasKey(x => x.Id);
 
-            Property(c => c.EntityId);
-            Property(c => c.EntityName).IsRequired().HasMaxLength(255);
+            Property(x => x.EntityId);
+            Property(x => x.EntityName).IsRequired().HasMaxLength(255);
+            Property(x => x.Album).IsRequired().HasMaxLength(50);
+            Property(x => x.HashCode).HasColumnOrder(100);
+
+            HasIndex(x => x.Album).HasName("IX_Album");
+            HasIndex(x => x.HashCode).HasName("IX_HashCode").IsUnique(true);
         }
     }
 }

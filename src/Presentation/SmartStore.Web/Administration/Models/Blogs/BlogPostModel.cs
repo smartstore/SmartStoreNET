@@ -41,15 +41,15 @@ namespace SmartStore.Admin.Models.Blogs
         [AllowHtml]
         public string Body { get; set; }
 
-        [UIHint("Picture")]
+        [UIHint("Picture"), AdditionalMetadata("album", "blog")]
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.PreviewDisplayType")]
         public PreviewDisplayType PreviewDisplayType { get; set; }
 
-        [UIHint("Picture")]
+        [UIHint("Picture"), AdditionalMetadata("album", "blog")]
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Picture")]
         public int? PictureId { get; set; }
 
-        [UIHint("Picture")]
+        [UIHint("Picture"), AdditionalMetadata("album", "blog")]
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.PreviewPicture")]
         public int? PreviewPictureId { get; set; }
 

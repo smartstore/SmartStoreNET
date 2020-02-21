@@ -30,6 +30,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// <summary>
         /// Gets the media file
         /// </summary>
+        [DataMember]
         public virtual MediaFile MediaFile { get; set; }
 
         /// <summary>

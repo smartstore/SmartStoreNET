@@ -27,7 +27,14 @@ namespace SmartStore.Services.Media
             builder.RegisterType<ImageCache>().As<IImageCache>().InstancePerRequest();
             builder.RegisterType<DefaultImageProcessor>().As<IImageProcessor>().InstancePerRequest();
             builder.RegisterType<PictureService>().As<IPictureService>().InstancePerRequest();
-            builder.RegisterType<MediaMover>().As<IMediaMover>().InstancePerRequest(); 
+            builder.RegisterType<MediaMover>().As<IMediaMover>().InstancePerRequest();
+
+            // Register all album providers
+            var albumProviderTypes = _typeFinder.FindClassesOfType<IMediaAlbumProvider>(ignoreInactivePlugins: true);
+            foreach (var type in albumProviderTypes)
+            {
+                builder.RegisterType(type).Keyed<IMediaAlbumProvider>(type).InstancePerRequest();
+            }
         }
     }
 }

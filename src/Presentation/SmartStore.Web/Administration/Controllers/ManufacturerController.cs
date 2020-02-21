@@ -167,7 +167,7 @@ namespace SmartStore.Admin.Controllers
                        select new
                        {
                            id = m.Id.ToString(),
-                           text = m.Name,
+                           text = m.GetLocalized(x => x.Name).Value,
                            selected = m.Id == selectedId
                        };
 
@@ -185,7 +185,7 @@ namespace SmartStore.Admin.Controllers
                         return new
                         {
                             id = x,
-                            text = item.Name,
+                            text = item.GetLocalized(y => y.Name).Value,
                             selected = false
                         };
                     }

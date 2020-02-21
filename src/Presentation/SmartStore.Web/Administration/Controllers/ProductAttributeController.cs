@@ -110,7 +110,6 @@ namespace SmartStore.Admin.Controllers
         // Ajax.
         public ActionResult AllProductAttributes(string label, int selectedId)
         {
-            var language = Services.WorkContext.WorkingLanguage;
             var allAttributes = new Dictionary<int, string>();
 
             for (var pageIndex = 0; pageIndex < 9999999; ++pageIndex)
@@ -119,7 +118,7 @@ namespace SmartStore.Admin.Controllers
 
                 foreach (var attribute in attributes)
                 {
-                    allAttributes[attribute.Id] = attribute.GetLocalized(x => x.Name, language.Id, true, false).Value;
+                    allAttributes[attribute.Id] = attribute.GetLocalized(x => x.Name).Value;
                 }
 
                 if (!attributes.HasNextPage)

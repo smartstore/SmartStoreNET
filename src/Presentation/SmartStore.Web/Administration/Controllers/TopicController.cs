@@ -396,40 +396,25 @@ namespace SmartStore.Admin.Controllers
 
 			var topics = query.ToList();
 
-			if (label.HasValue())
-			{
-				var labelTopic = new Topic();
-                if (useTitles)
+            var list = topics
+                .Select(x => new
                 {
-                    labelTopic.Title = label;
-                }
-                else
-                {
-                    labelTopic.SystemName = label;
-                }
+                    id = x.Id,
+                    text = useTitles ? x.GetLocalized(y => y.Title).Value : x.SystemName,
+                    selected = x.Id == selectedId
+                })
+                .ToList();
 
-				topics.Insert(0, labelTopic);
-			}
+            if (label.HasValue())
+            {
+                list.Insert(0, new { id = 0, text = label, selected = false });
+            }
+            if (includeHomePage)
+            {
+                list.Insert(0, new { id = -10, text = T("Admin.ContentManagement.Homepage").Text, selected = false });
+            }
 
-			if (includeHomePage)
-			{
-				topics.Insert(0, new Topic
-				{
-					Id = -10,
-					Title = T("Admin.ContentManagement.Homepage"),
-					SystemName = T("Admin.ContentManagement.Homepage"),
-				});
-			}
-
-			var list = from x in topics
-					   select new
-					   {
-						   id = x.Id.ToString(),
-						   text = useTitles ? x.Title : x.SystemName,
-						   selected = x.Id == selectedId
-					   };
-
-			return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            return new JsonResult { Data = list, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
 		}
     }
 }

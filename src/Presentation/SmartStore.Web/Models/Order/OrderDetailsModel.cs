@@ -52,6 +52,26 @@ namespace SmartStore.Web.Models.Order
         public string VatNumber { get; set; }
 
         public string PaymentMethod { get; set; }
+
+        public string PaymentMethodSystemName { get; set; }
+
+        #region Offline payment data 
+
+        public string CardNumber { get; set; }
+        public string MaskedCreditCardNumber { get; set; }
+        public string CardCvv2 { get; set; }
+        public string CardExpirationMonth { get; set; }
+        public string CardExpirationYear { get; set; }
+        public string DirectDebitAccountHolder { get; set; }
+        public string DirectDebitAccountNumber { get; set; }
+        public string DirectDebitBankCode { get; set; }
+        public string DirectDebitBankName { get; set; }
+        public string DirectDebitBIC { get; set; }
+        public string DirectDebitCountry { get; set; }
+        public string DirectDebitIban { get; set; }
+
+        #endregion
+
         public bool CanRePostProcessPayment { get; set; }
         public bool DisplayPurchaseOrderNumber { get; set; }
         public string PurchaseOrderNumber { get; set; }

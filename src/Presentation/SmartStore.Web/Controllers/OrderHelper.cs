@@ -18,6 +18,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
+using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Plugins;
@@ -41,6 +42,7 @@ namespace SmartStore.Web.Controllers
         private readonly IQuantityUnitService _quantityUnitService;
         private readonly IPictureService _pictureService;
         private readonly IProductService _productService;
+        private readonly IEncryptionService _encryptionService;
 
         public OrderHelper(
             ICommonServices services,
@@ -55,7 +57,8 @@ namespace SmartStore.Web.Controllers
             ICurrencyService currencyService,
             IQuantityUnitService quantityUnitService,
             IPictureService pictureService,
-            IProductService productService)
+            IProductService productService,
+            IEncryptionService encryptionService)
         {
             _services = services;
             _dateTimeHelper = dateTimeHelper;
@@ -70,6 +73,7 @@ namespace SmartStore.Web.Controllers
             _quantityUnitService = quantityUnitService;
             _pictureService = pictureService;
             _productService = productService;
+            _encryptionService = encryptionService;
 
             T = NullLocalizer.Instance;
         }
@@ -260,6 +264,7 @@ namespace SmartStore.Web.Controllers
             model.StoreId = order.StoreId;
 			model.CustomerLanguageId = order.CustomerLanguageId;
             model.CustomerComment = order.CustomerOrderComment;
+
             model.OrderNumber = order.GetOrderNumber();
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc);
             model.OrderStatus = order.OrderStatus.GetLocalizedEnum(_services.Localization, _services.WorkContext);
@@ -305,6 +310,7 @@ namespace SmartStore.Web.Controllers
 
             // Payment method.
             var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(order.PaymentMethodSystemName);
+            model.PaymentMethodSystemName = order.PaymentMethodSystemName;
             model.PaymentMethod = paymentMethod != null ? _pluginMediator.GetLocalizedFriendlyName(paymentMethod.Metadata) : order.PaymentMethodSystemName;
             model.CanRePostProcessPayment = _paymentService.CanRePostProcessPayment(order);
 
@@ -315,6 +321,26 @@ namespace SmartStore.Web.Controllers
                 model.PurchaseOrderNumber = order.PurchaseOrderNumber;
             }
 
+            if (order.AllowStoringCreditCardNumber)
+            {
+                model.CardNumber = _encryptionService.DecryptText(order.CardNumber);
+                model.MaskedCreditCardNumber = _encryptionService.DecryptText(order.MaskedCreditCardNumber);
+                model.CardCvv2 = _encryptionService.DecryptText(order.CardCvv2);
+                model.CardExpirationMonth = _encryptionService.DecryptText(order.CardExpirationMonth);
+                model.CardExpirationYear = _encryptionService.DecryptText(order.CardExpirationYear);
+            }
+
+            if (order.AllowStoringDirectDebit)
+            {
+                model.DirectDebitAccountHolder = _encryptionService.DecryptText(order.DirectDebitAccountHolder);
+                model.DirectDebitAccountNumber = _encryptionService.DecryptText(order.DirectDebitAccountNumber);
+                model.DirectDebitBankCode = _encryptionService.DecryptText(order.DirectDebitBankCode);
+                model.DirectDebitBankName = _encryptionService.DecryptText(order.DirectDebitBankName);
+                model.DirectDebitBIC = _encryptionService.DecryptText(order.DirectDebitBIC);
+                model.DirectDebitCountry = _encryptionService.DecryptText(order.DirectDebitCountry);
+                model.DirectDebitIban = _encryptionService.DecryptText(order.DirectDebitIban);
+            }
+            
             // Totals.
             switch (order.CustomerTaxDisplayType)
             {

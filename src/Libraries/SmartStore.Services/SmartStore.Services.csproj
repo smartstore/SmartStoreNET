@@ -328,6 +328,7 @@
     <Compile Include="Hooks\SlugSupportedHook.cs" />
     <Compile Include="Hooks\AuditableHook.cs" />
     <Compile Include="Hooks\FixProductMainPictureHook.cs" />
+    <Compile Include="Hooks\SettingSaveHook.cs" />
     <Compile Include="Hooks\UpdateCustomerFullNameHook.cs" />
     <Compile Include="Hooks\StoreSaveHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityHook.cs" />

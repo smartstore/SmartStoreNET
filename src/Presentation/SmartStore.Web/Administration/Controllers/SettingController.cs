@@ -181,9 +181,7 @@ namespace SmartStore.Admin.Controllers
 
 		private ActionResult NotifyAndRedirect(string actionMethod)
 		{
-			_customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 			NotifySuccess(T("Admin.Configuration.Updated"));
-
 			return RedirectToAction(actionMethod);
 		}
 
@@ -874,12 +872,8 @@ namespace SmartStore.Admin.Controllers
 			var success = _mediaMover.Value.Move(source, target);
 
 			if (success)
-			{
-				_customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
-
 				NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
-			}
-
+			
 			return RedirectToAction("Media");
         }
 
@@ -1724,8 +1718,6 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			Services.Settings.SetSetting(model.Name, model.Value ?? "", storeId);
-
-			_customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 
             return AllSettings(command);
         }

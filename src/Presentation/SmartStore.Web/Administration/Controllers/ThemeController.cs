@@ -136,9 +136,7 @@ namespace SmartStore.Admin.Controllers
 
 			themeSettings = model.ToEntity(themeSettings);
             Services.Settings.SaveSetting(themeSettings, model.StoreId);
-            
-			Services.CustomerActivity.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
-
+           
             Services.EventPublisher.Publish(new ModelBoundEvent(model, themeSettings, form));
 
             NotifySuccess(T("Admin.Configuration.Updated"));
@@ -465,7 +463,6 @@ namespace SmartStore.Admin.Controllers
 
 			Services.Settings.SaveSetting(themeSettings, storeId);
 
-			Services.CustomerActivity.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 			NotifySuccess(T("Admin.Configuration.Updated"));
 
 			return ExitPreview();

@@ -715,14 +715,14 @@ namespace SmartStore.Web.Controllers
 			}
 
 			// Calculate saving.
-			var finalPriceWithDiscount = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, true, 1, null, ctx.BatchContext);
+			var finalPriceWithDiscount = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, true, 1, null, batchContext);
 			finalPriceWithDiscount = _taxService.GetProductPrice(contextProduct, finalPriceWithDiscount, out taxRate);
 			finalPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithDiscount, ctx.Currency);
 
 			var finalPriceWithoutDiscount = finalPrice;
 			if (_catalogSettings.PriceDisplayType != PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 			{
-				finalPriceWithoutDiscount = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, false, 1, null, ctx.BatchContext);
+				finalPriceWithoutDiscount = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, false, 1, null, batchContext);
 				finalPriceWithoutDiscount = _taxService.GetProductPrice(contextProduct, finalPriceWithoutDiscount, out taxRate);
 				finalPriceWithoutDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithoutDiscount, ctx.Currency);
 			}

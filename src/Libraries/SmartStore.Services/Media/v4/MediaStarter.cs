@@ -16,9 +16,9 @@ namespace SmartStore.Services.Media
     public sealed class MediaStarter : IPostApplicationStart
     {
         private readonly IRepository<MediaAlbum> _albumRepository;
-        private readonly IMediaFolderService _albumService;
+        private readonly IAlbumService _albumService;
 
-        public MediaStarter(IRepository<MediaAlbum> albumRepository, IMediaFolderService albumService)
+        public MediaStarter(IRepository<MediaAlbum> albumRepository, IAlbumService albumService)
         {
             _albumRepository = albumRepository;
             _albumService = albumService;

@@ -2,7 +2,7 @@
 
 namespace SmartStore.Services.Media
 {
-    public class MediaAlbumDisplayHint
+    public class AlbumDisplayHint
     {
         /// <summary>
         /// Gets or sets the album folder icon display HTML color

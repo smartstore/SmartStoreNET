@@ -21,7 +21,7 @@ namespace SmartStore.Services.Media
             builder.RegisterType<MediaMigrator>().InstancePerRequest();
 
             builder.RegisterType<MediaTypeResolver>().As<IMediaTypeResolver>().InstancePerRequest();
-            builder.RegisterType<MediaFolderService>().As<IMediaFolderService>().InstancePerRequest();
+            builder.RegisterType<AlbumService>().As<IAlbumService>().InstancePerRequest();
 
             builder.RegisterType<DownloadService>().As<IDownloadService>().InstancePerRequest();
             builder.RegisterType<ImageCache>().As<IImageCache>().InstancePerRequest();

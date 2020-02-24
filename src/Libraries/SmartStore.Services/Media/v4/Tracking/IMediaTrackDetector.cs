@@ -7,8 +7,9 @@ using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Media
 {
-    public interface IMediaRelationDetector
+    public interface IMediaTrackDetector
     {
-        IEnumerable<MediaRelation> DetectAllRelations(string albumName);
+        void ConfigureTracks(string albumName, MediaTrackPropertyTable table);
+        IEnumerable<MediaTrackAction> DetectAllTracks(string albumName);
     }
 }

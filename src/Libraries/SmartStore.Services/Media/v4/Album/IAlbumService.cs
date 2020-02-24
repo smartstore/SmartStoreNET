@@ -5,7 +5,7 @@ using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Media
 {
-    public interface IMediaFolderService
+    public interface IAlbumService
     {
         T LoadAlbumProvider<T>() where T : IAlbumProvider;
         IAlbumProvider LoadAlbumProvider(string albumName);

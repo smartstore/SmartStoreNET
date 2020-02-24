@@ -13,7 +13,7 @@ using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Services.Media
 {
-    public partial class MediaFolderService : IMediaFolderService
+    public partial class AlbumService : IAlbumService
     {
         internal static TimeSpan FolderTreeCacheDuration = TimeSpan.FromHours(3);
 
@@ -22,8 +22,10 @@ namespace SmartStore.Services.Media
         private readonly IRepository<MediaAlbum> _albumRepository;
         private readonly IRepository<MediaFolder> _folderRepository;
         private readonly ICacheManager _cache;
+
+
         private readonly IEnumerable<Lazy<IAlbumProvider>> _albumProviders;
-        private readonly IIndex<Type, IAlbumProvider> _albumProvider;
+        private readonly IIndex<Type, IAlbumProvider> _albumProviderIndexer;
 
         private readonly static ConcurrentDictionary<string, AlbumProviderInfo> _albumProviderInfoCache = new ConcurrentDictionary<string, AlbumProviderInfo>();
         class AlbumProviderInfo
@@ -31,11 +33,11 @@ namespace SmartStore.Services.Media
             public int Id { get; set; } 
             public string Name { get; set; }
             public Type ProviderType { get; set; }
-            public bool IsRelationDetector { get; set; }
-            public MediaAlbumDisplayHint DisplayHint { get; set; }
+            public bool IsTrackDetector { get; set; }
+            public AlbumDisplayHint DisplayHint { get; set; }
         }
 
-        public MediaFolderService(
+        public AlbumService(
             IRepository<MediaAlbum> albumRepository,
             IRepository<MediaFolder> folderRepository,
             ICacheManager cache,
@@ -46,14 +48,14 @@ namespace SmartStore.Services.Media
             _folderRepository = folderRepository;
             _cache = cache;
             _albumProviders = albumProviders;
-            _albumProvider = albumProvider;
+            _albumProviderIndexer = albumProvider;
         }
 
         #region Albums
 
         public T LoadAlbumProvider<T>() where T : IAlbumProvider
         {
-            return (T)_albumProvider[typeof(T)];
+            return (T)_albumProviderIndexer[typeof(T)];
         }
 
         public IAlbumProvider LoadAlbumProvider(string albumName)
@@ -62,7 +64,7 @@ namespace SmartStore.Services.Media
 
             if (_albumProviderInfoCache.TryGetValue(albumName, out var info))
             {
-                return _albumProvider[info.ProviderType];
+                return _albumProviderIndexer[info.ProviderType];
             }
 
             return null;
@@ -95,8 +97,8 @@ namespace SmartStore.Services.Media
                         { 
                             Name = album.Name,
                             ProviderType = provider.GetType(),
-                            IsRelationDetector = provider is IMediaRelationDetector,
-                            DisplayHint = provider.GetDisplayHint(album) ?? new MediaAlbumDisplayHint()
+                            IsTrackDetector = provider is IMediaTrackDetector,
+                            DisplayHint = provider.GetDisplayHint(album) ?? new AlbumDisplayHint()
                         };
 
                         if (dbAlbums.TryGetValue(album.Name, out var dbAlbum))
@@ -150,7 +152,7 @@ namespace SmartStore.Services.Media
                 return _albumProviderInfoCache.Keys;
             }
 
-            return _albumProviderInfoCache.Where(x => x.Value.IsRelationDetector).Select(x => x.Key).ToArray();
+            return _albumProviderInfoCache.Where(x => x.Value.IsTrackDetector).Select(x => x.Key).ToArray();
         }
 
         #endregion

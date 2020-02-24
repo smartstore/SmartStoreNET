@@ -12,7 +12,7 @@ namespace SmartStore.Core.Domain.Media
 	{
 		private ICollection<ProductMediaFile> _productMediaFiles;
 		private ICollection<MediaTag> _tags;
-		private ICollection<MediaRelation> _relations;
+		private ICollection<MediaTrack> _relations;
 
 		#region Obsolete
 
@@ -166,12 +166,12 @@ namespace SmartStore.Core.Domain.Media
 		}
 
 		/// <summary>
-		/// Gets the related entities
+		/// Gets the related entity tracks
 		/// </summary>
 		[DataMember]
-		public virtual ICollection<MediaRelation> Relations
+		public virtual ICollection<MediaTrack> Tracks
 		{
-			get { return _relations ?? (_relations = new HashSet<MediaRelation>()); }
+			get { return _relations ?? (_relations = new HashSet<MediaTrack>()); }
 			protected set { _relations = value; }
 		}
 

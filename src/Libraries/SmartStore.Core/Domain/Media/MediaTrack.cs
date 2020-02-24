@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using SmartStore.Core.Data.Hooks;
 using SmartStore.Utilities;
 
 namespace SmartStore.Core.Domain.Media
 {
     [DataContract]
-    public partial class MediaRelation : BaseEntity, IEquatable<MediaRelation>
+    [Hookable(false)]
+    public partial class MediaTrack : BaseEntity, IEquatable<MediaTrack>
     {
         private int _mediaFileId;
         private int _entityId;
@@ -76,10 +78,10 @@ namespace SmartStore.Core.Domain.Media
 
         protected override bool Equals(BaseEntity other)
         {
-            return ((IEquatable<MediaRelation>)this).Equals(other as MediaRelation);
+            return ((IEquatable<MediaTrack>)this).Equals(other as MediaTrack);
         }
 
-        bool IEquatable<MediaRelation>.Equals(MediaRelation other)
+        bool IEquatable<MediaTrack>.Equals(MediaTrack other)
         {
             if (other == null)
                 return false;

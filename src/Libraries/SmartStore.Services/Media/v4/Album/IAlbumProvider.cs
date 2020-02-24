@@ -7,6 +7,6 @@ namespace SmartStore.Services.Media
     public interface IAlbumProvider
     {
         IEnumerable<MediaAlbum> GetAlbums();
-        MediaAlbumDisplayHint GetDisplayHint(MediaAlbum album);
+        AlbumDisplayHint GetDisplayHint(MediaAlbum album);
     }
 }

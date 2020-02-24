@@ -354,12 +354,13 @@
     <Compile Include="Media\Storage\MediaItem.cs" />
     <Compile Include="Media\Storage\MediaMover.cs" />
     <Compile Include="Media\TransientMediaClearTask.cs" />
+    <Compile Include="Media\v4\Album\AlbumRegistry.cs" />
     <Compile Include="Media\v4\Album\IAlbumProvider.cs" />
-    <Compile Include="Media\v4\Album\IMediaFolderService.cs" />
-    <Compile Include="Media\v4\Album\IMediaFolderServiceExtensions.cs" />
-    <Compile Include="Media\v4\Album\MediaAlbumDisplayHint.cs" />
+    <Compile Include="Media\v4\Album\IAlbumService.cs" />
+    <Compile Include="Media\v4\Album\IAlbumServiceExtensions.cs" />
+    <Compile Include="Media\v4\Album\AlbumDisplayHint.cs" />
     <Compile Include="Media\v4\Album\MediaFolderNode.cs" />
-    <Compile Include="Media\v4\Album\MediaFolderService.cs" />
+    <Compile Include="Media\v4\Album\AlbumService.cs" />
     <Compile Include="Media\v4\Album\SystemAlbumProvider.cs" />
     <Compile Include="Media\v4\MediaModule.cs" />
     <Compile Include="Media\v4\MediaStarter.cs" />
@@ -368,8 +369,12 @@
     <Compile Include="Media\v4\MediaTypes\MediaTypeResolver.cs" />
     <Compile Include="Media\v4\Migration\MediaMigrator.cs" />
     <Compile Include="Media\v4\Migration\SeedingDbMigrationConsumer.cs" />
-    <Compile Include="Media\v4\Relations\IMediaRelationDetector.cs" />
-    <Compile Include="Media\v4\Relations\IMediaRelationTracker.cs" />
+    <Compile Include="Media\v4\Tracking\IMediaTrackDetector.cs" />
+    <Compile Include="Media\v4\Tracking\IMediaTracker.cs" />
+    <Compile Include="Media\v4\Tracking\MediaTrackAction.cs" />
+    <Compile Include="Media\v4\Tracking\MediaTracker.cs" />
+    <Compile Include="Media\v4\Tracking\MediaTrackerHook.cs" />
+    <Compile Include="Media\v4\Tracking\MediaTrackPropertyTable.cs" />
     <Compile Include="Messages\Importer\NewsLetterSubscriptionImporter.cs" />
     <Compile Include="Messages\Events.cs" />
     <Compile Include="Messages\IMessageFactory.cs" />
@@ -766,9 +771,7 @@
       <CachedSettingsPropName>Nop_Services_EuropaCheckVatService_checkVatService</CachedSettingsPropName>
     </WebReferenceUrl>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Media\v4\Tracking\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Cart\Readme.txt">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>

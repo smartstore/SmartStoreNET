@@ -22,18 +22,21 @@ namespace SmartStore.Services.Media.Migration
         private readonly ICommonServices _services;
         private readonly IProviderManager _providerManager;
         private readonly IMediaTypeResolver _mediaTypeResolver;
-        private readonly IMediaFolderService _mediaFolderService;
+        private readonly IAlbumService _albumService;
+        private readonly IMediaTracker _mediaTracker;
 
         public MediaMigrator(
             ICommonServices services, 
             IProviderManager providerManager,
             IMediaTypeResolver mediaTypeResolver,
-            IMediaFolderService mediaFolderService)
+            IAlbumService albumService,
+            IMediaTracker mediaTracker)
         {
             _services = services;
             _providerManager = providerManager;
             _mediaTypeResolver = mediaTypeResolver;
-            _mediaFolderService = mediaFolderService;
+            _albumService = albumService;
+            _mediaTracker = mediaTracker;
         }
 
         public void Migrate()
@@ -43,12 +46,12 @@ namespace SmartStore.Services.Media.Migration
             CreateAlbums();
             CreateSettings(ctx);
             MigratePictures(ctx);
-            DetectRelations(ctx);
+            DetectTracks(ctx);
 
             Executed = true;
         }
 
-        private void CreateSettings(SmartObjectContext ctx)
+        public void CreateSettings(SmartObjectContext ctx)
         {
             var prefix = nameof(MediaSettings) + ".";
 
@@ -62,13 +65,13 @@ namespace SmartStore.Services.Media.Migration
             });
         }
 
-        private void CreateAlbums()
+        public void CreateAlbums()
         {
-            var providers = _mediaFolderService.LoadAllAlbumProviders();
-            _mediaFolderService.InstallAlbums(providers);
+            var providers = _albumService.LoadAllAlbumProviders();
+            _albumService.InstallAlbums(providers);
         }
 
-        private void MigratePictures(SmartObjectContext ctx)
+        public void MigratePictures(SmartObjectContext ctx)
         {
             var storageProviderSystemName = _services.Settings.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
             var mediaStorageProvider = _providerManager.GetProvider<IMediaStorageProvider>(storageProviderSystemName).Value;
@@ -116,67 +119,12 @@ namespace SmartStore.Services.Media.Migration
             }
         }
 
-        private void DetectRelations(SmartObjectContext ctx)
+        public void DetectTracks(SmartObjectContext ctx)
         {
-            // Get all installed album names...
-            var albumNames = _mediaFolderService.GetAlbumNames(true);
-
-            using (var scope = new DbContextScope(ctx, validateOnSave: false, hooksEnabled: false))
+            foreach (var albumName in _albumService.GetAlbumNames(true))
             {
-                foreach (var albumName in albumNames)
-                {
-                    // get the id for an album (necessary later to set FolderId)
-                    var albumId = _mediaFolderService.GetAlbumIdByName(albumName);
-
-                    // load corresponding detector provider for current album...
-                    var provider = _mediaFolderService.LoadAlbumProvider(albumName) as IMediaRelationDetector;
-
-                    // >>>>> DO detection (potentially a very long process)...
-                    var relations = provider.DetectAllRelations(albumName);
-
-                    // (perf) batch result data...
-                    foreach (var batch in relations.Slice(500))
-                    {
-                        // process the batch
-                        ProcessRelationsBatch(ctx, batch, albumId, albumName);
-                    }
-                }
+                _mediaTracker.DetectAllTracks(albumName, true);
             }
-        }
-
-        private void ProcessRelationsBatch(SmartObjectContext ctx, IEnumerable<MediaRelation> batch, int albumId, string albumName)
-        {
-            // Get distinct ids of all detected files...
-            var mediaFileIds = batch.Select(x => x.MediaFileId).Distinct().ToArray();
-
-            // fetch these files from database...
-            var files = ctx.Set<MediaFile>()
-                .Where(x => mediaFileIds.Contains(x.Id))
-                .Include(x => x.Relations)
-                .ToDictionary(x => x.Id);
-
-            // for each media file relation to an entity...
-            foreach (var relation in batch)
-            {
-                // fetch the file from local dictionary by its id...
-                if (files.TryGetValue(relation.MediaFileId, out var file))
-                {
-                    // set album id as folder id (during initial migration there are no sub-folders)
-                    file.FolderId = albumId;
-
-                    // set album name...
-                    relation.Album = albumName;
-
-                    // add the relation to the file entity
-                    file.Relations.Add(relation);
-                }
-            }
-
-            // Save whole batch to database
-            ctx.SaveChanges();
-
-            // Breathe
-            ctx.DetachEntities(x => x is MediaFile || x is MediaRelation, false);
         }
     }
 }

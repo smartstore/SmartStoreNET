@@ -47,7 +47,7 @@ namespace SmartStore.Services.Media
 
 		private readonly IRepository<MediaFile> _pictureRepository;
         private readonly IRepository<ProductMediaFile> _productPictureRepository;
-		private readonly IMediaFolderService _mediaFolderService;
+		private readonly IAlbumService _albumService;
 		private readonly IMediaTypeResolver _mediaTypeResolver;
 		private readonly ISettingService _settingService;
         private readonly IEventPublisher _eventPublisher;
@@ -73,7 +73,7 @@ namespace SmartStore.Services.Media
 		public PictureService(
             IRepository<MediaFile> pictureRepository,
             IRepository<ProductMediaFile> productPictureRepository,
-			IMediaFolderService mediaFolderService,
+			IAlbumService albumService,
 			IMediaTypeResolver mediaTypeResolver,
 			ISettingService settingService, 
             IEventPublisher eventPublisher,
@@ -87,7 +87,7 @@ namespace SmartStore.Services.Media
         {
             _pictureRepository = pictureRepository;
             _productPictureRepository = productPictureRepository;
-			_mediaFolderService = mediaFolderService;
+			_albumService = albumService;
 			_mediaTypeResolver = mediaTypeResolver;
             _settingService = settingService;
             _eventPublisher = eventPublisher;
@@ -743,7 +743,7 @@ namespace SmartStore.Services.Media
 
 			if (album.HasValue())
 			{
-				var albumId = _mediaFolderService.GetAlbumIdByName(album);
+				var albumId = _albumService.GetAlbumIdByName(album);
 				if (albumId > 0)
 				{
 					picture.FolderId = albumId;

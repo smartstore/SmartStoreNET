@@ -245,7 +245,7 @@
     <Compile Include="Domain\Forums\ForumPostVote.cs" />
     <Compile Include="Domain\Forums\ForumTopicSorting.cs" />
     <Compile Include="Domain\Localization\LocalizedPropertyCollection.cs" />
-    <Compile Include="Domain\Media\MediaRelation.cs" />
+    <Compile Include="Domain\Media\MediaTrack.cs" />
     <Compile Include="Domain\Media\MediaAlbum.cs" />
     <Compile Include="Domain\Media\MediaStorage.cs" />
     <Compile Include="Domain\Media\IHasMedia.cs" />

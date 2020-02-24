@@ -150,7 +150,7 @@
     <Compile Include="Mapping\DataExchange\ExportProfileMap.cs" />
     <Compile Include="Mapping\Forums\ForumPostVoteMap.cs" />
     <Compile Include="Mapping\Media\MediaFolderMap.cs" />
-    <Compile Include="Mapping\Media\MediaRelationMap.cs" />
+    <Compile Include="Mapping\Media\MediaTrackMap.cs" />
     <Compile Include="Mapping\Media\MediaTagMap.cs" />
     <Compile Include="Mapping\Rules\RuleEntityMap.cs" />
     <Compile Include="Mapping\Media\MediaStorageMap.cs" />

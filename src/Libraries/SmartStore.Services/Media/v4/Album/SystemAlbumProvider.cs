@@ -13,7 +13,7 @@ using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Services.Media
 {
-    public partial class SystemAlbumProvider : IAlbumProvider, IMediaRelationDetector
+    public partial class SystemAlbumProvider : IAlbumProvider, IMediaTrackDetector
     {
         private readonly IDbContext _dbContext;
         
@@ -113,48 +113,48 @@ namespace SmartStore.Services.Media
             };
         }
 
-        public MediaAlbumDisplayHint GetDisplayHint(MediaAlbum album)
+        public AlbumDisplayHint GetDisplayHint(MediaAlbum album)
         {
             if (album.Name == Products)
             {
-                return new MediaAlbumDisplayHint { OverlayIcon = "fa fa-cube" };
+                return new AlbumDisplayHint { OverlayIcon = "fa fa-cube" };
             }
             if (album.Name == Categories)
             {
-                return new MediaAlbumDisplayHint { OverlayIcon = "fa fa-sitemap" };
+                return new AlbumDisplayHint { OverlayIcon = "fa fa-sitemap" };
             }
             if (album.Name == Brands)
             {
-                return new MediaAlbumDisplayHint { OverlayIcon = "far fa-building" };
+                return new AlbumDisplayHint { OverlayIcon = "far fa-building" };
             }
             if (album.Name == Customers)
             {
-                return new MediaAlbumDisplayHint { OverlayIcon = "fa fa-user" };
+                return new AlbumDisplayHint { OverlayIcon = "fa fa-user" };
             }
             if (album.Name == Blog)
             {
-                return new MediaAlbumDisplayHint { OverlayIcon = "fa fa-blog" };
+                return new AlbumDisplayHint { OverlayIcon = "fa fa-blog" };
             }
             if (album.Name == News)
             {
-                return new MediaAlbumDisplayHint { OverlayIcon = "fa fa-newspaper" };
+                return new AlbumDisplayHint { OverlayIcon = "fa fa-newspaper" };
             }
             if (album.Name == Forums)
             {
-                return new MediaAlbumDisplayHint { OverlayIcon = "fa fa-users" };
+                return new AlbumDisplayHint { OverlayIcon = "fa fa-users" };
             }
             if (album.Name == Downloads)
             {
-                return new MediaAlbumDisplayHint { OverlayIcon = "fa fa-download" };
+                return new AlbumDisplayHint { OverlayIcon = "fa fa-download" };
             }
             if (album.Name == Messages)
             {
-                return new MediaAlbumDisplayHint { OverlayIcon = "fa fa-envelope" };
+                return new AlbumDisplayHint { OverlayIcon = "fa fa-envelope" };
             }
             if (album.Name == Files)
             {
                 // TODO: var(--success) should be system default.
-                return new MediaAlbumDisplayHint { Color = "var(--success)" };
+                return new AlbumDisplayHint { Color = "var(--success)" };
             }
 
             return null;
@@ -162,14 +162,47 @@ namespace SmartStore.Services.Media
 
         #endregion
 
-        #region Relation Detector
+        #region Tracking
 
-        public IEnumerable<MediaRelation> DetectAllRelations(string albumName)
+        public void ConfigureTracks(string albumName, MediaTrackPropertyTable table)
+        {
+            if (albumName == Products)
+            {
+                table.Register<ProductMediaFile>(x => x.MediaFileId);
+                table.Register<ProductAttributeOption>(x => x.MediaFileId);
+                table.Register<ProductVariantAttributeValue>(x => x.MediaFileId);
+                table.Register<SpecificationAttributeOption>(x => x.MediaFileId);
+            }
+            else if (albumName == Categories)
+            {
+                table.Register<Category>(x => x.MediaFileId);
+            }
+            else if (albumName == Brands)
+            {
+                table.Register<Manufacturer>(x => x.MediaFileId);
+            }
+            else if (albumName == Blog)
+            {
+                table.Register<BlogPost>(x => x.MediaFileId);
+                table.Register<BlogPost>(x => x.PreviewMediaFileId);
+            }
+            else if (albumName == News)
+            {
+                table.Register<NewsItem>(x => x.MediaFileId);
+                table.Register<NewsItem>(x => x.PreviewMediaFileId);
+            }
+            else if (albumName == Downloads)
+            {
+                table.Register<Download>(x => x.MediaFileId);
+            }
+        }
+
+        public IEnumerable<MediaTrackAction> DetectAllTracks(string albumName)
         {
             var ctx = _dbContext;
             var entityName = string.Empty;
 
-            // TODO: Messages, Downloads, Forums (?), Store (?)
+            // TODO: Messages, Forums (?), Store (?)
 
             // Products
             if (albumName == Products)
@@ -182,7 +215,7 @@ namespace SmartStore.Services.Media
                     {
                         foreach (var x in list)
                         {
-                            yield return new MediaRelation { EntityId = x.ProductId, EntityName = name, MediaFileId = x.MediaFileId };
+                            yield return new MediaTrackAction { EntityId = x.ProductId, EntityName = name, MediaFileId = x.MediaFileId };
                         }
                     }
                 }
@@ -195,7 +228,7 @@ namespace SmartStore.Services.Media
                     {
                         foreach (var x in list)
                         {
-                            yield return new MediaRelation { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId };
+                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId };
                         }
                     }
                 }
@@ -208,7 +241,7 @@ namespace SmartStore.Services.Media
                     {
                         foreach (var x in list)
                         {
-                            yield return new MediaRelation { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId };
+                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId };
                         }
                     }
                 }
@@ -221,7 +254,7 @@ namespace SmartStore.Services.Media
                     {
                         foreach (var x in list)
                         {
-                            yield return new MediaRelation { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId };
+                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId };
                         }
                     }
                 }
@@ -236,11 +269,10 @@ namespace SmartStore.Services.Media
                 {
                     foreach (var x in list)
                     {
-                        yield return new MediaRelation { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
+                        yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
                     }
                 }
             }
-
 
             // Brands
             if (albumName == Brands)
@@ -251,7 +283,7 @@ namespace SmartStore.Services.Media
                 {
                     foreach (var x in list)
                     {
-                        yield return new MediaRelation { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
+                        yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
                     }
                 }
             }
@@ -266,9 +298,9 @@ namespace SmartStore.Services.Media
                     foreach (var x in list)
                     {
                         if (x.MediaFileId.HasValue)
-                            yield return new MediaRelation { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
+                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
                         if (x.PreviewMediaFileId.HasValue)
-                            yield return new MediaRelation { EntityId = x.Id, EntityName = name, MediaFileId = x.PreviewMediaFileId.Value };
+                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.PreviewMediaFileId.Value };
                     }
                 }
             }
@@ -283,9 +315,9 @@ namespace SmartStore.Services.Media
                     foreach (var x in list)
                     {
                         if (x.MediaFileId.HasValue)
-                            yield return new MediaRelation { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
+                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
                         if (x.PreviewMediaFileId.HasValue)
-                            yield return new MediaRelation { EntityId = x.Id, EntityName = name, MediaFileId = x.PreviewMediaFileId.Value };
+                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.PreviewMediaFileId.Value };
                     }
                 }
             }
@@ -305,7 +337,7 @@ namespace SmartStore.Services.Media
                         var id = x.Value.ToInt();
                         if (id > 0)
                         {
-                            yield return new MediaRelation { EntityId = x.EntityId, EntityName = name, MediaFileId = id };
+                            yield return new MediaTrackAction { EntityId = x.EntityId, EntityName = name, MediaFileId = id };
                         }
                     }
                 }
@@ -320,7 +352,7 @@ namespace SmartStore.Services.Media
                 {
                     foreach (var x in list)
                     {
-                        yield return new MediaRelation { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
+                        yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
                     }
                 }
             }

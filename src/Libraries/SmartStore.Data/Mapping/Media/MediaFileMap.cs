@@ -46,7 +46,7 @@ namespace SmartStore.Data.Mapping.Media
                 .WithMany(t => t.MediaFiles)
                 .Map(m => m.ToTable("MediaFile_Tag_Mapping"));
 
-            HasMany(x => x.Relations)
+            HasMany(x => x.Tracks)
                 .WithRequired(x => x.MediaFile)
                 .HasForeignKey(x => x.MediaFileId)
                 .WillCascadeOnDelete(true);

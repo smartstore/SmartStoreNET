@@ -4,11 +4,11 @@ using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Data.Mapping.Media
 {
-    public partial class MediaRelationMap : EntityTypeConfiguration<MediaRelation>
+    public partial class MediaTrackMap : EntityTypeConfiguration<MediaTrack>
     {
-        public MediaRelationMap()
+        public MediaTrackMap()
         {
-            ToTable("MediaRelation");
+            ToTable("MediaTrack");
             HasKey(x => x.Id);
 
             Property(x => x.EntityId);

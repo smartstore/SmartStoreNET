@@ -786,6 +786,10 @@ namespace SmartStore.Services.Catalog.Importer
                 {
                     product.Visibility = (ProductVisibility)visibilityValue;
                 }
+                if (row.TryGetDataValue("Condition", out int conditionValue))
+                {
+                    product.Condition = (ProductCondition)conditionValue;
+                }
 
 				if (row.TryGetDataValue("ProductTemplateViewPath", out string tvp, row.IsTransient))
 				{

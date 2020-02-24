@@ -534,16 +534,14 @@ namespace SmartStore.Admin.Controllers
 
 			model.AvailableSubCategoryDisplayTypes = catalogSettings.SubCategoryDisplayType.ToSelectList();
 			model.AvailablePriceDisplayTypes = catalogSettings.PriceDisplayType.ToSelectList();
-
-            model.AvailableDefaultViewModes.Add(
-				new SelectListItem { Value = "grid", Text = Services.Localization.GetResource("Common.Grid"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("grid") }
-			);
-            model.AvailableDefaultViewModes.Add(
-				new SelectListItem { Value = "list", Text = Services.Localization.GetResource("Common.List"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("list") }
-			);
-
-            // Default sort order modes.
             model.AvailableSortOrderModes = catalogSettings.DefaultSortOrder.ToSelectList();
+
+            model.AvailableDefaultViewModes.Add(
+				new SelectListItem { Value = "grid", Text = T("Common.Grid"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("grid") }
+			);
+            model.AvailableDefaultViewModes.Add(
+				new SelectListItem { Value = "list", Text = T("Common.List"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("list") }
+			);
 
 			var deliveryTimes = _deliveryTimesService.GetAllDeliveryTimes();
 			foreach (var dt in deliveryTimes)

@@ -251,20 +251,10 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 			Currency currency = context.Currency.Entity;
 			var languageId = context.Projection.LanguageId ?? 0;
 			var dateFormat = "yyyy-MM-ddTHH:mmZ";
-			var defaultCondition = "new";
 			var defaultAvailability = "in stock";
 			var measureWeight = GetBaseMeasureWeight();
 
 			var config = (context.ConfigurationData as ProfileConfigurationModel) ?? new ProfileConfigurationModel();
-
-			if (config.Condition.IsCaseInsensitiveEqual(Unspecified))
-			{
-				defaultCondition = string.Empty;
-			}
-			else if (config.Condition.HasValue())
-			{
-				defaultCondition = config.Condition;
-			}
 
 			if (config.Availability.IsCaseInsensitiveEqual(Unspecified))
 			{
@@ -309,7 +299,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 
 						try
 						{
-							string category = (gmc == null ? null : gmc.Taxonomy);
+							string category = gmc == null ? null : gmc.Taxonomy;
 							string productType = product._CategoryPath;
 							var price = (decimal)product.Price;
 							var uniqueId = (string)product._UniqueId;
@@ -386,8 +376,20 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 								}
 							}
 
-							var condition = GetAttributeValue(attributeValues, "condition", languageId, null, defaultCondition);
-							WriteString(writer, "condition", condition);
+                            switch (entity.Condition)
+                            {
+                                case ProductCondition.Damaged:
+                                case ProductCondition.Used:
+                                    WriteString(writer, "condition", "used");
+                                    break;
+                                case ProductCondition.Refurbished:
+                                    WriteString(writer, "condition", "refurbished");
+                                    break;
+                                case ProductCondition.New:
+                                default:
+                                    WriteString(writer, "condition", "new");
+                                    break;
+                            }
 
 							WriteString(writer, "availability", availability);
 

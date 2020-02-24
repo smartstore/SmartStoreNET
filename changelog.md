@@ -33,6 +33,7 @@
 * #1754 Implement hidden boolean setting that controls which catalog search engine implementation should be used in backend.
 * #1776 Enable images and color values for search filters to be stored for specification attribute options.
 * #1793 Add field for manufacturer bottom description like for categories.
+* #1116 Add new field for product condition.
 
 ### Improvements
 * #1663 Make MeasureDimension and MeasureWeight localizable.

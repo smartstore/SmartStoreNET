@@ -211,6 +211,7 @@ namespace SmartStore.Admin.Controllers
 
 			p.ProductTypeId = m.ProductTypeId;
             p.Visibility = m.Visibility;
+            p.Condition = m.Condition;
 			p.ProductTemplateId = m.ProductTemplateId;
 
 			nameChanged = !string.Equals(p.Name, m.Name, StringComparison.CurrentCultureIgnoreCase);

@@ -309,7 +309,10 @@ namespace SmartStore.Web.Controllers
 						: null,
 					ReviewCount = product.ApprovedTotalReviews,
 					DisplayAdminLink = _services.Permissions.Authorize(Permissions.System.AccessBackend, customer),
-					ShowSku = _catalogSettings.ShowProductSku,
+                    Condition = product.Condition,
+                    ShowCondition = _catalogSettings.ShowProductCondition,
+                    LocalizedCondition = product.Condition.GetLocalizedEnum(_services.Localization, _services.WorkContext),
+                    ShowSku = _catalogSettings.ShowProductSku,
 					Sku = product.Sku,
 					ShowManufacturerPartNumber = _catalogSettings.ShowManufacturerPartNumber,
                     DisplayProductReviews = _catalogSettings.ShowProductReviewsInProductDetail && product.AllowCustomerReviews,
@@ -1054,6 +1057,9 @@ namespace SmartStore.Web.Controllers
 
 			model.Id = product.Id;
 			model.Name = product.GetLocalized(x => x.Name);
+            model.Condition = product.Condition;
+            model.ShowCondition = _catalogSettings.ShowProductCondition;
+            model.LocalizedCondition = product.Condition.GetLocalizedEnum(_services.Localization, _services.WorkContext);
 			model.ShowSku = _catalogSettings.ShowProductSku;
 			model.Sku = product.Sku;
 			model.ShortDescription = product.GetLocalized(x => x.ShortDescription);
@@ -1077,8 +1083,6 @@ namespace SmartStore.Web.Controllers
 			model.BundlePerItemPricing = product.BundlePerItemPricing;
 			model.BundlePerItemShipping = product.BundlePerItemShipping;
 			model.BundlePerItemShoppingCart = product.BundlePerItemShoppingCart;
-
-			//_taxSettings.TaxDisplayType == TaxDisplayType.ExcludingTax;
 
 			var taxDisplayType = _services.WorkContext.GetTaxDisplayTypeFor(customer, store.Id);
 			string taxInfo = T(taxDisplayType == TaxDisplayType.IncludingTax ? "Tax.InclVAT" : "Tax.ExclVAT");

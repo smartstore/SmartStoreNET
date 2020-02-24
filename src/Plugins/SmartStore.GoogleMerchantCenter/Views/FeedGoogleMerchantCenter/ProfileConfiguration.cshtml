@@ -81,22 +81,6 @@
 	</tr>
 	<tr>
 		<td class="adminTitle">
-			@Html.SmartLabelFor(m => m.Condition)
-		</td>
-		<td class="adminData">
-			@Html.DropDownList("Condition", new List<SelectListItem>
-			{
-				new SelectListItem { Text = T("Common.Auto"), Value = "" },
-				new SelectListItem { Text = T("Common.Unspecified"), Value = GmcXmlExportProvider.Unspecified },
-				new SelectListItem { Text = T("Plugins.Feed.Froogle.ConditionNew"), Value = "new" },
-				new SelectListItem { Text = T("Plugins.Feed.Froogle.ConditionUsed"), Value = "used" },
-				new SelectListItem { Text = T("Plugins.Feed.Froogle.ConditionRefurbished"), Value = "refurbished" }
-			})
-			@Html.ValidationMessageFor(m => m.Condition)
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
 			@Html.SmartLabelFor(m => m.Availability)
 		</td>
 		<td class="adminData">

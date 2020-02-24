@@ -7,7 +7,6 @@ using SmartStore.Services.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
-using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.UI.Choices;
 using SmartStore.Web.Models.Media;
 
@@ -38,7 +37,8 @@ namespace SmartStore.Web.Models.Catalog
 				if (_detailsPictureModel == null)
 				{
 					_detailsPictureModel = new ProductDetailsPictureModel();
-				}	
+				}
+
 				return _detailsPictureModel;
 			}
 		}
@@ -57,7 +57,11 @@ namespace SmartStore.Web.Models.Catalog
 		public int PictureSize { get; set; }
 		public bool CanonicalUrlsEnabled { get; set; }
 
-		public bool ShowSku { get; set; }
+        public ProductCondition Condition { get; set; }
+        public bool ShowCondition { get; set; }
+        public string LocalizedCondition { get; set; }
+
+        public bool ShowSku { get; set; }
 		public string Sku { get; set; }
 
 		public bool ShowManufacturerPartNumber { get; set; }

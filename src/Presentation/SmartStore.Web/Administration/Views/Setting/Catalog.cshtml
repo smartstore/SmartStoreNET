@@ -1,4 +1,5 @@
-﻿@model CatalogSettingsModel
+﻿@using SmartStore.Core.Domain.Catalog;
+@model CatalogSettingsModel
 
 @{
     Layout = "_SettingLayout";
@@ -696,6 +697,15 @@
 @helper TabProductDetailSettings()
 {
     <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowProductCondition)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowProductCondition)
+                @Html.ValidationMessageFor(model => model.ShowProductCondition)
+            </td>
+        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.RecentlyViewedProductsEnabled)

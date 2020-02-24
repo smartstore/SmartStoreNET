@@ -461,6 +461,25 @@
             builder.AddOrUpdate("ActivityLog.EditSettings", 
                 "The setting {0} has been changed. The new value is {1}.",
                 "Die Einstellung {0} wurde geändert. Der neue Wert ist {1}.");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.Fields.Condition",
+                "Product condition",
+                "Artikelzustand",
+                "Specifies the product condition.",
+                "Legt den Artikelzustand fest.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowProductCondition",
+                "Show product condition",
+                "Artikelzustand anzeigen",
+                "Specifies whether to show the product condition.",
+                "Legt fest, ob der Artikelzustand im Shop angezeigt werden soll.");
+
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.ProductCondition.New", "New", "Neu");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.ProductCondition.Refurbished", "Refurbished", "Generalüberholt");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.ProductCondition.Used", "Used", "Gebraucht");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.ProductCondition.Damaged", "Damaged", "Defekt");
+
+            builder.AddOrUpdate("Products.Condition", "Product condition", "Artikelzustand");
         }
     }
 }

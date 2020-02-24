@@ -3,9 +3,29 @@
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web;
+@{
+    var conditionContent = "http://schema.org/";
+
+    switch (Model.Condition)
+    {
+        case ProductCondition.Damaged:
+            conditionContent += "DamagedCondition";
+            break;
+        case ProductCondition.Used:
+            conditionContent += "UsedCondition";
+            break;
+        case ProductCondition.Refurbished:
+            conditionContent += "RefurbishedCondition";
+            break;
+        case ProductCondition.New:
+        default:
+            conditionContent += "NewCondition";
+            break;
+    }
+}
 
 <div class="pd-offer" @Html.Raw(!Model.ProductPrice.CallForPrice ? "itemprop=\"offers\" itemscope itemtype=\"http://schema.org/Offer\"" : "")>
-	<meta itemprop="itemCondition" content="http://schema.org/NewCondition" />
+	<meta itemprop="itemCondition" itemtype="http://schema.org/OfferItemCondition" content="@conditionContent" />
 
 	@if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton || Model.ProductPrice.ShowLoginNote)
 	{
@@ -50,5 +70,4 @@
 	</div>
 	
 	@{ Html.RenderPartial("Product.Offer.Actions.Misc", Model);	}
-
 </div>

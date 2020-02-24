@@ -95,6 +95,12 @@ namespace SmartStore.Core.Domain.Catalog
         public ProductVisibility Visibility { get; set; }
 
         /// <summary>
+        /// Gets or sets the condition of the product.
+        /// </summary>
+        [DataMember]
+        public ProductCondition Condition { get; set; }
+
+        /// <summary>
         /// Gets or sets the name
         /// </summary>
         [DataMember]

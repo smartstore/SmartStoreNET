@@ -62,6 +62,9 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Visibility")]
         public ProductVisibility Visibility { get; set; }
 
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Condition")]
+        public ProductCondition Condition { get; set; }
+
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductTemplate")]
 		[AllowHtml]
 		public int ProductTemplateId { get; set; }

@@ -114,13 +114,16 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HideProductDefaultPictures")]
 		public bool HideProductDefaultPictures { get; set; }
 
-		#endregion
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductCondition")]
+        public bool ShowProductCondition { get; set; }
 
-		#region Product lists
+        #endregion
 
-		#region Navigation
+        #region Product lists
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductsFromSubcategories")]
+        #region Navigation
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductsFromSubcategories")]
         public bool ShowProductsFromSubcategories { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IncludeFeaturedProductsInNormalLists")]

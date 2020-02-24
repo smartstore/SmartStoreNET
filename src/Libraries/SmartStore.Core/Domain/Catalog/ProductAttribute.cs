@@ -44,6 +44,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets the display order
 		/// </summary>
 		[DataMember]
+        [Index]
 		public int DisplayOrder { get; set; }
 
         /// <summary>

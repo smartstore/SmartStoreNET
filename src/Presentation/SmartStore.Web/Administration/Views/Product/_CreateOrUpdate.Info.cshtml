@@ -247,6 +247,15 @@
 				@Html.ValidationMessageFor(model => model.CustomsTariffNumber)
 			</td>
 		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Condition)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.Condition, Model.Condition.ToSelectList())
+                @Html.ValidationMessageFor(model => model.Condition)
+            </td>
+        </tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.CountryOfOriginId)

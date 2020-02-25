@@ -14,6 +14,7 @@ namespace SmartStore.Services.Catalog
     {
         #region Fields
 
+        private readonly ICommonServices _services;
         private readonly HttpContextBase _httpContext;
         private readonly IProductService _productService;
 		private readonly IAclService _aclService;
@@ -30,11 +31,13 @@ namespace SmartStore.Services.Catalog
         /// <param name="productService">Product service</param>
         /// <param name="catalogSettings">Catalog settings</param>
         public RecentlyViewedProductsService(
-			HttpContextBase httpContext,
+            ICommonServices services,
+            HttpContextBase httpContext,
 			IProductService productService,
 			IAclService aclService,
 			CatalogSettings catalogSettings)
         {
+            _services = services;
             _httpContext = httpContext;
             _productService = productService;
 			_aclService = aclService;
@@ -128,6 +131,11 @@ namespace SmartStore.Services.Catalog
             newProductIds.Skip(skip).Take(maxProducts).Each(x => {
                 recentlyViewedCookie.Values.Add("RecentlyViewedProductIds", x.ToString());
             });
+
+            if (_services.WebHelper.IsCurrentConnectionSecured())
+            {
+                recentlyViewedCookie.Secure = true;
+            }
 
             recentlyViewedCookie.Expires = DateTime.Now.AddDays(10.0);
             _httpContext.Response.Cookies.Set(recentlyViewedCookie);

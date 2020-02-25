@@ -22,20 +22,23 @@ namespace SmartStore.Services.Media.Migration
         private readonly ICommonServices _services;
         private readonly IProviderManager _providerManager;
         private readonly IMediaTypeResolver _mediaTypeResolver;
-        private readonly IAlbumService _albumService;
+        private readonly IAlbumRegistry _albumRegistry;
+        //private readonly IAlbumService _albumService;
         private readonly IMediaTracker _mediaTracker;
 
         public MediaMigrator(
             ICommonServices services, 
             IProviderManager providerManager,
             IMediaTypeResolver mediaTypeResolver,
-            IAlbumService albumService,
+            IAlbumRegistry albumRegistry,
+            //IAlbumService albumService,
             IMediaTracker mediaTracker)
         {
             _services = services;
             _providerManager = providerManager;
             _mediaTypeResolver = mediaTypeResolver;
-            _albumService = albumService;
+            _albumRegistry = albumRegistry;
+            //_albumService = albumService;
             _mediaTracker = mediaTracker;
         }
 
@@ -67,8 +70,8 @@ namespace SmartStore.Services.Media.Migration
 
         public void CreateAlbums()
         {
-            var providers = _albumService.LoadAllAlbumProviders();
-            _albumService.InstallAlbums(providers);
+            // Enforce full album registration
+            _albumRegistry.GetAllAlbums();
         }
 
         public void MigratePictures(SmartObjectContext ctx)
@@ -121,7 +124,7 @@ namespace SmartStore.Services.Media.Migration
 
         public void DetectTracks(SmartObjectContext ctx)
         {
-            foreach (var albumName in _albumService.GetAlbumNames(true))
+            foreach (var albumName in _albumRegistry.GetAlbumNames(true))
             {
                 _mediaTracker.DetectAllTracks(albumName, true);
             }

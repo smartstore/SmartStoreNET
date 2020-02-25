@@ -24,7 +24,7 @@ namespace SmartStore.Services.Media
         /// </summary>
         public string Name { get; set; }
         public string Slug { get; set; }
-        public bool CanTrackRelations { get; set; }
+        public bool CanDetectTracks { get; set; }
         public int? ParentId { get; set; }
         public int FilesCount { get; set; }
         public string ResKey { get; set; }

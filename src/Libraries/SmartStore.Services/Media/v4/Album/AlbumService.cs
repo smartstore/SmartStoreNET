@@ -19,145 +19,30 @@ namespace SmartStore.Services.Media
 
         internal const string FolderTreeKey = "mediafolder:tree";
 
+        private readonly IAlbumRegistry _albumRegistry;
         private readonly IRepository<MediaAlbum> _albumRepository;
         private readonly IRepository<MediaFolder> _folderRepository;
         private readonly ICacheManager _cache;
 
-
-        private readonly IEnumerable<Lazy<IAlbumProvider>> _albumProviders;
-        private readonly IIndex<Type, IAlbumProvider> _albumProviderIndexer;
-
-        private readonly static ConcurrentDictionary<string, AlbumProviderInfo> _albumProviderInfoCache = new ConcurrentDictionary<string, AlbumProviderInfo>();
-        class AlbumProviderInfo
-        {
-            public int Id { get; set; } 
-            public string Name { get; set; }
-            public Type ProviderType { get; set; }
-            public bool IsTrackDetector { get; set; }
-            public AlbumDisplayHint DisplayHint { get; set; }
-        }
-
         public AlbumService(
+            IAlbumRegistry albumRegistry,
             IRepository<MediaAlbum> albumRepository,
             IRepository<MediaFolder> folderRepository,
             ICacheManager cache,
             IEnumerable<Lazy<IAlbumProvider>> albumProviders,
             IIndex<Type, IAlbumProvider> albumProvider)
         {
+            _albumRegistry = albumRegistry;
             _albumRepository = albumRepository;
             _folderRepository = folderRepository;
             _cache = cache;
-            _albumProviders = albumProviders;
-            _albumProviderIndexer = albumProvider;
         }
 
-        #region Albums
-
-        public T LoadAlbumProvider<T>() where T : IAlbumProvider
-        {
-            return (T)_albumProviderIndexer[typeof(T)];
-        }
-
-        public IAlbumProvider LoadAlbumProvider(string albumName)
+        public int GetAlbumIdByName(string albumName)
         {
             Guard.NotEmpty(albumName, nameof(albumName));
-
-            if (_albumProviderInfoCache.TryGetValue(albumName, out var info))
-            {
-                return _albumProviderIndexer[info.ProviderType];
-            }
-
-            return null;
+            return _albumRegistry.GetAlbumByName(albumName)?.Id ?? 0;
         }
-
-        public IAlbumProvider[] LoadAllAlbumProviders()
-        {
-            return _albumProviders.Select(x => x.Value).ToArray();
-        }
-
-        public void InstallAlbums(IEnumerable<IAlbumProvider> albumProviders)
-        {
-            Guard.NotNull(albumProviders, nameof(albumProviders));
-
-            var dbAlbums = _albumRepository.Table.Select(x => new { x.Id, x.Name }).ToDictionary(x => x.Name);
-            var hasChanges = false;
-
-            using (var scope = new DbContextScope(_albumRepository.Context, 
-                validateOnSave: false, 
-                hooksEnabled: false, 
-                autoCommit: true))
-            {
-                foreach (var provider in albumProviders)
-                {
-                    var albums = provider.GetAlbums().DistinctBy(x => x.Name).ToArray();
-
-                    foreach (var album in albums)
-                    {
-                        var info = new AlbumProviderInfo 
-                        { 
-                            Name = album.Name,
-                            ProviderType = provider.GetType(),
-                            IsTrackDetector = provider is IMediaTrackDetector,
-                            DisplayHint = provider.GetDisplayHint(album) ?? new AlbumDisplayHint()
-                        };
-
-                        if (dbAlbums.TryGetValue(album.Name, out var dbAlbum))
-                        {
-                            info.Id = dbAlbum.Id;
-                        }
-                        else
-                        {
-                            _albumRepository.Insert(album);
-                            hasChanges = true;
-                            info.Id = album.Id;
-                        }
-
-                        _albumProviderInfoCache.AddOrUpdate(album.Name, info, (key, val) => info);
-                    }
-                }
-            }
-
-            if (hasChanges)
-            {
-                ClearCache();
-            }
-        }
-
-        public int GetAlbumIdByName(string name)
-        {
-            if (_albumProviderInfoCache.TryGetValue(name, out var info))
-            {
-                return info.Id;
-            }
-            
-            return 0;
-        }
-
-        public void DeleteAlbum(string name)
-        {
-            Guard.NotEmpty(name, nameof(name));
-
-            _albumProviderInfoCache.TryRemove(name, out _);
-
-            // TODO
-            throw new NotImplementedException();
-
-            //ClearCache();
-        }
-
-        public IEnumerable<string> GetAlbumNames(bool withRelationDetectors = false)
-        {
-            if (!withRelationDetectors)
-            {
-                return _albumProviderInfoCache.Keys;
-            }
-
-            return _albumProviderInfoCache.Where(x => x.Value.IsTrackDetector).Select(x => x.Key).ToArray();
-        }
-
-        #endregion
-
-        #region Folders
 
         public void DeleteFolder(MediaFolder folder)
         {
@@ -165,9 +50,6 @@ namespace SmartStore.Services.Media
             throw new NotImplementedException();
         }
 
-        #endregion
-
-        #region Tree
 
         public void ClearCache()
         {
@@ -205,7 +87,7 @@ namespace SmartStore.Services.Media
                         Id = x.Id,
                         Name = x.Name,
                         ParentId = x.ParentId,
-                        CanTrackRelations = x.CanTrackRelations,
+                        CanDetectTracks = x.CanDetectTracks,
                         FilesCount = x.FilesCount,
                         Slug = x.Slug
                     };
@@ -218,9 +100,10 @@ namespace SmartStore.Services.Media
                         item.IncludePath = album.IncludePath;
                         item.Order = album.Order ?? 0;
 
-                        if (_albumProviderInfoCache.TryGetValue(album.Name, out var info))
+                        var albumInfo = _albumRegistry.GetAlbumByName(album.Name);
+                        if (albumInfo != null)
                         {
-                            var displayHint = info.DisplayHint;
+                            var displayHint = albumInfo.DisplayHint;
                             item.Color = displayHint.Color;
                             item.OverlayColor = displayHint.OverlayColor;
                             item.OverlayIcon = displayHint.OverlayIcon;
@@ -286,7 +169,5 @@ namespace SmartStore.Services.Media
                 AddChildTreeNodes(newNode, node.Id, nodeMap);
             }
         }
-
-        #endregion
     }
 }

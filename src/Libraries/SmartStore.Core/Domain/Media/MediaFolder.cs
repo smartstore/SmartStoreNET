@@ -26,7 +26,7 @@ namespace SmartStore.Core.Domain.Media
         /// Gets or sets a value indicating whether the folder can track relations to entities for containing files.
         /// </summary>
         [DataMember]
-        public bool CanTrackRelations { get; set; }
+        public bool CanDetectTracks { get; set; }
 
         /// <summary>
         /// Gets or sets the parent folder id.

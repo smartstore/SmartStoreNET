@@ -22,6 +22,7 @@ using SmartStore.Data;
 using SmartStore.Data.Setup;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Hooks;
+using SmartStore.Services.Media;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Infrastructure.Installation;
@@ -263,7 +264,7 @@ namespace SmartStore.Web.Controllers
 				});
 			}
 
-			//set page timeout to 5 minutes
+			// set page timeout to 5 minutes
 			this.Server.ScriptTimeout = 300;
 
 			if (model.DatabaseConnectionString != null)
@@ -271,12 +272,12 @@ namespace SmartStore.Web.Controllers
 				model.DatabaseConnectionString = model.DatabaseConnectionString.Trim();
 			}
 
-			//SQL Server
+			// SQL Server
 			if (model.DataProvider.Equals("sqlserver", StringComparison.InvariantCultureIgnoreCase))
 			{
 				if (model.SqlConnectionInfo.Equals("sqlconnectioninfo_raw", StringComparison.InvariantCultureIgnoreCase))
 				{
-					//raw connection string
+					// raw connection string
 					if (string.IsNullOrEmpty(model.DatabaseConnectionString))
 					{
 						UpdateResult(x => 
@@ -288,7 +289,7 @@ namespace SmartStore.Web.Controllers
 
 					try
 					{
-						//try to create connection string
+						// try to create connection string
 						new SqlConnectionStringBuilder(model.DatabaseConnectionString);
 					}
 					catch (Exception ex)
@@ -302,7 +303,7 @@ namespace SmartStore.Web.Controllers
 				}
 				else
 				{
-					//values
+					// values
 					if (string.IsNullOrEmpty(model.SqlServerName))
 					{
 						UpdateResult(x =>
@@ -321,10 +322,10 @@ namespace SmartStore.Web.Controllers
 						});
 					}
 
-					//authentication type
+					// authentication type
 					if (model.SqlAuthenticationType.Equals("sqlauthentication", StringComparison.InvariantCultureIgnoreCase))
 					{
-						//SQL authentication
+						// SQL authentication
 						if (string.IsNullOrEmpty(model.SqlServerUsername))
 						{
 							UpdateResult(x =>
@@ -347,14 +348,14 @@ namespace SmartStore.Web.Controllers
 			}
 
 
-			//Consider granting access rights to the resource to the ASP.NET request identity. 
-			//ASP.NET has a base process identity 
-			//(typically {MACHINE}\ASPNET on IIS 5 or Network Service on IIS 6 and IIS 7, 
-			//and the configured application pool identity on IIS 7.5) that is used if the application is not impersonating.
-			//If the application is impersonating via <identity impersonate="true"/>, 
-			//the identity will be the anonymous user (typically IUSR_MACHINENAME) or the authenticated request user.
+			// Consider granting access rights to the resource to the ASP.NET request identity. 
+			// ASP.NET has a base process identity 
+			// (typically {MACHINE}\ASPNET on IIS 5 or Network Service on IIS 6 and IIS 7, 
+			// and the configured application pool identity on IIS 7.5) that is used if the application is not impersonating.
+			// If the application is impersonating via <identity impersonate="true"/>, 
+			// the identity will be the anonymous user (typically IUSR_MACHINENAME) or the authenticated request user.
 			var webHelper = scope.Resolve<IWebHelper>();
-			//validate permissions
+			// validate permissions
 			var dirsToCheck = FilePermissionHelper.GetDirectoriesWrite(webHelper);
 			foreach (string dir in dirsToCheck)
 			{
@@ -607,6 +608,18 @@ namespace SmartStore.Web.Controllers
 								}
 							}
 						}
+					}
+
+					// Detect media file tracks (must come after plugins installation)
+					UpdateResult(x =>
+					{
+						x.ProgressMessage = _locService.GetResource("Progress.ProcessingMedia");
+						Logger.Info(x.ProgressMessage);
+					});
+					var mediaTracker = scope.Resolve<IMediaTracker>();
+					foreach (var album in scope.Resolve<IAlbumRegistry>().GetAlbumNames(true))
+					{
+						mediaTracker.DetectAllTracks(album, false);
 					}
 
 					UpdateResult(x => 

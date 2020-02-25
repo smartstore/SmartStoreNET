@@ -9,7 +9,7 @@ namespace SmartStore.Services.Media
 {
     public interface IMediaTrackDetector
     {
-        void ConfigureTracks(string albumName, MediaTrackPropertyTable table);
+        void ConfigureTracks(string albumName, TrackedMediaPropertyTable table);
         IEnumerable<MediaTrackAction> DetectAllTracks(string albumName);
     }
 }

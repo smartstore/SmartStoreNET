@@ -147,6 +147,9 @@
   <LocaleResource Name="Progress.InstallingPlugins">
     <Value>Installiere Plugin {0} von {1}</Value>
   </LocaleResource>
+  <LocaleResource Name="Progress.ProcessingMedia">
+    <Value>Verarbeite Mediendateien</Value>
+  </LocaleResource>
   <LocaleResource Name="Progress.Finalizing">
     <Value>Schließe Installation ab</Value>
   </LocaleResource>

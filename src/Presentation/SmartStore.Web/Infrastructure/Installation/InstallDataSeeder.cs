@@ -70,18 +70,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 		#region Populate
 
-		private void PopulateMediaAlbums()
-		{
-			var albumService = new AlbumService(
-				new EfRepository<MediaAlbum>(_ctx),
-				null,
-				NullCache.Instance,
-				null, 
-				null);
-
-			albumService.InstallAlbums(new[] { new SystemAlbumProvider(_ctx) });
-		}
-
 		private void PopulateStores()
 		{
 			SaveRange(_data.Stores());
@@ -555,7 +543,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 				x.Add("Media.Storage.Provider", _config.StoreMediaInDB ? DatabaseMediaStorageProvider.SystemName : FileSystemMediaStorageProvider.SystemName);
 			});
 
-			Populate("PopulateMediaAlbums", PopulateMediaAlbums);
 			Populate("PopulatePictures", _data.Pictures());
 			Populate("PopulateCurrencies", PopulateCurrencies);
 			Populate("PopulateStores", PopulateStores);

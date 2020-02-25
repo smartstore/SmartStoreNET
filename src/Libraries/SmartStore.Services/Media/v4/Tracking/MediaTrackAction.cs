@@ -12,6 +12,8 @@ namespace SmartStore.Services.Media
 
         public int MediaFileId { get; set; }
 
+        public string Album { get; set; }
+
         public MediaTrackOperation Operation { get; set; }
 
         public MediaTrack ToTrack()
@@ -20,7 +22,8 @@ namespace SmartStore.Services.Media
             {
                 EntityName = EntityName,
                 EntityId = EntityId,
-                MediaFileId = MediaFileId
+                MediaFileId = MediaFileId,
+                Album = Album
             };
         }
 

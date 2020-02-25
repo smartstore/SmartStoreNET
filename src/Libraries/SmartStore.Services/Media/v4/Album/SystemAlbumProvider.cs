@@ -43,70 +43,70 @@ namespace SmartStore.Services.Media
                 {
                     Name = Products,
                     ResKey = "Admin.Catalog.Products",
-                    CanTrackRelations = true,
+                    CanDetectTracks = true,
                     Order = int.MinValue
                 },
                 new MediaAlbum
                 {
                     Name = Categories,
                     ResKey = "Admin.Catalog.Categories",
-                    CanTrackRelations = true,
+                    CanDetectTracks = true,
                     Order = int.MinValue + 10
                 },
                 new MediaAlbum
                 {
                     Name = Brands,
                     ResKey = "Manufacturers",
-                    CanTrackRelations = true,
+                    CanDetectTracks = true,
                     Order = int.MinValue + 20
                 },
                 new MediaAlbum
                 {
                     Name = Customers,
                     ResKey = "Admin.Customers",
-                    CanTrackRelations = true, // TBD
+                    CanDetectTracks = true, // TBD
                     Order = int.MinValue + 30
                 },
                 new MediaAlbum
                 {
                     Name = Blog,
                     ResKey = "Blog",
-                    CanTrackRelations = true,
+                    CanDetectTracks = true,
                     Order = int.MinValue + 40
                 },
                 new MediaAlbum
                 {
                     Name = News,
                     ResKey = "News",
-                    CanTrackRelations = true,
+                    CanDetectTracks = true,
                     Order = int.MinValue + 50
                 },
                 new MediaAlbum
                 {
                     Name = Forums,
                     ResKey = "Forum.Forum",
-                    CanTrackRelations = false, // TBD
+                    CanDetectTracks = false, // TBD
                     Order = int.MinValue + 60
                 },
                 new MediaAlbum
                 {
                     Name = Downloads,
                     ResKey = "Common.Downloads",
-                    CanTrackRelations = true,
+                    CanDetectTracks = true,
                     Order = int.MinValue + 70
                 },
                 new MediaAlbum
                 {
                     Name = Messages,
                     ResKey = "Admin.Media.Album.Message",
-                    CanTrackRelations = true,
+                    CanDetectTracks = true,
                     Order = int.MinValue + 80
                 },
                 new MediaAlbum
                 {
                     Name = Files,
                     ResKey = "Admin.Media.Album.File",
-                    CanTrackRelations = false,
+                    CanDetectTracks = false,
                     // Slug = "uploaded", // TBD: hmmmm??
                     Order = int.MaxValue
                 }
@@ -164,7 +164,7 @@ namespace SmartStore.Services.Media
 
         #region Tracking
 
-        public void ConfigureTracks(string albumName, MediaTrackPropertyTable table)
+        public void ConfigureTracks(string albumName, TrackedMediaPropertyTable table)
         {
             if (albumName == Products)
             {

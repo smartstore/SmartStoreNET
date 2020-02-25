@@ -1,47 +1,73 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autofac.Features.Indexed;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Media
 {
-    public class AlbumRegistry
+    public class AlbumRegistry : IAlbumRegistry
     {
-        private readonly MediaTrackPropertyTable _propertyTable;
-        private readonly IRepository<MediaAlbum> _albumRepository;
-        private readonly IEnumerable<Lazy<IAlbumProvider>> _albumProviders;
-        private readonly IIndex<Type, IAlbumProvider> _albumProviderIndexer;
+        internal const string AlbumInfosKey = "media:albums:all";
 
-        private readonly static ConcurrentDictionary<string, AlbumProviderInfo> _albumProviderInfoCache = new ConcurrentDictionary<string, AlbumProviderInfo>();
+        private readonly IDbContext _dbContext;
+        private readonly ICacheManager _cache;
+        private readonly IEnumerable<Lazy<IAlbumProvider>> _albumProviders;
         
         public AlbumRegistry(
-            IRepository<MediaAlbum> albumRepository,
-            IEnumerable<Lazy<IAlbumProvider>> albumProviders,
-            IIndex<Type, IAlbumProvider> albumProvider)
+            IDbContext dbContext,
+            ICacheManager cache,
+            IEnumerable<Lazy<IAlbumProvider>> albumProviders)
         {
-            _propertyTable = new MediaTrackPropertyTable();
-
-            _albumRepository = albumRepository;
+            _dbContext = dbContext;
+            _cache = cache;
             _albumProviders = albumProviders;
-            _albumProviderIndexer = albumProvider;
         }
 
-        public void RegisterAlbums(IEnumerable<IAlbumProvider> albumProviders)
+        public virtual IReadOnlyCollection<AlbumInfo> GetAllAlbums()
         {
-            Guard.NotNull(albumProviders, nameof(albumProviders));
+            return GetAlbumDictionary().Values;
+        }
 
-            foreach (var provider in albumProviders)
+        public IEnumerable<string> GetAlbumNames(bool withTrackDetectors = false)
+        {
+            var dict = GetAlbumDictionary();
+
+            if (!withTrackDetectors)
             {
+                return dict.Keys;
+            }
+
+            return dict.Where(x => x.Value.IsTrackDetector).Select(x => x.Key).ToArray();
+        }
+
+        private Dictionary<string, AlbumInfo> GetAlbumDictionary()
+        {
+            var albums = _cache.Get(AlbumInfosKey, () =>
+            {
+                return LoadAllAlbums().ToDictionary(x => x.Name);
+            }, TimeSpan.FromHours(24));
+
+            return albums;
+        }
+
+        protected virtual IEnumerable<AlbumInfo> LoadAllAlbums()
+        {
+            var setAlbums = _dbContext.Set<MediaAlbum>();
+            var dbAlbums = setAlbums
+                .AsNoTracking()
+                .Select(x => new { x.Id, x.Name })
+                .ToDictionary(x => x.Name);
+
+            foreach (var lazyProvider in _albumProviders)
+            {
+                var provider = lazyProvider.Value;
                 var albums = provider.GetAlbums().DistinctBy(x => x.Name).ToArray();
 
                 foreach (var album in albums)
                 {
-                    var info = new AlbumProviderInfo
+                    var info = new AlbumInfo
                     {
                         Name = album.Name,
                         ProviderType = provider.GetType(),
@@ -50,35 +76,68 @@ namespace SmartStore.Services.Media
 
                     if (provider is IMediaTrackDetector detector)
                     {
+                        var propertyTable = new TrackedMediaPropertyTable(album.Name);
+                        detector.ConfigureTracks(album.Name, propertyTable);
+
                         info.IsTrackDetector = true;
-                        detector.ConfigureTracks(album.Name, _propertyTable);
+                        info.TrackedProperties = propertyTable.GetProperties();
                     }
 
-                    //if (dbAlbums.TryGetValue(album.Name, out var dbAlbum))
-                    //{
-                    //    info.Id = dbAlbum.Id;
-                    //}
-                    //else
-                    //{
-                    //    _albumRepository.Insert(album);
-                    //    hasChanges = true;
-                    //    info.Id = album.Id;
-                    //}
+                    if (dbAlbums.TryGetValue(album.Name, out var dbAlbum))
+                    {
+                        info.Id = dbAlbum.Id;
+                    }
+                    else
+                    {
+                        setAlbums.Add(album);
+                        _dbContext.SaveChanges();
+                        info.Id = album.Id;
+                    }
 
-                    _albumProviderInfoCache.AddOrUpdate(album.Name, info, (key, val) => info);
+                    yield return info;
                 }
             }
         }
 
-        public
-
-        class AlbumProviderInfo
+        public virtual AlbumInfo GetAlbumByName(string name)
         {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public Type ProviderType { get; set; }
-            public bool IsTrackDetector { get; set; }
-            public AlbumDisplayHint DisplayHint { get; set; }
+            Guard.NotEmpty(name, nameof(name));
+            
+            return GetAlbumDictionary().Get(name);
+        }
+
+        public virtual AlbumInfo GetAlbumById(int id)
+        {
+            if (id > 0)
+            {
+                return GetAlbumDictionary().FirstOrDefault(x => x.Value.Id == id).Value;
+            }
+
+            return null;
+        }
+
+        public void UninstallAlbum(string albumName)
+        {
+            Guard.NotEmpty(albumName, nameof(albumName));
+
+            throw new NotImplementedException();
+
+            //ClearCache();
+        }
+
+        public void DeleteAlbum(string albumName, string moveFilesToAlbum)
+        {
+            Guard.NotEmpty(albumName, nameof(albumName));
+            Guard.NotEmpty(moveFilesToAlbum, nameof(moveFilesToAlbum));
+
+            throw new NotImplementedException();
+
+            //ClearCache();
+        }
+
+        public void ClearCache()
+        {
+            _cache.Remove(AlbumInfosKey);
         }
     }
 }

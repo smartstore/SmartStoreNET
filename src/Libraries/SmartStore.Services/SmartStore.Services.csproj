@@ -356,14 +356,14 @@
     <Compile Include="Media\TransientMediaClearTask.cs" />
     <Compile Include="Media\v4\Album\AlbumRegistry.cs" />
     <Compile Include="Media\v4\Album\IAlbumProvider.cs" />
+    <Compile Include="Media\v4\Album\IAlbumRegistry.cs" />
     <Compile Include="Media\v4\Album\IAlbumService.cs" />
     <Compile Include="Media\v4\Album\IAlbumServiceExtensions.cs" />
-    <Compile Include="Media\v4\Album\AlbumDisplayHint.cs" />
+    <Compile Include="Media\v4\Album\AlbumInfo.cs" />
     <Compile Include="Media\v4\Album\MediaFolderNode.cs" />
     <Compile Include="Media\v4\Album\AlbumService.cs" />
     <Compile Include="Media\v4\Album\SystemAlbumProvider.cs" />
     <Compile Include="Media\v4\MediaModule.cs" />
-    <Compile Include="Media\v4\MediaStarter.cs" />
     <Compile Include="Media\v4\MediaTypes\MediaType.cs" />
     <Compile Include="Media\v4\MediaTypes\IMediaTypeResolver.cs" />
     <Compile Include="Media\v4\MediaTypes\MediaTypeResolver.cs" />
@@ -374,7 +374,7 @@
     <Compile Include="Media\v4\Tracking\MediaTrackAction.cs" />
     <Compile Include="Media\v4\Tracking\MediaTracker.cs" />
     <Compile Include="Media\v4\Tracking\MediaTrackerHook.cs" />
-    <Compile Include="Media\v4\Tracking\MediaTrackPropertyTable.cs" />
+    <Compile Include="Media\v4\Tracking\TrackedMediaPropertyTable.cs" />
     <Compile Include="Messages\Importer\NewsLetterSubscriptionImporter.cs" />
     <Compile Include="Messages\Events.cs" />
     <Compile Include="Messages\IMessageFactory.cs" />

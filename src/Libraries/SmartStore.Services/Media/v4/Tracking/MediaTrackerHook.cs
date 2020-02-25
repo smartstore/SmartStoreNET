@@ -66,19 +66,19 @@ namespace SmartStore.Services.Media
             var state = entry.InitialState;
             var currentValues = entry.Entry.CurrentValues;
 
-            foreach (var pi in properties)
+            foreach (var prop in properties)
             {
                 if (beforeSave)
                 {
-                    if (entry.Entry.TryGetModifiedProperty(_dbContext, pi.Name, out object prevValue))
+                    if (entry.Entry.TryGetModifiedProperty(_dbContext, prop.Name, out object prevValue))
                     {
                         var actions = new HashSet<MediaTrackAction>();
                         
                         // Untrack the previous file relation (if not null)
-                        TryAddTrack(entry.Entity, prevValue, MediaTrackOperation.Untrack, actions);
+                        TryAddTrack(prop.Album, entry.Entity, prevValue, MediaTrackOperation.Untrack, actions);
 
                         // Track the new file relation (if not null)
-                        TryAddTrack(entry.Entity, currentValues[pi.Name], MediaTrackOperation.Track, actions);
+                        TryAddTrack(prop.Album, entry.Entity, currentValues[prop.Name], MediaTrackOperation.Track, actions);
 
                         _actionsTemp[entry.Entity] = actions;
                     }
@@ -89,7 +89,7 @@ namespace SmartStore.Services.Media
                     {
                         case EntityState.Added:
                         case EntityState.Deleted:
-                            TryAddTrack(entry.Entity, currentValues[pi.Name], state == EntityState.Added ? MediaTrackOperation.Track : MediaTrackOperation.Untrack);
+                            TryAddTrack(prop.Album, entry.Entity, currentValues[prop.Name], state == EntityState.Added ? MediaTrackOperation.Track : MediaTrackOperation.Untrack);
                             break;
                         case EntityState.Modified:
                             if (_actionsTemp.TryGetValue(entry.Entity, out var actions))
@@ -102,14 +102,20 @@ namespace SmartStore.Services.Media
             }
         }
 
-        private void TryAddTrack(BaseEntity entity, object value, MediaTrackOperation operation, HashSet<MediaTrackAction> actions = null)
+        private void TryAddTrack(string album, BaseEntity entity, object value, MediaTrackOperation operation, HashSet<MediaTrackAction> actions = null)
         {
             if (value == null)
                 return;
 
             if ((int)value > 0)
             {
-                (actions ?? _actionsUnit).Add(new MediaTrackAction { EntityId = entity.Id, EntityName = entity.GetEntityName(), MediaFileId = (int)value, Operation = operation });
+                (actions ?? _actionsUnit).Add(new MediaTrackAction 
+                { 
+                    Album = album,
+                    EntityId = entity.Id, 
+                    EntityName = entity.GetEntityName(), 
+                    MediaFileId = (int)value, Operation = operation 
+                });
             }
         }
 
@@ -126,7 +132,12 @@ namespace SmartStore.Services.Media
             _actionsAll.UnionWith(_actionsUnit);
 
             // Commit all track items in one go
-            _mediaTracker.Value.TrackMany("", _actionsUnit, false);
+            var tracker = _mediaTracker.Value;
+            using (tracker.BeginScope(false))
+            {
+                // TODO: (mm) make media setting: MakeFilesTransientWhenOrphaned
+                tracker.TrackMany(_actionsUnit);
+            }
 
             _actionsUnit.Clear();
             _actionsTemp.Clear();

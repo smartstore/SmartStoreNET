@@ -109,6 +109,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a value indicating whether the entity is subject to ACL.
         /// </summary>
         [DataMember]
+        [Index]
         public bool SubjectToAcl { get; set; }
 
         /// <summary>

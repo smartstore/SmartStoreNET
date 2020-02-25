@@ -30,7 +30,6 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Search;
 using SmartStore.Services.Search.Modelling;
-using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
@@ -110,7 +109,6 @@ namespace SmartStore.Web.Controllers
 			TaxSettings taxSettings,
 			PerformanceSettings performanceSettings,
 			IDeliveryTimeService deliveryTimeService,
-			Lazy<IMenuPublisher> _menuPublisher,
 			Lazy<IDataExporter> dataExporter,
             ICatalogSearchService catalogSearchService,
 			ICatalogSearchQueryFactory catalogSearchQueryFactory,
@@ -160,11 +158,13 @@ namespace SmartStore.Web.Controllers
             _linkResolver = linkResolver;
 
 			T = NullLocalizer.Instance;
-		}
+            Logger = NullLogger.Instance;
+            QuerySettings = DbQuerySettings.Default;
+        }
 
 		public Localizer T { get; set; }
-
 		public ILogger Logger { get; set; }
+        public DbQuerySettings QuerySettings { get; set; }
 
         #region Category
 
@@ -1498,15 +1498,20 @@ namespace SmartStore.Web.Controllers
 
         public ManufacturerNavigationModel PrepareManufacturerNavigationModel(int manufacturerItemsToDisplay)
         {
-			var cacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_NAVIGATION_MODEL_KEY,
+            var storeId = _services.StoreContext.CurrentStore.Id;
+            var storeToken = QuerySettings.IgnoreMultiStore ? "0" : storeId.ToString();
+            var rolesToken = QuerySettings.IgnoreAcl ? "0" : _services.WorkContext.CurrentCustomer.GetRolesIdent();
+
+            var cacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_NAVIGATION_MODEL_KEY,
                 !_catalogSettings.HideManufacturerDefaultPictures,
                 _services.WorkContext.WorkingLanguage.Id,
-                _services.StoreContext.CurrentStore.Id,
+                storeToken,
+                rolesToken,
                 manufacturerItemsToDisplay);
 
             var cacheModel = _services.Cache.Get(cacheKey, () =>
             {
-                var manufacturers = _manufacturerService.GetAllManufacturers(null, 0, manufacturerItemsToDisplay + 1, _services.StoreContext.CurrentStore.Id);
+                var manufacturers = _manufacturerService.GetAllManufacturers(null, 0, manufacturerItemsToDisplay + 1, storeId);
 
                 var model = new ManufacturerNavigationModel
                 {

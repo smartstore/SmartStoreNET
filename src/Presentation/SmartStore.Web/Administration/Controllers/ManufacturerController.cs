@@ -17,6 +17,7 @@ using SmartStore.Services.Discounts;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
+using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
@@ -37,6 +38,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IProductService _productService;
         private readonly IStoreService _storeService;
         private readonly IStoreMappingService _storeMappingService;
+        private readonly IAclService _aclService;
         private readonly IUrlRecordService _urlRecordService;
         private readonly IPictureService _pictureService;
         private readonly ILanguageService _languageService;
@@ -59,6 +61,7 @@ namespace SmartStore.Admin.Controllers
             IProductService productService,
             IStoreService storeService,
             IStoreMappingService storeMappingService,
+            IAclService aclService,
             IUrlRecordService urlRecordService,
             IPictureService pictureService,
             ILanguageService languageService,
@@ -76,6 +79,7 @@ namespace SmartStore.Admin.Controllers
             _productService = productService;
             _storeService = storeService;
             _storeMappingService = storeMappingService;
+            _aclService = aclService;
             _urlRecordService = urlRecordService;
             _pictureService = pictureService;
             _languageService = languageService;
@@ -142,8 +146,9 @@ namespace SmartStore.Admin.Controllers
             {
                 model.CreatedOn = _dateTimeHelper.ConvertToUserTime(manufacturer.CreatedOnUtc, DateTimeKind.Utc);
                 model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(manufacturer.UpdatedOnUtc, DateTimeKind.Utc);
-                model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(manufacturer);
                 model.SelectedDiscountIds = manufacturer.AppliedDiscounts.Select(d => d.Id).ToArray();
+                model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(manufacturer);
+                model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(manufacturer);
             }
 
             model.GridPageSize = _adminAreaSettings.GridPageSize;
@@ -294,6 +299,7 @@ namespace SmartStore.Admin.Controllers
                 }
 
                 UpdatePictureSeoNames(manufacturer);
+                SaveAclMappings(manufacturer, model.SelectedCustomerRoleIds);
                 SaveStoreMappings(manufacturer, model.SelectedStoreIds);
 
                 _customerActivityService.InsertActivity("AddNewManufacturer", T("ActivityLog.AddNewManufacturer"), manufacturer.Name);
@@ -381,6 +387,7 @@ namespace SmartStore.Admin.Controllers
                 Services.EventPublisher.Publish(new ModelBoundEvent(model, manufacturer, form));
 
                 UpdatePictureSeoNames(manufacturer);
+                SaveAclMappings(manufacturer, model.SelectedCustomerRoleIds);
                 SaveStoreMappings(manufacturer, model.SelectedStoreIds);
 
                 _customerActivityService.InsertActivity("EditManufacturer", T("ActivityLog.EditManufacturer"), manufacturer.Name);

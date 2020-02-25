@@ -369,7 +369,7 @@ namespace SmartStore.Services.Catalog
 		protected virtual IQueryable<Category> ApplyHiddenCategoriesFilter(IQueryable<Category> query, int storeId = 0, bool showHidden = false)
         {
 			var entityName = nameof(Category);
-			var applied = false;
+			var grouping = false;
 			
 			// Store mapping
 			if (!showHidden && storeId > 0 && !QuerySettings.IgnoreMultiStore)
@@ -381,7 +381,7 @@ namespace SmartStore.Services.Catalog
 						where !c.LimitedToStores || storeId == m.StoreId
 						select c;
 
-				applied = true;
+				grouping = true;
 			}
 
 			// ACL (access control list)
@@ -396,10 +396,10 @@ namespace SmartStore.Services.Catalog
 						where !c.SubjectToAcl || allowedCustomerRolesIds.Contains(a.CustomerRoleId)
 						select c;
 
-				applied = true;
+				grouping = true;
 			}
   
-			if (applied)
+			if (grouping)
 			{
 				// Only distinct categories (group by ID)
 				query = from c in query

@@ -252,17 +252,21 @@ namespace SmartStore.Web.Controllers
             if (!manufacturer.Published && !Services.Permissions.Authorize(Permissions.Catalog.Manufacturer.Read))
 				return HttpNotFound();
 
-			// Store mapping.
-			if (!_storeMappingService.Authorize(manufacturer))
+            // ACL (access control list).
+            if (!_aclService.Authorize(manufacturer))
+                return HttpNotFound();
+
+            // Store mapping.
+            if (!_storeMappingService.Authorize(manufacturer))
 				return HttpNotFound();
 
-			// 'Continue shopping' URL.
-			if (!Services.WorkContext.CurrentCustomer.IsSystemAccount)
+            var store = Services.StoreContext.CurrentStore;
+            var customer = Services.WorkContext.CurrentCustomer;
+
+            // 'Continue shopping' URL.
+            if (!customer.IsSystemAccount)
 			{
-				_genericAttributeService.SaveAttribute(Services.WorkContext.CurrentCustomer,
-					SystemCustomerAttributeNames.LastContinueShoppingPage,
-					Services.WebHelper.GetThisPageUrl(false),
-					Services.StoreContext.CurrentStore.Id);
+				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.LastContinueShoppingPage, Services.WebHelper.GetThisPageUrl(false), store.Id);
 			}
 
             var model = manufacturer.ToModel();
@@ -274,23 +278,21 @@ namespace SmartStore.Web.Controllers
 
 			model.PictureModel = _helper.PrepareManufacturerPictureModel(manufacturer, model.Name);
 
-			var customerRolesIds = Services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
-
 			// Featured products.
 			var hideFeaturedProducts = _catalogSettings.IgnoreFeaturedProducts || (query.IsSubPage && !_catalogSettings.IncludeFeaturedProductsInSubPages);
 			if (!hideFeaturedProducts)
 			{
 				CatalogSearchResult featuredProductsResult = null;
 
-				string cacheKey = ModelCacheEventConsumer.MANUFACTURER_HAS_FEATURED_PRODUCTS_KEY.FormatInvariant(
-					manufacturerId, string.Join(",", customerRolesIds), Services.StoreContext.CurrentStore.Id);
+                var customerRolesIds = customer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+                var cacheKey = ModelCacheEventConsumer.MANUFACTURER_HAS_FEATURED_PRODUCTS_KEY.FormatInvariant(manufacturerId, string.Join(",", customerRolesIds), store.Id);
 				var hasFeaturedProductsCache = Services.Cache.Get<bool?>(cacheKey);
 
 				var featuredProductsQuery = new CatalogSearchQuery()
-					.VisibleOnly(Services.WorkContext.CurrentCustomer)
+					.VisibleOnly(customer)
                     .WithVisibility(ProductVisibility.Full)
                     .WithManufacturerIds(true, manufacturerId)
-					.HasStoreId(Services.StoreContext.CurrentStore.Id)
+					.HasStoreId(store.Id)
 					.WithLanguage(Services.WorkContext.WorkingLanguage)
 					.WithCurrency(Services.WorkContext.WorkingCurrency);
 

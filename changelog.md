@@ -34,6 +34,7 @@
 * #1776 Enable images and color values for search filters to be stored for specification attribute options.
 * #1793 Add field for manufacturer bottom description like for categories.
 * #1116 Add new field for product condition.
+* #1790 ACL support for manufacturers.
 
 ### Improvements
 * #1663 Make MeasureDimension and MeasureWeight localizable.

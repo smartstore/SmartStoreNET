@@ -443,8 +443,10 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("CreatedOnUtc", entity.CreatedOnUtc.ToString(_culture));
 			_writer.Write("UpdatedOnUtc", entity.UpdatedOnUtc.ToString(_culture));
 			_writer.Write("HasDiscountsApplied", entity.HasDiscountsApplied.ToString());
+            _writer.Write("SubjectToAcl", entity.SubjectToAcl.ToString());
+            _writer.Write("LimitedToStores", entity.LimitedToStores.ToString());
 
-			WritePicture(manufacturer.Picture, "Picture");
+            WritePicture(manufacturer.Picture, "Picture");
 
 			WriteLocalized(manufacturer);
 

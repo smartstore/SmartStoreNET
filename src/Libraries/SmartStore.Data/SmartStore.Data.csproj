@@ -766,6 +766,10 @@
     <Compile Include="Migrations\202002241354543_ProductCondition.Designer.cs">
       <DependentUpon>202002241354543_ProductCondition.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202002251201557_ManufacturerSubjectToAcl.cs" />
+    <Compile Include="Migrations\202002251201557_ManufacturerSubjectToAcl.Designer.cs">
+      <DependentUpon>202002251201557_ManufacturerSubjectToAcl.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -1365,6 +1369,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202002241354543_ProductCondition.resx">
       <DependentUpon>202002241354543_ProductCondition.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002251201557_ManufacturerSubjectToAcl.resx">
+      <DependentUpon>202002251201557_ManufacturerSubjectToAcl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

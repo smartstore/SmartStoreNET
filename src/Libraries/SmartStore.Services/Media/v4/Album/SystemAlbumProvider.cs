@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Messages;
 
 namespace SmartStore.Services.Media
 {
@@ -195,6 +196,13 @@ namespace SmartStore.Services.Media
             {
                 table.Register<Download>(x => x.MediaFileId);
             }
+            else if (albumName == Messages)
+            {
+                // TODO: (mm) These props are localizable
+                table.Register<MessageTemplate>(x => x.Attachment1FileId);
+                table.Register<MessageTemplate>(x => x.Attachment2FileId);
+                table.Register<MessageTemplate>(x => x.Attachment3FileId);
+            }
         }
 
         public IEnumerable<MediaTrackAction> DetectAllTracks(string albumName)
@@ -353,6 +361,25 @@ namespace SmartStore.Services.Media
                     foreach (var x in list)
                     {
                         yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
+                    }
+                }
+            }
+
+            // Messages
+            if (albumName == Messages)
+            {
+                var name = nameof(MessageTemplate);
+                var p = new FastPager<MessageTemplate>(ctx.Set<MessageTemplate>().AsNoTracking());
+                while (p.ReadNextPage(x => new { x.Id, x.Attachment1FileId, x.Attachment2FileId, x.Attachment3FileId }, x => x.Id, out var list))
+                {
+                    foreach (var x in list)
+                    {
+                        if (x.Attachment1FileId.HasValue)
+                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.Attachment1FileId.Value };
+                        if (x.Attachment2FileId.HasValue)
+                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.Attachment2FileId.Value };
+                        if (x.Attachment3FileId.HasValue)
+                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.Attachment3FileId.Value };
                     }
                 }
             }

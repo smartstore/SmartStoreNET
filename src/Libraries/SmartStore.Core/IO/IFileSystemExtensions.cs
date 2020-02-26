@@ -200,7 +200,7 @@ namespace SmartStore.Core.IO
 		}
 
 		/// <summary>
-		/// Tries to create a folder in the storage provider.
+		/// Tries to create a folder in the storage provider if it does not exist yet.
 		/// </summary>
 		/// <param name="path">The relative path to the folder to be created.</param>
 		/// <returns>True if success; False otherwise.</returns>

@@ -13,6 +13,8 @@ using SmartStore.Data.Setup;
 using SmartStore.Services.Media.Storage;
 using SmartStore.Core.IO;
 using SmartStore.Data;
+using System.Runtime.CompilerServices;
+using SmartStore.Core.Domain.Messages;
 
 namespace SmartStore.Services.Media.Migration
 {
@@ -89,7 +91,10 @@ namespace SmartStore.Services.Media.Migration
         {
             var sql = "SELECT * FROM [Download] WHERE [MediaFileId] IS NOT NULL";
             var downloadStubs = ctx.SqlQuery<DownloadStub>(sql).ToDictionary(x => x.Id);
-            var folderId = _albumRegistry.GetAlbumByName(SystemAlbumProvider.Downloads)?.Id;
+
+            var downloadsFolderId = _albumRegistry.GetAlbumByName(SystemAlbumProvider.Downloads)?.Id;
+            var messagesFolderId = _albumRegistry.GetAlbumByName(SystemAlbumProvider.Messages)?.Id;
+            var newFiles = new List<MediaFile>();
 
             using (var scope = new DbContextScope(ctx, 
                 validateOnSave: false, 
@@ -97,6 +102,21 @@ namespace SmartStore.Services.Media.Migration
                 autoCommit: false, 
                 autoDetectChanges: false))
             {
+                var messageTemplates = ctx.Set<MessageTemplate>()
+                    .Where(x => x.Attachment1FileId.HasValue || x.Attachment2FileId.HasValue || x.Attachment3FileId.HasValue)
+                    .ToList();
+
+                // Key = Download.Id
+                var messageTemplatesDict = new Dictionary<int, MessageTemplate>();
+                foreach (var mt in messageTemplates)
+                {
+                    if (mt.Attachment1FileId.HasValue) messageTemplatesDict[mt.Attachment1FileId.Value] = mt;
+                    if (mt.Attachment2FileId.HasValue) messageTemplatesDict[mt.Attachment2FileId.Value] = mt;
+                    if (mt.Attachment3FileId.HasValue) messageTemplatesDict[mt.Attachment3FileId.Value] = mt;
+                }
+
+                var hasPostProcessor = _isFsProvider || messageTemplatesDict.Count > 0;
+
                 var query = ctx.Set<Download>().Where(x => x.MediaFileId == null && !x.UseDownloadUrl);
                 var pager = new FastPager<Download>(query, 250);
 
@@ -108,6 +128,12 @@ namespace SmartStore.Services.Media.Migration
                         if (stub == null)
                             continue;
 
+                        var isMailAttachment = false;
+                        if (messageTemplatesDict.TryGetValue(stub.Id, out var mt))
+                        {
+                            isMailAttachment = true;
+                        }
+
                         // Create and insert new MediaFile entity for the download
                         var file = new MediaFile
                         {
@@ -117,7 +143,7 @@ namespace SmartStore.Services.Media.Migration
                             Name = stub.Filename, // Extension appended later in MigrateFiles()
                             MimeType = stub.ContentType,
                             MediaType = MediaType.Image, // Resolved later in MigrateFiles()
-                            FolderId = folderId,
+                            FolderId = isMailAttachment ? messagesFolderId : downloadsFolderId,
                             IsNew = stub.IsNew,
                             IsTransient = stub.IsTransient,
                             MediaStorageId = stub.MediaStorageId,
@@ -125,27 +151,126 @@ namespace SmartStore.Services.Media.Migration
                         };
 
                         // Add a track for the new file
-                        file.Tracks.Add(new MediaTrack 
-                        { 
-                            Album = SystemAlbumProvider.Downloads, 
-                            EntityId = d.Id, 
-                            EntityName = d.GetEntityName()
-                        });
+                        if (mt != null)
+                        {
+                            // Is referenced by a message template: move file to "Messages" album
+                            file.Tracks.Add(new MediaTrack
+                            {
+                                Album = SystemAlbumProvider.Messages,
+                                EntityId = mt.Id,
+                                EntityName = mt.GetEntityName()
+                            });
+                        }
+                        else
+                        {
+                            file.Tracks.Add(new MediaTrack
+                            {
+                                Album = SystemAlbumProvider.Downloads,
+                                EntityId = d.Id,
+                                EntityName = d.GetEntityName()
+                            });
+                        }
 
                         // Assign new file to download
                         d.MediaFile = file;
 
-                        if (_isFsProvider)
+                        // To be able to move files later
+                        if (hasPostProcessor)
                         {
-                            // Copy file from "Media/Downloads" to "Media/Storage" folder
-                        }
+                            newFiles.Add(file);
+                        } 
                     }
 
                     // Save to DB
                     scope.Commit();
 
+                    if (hasPostProcessor)
+                    {
+                        // MessageTemplate attachments (Download > MediaFile)
+                        if (messageTemplatesDict.Count > 0)
+                        {
+                            ReRefMessageTemplateAttachments(ctx, messageTemplatesDict, downloads.ToDictionary(x => x.Id));
+                        }
+
+                        if (_isFsProvider)
+                        {
+                            // Copy files from "Media/Downloads" to "Media/Storage" folder
+                            MoveDownloadFiles(newFiles.ToDictionary(x => x.Id), downloads, downloadStubs);
+                        }
+
+                        newFiles.Clear();
+                    }
+
                     // Breathe
                     ctx.DetachEntities(x => x is Download || x is MediaFile || x is MediaStorage || x is MediaTrack, false);
+                }
+            }
+        }
+
+        private void ReRefMessageTemplateAttachments(
+            SmartObjectContext ctx,
+            Dictionary<int, MessageTemplate> messageTemplatesDict, 
+            Dictionary<int, Download> downloads)
+        {
+            bool hasChanges = false;
+            
+            foreach (var kvp in messageTemplatesDict)
+            {
+                var downloadId = kvp.Key;
+                var mt = kvp.Value;
+                var idxProp = Array.IndexOf(messageTemplatesDict.Select(x => new int?[] { mt.Attachment1FileId, mt.Attachment2FileId, mt.Attachment3FileId }).ToArray(), downloadId) + 1;
+
+                if (idxProp > 0)
+                {
+                    var d = downloads.Get(downloadId);
+                    if (d?.MediaFileId != null)
+                    {
+                        // Change Download.Id ref to MediaFile.Id
+                        if (idxProp == 1) mt.Attachment1FileId = d.MediaFileId;
+                        if (idxProp == 2) mt.Attachment2FileId = d.MediaFileId;
+                        if (idxProp == 3) mt.Attachment3FileId = d.MediaFileId;
+
+                        // We don't need Download entity anymore
+                        ctx.Set<Download>().Remove(d);
+
+                        hasChanges = true;
+                    }
+                }
+            }
+
+            if (hasChanges)
+            {
+                ctx.SaveChanges();
+            }
+        }
+
+        private void MoveDownloadFiles(
+            Dictionary<int, MediaFile> newFilesDict, 
+            IList<Download> downloads, 
+            Dictionary<int, DownloadStub> downloadStubs)
+        {
+            // Copy files from "Media/Downloads" to "Media/Storage" folder
+            foreach (var d in downloads)
+            {
+                var stub = downloadStubs.Get(d.Id);
+                if (stub == null)
+                    continue;
+
+                var oldPath = GetStoragePath(stub);
+                if (d.MediaFileId.HasValue)
+                {
+                    var file = newFilesDict.Get(d.MediaFileId.Value);
+                    if (file != null)
+                    {
+                        var newPath = GetStoragePath(file);
+
+                        try
+                        {
+                            // Copy now
+                            _mediaFileSystem.CopyFile(oldPath, newPath);
+                        }
+                        catch { }
+                    }
                 }
             }
         }
@@ -222,11 +347,41 @@ namespace SmartStore.Services.Media.Migration
         {
             foreach (var albumName in _albumRegistry.GetAlbumNames(true))
             {
-                if (albumName == SystemAlbumProvider.Downloads)
-                    continue; // Download tracks already added in MigrateDownload()
+                if (albumName == SystemAlbumProvider.Downloads || albumName == SystemAlbumProvider.Messages)
+                    continue; // Download and MessageTemplate tracks already added in MigrateDownload()
                 
                 _mediaTracker.DetectAllTracks(albumName, true);
             }
+        }
+
+        private string GetStoragePath(DownloadStub stub)
+        {
+            var fileName = BuildFileName(stub.Id, stub.Extension, stub.ContentType);
+            return _mediaFileSystem.Combine("Downloads", fileName);
+        }
+
+        private string GetStoragePath(QueuedEmailAttachmentStub stub)
+        {
+            var fileName = BuildFileName(stub.Id, Path.GetExtension(stub.Name), stub.MimeType);
+            return _mediaFileSystem.Combine("QueuedEmailAttachment", fileName);
+        }
+
+        private string GetStoragePath(MediaFile file)
+        {
+            var fileName = BuildFileName(file.Id, file.Extension, file.MimeType);
+            var subfolder = _mediaFileSystem.Combine("Storage", fileName.Substring(0, ImageCache.MaxDirLength));
+            _mediaFileSystem.TryCreateFolder(subfolder);
+
+            return _mediaFileSystem.Combine(subfolder, fileName);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private string BuildFileName(int id, string ext, string mime)
+        {
+            if (ext.IsEmpty())
+                ext = MimeTypes.MapMimeTypeToExtension(mime);
+
+            return id.ToString(ImageCache.IdFormatString) + "." + ext.EmptyNull().TrimStart('.');
         }
 
         public class DownloadStub
@@ -239,6 +394,16 @@ namespace SmartStore.Services.Media.Migration
             public bool IsTransient { get; set; }
             public DateTime UpdatedOnUtc { get; set; }
             public int? MediaStorageId { get; set; }
+        }
+
+        public class QueuedEmailAttachmentStub
+        {
+            public int Id { get; set; }
+            public int QueuedEmailId { get; set; }
+            public string MimeType { get; set; }
+            public string Name { get; set; }
+            public int? MediaStorageId { get; set; }
+            public int? FileId { get; set; }
         }
     }
 }

@@ -17,7 +17,7 @@ using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.GoogleAnalytics.Controllers
 {
-	public class WidgetsGoogleAnalyticsController : SmartController
+    public class WidgetsGoogleAnalyticsController : SmartController
     {
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
@@ -101,6 +101,7 @@ namespace SmartStore.GoogleAnalytics.Controllers
             {
                 Logger.Error(ex, "Error creating scripts for google ecommerce tracking");
             }
+
             return Content(globalScript);
         }
 
@@ -150,11 +151,9 @@ namespace SmartStore.GoogleAnalytics.Controllers
         {
 			var settings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
             var usCulture = new CultureInfo("en-US");
-            var script = "";
-			var ecScript = "";
-
-			script = settings.TrackingScript + "\n";
-			script = script.Replace("{GOOGLEID}", settings.GoogleId);
+            
+            var script = settings.TrackingScript + "\n";
+            script = script.Replace("{GOOGLEID}", settings.GoogleId);
 			script = script.Replace("{OPTOUTCOOKIE}", GetOptOutCookieScript());
 
 			if (order != null)
@@ -165,7 +164,7 @@ namespace SmartStore.GoogleAnalytics.Controllers
 					.Replace("https://", "")
 					.Replace("/", "");
 
-				ecScript = settings.EcommerceScript + "\n";
+                var ecScript = settings.EcommerceScript + "\n";
                 ecScript = ecScript.Replace("{GOOGLEID}", settings.GoogleId);
                 ecScript = ecScript.Replace("{ORDERID}", order.GetOrderNumber());
 				ecScript = ecScript.Replace("{SITE}", FixIllegalJavaScriptChars(site));
@@ -182,25 +181,28 @@ namespace SmartStore.GoogleAnalytics.Controllers
                 ecScript = ecScript.Replace("{CURRENCY}", order.CustomerCurrencyCode);
 
                 var sb = new StringBuilder();
-                foreach (var item in order.OrderItems)
+                if (settings.EcommerceDetailScript.HasValue())
                 {
-                    var ecDetailScript = settings.EcommerceDetailScript;
-                    var defaultProductCategory = _categoryService.GetProductCategoriesByProductId(item.ProductId).FirstOrDefault();
-					var categoryName = defaultProductCategory != null
-						? defaultProductCategory.Category.Name
-						: "";
+                    foreach (var item in order.OrderItems)
+                    {
+                        var ecDetailScript = settings.EcommerceDetailScript;
+                        var defaultProductCategory = _categoryService.GetProductCategoriesByProductId(item.ProductId).FirstOrDefault();
+                        var categoryName = defaultProductCategory != null
+                            ? defaultProductCategory.Category.Name
+                            : "";
 
-					// The SKU code is a required parameter for every item that is added to the transaction.
-					item.Product.MergeWithCombination(item.AttributesXml);
+                        // The SKU code is a required parameter for every item that is added to the transaction.
+                        item.Product.MergeWithCombination(item.AttributesXml);
 
-					ecDetailScript = ecDetailScript.Replace("{ORDERID}", order.GetOrderNumber());
-                    ecDetailScript = ecDetailScript.Replace("{PRODUCTSKU}", FixIllegalJavaScriptChars(item.Product.Sku));
-                    ecDetailScript = ecDetailScript.Replace("{PRODUCTNAME}", FixIllegalJavaScriptChars(item.Product.Name));
-                    ecDetailScript = ecDetailScript.Replace("{CATEGORYNAME}", FixIllegalJavaScriptChars(categoryName));
-                    ecDetailScript = ecDetailScript.Replace("{UNITPRICE}", item.UnitPriceInclTax.ToString("0.00", usCulture));
-                    ecDetailScript = ecDetailScript.Replace("{QUANTITY}", item.Quantity.ToString());
+                        ecDetailScript = ecDetailScript.Replace("{ORDERID}", order.GetOrderNumber());
+                        ecDetailScript = ecDetailScript.Replace("{PRODUCTSKU}", FixIllegalJavaScriptChars(item.Product.Sku));
+                        ecDetailScript = ecDetailScript.Replace("{PRODUCTNAME}", FixIllegalJavaScriptChars(item.Product.Name));
+                        ecDetailScript = ecDetailScript.Replace("{CATEGORYNAME}", FixIllegalJavaScriptChars(categoryName));
+                        ecDetailScript = ecDetailScript.Replace("{UNITPRICE}", item.UnitPriceInclTax.ToString("0.00", usCulture));
+                        ecDetailScript = ecDetailScript.Replace("{QUANTITY}", item.Quantity.ToString());
 
-                    sb.AppendLine(ecDetailScript);
+                        sb.AppendLine(ecDetailScript);
+                    }
                 }
 
                 ecScript = ecScript.Replace("{DETAILS}", sb.ToString());

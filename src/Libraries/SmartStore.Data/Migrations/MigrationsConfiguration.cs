@@ -193,7 +193,8 @@
             builder.Delete(
                 "Admin.Catalog.Products.Fields.VisibleIndividually",
                 "Admin.Catalog.Products.Fields.VisibleIndividually.Hint",
-                "Admin.Promotions.Discounts.NoDiscountsAvailable");
+                "Admin.Promotions.Discounts.NoDiscountsAvailable",
+                "Admin.Orders.Shipments.TrackingNumber.Button");
 
             // Rule
             builder.AddOrUpdate("Admin.Rules.SystemName", "System name", "Systemname");
@@ -480,6 +481,19 @@
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.ProductCondition.Damaged", "Damaged", "Defekt");
 
             builder.AddOrUpdate("Products.Condition", "Product condition", "Artikelzustand");
+            builder.AddOrUpdate("Common.OpenUrl", "Open URL", "URL öffnen");
+
+            builder.AddOrUpdate("Admin.Orders.Shipments.TrackingNumber",
+                "Tracking number",
+                "Tracking-Nummer",
+                "Specifies the tracking number for tracking the shipment.",
+                "Legt die Tracking-Nummer zur Sendungsverfolgung fest.");
+
+            builder.AddOrUpdate("Admin.Orders.Shipments.TrackingUrl",
+                "Tracking URL",
+                "Tracking-URL",
+                "Specifies the URL for tracking the shipment.",
+                "Legt die URL zur Sendungsverfolgung fest.");
         }
     }
 }

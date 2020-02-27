@@ -242,7 +242,8 @@ namespace SmartStore.WebApi.Controllers.OData
 				if (order.CanAddItemsToShipment())
 				{
 					var trackingNumber = parameters.GetValueSafe<string>("TrackingNumber");
-					var shipment = _orderProcessingService.Value.AddShipment(order, trackingNumber, null);
+                    var trackingUrl = parameters.GetValueSafe<string>("TrackingUrl");
+                    var shipment = _orderProcessingService.Value.AddShipment(order, trackingNumber, trackingUrl, null);
 
 					if (shipment != null)
 					{

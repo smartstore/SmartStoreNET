@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Orders;
 using System.Runtime.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace SmartStore.Core.Domain.Shipping
 {
@@ -24,6 +25,13 @@ namespace SmartStore.Core.Domain.Shipping
         /// </summary>
 		[DataMember]
 		public string TrackingNumber { get; set; }
+
+        /// <summary>
+        /// Gets or sets the tracking URL.
+        /// </summary>
+		[DataMember]
+        [StringLength(2000)]
+        public string TrackingUrl { get; set; }
 
         /// <summary>
         /// Gets or sets the total weight of this shipment

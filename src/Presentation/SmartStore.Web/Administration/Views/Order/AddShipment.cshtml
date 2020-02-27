@@ -4,6 +4,9 @@
 }
 @using (Html.BeginForm())
 {
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.OrderId)
+
     <div class="section-header">
         <div class="title">
             @string.Format(T("Admin.Orders.Shipments.AddNew.Title").Text, Model.OrderId) @Html.ActionLink("(" + T("Admin.Orders.Shipments.BackToOrder") + ")", "Edit", new { id = Model.OrderId })
@@ -28,6 +31,16 @@
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.TrackingNumber)
+                @Html.ValidationMessageFor(model => model.TrackingNumber)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TrackingUrl)
+            </td>
+            <td class="adminData">
+				@Html.EditorFor(model => model.TrackingUrl)
+                @Html.ValidationMessageFor(model => model.TrackingUrl)
             </td>
         </tr>
     </table>

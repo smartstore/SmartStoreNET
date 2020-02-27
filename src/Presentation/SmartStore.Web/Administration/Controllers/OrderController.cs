@@ -760,33 +760,30 @@ namespace SmartStore.Admin.Controllers
 			return model;
 		}
 
-		[NonAction]
-		protected ShipmentModel PrepareShipmentModel(Shipment shipment, bool withAllDetails)
+		private void PrepareShipmentModel(ShipmentModel model, Shipment shipment, bool withAllDetails)
         {
             var order = shipment.Order;
             var baseWeight = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
             var baseDimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId);
 
-			var model = new ShipmentModel
-            {
-                Id = shipment.Id,
-                OrderId = shipment.OrderId,
-				StoreId = order.StoreId,
-				LanguageId = order.CustomerLanguageId,
-				OrderNumber = order.GetOrderNumber(),
-				PurchaseOrderNumber = order.PurchaseOrderNumber,
-				ShippingMethod = order.ShippingMethod,
-                TrackingNumber = shipment.TrackingNumber,
-                TotalWeight = shipment.TotalWeight.HasValue ? string.Format("{0:F2} [{1}]", shipment.TotalWeight, baseWeight?.GetLocalized(x => x.Name) ?? "") : "",
-                CanShip = !shipment.ShippedDateUtc.HasValue,
-                CanDeliver = shipment.ShippedDateUtc.HasValue && !shipment.DeliveryDateUtc.HasValue,
-                ShippedDate = shipment.ShippedDateUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(shipment.ShippedDateUtc.Value, DateTimeKind.Utc) : (DateTime?)null,
-                DeliveryDate = shipment.DeliveryDateUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(shipment.DeliveryDateUtc.Value, DateTimeKind.Utc) : (DateTime?)null,
-                DisplayPdfPackagingSlip = _pdfSettings.Enabled,
-				ShowSku = _catalogSettings.ShowProductSku
-			};
+            model.Id = shipment.Id;
+            model.OrderId = shipment.OrderId;
+            model.StoreId = order.StoreId;
+            model.LanguageId = order.CustomerLanguageId;
+            model.OrderNumber = order.GetOrderNumber();
+            model.PurchaseOrderNumber = order.PurchaseOrderNumber;
+            model.ShippingMethod = order.ShippingMethod;
+            model.TrackingNumber = shipment.TrackingNumber;
+            model.TrackingUrl = shipment.TrackingUrl;
+            model.TotalWeight = shipment.TotalWeight.HasValue ? string.Format("{0:F2} [{1}]", shipment.TotalWeight, baseWeight?.GetLocalized(x => x.Name) ?? "") : "";
+            model.CanShip = !shipment.ShippedDateUtc.HasValue;
+            model.CanDeliver = shipment.ShippedDateUtc.HasValue && !shipment.DeliveryDateUtc.HasValue;
+            model.ShippedDate = shipment.ShippedDateUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(shipment.ShippedDateUtc.Value, DateTimeKind.Utc) : (DateTime?)null;
+            model.DeliveryDate = shipment.DeliveryDateUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(shipment.DeliveryDateUtc.Value, DateTimeKind.Utc) : (DateTime?)null;
+            model.DisplayPdfPackagingSlip = _pdfSettings.Enabled;
+            model.ShowSku = _catalogSettings.ShowProductSku;
 
-			if (withAllDetails)
+            if (withAllDetails)
 			{
                 // Shipping address.
 				model.ShippingAddress = order.ShippingAddress;
@@ -815,8 +812,6 @@ namespace SmartStore.Admin.Controllers
 
                 // TODO: Tracking URL.
             }
-
-            return model;
         }
 
 		private void PrepareOrderAddressModel(OrderAddressModel model, Address address)
@@ -2103,18 +2098,30 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Order.Read)]
         public ActionResult ShipmentListSelect(GridCommand command, ShipmentListModel model)
         {
-			var gridModel = new GridModel<ShipmentModel>();
-
-			DateTime? startDateValue = (model.StartDate == null) ? null
+			DateTime? startDateValue = (model.StartDate == null) 
+                ? null
 				: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
 
-			DateTime? endDateValue = (model.EndDate == null) ? null
+			DateTime? endDateValue = (model.EndDate == null) 
+                ? null
 				: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
 			var shipments = _shipmentService.GetAllShipments(model.TrackingNumber, startDateValue, endDateValue, command.Page - 1, command.PageSize);
 
-			gridModel.Data = shipments.Select(shipment => PrepareShipmentModel(shipment, false));
-			gridModel.Total = shipments.TotalCount;
+            var shipmentModels = shipments
+                .Select(x =>
+                {
+                    var sm = new ShipmentModel();
+                    PrepareShipmentModel(sm, x, false);
+                    return sm;
+                })
+                .ToList();
+
+            var gridModel = new GridModel<ShipmentModel>
+            {
+                Data = shipmentModels,
+                Total = shipmentModels.Count
+            };
 
 			return new JsonResult
 			{
@@ -2126,19 +2133,23 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Order.Read)]
         public ActionResult ShipmentsSelect(int orderId, GridCommand command)
         {
-			var model = new GridModel<ShipmentModel>();
-
-            var shipmentModels = new List<ShipmentModel>();
             var order = _orderService.GetOrderById(orderId);
 			var shipments = order.Shipments.OrderBy(s => s.CreatedOnUtc).ToList();
 
-			foreach (var shipment in shipments)
-			{
-				shipmentModels.Add(PrepareShipmentModel(shipment, false));
-			}
+            var shipmentModels = shipments
+                .Select(x =>
+                {
+                    var sm = new ShipmentModel();
+                    PrepareShipmentModel(sm, x, false);
+                    return sm;
+                })
+                .ToList();
 
-			model.Data = shipmentModels;
-			model.Total = shipmentModels.Count;
+            var model = new GridModel<ShipmentModel>
+            {
+                Data = shipmentModels,
+                Total = shipmentModels.Count
+            };
 
             return new JsonResult
             {
@@ -2169,7 +2180,7 @@ namespace SmartStore.Admin.Controllers
                 if (!orderItem.Product.IsShipEnabled)
                     continue;
 
-                // Eensure that this product can be added to a shipment
+                // Ensure that this product can be added to a shipment.
                 if (orderItem.GetItemsCanBeAddedToShipmentCount() <= 0)
                     continue;
 
@@ -2183,44 +2194,48 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
         [Permission(Permissions.Order.EditShipment)]
-        public ActionResult AddShipment(int orderId, FormCollection form, bool continueEditing)
+        public ActionResult AddShipment(ShipmentModel model, FormCollection form, bool continueEditing)
         {
-            var order = _orderService.GetOrderById(orderId);
+            var order = _orderService.GetOrderById(model.OrderId);
             if (order == null)
             {
-                return RedirectToAction("List");
+                return HttpNotFound();
             }
 
-			var quantities = new Dictionary<int, int>();
-			var trackingNumber = form["TrackingNumber"];
+            if (ModelState.IsValid)
+            {
+                var quantities = new Dictionary<int, int>();
 
-			foreach (var orderItem in order.OrderItems)
-			{
-				foreach (string formKey in form.AllKeys)
-				{
-					if (formKey.Equals(string.Format("qtyToAdd{0}", orderItem.Id), StringComparison.InvariantCultureIgnoreCase))
-					{
-						quantities.Add(orderItem.Id, form[formKey].ToInt());
-						break;
-					}
-				}
-			}
+                foreach (var orderItem in order.OrderItems)
+                {
+                    foreach (string formKey in form.AllKeys)
+                    {
+                        if (formKey.Equals(string.Format("qtyToAdd{0}", orderItem.Id), StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            quantities.Add(orderItem.Id, form[formKey].ToInt());
+                            break;
+                        }
+                    }
+                }
 
-			var shipment = _orderProcessingService.AddShipment(order, trackingNumber, quantities);
-			if (shipment != null)
-			{
-				NotifySuccess(T("Admin.Orders.Shipments.Added"));
+                var shipment = _orderProcessingService.AddShipment(order, model.TrackingNumber, model.TrackingUrl, quantities);
+                if (shipment != null)
+                {
+                    NotifySuccess(T("Admin.Orders.Shipments.Added"));
 
-				return continueEditing
-				   ? RedirectToAction("ShipmentDetails", new { id = shipment.Id })
-				   : RedirectToAction("Edit", new { id = orderId });
-			}
-			else
-			{
-				NotifyError(T("Admin.Orders.Shipments.NoProductsSelected"));
+                    return continueEditing
+                       ? RedirectToAction("ShipmentDetails", new { id = shipment.Id })
+                       : RedirectToAction("Edit", new { id = order.Id });
+                }
+                else
+                {
+                    NotifyError(T("Admin.Orders.Shipments.NoProductsSelected"));
 
-				return RedirectToAction("AddShipment", new { orderId });
-			}
+                    return RedirectToAction("AddShipment", new { order.Id });
+                }
+            }
+
+            return AddShipment(order.Id);
         }
 
         [Permission(Permissions.Order.Read)]
@@ -2229,10 +2244,38 @@ namespace SmartStore.Admin.Controllers
             var shipment = _shipmentService.GetShipmentById(id);
             if (shipment == null)
             {
-                return RedirectToAction("List");
+                return HttpNotFound();
             }
 
-            var model = PrepareShipmentModel(shipment, true);
+            var model = new ShipmentModel();
+            PrepareShipmentModel(model, shipment, true);
+
+            return View(model);
+        }
+
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [Permission(Permissions.Order.EditShipment)]
+        public ActionResult ShipmentDetails(ShipmentModel model, bool continueEditing)
+        {
+            var shipment = _shipmentService.GetShipmentById(model.Id);
+            if (shipment == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                shipment.TrackingNumber = model.TrackingNumber;
+                shipment.TrackingUrl = model.TrackingUrl;
+
+                _shipmentService.UpdateShipment(shipment);
+
+                return continueEditing 
+                    ? RedirectToAction("ShipmentDetails", new { id = shipment.Id })
+                    : RedirectToAction("Edit", new { id = shipment.OrderId });
+            }
+
+            PrepareShipmentModel(model, shipment, true);
 
             return View(model);
         }
@@ -2244,7 +2287,7 @@ namespace SmartStore.Admin.Controllers
             var shipment = _shipmentService.GetShipmentById(id);
             if (shipment == null)
             {
-                return RedirectToAction("List");
+                return HttpNotFound();
             }
 
             var orderId = shipment.OrderId;
@@ -2255,32 +2298,14 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("Edit", new { id = orderId });
         }
 
-        [HttpPost, ActionName("ShipmentDetails")]
-        [FormValueRequired("settrackingnumber")]
-        [Permission(Permissions.Order.EditShipment)]
-        public ActionResult SetTrackingNumber(ShipmentModel model)
-        {
-            var shipment = _shipmentService.GetShipmentById(model.Id);
-            if (shipment == null)
-            {
-                return RedirectToAction("List");
-            }
-
-            shipment.TrackingNumber = model.TrackingNumber;
-            _shipmentService.UpdateShipment(shipment);
-
-            return RedirectToAction("ShipmentDetails", new { id = shipment.Id });
-        }
-
-        [HttpPost, ActionName("ShipmentDetails")]
-        [FormValueRequired("setasshipped")]
+        [HttpPost]
         [Permission(Permissions.Order.EditShipment)]
         public ActionResult SetAsShipped(int id)
         {
             var shipment = _shipmentService.GetShipmentById(id);
             if (shipment == null)
             {
-                return RedirectToAction("List");
+                return HttpNotFound();
             }
 
             try
@@ -2295,15 +2320,14 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("ShipmentDetails", new { id = shipment.Id });
         }
 
-        [HttpPost, ActionName("ShipmentDetails")]
-        [FormValueRequired("setasdelivered")]
+        [HttpPost]
         [Permission(Permissions.Order.EditShipment)]
         public ActionResult SetAsDelivered(int id)
         {
             var shipment = _shipmentService.GetShipmentById(id);
             if (shipment == null)
             {
-                return RedirectToAction("List");
+                return HttpNotFound();
             }
 
             try
@@ -2360,7 +2384,14 @@ namespace SmartStore.Admin.Controllers
 				pdfFileName = "PackagingSlip-{0}.pdf".FormatInvariant(shipments[0].Id);
 			}
 
-			var model = shipments.Select(x => PrepareShipmentModel(x, true)).ToList();
+			var model = shipments
+                .Select(x =>
+                {
+                    var sm = new ShipmentModel();
+                    PrepareShipmentModel(sm, x, true);
+                    return sm;
+                })
+                .ToList();
 
 			// TODO: (mc) this is bad for multi-document processing, where orders can originate from different stores.
 			var storeId = model[0].StoreId;

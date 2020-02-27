@@ -8,7 +8,6 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
@@ -16,7 +15,6 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Affiliates;
@@ -39,7 +37,7 @@ using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Orders
 {
-	[TestFixture]
+    [TestFixture]
     public class OrderProcessingServiceTests : ServiceTest
     {
         IWorkContext _workContext;
@@ -86,7 +84,6 @@ namespace SmartStore.Services.Tests.Orders
         CatalogSettings _catalogSettings;
 		IOrderProcessingService _orderProcessingService;
         IEventPublisher _eventPublisher;
-        CurrencySettings _currencySettings;
 		IAffiliateService _affiliateService;
 		ISettingService _settingService;
 		IDownloadService _downloadService;
@@ -207,8 +204,6 @@ namespace SmartStore.Services.Tests.Orders
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
-            _currencySettings = new CurrencySettings();
-
             _orderProcessingService = new OrderProcessingService(_orderService, _webHelper,
                 _localizationService, _languageService,
                 _productService, _paymentService,
@@ -223,7 +218,7 @@ namespace SmartStore.Services.Tests.Orders
 				_newsLetterSubscriptionService,
 				_paymentSettings, _rewardPointsSettings,
                 _orderSettings, _taxSettings, _localizationSettings,
-                _currencySettings, _shoppingCartSettings,
+                _shoppingCartSettings,
                 _catalogSettings);
         }
         

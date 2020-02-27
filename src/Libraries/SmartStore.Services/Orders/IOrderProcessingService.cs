@@ -297,12 +297,17 @@ namespace SmartStore.Services.Orders
 		bool ValidateMinOrderTotalAmount(IList<OrganizedShoppingCartItem> cart);
 
 		/// <summary>
-		/// Adds a shipment to an order
+		/// Adds a shipment to an order.
 		/// </summary>
-		/// <param name="order">Order</param>
-		/// <param name="trackingNumber">Tracking number</param>
+		/// <param name="order">Order.</param>
+		/// <param name="trackingNumber">Tracking number.</param>
+        /// <param name="trackingUrl">Tracking URL.</param>
 		/// <param name="quantities">Quantities by order item identifiers. <c>null</c> to use the remaining total number of products for each order item.</param>
-		/// <returns>New shipment, <c>null</c> if no shipment was added</returns>
-		Shipment AddShipment(Order order, string trackingNumber, Dictionary<int, int> quantities);
+		/// <returns>New shipment, <c>null</c> if no shipment was added.</returns>
+		Shipment AddShipment(
+            Order order,
+            string trackingNumber,
+            string trackingUrl,
+            Dictionary<int, int> quantities);
     }
 }

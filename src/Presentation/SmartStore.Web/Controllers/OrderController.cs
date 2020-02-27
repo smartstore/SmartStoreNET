@@ -92,14 +92,19 @@ namespace SmartStore.Web.Controllers
 			var model = new ShipmentDetailsModel
 			{
 				Id = shipment.Id,
-				TrackingNumber = shipment.TrackingNumber
+				TrackingNumber = shipment.TrackingNumber,
+                TrackingNumberUrl = shipment.TrackingUrl
 			};
 
             if (shipment.ShippedDateUtc.HasValue)
+            {
                 model.ShippedDate = _dateTimeHelper.ConvertToUserTime(shipment.ShippedDateUtc.Value, DateTimeKind.Utc);
+            }
 
             if (shipment.DeliveryDateUtc.HasValue)
+            {
                 model.DeliveryDate = _dateTimeHelper.ConvertToUserTime(shipment.DeliveryDateUtc.Value, DateTimeKind.Utc);
+            }
             
             var srcm = _shippingService.LoadShippingRateComputationMethodBySystemName(order.ShippingRateComputationMethodSystemName);
 
@@ -108,7 +113,12 @@ namespace SmartStore.Web.Controllers
                 var shipmentTracker = srcm.Value.ShipmentTracker;
                 if (shipmentTracker != null)
                 {
-                    model.TrackingNumberUrl = shipmentTracker.GetUrl(shipment.TrackingNumber);
+                    // The URL entered by the merchant takes precedence over an automatically generated URL.
+                    if (model.TrackingNumberUrl.IsEmpty())
+                    {
+                        model.TrackingNumberUrl = shipmentTracker.GetUrl(shipment.TrackingNumber);
+                    }
+
 					if (shippingSettings.DisplayShipmentEventsToCustomers)
                     {
                         var shipmentEvents = shipmentTracker.GetShipmentEvents(shipment.TrackingNumber);
@@ -120,7 +130,7 @@ namespace SmartStore.Web.Controllers
 
 								var shipmentStatusEventModel = new ShipmentDetailsModel.ShipmentStatusEventModel
 								{
-									Country = (shipmentEventCountry != null ? shipmentEventCountry.GetLocalized(x => x.Name) : shipmentEvent.CountryCode),
+									Country = shipmentEventCountry != null ? shipmentEventCountry.GetLocalized(x => x.Name) : shipmentEvent.CountryCode,
 									Date = shipmentEvent.Date,
 									EventName = shipmentEvent.EventName,
 									Location = shipmentEvent.Location
@@ -133,7 +143,7 @@ namespace SmartStore.Web.Controllers
                 }
             }
             
-            //products in this shipment
+            // Products in this shipment.
 			model.ShowSku = catalogSettings.ShowProductSku;
 
             foreach (var shipmentItem in shipment.ShipmentItems)

@@ -35,6 +35,7 @@
 * #1793 Add field for manufacturer bottom description like for categories.
 * #1116 Add new field for product condition.
 * #1790 ACL support for manufacturers.
+* #1616 Add new field for tracking URL to shipment entity to better track shipments.
 
 ### Improvements
 * #1663 Make MeasureDimension and MeasureWeight localizable.

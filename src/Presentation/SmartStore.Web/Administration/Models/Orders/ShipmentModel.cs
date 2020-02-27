@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using FluentValidation;
+using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Orders
 {
-	public class ShipmentModel : EntityModelBase
+    [Validator(typeof(ShipmentValidator))]
+    public class ShipmentModel : EntityModelBase
     {
         public ShipmentModel()
         {
@@ -34,6 +38,9 @@ namespace SmartStore.Admin.Models.Orders
 
         [SmartResourceDisplayName("Admin.Orders.Shipments.TrackingNumber")]
         public string TrackingNumber { get; set; }
+
+        [SmartResourceDisplayName("Admin.Orders.Shipments.TrackingUrl")]
+        public string TrackingUrl { get; set; }
 
         [SmartResourceDisplayName("Admin.Orders.Shipments.ShippedDate")]
         public DateTime? ShippedDate { get; set; }
@@ -94,4 +101,14 @@ namespace SmartStore.Admin.Models.Orders
 
 		#endregion
 	}
+
+    public partial class ShipmentValidator : AbstractValidator<ShipmentModel>
+    {
+        public ShipmentValidator(Localizer T)
+        {
+            RuleFor(x => x.TrackingUrl)
+                .Must(x => x.IsEmpty() || x.IsWebUrl())
+                .WithMessage(T("Admin.Validation.Url"));
+        }
+    }
 }

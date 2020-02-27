@@ -314,8 +314,10 @@ var ShopBar = (function($) {
 		},
 
         hideThrobber: function () {      	
-        	var cnt = $(".tab-content", offcanvasCart);
-        	_.delay(function () { cnt.data("throbber").hide(); }, 100);
+            var throbber = $(".tab-content", offcanvasCart).data('throbber');
+            if (throbber) {
+                _.delay(function () { throbber.hide(); }, 100);
+            }
 		},
 
         initQtyControls: function(parentSelector) {

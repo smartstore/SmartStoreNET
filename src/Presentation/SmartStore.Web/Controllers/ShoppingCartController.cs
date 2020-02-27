@@ -2189,12 +2189,14 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult OffCanvasCart()
         {
-            var model = new OffCanvasCartModel
-			{
-				ShoppingCartEnabled = Services.Permissions.Authorize(Permissions.Cart.AccessShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled,
-				WishlistEnabled = Services.Permissions.Authorize(Permissions.Cart.AccessWishlist),
-				CompareProductsEnabled = _catalogSettings.CompareProductsEnabled
-			};
+            var model = new OffCanvasCartModel();
+
+            if (Services.Permissions.Authorize(Permissions.System.AccessShop))
+            {
+                model.ShoppingCartEnabled = _shoppingCartSettings.MiniShoppingCartEnabled && Services.Permissions.Authorize(Permissions.Cart.AccessShoppingCart);
+                model.WishlistEnabled = Services.Permissions.Authorize(Permissions.Cart.AccessWishlist);
+                model.CompareProductsEnabled = _catalogSettings.CompareProductsEnabled;
+            }
 
             return PartialView(model);
         }

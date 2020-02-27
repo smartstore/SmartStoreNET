@@ -18,7 +18,7 @@ namespace SmartStore.Web.Framework.Filters
 			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "PasswordRecoveryConfirm"),
 			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "AccountActivation"),
 			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "CheckUsernameAvailability"),
-			new Tuple<string, string>("SmartStore.Web.Controllers.CatalogController", "OffCanvasMenu")
+            new Tuple<string, string>("SmartStore.Web.Controllers.MenuController", "OffCanvas")
 		};
 
 		public Lazy<IPermissionService> PermissionService { get; set; }

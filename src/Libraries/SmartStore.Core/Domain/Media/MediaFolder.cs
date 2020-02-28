@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
 namespace SmartStore.Core.Domain.Media
@@ -11,9 +12,22 @@ namespace SmartStore.Core.Domain.Media
         private ICollection<MediaFolder> _children;
 
         /// <summary>
+        /// Gets or sets the parent folder id.
+        /// </summary>
+        [DataMember]
+        [Index("IX_NameParentId", Order = 0, IsUnique = true)]
+        public int? ParentId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent folder.
+        /// </summary>
+        public virtual MediaFolder Parent { get; set; }
+
+        /// <summary>
         /// Gets or sets the media folder name.
         /// </summary>
         [DataMember]
+        [Index("IX_NameParentId", Order = 1, IsUnique = true)]
         public string Name { get; set; }
 
         /// <summary>
@@ -27,17 +41,6 @@ namespace SmartStore.Core.Domain.Media
         /// </summary>
         [DataMember]
         public bool CanDetectTracks { get; set; }
-
-        /// <summary>
-        /// Gets or sets the parent folder id.
-        /// </summary>
-        [DataMember]
-        public int? ParentId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the parent folder.
-        /// </summary>
-        public virtual MediaFolder Parent { get; set; }
 
         /// <summary>
         /// Gets the child folders.

@@ -14,17 +14,21 @@ namespace SmartStore
 		/// Detaches all entities from the current object context
 		/// </summary>
 		/// <param name="unchangedEntitiesOnly">When <c>true</c>, only entities in unchanged state get detached.</param>
+		/// <param name="deep">Whether to scan all navigation properties and detach them recursively also.</param>
 		/// <returns>The count of detached entities</returns>
-		public static int DetachAll(this IDbContext ctx, bool unchangedEntitiesOnly = true)
+		public static int DetachAll(this IDbContext ctx, bool unchangedEntitiesOnly = true, bool deep = false)
 		{
-			return ctx.DetachEntities<BaseEntity>(unchangedEntitiesOnly);
+			return ctx.DetachEntities<BaseEntity>(unchangedEntitiesOnly, deep);
 		}
 
-		public static void DetachEntities<TEntity>(this IDbContext ctx, IEnumerable<TEntity> entities) where TEntity : BaseEntity
+		public static void DetachEntities<TEntity>(this IDbContext ctx, IEnumerable<TEntity> entities, bool deep = false) where TEntity : BaseEntity
 		{
 			Guard.NotNull(ctx, nameof(ctx));
 
-			entities.Each(x => ctx.DetachEntity(x));
+			using (new DbContextScope(ctx, autoDetectChanges: false, lazyLoading: false))
+			{
+				entities.Each(x => ctx.DetachEntity(x, deep));
+			}		
 		}
 
 		/// <summary>

@@ -219,7 +219,8 @@ namespace SmartStore.Core.IO
 			// Get relative from absolute path
 			var index = _storagePath.EmptyNull().Length;
 
-			return Directory.EnumerateFiles(MapStorage(path), pattern, deep ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+			return Directory
+				.EnumerateFiles(MapStorage(path), pattern, deep ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
 				.Select(x => x.Substring(index));
 		}
 
@@ -384,7 +385,7 @@ namespace SmartStore.Core.IO
 			File.Move(sourceFileInfo.FullName, targetFileInfo.FullName);
 		}
 
-		public void CopyFile(string path, string newPath)
+		public void CopyFile(string path, string newPath, bool overwrite = false)
 		{
 			var sourceFileInfo = new FileInfo(MapStorage(path));
 			if (!sourceFileInfo.Exists)
@@ -398,7 +399,7 @@ namespace SmartStore.Core.IO
 				throw new ArgumentException("File " + newPath + " already exists");
 			}
 
-			File.Copy(sourceFileInfo.FullName, targetFileInfo.FullName);
+			File.Copy(sourceFileInfo.FullName, targetFileInfo.FullName, overwrite);
 		}
 
 		public void SaveStream(string path, Stream inputStream)

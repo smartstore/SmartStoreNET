@@ -15,18 +15,20 @@ using SmartStore.Core.IO;
 using SmartStore.Data;
 using System.Runtime.CompilerServices;
 using SmartStore.Core.Domain.Messages;
+using System.Diagnostics;
 
 namespace SmartStore.Services.Media.Migration
 {
     public class MediaMigrator
     {
         internal static bool Executed;
+        internal const string MigrationName = "MediaManager";
         
         private readonly ICommonServices _services;
         private readonly IProviderManager _providerManager;
         private readonly IMediaTypeResolver _mediaTypeResolver;
         private readonly IAlbumRegistry _albumRegistry;
-        //private readonly IAlbumService _albumService;
+        private readonly IAlbumService _albumService;
         private readonly IMediaTracker _mediaTracker;
         private readonly IMediaStorageProvider _mediaStorageProvider;
         private readonly IMediaFileSystem _mediaFileSystem;
@@ -37,7 +39,7 @@ namespace SmartStore.Services.Media.Migration
             IProviderManager providerManager,
             IMediaTypeResolver mediaTypeResolver,
             IAlbumRegistry albumRegistry,
-            //IAlbumService albumService,
+            IAlbumService albumService,
             IMediaTracker mediaTracker,
             IMediaFileSystem mediaFileSystem)
         {
@@ -45,7 +47,7 @@ namespace SmartStore.Services.Media.Migration
             _providerManager = providerManager;
             _mediaTypeResolver = mediaTypeResolver;
             _albumRegistry = albumRegistry;
-            //_albumService = albumService;
+            _albumService = albumService;
             _mediaTracker = mediaTracker;
             _mediaFileSystem = mediaFileSystem;
 
@@ -58,13 +60,52 @@ namespace SmartStore.Services.Media.Migration
         {
             var ctx = _services.DbContext as SmartObjectContext;
 
-            CreateAlbums();
-            CreateSettings(ctx);
-            MigrateDownloads(ctx);
-            MigrateFiles(ctx);
-            DetectTracks(ctx);
+            // We're going to add new hooked entities, but during migration
+            // we don't need any hooking.
+            MediaTrackerHook.Silent = true;
 
-            Executed = true;
+            var watch = Stopwatch.StartNew();
+            long elapsed = 0;
+
+            try
+            {
+                CreateAlbums();
+                Log("CreateAlbums");
+
+                CreateSettings(ctx);
+                Log("CreateSettings");
+
+                MigrateDownloads(ctx);
+                Log("MigrateDownloads");
+
+                MigrateMediaFiles(ctx);
+                Log("MigrateMediaFiles");
+
+                MigrateUploadedFiles(ctx);
+                Log("MigrateUploadedFiles");
+
+                DetectTracks(ctx);
+                Log("DetectTracks");
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                MediaTrackerHook.Silent = false;
+                Executed = true;
+            }
+
+            void Log(string what)
+            {
+                watch.Stop();
+                var time = watch.ElapsedMilliseconds - elapsed;
+                var str = "MEDIA {0}: {1} ms.".FormatCurrent(what, time);
+                elapsed = watch.ElapsedMilliseconds;
+                Debug.WriteLine(str);
+                watch.Start();
+            }
         }
 
         public void CreateSettings(SmartObjectContext ctx)
@@ -89,7 +130,7 @@ namespace SmartStore.Services.Media.Migration
 
         public void MigrateDownloads(SmartObjectContext ctx)
         {
-            var sql = "SELECT * FROM [Download] WHERE [MediaFileId] IS NOT NULL";
+            var sql = "SELECT * FROM [Download] WHERE [MediaFileId] IS NULL AND [UseDownloadUrl] = 0";
             var downloadStubs = ctx.SqlQuery<DownloadStub>(sql).ToDictionary(x => x.Id);
 
             var downloadsFolderId = _albumRegistry.GetAlbumByName(SystemAlbumProvider.Downloads)?.Id;
@@ -117,13 +158,19 @@ namespace SmartStore.Services.Media.Migration
 
                 var hasPostProcessor = _isFsProvider || messageTemplatesDict.Count > 0;
 
-                var query = ctx.Set<Download>().Where(x => x.MediaFileId == null && !x.UseDownloadUrl);
-                var pager = new FastPager<Download>(query, 250);
+                var query = ctx.Set<Download>().Where(x => x.MediaFileId == null && !x.UseDownloadUrl && !string.IsNullOrEmpty(x.Filename) &&!string.IsNullOrEmpty(x.Extension));
+                var pager = new FastPager<Download>(query, 1000);
 
                 while (pager.ReadNextPage(out var downloads))
                 {
                     foreach (var d in downloads)
                     {
+                        if (d.Filename == "undefined")
+                        {
+                            // Something weird has happened in the past
+                            continue;
+                        }     
+                        
                         var stub = downloadStubs.Get(d.Id);
                         if (stub == null)
                             continue;
@@ -150,27 +197,6 @@ namespace SmartStore.Services.Media.Migration
                             Version = 0 // Ensure that this record gets processed by MigrateFiles()
                         };
 
-                        // Add a track for the new file
-                        if (mt != null)
-                        {
-                            // Is referenced by a message template: move file to "Messages" album
-                            file.Tracks.Add(new MediaTrack
-                            {
-                                Album = SystemAlbumProvider.Messages,
-                                EntityId = mt.Id,
-                                EntityName = mt.GetEntityName()
-                            });
-                        }
-                        else
-                        {
-                            file.Tracks.Add(new MediaTrack
-                            {
-                                Album = SystemAlbumProvider.Downloads,
-                                EntityId = d.Id,
-                                EntityName = d.GetEntityName()
-                            });
-                        }
-
                         // Assign new file to download
                         d.MediaFile = file;
 
@@ -178,31 +204,34 @@ namespace SmartStore.Services.Media.Migration
                         if (hasPostProcessor)
                         {
                             newFiles.Add(file);
-                        } 
+                        }
                     }
 
                     // Save to DB
-                    scope.Commit();
+                    int num = scope.Commit();
 
                     if (hasPostProcessor)
                     {
-                        // MessageTemplate attachments (Download > MediaFile)
-                        if (messageTemplatesDict.Count > 0)
-                        {
-                            ReRefMessageTemplateAttachments(ctx, messageTemplatesDict, downloads.ToDictionary(x => x.Id));
-                        }
+                        var downloadsDict = downloads.ToDictionary(x => x.Id);
 
                         if (_isFsProvider)
                         {
                             // Copy files from "Media/Downloads" to "Media/Storage" folder
-                            MoveDownloadFiles(newFiles.ToDictionary(x => x.Id), downloads, downloadStubs);
+                            MoveDownloadFiles(newFiles.ToDictionary(x => x.Id), downloadsDict, downloadStubs);
+                        }
+
+                        // MessageTemplate attachments (Download > MediaFile)
+                        if (messageTemplatesDict.Count > 0)
+                        {
+                            ReRefMessageTemplateAttachments(ctx, messageTemplatesDict, downloadsDict);
                         }
 
                         newFiles.Clear();
                     }
 
                     // Breathe
-                    ctx.DetachEntities(x => x is Download || x is MediaFile || x is MediaStorage || x is MediaTrack, false);
+                    ctx.DetachEntities<MessageTemplate>();
+                    ctx.DetachEntities<Download>(deep: true);
                 }
             }
         }
@@ -218,7 +247,7 @@ namespace SmartStore.Services.Media.Migration
             {
                 var downloadId = kvp.Key;
                 var mt = kvp.Value;
-                var idxProp = Array.IndexOf(messageTemplatesDict.Select(x => new int?[] { mt.Attachment1FileId, mt.Attachment2FileId, mt.Attachment3FileId }).ToArray(), downloadId) + 1;
+                var idxProp = Array.IndexOf(new int?[] { mt.Attachment1FileId, mt.Attachment2FileId, mt.Attachment3FileId }, downloadId) + 1;
 
                 if (idxProp > 0)
                 {
@@ -245,29 +274,30 @@ namespace SmartStore.Services.Media.Migration
         }
 
         private void MoveDownloadFiles(
-            Dictionary<int, MediaFile> newFilesDict, 
-            IList<Download> downloads, 
+            Dictionary<int, MediaFile> newFilesDict,
+            Dictionary<int, Download> downloadsDict, 
             Dictionary<int, DownloadStub> downloadStubs)
         {
-            // Copy files from "Media/Downloads" to "Media/Storage" folder
-            foreach (var d in downloads)
+            var downloadFiles = _mediaFileSystem.ListFiles("Downloads");
+            foreach (var downloadFile in downloadFiles)
             {
-                var stub = downloadStubs.Get(d.Id);
-                if (stub == null)
-                    continue;
-
-                var oldPath = GetStoragePath(stub);
-                if (d.MediaFileId.HasValue)
+                if (int.TryParse(downloadFile.Title, out var downloadId) && downloadId > 0 && downloadsDict.TryGetValue(downloadId, out var d))
                 {
+                    var stub = downloadStubs.Get(d.Id);
+                    if (stub == null || d.MediaFileId == null)
+                        continue;
+                    
                     var file = newFilesDict.Get(d.MediaFileId.Value);
                     if (file != null)
                     {
-                        var newPath = GetStoragePath(file);
-
                         try
                         {
                             // Copy now
-                            _mediaFileSystem.CopyFile(oldPath, newPath);
+                            var newPath = GetStoragePath(file);
+                            if (!_mediaFileSystem.FileExists(newPath))
+                            {
+                                _mediaFileSystem.CopyFile(downloadFile.Path, newPath);
+                            } 
                         }
                         catch { }
                     }
@@ -275,20 +305,28 @@ namespace SmartStore.Services.Media.Migration
             }
         }
 
-        public void MigrateFiles(SmartObjectContext ctx)
+        public void MigrateMediaFiles(SmartObjectContext ctx)
         {
             var query = ctx.Set<MediaFile>()
-                .Where(x => x.Version == 0)
+                //.Where(x => x.Version == 0)
                 .Include(x => x.MediaStorage);
 
             var pager = new FastPager<MediaFile>(query, 1000);
 
-            using (var scope = new DbContextScope(ctx, hooksEnabled: false, autoCommit: false))
+            using (var scope = new DbContextScope(ctx, 
+                hooksEnabled: false, 
+                autoCommit: false,
+                proxyCreation: false,
+                validateOnSave: false,
+                lazyLoading: false))
             {
                 while (pager.ReadNextPage(out var files))
                 {
                     foreach (var file in files)
                     {
+                        if (file.Version > 0)
+                            continue;
+                        
                         var mediaItem = file.ToMedia();
 
                         if (file.Extension.IsEmpty())
@@ -298,48 +336,164 @@ namespace SmartStore.Services.Media.Migration
                         
                         file.Name = file.Name + "." + file.Extension;
                         file.CreatedOnUtc = file.UpdatedOnUtc;
-
-                        if (file.Size == 0)
-                        {
-                            file.Size = _mediaStorageProvider.GetSize(mediaItem).Convert<int>();
-                        }
-
-                        file.MediaType = _mediaTypeResolver.Resolve(file);
-
-                        if (file.MediaType == MediaType.Image && file.Width == null && file.Height == null)
-                        {
-                            // Resolve image width and height
-                            var stream = _mediaStorageProvider.OpenRead(mediaItem);
-                            if (stream != null)
-                            {
-                                try
-                                {
-                                    var size = ImageHeader.GetDimensions(stream, file.MimeType, true);
-                                    file.Width = size.Width;
-                                    file.Height = size.Height;
-                                }
-                                finally
-                                {
-                                    stream.Dispose();
-                                }
-                            }
-                        }
-
-                        if (file.Width.HasValue && file.Height.HasValue)
-                        {
-                            file.PixelSize = file.Width.Value * file.Height.Value;
-                            // TODO: Metadata JSON
-                        }
-
                         file.Version = 1;
+
+                        ProcessMediaFile(file);
                     }
 
                     // Save to DB
-                    scope.Commit();
+                    int num = scope.Commit();
 
                     // Breathe
-                    ctx.DetachEntities(x => x is MediaFile || x is MediaStorage, false);
+                    ctx.DetachEntities<MediaFile>(deep: true);
                 }
+            }
+        }
+
+        public void MigrateUploadedFiles(SmartObjectContext ctx)
+        {
+            var fileSet = ctx.Set<MediaFile>();
+            var folderSet = ctx.Set<MediaFolder>();
+
+            using (var scope = new DbContextScope(ctx,
+                hooksEnabled: false,
+                autoCommit: false,
+                validateOnSave: false,
+                lazyLoading: false,
+                autoDetectChanges: false))
+            {
+
+                var albumId = _albumRegistry.GetAlbumByName(SystemAlbumProvider.Files)?.Id;
+                var rootFolder = _mediaFileSystem.GetFolder("Uploaded");
+                if (!rootFolder.Exists)
+                    return;
+
+                ProcessFolder(rootFolder, albumId.Value);
+
+                _albumService.ClearCache();
+
+                void ProcessFolder(IFolder folder, int mediaFolderId)
+                {
+                    var newFiles = new List<FilePair>();
+
+                    foreach (var uploadedFile in _mediaFileSystem.ListFiles(folder.Path))
+                    {
+                        var file = new MediaFile
+                        {
+                            CreatedOnUtc = uploadedFile.LastUpdated,
+                            UpdatedOnUtc = uploadedFile.LastUpdated,
+                            Extension = uploadedFile.Extension.TrimStart('.'),
+                            Name = uploadedFile.Name,
+                            MimeType = MimeTypes.MapNameToMimeType(uploadedFile.Name),
+                            Size = Convert.ToInt32(uploadedFile.Size),
+                            FolderId = mediaFolderId,
+                            Version = 2
+                        };
+
+                        ProcessMediaFile(file);
+
+                        if (!_isFsProvider)
+                        {
+                            using var stream = uploadedFile.OpenRead();
+                            file.MediaStorage = new MediaStorage { Data = stream.ToByteArray() };
+                        }
+                        else
+                        {
+                            newFiles.Add(new FilePair { MediaFile = file, UploadedFile = uploadedFile });
+                        }
+
+                        fileSet.Add(file);
+                    }
+
+                    // Process/save files of current folder
+                    try
+                    {
+                        // Save files to DB
+                        int num = scope.Commit();
+
+                        // Copy/Move files
+                        if (_isFsProvider)
+                        {
+                            foreach (var newFile in newFiles)
+                            {
+                                var newPath = GetStoragePath(newFile.MediaFile);
+                                if (!_mediaFileSystem.FileExists(newPath))
+                                {
+                                    // TODO: (mm) should we actually MOVE the file?
+                                    _mediaFileSystem.CopyFile(newFile.UploadedFile.Path, newPath);
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        newFiles.Clear();
+
+                        // Breathe
+                        ctx.DetachEntities<MediaFile>(deep: true);
+                    }
+
+                    foreach (var uploadedFolder in _mediaFileSystem.ListFolders(folder.Path))
+                    {
+                        var mediaFolder = new MediaFolder
+                        {
+                            Name = uploadedFolder.Name,
+                            ParentId = mediaFolderId
+                        };
+
+                        // Add folder and save ASAP, wen need the folder id
+                        folderSet.Add(mediaFolder);
+                        ctx.SaveChanges();
+
+                        ProcessFolder(uploadedFolder, mediaFolder.Id);
+                    }
+                }
+            }
+        }
+
+        private void ProcessMediaFile(MediaFile file)
+        {
+            MediaItem mediaItem = null;
+
+            if (file.Size == 0)
+            {
+                file.Size = Convert.ToInt32(_mediaStorageProvider.GetSize(GetMediaItem()));
+            }
+
+            file.MediaType = _mediaTypeResolver.Resolve(file);
+
+            if (file.MediaType == MediaType.Image && file.Width == null && file.Height == null)
+            {
+                // Resolve image width and height
+                var stream = _mediaStorageProvider.OpenRead(GetMediaItem());
+                if (stream != null)
+                {
+                    try
+                    {
+                        var size = ImageHeader.GetDimensions(stream, file.MimeType, true);
+                        file.Width = size.Width;
+                        file.Height = size.Height;
+                    }
+                    finally
+                    {
+                        stream.Dispose();
+                    }
+                }
+            }
+
+            if (file.Width.HasValue && file.Height.HasValue)
+            {
+                file.PixelSize = file.Width.Value * file.Height.Value;
+                // TODO: Metadata JSON
+            }
+            
+            MediaItem GetMediaItem()
+            {
+                return mediaItem ?? (mediaItem = file.ToMedia());
             }
         }
 
@@ -347,8 +501,8 @@ namespace SmartStore.Services.Media.Migration
         {
             foreach (var albumName in _albumRegistry.GetAlbumNames(true))
             {
-                if (albumName == SystemAlbumProvider.Downloads || albumName == SystemAlbumProvider.Messages)
-                    continue; // Download and MessageTemplate tracks already added in MigrateDownload()
+                //if (albumName == SystemAlbumProvider.Downloads || albumName == SystemAlbumProvider.Messages)
+                //    continue; // Download and MessageTemplate tracks already added in MigrateDownload()
                 
                 _mediaTracker.DetectAllTracks(albumName, true);
             }
@@ -366,11 +520,15 @@ namespace SmartStore.Services.Media.Migration
             return _mediaFileSystem.Combine("QueuedEmailAttachment", fileName);
         }
 
-        private string GetStoragePath(MediaFile file)
+        private string GetStoragePath(MediaFile file, bool tryCreateFolder = true)
         {
             var fileName = BuildFileName(file.Id, file.Extension, file.MimeType);
             var subfolder = _mediaFileSystem.Combine("Storage", fileName.Substring(0, ImageCache.MaxDirLength));
-            _mediaFileSystem.TryCreateFolder(subfolder);
+
+            if (tryCreateFolder)
+            {
+                _mediaFileSystem.TryCreateFolder(subfolder);
+            }          
 
             return _mediaFileSystem.Combine(subfolder, fileName);
         }
@@ -404,6 +562,12 @@ namespace SmartStore.Services.Media.Migration
             public string Name { get; set; }
             public int? MediaStorageId { get; set; }
             public int? FileId { get; set; }
+        }
+
+        class FilePair
+        {
+            public MediaFile MediaFile { get; set; }
+            public IFile UploadedFile { get; set; }
         }
     }
 }

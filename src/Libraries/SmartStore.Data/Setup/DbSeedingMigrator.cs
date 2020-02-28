@@ -77,6 +77,7 @@ namespace SmartStore.Data.Setup
 			if (_lastSeedException != null)
 			{
 				// This can happen when a previous migration attempt failed with a rollback.
+				//return 0;
 				throw _lastSeedException;
 			}
 
@@ -211,9 +212,9 @@ namespace SmartStore.Data.Setup
 				{
 					if (seeder.RollbackOnFailure)
 					{
+						_lastSeedException = new DbMigrationException(seederEntry.PreviousMigrationId, seederEntry.MigrationId, ex.InnerException ?? ex, true);
 						Update(seederEntry.PreviousMigrationId);
 						_isMigrating = false;
-						_lastSeedException = new DbMigrationException(seederEntry.PreviousMigrationId, seederEntry.MigrationId, ex.InnerException ?? ex, true);
 						throw _lastSeedException;
 					}
 

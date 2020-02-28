@@ -10,8 +10,8 @@ namespace SmartStore.Data.Mapping.Media
         {
             ToTable("MediaFolder");
             HasKey(c => c.Id);
-            Property(c => c.Name).IsRequired().HasMaxLength(100);
-            Property(c => c.Slug).HasMaxLength(100);
+            Property(c => c.Name).IsRequired().HasMaxLength(255);
+            Property(c => c.Slug).HasMaxLength(255);
             Property(c => c.Metadata).IsMaxLength();
 
             HasOptional(x => x.Parent)

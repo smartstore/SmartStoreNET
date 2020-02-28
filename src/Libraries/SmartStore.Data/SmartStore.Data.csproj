@@ -765,9 +765,9 @@
     <Compile Include="Migrations\202002180228163_PictureMediaRename1.Designer.cs">
       <DependentUpon>202002180228163_PictureMediaRename1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202002200229128_MediaFileExtend.cs" />
-    <Compile Include="Migrations\202002200229128_MediaFileExtend.Designer.cs">
-      <DependentUpon>202002200229128_MediaFileExtend.cs</DependentUpon>
+    <Compile Include="Migrations\202002280005340_MediaManager.cs" />
+    <Compile Include="Migrations\202002280005340_MediaManager.Designer.cs">
+      <DependentUpon>202002280005340_MediaManager.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\202002191252074_RemoveDiscountRequirements.cs" />
     <Compile Include="Migrations\202002191252074_RemoveDiscountRequirements.Designer.cs">
@@ -1388,8 +1388,8 @@
     <EmbeddedResource Include="Migrations\202002180228163_PictureMediaRename1.resx">
       <DependentUpon>202002180228163_PictureMediaRename1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202002200229128_MediaFileExtend.resx">
-      <DependentUpon>202002200229128_MediaFileExtend.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202002280005340_MediaManager.resx">
+      <DependentUpon>202002280005340_MediaManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202002191252074_RemoveDiscountRequirements.resx">
       <DependentUpon>202002191252074_RemoveDiscountRequirements.cs</DependentUpon>

@@ -16,7 +16,7 @@ namespace SmartStore.Data.Mapping.Media
 
             Property(x => x.Name).HasMaxLength(300).HasColumnName("Name");
             Property(x => x.Extension).HasMaxLength(50);
-            Property(x => x.MimeType).IsRequired().HasMaxLength(40);
+            Property(x => x.MimeType).IsRequired().HasMaxLength(100);
             Property(x => x.MediaType).IsRequired().HasMaxLength(20);
             Property(x => x.Alt).HasMaxLength(400);
             Property(x => x.Title).HasMaxLength(400);

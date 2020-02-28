@@ -108,6 +108,7 @@ namespace SmartStore.Services.Media
                     Name = Files,
                     ResKey = "Admin.Media.Album.File",
                     CanDetectTracks = false,
+                    IncludePath = true,
                     // Slug = "uploaded", // TBD: hmmmm??
                     Order = int.MaxValue
                 }
@@ -266,6 +267,8 @@ namespace SmartStore.Services.Media
                         }
                     }
                 }
+
+                yield break;
             }
 
             // Categories
@@ -280,6 +283,8 @@ namespace SmartStore.Services.Media
                         yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
                     }
                 }
+
+                yield break;
             }
 
             // Brands
@@ -294,6 +299,8 @@ namespace SmartStore.Services.Media
                         yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
                     }
                 }
+
+                yield break;
             }
 
             // BlogPost
@@ -311,6 +318,8 @@ namespace SmartStore.Services.Media
                             yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.PreviewMediaFileId.Value };
                     }
                 }
+
+                yield break;
             }
 
             // NewsItem
@@ -328,6 +337,8 @@ namespace SmartStore.Services.Media
                             yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.PreviewMediaFileId.Value };
                     }
                 }
+
+                yield break;
             }
 
             // Customer
@@ -349,6 +360,8 @@ namespace SmartStore.Services.Media
                         }
                     }
                 }
+
+                yield break;
             }
 
             // Downloads
@@ -363,6 +376,8 @@ namespace SmartStore.Services.Media
                         yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
                     }
                 }
+
+                yield break;
             }
 
             // Messages
@@ -382,6 +397,8 @@ namespace SmartStore.Services.Media
                             yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.Attachment3FileId.Value };
                     }
                 }
+
+                yield break;
             }
         }
 

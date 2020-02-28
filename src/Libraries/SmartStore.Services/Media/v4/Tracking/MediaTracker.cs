@@ -63,7 +63,7 @@ namespace SmartStore.Services.Media
         {
             Guard.NotNull(entity, nameof(entity));
 
-            if (mediaFileId < 1)
+            if (mediaFileId < 1 || entity.IsTransientRecord())
                 return;
 
             var file = _dbContext.Set<MediaFile>().Find(mediaFileId);
@@ -194,10 +194,10 @@ namespace SmartStore.Services.Media
                 }
 
                 // Save whole batch to database
-                ctx.SaveChanges();
+                int num = ctx.SaveChanges();
 
                 // Breathe
-                ctx.DetachEntities(x => x is MediaFile || x is MediaTrack, false);
+                ctx.DetachEntities<MediaFile>(deep: true);
             }
         }
 

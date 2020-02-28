@@ -29,8 +29,7 @@ namespace SmartStore.Services.Media
             IRepository<MediaAlbum> albumRepository,
             IRepository<MediaFolder> folderRepository,
             ICacheManager cache,
-            IEnumerable<Lazy<IAlbumProvider>> albumProviders,
-            IIndex<Type, IAlbumProvider> albumProvider)
+            IEnumerable<Lazy<IAlbumProvider>> albumProviders)
         {
             _albumRegistry = albumRegistry;
             _albumRepository = albumRepository;

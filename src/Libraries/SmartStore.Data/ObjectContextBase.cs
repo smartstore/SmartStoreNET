@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity;
-using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Data;
@@ -404,35 +404,90 @@ namespace SmartStore.Data
 			return false;
         }
 
-        public void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int DetachEntity<TEntity>(TEntity entity, bool deep = false) where TEntity : BaseEntity
         {
-			this.Entry(entity).State = EfState.Detached;
+			return DetachInternal(entity, deep ? new HashSet<BaseEntity>() : null, deep);
         }
 
-		public int DetachEntities<TEntity>(bool unchangedEntitiesOnly = true) where TEntity : class
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int DetachEntities<TEntity>(bool unchangedEntitiesOnly = true, bool deep = false) where TEntity : BaseEntity
 		{
-			return DetachEntities(o => o is TEntity, unchangedEntitiesOnly);
+			return DetachEntities(o => o is TEntity, unchangedEntitiesOnly, deep);
 		}
 
-		public int DetachEntities(Func<object, bool> predicate, bool unchangedEntitiesOnly = true)
+		public int DetachEntities(Func<BaseEntity, bool> predicate, bool unchangedEntitiesOnly = true, bool deep = false)
 		{
 			Guard.NotNull(predicate, nameof(predicate));
 
-			Func<DbEntityEntry, bool> predicate2 = x =>
+			var numDetached = 0;
+
+			using (new DbContextScope(this, autoDetectChanges: false, lazyLoading: false))
 			{
-				if (x.State > EfState.Detached && predicate(x.Entity))
+				var entries = base.ChangeTracker.Entries<BaseEntity>().Where(Match).ToList();
+
+				HashSet<BaseEntity> objSet = deep ? new HashSet<BaseEntity>() : null;
+
+				foreach (var entry in entries)
 				{
-					return unchangedEntitiesOnly 
-						? x.State == EfState.Unchanged
+					numDetached += DetachInternal(entry.Entity, objSet, deep);
+				}
+
+				return numDetached;
+			}
+
+			bool Match(DbEntityEntry<BaseEntity> entry)
+			{
+				if (entry.State > EfState.Detached && predicate(entry.Entity))
+				{
+					return unchangedEntitiesOnly
+						? entry.State == EfState.Unchanged
 						: true;
 				}
 
 				return false;
-			};
+			}
+		}
 
-			var attachedEntities = this.ChangeTracker.Entries().Where(predicate2).ToList();
-			attachedEntities.Each(entry => entry.State = EfState.Detached);
-			return attachedEntities.Count;
+		internal int DetachInternal(BaseEntity obj, ISet<BaseEntity> objSet, bool deep)
+		{
+			if (obj == null)
+				return 0;
+
+			int numDetached = 0;
+
+			if (deep)
+			{
+				// This is to prevent an infinite recursion when the child object has a navigation property
+				// that points back to the parent
+				if (objSet != null && !objSet.Add(obj))
+					return 0;
+
+				// Recursively detach all navigation properties
+				foreach (var prop in FastProperty.GetProperties(obj.GetUnproxiedType()).Values)
+				{
+					if (typeof(BaseEntity).IsAssignableFrom(prop.Property.PropertyType))
+					{
+						numDetached += DetachInternal(prop.GetValue(obj) as BaseEntity, objSet, deep);
+					}
+					else if (typeof(IEnumerable<BaseEntity>).IsAssignableFrom(prop.Property.PropertyType))
+					{
+						var val = prop.GetValue(obj);
+						if (val is IEnumerable<BaseEntity> list)
+						{
+							foreach (var item in list.ToList())
+							{
+								numDetached += DetachInternal(item, objSet, deep);
+							}
+						}
+					}
+				}
+			}
+
+			base.Entry(obj).State = EfState.Detached;
+			numDetached++;
+
+			return numDetached;
 		}
 
 		public void ChangeState<TEntity>(TEntity entity, EfState requestedState) where TEntity : BaseEntity

@@ -35,7 +35,7 @@ namespace SmartStore.Services.Media
             var albumProviderTypes = _typeFinder.FindClassesOfType<IAlbumProvider>(ignoreInactivePlugins: true);
             foreach (var type in albumProviderTypes)
             {
-                builder.RegisterType(type).Keyed<IAlbumProvider>(type).InstancePerRequest();
+                builder.RegisterType(type).As<IAlbumProvider>().Keyed<IAlbumProvider>(type).InstancePerRequest();
             }
         }
     }

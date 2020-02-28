@@ -162,7 +162,8 @@ namespace SmartStore.Core.IO
 		/// </summary>
 		/// <param name="path">The relative path to the file to be copied.</param>
 		/// <param name="newPath">The relative path to the new file.</param>
-		void CopyFile(string path, string newPath);
+		/// <param name="overwrite">Whether to overwrite a file with same name.</param>
+		void CopyFile(string path, string newPath, bool overwrite = false);
 
 		/// <summary>
 		/// Saves a stream in the storage provider.

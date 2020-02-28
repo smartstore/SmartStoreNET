@@ -14,7 +14,7 @@ namespace SmartStore.Services.Media
 {
     [Important]
     public sealed class MediaTrackerHook : DbSaveHook<BaseEntity>
-    {
+    {   
         // Track items for the current (SaveChanges) unit.
         private readonly HashSet<MediaTrackAction> _actionsUnit = new HashSet<MediaTrackAction>();
 
@@ -33,6 +33,7 @@ namespace SmartStore.Services.Media
             _dbContext = dbContext;
         }
 
+        internal static bool Silent { get; set; }
 
         protected override void OnUpdating(BaseEntity entity, IHookedEntity entry)
         {
@@ -56,6 +57,9 @@ namespace SmartStore.Services.Media
 
         private void HookObject(BaseEntity entity, IHookedEntity entry, bool beforeSave)
         {
+            if (Silent)
+                return;
+            
             var type = entry.EntityType;
 
             if (!_mediaTracker.Value.TryGetTrackedPropertiesFor(type, out var properties))

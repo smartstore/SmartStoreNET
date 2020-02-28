@@ -54,9 +54,10 @@ namespace SmartStore.Services.Media
 
         protected virtual IEnumerable<AlbumInfo> LoadAllAlbums()
         {
-            var setAlbums = _dbContext.Set<MediaAlbum>();
-            var dbAlbums = setAlbums
+            var setFolders = _dbContext.Set<MediaFolder>();
+            var dbAlbums = setFolders
                 .AsNoTracking()
+                .OfType<MediaFolder>()
                 .Select(x => new { x.Id, x.Name })
                 .ToDictionary(x => x.Name);
 
@@ -89,7 +90,7 @@ namespace SmartStore.Services.Media
                     }
                     else
                     {
-                        setAlbums.Add(album);
+                        setFolders.Add(album);
                         _dbContext.SaveChanges();
                         info.Id = album.Id;
                     }

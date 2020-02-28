@@ -12,7 +12,7 @@ namespace SmartStore.Services.Media.Migration
     {
         public void Handle(SeedingDbMigrationEvent message, IComponentContext componentContext)
         {
-            if (message.MigrationName != "MediaFileExtend")
+            if (message.MigrationName != MediaMigrator.MigrationName)
                 return;
 
             var mediaMigrator = componentContext.Resolve<MediaMigrator>();

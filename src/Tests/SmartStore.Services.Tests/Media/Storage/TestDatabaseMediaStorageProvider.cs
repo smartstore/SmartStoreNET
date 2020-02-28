@@ -34,5 +34,10 @@ namespace SmartStore.Services.Tests.Media.Storage
 		public void Remove(params MediaItem[] medias)
 		{
 		}
+
+		public long GetSize(MediaItem media)
+		{
+			return media.Entity.MediaStorage?.Data?.Length ?? 0;
+		}
 	}
 }

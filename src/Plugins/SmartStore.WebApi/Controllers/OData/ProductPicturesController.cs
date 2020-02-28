@@ -9,22 +9,22 @@ using SmartStore.Web.Framework.WebApi.Security;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
-	public class ProductPicturesController : WebApiEntityController<ProductPicture, IProductService>
+	public class ProductPicturesController : WebApiEntityController<ProductMediaFile, IProductService>
 	{
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditPicture)]
-        protected override void Insert(ProductPicture entity)
+        protected override void Insert(ProductMediaFile entity)
 		{
             Service.InsertProductPicture(entity);
         }
 
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditPicture)]
-        protected override void Update(ProductPicture entity)
+        protected override void Update(ProductMediaFile entity)
 		{
             Service.UpdateProductPicture(entity);
         }
 
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditPicture)]
-        protected override void Delete(ProductPicture entity)
+        protected override void Delete(ProductMediaFile entity)
 		{
 			Service.DeleteProductPicture(entity);
 		}
@@ -33,9 +33,9 @@ namespace SmartStore.WebApi.Controllers.OData
 
         [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<Picture> GetPicture(int key)
+        public SingleResult<MediaFile> GetPicture(int key)
         {
-            return GetRelatedEntity(key, x => x.Picture);
+            return GetRelatedEntity(key, x => x.MediaFile);
         }
 
         [WebApiQueryable]

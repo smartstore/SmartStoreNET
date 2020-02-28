@@ -256,7 +256,7 @@ namespace SmartStore.Services.Catalog
 
                 query = ApplyHiddenProductManufacturerFilter(query, storeId, showHidden);
                 query = query.OrderBy(pm => pm.DisplayOrder);
-                query = query.Include(pm => pm.Manufacturer.Picture);
+                query = query.Include(pm => pm.Manufacturer.MediaFile);
 
                 var productManufacturers = query.ToList();
 				return productManufacturers;

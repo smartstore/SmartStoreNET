@@ -160,7 +160,7 @@ namespace SmartStore.Services.Catalog.Importer
 					while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
 					{
 						var batch = segmenter.GetCurrentBatch<Category>();
-						_categoryRepository.Context.DetachAll(false);
+						_categoryRepository.Context.DetachAll(unchangedEntitiesOnly: false);
 
 						try
 						{

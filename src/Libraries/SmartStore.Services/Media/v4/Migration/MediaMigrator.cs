@@ -28,7 +28,7 @@ namespace SmartStore.Services.Media.Migration
         private readonly IProviderManager _providerManager;
         private readonly IMediaTypeResolver _mediaTypeResolver;
         private readonly IAlbumRegistry _albumRegistry;
-        private readonly IAlbumService _albumService;
+        private readonly IFolderService _folderService;
         private readonly IMediaTracker _mediaTracker;
         private readonly IMediaStorageProvider _mediaStorageProvider;
         private readonly IMediaFileSystem _mediaFileSystem;
@@ -39,7 +39,7 @@ namespace SmartStore.Services.Media.Migration
             IProviderManager providerManager,
             IMediaTypeResolver mediaTypeResolver,
             IAlbumRegistry albumRegistry,
-            IAlbumService albumService,
+            IFolderService folderService,
             IMediaTracker mediaTracker,
             IMediaFileSystem mediaFileSystem)
         {
@@ -47,7 +47,7 @@ namespace SmartStore.Services.Media.Migration
             _providerManager = providerManager;
             _mediaTypeResolver = mediaTypeResolver;
             _albumRegistry = albumRegistry;
-            _albumService = albumService;
+            _folderService = folderService;
             _mediaTracker = mediaTracker;
             _mediaFileSystem = mediaFileSystem;
 
@@ -64,28 +64,19 @@ namespace SmartStore.Services.Media.Migration
             // we don't need any hooking.
             MediaTrackerHook.Silent = true;
 
-            var watch = Stopwatch.StartNew();
             long elapsed = 0;
+            var watch = new Stopwatch();
 
             try
             {
-                CreateAlbums();
-                Log("CreateAlbums");
+                Execute("CreateAlbums", () => CreateAlbums());
+                Execute("CreateSettings", () => CreateSettings(ctx));
+                Execute("MigrateDownloads", () => MigrateDownloads(ctx));
+                Execute("MigrateMediaFiles", () => MigrateMediaFiles(ctx));
+                Execute("MigrateUploadedFiles", () => MigrateUploadedFiles(ctx));
+                Execute("DetectTracks", () => DetectTracks());
 
-                CreateSettings(ctx);
-                Log("CreateSettings");
-
-                MigrateDownloads(ctx);
-                Log("MigrateDownloads");
-
-                MigrateMediaFiles(ctx);
-                Log("MigrateMediaFiles");
-
-                MigrateUploadedFiles(ctx);
-                Log("MigrateUploadedFiles");
-
-                DetectTracks(ctx);
-                Log("DetectTracks");
+                _folderService.ClearCache();
             }
             catch
             {
@@ -97,14 +88,15 @@ namespace SmartStore.Services.Media.Migration
                 Executed = true;
             }
 
-            void Log(string what)
+            void Execute(string step, Action action)
             {
+                watch.Start();
+                action();
                 watch.Stop();
                 var time = watch.ElapsedMilliseconds - elapsed;
-                var str = "MEDIA {0}: {1} ms.".FormatCurrent(what, time);
+                var str = "MediaMigrator > {0}: {1} ms.".FormatCurrent(step, time);
                 elapsed = watch.ElapsedMilliseconds;
                 Debug.WriteLine(str);
-                watch.Start();
             }
         }
 
@@ -370,8 +362,6 @@ namespace SmartStore.Services.Media.Migration
 
                 ProcessFolder(rootFolder, albumId.Value);
 
-                _albumService.ClearCache();
-
                 void ProcessFolder(IFolder folder, int mediaFolderId)
                 {
                     var newFiles = new List<FilePair>();
@@ -497,7 +487,7 @@ namespace SmartStore.Services.Media.Migration
             }
         }
 
-        public void DetectTracks(SmartObjectContext ctx)
+        public void DetectTracks()
         {
             foreach (var albumName in _albumRegistry.GetAlbumNames(true))
             {

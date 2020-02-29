@@ -42,6 +42,7 @@ namespace SmartStore.Web.Framework
 			}
 		}
 
+		private static object _lock = new object();
 		internal const string OverriddenStoreIdKey = "OverriddenStoreId";
 		const string CacheKey = "stores:all";
 		
@@ -154,9 +155,16 @@ namespace SmartStore.Web.Framework
 
 		protected StoreEntityCache GetCachedStores()
 		{
-			return _cache.Get(CacheKey, () => 
+			// No cache acquirer here to prevent LockRecursionException
+			var entry = _cache.Get<StoreEntityCache>(CacheKey);
+			if (entry != null)
 			{
-				var entry = new StoreEntityCache();
+				return entry;
+			}
+
+			lock (_lock)
+			{
+				entry = new StoreEntityCache();
 
 				var allStores = _rs.Value.TableUntracked
 					.Expand(x => x.PrimaryStoreCurrency)
@@ -185,8 +193,10 @@ namespace SmartStore.Web.Framework
 					entry.PrimaryStoreId = allStores.FirstOrDefault().Id;
 				}
 
+				_cache.Put(CacheKey, entry);
+
 				return entry;
-			});
+			}
 		}
 
 		public override void OnAfterSave(IHookedEntity entry)

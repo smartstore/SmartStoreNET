@@ -89,7 +89,7 @@ namespace SmartStore.Core.Caching
 			}
 
 			// Get the (semaphore) locker specific to this key
-			using (KeyedLock.Lock("cache:" + key, TimeSpan.FromMinutes(1)))
+			using (KeyedLock.Lock("cache:" + key, TimeSpan.FromSeconds(5)))
 			{
 				// Atomic operation must be outer locked
 				if (!TryGet(key, independent, out value))

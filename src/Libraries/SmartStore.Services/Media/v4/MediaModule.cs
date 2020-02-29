@@ -22,7 +22,7 @@ namespace SmartStore.Services.Media
 
             builder.RegisterType<MediaTypeResolver>().As<IMediaTypeResolver>().InstancePerRequest();
             builder.RegisterType<AlbumRegistry>().As<IAlbumRegistry>().InstancePerRequest();
-            builder.RegisterType<AlbumService>().As<IAlbumService>().InstancePerRequest();
+            builder.RegisterType<FolderService>().As<IFolderService>().InstancePerRequest();
             builder.RegisterType<MediaTracker>().As<IMediaTracker>().InstancePerRequest();
 
             builder.RegisterType<DownloadService>().As<IDownloadService>().InstancePerRequest();

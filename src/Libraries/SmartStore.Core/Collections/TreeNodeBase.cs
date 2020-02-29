@@ -41,15 +41,28 @@ namespace SmartStore.Collections
 				{
 					var map = GetIdNodeMap();
 
-					if (_id != null && map.ContainsKey(_id))
+					// Remove old id(s) from map
+					if (_id != null)
 					{
-						// Remove old id from map
-						map.Remove(_id);
+						// We support multi-keys for single nodes
+						var ids = _id as IEnumerable<object> ?? new object[] { _id };
+						foreach (var id in ids)
+						{
+							if (map.ContainsKey(id))
+							{
+								map.Remove(id);
+							}
+						}
 					}
 
+					// Set id
 					if (value != null)
 					{
-						map[value] = this;
+						var ids = value as IEnumerable<object> ?? new object[] { value };
+						foreach (var id in ids)
+						{
+							map[id] = this;
+						}
 					}
 				}
 			}

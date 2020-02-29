@@ -171,7 +171,7 @@ namespace SmartStore.Web.Controllers
 
 						// When Picture has SeoFileName, it must match requested name
 						// When Picture has NO SeoFileName, requested name must match Id
-						if (picture.Name.HasValue() && !picture.Name.IsCaseInsensitiveEqual(nameWithoutExtension))
+						if (picture.Name.HasValue() && !picture.Name.IsCaseInsensitiveEqual(name))
 							return null;
 						else if (picture.Name.IsEmpty() && picture.Id.ToString(ImageCache.IdFormatString) != nameWithoutExtension)
 							return null;

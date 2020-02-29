@@ -754,12 +754,10 @@ namespace SmartStore.Admin.Controllers
 
 			string message = null;
 			var hasError = false;
-			var width = 0;
-			var height = 0;
 			string url = null;
 
-			int.TryParse(GetSetting("MAX_IMAGE_WIDTH"), out width);
-			int.TryParse(GetSetting("MAX_IMAGE_HEIGHT"), out height);
+			int.TryParse(GetSetting("MAX_IMAGE_WIDTH"), out var width);
+			int.TryParse(GetSetting("MAX_IMAGE_HEIGHT"), out var height);
 
 			var tempDir = FileSystemHelper.TempDirTenant("roxy " + CommonHelper.GenerateRandomInteger().ToString());
 

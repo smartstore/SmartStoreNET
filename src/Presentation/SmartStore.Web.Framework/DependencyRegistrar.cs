@@ -32,6 +32,7 @@ using SmartStore.Core.Security;
 using SmartStore.Core.Themes;
 using SmartStore.Data;
 using SmartStore.Data.Caching;
+using SmartStore.Data.Setup;
 using SmartStore.Rules;
 using SmartStore.Services;
 using SmartStore.Services.Affiliates;
@@ -1255,14 +1256,6 @@ namespace SmartStore.Web.Framework
 							if (c.TryResolve(out IStoreContext storeContext))
 							{
 								currentStoreId = storeContext.CurrentStore.Id;
-								//uncomment the code below if you want load settings per store only when you have two stores installed.
-								//var currentStoreId = c.Resolve<IStoreService>().GetAllStores().Count > 1
-								//    c.Resolve<IStoreContext>().CurrentStore.Id : 0;
-
-								////although it's better to connect to your database and execute the following SQL:
-								//DELETE FROM [Setting] WHERE [StoreId] > 0
-
-								//return c.Resolve<ISettingService>().LoadSetting<TSettings>(currentStoreId);
 							}
 						}
 						catch { }

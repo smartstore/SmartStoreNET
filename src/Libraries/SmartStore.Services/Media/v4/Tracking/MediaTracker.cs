@@ -22,7 +22,7 @@ namespace SmartStore.Services.Media
         private readonly ICacheManager _cache;
         private readonly IDbContext _dbContext;
         private readonly IAlbumRegistry _albumRegistry;
-        private readonly IAlbumService _albumService;
+        private readonly IFolderService _folderService;
         private readonly IIndex<Type, IAlbumProvider> _albumProviderFactory;
 
         private bool _makeFilesTransientWhenOrphaned;
@@ -31,13 +31,13 @@ namespace SmartStore.Services.Media
             ICacheManager cache,
             IDbContext dbContext,
             IAlbumRegistry albumRegistry,
-            IAlbumService albumService,
+            IFolderService folderService,
             IIndex<Type, IAlbumProvider> albumProviderFactory)
         {
             _cache = cache;
             _dbContext = dbContext;
             _albumRegistry = albumRegistry;
-            _albumService = albumService;
+            _folderService = folderService;
             _albumProviderFactory = albumProviderFactory;
         }
 
@@ -69,7 +69,7 @@ namespace SmartStore.Services.Media
             var file = _dbContext.Set<MediaFile>().Find(mediaFileId);
             if (file != null)
             {
-                var albumName = _albumService.FindAlbum(file)?.Value.Name;
+                var albumName = _folderService.FindAlbum(file)?.Value.Name;
                 if (albumName.IsEmpty())
                 {
                     throw new InvalidOperationException("Cannot track a media file that is not assigned to any album.");

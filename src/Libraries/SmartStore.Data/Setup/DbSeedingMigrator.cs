@@ -198,7 +198,7 @@ namespace SmartStore.Data.Setup
 				try
 				{
 					var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
-					
+
 					// Pre seed event
 					eventPublisher.Publish(new SeedingDbMigrationEvent { MigrationName = seederEntry.MigrationName, DbContext = ctx });
 

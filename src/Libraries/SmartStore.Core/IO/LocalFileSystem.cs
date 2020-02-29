@@ -393,13 +393,17 @@ namespace SmartStore.Core.IO
 				throw new ArgumentException("File " + path + " does not exist");
 			}
 
-			var targetFileInfo = new FileInfo(MapStorage(newPath));
-			if (targetFileInfo.Exists)
+			var targetPath = MapStorage(newPath);
+			if (!overwrite)
 			{
-				throw new ArgumentException("File " + newPath + " already exists");
+				var targetFileInfo = new FileInfo(targetPath);
+				if (targetFileInfo.Exists)
+				{
+					throw new ArgumentException("File " + newPath + " already exists");
+				}
 			}
 
-			File.Copy(sourceFileInfo.FullName, targetFileInfo.FullName, overwrite);
+			File.Copy(sourceFileInfo.FullName, targetPath, overwrite);
 		}
 
 		public void SaveStream(string path, Stream inputStream)

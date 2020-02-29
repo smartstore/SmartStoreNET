@@ -23,6 +23,7 @@ namespace SmartStore.Services.Media
         /// Folder name
         /// </summary>
         public string Name { get; set; }
+        public string Path { get; set; }
         public string Slug { get; set; }
         public bool CanDetectTracks { get; set; }
         public int? ParentId { get; set; }

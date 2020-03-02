@@ -1,0 +1,116 @@
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-column-gap: 2rem;
+    grid-template-rows: repeat(5, auto);
+    grid-row-gap: 2rem;
+}
+
+.report {
+    // Global
+    .title-report {
+        display: inline-block;
+        margin: 0;
+        vertical-align: middle;
+        font-size: 1.1rem;
+    }
+
+    .nav-item.nav-link {
+        font-size: .75rem;
+        padding: 0.33rem .66rem;
+        border-radius: 0;
+
+        &.nav-item-left {
+            border-top-left-radius: 2px;
+            border-bottom-left-radius: 2px;
+        }
+
+        &.nav-item-right {
+            border-top-right-radius: 2px;
+            border-bottom-right-radius: 2px;
+        }
+    }
+
+    .nav-link:hover {
+        border-color: transparent;
+    }
+
+    .table {
+        white-space: nowrap;
+
+        .display-row {
+            padding: 8px 16px;
+
+            &.row-number {
+                text-align: center;
+            }
+
+            &.row-money {
+                text-align: end;
+            }
+        }
+    }
+
+    .sales-chart {
+        grid-column-start: 1;
+        grid-column-end: 3;
+        grid-row-start: 2;
+        grid-row-end: 3;
+    }
+
+    .bestsellers {
+        grid-column-start: 3;
+        grid-column-end: 4;
+        grid-row-start: 2;
+        grid-row-end: 3;
+    }
+
+    .top-cumstomers {
+        grid-column-start: 1;
+        grid-column-end: 2;
+        grid-row-start: 3;
+        grid-row-end: 4;
+    }
+
+    .customer-registrations {
+        grid-column-start: 2;
+        grid-column-end: 4;
+        grid-row-start: 3;
+        grid-row-end: 4;
+    }
+
+    .latest-orders {
+        grid-column-start: 1;
+        grid-column-end: 3;
+        grid-row-start: 4;
+        grid-row-end: 5;
+    }
+
+    .store-statistics {
+        grid-column-start: 3;
+        grid-column-end: 4;
+        grid-row-start: 4;
+        grid-row-end: 5;
+    }
+
+    .order-fulfillment {
+        grid-column-start: 1;
+        grid-column-end: 3;
+        grid-row-start: 1;
+        grid-row-end: 2;
+    }
+
+    .incomplete-orders {
+        grid-column-start: 3;
+        grid-column-end: 4;
+        grid-row-start: 1;
+        grid-row-end: 2;
+    }
+
+    .marketplace-feed {
+        grid-column-start: 4;
+        grid-column-end: 5;
+        grid-row-start: 1;
+        grid-row-end: 6;
+    }
+}

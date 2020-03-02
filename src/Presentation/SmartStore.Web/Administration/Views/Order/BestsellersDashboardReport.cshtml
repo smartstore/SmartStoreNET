@@ -1,0 +1,71 @@
+﻿@model BestsellersDashboardReportModel
+
+<div class="bg-white rounded-lg shadow">
+    <div class="px-3 py-2" style="text-align-last: justify;">
+        <div class="font-weight-medium p-0 title-report">
+            <i class="fa fa-trophy pr-2"></i>
+            @T("Admin.SalesReport.BestSellers")
+        </div>
+
+        <nav class="p-0" style="display: inline-block">
+            <div class="nav nav-tabs" role="tablist">
+                <a class="btn btn-primary nav-item nav-link nav-item-left active" id="bestsellers-amount-tab" data-toggle="tab" href="#bestsellers-amount" role="tab" aria-controls="bestsellers-amount" aria-selected="true">by amount</a>
+                <a class="btn btn-primary nav-item nav-link nav-item-right" id="bestsellers-quantity-tab" data-toggle="tab" href="#bestsellers-quantity" role="tab" aria-controls="bestsellers-quantity" aria-selected="false">by quantity</a>
+            </div>
+        </nav>
+    </div>
+
+    <div class="tab-content" id="bestsellers-tabcontent">
+        <div class="tab-pane fade show active" id="bestsellers-amount" role="tabpanel" aria-labelledby="bestsellers-amount-tab">
+            <div class="table-responsive">
+                <table class="table table-striped m-0">
+                    <thead>
+                        <tr>
+                            <th class="display-row">@T("Admin.SalesReport.Bestsellers.Fields.Name")</th>
+                            <th class="display-row">@T("Admin.SalesReport.Bestsellers.Fields.TotalQuantity")</th>
+                            <th class="display-row">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var x in Model.BestsellersByAmount)
+                        {
+                            <tr>
+                                <td class="display-row">
+                                    @Html.LabeledProductName(x.ProductId, x.ProductDisplayName, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint)
+                                </td>
+                                <td class="display-row row-number">@x.TotalQuantity</td>
+                                <td class="display-row row-money font-weight-500">@x.TotalAmount</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="bestsellers-quantity" role="tabpanel" aria-labelledby="bestsellers-quantity-tab">
+            <div class="table-responsive">
+                <table class="table table-striped m-0">
+                    <thead>
+                        <tr>
+                            <th class="display-row">@T("Admin.SalesReport.Bestsellers.Fields.Name")</th>
+                            <th class="display-row">@T("Admin.SalesReport.Bestsellers.Fields.TotalQuantity")</th>
+                            <th class="display-row">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var x in Model.BestsellersByQuantity)
+                        {
+                            <tr>
+                                <td class="display-row">
+                                    @Html.LabeledProductName(x.ProductId, x.ProductDisplayName, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint)
+                                </td>
+
+                                <td class="display-row row-number font-weight-500">@x.TotalQuantity</td>
+                                <td class="display-row row-money">@x.TotalAmount</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

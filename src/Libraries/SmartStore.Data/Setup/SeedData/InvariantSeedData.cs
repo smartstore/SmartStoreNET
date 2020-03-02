@@ -13774,8 +13774,9 @@ namespace SmartStore.Data.Setup
 
 			var picture = _ctx.Set<MediaFile>().Create();
 			picture.MimeType = mimeType;
-			picture.Name = seoFilename;
-			picture.UpdatedOnUtc = DateTime.UtcNow;
+            picture.MediaType = "image";
+            picture.Name = seoFilename;
+            picture.CreatedOnUtc = picture.UpdatedOnUtc = DateTime.UtcNow;
 			
 			picture.MediaStorage = new MediaStorage
 			{

@@ -789,6 +789,10 @@
     <Compile Include="Migrations\202002271206204_ShipmentTrackingUrl.Designer.cs">
       <DependentUpon>202002271206204_ShipmentTrackingUrl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202003022018038_Merge8.cs" />
+    <Compile Include="Migrations\202003022018038_Merge8.Designer.cs">
+      <DependentUpon>202003022018038_Merge8.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -1405,6 +1409,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202002271206204_ShipmentTrackingUrl.resx">
       <DependentUpon>202002271206204_ShipmentTrackingUrl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003022018038_Merge8.resx">
+      <DependentUpon>202003022018038_Merge8.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

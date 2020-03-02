@@ -27,8 +27,9 @@ namespace SmartStore.Core.Caching
 		/// <param name="acquirer">Func which returns value to be added to the cache</param>
 		/// <param name="duration">Absolute expiration time</param>
 		/// <param name="independent">When <c>true</c>, no attemp will be made to invalidate depending/parent cache entries.</param>
+		/// <param name="allowRecursion">When <c>false</c>, an exception will be thrown when the acquirer tries to acces the same cache item.</param>
 		/// <returns>Cached item value</returns>
-		T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null, bool independent = false);
+		T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null, bool independent = false, bool allowRecursion = false);
 
 		/// <summary>
 		/// Gets a cache item associated with the specified key or - if it doesn't exist in the cache -  
@@ -39,8 +40,9 @@ namespace SmartStore.Core.Caching
 		/// <param name="acquirer">Func which returns value to be added to the cache</param>
 		/// <param name="duration">Absolute expiration time</param>
 		/// <param name="independent">When <c>true</c>, no attemp will be made to invalidate depending/parent cache entries.</param>
+		/// <param name="allowRecursion">When <c>false</c>, an exception will be thrown when the acquirer tries to acces the same cache item.</param>
 		/// <returns>Cached item value</returns>
-		Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null, bool independent = false);
+		Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null, bool independent = false, bool allowRecursion = false);
 
 		/// <summary>
 		/// Gets a hashset associated with the specified key or. If key does not exist,

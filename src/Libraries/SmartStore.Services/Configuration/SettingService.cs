@@ -58,7 +58,7 @@ namespace SmartStore.Services.Configuration
 				}
 
 				return dictionary;
-			}, independent: true);
+			}, independent: true, allowRecursion: false);
 		}
 
 		protected virtual PropertyInfo GetPropertyInfo<T, TPropType>(Expression<Func<T, TPropType>> keySelector)
@@ -367,7 +367,7 @@ namespace SmartStore.Services.Configuration
 		{
 			Guard.NotNull(settings, nameof(settings));
 
-			using (BeginScope())
+			using (BeginScope(clearCache: true))
 			{
 				var settingType = settings.GetType();
 				var prefix = settingType.Name;

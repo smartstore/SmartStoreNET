@@ -76,14 +76,14 @@ namespace SmartStore.Core.Caching
 			return value;
 		}
 
-        public T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null, bool independent = false)
+        public T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null, bool independent = false, bool allowRecursion = false)
         {
 			if (TryGet(key, independent, out T value))
 			{
 				return value;
 			}
 
-			if (_scopeAccessor.Value.HasScope(key))
+			if (!allowRecursion && _scopeAccessor.Value.HasScope(key))
 			{
 				throw new LockRecursionException(LockRecursionExceptionMessage.FormatInvariant(key));
 			}
@@ -94,10 +94,11 @@ namespace SmartStore.Core.Caching
 				// Atomic operation must be outer locked
 				if (!TryGet(key, independent, out value))
 				{
-					using (_scopeAccessor.Value.BeginScope(key))
+					var scope = !allowRecursion ? _scopeAccessor.Value.BeginScope(key) : ActionDisposable.Empty;
+					using (scope)
 					{
 						value = acquirer();
-						Put(key, value, duration, _scopeAccessor.Value.Current.Dependencies);
+						Put(key, value, duration, !allowRecursion ? _scopeAccessor.Value.Current.Dependencies : null);
 						return value;
 					}
 				}
@@ -106,14 +107,14 @@ namespace SmartStore.Core.Caching
 			return value;
 		}
 
-		public async Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null, bool independent = false)
+		public async Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null, bool independent = false, bool allowRecursion = false)
 		{
 			if (TryGet(key, independent, out T value))
 			{
 				return value;
 			}
 
-			if (_scopeAccessor.Value.HasScope(key))
+			if (!allowRecursion && _scopeAccessor.Value.HasScope(key))
 			{
 				throw new LockRecursionException(LockRecursionExceptionMessage.FormatInvariant(key));
 			}
@@ -123,10 +124,11 @@ namespace SmartStore.Core.Caching
 			{
 				if (!TryGet(key, independent, out value))
 				{
-					using (_scopeAccessor.Value.BeginScope(key))
+					var scope = !allowRecursion ? _scopeAccessor.Value.BeginScope(key) : ActionDisposable.Empty;
+					using (scope)
 					{
 						value = await acquirer();
-						Put(key, value, duration, _scopeAccessor.Value.Current.Dependencies);
+						Put(key, value, duration, !allowRecursion ? _scopeAccessor.Value.Current.Dependencies : null);
 						return value;
 					}
 				}

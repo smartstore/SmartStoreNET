@@ -116,7 +116,6 @@ namespace SmartStore.Services.Configuration
 			Expression<Func<T, TPropType>> keySelector,
 			int storeId = 0, bool clearCache = true) where T : ISettings, new();
 
-		/// <remarks>codehint: sm-add</remarks>
 		void UpdateSetting<T, TPropType>(T settings, Expression<Func<T, TPropType>> keySelector, bool overrideForStore, int storeId = 0) where T : ISettings, new();
 
 		void InsertSetting(Setting setting, bool clearCache = true);

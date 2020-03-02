@@ -384,8 +384,10 @@ namespace SmartStore.Services.Media.Migration
 
                         if (!_isFsProvider)
                         {
-                            /*using*/ var stream = uploadedFile.OpenRead();
-                            file.MediaStorage = new MediaStorage { Data = stream.ToByteArray() };
+                            using (var stream = uploadedFile.OpenRead())
+                            {
+                                file.MediaStorage = new MediaStorage { Data = stream.ToByteArray() };
+                            }
                         }
                         else
                         {

@@ -114,7 +114,7 @@ namespace SmartStore.Services.Media
 
             return root;
 
-            static void AddChildTreeNodes(TreeNode<MediaFolderNode> parentNode, int parentId, Multimap<int, MediaFolderNode> nodeMap)
+            /*static*/ void AddChildTreeNodes(TreeNode<MediaFolderNode> parentNode, int parentId, Multimap<int, MediaFolderNode> nodeMap)
             {
                 var parent = parentNode?.Value;
                 if (parent == null)

@@ -1588,7 +1588,7 @@ namespace SmartStore.Data.Utilities
                 }
             }
 
-            static T GetExtraData<T>(OldDiscountRequirement req, string name)
+            /*static*/ T GetExtraData<T>(OldDiscountRequirement req, string name)
             {
                 try
                 {
@@ -1609,7 +1609,7 @@ namespace SmartStore.Data.Utilities
                 return default(T);
             }
 
-            static PluginFilterConfigModel GetFilterData(Dictionary<int, SyncMapping> syncMappings, int entityId, string rootNodeName)
+            /*static*/ PluginFilterConfigModel GetFilterData(Dictionary<int, SyncMapping> syncMappings, int entityId, string rootNodeName)
             {
                 try
                 {
@@ -1630,11 +1630,11 @@ namespace SmartStore.Data.Utilities
                 return null;
             }
 
-            static void AddRulesForCommonFilters(SmartObjectContext ctx, RuleSetEntity ruleSet, PluginFilterConfigModel model, string pluginSystemName)
+            /*static*/ void AddRulesForCommonFilters(SmartObjectContext _ctx, RuleSetEntity ruleSet, PluginFilterConfigModel model, string pluginSystemName)
             {
                 // Store id (if plugin is limited to stores).
                 var settingName = $"PluginSetting.{pluginSystemName}.LimitedToStores";
-                var limitedToStoresValue = ctx.Set<Setting>()
+                var limitedToStoresValue = _ctx.Set<Setting>()
                     .Where(x => x.Name == settingName)
                     .Select(x => x.Value)
                     .FirstOrDefault();
@@ -1671,7 +1671,7 @@ namespace SmartStore.Data.Utilities
                         else
                         {
                             // There's no operator for this filter. We have to turn him around logically.
-                            var allRoleIds = ctx.Set<CustomerRole>().Select(x => x.Id).ToList();
+                            var allRoleIds = _ctx.Set<CustomerRole>().Select(x => x.Id).ToList();
                             var includedRoleIds = allRoleIds.Except(excludedRoleIds).ToArray();
 
                             if (includedRoleIds.Any())

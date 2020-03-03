@@ -509,6 +509,7 @@
     <Content Include="App_Data\Localization\Installation\installation.en.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="App_Data\Samples\brand\wilson.png" />
     <Content Include="App_Data\Samples\category\0000930_spiegel-bestseller.png" />
     <Content Include="App_Data\Samples\product\0000932_uberman-der-roman.jpeg" />
     <Content Include="App_Data\Samples\product\0000935_der-gefangene-des-himmels-roman_300.jpeg" />
@@ -589,7 +590,6 @@
     <Content Include="App_Data\Samples\brand\titleist.png" />
     <Content Include="App_Data\Samples\brand\ubisoft.png" />
     <Content Include="App_Data\Samples\brand\wb.png" />
-    <Content Include="App_Data\Samples\brand\manufacturer_wilson.png" />
     <Content Include="App_Data\Samples\product\airpods_gold.jpg" />
     <Content Include="App_Data\Samples\product\airpods_lightblue.jpg" />
     <Content Include="App_Data\Samples\product\airpods_mint.jpg" />

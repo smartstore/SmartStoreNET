@@ -1358,9 +1358,7 @@ namespace SmartStore.Admin.Controllers
                  if (customer != null)
                  {
                      m.CustomerName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
-                                          
-                     var overflow = m.CustomerName.Length > 30 ? m.CustomerName.Length - 30 : 0;
-                     m.DisplayName = overflow > 0 ? m.CustomerName.Substring(0, m.CustomerName.Length - overflow) + "..." : m.CustomerName;
+                     m.DisplayName = m.CustomerName.Length > 30 ? m.CustomerName.Truncate(30) + "..." : m.CustomerName;
                  }
 
                  return m;

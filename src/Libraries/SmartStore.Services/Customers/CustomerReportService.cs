@@ -25,7 +25,7 @@ namespace SmartStore.Services.Customers
         private readonly ICustomerService _customerService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly IPriceFormatter _priceFormatter;
-    
+
         #endregion
 
         #region Ctor
@@ -111,7 +111,7 @@ namespace SmartStore.Services.Customers
                     break;
                 case 2:
                     {
-                        query2 = query2.OrderByDescending(x => x.OrderCount);
+                        query2 = query2.OrderByDescending(x => x.OrderCount).ThenByDescending(x => x.OrderTotal);
                     }
                     break;
                 default:

@@ -3,14 +3,14 @@
 <div class="bg-white rounded-lg shadow">
     <div class="px-3 py-2" style="text-align-last: justify;">
         <div class="font-weight-medium p-0 title-report">
-            <i class="fa fa-trophy pr-2"></i>
+            <i class="fa fa-crown pr-2"></i>
             @T("Admin.SalesReport.BestCustomers")
         </div>
 
         <nav class="p-0" style="display: inline-block">
             <div class="nav nav-tabs" role="tablist">
-                <a class="btn btn-success nav-item nav-link nav-item-left active" id="customers-amount-tab" data-toggle="tab" href="#customers-amount" role="tab" aria-controls="customers-amount" aria-selected="true">by amount</a>
-                <a class="btn btn-success nav-item nav-link nav-item-right" id="customers-quantity-tab" data-toggle="tab" href="#customers-quantity" role="tab" aria-controls="customers-quantity" aria-selected="false">by quantity</a>
+                <a class="btn btn-success nav-item nav-link nav-item-left" id="customers-quantity-tab" data-toggle="tab" href="#customers-quantity" role="tab" aria-controls="customers-quantity" aria-selected="false">by quantity</a>
+                <a class="btn btn-success nav-item nav-link nav-item-right active" id="customers-amount-tab" data-toggle="tab" href="#customers-amount" role="tab" aria-controls="customers-amount" aria-selected="true">by amount</a>
             </div>
         </nav>
     </div>
@@ -21,8 +21,8 @@
                 <table class="table table-striped m-0">
                     <thead>
                         <tr>
-                            <th class="display-row">@T("Admin.SalesReport.Bestsellers.Fields.Name")</th>
-                            <th class="display-row">@T("Admin.SalesReport.Bestsellers.Fields.TotalQuantity")</th>
+                            <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
+                            <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.OrderCount")</th>
                             <th class="display-row">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
                         </tr>
                     </thead>
@@ -31,8 +31,7 @@
                         {
                             <tr>
                                 <td class="display-row">
-                                    @*@Html.LabeledProductName(x.CustomerId, x.ProductDisplayName, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint)*@
-                                    @x.CustomerId
+                                    @Html.ActionLink(x.DisplayName, "Edit", "Customer", new { id = x.CustomerId }, new { })
                                 </td>
                                 <td class="display-row row-number">@x.OrderCount</td>
                                 <td class="display-row row-money font-weight-500">@x.OrderTotal</td>
@@ -47,8 +46,8 @@
                 <table class="table table-striped m-0">
                     <thead>
                         <tr>
-                            <th class="display-row">@T("Admin.SalesReport.Bestsellers.Fields.Name")</th>
-                            <th class="display-row">@T("Admin.SalesReport.Bestsellers.Fields.TotalQuantity")</th>
+                            <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
+                            <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.OrderCount")</th>
                             <th class="display-row">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
                         </tr>
                     </thead>
@@ -57,8 +56,7 @@
                         {
                             <tr>
                                 <td class="display-row">
-                                    @*@Html.LabeledProductName(x.ProductId, x.ProductDisplayName, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint)*@
-                                    @x.CustomerId
+                                    @Html.ActionLink(x.DisplayName, "Edit", "Customer", new { id = x.CustomerId }, new { })
                                 </td>
 
                                 <td class="display-row row-number font-weight-500">@x.OrderCount</td>

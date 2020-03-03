@@ -1344,16 +1344,41 @@ namespace SmartStore.Admin.Controllers
         #endregion
 
         #region Reports
+        [NonAction]
+        private List<BestCustomerReportLineModel> CreateCustomerReportLineModel(IList<BestCustomerReportLine> items)
+        {
+            return items.Select(x =>
+             {
+                 var m = new BestCustomerReportLineModel()
+                 {
+                     CustomerId = x.CustomerId,
+                     OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
+                     OrderCount = x.OrderCount,
+                 };
 
+                 var customer = _customerService.GetCustomerById(x.CustomerId);
+                 if (customer != null)
+                 {
+                     m.CustomerName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
+                                          
+                     var overflow = m.CustomerName.Length > 30 ? m.CustomerName.Length - 30 : 0;
+                     m.DisplayName = overflow > 0 ? m.CustomerName.Substring(0, m.CustomerName.Length - overflow) + "..." : m.CustomerName;
+                 }
+
+                 return m;
+             }).ToList();
+        }
 
         [Permission(Permissions.Customer.Read, false)]
         public ActionResult BestCustomersReport()
         {
             var model = new BestCustomersDashboardReportModel()
             {
-                BestCustomersByAmount = _customerReportService.GetBestCustomersReport(null, null, null, null, null, 1, 7).ToList(),
-                BestCustomersByQuantity = _customerReportService.GetBestCustomersReport(null, null, null, null, null, 2, 7).ToList()
+                BestCustomersByAmount = CreateCustomerReportLineModel(_customerReportService.GetBestCustomersReport(null, null, null, null, null, 1, 7)),
+                BestCustomersByQuantity = CreateCustomerReportLineModel(_customerReportService.GetBestCustomersReport(null, null, null, null, null, 2, 7))
             };
+
+            // format price and get customer by id
 
             return PartialView(model);
         }
@@ -1397,23 +1422,7 @@ namespace SmartStore.Admin.Controllers
 
             var gridModel = new GridModel<BestCustomerReportLineModel>
             {
-                Data = items.Select(x =>
-                {
-                    var m = new BestCustomerReportLineModel()
-                    {
-                        CustomerId = x.CustomerId,
-                        OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
-                        OrderCount = x.OrderCount,
-                    };
-
-                    var customer = _customerService.GetCustomerById(x.CustomerId);
-                    if (customer != null)
-                    {
-                        m.CustomerName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
-                    }
-
-                    return m;
-                }),
+                Data = CreateCustomerReportLineModel(items),
                 Total = items.Count
             };
 
@@ -1443,23 +1452,7 @@ namespace SmartStore.Admin.Controllers
 
             var gridModel = new GridModel<BestCustomerReportLineModel>
             {
-                Data = items.Select(x =>
-                {
-                    var m = new BestCustomerReportLineModel()
-                    {
-                        CustomerId = x.CustomerId,
-                        OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
-                        OrderCount = x.OrderCount,
-                    };
-
-                    var customer = _customerService.GetCustomerById(x.CustomerId);
-                    if (customer != null)
-                    {
-                        m.CustomerName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
-                    }
-
-                    return m;
-                }),
+                Data = CreateCustomerReportLineModel(items),
                 Total = items.Count
             };
 

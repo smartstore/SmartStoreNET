@@ -2512,8 +2512,9 @@ namespace SmartStore.Admin.Controllers
 
                 if (product != null)
                 {
+                    var maxLength = product.ProductType != ProductType.SimpleProduct ? 24 : 30;
                     m.ProductName = product.Name;
-                    var overflow = product.Name.Length > 30 ? product.Name.Length - 30 : 0;
+                    var overflow = product.Name.Length > maxLength ? product.Name.Length - maxLength : 0;
                     m.ProductDisplayName = overflow > 0 ? product.Name.Substring(0, product.Name.Length - overflow) + "..." : product.Name;
                     m.ProductTypeName = product.GetProductTypeLabel(_localizationService);
                     m.ProductTypeLabelHint = product.ProductTypeLabelHint;
@@ -2530,7 +2531,7 @@ namespace SmartStore.Admin.Controllers
             var model = new BestsellersDashboardReportModel
             {
                 BestsellersByQuantity = GetBestsellersBriefReportModel(7, 1),
-                BestsellersByAmount = GetBestsellersBriefReportModel(7, 1)
+                BestsellersByAmount = GetBestsellersBriefReportModel(7, 2)
             };
 
             return PartialView(model);

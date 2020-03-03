@@ -55,27 +55,27 @@ namespace SmartStore.Services.Orders
         #endregion
 
         #region Methods
-        
+
         /// <summary>
         /// Get order average report
         /// </summary>
-		/// <param name="storeId">Store identifier</param>
-		/// <param name="orderStatusIds">Filter by order status</param>
-		/// <param name="paymentStatusIds">Filter by payment status</param>
-		/// <param name="shippingStatusIds">Filter by shipping status</param>
+        /// <param name="storeId">Store identifier</param>
+        /// <param name="orderStatusIds">Filter by order status</param>
+        /// <param name="paymentStatusIds">Filter by payment status</param>
+        /// <param name="shippingStatusIds">Filter by shipping status</param>
         /// <param name="startTimeUtc">Start date</param>
         /// <param name="endTimeUtc">End date</param>
         /// <param name="billingEmail">Billing email. Leave empty to load all records.</param>
         /// <param name="ignoreCancelledOrders">A value indicating whether to ignore cancelled orders</param>
         /// <returns>Result</returns>
-		public virtual OrderAverageReportLine GetOrderAverageReportLine(int storeId, int[] orderStatusIds,
+        public virtual OrderAverageReportLine GetOrderAverageReportLine(int storeId, int[] orderStatusIds,
             int[] paymentStatusIds, int[] shippingStatusIds, DateTime? startTimeUtc, DateTime? endTimeUtc,
             string billingEmail, bool ignoreCancelledOrders = false)
         {
             var query = _orderRepository.Table;
             query = query.Where(o => !o.Deleted);
-			if (storeId > 0)
-				query = query.Where(o => o.StoreId == storeId);
+            if (storeId > 0)
+                query = query.Where(o => o.StoreId == storeId);
             if (ignoreCancelledOrders)
             {
                 int cancelledOrderStatusId = (int)OrderStatus.Cancelled;
@@ -88,21 +88,21 @@ namespace SmartStore.Services.Orders
             if (!String.IsNullOrEmpty(billingEmail))
                 query = query.Where(o => o.BillingAddress != null && !String.IsNullOrEmpty(o.BillingAddress.Email) && o.BillingAddress.Email.Contains(billingEmail));
 
-			if (orderStatusIds != null && orderStatusIds.Count() > 0)
-				query = query.Where(x => orderStatusIds.Contains(x.OrderStatusId));
+            if (orderStatusIds != null && orderStatusIds.Count() > 0)
+                query = query.Where(x => orderStatusIds.Contains(x.OrderStatusId));
 
-			if (paymentStatusIds != null && paymentStatusIds.Count() > 0)
-				query = query.Where(x => paymentStatusIds.Contains(x.PaymentStatusId));
+            if (paymentStatusIds != null && paymentStatusIds.Count() > 0)
+                query = query.Where(x => paymentStatusIds.Contains(x.PaymentStatusId));
 
-			if (shippingStatusIds != null && shippingStatusIds.Count() > 0)
-				query = query.Where(x => shippingStatusIds.Contains(x.ShippingStatusId));
+            if (shippingStatusIds != null && shippingStatusIds.Count() > 0)
+                query = query.Where(x => shippingStatusIds.Contains(x.ShippingStatusId));
 
-			var item = (from oq in query
-						group oq by 1 into result
-						select new { OrderCount = result.Count(), OrderTaxSum = result.Sum(o => o.OrderTax), OrderTotalSum = result.Sum(o => o.OrderTotal) }
-					   ).Select(r => new OrderAverageReportLine(){ SumTax = r.OrderTaxSum, CountOrders=r.OrderCount, SumOrders = r.OrderTotalSum}).FirstOrDefault();
+            var item = (from oq in query
+                        group oq by 1 into result
+                        select new { OrderCount = result.Count(), OrderTaxSum = result.Sum(o => o.OrderTax), OrderTotalSum = result.Sum(o => o.OrderTotal) }
+                       ).Select(r => new OrderAverageReportLine() { SumTax = r.OrderTaxSum, CountOrders = r.OrderCount, SumOrders = r.OrderTotalSum }).FirstOrDefault();
 
-			item = item ?? new OrderAverageReportLine() { CountOrders = 0, SumOrders = decimal.Zero, SumTax = decimal.Zero };
+            item = item ?? new OrderAverageReportLine() { CountOrders = 0, SumOrders = decimal.Zero, SumTax = decimal.Zero };
             return item;
         }
 
@@ -119,7 +119,7 @@ namespace SmartStore.Services.Orders
 
             DateTime nowDt = _dateTimeHelper.ConvertToUserTime(DateTime.Now);
             TimeZoneInfo timeZone = _dateTimeHelper.CurrentTimeZone;
-			var orderStatusId = new int[] { (int)os };
+            var orderStatusId = new int[] { (int)os };
 
             //today
             DateTime t1 = new DateTime(nowDt.Year, nowDt.Month, nowDt.Day);
@@ -127,7 +127,7 @@ namespace SmartStore.Services.Orders
             {
                 DateTime? startTime1 = _dateTimeHelper.ConvertToUtcTime(t1, timeZone);
                 DateTime? endTime1 = null;
-				var todayResult = GetOrderAverageReportLine(storeId, orderStatusId, null, null, startTime1, endTime1, null);
+                var todayResult = GetOrderAverageReportLine(storeId, orderStatusId, null, null, startTime1, endTime1, null);
                 item.SumTodayOrders = todayResult.SumOrders;
                 item.CountTodayOrders = todayResult.CountOrders;
             }
@@ -139,7 +139,7 @@ namespace SmartStore.Services.Orders
             {
                 DateTime? startTime2 = _dateTimeHelper.ConvertToUtcTime(t2, timeZone);
                 DateTime? endTime2 = null;
-				var weekResult = GetOrderAverageReportLine(storeId, orderStatusId, null, null, startTime2, endTime2, null);
+                var weekResult = GetOrderAverageReportLine(storeId, orderStatusId, null, null, startTime2, endTime2, null);
                 item.SumThisWeekOrders = weekResult.SumOrders;
                 item.CountThisWeekOrders = weekResult.CountOrders;
             }
@@ -149,7 +149,7 @@ namespace SmartStore.Services.Orders
             {
                 DateTime? startTime3 = _dateTimeHelper.ConvertToUtcTime(t3, timeZone);
                 DateTime? endTime3 = null;
-				var monthResult = GetOrderAverageReportLine(storeId, orderStatusId, null, null, startTime3, endTime3, null);
+                var monthResult = GetOrderAverageReportLine(storeId, orderStatusId, null, null, startTime3, endTime3, null);
                 item.SumThisMonthOrders = monthResult.SumOrders;
                 item.CountThisMonthOrders = monthResult.CountOrders;
             }
@@ -159,14 +159,14 @@ namespace SmartStore.Services.Orders
             {
                 DateTime? startTime4 = _dateTimeHelper.ConvertToUtcTime(t4, timeZone);
                 DateTime? endTime4 = null;
-				var yearResult = GetOrderAverageReportLine(storeId, orderStatusId, null, null, startTime4, endTime4, null);
+                var yearResult = GetOrderAverageReportLine(storeId, orderStatusId, null, null, startTime4, endTime4, null);
                 item.SumThisYearOrders = yearResult.SumOrders;
                 item.CountThisYearOrders = yearResult.CountOrders;
             }
             //all time
             DateTime? startTime5 = null;
             DateTime? endTime5 = null;
-			var allTimeResult = GetOrderAverageReportLine(storeId, orderStatusId, null, null, startTime5, endTime5, null);
+            var allTimeResult = GetOrderAverageReportLine(storeId, orderStatusId, null, null, startTime5, endTime5, null);
             item.SumAllTimeOrders = allTimeResult.SumOrders;
             item.CountAllTimeOrders = allTimeResult.CountOrders;
 
@@ -187,9 +187,9 @@ namespace SmartStore.Services.Orders
         /// <param name="orderBy">1 - order by quantity, 2 - order by total amount</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Result</returns>
-		public virtual IList<BestsellersReportLine> BestSellersReport(int storeId, 
-			DateTime? startTime, DateTime? endTime,
-			OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
+		public virtual IList<BestsellersReportLine> BestSellersReport(int storeId,
+            DateTime? startTime, DateTime? endTime,
+            OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
             int billingCountryId = 0,
             int recordsToReturn = 5, int orderBy = 1, bool showHidden = false)
         {
@@ -209,8 +209,8 @@ namespace SmartStore.Services.Orders
             var query1 = from orderItem in _orderItemRepository.Table
                          join o in _orderRepository.Table on orderItem.OrderId equals o.Id
                          join p in _productRepository.Table on orderItem.ProductId equals p.Id
-						 where (storeId == 0 || storeId == o.StoreId) &&
-						 (!startTime.HasValue || startTime.Value <= o.CreatedOnUtc) &&
+                         where (storeId == 0 || storeId == o.StoreId) &&
+                         (!startTime.HasValue || startTime.Value <= o.CreatedOnUtc) &&
                          (!endTime.HasValue || endTime.Value >= o.CreatedOnUtc) &&
                          (!orderStatusId.HasValue || orderStatusId == o.OrderStatusId) &&
                          (!paymentStatusId.HasValue || paymentStatusId == o.PaymentStatusId) &&
@@ -221,7 +221,7 @@ namespace SmartStore.Services.Orders
                          (showHidden || p.Published)
                          select orderItem;
 
-            var query2 = 
+            var query2 =
                 //group by products
                 from orderItem in query1
                 group orderItem by orderItem.ProductId into g
@@ -236,7 +236,7 @@ namespace SmartStore.Services.Orders
             {
                 case 1:
                     {
-                        query2 = query2.OrderByDescending(x => x.TotalQuantity);
+                        query2 = query2.OrderByDescending(x => x.TotalQuantity).ThenByDescending(x => x.TotalAmount);
                     }
                     break;
                 case 2:
@@ -269,34 +269,34 @@ namespace SmartStore.Services.Orders
         {
             if (productId == 0)
                 throw new ArgumentException("Product ID is not specified");
-            
+
             var query = from orderItem in _orderItemRepository.Table
                         where orderItem.ProductId == productId
                         group orderItem by orderItem.Id into g
                         select new { ProductsPurchased = g.Sum(x => x.Quantity) };
-           
+
             return query.Select(x => x.ProductsPurchased).FirstOrDefault();
         }
-        
+
         public virtual int[] GetAlsoPurchasedProductsIds(int storeId, int productId, int recordsToReturn = 5, bool showHidden = false)
         {
             if (productId == 0)
                 throw new ArgumentException("Product ID is not specified");
 
             //this inner query should retrieve all orders that have contained the productID
-			var query1 = from orderItem in _orderItemRepository.Table
-						 where orderItem.ProductId == productId
-						 select orderItem.OrderId;
+            var query1 = from orderItem in _orderItemRepository.Table
+                         where orderItem.ProductId == productId
+                         select orderItem.OrderId;
 
             var query2 = from orderItem in _orderItemRepository.Table
                          join p in _productRepository.Table on orderItem.ProductId equals p.Id
                          where (query1.Contains(orderItem.OrderId)) &&
                          (p.Id != productId) &&
                          (showHidden || p.Published) &&
-						 (!orderItem.Order.Deleted) &&
-						 (storeId == 0 || orderItem.Order.StoreId == storeId) &&
+                         (!orderItem.Order.Deleted) &&
+                         (storeId == 0 || orderItem.Order.StoreId == storeId) &&
                          (!p.Deleted) && (!p.IsSystemProduct) &&
-						 (showHidden || p.Published)
+                         (showHidden || p.Published)
                          select new { orderItem = orderItem, p };
 
             var query3 = from orderItem_p in query2
@@ -308,16 +308,16 @@ namespace SmartStore.Services.Orders
                          };
             query3 = query3.OrderByDescending(x => x.ProductsPurchased);
 
-			if (recordsToReturn > 0)
-				query3 = query3.Take(() => recordsToReturn);
+            if (recordsToReturn > 0)
+                query3 = query3.Take(() => recordsToReturn);
 
-			var report = query3.ToList();
+            var report = query3.ToList();
 
-			var ids = new List<int>();
-			foreach (var line in report)
-				ids.Add(line.ProductId);
+            var ids = new List<int>();
+            foreach (var line in report)
+                ids.Add(line.ProductId);
 
-			return ids.ToArray();
+            return ids.ToArray();
         }
 
         /// <summary>
@@ -332,10 +332,10 @@ namespace SmartStore.Services.Orders
         public virtual IPagedList<Product> ProductsNeverSold(DateTime? startTime,
             DateTime? endTime, int pageIndex, int pageSize, bool showHidden = false)
         {
-			var groupedProductId = (int)ProductType.GroupedProduct;
+            var groupedProductId = (int)ProductType.GroupedProduct;
 
-			// This inner query should retrieve all purchased order product varint identifiers.
-			var query1 = (from orderItem in _orderItemRepository.Table
+            // This inner query should retrieve all purchased order product varint identifiers.
+            var query1 = (from orderItem in _orderItemRepository.Table
                           join o in _orderRepository.Table on orderItem.OrderId equals o.Id
                           where (!startTime.HasValue || startTime.Value <= o.CreatedOnUtc) &&
                                 (!endTime.HasValue || endTime.Value >= o.CreatedOnUtc) &&
@@ -344,14 +344,14 @@ namespace SmartStore.Services.Orders
 
             var query2 = from p in _productRepository.Table
                          where !query1.Contains(p.Id) &&
-								p.ProductTypeId != groupedProductId &&
-							   !p.Deleted &&
+                                p.ProductTypeId != groupedProductId &&
+                               !p.Deleted &&
                                (showHidden || p.Published)
-						 orderby p.Name
-						 select p;
+                         orderby p.Name
+                         select p;
 
-			var products = new PagedList<Product>(query2, pageIndex, pageSize);
-			return products;
+            var products = new PagedList<Product>(query2, pageIndex, pageSize);
+            return products;
         }
 
         /// <summary>
@@ -366,38 +366,38 @@ namespace SmartStore.Services.Orders
         /// <param name="billingEmail">Billing email. Leave empty to load all records.</param>
         /// <returns>Result</returns>
 		public virtual decimal ProfitReport(int storeId, int[] orderStatusIds, int[] paymentStatusIds, int[] shippingStatusIds,
-			DateTime? startTimeUtc, DateTime? endTimeUtc, string billingEmail)
+            DateTime? startTimeUtc, DateTime? endTimeUtc, string billingEmail)
         {
             //We cannot use String.IsNullOrEmpty(billingEmail) in SQL Compact
             bool dontSearchEmail = String.IsNullOrEmpty(billingEmail);
 
-			var orders =
-				from o in _orderRepository.Table
-				where (storeId == 0 || storeId == o.StoreId) &&
-					(!startTimeUtc.HasValue || startTimeUtc.Value <= o.CreatedOnUtc) &&
-					(!endTimeUtc.HasValue || endTimeUtc.Value >= o.CreatedOnUtc) &&
-					(!o.Deleted) &&
-					(dontSearchEmail || (o.BillingAddress != null && !String.IsNullOrEmpty(o.BillingAddress.Email) && o.BillingAddress.Email.Contains(billingEmail)))
-				select o;
+            var orders =
+                from o in _orderRepository.Table
+                where (storeId == 0 || storeId == o.StoreId) &&
+                    (!startTimeUtc.HasValue || startTimeUtc.Value <= o.CreatedOnUtc) &&
+                    (!endTimeUtc.HasValue || endTimeUtc.Value >= o.CreatedOnUtc) &&
+                    (!o.Deleted) &&
+                    (dontSearchEmail || (o.BillingAddress != null && !String.IsNullOrEmpty(o.BillingAddress.Email) && o.BillingAddress.Email.Contains(billingEmail)))
+                select o;
 
-			if (orderStatusIds != null && orderStatusIds.Count() > 0)
-				orders = orders.Where(x => orderStatusIds.Contains(x.OrderStatusId));
+            if (orderStatusIds != null && orderStatusIds.Count() > 0)
+                orders = orders.Where(x => orderStatusIds.Contains(x.OrderStatusId));
 
-			if (paymentStatusIds != null && paymentStatusIds.Count() > 0)
-				orders = orders.Where(x => paymentStatusIds.Contains(x.PaymentStatusId));
+            if (paymentStatusIds != null && paymentStatusIds.Count() > 0)
+                orders = orders.Where(x => paymentStatusIds.Contains(x.PaymentStatusId));
 
-			if (shippingStatusIds != null && shippingStatusIds.Count() > 0)
-				orders = orders.Where(x => shippingStatusIds.Contains(x.ShippingStatusId));
+            if (shippingStatusIds != null && shippingStatusIds.Count() > 0)
+                orders = orders.Where(x => shippingStatusIds.Contains(x.ShippingStatusId));
 
-			var query =
-				from orderItem in _orderItemRepository.Table
-				join o in orders on orderItem.OrderId equals o.Id
-				select orderItem;
+            var query =
+                from orderItem in _orderItemRepository.Table
+                join o in orders on orderItem.OrderId equals o.Id
+                select orderItem;
 
-			var productCost = Convert.ToDecimal(query.Sum(orderItem => (decimal?)orderItem.ProductCost * orderItem.Quantity));
+            var productCost = Convert.ToDecimal(query.Sum(orderItem => (decimal?)orderItem.ProductCost * orderItem.Quantity));
 
-			var reportSummary = GetOrderAverageReportLine(storeId, orderStatusIds, paymentStatusIds, shippingStatusIds, startTimeUtc, endTimeUtc, billingEmail);
-			var profit = reportSummary.SumOrders - reportSummary.SumTax - productCost;
+            var reportSummary = GetOrderAverageReportLine(storeId, orderStatusIds, paymentStatusIds, shippingStatusIds, startTimeUtc, endTimeUtc, billingEmail);
+            var profit = reportSummary.SumOrders - reportSummary.SumTax - productCost;
 
             return profit;
         }

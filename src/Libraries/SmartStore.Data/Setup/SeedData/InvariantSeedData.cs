@@ -13797,7 +13797,11 @@ namespace SmartStore.Data.Setup
             {
                 mimeType = "image/png";
             }
-            else if (imageName.EndsWith(".gif"))
+			else if (imageName.EndsWith(".jpg"))
+			{
+				mimeType = "image/jpeg";
+			}
+			else if (imageName.EndsWith(".gif"))
             {
                 mimeType = "image/gif";
             }

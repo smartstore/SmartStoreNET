@@ -2513,6 +2513,8 @@ namespace SmartStore.Admin.Controllers
                 if (product != null)
                 {
                     m.ProductName = product.Name;
+                    var overflow = product.Name.Length > 30 ? product.Name.Length - 30 : 0;
+                    m.ProductDisplayName = overflow > 0 ? product.Name.Substring(0, product.Name.Length - overflow) + "..." : product.Name;
                     m.ProductTypeName = product.GetProductTypeLabel(_localizationService);
                     m.ProductTypeLabelHint = product.ProductTypeLabelHint;
                 }

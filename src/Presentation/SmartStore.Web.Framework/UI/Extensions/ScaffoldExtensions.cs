@@ -41,7 +41,7 @@ namespace SmartStore.Web.Framework.UI
 			return "<# if({0} && {0}.length > 0) {{ #>{1}<# }} #>".FormatInvariant(name, result);
 		}
 
-		public static HelperResult LabeledProductName<T>(this HtmlHelper<T> helper, int id, string name, string typeName, string typeLabelHint)
+		public static HelperResult LabeledProductName<T>(this HtmlHelper<T> helper, int id, string name, string displayName, string typeName, string typeLabelHint)
 		{
 			if (id == 0 && name.IsEmpty())
 				return null;
@@ -51,7 +51,7 @@ namespace SmartStore.Web.Framework.UI
 			if (id != 0)
 			{
 				string url = UrlHelper.GenerateContentUrl("~/Admin/Product/Edit/", helper.ViewContext.RequestContext.HttpContext);
-				namePart = "<a href=\"{0}{1}\" title='{2}'>{2}</a>".FormatInvariant(url, id, helper.Encode(name));
+				namePart = "<a href=\"{0}{1}\" title='{2}'>{3}</a>".FormatInvariant(url, id, name, helper.Encode(displayName));
 			}
 			else
 			{

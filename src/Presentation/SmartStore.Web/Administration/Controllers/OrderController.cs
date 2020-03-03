@@ -2846,12 +2846,12 @@ namespace SmartStore.Admin.Controllers
                     var overflow = customerDisplayName.Length > 30 ? customerDisplayName.Length - 30 : 0;
                     customerDisplayName = overflow > 0 ? customerDisplayName.Substring(0, customerDisplayName.Length - overflow) + "..." : customerDisplayName;
                 }
-                
+
                 model.LatestOrders.Add(
                     new DashboardOrderModel(
                         customer,
                         customerDisplayName,
-                        order.OrderItems.Count,
+                        order.OrderItems.Select(x => x.Quantity).Sum(),
                         _priceFormatter.FormatPrice(order.OrderTotal, true, false),
                         order.CreatedOnUtc.ToString("MM/dd/yyyy H:mm"),
                         order.OrderStatus,

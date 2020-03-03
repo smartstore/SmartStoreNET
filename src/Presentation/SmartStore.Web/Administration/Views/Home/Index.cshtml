@@ -1,6 +1,11 @@
 ﻿@{
     ViewBag.Title = T("Admin.Dashboard").Text;
+    Layout = "_SimpleLayout";
+
 }
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script src="~/Administration/Scripts/gauge.js"></script> @*Bundle this*@
 
 <div class="section-header">
     <div class="title">
@@ -9,35 +14,71 @@
     </div>
 </div>
 
-<div class="dashboard">
-	@{ Html.RenderWidget("admin_dashboard_top"); }
+<div class="dashboard-grid report">
+    @{ Html.RenderWidget("admin_dashboard_top"); }
+    <div class="order-fulfillment">
+        @*@{ Html.RenderAction("OrderFulfillmentReport", "Order"); }*@
+    </div>
+    <div class="incomplete-orders">
+        @*@{ Html.RenderAction("OrderIncompleteReport", "Order"); }*@
 
-	<div class="row">
-		<div class="col-lg-9 col-xl-10">
-			@{ Html.RenderAction("OrderAverageReport", "Order"); }
-			<div class="row">
-				<div class="col-xl-6">
-					@{ Html.RenderAction("BestsellersBriefReportByQuantity", "Order"); }
-				</div>
-				<div class="col-xl-6">
-					@{ Html.RenderAction("BestsellersBriefReportByAmount", "Order"); }
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-xl-6">
-					@{ Html.RenderAction("ReportRegisteredCustomers", "Customer"); }
-				</div>
-				<div class="col-xl-6">
-					@{ Html.RenderAction("OrderIncompleteReport", "Order"); }
-				</div>
-			</div>
-		</div>
+    </div>
+    <div class="sales-chart">
+        @*@{ Html.RenderAction("OrderReport", "Order"); }*@
 
-		<div class="col-lg-3 col-xl-2">
-			@{ Html.RenderAction("MarketplaceFeed"); }
-		</div>
-	</div>
+    </div>
+    <div class="bestsellers">
+        @{ Html.RenderAction("BestsellersDashboardReport", "Order"); }
 
-	@{ Html.RenderWidget("admin_dashboard_bottom"); }
+    </div>
+    <div class="top-customers">
+        @{ Html.RenderAction("BestCustomersReport", "Customer"); }
+
+    </div>
+    <div class="customer-registrations">
+        @*@{ Html.RenderAction("RegisteredCustomersReport", "Customer"); }*@
+    </div>
+    <div class="latest-orders">
+        @*@{ Html.RenderAction("LatestOrdersReport", "Order"); }*@
+    </div>
+    <div class="store-statistics">
+        @*@{ Html.RenderAction("StoreReport", "Customer"); }*@
+    </div>
+    <div class="marketplace-feed">
+        @{ Html.RenderAction("MarketplaceFeed"); }
+    </div>
+
+    @*<div class="row px-3">
+                <div class="col-lg-9 col-xl-10">
+
+                    @{ Html.RenderAction("OrderAverageReport", "Order"); }
+                    <div class="row">
+                        <div class="col-xl-6">
+                            @{ Html.RenderAction("BestsellersBriefReportByQuantity", "Order"); }
+                        </div>
+                        <div class="col-xl-6">
+                            @{ Html.RenderAction("BestsellersBriefReportByAmount", "Order"); }
+                        </div>
+
+
+
+
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6">
+                            @{ Html.RenderAction("ReportRegisteredCustomers", "Customer"); }
+                        </div>
+                       <div class="col-xl-6">
+                                @{ Html.RenderAction("OrderIncompleteReport", "Order"); }
+                            </div>
+                    </div>
+                </div>
+
+            <div class="col-lg-3 col-xl-2 py-3">
+                    @{ Html.RenderAction("MarketplaceFeed"); }
+                </div>
+        </div>*@
+
+    @{ Html.RenderWidget("admin_dashboard_bottom"); }
 </div>
 

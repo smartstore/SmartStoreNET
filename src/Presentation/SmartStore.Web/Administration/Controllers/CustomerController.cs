@@ -37,6 +37,7 @@ using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
+using static SmartStore.Services.Customers.CustomerReportService;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -145,6 +146,12 @@ namespace SmartStore.Admin.Controllers
                 }
             }
             return sb.ToString();
+        }
+
+        [NonAction]
+        public List<RegistredCustomersDate> GetRegisteredCustomersReport()
+        {
+            return _customerReportService.GetRegisteredCustomersDate();
         }
 
         [NonAction]
@@ -1226,7 +1233,7 @@ namespace SmartStore.Admin.Controllers
 
                 NotifySuccess(T("Admin.Customers.Customers.Addresses.Updated"));
 
-                return continueEditing 
+                return continueEditing
                     ? RedirectToAction("AddressEdit", new { addressId = model.Address.Id, customerId = model.CustomerId })
                     : RedirectToAction("Edit", new { id = customer.Id });
             }
@@ -1338,6 +1345,20 @@ namespace SmartStore.Admin.Controllers
 
         #region Reports
 
+
+        [Permission(Permissions.Customer.Read, false)]
+        public ActionResult BestCustomersReport()
+        {
+            var model = new BestCustomersDashboardReportModel()
+            {
+                BestCustomersByAmount = _customerReportService.GetBestCustomersReport(null, null, null, null, null, 1, 7).ToList(),
+                BestCustomersByQuantity = _customerReportService.GetBestCustomersReport(null, null, null, null, null, 2, 7).ToList()
+            };
+
+            return PartialView(model);
+        }
+
+
         [Permission(Permissions.Customer.Read)]
         public ActionResult Reports()
         {
@@ -1372,28 +1393,12 @@ namespace SmartStore.Admin.Controllers
             PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)(model.PaymentStatusId) : null;
             ShippingStatus? shippingStatus = model.ShippingStatusId > 0 ? (ShippingStatus?)(model.ShippingStatusId) : null;
 
-            var items = _customerReportService.GetBestCustomersReport(startDateValue, endDateValue, orderStatus, paymentStatus, shippingStatus, 1);
+            var items = _customerReportService.GetBestCustomersReport(startDateValue, endDateValue, orderStatus, paymentStatus, shippingStatus, 1, 20);
 
-            var gridModel = new GridModel<BestCustomerReportLineModel>
+            var gridModel = new GridModel<BestCustomersReportLineModel>
             {
-                Data = items.Select(x =>
-                {
-                    var m = new BestCustomerReportLineModel()
-                    {
-                        CustomerId = x.CustomerId,
-                        OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
-                        OrderCount = x.OrderCount,
-                    };
-
-                    var customer = _customerService.GetCustomerById(x.CustomerId);
-                    if (customer != null)
-                    {
-                        m.CustomerName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
-                    }
-
-                    return m;
-                }),
-                Total = items.Count
+                Data = items.Select(x => x),
+                Total = items.count
             };
 
             return new JsonResult
@@ -1418,27 +1423,11 @@ namespace SmartStore.Admin.Controllers
             PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)(model.PaymentStatusId) : null;
             ShippingStatus? shippingStatus = model.ShippingStatusId > 0 ? (ShippingStatus?)(model.ShippingStatusId) : null;
 
-            var items = _customerReportService.GetBestCustomersReport(startDateValue, endDateValue, orderStatus, paymentStatus, shippingStatus, 2);
+            var items = _customerReportService.GetBestCustomersReport(startDateValue, endDateValue, orderStatus, paymentStatus, shippingStatus, 2, 20);
 
-            var gridModel = new GridModel<BestCustomerReportLineModel>
+            var gridModel = new GridModel<BestCustomersReportLineModel>
             {
-                Data = items.Select(x =>
-                {
-                    var m = new BestCustomerReportLineModel
-                    {
-                        CustomerId = x.CustomerId,
-                        OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
-                        OrderCount = x.OrderCount,
-                    };
-
-                    var customer = _customerService.GetCustomerById(x.CustomerId);
-                    if (customer != null)
-                    {
-                        m.CustomerName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
-                    }
-
-                    return m;
-                }),
+                Data = items.Select(x => x),
                 Total = items.Count
             };
 
@@ -1453,6 +1442,12 @@ namespace SmartStore.Admin.Controllers
         public ActionResult ReportRegisteredCustomers()
         {
             var model = GetReportRegisteredCustomersModel();
+            //ViewBag.RegistredCustomers = _customerReportService.GetRegisteredCustomersDate();
+            var registredCustomers = _customerReportService.GetRegisteredCustomersDate();
+
+            ViewBag.QuantityArray = registredCustomers.Select(x => x.Count).ToArray();
+            ViewBag.DateArray = registredCustomers.Select(x => x.Date).ToArray();
+
             return PartialView(model);
         }
 

@@ -261,6 +261,7 @@
     <Compile Include="Models\Common\MaintenanceModel.cs" />
     <Compile Include="Models\Common\SystemWarningModel.cs" />
     <Compile Include="Models\Common\SystemInfoModel.cs" />
+    <Compile Include="Models\Customers\BestCustomersDashboardReportModel.cs" />
     <Compile Include="Models\DataExchange\CsvConfigurationModel.cs" />
     <Compile Include="Models\DataExchange\ExportDeploymentModel.cs" />
     <Compile Include="Models\DataExchange\ExportFilterModel.cs" />
@@ -281,6 +282,8 @@
     <Compile Include="Models\Messages\MessageTemplatePreviewModel.cs" />
     <Compile Include="Models\News\NewsItemListModel.cs" />
     <Compile Include="Models\Orders\AutoUpdateOrderItemModel.cs" />
+    <Compile Include="Models\Orders\BestsellersDashboardReportModel.cs" />
+    <Compile Include="Models\Orders\BestsellersReportLineModel.cs" />
     <Compile Include="Models\Orders\CheckoutAttributeListModel.cs" />
     <Compile Include="Models\Orders\ReturnRequestListModel.cs" />
     <Compile Include="Models\Payments\PaymentMethodEditModel.cs" />
@@ -520,6 +523,7 @@
     <Content Include="Scripts\smartstore.download.js" />
     <Content Include="Content\theme-rtl.scss" />
     <Content Include="Content\_rtl.scss" />
+    <Content Include="Content\_dashboard.scss" />
     <None Include="Scripts\_references.js" />
     <Content Include="sitemap.config">
       <SubType>Designer</SubType>
@@ -635,6 +639,8 @@
     <Content Include="Views\Shared\EditorTemplates\RuleSets.cshtml" />
     <Content Include="Views\Shared\Layouts\_SettingLayout.cshtml" />
     <Content Include="Views\Shared\Menus\Settings.cshtml" />
+    <Content Include="Views\Shared\Layouts\_SimpleLayout.cshtml" />
+    <Content Include="Views\Customer\BestCustomersReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />
@@ -1096,6 +1102,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Order\BestsellersBriefReportByAmount.cshtml" />
+    <Content Include="Views\Order\BestsellersDashboardReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Setting\GeneralCommon.cshtml" />

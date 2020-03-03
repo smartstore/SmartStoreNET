@@ -24,16 +24,23 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICommonServices _services;
 		private readonly CommonSettings _commonSettings;
 		private readonly Lazy<IUserAgent> _userAgent;
+        private readonly CustomerController _customerController;
 
         #endregion
 
         #region Ctor
 
-		public HomeController(ICommonServices services, CommonSettings commonSettings, Lazy<IUserAgent> userAgent)
+		public HomeController(
+            ICommonServices services,
+            CommonSettings commonSettings,
+            Lazy<IUserAgent> userAgent,
+            CustomerController customerController
+            )
         {
-            this._commonSettings = commonSettings;
-			this._services = services;
-			this._userAgent = userAgent;
+            _commonSettings = commonSettings;
+			_services = services;
+			_userAgent = userAgent;
+            _customerController = customerController;
         }
 
         #endregion
@@ -147,7 +154,6 @@ namespace SmartStore.Admin.Controllers
 			_services.Settings.SaveSetting(_commonSettings);
             return Content("Setting changed");
         }
-
         #endregion
     }
 }

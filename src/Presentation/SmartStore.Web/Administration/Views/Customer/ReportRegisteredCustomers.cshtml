@@ -1,29 +1,63 @@
 ﻿@model IList<RegisteredCustomerReportLineModel>
 
-<div class="card shadow-sm mb-4">
-	<h6 class="card-header font-weight-medium border-bottom-0">
-		<i class="fa fa-users pr-2"></i>
-		@T("Admin.Customers.Reports.RegisteredCustomers")
-	</h6>
+@{ 
+    var yyy = Newtonsoft.Json.JsonConvert.SerializeObject(Model.OrderBy(x => x.Customers).Select(x => x.Customers).ToArray());
+}
 
-	<div class="table-responsive">
-		<table class="table table-striped m-0">
-			<thead>
-				<tr>
-					<th>@T("Admin.Customers.Reports.RegisteredCustomers.Fields.Period")</th>
-					<th>@T("Admin.Customers.Reports.RegisteredCustomers.Fields.Customers")</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var x in Model)
-				{
-					<tr>
-						<td>@x.Period</td>
-						<td>@x.Customers</td>
-					</tr>
-				}
-			</tbody>
-		</table>
-	</div>
+<script>
+    var data = JSON.parse('@yyy');
+</script>
+
+<div class="card shadow-sm mb-4">
+    <h6 class="card-header font-weight-medium border-bottom-0">
+        <i class="fa fa-users pr-2"></i>
+        @T("Admin.Customers.Reports.RegisteredCustomers")
+    </h6>
+
+    @*<div class="ct-chart-customer ct-perfect-fourth"></div>
+        <script>
+                var quantityArray = @Html.Raw(Json.Encode(ViewBag.QuantityArray));
+                var dateArray = @Html.Raw(Json.Encode(ViewBag.DateArray));
+
+                var data = {
+                    // A labels array that can contain any sort of values
+                    labels: dateArray,
+                    // Our series array that contains series objects or in this case series data arrays
+                    series: [quantityArray],
+                };
+
+                var options = {
+                    fullWidth: true,
+                    showArea: true,
+                    axisY: {
+                        onlyInteger: true,
+                    },
+                }
+
+                // Create a new line chart object where as first parameter we pass in a selector
+                // that is resolving to our chart container element. The Second parameter
+                // is the actual data object.
+                new Chartist.Line('.ct-chart-customer', data, options);
+        </script>*@
+
+    <div class="table-responsive">
+            <table class="table table-striped m-0">
+                <thead>
+                    <tr>
+                        <th>@T("Admin.Customers.Reports.RegisteredCustomers.Fields.Period")</th>
+                        <th>@T("Admin.Customers.Reports.RegisteredCustomers.Fields.Customers")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var x in Model)
+                    {
+                        <tr>
+                            <td>@x.Period</td>
+                            <td>@x.Customers</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
 </div>
 

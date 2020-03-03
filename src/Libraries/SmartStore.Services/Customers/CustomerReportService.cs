@@ -8,6 +8,10 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Services.Helpers;
+using System.Diagnostics;
+using SmartStore.Admin.Models.Customers;
+using SmartStore.Services.Catalog;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Services.Customers
 {
@@ -22,11 +26,12 @@ namespace SmartStore.Services.Customers
         private readonly IRepository<Order> _orderRepository;
         private readonly ICustomerService _customerService;
         private readonly IDateTimeHelper _dateTimeHelper;
-        
+        private readonly IPriceFormatter _priceFormatter;
+    
         #endregion
 
         #region Ctor
-        
+
         /// <summary>
         /// Ctor
         /// </summary>
@@ -36,15 +41,23 @@ namespace SmartStore.Services.Customers
         /// <param name="dateTimeHelper">Date time helper</param>
         public CustomerReportService(IRepository<Customer> customerRepository,
             IRepository<Order> orderRepository, ICustomerService customerService,
-            IDateTimeHelper dateTimeHelper)
+            IDateTimeHelper dateTimeHelper, IPriceFormatter priceFormatter)
         {
-            this._customerRepository = customerRepository;
-            this._orderRepository = orderRepository;
-            this._customerService = customerService;
-            this._dateTimeHelper = dateTimeHelper;
+            _customerRepository = customerRepository;
+            _orderRepository = orderRepository;
+            _customerService = customerService;
+            _dateTimeHelper = dateTimeHelper;
+            _priceFormatter = priceFormatter;
         }
 
         #endregion
+
+        public Localizer T
+        {
+            get;
+            set;
+        } = NullLocalizer.Instance;
+
 
         #region Methods
 
@@ -58,8 +71,8 @@ namespace SmartStore.Services.Customers
         /// <param name="ss">Order shippment status; null to load all records</param>
         /// <param name="orderBy">1 - order by order total, 2 - order by number of orders</param>
         /// <returns>Report</returns>
-        public virtual IList<BestCustomerReportLine> GetBestCustomersReport(DateTime? startTime,
-            DateTime? endTime, OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss, int orderBy)
+        public virtual IList<BestCustomersReportLineModel> GetBestCustomersReport(DateTime? startTime,
+            DateTime? endTime, OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss, int orderBy, int count)
         {
             int? orderStatusId = null;
             if (os.HasValue)
@@ -107,18 +120,26 @@ namespace SmartStore.Services.Customers
                     throw new ArgumentException("Wrong orderBy parameter", "orderBy");
             }
 
-            // load 20 customers
-            query2 = query2.Take(() => 20);
+            query2 = query2.Take(() => count);
 
             var result = query2.ToList().Select(x =>
             {
-                return new BestCustomerReportLine()
+                var m = new BestCustomersReportLineModel()
                 {
                     CustomerId = x.CustomerId,
-                    OrderTotal = x.OrderTotal,
-                    OrderCount = x.OrderCount
+                    OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
+                    OrderCount = x.OrderCount,
                 };
+
+                var customer = _customerService.GetCustomerById(x.CustomerId);
+                if (customer != null)
+                {
+                    m.CustomerName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
+                }
+                return m;
+
             }).ToList();
+
             return result;
         }
 
@@ -139,13 +160,64 @@ namespace SmartStore.Services.Customers
                         from cr in c.CustomerRoles
                         where !c.Deleted &&
                         cr.Id == registeredCustomerRole.Id &&
-                        c.CreatedOnUtc >= date 
+                        c.CreatedOnUtc >= date
                         //&& c.CreatedOnUtc <= DateTime.UtcNow
                         select c;
             int count = query.Count();
             return count;
         }
 
+        public List<RegistredCustomersDate> GetRegisteredCustomersDate()
+        {
+            //Get registred customers in last 365 days, group by day and count them 
+            var date = _dateTimeHelper.ConvertToUserTime(DateTime.Now).AddDays(-365);
+
+            var registeredCustomerRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered);
+            if (registeredCustomerRole == null)
+                return new List<RegistredCustomersDate>();
+
+            var query = from c in _customerRepository.Table
+                        from cr in c.CustomerRoles
+                        where !c.Deleted &&
+                        cr.Id == registeredCustomerRole.Id &&
+                        c.CreatedOnUtc >= date
+                        group c.CreatedOnUtc by DbFunctions.TruncateTime(c.CreatedOnUtc) into dg
+                        select new { Date = (DateTime)dg.Key, Count = dg.Count() };
+
+            var data = new List<RegistredCustomersDate>();
+            data.Add(new RegistredCustomersDate(DateTime.Now.AddDays(-760).ToString("MM/dd/yyyy"), 0));
+            foreach (var item in query.ToList())
+            {
+                data.Add(new RegistredCustomersDate(item.Date.ToString("MM/dd/yyyy"), item.Count));
+            }
+
+
+            return data;
+        }
+
+        public struct RegistredCustomersDate
+        {
+            public string Date { get; set; }
+            public int Count { get; set; }
+
+            public RegistredCustomersDate(string date, int count)
+            {
+                Date = date;
+                Count = count;
+            }
+        }
+
+        public struct customerCountDay
+        {
+            public int Key { get; set; }
+            public int Value { get; set; }
+
+            public customerCountDay(int key, int value)
+            {
+                Key = key;
+                Value = value;
+            }
+        };
         #endregion
     }
 }

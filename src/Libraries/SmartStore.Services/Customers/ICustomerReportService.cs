@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using SmartStore.Admin.Models.Customers;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
+using static SmartStore.Services.Customers.CustomerReportService;
 
 namespace SmartStore.Services.Customers
 {
@@ -22,8 +24,7 @@ namespace SmartStore.Services.Customers
         /// <param name="ss">Order shippment status; null to load all records</param>
         /// <param name="orderBy">1 - order by order total, 2 - order by number of orders</param>
         /// <returns>Report</returns>
-        IList<BestCustomerReportLine> GetBestCustomersReport(DateTime? startTime,
-            DateTime? endTime, OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss, int orderBy);
+        IList<BestCustomerReportLine> GetBestCustomersReport(DateTime? startTime, DateTime? endTime, OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss, int orderBy, int count);
         
         /// <summary>
         /// Gets a report of customers registered in the last days
@@ -31,5 +32,6 @@ namespace SmartStore.Services.Customers
         /// <param name="days">Customers registered in the last days</param>
         /// <returns>Number of registered customers</returns>
         int GetRegisteredCustomersReport(int days);
+        List<RegistredCustomersDate> GetRegisteredCustomersDate();
     }
 }

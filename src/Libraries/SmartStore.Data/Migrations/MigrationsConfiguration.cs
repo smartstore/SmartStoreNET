@@ -498,6 +498,9 @@
 
             builder.AddOrUpdate("Admin.Media.Album.Message", "Messages", "Nachrichten");
             builder.AddOrUpdate("Admin.Media.Album.File", "Files", "Dateien");
+
+            builder.AddOrUpdate("Admin.SalesReport.LatestOrders", "Latest orders", "Neuste Bestellungen");
+
         }
     }
 }

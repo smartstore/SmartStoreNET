@@ -1,0 +1,72 @@
+﻿@model LatestOrdersDashboardReportModel
+@using SmartStore.Core.Domain.Orders
+
+<div class="bg-white rounded-lg shadow">
+    <div class="px-3 py-2">
+        <div class="font-weight-medium p-0 title-report">
+            <i class="fa fa-shopping-cart pr-2"></i>
+            @T("Admin.SalesReport.LatestOrders")
+        </div>
+    </div>
+
+
+    <div class="table-responsive">
+        <table class="table table-striped m-0">
+            <thead>
+                <tr>
+                    <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
+                    <th class="display-row row-number">@T("Admin.Catalog.Categories.Products")</th>
+                    <th class="display-row row-money">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
+                    <th class="display-row">@T("Account.CustomerOrders.OrderDate")</th>
+                    <th class="display-row">@T("Account.CustomerOrders.OrderStatus	")</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var x in Model.LatestOrders)
+                {
+                    <tr class="clickable order-row" index="@x.OrderId">
+                        @*<td class="display-row">
+                                @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductDisplayName, x.ProductTypeName, x.ProductTypeLabelHint)
+                            </td>*@
+                        <td class="display-row">
+                            @Html.ActionLink(x.CustomerDisplayName, "Edit", "Customer", new { id = x.Customer.Id }, new { })
+                        </td>
+                        <td class="display-row row-number">
+                            <a href="/Admin/Order/Edit/@x.OrderId">@x.ProductsTotal</a>
+                        </td>
+                        <td class="display-row row-money">@x.TotalAmount</td>
+                        <td class="display-row">@x.Created</td>
+
+                        @if (x.OrderState == OrderStatus.Pending)
+                        {
+                            <td class="display-row text-warning">@x.OrderState</td>
+                        }
+                        else if (x.OrderState == OrderStatus.Processing)
+                        {
+                            <td class="display-row text-gray">@x.OrderState</td>
+                        }
+                        else if (x.OrderState == OrderStatus.Complete)
+                        {
+                            <td class="display-row text-success">@x.OrderState</td>
+                        }
+                        else if (x.OrderState == OrderStatus.Cancelled)
+                        {
+                            <td class="display-row text-danger">@x.OrderState</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    $(".order-row").on("click", function ($element) {
+        window.location = "/Admin/Order/Edit/" + $(this).attr('index');
+    });
+</script>
+<style>
+    .clickable:hover{
+        cursor: pointer;
+    }
+</style>

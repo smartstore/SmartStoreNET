@@ -2829,6 +2829,39 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
+        [Permission(Permissions.Order.Read, false)]
+        public ActionResult LatestOrdersDashboardReport()
+        {
+            var model = new LatestOrdersDashboardReportModel();
+
+            var latestOrders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue).Take(7).ToList();
+            foreach (var order in latestOrders)
+            {
+                var customerDisplayName = "";
+                var customer = _customerService.GetCustomerById(order.CustomerId);
+                if (customer != null)
+                {
+                    customerDisplayName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
+
+                    var overflow = customerDisplayName.Length > 30 ? customerDisplayName.Length - 30 : 0;
+                    customerDisplayName = overflow > 0 ? customerDisplayName.Substring(0, customerDisplayName.Length - overflow) + "..." : customerDisplayName;
+                }
+                
+                model.LatestOrders.Add(
+                    new DashboardOrderModel(
+                        customer,
+                        customerDisplayName,
+                        order.OrderItems.Count,
+                        _priceFormatter.FormatPrice(order.OrderTotal, true, false),
+                        order.CreatedOnUtc.ToString("MM/dd/yyyy H:mm"),
+                        order.OrderStatus,
+                        order.Id)
+                    );
+            }
+
+            return PartialView(model);
+        }
+
         #endregion
     }
 }

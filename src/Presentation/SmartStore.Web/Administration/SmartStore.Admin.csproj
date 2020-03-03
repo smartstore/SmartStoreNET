@@ -300,6 +300,7 @@
     <Compile Include="Models\Settings\PaymentSettingsModel.cs" />
     <Compile Include="Models\Settings\SearchSettingsModel.cs" />
     <Compile Include="Models\Settings\DataExchangeSettingsModel.cs" />
+    <Compile Include="Models\Stores\StoreDashboardReportModel.cs" />
     <Compile Include="Models\Tasks\ScheduleTaskHistoryModel.cs" />
     <Compile Include="Models\UrlRecord\UrlRecordListModel.cs" />
     <Compile Include="Models\UrlRecord\UrlRecordModel.cs" />
@@ -642,6 +643,7 @@
     <Content Include="Views\Shared\Layouts\_SimpleLayout.cshtml" />
     <Content Include="Views\Customer\TopCustomersDashboardReport.cshtml" />
     <Content Include="Views\Order\LatestOrdersDashboardReport.cshtml" />
+    <Content Include="Views\Store\StoreDashboardReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

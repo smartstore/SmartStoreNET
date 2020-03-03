@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
+using SmartStore.Admin.Models.Store;
 using SmartStore.Admin.Models.Stores;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Security;
@@ -56,6 +57,8 @@ namespace SmartStore.Admin.Controllers
 
             return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
+
+        #region list
 
         [Permission(Permissions.Configuration.Store.Read)]
 		public ActionResult List()
@@ -210,5 +213,18 @@ namespace SmartStore.Admin.Controllers
 
 			return RedirectToAction("Edit", new { id = store.Id });
 		}
-	}
+
+        #endregion
+
+        [Permission(Permissions.Customer.Read, false)]
+        public ActionResult StoreDashboardReport()
+        {
+            var model = new StoreDashboardReportModel();
+
+            model.StoreStatisticsReport.Add("Produkte", 128372);
+
+            return PartialView(model);
+
+        }
+    }
 }

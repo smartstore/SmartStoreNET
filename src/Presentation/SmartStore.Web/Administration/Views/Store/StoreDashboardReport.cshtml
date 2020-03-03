@@ -1,0 +1,32 @@
+﻿@model StoreDashboardReportModel
+@using SmartStore.Admin.Models.Store
+
+<div class="bg-white rounded-lg shadow">
+    <div class="px-3 py-2">
+        <div class="font-weight-medium p-0 title-report">
+            <i class="fa fa-chart-line pr-2"></i>
+            @T("Admin.SalesReport.StoreStatistics")
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped m-0">
+            <thead>
+                <tr>
+                    <th class="display-row">@T("Field")</th>
+                    <th class="display-row row-right">@T("Number")</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.StoreStatisticsReport)
+                {
+                <tr>
+                    <td class="display-row">@Html.LabelFor(model => item.Key)</td>
+                    <td class="display-row row-right">@Html.LabelFor(model => item.Value)</td>
+
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

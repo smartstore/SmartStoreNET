@@ -1,25 +1,41 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Events;
 using SmartStore.Core.IO;
+using SmartStore.Core.Domain.Configuration;
+using SmartStore.Core.Data.Hooks;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Media
 {
-    public partial class MediaTypeResolver : IMediaTypeResolver
+    public partial class MediaTypeResolver : DbSaveHook<Setting>, IMediaTypeResolver
     {
-        private readonly MediaSettings _mediaSettings;
-        private IDictionary<string, MediaType> _map;
+        const string MapCacheKey = "media:exttypemap";
         
-        public MediaTypeResolver(MediaSettings mediaSettings)
+        private readonly ICacheManager _cache;
+        private readonly Lazy<MediaSettings> _mediaSettings;
+
+        private static HashSet<string> _mapInvalidatorSettingKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
+            TypeHelper.NameOf<MediaSettings>(x => x.ImageTypes, true),
+            TypeHelper.NameOf<MediaSettings>(x => x.VideoTypes, true),
+            TypeHelper.NameOf<MediaSettings>(x => x.AudioTypes, true),
+            TypeHelper.NameOf<MediaSettings>(x => x.DocumentTypes, true),
+            TypeHelper.NameOf<MediaSettings>(x => x.TextTypes, true)
+        };
+        
+        public MediaTypeResolver(ICacheManager cache, Lazy<MediaSettings> mediaSettings)
+        {
+            _cache = cache;
             _mediaSettings = mediaSettings;
         }
 
         public MediaType Resolve(MediaFile file)
         {
             Guard.NotNull(file, nameof(file));
-
-            EnsureMap();
 
             var extension = file.Extension;
 
@@ -28,9 +44,11 @@ namespace SmartStore.Services.Media
                 extension = MimeTypes.MapMimeTypeToExtension(file.MimeType);
             }
 
-            if (extension.HasValue() && _map.TryGetValue(file.Extension, out var mediaType))
+            var map = GetExtensionMediaTypeMap();
+
+            if (extension.HasValue() && map.TryGetValue(file.Extension.ToLower(), out var mediaType))
             {
-                return mediaType;
+                return (MediaType)mediaType;
             }
 
             // Get first mime token (e.g. IMAGE/png, VIDEO/mp4 etc.)
@@ -39,32 +57,49 @@ namespace SmartStore.Services.Media
             return MediaType.GetMediaType(type) ?? MediaType.Binary;
         }
 
-        private void EnsureMap()
+        private Dictionary<string, string> GetExtensionMediaTypeMap()
         {
-            if (_map != null)
-                return;
-            
-            _map = new Dictionary<string, MediaType>(StringComparer.OrdinalIgnoreCase);
-
-            AddExtensionsToMap(_mediaSettings.ImageTypes, MediaType.Image);
-            AddExtensionsToMap(_mediaSettings.VideoTypes, MediaType.Video);
-            AddExtensionsToMap(_mediaSettings.AudioTypes, MediaType.Audio);
-            AddExtensionsToMap(_mediaSettings.DocumentTypes, MediaType.Document);
-            AddExtensionsToMap(_mediaSettings.TextTypes, MediaType.Text);
-
-            void AddExtensionsToMap(string extensions, MediaType forType)
+            return _cache.Get(MapCacheKey, () => 
             {
-                var arr = extensions.EmptyNull()
-                    .Replace(Environment.NewLine, " ")
-                    .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                var mediaSettings = _mediaSettings.Value;
+                var map = new Dictionary<string, string>();
 
-                if (arr.Length == 0)
+                AddExtensionsToMap(mediaSettings.ImageTypes, MediaType.Image);
+                AddExtensionsToMap(mediaSettings.VideoTypes, MediaType.Video);
+                AddExtensionsToMap(mediaSettings.AudioTypes, MediaType.Audio);
+                AddExtensionsToMap(mediaSettings.DocumentTypes, MediaType.Document);
+                AddExtensionsToMap(mediaSettings.TextTypes, MediaType.Text);
+
+                return map;
+
+                void AddExtensionsToMap(string extensions, MediaType forType)
                 {
-                    arr = forType.DefaultExtensions;
-                }
+                    var arr = extensions.EmptyNull()
+                        .Replace(Environment.NewLine, " ")
+                        .ToLower()
+                        .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                arr.Each(x => _map[x] = forType);
+                    if (arr.Length == 0)
+                    {
+                        arr = forType.DefaultExtensions;
+                    }
+
+                    arr.Each(x => map[x] = forType.Name);
+                }
+            });
+        }
+
+        #region Invalidation Hook
+
+        public override void OnAfterSave(IHookedEntity entry)
+        {
+            var setting = entry.Entity as Setting;
+            if (_mapInvalidatorSettingKeys.Contains(setting.Name))
+            {
+                _cache.Remove(MapCacheKey);
             }
         }
+
+        #endregion
     }
 }

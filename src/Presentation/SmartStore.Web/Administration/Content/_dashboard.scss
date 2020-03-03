@@ -6,6 +6,10 @@
     grid-row-gap: 2rem;
 }
 
+.clickable:hover {
+    cursor: pointer;
+}
+
 .report {
     // Global
     .title-report {
@@ -41,11 +45,11 @@
         .display-row {
             padding: 8px 16px;
 
-            &.row-number {
+            &.row-center {
                 text-align: center;
             }
 
-            &.row-money {
+            &.row-right {
                 text-align: end;
             }
         }

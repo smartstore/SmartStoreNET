@@ -15,8 +15,8 @@
             <thead>
                 <tr>
                     <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
-                    <th class="display-row row-number">@T("Admin.Catalog.Categories.Products")</th>
-                    <th class="display-row row-money">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
+                    <th class="display-row row-center">@T("Admin.Catalog.Categories.Products")</th>
+                    <th class="display-row row-right">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
                     <th class="display-row">@T("Account.CustomerOrders.OrderDate")</th>
                     <th class="display-row">@T("Account.CustomerOrders.OrderStatus	")</th>
                 </tr>
@@ -31,10 +31,10 @@
                         <td class="display-row">
                             @Html.ActionLink(x.CustomerDisplayName, "Edit", "Customer", new { id = x.Customer.Id }, new { })
                         </td>
-                        <td class="display-row row-number">
+                        <td class="display-row row-center">
                             <a href="/Admin/Order/Edit/@x.OrderId">@x.ProductsTotal</a>
                         </td>
-                        <td class="display-row row-money">@x.TotalAmount</td>
+                        <td class="display-row row-right">@x.TotalAmount</td>
                         <td class="display-row">@x.Created</td>
 
                         @if (x.OrderState == OrderStatus.Pending)
@@ -65,8 +65,3 @@
         window.location = "/Admin/Order/Edit/" + $(this).attr('index');
     });
 </script>
-<style>
-    .clickable:hover{
-        cursor: pointer;
-    }
-</style>

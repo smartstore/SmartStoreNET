@@ -22,8 +22,8 @@
                     <thead>
                         <tr>
                             <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
-                            <th class="display-row row-number">@T("Admin.Customers.Reports.BestBy.Fields.OrderCount")</th>
-                            <th class="display-row row-money">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
+                            <th class="display-row row-center">@T("Admin.Customers.Reports.BestBy.Fields.OrderCount")</th>
+                            <th class="display-row row-right">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -33,8 +33,8 @@
                                 <td class="display-row">
                                     @Html.ActionLink(x.DisplayName, "Edit", "Customer", new { id = x.CustomerId }, new { })
                                 </td>
-                                <td class="display-row row-number">@x.OrderCount</td>
-                                <td class="display-row row-money font-weight-500">@x.OrderTotal</td>
+                                <td class="display-row row-center">@x.OrderCount</td>
+                                <td class="display-row row-right font-weight-500">@x.OrderTotal</td>
                             </tr>
                         }
                     </tbody>
@@ -47,8 +47,8 @@
                     <thead>
                         <tr>
                             <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
-                            <th class="display-row row-number">@T("Admin.Customers.Reports.BestBy.Fields.OrderCount")</th>
-                            <th class="display-row row-money">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
+                            <th class="display-row row-center">@T("Admin.Customers.Reports.BestBy.Fields.OrderCount")</th>
+                            <th class="display-row row-right">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -59,8 +59,8 @@
                                     @Html.ActionLink(x.DisplayName, "Edit", "Customer", new { id = x.CustomerId }, new { })
                                 </td>
 
-                                <td class="display-row row-number font-weight-500">@x.OrderCount</td>
-                                <td class="display-row row-money">@x.OrderTotal</td>
+                                <td class="display-row row-center font-weight-500">@x.OrderCount</td>
+                                <td class="display-row row-right">@x.OrderTotal</td>
                             </tr>
                         }
                     </tbody>

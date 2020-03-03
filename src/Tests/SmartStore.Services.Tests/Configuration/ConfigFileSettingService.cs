@@ -59,7 +59,7 @@ namespace SmartStore.Services.Tests.Configuration
             throw new InvalidOperationException("Deleting settings is not supported.");
         }
 
-		public override void SetSetting<T>(string key, T value, int storeId = 0, bool clearCache = true)
+        public override SaveSettingResult SetSetting<T>(string key, T value, int storeId = 0, bool clearCache = true)
         {
             throw new NotImplementedException();
         }

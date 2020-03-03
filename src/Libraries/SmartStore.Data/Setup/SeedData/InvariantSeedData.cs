@@ -30,6 +30,7 @@ using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Domain.Topics;
+using SmartStore.Core.IO;
 using SmartStore.Utilities;
 
 namespace SmartStore.Data.Setup
@@ -58,17 +59,15 @@ namespace SmartStore.Data.Setup
 		{
 			var entities = new List<MediaFile>
 			{
-				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "company_logo.png"), "image/png", GetSeName("company-logo")),
-
-				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_charcoal.jpg"), "image/jpeg", "all-star-charcoal"),
-				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_maroon.jpg"), "image/jpeg", "all-star-maroon"),
-				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_navy.jpg"), "image/jpeg", "all-star-navy"),
-				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_purple.jpg"), "image/jpeg", "all-star-purple"),
-				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_white.jpg"), "image/jpeg", "all-star-white"),
-
-				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "wayfarer_havana.png"), "image/png", "wayfarer_havana"),
-				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "wayfarer_havana_black.png"), "image/png", "wayfarer_havana_black"),
-				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "wayfarer_rayban-black.png"), "image/png", "wayfarer_rayban_black")
+				CreatePicture("company-logo.png"),
+				CreatePicture("product/allstar_charcoal.jpg"),
+				CreatePicture("product/allstar_maroon.jpg"),
+				CreatePicture("product/allstar_navy.jpg"),
+				CreatePicture("product/allstar_purple.jpg"),
+				CreatePicture("product/allstar_white.jpg"),
+				CreatePicture("product/wayfarer_havana.png"),
+				CreatePicture("product/wayfarer_havana_black.png"),
+				CreatePicture("product/wayfarer_rayban-black.png")
 			};
 
 			this.Alter(entities);
@@ -8912,7 +8911,7 @@ namespace SmartStore.Data.Setup
                 Name = "Furniture",
                 Alias = "Furniture",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_furniture.jpg"), "image/jpeg", GetSeName("Furniture")),
+                MediaFile = CreatePicture("category/furniture.jpg"),
                 Published = true,
                 DisplayOrder = 1,
                 MetaTitle = "Furniture",
@@ -8924,7 +8923,7 @@ namespace SmartStore.Data.Setup
                 Name = "Apple",
                 Alias = "Apple",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_apple.png"), "image/png", GetSeName("Apple")),
+                MediaFile = CreatePicture("category/apple.png"),
                 Published = true,
                 DisplayOrder = 1,
                 MetaTitle = "Apple",
@@ -8936,7 +8935,7 @@ namespace SmartStore.Data.Setup
                 Name = "Sports",
                 Alias = "Sports",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_sports.jpg"), "image/jpeg", GetSeName("Sports")),
+                MediaFile = CreatePicture("category/sports.jpg"),
                 Published = true,
                 DisplayOrder = 1,
                 MetaTitle = "Sports",
@@ -8948,7 +8947,7 @@ namespace SmartStore.Data.Setup
 				Name = "Books",
                 Alias = "Books",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "emblem_library.png"), "image/jpeg", GetSeName("Books")),
+				MediaFile = CreatePicture("category/emblem_library.png", GetSeName("Books")),
 				Published = true,
 				DisplayOrder = 1,
 				MetaTitle = "Books"
@@ -8959,7 +8958,7 @@ namespace SmartStore.Data.Setup
 			//	Name = "Computers",
    //             Alias = "Computers",
 			//	CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-   //             Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_computers.png"), "image/png", GetSeName("Computers")),
+   //             Picture = CreatePicture("category/computers.png"),
 			//	Published = true,
 			//	DisplayOrder = 2,
 			//	MetaTitle = "Computers"
@@ -8970,7 +8969,7 @@ namespace SmartStore.Data.Setup
                 Name = "Fashion",
                 Alias = "Fashion",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_fashion.jpg"), "image/png", GetSeName("Fashion")),
+                MediaFile = CreatePicture("category/fashion.jpg"),
                 Published = true,
                 DisplayOrder = 2,
                 MetaTitle = "Fashion",
@@ -8984,7 +8983,7 @@ namespace SmartStore.Data.Setup
 				Name = "Gaming",
 				Alias = "Gaming",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ps4_bundle_minecraft.jpg"), "image/png", GetSeName("Gaming")),
+				MediaFile = CreatePicture("product/ps4_bundle_minecraft.jpg", GetSeName("Gaming")),
 				Published = true,
 				DisplayOrder = 3,
                 ShowOnHomePage = true,
@@ -8997,7 +8996,7 @@ namespace SmartStore.Data.Setup
    //             Alias = "Cell phones",
 			//	CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 			//	//ParentCategoryId = categoryElectronics.Id,
-   //             Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_cellphone.png"), "image/png", GetSeName("Cell phones")),
+   //             Picture = CreatePicture("category/cellphone.png"),
 			//	Published = true,
 			//	DisplayOrder = 4,
 			//	MetaTitle = "Cell phones"
@@ -9008,7 +9007,7 @@ namespace SmartStore.Data.Setup
 				Name = "Digital Products",
                 Alias = "Digital Products",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_digitalproducts.jpg"), "image/jpeg", GetSeName("Digital Products")),
+                MediaFile = CreatePicture("category/digitalproducts.jpg"),
 				Published = true,
 				DisplayOrder = 6,
 				MetaTitle = "Digital Products",
@@ -9020,7 +9019,7 @@ namespace SmartStore.Data.Setup
 				Name = "Gift Cards",
                 Alias = "Gift Cards",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gift-cards.png"), "image/png", GetSeName("Gift Cards")),
+				MediaFile = CreatePicture("category/gift-cards.png"),
 				Published = true,
 				DisplayOrder = 12,
 				MetaTitle = "Gift cards",
@@ -9032,7 +9031,7 @@ namespace SmartStore.Data.Setup
 				Name = "Watches",
                 Alias = "Watches",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_watches.png"), "image/png", GetSeName("Watches")),
+                MediaFile = CreatePicture("category/watches.png"),
 				Published = true,
 				DisplayOrder = 10,
 				MetaTitle = "Watches",
@@ -9067,7 +9066,7 @@ namespace SmartStore.Data.Setup
                 Name = "Jackets",
                 Alias = "Jackets",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_jackets.jpg"), "image/png", GetSeName("Jackets")),
+                MediaFile = CreatePicture("category/jackets.jpg"),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
                 DisplayOrder = 1,
@@ -9080,7 +9079,7 @@ namespace SmartStore.Data.Setup
                 Name = "Leather jackets",
                 Alias = "Leather jackets",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_leather_jackets.jpg"), "image/png", GetSeName("Leather jackets")),
+                MediaFile = CreatePicture("category/leather_jackets.jpg"),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
                 DisplayOrder = 1,
@@ -9093,7 +9092,7 @@ namespace SmartStore.Data.Setup
                 Name = "Shoes",
                 Alias = "Shoes",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_shoes.png"), "image/png", GetSeName("Shoes")),
+                MediaFile = CreatePicture("category/shoes.png"),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
                 DisplayOrder = 1,
@@ -9106,7 +9105,7 @@ namespace SmartStore.Data.Setup
                 Name = "Trousers",
                 Alias = "Pants",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_trousers.png"), "image/png", GetSeName("Trousers")),
+                MediaFile = CreatePicture("category/trousers.png"),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
                 DisplayOrder = 1,
@@ -9119,7 +9118,7 @@ namespace SmartStore.Data.Setup
                 Name = "Tracksuits",
                 Alias = "Tracksuits",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_tracksuit.png"), "image/png", GetSeName("Tracksuits")),
+                MediaFile = CreatePicture("category/tracksuit.png"),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
                 DisplayOrder = 1,
@@ -9136,7 +9135,7 @@ namespace SmartStore.Data.Setup
                 Name = "Golf",
                 Alias = "Golf",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_golf.jpg"), "image/png", GetSeName("Golf")),
+                MediaFile = CreatePicture("category/golf.jpg"),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Sports").First().Id,
                 DisplayOrder = 1,
@@ -9149,7 +9148,7 @@ namespace SmartStore.Data.Setup
                 Name = "Sunglasses",
                 Alias = "Sunglasses",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_glasses.png"), "image/png", GetSeName("Sunglasses")),
+                MediaFile = CreatePicture("category/glasses.png"),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
                 DisplayOrder = 1,
@@ -9162,7 +9161,7 @@ namespace SmartStore.Data.Setup
                 Name = "Soccer",
                 Alias = "Soccer",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_soccer.png"), "image/png", GetSeName("Soccer")),
+                MediaFile = CreatePicture("category/soccer.png"),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Sports").First().Id,
                 DisplayOrder = 1,
@@ -9175,7 +9174,7 @@ namespace SmartStore.Data.Setup
                 Name = "Basketball",
                 Alias = "Basketball",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_basketball.png"), "image/png", GetSeName("Basketball")),
+                MediaFile = CreatePicture("category/basketball.png"),
                 Published = true,
                 ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Sports").First().Id,
                 DisplayOrder = 1,
@@ -9188,7 +9187,7 @@ namespace SmartStore.Data.Setup
 				Name = "SPIEGEL-Bestseller",
                 Alias = "SPIEGEL-Bestseller",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000930_spiegel-bestseller.png"), "image/png", GetSeName("SPIEGEL-Bestseller")),
+				MediaFile = CreatePicture("category/0000930_spiegel-bestseller.png", GetSeName("SPIEGEL-Bestseller")),
 				Published = true,
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Books").First().Id,
 				DisplayOrder = 1,
@@ -9200,7 +9199,7 @@ namespace SmartStore.Data.Setup
 				Name = "Cook and enjoy",
                 Alias = "Cook and enjoy",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000936_kochen-geniesen.jpeg"), "image/jpeg", GetSeName("Cook and enjoy")),
+				MediaFile = CreatePicture("category/0000936_kochen-geniesen.jpeg", GetSeName("Cook and enjoy")),
 				Published = true,
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Books").First().Id,
 				DisplayOrder = 2,
@@ -9213,7 +9212,7 @@ namespace SmartStore.Data.Setup
    //             Alias = "Desktops",
 			//	CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 			//	ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Computers").First().Id,
-			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_desktops.png"), "image/png", GetSeName("Desktops")),
+			//	Picture = CreatePicture("category/desktops.png"),
 			//	Published = true,
 			//	DisplayOrder = 1,
 			//	MetaTitle = "Desktops"
@@ -9225,7 +9224,7 @@ namespace SmartStore.Data.Setup
    //             Alias = "Notebooks",
 			//	CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 			//	ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Computers").First().Id,
-   //             Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_notebooks.png"), "image/png", GetSeName("Notebooks")),
+   //             Picture = CreatePicture("category/notebooks.png"),
 			//	Published = true,
 			//	DisplayOrder = 2,
 			//	MetaTitle = "Notebooks"
@@ -9237,7 +9236,7 @@ namespace SmartStore.Data.Setup
 				Alias = "Gaming Accessories",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
-				MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming_accessories.png"), "image/png", GetSeName("Gaming Accessories")),
+				MediaFile = CreatePicture("category/gaming_accessories.png"),
 				Published = true,
 				DisplayOrder = 2,
 				MetaTitle = "Gaming Accessories"
@@ -9249,7 +9248,7 @@ namespace SmartStore.Data.Setup
 				Alias = "Games",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
-				MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_games.jpg"), "image/png", GetSeName("Games")),
+				MediaFile = CreatePicture("category/games.jpg"),
 				Published = true,
 				DisplayOrder = 3,
 				MetaTitle = "Games"
@@ -9287,7 +9286,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Jack-Wolfskin",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_Jack_Wolfskin.png"), "image/png", GetSeName("Jack Wolfskin")),
+                MediaFile = CreatePicture("brand/Jack_Wolfskin.png"),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9300,7 +9299,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Mey-And-Edlich",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_MeyAndEdlich.jpg"), "image/png", GetSeName("Mey Edlich")),
+                MediaFile = CreatePicture("brand/MeyAndEdlich.jpg", GetSeName("Mey Edlich")),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9313,7 +9312,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "EA Sports",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_EA_Sports.png"), "image/png", GetSeName("EA Sports")),
+                MediaFile = CreatePicture("brand/EA_Sports.png"),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9326,7 +9325,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Warner Home Video Games",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_wb.png"), "image/png", GetSeName("Warner Home Video Games")),
+                MediaFile = CreatePicture("brand/wb.png", GetSeName("Warner Home Video Games")),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9339,7 +9338,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Breitling",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_breitling.png"), "image/png", GetSeName("Breitling")),
+                MediaFile = CreatePicture("brand/breitling.png"),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9352,7 +9351,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Tissot",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_Tissot.png"), "image/png", GetSeName("Tissot")),
+                MediaFile = CreatePicture("brand/Tissot.png"),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9365,7 +9364,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Seiko",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_seiko.png"), "image/png", GetSeName("Seiko")),
+                MediaFile = CreatePicture("brand/seiko.png"),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9378,7 +9377,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Titleist",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_titleist.png"), "image/png", GetSeName("Titleist")),
+                MediaFile = CreatePicture("brand/titleist.png"),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9391,7 +9390,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Puma",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_puma.jpg"), "image/png", GetSeName("Puma")),
+                MediaFile = CreatePicture("brand/puma.jpg"),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9404,7 +9403,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Nike",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_nike.png"), "image/png", GetSeName("Nike")),
+                MediaFile = CreatePicture("brand/nike.png"),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9417,7 +9416,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Wilson",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_wilson.png"), "image/png", GetSeName("Wilson")),
+                MediaFile = CreatePicture("brand/wilson.png"),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9430,7 +9429,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Adidas",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_adidas.png"), "image/png", GetSeName("Adidas")),
+                MediaFile = CreatePicture("brand/adidas.png"),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9443,7 +9442,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Ray-Ban",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_ray-ban.jpg"), "image/png", GetSeName("Ray-Ban")),
+                MediaFile = CreatePicture("brand/ray-ban.jpg"),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9456,7 +9455,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Oakley",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_oakley.png"), "image/png", GetSeName("Oakley")),
+                MediaFile = CreatePicture("brand/oakley.png"),
                 Published = true,
                 DisplayOrder = 1
             };
@@ -9469,7 +9468,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Apple",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_apple.png"), "image/png", GetSeName("Apple")),
+                MediaFile = CreatePicture("brand/apple.png"),
 				Published = true,
 				DisplayOrder = 1
 			};
@@ -9482,7 +9481,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Android",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-android.png"), "image/png", GetSeName("Android")),
+                MediaFile = CreatePicture("brand/android.png"),
                 Published = true,
                 DisplayOrder = 2
             };
@@ -9495,7 +9494,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "LG",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-lg.png"), "image/png", GetSeName("LG")),
+                MediaFile = CreatePicture("brand/lg.png"),
                 Published = true,
                 DisplayOrder = 3
             };
@@ -9508,7 +9507,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Dell",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-dell.png"), "image/png", GetSeName("Dell")),
+                MediaFile = CreatePicture("brand/dell.png"),
                 Published = true,
                 DisplayOrder = 4
             };
@@ -9521,7 +9520,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "HP",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-hp.png"), "image/png", GetSeName("HP")),
+                MediaFile = CreatePicture("brand/hp.png"),
                 Published = true,
                 DisplayOrder = 5
             };
@@ -9534,7 +9533,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Microsoft",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-microsoft.png"), "image/png", GetSeName("Microsoft")),
+                MediaFile = CreatePicture("brand/microsoft-icon.png", GetSeName("Microsoft")),
                 Published = true,
                 DisplayOrder = 6
             };
@@ -9547,7 +9546,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Samsung",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-samsung.png"), "image/png", GetSeName("Samsung")),
+                MediaFile = CreatePicture("brand/samsung.png"),
 				Published = true,
 				DisplayOrder = 7
 			};
@@ -9560,7 +9559,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Acer",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "acer-logo.jpg"), "image/pjpeg", GetSeName("Acer")),
+				MediaFile = CreatePicture("acer.jpg"),
 				Published = true,
 				DisplayOrder = 8
 			};
@@ -9573,7 +9572,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "TrekStor",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-trekstor.png"), "image/png", GetSeName("TrekStor")),
+                MediaFile = CreatePicture("brand/trekstor.png"),
 				Published = true,
 				DisplayOrder = 9
 			};
@@ -9586,7 +9585,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Western Digital",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-westerndigital.png"), "image/png", GetSeName("Western Digital")),
+                MediaFile = CreatePicture("brand/westerndigital.png"),
 				Published = true,
 				DisplayOrder = 10
 			};
@@ -9599,7 +9598,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "MSI",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-msi.png"), "image/png", GetSeName("MSI")),
+                MediaFile = CreatePicture("brand/msi.png"),
 				Published = true,
 				DisplayOrder = 11
 			};
@@ -9612,7 +9611,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Canon",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-canon.png"), "image/png", GetSeName("Canon")),
+                MediaFile = CreatePicture("brand/canon.png"),
 				Published = true,
 				DisplayOrder = 12
 			};
@@ -9625,7 +9624,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Casio",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-casio.png"), "image/png", GetSeName("Casio")),
+                MediaFile = CreatePicture("brand/casio.png"),
 				Published = true,
 				DisplayOrder = 13
 			};
@@ -9638,7 +9637,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Panasonic",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-panasonic.png"), "image/png", GetSeName("Panasonic")),
+                MediaFile = CreatePicture("brand/panasonic.png"),
 				Published = true,
 				DisplayOrder = 14
 			};
@@ -9651,7 +9650,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "BlackBerry",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-blackberry.png"), "image/png", GetSeName("BlackBerry")),
+                MediaFile = CreatePicture("brand/blackberry.png"),
 				Published = true,
 				DisplayOrder = 15
 			};
@@ -9664,7 +9663,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "HTC",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-htc.png"), "image/png", GetSeName("HTC")),
+                MediaFile = CreatePicture("brand/htc.png"),
 				Published = true,
 				DisplayOrder = 16
 			};
@@ -9677,7 +9676,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Festina",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_festina.png"), "image/png", GetSeName("Festina")),
+                MediaFile = CreatePicture("brand/festina.png"),
 				Published = true,
 				DisplayOrder = 17
 			};
@@ -9690,7 +9689,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Certina",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-certina.png"), "image/png", GetSeName("Certina")),
+                MediaFile = CreatePicture("brand/certina.png"),
 				Published = true,
 				DisplayOrder = 18
 			};
@@ -9703,7 +9702,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Sony",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_sony.png"), "image/png", GetSeName("Sony")),
+                MediaFile = CreatePicture("brand/sony.png"),
 				Published = true,
 				DisplayOrder = 19
 			};
@@ -9716,7 +9715,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Ubisoft",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_ubisoft.png"), "image/png", GetSeName("Ubisoft")),
+                MediaFile = CreatePicture("brand/ubisoft.png"),
 				Published = true,
 				DisplayOrder = 20
 			};
@@ -9775,14 +9774,14 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 1
 			});
 
-			var allStarImages = new string[] { "product_allstar_converse.jpg", "product_allstar_hi_charcoal.jpg", "product_allstar_hi_maroon.jpg", "product_allstar_hi_navy.jpg",
-				"product_allstar_hi_purple.jpg", "product_allstar_hi_white.jpg" };
+			var allStarImages = new string[] { "product/allstar_converse.jpg", "product/allstar_hi_charcoal.jpg", "product/allstar_hi_maroon.jpg", "product/allstar_hi_navy.jpg",
+				"product/allstar_hi_purple.jpg", "product/allstar_hi_white.jpg" };
 
 			for (var i = 0; i < allStarImages.Length; ++i)
 			{
 				converseAllStar.ProductPictures.Add(new ProductMediaFile
 				{
-					MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + allStarImages[i]), "image/jpeg", allStarImages[i].Replace("product_", "").Replace(".jpg", "")),
+					MediaFile = CreatePicture(allStarImages[i]),
 					DisplayOrder = i + 1
 				});
 			}
@@ -9839,14 +9838,14 @@ namespace SmartStore.Data.Setup
 				Price = 29.00M
 			});
 
-			var shirtMeccanicaImages = new string[] { "product_shirt_meccanica_black_1.jpg", "product_shirt_meccanica_black_2.jpg", "product_shirt_meccanica_black_3.jpg",
-                "product_shirt_meccanica_red_1.jpg", "product_shirt_meccanica_red_2.jpg", "product_shirt_meccanica_red_3.jpg", "product_shirt_meccanica_red_4.jpg"  };
+			var shirtMeccanicaImages = new string[] { "product/shirt_meccanica_black_1.jpg", "product/shirt_meccanica_black_2.jpg", "product/shirt_meccanica_black_3.jpg",
+                "product/shirt_meccanica_red_1.jpg", "product/shirt_meccanica_red_2.jpg", "product/shirt_meccanica_red_3.jpg", "product/shirt_meccanica_red_4.jpg"  };
 
 			for (var i = 0; i < shirtMeccanicaImages.Length; ++i)
 			{
 				shirtMeccanica.ProductPictures.Add(new ProductMediaFile
 				{
-					MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + shirtMeccanicaImages[i]), "image/jpeg", shirtMeccanicaImages[i].Replace("product_", "").Replace(".jpg", "")),
+					MediaFile = CreatePicture(shirtMeccanicaImages[i]),
 					DisplayOrder = i + 1
 				});
 			}
@@ -9895,14 +9894,14 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 1
 			});
 
-			var ladiesJacketImages = new string[] { "product_ladies_jacket_silver.jpg", "product_ladies_jacket_black.jpg", "product_ladies_jacket_red.jpg",
-                "product_ladies_jacket_orange.jpg", "product_ladies_jacket_green.jpg", "product_ladies_jacket_blue.jpg", "product_ladies_jacket_navy.jpg",  };
+			var ladiesJacketImages = new string[] { "product/ladies_jacket_silver.jpg", "product/ladies_jacket_black.jpg", "product/ladies_jacket_red.jpg",
+                "product/ladies_jacket_orange.jpg", "product/ladies_jacket_green.jpg", "product/ladies_jacket_blue.jpg", "product/ladies_jacket_navy.jpg",  };
 
 			for (var i = 0; i < ladiesJacketImages.Length; ++i)
 			{
 				ladiesJacket.ProductPictures.Add(new ProductMediaFile
 				{
-					MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + ladiesJacketImages[i]), "image/jpeg", ladiesJacketImages[i].Replace("product_", "").Replace(".jpg", "")),
+					MediaFile = CreatePicture(ladiesJacketImages[i]),
 					DisplayOrder = i + 1
 				});
 			}
@@ -9948,7 +9947,7 @@ namespace SmartStore.Data.Setup
 
 			clarkJeans.ProductPictures.Add(new ProductMediaFile
 			{
-				MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_clark_premium_jeans.jpg"), "image/jpeg", "clark_premium_jeans"),
+				MediaFile = CreatePicture("product/clark_premium_jeans.jpg"),
 				DisplayOrder = 1
 			});
 
@@ -10001,14 +10000,14 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 1
 			});
 
-			var corbusierTableImages = new string[] { "product_corbusier_lc6_table_1.jpg", "product_corbusier_lc6_table_2.jpg", "product_corbusier_lc6_table_3.jpg",
-				"product_corbusier_lc6_table_4.jpg" };
+			var corbusierTableImages = new string[] { "product/corbusier_lc6_table_1.jpg", "product/corbusier_lc6_table_2.jpg", "product/corbusier_lc6_table_3.jpg",
+				"product/corbusier_lc6_table_4.jpg" };
 
 			for (var i = 0; i < corbusierTableImages.Length; ++i)
 			{
 				corbusierTable.ProductPictures.Add(new ProductMediaFile
 				{
-					MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + corbusierTableImages[i]), "image/jpeg", corbusierTableImages[i].Replace("product_", "").Replace(".jpg", "")),
+					MediaFile = CreatePicture(corbusierTableImages[i]),
 					DisplayOrder = i + 1
 				});
 			}
@@ -10071,12 +10070,12 @@ namespace SmartStore.Data.Setup
 
 			ballChair.ProductPictures.Add(new ProductMediaFile
 			{
-				MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_ball_chair_white.jpg"), "image/jpeg", "ball_chair_white"),
+				MediaFile = CreatePicture("product/ball_chair_white.jpg"),
 				DisplayOrder = 1
 			});
 			ballChair.ProductPictures.Add(new ProductMediaFile
 			{
-				MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_ball_chair_black.jpg"), "image/jpeg", "ball_chair_black"),
+				MediaFile = CreatePicture("product/ball_chair_black.jpg"),
 				DisplayOrder = 2
 			});
 
@@ -10141,12 +10140,12 @@ namespace SmartStore.Data.Setup
 
 			loungeChair.ProductPictures.Add(new ProductMediaFile
 			{
-				MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_charles_eames_lounge_chair_white.jpg"), "image/jpeg", "charles_eames_lounge_chair_white"),
+				MediaFile = CreatePicture("product/charles_eames_lounge_chair_white.jpg"),
 				DisplayOrder = 1
 			});
 			loungeChair.ProductPictures.Add(new ProductMediaFile
 			{
-				MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_charles_eames_lounge_chair_black.jpg"), "image/jpeg", "charles_eames_lounge_chair_black"),
+				MediaFile = CreatePicture("product/charles_eames_lounge_chair_black.jpg"),
 				DisplayOrder = 2
 			});
 
@@ -10222,7 +10221,7 @@ namespace SmartStore.Data.Setup
 
 			cubeChair.ProductPictures.Add(new ProductMediaFile
 			{
-				MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_hoffmann_cube_chair_black.jpg"), "image/jpeg", "hoffmann_cube_chair_black"),
+				MediaFile = CreatePicture("product/hoffmann_cube_chair_black.jpg"),
 				DisplayOrder = 1
 			});
 
@@ -10293,7 +10292,7 @@ namespace SmartStore.Data.Setup
             //    DisplayOrder = 5
             //};
 
-            //AddProductPicture(productJackWolfskinCooGeeLowM, "product_wolfskin_shoes_coogee_1.jpg", "jack-wolfskin-shoes-coogee-low-m-1");
+            //AddProductPicture(productJackWolfskinCooGeeLowM, "product/wolfskin_shoes_coogee_1.jpg", "jack-wolfskin-shoes-coogee-low-m-1");
 
             //productJackWolfskinCooGeeLowM.ProductCategories.Add(new ProductCategory { Category = categoryShoes, DisplayOrder = 1 });
 
@@ -10329,7 +10328,7 @@ namespace SmartStore.Data.Setup
             //    DisplayOrder = 5
             //};
 
-            //AddProductPicture(productAdidasSuperstarSchuh, "product_adidas_superstar_schuh_1.jpg", "adidas-superstar-schuh-1");
+            //AddProductPicture(productAdidasSuperstarSchuh, "product/adidas_superstar_schuh_1.jpg", "adidas-superstar-schuh-1");
 
             //productJackWolfskinCooGeeLowM.ProductCategories.Add(new ProductCategory { Category = categoryShoes, DisplayOrder = 1 });
 
@@ -10372,7 +10371,7 @@ namespace SmartStore.Data.Setup
                 DisplayOrder = 5
             };
 
-            AddProductPicture(productJackWolfsKinKanukaPoint, "product_jack_wolfskin_kanuka_point_1.png", "jack-wolfskin-kanuka-point-1");
+            AddProductPicture(productJackWolfsKinKanukaPoint, "product/jack_wolfskin_kanuka_point_1.png");
 
             productJackWolfsKinKanukaPoint.ProductCategories.Add(new ProductCategory { Category = categoryJackets, DisplayOrder = 1 });
 
@@ -10415,7 +10414,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productTitleistSM6TourChrome, "product_titleist_sm6_tour_chrome.jpg");
+            AddProductPicture(productTitleistSM6TourChrome, "product/titleist_sm6_tour_chrome.jpg");
 
             productTitleistSM6TourChrome.ProductCategories.Add(new ProductCategory { Category = categories["Golf"], DisplayOrder = 1 });
 
@@ -10449,7 +10448,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productTitleistProV1x, "product_titleist-pro-v1x.jpg");
+            AddProductPicture(productTitleistProV1x, "product/titleist-pro-v1x.jpg");
 
             productTitleistProV1x.ProductCategories.Add(new ProductCategory { Category = categories["Golf"], DisplayOrder = 1 });
 
@@ -10483,8 +10482,8 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productSupremeGolfball, "product_supremeGolfball_1.jpg", "golfball-1");
-            AddProductPicture(productSupremeGolfball, "product_supremeGolfball_2.jpg", "golfball-2");
+            AddProductPicture(productSupremeGolfball, "product/supremeGolfball_1.jpg");
+            AddProductPicture(productSupremeGolfball, "product/supremeGolfball_2.jpg");
 
             productSupremeGolfball.ProductCategories.Add(new ProductCategory { Category = categories["Golf"], DisplayOrder = 1 });
 
@@ -10518,7 +10517,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productGBBEpicSubZeroDriver, "product_gbb-epic-sub-zero-driver.jpg");
+            AddProductPicture(productGBBEpicSubZeroDriver, "product/gbb-epic-sub-zero-driver.jpg");
 
             productGBBEpicSubZeroDriver.ProductCategories.Add(new ProductCategory { Category = categories["Golf"], DisplayOrder = 1 });
 
@@ -10558,7 +10557,7 @@ namespace SmartStore.Data.Setup
                 HasTierPrices = true
             };
 
-            AddProductPicture(productNikeStrikeFootball, "products_nike-strike-football.jpg");
+            AddProductPicture(productNikeStrikeFootball, "product/nike-strike-football.jpg");
 
             productNikeStrikeFootball.ProductCategories.Add(new ProductCategory { Category = categories["Soccer"], DisplayOrder = 1 });
 
@@ -10613,7 +10612,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productNikeEvoPowerBall, "product_nike-vopower-53-trainer-hs-ball.jpg");
+            AddProductPicture(productNikeEvoPowerBall, "product/nike-vopower-53-trainer-hs-ball.jpg");
 
             productNikeEvoPowerBall.ProductCategories.Add(new ProductCategory { Category = categories["Soccer"], DisplayOrder = 1 });
 
@@ -10664,11 +10663,11 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productTorfabrikOfficialGameBall, "product_torfabrik-offizieller-spielball_white.png", "official-game-ball-white");
-            AddProductPicture(productTorfabrikOfficialGameBall, "product_torfabrik-offizieller-spielball_red.png", "official-game-ball-red");
-            AddProductPicture(productTorfabrikOfficialGameBall, "product_torfabrik-offizieller-spielball_yellow.png", "official-game-ball-yellow");
-            AddProductPicture(productTorfabrikOfficialGameBall, "product_torfabrik-offizieller-spielball_blue.png", "official-game-ball-blue");
-            AddProductPicture(productTorfabrikOfficialGameBall, "product_torfabrik-offizieller-spielball_green.png", "official-game-ball-green");
+            AddProductPicture(productTorfabrikOfficialGameBall, "product/torfabrik-offizieller-spielball_white.png", "official-game-ball-white");
+            AddProductPicture(productTorfabrikOfficialGameBall, "product/torfabrik-offizieller-spielball_red.png", "official-game-ball-red");
+            AddProductPicture(productTorfabrikOfficialGameBall, "product/torfabrik-offizieller-spielball_yellow.png", "official-game-ball-yellow");
+            AddProductPicture(productTorfabrikOfficialGameBall, "product/torfabrik-offizieller-spielball_blue.png", "official-game-ball-blue");
+            AddProductPicture(productTorfabrikOfficialGameBall, "product/torfabrik-offizieller-spielball_green.png", "official-game-ball-green");
 
             productTorfabrikOfficialGameBall.ProductCategories.Add(new ProductCategory { Category = categories["Soccer"], DisplayOrder = 1 });
 
@@ -10719,13 +10718,13 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productAdidasTangoSalaBall, "product_adidas-tango-pasadena-ball-white.png", "adidas-tango-pasadena-ball-white");
-            AddProductPicture(productAdidasTangoSalaBall, "product_adidas-tango-pasadena-ball-yellow.jpg", "adidas-tango-pasadena-ball-yellow");
-            AddProductPicture(productAdidasTangoSalaBall, "product_adidas-tango-pasadena-ball-red.jpg", "adidas-tango-pasadena-ball-red");
-            AddProductPicture(productAdidasTangoSalaBall, "product_adidas-tango-pasadena-ball-green.jpg", "adidas-tango-pasadena-ball-green");
-            AddProductPicture(productAdidasTangoSalaBall, "product_adidas-tango-pasadena-ball-gray.jpg", "adidas-tango-pasadena-ball-gray");
-            AddProductPicture(productAdidasTangoSalaBall, "product_adidas-tango-pasadena-ball-brown.jpg", "adidas-tango-pasadena-ball-brown");
-            AddProductPicture(productAdidasTangoSalaBall, "product_adidas-tango-pasadena-ball-blue.jpg", "adidas-tango-pasadena-ball-blue");
+            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-white.png");
+            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-yellow.jpg");
+            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-red.jpg");
+            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-green.jpg");
+            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-gray.jpg");
+            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-brown.jpg");
+            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-blue.jpg");
 
             productAdidasTangoSalaBall.ProductCategories.Add(new ProductCategory { Category = categories["Soccer"], DisplayOrder = 1 });
 
@@ -10782,7 +10781,7 @@ namespace SmartStore.Data.Setup
                 HasTierPrices = true
             };
 
-            AddProductPicture(productEvolutionHighSchoolGameBasketball, "product_evolution-high-school-game-basketball.jpg");
+            AddProductPicture(productEvolutionHighSchoolGameBasketball, "product/evolution-high-school-game-basketball.jpg");
 
             productEvolutionHighSchoolGameBasketball.ProductCategories.Add(new ProductCategory { Category = categories["Basketball"], DisplayOrder = 1 });
 
@@ -10820,7 +10819,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productAllCourtBasketball, "product_all-court-basketball.png");
+            AddProductPicture(productAllCourtBasketball, "product/all-court-basketball.png");
 
             productAllCourtBasketball.ProductCategories.Add(new ProductCategory { Category = categories["Basketball"], DisplayOrder = 1 });
 
@@ -10858,9 +10857,9 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productRayBanTopBar, "product_RayBanTopBar_1.jpg", "rayban-top-bar-1");
-            AddProductPicture(productRayBanTopBar, "product_RayBanTopBar_2.jpg", "rayban-top-bar-2");
-            AddProductPicture(productRayBanTopBar, "product_RayBanTopBar_3.jpg", "rayban-top-bar-3");
+            AddProductPicture(productRayBanTopBar, "product/RayBanTopBar_1.jpg", "rayban-top-bar-1");
+            AddProductPicture(productRayBanTopBar, "product/RayBanTopBar_2.jpg", "rayban-top-bar-2");
+            AddProductPicture(productRayBanTopBar, "product/RayBanTopBar_3.jpg", "rayban-top-bar-3");
 
             productRayBanTopBar.ProductCategories.Add(new ProductCategory { Category = categories["Sunglasses"], DisplayOrder = 1 });
 
@@ -10894,12 +10893,12 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productOriginalWayfarer, "product_productOriginalWayfarer_1.jpg", "wayfarer-blue-gray-classic-black-1");
-            AddProductPicture(productOriginalWayfarer, "product_productOriginalWayfarer_2.jpg", "wayfarer-blue-gray-classic-black-2");
-            AddProductPicture(productOriginalWayfarer, "product_productOriginalWayfarer_3.jpg", "wayfarer-gray-course-black");
-            AddProductPicture(productOriginalWayfarer, "product_productOriginalWayfarer_4.jpg", "wayfarer-brown-course-havana");
-            AddProductPicture(productOriginalWayfarer, "product_productOriginalWayfarer_5.jpg", "wayfarer-green-classic-havana-black");
-            AddProductPicture(productOriginalWayfarer, "product_productOriginalWayfarer_6.jpg", "wayfarer-blue-gray-classic-black-3");
+            AddProductPicture(productOriginalWayfarer, "product/OriginalWayfarer_1.jpg", "wayfarer-blue-gray-classic-black-1");
+            AddProductPicture(productOriginalWayfarer, "product/OriginalWayfarer_2.jpg", "wayfarer-blue-gray-classic-black-2");
+            AddProductPicture(productOriginalWayfarer, "product/OriginalWayfarer_3.jpg", "wayfarer-gray-course-black");
+            AddProductPicture(productOriginalWayfarer, "product/OriginalWayfarer_4.jpg", "wayfarer-brown-course-havana");
+            AddProductPicture(productOriginalWayfarer, "product/OriginalWayfarer_5.jpg", "wayfarer-green-classic-havana-black");
+            AddProductPicture(productOriginalWayfarer, "product/OriginalWayfarer_6.jpg", "wayfarer-blue-gray-classic-black-3");
 
             productOriginalWayfarer.ProductCategories.Add(new ProductCategory { Category = categories["Sunglasses"], DisplayOrder = 1 });
 
@@ -10933,7 +10932,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productRadarEVPrizmSportsSunglasses, "product_radar_ev_prizm.jpg");
+            AddProductPicture(productRadarEVPrizmSportsSunglasses, "product/radar_ev_prizm.jpg");
 
             productRadarEVPrizmSportsSunglasses.ProductCategories.Add(new ProductCategory { Category = categories["Sunglasses"], DisplayOrder = 1 });
 
@@ -10967,53 +10966,53 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlakSunglasses.jpg", "custom_flak");
-            AddProductPicture(productCustomFlakSunglasses, "productCustomFlakSunglasses_black_white.jpg", "custom_flak_black_white");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_gray.jpg", "custom_flak_matteblack_gray");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_clear.jpg", "custom_flak_matteblack_clear");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_jadeiridium.jpg", "custom_flak_matteblack_jadeiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_positiverediridium.jpg", "custom_flak_matteblack_positiverediridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_rubyiridium.jpg", "custom_flak_matteblack_rubyiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_sapphireiridium.jpg", "custom_flak_matteblack_sapphireiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_violetiridium.jpg", "custom_flak_matteblack_violetiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_24kiridium.jpg", "custom_flak_matteblack_24kiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_fireiridium.jpg", "custom_flak_matteblack_fireiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_24kiridium.jpg", "custom_flak_orangeflare_24kiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_clear.jpg", "custom_flak_orangeflare_clear");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_fireiridium.jpg", "custom_flak_orangeflare_fireiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_gray.jpg", "custom_flak_orangeflare_gray");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_jadeiridium.jpg", "custom_flak_orangeflare_jadeiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_positiverediridium.jpg", "custom_flak_orangeflare_positiverediridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_rubyiridium.jpg", "custom_flak_orangeflare_rubyiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_sapphireiridium.jpg", "custom_flak_orangeflare_sapphireiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_violetiridium.jpg", "custom_flak_orangeflare_violetiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_24kiridium.jpg", "custom_flak_polishedwhite_24kiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_clear.jpg", "custom_flak_polishedwhite_clear");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_fireiridium.jpg", "custom_flak_polishedwhite_fireiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_gray.jpg", "custom_flak_polishedwhite_gray");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_jadeiridium.jpg", "custom_flak_polishedwhite_jadeiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_rubyiridium.jpg", "custom_flak_polishedwhite_rubyiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_sapphireiridium.jpg", "custom_flak_polishedwhite_sapphireiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_violetiridium.jpg", "custom_flak_polishedwhite_violetiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_positiverediridium.jpg", "custom_flak_polishedwhite_positiverediridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_24kiridium.jpg", "custom_flak_redline_24kiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_clear.jpg", "custom_flak_redline_clear");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_fireiridium.jpg", "custom_flak_redline_fireiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_gray.jpg", "custom_flak_redline_gray");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_jadeiridium.jpg", "custom_flak_redline_jadeiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_positiverediridium.jpg", "custom_flak_redline_positiverediridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_rubyiridium.jpg", "custom_flak_redline_rubyiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_sapphireiridium.jpg", "custom_flak_redline_sapphireiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_violetiridium.jpg", "custom_flak_redline_violetiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_24kiridium.jpg", "custom_flak_skyblue_24kiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_clear.jpg", "custom_flak_skyblue_clear");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_fireiridium.jpg", "custom_flak_skyblue_fireiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_gray.jpg", "custom_flak_skyblue_gray");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_jadeiridium.jpg", "custom_flak_skyblue_jadeiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_positiverediridium.jpg", "custom_flak_skyblue_positiverediridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_rubyiridium.jpg", "custom_flak_skyblue_rubyiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_sapphireiridium.jpg", "custom_flak_skyblue_sapphireiridium");
-            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_violetiridium.jpg", "custom_flak_skyblue_violetiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlakSunglasses.jpg", "customflak");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlakSunglasses_black_white.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_matteblack_gray.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_matteblack_clear.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_matteblack_jadeiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_matteblack_positiverediridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_matteblack_rubyiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_matteblack_sapphireiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_matteblack_violetiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_matteblack_24kiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_matteblack_fireiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_orangeflare_24kiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_orangeflare_clear.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_orangeflare_fireiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_orangeflare_gray.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_orangeflare_jadeiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_orangeflare_positiverediridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_orangeflare_rubyiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_orangeflare_sapphireiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_orangeflare_violetiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_polishedwhite_24kiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_polishedwhite_clear.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_polishedwhite_fireiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_polishedwhite_gray.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_polishedwhite_jadeiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_polishedwhite_rubyiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_polishedwhite_sapphireiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_polishedwhite_violetiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_polishedwhite_positiverediridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_redline_24kiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_redline_clear.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_redline_fireiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_redline_gray.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_redline_jadeiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_redline_positiverediridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_redline_rubyiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_redline_sapphireiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_redline_violetiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_skyblue_24kiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_skyblue_clear.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_skyblue_fireiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_skyblue_gray.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_skyblue_jadeiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_skyblue_positiverediridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_skyblue_rubyiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_skyblue_sapphireiridium.jpg");
+            AddProductPicture(productCustomFlakSunglasses, "product/CustomFlak_skyblue_violetiridium.jpg");
 
             productCustomFlakSunglasses.ProductCategories.Add(new ProductCategory { Category = categories["Sunglasses"], DisplayOrder = 1 });
 
@@ -11054,13 +11053,13 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productIphoneplus, "product_iphone-plus_all_colors.jpg", "iphone-plus-all-colors");
-            AddProductPicture(productIphoneplus, "product_iphoneplus_1.jpg", "iphone-plus-default");
-            AddProductPicture(productIphoneplus, "product_iphone-plus_red.jpg", "iphone-plus-red");
-            AddProductPicture(productIphoneplus, "product_iphone-plus_silver.jpg", "iphone-plus-silver");
-            AddProductPicture(productIphoneplus, "product_iphone-plus_black.jpg", "iphone-plus-black");
-            AddProductPicture(productIphoneplus, "product_iphone-plus_rose.jpg", "iphone-plus-rose");
-            AddProductPicture(productIphoneplus, "product_iphone-plus_gold.jpg", "iphone-plus-gold");
+            AddProductPicture(productIphoneplus, "product/iphone-plus_all_colors.jpg");
+            AddProductPicture(productIphoneplus, "product/iphoneplus_1.jpg", "iphone-plus-default");
+            AddProductPicture(productIphoneplus, "product/iphone-plus_red.jpg");
+            AddProductPicture(productIphoneplus, "product/iphone-plus_silver.jpg");
+            AddProductPicture(productIphoneplus, "product/iphone-plus_black.jpg");
+            AddProductPicture(productIphoneplus, "product/iphone-plus_rose.jpg");
+            AddProductPicture(productIphoneplus, "product/iphone-plus_gold.jpg");
 
             productIphoneplus.ProductCategories.Add(new ProductCategory { Category = categories["Apple"], DisplayOrder = 1 });
 
@@ -11128,8 +11127,8 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productWatchSeries2, "product_watchseries2_1.jpg", "watchseries-1");
-            AddProductPicture(productWatchSeries2, "product_watchseries2_2.jpg", "watchseries-2");
+            AddProductPicture(productWatchSeries2, "product/watchseries2_1.jpg");
+            AddProductPicture(productWatchSeries2, "product/watchseries2_2.jpg");
 
             productWatchSeries2.ProductCategories.Add(new ProductCategory { Category = categories["Apple"], DisplayOrder = 1 });
 
@@ -11190,12 +11189,12 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productAirpods, "products_airpods_white.jpg", "airpods-white");
-            AddProductPicture(productAirpods, "products_airpods_turquoise.jpg", "airpods-turquoise");
-            AddProductPicture(productAirpods, "products_airpods_lightblue.jpg", "airpods-lightblue");
-            AddProductPicture(productAirpods, "products_airpods_rose.jpg", "airpods-rose");
-            AddProductPicture(productAirpods, "products_airpods_gold.jpg", "airpods-gold");
-            AddProductPicture(productAirpods, "products_airpods_mint.jpg", "airpods-mint");
+            AddProductPicture(productAirpods, "product/airpods_white.jpg");
+            AddProductPicture(productAirpods, "product/airpods_turquoise.jpg");
+            AddProductPicture(productAirpods, "product/airpods_lightblue.jpg");
+            AddProductPicture(productAirpods, "product/airpods_rose.jpg");
+            AddProductPicture(productAirpods, "product/airpods_gold.jpg");
+            AddProductPicture(productAirpods, "product/airpods_mint.jpg");
 
             productAirpods.ProductCategories.Add(new ProductCategory { Category = categories["Apple"], DisplayOrder = 1 });
 
@@ -11233,11 +11232,11 @@ namespace SmartStore.Data.Setup
                 BundlePerItemShoppingCart = true
             };
 
-            AddProductPicture(productAppleProHipsterBundle, "product_ultimate-apple-pro-hipster-bundle.jpg", "apple-pro-hipster-bundle");
-            AddProductPicture(productAppleProHipsterBundle, "products_airpods_white.jpg", "bundle-airpods-white");
-            AddProductPicture(productAppleProHipsterBundle, "product_watchseries2_2.jpg", "bundle-watchseries");
-            AddProductPicture(productAppleProHipsterBundle, "product_iphoneplus_2.jpg", "bundle-iphoneplus");
-            AddProductPicture(productAppleProHipsterBundle, "category_apple.png", "bundle-apple");
+            AddProductPicture(productAppleProHipsterBundle, "product/ultimate-apple-pro-hipster-bundle.jpg");
+            AddProductPicture(productAppleProHipsterBundle, "product/airpods_white.jpg", "bundle-airpods-white");
+            AddProductPicture(productAppleProHipsterBundle, "product/watchseries2_2.jpg", "bundle-watchseries");
+            AddProductPicture(productAppleProHipsterBundle, "product/iphoneplus_2.jpg", "bundle-iphoneplus");
+            AddProductPicture(productAppleProHipsterBundle, "category/apple.png", "bundle-apple");
 
             productAppleProHipsterBundle.ProductCategories.Add(new ProductCategory { Category = categories["Apple"], DisplayOrder = 1 });
 
@@ -11276,17 +11275,17 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(product97ipad, "product_ipad_1.jpg", "ipad-1");
-            AddProductPicture(product97ipad, "product_ipad_2.jpg", "ipad-2");
-            AddProductPicture(product97ipad, "product_97-ipad-yellow.jpg", "ipad-yellow");
-            AddProductPicture(product97ipad, "product_97-ipad-turquoise.jpg", "ipad-turquoise");
-            AddProductPicture(product97ipad, "product_97-ipad-lightblue.jpg", "ipad-lightblue");
-            AddProductPicture(product97ipad, "product_97-ipad-purple.jpg", "ipad-purple");
-            AddProductPicture(product97ipad, "product_97-ipad-mint.jpg", "ipad-mint");
-            AddProductPicture(product97ipad, "product_97-ipad-rose.jpg", "ipad-rose");
-            AddProductPicture(product97ipad, "product_97-ipad-spacegray.jpg", "ipad-spacegray");
-            AddProductPicture(product97ipad, "product_97-ipad-gold.jpg", "ipad-gold");
-            AddProductPicture(product97ipad, "product_97-ipad-silver.jpg", "ipad-silver");
+            AddProductPicture(product97ipad, "product/ipad_1.jpg");
+            AddProductPicture(product97ipad, "product/ipad_2.jpg");
+            AddProductPicture(product97ipad, "product/97-ipad-yellow.jpg");
+            AddProductPicture(product97ipad, "product/97-ipad-turquoise.jpg");
+            AddProductPicture(product97ipad, "product/97-ipad-lightblue.jpg");
+            AddProductPicture(product97ipad, "product/97-ipad-purple.jpg");
+            AddProductPicture(product97ipad, "product/97-ipad-mint.jpg");
+            AddProductPicture(product97ipad, "product/97-ipad-rose.jpg");
+            AddProductPicture(product97ipad, "product/97-ipad-spacegray.jpg");
+            AddProductPicture(product97ipad, "product/97-ipad-gold.jpg");
+            AddProductPicture(product97ipad, "product/97-ipad-silver.jpg");
 
             product97ipad.ProductCategories.Add(new ProductCategory { Category = categories["Apple"], DisplayOrder = 1 });
 
@@ -11357,7 +11356,7 @@ namespace SmartStore.Data.Setup
                 DisplayOrder = 1
             };
 
-            AddProductPicture(product10GiftCard, "product_gift_card_10.png");
+            AddProductPicture(product10GiftCard, "product/gift_card_10.png");
             product10GiftCard.ProductCategories.Add(new ProductCategory { Category = categories["Gift Cards"], DisplayOrder = 1 });
 
             #endregion product10GiftCard
@@ -11388,7 +11387,7 @@ namespace SmartStore.Data.Setup
                 DisplayOrder = 2
             };
 
-            AddProductPicture(product25GiftCard, "product_gift_card_25.png");
+            AddProductPicture(product25GiftCard, "product/gift_card_25.png");
             product25GiftCard.ProductCategories.Add(new ProductCategory { Category = categories["Gift Cards"], DisplayOrder = 1 });
 
             #endregion product25GiftCard
@@ -11419,7 +11418,7 @@ namespace SmartStore.Data.Setup
                 DisplayOrder = 3
             };
 
-            AddProductPicture(product50GiftCard, "product_gift_card_50.png");
+            AddProductPicture(product50GiftCard, "product/gift_card_50.png");
             product50GiftCard.ProductCategories.Add(new ProductCategory { Category = categories["Gift Cards"], DisplayOrder = 1 });
 
             #endregion product50GiftCard
@@ -11450,7 +11449,7 @@ namespace SmartStore.Data.Setup
                 DisplayOrder = 4,
             };
 
-            AddProductPicture(product100GiftCard, "product_gift_card_100.png");
+            AddProductPicture(product100GiftCard, "product/gift_card_100.png");
             product100GiftCard.ProductCategories.Add(new ProductCategory { Category = categories["Gift Cards"], DisplayOrder = 1 });
 
             #endregion product100GiftCard
@@ -11482,7 +11481,7 @@ namespace SmartStore.Data.Setup
                 IsShipEnabled = true
             };
 
-            AddProductPicture(productBooksUberMan, "0000932_uberman-der-roman.jpeg");
+            AddProductPicture(productBooksUberMan, "product/0000932_uberman-der-roman.jpeg");
             productBooksUberMan.ProductCategories.Add(new ProductCategory { Category = categories["SPIEGEL-Bestseller"], DisplayOrder = 1 });
 
             productBooksUberMan.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
@@ -11533,7 +11532,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
-            AddProductPicture(productBooksGefangeneDesHimmels, "0000935_der-gefangene-des-himmels-roman_300.jpeg");
+            AddProductPicture(productBooksGefangeneDesHimmels, "product/0000935_der-gefangene-des-himmels-roman_300.jpeg");
             productBooksGefangeneDesHimmels.ProductCategories.Add(new ProductCategory { Category = categories["SPIEGEL-Bestseller"], DisplayOrder = 1 });
 
             productBooksGefangeneDesHimmels.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
@@ -11588,7 +11587,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
-            AddProductPicture(productBooksBestGrillingRecipes, "product_bestgrillingrecipes.jpg");
+            AddProductPicture(productBooksBestGrillingRecipes, "product/bestgrillingrecipes.jpg");
             productBooksBestGrillingRecipes.ProductCategories.Add(new ProductCategory { Category = categories["Cook and enjoy"], DisplayOrder = 1 });
 
             productBooksBestGrillingRecipes.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
@@ -11642,7 +11641,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = secondDeliveryTime.Id
             };
 
-            AddProductPicture(productBooksCookingForTwo, "product_cookingfortwo.jpg");
+            AddProductPicture(productBooksCookingForTwo, "product/cookingfortwo.jpg");
             productBooksCookingForTwo.ProductCategories.Add(new ProductCategory { Category = categories["Cook and enjoy"], DisplayOrder = 1 });
 
             productBooksCookingForTwo.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
@@ -11696,7 +11695,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productBooksAutosDerSuperlative, "0000944_autos-der-superlative-die-starksten-die-ersten-die-schonsten-die-schnellsten.jpeg");
+            AddProductPicture(productBooksAutosDerSuperlative, "product/0000944_autos-der-superlative-die-starksten-die-ersten-die-schonsten-die-schnellsten.jpeg");
             productBooksAutosDerSuperlative.ProductCategories.Add(new ProductCategory { Category = categories["Books"], DisplayOrder = 1 });
 
             productBooksAutosDerSuperlative.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
@@ -11750,7 +11749,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
-            AddProductPicture(productBooksBildatlasMotorraeder, "0000942_bildatlas-motorrader-mit-mehr-als-350-brillanten-abbildungen.jpeg");
+            AddProductPicture(productBooksBildatlasMotorraeder, "product/0000942_bildatlas-motorrader-mit-mehr-als-350-brillanten-abbildungen.jpeg");
             productBooksBildatlasMotorraeder.ProductCategories.Add(new ProductCategory { Category = categories["Books"], DisplayOrder = 1 });
 
             productBooksBildatlasMotorraeder.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
@@ -11804,7 +11803,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
-            AddProductPicture(productBooksAutoBuch, "0000947_das-auto-buch-die-grose-chronik-mit-uber-1200-modellen_300.jpeg");
+            AddProductPicture(productBooksAutoBuch, "product/0000947_das-auto-buch-die-grose-chronik-mit-uber-1200-modellen_300.jpeg");
             productBooksAutoBuch.ProductCategories.Add(new ProductCategory { Category = categories["Books"], DisplayOrder = 1 });
 
             productBooksAutoBuch.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
@@ -11858,7 +11857,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
-            AddProductPicture(productBooksFastCars, "0000946_fast-cars-bildkalender-2013_300.jpeg");
+            AddProductPicture(productBooksFastCars, "product/0000946_fast-cars-bildkalender-2013_300.jpeg");
             productBooksFastCars.ProductCategories.Add(new ProductCategory { Category = categories["Books"], DisplayOrder = 1 });
 
             productBooksFastCars.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
@@ -11912,7 +11911,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = secondDeliveryTime.Id
             };
 
-            AddProductPicture(productBooksMotorradAbenteuer, "0000943_motorrad-abenteuer-fahrtechnik-fur-reise-enduros.jpeg");
+            AddProductPicture(productBooksMotorradAbenteuer, "product/0000943_motorrad-abenteuer-fahrtechnik-fur-reise-enduros.jpeg");
             productBooksMotorradAbenteuer.ProductCategories.Add(new ProductCategory { Category = categories["Books"], DisplayOrder = 1 });
 
             productBooksMotorradAbenteuer.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
@@ -11971,7 +11970,7 @@ namespace SmartStore.Data.Setup
                 HasSampleDownload = true
             };
 
-            AddProductPicture(productBooksStoneOfTheWise, "stone_of_wisdom.jpg");
+            AddProductPicture(productBooksStoneOfTheWise, "product/stone_of_wisdom.jpg");
             productBooksStoneOfTheWise.ProductCategories.Add(new ProductCategory { Category = categories["Digital Products"], DisplayOrder = 1 });
 
             productBooksStoneOfTheWise.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
@@ -12027,7 +12026,7 @@ namespace SmartStore.Data.Setup
                 HasSampleDownload = true
             };
 
-            AddProductPicture(productInstantDownloadVivaldi, "vivaldi.jpg");
+            AddProductPicture(productInstantDownloadVivaldi, "product/vivaldi.jpg");
             productInstantDownloadVivaldi.ProductCategories.Add(new ProductCategory { Category = categories["Digital Products"], DisplayOrder = 1 });
 
             productInstantDownloadVivaldi.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
@@ -12075,7 +12074,7 @@ namespace SmartStore.Data.Setup
                 HasSampleDownload = true
             };
 
-            AddProductPicture(productInstantDownloadBeethoven, "Beethoven.jpg");
+            AddProductPicture(productInstantDownloadBeethoven, "product/Beethoven.jpg");
             productInstantDownloadBeethoven.ProductCategories.Add(new ProductCategory { Category = categories["Digital Products"], DisplayOrder = 1 });
 
             productInstantDownloadBeethoven.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
@@ -12127,7 +12126,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productTRANSOCEANCHRONOGRAPH, "product_transocean-chronograph.jpg");
+            AddProductPicture(productTRANSOCEANCHRONOGRAPH, "product/transocean-chronograph.jpg");
             productTRANSOCEANCHRONOGRAPH.ProductCategories.Add(new ProductCategory { Category = categories["Watches"], DisplayOrder = 1 });
 
             productTRANSOCEANCHRONOGRAPH.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Breitling"], DisplayOrder = 1 });
@@ -12225,8 +12224,8 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productTissotTTouchExpertSolar, "product_tissot-t-touch-expert-solar.jpg", "tissot-1");
-            AddProductPicture(productTissotTTouchExpertSolar, "product_tissot-t-touch-expert-solar-t091_2.jpg", "tissot-2");
+            AddProductPicture(productTissotTTouchExpertSolar, "product/tissot-t-touch-expert-solar.jpg");
+            AddProductPicture(productTissotTTouchExpertSolar, "product/tissot-t-touch-expert-solar-t091_2.jpg");
 
             productTissotTTouchExpertSolar.ProductCategories.Add(new ProductCategory { Category = categories["Watches"], DisplayOrder = 1 });
 
@@ -12325,7 +12324,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productSeikoSRPA49K1, "product_SeikoSRPA49K1.jpg");
+            AddProductPicture(productSeikoSRPA49K1, "product/SeikoSRPA49K1.jpg");
             productSeikoSRPA49K1.ProductCategories.Add(new ProductCategory { Category = categories["Watches"], DisplayOrder = 1 });
 
             productSeikoSRPA49K1.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Seiko"], DisplayOrder = 1 });
@@ -12415,7 +12414,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            AddProductPicture(productWatchesCertinaDSPodiumBigSize, "product_certina_ds_podium_big.png");
+            AddProductPicture(productWatchesCertinaDSPodiumBigSize, "product/certina_ds_podium_big.png");
             productWatchesCertinaDSPodiumBigSize.ProductCategories.Add(new ProductCategory { Category = categories["Watches"], DisplayOrder = 1 });
 
             productWatchesCertinaDSPodiumBigSize.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Certina"], DisplayOrder = 1 });
@@ -12518,8 +12517,8 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
-            AddProductPicture(productPs3, "product_ps4_w_controller.jpg", "ps4-w-controller");
-            AddProductPicture(productPs3, "product_ps4_wo_controller.jpg", "ps4-wo-single");
+            AddProductPicture(productPs3, "product/ps4_w_controller.jpg");
+            AddProductPicture(productPs3, "product/ps4_wo_controller.jpg");
 
             productPs3.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
             productPs3.ProductCategories.Add(new ProductCategory { Category = categories["Gaming"], DisplayOrder = 4 });
@@ -12547,7 +12546,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
-            AddProductPicture(productDualshock4Controller, "product_dualshock4.jpg");
+            AddProductPicture(productDualshock4Controller, "product/dualshock4.jpg");
             productDualshock4Controller.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
             productDualshock4Controller.ProductCategories.Add(new ProductCategory { Category = categories["Gaming Accessories"], DisplayOrder = 1 });
 
@@ -12577,7 +12576,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
-            AddProductPicture(productMinecraft, "product_minecraft.jpg");
+            AddProductPicture(productMinecraft, "product/minecraft.jpg");
             productMinecraft.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
             productMinecraft.ProductCategories.Add(new ProductCategory { Category = categories["Games"], DisplayOrder = 4 });
 
@@ -12609,7 +12608,7 @@ namespace SmartStore.Data.Setup
                 BundlePerItemShoppingCart = true
             };
 
-            AddProductPicture(productBundlePs3AssassinCreed, "ps4_bundle_minecraft.jpg");
+            AddProductPicture(productBundlePs3AssassinCreed, "product/ps4_bundle_minecraft.jpg");
             productBundlePs3AssassinCreed.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
             productBundlePs3AssassinCreed.ProductCategories.Add(new ProductCategory { Category = categories["Gaming"], DisplayOrder = 1 });
 
@@ -12641,8 +12640,8 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
-            AddProductPicture(productPs4, "product_sony_ps4.png", "sony-ps4");
-            AddProductPicture(productPs4, "product_sony_dualshock4_wirelesscontroller.png", "sony-ps4-dualshock");
+            AddProductPicture(productPs4, "product/sony_ps4.png", "sony-ps4");
+            AddProductPicture(productPs4, "product/sony_dualshock4_wirelesscontroller.png");
 
             productPs4.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
             productPs4.ProductCategories.Add(new ProductCategory { Category = categories["Gaming"], DisplayOrder = 5 });
@@ -12670,7 +12669,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
-            AddProductPicture(productPs4Camera, "product_sony_ps4_camera.png");
+            AddProductPicture(productPs4Camera, "product/sony_ps4_camera.png");
             productPs4Camera.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
             productPs4Camera.ProductCategories.Add(new ProductCategory { Category = categories["Gaming Accessories"], DisplayOrder = 3 });
 
@@ -12700,7 +12699,7 @@ namespace SmartStore.Data.Setup
                 BundleTitleText = "Bundle includes"
             };
 
-            AddProductPicture(productBundlePs4, "product_sony_ps4_bundle.png");
+            AddProductPicture(productBundlePs4, "product/sony_ps4_bundle.png");
             productBundlePs4.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
             productBundlePs4.ProductCategories.Add(new ProductCategory { Category = categories["Gaming"], DisplayOrder = 2 });
 
@@ -12730,7 +12729,7 @@ namespace SmartStore.Data.Setup
                 ShowOnHomePage = true
             };
 
-            AddProductPicture(productGroupAccessories, "category_gaming_accessories.png");
+            AddProductPicture(productGroupAccessories, "category/gaming_accessories.png");
             productGroupAccessories.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
             productGroupAccessories.ProductCategories.Add(new ProductCategory { Category = categories["Gaming"], DisplayOrder = 3 });
 
@@ -12760,7 +12759,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
-            AddProductPicture(productPrinceOfPersia, "products_princeofpersia.jpg");
+            AddProductPicture(productPrinceOfPersia, "product/princeofpersia.jpg");
             productPrinceOfPersia.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Ubisoft"], DisplayOrder = 1 });
             productPrinceOfPersia.ProductCategories.Add(new ProductCategory { Category = categories["Games"], DisplayOrder = 2 });
 
@@ -12792,7 +12791,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
-            AddProductPicture(productHorizonZeroDown, "product_horizon.jpg");
+            AddProductPicture(productHorizonZeroDown, "product/horizon.jpg");
             productHorizonZeroDown.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
             productHorizonZeroDown.ProductCategories.Add(new ProductCategory { Category = categories["Games"], DisplayOrder = 2 });
 
@@ -12824,7 +12823,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
-            AddProductPicture(productFifa17, "product_fifa17.jpg");
+            AddProductPicture(productFifa17, "product/fifa17.jpg");
             productFifa17.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["EA Sports"], DisplayOrder = 1 });
             productFifa17.ProductCategories.Add(new ProductCategory { Category = categories["Games"], DisplayOrder = 2 });
 
@@ -12855,7 +12854,7 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = firstDeliveryTime.Id
             };
 
-            AddProductPicture(productLegoWorlds, "product_legoworlds.jpg");
+            AddProductPicture(productLegoWorlds, "product/legoworlds.jpg");
             productLegoWorlds.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Warner Home Video Games"], DisplayOrder = 1 });
             productLegoWorlds.ProductCategories.Add(new ProductCategory { Category = categories["Games"], DisplayOrder = 3 });
 
@@ -12886,7 +12885,7 @@ namespace SmartStore.Data.Setup
             //    DeliveryTimeId = firstDeliveryTime.Id
             //};
 
-            //AddProductPicture(productXBoxOneS, "product_xbox_one_s_1.png", "microsoft-xbox-one-s-1");
+            //AddProductPicture(productXBoxOneS, "product/xbox_one_s_1.png", "microsoft-xbox-one-s-1");
             //productXBoxOneS.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuMicrosoft, DisplayOrder = 1 });
             //productXBoxOneS.ProductCategories.Add(new ProductCategory { Category = categoryGaming, DisplayOrder = 1 });
 
@@ -13062,59 +13061,78 @@ namespace SmartStore.Data.Setup
                 .Where(x => sampleDownloadSkus.Contains(x.Sku))
                 .ToDictionary(x => x.Sku);
 
-            foreach (var product in sampleDownloadProducts.Values)
+			var now = DateTime.UtcNow;
+
+			foreach (var product in sampleDownloadProducts.Values)
             {
                 if (product.Sku.IsCaseInsensitiveEqual("P-1017"))
                 {
-                    product.SampleDownload = new Download
+					var buffer = File.ReadAllBytes(_sampleImagesPath + "download/beethoven-fur-elise.mp3");
+					product.SampleDownload = new Download
                     {
                         EntityId = product.Id,
                         EntityName = nameof(Product),
                         DownloadGuid = Guid.NewGuid(),
                         ContentType = "audio/mp3",
-                        MediaStorage = new MediaStorage
-                        {
-                            Data = File.ReadAllBytes(_sampleDownloadsPath + "beethoven-fur-elise.mp3")
-                        },
-                        Extension = ".mp3",
-                        Filename = "beethoven-fur-elise.mp3",
-                        IsNew = true,
-                        UpdatedOnUtc = DateTime.UtcNow
+						MediaFile = new MediaFile
+						{
+							Name = "beethoven-fur-elise.mp3",
+							MediaType = "audio",
+							MimeType = "audio/mp3",
+							Extension = "mp3",
+							Size = buffer.Length,
+							IsNew = true,
+							UpdatedOnUtc = now,
+							CreatedOnUtc = now,
+							MediaStorage = new MediaStorage { Data = buffer }
+						},
+                        UpdatedOnUtc = now
                     };
                 }
                 else if (product.Sku.IsCaseInsensitiveEqual("P-1016"))
                 {
-                    product.SampleDownload = new Download
+					var buffer = File.ReadAllBytes(_sampleImagesPath + "download/vivaldi-four-seasons-spring.mp3");
+					product.SampleDownload = new Download
                     {
                         EntityId = product.Id,
                         EntityName = nameof(Product),
                         DownloadGuid = Guid.NewGuid(),
-                        ContentType = "audio/mp3",
-                        MediaStorage = new MediaStorage
-                        {
-                            Data = File.ReadAllBytes(_sampleDownloadsPath + "vivaldi-four-seasons-spring.mp3")
-                        },
-                        Extension = ".mp3",
-                        Filename = "vivaldi-four-seasons-spring",
-                        IsNew = true,
+						MediaFile = new MediaFile
+						{
+							Name = "vivaldi-four-seasons-spring.mp3",
+							MediaType = "audio",
+							MimeType = "audio/mp3",
+							Extension = "mp3",
+							Size = buffer.Length,
+							IsNew = true,
+							UpdatedOnUtc = now,
+							CreatedOnUtc = now,
+							MediaStorage = new MediaStorage { Data = buffer }
+						},
                         UpdatedOnUtc = DateTime.UtcNow
                     };
                 }
                 else if (product.Sku.IsCaseInsensitiveEqual("P-6001"))
                 {
-                    product.SampleDownload = new Download
+					var buffer = File.ReadAllBytes(_sampleImagesPath + "download/Stone_of_the_wise_preview.pdf");
+					product.SampleDownload = new Download
                     {
                         EntityId = product.Id,
                         EntityName = nameof(Product),
                         DownloadGuid = Guid.NewGuid(),
                         ContentType = "application/pdf",
-                        MediaStorage = new MediaStorage
-                        {
-                            Data = File.ReadAllBytes(_sampleDownloadsPath + "Stone_of_the_wise_preview.pdf")
-                        },
-                        Extension = ".pdf",
-                        Filename = "Stone_of_the_wise_preview",
-                        IsNew = true,
+						MediaFile = new MediaFile
+						{
+							Name = "Stone_of_the_wise_preview.pdf",
+							MediaType = "document",
+							MimeType = "application/pdf",
+							Extension = "pdf",
+							Size = buffer.Length,
+							IsNew = true,
+							UpdatedOnUtc = now,
+							CreatedOnUtc = now,
+							MediaStorage = new MediaStorage { Data = buffer }
+						},
                         UpdatedOnUtc = DateTime.UtcNow
                     };
                 }
@@ -13767,23 +13785,36 @@ namespace SmartStore.Data.Setup
 			return null;
 		}
 
-		protected MediaFile CreatePicture(byte[] pictureBinary, string mimeType, string seoFilename)
+		protected MediaFile CreatePicture(string fileName, string seoFilename = null)
 		{
-			mimeType = mimeType.EmptyNull().Truncate(20);
-			seoFilename = seoFilename.Truncate(100);
-
-			var picture = _ctx.Set<MediaFile>().Create();
-			picture.MimeType = mimeType;
-            picture.MediaType = "image";
-            picture.Name = seoFilename;
-            picture.CreatedOnUtc = picture.UpdatedOnUtc = DateTime.UtcNow;
-			
-			picture.MediaStorage = new MediaStorage
+			try
 			{
-				Data = pictureBinary
-			};
+				var ext = Path.GetExtension(fileName);
+				var path = Path.Combine(_sampleImagesPath, fileName).Replace('/', '\\');
+				var mimeType = MimeTypes.MapNameToMimeType(ext);
+				var buffer = File.ReadAllBytes(path);
+				var now = DateTime.UtcNow;
 
-			return picture;
+				var name = seoFilename.HasValue()
+					? seoFilename.Truncate(100) + ext
+					: Path.GetFileName(fileName).ToLower().Replace('_', '-');
+
+				var picture = new MediaFile
+				{
+					Name = name,
+					MimeType = mimeType,
+					CreatedOnUtc = now,
+					UpdatedOnUtc = now,
+					Size = buffer.Length,
+					MediaStorage = new MediaStorage { Data = buffer }
+				};
+
+				return picture;
+			}
+			catch (Exception ex) 
+			{
+				throw ex;
+			}
 		}
 
         protected void AddProductPicture(
@@ -13792,23 +13823,9 @@ namespace SmartStore.Data.Setup
             string seName = null,
             int displayOrder = 1)
         {
-            string mimeType = null;
-            if (imageName.EndsWith(".png"))
-            {
-                mimeType = "image/png";
-            }
-			else if (imageName.EndsWith(".jpg"))
-			{
-				mimeType = "image/jpeg";
-			}
-			else if (imageName.EndsWith(".gif"))
-            {
-                mimeType = "image/gif";
-            }
-
             product.ProductPictures.Add(new ProductMediaFile
             {
-                MediaFile = CreatePicture(File.ReadAllBytes(_sampleImagesPath + imageName), mimeType ?? "image/jpeg", seName ?? GetSeName(product.Name)),
+                MediaFile = CreatePicture(imageName, seName ?? GetSeName(product.Name)),
                 DisplayOrder = displayOrder
             });
         }

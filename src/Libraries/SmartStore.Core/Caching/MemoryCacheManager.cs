@@ -98,7 +98,7 @@ namespace SmartStore.Core.Caching
 					using (scope)
 					{
 						value = acquirer();
-						Put(key, value, duration, !allowRecursion ? _scopeAccessor.Value.Current.Dependencies : null);
+						Put(key, value, duration, _scopeAccessor.Value.Current.Dependencies);
 						return value;
 					}
 				}
@@ -128,7 +128,7 @@ namespace SmartStore.Core.Caching
 					using (scope)
 					{
 						value = await acquirer();
-						Put(key, value, duration, !allowRecursion ? _scopeAccessor.Value.Current.Dependencies : null);
+						Put(key, value, duration, _scopeAccessor.Value.Current.Dependencies);
 						return value;
 					}
 				}

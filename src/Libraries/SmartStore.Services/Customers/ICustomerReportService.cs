@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using SmartStore.Admin.Models.Customers;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;

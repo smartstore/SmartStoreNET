@@ -1395,10 +1395,26 @@ namespace SmartStore.Admin.Controllers
 
             var items = _customerReportService.GetBestCustomersReport(startDateValue, endDateValue, orderStatus, paymentStatus, shippingStatus, 1, 20);
 
-            var gridModel = new GridModel<BestCustomersReportLineModel>
+            var gridModel = new GridModel<BestCustomerReportLineModel>
             {
-                Data = items.Select(x => x),
-                Total = items.count
+                Data = items.Select(x =>
+                {
+                    var m = new BestCustomerReportLineModel()
+                    {
+                        CustomerId = x.CustomerId,
+                        OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
+                        OrderCount = x.OrderCount,
+                    };
+
+                    var customer = _customerService.GetCustomerById(x.CustomerId);
+                    if (customer != null)
+                    {
+                        m.CustomerName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
+                    }
+
+                    return m;
+                }),
+                Total = items.Count
             };
 
             return new JsonResult
@@ -1425,9 +1441,25 @@ namespace SmartStore.Admin.Controllers
 
             var items = _customerReportService.GetBestCustomersReport(startDateValue, endDateValue, orderStatus, paymentStatus, shippingStatus, 2, 20);
 
-            var gridModel = new GridModel<BestCustomersReportLineModel>
+            var gridModel = new GridModel<BestCustomerReportLineModel>
             {
-                Data = items.Select(x => x),
+                Data = items.Select(x =>
+                {
+                    var m = new BestCustomerReportLineModel()
+                    {
+                        CustomerId = x.CustomerId,
+                        OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
+                        OrderCount = x.OrderCount,
+                    };
+
+                    var customer = _customerService.GetCustomerById(x.CustomerId);
+                    if (customer != null)
+                    {
+                        m.CustomerName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
+                    }
+
+                    return m;
+                }),
                 Total = items.Count
             };
 

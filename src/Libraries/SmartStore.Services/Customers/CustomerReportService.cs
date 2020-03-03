@@ -8,8 +8,6 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Services.Helpers;
-using System.Diagnostics;
-using SmartStore.Admin.Models.Customers;
 using SmartStore.Services.Catalog;
 using SmartStore.Core.Localization;
 
@@ -71,7 +69,7 @@ namespace SmartStore.Services.Customers
         /// <param name="ss">Order shippment status; null to load all records</param>
         /// <param name="orderBy">1 - order by order total, 2 - order by number of orders</param>
         /// <returns>Report</returns>
-        public virtual IList<BestCustomersReportLineModel> GetBestCustomersReport(DateTime? startTime,
+        public virtual IList<BestCustomerReportLine> GetBestCustomersReport(DateTime? startTime,
             DateTime? endTime, OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss, int orderBy, int count)
         {
             int? orderStatusId = null;
@@ -124,19 +122,12 @@ namespace SmartStore.Services.Customers
 
             var result = query2.ToList().Select(x =>
             {
-                var m = new BestCustomersReportLineModel()
+                return new BestCustomerReportLine()
                 {
                     CustomerId = x.CustomerId,
-                    OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
+                    OrderTotal = x.OrderTotal,
                     OrderCount = x.OrderCount,
                 };
-
-                var customer = _customerService.GetCustomerById(x.CustomerId);
-                if (customer != null)
-                {
-                    m.CustomerName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
-                }
-                return m;
 
             }).ToList();
 

@@ -7,7 +7,7 @@ namespace SmartStore.Admin.Models.Customers
 {
     public class BestCustomersDashboardReportModel : ModelBase
     {
-        public IList<BestCustomersReportLineModel> BestCustomersByQuantity { get; set; }
-        public IList<BestCustomersReportLineModel> BestCustomersByAmount { get; set; }
+        public IList<BestCustomerReportLine> BestCustomersByQuantity { get; set; }
+        public IList<BestCustomerReportLine> BestCustomersByAmount { get; set; }
     }
 }

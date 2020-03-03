@@ -26,14 +26,14 @@
 {
     var dataDictAttributes = new ViewDataDictionary();
     dataDictAttributes.TemplateInfo.HtmlFieldPrefix = "bestbyordertotal";
-    @Html.Partial("_ReportBestCustomersByOrderTotal", Model.BestCustomersByOrderTotal, dataDictAttributes)
+    @Html.Partial("_ReportTopCustomersByOrderTotal", Model.TopCustomersByOrderTotal, dataDictAttributes)
 }
 
 @helper TabBestByNumberOfOrders()
 {
     var dataDictAttributes = new ViewDataDictionary();
     dataDictAttributes.TemplateInfo.HtmlFieldPrefix = "bestbynumberoforders";
-    @Html.Partial("_ReportBestCustomersByNumberOfOrders", Model.BestCustomersByOrderTotal, dataDictAttributes)
+    @Html.Partial("_ReportTopCustomersByNumberOfOrders", Model.TopCustomersByOrderTotal, dataDictAttributes)
 }
 @helper TabRegisteredCustomers()
 {

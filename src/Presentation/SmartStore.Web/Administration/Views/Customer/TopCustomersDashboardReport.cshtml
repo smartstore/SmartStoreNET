@@ -1,10 +1,10 @@
-﻿@model BestCustomersDashboardReportModel
+﻿@model TopCustomersDashboardReportModel
 
 <div class="bg-white rounded-lg shadow">
     <div class="px-3 py-2" style="text-align-last: justify;">
         <div class="font-weight-medium p-0 title-report">
             <i class="fa fa-crown pr-2"></i>
-            @T("Admin.SalesReport.BestCustomers")
+            @T("Admin.SalesReport.TopCustomers")
         </div>
 
         <nav class="p-0" style="display: inline-block">
@@ -22,12 +22,12 @@
                     <thead>
                         <tr>
                             <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
-                            <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.OrderCount")</th>
-                            <th class="display-row">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
+                            <th class="display-row row-number">@T("Admin.Customers.Reports.BestBy.Fields.OrderCount")</th>
+                            <th class="display-row row-money">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var x in Model.BestCustomersByAmount)
+                        @foreach (var x in Model.TopCustomersByAmount)
                         {
                             <tr>
                                 <td class="display-row">
@@ -47,12 +47,12 @@
                     <thead>
                         <tr>
                             <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
-                            <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.OrderCount")</th>
-                            <th class="display-row">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
+                            <th class="display-row row-number">@T("Admin.Customers.Reports.BestBy.Fields.OrderCount")</th>
+                            <th class="display-row row-money">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var x in Model.BestCustomersByQuantity)
+                        @foreach (var x in Model.TopCustomersByQuantity)
                         {
                             <tr>
                                 <td class="display-row">

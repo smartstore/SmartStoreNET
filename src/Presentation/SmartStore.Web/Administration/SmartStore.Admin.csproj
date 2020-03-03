@@ -261,7 +261,7 @@
     <Compile Include="Models\Common\MaintenanceModel.cs" />
     <Compile Include="Models\Common\SystemWarningModel.cs" />
     <Compile Include="Models\Common\SystemInfoModel.cs" />
-    <Compile Include="Models\Customers\BestCustomersDashboardReportModel.cs" />
+    <Compile Include="Models\Customers\TopCustomersDashboardReportModel.cs" />
     <Compile Include="Models\DataExchange\CsvConfigurationModel.cs" />
     <Compile Include="Models\DataExchange\ExportDeploymentModel.cs" />
     <Compile Include="Models\DataExchange\ExportFilterModel.cs" />
@@ -332,8 +332,8 @@
     <Compile Include="Models\Settings\BlogSettingsModel.cs" />
     <Compile Include="Models\Blogs\BlogCommentModel.cs" />
     <Compile Include="Models\Settings\CatalogSettingsModel.cs" />
-    <Compile Include="Models\Customers\BestCustomersReportModel.cs" />
-    <Compile Include="Models\Customers\BestCustomerReportLineModel.cs" />
+    <Compile Include="Models\Customers\TopCustomersReportModel.cs" />
+    <Compile Include="Models\Customers\TopCustomerReportLineModel.cs" />
     <Compile Include="Models\Customers\RegisteredCustomerReportLineModel.cs" />
     <Compile Include="Models\Customers\CustomerReportsModel.cs" />
     <Compile Include="Models\Orders\BestsellersReportLineModel.cs" />
@@ -640,7 +640,7 @@
     <Content Include="Views\Shared\Layouts\_SettingLayout.cshtml" />
     <Content Include="Views\Shared\Menus\Settings.cshtml" />
     <Content Include="Views\Shared\Layouts\_SimpleLayout.cshtml" />
-    <Content Include="Views\Customer\BestCustomersReport.cshtml" />
+    <Content Include="Views\Customer\TopCustomersDashboardReport.cshtml" />
     <Content Include="Views\Order\LatestOrdersDashboardReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -1075,10 +1075,10 @@
     <Content Include="Views\Customer\Reports.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Customer\_ReportBestCustomersByOrderTotal.cshtml" />
+    <Content Include="Views\Customer\_ReportTopCustomersByOrderTotal.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Customer\_ReportBestCustomersByNumberOfOrders.cshtml" />
+    <Content Include="Views\Customer\_ReportTopCustomersByNumberOfOrders.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Customer\ReportRegisteredCustomers.cshtml" />

@@ -1,5 +1,5 @@
 ﻿@using Telerik.Web.Mvc.UI
-@model BestCustomersReportModel
+@model TopCustomersReportModel
 
 <div class="row mt-3 grid-filter">
 	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
@@ -32,7 +32,7 @@
 </div>
 
 <div>
-	@(Html.Telerik().Grid<BestCustomerReportLineModel>()
+	@(Html.Telerik().Grid<TopCustomerReportLineModel>()
 		.Name("best-customers-ordertotal-grid")
 		.ClientEvents(events => events.OnDataBinding("bestCustomersOrderTotalOnDataBinding"))
 		.Columns(columns =>
@@ -47,7 +47,7 @@
 				.Template(x => Html.ActionLink(x.CustomerName, "Edit", "Customer", new { id = x.CustomerId }, new { }))
 				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerName #></a>");
 		})
-		.DataBinding(dataBinding => dataBinding.Ajax().Select("ReportBestCustomersByOrderTotalList", "Customer"))
+		.DataBinding(dataBinding => dataBinding.Ajax().Select("ReportTopCustomersByOrderTotalList", "Customer"))
 		.EnableCustomBinding(true))
 </div>
     

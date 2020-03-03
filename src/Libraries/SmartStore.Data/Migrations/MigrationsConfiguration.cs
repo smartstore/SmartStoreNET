@@ -500,7 +500,7 @@
             builder.AddOrUpdate("Admin.Media.Album.File", "Files", "Dateien");
 
             builder.AddOrUpdate("Admin.SalesReport.LatestOrders", "Latest orders", "Neuste Bestellungen");
-
+            builder.AddOrUpdate("Admin.SalesReport.TopCustomers", "Top customers", "Top Kunden");
         }
     }
 }

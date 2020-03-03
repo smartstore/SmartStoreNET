@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Customers
 {
-    public class BestCustomersReportModel : ModelBase
+    public class TopCustomersReportModel : ModelBase
     {
-        public BestCustomersReportModel()
+        public TopCustomersReportModel()
         {
             AvailableOrderStatuses = new List<SelectListItem>();
             AvailablePaymentStatuses = new List<SelectListItem>();

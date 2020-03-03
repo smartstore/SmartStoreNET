@@ -10,12 +10,10 @@ using SmartStore.Admin.Models.ShoppingCart;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
-using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
-using SmartStore.Core.Email;
 using SmartStore.Core.Security;
 using SmartStore.Services;
 using SmartStore.Services.Affiliates;
@@ -1345,11 +1343,11 @@ namespace SmartStore.Admin.Controllers
 
         #region Reports
         [NonAction]
-        private List<BestCustomerReportLineModel> CreateCustomerReportLineModel(IList<BestCustomerReportLine> items)
+        private List<TopCustomerReportLineModel> CreateCustomerReportLineModel(IList<TopCustomerReportLine> items)
         {
             return items.Select(x =>
              {
-                 var m = new BestCustomerReportLineModel()
+                 var m = new TopCustomerReportLineModel()
                  {
                      CustomerId = x.CustomerId,
                      OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
@@ -1370,12 +1368,12 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Customer.Read, false)]
-        public ActionResult BestCustomersReport()
+        public ActionResult TopCustomersDashboardReport()
         {
-            var model = new BestCustomersDashboardReportModel()
+            var model = new TopCustomersDashboardReportModel()
             {
-                BestCustomersByAmount = CreateCustomerReportLineModel(_customerReportService.GetBestCustomersReport(null, null, null, null, null, 1, 7)),
-                BestCustomersByQuantity = CreateCustomerReportLineModel(_customerReportService.GetBestCustomersReport(null, null, null, null, null, 2, 7))
+                TopCustomersByAmount = CreateCustomerReportLineModel(_customerReportService.GetTopCustomersReport(null, null, null, null, null, 1, 7)),
+                TopCustomersByQuantity = CreateCustomerReportLineModel(_customerReportService.GetTopCustomersReport(null, null, null, null, null, 2, 7))
             };
 
             // format price and get customer by id
@@ -1390,23 +1388,23 @@ namespace SmartStore.Admin.Controllers
             var model = new CustomerReportsModel();
 
             //customers by number of orders
-            model.BestCustomersByNumberOfOrders = new BestCustomersReportModel();
-            model.BestCustomersByNumberOfOrders.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
-            model.BestCustomersByNumberOfOrders.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
-            model.BestCustomersByNumberOfOrders.AvailableShippingStatuses = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
+            model.TopCustomersByNumberOfOrders = new TopCustomersReportModel();
+            model.TopCustomersByNumberOfOrders.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
+            model.TopCustomersByNumberOfOrders.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
+            model.TopCustomersByNumberOfOrders.AvailableShippingStatuses = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
 
             //customers by order total
-            model.BestCustomersByOrderTotal = new BestCustomersReportModel();
-            model.BestCustomersByOrderTotal.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
-            model.BestCustomersByOrderTotal.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
-            model.BestCustomersByOrderTotal.AvailableShippingStatuses = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
+            model.TopCustomersByOrderTotal = new TopCustomersReportModel();
+            model.TopCustomersByOrderTotal.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
+            model.TopCustomersByOrderTotal.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
+            model.TopCustomersByOrderTotal.AvailableShippingStatuses = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
 
             return View(model);
         }
 
         [GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Customer.Read)]
-        public ActionResult ReportBestCustomersByOrderTotalList(GridCommand command, BestCustomersReportModel model)
+        public ActionResult ReportTopCustomersByOrderTotalList(GridCommand command, TopCustomersReportModel model)
         {
             DateTime? startDateValue = (model.StartDate == null) ? null
                             : (DateTime?)Services.DateTimeHelper.ConvertToUtcTime(model.StartDate.Value, Services.DateTimeHelper.CurrentTimeZone);
@@ -1418,9 +1416,9 @@ namespace SmartStore.Admin.Controllers
             PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)(model.PaymentStatusId) : null;
             ShippingStatus? shippingStatus = model.ShippingStatusId > 0 ? (ShippingStatus?)(model.ShippingStatusId) : null;
 
-            var items = _customerReportService.GetBestCustomersReport(startDateValue, endDateValue, orderStatus, paymentStatus, shippingStatus, 1, 20);
+            var items = _customerReportService.GetTopCustomersReport(startDateValue, endDateValue, orderStatus, paymentStatus, shippingStatus, 1, 20);
 
-            var gridModel = new GridModel<BestCustomerReportLineModel>
+            var gridModel = new GridModel<TopCustomerReportLineModel>
             {
                 Data = CreateCustomerReportLineModel(items),
                 Total = items.Count
@@ -1434,7 +1432,7 @@ namespace SmartStore.Admin.Controllers
 
         [GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Customer.Read)]
-        public ActionResult ReportBestCustomersByNumberOfOrdersList(GridCommand command, BestCustomersReportModel model)
+        public ActionResult ReportTopCustomersByNumberOfOrdersList(GridCommand command, TopCustomersReportModel model)
         {
             DateTime? startDateValue = (model.StartDate == null) 
                 ? null
@@ -1448,9 +1446,9 @@ namespace SmartStore.Admin.Controllers
             PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)(model.PaymentStatusId) : null;
             ShippingStatus? shippingStatus = model.ShippingStatusId > 0 ? (ShippingStatus?)(model.ShippingStatusId) : null;
 
-            var items = _customerReportService.GetBestCustomersReport(startDateValue, endDateValue, orderStatus, paymentStatus, shippingStatus, 2, 20);
+            var items = _customerReportService.GetTopCustomersReport(startDateValue, endDateValue, orderStatus, paymentStatus, shippingStatus, 2, 20);
 
-            var gridModel = new GridModel<BestCustomerReportLineModel>
+            var gridModel = new GridModel<TopCustomerReportLineModel>
             {
                 Data = CreateCustomerReportLineModel(items),
                 Total = items.Count

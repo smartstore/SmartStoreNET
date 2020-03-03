@@ -23,7 +23,7 @@ namespace SmartStore.Services.Customers
         /// <param name="ss">Order shippment status; null to load all records</param>
         /// <param name="orderBy">1 - order by order total, 2 - order by number of orders</param>
         /// <returns>Report</returns>
-        IList<BestCustomerReportLine> GetBestCustomersReport(DateTime? startTime, DateTime? endTime, OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss, int orderBy, int count);
+        IList<TopCustomerReportLine> GetTopCustomersReport(DateTime? startTime, DateTime? endTime, OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss, int orderBy, int count);
         
         /// <summary>
         /// Gets a report of customers registered in the last days

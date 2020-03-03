@@ -3,7 +3,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Customers
 {
-    public class BestCustomerReportLineModel : ModelBase
+    public class TopCustomerReportLineModel : ModelBase
     {
 		[SmartResourceDisplayName("Admin.Customers.Reports.BestBy.Fields.Customer")]
         public int CustomerId { get; set; }

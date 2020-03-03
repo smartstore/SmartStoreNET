@@ -62,7 +62,7 @@
 					.HeaderHtmlAttributes(new { style = "text-align:center" });
 
 				columns.Bound(x => x.ProductName)
-					.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+					.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
 					.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
 				columns.Bound(x => x.CustomerId)
 					.Template(x => Html.ActionLink(x.CustomerName, "Edit", "Customer", new { id = x.CustomerId }, new { }))

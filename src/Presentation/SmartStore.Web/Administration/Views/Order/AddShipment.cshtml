@@ -74,7 +74,7 @@
                     var fieldId = string.Concat("qtyToAdd", item.OrderItemId);
 					<tr>
 						<td>
-							@Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)
+							@Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)
 							@if (!String.IsNullOrEmpty(item.AttributeInfo))
 							{
 								<br />

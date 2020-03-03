@@ -709,7 +709,7 @@
 			.Columns(columns =>
 			{
 				columns.Bound(sci => sci.ProductName)
-					.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+					.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
 					.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
 				columns.Bound(sci => sci.Quantity).Centered().Width(100);
 				columns.Bound(sci => sci.UnitPrice).RightAlign().Width(120);
@@ -733,7 +733,7 @@
 			.Columns(columns =>
 			{
 				columns.Bound(sci => sci.ProductName)
-					.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+					.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
 					.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
 				columns.Bound(sci => sci.Quantity).Centered().Width(100);
 				columns.Bound(sci => sci.UnitPrice).RightAlign().Width(120);

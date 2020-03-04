@@ -55,6 +55,18 @@
         }
     }
 
+    .chart-toggle {
+        font-size: .75rem;
+        padding: 0.33rem .66rem;
+        border: 0;
+        z-index: 1;
+    }
+
+    .canvas-container {
+        position: relative;
+        bottom: -10px;
+    }
+
     .sales-chart {
         grid-column-start: 1;
         grid-column-end: 3;
@@ -116,5 +128,37 @@
         grid-column-end: 5;
         grid-row-start: 1;
         grid-row-end: 6;
+    }
+
+    .customer-registrations, .top-customers {
+        .btn-group {
+            > .btn-secondary {
+                &.active {
+                    background-color: darken($success, 10%);
+                    color: white;
+                    z-index: 2;
+                }
+
+                &:hover:not(.active) {
+                    background-color: darken($secondary, 10%);
+                }
+            }
+        }
+    }
+
+    .sales-chart, .bestsellers {
+        .btn-group {
+            > .btn-secondary {
+                &.active {
+                    background-color: darken($primary, 10%);
+                    color: white;
+                    z-index: 2;
+                }
+
+                &:hover:not(.active) {
+                    background-color: darken($secondary, 10%);
+                }
+            }
+        }
     }
 }

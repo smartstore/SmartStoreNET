@@ -313,6 +313,10 @@ body {
         box-shadow: none;
         margin: 0;
         padding-top: 30px;
+
+        .section-header > .title{
+            display: none;
+        }
     }
 }
 

@@ -28,7 +28,7 @@ namespace SmartStore.Core.Caching
 			return default(T);
 		}
 
-		public T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null, bool independent = false)
+		public T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null, bool independent = false, bool allowRecursion = false)
 		{
 			if (acquirer == null)
 			{
@@ -37,7 +37,7 @@ namespace SmartStore.Core.Caching
 			return acquirer();
 		}
 
-		public Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null, bool independent = false)
+		public Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null, bool independent = false, bool allowRecursion = false)
 		{
 			if (acquirer == null)
 			{

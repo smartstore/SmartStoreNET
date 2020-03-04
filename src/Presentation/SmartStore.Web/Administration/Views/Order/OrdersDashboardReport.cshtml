@@ -1,0 +1,294 @@
+﻿@model OrdersDashboardReportModel
+
+<div class="bg-white rounded-lg shadow h-100" style="overflow:hidden">
+    <div class="px-3 pt-3 d-flex pb-0">
+        <div class="font-weight-medium p-0 title-report">
+            <i class="fa fa-chart-bar pr-2"></i>
+            @T("Account.CustomerOrders")
+        </div>
+
+        <div class="align-self-center pl-2 fs-h6">
+            <span>+14%</span><i class="fas fa-chevron-up text-success pl-1"></i>
+        </div>
+
+        <div class="btn-group btn-group-toggle ml-auto" data-toggle="buttons">
+            <label class="btn btn-secondary active chart-toggle">
+                <input type="radio" name="orders-toggle" period="day" autocomplete="off" checked>
+                @T("Time.Day")
+            </label>
+            <label class="btn btn-secondary chart-toggle">
+                <input type="radio" name="orders-toggle" period="week" autocomplete="off">
+                @T("Time.Week")
+            </label>
+            <label class="btn btn-secondary chart-toggle">
+                <input type="radio" name="orders-toggle" period="month" autocomplete="off">
+                @T("Time.Month")
+            </label>
+            <label class="btn btn-secondary chart-toggle">
+                <input type="radio" name="orders-toggle" period="year" autocomplete="off">
+                @T("Time.Year")
+            </label>
+        </div>
+    </div>
+    <div class="canvas-container pt-0 mt-0">
+        <canvas id="orders-chart" class="w-100" width="3" height="1"></canvas>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('input[type=radio][name=orders-toggle]').change(function () {
+            setChartData($('input:radio[name=orders-toggle]:checked').attr("period"));
+        });
+
+        function setChartData(period) {
+            ordersChart.destroy();
+
+            if (period === "day")
+                updateData(labels_day, dummyDataSales_day, dummyDataCancelled_day, dummyDataProcessing_day, dummyDataPending_day);
+
+            else if (period === "week")
+                updateData(labels_week, dummyDataSales_week, dummyDataCancelled_week, dummyDataProcessing_week, dummyDataPending_week);
+
+            else if (period === "month")
+                updateData(labels_month, dummyDataSales_month, dummyDataCancelled_month, dummyDataProcessing_month, dummyDataPending_month);
+
+            else if (period === "year")
+                updateData(labels_year, dummyDataSales_year, dummyDataCancelled_year, dummyDataProcessing_year, dummyDataPending_year);
+
+            else
+                console.error("no valid chart period >>> " + period);
+        }
+
+        function updateData(labels, dataOrders, dataCancelled, dataPending, dataProcessing) {
+            order_config.data.datasets[0].data = dataCancelled;
+            order_config.data.datasets[1].data = dataPending;
+            order_config.data.datasets[2].data = dataProcessing;
+            order_config.data.datasets[3].data = dataOrders;
+            order_config.data.labels = labels;
+            ordersChart = new Chart(order_ctx, order_config);
+        }
+
+        //----------------------------------------------------
+        // Chartjs
+        var style = getComputedStyle(document.body);
+        var colorPrimary = style.getPropertyValue('--primary');
+        var colorIndigo = style.getPropertyValue('--indigo');
+        var colorDanger = style.getPropertyValue('--danger');
+        var colorSuccess = style.getPropertyValue('--success');
+        var colorWarning = style.getPropertyValue('--warning');
+
+        var fontFamily = style.getPropertyValue('--font-family-sans-serif');
+
+        var chartOptions = {
+            responsive: true,
+            stacked: false,
+            animation: {
+                duration: 1000,
+                easing: 'easeInOutSine',
+
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: false,
+            },
+            layout: {
+                padding: {
+                    left: 0,
+                    right: 0,
+                    top: 5,
+                    bottom: 4
+                }
+            },
+            legend: {
+                display: true,
+                labels: {
+                    //boxWidth: 7,
+                    //padding: 20,
+                    //fontFamily: fontFamily,
+                    //usePointStyle: true,
+
+                    //generateLabels: function (chart) {
+                    //    return chart.data.datasets[0].label;
+                    //}
+                }
+            },
+            elements: {
+                point: {
+                    radius: 0,
+                    hoverRadius: 6,
+                }
+            },
+            tooltips: {
+                enabled: true,
+                mode: 'nearest',
+                intersect: false,
+            },
+            scales: {
+                yAxes: [{
+                    display: false,
+                }],
+                xAxes: [{
+                    display: false,
+                    position: 'top',
+                    gridLines: {
+                        display: false,
+                    },
+                    scaleLabel: {
+                        display: false,
+                        padding: 0,
+                    },
+                    //ticks: {
+                    //    callback: function (value, index, values) {
+                    //        return index % 7 != 0 ? null : value;
+                    //    },
+                    //    fontFamily: fontFamily,
+                    //    padding: 0,
+                    //    z: 0,
+                    //}
+                }]
+            },
+            title: {
+                display: false,
+            }
+        }
+
+        var dummyDataSales_day = [8, 5, 9, 7, 8, 10, 9, 12, 9, 15, 17, 16, 12, 9, 14, 17, 18, 13, 18, 15, 19, 17, 18, 16];
+        var dummyDataSales_week = [7, 5, 9, 7, 8, 12, 13];
+        var dummyDataSales_month = [34, 52, 46, 59];
+        var dummyDataSales_year = [61, 72, 53, 82, 112, 135, 122, 113, 133, 124, 111, 124, 112];
+
+        var dummyDataCancelled_day = [1, 0, 0, 2, 1, 1, 0, 2, 1, 2, 3, 1, 0, 0, 1, 0, 4, 2, 1, 1, 3, 2, 1, 0];
+        var dummyDataCancelled_week = [1, 2, 3, 2, 1, 4, 1];
+        var dummyDataCancelled_month = [4, 7, 2, 8];
+        var dummyDataCancelled_year = [6, 9, 5, 3, 12, 17, 9, 14, 18, 9, 12, 16, 8];
+
+        var dummyDataPending_day = [3, 1, 5, 4, 4, 8, 7, 7, 7, 12, 13, 10, 5, 7, 5, 8, 9, 2, 9, 8, 15, 8, 6, 8];
+        var dummyDataPending_week = [3, 2, 7, 3, 3, 4, 2];
+        var dummyDataPending_month = [14, 28, 16, 23];
+        var dummyDataPending_year = [3, 5, 7, 4, 8, 3, 6, 3, 8, 12, 31, 21, 47];
+
+        var dummyDataProcessing_day = [4, 3, 3, 2, 2, 3, 2, 3, 4, 6, 9, 9, 3, 5, 9, 7, 8, 3, 8, 5, 9, 7, 8, 6];
+        var dummyDataProcessing_week = [4, 2, 6, 2, 3, 7, 8];
+        var dummyDataProcessing_month = [17, 14, 22, 27];
+        var dummyDataProcessing_year = [8, 12, 28, 22, 32, 43, 42, 70, 45, 66, 43, 60, 59];
+
+        var labels_day = ['0:00 Uhr', '1:00 Uhr', '2:00 Uhr', '3:00 Uhr',
+            '4:00 Uhr', '5:00 Uhr', '6:00 Uhr', '7:00 Uhr', '8:00 Uhr',
+            '9:00 Uhr', '10:00 Uhr', '11:00 Uhr', '12:00 Uhr', '13:00 Uhr',
+            '14:00 Uhr', '15:00 Uhr', '16:00 Uhr', '17:00 Uhr', '18:00 Uhr',
+            '19:00 Uhr', '20:00 Uhr', '21:00 Uhr', '22:00 Uhr', '23:00 Uhr'];
+        var labels_week = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+        var labels_month = ['01.01 - 07.01', '08.01 - 15.01', '16.01 - 23.01', '24.01 - 31.01'];
+        var labels_year = ['April 2019', 'Mai 2019', 'Juni 2019', 'Juli 2019', 'August 2019', 'September 2019', 'October 2019', 'November 2019', 'Dezember 2019', 'Januar 2020', 'Februar 2020', 'März 2020'];
+
+        var ordersChartElement = document.getElementById('orders-chart');
+        var order_ctx = ordersChartElement.getContext('2d');
+
+        var ordersGradient = order_ctx.createLinearGradient(0, -ordersChartElement.clientHeight / 5, 0, ordersChartElement.clientHeight);
+        ordersGradient.addColorStop(0, colorPrimary);
+        var rgbColors = hexToRgb(colorPrimary.substr(1));
+        ordersGradient.addColorStop(1, 'rgba(' + rgbColors.r + ', ' + rgbColors.g + ', ' + rgbColors.b + ', 0)');
+
+        var cancelledGradient = order_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
+        cancelledGradient.addColorStop(0, colorDanger);
+        rgbColors = hexToRgb(colorDanger.substr(1));
+        cancelledGradient.addColorStop(1, 'rgba(' + rgbColors.r + ', ' + rgbColors.g + ', ' + rgbColors.b + ', 0)');
+
+        var pendingGradient = order_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
+        pendingGradient.addColorStop(0, colorWarning);
+        rgbColors = hexToRgb(colorWarning.substr(1));
+        pendingGradient.addColorStop(1, 'rgba(' + rgbColors.r + ', ' + rgbColors.g + ', ' + rgbColors.b + ', 0)');
+
+        var processingGradient = order_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
+        processingGradient.addColorStop(0, colorSuccess);
+        rgbColors = hexToRgb(colorSuccess.substr(1));
+        processingGradient.addColorStop(1, 'rgba(' + rgbColors.r + ', ' + rgbColors.g + ', ' + rgbColors.b + ', 0)');
+
+        var order_config = {
+            type: 'line',
+            data: {
+                labels: labels_day,
+                datasets: [{
+                    label: 'Cancelled',
+                    data: dummyDataCancelled_day,
+                    borderWidth: 4,
+                    borderColor: colorDanger,
+                    backgroundColor: cancelledGradient,
+                    lineTension: 0.2,
+                    fill: true,
+                    pointHoverBackgroundColor: colorDanger,
+                    pointHoverBorderColor: 'transparent',
+                }, {
+                    label: 'Pending',
+                    data: dummyDataPending_day,
+                    borderWidth: 4,
+                    borderColor: colorWarning,
+                    backgroundColor: pendingGradient,
+                    lineTension: 0.2,
+                    fill: true,
+                    hidden: true,
+                    pointHoverBackgroundColor: colorWarning,
+                    pointHoverBorderColor: 'transparent',
+                }, {
+                    label: 'Processing',
+                    data: dummyDataProcessing_day,
+                    borderWidth: 4,
+                    borderColor: colorSuccess,
+                    backgroundColor: processingGradient,
+                    lineTension: 0.2,
+                    fill: true,
+                    hidden: true,
+                    pointHoverBackgroundColor: colorSuccess,
+                    pointHoverBorderColor: 'transparent',
+                }, {
+                    label: 'Orders',
+                    data: dummyDataSales_day,
+                    borderWidth: 4,
+                    borderColor: colorPrimary,
+                    backgroundColor: ordersGradient,
+                    lineTension: 0.2,
+                    fill: true,
+                    pointHoverBackgroundColor: colorPrimary,
+                    pointHoverBorderColor: 'transparent',
+                }]
+            },
+            options: chartOptions,
+        }
+
+        var ordersChart = new Chart(order_ctx, order_config);
+
+        function hexToRgb(hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+    });
+</script>
+<style>
+    [class="0-legend"] {
+        list-style: none;
+        cursor: pointer;
+        padding-left: 50px;
+    }
+
+        [class="0-legend"] li {
+            display: inline-block;
+            padding: 0 55px;
+        }
+
+            [class="0-legend"] li.hidden {
+                text-decoration: line-through;
+            }
+
+            [class="0-legend"] li span {
+                border-radius: 55px;
+                display: inline-block;
+                height: 10px;
+                margin-right: 10px;
+                width: 10px;
+            }
+</style>

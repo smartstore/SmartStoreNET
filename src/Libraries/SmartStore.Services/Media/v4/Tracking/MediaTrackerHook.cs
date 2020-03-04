@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
@@ -68,7 +69,6 @@ namespace SmartStore.Services.Media
             }
 
             var state = entry.InitialState;
-            var currentValues = entry.Entry.CurrentValues;
 
             foreach (var prop in properties)
             {
@@ -82,7 +82,7 @@ namespace SmartStore.Services.Media
                         TryAddTrack(prop.Album, entry.Entity, prevValue, MediaTrackOperation.Untrack, actions);
 
                         // Track the new file relation (if not null)
-                        TryAddTrack(prop.Album, entry.Entity, currentValues[prop.Name], MediaTrackOperation.Track, actions);
+                        TryAddTrack(prop.Album, entry.Entity, entry.Entry.CurrentValues[prop.Name], MediaTrackOperation.Track, actions);
 
                         _actionsTemp[entry.Entity] = actions;
                     }
@@ -93,7 +93,8 @@ namespace SmartStore.Services.Media
                     {
                         case EntityState.Added:
                         case EntityState.Deleted:
-                            TryAddTrack(prop.Album, entry.Entity, currentValues[prop.Name], state == EntityState.Added ? MediaTrackOperation.Track : MediaTrackOperation.Untrack);
+                            var value = FastProperty.GetProperty(type, prop.Name).GetValue(entry.Entity);
+                            TryAddTrack(prop.Album, entry.Entity, value, state == EntityState.Added ? MediaTrackOperation.Track : MediaTrackOperation.Untrack);
                             break;
                         case EntityState.Modified:
                             if (_actionsTemp.TryGetValue(entry.Entity, out var actions))

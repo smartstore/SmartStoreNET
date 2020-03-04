@@ -119,7 +119,6 @@ namespace SmartStore.Services.Media
 
         protected virtual void TrackManyCore(IEnumerable<MediaTrackAction> actions, string albumName, bool isMigration)
         {
-            Guard.NotEmpty(albumName, nameof(albumName));
             Guard.NotNull(actions, nameof(actions));
 
             if (!actions.Any())

@@ -1,0 +1,58 @@
+﻿@model RegisteredCustomersDashboardReportModel
+
+<div class="bg-white rounded-lg shadow">
+    <div class="px-3 py-2" style="text-align-last: justify;">
+        <div class="font-weight-medium p-0 title-report">
+            <i class="fa fa-users pr-2"></i>
+            @T("Admin.Customers.Reports.RegisteredCustomers")
+        </div>
+
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-secondary active chart-toggle">
+                <input type="radio" name="customers-toggle" period="day" autocomplete="off" checked>
+                @T("Time.Day")
+            </label>
+            <label class="btn btn-secondary chart-toggle">
+                <input type="radio" name="customers-toggle" period="week" autocomplete="off">
+                @T("Time.Week")
+            </label>
+            <label class="btn btn-secondary chart-toggle">
+                <input type="radio" name="customers-toggle" period="month" autocomplete="off">
+                @T("Time.Month")
+            </label>
+            <label class="btn btn-secondary chart-toggle">
+                <input type="radio" name="customers-toggle" period="year" autocomplete="off">
+                @T("Time.Year")
+            </label>
+        </div>
+    </div>
+    <div>
+
+
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('input[type=radio][name=customers-toggle]').change(function () {
+            SetChartData($('input:radio[name=customers-toggle]:checked').attr("period"));
+        });
+
+        function SetChartData(period) {
+            // get chart elements and update chart with new data
+
+            if (period === "day") {
+
+            } else if (period === "week") {
+
+            } else if (period === "month") {
+
+            } else if (period === "year") {
+
+            } else {
+                console.error("no valid chart period >>> " + period);
+            }
+        }
+
+    });
+</script>

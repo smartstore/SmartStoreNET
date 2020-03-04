@@ -2859,6 +2859,15 @@ namespace SmartStore.Admin.Controllers
             return PartialView(model);
         }
 
+        [Permission(Permissions.Order.Read, false)]
+        public ActionResult OrdersDashboardReport()
+        {
+            var model = new OrdersDashboardReportModel();
+
+
+            return PartialView(model);
+        }
+
         #endregion
     }
 }

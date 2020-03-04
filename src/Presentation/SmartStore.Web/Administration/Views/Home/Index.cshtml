@@ -5,7 +5,7 @@
 }
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-<script src="~/Administration/Scripts/gauge.js"></script> @*Bundle this*@
+@* PIE CHARTs *@
 
 <div class="section-header">
     <div class="title">
@@ -21,22 +21,18 @@
     </div>
     <div class="incomplete-orders">
         @*@{ Html.RenderAction("OrderIncompleteReport", "Order"); }*@
-
     </div>
     <div class="sales-chart">
-        @*@{ Html.RenderAction("OrderReport", "Order"); }*@
-
+        @{ Html.RenderAction("OrdersDashboardReport", "Order"); }
     </div>
     <div class="bestsellers">
         @{ Html.RenderAction("BestsellersDashboardReport", "Order"); }
-
     </div>
     <div class="top-customers">
         @{ Html.RenderAction("TopCustomersDashboardReport", "Customer"); }
-
     </div>
     <div class="customer-registrations">
-        @*@{ Html.RenderAction("RegisteredCustomersReport", "Customer"); }*@
+        @{ Html.RenderAction("RegisteredCustomersDashboardReport", "Customer"); }
     </div>
     <div class="latest-orders">
         @{ Html.RenderAction("LatestOrdersDashboardReport", "Order"); }

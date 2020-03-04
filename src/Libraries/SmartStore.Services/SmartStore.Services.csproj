@@ -251,6 +251,7 @@
     <Compile Include="Customers\Rules\ITargetGroupService.cs" />
     <Compile Include="Customers\Rules\TargetGroupFilterDescriptor.cs" />
     <Compile Include="Customers\Rules\TargetGroupService.cs" />
+    <Compile Include="Customers\Tasks\CustomerRolesAssignmentsTask.cs" />
     <Compile Include="DataExchange\Export\Deployment\DataDeploymentResult.cs" />
     <Compile Include="DataExchange\Export\Deployment\PublicFolderPublisher.cs" />
     <Compile Include="DataExchange\Export\ExportFileStream.cs" />

@@ -24,20 +24,26 @@ namespace SmartStore.Data.Migrations
 
 		public void Seed(SmartObjectContext context)
 		{
-			var pdfUser = context.Set<Customer>().Include(x => x.CustomerRoles).FirstOrDefault(x => x.SystemName == SystemCustomerNames.PdfConverter);
+			var pdfUser = context.Set<Customer>()
+                .Include(x => x.CustomerRoleMappings.Select(rm => rm.CustomerRole))
+                .FirstOrDefault(x => x.SystemName == SystemCustomerNames.PdfConverter);
 
 			if (pdfUser == null)
 				return;
 
-			if (!pdfUser.CustomerRoles.Any())
+			if (!pdfUser.CustomerRoleMappings.Any())
 			{
-				var guestRole = pdfUser.CustomerRoles.FirstOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests);
+                var guestRole = pdfUser.CustomerRoleMappings
+                    .Where(x => !x.IsSystemMapping)
+                    .Select(x => x.CustomerRole)
+                    .FirstOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests);
+
 				if (guestRole == null)
 				{
 					guestRole = context.Set<CustomerRole>().FirstOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests);
 					if (guestRole != null)
 					{
-						pdfUser.CustomerRoles.Add(guestRole);
+                        context.Set<CustomerRoleMapping>().Add(new CustomerRoleMapping { CustomerId = pdfUser.Id, CustomerRoleId = guestRole.Id });
 						context.SaveChanges();
 					}
 				}

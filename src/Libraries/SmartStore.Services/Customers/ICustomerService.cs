@@ -5,7 +5,6 @@ using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Customers
 {
@@ -195,15 +194,44 @@ namespace SmartStore.Services.Customers
 
         #endregion
 
-		#region Reward points
+        #region Customer role mappings
 
-		/// <summary>
-		/// Add or remove reward points for a product review
-		/// </summary>
-		/// <param name="customer">The customer</param>
-		/// <param name="product">The product</param>
-		/// <param name="add">Whether to add or remove points</param>
-		void RewardPointsForProductReview(Customer customer, Product product, bool add);
+        /// <summary>
+        /// Gets a customer role mapping by identifier.
+        /// </summary>
+        /// <param name="mappingId">Mapping identifier.</param>
+        /// <returns>Customer role mapping.</returns>
+        CustomerRoleMapping GetCustomerRoleMappingById(int mappingId);
+
+        /// <summary>
+        /// Inserts a customer role mapping.
+        /// </summary>
+        /// <param name="mapping">Customer role mapping.</param>
+        void InsertCustomerRoleMapping(CustomerRoleMapping mapping);
+
+        /// <summary>
+        /// Updates a customer role mapping.
+        /// </summary>
+        /// <param name="mapping">Customer role mapping.</param>
+        void UpdateCustomerRoleMapping(CustomerRoleMapping mapping);
+
+        /// <summary>
+        /// Deletes a customer role mapping.
+        /// </summary>
+        /// <param name="mapping">Customer role mapping.</param>
+        void DeleteCustomerRoleMapping(CustomerRoleMapping mapping);
+
+        #endregion
+
+        #region Reward points
+
+        /// <summary>
+        /// Add or remove reward points for a product review
+        /// </summary>
+        /// <param name="customer">The customer</param>
+        /// <param name="product">The product</param>
+        /// <param name="add">Whether to add or remove points</param>
+        void RewardPointsForProductReview(Customer customer, Product product, bool add);
 
 		/// <summary>
 		/// Gets reward points histories
@@ -212,6 +240,6 @@ namespace SmartStore.Services.Customers
 		/// <returns>Reward points histories</returns>
 		Multimap<int, RewardPointsHistory> GetRewardPointsHistoriesByCustomerIds(int[] customerIds);
 
-		#endregion Reward points
+		#endregion
 	}
 }

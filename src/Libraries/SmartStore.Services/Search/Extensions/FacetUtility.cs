@@ -178,7 +178,7 @@ namespace SmartStore.Services.Search.Extensions
             var query = groupQuery
                 .OrderByDescending(x => x.Count)
                 .Select(x => x.Customer)
-                .Where(x => x.CustomerRoles.FirstOrDefault(y => y.SystemName == SystemCustomerRoleNames.Guests) == null && !x.Deleted && x.Active && !x.IsSystemAccount);
+                .Where(x => x.CustomerRoleMappings.FirstOrDefault(y => y.CustomerRole.SystemName == SystemCustomerRoleNames.Guests) == null && !x.Deleted && x.Active && !x.IsSystemAccount);
 
             return query;
         }

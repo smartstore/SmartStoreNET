@@ -82,12 +82,12 @@ namespace SmartStore.Core.Tests.Rules.Filters
                 RuleType = RuleType.Int,
                 Name = "Age"
             };
-            public static FilterDescriptor IsInAnyRole = new AnyFilterDescriptor<Customer, CustomerRole, int>(x => x.CustomerRoles.Where(y => y.Active), r => r.Id)
+            public static FilterDescriptor IsInAnyRole = new AnyFilterDescriptor<Customer, CustomerRoleMapping, int>(x => x.CustomerRoleMappings.Where(y => y.CustomerRole.Active), r => r.CustomerRole.Id)
             {
                 RuleType = RuleType.IntArray,
                 Name = "IsInAnyRole"
             };
-            public static FilterDescriptor HasAllRoles = new AllFilterDescriptor<Customer, CustomerRole, int>(x => x.CustomerRoles.Where(y => y.Active), r => r.Id)
+            public static FilterDescriptor HasAllRoles = new AllFilterDescriptor<Customer, CustomerRoleMapping, int>(x => x.CustomerRoleMappings.Where(y => y.CustomerRole.Active), r => r.CustomerRole.Id)
             {
                 RuleType = RuleType.IntArray,
                 Name = "HasAllRoles"
@@ -139,18 +139,18 @@ namespace SmartStore.Core.Tests.Rules.Filters
                 _products.Add(new Product { Id = i });
             }
 
-            _customers = new List<Customer>
+            _customers = new List<Customer>();
+
+            var customer1 = new Customer
             {
-                new Customer
-                {
-                    Id = 1,
-                    Username = "sally",
-                    BillingAddress = new Address { CountryId = 1 }, ShippingAddress = new Address { CountryId = 1 },
-                    BirthDate = new DateTime(1980, 1, 1),
-                    CustomerRoles = new List<CustomerRole> { _role1, _role2 },
-                    IsTaxExempt = false,
-                    LastActivityDateUtc = DateTime.Now.AddDays(-5),
-                    Orders = new List<Order>
+                Id = 1,
+                Username = "sally",
+                BillingAddress = new Address { CountryId = 1 },
+                ShippingAddress = new Address { CountryId = 1 },
+                BirthDate = new DateTime(1980, 1, 1),
+                IsTaxExempt = false,
+                LastActivityDateUtc = DateTime.Now.AddDays(-5),
+                Orders = new List<Order>
                     {
                         new Order
                         {
@@ -168,17 +168,21 @@ namespace SmartStore.Core.Tests.Rules.Filters
                             }
                         }
                     }
-                },
-                new Customer
-                {
-                    Id = 2,
-                    Username = "john",
-                    BillingAddress = new Address { CountryId = 2 }, ShippingAddress = new Address { CountryId = 1 },
-                    BirthDate = new DateTime(1999, 12, 24),
-                    CustomerRoles = new List<CustomerRole> { _role2, _role3, _role4 },
-                    IsTaxExempt = true,
-                    LastActivityDateUtc = DateTime.Now.AddDays(-1),
-                    Orders = new List<Order>
+            };
+            customer1.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = 1, CustomerRoleId = _role1.Id, CustomerRole = _role1 });
+            customer1.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = 1, CustomerRoleId = _role2.Id, CustomerRole = _role2 });
+            _customers.Add(customer1);
+
+            var customer2 = new Customer
+            {
+                Id = 2,
+                Username = "john",
+                BillingAddress = new Address { CountryId = 2 },
+                ShippingAddress = new Address { CountryId = 1 },
+                BirthDate = new DateTime(1999, 12, 24),
+                IsTaxExempt = true,
+                LastActivityDateUtc = DateTime.Now.AddDays(-1),
+                Orders = new List<Order>
                     {
                         new Order
                         {
@@ -198,17 +202,22 @@ namespace SmartStore.Core.Tests.Rules.Filters
                             }
                         }
                     }
-                },
-                new Customer
-                {
-                    Id = 3,
-                    Username = "edward",
-                    BillingAddress = new Address { CountryId = 3 }, ShippingAddress = new Address { CountryId = 3 },
-                    BirthDate = new DateTime(1960, 10, 10),
-                    CustomerRoles = new List<CustomerRole> { _role1, _role4 },
-                    IsTaxExempt = false,
-                    LastActivityDateUtc = DateTime.Now.AddDays(-100),
-                    Orders = new List<Order>
+            };
+            customer2.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = 2, CustomerRoleId = _role2.Id, CustomerRole = _role2 });
+            customer2.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = 2, CustomerRoleId = _role3.Id, CustomerRole = _role3 });
+            customer2.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = 2, CustomerRoleId = _role4.Id, CustomerRole = _role4 });
+            _customers.Add(customer2);
+
+            var customer3 = new Customer
+            {
+                Id = 3,
+                Username = "edward",
+                BillingAddress = new Address { CountryId = 3 },
+                ShippingAddress = new Address { CountryId = 3 },
+                BirthDate = new DateTime(1960, 10, 10),
+                IsTaxExempt = false,
+                LastActivityDateUtc = DateTime.Now.AddDays(-100),
+                Orders = new List<Order>
                     {
                         new Order
                         {
@@ -227,17 +236,21 @@ namespace SmartStore.Core.Tests.Rules.Filters
                             }
                         }
                     }
-                },
-                new Customer
-                {
-                    Id = 4,
-                    Username = "snowden",
-                    BillingAddress = new Address { CountryId = 1 }, ShippingAddress = new Address { CountryId = 1 },
-                    BirthDate = DateTime.Now.AddYears(-32),
-                    CustomerRoles = new List<CustomerRole> { _role2, _role3 },
-                    IsTaxExempt = true,
-                    LastActivityDateUtc = DateTime.Now.AddDays(0),
-                    Orders = new List<Order>
+            };
+            customer3.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = 3, CustomerRoleId = _role1.Id, CustomerRole = _role1 });
+            customer3.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = 3, CustomerRoleId = _role4.Id, CustomerRole = _role4 });
+            _customers.Add(customer3);
+
+            var customer4 = new Customer
+            {
+                Id = 4,
+                Username = "snowden",
+                BillingAddress = new Address { CountryId = 1 },
+                ShippingAddress = new Address { CountryId = 1 },
+                BirthDate = DateTime.Now.AddYears(-32),
+                IsTaxExempt = true,
+                LastActivityDateUtc = DateTime.Now.AddDays(0),
+                Orders = new List<Order>
                     {
                         new Order
                         {
@@ -253,36 +266,44 @@ namespace SmartStore.Core.Tests.Rules.Filters
                             }
                         }
                     }
-                },
-                new Customer
-                {
-                    Id = 5,
-                    BillingAddress = new Address { CountryId = 2 }, ShippingAddress = new Address { CountryId = 2 },
-                    CustomerRoles = new List<CustomerRole> { _role1 },
-                    LastActivityDateUtc = DateTime.Now.AddDays(-2),
-                    Orders = new List<Order>
-                    {
-                        new Order
-                        {
-                            OrderItems = new List<OrderItem>()
-                        }
-                    }
-                },
-                new Customer
-                {
-                    Id = 6,
-                    BillingAddress = new Address { CountryId = 1 }, ShippingAddress = new Address { CountryId = 1 },
-                    CustomerRoles = new List<CustomerRole> { _role2 },
-                    LastActivityDateUtc = DateTime.Now.AddDays(-10),
-                    Orders = new List<Order>
-                    {
-                        new Order
-                        {
-                            OrderItems = new List<OrderItem>()
-                        }
-                    }
-                }
             };
+            customer4.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = 4, CustomerRoleId = _role2.Id, CustomerRole = _role2 });
+            customer4.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = 4, CustomerRoleId = _role3.Id, CustomerRole = _role3 });
+            _customers.Add(customer4);
+
+            var customer5 = new Customer
+            {
+                Id = 5,
+                BillingAddress = new Address { CountryId = 2 },
+                ShippingAddress = new Address { CountryId = 2 },
+                LastActivityDateUtc = DateTime.Now.AddDays(-2),
+                Orders = new List<Order>
+                    {
+                        new Order
+                        {
+                            OrderItems = new List<OrderItem>()
+                        }
+                    }
+            };
+            customer5.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = 5, CustomerRoleId = _role1.Id, CustomerRole = _role1 });
+            _customers.Add(customer5);
+
+            var customer6 = new Customer
+            {
+                Id = 6,
+                BillingAddress = new Address { CountryId = 1 },
+                ShippingAddress = new Address { CountryId = 1 },
+                LastActivityDateUtc = DateTime.Now.AddDays(-10),
+                Orders = new List<Order>
+                    {
+                        new Order
+                        {
+                            OrderItems = new List<OrderItem>()
+                        }
+                    }
+            };
+            customer6.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = 6, CustomerRoleId = _role2.Id, CustomerRole = _role2 });
+            _customers.Add(customer6);
         }
 
         protected virtual List<Customer> ExecuteQuery<TValue>(RuleOperator op, Expression<Func<Customer, TValue>> left, object right)

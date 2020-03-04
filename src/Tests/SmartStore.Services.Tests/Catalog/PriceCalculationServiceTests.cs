@@ -164,22 +164,20 @@ namespace SmartStore.Services.Tests.Catalog
 				Published = true,
 			};
 
-            //customer roles
-            var customerRole1 = new CustomerRole()
+            var customerRole1 = new CustomerRole
             {
                 Id = 1,
                 Name = "Some role 1",
                 Active = true,
             };
-            var customerRole2 = new CustomerRole()
+            var customerRole2 = new CustomerRole
             {
                 Id = 2,
                 Name = "Some role 2",
                 Active = true,
             };
 
-			//add tier prices
-			product.TierPrices.Add(new TierPrice()
+			product.TierPrices.Add(new TierPrice
 			{
 				Price = 10,
 				Quantity = 2,
@@ -187,7 +185,7 @@ namespace SmartStore.Services.Tests.Catalog
 				CustomerRole = customerRole1,
                 CalculationMethod = TierPriceCalculationMethod.Fixed
             });
-			product.TierPrices.Add(new TierPrice()
+			product.TierPrices.Add(new TierPrice
 			{
 				Price = 9,
 				Quantity = 2,
@@ -195,7 +193,7 @@ namespace SmartStore.Services.Tests.Catalog
 				CustomerRole = customerRole2,
                 CalculationMethod = TierPriceCalculationMethod.Fixed
             });
-			product.TierPrices.Add(new TierPrice()
+			product.TierPrices.Add(new TierPrice
 			{
 				Price = 8,
 				Quantity = 5,
@@ -203,7 +201,7 @@ namespace SmartStore.Services.Tests.Catalog
 				CustomerRole = customerRole1,
                 CalculationMethod = TierPriceCalculationMethod.Fixed
             });
-			product.TierPrices.Add(new TierPrice()
+			product.TierPrices.Add(new TierPrice
 			{
 				Price = 5,
 				Quantity = 10,
@@ -211,12 +209,16 @@ namespace SmartStore.Services.Tests.Catalog
 				CustomerRole = customerRole2,
                 CalculationMethod = TierPriceCalculationMethod.Fixed
             });
-			//set HasTierPrices property
 			product.HasTierPrices = true;
 
-			//customer
-			Customer customer = new Customer();
-			customer.CustomerRoles.Add(customerRole1);
+
+			var customer = new Customer();
+            customer.CustomerRoleMappings.Add(new CustomerRoleMapping
+            {
+                CustomerId = customer.Id,
+                CustomerRoleId = customerRole1.Id,
+                CustomerRole = customerRole1
+            });
 
 			_priceCalcService.GetFinalPrice(product, customer, 0, false, 1, isTierPrice: true).ShouldEqual(12.34M);
 			_priceCalcService.GetFinalPrice(product, customer, 0, false, 2, isTierPrice: true).ShouldEqual(10);

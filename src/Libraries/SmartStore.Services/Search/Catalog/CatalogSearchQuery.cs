@@ -86,7 +86,7 @@ namespace SmartStore.Services.Search
 		{
 			if (customer != null)
 			{
-				var allowedCustomerRoleIds = customer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToArray();
+                var allowedCustomerRoleIds = customer.GetRoleIds();
 
 				return VisibleOnly(allowedCustomerRoleIds);
 			}

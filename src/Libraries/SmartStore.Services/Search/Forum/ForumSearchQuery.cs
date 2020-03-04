@@ -83,7 +83,7 @@ namespace SmartStore.Services.Search
 
                 if (includeCustomerRoles)
                 {
-                    var allowedRoleIds = customer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToArray();
+                    var allowedRoleIds = customer.GetRoleIds();
                     if (allowedRoleIds != null && allowedRoleIds.Length > 0)
                     {
                         var roleIds = allowedRoleIds.Where(x => x != 0).Distinct().ToList();

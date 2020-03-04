@@ -180,7 +180,7 @@ namespace SmartStore.Services.Security
 
 		public bool Authorize(string entityName, int entityId)
 		{
-			return Authorize(entityName, entityId, _workContext.Value.CurrentCustomer?.CustomerRoles);
+			return Authorize(entityName, entityId, _workContext.Value.CurrentCustomer?.CustomerRoleMappings?.Select(x => x.CustomerRole));
 		}
 
 		public virtual bool Authorize(string entityName, int entityId, IEnumerable<CustomerRole> roles)

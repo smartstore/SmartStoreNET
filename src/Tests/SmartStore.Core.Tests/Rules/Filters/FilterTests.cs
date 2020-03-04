@@ -360,7 +360,10 @@ namespace SmartStore.Core.Tests.Rules.Filters
 
             var roleIdsToCheck = filter.Value as List<int>;
 
-            var expectedResult = Customers.Where(x => x.CustomerRoles.Any(r => r.Active && roleIdsToCheck.Contains(r.Id))).ToList();
+            var expectedResult = Customers
+                .Where(x => x.CustomerRoleMappings.Any(rm => rm.CustomerRole.Active && roleIdsToCheck.Contains(rm.CustomerRole.Id)))
+                .ToList();
+
             var result = ExecuteQuery(LogicalRuleOperator.And, filter);
 
             AssertEquality(expectedResult, result);
@@ -378,7 +381,10 @@ namespace SmartStore.Core.Tests.Rules.Filters
 
             var roleIdsToCheck = filter.Value as List<int>;
 
-            var expectedResult = Customers.Where(x => x.CustomerRoles.Where(r => r.Active).All(r => roleIdsToCheck.Contains(r.Id))).ToList();
+            var expectedResult = Customers
+                .Where(x => x.CustomerRoleMappings.Where(rm => rm.CustomerRole.Active).All(rm => roleIdsToCheck.Contains(rm.CustomerRole.Id)))
+                .ToList();
+
             var result = ExecuteQuery(LogicalRuleOperator.And, filter);
 
             AssertEquality(expectedResult, result);

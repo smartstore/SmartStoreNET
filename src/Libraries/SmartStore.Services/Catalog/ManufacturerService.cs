@@ -90,7 +90,7 @@ namespace SmartStore.Services.Catalog
             // ACL (access control list).
             if (!showHidden && !QuerySettings.IgnoreAcl)
             {
-                var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+                var allowedCustomerRolesIds = _workContext.CurrentCustomer.GetRoleIds();
 
                 query = from m in query
                         join a in _aclRepository.Table
@@ -358,7 +358,7 @@ namespace SmartStore.Services.Catalog
             // ACL (access control list).
             if (!showHidden && !QuerySettings.IgnoreAcl)
             {
-                var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+                var allowedCustomerRolesIds = _workContext.CurrentCustomer.GetRoleIds();
 
                 query =
                     from pm in query

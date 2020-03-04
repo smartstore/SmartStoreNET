@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Admin.Models.Customers;
 using SmartStore.Admin.Models.ShoppingCart;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
@@ -214,7 +215,7 @@ namespace SmartStore.Admin.Controllers
                 ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode),
                 Active = customer.Active,
                 Phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone),
-                CustomerRoleNames = GetCustomerRolesNames(customer.CustomerRoles.ToList()),
+                CustomerRoleNames = GetCustomerRolesNames(customer.CustomerRoleMappings.Select(x => x.CustomerRole).ToList()),
                 CreatedOn = Services.DateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc),
                 LastActivityDate = Services.DateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc),
             };
@@ -618,15 +619,10 @@ namespace SmartStore.Admin.Controllers
                 // Customer roles.
                 if (allowManagingCustomerRoles)
                 {
-                    foreach (var customerRole in newCustomerRoles)
-                    {
-                        customer.CustomerRoles.Add(customerRole);
-                    }
-                    _customerService.UpdateCustomer(customer);
+                    newCustomerRoles.Each(x => _customerService.InsertCustomerRoleMapping(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = x.Id }));
                 }
 
                 Services.EventPublisher.Publish(new ModelBoundEvent(model, customer, form));
-
                 Services.CustomerActivity.InsertActivity("AddNewCustomer", T("ActivityLog.AddNewCustomer"), customer.Id);
 
                 NotifySuccess(T("Admin.Customers.Customers.Added"));
@@ -683,7 +679,10 @@ namespace SmartStore.Admin.Controllers
             model.Phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone);
             model.Fax = customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax);
 
-            model.SelectedCustomerRoleIds = customer.CustomerRoles.Select(cr => cr.Id).ToArray();
+            model.SelectedCustomerRoleIds = customer.CustomerRoleMappings
+                .Where(x => !x.IsSystemMapping)
+                .Select(x => x.CustomerRoleId)
+                .ToArray();
 
             PrepareCustomerModelForEdit(model, customer);
 
@@ -819,29 +818,35 @@ namespace SmartStore.Admin.Controllers
                     if (_customerSettings.FaxEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Fax, model.Fax);
 
+                    _customerService.UpdateCustomer(customer);
+
                     // Customer roles.
                     if (allowManagingCustomerRoles)
                     {
-                        foreach (var customerRole in allCustomerRoles)
+                        using (var scope = new DbContextScope(ctx: Services.DbContext, validateOnSave: false, autoDetectChanges: false, autoCommit: false))
                         {
-                            if (model.SelectedCustomerRoleIds != null && model.SelectedCustomerRoleIds.Contains(customerRole.Id))
+                            var existingMappings = customer.CustomerRoleMappings
+                                .Where(x => !x.IsSystemMapping)
+                                .ToMultimap(x => x.CustomerRoleId, x => x);
+
+                            foreach (var role in allCustomerRoles)
                             {
-                                if (customer.CustomerRoles.Where(cr => cr.Id == customerRole.Id).Count() == 0)
+                                if (model.SelectedCustomerRoleIds?.Contains(role.Id) ?? false)
                                 {
-                                    customer.CustomerRoles.Add(customerRole);
+                                    if (!existingMappings.ContainsKey(role.Id))
+                                    {
+                                        _customerService.InsertCustomerRoleMapping(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = role.Id });
+                                    }
+                                }
+                                else if (existingMappings.ContainsKey(role.Id))
+                                {
+                                    existingMappings[role.Id].Each(x => _customerService.DeleteCustomerRoleMapping(x));
                                 }
                             }
-                            else
-                            {
-                                if (customer.CustomerRoles.Where(cr => cr.Id == customerRole.Id).Count() > 0)
-                                {
-                                    customer.CustomerRoles.Remove(customerRole);
-                                }
-                            }
+
+                            scope.Commit();
                         }
                     }
-
-                    _customerService.UpdateCustomer(customer);
 
                     Services.EventPublisher.Publish(new ModelBoundEvent(model, customer, form));
                     Services.CustomerActivity.InsertActivity("EditCustomer", T("ActivityLog.EditCustomer"), customer.Id);

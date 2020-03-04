@@ -490,7 +490,7 @@ namespace SmartStore.Web.Framework
 
             if (!taxDisplayType.HasValue)
             {
-                var customerRoles = customer.CustomerRoles;
+                var customerRoles = customer.CustomerRoleMappings.Select(x => x.CustomerRole).ToList();
                 string key = string.Format(FrameworkCacheConsumer.CUSTOMERROLES_TAX_DISPLAY_TYPES_KEY, String.Join(",", customerRoles.Select(x => x.Id)), storeId);
                 var cacheResult = _cacheManager.Get(key, () =>
                 {

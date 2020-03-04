@@ -398,10 +398,10 @@ namespace SmartStore.Services.DataExchange.Export
 			result._FullName = null;
 			result._AvatarPictureUrl = null;
 
-			result.CustomerRoles = customer.CustomerRoles
+			result.CustomerRoles = customer.CustomerRoleMappings
 				.Select(x =>
 				{
-					dynamic dyn = new DynamicEntity(x);
+					dynamic dyn = new DynamicEntity(x.CustomerRole);
 					return dyn;
 				})
 				.ToList();

@@ -104,7 +104,7 @@ namespace SmartStore.Services.Topics
 			// ACL (access control list)
 			if (!showHidden && !QuerySettings.IgnoreAcl)
 			{
-				var allowedCustomerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+                var allowedCustomerRolesIds = _services.WorkContext.CurrentCustomer.GetRoleIds();
 
 				query = from c in query
 						join a in _aclRepository.Table

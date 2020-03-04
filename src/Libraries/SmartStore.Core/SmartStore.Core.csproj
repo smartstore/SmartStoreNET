@@ -226,6 +226,7 @@
     <Compile Include="Domain\Customers\CustomerLoginType.cs" />
     <Compile Include="Domain\Customers\CustomerNumberVisibility.cs" />
     <Compile Include="Domain\Customers\CustomerNumberMethod.cs" />
+    <Compile Include="Domain\Customers\CustomerRoleMapping.cs" />
     <Compile Include="Domain\Customers\PrivacySettings.cs" />
     <Compile Include="Domain\Customers\WalletHistory.cs" />
     <Compile Include="Domain\Customers\WalletPostingReason.cs" />

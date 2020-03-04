@@ -70,7 +70,7 @@ namespace SmartStore.Services.Cms
 
 			if (roles == null)
             {
-                roles = _services.WorkContext.CurrentCustomer.CustomerRoles;
+                roles = _services.WorkContext.CurrentCustomer.CustomerRoleMappings.Select(x => x.CustomerRole);
             }
 
             if (languageId == 0)

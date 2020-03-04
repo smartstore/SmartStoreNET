@@ -52,9 +52,32 @@ namespace SmartStore.Services.Tests.Security
                 _workContext,
                 _cacheManager);
 
-            _cAdmin.CustomerRoles.Add(_rAdmin);
-            _cModerator.CustomerRoles.AddRange(new CustomerRole[] { _rGuest, _rModerator });
-            _cGuest.CustomerRoles.Add(_rGuest);
+            _cAdmin.CustomerRoleMappings.Add(new CustomerRoleMapping
+            {
+                CustomerId = _cAdmin.Id,
+                CustomerRoleId = _rAdmin.Id,
+                CustomerRole = _rAdmin
+            });
+
+            _cModerator.CustomerRoleMappings.Add(new CustomerRoleMapping
+            {
+                CustomerId = _cModerator.Id,
+                CustomerRoleId = _rGuest.Id,
+                CustomerRole = _rGuest
+            });
+            _cModerator.CustomerRoleMappings.Add(new CustomerRoleMapping
+            {
+                CustomerId = _cModerator.Id,
+                CustomerRoleId = _rModerator.Id,
+                CustomerRole = _rModerator
+            });
+
+            _cGuest.CustomerRoleMappings.Add(new CustomerRoleMapping
+            {
+                CustomerId = _cGuest.Id,
+                CustomerRoleId = _rGuest.Id,
+                CustomerRole = _rGuest
+            });
 
             var pCatalog = new PermissionRecord { Id = 1, SystemName = "catalog" };
 

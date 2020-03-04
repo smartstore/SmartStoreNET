@@ -133,16 +133,17 @@ namespace SmartStore.Services.Customers
 
             var registeredCustomerRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered);
             if (registeredCustomerRole == null)
+            {
                 return 0;
+            }
 
-            var query = from c in _customerRepository.Table
-                        from cr in c.CustomerRoles
-                        where !c.Deleted &&
-                        cr.Id == registeredCustomerRole.Id &&
-                        c.CreatedOnUtc >= date 
-                        //&& c.CreatedOnUtc <= DateTime.UtcNow
-                        select c;
-            int count = query.Count();
+            var query = 
+                from c in _customerRepository.Table
+                from rm in c.CustomerRoleMappings
+                where !c.Deleted && rm.CustomerRoleId == registeredCustomerRole.Id && c.CreatedOnUtc >= date
+                select c;
+
+            var count = query.Count();
             return count;
         }
 

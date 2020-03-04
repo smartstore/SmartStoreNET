@@ -624,11 +624,18 @@ namespace SmartStore.Services.Orders
             Customer customer = cart.GetCustomer();
             if (customer != null)
             {
-                //check whether customer is in a customer role with free shipping applied
-                var customerRoles = customer.CustomerRoles.Where(cr => cr.Active);
+                // Check whether customer is in a customer role with free shipping applied.
+                var customerRoles = customer.CustomerRoleMappings
+                    .Select(x => x.CustomerRole)
+                    .Where(x => x.Active);
+
                 foreach (var customerRole in customerRoles)
+                {
                     if (customerRole.FreeShipping)
+                    {
                         return true;
+                    }
+                }
             }
 
             bool shoppingCartRequiresShipping = cart.RequiresShipping();

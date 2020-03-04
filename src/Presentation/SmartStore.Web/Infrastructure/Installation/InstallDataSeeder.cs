@@ -183,9 +183,14 @@ namespace SmartStore.Web.Infrastructure.Installation
             adminUser.Addresses.Add(adminAddress);
             adminUser.BillingAddress = adminAddress;
             adminUser.ShippingAddress = adminAddress;
-            adminUser.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Administrators));
-            adminUser.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.ForumModerators));
-            adminUser.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Registered));
+
+            var adminRole = customerRoles.First(x => x.SystemName == SystemCustomerRoleNames.Administrators);
+            var forumRole = customerRoles.First(x => x.SystemName == SystemCustomerRoleNames.ForumModerators);
+            var registeredRole = customerRoles.First(x => x.SystemName == SystemCustomerRoleNames.Registered);
+
+            adminUser.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = adminUser.Id, CustomerRoleId = adminRole.Id });
+            adminUser.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = adminUser.Id, CustomerRoleId = forumRole.Id });
+            adminUser.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = adminUser.Id, CustomerRoleId = registeredRole.Id });
             Save(adminUser);
 
 			// Set default customer name
@@ -208,19 +213,21 @@ namespace SmartStore.Web.Infrastructure.Installation
 			});
 			_ctx.SaveChanges();
 
-			// Built-in user for search engines (crawlers)
+            // Built-in user for search engines (crawlers)
+            var guestRole = customerRoles.FirstOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests);
+
             var customer = _data.SearchEngineUser();
-            customer.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests));
+            customer.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = guestRole.Id });
             Save(customer);
 
             // Built-in user for background tasks
             customer = _data.BackgroundTaskUser();
-            customer.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests));
+            customer.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = guestRole.Id });
             Save(customer);
 
 			// Built-in user for the PDF converter
 			customer = _data.PdfConverterUser();
-			customer.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests));
+            customer.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = guestRole.Id });
 			Save(customer);
         }
 

@@ -107,50 +107,6 @@ namespace SmartStore.WebApi.Controllers.OData
 			return Request.CreateResponseForEntity(address, relatedKey);
 		}
 
-        /// <summary>
-        /// Handle customer role assignments
-        /// </summary>
-        /// <param name="key">Customer id</param>
-        /// <param name="relatedKey">Customer role id</param>
-        /// <returns>Customer role</returns>
-        [WebApiAuthenticate(Permission = Permissions.Customer.EditRole)]
-        public HttpResponseMessage NavigationCustomerRoles(int key, int relatedKey)
-		{
-			CustomerRole role = null;
-			var entity = GetExpandedEntity(key, x => x.CustomerRoles);
-
-			if (Request.Method == HttpMethod.Delete)
-			{
-				if (relatedKey == 0)
-				{
-					entity.CustomerRoles.Clear();
-					Service.UpdateCustomer(entity);
-				}
-				else if ((role = Service.GetCustomerRoleById(relatedKey)) != null && entity.CustomerRoles.Any(x => x.Id == role.Id))
-				{
-					entity.CustomerRoles.Remove(role);
-					Service.UpdateCustomer(entity);
-				}
-
-				return Request.CreateResponse(HttpStatusCode.NoContent);
-			}
-
-			role = Service.GetCustomerRoleById(relatedKey);
-
-			if (Request.Method == HttpMethod.Post)
-			{
-				if (role != null && !entity.CustomerRoles.Any(x => x.Id == role.Id))
-				{
-					entity.CustomerRoles.Add(role);
-					Service.UpdateCustomer(entity);
-
-					return Request.CreateResponse(HttpStatusCode.Created, role);
-				}
-			}
-
-			return Request.CreateResponseForEntity(role, relatedKey);
-		}
-
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
         public SingleResult<Address> GetBillingAddress(int key)
@@ -196,13 +152,21 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetRelatedCollection(key, x => x.Addresses);
 		}
 
+        // For backward compatibility.
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Role.Read)]
         public IQueryable<CustomerRole> GetCustomerRoles(int key)
 		{
-			return GetRelatedCollection(key, x => x.CustomerRoles);
-		}
+			return GetRelatedCollection(key, x => x.CustomerRoleMappings.Select(rm => rm.CustomerRole));
+        }
 
-		#endregion
-	}
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Customer.Role.Read)]
+        public IQueryable<CustomerRoleMapping> GetCustomerRoleMappings(int key)
+        {
+            return GetRelatedCollection(key, x => x.CustomerRoleMappings);
+        }
+
+        #endregion
+    }
 }

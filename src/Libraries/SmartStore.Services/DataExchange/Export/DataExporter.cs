@@ -1173,7 +1173,7 @@ namespace SmartStore.Services.DataExchange.Export
 				.Expand(x => x.ShippingAddress)
 				.Expand(x => x.Addresses.Select(y => y.Country))
 				.Expand(x => x.Addresses.Select(y => y.StateProvince))
-				.Expand(x => x.CustomerRoles)
+				.Expand(x => x.CustomerRoleMappings.Select(rm => rm.CustomerRole))
 				.Where(x => !x.Deleted);
 
             if (ctx.Filter.IsActiveCustomer.HasValue)
@@ -1188,7 +1188,7 @@ namespace SmartStore.Services.DataExchange.Export
 
             if (ctx.Filter.CustomerRoleIds != null && ctx.Filter.CustomerRoleIds.Any())
             {
-                query = query.Where(x => x.CustomerRoles.Select(y => y.Id).Intersect(ctx.Filter.CustomerRoleIds).Any());
+                query = query.Where(x => x.CustomerRoleMappings.Select(y => y.CustomerRoleId).Intersect(ctx.Filter.CustomerRoleIds).Any());
             }
 
             if (ctx.Filter.BillingCountryIds != null && ctx.Filter.BillingCountryIds.Any())
@@ -1386,7 +1386,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 			var query = _shoppingCartItemRepository.Value.TableUntracked
 				.Expand(x => x.Customer)
-				.Expand(x => x.Customer.CustomerRoles)
+				.Expand(x => x.Customer.CustomerRoleMappings.Select(rm => rm.CustomerRole))
 				.Expand(x => x.Product)
 				.Where(x => !x.Customer.Deleted);
 
@@ -1420,7 +1420,7 @@ namespace SmartStore.Services.DataExchange.Export
 
             if (ctx.Filter.CustomerRoleIds != null && ctx.Filter.CustomerRoleIds.Any())
             {
-                query = query.Where(x => x.Customer.CustomerRoles.Select(y => y.Id).Intersect(ctx.Filter.CustomerRoleIds).Any());
+                query = query.Where(x => x.Customer.CustomerRoleMappings.Select(y => y.CustomerRoleId).Intersect(ctx.Filter.CustomerRoleIds).Any());
             }
 
 			if (ctx.Filter.LastActivityFrom.HasValue)

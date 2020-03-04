@@ -42,7 +42,7 @@ namespace SmartStore.WebApi.Services
 					)
 				on c.Id equals a.EntityId into ga
 				from a in ga.DefaultIfEmpty()
-				where !c.Deleted && c.CustomerRoles.Select(r => r.Id).Contains(registeredRoleId)
+				where !c.Deleted && c.CustomerRoleMappings.Select(rm => rm.CustomerRoleId).Contains(registeredRoleId)
 				orderby a.Value descending
 				select c;
 

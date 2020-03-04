@@ -29,6 +29,7 @@ namespace SmartStore.Services.Customers
     {
         private readonly IRepository<Customer> _customerRepository;
         private readonly IRepository<CustomerRole> _customerRoleRepository;
+        private readonly IRepository<CustomerRoleMapping> _customerRoleMappingRepository;
         private readonly IRepository<GenericAttribute> _gaRepository;
 		private readonly IRepository<RewardPointsHistory> _rewardPointsHistoryRepository;
         private readonly IRepository<ShoppingCartItem> _shoppingCartItemRepository;
@@ -43,6 +44,7 @@ namespace SmartStore.Services.Customers
 		public CustomerService(
             IRepository<Customer> customerRepository,
             IRepository<CustomerRole> customerRoleRepository,
+            IRepository<CustomerRoleMapping> customerRoleMappingRepository,
             IRepository<GenericAttribute> gaRepository,
 			IRepository<RewardPointsHistory> rewardPointsHistoryRepository,
             IRepository<ShoppingCartItem> shoppingCartItemRepository,
@@ -56,6 +58,7 @@ namespace SmartStore.Services.Customers
         {
             _customerRepository = customerRepository;
             _customerRoleRepository = customerRoleRepository;
+            _customerRoleMappingRepository = customerRoleMappingRepository;
             _gaRepository = gaRepository;
 			_rewardPointsHistoryRepository = rewardPointsHistoryRepository;
             _shoppingCartItemRepository = shoppingCartItemRepository;
@@ -176,7 +179,7 @@ namespace SmartStore.Services.Customers
 
 			if (q.CustomerRoleIds != null && q.CustomerRoleIds.Length > 0)
 			{
-				query = query.Where(c => c.CustomerRoles.Select(cr => cr.Id).Intersect(q.CustomerRoleIds).Count() > 0);
+				query = query.Where(c => c.CustomerRoleMappings.Select(rm => rm.CustomerRoleId).Intersect(q.CustomerRoleIds).Count() > 0);
 			}
 
 			if (q.Deleted.HasValue)
@@ -400,12 +403,14 @@ namespace SmartStore.Services.Customers
             // Add to 'Guests' role
             var guestRole = GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests);
             if (guestRole == null)
+            {
                 throw new SmartException("'Guests' role could not be loaded");
+            }
 
 			using (new DbContextScope(autoCommit: true))
 			{
-				// Ensure that entities are saved to db in any case
-				customer.CustomerRoles.Add(guestRole);
+                // Ensure that entities are saved to db in any case
+                customer.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = guestRole.Id });
 				_customerRepository.Insert(customer);
 
 				var clientIdent = _services.WebHelper.GetClientIdent();
@@ -551,7 +556,7 @@ namespace SmartStore.Services.Customers
 				if (registrationTo.HasValue)
 					query = query.Where(c => registrationTo.Value >= c.CreatedOnUtc);
 
-				query = query.Where(c => c.CustomerRoles.Select(cr => cr.Id).Contains(guestRole.Id));
+				query = query.Where(c => c.CustomerRoleMappings.Select(rm => rm.CustomerRoleId).Contains(guestRole.Id));
 
 				if (onlyWithoutShoppingCart)
 					query = query.Where(c => !c.ShoppingCartItems.Any());
@@ -724,9 +729,45 @@ namespace SmartStore.Services.Customers
 
         #endregion
 
-		#region Reward points
+        #region Customer role mappings
 
-		public virtual void RewardPointsForProductReview(Customer customer, Product product, bool add)
+        public virtual CustomerRoleMapping GetCustomerRoleMappingById(int mappingId)
+        {
+            if (mappingId == 0)
+            {
+                return null;
+            }
+
+            return _customerRoleMappingRepository.GetById(mappingId);
+        }
+
+        public virtual void InsertCustomerRoleMapping(CustomerRoleMapping mapping)
+        {
+            Guard.NotNull(mapping, nameof(mapping));
+
+            _customerRoleMappingRepository.Insert(mapping);
+        }
+
+        public virtual void UpdateCustomerRoleMapping(CustomerRoleMapping mapping)
+        {
+            Guard.NotNull(mapping, nameof(mapping));
+
+            _customerRoleMappingRepository.Update(mapping);
+        }
+
+        public virtual void DeleteCustomerRoleMapping(CustomerRoleMapping mapping)
+        {
+            if (mapping != null)
+            {
+                _customerRoleMappingRepository.Delete(mapping);
+            }
+        }
+
+        #endregion
+
+        #region Reward points
+
+        public virtual void RewardPointsForProductReview(Customer customer, Product product, bool add)
 		{
 			if (_rewardPointsSettings.Enabled && _rewardPointsSettings.PointsForProductReview > 0)
 			{
@@ -757,6 +798,6 @@ namespace SmartStore.Services.Customers
 			return map;
 		}
 
-		#endregion Reward points
+		#endregion
 	}
 }

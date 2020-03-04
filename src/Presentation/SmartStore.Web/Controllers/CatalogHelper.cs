@@ -534,7 +534,7 @@ namespace SmartStore.Web.Controllers
 			{
 				// SQCE throw NotImplementedException with .Expand()
 				query = query
-					.Expand(x => x.Customer.CustomerRoles)
+					.Expand(x => x.Customer.CustomerRoleMappings.Select(rm => rm.CustomerRole))
 					.Expand(x => x.Customer.CustomerContent);
 			}
 

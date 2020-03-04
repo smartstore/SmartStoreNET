@@ -129,7 +129,7 @@ namespace SmartStore.Services.Security
 
 		public static bool Authorize(this IAclService aclService, string entityName, int entityId, Customer customer)
 		{
-			return aclService.Authorize(entityName, entityId, customer?.CustomerRoles);
+			return aclService.Authorize(entityName, entityId, customer?.CustomerRoleMappings?.Select(x => x.CustomerRole));
 		}
 
 		/// <summary>
@@ -164,7 +164,7 @@ namespace SmartStore.Services.Security
 			if (!entity.SubjectToAcl)
 				return true;
 
-			return aclService.Authorize(entity.GetEntityName(), entity.Id, customer?.CustomerRoles);
+			return aclService.Authorize(entity.GetEntityName(), entity.Id, customer?.CustomerRoleMappings?.Select(x => x.CustomerRole));
 		}
 
 		/// <summary>

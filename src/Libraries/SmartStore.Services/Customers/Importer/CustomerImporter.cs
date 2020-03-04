@@ -18,7 +18,6 @@ using SmartStore.Services.DataExchange.Import.Events;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Media;
-using SmartStore.Services.Security;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Customers.Importer
@@ -29,10 +28,11 @@ namespace SmartStore.Services.Customers.Importer
 
 		private readonly IRepository<Customer> _customerRepository;
 		private readonly IRepository<CustomerRole> _customerRoleRepository;
-		private readonly IRepository<MediaFile> _pictureRepository;
+        private readonly IRepository<MediaFile> _pictureRepository;
 		private readonly ICommonServices _services;
-		private readonly IGenericAttributeService _genericAttributeService;
-		private readonly IPictureService _pictureService;
+        private readonly ICustomerService _customerService;
+        private readonly IGenericAttributeService _genericAttributeService;
+        private readonly IPictureService _pictureService;
 		private readonly IAffiliateService _affiliateService;
 		private readonly ICountryService _countryService;
 		private readonly IStateProvinceService _stateProvinceService;
@@ -46,9 +46,10 @@ namespace SmartStore.Services.Customers.Importer
         public CustomerImporter(
 			IRepository<Customer> customerRepository,
 			IRepository<CustomerRole> customerRoleRepository,
-			IRepository<MediaFile> pictureRepository,
+            IRepository<MediaFile> pictureRepository,
 			ICommonServices services,
-			IGenericAttributeService genericAttributeService,
+            ICustomerService customerService,
+            IGenericAttributeService genericAttributeService,
 			IPictureService pictureService,
 			IAffiliateService affiliateService,
 			ICountryService countryService,
@@ -64,6 +65,7 @@ namespace SmartStore.Services.Customers.Importer
 			_customerRoleRepository = customerRoleRepository;
 			_pictureRepository = pictureRepository;
 			_services = services;
+            _customerService = customerService;
 			_genericAttributeService = genericAttributeService;
 			_pictureService = pictureService;
 			_affiliateService = affiliateService;
@@ -138,24 +140,24 @@ namespace SmartStore.Services.Customers.Importer
 					context.Result.NewRecords += batch.Count(x => x.IsNew && !x.IsTransient);
 					context.Result.ModifiedRecords += batch.Count(x => !x.IsNew && !x.IsTransient);
 
-					// ===========================================================================
-					// Process customer roles
-					// ===========================================================================
-					try
-					{
-                        _customerRepository.AutoCommitEnabled = true;
-                        if (allowManagingCustomerRoles)
+                    // ===========================================================================
+                    // Process customer roles
+                    // ===========================================================================
+                    if (allowManagingCustomerRoles && context.DataSegmenter.HasColumn("CustomerRoleSystemNames"))
+                    {
+                        try
                         {
+                            _customerRepository.AutoCommitEnabled = true;
                             ProcessCustomerRoles(context, batch);
                         }
-					}
-					catch (Exception ex)
-					{
-						context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessCustomerRoles");
-					}
-					finally
-					{
-                        _customerRepository.AutoCommitEnabled = false;
+                        catch (Exception ex)
+                        {
+                            context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessCustomerRoles");
+                        }
+                        finally
+                        {
+                            _customerRepository.AutoCommitEnabled = false;
+                        }
                     }
 
 					// ===========================================================================
@@ -216,8 +218,9 @@ namespace SmartStore.Services.Customers.Importer
 			_customerRepository.AutoCommitEnabled = true;
 
 			var currentCustomer = _services.WorkContext.CurrentCustomer;
-			var customerQuery = _customerRepository.Table.Expand(x => x.Addresses);
-			var hasCustomerRoleSystemNames = context.DataSegmenter.HasColumn("CustomerRoleSystemNames");
+            var customerQuery = _customerRepository.Table
+                .Expand(x => x.Addresses)
+                .Expand(x => x.CustomerRoleMappings.Select(rm => rm.CustomerRole));
 
 			foreach (var row in batch)
 			{
@@ -279,7 +282,7 @@ namespace SmartStore.Services.Customers.Importer
 				}
 				else
 				{
-					_customerRepository.Context.LoadCollection(customer, (Customer x) => x.CustomerRoles);
+					_customerRepository.Context.LoadCollection(customer, (Customer x) => x.CustomerRoleMappings);
 				}
 
 				var affiliateId = row.GetDataValue<int>("AffiliateId");
@@ -375,72 +378,60 @@ namespace SmartStore.Services.Customers.Importer
 			ImportExecuteContext context,
 			IEnumerable<ImportRow<Customer>> batch)
 		{
-            var num = 0;
-			CustomerRole role = null;
             Dictionary<string, CustomerRole> allCustomerRoles = null;
-            var hasCustomerRoleSystemNames = context.DataSegmenter.HasColumn("CustomerRoleSystemNames");
 
 			foreach (var row in batch)
 			{
 				var customer = row.Entity;
+                var importRoleSystemNames = row.GetDataValue<List<string>>("CustomerRoleSystemNames");
 
-				// New customer role field.
-				if (hasCustomerRoleSystemNames)
+				var assignedRoles = customer.CustomerRoleMappings
+                    .Where(x => !x.IsSystemMapping)
+                    .Select(x => x.CustomerRole)
+                    .ToDictionarySafe(x => x.SystemName, StringComparer.OrdinalIgnoreCase);
+
+				// Roles to remove.
+				foreach (var customerRole in assignedRoles)
 				{
-                    var updateCustomer = false;
-                    var importRoleSystemNames = row.GetDataValue<List<string>>("CustomerRoleSystemNames");
-					var assignedRoles = customer.CustomerRoles.ToDictionarySafe(x => x.SystemName, StringComparer.OrdinalIgnoreCase);
-
-					// Roles to remove.
-					foreach (var customerRole in assignedRoles)
+					var systemName = customerRole.Key;
+					if (!systemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.Administrators) &&
+						!systemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.SuperAdministrators) &&
+						!importRoleSystemNames.Contains(systemName))
 					{
-						var systemName = customerRole.Key;
-						if (!systemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.Administrators) &&
-							!systemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.SuperAdministrators) &&
-							!importRoleSystemNames.Contains(systemName))
-						{
-							customer.CustomerRoles.Remove(customerRole.Value);
-                            updateCustomer = true;
-						}
+                        var mappings = customer.CustomerRoleMappings.Where(x => !x.IsSystemMapping && x.CustomerRoleId == customerRole.Value.Id).ToList();
+                        mappings.Each(x => _customerService.DeleteCustomerRoleMapping(x));
 					}
+				}
 
-					// Roles to add.
-					foreach (var systemName in importRoleSystemNames)
+				// Roles to add.
+				foreach (var systemName in importRoleSystemNames)
+				{
+					if (systemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.Administrators) ||
+						systemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.SuperAdministrators))
 					{
-						if (systemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.Administrators) ||
-							systemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.SuperAdministrators))
-						{
-							context.Result.AddInfo("Security. Ignored administrator role.", row.GetRowInfo(), "CustomerRoleSystemNames");
-						}
-						else if (!assignedRoles.ContainsKey(systemName))
-						{
-                            // Add role mapping, never insert roles.
-                            // Be careful not to insert the roles several times!
-                            if (allCustomerRoles == null)
-                            {
-                                allCustomerRoles = _customerRoleRepository.Table
-                                    .Where(x => !string.IsNullOrEmpty(x.SystemName))
-                                    .ToDictionarySafe(x => x.SystemName, StringComparer.OrdinalIgnoreCase);
-                            }
-
-                            if (allCustomerRoles?.TryGetValue(systemName, out role) ?? false)
-                            {
-                                customer.CustomerRoles.Add(role);
-                                updateCustomer = true;
-                            }
+						context.Result.AddInfo("Security. Ignored administrator role.", row.GetRowInfo(), "CustomerRoleSystemNames");
+					}
+					else if (!assignedRoles.ContainsKey(systemName))
+					{
+                        // Add role mapping, never insert roles.
+                        // Be careful not to insert the roles several times!
+                        if (allCustomerRoles == null)
+                        {
+                            allCustomerRoles = _customerRoleRepository.TableUntracked
+                                .Where(x => !string.IsNullOrEmpty(x.SystemName))
+                                .ToDictionarySafe(x => x.SystemName, StringComparer.OrdinalIgnoreCase);
                         }
-					}
 
-                    if (updateCustomer)
-                    {
-                        _customerRepository.Update(customer);
-                        ++num;
+                        if (allCustomerRoles.TryGetValue(systemName, out var role))
+                        {
+                            _customerService.InsertCustomerRoleMapping(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = role.Id });
+                        }
                     }
 				}
 			}
 
-            return num;
-		}
+            return _services.DbContext.SaveChanges();
+        }
 
 		protected virtual int ProcessAddresses(
 			ImportExecuteContext context,

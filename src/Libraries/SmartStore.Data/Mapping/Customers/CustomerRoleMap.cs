@@ -7,10 +7,14 @@ namespace SmartStore.Data.Mapping.Customers
     {
         public CustomerRoleMap()
         {
-            this.ToTable("CustomerRole");
-            this.HasKey(cr => cr.Id);
-            this.Property(cr => cr.Name).IsRequired().HasMaxLength(255);
-            this.Property(cr => cr.SystemName).HasMaxLength(255);
+            ToTable("CustomerRole");
+            HasKey(cr => cr.Id);
+            Property(cr => cr.Name).IsRequired().HasMaxLength(255);
+            Property(cr => cr.SystemName).HasMaxLength(255);
+
+            HasMany(cr => cr.RuleSets)
+                .WithMany(rs => rs.CustomerRoles)
+                .Map(m => m.ToTable("RuleSet_CustomerRole_Mapping"));
         }
     }
 }

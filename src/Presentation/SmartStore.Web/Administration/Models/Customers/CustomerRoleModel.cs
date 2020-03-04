@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Rules;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -40,6 +42,12 @@ namespace SmartStore.Admin.Models.Customers
 
         [SmartResourceDisplayName("Admin.Customers.CustomerRoles.Fields.SystemName")]
         public string SystemName { get; set; }
+
+        [UIHint("RuleSets")]
+        [AdditionalMetadata("multiple", true)]
+        [AdditionalMetadata("scope", RuleScope.Customer)]
+        [SmartResourceDisplayName("Admin.Customers.CustomerRoles.AutomatedAssignmentRules")]
+        public int[] SelectedRuleSetIds { get; set; }
 
         public TreeNode<IPermissionNode> PermissionTree { get; set; }
     }

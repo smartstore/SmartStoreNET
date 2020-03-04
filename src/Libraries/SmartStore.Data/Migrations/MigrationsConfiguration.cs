@@ -498,6 +498,12 @@
 
             builder.AddOrUpdate("Admin.Media.Album.Message", "Messages", "Nachrichten");
             builder.AddOrUpdate("Admin.Media.Album.File", "Files", "Dateien");
+
+            builder.AddOrUpdate("Admin.Customers.CustomerRoles.AutomatedAssignmentRules",
+                "Rules for automated assignment",
+                "Regeln für automatische Zuordnung",
+                "Customers are automatically assigned to this customer group by scheduled task if they fulfill one of the selected rules.",
+                "Kunden werden automatisch per geplanter Aufgabe dieser Kundengruppe zugeordnet, wenn sie eine der gewählten Regeln erfüllen.");
         }
     }
 }

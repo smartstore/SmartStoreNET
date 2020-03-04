@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Customers;
@@ -9,7 +8,9 @@ using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
+using SmartStore.Rules;
 using SmartStore.Services.Customers;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -22,42 +23,16 @@ namespace SmartStore.Admin.Controllers
     {
         private readonly ICustomerService _customerService;
         private readonly ICustomerActivityService _customerActivityService;
+        private readonly IRuleStorage _ruleStorage;
 
         public CustomerRoleController(
             ICustomerService customerService,
-            ICustomerActivityService customerActivityService)
+            ICustomerActivityService customerActivityService,
+            IRuleStorage ruleStorage)
         {
             _customerService = customerService;
             _customerActivityService = customerActivityService;
-        }
-
-        [NonAction]
-        protected List<SelectListItem> GetTaxDisplayTypesList(CustomerRoleModel model)
-        {
-            var list = new List<SelectListItem>();
-
-            if (model.TaxDisplayType.HasValue)
-            {
-                list.Insert(0, new SelectListItem
-                {
-                    Text = T("Enums.Smartstore.Core.Domain.Tax.TaxDisplayType.IncludingTax"),
-                    Value = "0",
-                    Selected = (TaxDisplayType)model.TaxDisplayType.Value == TaxDisplayType.IncludingTax
-                });
-                list.Insert(1, new SelectListItem
-                {
-                    Text = T("Enums.Smartstore.Core.Domain.Tax.TaxDisplayType.ExcludingTax"),
-                    Value = "10",
-                    Selected = (TaxDisplayType)model.TaxDisplayType.Value == TaxDisplayType.ExcludingTax
-                });
-            }
-            else
-            {
-                list.Insert(0, new SelectListItem { Text = T("Enums.Smartstore.Core.Domain.Tax.TaxDisplayType.IncludingTax"), Value = "0" });
-                list.Insert(1, new SelectListItem { Text = T("Enums.Smartstore.Core.Domain.Tax.TaxDisplayType.ExcludingTax"), Value = "10" });
-            }
-
-            return list;
+            _ruleStorage = ruleStorage;
         }
 
         // Ajax.
@@ -127,7 +102,7 @@ namespace SmartStore.Admin.Controllers
                 Active = true
             };
 
-            model.TaxDisplayTypes = GetTaxDisplayTypesList(model);
+            PrepareModel(model, null);
 
             return View(model);
         }
@@ -140,6 +115,13 @@ namespace SmartStore.Admin.Controllers
             {
                 var customerRole = model.ToEntity();
                 _customerService.InsertCustomerRole(customerRole);
+
+                if (model.SelectedRuleSetIds?.Any() ?? false)
+                {
+                    _ruleStorage.ApplyRuleSetMappings(customerRole, model.SelectedRuleSetIds);
+
+                    _customerService.UpdateCustomerRole(customerRole);
+                }
 
                 _customerActivityService.InsertActivity("AddNewCustomerRole", T("ActivityLog.AddNewCustomerRole"), customerRole.Name);
 
@@ -160,7 +142,8 @@ namespace SmartStore.Admin.Controllers
             }
 
             var model = customerRole.ToModel();
-            model.TaxDisplayTypes = GetTaxDisplayTypesList(model);
+            PrepareModel(model, customerRole);
+
             model.PermissionTree = Services.Permissions.GetPermissionTree(customerRole, true);
 
             return View(model);
@@ -191,6 +174,10 @@ namespace SmartStore.Admin.Controllers
                     }
 
                     customerRole = model.ToEntity(customerRole);
+
+                    // Add\remove assigned rule sets.
+                    _ruleStorage.ApplyRuleSetMappings(customerRole, model.SelectedRuleSetIds);
+
                     _customerService.UpdateCustomerRole(customerRole);
 
                     // Update permissions.
@@ -290,5 +277,17 @@ namespace SmartStore.Admin.Controllers
         }
 
         #endregion
+
+        private void PrepareModel(CustomerRoleModel model, CustomerRole role)
+        {
+            if (role != null)
+            {
+                model.SelectedRuleSetIds = role.RuleSets.Select(x => x.Id).ToArray();
+            }
+
+            model.TaxDisplayTypes = model.TaxDisplayType.HasValue
+                ? ((TaxDisplayType)model.TaxDisplayType.Value).ToSelectList().ToList()
+                : TaxDisplayType.IncludingTax.ToSelectList(false).ToList();
+        }
     }
 }

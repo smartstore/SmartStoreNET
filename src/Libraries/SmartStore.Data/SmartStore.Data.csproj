@@ -801,6 +801,13 @@
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
+    <Compile Include="Setup\SeedData\InvariantSeedData.Products.cs" />
+    <Compile Include="Setup\SeedData\InvariantSeedData.Manufacturers.cs" />
+    <Compile Include="Setup\SeedData\InvariantSeedData.Categories.cs" />
+    <Compile Include="Setup\SeedData\InvariantSeedData.Variants.cs" />
+    <Compile Include="Setup\SeedData\InvariantSeedData.SpecificationAttributes.cs" />
+    <Compile Include="Setup\SeedData\InvariantSeedData.ActivityLogTypes.cs" />
+    <Compile Include="Setup\SeedData\InvariantSeedData.Countries.cs" />
     <Compile Include="Setup\SeedDbMigrationEvent.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
     <Compile Include="Extensions\IDbContextExtensions.cs" />

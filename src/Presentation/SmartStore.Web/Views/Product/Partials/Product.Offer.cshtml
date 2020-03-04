@@ -26,7 +26,7 @@
 
 <div class="pd-offer" @Html.Raw(!Model.ProductPrice.CallForPrice ? "itemprop=\"offers\" itemscope itemtype=\"http://schema.org/Offer\"" : "")>
 	<meta itemprop="itemCondition" itemtype="http://schema.org/OfferItemCondition" content="@conditionContent" />
-
+	<link itemprop="url" href="@Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme)" />
 	@if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton || Model.ProductPrice.ShowLoginNote)
 	{
 		if (Model.AddToCart.CustomerEntersPrice && !Model.ProductPrice.HidePrices)

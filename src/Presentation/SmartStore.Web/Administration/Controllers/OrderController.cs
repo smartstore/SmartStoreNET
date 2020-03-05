@@ -2864,6 +2864,31 @@ namespace SmartStore.Admin.Controllers
         {
             var model = new OrdersDashboardReportModel();
 
+            // Get all (last 2 years from today) Orders
+            // Generate correct labels (day, week, month etc)
+            // Filter into categories (day, daybefore, week, weekbefore, month etc)
+            // Calc Values (Sum, delta etc)
+            // Convert into json (JsonConvert.SerializeObject),(Arrays & strings)
+            var orders = _orderService.SearchOrders(0, 0, DateTime.UtcNow.AddDays(-730), null, null, null, null, null, null, null, 0, int.MaxValue);
+
+            // Create labels for day period (24)
+            
+
+            // Create labels for week period (7)
+            var days = new string[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };// Localize
+            var dayOfWeek = (int)DateTime.UtcNow.DayOfWeek;
+
+            for (int i = 0; i < 7; i++)
+            {
+                model.OrderLabelsWeek.Add(days[(dayOfWeek + i) % 7]);
+            }
+
+
+            // Create labels for month period (4)
+
+
+            // Create labels for year period (12)
+
 
             return PartialView(model);
         }

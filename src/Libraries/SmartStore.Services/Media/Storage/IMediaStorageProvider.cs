@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Media.Storage
@@ -9,45 +10,45 @@ namespace SmartStore.Services.Media.Storage
 		/// <summary>
 		/// Gets the size of the media item in bytes.
 		/// </summary>
-		/// <param name="media">Media storage item</param>
-		long GetSize(MediaItem media);
-		
+		/// <param name="mediaFile">Media file item</param>
+		long GetSize(MediaFile mediaFile);
+
 		/// <summary>
 		/// Opens the media item for reading
 		/// </summary>
-		/// <param name="media">Media storage item</param>
-		Stream OpenRead(MediaItem media);
+		/// <param name="mediaFile">Media file item</param>
+		Stream OpenRead(MediaFile mediaFile);
 
 		/// <summary>
 		/// Loads media item data
 		/// </summary>
-		/// <param name="media">Media storage item</param>
-		byte[] Load(MediaItem media);
+		/// <param name="mediaFile">Media storage item</param>
+		byte[] Load(MediaFile mediaFile);
 
 		/// <summary>
 		/// Asynchronously loads media item data
 		/// </summary>
-		/// <param name="media">Media storage item</param>
-		Task<byte[]> LoadAsync(MediaItem media);
+		/// <param name="mediaFile">Media file item</param>
+		Task<byte[]> LoadAsync(MediaFile mediaFile);
 
 		/// <summary>
 		/// Saves media item data
 		/// </summary>
-		/// <param name="media">Media storage item</param>
+		/// <param name="mediaFile">Media file item</param>
 		/// <param name="data">New binary data</param>
-		void Save(MediaItem media, byte[] data);
+		void Save(MediaFile mediaFile, byte[] data);
 
 		/// <summary>
 		/// Asynchronously saves media item data
 		/// </summary>
-		/// <param name="media">Media storage item</param>
+		/// <param name="mediaFile">Media file item</param>
 		/// <param name="data">New binary data</param>
-		Task SaveAsync(MediaItem media, byte[] data);
+		Task SaveAsync(MediaFile mediaFile, byte[] data);
 
 		/// <summary>
 		/// Remove media storage item(s)
 		/// </summary>
-		/// <param name="medias">Media storage items</param>
-		void Remove(params MediaItem[] medias);
+		/// <param name="mediaFiles">Media file items</param>
+		void Remove(params MediaFile[] mediaFiles);
 	}
 }

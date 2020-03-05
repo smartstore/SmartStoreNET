@@ -835,7 +835,7 @@ namespace SmartStore
 			if (string.IsNullOrEmpty(grow))
 				return (string.IsNullOrEmpty(value) ? "" : value);
 
-			return string.Concat(value, delimiter, grow);
+			return value + delimiter + grow;
 		}
 
         /// <summary>

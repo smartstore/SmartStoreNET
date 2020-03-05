@@ -115,14 +115,11 @@ namespace SmartStore.Services.Catalog.Extensions
 										DownloadGuid = Guid.NewGuid(),
 										UseDownloadUrl = false,
 										DownloadUrl = "",
-										ContentType = postedFile.ContentType,
-										Filename = System.IO.Path.GetFileNameWithoutExtension(postedFile.FileName),
-										Extension = System.IO.Path.GetExtension(postedFile.FileName),
-										IsNew = true,
 										UpdatedOnUtc = DateTime.UtcNow
 									};
 
-									downloadService.InsertDownload(download, postedFile.InputStream != null ? postedFile.InputStream.ToByteArray() : null);
+									var buffer = postedFile.InputStream != null ? postedFile.InputStream.ToByteArray() : (byte[])null;
+									downloadService.InsertDownload(download, buffer, postedFile.FileName, postedFile.ContentType);
 
 									result = productAttributeParser.AddProductAttribute(result, pva, download.DownloadGuid.ToString());
 								}

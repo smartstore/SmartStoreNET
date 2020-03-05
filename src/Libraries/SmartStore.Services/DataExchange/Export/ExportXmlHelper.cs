@@ -617,25 +617,28 @@ namespace SmartStore.Services.DataExchange.Export
                 foreach (dynamic download in product.Downloads)
                 {
                     Download downloadEntity = download.Entity;
+					var mediaFile = downloadEntity.MediaFile;
 
                     _writer.WriteStartElement("Download");
                     _writer.Write("Id", downloadEntity.Id.ToString());
                     _writer.Write("DownloadGuid", downloadEntity.DownloadGuid.ToString());
                     _writer.Write("UseDownloadUrl", downloadEntity.UseDownloadUrl.ToString());
                     _writer.Write("DownloadUrl", downloadEntity.DownloadUrl);
-                    _writer.Write("ContentType", downloadEntity.ContentType);
-                    _writer.Write("Filename", downloadEntity.Filename);
-                    _writer.Write("Extension", downloadEntity.Extension);
-                    _writer.Write("IsNew", downloadEntity.IsNew.ToString());
                     _writer.Write("IsTransient", downloadEntity.IsTransient.ToString());
                     _writer.Write("UpdatedOnUtc", downloadEntity.UpdatedOnUtc.ToString(_culture));
-                    _writer.Write("MediaStorageId", downloadEntity.MediaStorageId.HasValue ? downloadEntity.MediaStorageId.Value.ToString() : "");
                     _writer.Write("EntityId", downloadEntity.EntityId.ToString());
                     _writer.Write("EntityName", downloadEntity.EntityName);
                     _writer.Write("FileVersion", downloadEntity.FileVersion);
                     _writer.Write("Changelog", downloadEntity.Changelog);
+					if (!downloadEntity.UseDownloadUrl && mediaFile != null)
+					{
+						_writer.Write("ContentType", mediaFile.MimeType);
+						_writer.Write("Filename", mediaFile.Name);
+						_writer.Write("Extension", mediaFile.Extension);
+						_writer.Write("MediaStorageId", mediaFile.MediaStorageId.HasValue ? mediaFile.MediaStorageId.Value.ToString() : "");
+					}
 
-                    _writer.WriteEndElement();	// Download
+					_writer.WriteEndElement();	// Download
                 }
                 _writer.WriteEndElement();	// Downloads
             }

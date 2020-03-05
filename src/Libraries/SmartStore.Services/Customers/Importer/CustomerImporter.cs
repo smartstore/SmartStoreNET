@@ -640,7 +640,7 @@ namespace SmartStore.Services.Customers.Importer
 
 						if (pictureBinary != null && pictureBinary.Length > 0)
 						{
-                            var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false, "customer");
+                            var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, false, false, "customer");
 
                             if (picture != null)
 							{

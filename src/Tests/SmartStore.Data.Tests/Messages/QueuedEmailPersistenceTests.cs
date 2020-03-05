@@ -67,28 +67,21 @@ namespace SmartStore.Data.Tests.Messages
 				Password = "111"
 			};
 
-			var download = new Download
+			var file = new MediaFile
 			{
-				ContentType = "text/plain",
-				MediaStorage = new MediaStorage
-				{
-					Data = new byte[10]
-				},
-				UpdatedOnUtc = DateTime.UtcNow,
-				DownloadGuid = Guid.NewGuid(),
 				Extension = "txt",
-				Filename = "file",
-                EntityName = "QueuedEmailAttachment",
-                EntityId = 1
+				Name = "file.txt",
+				MimeType = "text/plain",
+				MediaStorage = new MediaStorage { Data = new byte[10] }
 			};
 
-			// add attachment
+			// Add attachment
 			var attach = new QueuedEmailAttachment
 			{
 				StorageLocation = EmailAttachmentStorageLocation.FileReference,
 				Name = "file.txt",
 				MimeType = "text/plain",
-				File = download
+				MediaFile = file
 			};
 			
 			var qe = new QueuedEmail
@@ -110,14 +103,14 @@ namespace SmartStore.Data.Tests.Messages
 			attach = fromDb.Attachments.FirstOrDefault();
 			attach.ShouldNotBeNull();
 
-			download = attach.File;
-			download.ShouldNotBeNull();
+			file = attach.MediaFile;
+			file.ShouldNotBeNull();
 
 			var attachId = attach.Id;
-			var downloadId = download.Id;
+			var fileId = file.Id;
 
 			// delete Attachment.Download
-			context.Set<Download>().Remove(download);
+			context.Set<MediaFile>().Remove(file);
 			context.SaveChanges();
 			base.ReloadContext();
 

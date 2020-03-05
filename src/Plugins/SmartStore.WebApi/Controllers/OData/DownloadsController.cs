@@ -13,7 +13,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Media.Download.Create)]
 		protected override void Insert(Download entity)
 		{
-			Service.InsertDownload(entity, null);
+			Service.InsertDownload(entity);
 		}
 
         [WebApiAuthenticate(Permission = Permissions.Media.Download.Update)]

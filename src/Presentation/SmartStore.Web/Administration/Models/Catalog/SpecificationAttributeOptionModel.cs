@@ -3,6 +3,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
@@ -66,4 +68,21 @@ namespace SmartStore.Admin.Models.Catalog
 			RuleFor(x => x.Name).NotEmpty();
 		}
 	}
+
+    public class SpecificationAttributeOptionMapper :
+        IMapper<SpecificationAttributeOption, SpecificationAttributeOptionModel>,
+        IMapper<SpecificationAttributeOptionModel, SpecificationAttributeOption>
+    {
+        public void Map(SpecificationAttributeOption from, SpecificationAttributeOptionModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.PictureId = from.MediaFileId;
+        }
+
+        public void Map(SpecificationAttributeOptionModel from, SpecificationAttributeOption to)
+        {
+            MiniMapper.Map(from, to);
+            to.MediaFileId = from.PictureId;
+        }
+    }
 }

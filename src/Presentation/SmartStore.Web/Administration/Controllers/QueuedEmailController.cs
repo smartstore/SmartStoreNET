@@ -285,9 +285,9 @@ namespace SmartStore.Admin.Controllers
 
 				return File(path, qea.MimeType, qea.Name);
 			}
-			else if (qea.FileId.HasValue)
+			else if (qea.MediaFileId.HasValue)
 			{
-				return RedirectToAction("DownloadFile", "Download", new { downloadId = qea.FileId.Value });
+				return RedirectToAction("DownloadFile", "Download", new { downloadId = qea.MediaFileId.Value });
 			}
 
 			NotifyError(T("Admin.System.QueuedEmails.CouldNotDownloadAttachment"));

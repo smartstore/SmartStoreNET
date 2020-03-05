@@ -12,15 +12,6 @@ namespace SmartStore.Data.Mapping.Messages
 
 			Property(x => x.Path).IsOptional().HasMaxLength(1000);
 
-#pragma warning disable 612, 618
-			Property(x => x.Data).IsMaxLength();
-#pragma warning restore 612, 618
-
-			HasOptional(x => x.File)
-				.WithMany()
-				.HasForeignKey(x => x.FileId)
-				.WillCascadeOnDelete(true);
-
 			Property(x => x.Name).IsRequired().HasMaxLength(200);
 			Property(x => x.MimeType).IsRequired().HasMaxLength(200);
 
@@ -29,10 +20,15 @@ namespace SmartStore.Data.Mapping.Messages
 				.HasForeignKey(x => x.QueuedEmailId)
 				.WillCascadeOnDelete(true);
 
+			HasOptional(x => x.MediaFile)
+				.WithMany()
+				.HasForeignKey(x => x.MediaFileId)
+				.WillCascadeOnDelete(false);
+
 			HasOptional(x => x.MediaStorage)
 				.WithMany()
 				.HasForeignKey(x => x.MediaStorageId)
-				.WillCascadeOnDelete(false);
+				.WillCascadeOnDelete(true);
 		}
 	}
 }

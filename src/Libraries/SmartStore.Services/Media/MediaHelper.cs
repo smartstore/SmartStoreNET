@@ -38,26 +38,26 @@ namespace SmartStore.Services.Media
 
 		public static void UpdatePictureTransientStateFor<TEntity>(TEntity entity, Expression<Func<TEntity, int>> pictureIdProp, bool save = false) where TEntity : BaseEntity
 		{
-			Guard.NotNull(entity, nameof(entity));
-			Guard.NotNull(pictureIdProp, nameof(pictureIdProp));
+			//Guard.NotNull(entity, nameof(entity));
+			//Guard.NotNull(pictureIdProp, nameof(pictureIdProp));
 
-			var propName = pictureIdProp.ExtractMemberInfo().Name;
-			int currentPictureId = pictureIdProp.CompileFast(PropertyCachingStrategy.EagerCached).Invoke(entity);
-			var rs = EngineContext.Current.Resolve<IRepository<MediaFile>>();
+			//var propName = pictureIdProp.ExtractMemberInfo().Name;
+			//int currentPictureId = pictureIdProp.CompileFast(PropertyCachingStrategy.EagerCached).Invoke(entity);
+			//var rs = EngineContext.Current.Resolve<IRepository<MediaFile>>();
 
-			UpdateTransientStateForEntityInternal(entity, propName, currentPictureId, rs, GetPictureDeleteAction(), save);
+			//UpdateTransientStateForEntityInternal(entity, propName, currentPictureId, rs, GetPictureDeleteAction(), save);
 		}
 
 		public static void UpdatePictureTransientStateFor<TEntity>(TEntity entity, Expression<Func<TEntity, int?>> pictureIdProp, bool save = false) where TEntity : BaseEntity
 		{
-			Guard.NotNull(entity, nameof(entity));
-			Guard.NotNull(pictureIdProp, nameof(pictureIdProp));
+			//Guard.NotNull(entity, nameof(entity));
+			//Guard.NotNull(pictureIdProp, nameof(pictureIdProp));
 
-			var propName = pictureIdProp.ExtractMemberInfo().Name;
-			int currentPictureId = pictureIdProp.CompileFast(PropertyCachingStrategy.EagerCached).Invoke(entity).GetValueOrDefault();
-			var rs = EngineContext.Current.Resolve<IRepository<MediaFile>>();
+			//var propName = pictureIdProp.ExtractMemberInfo().Name;
+			//int currentPictureId = pictureIdProp.CompileFast(PropertyCachingStrategy.EagerCached).Invoke(entity).GetValueOrDefault();
+			//var rs = EngineContext.Current.Resolve<IRepository<MediaFile>>();
 
-			UpdateTransientStateForEntityInternal(entity, propName, currentPictureId, rs, GetPictureDeleteAction(), save);
+			//UpdateTransientStateForEntityInternal(entity, propName, currentPictureId, rs, GetPictureDeleteAction(), save);
 		}
 
 		public static void UpdateDownloadTransientState(int? prevDownloadId, int? currentDownloadId, bool save = false)
@@ -74,14 +74,14 @@ namespace SmartStore.Services.Media
 
 		public static void UpdatePictureTransientState(int? prevPictureId, int? currentPictureId, bool save = false)
 		{
-			var rs = EngineContext.Current.Resolve<IRepository<MediaFile>>();
-			UpdateTransientStateCore(prevPictureId.GetValueOrDefault(), currentPictureId.GetValueOrDefault(), rs, GetPictureDeleteAction(), save);
+			//var rs = EngineContext.Current.Resolve<IRepository<MediaFile>>();
+			//UpdateTransientStateCore(prevPictureId.GetValueOrDefault(), currentPictureId.GetValueOrDefault(), rs, GetPictureDeleteAction(), save);
 		}
 
 		public static void UpdatePictureTransientState(int prevPictureId, int currentPictureId, bool save = false)
 		{
-			var rs = EngineContext.Current.Resolve<IRepository<MediaFile>>();
-			UpdateTransientStateCore(prevPictureId, currentPictureId, rs, GetPictureDeleteAction(), save);
+			//var rs = EngineContext.Current.Resolve<IRepository<MediaFile>>();
+			//UpdateTransientStateCore(prevPictureId, currentPictureId, rs, GetPictureDeleteAction(), save);
 		}
 
 		private static Action<object> GetPictureDeleteAction()
@@ -103,14 +103,14 @@ namespace SmartStore.Services.Media
 			Action<object> deleteAction,
 			bool save) where TEntity : BaseEntity where TMedia : BaseEntity
 		{
-			object obj = null;
-			int prevMediaId = 0;
-			if (rs.Context.TryGetModifiedProperty(entity, propName, out obj))
-			{
-				prevMediaId = ((int?)obj).GetValueOrDefault();
-			}
+			//object obj = null;
+			//int prevMediaId = 0;
+			//if (rs.Context.TryGetModifiedProperty(entity, propName, out obj))
+			//{
+			//	prevMediaId = ((int?)obj).GetValueOrDefault();
+			//}
 
-			UpdateTransientStateCore(prevMediaId, currentMediaId, rs, deleteAction, save);
+			//UpdateTransientStateCore(prevMediaId, currentMediaId, rs, deleteAction, save);
 		}
 
 		internal static void UpdateTransientStateCore<TMedia>(
@@ -121,58 +121,58 @@ namespace SmartStore.Services.Media
 			bool save)
 			where TMedia : BaseEntity
 		{
-			var autoCommit = rs.AutoCommitEnabled;
-			rs.AutoCommitEnabled = false;
+			//var autoCommit = rs.AutoCommitEnabled;
+			//rs.AutoCommitEnabled = false;
 
-			try
-			{
-				TMedia media = null;
-				bool shouldSave = false;
+			//try
+			//{
+			//	TMedia media = null;
+			//	bool shouldSave = false;
 
-				bool isModified = prevMediaId != currentMediaId;
+			//	bool isModified = prevMediaId != currentMediaId;
 
-				if (currentMediaId > 0 && isModified)
-				{
-					// new entity with a media or media replaced
-					media = rs.GetById(currentMediaId);
-					if (media != null)
-					{
-						var transient = media as ITransient;
-						if (transient != null)
-						{
-							transient.IsTransient = false;
-							shouldSave = true;
-						}
-					}
-				}
+			//	if (currentMediaId > 0 && isModified)
+			//	{
+			//		// new entity with a media or media replaced
+			//		media = rs.GetById(currentMediaId);
+			//		if (media != null)
+			//		{
+			//			var transient = media as ITransient;
+			//			if (transient != null)
+			//			{
+			//				transient.IsTransient = false;
+			//				shouldSave = true;
+			//			}
+			//		}
+			//	}
 
-				if (prevMediaId > 0 && isModified)
-				{
-					// ID changed, so delete old record
-					media = rs.GetById(prevMediaId);
-					if (media != null)
-					{
-						if (deleteAction == null)
-						{
-							rs.Delete(media);
-						}
-						else
-						{
-							deleteAction(media);
-						}
-						shouldSave = true;
-					}
-				}
+			//	if (prevMediaId > 0 && isModified)
+			//	{
+			//		// ID changed, so delete old record
+			//		media = rs.GetById(prevMediaId);
+			//		if (media != null)
+			//		{
+			//			if (deleteAction == null)
+			//			{
+			//				rs.Delete(media);
+			//			}
+			//			else
+			//			{
+			//				deleteAction(media);
+			//			}
+			//			shouldSave = true;
+			//		}
+			//	}
 
-				if (save && shouldSave)
-				{
-					rs.Context.SaveChanges();
-				}
-			}
-			finally
-			{
-				rs.AutoCommitEnabled = autoCommit;
-			}
+			//	if (save && shouldSave)
+			//	{
+			//		rs.Context.SaveChanges();
+			//	}
+			//}
+			//finally
+			//{
+			//	rs.AutoCommitEnabled = autoCommit;
+			//}
 		}
 	}
 

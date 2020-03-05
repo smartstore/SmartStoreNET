@@ -393,10 +393,7 @@ namespace SmartStore.Services.Catalog
                 DownloadGuid = Guid.NewGuid(),
                 UseDownloadUrl = download.UseDownloadUrl,
                 DownloadUrl = download.DownloadUrl,
-                ContentType = download.ContentType,
-                Filename = download.Filename,
-                Extension = download.Extension,
-                IsNew = download.IsNew,
+				MediaFile = download.MediaFile,
                 UpdatedOnUtc = DateTime.UtcNow,
                 EntityId = download.EntityId,
                 EntityName = download.EntityName,
@@ -404,7 +401,8 @@ namespace SmartStore.Services.Catalog
                 FileVersion = download.FileVersion
             };
 
-            _downloadService.InsertDownload(clone, download.MediaStorage?.Data);
+			_services.DbContext.Set<Download>().Add(clone);
+			_services.DbContext.SaveChanges();
 
             return clone;
         }
@@ -433,7 +431,6 @@ namespace SmartStore.Services.Catalog
 					buffer,
 					picture.MimeType,
 					seoFilename,
-					true,
 					picture.Width ?? 0,
 					picture.Height ?? 0,
 					false,

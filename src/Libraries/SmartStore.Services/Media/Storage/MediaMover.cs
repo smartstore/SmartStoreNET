@@ -15,28 +15,20 @@ namespace SmartStore.Services.Media.Storage
 		private const int PAGE_SIZE = 100;
 
 		private readonly IRepository<MediaFile> _pictureRepository;
-		private readonly IRepository<Download> _downloadRepository;
-		private readonly IRepository<QueuedEmailAttachment> _queuedEmailAttachmentRepository;
 		private readonly ICommonServices _services;
 		private readonly ILogger _logger;
 
 		public MediaMover(
 			IRepository<MediaFile> pictureRepository,
-			IRepository<Download> downloadRepository,
-			IRepository<QueuedEmailAttachment> queuedEmailAttachmentRepository,
 			ICommonServices services,
 			ILogger logger)
 		{
 			_pictureRepository = pictureRepository;
-			_downloadRepository = downloadRepository;
-			_queuedEmailAttachmentRepository = queuedEmailAttachmentRepository;
 			_services = services;
 			_logger = logger;
-
-			T = NullLocalizer.Instance;
 		}
 
-		public Localizer T { get; set; }
+		public Localizer T { get; set; } = NullLocalizer.Instance;
 
 		protected virtual void PageEntities<TEntity>(IOrderedQueryable<TEntity> query, Action<TEntity> moveEntity) where TEntity : BaseEntity, IHasMedia
 		{
@@ -95,63 +87,44 @@ namespace SmartStore.Services.Media.Storage
 
 			// we are about to process data in chunks but want to commit ALL at once when ALL chunks have been processed successfully.
 			// autoDetectChanges true required for newly inserted binary data.
-			using (var scope = new DbContextScope(ctx: _services.DbContext, autoDetectChanges: true, proxyCreation: false, validateOnSave: false, autoCommit: false))
-			using (var transaction = _services.DbContext.BeginTransaction())
+			using (var scope = new DbContextScope(ctx: _services.DbContext, 
+				autoDetectChanges: true, 
+				proxyCreation: false, 
+				validateOnSave: false, 
+				autoCommit: false))
 			{
-				try
+				using (var transaction = _services.DbContext.BeginTransaction())
 				{
-					// pictures
-					var queryPictures = _pictureRepository.Table
-						.Expand(x => x.MediaStorage)
-						.OrderBy(x => x.Id);
-
-					PageEntities(queryPictures, picture =>
+					try
 					{
-						// move item from source to target
-						source.MoveTo(target, context, picture.ToMedia());
+						// Files
+						var queryFiles = _pictureRepository.Table
+							.Expand(x => x.MediaStorage)
+							.OrderBy(x => x.Id);
 
-						picture.UpdatedOnUtc = utcNow;
-						++context.MovedItems;
-					});
+						PageEntities(queryFiles, picture =>
+						{
+							// move item from source to target
+							source.MoveTo(target, context, picture);
 
-					// downloads
-					var queryDownloads = _downloadRepository.Table
-						.Expand(x => x.MediaStorage)
-						.OrderBy(x => x.Id);
+							picture.UpdatedOnUtc = utcNow;
+							++context.MovedItems;
+						});
 
-					PageEntities(queryDownloads, download =>
+						transaction.Commit();
+						success = true;
+					}
+					catch (Exception exception)
 					{
-						source.MoveTo(target, context, download.ToMedia());
+						success = false;
+						transaction.Rollback();
 
-						download.UpdatedOnUtc = utcNow;
-						++context.MovedItems;
-					});
-
-					// queued email attachments
-					var queryQueuedEmailAttachments = _queuedEmailAttachmentRepository.Table
-						.Expand(x => x.MediaStorage)
-						.Where(x => x.StorageLocation == EmailAttachmentStorageLocation.Blob)
-						.OrderBy(x => x.Id);
-
-					PageEntities(queryQueuedEmailAttachments, attachment =>
-					{
-						source.MoveTo(target, context, attachment.ToMedia());
-
-						++context.MovedItems;
-					});
-
-					transaction.Commit();
-					success = true;
-				}
-				catch (Exception exception)
-				{
-					success = false;
-					transaction.Rollback();
-
-					_services.Notifier.Error(exception.Message);
-					_logger.Error(exception);
+						_services.Notifier.Error(exception.Message);
+						_logger.Error(exception);
+					}
 				}
 			}
+
 
 			if (success)
 			{

@@ -218,13 +218,13 @@ namespace SmartStore.Services.Media
             {
                 // Products
                 {
-                    var name = nameof(Product);
+                    var name = nameof(ProductMediaFile);
                     var p = new FastPager<ProductMediaFile>(ctx.Set<ProductMediaFile>().AsNoTracking());
                     while (p.ReadNextPage(x => new { x.Id, x.ProductId, x.MediaFileId }, x => x.Id, out var list))
                     {
                         foreach (var x in list)
                         {
-                            yield return new MediaTrackAction { EntityId = x.ProductId, EntityName = name, MediaFileId = x.MediaFileId };
+                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId };
                         }
                     }
                 }

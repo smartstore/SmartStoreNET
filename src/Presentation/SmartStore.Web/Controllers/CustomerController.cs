@@ -1421,7 +1421,7 @@ namespace SmartStore.Web.Controllers
                         .Select(x => new DownloadVersion
                         {
                             FileVersion = x.FileVersion,
-                            FileName = string.Concat(x.Filename, x.Extension),
+                            FileName = x.MediaFile.Name,
                             DownloadGuid = x.DownloadGuid,
                             Changelog = x.Changelog,
                             DownloadId = x.Id
@@ -1591,7 +1591,7 @@ namespace SmartStore.Web.Controllers
 						_pictureService.DeletePicture(customerAvatar);
 					}
 
-					customerAvatar = _pictureService.InsertPicture(uploadedFile.Buffer, uploadedFile.ContentType, null, true, false, album: "customer");
+					customerAvatar = _pictureService.InsertPicture(uploadedFile.Buffer, uploadedFile.ContentType, null, false, album: "customer");
 
 					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, customerAvatar.Id);
 

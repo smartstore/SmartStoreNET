@@ -144,59 +144,63 @@ namespace SmartStore.Data.Migrations
 
 				#region Downloads
 
-				PageEntities(context, mediaStorages, context.Set<Download>().OrderBy(x => x.Id), download =>
-				{
-					if (download.DownloadBinary != null && download.DownloadBinary.LongLength > 0)
-					{
-						if (storeMediaInDb)
-						{
-							// move binary data
-							download.MediaStorage = new MediaStorage { Data = download.DownloadBinary };
-						}
-						else
-						{
-							// move to file system. it's necessary because from now on DownloadService depends on current storage provider
-							// and it would not find the binary data anymore if not moved.
-							var fileName = GetFileName(download.Id, download.Extension, download.ContentType);
-							var path = fileSystem.Combine(fileSystem.Combine(mediaBasePath, "Downloads"), fileName);
+				// TODO: (mm) remove later (?)
 
-							fileSystem.WriteAllBytes(path, download.DownloadBinary);
-						}
+				//PageEntities(context, mediaStorages, context.Set<Download>().OrderBy(x => x.Id), download =>
+				//{
+				//	if (download.DownloadBinary != null && download.DownloadBinary.LongLength > 0)
+				//	{
+				//		if (storeMediaInDb)
+				//		{
+				//			// move binary data
+				//			download.MediaStorage = new MediaStorage { Data = download.DownloadBinary };
+				//		}
+				//		else
+				//		{
+				//			// move to file system. it's necessary because from now on DownloadService depends on current storage provider
+				//			// and it would not find the binary data anymore if not moved.
+				//			var fileName = GetFileName(download.Id, download.Extension, download.ContentType);
+				//			var path = fileSystem.Combine(fileSystem.Combine(mediaBasePath, "Downloads"), fileName);
 
-						download.DownloadBinary = null;
-					}
-				});
+				//			fileSystem.WriteAllBytes(path, download.DownloadBinary);
+				//		}
+
+				//		download.DownloadBinary = null;
+				//	}
+				//});
 
 				#endregion
 
 				#region Queued email attachments
 
-				var attachmentQuery = context.Set<QueuedEmailAttachment>()
-					.Where(x => x.StorageLocation == EmailAttachmentStorageLocation.Blob)
-					.OrderBy(x => x.Id);
+				// TODO: (mm) remove later (?)
 
-				PageEntities(context, mediaStorages, attachmentQuery, attachment =>
-				{
-					if (attachment.Data != null && attachment.Data.LongLength > 0)
-					{
-						if (storeMediaInDb)
-						{
-							// move binary data
-							attachment.MediaStorage = new MediaStorage { Data = attachment.Data };
-						}
-						else
-						{
-							// move to file system. it's necessary because from now on QueuedEmailService depends on current storage provider
-							// and it would not find the binary data anymore if do not move it.
-							var fileName = GetFileName(attachment.Id, Path.GetExtension(attachment.Name.EmptyNull()), attachment.MimeType);
-							var path = fileSystem.Combine(fileSystem.Combine(mediaBasePath, "QueuedEmailAttachment"), fileName);
+				//var attachmentQuery = context.Set<QueuedEmailAttachment>()
+				//	.Where(x => x.StorageLocation == EmailAttachmentStorageLocation.Blob)
+				//	.OrderBy(x => x.Id);
 
-							fileSystem.WriteAllBytes(path, attachment.Data);
-						}
+				//PageEntities(context, mediaStorages, attachmentQuery, attachment =>
+				//{
+				//	if (attachment.Data != null && attachment.Data.LongLength > 0)
+				//	{
+				//		if (storeMediaInDb)
+				//		{
+				//			// move binary data
+				//			attachment.MediaStorage = new MediaStorage { Data = attachment.Data };
+				//		}
+				//		else
+				//		{
+				//			// move to file system. it's necessary because from now on QueuedEmailService depends on current storage provider
+				//			// and it would not find the binary data anymore if do not move it.
+				//			var fileName = GetFileName(attachment.Id, Path.GetExtension(attachment.Name.EmptyNull()), attachment.MimeType);
+				//			var path = fileSystem.Combine(fileSystem.Combine(mediaBasePath, "QueuedEmailAttachment"), fileName);
 
-						attachment.Data = null;
-					}
-				});
+				//			fileSystem.WriteAllBytes(path, attachment.Data);
+				//		}
+
+				//		attachment.Data = null;
+				//	}
+				//});
 
 				#endregion
 			}

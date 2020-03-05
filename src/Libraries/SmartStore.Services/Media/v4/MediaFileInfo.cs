@@ -42,9 +42,6 @@ namespace SmartStore.Services.Media
         [JsonProperty("type")]
         public string MediaType => File.MediaType;
 
-        [JsonProperty("isNew")]
-        public bool IsNew => File.IsNew;
-
         [JsonProperty("isTransient")]
         public bool IsTransient => File.IsTransient;
 
@@ -90,7 +87,7 @@ namespace SmartStore.Services.Media
 
         public Stream OpenRead()
         {
-            return _storageProvider.OpenRead(File.ToMedia());
+            return _storageProvider.OpenRead(File);
         }
 
         public Stream CreateFile()

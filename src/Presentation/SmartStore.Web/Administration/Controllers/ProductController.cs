@@ -284,14 +284,14 @@ namespace SmartStore.Admin.Controllers
             p.HasSampleDownload = m.HasSampleDownload;
             p.SampleDownloadId = m.SampleDownloadId == 0 ? (int?)null : m.SampleDownloadId;
 
-            if (m.NewVersionDownloadId != 0 && m.NewVersionDownloadId != null)
+            if (m.NewVersionDownloadId > 0)
             {
                 // Set version info & product id for new download.
-                var newVersion = _downloadService.GetDownloadById((int)m.NewVersionDownloadId);
-                newVersion.FileVersion = m.NewVersion != null ? m.NewVersion : String.Empty;
+                var newVersion = _downloadService.GetDownloadById(m.NewVersionDownloadId.Value);
+                newVersion.FileVersion = m.NewVersion ?? String.Empty;
                 newVersion.EntityId = p.Id;
                 newVersion.IsTransient = false;
-                _downloadService.UpdateDownload(newVersion, newVersion.MediaStorage.Data);
+                _downloadService.UpdateDownload(newVersion, _pictureService.LoadPictureBinary(newVersion.MediaFile));
             }
             else if (m.DownloadFileVersion.HasValue())
             {
@@ -638,7 +638,7 @@ namespace SmartStore.Admin.Controllers
                     {
                         FileVersion = x.FileVersion,
                         DownloadId = x.Id,
-                        FileName = string.Concat(x.Filename, x.Extension),
+                        FileName = x.MediaFile.Name,
                         DownloadUrl = Url.Action("DownloadFile", "Download", new { downloadId = x.Id })
                     })
                     .ToList();

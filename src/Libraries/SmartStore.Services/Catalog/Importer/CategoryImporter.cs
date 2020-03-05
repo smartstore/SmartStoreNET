@@ -220,7 +220,7 @@ namespace SmartStore.Services.Catalog.Importer
 
                             if (pictureBinary != null && pictureBinary.Length > 0)
                             {
-                                var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false, "category");
+                                var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, false, false, "category");
                                 if (picture != null)
                                 {
                                     row.Entity.MediaFileId = picture.Id;

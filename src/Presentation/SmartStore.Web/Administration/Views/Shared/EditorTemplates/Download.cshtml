@@ -81,13 +81,12 @@
     var initiallyShowUrlPanel = false;
     var hasFile = false;
     var downloadUrl = "";
-    if (download != null) {
+    if (download != null) 
+	{
         downloadUrl = Url.Action("DownloadFile", "Download", new { downloadId = download.Id });
         initiallyShowUrlPanel = !MinimalMode && download.UseDownloadUrl;
         hasFile = !download.UseDownloadUrl;
-        fileName = string.IsNullOrWhiteSpace(download.Filename) || download.Filename.IsCaseInsensitiveEqual("undefined")
-            ? download.Id.ToString()
-            : string.Concat(download.Filename, download.Extension);
+        fileName = download.MediaFile?.Name ?? (download.Id.ToString().Grow(download.MediaFile?.Extension, "."));
     }
 
     Html.AddScriptParts(true, "~/Administration/Scripts/smartstore.download.js");

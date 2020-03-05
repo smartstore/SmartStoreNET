@@ -13,14 +13,17 @@ namespace SmartStore.Services.Media.Storage
 	public class DatabaseMediaStorageProvider : IMediaStorageProvider, ISupportsMediaMoving
 	{
 		private readonly IDbContext _dbContext;
-		private readonly IRepository<MediaStorage> _mediaStorageRepository;
+		private readonly IRepository<MediaStorage> _mediaStorageRepo;
+		private readonly IRepository<MediaFile> _mediaFileRepo;
 
 		public DatabaseMediaStorageProvider(
 			IDbContext dbContext,
-			IRepository<MediaStorage> mediaStorageRepository)
+			IRepository<MediaStorage> mediaStorageRepo,
+			IRepository<MediaFile> mediaFileRepo)
 		{
 			_dbContext = dbContext;
-			_mediaStorageRepository = mediaStorageRepository;
+			_mediaStorageRepo = mediaStorageRepo;
+			_mediaFileRepo = mediaFileRepo;
 		}
 
 		public static string SystemName
@@ -28,133 +31,99 @@ namespace SmartStore.Services.Media.Storage
 			get { return "MediaStorage.SmartStoreDatabase"; }
 		}
 
-		public long GetSize(MediaItem media)
+		public long GetSize(MediaFile mediaFile)
 		{
-			return media.Entity?.MediaStorage?.Data?.LongLength ?? 0;
+			Guard.NotNull(mediaFile, nameof(mediaFile));
+
+			return mediaFile.MediaStorage?.Data?.LongLength ?? 0;
 		}
 
-		public Stream OpenRead(MediaItem media)
+		public Stream OpenRead(MediaFile mediaFile)
 		{
-			Guard.NotNull(media, nameof(media));
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-			return media.Entity?.MediaStorage?.Data?.ToStream();
+			return mediaFile.MediaStorage?.Data?.ToStream();
 		}
 
-		public byte[] Load(MediaItem media)
+		public byte[] Load(MediaFile mediaFile)
 		{
-			Guard.NotNull(media, nameof(media));
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-			return media.Entity?.MediaStorage?.Data ?? new byte[0];
+			return mediaFile.MediaStorage?.Data ?? new byte[0];
 		}
 
-		public Task<byte[]> LoadAsync(MediaItem media)
+		public Task<byte[]> LoadAsync(MediaFile mediaFile)
 		{
-			return Task.FromResult(Load(media));
+			return Task.FromResult(Load(mediaFile));
 		}
 
-		public void Save(MediaItem media, byte[] data)
+		public void Save(MediaFile mediaFile, byte[] data)
 		{
-			Guard.NotNull(media, nameof(media));
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-			if (data == null || data.LongLength == 0)
-			{
-				// remove media storage if any
-				if ((media.Entity.MediaStorageId ?? 0) != 0 && media.Entity != null && media.Entity.MediaStorage != null)
-				{
-					_mediaStorageRepository.Delete(media.Entity.MediaStorage);
-				}
-			}
-			else
-			{
-				if (media.Entity.MediaStorage == null)
-				{
-					// entity has no media storage -> insert
-					var newStorage = new MediaStorage { Data = data };
-
-					_mediaStorageRepository.Insert(newStorage);
-
-					if (newStorage.Id == 0)
-					{
-						// actually we should never get here
-						_dbContext.SaveChanges();
-					}
-
-					media.Entity.MediaStorageId = newStorage.Id;
-
-					//// Required because during import the ChangeTracker doesn't treat media.Entity as changed entry.
-					//_dbContext.ChangeState((BaseEntity)media.Entity, System.Data.Entity.EntityState.Modified);
-
-					_dbContext.SaveChanges();
-				}
-				else
-				{
-					// update existing media storage
-					media.Entity.MediaStorage.Data = data;
-
-					_mediaStorageRepository.Update(media.Entity.MediaStorage);
-				}
-			}
+			mediaFile.ApplyBlob(data);
+			_mediaFileRepo.Update(mediaFile);
 		}
 
-		public Task SaveAsync(MediaItem media, byte[] data)
+		public Task SaveAsync(MediaFile mediaFile, byte[] data)
 		{
-			Save(media, data);
+			Save(mediaFile, data);
 			return Task.FromResult(0);
 		}
 
-		public void Remove(params MediaItem[] medias)
+		public void Remove(params MediaFile[] mediaFiles)
 		{
-			foreach (var media in medias)
+			using (var scope = new DbContextScope(ctx: _mediaFileRepo.Context, autoCommit: false))
 			{
-				if ((media.Entity.MediaStorageId ?? 0) != 0)
+				foreach (var media in mediaFiles)
 				{
-					// this also nulls media.Entity.MediaStorageId
-					_mediaStorageRepository.Delete(media.Entity.MediaStorage);
+					media.ApplyBlob(null);
 				}
+
+				scope.Commit();
 			}
 		}
 
-
-		public void MoveTo(ISupportsMediaMoving target, MediaMoverContext context, MediaItem media)
+		public void MoveTo(ISupportsMediaMoving target, MediaMoverContext context, MediaFile mediaFile)
 		{
 			Guard.NotNull(target, nameof(target));
 			Guard.NotNull(context, nameof(context));
-			Guard.NotNull(media, nameof(media));
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-			if (media.Entity.MediaStorage != null)
+			if (mediaFile.MediaStorage != null)
 			{
-				// let target store data (into a file for example)
-				target.Receive(context, media, media.Entity.MediaStorage.Data);
+				// Let target store data (into a file for example)
+				target.Receive(context, mediaFile, mediaFile.MediaStorage.Data);
 
-				// remove picture binary from DB
+				// Remove picture binary from DB
 				try
 				{
-					_mediaStorageRepository.Delete(media.Entity.MediaStorage);
+					mediaFile.MediaStorageId = null;
+					mediaFile.MediaStorage = null;
+					_mediaFileRepo.Update(mediaFile);
 				}
 				catch { }
-
-				media.Entity.MediaStorageId = null;
-
+				
 				context.ShrinkDatabase = true;
 			}
 		}
 
-		public void Receive(MediaMoverContext context, MediaItem media, byte[] data)
+		public void Receive(MediaMoverContext context, MediaFile mediaFile, byte[] data)
 		{
 			Guard.NotNull(context, nameof(context));
-			Guard.NotNull(media, nameof(media));
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 
 			// store data for later bulk commit
 			if (data != null && data.LongLength > 0)
 			{
-				// requires autoDetectChanges set to true or remove explicit entity detaching
-				media.Entity.MediaStorage = new MediaStorage { Data = data };
+				// Requires autoDetectChanges set to true or remove explicit entity detaching
+				mediaFile.MediaStorage = new MediaStorage { Data = data };
 			}
 		}
 
-		public Task ReceiveAsync(MediaMoverContext context, MediaItem media, byte[] data)
+		public Task ReceiveAsync(MediaMoverContext context, MediaFile mediaFile, byte[] data)
 		{
-			Receive(context, media, data);
+			Receive(context, mediaFile, data);
 			return Task.FromResult(0);
 		}
 

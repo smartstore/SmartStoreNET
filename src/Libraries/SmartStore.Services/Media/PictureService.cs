@@ -256,21 +256,21 @@ namespace SmartStore.Services.Media
 		{
 			Guard.NotNull(picture, nameof(picture));
 
-			return _storageProvider.Value.OpenRead(picture.ToMedia());
+			return _storageProvider.Value.OpenRead(picture);
 		}
 
 		public virtual byte[] LoadPictureBinary(MediaFile picture)
         {
 			Guard.NotNull(picture, nameof(picture));
 
-			return _storageProvider.Value.Load(picture.ToMedia());
+			return _storageProvider.Value.Load(picture);
         }
 
 		public virtual Task<byte[]> LoadPictureBinaryAsync(MediaFile picture)
 		{
 			Guard.NotNull(picture, nameof(picture));
 
-			return _storageProvider.Value.LoadAsync(picture.ToMedia());
+			return _storageProvider.Value.LoadAsync(picture);
 		}
 
 		public virtual Size GetPictureSize(byte[] pictureBinary, string mimeType = null)
@@ -434,20 +434,6 @@ namespace SmartStore.Services.Media
 			// Do some maintenance stuff
 			EnsurePictureSizeResolved(picture, true);
 
-			if (picture.IsNew)
-			{
-				_imageCache.Delete(picture);
-
-				// We do not validate picture binary here to ensure that no exception ("Parameter is not valid") will be thrown
-				UpdatePicture(
-					picture,
-					null,
-					picture.MimeType,
-					picture.Name,
-					false,
-					false);
-			}
-
 			extension = (picture.Extension.NullEmpty() ?? Path.GetExtension(picture.Name).NullEmpty() ?? MimeTypes.MapMimeTypeToExtension(picture.MimeType)).TrimStart('.');
 
 			return new PictureInfo
@@ -501,10 +487,9 @@ namespace SmartStore.Services.Media
 
 		private void EnsurePictureSizeResolved(MediaFile picture, bool saveOnResolve)
 		{
-			if (picture.Width == null && picture.Height == null)
+			if (picture.MediaType == MediaType.Image && picture.Width == null && picture.Height == null)
 			{
-                var mediaItem = picture.ToMedia();
-                var stream = _storageProvider.Value.OpenRead(mediaItem);
+                var stream = _storageProvider.Value.OpenRead(picture);
 
                 if (stream != null)
                 {
@@ -563,11 +548,12 @@ namespace SmartStore.Services.Media
 		{
 			var picture = GetPictureById(pictureId);
 
-			// update if it has been changed
-			if (picture != null && seoFilename != picture.Name)
-			{
-				UpdatePicture(picture, null, picture.MimeType, seoFilename, true, false);
-			}
+			//// TODO: (mm) Think about file name change requirement thoroughly
+			//// update if it has been changed
+			//if (picture != null && seoFilename != picture.Name)
+			//{
+			//	UpdatePicture(picture, null, picture.MimeType, seoFilename, true, false);
+			//}
 
 			return picture;
 		}
@@ -683,7 +669,7 @@ namespace SmartStore.Services.Media
             HasChanges = true;
 
 			// delete from storage
-			_storageProvider.Value.Remove(picture.ToMedia());
+			_storageProvider.Value.Remove(picture);
 
 			// delete entity
 			_pictureRepository.Delete(picture);
@@ -692,8 +678,7 @@ namespace SmartStore.Services.Media
 		public virtual MediaFile InsertPicture(
 			byte[] pictureBinary,
 			string mimeType,
-			string seoFilename,
-			bool isNew,
+			string filename,
 			bool isTransient = true,
 			bool validateBinary = true,
 			string album = null)
@@ -705,83 +690,72 @@ namespace SmartStore.Services.Media
 				pictureBinary = ValidatePicture(pictureBinary, mimeType, out size);
 			}
 
-			return InsertPicture(pictureBinary, mimeType, seoFilename, isNew, size.Width, size.Height, isTransient);
+			return InsertPicture(pictureBinary, mimeType, filename, size.Width, size.Height, isTransient, album);
 		}
 
 		public virtual MediaFile InsertPicture(
 			byte[] pictureBinary,
 			string mimeType,
-			string seoFilename,
-			bool isNew,
+			string fileName,
 			int width,
 			int height,
 			bool isTransient = true,
 			string album = null)
 		{
-			var mime = mimeType.EmptyNull().Truncate(40);
-			var ext = MimeTypes.MapMimeTypeToExtension(mime);
-			var name = seoFilename.Truncate(100);
+			var mime = mimeType.EmptyNull().Truncate(100);
+			var name = NormalizeFileName(fileName, ref mime, out string ext);
 
-			var picture = new MediaFile
+			var file = new MediaFile
 			{
 				MimeType = mime,
 				Extension = ext,
-				Name = name + (ext.HasValue() ? "." + ext : ""),
-				Size = pictureBinary != null ? pictureBinary.Length : 0,
-				IsNew = isNew,
+				Name = name,
 				IsTransient = isTransient
 			};
-
-			picture.MediaType = _mediaTypeResolver.Resolve(picture);
-
-			if (width > 0 && height > 0)
-			{
-				picture.PixelSize = width * height;
-				picture.Width = width;
-				picture.Height = height;
-			}
+			
+			file.MediaType = _mediaTypeResolver.Resolve(file);
 
 			if (album.HasValue())
 			{
 				var albumId = _albumRegistry.GetAlbumByName(album)?.Id;
 				if (albumId > 0)
 				{
-					picture.FolderId = albumId;
+					file.FolderId = albumId;
 				}
 			}
 
-			_pictureRepository.Insert(picture);
+			file.RefreshMetadata(pictureBinary);
+			_pictureRepository.Insert(file);
 
 			// Save to storage.
-			_storageProvider.Value.Save(picture.ToMedia(), pictureBinary);
+			_storageProvider.Value.Save(file, pictureBinary);
 
-			return picture;
+			return file;
 		}
 
 		public virtual void UpdatePicture(
 			MediaFile picture,
 			byte[] pictureBinary,
 			string mimeType,
-			string seoFilename,
-			bool isNew,
+			string fileName,
 			bool validateBinary = true)
 		{
 			if (picture == null)
 				return;
 
-			mimeType = mimeType.EmptyNull().Truncate(40);
-			seoFilename = seoFilename.Truncate(100);
+			var mime = mimeType.EmptyNull().Truncate(100);
+			var name = NormalizeFileName(fileName, ref mime, out string ext);
 
 			var size = Size.Empty;
 
 			if (validateBinary && pictureBinary != null)
 			{
-				pictureBinary = ValidatePicture(pictureBinary, mimeType, out size);
+				pictureBinary = ValidatePicture(pictureBinary, mime, out size);
 				picture.Size = pictureBinary.Length;
 			}
 
 			// delete old thumbs if a picture has been changed
-			if (seoFilename != picture.Name)
+			if (name != picture.Name)
 			{
 				_imageCache.Delete(picture);
 
@@ -790,12 +764,9 @@ namespace SmartStore.Services.Media
                 HasChanges = true;
             }
 
-			var ext = MimeTypes.MapMimeTypeToExtension(mimeType);
-
 			picture.Extension = ext;
-			picture.MimeType = mimeType;
-			picture.Name = seoFilename + (ext.HasValue() ? "." + ext : "");
-			picture.IsNew = isNew;
+			picture.MimeType = mime;
+			picture.Name = name;
 
 			if (!size.IsEmpty)
 			{
@@ -806,13 +777,38 @@ namespace SmartStore.Services.Media
 
 			picture.MediaType = _mediaTypeResolver.Resolve(picture);
 
+			if (pictureBinary != null)
+			{
+				picture.RefreshMetadata(pictureBinary);
+			}
+			
 			_pictureRepository.Update(picture);
 
 			// save to storage
 			if (pictureBinary != null)
 			{
-				_storageProvider.Value.Save(picture.ToMedia(), pictureBinary);
+				_storageProvider.Value.Save(picture, pictureBinary);
 			}		
+		}
+
+		private string NormalizeFileName(string name, ref string mime, out string ext)
+		{
+			// TODO: (mm) temp helper only, refactor and remove later
+			var title = Path.GetFileNameWithoutExtension(name);
+
+			if (title != name)
+			{
+				// File name includes extension already
+				title = GetPictureSeName(title.Truncate(200));
+				ext = Path.GetExtension(name).Trim('.');
+				mime = MimeTypes.MapNameToMimeType(name);
+				return title + "." + ext;
+			}
+
+			// Filename is extensionless
+			title = GetPictureSeName(title.Truncate(200));
+			ext = MimeTypes.MapMimeTypeToExtension(mime);
+			return title.Grow(ext, ".");
 		}
 
 		#endregion

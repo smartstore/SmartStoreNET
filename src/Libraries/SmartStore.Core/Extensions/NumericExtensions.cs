@@ -11,28 +11,32 @@ namespace SmartStore
 
 		public static int GetRange(this int id, int size, out int lower)
 		{
-			lower = 0;
-
-			// max 1000 values per cache item
-			var range = (int)Math.Ceiling((decimal)id / size) * size;
+            // max 1000 values per cache item
+            var range = (int)Math.Ceiling((decimal)id / size) * size;
 
 			lower = range - (size - 1);
 
 			return range;
 		}
 
-		#endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int? ZeroToNull(this int? value)
+        {
+            return value <= 0 ? null : value;
+        }
 
-		#region decimal
+        #endregion
 
-		/// <summary>
-		/// Calculates the tax (percentage) from a gross and a net value.
-		/// </summary>
-		/// <param name="inclTax">Gross value</param>
-		/// <param name="exclTax">Net value</param>
-		/// <param name="decimals">Rounding decimal number</param>
-		/// <returns>Tax percentage</returns>
-		public static decimal ToTaxPercentage(this decimal inclTax, decimal exclTax, int? decimals = null)
+        #region decimal
+
+        /// <summary>
+        /// Calculates the tax (percentage) from a gross and a net value.
+        /// </summary>
+        /// <param name="inclTax">Gross value</param>
+        /// <param name="exclTax">Net value</param>
+        /// <param name="decimals">Rounding decimal number</param>
+        /// <returns>Tax percentage</returns>
+        public static decimal ToTaxPercentage(this decimal inclTax, decimal exclTax, int? decimals = null)
 		{
 			if (exclTax == decimal.Zero)
 			{

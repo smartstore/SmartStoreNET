@@ -377,52 +377,25 @@ namespace SmartStore.Web.Infrastructure.Installation
 				var fileSystemStorageProvider = new FileSystemMediaStorageProvider(new MediaFileSystem());
 				var mediaStorages = _ctx.Set<MediaStorage>();
 
-				// pictures
-				var pics = _ctx.Set<MediaFile>()
-					.Expand(x => x.MediaStorage)
-					.Where(x => x.MediaStorageId != null)
-					.ToList();
-
-				foreach (var pic in pics)
+				using (var scope = new DbContextScope(ctx: _ctx, autoDetectChanges: true, autoCommit: false))
 				{
-					if (pic.MediaStorage != null && pic.MediaStorage.Data != null && pic.MediaStorage.Data.LongLength > 0)
+					var mediaFiles = _ctx.Set<MediaFile>()
+						.Expand(x => x.MediaStorage)
+						.Where(x => x.MediaStorageId != null)
+						.ToList();
+
+					foreach (var mediaFile in mediaFiles)
 					{
-						fileSystemStorageProvider.Save(pic.ToMedia(), pic.MediaStorage.Data);
-
-						try
+						if (mediaFile.MediaStorage?.Data?.LongLength > 0)
 						{
-							mediaStorages.Remove(pic.MediaStorage);
+							fileSystemStorageProvider.Save(mediaFile, mediaFile.MediaStorage.Data);
+							mediaFile.MediaStorageId = null;
+							mediaFile.MediaStorage = null;
 						}
-						catch { }
-
-						pic.MediaStorageId = null;
 					}
+
+					scope.Commit();
 				}
-
-				_ctx.SaveChanges();
-
-				// downloads
-				var downloads = _ctx.Set<Download>()
-					.Expand(x => x.MediaStorage)
-					.ToList();
-
-				foreach (var download in downloads)
-				{
-					if (download.MediaStorage != null && download.MediaStorage.Data != null && download.MediaStorage.Data.LongLength > 0)
-					{
-						fileSystemStorageProvider.Save(download.ToMedia(), download.MediaStorage.Data);
-
-						try
-						{
-							mediaStorages.Remove(download.MediaStorage);
-						}
-						catch { }
-
-						download.MediaStorageId = null;
-					}
-				}
-
-				_ctx.SaveChanges();
 			}
 		}
 

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.IO;
 using SmartStore.Core.Plugins;
@@ -14,6 +15,8 @@ namespace SmartStore.Services.Media.Storage
 	[DisplayOrder(1)]
 	public class FileSystemMediaStorageProvider : IMediaStorageProvider, ISupportsMediaMoving
 	{
+		const string MediaRootPath = "Storage";
+		
 		private readonly IMediaFileSystem _fileSystem;
 
 		public FileSystemMediaStorageProvider(IMediaFileSystem fileSystem)
@@ -26,77 +29,86 @@ namespace SmartStore.Services.Media.Storage
 			get { return "MediaStorage.SmartStoreFileSystem"; }
 		}
 
-		protected string GetPath(MediaItem media)
+		protected string GetPath(MediaFile mediaFile)
 		{
-			var fileName = media.GetFileName();
+			var ext = mediaFile.Extension.NullEmpty() ?? MimeTypes.MapMimeTypeToExtension(mediaFile.MimeType);
 
-			var file = media.Entity as MediaFile;
-			if (file != null)
+			var fileName = mediaFile.Id.ToString(ImageCache.IdFormatString).Grow(ext, ".");
+			var subfolder = fileName.Substring(0, ImageCache.MaxDirLength);
+			var path = _fileSystem.Combine(subfolder, fileName);
+
+			return _fileSystem.Combine(MediaRootPath, path);
+		}
+
+		public long GetSize(MediaFile mediaFile)
+		{
+			Guard.NotNull(mediaFile, nameof(mediaFile));
+
+			if (mediaFile.Size > 0)
 			{
-				var subfolder = fileName.Substring(0, ImageCache.MaxDirLength);
-				fileName = _fileSystem.Combine(subfolder, fileName);
+				return mediaFile.Size;
 			}
 
-			return _fileSystem.Combine(media.Path, fileName);
+			var file = _fileSystem.GetFile(GetPath(mediaFile));
+			if (file.Exists)
+			{
+				// Hopefully a future commit will save this
+				mediaFile.Size = (int)file.Size;
+			}
+
+			return mediaFile.Size;
 		}
 
-		public long GetSize(MediaItem media)
+		public Stream OpenRead(MediaFile mediaFile)
 		{
-			Guard.NotNull(media, nameof(media));
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-			var file = _fileSystem.GetFile(GetPath(media));
-			return file.Exists ? (int)file.Size : 0;
-		}
-
-		public Stream OpenRead(MediaItem media)
-		{
-			Guard.NotNull(media, nameof(media));
-
-			var file = _fileSystem.GetFile(GetPath(media));
+			var file = _fileSystem.GetFile(GetPath(mediaFile));
 			return file.Exists ? file.OpenRead() : null;
 		}
 
-		public byte[] Load(MediaItem media)
+		public byte[] Load(MediaFile mediaFile)
 		{
-			Guard.NotNull(media, nameof(media));
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 			
-			var filePath = GetPath(media);
+			var filePath = GetPath(mediaFile);
 			return _fileSystem.ReadAllBytes(filePath) ?? new byte[0];
 		}
 
-		public async Task<byte[]> LoadAsync(MediaItem media)
+		public async Task<byte[]> LoadAsync(MediaFile mediaFile)
 		{
-			Guard.NotNull(media, nameof(media));
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-			var filePath = GetPath(media);
+			var filePath = GetPath(mediaFile);
 			return (await _fileSystem.ReadAllBytesAsync(filePath)) ?? new byte[0];
 		}
 
-		public void Save(MediaItem media, byte[] data)
+		public void Save(MediaFile mediaFile, byte[] data)
 		{
-			Guard.NotNull(media, nameof(media));
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 
 			// TODO: (?) if the new file extension differs from the old one then the old file never gets deleted
 
-			var filePath = GetPath(media);
+			var filePath = GetPath(mediaFile);
 
-			if (data != null && data.LongLength != 0)
+			if (data != null && data.LongLength > 0)
 			{
 				_fileSystem.WriteAllBytes(filePath, data);
 			}
 			else if (_fileSystem.FileExists(filePath))
 			{
+				// Remove media storage if any
 				_fileSystem.DeleteFile(filePath);
 			}
 		}
 
-		public async Task SaveAsync(MediaItem media, byte[] data)
+		public async Task SaveAsync(MediaFile mediaFile, byte[] data)
 		{
-			Guard.NotNull(media, nameof(media));
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 
 			// TODO: (?) if the new file extension differs from the old one then the old file never gets deleted
 
-			var filePath = GetPath(media);
+			var filePath = GetPath(mediaFile);
 
 			if (data != null && data.LongLength != 0)
 			{
@@ -108,33 +120,31 @@ namespace SmartStore.Services.Media.Storage
 			}
 		}
 
-		public void Remove(params MediaItem[] medias)
+		public void Remove(params MediaFile[] mediaFiles)
 		{
-			foreach (var media in medias)
+			foreach (var media in mediaFiles)
 			{
-				var filePath = GetPath(media);
-				_fileSystem.DeleteFile(filePath);
+				_fileSystem.DeleteFile(GetPath(media));
 			}
 		}
 
-
-		public void MoveTo(ISupportsMediaMoving target, MediaMoverContext context, MediaItem media)
+		public void MoveTo(ISupportsMediaMoving target, MediaMoverContext context, MediaFile mediaFile)
 		{
 			Guard.NotNull(target, nameof(target));
 			Guard.NotNull(context, nameof(context));
-			Guard.NotNull(media, nameof(media));
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-			var filePath = GetPath(media);
+			var filePath = GetPath(mediaFile);
 
 			try
 			{
-				// read data from file
+				// Read data from file
 				var data = _fileSystem.ReadAllBytes(filePath);
 
-				// let target store data (into database for example)
-				target.Receive(context, media, data);
+				// Let target store data (into database for example)
+				target.Receive(context, mediaFile, data);
 
-				// remember file path: we must be able to rollback IO operations on transaction failure
+				// Remember file path: we must be able to rollback IO operations on transaction failure
 				context.AffectedFiles.Add(filePath);
 			}
 			catch (Exception exception)
@@ -143,15 +153,15 @@ namespace SmartStore.Services.Media.Storage
 			}
 		}
 
-		public void Receive(MediaMoverContext context, MediaItem media, byte[] data)
+		public void Receive(MediaMoverContext context, MediaFile mediaFile, byte[] data)
 		{
 			Guard.NotNull(context, nameof(context));
-			Guard.NotNull(media, nameof(media));
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 
 			// store data into file
 			if (data != null && data.LongLength != 0)
 			{
-				var filePath = GetPath(media);
+				var filePath = GetPath(mediaFile);
 
 				if (!_fileSystem.FileExists(filePath))
 				{
@@ -166,15 +176,15 @@ namespace SmartStore.Services.Media.Storage
 			}
 		}
 
-		public async Task ReceiveAsync(MediaMoverContext context, MediaItem media, byte[] data)
+		public async Task ReceiveAsync(MediaMoverContext context, MediaFile mediaFile, byte[] data)
 		{
 			Guard.NotNull(context, nameof(context));
-			Guard.NotNull(media, nameof(media));
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 
 			// store data into file
 			if (data != null && data.LongLength != 0)
 			{
-				var filePath = GetPath(media);
+				var filePath = GetPath(mediaFile);
 
 				await _fileSystem.WriteAllBytesAsync(filePath, data);
 

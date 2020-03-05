@@ -205,10 +205,6 @@ namespace SmartStore.Admin.Controllers
             {
                 messageTemplate = model.ToEntity(messageTemplate);
 
-                MediaHelper.UpdateDownloadTransientStateFor(messageTemplate, x => x.Attachment1FileId);
-                MediaHelper.UpdateDownloadTransientStateFor(messageTemplate, x => x.Attachment2FileId);
-                MediaHelper.UpdateDownloadTransientStateFor(messageTemplate, x => x.Attachment3FileId);
-
                 _messageTemplateService.UpdateMessageTemplate(messageTemplate);
 
                 SaveStoreMappings(messageTemplate, model.SelectedStoreIds);

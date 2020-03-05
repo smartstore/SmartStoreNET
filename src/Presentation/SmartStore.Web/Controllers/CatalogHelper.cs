@@ -818,9 +818,9 @@ namespace SmartStore.Web.Controllers
 									if (selectedVariant.Value.HasValue() && Guid.TryParse(selectedVariant.Value, out guid))
 									{										
 										var download = _downloadService.GetDownloadByGuid(guid);
-										if (download != null)
+										if (download?.MediaFile != null)
 										{
-											pvaModel.UploadedFileName = string.Concat(download.Filename ?? download.DownloadGuid.ToString(), download.Extension);
+											pvaModel.UploadedFileName = download.MediaFile.Name;
 										}
 									}
 									break;

@@ -41,7 +41,6 @@ namespace SmartStore.Admin.Models.Blogs
         [AllowHtml]
         public string Body { get; set; }
 
-        [UIHint("Picture"), AdditionalMetadata("album", "blog")]
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.PreviewDisplayType")]
         public PreviewDisplayType PreviewDisplayType { get; set; }
 
@@ -119,12 +118,22 @@ namespace SmartStore.Admin.Models.Blogs
     }
 
     public class BlogPostMapper :
-        IMapper<BlogPost, BlogPostModel>
+        IMapper<BlogPost, BlogPostModel>,
+        IMapper<BlogPostModel, BlogPost>
     {
         public void Map(BlogPost from, BlogPostModel to)
         {
             MiniMapper.Map(from, to);
             to.SeName = from.GetSeName(from.LanguageId, true, false);
+            to.PictureId = from.MediaFileId;
+            to.PreviewPictureId = from.PreviewMediaFileId;
+        }
+
+        public void Map(BlogPostModel from, BlogPost to)
+        {
+            MiniMapper.Map(from, to);
+            to.MediaFileId = from.PictureId.ZeroToNull();
+            to.PreviewMediaFileId = from.PreviewPictureId.ZeroToNull();
         }
     }
 }

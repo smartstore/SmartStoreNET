@@ -102,12 +102,6 @@ namespace SmartStore.Core.Domain.Media
 		[DataMember]
 		public int? Height { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the file is new
-        /// </summary>
-		[DataMember]
-		public bool IsNew { get; set; }
-
 		/// <summary>
 		/// Gets or sets the date and time of instance update
 		/// </summary>

@@ -18,7 +18,7 @@ namespace SmartStore.Services.Customers
 
         public override Task ExecuteAsync(TaskExecutionContext ctx)
         {
-            return null;
+            return Task.CompletedTask;
         }
     }
 }

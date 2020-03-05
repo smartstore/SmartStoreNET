@@ -8,7 +8,7 @@
         </div>
 
         <div class="align-self-center pl-2 fs-h6">
-            <span>+14%</span><i class="fas fa-chevron-up text-success pl-1"></i>
+            <span id="orders-delta-percentage">+121%</span><i id="orders-delta-percentage-chevron" class="fas fa-chevron-up text-success pl-1"></i>
         </div>
 
         <div class="btn-group btn-group-toggle ml-auto" data-toggle="buttons">
@@ -30,8 +30,9 @@
             </label>
         </div>
     </div>
-    <div class="canvas-container pt-0 mt-0">
-        <canvas id="orders-chart" class="w-100" width="3" height="1"></canvas>
+    <div class="pl-3 pt-2" id="orders-chart-legend"></div>
+    <div class="canvas-container pt-0 mt-0 h-100" style="transform: translateY(-69px); pointer-events: none">
+        <canvas id="orders-chart" class="w-100" width="70" height="22" style="position: absolute; bottom: 0px; pointer-events: all"></canvas>
     </div>
 </div>
 
@@ -44,29 +45,88 @@
         function setChartData(period) {
             ordersChart.destroy();
 
-            if (period === "day")
-                updateData(labels_day, dummyDataSales_day, dummyDataCancelled_day, dummyDataProcessing_day, dummyDataPending_day);
-
-            else if (period === "week")
-                updateData(labels_week, dummyDataSales_week, dummyDataCancelled_week, dummyDataProcessing_week, dummyDataPending_week);
-
-            else if (period === "month")
-                updateData(labels_month, dummyDataSales_month, dummyDataCancelled_month, dummyDataProcessing_month, dummyDataPending_month);
-
-            else if (period === "year")
-                updateData(labels_year, dummyDataSales_year, dummyDataCancelled_year, dummyDataProcessing_year, dummyDataPending_year);
-
-            else
+            if (period === "day") {
+                activePeriod = 0;
+                updateData(labels_day, dummyDataSales_day, dummyDataCancelled_day, dummyDataProcessing_day, dummyDataPending_day, dummyDataOrdersDelta_day);
+            }
+            else if (period === "week") {
+                activePeriod = 1;
+                updateData(labels_week, dummyDataSales_week, dummyDataCancelled_week, dummyDataProcessing_week, dummyDataPending_week, dummyDataOrdersDelta_week);
+            }
+            else if (period === "month") {
+                activePeriod = 2;
+                updateData(labels_month, dummyDataSales_month, dummyDataCancelled_month, dummyDataProcessing_month, dummyDataPending_month, dummyDataOrdersDelta_month);
+            }
+            else if (period === "year") {
+                activePeriod = 3;
+                updateData(labels_year, dummyDataSales_year, dummyDataCancelled_year, dummyDataProcessing_year, dummyDataPending_year, dummyDataOrdersDelta_year);
+            }
+            else {
                 console.error("no valid chart period >>> " + period);
+            }
         }
 
-        function updateData(labels, dataOrders, dataCancelled, dataPending, dataProcessing) {
+        function updateData(labels, dataOrders, dataCancelled, dataPending, dataProcessing, deltaPercentage) {
             order_config.data.datasets[0].data = dataCancelled;
             order_config.data.datasets[1].data = dataPending;
             order_config.data.datasets[2].data = dataProcessing;
             order_config.data.datasets[3].data = dataOrders;
+
+            var icon = document.getElementById("orders-delta-percentage-chevron");
+            var text = document.getElementById("orders-delta-percentage");
+
+            if (deltaPercentage < 0) {
+                text.innerHTML = deltaPercentage + "%";
+                icon.classList.remove("fa-chevron-up");
+                icon.classList.remove("text-success");
+                icon.classList.add("fa-chevron-down");
+                icon.classList.add("text-danger");
+            } else {
+                text.innerHTML = "+" + deltaPercentage + "%";
+                icon.classList.remove("fa-chevron-down");
+                icon.classList.remove("text-danger");
+                icon.classList.add("fa-chevron-up");
+                icon.classList.add("text-success");
+            }
+
             order_config.data.labels = labels;
-            ordersChart = new Chart(order_ctx, order_config);
+            ordersChart = new Chart(orders_ctx, order_config);
+
+            ordersLegendContainer.innerHTML = ordersChart.generateLegend();
+            var legendItems = ordersLegendContainer.getElementsByTagName('li');
+            for (var i = 0; i < legendItems.length; i++) {
+                legendItems[i].addEventListener("click", legendClickCallback, false);
+            }
+        }
+
+        function legendClickCallback(event) {
+            event = event || window.event;
+
+            var target = event.target || event.srcElement;
+            while (target.nodeName !== 'LI') {
+                target = target.parentElement;
+            }
+            var parent = target.parentElement;
+            var chartId = parseInt(parent.classList[0].split("-")[0], 10);
+            console.log(chartId);
+            var chart = Chart.instances[chartId];
+            console.log(chart);
+            var index = (ordersChart.data.datasets.length - 1) - Array.prototype.slice.call(parent.children).indexOf(target);
+            var meta = chart.getDatasetMeta(index);
+            // console.log(meta);
+            console.log(Chart);
+
+            if (chart.data.datasets[index].hidden) {
+                target.classList.remove('hidden');
+
+            } else {
+                target.classList.add('hidden');
+            }
+
+            meta.hidden = !chart.data.datasets[index].hidden;
+            chart.data.datasets[index].hidden = !chart.data.datasets[index].hidden;
+
+            chart.update();
         }
 
         //----------------------------------------------------
@@ -82,9 +142,17 @@
 
         var chartOptions = {
             responsive: true,
-            stacked: false,
+            responsiveAnimationDuration: 0,//1000,
+            maintainAspectRatio: true,
+            stacked: true,
             animation: {
                 duration: 1000,
+                hide: {
+                    visible: {
+                        type: true,
+                        easing: 'easeInOutSine'
+                    },
+                },
                 easing: 'easeInOutSine',
 
             },
@@ -100,18 +168,26 @@
                     bottom: 4
                 }
             },
-            legend: {
-                display: true,
-                labels: {
-                    //boxWidth: 7,
-                    //padding: 20,
-                    //fontFamily: fontFamily,
-                    //usePointStyle: true,
+            legend: false,
+            legendCallback: function (chart) {
+                var text = [];
+                text.push('<ul class="' + chart.id + '-legend">');
+                for (var i = chart.data.datasets.length - 1; i >= 0; i--) {
+                    if (chart.data.datasets[i].hidden) {
+                        text.push('<li class="hidden"><span style="background-color:' + chart.data.datasets[i].borderColor + '"></span>');
+                    }
+                    else {
+                        text.push('<li><span style="background-color:' + chart.data.datasets[i].borderColor + '"></span>');
+                    }
 
-                    //generateLabels: function (chart) {
-                    //    return chart.data.datasets[0].label;
-                    //}
+                    if (chart.data.labels[i]) {
+                        text.push(chart.data.datasets[i].label);
+                        text.push('<b class="font-weight-500 pl-1" style="text-decoration: none">' + getOrdersStatusTotalSum(i) + '</b>');
+                    }
+                    text.push('</li>');
                 }
+                text.push('</ul>');
+                return text.join("");
             },
             elements: {
                 point: {
@@ -127,6 +203,8 @@
             scales: {
                 yAxes: [{
                     display: false,
+                    stacked: true,
+
                 }],
                 xAxes: [{
                     display: false,
@@ -138,14 +216,6 @@
                         display: false,
                         padding: 0,
                     },
-                    //ticks: {
-                    //    callback: function (value, index, values) {
-                    //        return index % 7 != 0 ? null : value;
-                    //    },
-                    //    fontFamily: fontFamily,
-                    //    padding: 0,
-                    //    z: 0,
-                    //}
                 }]
             },
             title: {
@@ -173,6 +243,31 @@
         var dummyDataProcessing_month = [17, 14, 22, 27];
         var dummyDataProcessing_year = [8, 12, 28, 22, 32, 43, 42, 70, 45, 66, 43, 60, 59];
 
+        var dummyDataOrdersDelta_day = 121;
+        var dummyDataOrdersDelta_week = 14;
+        var dummyDataOrdersDelta_month = 3;
+        var dummyDataOrdersDelta_year = -22;
+
+        var dummyData_OrdersCompleteSumDay = "2.353 €";
+        var dummyData_OrdersPendingSumDay = "854 €";
+        var dummyData_OrdersProcessingSumDay = "1.123 €";
+        var dummyData_OrdersCancelledSumDay = "84 €";
+
+        var dummyData_OrdersCompleteSumWeek = "12.325 €";
+        var dummyData_OrdersPendingSumWeek = "2.421 €";
+        var dummyData_OrdersProcessingSumWeek = "4.953 €";
+        var dummyData_OrdersCancelledSumWeek = "204 €";
+
+        var dummyData_OrdersCompleteSumMonth = "48.134 €";
+        var dummyData_OrdersPendingSumMonth = "2.645 €";
+        var dummyData_OrdersProcessingSumMonth = "6.553 €";
+        var dummyData_OrdersCancelledSumMonth = "584 €";
+
+        var dummyData_OrdersCompleteSumYear = "358.435 €";
+        var dummyData_OrdersPendingSumYear = "2.653 €";
+        var dummyData_OrdersProcessingSumYear = "6.851 €";
+        var dummyData_OrdersCancelledSumYear = "5.581 €";
+
         var labels_day = ['0:00 Uhr', '1:00 Uhr', '2:00 Uhr', '3:00 Uhr',
             '4:00 Uhr', '5:00 Uhr', '6:00 Uhr', '7:00 Uhr', '8:00 Uhr',
             '9:00 Uhr', '10:00 Uhr', '11:00 Uhr', '12:00 Uhr', '13:00 Uhr',
@@ -182,35 +277,34 @@
         var labels_month = ['01.01 - 07.01', '08.01 - 15.01', '16.01 - 23.01', '24.01 - 31.01'];
         var labels_year = ['April 2019', 'Mai 2019', 'Juni 2019', 'Juli 2019', 'August 2019', 'September 2019', 'October 2019', 'November 2019', 'Dezember 2019', 'Januar 2020', 'Februar 2020', 'März 2020'];
 
+        var activePeriod = 0;
+
         var ordersChartElement = document.getElementById('orders-chart');
-        var order_ctx = ordersChartElement.getContext('2d');
+        var orders_ctx = ordersChartElement.getContext('2d');
+        var ordersLegendContainer = document.getElementById("orders-chart-legend");
 
-        var ordersGradient = order_ctx.createLinearGradient(0, -ordersChartElement.clientHeight / 5, 0, ordersChartElement.clientHeight);
-        ordersGradient.addColorStop(0, colorPrimary);
-        var rgbColors = hexToRgb(colorPrimary.substr(1));
-        ordersGradient.addColorStop(1, 'rgba(' + rgbColors.r + ', ' + rgbColors.g + ', ' + rgbColors.b + ', 0)');
+        var salesGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
+        salesGradient.addColorStop(0, hexToRgba(colorPrimary.substr(1), .9));
+        salesGradient.addColorStop(1, hexToRgba(colorPrimary.substr(1), .1));
 
-        var cancelledGradient = order_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
-        cancelledGradient.addColorStop(0, colorDanger);
-        rgbColors = hexToRgb(colorDanger.substr(1));
-        cancelledGradient.addColorStop(1, 'rgba(' + rgbColors.r + ', ' + rgbColors.g + ', ' + rgbColors.b + ', 0)');
+        var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
+        cancelledGradient.addColorStop(0, hexToRgba(colorDanger.substr(1), .9));
+        cancelledGradient.addColorStop(1, hexToRgba(colorDanger.substr(1), .1));
 
-        var pendingGradient = order_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
-        pendingGradient.addColorStop(0, colorWarning);
-        rgbColors = hexToRgb(colorWarning.substr(1));
-        pendingGradient.addColorStop(1, 'rgba(' + rgbColors.r + ', ' + rgbColors.g + ', ' + rgbColors.b + ', 0)');
+        var pendingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
+        pendingGradient.addColorStop(0, hexToRgba(colorWarning.substr(1), .9));
+        pendingGradient.addColorStop(1, hexToRgba(colorWarning.substr(1), .1));
 
-        var processingGradient = order_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
-        processingGradient.addColorStop(0, colorSuccess);
-        rgbColors = hexToRgb(colorSuccess.substr(1));
-        processingGradient.addColorStop(1, 'rgba(' + rgbColors.r + ', ' + rgbColors.g + ', ' + rgbColors.b + ', 0)');
+        var processingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
+        processingGradient.addColorStop(0, hexToRgba(colorSuccess.substr(1), .9));
+        processingGradient.addColorStop(1, hexToRgba(colorSuccess.substr(1), .1));
 
         var order_config = {
             type: 'line',
             data: {
                 labels: labels_day,
                 datasets: [{
-                    label: 'Cancelled',
+                    label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled")',
                     data: dummyDataCancelled_day,
                     borderWidth: 4,
                     borderColor: colorDanger,
@@ -220,7 +314,7 @@
                     pointHoverBackgroundColor: colorDanger,
                     pointHoverBorderColor: 'transparent',
                 }, {
-                    label: 'Pending',
+                    label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending")',
                     data: dummyDataPending_day,
                     borderWidth: 4,
                     borderColor: colorWarning,
@@ -231,7 +325,7 @@
                     pointHoverBackgroundColor: colorWarning,
                     pointHoverBorderColor: 'transparent',
                 }, {
-                    label: 'Processing',
+                    label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing")',
                     data: dummyDataProcessing_day,
                     borderWidth: 4,
                     borderColor: colorSuccess,
@@ -242,11 +336,11 @@
                     pointHoverBackgroundColor: colorSuccess,
                     pointHoverBorderColor: 'transparent',
                 }, {
-                    label: 'Orders',
+                    label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")',
                     data: dummyDataSales_day,
                     borderWidth: 4,
                     borderColor: colorPrimary,
-                    backgroundColor: ordersGradient,
+                    backgroundColor: salesGradient,
                     lineTension: 0.2,
                     fill: true,
                     pointHoverBackgroundColor: colorPrimary,
@@ -256,39 +350,148 @@
             options: chartOptions,
         }
 
-        var ordersChart = new Chart(order_ctx, order_config);
+        var ordersChart = new Chart(orders_ctx, order_config);
 
-        function hexToRgb(hex) {
+        ordersLegendContainer.innerHTML = ordersChart.generateLegend();
+        var legendItems = ordersLegendContainer.getElementsByTagName('li');
+        for (var i = 0; i < legendItems.length; i++) {
+            legendItems[i].addEventListener("click", legendClickCallback, false);
+        }
+
+        function hexToRgba(hex, opacity) {
             var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? {
+            var rgb = result ? {
                 r: parseInt(result[1], 16),
                 g: parseInt(result[2], 16),
                 b: parseInt(result[3], 16)
             } : null;
+            return 'rgba(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', ' + opacity + ')';
         }
+
+        function getOrdersStatusTotalSum(currentStatus) {
+            if (activePeriod === 0) {
+                  //Day
+                  if (currentStatus === 0) {
+                      // Cancelled
+                      return dummyData_OrdersCancelledSumDay;
+                  }
+                  else if (currentStatus === 1) {
+                      // Pending
+                      return dummyData_OrdersPendingSumDay;
+                  }
+                  else if (currentStatus === 2) {
+                      // Processing
+                      return dummyData_OrdersProcessingSumDay;
+                  }
+                  else if (currentStatus === 3) {
+                      // Complete
+                      return dummyData_OrdersCompleteSumDay;
+                  }
+                  else {
+                      console.warn("wrong index >>> " + currentStatus);
+                      return 0;
+                  }
+              }
+              else if (activePeriod === 1) {
+                  //Week
+                  if (currentStatus === 0) {
+                      // Cancelled
+                      return dummyData_OrdersCancelledSumWeek;
+                  }
+                  else if (currentStatus === 1) {
+                      // Pending
+                      return dummyData_OrdersPendingSumWeek;
+                  }
+                  else if (currentStatus === 2) {
+                      // Processing
+                      return dummyData_OrdersProcessingSumWeek;
+                  }
+                  else if (currentStatus === 3) {
+                      // Complete
+                      return dummyData_OrdersCompleteSumWeek;
+                  }
+                  else {
+                      console.warn("wrong index >>> " + currentStatus);
+                      return 0;
+                  }
+              }
+              else if (activePeriod === 2) {
+                  //Month
+                  if (currentStatus === 0) {
+                      // Cancelled
+                      return dummyData_OrdersCancelledSumMonth;
+                  }
+                  else if (currentStatus === 1) {
+                      // Pending
+                      return dummyData_OrdersPendingSumMonth;
+                  }
+                  else if (currentStatus === 2) {
+                      // Processing
+                      return dummyData_OrdersProcessingSumMonth;
+                  }
+                  else if (currentStatus === 3) {
+                      // Complete
+                      return dummyData_OrdersCompleteSumMonth;
+                  }
+                  else {
+                      console.warn("wrong index >>> " + currentStatus);
+                      return 0;
+                  }
+              }
+              else if (activePeriod === 3) {
+                  //Year
+                  if (currentStatus === 0) {
+                      // Cancelled
+                      return dummyData_OrdersCancelledSumYear;
+                  }
+                  else if (currentStatus === 1) {
+                      // Pending
+                      return dummyData_OrdersPendingSumYear;
+                  }
+                  else if (currentStatus === 2) {
+                      // Processing
+                      return dummyData_OrdersProcessingSumYear;
+                  }
+                  else if (currentStatus === 3) {
+                      // Complete
+                      return dummyData_OrdersCompleteSumYear;
+                  }
+                  else {
+                      console.warn("wrong status index >>> " + currentStatus);
+                      return 0;
+                  }
+              } else {
+                  console.warn("wrong period index >>> " + period);
+                  return 0;
+              }
+          }
     });
 </script>
 <style>
-    [class="0-legend"] {
-        list-style: none;
+    #orders-chart-legend > ul {
         cursor: pointer;
-        padding-left: 50px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
     }
 
-        [class="0-legend"] li {
-            display: inline-block;
-            padding: 0 55px;
+    #orders-chart-legend li {
+        display: inline-block;
+    }
+
+        #orders-chart-legend li:not(:last-child) {
+            padding-right: 1rem;
         }
 
-            [class="0-legend"] li.hidden {
-                text-decoration: line-through;
-            }
+        #orders-chart-legend li.hidden {
+            text-decoration: line-through;
+        }
 
-            [class="0-legend"] li span {
-                border-radius: 55px;
-                display: inline-block;
-                height: 10px;
-                margin-right: 10px;
-                width: 10px;
-            }
+        #orders-chart-legend li span {
+            border-radius: 7px;
+            display: inline-block;
+            height: 11px;
+            margin-right: .3rem;
+            width: 11px;
+        }
 </style>

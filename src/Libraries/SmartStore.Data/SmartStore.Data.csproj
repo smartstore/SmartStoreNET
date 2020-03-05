@@ -793,13 +793,9 @@
     <Compile Include="Migrations\202003022018038_Merge8.Designer.cs">
       <DependentUpon>202003022018038_Merge8.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202003032033525_CustomerRoleMappings.cs" />
-    <Compile Include="Migrations\202003032033525_CustomerRoleMappings.Designer.cs">
-      <DependentUpon>202003032033525_CustomerRoleMappings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202003051908412_MediaManager2.cs" />
-    <Compile Include="Migrations\202003051908412_MediaManager2.Designer.cs">
-      <DependentUpon>202003051908412_MediaManager2.cs</DependentUpon>
+    <Compile Include="Migrations\202003052100521_CustomerRoleMappings.cs" />
+    <Compile Include="Migrations\202003052100521_CustomerRoleMappings.Designer.cs">
+      <DependentUpon>202003052100521_CustomerRoleMappings.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -1428,11 +1424,8 @@
     <EmbeddedResource Include="Migrations\202003022018038_Merge8.resx">
       <DependentUpon>202003022018038_Merge8.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202003032033525_CustomerRoleMappings.resx">
-      <DependentUpon>202003032033525_CustomerRoleMappings.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202003051908412_MediaManager2.resx">
-      <DependentUpon>202003051908412_MediaManager2.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202003052100521_CustomerRoleMappings.resx">
+      <DependentUpon>202003052100521_CustomerRoleMappings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

@@ -17,6 +17,7 @@ namespace SmartStore.Core.Domain.Customers
     {
         private ICollection<ExternalAuthenticationRecord> _externalAuthenticationRecords;
         private ICollection<CustomerContent> _customerContent;
+        private ICollection<CustomerRole> _customerRoles;
         private ICollection<CustomerRoleMapping> _customerRoleMappings;
         private ICollection<ShoppingCartItem> _shoppingCartItems;
         private ICollection<Order> _orders;
@@ -210,6 +211,15 @@ namespace SmartStore.Core.Domain.Customers
         {
 			get { return _customerContent ?? (_customerContent = new HashSet<CustomerContent>()); }
             protected set { _customerContent = value; }
+        }
+
+        /// <summary>
+		/// Gets or sets the customer roles
+		/// </summary>
+        public virtual ICollection<CustomerRole> CustomerRoles
+        {
+            get { return _customerRoles ?? (_customerRoles = new HashSet<CustomerRole>()); }
+            protected internal set { _customerRoles = value; }
         }
 
         /// <summary>

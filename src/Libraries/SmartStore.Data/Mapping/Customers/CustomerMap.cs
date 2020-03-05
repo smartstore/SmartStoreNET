@@ -27,6 +27,10 @@ namespace SmartStore.Data.Mapping.Customers
 
 			Ignore(u => u.PasswordFormat);
 
+            HasMany(c => c.CustomerRoles)
+                .WithMany()
+                .Map(m => m.ToTable("Customer_CustomerRole_Mapping"));
+
             HasMany<Address>(c => c.Addresses)
                 .WithMany()
                 .Map(m => m.ToTable("CustomerAddresses"));

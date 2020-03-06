@@ -4,6 +4,7 @@
 ###New Features
 * #1809 Added a parameter to start an import after uploading import files.
 * #1801 Added endpoints for ProductPicture, ProductCategory, ProductManufacturer to allow to update DisplayOrder.
+* Added endpoints for CustomerRoleMapping.
 
 ##Web Api 3.1.5.1
 ###New Features

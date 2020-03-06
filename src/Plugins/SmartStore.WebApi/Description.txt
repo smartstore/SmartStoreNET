@@ -1,4 +1,4 @@
-﻿FriendlyName: SmartStore.NET Web Api
+﻿FriendlyName: SmartStore.NET Web API
 SystemName: SmartStore.WebApi
 Group: Api
 Version: 3.2.2

@@ -152,14 +152,6 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetRelatedCollection(key, x => x.Addresses);
 		}
 
-        // For backward compatibility.
-		[WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Customer.Role.Read)]
-        public IQueryable<CustomerRole> GetCustomerRoles(int key)
-		{
-			return GetRelatedCollection(key, x => x.CustomerRoleMappings.Select(rm => rm.CustomerRole));
-        }
-
         [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Role.Read)]
         public IQueryable<CustomerRoleMapping> GetCustomerRoleMappings(int key)

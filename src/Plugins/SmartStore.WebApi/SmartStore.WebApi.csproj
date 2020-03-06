@@ -220,6 +220,7 @@
     <Compile Include="Controllers\OData\CountriesController.cs" />
     <Compile Include="Controllers\OData\CurrenciesController.cs" />
     <Compile Include="Controllers\OData\BlogPostsController.cs" />
+    <Compile Include="Controllers\OData\CustomerRoleMappingsController.cs" />
     <Compile Include="Controllers\OData\CustomerRolesController.cs" />
     <Compile Include="Controllers\OData\CustomersController.cs" />
     <Compile Include="Controllers\OData\DownloadsController.cs" />

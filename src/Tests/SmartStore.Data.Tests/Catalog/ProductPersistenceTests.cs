@@ -306,8 +306,7 @@ namespace SmartStore.Data.Tests.Catalog
 						Data = new byte[] { 1, 2, 3 }
 					},
 					UpdatedOnUtc = DateTime.UtcNow,
-					MimeType = "image/pjpeg",
-					IsNew = true
+					MimeType = "image/pjpeg"
 				}
 			});
 

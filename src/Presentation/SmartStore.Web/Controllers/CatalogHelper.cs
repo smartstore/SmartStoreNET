@@ -534,7 +534,7 @@ namespace SmartStore.Web.Controllers
 			{
 				// SQCE throw NotImplementedException with .Expand()
 				query = query
-					.Expand(x => x.Customer.CustomerRoles)
+					.Expand(x => x.Customer.CustomerRoleMappings.Select(rm => rm.CustomerRole))
 					.Expand(x => x.Customer.CustomerContent);
 			}
 
@@ -818,9 +818,9 @@ namespace SmartStore.Web.Controllers
 									if (selectedVariant.Value.HasValue() && Guid.TryParse(selectedVariant.Value, out guid))
 									{										
 										var download = _downloadService.GetDownloadByGuid(guid);
-										if (download != null)
+										if (download?.MediaFile != null)
 										{
-											pvaModel.UploadedFileName = string.Concat(download.Filename ?? download.DownloadGuid.ToString(), download.Extension);
+											pvaModel.UploadedFileName = download.MediaFile.Name;
 										}
 									}
 									break;

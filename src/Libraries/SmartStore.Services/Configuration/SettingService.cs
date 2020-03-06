@@ -57,7 +57,7 @@ namespace SmartStore.Services.Configuration
 				}
 
 				return dictionary;
-			}, independent: true, allowRecursion: false);
+			}, independent: true, allowRecursion: true);
 		}
 
 		protected virtual PropertyInfo GetPropertyInfo<T, TPropType>(Expression<Func<T, TPropType>> keySelector)

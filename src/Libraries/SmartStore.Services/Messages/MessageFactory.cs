@@ -39,7 +39,7 @@ namespace SmartStore.Services.Messages
 		private readonly ILanguageService _languageService;
 		private readonly IEmailAccountService _emailAccountService;
 		private readonly EmailAccountSettings _emailAccountSettings;
-		private readonly IDownloadService _downloadService;
+		private readonly IPictureService _mediaService;
 
 		public MessageFactory(
 			ICommonServices services,
@@ -51,7 +51,7 @@ namespace SmartStore.Services.Messages
 			ILanguageService languageService,
 			IEmailAccountService emailAccountService,
 			EmailAccountSettings emailAccountSettings,
-			IDownloadService downloadService)
+			IPictureService mediaService)
 		{
 			_services = services;
 			_templateEngine = templateEngine;
@@ -62,14 +62,11 @@ namespace SmartStore.Services.Messages
 			_languageService = languageService;
 			_emailAccountService = emailAccountService;
 			_emailAccountSettings = emailAccountSettings;
-			_downloadService = downloadService;
-
-			T = NullLocalizer.Instance;
-			Logger = NullLogger.Instance;
+			_mediaService = mediaService;
 		}
 
-		public Localizer T { get; set; }
-		public ILogger Logger { get; set; }
+		public Localizer T { get; set; } = NullLocalizer.Instance;
+		public ILogger Logger { get; set; } = NullLogger.Instance;
 
 		public virtual CreateMessageResult CreateMessage(MessageContext messageContext, bool queue, params object[] modelParts)
 		{
@@ -284,15 +281,15 @@ namespace SmartStore.Services.Messages
 
 			if (fileIds.Any())
 			{
-				var files = _downloadService.GetDownloadsByIds(fileIds);
+				var files = _mediaService.GetPicturesByIds(fileIds, true);
 				foreach (var file in files)
 				{
 					queuedEmail.Attachments.Add(new QueuedEmailAttachment
 					{
 						StorageLocation = EmailAttachmentStorageLocation.FileReference,
-						FileId = file.Id,
-						Name = (file.Filename.NullEmpty() ?? file.Id.ToString()) + file.Extension.EmptyNull(),
-						MimeType = file.ContentType.NullEmpty() ?? "application/octet-stream"
+						MediaFileId = file.Id,
+						Name = file.Name,
+						MimeType = file.MimeType
 					});
 				}
 			}

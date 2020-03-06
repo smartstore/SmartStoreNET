@@ -20,7 +20,7 @@ namespace SmartStore.Data.Tests.Media
 				UpdatedOnUtc = DateTime.UtcNow,
 				MimeType = "image/pjpeg",
                 Name = "seo filename 1",
-                IsNew = true
+                IsTransient = true
             };
 
             var fromDb = SaveAndLoadEntity(picture);
@@ -28,7 +28,7 @@ namespace SmartStore.Data.Tests.Media
             fromDb.MediaStorage.Data.ShouldEqual(new byte[] { 1, 2, 3 });
             fromDb.MimeType.ShouldEqual("image/pjpeg");
             fromDb.Name.ShouldEqual("seo filename 1");
-            fromDb.IsNew.ShouldEqual(true);
+            fromDb.IsTransient.ShouldEqual(true);
         }
     }
 }

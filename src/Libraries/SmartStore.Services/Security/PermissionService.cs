@@ -335,6 +335,11 @@ namespace SmartStore.Services.Security
                                         });
                                     }
 
+                                    if (newPermission.SystemName.IsEmpty())
+                                    {
+                                        var yo = true;
+                                    }
+
                                     _permissionRepository.Insert(newPermission);
 
                                     clearCache = true;
@@ -413,7 +418,7 @@ namespace SmartStore.Services.Security
                 return false;
             }
 
-            foreach (var role in customer.CustomerRoles.Where(x => x.Active))
+            foreach (var role in customer.CustomerRoleMappings.Select(x => x.CustomerRole).Where(x => x.Active))
             {
                 var tree = GetPermissionTree(role);
                 var node = tree.SelectNodeById(permissionSystemName);
@@ -458,7 +463,7 @@ namespace SmartStore.Services.Security
 
                 if (aliasCutomerRoleIds.Any())
                 {
-                    var roles = _workContext.CurrentCustomer.CustomerRoles.Where(x => x.Active);
+                    var roles = _workContext.CurrentCustomer.CustomerRoleMappings.Select(x => x.CustomerRole).Where(x => x.Active);
                     foreach (var role in roles)
                     {
                         if (aliasCutomerRoleIds.Contains(role.Id))
@@ -485,7 +490,7 @@ namespace SmartStore.Services.Security
                 return false;
             }
 
-            foreach (var role in customer.CustomerRoles.Where(x => x.Active))
+            foreach (var role in customer.CustomerRoleMappings.Select(x => x.CustomerRole).Where(x => x.Active))
             {
                 var tree = GetPermissionTree(role);
                 var node = tree.SelectNodeById(permissionSystemName);

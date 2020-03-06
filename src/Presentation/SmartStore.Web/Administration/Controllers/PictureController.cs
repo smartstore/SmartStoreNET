@@ -32,7 +32,13 @@ namespace SmartStore.Admin.Controllers
 				return Json(new { success = false });
 			}
             
-            var picture = _pictureService.InsertPicture(postedFile.Buffer, postedFile.ContentType, null, true, isTransient, validate, album);
+            var picture = _pictureService.InsertPicture(
+                postedFile.Buffer, 
+                postedFile.ContentType, 
+                postedFile.FileName,
+                isTransient, 
+                validate, 
+                album);
 
             return Json(new
 			{

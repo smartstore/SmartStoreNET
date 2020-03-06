@@ -186,7 +186,7 @@ namespace SmartStore.Web.Framework
 				}
 
 				return entry;
-			}, allowRecursion: false);
+			}, allowRecursion: true);
 		}
 
 		public override void OnAfterSave(IHookedEntity entry)

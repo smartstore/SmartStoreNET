@@ -25,6 +25,7 @@ namespace SmartStore.Services.Tests.Helpers
     {
         IRepository<Customer> _customerRepo;
         IRepository<CustomerRole> _customerRoleRepo;
+        IRepository<CustomerRoleMapping> _customerRoleMappingRepo;
         IRepository<GenericAttribute> _genericAttributeRepo;
         IRepository<RewardPointsHistory> _rewardPointsHistoryRepo;
         IRepository<ShoppingCartItem> _shoppingCartItemRepo;
@@ -73,6 +74,7 @@ namespace SmartStore.Services.Tests.Helpers
             _customerRepo.Expect(x => x.Table).Return(new List<Customer> { customer1 }.AsQueryable());
 
             _customerRoleRepo = MockRepository.GenerateMock<IRepository<CustomerRole>>();
+            _customerRoleMappingRepo = MockRepository.GenerateMock<IRepository<CustomerRoleMapping>>();
             _genericAttributeRepo = MockRepository.GenerateMock<IRepository<GenericAttribute>>();
             _rewardPointsHistoryRepo = MockRepository.GenerateMock<IRepository<RewardPointsHistory>>();
             _shoppingCartItemRepo = MockRepository.GenerateMock<IRepository<ShoppingCartItem>>();
@@ -92,6 +94,7 @@ namespace SmartStore.Services.Tests.Helpers
             _customerService = new CustomerService(
                 _customerRepo,
                 _customerRoleRepo,
+                _customerRoleMappingRepo,
                 _genericAttributeRepo,
                 _rewardPointsHistoryRepo,
                 _shoppingCartItemRepo,

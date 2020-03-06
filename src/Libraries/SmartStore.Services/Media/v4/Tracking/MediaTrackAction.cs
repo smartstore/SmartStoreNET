@@ -58,6 +58,11 @@ namespace SmartStore.Services.Media
 
             return combiner.CombinedHash;
         }
+
+        public override string ToString()
+        {
+            return $"MediaTrackAction (EntityName: {EntityName}, EntityId: {EntityId}, MediaFileId: {MediaFileId})";
+        }
     }
 
     public enum MediaTrackOperation

@@ -28,8 +28,9 @@ namespace SmartStore.Services.Tests.Messages
 		QueuedEmailService _queuedEmailService;
 		ISettingService _settingService;
 		IEventPublisher _eventPublisher;
+        IPictureService _mediaService;
 
-		[SetUp]
+        [SetUp]
 		public new void SetUp()
 		{
 			_qeRepository = MockRepository.GenerateMock<IRepository<QueuedEmail>>();
@@ -38,13 +39,14 @@ namespace SmartStore.Services.Tests.Messages
 			_emailSender = MockRepository.GenerateMock<IEmailSender>();
 			_services = MockRepository.GenerateMock<ICommonServices>();
 			_eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
+            _mediaService = MockRepository.GenerateMock<IPictureService>();
 
-			_settingService = new ConfigFileSettingService(null, null);
+            _settingService = new ConfigFileSettingService(null, null);
 			_services.Expect(x => x.Settings).Return(_settingService);
 
-			_downloadService = new DownloadService(_downloadRepository, _eventPublisher, _settingService, ProviderManager);
+			_downloadService = new DownloadService(_downloadRepository, _eventPublisher, _mediaService, _settingService, ProviderManager);
 
-			_queuedEmailService = new QueuedEmailService(_qeRepository, _qeaRepository, _emailSender, _services, _downloadService, ProviderManager);
+			_queuedEmailService = new QueuedEmailService(_qeRepository, _qeaRepository, _emailSender, _services);
 		}
 
         [Test]
@@ -99,13 +101,13 @@ namespace SmartStore.Services.Tests.Messages
 				StorageLocation = EmailAttachmentStorageLocation.FileReference,
 				Name = "file.pdf",
 				MimeType = "application/pdf",
-				File = new Download
-				{
-					ContentType = "application/pdf",
+				MediaFile = new MediaFile
+                {
+					MimeType = "application/pdf",
 					MediaStorage = new MediaStorage { Id = 2, Data = pdfBinary },
 					MediaStorageId = 2,
 					Extension = ".pdf",
-					Filename = "file"
+					Name = "file"
 				}
 			};
 

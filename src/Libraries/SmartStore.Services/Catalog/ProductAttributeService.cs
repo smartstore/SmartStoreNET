@@ -491,7 +491,6 @@ namespace SmartStore.Services.Catalog
 							pictureBinary,
 							picture.MimeType,
 							picture.Name,
-							picture.IsNew,
 							picture.Width ?? 0,
 							picture.Height ?? 0,
 							picture.IsTransient,

@@ -622,18 +622,28 @@ namespace SmartStore.Services.Tests.Orders
 			cart.Add(new OrganizedShoppingCartItem(sci2));
 
 			var customer = new Customer();
-			var customerRole1 = new CustomerRole()
+			var customerRole1 = new CustomerRole
 			{
 				Active = true,
 				FreeShipping = true,
 			};
-			var customerRole2 = new CustomerRole()
+			var customerRole2 = new CustomerRole
 			{
 				Active = true,
 				FreeShipping = false,
 			};
-			customer.CustomerRoles.Add(customerRole1);
-			customer.CustomerRoles.Add(customerRole2);
+
+            customer.CustomerRoleMappings.Add(new CustomerRoleMapping
+            {
+                CustomerId = customer.Id,
+                CustomerRole = customerRole1
+            });
+            customer.CustomerRoleMappings.Add(new CustomerRoleMapping
+            {
+                CustomerId = customer.Id,
+                CustomerRole = customerRole2
+            });
+
 			cart.ForEach(sci => sci.Item.Customer = customer);
 			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 

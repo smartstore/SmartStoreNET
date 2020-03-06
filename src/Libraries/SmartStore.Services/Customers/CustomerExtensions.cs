@@ -33,9 +33,9 @@ namespace SmartStore.Services.Customers
 			Guard.NotNull(customer, nameof(customer));
 			Guard.NotEmpty(customerRoleSystemName, nameof(customerRoleSystemName));
 
-			var result = customer.CustomerRoles
-                .Where(cr => !onlyActiveCustomerRoles || cr.Active)
-                .Where(cr => cr.SystemName == customerRoleSystemName)
+			var result = customer.CustomerRoleMappings
+                .Where(rm => !onlyActiveCustomerRoles || rm.CustomerRole.Active)
+                .Where(rm => rm.CustomerRole.SystemName == customerRoleSystemName)
                 .FirstOrDefault() != null;
 
             return result;

@@ -12,9 +12,9 @@ namespace SmartStore.Admin.Models.Orders
         public int OrdersPercentageDeltaDay { get; set; }
 
         public int[] CompleteTotalDay { get; set; }
-        public int[] CompleteTotalDayBefore { get; set; }
+        public int[] CompleteTotalDayBefore { get; set; } // this is stupid, what should this do?????
         public int[] CompleteAmountDay { get; set; }
-        public int[] CompleteAmountDayBefore { get; set; }
+        public int[] CompleteAmountDayBefore { get; set; }   // is this needed? jsut calc the deklta on the fly...?
 
         public int[] PendingTotalDay { get; set; }
         public int[] PendingTotalDayBefore { get; set; }

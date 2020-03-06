@@ -11,8 +11,6 @@ namespace SmartStore.Web.Infrastructure
     {
         public void RegisterRoutes(RouteCollection routes)
         {
-            GenericPathRoute.RegisterUrlPrefix("marketplaceyo", "product", "category", "manufacturer");
-
             // Main generic path route
             routes.MapGenericPathRoute("GenericUrl",
                 "{*generic_se_name}",

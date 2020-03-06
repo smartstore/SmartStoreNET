@@ -29,7 +29,6 @@ namespace SmartStore.Data.Mapping.Media
             HasIndex(x => x.MediaType).HasName("IX_MediaType");
             HasIndex(x => x.Size).HasName("IX_Size");
             HasIndex(x => x.PixelSize).HasName("IX_PixelSize");
-            HasIndex(x => x.IsNew).HasName("IX_IsNew");
             HasIndex(x => x.Deleted).HasName("IX_Deleted");
 
             HasOptional(x => x.Folder)

@@ -3464,7 +3464,6 @@ namespace SmartStore.Data.Setup
                         EntityId = product.Id,
                         EntityName = nameof(Product),
                         DownloadGuid = Guid.NewGuid(),
-                        ContentType = "audio/mp3",
                         MediaFile = new MediaFile
                         {
                             Name = "beethoven-fur-elise.mp3",
@@ -3472,7 +3471,6 @@ namespace SmartStore.Data.Setup
                             MimeType = "audio/mp3",
                             Extension = "mp3",
                             Size = buffer.Length,
-                            IsNew = true,
                             UpdatedOnUtc = now,
                             CreatedOnUtc = now,
                             MediaStorage = new MediaStorage { Data = buffer }
@@ -3495,7 +3493,6 @@ namespace SmartStore.Data.Setup
                             MimeType = "audio/mp3",
                             Extension = "mp3",
                             Size = buffer.Length,
-                            IsNew = true,
                             UpdatedOnUtc = now,
                             CreatedOnUtc = now,
                             MediaStorage = new MediaStorage { Data = buffer }
@@ -3511,7 +3508,6 @@ namespace SmartStore.Data.Setup
                         EntityId = product.Id,
                         EntityName = nameof(Product),
                         DownloadGuid = Guid.NewGuid(),
-                        ContentType = "application/pdf",
                         MediaFile = new MediaFile
                         {
                             Name = "Stone_of_the_wise_preview.pdf",
@@ -3519,7 +3515,6 @@ namespace SmartStore.Data.Setup
                             MimeType = "application/pdf",
                             Extension = "pdf",
                             Size = buffer.Length,
-                            IsNew = true,
                             UpdatedOnUtc = now,
                             CreatedOnUtc = now,
                             MediaStorage = new MediaStorage { Data = buffer }

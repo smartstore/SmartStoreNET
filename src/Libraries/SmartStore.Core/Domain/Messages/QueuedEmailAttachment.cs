@@ -29,9 +29,9 @@ namespace SmartStore.Core.Domain.Messages
 		public string Path { get; set; }
 
 		/// <summary>
-		/// The id of a <see cref="Download"/> record (only applicable if location is <c>FileReference</c>)
+		/// The id of a <see cref="SmartStore.Core.Domain.Media.MediaFile"/> record (only applicable if location is <c>FileReference</c>)
 		/// </summary>
-		public int? FileId { get; set; }
+		public int? MediaFileId { get; set; }
 
 		/// <summary>
 		/// Gets the file object
@@ -39,13 +39,7 @@ namespace SmartStore.Core.Domain.Messages
 		/// <remarks>
 		/// This property is not named <c>Download</c> on purpose, because we're going to rename Download to File in a future release.
 		/// </remarks>
-		public virtual Download File { get; set; }
-
-		/// <summary>
-		/// The attachment's binary data (only applicable if location is <c>Blob</c>)
-		/// </summary>
-		[Obsolete("Use property MediaStorage instead")]
-		public byte[] Data { get; set; }
+		public virtual MediaFile MediaFile { get; set; }
 
 		/// <summary>
 		/// The attachment file name (without path)
@@ -58,12 +52,12 @@ namespace SmartStore.Core.Domain.Messages
 		public string MimeType { get; set; }
 
 		/// <summary>
-		/// Gets or sets the media storage identifier
+		/// Gets or sets the media storage identifier (when location is BLOB)
 		/// </summary>
 		public int? MediaStorageId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the media storage
+		/// Gets or sets the media storage (when location is BLOB)
 		/// </summary>
 		public virtual MediaStorage MediaStorage { get; set; }
 	}

@@ -9,18 +9,23 @@ namespace SmartStore.Data.Setup
 {
 	public class DbMigrationContext
 	{
-		private static DbMigrationContext s_dbMigrationContext;
+		private static DbMigrationContext _dbMigrationContext;
 		private readonly ConcurrentDictionary<Type, bool> _map = new ConcurrentDictionary<Type, bool>();
+
+		private DbMigrationContext()
+		{
+		}
 
 		public static DbMigrationContext Current
 		{
 			get
 			{
-				if (s_dbMigrationContext == null)
+				if (_dbMigrationContext == null)
 				{
-					s_dbMigrationContext = new DbMigrationContext();
+					_dbMigrationContext = new DbMigrationContext();
 				}
-				return s_dbMigrationContext;
+
+				return _dbMigrationContext;
 			}
 		}
 
@@ -31,8 +36,7 @@ namespace SmartStore.Data.Setup
 
 		public bool SuppressInitialCreate<TContext>() where TContext : DbContext
 		{
-			bool value;
-			if (_map.TryGetValue(typeof(TContext), out value))
+			if (_map.TryGetValue(typeof(TContext), out var value))
 			{
 				return value;
 			}

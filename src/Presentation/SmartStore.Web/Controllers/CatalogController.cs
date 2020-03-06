@@ -150,7 +150,12 @@ namespace SmartStore.Web.Controllers
 
 			model.SubCategoryDisplayType = _catalogSettings.SubCategoryDisplayType;
 
-			var customerRolesIds = customer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+			var customerRolesIds = customer.CustomerRoleMappings
+                .Select(x => x.CustomerRole)
+                .Where(x => x.Active)
+                .Select(x => x.Id)
+                .ToList();
+
 			var pictureSize = _mediaSettings.CategoryThumbPictureSize;
 			var fallbackType = _catalogSettings.HideCategoryDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
 
@@ -284,7 +289,12 @@ namespace SmartStore.Web.Controllers
 			{
 				CatalogSearchResult featuredProductsResult = null;
 
-                var customerRolesIds = customer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+                var customerRolesIds = customer.CustomerRoleMappings
+                    .Select(x => x.CustomerRole)
+                    .Where(x => x.Active)
+                    .Select(x => x.Id)
+                    .ToList();
+
                 var cacheKey = ModelCacheEventConsumer.MANUFACTURER_HAS_FEATURED_PRODUCTS_KEY.FormatInvariant(manufacturerId, string.Join(",", customerRolesIds), store.Id);
 				var hasFeaturedProductsCache = Services.Cache.Get<bool?>(cacheKey);
 

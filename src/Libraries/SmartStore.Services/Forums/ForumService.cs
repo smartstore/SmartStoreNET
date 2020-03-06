@@ -185,7 +185,7 @@ namespace SmartStore.Services.Forums
 
             if (!showHidden && !QuerySettings.IgnoreAcl)
             {
-                var allowedCustomerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+                var allowedCustomerRolesIds = _services.WorkContext.CurrentCustomer.GetRoleIds();
 
                 query =
                     from fg in query
@@ -392,7 +392,7 @@ namespace SmartStore.Services.Forums
 
             if (!showHidden && !QuerySettings.IgnoreAcl)
             {
-                var allowedCustomerRolesIds = customer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+                var allowedCustomerRolesIds = customer.GetRoleIds();
 
                 query =
                     from ft in query

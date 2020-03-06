@@ -4,6 +4,9 @@ using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Data.Entity.Migrations.Infrastructure;
 using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Web;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
@@ -84,18 +87,21 @@ namespace SmartStore.Data.Setup
 			var pendingMigrations = GetPendingMigrations().ToList();
 			if (!pendingMigrations.Any())
 				return 0;
-		
+
+			// There are pending migrations and the app version is 3.0.0 at least.
+			// Earlier versions are totally blocked by AppUpdater.
+			// We have to ensure that the initial migration - which is '201705281903241_MoreIndexes'
+			// after squashing old 2.x and 1.x migrations - does not run if current head is '201705102339006_V3Final'.
+			DbMigrationContext.Current.SetSuppressInitialCreate<TContext>(true);
+
 			var coreSeeders = new List<SeederEntry>();
 			var externalSeeders = new List<SeederEntry>();
 			var isCoreMigration = context is SmartObjectContext;
 			var databaseMigrations = this.GetDatabaseMigrations().ToArray();
 			var initialMigration = databaseMigrations.LastOrDefault() ?? "[Initial]";
 			var lastSuccessfulMigration = databaseMigrations.FirstOrDefault();
-
-			IDataSeeder<SmartObjectContext> coreSeeder = null;
-			IDataSeeder<TContext> externalSeeder = null;
-
 			int result = 0;
+
 			_isMigrating = true;
 
 			// Apply migrations
@@ -109,11 +115,11 @@ namespace SmartStore.Data.Setup
 
 				// Resolve and instantiate the DbMigration instance from the assembly
 				var migration = MigratorUtils.CreateMigrationInstanceByMigrationId(migrationId, Configuration);
-				
+
 				// Seeders for the core DbContext must be run in any case 
 				// (e.g. for Resource or Setting updates even from external plugins)
-				coreSeeder = migration as IDataSeeder<SmartObjectContext>;
-				externalSeeder = null;
+				var coreSeeder = migration as IDataSeeder<SmartObjectContext>;
+				IDataSeeder<TContext> externalSeeder = null;
 
 				if (!isCoreMigration)
 				{
@@ -171,11 +177,10 @@ namespace SmartStore.Data.Setup
 				lastSuccessfulMigration = migrationId;
 			}
 
-			// Apply core data seeders first
-			SmartObjectContext coreContext = null;
 			if (coreSeeders.Any())
 			{
-				coreContext = isCoreMigration ? context as SmartObjectContext : new SmartObjectContext();
+				// Apply core data seeders first
+				var coreContext = isCoreMigration ? context as SmartObjectContext : new SmartObjectContext();
 				RunSeeders<SmartObjectContext>(coreSeeders, coreContext);
 			}
 
@@ -213,8 +218,14 @@ namespace SmartStore.Data.Setup
 					if (seeder.RollbackOnFailure)
 					{
 						_lastSeedException = new DbMigrationException(seederEntry.PreviousMigrationId, seederEntry.MigrationId, ex.InnerException ?? ex, true);
-						Update(seederEntry.PreviousMigrationId);
+						
+						try
+						{
+							Update(seederEntry.PreviousMigrationId);
+						} catch { }
+
 						_isMigrating = false;
+
 						throw _lastSeedException;
 					}
 

@@ -15,6 +15,11 @@ namespace SmartStore.Data.Mapping.Media
             Property(x => x.EntityName).IsRequired().HasMaxLength(255);
             Property(x => x.Album).IsRequired().HasMaxLength(50);
 
+            HasRequired(x => x.MediaFile)
+                .WithMany(x => x.Tracks)
+                .HasForeignKey(x => x.MediaFileId)
+                .WillCascadeOnDelete(true);
+
             HasIndex(x => x.Album).HasName("IX_Album");
         }
     }

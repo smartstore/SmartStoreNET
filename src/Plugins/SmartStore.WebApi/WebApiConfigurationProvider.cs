@@ -43,7 +43,8 @@ namespace SmartStore.WebApi
 			m.EntitySet<Currency>(WebApiOdataEntitySet.Currencies);
 			m.EntitySet<Customer>(WebApiOdataEntitySet.Customers);
 			m.EntitySet<CustomerRole>(WebApiOdataEntitySet.CustomerRoles);
-			m.EntitySet<DeliveryTime>(WebApiOdataEntitySet.DeliveryTimes);
+            m.EntitySet<CustomerRoleMapping>(WebApiOdataEntitySet.CustomerRoleMappings);
+            m.EntitySet<DeliveryTime>(WebApiOdataEntitySet.DeliveryTimes);
 			m.EntitySet<Discount>(WebApiOdataEntitySet.Discounts);
 			m.EntitySet<Download>(WebApiOdataEntitySet.Downloads);
 			m.EntitySet<GenericAttribute>(WebApiOdataEntitySet.GenericAttributes);
@@ -204,7 +205,8 @@ namespace SmartStore.WebApi
 		public static string Currencies { get { return "Currencies"; } }
 		public static string Customers { get { return "Customers"; } }
 		public static string CustomerRoles { get { return "CustomerRoles"; } }
-		public static string DeliveryTimes { get { return "DeliveryTimes"; } }
+        public static string CustomerRoleMappings { get { return "CustomerRoleMappings"; } }
+        public static string DeliveryTimes { get { return "DeliveryTimes"; } }
 		public static string Discounts { get { return "Discounts"; } }
 		public static string Downloads { get { return "Downloads"; } }
 		public static string GenericAttributes { get { return "GenericAttributes"; } }

@@ -840,6 +840,6 @@ namespace SmartStore.Admin.Models.Catalog
         {
             MiniMapper.Map(from, to);
             to.SeName = from.GetSeName(0, true, false);
-        }
+		}
     }
 }

@@ -214,15 +214,20 @@ namespace SmartStore.Core.Packaging
 
 		internal void ExecuteMigrations()
 		{
-			TryMigrateDefaultTenant();	
-
 			if (!DataSettings.DatabaseIsInstalled())
 				return;
 
 			var currentVersion = SmartStoreVersion.Version;
 			var prevVersion = DataSettings.Current.AppVersion ?? new Version(1, 0);
 
-            if (prevVersion >= currentVersion)
+			if (prevVersion < new Version(3, 0, 0))
+			{
+				throw new ApplicationException($"Smartstore {currentVersion} does not support automatic upgrade from version {prevVersion}. Please upgrade to version 3.x first.");
+			}
+
+			TryMigrateDefaultTenant();
+
+			if (prevVersion >= currentVersion)
 				return;
 
             if (prevVersion < new Version(2, 1))

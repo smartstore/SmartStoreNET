@@ -96,12 +96,22 @@ namespace SmartStore.Admin.Models.News
     }
 
     public class NewsItemMapper :
-        IMapper<NewsItem, NewsItemModel>
+        IMapper<NewsItem, NewsItemModel>,
+        IMapper<NewsItemModel, NewsItem>
     {
         public void Map(NewsItem from, NewsItemModel to)
         {
             MiniMapper.Map(from, to);
             to.SeName = from.GetSeName(from.LanguageId, true, false);
+            to.PictureId = from.MediaFileId;
+            to.PreviewPictureId = from.PreviewMediaFileId;
+        }
+
+        public void Map(NewsItemModel from, NewsItem to)
+        {
+            MiniMapper.Map(from, to);
+            to.MediaFileId = from.PictureId.ZeroToNull();
+            to.PreviewMediaFileId = from.PreviewPictureId.ZeroToNull();
         }
     }
 }

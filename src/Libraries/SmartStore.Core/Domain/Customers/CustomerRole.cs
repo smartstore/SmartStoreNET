@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Rules.Domain;
 
 namespace SmartStore.Core.Domain.Customers
 {
@@ -8,9 +9,10 @@ namespace SmartStore.Core.Domain.Customers
     /// Represents a customer role
     /// </summary>
     [DataContract]
-    public partial class CustomerRole : BaseEntity
+    public partial class CustomerRole : BaseEntity, IRulesContainer
     {
         private ICollection<PermissionRoleMapping> _permissionRoleMappings;
+        private ICollection<RuleSetEntity> _ruleSets;
 
         /// <summary>
         /// Gets or sets the customer role name
@@ -61,6 +63,15 @@ namespace SmartStore.Core.Domain.Customers
         {
             get { return _permissionRoleMappings ?? (_permissionRoleMappings = new HashSet<PermissionRoleMapping>()); }
             protected set { _permissionRoleMappings = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets assigned rule sets.
+        /// </summary>
+        public virtual ICollection<RuleSetEntity> RuleSets
+        {
+            get { return _ruleSets ?? (_ruleSets = new HashSet<RuleSetEntity>()); }
+            protected set { _ruleSets = value; }
         }
     }
 }

@@ -229,12 +229,20 @@ namespace SmartStore.Admin.Models.Catalog
 	}
 
     public class CategoryMapper :
-        IMapper<Category, CategoryModel>
+        IMapper<Category, CategoryModel>,
+        IMapper<CategoryModel, Category>
     {
         public void Map(Category from, CategoryModel to)
         {
             MiniMapper.Map(from, to);
             to.SeName = from.GetSeName(0, true, false);
+            to.PictureId = from.MediaFileId;
+        }
+
+        public void Map(CategoryModel from, Category to)
+        {
+            MiniMapper.Map(from, to);
+            to.MediaFileId = from.PictureId.ZeroToNull();
         }
     }
 }

@@ -44,7 +44,7 @@ namespace SmartStore.Services.Catalog
                     if (customer == null)
                         continue;
 
-                    var customerRoles = customer.CustomerRoles.Where(cr => cr.Active);
+                    var customerRoles = customer.CustomerRoleMappings.Select(x => x.CustomerRole).Where(cr => cr.Active);
                     if (!customerRoles.Any())
                         continue;
 

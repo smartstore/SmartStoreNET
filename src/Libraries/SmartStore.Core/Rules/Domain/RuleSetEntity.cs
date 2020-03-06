@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
@@ -16,6 +17,7 @@ namespace SmartStore.Rules.Domain
         private ICollection<Discount> _discounts;
         private ICollection<ShippingMethod> _shippingMethods;
         private ICollection<PaymentMethod> _paymentMethods;
+        private ICollection<CustomerRole> _customerRoles;
 
         [DataMember]
         [StringLength(200)]
@@ -78,6 +80,15 @@ namespace SmartStore.Rules.Domain
         {
             get { return _paymentMethods ?? (_paymentMethods = new HashSet<PaymentMethod>()); }
             protected set { _paymentMethods = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets assigned customer roles.
+        /// </summary>
+        public virtual ICollection<CustomerRole> CustomerRoles
+        {
+            get { return _customerRoles ?? (_customerRoles = new HashSet<CustomerRole>()); }
+            protected set { _customerRoles = value; }
         }
     }
 }

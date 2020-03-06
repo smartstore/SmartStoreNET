@@ -89,7 +89,12 @@ namespace SmartStore.Services.Media
                 }
                 else
                 {
-                    file.Tracks.Remove(track);
+                    var dbTrack = file.Tracks.FirstOrDefault(x => x == track);
+                    if (dbTrack != null)
+                    {
+                        file.Tracks.Remove(track);
+                        _dbContext.ChangeState(dbTrack, System.Data.Entity.EntityState.Deleted);
+                    }
                 }
 
                 if (file.Tracks.Count > 0)
@@ -119,7 +124,6 @@ namespace SmartStore.Services.Media
 
         protected virtual void TrackManyCore(IEnumerable<MediaTrackAction> actions, string albumName, bool isMigration)
         {
-            Guard.NotEmpty(albumName, nameof(albumName));
             Guard.NotNull(actions, nameof(actions));
 
             if (!actions.Any())
@@ -177,7 +181,12 @@ namespace SmartStore.Services.Media
                         }
                         else
                         {
-                            file.Tracks.Remove(track);
+                            var dbTrack = file.Tracks.FirstOrDefault(x => x == track);
+                            if (dbTrack != null)
+                            {
+                                file.Tracks.Remove(track);
+                                _dbContext.ChangeState(dbTrack, System.Data.Entity.EntityState.Deleted);
+                            } 
                         }
 
                         if (file.Tracks.Count > 0)

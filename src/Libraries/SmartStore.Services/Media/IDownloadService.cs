@@ -72,14 +72,14 @@ namespace SmartStore.Services.Media
         /// Inserts a download
         /// </summary>
         /// <param name="download">Download</param>
-		/// <param name="downloadBinary">Download binary, can be <c>null</c></param>
-        void InsertDownload(Download download, byte[] downloadBinary);
+        void InsertDownload(Download download);
+        void InsertDownload(Download download, byte[] downloadBinary, string fileName, string mimeType = null);
 
-		/// <summary>
-		/// Updates the download but leaves the binary data untouched
-		/// </summary>
-		/// <param name="download">Download</param>
-		void UpdateDownload(Download download);
+        /// <summary>
+        /// Updates the download but leaves the binary data untouched
+        /// </summary>
+        /// <param name="download">Download</param>
+        void UpdateDownload(Download download);
 
 		/// <summary>
 		/// Updates the download including the associated binary data

@@ -859,13 +859,12 @@ namespace SmartStore.Web.Controllers
 							{
 								caModel.UploadedFileGuid = values.First();
 
-								Guid guid;
-								if (caModel.UploadedFileGuid.HasValue() && Guid.TryParse(caModel.UploadedFileGuid, out guid))
+								if (caModel.UploadedFileGuid.HasValue() && Guid.TryParse(caModel.UploadedFileGuid, out var guid))
 								{
 									var download = _downloadService.GetDownloadByGuid(guid);
-									if (download != null)
+									if (download != null && !download.UseDownloadUrl && download.MediaFile != null)
 									{
-										caModel.UploadedFileName = string.Concat(download.Filename ?? download.DownloadGuid.ToString(), download.Extension);
+                                        caModel.UploadedFileName = download.MediaFile.Name;
 									}
 								}
 							}
@@ -1268,16 +1267,12 @@ namespace SmartStore.Web.Controllers
                         DownloadGuid = Guid.NewGuid(),
                         UseDownloadUrl = false,
                         DownloadUrl = "",
-                        ContentType = postedFile.ContentType,
-                        Filename = postedFile.FileTitle,
-                        Extension = postedFile.FileExtension,
-                        IsNew = true,
                         UpdatedOnUtc = DateTime.UtcNow,
                         EntityId = 0,
                         EntityName = "CheckoutAttribute"
                     };
 
-                    _downloadService.InsertDownload(download, postedFile.Buffer);
+                    _downloadService.InsertDownload(download, postedFile.Buffer, postedFile.FileName, postedFile.ContentType);
 
                     return Json(new
                     {
@@ -1582,18 +1577,12 @@ namespace SmartStore.Web.Controllers
                 DownloadGuid = Guid.NewGuid(),
                 UseDownloadUrl = false,
                 DownloadUrl = "",
-                ContentType = postedFile.ContentType,
-                // we store filename without extension for downloads
-                Filename = postedFile.FileTitle,
-                Extension = postedFile.FileExtension,
-                IsNew = true,
-				IsTransient = true,
 				UpdatedOnUtc = DateTime.UtcNow,
                 EntityId = productId,
                 EntityName = "ProductAttribute"
             };
 
-            _downloadService.InsertDownload(download, postedFile.Buffer);
+            _downloadService.InsertDownload(download, postedFile.Buffer, postedFile.FileName, postedFile.ContentType);
 
             return Json(new
             {

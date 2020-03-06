@@ -9,6 +9,7 @@
 {
     x.Add().Text(T("Common.General").Text).Content(TabGeneral()).Selected(true);
     x.Add().Text(T("Admin.Configuration.ACL").Text).Content(TabPermissions());
+    x.Add().Text(T("Admin.Customers").Text).Content(TabCustomers());
     
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customer-role-edit", this.Html, this.Model));
 })
@@ -32,6 +33,15 @@
             <td class="adminData">
                 @Html.EditorFor(model => model.SystemName)
                 @Html.ValidationMessageFor(model => model.SystemName)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Active)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Active)
+                @Html.ValidationMessageFor(model => model.Active)
             </td>
         </tr>
         <tr>
@@ -63,11 +73,11 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Active)
+                @Html.SmartLabelFor(model => model.SelectedRuleSetIds)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Active)
-                @Html.ValidationMessageFor(model => model.Active)
+                @Html.EditorFor(model => model.SelectedRuleSetIds)
+                @Html.ValidationMessageFor(model => model.SelectedRuleSetIds)
             </td>
         </tr>
         <tr>
@@ -106,7 +116,7 @@
 	        <div class="alert alert-warning">
 		        @T("Admin.System.Warnings.NoPermissionsDefined")
 	        </div>
-        }        
+        }
     }
     else
     {
@@ -128,6 +138,48 @@
                 $('#permission-tree').tree('expandAll');
             });
 	    });
+    </script>
+}
+
+@helper TabCustomers()
+{
+    if (Model.Id > 0)
+    {
+        @(Html.Telerik().Grid<CustomerRoleMappingModel>()
+		    .Name("role-mapping-grid")
+		    .ClientEvents(events => events.OnRowDataBound("onRoleMappingRowDataBound"))
+		    .Columns(columns =>
+		    {
+			    columns.Bound(x => x.Email)
+				    .ClientTemplate("<a href=\"" + Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= Email #></a>");
+			    columns.Bound(x => x.Active)
+					.ClientTemplate(Html.SymbolForBool("Active"))
+					.Centered();
+			    columns.Bound(x => x.Username)
+				    .Visible(Model.UsernamesEnabled);
+			    columns.Bound(x => x.FullName);
+			    columns.Bound(x => x.IsSystemMapping)
+					    .ClientTemplate(Html.SymbolForBool("IsSystemMapping"))
+					    .Centered();
+		    })
+		    .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+		    .DataBinding(dataBinding => dataBinding.Ajax().Select("CustomerRoleMappings", "CustomerRole"))
+		    .PreserveGridState()
+		    .EnableCustomBinding(true));
+    }
+    else
+    {
+		<div class="alert alert-warning">
+			@T("Admin.SaveBeforeEdit")
+		</div>
+    }
+
+    <script>
+        function onRoleMappingRowDataBound(e) {
+		    if (!e.dataItem.Active) {
+			    $(e.row).find('td').wrapInner('<span class="muted" />');
+		    }
+        }
     </script>
 }
 

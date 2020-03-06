@@ -150,23 +150,23 @@ namespace SmartStore.Services.Media.Migration
 
                 var hasPostProcessor = _isFsProvider || messageTemplatesDict.Count > 0;
 
-                var query = ctx.Set<Download>().Where(x => x.MediaFileId == null && !x.UseDownloadUrl && !string.IsNullOrEmpty(x.Filename) &&!string.IsNullOrEmpty(x.Extension));
+                var query = ctx.Set<Download>().Where(x => x.MediaFileId == null);
                 var pager = new FastPager<Download>(query, 1000);
 
                 while (pager.ReadNextPage(out var downloads))
                 {
                     foreach (var d in downloads)
                     {
-                        if (d.Filename == "undefined")
+                        var stub = downloadStubs.Get(d.Id);
+                        if (stub == null)
+                            continue;
+
+                        if (stub.UseDownloadUrl || stub.Filename == "undefined" || string.IsNullOrEmpty(stub.Filename) || string.IsNullOrEmpty(stub.Extension))
                         {
                             // Something weird has happened in the past
                             continue;
                         }     
                         
-                        var stub = downloadStubs.Get(d.Id);
-                        if (stub == null)
-                            continue;
-
                         var isMailAttachment = false;
                         if (messageTemplatesDict.TryGetValue(stub.Id, out var mt))
                         {
@@ -183,7 +183,6 @@ namespace SmartStore.Services.Media.Migration
                             MimeType = stub.ContentType,
                             MediaType = MediaType.Image, // Resolved later in MigrateFiles()
                             FolderId = isMailAttachment ? messagesFolderId : downloadsFolderId,
-                            IsNew = stub.IsNew,
                             IsTransient = stub.IsTransient,
                             MediaStorageId = stub.MediaStorageId,
                             Version = 0 // Ensure that this record gets processed by MigrateFiles()
@@ -319,8 +318,6 @@ namespace SmartStore.Services.Media.Migration
                         if (file.Version > 0)
                             continue;
                         
-                        var mediaItem = file.ToMedia();
-
                         if (file.Extension.IsEmpty())
                         {
                             file.Extension = MimeTypes.MapMimeTypeToExtension(file.MimeType);
@@ -449,11 +446,9 @@ namespace SmartStore.Services.Media.Migration
 
         private void ProcessMediaFile(MediaFile file)
         {
-            MediaItem mediaItem = null;
-
             if (file.Size == 0)
             {
-                file.Size = Convert.ToInt32(_mediaStorageProvider.GetSize(GetMediaItem()));
+                file.Size = Convert.ToInt32(_mediaStorageProvider.GetSize(file));
             }
 
             file.MediaType = _mediaTypeResolver.Resolve(file);
@@ -461,7 +456,7 @@ namespace SmartStore.Services.Media.Migration
             if (file.MediaType == MediaType.Image && file.Width == null && file.Height == null)
             {
                 // Resolve image width and height
-                var stream = _mediaStorageProvider.OpenRead(GetMediaItem());
+                var stream = _mediaStorageProvider.OpenRead(file);
                 if (stream != null)
                 {
                     try
@@ -469,6 +464,7 @@ namespace SmartStore.Services.Media.Migration
                         var size = ImageHeader.GetDimensions(stream, file.MimeType, true);
                         file.Width = size.Width;
                         file.Height = size.Height;
+                        file.PixelSize = size.Width * size.Height;
                     }
                     finally
                     {
@@ -481,11 +477,6 @@ namespace SmartStore.Services.Media.Migration
             {
                 file.PixelSize = file.Width.Value * file.Height.Value;
                 // TODO: Metadata JSON
-            }
-            
-            MediaItem GetMediaItem()
-            {
-                return mediaItem ?? (mediaItem = file.ToMedia());
             }
         }
 
@@ -537,10 +528,10 @@ namespace SmartStore.Services.Media.Migration
         public class DownloadStub
         {
             public int Id { get; set; }
+            public bool UseDownloadUrl { get; set; }
             public string ContentType { get; set; }
             public string Filename { get; set; }
             public string Extension { get; set; }
-            public bool IsNew { get; set; }
             public bool IsTransient { get; set; }
             public DateTime UpdatedOnUtc { get; set; }
             public int? MediaStorageId { get; set; }

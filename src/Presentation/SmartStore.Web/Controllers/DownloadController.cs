@@ -46,12 +46,12 @@ namespace SmartStore.Web.Controllers
                 return new RedirectResult(Url.Action("Info", "Customer"));
             }
             
-			var fileName = (download.Filename.HasValue() ? download.Filename : download.Id.ToString());
-			var contentType = (download.ContentType.HasValue() ? download.ContentType : "application/octet-stream");
+			var fileName = download.MediaFile.Name;
+			var contentType = download.MediaFile.MimeType;
 
 			return new FileContentResult(data, contentType)
 			{
-				FileDownloadName = fileName + download.Extension
+				FileDownloadName = fileName
 			};
 		}
 

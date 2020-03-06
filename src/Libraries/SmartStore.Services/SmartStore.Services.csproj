@@ -251,6 +251,7 @@
     <Compile Include="Customers\Rules\ITargetGroupService.cs" />
     <Compile Include="Customers\Rules\TargetGroupFilterDescriptor.cs" />
     <Compile Include="Customers\Rules\TargetGroupService.cs" />
+    <Compile Include="Customers\Tasks\CustomerRolesAssignmentsTask.cs" />
     <Compile Include="DataExchange\Export\Deployment\DataDeploymentResult.cs" />
     <Compile Include="DataExchange\Export\Deployment\PublicFolderPublisher.cs" />
     <Compile Include="DataExchange\Export\ExportFileStream.cs" />
@@ -323,7 +324,6 @@
     <Compile Include="Events\EventPublisher.cs" />
     <Compile Include="Forums\ForumMessageFactoryExtensions.cs" />
     <Compile Include="Hooks\LocalizedEntityRelationHook.cs" />
-    <Compile Include="Hooks\PictureHook.cs" />
     <Compile Include="Hooks\SearchQueryAliasHook.cs" />
     <Compile Include="Hooks\SlugSupportedHook.cs" />
     <Compile Include="Hooks\AuditableHook.cs" />
@@ -350,8 +350,7 @@
     <Compile Include="Media\Storage\IMediaMover.cs" />
     <Compile Include="Media\Storage\ISupportsMediaMoving.cs" />
     <Compile Include="Media\Storage\MediaMoverContext.cs" />
-    <Compile Include="Media\Storage\MediaStorageExtensions.cs" />
-    <Compile Include="Media\Storage\MediaItem.cs" />
+    <Compile Include="Media\Extensions\MediaFileExtensions.cs" />
     <Compile Include="Media\Storage\MediaMover.cs" />
     <Compile Include="Media\TransientMediaClearTask.cs" />
     <Compile Include="Media\v4\Album\AlbumFileSystemAdapter.cs" />

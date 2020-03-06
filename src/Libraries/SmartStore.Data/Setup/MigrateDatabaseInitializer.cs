@@ -68,25 +68,7 @@ namespace SmartStore.Data.Setup
 			}
 
 			var config = CreateConfiguration();
-			
 			var migrator = new DbSeedingMigrator<TContext>(config);
-			var tablesExist = CheckTables(context);
-
-			if (tablesExist)
-			{
-				// Tables specific to the model DO exist in the database...
-				var hasHistoryEntry = migrator.GetDatabaseMigrations().Any();
-				if (!hasHistoryEntry)
-				{
-					// ...but there is no entry in the __MigrationHistory table (or __MigrationHistory doesn't exist at all)
-					// We MUST assume that the database was created with a previous SmartStore version
-					// prior integrating EF Migrations.
-					// Running the Migrator with initial DDL would crash in this case as
-					// the db objects exist already. Therefore we set a suppression flag
-					// which we read in the corresponding InitialMigration to exit early.
-					DbMigrationContext.Current.SetSuppressInitialCreate<TContext>(true);
-				}
-			}
 
 			using (new DbContextScope(context as IDbContext, hooksEnabled: false))
 			{

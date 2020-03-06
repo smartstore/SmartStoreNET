@@ -112,13 +112,11 @@ namespace SmartStore.Services.Orders
                             Guid downloadGuid;
                             Guid.TryParse(valueStr, out downloadGuid);
                             var download = _downloadService.GetDownloadByGuid(downloadGuid);
-                            if (download != null)
+                            if (download?.MediaFile != null)
                             {
                                 //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
                                 string attributeText = "";
-                                var fileName = string.Format("{0}{1}",
-                                    download.Filename ?? download.DownloadGuid.ToString(),
-                                    download.Extension);
+                                var fileName = download.MediaFile.Name;
                                 //encode (if required)
                                 if (htmlEncode)
                                     fileName = HttpUtility.HtmlEncode(fileName);

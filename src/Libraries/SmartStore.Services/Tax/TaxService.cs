@@ -764,7 +764,7 @@ namespace SmartStore.Services.Tax
                 if (customer.IsTaxExempt)
                     return true;
 
-                if (customer.CustomerRoles.Where(cr => cr.Active).Any(cr => cr.TaxExempt))
+                if (customer.CustomerRoleMappings.Select(rm => rm.CustomerRole).Where(cr => cr.Active).Any(cr => cr.TaxExempt))
                     return true;
             }
 

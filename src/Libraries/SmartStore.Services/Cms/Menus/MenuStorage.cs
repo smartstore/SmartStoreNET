@@ -130,7 +130,7 @@ namespace SmartStore.Services.Cms
         {
             if (roles == null)
             {
-                roles = _services.WorkContext.CurrentCustomer.CustomerRoles;
+                roles = _services.WorkContext.CurrentCustomer.CustomerRoleMappings.Select(x => x.CustomerRole);
             }
 
             if (storeId == 0)
@@ -365,7 +365,7 @@ namespace SmartStore.Services.Cms
 
             if (!includeHidden && !QuerySettings.IgnoreAcl)
             {
-                var allowedRoleIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+                var allowedRoleIds = _services.WorkContext.CurrentCustomer.GetRoleIds();
 
                 query = 
                     from x in query
@@ -436,7 +436,7 @@ namespace SmartStore.Services.Cms
 
             if (!includeHidden && !QuerySettings.IgnoreAcl)
             {
-                var allowedRoleIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+                var allowedRoleIds = _services.WorkContext.CurrentCustomer.GetRoleIds();
 
                 query =
                     from x in query

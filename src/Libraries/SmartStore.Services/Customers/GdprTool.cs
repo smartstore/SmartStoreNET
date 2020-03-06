@@ -99,7 +99,7 @@ namespace SmartStore.Services.Customers
 			if (model != null)
 			{
 				// Roles
-				model["CustomerRoles"] = customer.CustomerRoles.Select(x => x.Name).ToArray();
+				model["CustomerRoles"] = customer.CustomerRoleMappings.Select(x => x.CustomerRole.Name).ToArray();
 				
 				// Generic attributes
 				var attributes = _genericAttributeService.GetAttributesForEntity(customer.Id, "Customer");
@@ -235,9 +235,20 @@ namespace SmartStore.Services.Customers
 				// Set to deleted
 				customer.Deleted = true;
 
-				// Unassign roles
-				customer.CustomerRoles.Clear();
-				customer.CustomerRoles.Add(_services.Resolve<ICustomerService>().GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests));
+                // Unassign roles
+                var customerService = _services.Resolve<ICustomerService>();
+                var roleMappings = customer.CustomerRoleMappings.ToList();
+                var guestRole = customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests);
+                var insertGuestMapping = !roleMappings.Any(x => x.CustomerRoleId == guestRole.Id);
+
+                roleMappings
+                    .Where(x => x.CustomerRoleId != guestRole.Id)
+                    .Each(x => customerService.DeleteCustomerRoleMapping(x));
+
+                if (insertGuestMapping)
+                {
+                    customerService.InsertCustomerRoleMapping(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = guestRole.Id });
+                }
 				
 				// Delete shopping cart & wishlist (TBD: (mc) Really?!?)
 				_shoppingCartService.DeleteExpiredShoppingCartItems(DateTime.UtcNow, customer.Id);

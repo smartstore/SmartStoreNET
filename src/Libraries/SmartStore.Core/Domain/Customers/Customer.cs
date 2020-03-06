@@ -18,6 +18,7 @@ namespace SmartStore.Core.Domain.Customers
         private ICollection<ExternalAuthenticationRecord> _externalAuthenticationRecords;
         private ICollection<CustomerContent> _customerContent;
         private ICollection<CustomerRole> _customerRoles;
+        private ICollection<CustomerRoleMapping> _customerRoleMappings;
         private ICollection<ShoppingCartItem> _shoppingCartItems;
         private ICollection<Order> _orders;
         private ICollection<RewardPointsHistory> _rewardPointsHistory;
@@ -212,14 +213,23 @@ namespace SmartStore.Core.Domain.Customers
             protected set { _customerContent = value; }
         }
 
-		/// <summary>
+        /// <summary>
 		/// Gets or sets the customer roles
 		/// </summary>
-		[DataMember]
-		public virtual ICollection<CustomerRole> CustomerRoles
+        public virtual ICollection<CustomerRole> CustomerRoles
         {
-			get { return _customerRoles ?? (_customerRoles = new HashSet<CustomerRole>()); }
+            get { return _customerRoles ?? (_customerRoles = new HashSet<CustomerRole>()); }
             protected internal set { _customerRoles = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the customer role mappings.
+        /// </summary>
+        [DataMember]
+        public virtual ICollection<CustomerRoleMapping> CustomerRoleMappings
+        {
+            get { return _customerRoleMappings ?? (_customerRoleMappings = new HashSet<CustomerRoleMapping>()); }
+            protected set { _customerRoleMappings = value; }
         }
 
         /// <summary>
@@ -327,8 +337,22 @@ namespace SmartStore.Core.Domain.Customers
 		/// <returns>The identifier</returns>
 		public string GetRolesIdent(bool onlyActiveCustomerRoles = true)
 		{
-			return string.Join(",", this.CustomerRoles.Where(x => !onlyActiveCustomerRoles || x.Active).Select(x => x.Id));
+            return string.Join(",", GetRoleIds(onlyActiveCustomerRoles));
 		}
+
+        /// <summary>
+        /// Get identifiers of assigned customer roles.
+        /// </summary>
+        /// <param name="onlyActiveCustomerRoles"><c>true</c> ignores all inactive roles</param>
+        /// <returns>Customer role identifiers.</returns>
+        public int[] GetRoleIds(bool onlyActiveCustomerRoles = true)
+        {
+            return CustomerRoleMappings
+                .Select(x => x.CustomerRole)
+                .Where(x => !onlyActiveCustomerRoles || x.Active)
+                .Select(x => x.Id)
+                .ToArray();
+        }
 
 		public virtual void RemoveAddress(Address address)
 		{

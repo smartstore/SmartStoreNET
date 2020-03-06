@@ -160,7 +160,7 @@ namespace SmartStore.WebApi.Controllers.Api
 						image.Exists = true;
 
 						var seoName = _pictureService.Value.GetPictureSeName(Path.GetFileNameWithoutExtension(image.FileName));
-						_pictureService.Value.UpdatePicture(image.Picture, pictureBinary, image.MediaType, seoName, false, false);
+						_pictureService.Value.UpdatePicture(image.Picture, pictureBinary, image.MediaType, seoName, false);
 					}
 					else
 					{
@@ -168,7 +168,7 @@ namespace SmartStore.WebApi.Controllers.Api
 						if (pictureBinary != null)
 						{
 							var seoName = _pictureService.Value.GetPictureSeName(Path.GetFileNameWithoutExtension(image.FileName));
-                            var newPicture = _pictureService.Value.InsertPicture(pictureBinary, image.MediaType, seoName, true, false, false, "product");
+                            var newPicture = _pictureService.Value.InsertPicture(pictureBinary, image.MediaType, seoName, false, false, "product");
                             
 							if (newPicture != null)
 							{

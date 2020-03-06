@@ -99,6 +99,8 @@ namespace SmartStore.Data.Setup
 
 				// save now
 				int affectedRows = _ctx.SaveChanges();
+
+				_ctx.DetachEntities<LocaleStringResource>();
 			}
 		}
 

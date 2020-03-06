@@ -10,7 +10,7 @@ namespace SmartStore.Core.Domain.Messages
 		Blob,
 
 		/// <summary>
-		/// Attachment is a reference to <see cref="Download"/>
+		/// Attachment is a reference to <see cref="MediaFile"/>
 		/// </summary>
 		FileReference,
 		

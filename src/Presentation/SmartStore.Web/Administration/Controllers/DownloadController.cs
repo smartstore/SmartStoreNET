@@ -39,12 +39,12 @@ namespace SmartStore.Admin.Controllers
 				if (data == null || data.LongLength == 0)
 					return Content(T("Common.Download.NoDataAvailable"));
 
-				var fileName = (download.Filename.HasValue() ? download.Filename : downloadId.ToString());
-				var contentType = (download.ContentType.HasValue() ? download.ContentType : "application/octet-stream");
+				var fileName = download.MediaFile.Name;
+				var contentType = download.MediaFile.MimeType;
 
                 return new FileContentResult(data, contentType)
 				{
-					FileDownloadName = fileName + download.Extension
+					FileDownloadName = fileName
 				};
             }
         }
@@ -61,12 +61,11 @@ namespace SmartStore.Admin.Controllers
 				DownloadGuid = Guid.NewGuid(),
 				UseDownloadUrl = true,
 				DownloadUrl = downloadUrl,
-				IsNew = true,
 				IsTransient = true,
 				UpdatedOnUtc = DateTime.UtcNow
 			};
 
-            _downloadService.InsertDownload(download, null);
+            _downloadService.InsertDownload(download);
 
 			return Json(new
 			{
@@ -94,16 +93,10 @@ namespace SmartStore.Admin.Controllers
                 DownloadGuid = Guid.NewGuid(),
                 UseDownloadUrl = false,
                 DownloadUrl = "",
-				ContentType = postedFile.ContentType,
-                // we store filename without extension for downloads
-                Filename = postedFile.FileTitle,
-                Extension = postedFile.FileExtension,
-                IsNew = true,
-				IsTransient = true,
 				UpdatedOnUtc = DateTime.UtcNow
             };
 
-            _downloadService.InsertDownload(download, postedFile.Buffer);
+            _downloadService.InsertDownload(download, postedFile.Buffer, postedFile.FileName, postedFile.ContentType);
 
             return Json(new 
             { 

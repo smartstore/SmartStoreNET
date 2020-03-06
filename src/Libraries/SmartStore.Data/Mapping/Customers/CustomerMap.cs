@@ -8,34 +8,35 @@ namespace SmartStore.Data.Mapping.Customers
     {
         public CustomerMap()
         {
-            this.ToTable("Customer");
-            this.HasKey(c => c.Id);
-            this.Property(u => u.Username).HasMaxLength(500);
-            this.Property(u => u.Email).HasMaxLength(500);
-			this.Property(u => u.SystemName).HasMaxLength(500);
-			this.Property(u => u.Password).HasMaxLength(500);
-			this.Property(u => u.PasswordSalt).HasMaxLength(500);
-			this.Property(u => u.LastIpAddress).HasMaxLength(100);
+            ToTable("Customer");
+            HasKey(c => c.Id);
+            Property(u => u.Username).HasMaxLength(500);
+            Property(u => u.Email).HasMaxLength(500);
+			Property(u => u.SystemName).HasMaxLength(500);
+			Property(u => u.Password).HasMaxLength(500);
+			Property(u => u.PasswordSalt).HasMaxLength(500);
+			Property(u => u.LastIpAddress).HasMaxLength(100);
 
-			this.Property(u => u.Title).HasMaxLength(100);
-			this.Property(u => u.Salutation).HasMaxLength(50);
-			this.Property(u => u.FirstName).HasMaxLength(225);
-			this.Property(u => u.LastName).HasMaxLength(225);
-			this.Property(u => u.FullName).HasMaxLength(450);
-			this.Property(u => u.Company).HasMaxLength(255);
-			this.Property(u => u.CustomerNumber).HasMaxLength(100);
+			Property(u => u.Title).HasMaxLength(100);
+			Property(u => u.Salutation).HasMaxLength(50);
+			Property(u => u.FirstName).HasMaxLength(225);
+			Property(u => u.LastName).HasMaxLength(225);
+			Property(u => u.FullName).HasMaxLength(450);
+			Property(u => u.Company).HasMaxLength(255);
+			Property(u => u.CustomerNumber).HasMaxLength(100);
 
-			this.Ignore(u => u.PasswordFormat);
+			Ignore(u => u.PasswordFormat);
 
-            this.HasMany(c => c.CustomerRoles)
+            HasMany(c => c.CustomerRoles)
                 .WithMany()
                 .Map(m => m.ToTable("Customer_CustomerRole_Mapping"));
 
-            this.HasMany<Address>(c => c.Addresses)
+            HasMany<Address>(c => c.Addresses)
                 .WithMany()
                 .Map(m => m.ToTable("CustomerAddresses"));
-            this.HasOptional<Address>(c => c.BillingAddress);
-            this.HasOptional<Address>(c => c.ShippingAddress);
+
+            HasOptional<Address>(c => c.BillingAddress);
+            HasOptional<Address>(c => c.ShippingAddress);
         }
     }
 }

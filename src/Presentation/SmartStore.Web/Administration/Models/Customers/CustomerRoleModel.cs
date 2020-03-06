@@ -50,7 +50,11 @@ namespace SmartStore.Admin.Models.Customers
         public int[] SelectedRuleSetIds { get; set; }
 
         public TreeNode<IPermissionNode> PermissionTree { get; set; }
+
+        public int GridPageSize { get; set; }
+        public bool UsernamesEnabled { get; set; }
     }
+
 
     public partial class CustomerRoleValidator : AbstractValidator<CustomerRoleModel>
     {

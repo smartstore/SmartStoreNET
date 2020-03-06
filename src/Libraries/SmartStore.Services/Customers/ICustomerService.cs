@@ -204,6 +204,24 @@ namespace SmartStore.Services.Customers
         CustomerRoleMapping GetCustomerRoleMappingById(int mappingId);
 
         /// <summary>
+        /// Gets customer role mappings.
+        /// </summary>
+        /// <param name="customerIds">Customer identifiers to be filtered by.</param>
+        /// <param name="customerRoleIds">Customer role identifiers to be filtered by.</param>
+        /// <param name="isSystemMapping">Whether to filter by system or user mappings.</param>
+        /// <param name="pageIndex">Page index.</param>
+        /// <param name="pageSize">Page size.</param>
+        /// <param name="withCustomers">Whether to include customers through navigation property.</param>
+        /// <returns>Customer role mappings.</returns>
+        IPagedList<CustomerRoleMapping> GetCustomerRoleMappings(
+            int[] customerIds,
+            int[] customerRoleIds,
+            bool? isSystemMapping,
+            int pageIndex,
+            int pageSize,
+            bool withCustomers = true);
+
+        /// <summary>
         /// Inserts a customer role mapping.
         /// </summary>
         /// <param name="mapping">Customer role mapping.</param>

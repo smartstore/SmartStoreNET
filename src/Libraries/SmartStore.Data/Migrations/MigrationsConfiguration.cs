@@ -504,6 +504,8 @@
                 "Regeln für automatische Zuordnung",
                 "Customers are automatically assigned to this customer group by scheduled task if they fulfill one of the selected rules.",
                 "Kunden werden automatisch per geplanter Aufgabe dieser Kundengruppe zugeordnet, wenn sie eine der gewählten Regeln erfüllen.");
+
+            builder.AddOrUpdate("Admin.CustomerRoleMapping.IsSystemMapping", "Automatic assignment", "Automatische Zuordnung");
         }
     }
 }

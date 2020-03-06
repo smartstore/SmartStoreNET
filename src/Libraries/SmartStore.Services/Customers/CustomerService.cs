@@ -741,6 +741,40 @@ namespace SmartStore.Services.Customers
             return _customerRoleMappingRepository.GetById(mappingId);
         }
 
+        public virtual IPagedList<CustomerRoleMapping> GetCustomerRoleMappings(
+            int[] customerIds, 
+            int[] customerRoleIds,
+            bool? isSystemMapping,
+            int pageIndex,
+            int pageSize,
+            bool withCustomers = true)
+        {
+            var query = _customerRoleMappingRepository.TableUntracked;
+
+            if (withCustomers)
+            {
+                query = query.Include(x => x.Customer);
+            }
+
+            if (customerIds?.Any() ?? false)
+            {
+                query = query.Where(x => customerIds.Contains(x.CustomerId));
+            }
+            if (customerRoleIds?.Any() ?? false)
+            {
+                query = query.Where(x => customerRoleIds.Contains(x.CustomerRoleId));
+            }
+            if (isSystemMapping.HasValue)
+            {
+                query = query.Where(x => x.IsSystemMapping == isSystemMapping.Value);
+            }
+
+            query = query.OrderByDescending(x => x.IsSystemMapping);
+
+            var mappings = new PagedList<CustomerRoleMapping>(query, pageIndex, pageSize);
+            return mappings;
+        }
+
         public virtual void InsertCustomerRoleMapping(CustomerRoleMapping mapping)
         {
             Guard.NotNull(mapping, nameof(mapping));

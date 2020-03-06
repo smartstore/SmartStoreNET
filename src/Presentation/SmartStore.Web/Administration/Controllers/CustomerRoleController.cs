@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Customers;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Tax;
@@ -24,15 +25,21 @@ namespace SmartStore.Admin.Controllers
         private readonly ICustomerService _customerService;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IRuleStorage _ruleStorage;
+        private readonly CustomerSettings _customerSettings;
+        private readonly AdminAreaSettings _adminAreaSettings;
 
         public CustomerRoleController(
             ICustomerService customerService,
             ICustomerActivityService customerActivityService,
-            IRuleStorage ruleStorage)
+            IRuleStorage ruleStorage,
+            CustomerSettings customerSettings,
+            AdminAreaSettings adminAreaSettings)
         {
             _customerService = customerService;
             _customerActivityService = customerActivityService;
             _ruleStorage = ruleStorage;
+            _customerSettings = customerSettings;
+            _adminAreaSettings = adminAreaSettings;
         }
 
         // Ajax.
@@ -276,6 +283,38 @@ namespace SmartStore.Admin.Controllers
 
         }
 
+        [HttpPost, GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Customer.Role.Read)]
+        public ActionResult CustomerRoleMappings(GridCommand command, int id)
+        {
+            var model = new GridModel<CustomerRoleMappingModel>();
+            var mappings = _customerService.GetCustomerRoleMappings(null, new int[] { id }, null, command.Page - 1, command.PageSize);
+            var role = _customerService.GetCustomerRoleById(id);
+            var isGuestRole = role.SystemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.Guests);
+            var emailFallbackStr = isGuestRole ? T("Admin.Customers.Guest").Text : string.Empty;
+
+            model.Data = mappings.Select(x =>
+            {
+                var mappingModel = new CustomerRoleMappingModel
+                {
+                    Id = x.Id,
+                    Active = x.Customer.Active,
+                    CustomerId = x.CustomerId,
+                    Email = x.Customer.Email.NullEmpty() ?? emailFallbackStr,
+                    Username = x.Customer.Username,
+                    FullName = x.Customer.GetFullName(),
+                    IsSystemMapping = x.IsSystemMapping
+                };
+
+                return mappingModel;
+            })
+            .ToList();
+
+            model.Total = mappings.TotalCount;
+
+            return new JsonResult { Data = model };
+        }
+
         #endregion
 
         private void PrepareModel(CustomerRoleModel model, CustomerRole role)
@@ -288,6 +327,9 @@ namespace SmartStore.Admin.Controllers
             model.TaxDisplayTypes = model.TaxDisplayType.HasValue
                 ? ((TaxDisplayType)model.TaxDisplayType.Value).ToSelectList().ToList()
                 : TaxDisplayType.IncludingTax.ToSelectList(false).ToList();
+
+            model.GridPageSize = _adminAreaSettings.GridPageSize;
+            model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
         }
     }
 }

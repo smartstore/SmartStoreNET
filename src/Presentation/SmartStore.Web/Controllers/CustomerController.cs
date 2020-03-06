@@ -1421,7 +1421,7 @@ namespace SmartStore.Web.Controllers
                         .Select(x => new DownloadVersion
                         {
                             FileVersion = x.FileVersion,
-                            FileName = x.MediaFile.Name,
+                            FileName = x.MediaFile?.Name,
                             DownloadGuid = x.DownloadGuid,
                             Changelog = x.Changelog,
                             DownloadId = x.Id
@@ -1430,7 +1430,9 @@ namespace SmartStore.Web.Controllers
                 }
 
                 if (_downloadService.IsLicenseDownloadAllowed(item))
+                {
                     itemModel.LicenseId = item.LicenseDownloadId ?? 0;
+                }
             }
             
             return View(model);

@@ -638,7 +638,7 @@ namespace SmartStore.Admin.Controllers
                     {
                         FileVersion = x.FileVersion,
                         DownloadId = x.Id,
-                        FileName = x.MediaFile.Name,
+                        FileName = x.MediaFile?.Name,
                         DownloadUrl = Url.Action("DownloadFile", "Download", new { downloadId = x.Id })
                     })
                     .ToList();

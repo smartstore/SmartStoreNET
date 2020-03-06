@@ -335,6 +335,11 @@ namespace SmartStore.Services.Security
                                         });
                                     }
 
+                                    if (newPermission.SystemName.IsEmpty())
+                                    {
+                                        var yo = true;
+                                    }
+
                                     _permissionRepository.Insert(newPermission);
 
                                     clearCache = true;

@@ -20,9 +20,9 @@ namespace SmartStore.Data
 
 			var initializer = new MigrateDatabaseInitializer<SmartObjectContext, MigrationsConfiguration>
 			{
-				TablesToCheck = new[] { "Customer", "Discount", "Order", "Product", "ShoppingCartItem" }
+				TablesToCheck = new[] { "Customer", "Discount", "Order", "Product", "ShoppingCartItem", "QueuedEmailAttachment", "ExportProfile" }
 			};
-			Database.SetInitializer<SmartObjectContext>(initializer);
+			Database.SetInitializer(initializer);
 		}
 
 		/// <summary>

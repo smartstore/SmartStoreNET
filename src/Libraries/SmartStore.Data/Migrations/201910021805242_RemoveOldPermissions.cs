@@ -30,12 +30,12 @@ namespace SmartStore.Data.Migrations
             //CreateTable(
             //    "dbo.PermissionRecord_Role_Mapping",
             //    c => new
-            //        {
-            //            PermissionRecord_Id = c.Int(nullable: false),
-            //            CustomerRole_Id = c.Int(nullable: false),
-            //        })
+            //    {
+            //        PermissionRecord_Id = c.Int(nullable: false),
+            //        CustomerRole_Id = c.Int(nullable: false),
+            //    })
             //    .PrimaryKey(t => new { t.PermissionRecord_Id, t.CustomerRole_Id });
-            
+
             //AddColumn("dbo.PermissionRecord", "Category", c => c.String(nullable: false, maxLength: 255));
             //AddColumn("dbo.PermissionRecord", "Name", c => c.String(nullable: false));
             //CreateIndex("dbo.PermissionRecord_Role_Mapping", "CustomerRole_Id");
@@ -70,16 +70,12 @@ namespace SmartStore.Data.Migrations
             }
 
             Execute(context, "DELETE FROM [dbo].[PermissionRecord] WHERE [Name] <> '' AND [Name] IS NOT NULL");
-
             Execute(context, "Alter Table [dbo].[PermissionRecord_Role_Mapping] Drop Constraint [FK_dbo.PermissionRecord_Role_Mapping_dbo.PermissionRecord_PermissionRecord_Id]");
             Execute(context, "Alter Table [dbo].[PermissionRecord_Role_Mapping] Drop Constraint [FK_dbo.PermissionRecord_Role_Mapping_dbo.CustomerRole_CustomerRole_Id]");
-
             Execute(context, "Drop Index [IX_PermissionRecord_Id] ON [dbo].[PermissionRecord_Role_Mapping]");
             Execute(context, "Drop Index [IX_CustomerRole_Id] ON [dbo].[PermissionRecord_Role_Mapping]");
-
             Execute(context, "Alter Table [dbo].[PermissionRecord] Drop Column [Name]");
             Execute(context, "Alter Table [dbo].[PermissionRecord] Drop Column [Category]");
-
             Execute(context, "Drop Table [dbo].[PermissionRecord_Role_Mapping]");
         }
 

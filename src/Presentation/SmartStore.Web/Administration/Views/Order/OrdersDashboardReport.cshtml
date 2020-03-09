@@ -1,4 +1,8 @@
 ﻿@model OrdersDashboardReportModel
+@using Newtonsoft.Json;
+@{
+    var jsonData = JsonConvert.SerializeObject(Model);
+}
 
 <div class="bg-white rounded-lg shadow h-100" style="overflow:hidden">
     <div class="px-3 pt-3 d-flex pb-0">
@@ -7,25 +11,29 @@
             @T("Account.CustomerOrders")
         </div>
 
+        <div class="align-self-center pl-2 fs-h6 font-weight-300">
+            <span id="orders-sum-amount" class="text-muted">13.873 €</span>
+        </div>
+
         <div class="align-self-center pl-2 fs-h6">
             <span id="orders-delta-percentage">+121%</span><i id="orders-delta-percentage-chevron" class="fas fa-chevron-up text-success pl-1"></i>
         </div>
 
         <div class="btn-group btn-group-toggle ml-auto" data-toggle="buttons">
             <label class="btn btn-secondary active chart-toggle">
-                <input type="radio" name="orders-toggle" period="day" autocomplete="off" checked>
+                <input type="radio" name="orders-toggle" data-period="Day" autocomplete="off" checked>
                 @T("Time.Day")
             </label>
             <label class="btn btn-secondary chart-toggle">
-                <input type="radio" name="orders-toggle" period="week" autocomplete="off">
+                <input type="radio" name="orders-toggle" data-period="Week" autocomplete="off">
                 @T("Time.Week")
             </label>
             <label class="btn btn-secondary chart-toggle">
-                <input type="radio" name="orders-toggle" period="month" autocomplete="off">
+                <input type="radio" name="orders-toggle" data-period="Month" autocomplete="off">
                 @T("Time.Month")
             </label>
             <label class="btn btn-secondary chart-toggle">
-                <input type="radio" name="orders-toggle" period="year" autocomplete="off">
+                <input type="radio" name="orders-toggle" data-period="Year" autocomplete="off">
                 @T("Time.Year")
             </label>
         </div>
@@ -37,60 +45,31 @@
 </div>
 
 <script>
+    var currentPeriod = "Day";
+    var ordersData = JSON.parse('@Html.Raw(jsonData)');
+    $("#orders-delta-percentage").html(ordersData.Day.PercentageDelta);
+    $("#orders-sum-amount").html(ordersData.Day.TotalAmount);
+
     $(document).ready(function () {
-        $('input[type=radio][name=orders-toggle]').change(function () {
-            setChartData($('input:radio[name=orders-toggle]:checked').attr("period"));
+        $('input[type=radio][name=orders-toggle]').on('change', function () {
+            setChartData($('input:radio[name=orders-toggle]:checked').data("period"));
         });
 
         function setChartData(period) {
             ordersChart.destroy();
 
-            if (period === "day") {
-                activePeriod = 0;
-                updateData(labels_day, dummyDataSales_day, dummyDataCancelled_day, dummyDataProcessing_day, dummyDataPending_day, dummyDataOrdersDelta_day);
-            }
-            else if (period === "week") {
-                activePeriod = 1;
-                updateData(labels_week, dummyDataSales_week, dummyDataCancelled_week, dummyDataProcessing_week, dummyDataPending_week, dummyDataOrdersDelta_week);
-            }
-            else if (period === "month") {
-                activePeriod = 2;
-                updateData(labels_month, dummyDataSales_month, dummyDataCancelled_month, dummyDataProcessing_month, dummyDataPending_month, dummyDataOrdersDelta_month);
-            }
-            else if (period === "year") {
-                activePeriod = 3;
-                updateData(labels_year, dummyDataSales_year, dummyDataCancelled_year, dummyDataProcessing_year, dummyDataPending_year, dummyDataOrdersDelta_year);
-            }
-            else {
-                console.error("no valid chart period >>> " + period);
-            }
-        }
+            order_config.data.labels = ordersData[period].Labels;
+            order_config.data.datasets[0].data = ordersData[period].Data[0].Amount;
+            order_config.data.datasets[1].data = ordersData[period].Data[1].Amount;
+            order_config.data.datasets[2].data = ordersData[period].Data[2].Amount;
+            order_config.data.datasets[3].data = ordersData[period].Data[3].Amount;
 
-        function updateData(labels, dataOrders, dataCancelled, dataPending, dataProcessing, deltaPercentage) {
-            order_config.data.datasets[0].data = dataCancelled;
-            order_config.data.datasets[1].data = dataPending;
-            order_config.data.datasets[2].data = dataProcessing;
-            order_config.data.datasets[3].data = dataOrders;
-
-            var icon = document.getElementById("orders-delta-percentage-chevron");
-            var text = document.getElementById("orders-delta-percentage");
-
-            if (deltaPercentage < 0) {
-                text.innerHTML = deltaPercentage + "%";
-                icon.classList.remove("fa-chevron-up");
-                icon.classList.remove("text-success");
-                icon.classList.add("fa-chevron-down");
-                icon.classList.add("text-danger");
-            } else {
-                text.innerHTML = "+" + deltaPercentage + "%";
-                icon.classList.remove("fa-chevron-down");
-                icon.classList.remove("text-danger");
-                icon.classList.add("fa-chevron-up");
-                icon.classList.add("text-success");
-            }
-
-            order_config.data.labels = labels;
             ordersChart = new Chart(orders_ctx, order_config);
+
+            $("#orders-delta-percentage").html(ordersData[period].PercentageDelta);
+            $("#orders-sum-amount").html(ordersData[period].TotalAmount);
+            currentPeriod = period;
+            console.log(period);
 
             ordersLegendContainer.innerHTML = ordersChart.generateLegend();
             var legendItems = ordersLegendContainer.getElementsByTagName('li');
@@ -108,13 +87,9 @@
             }
             var parent = target.parentElement;
             var chartId = parseInt(parent.classList[0].split("-")[0], 10);
-            console.log(chartId);
             var chart = Chart.instances[chartId];
-            console.log(chart);
             var index = (ordersChart.data.datasets.length - 1) - Array.prototype.slice.call(parent.children).indexOf(target);
             var meta = chart.getDatasetMeta(index);
-            // console.log(meta);
-            console.log(Chart);
 
             if (chart.data.datasets[index].hidden) {
                 target.classList.remove('hidden');
@@ -146,7 +121,7 @@
             maintainAspectRatio: true,
             stacked: true,
             animation: {
-                duration: 1000,
+                duration: 400,
                 hide: {
                     visible: {
                         type: true,
@@ -170,19 +145,25 @@
             },
             legend: false,
             legendCallback: function (chart) {
+                console.log(ordersData);
+                console.log(currentPeriod);
+                console.log(ordersData[currentPeriod]);
+
                 var text = [];
                 text.push('<ul class="' + chart.id + '-legend">');
                 for (var i = chart.data.datasets.length - 1; i >= 0; i--) {
+                    console.log(i);
+                    console.log(ordersData[currentPeriod].Data[i]);
                     if (chart.data.datasets[i].hidden) {
-                        text.push('<li class="hidden"><span style="background-color:' + chart.data.datasets[i].borderColor + '"></span>');
+                        text.push('<li class="hidden"><span class="legend" style="background-color:' + chart.data.datasets[i].borderColor + '"></span>');
                     }
                     else {
-                        text.push('<li><span style="background-color:' + chart.data.datasets[i].borderColor + '"></span>');
+                        text.push('<li><span class="legend" style="background-color:' + chart.data.datasets[i].borderColor + '"></span>');
                     }
 
                     if (chart.data.labels[i]) {
-                        text.push(chart.data.datasets[i].label);
-                        text.push('<b class="font-weight-500 pl-1" style="text-decoration: none">' + getOrdersStatusTotalSum(i) + '</b>');
+                        text.push('<span>' + chart.data.datasets[i].label + '</span>');
+                        text.push('<span class="font-weight-500 pl-1 total-amount">' + ordersData[currentPeriod].Data[i].TotalAmount + '</span>');
                     }
                     text.push('</li>');
                 }
@@ -223,65 +204,9 @@
             }
         }
 
-        var dummyDataSales_day = [8, 5, 9, 7, 8, 10, 9, 12, 9, 15, 17, 16, 12, 9, 14, 17, 18, 13, 18, 15, 19, 17, 18, 16];
-        var dummyDataSales_week = [7, 5, 9, 7, 8, 12, 13];
-        var dummyDataSales_month = [34, 52, 46, 59];
-        var dummyDataSales_year = [61, 72, 53, 82, 112, 135, 122, 113, 133, 124, 111, 124, 112];
-
-        var dummyDataCancelled_day = [1, 0, 0, 2, 1, 1, 0, 2, 1, 2, 3, 1, 0, 0, 1, 0, 4, 2, 1, 1, 3, 2, 1, 0];
-        var dummyDataCancelled_week = [1, 2, 3, 2, 1, 4, 1];
-        var dummyDataCancelled_month = [4, 7, 2, 8];
-        var dummyDataCancelled_year = [6, 9, 5, 3, 12, 17, 9, 14, 18, 9, 12, 16, 8];
-
-        var dummyDataPending_day = [3, 1, 5, 4, 4, 8, 7, 7, 7, 12, 13, 10, 5, 7, 5, 8, 9, 2, 9, 8, 15, 8, 6, 8];
-        var dummyDataPending_week = [3, 2, 7, 3, 3, 4, 2];
-        var dummyDataPending_month = [14, 28, 16, 23];
-        var dummyDataPending_year = [3, 5, 7, 4, 8, 3, 6, 3, 8, 12, 31, 21, 47];
-
-        var dummyDataProcessing_day = [4, 3, 3, 2, 2, 3, 2, 3, 4, 6, 9, 9, 3, 5, 9, 7, 8, 3, 8, 5, 9, 7, 8, 6];
-        var dummyDataProcessing_week = [4, 2, 6, 2, 3, 7, 8];
-        var dummyDataProcessing_month = [17, 14, 22, 27];
-        var dummyDataProcessing_year = [8, 12, 28, 22, 32, 43, 42, 70, 45, 66, 43, 60, 59];
-
-        var dummyDataOrdersDelta_day = 121;
-        var dummyDataOrdersDelta_week = 14;
-        var dummyDataOrdersDelta_month = 3;
-        var dummyDataOrdersDelta_year = -22;
-
-        var dummyData_OrdersCompleteSumDay = "2.353 €";
-        var dummyData_OrdersPendingSumDay = "854 €";
-        var dummyData_OrdersProcessingSumDay = "1.123 €";
-        var dummyData_OrdersCancelledSumDay = "84 €";
-
-        var dummyData_OrdersCompleteSumWeek = "12.325 €";
-        var dummyData_OrdersPendingSumWeek = "2.421 €";
-        var dummyData_OrdersProcessingSumWeek = "4.953 €";
-        var dummyData_OrdersCancelledSumWeek = "204 €";
-
-        var dummyData_OrdersCompleteSumMonth = "48.134 €";
-        var dummyData_OrdersPendingSumMonth = "2.645 €";
-        var dummyData_OrdersProcessingSumMonth = "6.553 €";
-        var dummyData_OrdersCancelledSumMonth = "584 €";
-
-        var dummyData_OrdersCompleteSumYear = "358.435 €";
-        var dummyData_OrdersPendingSumYear = "2.653 €";
-        var dummyData_OrdersProcessingSumYear = "6.851 €";
-        var dummyData_OrdersCancelledSumYear = "5.581 €";
-
-        var labels_day = ['0:00 Uhr', '1:00 Uhr', '2:00 Uhr', '3:00 Uhr',
-            '4:00 Uhr', '5:00 Uhr', '6:00 Uhr', '7:00 Uhr', '8:00 Uhr',
-            '9:00 Uhr', '10:00 Uhr', '11:00 Uhr', '12:00 Uhr', '13:00 Uhr',
-            '14:00 Uhr', '15:00 Uhr', '16:00 Uhr', '17:00 Uhr', '18:00 Uhr',
-            '19:00 Uhr', '20:00 Uhr', '21:00 Uhr', '22:00 Uhr', '23:00 Uhr'];
-        var labels_week = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
-        var labels_month = ['01.01 - 07.01', '08.01 - 15.01', '16.01 - 23.01', '24.01 - 31.01'];
-        var labels_year = ['April 2019', 'Mai 2019', 'Juni 2019', 'Juli 2019', 'August 2019', 'September 2019', 'October 2019', 'November 2019', 'Dezember 2019', 'Januar 2020', 'Februar 2020', 'März 2020'];
-
-        var activePeriod = 0;
-
-        var ordersChartElement = document.getElementById('orders-chart');
+        var ordersChartElement = $('#orders-chart')[0];
         var orders_ctx = ordersChartElement.getContext('2d');
-        var ordersLegendContainer = document.getElementById("orders-chart-legend");
+        var ordersLegendContainer = $("#orders-chart-legend")[0];
 
         var salesGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
         salesGradient.addColorStop(0, hexToRgba(colorPrimary.substr(1), .9));
@@ -302,11 +227,11 @@
         var order_config = {
             type: 'line',
             data: {
-                labels: labels_day,
+                labels: ordersData.Day.Labels,
                 datasets: [{
                     label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled")',
-                    data: dummyDataCancelled_day,
-                    borderWidth: 4,
+                    data: ordersData.Day.Data[0].Amount,
+                    borderWidth: 3,
                     borderColor: colorDanger,
                     backgroundColor: cancelledGradient,
                     lineTension: 0.2,
@@ -315,7 +240,7 @@
                     pointHoverBorderColor: 'transparent',
                 }, {
                     label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending")',
-                    data: dummyDataPending_day,
+                    data: ordersData.Day.Data[1].Amount,
                     borderWidth: 4,
                     borderColor: colorWarning,
                     backgroundColor: pendingGradient,
@@ -326,7 +251,7 @@
                     pointHoverBorderColor: 'transparent',
                 }, {
                     label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing")',
-                    data: dummyDataProcessing_day,
+                    data: ordersData.Day.Data[2].Amount,
                     borderWidth: 4,
                     borderColor: colorSuccess,
                     backgroundColor: processingGradient,
@@ -337,8 +262,8 @@
                     pointHoverBorderColor: 'transparent',
                 }, {
                     label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")',
-                    data: dummyDataSales_day,
-                    borderWidth: 4,
+                    data: ordersData.Day.Data[3].Amount,
+                    borderWidth: 3,
                     borderColor: colorPrimary,
                     backgroundColor: salesGradient,
                     lineTension: 0.2,
@@ -352,7 +277,7 @@
 
         var ordersChart = new Chart(orders_ctx, order_config);
 
-        ordersLegendContainer.innerHTML = ordersChart.generateLegend();
+        $(ordersLegendContainer).html(ordersChart.generateLegend());
         var legendItems = ordersLegendContainer.getElementsByTagName('li');
         for (var i = 0; i < legendItems.length; i++) {
             legendItems[i].addEventListener("click", legendClickCallback, false);
@@ -368,103 +293,6 @@
             return 'rgba(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', ' + opacity + ')';
         }
 
-        function getOrdersStatusTotalSum(currentStatus) {
-            if (activePeriod === 0) {
-                  //Day
-                  if (currentStatus === 0) {
-                      // Cancelled
-                      return dummyData_OrdersCancelledSumDay;
-                  }
-                  else if (currentStatus === 1) {
-                      // Pending
-                      return dummyData_OrdersPendingSumDay;
-                  }
-                  else if (currentStatus === 2) {
-                      // Processing
-                      return dummyData_OrdersProcessingSumDay;
-                  }
-                  else if (currentStatus === 3) {
-                      // Complete
-                      return dummyData_OrdersCompleteSumDay;
-                  }
-                  else {
-                      console.warn("wrong index >>> " + currentStatus);
-                      return 0;
-                  }
-              }
-              else if (activePeriod === 1) {
-                  //Week
-                  if (currentStatus === 0) {
-                      // Cancelled
-                      return dummyData_OrdersCancelledSumWeek;
-                  }
-                  else if (currentStatus === 1) {
-                      // Pending
-                      return dummyData_OrdersPendingSumWeek;
-                  }
-                  else if (currentStatus === 2) {
-                      // Processing
-                      return dummyData_OrdersProcessingSumWeek;
-                  }
-                  else if (currentStatus === 3) {
-                      // Complete
-                      return dummyData_OrdersCompleteSumWeek;
-                  }
-                  else {
-                      console.warn("wrong index >>> " + currentStatus);
-                      return 0;
-                  }
-              }
-              else if (activePeriod === 2) {
-                  //Month
-                  if (currentStatus === 0) {
-                      // Cancelled
-                      return dummyData_OrdersCancelledSumMonth;
-                  }
-                  else if (currentStatus === 1) {
-                      // Pending
-                      return dummyData_OrdersPendingSumMonth;
-                  }
-                  else if (currentStatus === 2) {
-                      // Processing
-                      return dummyData_OrdersProcessingSumMonth;
-                  }
-                  else if (currentStatus === 3) {
-                      // Complete
-                      return dummyData_OrdersCompleteSumMonth;
-                  }
-                  else {
-                      console.warn("wrong index >>> " + currentStatus);
-                      return 0;
-                  }
-              }
-              else if (activePeriod === 3) {
-                  //Year
-                  if (currentStatus === 0) {
-                      // Cancelled
-                      return dummyData_OrdersCancelledSumYear;
-                  }
-                  else if (currentStatus === 1) {
-                      // Pending
-                      return dummyData_OrdersPendingSumYear;
-                  }
-                  else if (currentStatus === 2) {
-                      // Processing
-                      return dummyData_OrdersProcessingSumYear;
-                  }
-                  else if (currentStatus === 3) {
-                      // Complete
-                      return dummyData_OrdersCompleteSumYear;
-                  }
-                  else {
-                      console.warn("wrong status index >>> " + currentStatus);
-                      return 0;
-                  }
-              } else {
-                  console.warn("wrong period index >>> " + period);
-                  return 0;
-              }
-          }
     });
 </script>
 <style>
@@ -477,6 +305,7 @@
 
     #orders-chart-legend li {
         display: inline-block;
+        user-select: none;
     }
 
         #orders-chart-legend li:not(:last-child) {
@@ -485,13 +314,20 @@
 
         #orders-chart-legend li.hidden {
             text-decoration: line-through;
+            user-select: none;
         }
 
-        #orders-chart-legend li span {
-            border-radius: 7px;
-            display: inline-block;
-            height: 11px;
-            margin-right: .3rem;
-            width: 11px;
-        }
+    #orders-chart-legend .total-amount {
+        text-decoration: none !important;
+        display: inline-block;
+        user-select: text;
+    }
+
+    #orders-chart-legend .legend {
+        border-radius: 7px;
+        display: inline-block;
+        height: 11px;
+        margin-right: .3rem;
+        width: 11px;
+    }
 </style>

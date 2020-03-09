@@ -1,112 +1,70 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Orders
 {
     public class OrdersDashboardReportModel : ModelBase
     {
-        // Day
-        public List<string> OrderLabelsDay { get; set; }
-        public int OrdersSumDay { get; set; }
-        public int OrdersSumDayBefore { get; set; }
-        public int OrdersPercentageDeltaDay { get; set; }
+        // Struktur:
+        // 4x Klasse mit jeweils:
+        //public string[] OrderLabelsDay { get; set; }
+        //public string OrdersPercentageDeltaDay { get; set; }
+        //public string OrdersAmountDay { get; set; }
+        //public string CompleteTotalDay { get; set; }
+        //public string CompleteAmountDay { get; set; }
+        //public string PendingTotalDay { get; set; }
+        //public string PendingAmountDay { get; set; }
+        //public string ProcessingTotalDay { get; set; }
+        //public string ProcessingAmountDay { get; set; }
+        //public int[] CancelledTotalDay { get; set; }
+        //public int[] CancelledAmountDay { get; set; }
 
-        public int[] CompleteTotalDay { get; set; }
-        public int[] CompleteTotalDayBefore { get; set; } // this is stupid, what should this do?????
-        public int[] CompleteAmountDay { get; set; }
-        public int[] CompleteAmountDayBefore { get; set; }   // is this needed? jsut calc the deklta on the fly...?
+        // for each period time - as data types as needed by chartjs!
+        // think for yourself....
 
-        public int[] PendingTotalDay { get; set; }
-        public int[] PendingTotalDayBefore { get; set; }
-        public int[] PendingAmountDay { get; set; }
-        public int[] PendingAmountDayBefore { get; set; }
+        public OrdersDashboardReportLineModel Day { get; set; }
+        public OrdersDashboardReportLineModel Week { get; set; }
+        public OrdersDashboardReportLineModel Month { get; set; }
+        public OrdersDashboardReportLineModel Year { get; set; }
+    }
+    public class OrdersDashboardReportLineModel : ModelBase
+    {
+        public string[] Labels { get; set; }
+        public string PercentageDelta { get; set; }
+        public int TotalAmount { get; set; }
 
-        public int[] ProcessingTotalDay { get; set; }
-        public int[] ProcessingTotalDayBefore { get; set; }
-        public int[] ProcessingAmountDay { get; set; }
-        public int[] ProcessingAmountDayBefore { get; set; }
+        //public ChartDataPoint Complete { get; set; }
+        //public ChartDataPoint Pending { get; set; }
+        //public ChartDataPoint Processing { get; set; }
+        //public ChartDataPoint Cancelled { get; set; }
+        public ChartDataPoint[] Data { get; set; }
 
-        public int[] CancelledTotalDay { get; set; }
-        public int[] CancelledTotalDayBefore { get; set; }
-        public int[] CancelledAmountDay { get; set; }
-        public int[] CancelledAmountDayBefore { get; set; }
+        public OrdersDashboardReportLineModel(int amountDatasets)
+        {
+            Data = new ChartDataPoint[4];
+            Data[0] = new ChartDataPoint(amountDatasets);
+            Data[1] = new ChartDataPoint(amountDatasets);
+            Data[2] = new ChartDataPoint(amountDatasets);
+            Data[3] = new ChartDataPoint(amountDatasets);
 
-        // Week
-        public List<string> OrderLabelsWeek { get; set; }
-        public int OrdersSumWeek { get; set; }
-        public int OrdersSumWeekBefore { get; set; }
-        public int OrdersPercentageDeltaWeek { get; set; }
+            //Complete = new ChartDataPoint(amountDatasets);
+            //Pending = new ChartDataPoint(amountDatasets);
+            //Processing = new ChartDataPoint(amountDatasets);
+            //Cancelled = new ChartDataPoint(amountDatasets);
+        }
+    }
 
-        public int[] CompleteTotalWeek { get; set; }
-        public int[] CompleteTotalWeekBefore { get; set; }
-        public int[] CompleteAmountWeek { get; set; }
-        public int[] CompleteAmountWeekBefore { get; set; }
-
-        public int[] PendingTotalWeek { get; set; }
-        public int[] PendingTotalWeekBefore { get; set; }
-        public int[] PendingAmountWeek { get; set; }
-        public int[] PendingAmountWeekBefore { get; set; }
+    public class ChartDataPoint
+    {
+        public int TotalAmount { get; set; } = 0;
+        public int[] Quantity { get; set; }
+        public int[] Amount { get; set; }
         
-        public int[] ProcessingTotalWeek { get; set; }
-        public int[] ProcessingTotalWeekBefore { get; set; }
-        public int[] ProcessingAmountWeek { get; set; }
-        public int[] ProcessingAmountWeekBefore { get; set; }
-        
-        public int[] CancelledTotalWeek { get; set; }
-        public int[] CancelledTotalWeekBefore { get; set; }
-        public int[] CancelledAmountWeek { get; set; }
-        public int[] CancelledAmountWeekBefore { get; set; }
-        
-        // Month
-        public List<string> OrderLabelsMonth { get; set; }
-        public int OrdersSumMonth { get; set; }
-        public int OrdersSumMonthBefore { get; set; }
-        public int OrdersPercentageDeltaMonth { get; set; }
-
-        public int[] CompleteTotalMonth { get; set; }
-        public int[] CompleteTotalMonthBefore { get; set; }
-        public int[] CompleteAmountMonth { get; set; }
-        public int[] CompleteAmountMonthBefore { get; set; }
-
-        public int[] PendingTotalMonth { get; set; }
-        public int[] PendingTotalMonthBefore { get; set; }
-        public int[] PendingAmountMonth { get; set; }
-        public int[] PendingAmountMonthBefore { get; set; }
-
-        public int[] ProcessingTotalMonth { get; set; }
-        public int[] ProcessingTotalMonthBefore { get; set; }
-        public int[] ProcessingAmountMonth { get; set; }
-        public int[] ProcessingAmountMonthBefore { get; set; }
-
-        public int[] CancelledTotalMonth { get; set; }
-        public int[] CancelledTotalMonthBefore { get; set; }
-        public int[] CancelledAmountMonth { get; set; }
-        public int[] CancelledAmountMonthBefore { get; set; }
-
-        // Year
-        public List<string> OrderLabelsYear { get; set; }
-        public int OrdersSumYear { get; set; }
-        public int OrdersSumYearBefore { get; set; }
-        public int OrdersPercentageDeltaYear { get; set; }
-
-        public int[] CompleteTotalYear { get; set; }
-        public int[] CompleteTotalYearBefore { get; set; }
-        public int[] CompleteAmountYear { get; set; }
-        public int[] CompleteAmountYearBefore { get; set; }
-
-        public int[] PendingTotalYear { get; set; }
-        public int[] PendingTotalYearBefore { get; set; }
-        public int[] PendingAmountYear { get; set; }
-        public int[] PendingAmountYearBefore { get; set; }
-
-        public int[] ProcessingTotalYear { get; set; }
-        public int[] ProcessingTotalYearBefore { get; set; }
-        public int[] ProcessingAmountYear { get; set; }
-        public int[] ProcessingAmountYearBefore { get; set; }
-
-        public int[] CancelledTotalYear { get; set; }
-        public int[] CancelledTotalYearBefore { get; set; }
-        public int[] CancelledAmountYear { get; set; }
-        public int[] CancelledAmountYearBefore { get; set; }
+        public ChartDataPoint(int amountDatasets)
+        {
+            Quantity = new int[amountDatasets];
+            Amount = new int[amountDatasets];
+        }
     }
 }

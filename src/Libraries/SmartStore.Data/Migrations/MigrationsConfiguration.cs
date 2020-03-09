@@ -506,6 +506,19 @@
                 "Kunden werden automatisch per geplanter Aufgabe dieser Kundengruppe zugeordnet, wenn sie eine der gewählten Regeln erfüllen.");
 
             builder.AddOrUpdate("Admin.CustomerRoleMapping.IsSystemMapping", "Automatic assignment", "Automatische Zuordnung");
+            builder.AddOrUpdate("Admin.CustomerRoleMapping.ReapplyRules", "Reapply rules", "Regeln neu anwenden");
+            
+            builder.AddOrUpdate("Admin.CustomerRoleMapping.SpecifyRules",
+                "Please first select rules for this customer role on the tab \"General\".",
+                "Bitte legen Sie zuerst über den Reiter \"Allgemein\" Regeln für diese Kundengruppe fest.");
+
+            builder.AddOrUpdate("Admin.CustomerRoleMapping.RoleMappingListDescription",
+                "The list shows customers who are assigned to this customer role. Customers are automatically assigned by scheduled task, if rules are specified for this role. You can make a manual assignment using the customer role selection at the respective customer.",
+                "Die Liste zeigt Kunden, die dieser Kundenruppe zugeordnet sind. Kunden werden automatisch per geplanter Aufgabe zugeordnet, sofern für diese Gruppe Regeln festgelegt sind. Eine manuelle Zuordnung können Sie über die Kundengruppenauswahl beim jeweiligen Kunden vornehmen.");
+
+            builder.AddOrUpdate("Admin.System.ScheduleTasks.TaskNotFound",
+                "The scheduled task \"{0}\" was not found.",
+                "Die geplante Aufgabe \"{0}\" wurde nicht gefunden.");
         }
     }
 }

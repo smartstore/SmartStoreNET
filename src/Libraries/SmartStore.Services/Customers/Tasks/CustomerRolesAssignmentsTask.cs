@@ -18,6 +18,10 @@ namespace SmartStore.Services.Customers
 
         public override Task ExecuteAsync(TaskExecutionContext ctx)
         {
+            var ruleIds = ctx.Parameters.ContainsKey("RuleIds")
+                ? ctx.Parameters["RuleIds"].ToIntArray()
+                : new int[0];
+
             return Task.CompletedTask;
         }
     }

@@ -1,4 +1,5 @@
-﻿using SmartStore.Web.Framework;
+﻿using System;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Customers
@@ -18,6 +19,12 @@ namespace SmartStore.Admin.Models.Customers
 
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.FullName")]
         public string FullName { get; set; }
+
+        [SmartResourceDisplayName("Common.CreatedOn")]
+        public DateTime CreatedOn { get; set; }
+
+        [SmartResourceDisplayName("Admin.Customers.Customers.Fields.LastActivityDate")]
+        public DateTime LastActivityDate { get; set; }
 
         [SmartResourceDisplayName("Admin.CustomerRoleMapping.IsSystemMapping")]
         public bool IsSystemMapping { get; set; }

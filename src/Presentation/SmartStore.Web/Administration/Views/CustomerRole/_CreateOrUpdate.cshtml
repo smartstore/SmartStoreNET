@@ -124,27 +124,16 @@
 			@T("Admin.SaveBeforeEdit")
 		</div>
     }
-
-    <script>
-        $(function () {
-            // Init permission tree.
-            $('#permission-tree').tree('init', {
-                nodeState: 'on-off',
-                stateTitles: [@T("Common.Allow").JsText, @T("Common.Deny").JsText, @T("Admin.Permissions.AllowInherited").JsText, @T("Admin.Permissions.DenyInherited").JsText]
-            });
-
-            // Expand\collapse all.
-            $('#ExpandCollapseAll').on('click', function () {
-                $('#permission-tree').tree('expandAll');
-            });
-	    });
-    </script>
 }
 
 @helper TabCustomers()
 {
     if (Model.Id > 0)
     {
+        <div class="alert alert-info">
+            @T("Admin.CustomerRoleMapping.RoleMappingListDescription")
+        </div>
+
         @(Html.Telerik().Grid<CustomerRoleMappingModel>()
 		    .Name("role-mapping-grid")
 		    .ClientEvents(events => events.OnRowDataBound("onRoleMappingRowDataBound"))
@@ -152,16 +141,19 @@
 		    {
 			    columns.Bound(x => x.Email)
 				    .ClientTemplate("<a href=\"" + Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= Email #></a>");
-			    columns.Bound(x => x.Active)
-					.ClientTemplate(Html.SymbolForBool("Active"))
-					.Centered();
 			    columns.Bound(x => x.Username)
 				    .Visible(Model.UsernamesEnabled);
 			    columns.Bound(x => x.FullName);
+			    columns.Bound(x => x.Active)
+					.ClientTemplate(Html.SymbolForBool("Active"))
+					.Centered();
+                columns.Bound(x => x.CreatedOn);
+                columns.Bound(x => x.LastActivityDate);
 			    columns.Bound(x => x.IsSystemMapping)
 					    .ClientTemplate(Html.SymbolForBool("IsSystemMapping"))
 					    .Centered();
 		    })
+            .ToolBar(commands => commands.Template(RoleMappingsGridCommands))
 		    .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 		    .DataBinding(dataBinding => dataBinding.Ajax().Select("CustomerRoleMappings", "CustomerRole"))
 		    .PreserveGridState()
@@ -173,14 +165,40 @@
 			@T("Admin.SaveBeforeEdit")
 		</div>
     }
+}
 
-    <script>
-        function onRoleMappingRowDataBound(e) {
-		    if (!e.dataItem.Active) {
-			    $(e.row).find('td').wrapInner('<span class="muted" />');
-		    }
-        }
-    </script>
+<script>
+    function onRoleMappingRowDataBound(e) {
+		if (!e.dataItem.Active) {
+			$(e.row).find('td').wrapInner('<span class="muted" />');
+		}
+    }
+
+    $(function () {
+        // Init permission tree.
+        $('#permission-tree').tree('init', {
+            nodeState: 'on-off',
+            stateTitles: [@T("Common.Allow").JsText, @T("Common.Deny").JsText, @T("Admin.Permissions.AllowInherited").JsText, @T("Admin.Permissions.DenyInherited").JsText]
+        });
+
+        // Expand\collapse all.
+        $('#ExpandCollapseAll').on('click', function () {
+            $('#permission-tree').tree('expandAll');
+        });
+
+        // Reapply rules.
+        $('#btnReapplyRules').on('click', function () {
+    		$(this).doPostData({ });
+        });
+	});
+</script>
+
+@helper RoleMappingsGridCommands(Grid<CustomerRoleMappingModel> grid)
+{
+	<button type="button" id="btnReapplyRules" class="t-button t-grid-save-changes" data-url="@Url.Action("ApplyRules", new { id = Model.Id })" data-ask="@T("Admin.Common.AskToProceed")">
+		<i class="fa fa-play"></i>
+		<span>@T("Admin.CustomerRoleMapping.ReapplyRules")</span>
+	</button>
 }
 
 @helper PermissionNode(TreeNode<IPermissionNode> node)

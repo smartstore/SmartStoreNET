@@ -341,7 +341,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     _taskScheduler.Value.RunSingleTask(task.Id, new Dictionary<string, string>
                     {
-                        { "RuleIds", string.Join(",", customerRole.RuleSets.Select(x => x.Id)) }
+                        { "CustomerRoleIds", customerRole.Id.ToString() }
                     });
 
                     NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));

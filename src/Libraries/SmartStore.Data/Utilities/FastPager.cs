@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Data.Entity;
+using System.Threading.Tasks;
 using SmartStore.Core;
 
 namespace SmartStore.Data.Utilities
@@ -75,6 +76,44 @@ namespace SmartStore.Data.Utilities
 
             _maxId = idSelector(page.Last());
             return true;
+        }
+
+        public async Task<IList<T>> ReadNextPageAsync<TShape>()
+        {
+            return await ReadNextPageAsync(x => x, x => x.Id);
+        }
+
+        public async Task<IList<TShape>> ReadNextPageAsync<TShape>(
+            Expression<Func<T, TShape>> shaper,
+            Func<TShape, int> idSelector)
+        {
+            Guard.NotNull(shaper, nameof(shaper));
+
+            if (_maxId == null)
+            {
+                _maxId = int.MaxValue;
+            }
+            if (_maxId.Value <= 1)
+            {
+                return null;
+            }
+
+            var page = await _query
+                .Where(x => x.Id < _maxId.Value)
+                .OrderByDescending(x => x.Id)
+                .Take(() => _pageSize)
+                .Select(shaper)
+                .ToListAsync();
+
+            if (page.Count == 0)
+            {
+                _maxId = -1;
+                page = null;
+                return null;
+            }
+
+            _maxId = idSelector(page.Last());
+            return page;
         }
     }
 }

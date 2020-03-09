@@ -388,9 +388,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     case RuleScope.Customer:
                         {
-                            var provider = _ruleProvider(entity.Scope) as ITargetGroupService;
-                            var expression = _ruleFactory.CreateExpressionGroup(entity, provider, true) as FilterExpression;
-
+                            var expression = _ruleFactory.CreateExpressionGroup(entity, _targetGroupService, true) as FilterExpression;
                             var result = _targetGroupService.ProcessFilter(new[] { expression }, LogicalRuleOperator.And, 0, 500);
 
                             message = T("Admin.Rules.Execute.MatchCustomers", result.TotalCount.ToString("N0"));

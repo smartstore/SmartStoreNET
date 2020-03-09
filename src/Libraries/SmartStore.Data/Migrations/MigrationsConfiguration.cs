@@ -513,8 +513,8 @@
                 "Bitte legen Sie zuerst über den Reiter \"Allgemein\" Regeln für diese Kundengruppe fest.");
 
             builder.AddOrUpdate("Admin.CustomerRoleMapping.RoleMappingListDescription",
-                "The list shows customers who are assigned to this customer role. Customers are automatically assigned by scheduled task, if rules are specified for this role. You can make a manual assignment using the customer role selection at the respective customer.",
-                "Die Liste zeigt Kunden, die dieser Kundenruppe zugeordnet sind. Kunden werden automatisch per geplanter Aufgabe zugeordnet, sofern für diese Gruppe Regeln festgelegt sind. Eine manuelle Zuordnung können Sie über die Kundengruppenauswahl beim jeweiligen Kunden vornehmen.");
+                "The list shows customers who are assigned to this customer role. Customers are automatically assigned by scheduled task as long as the group is active and rules are specified for it. You can make a manual assignment using the customer role selection at the respective customer.",
+                "Die Liste zeigt Kunden, die dieser Kundenruppe zugeordnet sind. Kunden werden automatisch per geplanter Aufgabe zugeordnet, sofern die Gruppe aktiv ist und für sie Regeln festgelegt sind. Eine manuelle Zuordnung können Sie über die Kundengruppenauswahl beim jeweiligen Kunden vornehmen.");
 
             builder.AddOrUpdate("Admin.System.ScheduleTasks.TaskNotFound",
                 "The scheduled task \"{0}\" was not found.",

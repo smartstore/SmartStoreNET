@@ -2,6 +2,7 @@
 @using Newtonsoft.Json;
 @{
     var jsonData = JsonConvert.SerializeObject(Model);
+    var currency = " " + ViewBag.CurrencySymbol;
 }
 
 <div class="bg-white rounded-lg shadow h-100" style="overflow:hidden">
@@ -12,11 +13,11 @@
         </div>
 
         <div class="align-self-center pl-2 fs-h6 font-weight-300">
-            <span id="orders-sum-amount" class="text-muted">13.873 €</span>
+            <span id="orders-sum-amount" class="text-muted"></span>
         </div>
 
         <div class="align-self-center pl-2 fs-h6">
-            <span id="orders-delta-percentage">+121%</span><i id="orders-delta-percentage-chevron" class="fas fa-chevron-up text-success pl-1"></i>
+            <span id="orders-delta-percentage"></span><span id="orders-delta-percentage-chevron" class="chevron pl-1 d-none"></span>
         </div>
 
         <div class="btn-group btn-group-toggle ml-auto" data-toggle="buttons">
@@ -40,36 +41,63 @@
     </div>
     <div class="pl-3 pt-2" id="orders-chart-legend"></div>
     <div class="canvas-container pt-0 mt-0 h-100" style="transform: translateY(-69px); pointer-events: none">
-        <canvas id="orders-chart" class="w-100" width="70" height="22" style="position: absolute; bottom: 0px; pointer-events: all"></canvas>
+        <canvas id="orders-chart" class="w-100" width="70" height="21" style="position: absolute; bottom: 0px; pointer-events: all"></canvas>
     </div>
 </div>
 
 <script>
     var currentPeriod = "Day";
     var ordersData = JSON.parse('@Html.Raw(jsonData)');
-    $("#orders-delta-percentage").html(ordersData.Day.PercentageDelta);
-    $("#orders-sum-amount").html(ordersData.Day.TotalAmount);
+    var currencySymbol = '@Html.Raw(currency)';
 
     $(document).ready(function () {
         $('input[type=radio][name=orders-toggle]').on('change', function () {
             setChartData($('input:radio[name=orders-toggle]:checked').data("period"));
         });
 
+        setPercentageDelta(currentPeriod);
+
+        function setPercentageDelta(period) {
+            var val = ordersData[period].PercentageDelta;
+
+            if (val < 0) {
+                if (!$("#orders-delta-percentage-chevron").hasClass("negative")) {
+                    $("#orders-delta-percentage-chevron").addClass("negative");
+                }
+                if ($("#orders-delta-percentage-chevron").hasClass("d-none")) {
+                    $("#orders-delta-percentage-chevron").removeClass("d-none");
+                }
+            }
+            else if (val > 0) {
+                if ($("#orders-delta-percentage-chevron").hasClass("negative")) {
+                    $("#orders-delta-percentage-chevron").removeClass("negative");
+                }
+                if ($("#orders-delta-percentage-chevron").hasClass("d-none")) {
+                    $("#orders-delta-percentage-chevron").removeClass("d-none");
+                }
+            }
+            else if (!$("#orders-delta-percentage-chevron").hasClass("d-none")) {
+                $("#orders-delta-percentage-chevron").addClass("d-none")
+            }
+
+            var delta = val == 0 ? "" : val < 0 ? "-" + Math.abs(val) + " %" : "+" + Math.abs(val) + " %";
+
+            $("#orders-delta-percentage").html(delta);
+            $("#orders-sum-amount").html(ordersData[period].TotalAmount + currencySymbol);
+        }
+
         function setChartData(period) {
             ordersChart.destroy();
 
             order_config.data.labels = ordersData[period].Labels;
-            order_config.data.datasets[0].data = ordersData[period].Data[0].Amount;
-            order_config.data.datasets[1].data = ordersData[period].Data[1].Amount;
-            order_config.data.datasets[2].data = ordersData[period].Data[2].Amount;
-            order_config.data.datasets[3].data = ordersData[period].Data[3].Amount;
-
+            for (var i = 0; i < order_config.data.datasets.length; i++) {
+                order_config.data.datasets[i].data = ordersData[period].Data[i].Amount;
+            }
             ordersChart = new Chart(orders_ctx, order_config);
 
-            $("#orders-delta-percentage").html(ordersData[period].PercentageDelta);
-            $("#orders-sum-amount").html(ordersData[period].TotalAmount);
+            setPercentageDelta(period, ordersData);
+
             currentPeriod = period;
-            console.log(period);
 
             ordersLegendContainer.innerHTML = ordersChart.generateLegend();
             var legendItems = ordersLegendContainer.getElementsByTagName('li');
@@ -115,7 +143,75 @@
 
         var fontFamily = style.getPropertyValue('--font-family-sans-serif');
 
-        var chartOptions = {
+        var ordersChartElement = $('#orders-chart')[0];
+        var orders_ctx = ordersChartElement.getContext('2d');
+        var ordersLegendContainer = $("#orders-chart-legend")[0];
+
+        var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
+        completeGradient.addColorStop(0, hexToRgba(colorPrimary.substr(1), .9));
+        completeGradient.addColorStop(1, hexToRgba(colorPrimary.substr(1), .1));
+
+        var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
+        cancelledGradient.addColorStop(0, hexToRgba(colorDanger.substr(1), .9));
+        cancelledGradient.addColorStop(1, hexToRgba(colorDanger.substr(1), .1));
+
+        var pendingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
+        pendingGradient.addColorStop(0, hexToRgba(colorWarning.substr(1), .9));
+        pendingGradient.addColorStop(1, hexToRgba(colorWarning.substr(1), .1));
+
+        var processingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
+        processingGradient.addColorStop(0, hexToRgba(colorSuccess.substr(1), .9));
+        processingGradient.addColorStop(1, hexToRgba(colorSuccess.substr(1), .1));
+
+        var order_config = {
+            type: 'line',
+            data: {
+                labels: ordersData.Day.Labels,
+                datasets: [{
+                    label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled")',
+                    data: ordersData.Day.Data[0].Amount,
+                    borderWidth: 2,
+                    borderColor: colorDanger,
+                    backgroundColor: cancelledGradient,
+                    lineTension: 0.2,
+                    fill: true,
+                    pointHoverBackgroundColor: colorDanger,
+                    pointHoverBorderColor: 'transparent',
+                }, {
+                    label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending")',
+                    data: ordersData.Day.Data[1].Amount,
+                    borderWidth: 2,
+                    borderColor: colorWarning,
+                    backgroundColor: pendingGradient,
+                    lineTension: 0.2,
+                    fill: true,
+                    hidden: true,
+                    pointHoverBackgroundColor: colorWarning,
+                    pointHoverBorderColor: 'transparent',
+                }, {
+                    label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing")',
+                    data: ordersData.Day.Data[2].Amount,
+                    borderWidth: 2,
+                    borderColor: colorSuccess,
+                    backgroundColor: processingGradient,
+                    lineTension: 0.2,
+                    fill: true,
+                    hidden: true,
+                    pointHoverBackgroundColor: colorSuccess,
+                    pointHoverBorderColor: 'transparent',
+                }, {
+                    label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")',
+                    data: ordersData.Day.Data[3].Amount,
+                    borderWidth: 2,
+                    borderColor: colorPrimary,
+                    backgroundColor: completeGradient,
+                    lineTension: 0.2,
+                    fill: true,
+                    pointHoverBackgroundColor: colorPrimary,
+                    pointHoverBorderColor: 'transparent',
+                }]
+            },
+            options: {
             responsive: true,
             responsiveAnimationDuration: 0,//1000,
             maintainAspectRatio: true,
@@ -145,15 +241,10 @@
             },
             legend: false,
             legendCallback: function (chart) {
-                console.log(ordersData);
-                console.log(currentPeriod);
-                console.log(ordersData[currentPeriod]);
 
                 var text = [];
                 text.push('<ul class="' + chart.id + '-legend">');
                 for (var i = chart.data.datasets.length - 1; i >= 0; i--) {
-                    console.log(i);
-                    console.log(ordersData[currentPeriod].Data[i]);
                     if (chart.data.datasets[i].hidden) {
                         text.push('<li class="hidden"><span class="legend" style="background-color:' + chart.data.datasets[i].borderColor + '"></span>');
                     }
@@ -163,7 +254,7 @@
 
                     if (chart.data.labels[i]) {
                         text.push('<span>' + chart.data.datasets[i].label + '</span>');
-                        text.push('<span class="font-weight-500 pl-1 total-amount">' + ordersData[currentPeriod].Data[i].TotalAmount + '</span>');
+                        text.push('<span class="font-weight-500 pl-1 total-amount">' + ordersData[currentPeriod].Data[i].TotalAmount + currencySymbol + '</span>');
                     }
                     text.push('</li>');
                 }
@@ -180,6 +271,21 @@
                 enabled: true,
                 mode: 'nearest',
                 intersect: false,
+                titleFontFamily: fontFamily,
+                bodyFontFamily: fontFamily,
+                xPadding: 10,
+                yPadding: 8,
+                caretPadding: 6,
+                caretSize: 8,
+                cornerRadius: 4,
+                titleMarginBottom: 8,
+                bodySpacing: 5,
+                callbacks: {
+                    label: function (item, data) {
+                        return " " + (data.datasets[item.datasetIndex].label || '') + ": " + Math.round(item.yLabel) + currencySymbol;
+                    }
+                }
+
             },
             scales: {
                 yAxes: [{
@@ -202,77 +308,7 @@
             title: {
                 display: false,
             }
-        }
-
-        var ordersChartElement = $('#orders-chart')[0];
-        var orders_ctx = ordersChartElement.getContext('2d');
-        var ordersLegendContainer = $("#orders-chart-legend")[0];
-
-        var salesGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
-        salesGradient.addColorStop(0, hexToRgba(colorPrimary.substr(1), .9));
-        salesGradient.addColorStop(1, hexToRgba(colorPrimary.substr(1), .1));
-
-        var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
-        cancelledGradient.addColorStop(0, hexToRgba(colorDanger.substr(1), .9));
-        cancelledGradient.addColorStop(1, hexToRgba(colorDanger.substr(1), .1));
-
-        var pendingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
-        pendingGradient.addColorStop(0, hexToRgba(colorWarning.substr(1), .9));
-        pendingGradient.addColorStop(1, hexToRgba(colorWarning.substr(1), .1));
-
-        var processingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
-        processingGradient.addColorStop(0, hexToRgba(colorSuccess.substr(1), .9));
-        processingGradient.addColorStop(1, hexToRgba(colorSuccess.substr(1), .1));
-
-        var order_config = {
-            type: 'line',
-            data: {
-                labels: ordersData.Day.Labels,
-                datasets: [{
-                    label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled")',
-                    data: ordersData.Day.Data[0].Amount,
-                    borderWidth: 3,
-                    borderColor: colorDanger,
-                    backgroundColor: cancelledGradient,
-                    lineTension: 0.2,
-                    fill: true,
-                    pointHoverBackgroundColor: colorDanger,
-                    pointHoverBorderColor: 'transparent',
-                }, {
-                    label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending")',
-                    data: ordersData.Day.Data[1].Amount,
-                    borderWidth: 4,
-                    borderColor: colorWarning,
-                    backgroundColor: pendingGradient,
-                    lineTension: 0.2,
-                    fill: true,
-                    hidden: true,
-                    pointHoverBackgroundColor: colorWarning,
-                    pointHoverBorderColor: 'transparent',
-                }, {
-                    label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing")',
-                    data: ordersData.Day.Data[2].Amount,
-                    borderWidth: 4,
-                    borderColor: colorSuccess,
-                    backgroundColor: processingGradient,
-                    lineTension: 0.2,
-                    fill: true,
-                    hidden: true,
-                    pointHoverBackgroundColor: colorSuccess,
-                    pointHoverBorderColor: 'transparent',
-                }, {
-                    label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")',
-                    data: ordersData.Day.Data[3].Amount,
-                    borderWidth: 3,
-                    borderColor: colorPrimary,
-                    backgroundColor: salesGradient,
-                    lineTension: 0.2,
-                    fill: true,
-                    pointHoverBackgroundColor: colorPrimary,
-                    pointHoverBorderColor: 'transparent',
-                }]
-            },
-            options: chartOptions,
+        },
         }
 
         var ordersChart = new Chart(orders_ctx, order_config);

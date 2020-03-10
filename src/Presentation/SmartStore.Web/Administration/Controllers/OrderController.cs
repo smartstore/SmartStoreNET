@@ -594,15 +594,15 @@ namespace SmartStore.Admin.Controllers
 
                 // Return requests.
                 orderItemModel.ReturnRequests = _orderService.SearchReturnRequests(0, 0, orderItem.Id, null, 0, int.MaxValue).Select(x =>
+                {
+                    return new OrderModel.ReturnRequestModel
                     {
-                        return new OrderModel.ReturnRequestModel
-                        {
-                            Id = x.Id,
-                            Quantity = x.Quantity,
-                            Status = x.ReturnRequestStatus,
-                            StatusString = x.ReturnRequestStatus.GetLocalizedEnum(_localizationService, _workContext)
-                        };
-                    })
+                        Id = x.Id,
+                        Quantity = x.Quantity,
+                        Status = x.ReturnRequestStatus,
+                        StatusString = x.ReturnRequestStatus.GetLocalizedEnum(_localizationService, _workContext)
+                    };
+                })
                     .ToList();
 
                 // Gift cards.
@@ -2514,7 +2514,7 @@ namespace SmartStore.Admin.Controllers
                 if (product != null)
                 {
                     m.ProductName = product.Name;
-                    var maxLength = product.ProductType != ProductType.SimpleProduct ? 24 : 30;
+                    var maxLength = product.ProductType != ProductType.SimpleProduct ? 18 : 24;
                     m.ProductDisplayName = m.ProductName.Length > maxLength ? m.ProductName.Truncate(maxLength) + "..." : product.Name;
                     m.ProductTypeName = product.GetProductTypeLabel(_localizationService);
                     m.ProductTypeLabelHint = product.ProductTypeLabelHint;
@@ -2864,239 +2864,114 @@ namespace SmartStore.Admin.Controllers
         public ActionResult OrdersDashboardReport()
         {
             var model = new OrdersDashboardReportModel();
+            ViewBag.CurrencySymbol = Services.StoreContext.CurrentStore.PrimaryStoreCurrency.NumberFormat.CurrencySymbol.ToString();
+
             // Get all (last 2 years from today) orders
             var orders = _orderService.SearchOrders(0, 0, DateTime.UtcNow.AddDays(-730), null, null, null, null, null, null, null, 0, int.MaxValue);
-            // Generate correct labels (day, week, month etc)
-            // CreateOrdersDashboardLabels(model);
-            // Calc Values (Sum, delta etc)
             // Filter into categories (day, daybefore, week, weekbefore, month etc)
+            // Generate correct labels (day, week, month etc)            
+            // Calc Values (Sum, delta etc)
 
-            // Create data for day period (24 hours)
-            var labelsDay = new List<string>();
-            var reportDay = new OrdersDashboardReportLineModel(24);
+            // Create for day period (24 hours)
+            // Dict<datetime, decimal> better?
+            var currentTime = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, DateTime.UtcNow.Hour, 0, 0);
+            var ordersDay = orders.Where(x => x.CreatedOnUtc < currentTime && x.CreatedOnUtc >= currentTime.AddDays(-1)).Select(x => x).ToList();
+            var ordersReports = GetOrderReports(ordersDay);
 
-            var ordersDay = orders.Where(x => (x.CreatedOnUtc - DateTime.UtcNow).Days == 0).Select(x => x).OrderByDescending(x => x.CreatedOnUtc).ToList();
-            var ordersDayComplete = ordersDay.Where(x => x.OrderStatus == OrderStatus.Complete).Select(x => x).ToList();
-            var ordersDayPending = ordersDay.Where(x => x.OrderStatus == OrderStatus.Pending).Select(x => x).ToList();
-            var ordersDayProcessing = ordersDay.Where(x => x.OrderStatus == OrderStatus.Processing).Select(x => x).ToList();
-            var ordersDayCancelled = ordersDay.Where(x => x.OrderStatus == OrderStatus.Cancelled).Select(x => x).ToList();
-
-            
-
-            var y = new List<DateTime>();
-            for (int i = 23; i >= 0; i--)
+            for (int i = 0; i < 24; i++)
             {
                 // Switch to normal Time not utc
-
-                var date = DateTime.UtcNow.AddMinutes(-(i * 60));
-                var date2 = date.AddMinutes(60);
+                var date = currentTime.AddHours(-(23 - i));
                 var startDate = new DateTime(date.Year, date.Month, date.Day, date.Hour, 0, 0);
-                var endDate = new DateTime(date2.Year, date2.Month, date2.Day, date2.Hour, 0, 0);
-                labelsDay.Add(date.ToString("dd MMMM H") + " Uhr");
-
-                foreach (var item in ordersDayComplete.Where(x => x.CreatedOnUtc <= endDate && x.CreatedOnUtc > startDate).Select(x => x.CreatedOnUtc).ToList())
-                {
-                    y.Add(item);
-                }
-
-                var completeOrders = ordersDayComplete.Where(x => x.CreatedOnUtc <= endDate && x.CreatedOnUtc > startDate).ToList();
-                reportDay.Data[3].Amount[i] = decimal.ToInt32(completeOrders.Sum(x => x.OrderSubtotalExclTax));
-                reportDay.Data[3].Quantity[i] = completeOrders.Count;
-
-                var pendingOrders = ordersDayPending.Where(x => x.CreatedOnUtc <= endDate && x.CreatedOnUtc > startDate).ToList();
-                reportDay.Data[1].Amount[i] = decimal.ToInt32(pendingOrders.Sum(x => x.OrderSubtotalExclTax));
-                reportDay.Data[1].Quantity[i] = pendingOrders.Count;
-
-                var processingOrders = ordersDayProcessing.Where(x => x.CreatedOnUtc <= endDate && x.CreatedOnUtc > startDate).ToList();
-                reportDay.Data[2].Amount[i] = decimal.ToInt32(processingOrders.Sum(x => x.OrderSubtotalExclTax));
-                reportDay.Data[2].Quantity[i] = processingOrders.Count;
-
-                var cancelledOrders = ordersDayCancelled.Where(x => x.CreatedOnUtc <= endDate && x.CreatedOnUtc > startDate).ToList();
-                reportDay.Data[0].Amount[i] = decimal.ToInt32(cancelledOrders.Sum(x => x.OrderSubtotalExclTax));
-                reportDay.Data[0].Quantity[i] = cancelledOrders.Count;
+                model.Day.Labels[i] = date.ToString("dd MMMM H") + " " + T("Admin.Common.TimeOfDay");
+                date = date.AddHours(1);
+                var endDate = new DateTime(date.Year, date.Month, date.Day, date.Hour, 0, 0);
+                GetReportPointData(model.Day, ordersReports, startDate, endDate, i);
             }
-            model.Day = reportDay;
-            model.Day.Labels = labelsDay.ToArray();
-            model.Day.TotalAmount = decimal.ToInt32(ordersDay.Sum(x => x.OrderSubtotalExclTax));
-            foreach (var item in model.Day.Data)
+            CalculateTotalAmount(model.Day, orders, ordersDay, currentTime.AddDays(-2), currentTime.AddDays(-1));
+
+            // Create for week period (7 days)
+            currentTime = currentTime.AddHours(-currentTime.Hour);
+            var ordersWeek = orders.Where(x => x.CreatedOnUtc < currentTime && x.CreatedOnUtc >= currentTime.AddDays(-7)).Select(x => x).ToList();
+            ordersReports = GetOrderReports(ordersWeek);
+
+            for (int i = 0; i < 7; i++)
             {
-                item.TotalAmount = item.Amount.Sum();
-                item.Amount = item.Amount.Reverse().ToArray();
-                item.Quantity = item.Quantity.Reverse().ToArray();
+                var date = currentTime.AddDays(-(6 - i));
+                model.Week.Labels[i] = date.ToString("dddd dd MMMM");
+                GetReportPointData(model.Week, ordersReports, date, date.AddDays(1), i);
             }
+            CalculateTotalAmount(model.Week, orders, ordersWeek, currentTime.AddDays(-14), currentTime.AddDays(-7));
 
-            var dayBefore = DateTime.UtcNow.AddDays(-1);
-            var ordersDayBefore = orders.Where(x => (x.CreatedOnUtc - dayBefore).Days == 0).Select(x => x).ToList();
-            var sumDayBefore = decimal.ToInt32(ordersDayBefore.Sum(x => x.OrderSubtotalExclTax));
-            var percentageDeltaDay = sumDayBefore <= 0 ? 0 : model.Day.TotalAmount / sumDayBefore * 100 - 100;
-            var prefixDay = percentageDeltaDay >= 0 ? "+" : "-";
-            model.Day.PercentageDelta = prefixDay + Math.Abs(percentageDeltaDay) + " %";
 
-            //// Create labels for week period (7 days)            
-            var labelsWeek = new List<string>();
-            var reportWeek = new OrdersDashboardReportLineModel(7);
+            // Create for month period (4 weeks)
+            var ordersMonth = orders.Where(x => x.CreatedOnUtc < currentTime && x.CreatedOnUtc >= currentTime.AddDays(-28)).Select(x => x).ToList();
+            ordersReports = GetOrderReports(ordersMonth);
 
-            var ordersWeek = orders.Where(x => (x.CreatedOnUtc - DateTime.UtcNow).Days <= 7).Select(x => x).ToList();
-            var ordersWeekComplete = ordersWeek.Where(x => x.OrderStatus == OrderStatus.Complete).Select(x => x).ToList();
-            var ordersWeekPending = ordersWeek.Where(x => x.OrderStatus == OrderStatus.Pending).Select(x => x).ToList();
-            var ordersWeekProcessing = ordersWeek.Where(x => x.OrderStatus == OrderStatus.Processing).Select(x => x).ToList();
-            var ordersWeekCancelled = ordersWeek.Where(x => x.OrderStatus == OrderStatus.Cancelled).Select(x => x).ToList();
-
-            for (int i = 6; i >= 0; i--)
+            for (int i = 0; i < 4; i++)
             {
-                var date = DateTime.UtcNow.AddDays(-i);
-                labelsWeek.Add(date.ToString("dddd dd MMMM"));
-
-                var completeOrders = ordersWeekComplete.Where(x => (x.CreatedOnUtc - date).Days == 0).ToList();
-                reportWeek.Data[3].Amount[i] = decimal.ToInt32(completeOrders.Sum(x => x.OrderSubtotalExclTax));
-                reportWeek.Data[3].Quantity[i] = completeOrders.Count;
-
-                var pendingOrders = ordersWeekPending.Where(x => (x.CreatedOnUtc - date).Days == 0).ToList();
-                reportWeek.Data[1].Amount[i] = decimal.ToInt32(pendingOrders.Sum(x => x.OrderSubtotalExclTax));
-                reportWeek.Data[1].Quantity[i] = pendingOrders.Count;
-
-                var processingOrders = ordersWeekProcessing.Where(x => (x.CreatedOnUtc - date).Days == 0).ToList();
-                reportWeek.Data[2].Amount[i] = decimal.ToInt32(processingOrders.Sum(x => x.OrderSubtotalExclTax));
-                reportWeek.Data[2].Quantity[i] = processingOrders.Count;
-
-                var cancelledOrders = ordersWeekCancelled.Where(x => (x.CreatedOnUtc - date).Days == 0).ToList();
-                reportWeek.Data[0].Amount[i] = decimal.ToInt32(cancelledOrders.Sum(x => x.OrderSubtotalExclTax));
-                reportWeek.Data[0].Quantity[i] = cancelledOrders.Count;
+                var fromDate = currentTime.AddDays(-(3 - i + 1) * 7 + 1);
+                var toDate = currentTime.AddDays(-((3 - i) * 7) + 1);
+                model.Month.Labels[i] = fromDate.ToString("dd.MM") + " - " + toDate.AddDays(-1).ToString("dd.MM");
+                GetReportPointData(model.Month, ordersReports, fromDate, toDate, i);
             }
-            model.Week = reportWeek;
-            model.Week.Labels = labelsWeek.ToArray();
-            model.Week.TotalAmount = decimal.ToInt32(ordersWeek.Sum(x => x.OrderSubtotalExclTax));
-            foreach (var item in model.Week.Data)
-            {
-                item.TotalAmount = item.Amount.Sum();
-                item.Amount = item.Amount.Reverse().ToArray();
-                item.Quantity = item.Quantity.Reverse().ToArray();
-            }
+            CalculateTotalAmount(model.Month, orders, ordersMonth, currentTime.AddDays(-56), currentTime.AddDays(-28));
 
-            var weekBeforeEnd = DateTime.UtcNow.AddDays(-7);
-            var weekBeforeStart = weekBeforeEnd.AddDays(-7);
-            var ordersWeekBefore = orders.Where(x => x.CreatedOnUtc <= weekBeforeEnd && x.CreatedOnUtc > weekBeforeStart).Select(x => x).ToList();
-            var sumWeekBefore = decimal.ToInt32(ordersWeekBefore.Sum(x => x.OrderSubtotalExclTax));
-            var percentageDeltaWeek = sumWeekBefore <= 0 ? 0 : model.Week.TotalAmount / sumWeekBefore * 100 - 100;
-            var prefixWeek = percentageDeltaWeek >= 0 ? "+" : "-";
-            model.Week.PercentageDelta = prefixWeek + Math.Abs(percentageDeltaWeek) + " %";
+            // Create for year period (12 months)
+            var ordersYear = orders.Where(x => x.CreatedOnUtc < currentTime && x.CreatedOnUtc >= currentTime.AddYears(-1)).Select(x => x).ToList();
+            ordersReports = GetOrderReports(ordersYear);
 
-            //// Create labels for month period (4 weeks) last 4 weeks
-            var labelsMonth = new List<string>();
-            var reportMonth = new OrdersDashboardReportLineModel(4);
-
-            var ordersMonth = orders.Where(x =>
-                (x.CreatedOnUtc - DateTime.UtcNow).Days <= DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month))
-                .Select(x => x).OrderByDescending(x => x.CreatedOnUtc).ToList();
-            var ordersMonthComplete = ordersMonth.Where(x => x.OrderStatus == OrderStatus.Complete).Select(x => x).ToList();
-            var ordersMonthPending = ordersMonth.Where(x => x.OrderStatus == OrderStatus.Pending).Select(x => x).ToList();
-            var ordersMonthProcessing = ordersMonth.Where(x => x.OrderStatus == OrderStatus.Processing).Select(x => x).ToList();
-            var ordersMonthCancelled = ordersMonth.Where(x => x.OrderStatus == OrderStatus.Cancelled).Select(x => x).ToList();
-
-            for (int i = 3; i >= 0; i--)
-            {
-                var fromDate = DateTime.UtcNow.AddDays(-((i + 1) * 7 + i));
-                var toDate = DateTime.UtcNow.AddDays(-(i * 7) - i);
-                labelsMonth.Add(fromDate.ToString("dd.MM") + " - " + toDate.ToString("dd.MM"));
-
-                var completeOrders = ordersMonthComplete.Where(x => x.CreatedOnUtc <= toDate && x.CreatedOnUtc > fromDate).ToList();
-                reportMonth.Data[3].Amount[i] = decimal.ToInt32(completeOrders.Sum(x => x.OrderSubtotalExclTax));
-                reportMonth.Data[3].Quantity[i] = completeOrders.Count;
-
-                var pendingOrders = ordersMonthPending.Where(x => x.CreatedOnUtc <= toDate && x.CreatedOnUtc > fromDate).ToList();
-                reportMonth.Data[1].Amount[i] = decimal.ToInt32(pendingOrders.Sum(x => x.OrderSubtotalExclTax));
-                reportMonth.Data[1].Quantity[i] = pendingOrders.Count;
-
-                var processingOrders = ordersMonthProcessing.Where(x => x.CreatedOnUtc <= toDate && x.CreatedOnUtc > fromDate).ToList();
-                reportMonth.Data[2].Amount[i] = decimal.ToInt32(processingOrders.Sum(x => x.OrderSubtotalExclTax));
-                reportMonth.Data[2].Quantity[i] = processingOrders.Count;
-
-                var cancelledOrders = ordersMonthCancelled.Where(x => x.CreatedOnUtc <= toDate && x.CreatedOnUtc > fromDate).ToList();
-                reportMonth.Data[0].Amount[i] = decimal.ToInt32(cancelledOrders.Sum(x => x.OrderSubtotalExclTax));
-                reportMonth.Data[0].Quantity[i] = cancelledOrders.Count;
-            }
-            model.Month = reportMonth;
-            model.Month.Labels = labelsMonth.ToArray();
-            model.Month.TotalAmount = decimal.ToInt32(ordersMonth.Sum(x => x.OrderSubtotalExclTax));
-            foreach (var item in model.Month.Data)
-            {
-                item.TotalAmount = item.Amount.Sum();
-                item.Amount = item.Amount.Reverse().ToArray();
-                item.Quantity = item.Quantity.Reverse().ToArray();
-            }
-
-            var monthBeforeEnd = DateTime.UtcNow.AddDays(-DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month));
-            var monthBeforeStart = monthBeforeEnd.AddDays(-DateTime.DaysInMonth(monthBeforeEnd.Year, monthBeforeEnd.Month));
-            var ordersMonthBefore = orders.Where(x => x.CreatedOnUtc <= monthBeforeEnd && x.CreatedOnUtc > monthBeforeStart).Select(x => x).ToList();
-            var sumMonthBefore = decimal.ToInt32(ordersMonthBefore.Sum(x => x.OrderSubtotalExclTax));
-            var percentageDeltaMonth = sumMonthBefore <= 0 ? 0 : model.Month.TotalAmount / sumMonthBefore * 100 - 100;
-            var prefixMonth = percentageDeltaWeek >= 0 ? "+" : "-";
-            model.Month.PercentageDelta = prefixMonth + Math.Abs(percentageDeltaMonth) + " %";
-
-            //// Create labels for year period (12)
-            var labelsYear = new List<string>();
-            var reportYear = new OrdersDashboardReportLineModel(12);
-
-            var ordersYear = orders.Where(x => (x.CreatedOnUtc - DateTime.UtcNow).Days <= 365).Select(x => x).OrderByDescending(x => x.CreatedOnUtc).ToList();
-            var ordersYearComplete = ordersYear.Where(x => x.OrderStatus == OrderStatus.Complete).Select(x => x).ToList();
-            var ordersYearPending = ordersYear.Where(x => x.OrderStatus == OrderStatus.Pending).Select(x => x).ToList();
-            var ordersYearProcessing = ordersYear.Where(x => x.OrderStatus == OrderStatus.Processing).Select(x => x).ToList();
-            var ordersYearCancelled = ordersYear.Where(x => x.OrderStatus == OrderStatus.Cancelled).Select(x => x).ToList();
-
-            var daysOffset = 0;
             for (int i = 0; i < 12; i++)
             {
-                daysOffset += DateTime.DaysInMonth(DateTime.UtcNow.AddDays(-daysOffset).Year, DateTime.UtcNow.AddDays(-daysOffset).Month);
-                var date = DateTime.UtcNow.AddDays(-daysOffset);
-                labelsYear.Add(date.ToString("MMMM yyyy"));
-
-                //from 01. to 31. each month
+                var date = currentTime.AddMonths(-(11 - i));
                 var fromDate = new DateTime(date.Year, date.Month, 1);
-                var toDate = new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month));
-
-                var completeOrders = ordersYearComplete.Where(x => x.CreatedOnUtc <= toDate && x.CreatedOnUtc > fromDate).ToList();
-                reportYear.Data[3].Amount[11 - i] = decimal.ToInt32(completeOrders.Sum(x => x.OrderSubtotalExclTax));
-                reportYear.Data[3].Quantity[11 - i] = completeOrders.Count;
-
-                var pendingOrders = ordersYearPending.Where(x => x.CreatedOnUtc <= toDate && x.CreatedOnUtc > fromDate).ToList();
-                reportYear.Data[1].Amount[11 - i] = decimal.ToInt32(pendingOrders.Sum(x => x.OrderSubtotalExclTax));
-                reportYear.Data[1].Quantity[11 - i] = pendingOrders.Count;
-
-                var processingOrders = ordersYearProcessing.Where(x => x.CreatedOnUtc <= toDate && x.CreatedOnUtc > fromDate).ToList();
-                reportYear.Data[2].Amount[11 - i] = decimal.ToInt32(processingOrders.Sum(x => x.OrderSubtotalExclTax));
-                reportYear.Data[2].Quantity[11 - i] = processingOrders.Count;
-
-                var cancelledOrders = ordersYearCancelled.Where(x => x.CreatedOnUtc <= toDate && x.CreatedOnUtc > fromDate).ToList();
-                reportYear.Data[0].Amount[11 - i] = decimal.ToInt32(cancelledOrders.Sum(x => x.OrderSubtotalExclTax));
-                reportYear.Data[0].Quantity[11 - i] = cancelledOrders.Count;
+                var toDate = fromDate.AddMonths(1);
+                model.Year.Labels[i] = date.ToString("MMMM yyyy");
+                GetReportPointData(model.Year, ordersReports, fromDate, toDate, i);
             }
-            model.Year = reportYear;
-            model.Year.Labels = labelsYear.ToArray();
-            model.Year.TotalAmount = decimal.ToInt32(ordersYear.Sum(x => x.OrderSubtotalExclTax));
-            foreach (var item in model.Year.Data)
-            {
-                item.TotalAmount = item.Amount.Sum();
-                item.Amount = item.Amount.Reverse().ToArray();
-                item.Quantity = item.Quantity.Reverse().ToArray();
-            }
-
-
-            var yearBeforeEnd = DateTime.UtcNow.AddDays(-365);
-            var yearBeforeStart = monthBeforeEnd.AddDays(-365);
-            var ordersYearBefore = orders.Where(x => x.CreatedOnUtc <= yearBeforeEnd && x.CreatedOnUtc > yearBeforeStart).Select(x => x).ToList();
-            var sumYearBefore = decimal.ToInt32(ordersYearBefore.Sum(x => x.OrderSubtotalExclTax));
-            var percentageDeltaYear = sumYearBefore <= 0 ? 0 : model.Year.TotalAmount / sumYearBefore * 100 - 100;
-            var prefixYear = percentageDeltaYear >= 0 ? "+" : "-";
-            model.Year.PercentageDelta = prefixYear + Math.Abs(percentageDeltaYear) + " %";
+            CalculateTotalAmount(model.Year, orders, ordersYear, currentTime.AddYears(-2), currentTime.AddYears(-1));
 
             return PartialView(model);
         }
 
         [NonAction]
-        private void CreateOrdersDashboardLabels(OrdersDashboardReportModel model)
+        private List<Order>[] GetOrderReports(List<Order> list)
         {
+            var orderReports = new List<Order>[4];
+            orderReports[0] = list.Where(x => x.OrderStatus == OrderStatus.Cancelled).Select(x => x).ToList();
+            orderReports[1] = list.Where(x => x.OrderStatus == OrderStatus.Pending).Select(x => x).ToList();
+            orderReports[2] = list.Where(x => x.OrderStatus == OrderStatus.Processing).Select(x => x).ToList();
+            orderReports[3] = list.Where(x => x.OrderStatus == OrderStatus.Complete).Select(x => x).ToList();
 
-            #endregion
+            return orderReports;
         }
+
+        [NonAction]
+        private void GetReportPointData(OrdersDashboardReportLineModel model, List<Order>[] reports, DateTime startDate, DateTime endDate, int index)
+        {
+            for (int j = 0; j < reports.Length; j++)
+            {
+                var point = reports[j].Where(x => x.CreatedOnUtc < endDate && x.CreatedOnUtc >= startDate).ToList();
+                model.Data[j].Amount[index] = point.Sum(x => x.OrderSubtotalExclTax);
+                model.Data[j].Quantity[index] = point.Count;
+            }
+        }
+
+        [NonAction]
+        private void CalculateTotalAmount(OrdersDashboardReportLineModel model, IList<Order> allOrders, List<Order> orders, DateTime fromDate, DateTime toDate)
+        {
+            foreach (var item in model.Data)
+            {
+                item.TotalAmount = decimal.ToInt32(item.Amount.Sum());
+            }
+
+            model.TotalAmount = decimal.ToInt32(orders.Sum(x => x.OrderSubtotalExclTax));
+            var ordersBefore = allOrders.Where(x => x.CreatedOnUtc < toDate && x.CreatedOnUtc >= fromDate).Select(x => x).ToList();
+            var sumBefore = decimal.ToInt32(ordersBefore.Sum(x => x.OrderSubtotalExclTax));
+            model.PercentageDelta = sumBefore <= 0 ? 0 : (int)Math.Round(model.TotalAmount / (decimal)sumBefore * 100 - 100);
+
+        }
+
+        #endregion
     }
 }

@@ -6,6 +6,12 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Core.Domain.Media
 {
+    public enum MediaTrackOperation
+    {
+        Track,
+        Untrack
+    }
+
     [DataContract]
     [Hookable(false)]
     public partial class MediaTrack : BaseEntity, IEquatable<MediaTrack>
@@ -13,6 +19,7 @@ namespace SmartStore.Core.Domain.Media
         private int _mediaFileId;
         private int _entityId;
         private string _entityName;
+        private string _property;
         private int? _hashCode;
 
         /// <summary>
@@ -70,6 +77,24 @@ namespace SmartStore.Core.Domain.Media
             }
         }
 
+        /// <summary>
+        /// Gets or sets the media file property name in the tracked entity.
+        /// </summary>
+        [DataMember]
+        [Index("IX_MediaTrack_Composite", IsUnique = true, Order = 3)]
+        public string Property
+        {
+            get => _property;
+            set
+            {
+                _property = value;
+                _hashCode = null;
+            }
+        }
+
+        [NotMapped]
+        public MediaTrackOperation Operation { get; set; }
+
         protected override bool Equals(BaseEntity other)
         {
             return ((IEquatable<MediaTrack>)this).Equals(other as MediaTrack);
@@ -85,7 +110,8 @@ namespace SmartStore.Core.Domain.Media
 
             return this.MediaFileId == other.MediaFileId
                 && this.EntityId == other.EntityId
-                && this.EntityName.Equals(other.EntityName, StringComparison.OrdinalIgnoreCase);
+                && string.Equals(this.EntityName, other.EntityName, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(this.Property, other.Property, StringComparison.OrdinalIgnoreCase);
         }
 
         public override int GetHashCode()
@@ -97,7 +123,8 @@ namespace SmartStore.Core.Domain.Media
                     .Add(GetUnproxiedType().GetHashCode())
                     .Add(this.MediaFileId)
                     .Add(this.EntityId)
-                    .Add(this.EntityName);
+                    .Add(this.EntityName)
+                    .Add(this.Property);
 
                 _hashCode = combiner.CombinedHash;
             }
@@ -107,7 +134,7 @@ namespace SmartStore.Core.Domain.Media
 
         public override string ToString()
         {
-            return $"MediaTrack (EntityName: {EntityName}, EntityId: {EntityId}, MediaFileId: {MediaFileId})";
+            return $"MediaTrack (MediaFileId: {MediaFileId}, EntityName: {EntityName}, EntityId: {EntityId}, Property: {Property})";
         }
     }
 }

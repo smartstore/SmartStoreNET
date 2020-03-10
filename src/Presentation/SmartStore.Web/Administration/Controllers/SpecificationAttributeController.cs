@@ -354,8 +354,6 @@ namespace SmartStore.Admin.Controllers
 				{
 					var sao = model.ToEntity();
 
-                    MediaHelper.UpdatePictureTransientStateFor(sao, m => m.MediaFileId);
-
                     try
 					{
 						_specificationAttributeService.InsertSpecificationAttributeOption(sao);
@@ -416,8 +414,6 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 sao = model.ToEntity(sao);
-
-                MediaHelper.UpdatePictureTransientStateFor(sao, m => m.MediaFileId);
 
                 try
 				{

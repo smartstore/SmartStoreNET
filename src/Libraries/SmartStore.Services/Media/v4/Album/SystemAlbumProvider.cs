@@ -206,7 +206,7 @@ namespace SmartStore.Services.Media
             }
         }
 
-        public IEnumerable<MediaTrackAction> DetectAllTracks(string albumName)
+        public IEnumerable<MediaTrack> DetectAllTracks(string albumName)
         {
             var ctx = _dbContext;
             var entityName = string.Empty;
@@ -224,7 +224,7 @@ namespace SmartStore.Services.Media
                     {
                         foreach (var x in list)
                         {
-                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId };
+                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId, Property = nameof(x.MediaFileId) };
                         }
                     }
                 }
@@ -237,7 +237,7 @@ namespace SmartStore.Services.Media
                     {
                         foreach (var x in list)
                         {
-                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId };
+                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId, Property = nameof(x.MediaFileId) };
                         }
                     }
                 }
@@ -250,7 +250,7 @@ namespace SmartStore.Services.Media
                     {
                         foreach (var x in list)
                         {
-                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId };
+                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId, Property = nameof(x.MediaFileId) };
                         }
                     }
                 }
@@ -263,7 +263,7 @@ namespace SmartStore.Services.Media
                     {
                         foreach (var x in list)
                         {
-                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId };
+                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId, Property = nameof(x.MediaFileId) };
                         }
                     }
                 }
@@ -280,7 +280,7 @@ namespace SmartStore.Services.Media
                 {
                     foreach (var x in list)
                     {
-                        yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
+                        yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value, Property = nameof(x.MediaFileId) };
                     }
                 }
 
@@ -296,7 +296,7 @@ namespace SmartStore.Services.Media
                 {
                     foreach (var x in list)
                     {
-                        yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
+                        yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value, Property = nameof(x.MediaFileId) };
                     }
                 }
 
@@ -313,9 +313,9 @@ namespace SmartStore.Services.Media
                     foreach (var x in list)
                     {
                         if (x.MediaFileId.HasValue)
-                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
+                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value, Property = nameof(x.MediaFileId) };
                         if (x.PreviewMediaFileId.HasValue)
-                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.PreviewMediaFileId.Value };
+                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.PreviewMediaFileId.Value, Property = nameof(x.PreviewMediaFileId) };
                     }
                 }
 
@@ -332,9 +332,9 @@ namespace SmartStore.Services.Media
                     foreach (var x in list)
                     {
                         if (x.MediaFileId.HasValue)
-                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
+                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value, Property = nameof(x.MediaFileId) };
                         if (x.PreviewMediaFileId.HasValue)
-                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.PreviewMediaFileId.Value };
+                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.PreviewMediaFileId.Value, Property = nameof(x.PreviewMediaFileId) };
                     }
                 }
 
@@ -344,11 +344,12 @@ namespace SmartStore.Services.Media
             // Customer
             if (albumName == Customers)
             {
-                var name = nameof(Customers);
+                var name = nameof(Customer);
+                var key = SystemCustomerAttributeNames.AvatarPictureId;
 
                 // Avatars
                 var p = new FastPager<GenericAttribute>(ctx.Set<GenericAttribute>().AsNoTracking()
-                    .Where(x => x.KeyGroup == nameof(Customer) && x.Key == SystemCustomerAttributeNames.AvatarPictureId));
+                    .Where(x => x.KeyGroup == nameof(Customer) && x.Key == key));
                 while (p.ReadNextPage(x => new { x.Id, x.EntityId, x.Value }, x => x.Id, out var list))
                 {
                     foreach (var x in list)
@@ -356,7 +357,7 @@ namespace SmartStore.Services.Media
                         var id = x.Value.ToInt();
                         if (id > 0)
                         {
-                            yield return new MediaTrackAction { EntityId = x.EntityId, EntityName = name, MediaFileId = id };
+                            yield return new MediaTrack { EntityId = x.EntityId, EntityName = name, MediaFileId = id, Property = key };
                         }
                     }
                 }
@@ -373,7 +374,7 @@ namespace SmartStore.Services.Media
                 {
                     foreach (var x in list)
                     {
-                        yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value };
+                        yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value, Property = nameof(x.MediaFileId) };
                     }
                 }
 
@@ -390,11 +391,11 @@ namespace SmartStore.Services.Media
                     foreach (var x in list)
                     {
                         if (x.Attachment1FileId.HasValue)
-                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.Attachment1FileId.Value };
+                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.Attachment1FileId.Value, Property = nameof(x.Attachment1FileId) };
                         if (x.Attachment2FileId.HasValue)
-                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.Attachment2FileId.Value };
+                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.Attachment2FileId.Value, Property = nameof(x.Attachment2FileId) };
                         if (x.Attachment3FileId.HasValue)
-                            yield return new MediaTrackAction { EntityId = x.Id, EntityName = name, MediaFileId = x.Attachment3FileId.Value };
+                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.Attachment3FileId.Value, Property = nameof(x.Attachment3FileId) };
                     }
                 }
 

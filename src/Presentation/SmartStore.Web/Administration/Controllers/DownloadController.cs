@@ -92,7 +92,7 @@ namespace SmartStore.Admin.Controllers
                 EntityName = entityName,
                 DownloadGuid = Guid.NewGuid(),
                 UseDownloadUrl = false,
-                DownloadUrl = "",
+                DownloadUrl = string.Empty,
 				UpdatedOnUtc = DateTime.UtcNow
             };
 
@@ -102,7 +102,7 @@ namespace SmartStore.Admin.Controllers
             { 
                 success = true, 
 				downloadId = download.Id,
-				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, download.Id, new { minimalMode = minimalMode, fieldName = fieldName, entityId = entityId, entityName = entityName })
+				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, download.Id, new { minimalMode, fieldName, entityId, entityName })
             });
         }
 

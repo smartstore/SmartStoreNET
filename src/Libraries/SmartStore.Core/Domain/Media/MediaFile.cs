@@ -14,16 +14,6 @@ namespace SmartStore.Core.Domain.Media
 		private ICollection<MediaTag> _tags;
 		private ICollection<MediaTrack> _tracks;
 
-		#region Obsolete
-
-		/// <summary>
-		/// Gets or sets the picture binary
-		/// </summary>
-		[Obsolete("Use property MediaStorage instead")]
-		public byte[] PictureBinary { get; set; }
-
-		#endregion
-
 		/// <summary>
 		/// Gets or sets the associated folder identifier.
 		/// </summary>

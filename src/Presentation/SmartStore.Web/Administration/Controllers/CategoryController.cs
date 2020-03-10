@@ -448,8 +448,6 @@ namespace SmartStore.Admin.Controllers
             {
                 var category = model.ToEntity();
 
-                MediaHelper.UpdatePictureTransientStateFor(category, c => c.MediaFileId);
-
                 _categoryService.InsertCategory(category);
 
                 model.SeName = category.ValidateSeName(model.SeName, category.Name, true);
@@ -559,8 +557,6 @@ namespace SmartStore.Admin.Controllers
             {
                 category = model.ToEntity(category);
                 category.ParentCategoryId = model.ParentCategoryId ?? 0;
-
-                MediaHelper.UpdatePictureTransientStateFor(category, c => c.MediaFileId);
 
                 _categoryService.UpdateCategory(category);
 

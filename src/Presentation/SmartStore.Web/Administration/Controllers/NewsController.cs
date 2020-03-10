@@ -150,9 +150,6 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var newsItem = model.ToEntity();
-                
-                MediaHelper.UpdatePictureTransientStateFor(newsItem, c => c.MediaFileId);
-                MediaHelper.UpdatePictureTransientStateFor(newsItem, c => c.PreviewMediaFileId);
 
                 newsItem.StartDateUtc = model.StartDate;
                 newsItem.EndDateUtc = model.EndDate;
@@ -209,9 +206,6 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 newsItem = model.ToEntity(newsItem);
-
-                MediaHelper.UpdatePictureTransientStateFor(newsItem, c => c.MediaFileId);
-                MediaHelper.UpdatePictureTransientStateFor(newsItem, c => c.PreviewMediaFileId);
 
                 newsItem.StartDateUtc = model.StartDate;
                 newsItem.EndDateUtc = model.EndDate;

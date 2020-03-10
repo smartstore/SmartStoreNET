@@ -273,8 +273,6 @@ namespace SmartStore.Admin.Controllers
             {
                 var manufacturer = model.ToEntity();
 
-                MediaHelper.UpdatePictureTransientStateFor(manufacturer, m => m.MediaFileId);
-
                 _manufacturerService.InsertManufacturer(manufacturer);
 
                 model.SeName = manufacturer.ValidateSeName(model.SeName, manufacturer.Name, true);
@@ -357,7 +355,6 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 manufacturer = model.ToEntity(manufacturer);
-                MediaHelper.UpdatePictureTransientStateFor(manufacturer, m => m.MediaFileId);
 
                 model.SeName = manufacturer.ValidateSeName(model.SeName, manufacturer.Name, true);
                 _urlRecordService.SaveSlug(manufacturer, model.SeName, 0);

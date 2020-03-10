@@ -352,7 +352,8 @@
     <Compile Include="Media\Storage\IMediaMover.cs" />
     <Compile Include="Media\Storage\ISupportsMediaMoving.cs" />
     <Compile Include="Media\Storage\MediaMoverContext.cs" />
-    <Compile Include="Media\Extensions\MediaFileExtensions.cs" />
+    <Compile Include="Media\v4\Extensions\IMediaTrackerExtensions.cs" />
+    <Compile Include="Media\v4\Extensions\MediaFileExtensions.cs" />
     <Compile Include="Media\Storage\MediaMover.cs" />
     <Compile Include="Media\TransientMediaClearTask.cs" />
     <Compile Include="Media\v4\Album\AlbumFileSystemAdapter.cs" />
@@ -377,7 +378,6 @@
     <Compile Include="Media\v4\Migration\SeedingDbMigrationConsumer.cs" />
     <Compile Include="Media\v4\Tracking\IMediaTrackDetector.cs" />
     <Compile Include="Media\v4\Tracking\IMediaTracker.cs" />
-    <Compile Include="Media\v4\Tracking\MediaTrackAction.cs" />
     <Compile Include="Media\v4\Tracking\MediaTracker.cs" />
     <Compile Include="Media\v4\Tracking\MediaTrackerHook.cs" />
     <Compile Include="Media\v4\Tracking\TrackedMediaPropertyTable.cs" />

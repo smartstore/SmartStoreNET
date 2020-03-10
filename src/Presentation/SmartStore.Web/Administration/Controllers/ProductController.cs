@@ -2196,8 +2196,6 @@ namespace SmartStore.Admin.Controllers
                 DisplayOrder = displayOrder,
             };
 
-			MediaHelper.UpdatePictureTransientStateFor(productPicture, pp => pp.MediaFileId);
-
             _productService.InsertProductPicture(productPicture);
 
             _pictureService.SetSeoFilename(pictureId, _pictureService.GetPictureSeName(product.Name));
@@ -3117,8 +3115,6 @@ namespace SmartStore.Admin.Controllers
 
                 pvav.LinkedProductId = pvav.ValueType == ProductVariantAttributeValueType.Simple ? 0 : model.LinkedProductId;
 
-                MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.MediaFileId);
-
                 try
 				{
 					_productAttributeService.InsertProductVariantAttributeValue(pvav);
@@ -3231,8 +3227,6 @@ namespace SmartStore.Admin.Controllers
 				pvav.ValueTypeId = model.ValueTypeId;
 				pvav.Quantity = model.Quantity;
                 pvav.LinkedProductId = pvav.ValueType == ProductVariantAttributeValueType.Simple ? 0 : model.LinkedProductId;
-
-				MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.MediaFileId);
 
 				try
 				{
@@ -3641,12 +3635,9 @@ namespace SmartStore.Admin.Controllers
         {
             var download = _downloadService.GetDownloadById(downloadId);
             if (download == null)
-            {
                 return HttpNotFound();
-            }
 
             _downloadService.DeleteDownload(download);
-
             NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
 
             return RedirectToAction("Edit", new { id = productId });

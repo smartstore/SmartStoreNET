@@ -5,7 +5,7 @@
 
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 1fr .8fr 1fr .6fr;
     grid-column-gap: 2rem;
     grid-template-rows: repeat(5, auto);
     grid-row-gap: 2rem;
@@ -13,6 +13,10 @@
 
 .clickable:hover {
     cursor: pointer;
+}
+
+.linked-text:link{
+    color: inherit;
 }
 
 .report {
@@ -133,6 +137,20 @@
         grid-column-end: 5;
         grid-row-start: 1;
         grid-row-end: 6;
+    }
+
+    .chevron {
+        color: var(--success);
+
+        &:after {
+            @include fontawesome-font("\f077", regular); // chevron-down
+            position: absolute;
+        }
+
+        &.negative:after {
+            color: var(--danger);
+            transform: rotate(180deg);
+        }
     }
 
     .btn-group > .btn-secondary:hover:not(.active) {

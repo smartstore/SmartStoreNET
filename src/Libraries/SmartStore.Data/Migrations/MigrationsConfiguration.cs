@@ -509,6 +509,11 @@
                 "Kunden werden automatisch per geplanter Aufgabe dieser Kundengruppe zugeordnet, wenn sie eine der gewählten Regeln erfüllen.");
 
             builder.AddOrUpdate("Admin.CustomerRoleMapping.IsSystemMapping", "Automatic assignment", "Automatische Zuordnung");
+
+            builder.AddOrUpdate("Admin.Common.TimeOfDay", "o'clock", "Uhr");
+            builder.AddOrUpdate("Admin.SalesReport.ByQuantity", "by quantity", "nach Menge");
+            builder.AddOrUpdate("Admin.SalesReport.ByAmount", "by amount", "nach Betrag");
+
         }
     }
 }

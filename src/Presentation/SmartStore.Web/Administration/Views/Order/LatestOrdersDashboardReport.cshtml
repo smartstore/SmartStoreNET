@@ -24,34 +24,32 @@
             <tbody>
                 @foreach (var x in Model.LatestOrders)
                 {
-                    <tr class="clickable order-row" index="@x.OrderId">
+                    <tr class="order-row" index="@x.OrderId">
                         @*<td class="display-row">
                                 @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductDisplayName, x.ProductTypeName, x.ProductTypeLabelHint)
                             </td>*@
                         <td class="display-row">
                             @Html.ActionLink(x.CustomerDisplayName, "Edit", "Customer", new { id = x.Customer.Id }, new { })
                         </td>
-                        <td class="display-row row-center">
-                            <a href="/Admin/Order/Edit/@x.OrderId">@x.ProductsTotal</a>
-                        </td>
+                        <td class="display-row row-center">@x.ProductsTotal</td>
                         <td class="display-row row-right">@x.TotalAmount</td>
                         <td class="display-row">@x.Created</td>
 
                         @if (x.OrderState == OrderStatus.Pending)
                         {
-                            <td class="display-row text-warning">@x.OrderState</td>
+                            <td class="display-row"><a href="/Admin/Order/Edit/@x.OrderId" class="text-warning">@x.OrderState</a></td>
                         }
                         else if (x.OrderState == OrderStatus.Processing)
                         {
-                            <td class="display-row text-gray">@x.OrderState</td>
+                            <td class="display-row"><a href="/Admin/Order/Edit/@x.OrderId" class="text-gray">@x.OrderState</a></td>
                         }
                         else if (x.OrderState == OrderStatus.Complete)
                         {
-                            <td class="display-row text-success">@x.OrderState</td>
+                            <td class="display-row"><a href="/Admin/Order/Edit/@x.OrderId" class="text-success">@x.OrderState</a></td>
                         }
                         else if (x.OrderState == OrderStatus.Cancelled)
                         {
-                            <td class="display-row text-danger">@x.OrderState</td>
+                            <td class="display-row"><a href="/Admin/Order/Edit/@x.OrderId" class="text-danger">@x.OrderState</a></td>
                         }
                     </tr>
                 }
@@ -61,7 +59,7 @@
 </div>
 
 <script>
-    $(".order-row").on("click", function ($element) {
-        window.location = "/Admin/Order/Edit/" + $(this).attr('index');
-    });
+    //$(".order-row").on("click", function ($element) {
+    //    window.location = "/Admin/Order/Edit/" + $(this).attr('index');
+    //});
 </script>

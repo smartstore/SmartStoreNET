@@ -772,12 +772,12 @@ namespace SmartStore.Services.Customers
             if (withCustomers)
             {
                 query = query
-                    .OrderByDescending(x => x.IsSystemMapping)
+                    .OrderBy(x => x.IsSystemMapping)
                     .ThenByDescending(x => x.Customer.CreatedOnUtc);
             }
             else
             {
-                query = query.OrderByDescending(x => x.IsSystemMapping);
+                query = query.OrderBy(x => x.IsSystemMapping);
             }
 
             var mappings = new PagedList<CustomerRoleMapping>(query, pageIndex, pageSize);

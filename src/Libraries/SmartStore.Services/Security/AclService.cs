@@ -17,7 +17,7 @@ namespace SmartStore.Services.Security
 		/// 0 = segment (EntityName.IdRange)
 		/// </summary>
 		const string ACL_SEGMENT_KEY = "acl:range-{0}";
-		const string ACL_SEGMENT_PATTERN = "acl:range-*";
+		internal const string ACL_SEGMENT_PATTERN = "acl:range-*";
 
         private readonly IRepository<AclRecord> _aclRecordRepository;
         private readonly Work<IWorkContext> _workContext;

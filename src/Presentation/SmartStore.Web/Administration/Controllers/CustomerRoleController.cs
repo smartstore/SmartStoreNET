@@ -334,26 +334,19 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
             }
 
-            if (customerRole.RuleSets.Any())
+            var task = _scheduleTaskService.Value.GetTaskByType<CustomerRolesAssignmentsTask>();
+            if (task != null)
             {
-                var task = _scheduleTaskService.Value.GetTaskByType<CustomerRolesAssignmentsTask>();
-                if (task != null)
+                _taskScheduler.Value.RunSingleTask(task.Id, new Dictionary<string, string>
                 {
-                    _taskScheduler.Value.RunSingleTask(task.Id, new Dictionary<string, string>
-                    {
-                        { "CustomerRoleIds", customerRole.Id.ToString() }
-                    });
+                    { "CustomerRoleIds", customerRole.Id.ToString() }
+                });
 
-                    NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
-                }
-                else
-                {
-                    NotifyError(T("Admin.System.ScheduleTasks.TaskNotFound", nameof(CustomerRolesAssignmentsTask)));
-                }
+                NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
             }
             else
             {
-                NotifyWarning(T("Admin.CustomerRoleMapping.SpecifyRules"));
+                NotifyError(T("Admin.System.ScheduleTasks.TaskNotFound", nameof(CustomerRolesAssignmentsTask)));
             }
 
             return RedirectToAction("Edit", new { id = customerRole.Id });

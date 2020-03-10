@@ -115,7 +115,7 @@ namespace SmartStore.Data.Migrations
                 context.Set<ScheduleTask>().AddOrUpdate(x => x.Type,
                     new ScheduleTask
                     {
-                        Name = isGerman ? "Zuordnungen zu Kundengruppen für Regeln aktualisieren" : "Update assignments to customer roles for rules",
+                        Name = isGerman ? "Zuordnungen von Kunden zu Kundengruppen aktualisieren" : "Update assignments of customers to customer roles",
                         CronExpression = "15 2 * * *", // At 02:15
                         Type = "SmartStore.Services.Customers.CustomerRolesAssignmentsTask, SmartStore.Services",
                         Enabled = true,

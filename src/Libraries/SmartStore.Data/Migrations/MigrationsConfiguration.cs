@@ -508,10 +508,6 @@
             builder.AddOrUpdate("Admin.CustomerRoleMapping.IsSystemMapping", "Automatic assignment", "Automatische Zuordnung");
             builder.AddOrUpdate("Admin.CustomerRoleMapping.ReapplyRules", "Reapply rules", "Regeln neu anwenden");
             
-            builder.AddOrUpdate("Admin.CustomerRoleMapping.SpecifyRules",
-                "Please first select rules for this customer role on the tab \"General\".",
-                "Bitte legen Sie zuerst über den Reiter \"Allgemein\" Regeln für diese Kundengruppe fest.");
-
             builder.AddOrUpdate("Admin.CustomerRoleMapping.RoleMappingListDescription",
                 "The list shows customers who are assigned to this customer role. Customers are automatically assigned by scheduled task as long as the group is active and rules are specified for it. You can make a manual assignment using the customer role selection at the respective customer.",
                 "Die Liste zeigt Kunden, die dieser Kundenruppe zugeordnet sind. Kunden werden automatisch per geplanter Aufgabe zugeordnet, sofern die Gruppe aktiv ist und für sie Regeln festgelegt sind. Eine manuelle Zuordnung können Sie über die Kundengruppenauswahl beim jeweiligen Kunden vornehmen.");

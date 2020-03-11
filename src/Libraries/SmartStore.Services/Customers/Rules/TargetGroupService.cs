@@ -125,7 +125,10 @@ namespace SmartStore.Services.Customers
             var predicate = group.ToPredicate(false);
 
             // Apply predicate to query
-            query = query.Where(predicate).Cast<Customer>();
+            query = query
+                .Where(predicate)
+                .Cast<Customer>()
+                .OrderByDescending(c => c.CreatedOnUtc);
 
             return new PagedList<Customer>(query, pageIndex, pageSize);
         }

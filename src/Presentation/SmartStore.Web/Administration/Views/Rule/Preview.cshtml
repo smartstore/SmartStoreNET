@@ -1,0 +1,50 @@
+﻿@using SmartStore.Rules
+@using SmartStore.Admin.Models.Rules
+@using SmartStore.Admin.Models.Customers
+@model RuleSetPreviewModel
+@{
+    ViewBag.Title = string.Concat(T("Admin.Common.Preview"), " - ", Model.Name);
+}
+
+<div class="section-header">
+    <div class="title">
+        @ViewBag.Title @Html.ActionLink("(" + T("Common.Back") + ")", "Edit", new { id = Model.Id })
+    </div>
+</div>
+<div>
+    @if (Model.Scope == RuleScope.Customer)
+    {
+		@(Html.Telerik().Grid<CustomerModel>()
+				.Name("preview-customer-grid")
+				.DataKeys(keys => keys.Add(x => x.Id)
+				.RouteKey("Id"))
+				.Columns(columns =>
+				{
+			        columns.Bound(x => x.Email)
+				        .ClientTemplate("<a href=\"" + Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\"><#= Email #></a>");
+					columns.Bound(x => x.Username)
+						.Visible(Model.UsernamesEnabled);
+					columns.Bound(x => x.FullName);
+					columns.Bound(x => x.Active)
+						 .ClientTemplate(Html.SymbolForBool("Active"))
+						 .Centered();
+					columns.Bound(x => x.CreatedOn);
+					columns.Bound(x => x.LastActivityDate);
+				})
+				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Rule", new { id = Model.Id }))
+				.ClientEvents(events => events.OnDataBound("onCustomerPreviewRowDataBound"))
+				.EnableCustomBinding(true))
+    }
+	else
+	{
+		<div class="alert alert-warning">@T("Common.NoPreview")</div>
+	}
+</div>
+<script>
+    function onCustomerPreviewRowDataBound(e) {
+		if (e.dataItem && !e.dataItem.Active) {
+			$(e.row).find('td').wrapInner('<span class="muted" />');
+		}
+    }
+</script>

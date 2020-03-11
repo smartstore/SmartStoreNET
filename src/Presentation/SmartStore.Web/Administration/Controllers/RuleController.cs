@@ -4,10 +4,12 @@ using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using Newtonsoft.Json;
+using SmartStore.Admin.Models.Customers;
 using SmartStore.Admin.Models.Rules;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
 using SmartStore.Rules;
@@ -37,6 +39,7 @@ namespace SmartStore.Admin.Controllers
         private readonly Lazy<IPaymentService> _paymentService;
         private readonly Lazy<PluginMediator> _pluginMediator;
         private readonly AdminAreaSettings _adminAreaSettings;
+        private readonly CustomerSettings _customerSettings;
 
         public RuleController(
             IRuleFactory ruleFactory,
@@ -47,7 +50,8 @@ namespace SmartStore.Admin.Controllers
             IEnumerable<IRuleOptionsProvider> ruleOptionsProviders,
             Lazy<IPaymentService> paymentService,
             Lazy<PluginMediator> pluginMediator,
-            AdminAreaSettings adminAreaSettings)
+            AdminAreaSettings adminAreaSettings,
+            CustomerSettings customerSettings)
         {
             _ruleFactory = ruleFactory;
             _ruleStorage = ruleStorage;
@@ -58,6 +62,7 @@ namespace SmartStore.Admin.Controllers
             _paymentService = paymentService;
             _pluginMediator = pluginMediator;
             _adminAreaSettings = adminAreaSettings;
+            _customerSettings = customerSettings;
         }
 
         // Ajax.
@@ -248,6 +253,65 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
+        [Permission(Permissions.System.Rule.Execute)]
+        public ActionResult Preview(int id)
+        {
+            var entity = _ruleStorage.GetRuleSetById(id, false, true);
+            if (entity == null || entity.IsSubGroup)
+            {
+                return HttpNotFound();
+            }
+
+            var model = MiniMapper.Map<RuleSetEntity, RuleSetPreviewModel>(entity);
+            model.GridPageSize = _adminAreaSettings.GridPageSize;
+            model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
+
+            return View(model);
+        }
+
+        [HttpPost, GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.System.Rule.Execute)]
+        public ActionResult PreviewList(int id, GridCommand command)
+        {
+            var entity = _ruleStorage.GetRuleSetById(id, false, true);
+
+            switch (entity.Scope)
+            {
+                case RuleScope.Customer:
+                    {
+                        var expression = _ruleFactory.CreateExpressionGroup(entity, _targetGroupService, true) as FilterExpression;
+                        var customers = _targetGroupService.ProcessFilter(new[] { expression }, LogicalRuleOperator.And, command.Page - 1, command.PageSize);
+                        var guestStr = T("Admin.Customers.Guest").Text;
+
+                        var model = new GridModel<CustomerModel>
+                        {
+                            Total = customers.TotalCount
+                        };
+
+                        model.Data = customers.Select(x =>
+                        {
+                            var customerModel = new CustomerModel
+                            {
+                                Id = x.Id,
+                                Active = x.Active,
+                                Email = x.Email.NullEmpty() ?? (x.IsGuest() ? guestStr : string.Empty),
+                                Username = x.Username,
+                                FullName = x.GetFullName(),
+                                CreatedOn = Services.DateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
+                                LastActivityDate = Services.DateTimeHelper.ConvertToUserTime(x.LastActivityDateUtc, DateTimeKind.Utc)
+                            };
+
+                            return customerModel;
+                        })
+                        .ToList();
+
+                        return new JsonResult { Data = model };
+                    }
+            }
+
+
+            return new JsonResult { Data = null };            
+        }
 
         [HttpPost]
         [Permission(Permissions.System.Rule.Create)]
@@ -389,7 +453,7 @@ namespace SmartStore.Admin.Controllers
                     case RuleScope.Customer:
                         {
                             var expression = _ruleFactory.CreateExpressionGroup(entity, _targetGroupService, true) as FilterExpression;
-                            var result = _targetGroupService.ProcessFilter(new[] { expression }, LogicalRuleOperator.And, 0, 500);
+                            var result = _targetGroupService.ProcessFilter(new[] { expression }, LogicalRuleOperator.And, 0, 1);
 
                             message = T("Admin.Rules.Execute.MatchCustomers", result.TotalCount.ToString("N0"));
                         }

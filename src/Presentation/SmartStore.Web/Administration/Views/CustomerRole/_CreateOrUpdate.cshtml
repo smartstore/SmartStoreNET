@@ -169,7 +169,7 @@
 
 <script>
     function onRoleMappingRowDataBound(e) {
-		if (!e.dataItem.Active) {
+		if (e.dataItem && !e.dataItem.Active) {
 			$(e.row).find('td').wrapInner('<span class="muted" />');
 		}
     }

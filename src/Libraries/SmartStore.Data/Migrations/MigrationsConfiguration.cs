@@ -483,6 +483,7 @@
 
             builder.AddOrUpdate("Products.Condition", "Product condition", "Artikelzustand");
             builder.AddOrUpdate("Common.OpenUrl", "Open URL", "URL öffnen");
+            builder.AddOrUpdate("Common.NoPreview", "A preview is not available.", "Eine Vorschau ist nicht verfügbar.");
 
             builder.AddOrUpdate("Admin.Orders.Shipments.TrackingNumber",
                 "Tracking number",

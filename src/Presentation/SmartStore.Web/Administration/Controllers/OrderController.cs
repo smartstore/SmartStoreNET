@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -2851,7 +2852,7 @@ namespace SmartStore.Admin.Controllers
                         customerDisplayName,
                         order.OrderItems.Select(x => x.Quantity).Sum(),
                         _priceFormatter.FormatPrice(order.OrderTotal, true, false),
-                        order.CreatedOnUtc.ToString("MM/dd/yyyy H:mm"),
+                        order.CreatedOnUtc.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("dd/MM/yyyy H:mm"),
                         order.OrderStatus,
                         order.Id)
                     );
@@ -2863,62 +2864,57 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Order.Read, false)]
         public ActionResult OrdersDashboardReport()
         {
+            var watch = new Stopwatch();
+            watch.Start();
+
             var model = new OrdersDashboardReportModel();
-            ViewBag.CurrencySymbol = Services.StoreContext.CurrentStore.PrimaryStoreCurrency.NumberFormat.CurrencySymbol.ToString();
-
-            // Get all (last 2 years from today) orders
             var orders = _orderService.SearchOrders(0, 0, DateTime.UtcNow.AddDays(-730), null, null, null, null, null, null, null, 0, int.MaxValue);
-            // Filter into categories (day, daybefore, week, weekbefore, month etc)
-            // Generate correct labels (day, week, month etc)            
-            // Calc Values (Sum, delta etc)
 
-            // Create for day period (24 hours)
-            // Dict<datetime, decimal> better?
-            var currentTime = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, DateTime.UtcNow.Hour, 0, 0);
+            var currentTime = DateTime.UtcNow;//new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, DateTime.UtcNow.Hour, 0, 0);
             var ordersDay = orders.Where(x => x.CreatedOnUtc < currentTime && x.CreatedOnUtc >= currentTime.AddDays(-1)).Select(x => x).ToList();
             var ordersReports = GetOrderReports(ordersDay);
-
+            currentTime = new DateTime(currentTime.Year, currentTime.Month, currentTime.Day, currentTime.Hour, 0, 0);
+            //.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours)
             for (int i = 0; i < 24; i++)
             {
                 // Switch to normal Time not utc
                 var date = currentTime.AddHours(-(23 - i));
                 var startDate = new DateTime(date.Year, date.Month, date.Day, date.Hour, 0, 0);
-                model.Day.Labels[i] = date.ToString("dd MMMM H") + " " + T("Admin.Common.TimeOfDay");
+                model.Day.Labels[i] = date.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("dd MMMM H") + " " + T("Admin.Common.TimeOfDay");
                 date = date.AddHours(1);
                 var endDate = new DateTime(date.Year, date.Month, date.Day, date.Hour, 0, 0);
                 GetReportPointData(model.Day, ordersReports, startDate, endDate, i);
             }
-            CalculateTotalAmount(model.Day, orders, ordersDay, currentTime.AddDays(-2), currentTime.AddDays(-1));
+            CalculateOrdersAmount(model.Day, orders, ordersDay, currentTime.AddDays(-2), currentTime.AddDays(-1));
 
             // Create for week period (7 days)
-            currentTime = currentTime.AddHours(-currentTime.Hour);
-            var ordersWeek = orders.Where(x => x.CreatedOnUtc < currentTime && x.CreatedOnUtc >= currentTime.AddDays(-7)).Select(x => x).ToList();
+            currentTime = new DateTime(currentTime.Year, currentTime.Month, currentTime.Day, 0, 0, 0);
+            var ordersWeek = orders.Where(x => x.CreatedOnUtc < currentTime.AddDays(1) && x.CreatedOnUtc >= currentTime.AddDays(-6)).Select(x => x).ToList();
             ordersReports = GetOrderReports(ordersWeek);
 
             for (int i = 0; i < 7; i++)
             {
                 var date = currentTime.AddDays(-(6 - i));
-                model.Week.Labels[i] = date.ToString("dddd dd MMMM");
+                model.Week.Labels[i] = date.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("dddd dd MMMM");
                 GetReportPointData(model.Week, ordersReports, date, date.AddDays(1), i);
             }
-            CalculateTotalAmount(model.Week, orders, ordersWeek, currentTime.AddDays(-14), currentTime.AddDays(-7));
-
+            CalculateOrdersAmount(model.Week, orders, ordersWeek, currentTime.AddDays(-14), currentTime.AddDays(-7));
 
             // Create for month period (4 weeks)
-            var ordersMonth = orders.Where(x => x.CreatedOnUtc < currentTime && x.CreatedOnUtc >= currentTime.AddDays(-28)).Select(x => x).ToList();
+            var ordersMonth = orders.Where(x => x.CreatedOnUtc < currentTime.AddDays(1) && x.CreatedOnUtc >= currentTime.AddDays(-27)).Select(x => x).ToList();
             ordersReports = GetOrderReports(ordersMonth);
 
             for (int i = 0; i < 4; i++)
             {
                 var fromDate = currentTime.AddDays(-(3 - i + 1) * 7 + 1);
                 var toDate = currentTime.AddDays(-((3 - i) * 7) + 1);
-                model.Month.Labels[i] = fromDate.ToString("dd.MM") + " - " + toDate.AddDays(-1).ToString("dd.MM");
+                model.Month.Labels[i] = fromDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("dd.MM") + " - " + toDate.AddDays(-1).ToString("dd.MM");
                 GetReportPointData(model.Month, ordersReports, fromDate, toDate, i);
             }
-            CalculateTotalAmount(model.Month, orders, ordersMonth, currentTime.AddDays(-56), currentTime.AddDays(-28));
+            CalculateOrdersAmount(model.Month, orders, ordersMonth, currentTime.AddDays(-56), currentTime.AddDays(-28));
 
             // Create for year period (12 months)
-            var ordersYear = orders.Where(x => x.CreatedOnUtc < currentTime && x.CreatedOnUtc >= currentTime.AddYears(-1)).Select(x => x).ToList();
+            var ordersYear = orders.Where(x => x.CreatedOnUtc < currentTime.AddDays(1) && x.CreatedOnUtc >= currentTime.AddYears(-1)).Select(x => x).ToList();
             ordersReports = GetOrderReports(ordersYear);
 
             for (int i = 0; i < 12; i++)
@@ -2926,10 +2922,13 @@ namespace SmartStore.Admin.Controllers
                 var date = currentTime.AddMonths(-(11 - i));
                 var fromDate = new DateTime(date.Year, date.Month, 1);
                 var toDate = fromDate.AddMonths(1);
-                model.Year.Labels[i] = date.ToString("MMMM yyyy");
+                model.Year.Labels[i] = date.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("MMMM yyyy");
                 GetReportPointData(model.Year, ordersReports, fromDate, toDate, i);
             }
-            CalculateTotalAmount(model.Year, orders, ordersYear, currentTime.AddYears(-2), currentTime.AddYears(-1));
+            CalculateOrdersAmount(model.Year, orders, ordersYear, currentTime.AddYears(-2), currentTime.AddYears(-1));
+
+            watch.Stop();
+            Debug.WriteLine(watch.ElapsedMilliseconds);
 
             return PartialView(model);
         }
@@ -2952,24 +2951,29 @@ namespace SmartStore.Admin.Controllers
             for (int j = 0; j < reports.Length; j++)
             {
                 var point = reports[j].Where(x => x.CreatedOnUtc < endDate && x.CreatedOnUtc >= startDate).ToList();
-                model.Data[j].Amount[index] = point.Sum(x => x.OrderSubtotalExclTax);
+                model.Data[j].Amount[index] = point.Sum(x => x.OrderTotal);
+                model.Data[j].FormattedAmount[index] = _priceFormatter.FormatPrice((int)model.Data[j].Amount[index], true, false);
                 model.Data[j].Quantity[index] = point.Count;
             }
         }
 
         [NonAction]
-        private void CalculateTotalAmount(OrdersDashboardReportLineModel model, IList<Order> allOrders, List<Order> orders, DateTime fromDate, DateTime toDate)
+        private void CalculateOrdersAmount(OrdersDashboardReportLineModel model, IList<Order> allOrders, List<Order> orders, DateTime fromDate, DateTime toDate)
         {
             foreach (var item in model.Data)
             {
-                item.TotalAmount = decimal.ToInt32(item.Amount.Sum());
+                item.TotalAmount = _priceFormatter.FormatPrice((int)Math.Round(item.Amount.Sum()), true, false);
             }
 
-            model.TotalAmount = decimal.ToInt32(orders.Sum(x => x.OrderSubtotalExclTax));
-            var ordersBefore = allOrders.Where(x => x.CreatedOnUtc < toDate && x.CreatedOnUtc >= fromDate).Select(x => x).ToList();
-            var sumBefore = decimal.ToInt32(ordersBefore.Sum(x => x.OrderSubtotalExclTax));
-            model.PercentageDelta = sumBefore <= 0 ? 0 : (int)Math.Round(model.TotalAmount / (decimal)sumBefore * 100 - 100);
+            var totalAmount = orders.Sum(x => x.OrderTotal);
+            model.TotalAmount = _priceFormatter.FormatPrice((int)Math.Round(totalAmount), true, false);
+            var sumBefore = Math.Round(allOrders
+                .Where(x => x.CreatedOnUtc < toDate && x.CreatedOnUtc >= fromDate)
+                .Select(x => x)
+                .Sum(x => x.OrderTotal)
+                );
 
+            model.PercentageDelta = sumBefore <= 0 ? 0 : (int)Math.Round(totalAmount / sumBefore * 100 - 100);
         }
 
         #endregion

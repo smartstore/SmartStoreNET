@@ -2,7 +2,6 @@
 @using Newtonsoft.Json;
 @{
     var jsonData = JsonConvert.SerializeObject(Model);
-    var currency = " " + ViewBag.CurrencySymbol;
 }
 
 <div class="bg-white rounded-lg shadow h-100" style="overflow:hidden">
@@ -46,120 +45,45 @@
 </div>
 
 <script>
-    var currentPeriod = "Day";
-    var ordersData = JSON.parse('@Html.Raw(jsonData)');
-    var currencySymbol = '@Html.Raw(currency)';
+    $(function () {
+        var ordersData = JSON.parse('@Html.Raw(jsonData)');
+        var $chevronElement = $("#orders-delta-percentage-chevron");
+        var $percentageElement = $("#orders-delta-percentage");
+        var $sumElement = $("#orders-sum-amount");
+        var currentPeriod = "Day";
 
-    $(document).ready(function () {
-        $('input[type=radio][name=orders-toggle]').on('change', function () {
-            setChartData($('input:radio[name=orders-toggle]:checked').data("period"));
-        });
+        //Object.prototype.getByIndex = function (index) {
+        //        return this[Object.keys(this)[index]];
+        //};
+        //console.log(ordersData.getByIndex(0));
 
-        setPercentageDelta(currentPeriod);
-
-        function setPercentageDelta(period) {
-            var val = ordersData[period].PercentageDelta;
-
-            if (val < 0) {
-                if (!$("#orders-delta-percentage-chevron").hasClass("negative")) {
-                    $("#orders-delta-percentage-chevron").addClass("negative");
-                }
-                if ($("#orders-delta-percentage-chevron").hasClass("d-none")) {
-                    $("#orders-delta-percentage-chevron").removeClass("d-none");
-                }
-            }
-            else if (val > 0) {
-                if ($("#orders-delta-percentage-chevron").hasClass("negative")) {
-                    $("#orders-delta-percentage-chevron").removeClass("negative");
-                }
-                if ($("#orders-delta-percentage-chevron").hasClass("d-none")) {
-                    $("#orders-delta-percentage-chevron").removeClass("d-none");
-                }
-            }
-            else if (!$("#orders-delta-percentage-chevron").hasClass("d-none")) {
-                $("#orders-delta-percentage-chevron").addClass("d-none")
-            }
-
-            var delta = val == 0 ? "" : val < 0 ? "-" + Math.abs(val) + " %" : "+" + Math.abs(val) + " %";
-
-            $("#orders-delta-percentage").html(delta);
-            $("#orders-sum-amount").html(ordersData[period].TotalAmount + currencySymbol);
-        }
-
-        function setChartData(period) {
-            ordersChart.destroy();
-
-            order_config.data.labels = ordersData[period].Labels;
-            for (var i = 0; i < order_config.data.datasets.length; i++) {
-                order_config.data.datasets[i].data = ordersData[period].Data[i].Amount;
-            }
-            ordersChart = new Chart(orders_ctx, order_config);
-
-            setPercentageDelta(period, ordersData);
-
-            currentPeriod = period;
-
-            ordersLegendContainer.innerHTML = ordersChart.generateLegend();
-            var legendItems = ordersLegendContainer.getElementsByTagName('li');
-            for (var i = 0; i < legendItems.length; i++) {
-                legendItems[i].addEventListener("click", legendClickCallback, false);
-            }
-        }
-
-        function legendClickCallback(event) {
-            event = event || window.event;
-
-            var target = event.target || event.srcElement;
-            while (target.nodeName !== 'LI') {
-                target = target.parentElement;
-            }
-            var parent = target.parentElement;
-            var chartId = parseInt(parent.classList[0].split("-")[0], 10);
-            var chart = Chart.instances[chartId];
-            var index = (ordersChart.data.datasets.length - 1) - Array.prototype.slice.call(parent.children).indexOf(target);
-            var meta = chart.getDatasetMeta(index);
-
-            if (chart.data.datasets[index].hidden) {
-                target.classList.remove('hidden');
-
-            } else {
-                target.classList.add('hidden');
-            }
-
-            meta.hidden = !chart.data.datasets[index].hidden;
-            chart.data.datasets[index].hidden = !chart.data.datasets[index].hidden;
-
-            chart.update();
-        }
-
-        //----------------------------------------------------
-        // Chartjs
         var style = getComputedStyle(document.body);
         var colorPrimary = style.getPropertyValue('--primary');
         var colorIndigo = style.getPropertyValue('--indigo');
         var colorDanger = style.getPropertyValue('--danger');
         var colorSuccess = style.getPropertyValue('--success');
         var colorWarning = style.getPropertyValue('--warning');
-
         var fontFamily = style.getPropertyValue('--font-family-sans-serif');
 
-        var ordersChartElement = $('#orders-chart')[0];
-        var orders_ctx = ordersChartElement.getContext('2d');
-        var ordersLegendContainer = $("#orders-chart-legend")[0];
+        //----------------------------------------------------
+        // Chartjs
 
-        var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
+        var $ordersChartElement = $('#orders-chart')[0];
+        var orders_ctx = $ordersChartElement.getContext('2d');
+
+        var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight);
         completeGradient.addColorStop(0, hexToRgba(colorPrimary.substr(1), .9));
         completeGradient.addColorStop(1, hexToRgba(colorPrimary.substr(1), .1));
 
-        var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
+        var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight);
         cancelledGradient.addColorStop(0, hexToRgba(colorDanger.substr(1), .9));
         cancelledGradient.addColorStop(1, hexToRgba(colorDanger.substr(1), .1));
 
-        var pendingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
+        var pendingGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight);
         pendingGradient.addColorStop(0, hexToRgba(colorWarning.substr(1), .9));
         pendingGradient.addColorStop(1, hexToRgba(colorWarning.substr(1), .1));
 
-        var processingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight);
+        var processingGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight);
         processingGradient.addColorStop(0, hexToRgba(colorSuccess.substr(1), .9));
         processingGradient.addColorStop(1, hexToRgba(colorSuccess.substr(1), .1));
 
@@ -212,111 +136,195 @@
                 }]
             },
             options: {
-            responsive: true,
-            responsiveAnimationDuration: 0,//1000,
-            maintainAspectRatio: true,
-            stacked: true,
-            animation: {
-                duration: 400,
-                hide: {
-                    visible: {
-                        type: true,
-                        easing: 'easeInOutSine'
+                responsive: true,
+                responsiveAnimationDuration: 0,
+                maintainAspectRatio: true,
+                stacked: true,
+                animation: {
+                    duration: 400,
+                    hide: {
+                        visible: {
+                            type: true,
+                            easing: 'easeInOutSine'
+                        },
                     },
+                    easing: 'easeInOutSine',
+
                 },
-                easing: 'easeInOutSine',
-
-            },
-            hover: {
-                mode: 'nearest',
-                intersect: false,
-            },
-            layout: {
-                padding: {
-                    left: 0,
-                    right: 0,
-                    top: 5,
-                    bottom: 4
-                }
-            },
-            legend: false,
-            legendCallback: function (chart) {
-
-                var text = [];
-                text.push('<ul class="' + chart.id + '-legend">');
-                for (var i = chart.data.datasets.length - 1; i >= 0; i--) {
-                    if (chart.data.datasets[i].hidden) {
-                        text.push('<li class="hidden"><span class="legend" style="background-color:' + chart.data.datasets[i].borderColor + '"></span>');
+                hover: {
+                    mode: 'nearest',
+                    intersect: false,
+                },
+                layout: {
+                    padding: {
+                        left: 0,
+                        right: 0,
+                        top: 5,
+                        bottom: 4
                     }
-                    else {
-                        text.push('<li><span class="legend" style="background-color:' + chart.data.datasets[i].borderColor + '"></span>');
-                    }
+                },
+                legend: false,
+                legendCallback: function (chart) {
+                    var text = [];
+                    text.push('<ul class="' + chart.id + '-legend">');
+                    for (var i = chart.data.datasets.length - 1; i >= 0; i--) {
+                        if (chart.data.datasets[i].hidden) {
+                            text.push('<li class="hidden"><span class="legend" style="background-color:' + chart.data.datasets[i].borderColor + '"></span>');
+                        }
+                        else {
+                            text.push('<li><span class="legend" style="background-color:' + chart.data.datasets[i].borderColor + '"></span>');
+                        }
 
-                    if (chart.data.labels[i]) {
-                        text.push('<span>' + chart.data.datasets[i].label + '</span>');
-                        text.push('<span class="font-weight-500 pl-1 total-amount">' + ordersData[currentPeriod].Data[i].TotalAmount + currencySymbol + '</span>');
+                        if (chart.data.labels[i]) {
+                            text.push('<span>' + chart.data.datasets[i].label + '</span>');
+                            text.push('<span class="font-weight-500 pl-1 total-amount">' + ordersData[currentPeriod].Data[i].TotalAmount + '</span>');
+                        }
+                        text.push('</li>');
                     }
-                    text.push('</li>');
-                }
-                text.push('</ul>');
-                return text.join("");
-            },
-            elements: {
-                point: {
-                    radius: 0,
-                    hoverRadius: 6,
-                }
-            },
-            tooltips: {
-                enabled: true,
-                mode: 'nearest',
-                intersect: false,
-                titleFontFamily: fontFamily,
-                bodyFontFamily: fontFamily,
-                xPadding: 10,
-                yPadding: 8,
-                caretPadding: 6,
-                caretSize: 8,
-                cornerRadius: 4,
-                titleMarginBottom: 8,
-                bodySpacing: 5,
-                callbacks: {
-                    label: function (item, data) {
-                        return " " + (data.datasets[item.datasetIndex].label || '') + ": " + Math.round(item.yLabel) + currencySymbol;
+                    text.push('</ul>');
+                    return text.join("");
+                },
+                elements: {
+                    point: {
+                        radius: 0,
+                        hoverRadius: 6,
                     }
-                }
-
-            },
-            scales: {
-                yAxes: [{
-                    display: false,
-                    stacked: true,
-
-                }],
-                xAxes: [{
-                    display: false,
-                    position: 'top',
-                    gridLines: {
+                },
+                tooltips: {
+                    enabled: true,
+                    mode: 'nearest',
+                    intersect: false,
+                    titleFontFamily: fontFamily,
+                    bodyFontFamily: fontFamily,
+                    xPadding: 10,
+                    yPadding: 8,
+                    caretPadding: 6,
+                    caretSize: 8,
+                    cornerRadius: 4,
+                    titleMarginBottom: 8,
+                    bodySpacing: 5,
+                    callbacks: {
+                        label: function (item, data) {
+                            return " " + (data.datasets[item.datasetIndex].label || '') + ": " + item.yLabel; //ordersData.getByIndex(item.datasetIndex).FormattedAmount[item.index];
+                        }
+                    }
+                },
+                scales: {
+                    yAxes: [{
                         display: false,
-                    },
-                    scaleLabel: {
+                        stacked: true,
+
+                    }],
+                    xAxes: [{
                         display: false,
-                        padding: 0,
-                    },
-                }]
+                        position: 'top',
+                        gridLines: {
+                            display: false,
+                        },
+                        scaleLabel: {
+                            display: false,
+                            padding: 0,
+                        },
+                    }]
+                },
+                title: {
+                    display: false,
+                }
             },
-            title: {
-                display: false,
-            }
-        },
         }
 
         var ordersChart = new Chart(orders_ctx, order_config);
+        setPercentageDelta(currentPeriod);
 
-        $(ordersLegendContainer).html(ordersChart.generateLegend());
-        var legendItems = ordersLegendContainer.getElementsByTagName('li');
-        for (var i = 0; i < legendItems.length; i++) {
-            legendItems[i].addEventListener("click", legendClickCallback, false);
+        var $ordersLegendContainer = $("#orders-chart-legend")[0];
+        createLegend();
+
+
+        //----------------------------------------------------
+        // EventHandler
+
+        $('input[type=radio][name=orders-toggle]').on('change', function () {
+            setChartData($('input:radio[name=orders-toggle]:checked').data("period"));
+        });
+
+        //----------------------------------------------------
+        // Functions
+
+        function setPercentageDelta(period) {
+            var val = ordersData[period].PercentageDelta;
+
+            if (val < 0) {
+                if (!$chevronElement.hasClass("negative")) {
+                    $chevronElement.addClass("negative");
+                }
+                if ($chevronElement.hasClass("d-none")) {
+                    $chevronElement.removeClass("d-none");
+                }
+            }
+            else if (val > 0) {
+                if ($chevronElement.hasClass("negative")) {
+                    $chevronElement.removeClass("negative");
+                }
+                if ($chevronElement.hasClass("d-none")) {
+                    $chevronElement.removeClass("d-none");
+                }
+            }
+            else if (!$chevronElement.hasClass("d-none")) {
+                $chevronElement.addClass("d-none")
+            }
+
+            var delta = val == 0 ? "" : val < 0 ? "-" + Math.abs(val) + " %" : "+" + Math.abs(val) + " %";
+
+            $percentageElement.html(delta);
+            $sumElement.html(ordersData[period].TotalAmount);
+        }
+
+        function setChartData(period) {
+            ordersChart.destroy();
+
+            order_config.data.labels = ordersData[period].Labels;
+            for (var i = 0; i < order_config.data.datasets.length; i++) {
+                order_config.data.datasets[i].data = ordersData[period].Data[i].Amount;
+            }
+
+            ordersChart = new Chart(orders_ctx, order_config);
+            setPercentageDelta(period, ordersData);
+            currentPeriod = period;
+            createLegend();
+        }
+
+        function createLegend() {
+            $($ordersLegendContainer).html(ordersChart.generateLegend());
+            var legendItems = $ordersLegendContainer.getElementsByTagName('li');
+            for (var i = 0; i < legendItems.length; i++) {
+                legendItems[i].addEventListener("click", legendClickCallback, false);
+            }
+        }
+
+        function legendClickCallback(event) {
+            event = event || window.event;
+
+            var target = event.target || event.srcElement;
+            while (target.nodeName !== 'LI') {
+                target = target.parentElement;
+            }
+            var parent = target.parentElement;
+            var chartId = parseInt(parent.classList[0].split("-")[0], 10);
+            var chart = Chart.instances[chartId];
+            var index = (ordersChart.data.datasets.length - 1) - Array.prototype.slice.call(parent.children).indexOf(target);
+            var meta = chart.getDatasetMeta(index);
+
+            if (chart.data.datasets[index].hidden) {
+                target.classList.remove('hidden');
+
+            } else {
+                target.classList.add('hidden');
+            }
+
+            meta.hidden = !chart.data.datasets[index].hidden;
+            chart.data.datasets[index].hidden = !chart.data.datasets[index].hidden;
+
+            chart.update();
         }
 
         function hexToRgba(hex, opacity) {
@@ -328,42 +336,5 @@
             } : null;
             return 'rgba(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', ' + opacity + ')';
         }
-
     });
 </script>
-<style>
-    #orders-chart-legend > ul {
-        cursor: pointer;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    #orders-chart-legend li {
-        display: inline-block;
-        user-select: none;
-    }
-
-        #orders-chart-legend li:not(:last-child) {
-            padding-right: 1rem;
-        }
-
-        #orders-chart-legend li.hidden {
-            text-decoration: line-through;
-            user-select: none;
-        }
-
-    #orders-chart-legend .total-amount {
-        text-decoration: none !important;
-        display: inline-block;
-        user-select: text;
-    }
-
-    #orders-chart-legend .legend {
-        border-radius: 7px;
-        display: inline-block;
-        height: 11px;
-        margin-right: .3rem;
-        width: 11px;
-    }
-</style>

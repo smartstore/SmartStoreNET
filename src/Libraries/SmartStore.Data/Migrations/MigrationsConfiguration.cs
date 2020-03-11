@@ -292,6 +292,8 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CartTotal", "Total amount of cart", "Gesamtbetrag des Warenkorbes");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CartSubtotal", "Subtotal amount of cart", "Zwischensumme des Warenkorbes");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductInCart", "Product in cart", "Produkt im Warenkorb");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductFromCategoryInCart", "Product from category in cart", "Produkt aus Kategorie im Warenkorb");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductFromManufacturerInCart", "Product from manufacturer in cart", "Produkt von Hersteller im Warenkorb");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductOnWishlist", "Product on wishlist", "Produkt auf der Wunschliste");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductReviewCount", "Number of product reviews", "Anzahl der Produkt Rezensionen");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.RewardPointsBalance", "Number of reward points", "Anzahl der Bonuspunkte");

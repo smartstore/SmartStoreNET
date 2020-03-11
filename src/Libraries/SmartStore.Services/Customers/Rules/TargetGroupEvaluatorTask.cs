@@ -17,7 +17,7 @@ namespace SmartStore.Services.Customers
     /// <summary>
     /// Updates the system assignments to customer roles for rules.
     /// </summary>
-    public partial class CustomerRolesAssignmentsTask : AsyncTask
+    public partial class TargetGroupEvaluatorTask : AsyncTask
     {
         protected readonly IRepository<CustomerRole> _customerRoleRepository;
         protected readonly IRepository<CustomerRoleMapping> _customerRoleMappingRepository;
@@ -25,7 +25,7 @@ namespace SmartStore.Services.Customers
         protected readonly ITargetGroupService _targetGroupService;
         protected readonly ICacheManager _cacheManager;
 
-        public CustomerRolesAssignmentsTask(
+        public TargetGroupEvaluatorTask(
             IRepository<CustomerRole> customerRoleRepository,
             IRepository<CustomerRoleMapping> customerRoleMappingRepository,
             IRuleFactory ruleFactory,

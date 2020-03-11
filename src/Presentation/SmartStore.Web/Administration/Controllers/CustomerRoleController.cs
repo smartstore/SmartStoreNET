@@ -334,7 +334,7 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
             }
 
-            var task = _scheduleTaskService.Value.GetTaskByType<CustomerRolesAssignmentsTask>();
+            var task = _scheduleTaskService.Value.GetTaskByType<TargetGroupEvaluatorTask>();
             if (task != null)
             {
                 _taskScheduler.Value.RunSingleTask(task.Id, new Dictionary<string, string>
@@ -346,7 +346,7 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-                NotifyError(T("Admin.System.ScheduleTasks.TaskNotFound", nameof(CustomerRolesAssignmentsTask)));
+                NotifyError(T("Admin.System.ScheduleTasks.TaskNotFound", nameof(TargetGroupEvaluatorTask)));
             }
 
             return RedirectToAction("Edit", new { id = customerRole.Id });

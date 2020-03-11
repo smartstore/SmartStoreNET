@@ -117,7 +117,7 @@ namespace SmartStore.Data.Migrations
                     {
                         Name = isGerman ? "Zuordnungen von Kunden zu Kundengruppen aktualisieren" : "Update assignments of customers to customer roles",
                         CronExpression = "15 2 * * *", // At 02:15
-                        Type = "SmartStore.Services.Customers.CustomerRolesAssignmentsTask, SmartStore.Services",
+                        Type = "SmartStore.Services.Customers.TargetGroupEvaluatorTask, SmartStore.Services",
                         Enabled = true,
                         StopOnError = false
                     }

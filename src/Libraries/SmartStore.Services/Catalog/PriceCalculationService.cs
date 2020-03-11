@@ -416,7 +416,8 @@ namespace SmartStore.Services.Catalog
 		public virtual PriceCalculationContext CreatePriceCalculationContext(
 			IEnumerable<Product> products = null, 
 			Customer customer = null, 
-			int? storeId = null)
+			int? storeId = null,
+            bool includeHidden = true)
 		{
 			if (customer == null)
 				customer = _services.WorkContext.CurrentCustomer;
@@ -428,11 +429,11 @@ namespace SmartStore.Services.Catalog
 				x => _productAttributeService.GetProductVariantAttributesByProductIds(x, null),
 				x => _productAttributeService.GetProductVariantAttributeCombinations(x),
 				x => _productService.GetTierPricesByProductIds(x, customer, storeId.Value),
-				x => _categoryService.GetProductCategoriesByProductIds(x, true),
-				x => _manufacturerService.GetProductManufacturersByProductIds(x),
+				x => _categoryService.GetProductCategoriesByProductIds(x, includeHidden),
+				x => _manufacturerService.GetProductManufacturersByProductIds(x, includeHidden),
 				x => _productService.GetAppliedDiscountsByProductIds(x),
-				x => _productService.GetBundleItemsByProductIds(x, true),
-                x => _productService.GetAssociatedProductsByProductIds(x)
+				x => _productService.GetBundleItemsByProductIds(x, includeHidden),
+                x => _productService.GetAssociatedProductsByProductIds(x, includeHidden)
 			);
 
 			return context;

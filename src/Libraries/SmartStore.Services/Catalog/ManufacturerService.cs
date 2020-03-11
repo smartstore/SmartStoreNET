@@ -263,22 +263,24 @@ namespace SmartStore.Services.Catalog
 			});
         }
 
-		public virtual Multimap<int, ProductManufacturer> GetProductManufacturersByManufacturerIds(int[] manufacturerIds)
+		public virtual Multimap<int, ProductManufacturer> GetProductManufacturersByManufacturerIds(int[] manufacturerIds, bool showHidden = false)
 		{
 			Guard.NotNull(manufacturerIds, nameof(manufacturerIds));
 
-			var query = _productManufacturerRepository.TableUntracked
-				.Where(x => manufacturerIds.Contains(x.ManufacturerId))
-				.OrderBy(x => x.DisplayOrder);
+            var query = _productManufacturerRepository.TableUntracked
+				.Where(x => manufacturerIds.Contains(x.ManufacturerId));
 
-			var map = query
+            query = ApplyHiddenProductManufacturerFilter(query, _storeContext.CurrentStore.Id, showHidden);
+            query = query.OrderBy(pm => pm.DisplayOrder);
+
+            var map = query
 				.ToList()
 				.ToMultimap(x => x.ManufacturerId, x => x);
 
 			return map;
 		}
 
-		public virtual Multimap<int, ProductManufacturer> GetProductManufacturersByProductIds(int[] productIds)
+		public virtual Multimap<int, ProductManufacturer> GetProductManufacturersByProductIds(int[] productIds, bool showHidden = false)
 		{
 			Guard.NotNull(productIds, nameof(productIds));
 
@@ -293,7 +295,8 @@ namespace SmartStore.Services.Catalog
 				where !pm.Manufacturer.Deleted && productIds.Contains(pm.ProductId)
 				select pm;
 
-			query = query.Include(x => x.Manufacturer.MediaFile);
+            query = ApplyHiddenProductManufacturerFilter(query, _storeContext.CurrentStore.Id, showHidden);
+            query = query.Include(x => x.Manufacturer.MediaFile);
 
 			var map = query
 				.OrderBy(x => x.ProductId)

@@ -16,10 +16,9 @@ namespace SmartStore.Services.Cart.Rules.Impl
 
         protected override IEnumerable<int> GetValues(CartRuleContext context)
         {
-            var cartProductIds = _shoppingCartService.GetCartItems(context.Customer, ShoppingCartType.ShoppingCart, context.Store.Id)
-                .Select(x => x.Item.ProductId);
+            var cart = _shoppingCartService.GetCartItems(context.Customer, ShoppingCartType.ShoppingCart, context.Store.Id);
 
-            return cartProductIds;
+            return cart.Select(x => x.Item.ProductId);
         }
     }
 }

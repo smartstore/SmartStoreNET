@@ -64,8 +64,7 @@ namespace SmartStore.Services.Customers
                     try
                     {
                         ctx.SetProgress(++count, roles.Count, $"Sync customer assignments for role {role.SystemName.NaIfEmpty()}.");
-
-                        _customerRoleMappingRepository.Context.DetachEntities(x => x is CustomerRoleMapping);
+                        _customerRoleMappingRepository.Context.DetachEntities<CustomerRoleMapping>();
                     }
                     catch { }
 
@@ -80,15 +79,15 @@ namespace SmartStore.Services.Customers
                     {
                         foreach (var ruleSet in role.RuleSets.Where(x => x.IsActive))
                         {
-                            if (ctx.CancellationToken.IsCancellationRequested) return;
+                            if (ctx.CancellationToken.IsCancellationRequested) 
+                                return;
 
-                            var expression = _ruleFactory.CreateExpressionGroup(ruleSet, _targetGroupService) as FilterExpression;
-                            if (expression != null)
+                            if (_ruleFactory.CreateExpressionGroup(ruleSet, _targetGroupService) is FilterExpression expression)
                             {
                                 var filterResult = _targetGroupService.ProcessFilter(expression, 0, 500);
                                 var resultPager = new FastPager<Customer>(filterResult.SourceQuery, 500);
 
-                                for (var i = 0; i < 9999999; ++i)
+                                while (true)
                                 {
                                     var customerIds = await resultPager.ReadNextPageAsync(x => x.Id, x => x);
                                     if (!(customerIds?.Any() ?? false))
@@ -107,9 +106,10 @@ namespace SmartStore.Services.Customers
                     var pager = new FastPager<CustomerRoleMapping>(query, 500);
 
                     // Mappings to delete.
-                    for (var i = 0; i < 9999999; ++i)
+                    while (true)
                     {
-                        if (ctx.CancellationToken.IsCancellationRequested) return;
+                        if (ctx.CancellationToken.IsCancellationRequested) 
+                            return;
 
                         var mappings = await pager.ReadNextPageAsync<CustomerRoleMapping>();
                         if (!(mappings?.Any() ?? false))
@@ -143,7 +143,8 @@ namespace SmartStore.Services.Customers
                         {
                             foreach (var chunk in toAdd.Slice(500))
                             {
-                                if (ctx.CancellationToken.IsCancellationRequested) return;
+                                if (ctx.CancellationToken.IsCancellationRequested) 
+                                    return;
 
                                 foreach (var customerId in chunk)
                                 {

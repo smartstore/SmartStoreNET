@@ -5,22 +5,36 @@
 
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 1fr .8fr 1fr .6fr;
+    grid-template-columns: repeat(4, 1fr);
     grid-column-gap: 2rem;
     grid-template-rows: repeat(5, auto);
     grid-row-gap: 2rem;
 }
 
+.table-chart {
+    tr > th, tr > td {
+        width: 25%;
+        min-width: 25%;
+        max-width: 25%;
+
+        &:first-child {
+            width: 50%;
+            min-width: 50%;
+            max-width: 50%;
+        }
+    }
+}
+
+
 .clickable:hover {
     cursor: pointer;
 }
 
-.linked-text:link{
+.linked-text:link {
     color: inherit;
 }
 
 .report {
-    // Global
     .title-report {
         display: inline-block;
         margin: 0;
@@ -53,27 +67,17 @@
 
         .display-row {
             padding: 8px 16px;
-
-            &.row-center {
-                text-align: center;
-            }
-
-            &.row-right {
-                text-align: end;
-            }
         }
     }
 
     .chart-toggle {
-        font-size: .75rem;
+        /*font-size: .75rem;
         padding: 0.33rem .66rem;
-        border: 0;
-        z-index: 1;
+        z-index: 1;*/
     }
 
     .canvas-container {
         position: relative;
-        //transform: translateY(-44px);
     }
 
     .sales-chart {
@@ -139,6 +143,43 @@
         grid-row-end: 6;
     }
 
+    #orders-chart-legend {
+        & > ul {
+            cursor: pointer;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        & li {
+            display: inline-block;
+            user-select: none;
+
+            &.hidden {
+                text-decoration: line-through;
+                user-select: none;
+            }
+
+            &:not(:last-child) {
+                padding-right: 1rem;
+            }
+        }
+
+        & .total-amount {
+            text-decoration: none !important;
+            display: inline-block;
+            user-select: text;
+        }
+
+        & .legend {
+            border-radius: 7px;
+            display: inline-block;
+            height: 11px;
+            margin-right: .3rem;
+            width: 11px;
+        }
+    }
+
     .chevron {
         color: var(--success);
 
@@ -152,10 +193,9 @@
             transform: rotate(180deg);
         }
     }
-
-    .btn-group > .btn-secondary:hover:not(.active) {
+    /*.btn-group > .btn-secondary:hover:not(.active) {
         background-color: darken($secondary, 5%);
-    }
+    }*/
     /*.customer-registrations, .top-customers {
         .btn-group {
             > .btn-secondary {

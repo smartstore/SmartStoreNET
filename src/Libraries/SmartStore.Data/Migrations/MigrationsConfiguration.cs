@@ -499,7 +499,7 @@
             builder.AddOrUpdate("Admin.Media.Album.Message", "Messages", "Nachrichten");
             builder.AddOrUpdate("Admin.Media.Album.File", "Files", "Dateien");
 
-            builder.AddOrUpdate("Admin.SalesReport.LatestOrders", "Latest orders", "Neuste Bestellungen");
+            builder.AddOrUpdate("Admin.SalesReport.LatestOrders", "Latest orders", "Neueste Bestellungen");
             builder.AddOrUpdate("Admin.SalesReport.TopCustomers", "Top customers", "Top Kunden");
 
             builder.AddOrUpdate("Admin.Customers.CustomerRoles.AutomatedAssignmentRules",
@@ -510,10 +510,12 @@
 
             builder.AddOrUpdate("Admin.CustomerRoleMapping.IsSystemMapping", "Automatic assignment", "Automatische Zuordnung");
 
-            builder.AddOrUpdate("Admin.Common.TimeOfDay", "o'clock", "Uhr");
-            builder.AddOrUpdate("Admin.SalesReport.ByQuantity", "by quantity", "nach Menge");
-            builder.AddOrUpdate("Admin.SalesReport.ByAmount", "by amount", "nach Betrag");
+            builder.AddOrUpdate("Admin.SalesReport.ByQuantity", "By quantity", "Nach Anzahl");
+            builder.AddOrUpdate("Admin.SalesReport.ByAmount", "By amount", "Nach Betrag");
+            builder.AddOrUpdate("Time.Today", "Today", "Heute");
 
+            builder.AddOrUpdate("Common.Amount.Financial", "Amount", "Betrag");
+            builder.AddOrUpdate("Common.Amount", "Amount", "Betrag");
         }
     }
 }

@@ -42,137 +42,100 @@ namespace SmartStore.Services.Customers
         public override async Task ExecuteAsync(TaskExecutionContext ctx)
         {
             var count = 0;
-            var clearCache = false;
+            var numDeleted = 0;
+            var numAdded = 0;
             var roleQuery = _customerRoleRepository.TableUntracked.Expand(x => x.RuleSets);
 
             if (ctx.Parameters.ContainsKey("CustomerRoleIds"))
             {
-                var rolesIds = ctx.Parameters["CustomerRoleIds"].ToIntArray();
-                roleQuery = roleQuery.Where(x => rolesIds.Contains(x.Id));
+                var roleIds = ctx.Parameters["CustomerRoleIds"].ToIntArray();
+                roleQuery = roleQuery.Where(x => roleIds.Contains(x.Id));
+
+                numDeleted = _customerRoleMappingRepository.Context.ExecuteSqlCommand(
+                    "Delete From [dbo].[CustomerRoleMapping] Where [CustomerRoleId] In ({0}) And [IsSystemMapping] = 1",
+                    false,
+                    null,
+                    string.Join(",", roleIds));
+            }
+            else
+            {
+                numDeleted = _customerRoleMappingRepository.Context.ExecuteSqlCommand("Delete From [dbo].[CustomerRoleMapping] Where [IsSystemMapping] = 1");
             }
 
-            var roles = await roleQuery.ToListAsync();
-            if (!roles.Any())
-            {
-                return;
-            }
+            var roles = await roleQuery
+                .Where(x => x.Active)
+                .ToListAsync();
 
             using (var scope = new DbContextScope(ctx: _customerRoleMappingRepository.Context, autoDetectChanges: false, validateOnSave: false, hooksEnabled: false, autoCommit: false))
             {
                 foreach (var role in roles)
                 {
-                    try
-                    {
-                        ctx.SetProgress(++count, roles.Count, $"Sync customer assignments for role {role.SystemName.NaIfEmpty()}.");
-                        _customerRoleMappingRepository.Context.DetachEntities<CustomerRoleMapping>();
-                    }
-                    catch { }
-
                     var ruleSetCustomerIds = new HashSet<int>();
-                    var existingCustomerIds = new HashSet<int>();
-                    var numDeleted = 0;
-                    var numAdded = 0;
+
+                    ctx.SetProgress(++count, roles.Count, $"Add customer assignments for role \"{role.SystemName.NaIfEmpty()}\".");
 
                     // Execute active rule sets and collect customer ids.
-                    // Delete old mappings if the role is inactive or has no assigned rule sets.
-                    if (role.Active)
+                    foreach (var ruleSet in role.RuleSets.Where(x => x.IsActive))
                     {
-                        foreach (var ruleSet in role.RuleSets.Where(x => x.IsActive))
-                        {
-                            if (ctx.CancellationToken.IsCancellationRequested) 
-                                return;
-
-                            if (_ruleFactory.CreateExpressionGroup(ruleSet, _targetGroupService) is FilterExpression expression)
-                            {
-                                var filterResult = _targetGroupService.ProcessFilter(expression, 0, 500);
-                                var resultPager = new FastPager<Customer>(filterResult.SourceQuery, 500);
-
-                                while (true)
-                                {
-                                    var customerIds = await resultPager.ReadNextPageAsync(x => x.Id, x => x);
-                                    if (!(customerIds?.Any() ?? false))
-                                    {
-                                        break;
-                                    }
-
-                                    ruleSetCustomerIds.AddRange(customerIds);
-                                }
-                            }
-                        }
-                    }
-
-                    // Sync mappings.
-                    var query = _customerRoleMappingRepository.Table.Where(x => x.CustomerRoleId == role.Id && x.IsSystemMapping);
-                    var pager = new FastPager<CustomerRoleMapping>(query, 500);
-
-                    // Mappings to delete.
-                    while (true)
-                    {
-                        if (ctx.CancellationToken.IsCancellationRequested) 
+                        if (ctx.CancellationToken.IsCancellationRequested)
                             return;
 
-                        var mappings = await pager.ReadNextPageAsync<CustomerRoleMapping>();
-                        if (!(mappings?.Any() ?? false))
+                        if (_ruleFactory.CreateExpressionGroup(ruleSet, _targetGroupService) is FilterExpression expression)
                         {
-                            break;
-                        }
+                            var filterResult = _targetGroupService.ProcessFilter(expression, 0, 500);
+                            var resultPager = new FastPager<Customer>(filterResult.SourceQuery, 500);
 
-                        foreach (var mapping in mappings)
-                        {
-                            if (!role.Active || !ruleSetCustomerIds.Contains(mapping.CustomerId))
+                            while (true)
                             {
-                                _customerRoleMappingRepository.Delete(mapping);
-
-                                ++numDeleted;
-                                clearCache = true;
-                            }
-                            else
-                            {
-                                existingCustomerIds.Add(mapping.CustomerId);
-                            }
-                        }
-
-                        await scope.CommitAsync();
-                    }
-
-                    // Mappings to add.
-                    if (role.Active)
-                    {
-                        var toAdd = ruleSetCustomerIds.Except(existingCustomerIds).ToList();
-                        if (toAdd.Any())
-                        {
-                            foreach (var chunk in toAdd.Slice(500))
-                            {
-                                if (ctx.CancellationToken.IsCancellationRequested) 
-                                    return;
-
-                                foreach (var customerId in chunk)
+                                var customerIds = await resultPager.ReadNextPageAsync(x => x.Id, x => x);
+                                if (!(customerIds?.Any() ?? false))
                                 {
-                                    _customerRoleMappingRepository.Insert(new CustomerRoleMapping
-                                    {
-                                        CustomerId = customerId,
-                                        CustomerRoleId = role.Id,
-                                        IsSystemMapping = true
-                                    });
-
-                                    ++numAdded;
-                                    clearCache = true;
+                                    break;
                                 }
 
-                                await scope.CommitAsync();
+                                ruleSetCustomerIds.AddRange(customerIds);
                             }
                         }
                     }
 
-                    Debug.WriteLineIf(numDeleted > 0 || numAdded > 0, $"Customer assignments for {role.SystemName.NaIfEmpty()}: deleted {numDeleted}, added {numAdded}.");
+                    // Add mappings.
+                    if (ruleSetCustomerIds.Any())
+                    {
+                        foreach (var chunk in ruleSetCustomerIds.Slice(500))
+                        {
+                            if (ctx.CancellationToken.IsCancellationRequested)
+                                return;
+
+                            foreach (var customerId in chunk)
+                            {
+                                _customerRoleMappingRepository.Insert(new CustomerRoleMapping
+                                {
+                                    CustomerId = customerId,
+                                    CustomerRoleId = role.Id,
+                                    IsSystemMapping = true
+                                });
+
+                                ++numAdded;
+                            }
+
+                            await scope.CommitAsync();
+                        }
+
+                        try
+                        {
+                            _customerRoleMappingRepository.Context.DetachEntities<CustomerRoleMapping>();
+                        }
+                        catch { }
+                    }
                 }
             }
 
-
-            if (clearCache)
+            if (numAdded > 0 || numDeleted > 0)
             {
                 _cacheManager.RemoveByPattern(AclService.ACL_SEGMENT_PATTERN);
             }
+
+            Debug.WriteLineIf(numDeleted > 0 || numAdded > 0, $"Deleted {numDeleted} and added {numAdded} customer assignments for {roles.Count} roles.");
         }
     }
 }

@@ -1,28 +1,27 @@
 ﻿@model StoreDashboardReportModel
 @using SmartStore.Admin.Models.Store
 
-<div class="bg-white rounded-lg shadow">
-    <div class="px-3 py-2">
-        <div class="font-weight-medium p-0 title-report">
-            <i class="fa fa-chart-line pr-2"></i>
-            @T("Admin.SalesReport.StoreStatistics")
+<div class="bg-white rounded shadow-sm">
+    <div class="px-4 pt-4 pb-2">
+        <div class="p-0 title-report fs-h5 font-weight-700">
+            <i class="fa fa-chart-line pr-2"></i>@T("Admin.SalesReport.StoreStatistics")
         </div>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-striped m-0">
+    <div class="table-responsive table-dashboard">
+        <table class="table m-0">
             <thead>
                 <tr>
-                    <th class="display-row">@T("Field")</th>
-                    <th class="display-row row-right">@T("Number")</th>
+                    <th class="display-row">@T("Attribute")</th>
+                    <th class="display-row text-right">@T("Value")</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model.StoreStatisticsReport)
                 {
                 <tr>
-                    <td class="display-row">@Html.LabelFor(model => item.Key)</td>
-                    <td class="display-row row-right">@Html.LabelFor(model => item.Value)</td>
+                    <td class="display-row">@item.Key</td>
+                    <td class="display-row text-right">@item.Value</td>
 
                 </tr>
                 }

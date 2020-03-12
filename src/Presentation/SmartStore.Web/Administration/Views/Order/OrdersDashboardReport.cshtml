@@ -4,43 +4,46 @@
     var jsonData = JsonConvert.SerializeObject(Model);
 }
 
-<div class="bg-white rounded-lg shadow h-100" style="overflow:hidden">
-    <div class="px-3 pt-3 d-flex pb-0">
-        <div class="font-weight-medium p-0 title-report">
-            <i class="fa fa-chart-bar pr-2"></i>
-            @T("Account.CustomerOrders")
+<div class="bg-white rounded shadow-sm h-100">
+    <div class="px-4 pt-4 d-flex pb-0">
+        <div class="p-0 title-report fs-h5 font-weight-700">
+            <i class="fa fa-chart-bar pr-2"></i>@T("Account.CustomerOrders")
         </div>
 
-        <div class="align-self-center pl-2 fs-h6 font-weight-300">
-            <span id="orders-sum-amount" class="text-muted"></span>
+        <div class="align-self-center pl-4 fs-h5 font-weight-300">
+            <span id="orders-sum-amount" class="text-muted align-middle"></span>
         </div>
 
-        <div class="align-self-center pl-2 fs-h6">
-            <span id="orders-delta-percentage"></span><span id="orders-delta-percentage-chevron" class="chevron pl-1 d-none"></span>
+        <div class="align-self-center pl-3 fs-h5">
+            <span id="orders-delta-percentage" class="align-middle"></span><span id="orders-delta-percentage-chevron" class="chevron align-middle pl-1 d-none"></span>
         </div>
 
         <div class="btn-group btn-group-toggle ml-auto" data-toggle="buttons">
-            <label class="btn btn-secondary active chart-toggle">
+            <label class="btn btn-secondary btn-dashboard align-self-center active">
                 <input type="radio" name="orders-toggle" data-period="Day" autocomplete="off" checked>
-                @T("Time.Day")
+                @T("Time.Today")
             </label>
-            <label class="btn btn-secondary chart-toggle">
+            <label class="btn btn-secondary btn-dashboard align-self-center">
+                <input type="radio" name="orders-toggle" data-period="Yesterday" autocomplete="off" checked>
+                @T("Time.Yesterday")
+            </label>
+            <label class="btn btn-secondary btn-dashboard align-self-center">
                 <input type="radio" name="orders-toggle" data-period="Week" autocomplete="off">
                 @T("Time.Week")
             </label>
-            <label class="btn btn-secondary chart-toggle">
+            <label class="btn btn-secondary btn-dashboard align-self-center">
                 <input type="radio" name="orders-toggle" data-period="Month" autocomplete="off">
                 @T("Time.Month")
             </label>
-            <label class="btn btn-secondary chart-toggle">
+            <label class="btn btn-secondary btn-dashboard align-self-center">
                 <input type="radio" name="orders-toggle" data-period="Year" autocomplete="off">
                 @T("Time.Year")
             </label>
         </div>
     </div>
-    <div class="pl-3 pt-2" id="orders-chart-legend"></div>
-    <div class="canvas-container pt-0 mt-0 h-100" style="transform: translateY(-69px); pointer-events: none">
-        <canvas id="orders-chart" class="w-100" width="70" height="21" style="position: absolute; bottom: 0px; pointer-events: all"></canvas>
+    <div class="px-4 pt-3" id="orders-chart-legend"></div>
+    <div class="canvas-container" style="height: 75%; transform: translateY(2px); pointer-events: none">
+        <canvas id="orders-chart" class="w-100" width="70" height="18" style="position: absolute; pointer-events: all"></canvas>
     </div>
 </div>
 
@@ -52,11 +55,6 @@
         var $sumElement = $("#orders-sum-amount");
         var currentPeriod = "Day";
 
-        //Object.prototype.getByIndex = function (index) {
-        //        return this[Object.keys(this)[index]];
-        //};
-        //console.log(ordersData.getByIndex(0));
-
         var style = getComputedStyle(document.body);
         var colorPrimary = style.getPropertyValue('--primary');
         var colorIndigo = style.getPropertyValue('--indigo');
@@ -67,25 +65,29 @@
 
         //----------------------------------------------------
         // Chartjs
-
         var $ordersChartElement = $('#orders-chart')[0];
         var orders_ctx = $ordersChartElement.getContext('2d');
 
         var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight);
-        completeGradient.addColorStop(0, hexToRgba(colorPrimary.substr(1), .9));
-        completeGradient.addColorStop(1, hexToRgba(colorPrimary.substr(1), .1));
+        completeGradient.addColorStop(0, hexToRgba(colorPrimary.substr(1), 1));
+        //completeGradient.addColorStop(1, hexToRgba(colorPrimary.substr(1), .1));
+        completeGradient.addColorStop(1, 'rgb(255,255,255)');
+
 
         var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight);
-        cancelledGradient.addColorStop(0, hexToRgba(colorDanger.substr(1), .9));
-        cancelledGradient.addColorStop(1, hexToRgba(colorDanger.substr(1), .1));
+        cancelledGradient.addColorStop(0, hexToRgba(colorDanger.substr(1), 1));
+        //cancelledGradient.addColorStop(0, hexToRgba(colorDanger.substr(1), .1));
+        cancelledGradient.addColorStop(1, 'rgb(255,255,255)');
 
         var pendingGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight);
-        pendingGradient.addColorStop(0, hexToRgba(colorWarning.substr(1), .9));
-        pendingGradient.addColorStop(1, hexToRgba(colorWarning.substr(1), .1));
+        pendingGradient.addColorStop(0, hexToRgba(colorWarning.substr(1), 1));
+        //pendingGradient.addColorStop(1, hexToRgba(colorWarning.substr(1), .1));
+        pendingGradient.addColorStop(1, 'rgb(255,255,255)');
 
         var processingGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight);
-        processingGradient.addColorStop(0, hexToRgba(colorSuccess.substr(1), .9));
-        processingGradient.addColorStop(1, hexToRgba(colorSuccess.substr(1), .1));
+        processingGradient.addColorStop(0, hexToRgba(colorSuccess.substr(1), 1));
+        //processingGradient.addColorStop(1, hexToRgba(colorSuccess.substr(1), .1));
+        processingGradient.addColorStop(1, 'rgb(255,255,255)');
 
         var order_config = {
             type: 'line',
@@ -94,43 +96,31 @@
                 datasets: [{
                     label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled")',
                     data: ordersData.Day.Data[0].Amount,
-                    borderWidth: 2,
                     borderColor: colorDanger,
                     backgroundColor: cancelledGradient,
-                    lineTension: 0.2,
-                    fill: true,
                     pointHoverBackgroundColor: colorDanger,
                     pointHoverBorderColor: 'transparent',
                 }, {
                     label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending")',
                     data: ordersData.Day.Data[1].Amount,
-                    borderWidth: 2,
                     borderColor: colorWarning,
                     backgroundColor: pendingGradient,
-                    lineTension: 0.2,
-                    fill: true,
                     hidden: true,
                     pointHoverBackgroundColor: colorWarning,
                     pointHoverBorderColor: 'transparent',
                 }, {
                     label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing")',
                     data: ordersData.Day.Data[2].Amount,
-                    borderWidth: 2,
                     borderColor: colorSuccess,
                     backgroundColor: processingGradient,
-                    lineTension: 0.2,
-                    fill: true,
                     hidden: true,
                     pointHoverBackgroundColor: colorSuccess,
                     pointHoverBorderColor: 'transparent',
                 }, {
                     label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")',
                     data: ordersData.Day.Data[3].Amount,
-                    borderWidth: 2,
                     borderColor: colorPrimary,
                     backgroundColor: completeGradient,
-                    lineTension: 0.2,
-                    fill: true,
                     pointHoverBackgroundColor: colorPrimary,
                     pointHoverBorderColor: 'transparent',
                 }]
@@ -138,7 +128,7 @@
             options: {
                 responsive: true,
                 responsiveAnimationDuration: 0,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 stacked: true,
                 animation: {
                     duration: 400,
@@ -188,6 +178,12 @@
                     point: {
                         radius: 0,
                         hoverRadius: 6,
+                        hitRadius: 3,
+                    },
+                    line: {
+                        borderWidth: 2,
+                        lineTension: 0.2,
+                        fill: true,
                     }
                 },
                 tooltips: {
@@ -205,7 +201,7 @@
                     bodySpacing: 5,
                     callbacks: {
                         label: function (item, data) {
-                            return " " + (data.datasets[item.datasetIndex].label || '') + ": " + item.yLabel; //ordersData.getByIndex(item.datasetIndex).FormattedAmount[item.index];
+                            return " " + (data.datasets[item.datasetIndex].label || '') + ": " + item.yLabel;
                         }
                     }
                 },
@@ -213,7 +209,6 @@
                     yAxes: [{
                         display: false,
                         stacked: true,
-
                     }],
                     xAxes: [{
                         display: false,
@@ -239,8 +234,24 @@
         var $ordersLegendContainer = $("#orders-chart-legend")[0];
         createLegend();
 
+        //$("#orders-chart").outerHeight($("#orders-chart-container").outerHeight());
+        //$(window).on("resize", function () {
+        //    $("#orders-chart").outerHeight($(window).height() - $("#orders-chart").offset().top - Math.abs($("#orders-chart").outerHeight(true) - $("#orders-chart").outerHeight()));
+        //});
 
-        //----------------------------------------------------
+        //resizeChart();
+
+
+        //$(window).on("resize", function(){
+        //    resizeChart();
+        //});
+
+        //function resizeChart(){
+        //    // $("#orders-chart").outerHeight($(window).height()-$("#orders-chart").offset().top - Math.abs($("#orders-chart").outerHeight(true) - $("#orders-chart").outerHeight()));
+        //    $($ordersChartElement).attr('width', $('orders-chart-container').width()); //max width
+        //    $($ordersChartElement).attr('height', $('orders-chart-container').height());
+        //}
+        ////----------------------------------------------------
         // EventHandler
 
         $('input[type=radio][name=orders-toggle]').on('change', function () {
@@ -254,26 +265,18 @@
             var val = ordersData[period].PercentageDelta;
 
             if (val < 0) {
-                if (!$chevronElement.hasClass("negative")) {
-                    $chevronElement.addClass("negative");
-                }
-                if ($chevronElement.hasClass("d-none")) {
-                    $chevronElement.removeClass("d-none");
-                }
+                $chevronElement.addClass("negative");
+                $chevronElement.removeClass("d-none");
             }
             else if (val > 0) {
-                if ($chevronElement.hasClass("negative")) {
-                    $chevronElement.removeClass("negative");
-                }
-                if ($chevronElement.hasClass("d-none")) {
-                    $chevronElement.removeClass("d-none");
-                }
+                $chevronElement.removeClass("negative");
+                $chevronElement.removeClass("d-none");
             }
-            else if (!$chevronElement.hasClass("d-none")) {
+            else {
                 $chevronElement.addClass("d-none")
             }
 
-            var delta = val == 0 ? "" : val < 0 ? "-" + Math.abs(val) + " %" : "+" + Math.abs(val) + " %";
+            var delta = val == 0 ? "" : val < 0 ? "-" + Math.abs(val) + "%" : "+" + Math.abs(val) + "%";
 
             $percentageElement.html(delta);
             $sumElement.html(ordersData[period].TotalAmount);

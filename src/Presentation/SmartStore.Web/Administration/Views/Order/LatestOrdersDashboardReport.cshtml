@@ -1,55 +1,50 @@
 ﻿@model LatestOrdersDashboardReportModel
 @using SmartStore.Core.Domain.Orders
 
-<div class="bg-white rounded-lg shadow">
-    <div class="px-3 py-2">
-        <div class="font-weight-medium p-0 title-report">
-            <i class="fa fa-shopping-cart pr-2"></i>
-            @T("Admin.SalesReport.LatestOrders")
+<div class="bg-white rounded shadow-sm">
+    <div class="px-4 pt-4 pb-2">
+        <div class="p-0 title-report fs-h5 font-weight-700">
+            <i class="fa fa-shopping-cart pr-2"></i>@T("Admin.SalesReport.LatestOrders")
         </div>
     </div>
-
-
-    <div class="table-responsive">
-        <table class="table table-striped m-0">
+    
+    <div class="table-responsive table-dashboard">
+        <table class="table m-0">
             <thead>
                 <tr>
-                    <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
-                    <th class="display-row row-center">@T("Admin.Catalog.Categories.Products")</th>
-                    <th class="display-row row-right">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
-                    <th class="display-row">@T("Account.CustomerOrders.OrderDate")</th>
-                    <th class="display-row">@T("Account.CustomerOrders.OrderStatus	")</th>
+                    <th class="display-row" style="width: 30%">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
+                    <th class="display-row text-center" style="width: 10%">@T("Admin.Catalog.Categories.Products")</th>
+                    <th class="display-row text-right" style="width: 20%">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
+                    <th class="display-row" style="width: 20%; padding-left: 32px">@T("Account.CustomerOrders.OrderDate")</th>
+                    <th class="display-row" style="width: 20%">@T("Account.CustomerOrders.OrderStatus")</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var x in Model.LatestOrders)
                 {
                     <tr class="order-row" index="@x.OrderId">
-                        @*<td class="display-row">
-                                @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductDisplayName, x.ProductTypeName, x.ProductTypeLabelHint)
-                            </td>*@
                         <td class="display-row">
                             @Html.ActionLink(x.CustomerDisplayName, "Edit", "Customer", new { id = x.Customer.Id }, new { })
                         </td>
-                        <td class="display-row row-center">@x.ProductsTotal</td>
-                        <td class="display-row row-right">@x.TotalAmount</td>
-                        <td class="display-row">@x.Created</td>
+                        <td class="display-row text-center">@x.ProductsTotal</td>
+                        <td class="display-row text-right">@x.TotalAmount</td>
+                        <td class="display-row" style="padding-left: 32px">@x.Created</td>
 
                         @if (x.OrderState == OrderStatus.Pending)
                         {
-                            <td class="display-row"><a href="/Admin/Order/Edit/@x.OrderId" class="text-warning">@x.OrderState</a></td>
+                            <td class="display-row"><a href="/Admin/Order/Edit/@x.OrderId" class="text-white bg-warning px-3 py-1 rounded">@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending")</a></td>
                         }
                         else if (x.OrderState == OrderStatus.Processing)
                         {
-                            <td class="display-row"><a href="/Admin/Order/Edit/@x.OrderId" class="text-gray">@x.OrderState</a></td>
+                            <td class="display-row"><a href="/Admin/Order/Edit/@x.OrderId" class="text-white bg-primary px-3 py-1 rounded">@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing")</a></td>
                         }
                         else if (x.OrderState == OrderStatus.Complete)
                         {
-                            <td class="display-row"><a href="/Admin/Order/Edit/@x.OrderId" class="text-success">@x.OrderState</a></td>
+                            <td class="display-row"><a href="/Admin/Order/Edit/@x.OrderId" class="text-white bg-success px-3 py-1 rounded">@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")</a></td>
                         }
                         else if (x.OrderState == OrderStatus.Cancelled)
                         {
-                            <td class="display-row"><a href="/Admin/Order/Edit/@x.OrderId" class="text-danger">@x.OrderState</a></td>
+                            <td class="display-row"><a href="/Admin/Order/Edit/@x.OrderId" class="text-white bg-danger px-3 py-1 rounded">@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled")</a></td>
                         }
                     </tr>
                 }
@@ -57,9 +52,3 @@
         </table>
     </div>
 </div>
-
-<script>
-    //$(".order-row").on("click", function ($element) {
-    //    window.location = "/Admin/Order/Edit/" + $(this).attr('index');
-    //});
-</script>

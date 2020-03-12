@@ -40,10 +40,11 @@
                 continue;
             }
 
-            var attrs = new RouteValueDictionary(item.LinkHtmlAttributes).PrependCssClass("menu-link");
+            var attrs = new RouteValueDictionary(item.HtmlAttributes);
+            var linkAttrs = new RouteValueDictionary(item.LinkHtmlAttributes).PrependCssClass("menu-link");
 
-            <li>
-                <a href="@itemUrl" @Html.Attrs(attrs)>
+            <li @Html.Attrs(attrs)>
+                <a href="@itemUrl" @Html.Attrs(linkAttrs)>
                     @if (hasIcons)
                     {
                         <i class="fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : " fas")"></i>

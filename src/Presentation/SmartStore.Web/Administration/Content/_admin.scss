@@ -303,18 +303,19 @@ body {
     }
 }
 
-.simple-admin {
-    /*#header {
-        grid-row: 1/2;
-    }*/
 
+//
+// Minimal admin layout
+// --------------------------------------------------------------
+
+.minimal-admin {
     #content {
         background-color: transparent;
         box-shadow: none;
         margin: 0;
-        padding-top: 30px;
+        padding-top: 0;
 
-        .section-header > .title{
+        .section-header{
             display: none;
         }
     }

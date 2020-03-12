@@ -80,67 +80,67 @@
         position: relative;
     }
 
-    .sales-chart {
+    .report-order-fulfillment {
         grid-column-start: 1;
-        grid-column-end: 3;
-        grid-row-start: 2;
-        grid-row-end: 3;
-    }
-
-    .bestsellers {
-        grid-column-start: 3;
-        grid-column-end: 4;
-        grid-row-start: 2;
-        grid-row-end: 3;
-    }
-
-    .top-cumstomers {
-        grid-column-start: 1;
-        grid-column-end: 2;
-        grid-row-start: 3;
-        grid-row-end: 4;
-    }
-
-    .customer-registrations {
-        grid-column-start: 2;
-        grid-column-end: 4;
-        grid-row-start: 3;
-        grid-row-end: 4;
-    }
-
-    .latest-orders {
-        grid-column-start: 1;
-        grid-column-end: 3;
-        grid-row-start: 4;
-        grid-row-end: 5;
-    }
-
-    .store-statistics {
-        grid-column-start: 3;
-        grid-column-end: 4;
-        grid-row-start: 4;
-        grid-row-end: 5;
-    }
-
-    .order-fulfillment {
-        grid-column-start: 1;
-        grid-column-end: 3;
+        grid-column-end: 7;
         grid-row-start: 1;
         grid-row-end: 2;
     }
 
-    .incomplete-orders {
-        grid-column-start: 3;
-        grid-column-end: 4;
+    .report-incomplete-orders {
+        grid-column-start: 7;
+        grid-column-end: 9;
         grid-row-start: 1;
         grid-row-end: 2;
     }
 
     .marketplace-feed {
-        grid-column-start: 4;
-        grid-column-end: 5;
+        grid-column-start: 11;
+        grid-column-end: 13;
         grid-row-start: 1;
-        grid-row-end: 6;
+        grid-row-end: 5;
+    }
+
+    .report-sales {
+        grid-column-start: 1;
+        grid-column-end: 8;
+        grid-row-start: 2;
+        grid-row-end: 3;
+    }
+
+    .report-bestsellers {
+        grid-column-start: 8;
+        grid-column-end: 11;
+        grid-row-start: 2;
+        grid-row-end: 3;
+    }
+
+    .report-top-customers {
+        grid-column-start: 1;
+        grid-column-end: 4;
+        grid-row-start: 3;
+        grid-row-end: 4;
+    }
+
+    .report-customer-registrations {
+        grid-column-start: 4;
+        grid-column-end: 11;
+        grid-row-start: 3;
+        grid-row-end: 4;
+    }
+
+    .report-latest-orders {
+        grid-column-start: 1;
+        grid-column-end: 8;
+        grid-row-start: 4;
+        grid-row-end: 5;
+    }
+
+    .report-store-statistics {
+        grid-column-start: 8;
+        grid-column-end: 11;
+        grid-row-start: 4;
+        grid-row-end: 5;
     }
 
     #orders-chart-legend {

@@ -14,30 +14,30 @@
     </div>
 </div>
 
-<div class="dashboard-grid report">
+<div class="dashboard-grid reports">
     @{ Html.RenderWidget("admin_dashboard_top"); }
-    <div class="order-fulfillment">
+    <div class="report-order-fulfillment">
         @*@{ Html.RenderAction("OrderFulfillmentReport", "Order"); }*@
     </div>
-    <div class="incomplete-orders">
+    <div class="report-incomplete-orders">
         @*@{ Html.RenderAction("OrderIncompleteReport", "Order"); }*@
     </div>
-    <div class="sales-chart">
+    <div class="report-sales">
         @{ Html.RenderAction("OrdersDashboardReport", "Order"); }
     </div>
-    <div class="bestsellers">
+    <div class="report-bestsellers">
         @{ Html.RenderAction("BestsellersDashboardReport", "Order"); }
     </div>
-    <div class="top-customers">
+    <div class="report-top-customers">
         @{ Html.RenderAction("TopCustomersDashboardReport", "Customer"); }
     </div>
-    <div class="customer-registrations">
+    <div class="report-customer-registrations">
         @{ Html.RenderAction("RegisteredCustomersDashboardReport", "Customer"); }
     </div>
-    <div class="latest-orders">
+    <div class="report-latest-orders">
         @{ Html.RenderAction("LatestOrdersDashboardReport", "Order"); }
     </div>
-    <div class="store-statistics">
+    <div class="report-store-statistics">
         @{ Html.RenderAction("StoreDashboardReport", "Store"); }
     </div>
     <div class="marketplace-feed">

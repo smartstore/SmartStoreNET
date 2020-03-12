@@ -445,6 +445,10 @@
     <Compile Include="Migrations\202003052100521_CustomerRoleMappings.Designer.cs">
       <DependentUpon>202003052100521_CustomerRoleMappings.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202003112359492_MediaManager2.cs" />
+    <Compile Include="Migrations\202003112359492_MediaManager2.Designer.cs">
+      <DependentUpon>202003112359492_MediaManager2.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -808,6 +812,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202003052100521_CustomerRoleMappings.resx">
       <DependentUpon>202003052100521_CustomerRoleMappings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003112359492_MediaManager2.resx">
+      <DependentUpon>202003112359492_MediaManager2.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

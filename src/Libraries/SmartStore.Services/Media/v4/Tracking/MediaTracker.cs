@@ -121,7 +121,7 @@ namespace SmartStore.Services.Media
             var file = _dbContext.Set<MediaFile>().Find(mediaFileId);
             if (file != null)
             {
-                var albumName = _folderService.FindAlbum(file)?.Value.Name;
+                var albumName = _folderService.FindAlbum(file)?.Value?.Name;
                 if (albumName.IsEmpty())
                 {
                     throw new InvalidOperationException("Cannot track a media file that is not assigned to any album.");
@@ -222,11 +222,22 @@ namespace SmartStore.Services.Media
                             file.Version = 2;
                         }
 
-                        if (albumName.HasValue() && track.Album.IsEmpty())
+                        if (track.Album.IsEmpty())
                         {
-                            // Overwrite track album if scope album was passed.
-                            track.Album = albumName;
+                            if (albumName.HasValue())
+                            {
+                                // Overwrite track album if scope album was passed.
+                                track.Album = albumName;
+                            }
+                            else if (file.FolderId.HasValue)
+                            {
+                                // Determine album from file
+                                track.Album = _folderService.FindAlbum(file)?.Value?.Name;
+                            }
                         }
+
+                        if (track.Album.IsEmpty())
+                            continue; // cannot track without album name
 
                         // add or remove the track from file
                         if (track.Operation == MediaTrackOperation.Track)

@@ -432,7 +432,7 @@ namespace SmartStore.Services.Media.Migration
                             ParentId = mediaFolderId
                         };
 
-                        // Add folder and save ASAP, wen need the folder id
+                        // Add folder and save ASAP, we need the folder id
                         folderSet.Add(mediaFolder);
                         ctx.SaveChanges();
 

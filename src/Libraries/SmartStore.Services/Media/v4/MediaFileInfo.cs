@@ -17,7 +17,7 @@ namespace SmartStore.Services.Media
         public MediaFileInfo(MediaFile file, IMediaStorageProvider storageProvider, string path)
         {
             File = file;
-            Directory = path;
+            Directory = path.EmptyNull();
 
             if (File.Width.HasValue && File.Height.HasValue)
             {
@@ -59,7 +59,7 @@ namespace SmartStore.Services.Media
         #region IFile
 
         [JsonProperty("path")]
-        public string Path => Directory + "/" + File.Name;
+        public string Path => (Directory + "/" + File.Name).Trim('/');
 
         [JsonProperty("dir")]
         public string Directory { get; }

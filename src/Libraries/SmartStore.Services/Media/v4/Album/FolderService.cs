@@ -37,27 +37,6 @@ namespace SmartStore.Services.Media
             _cache = cache;
         }
 
-        #region Album
-
-        public int GetAlbumIdByName(string albumName)
-        {
-            Guard.NotEmpty(albumName, nameof(albumName));
-            return _albumRegistry.GetAlbumByName(albumName)?.Id ?? 0;
-        }
-
-        public TreeNode<MediaFolderNode> FindAlbum(MediaFile mediaFile)
-        {
-            var node = GetNodeById(mediaFile?.FolderId ?? 0);
-            if (node != null)
-            {
-                return node.Closest(x => x.Value.IsAlbum);
-            }
-
-            return null;
-        }
-
-        #endregion
-
         #region Cached nodes
 
         public TreeNode<MediaFolderNode> GetRootNode()
@@ -175,7 +154,7 @@ namespace SmartStore.Services.Media
 
         private string NormalizePath(string path)
         {
-            return path.Trim('/', '\\').ToLower();
+            return path.Replace('\\', '/').Trim('/').ToLower();
         }
 
         #endregion

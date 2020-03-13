@@ -28,13 +28,12 @@ namespace SmartStore.Core
             this.TotalCount = totalItemsCount;
         }
 
-        // only here for compat reasons with nc
         public void LoadPagedList<T>(IPagedList<T> pagedList)
         {
             this.Init(pagedList);
         }
 
-        public void Init(IPageable pageable)
+        protected void Init(IPageable pageable)
         {
             Guard.NotNull(pageable, "pageable");
 

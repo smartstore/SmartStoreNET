@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Core
 {
-    public class PagedList<T> : IPagedList<T>, IReadOnlyList<T>, IReadOnlyCollection<T>
+    public class PagedList<T> : IPagedList<T>
     {
 		private bool _isEfQuery;
 		private bool _queryIsPagedAlready;

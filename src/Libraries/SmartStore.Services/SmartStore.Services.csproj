@@ -370,12 +370,14 @@
     <Compile Include="Media\v4\IMediaService.cs" />
     <Compile Include="Media\v4\MediaFileInfo.cs" />
     <Compile Include="Media\v4\MediaModule.cs" />
-    <Compile Include="Media\v4\MediaQuery.cs" />
+    <Compile Include="Media\v4\Search\MediaSearchQuery.cs" />
+    <Compile Include="Media\v4\MediaService.cs" />
     <Compile Include="Media\v4\MediaTypes\MediaType.cs" />
     <Compile Include="Media\v4\MediaTypes\IMediaTypeResolver.cs" />
     <Compile Include="Media\v4\MediaTypes\MediaTypeResolver.cs" />
     <Compile Include="Media\v4\Migration\MediaMigrator.cs" />
     <Compile Include="Media\v4\Migration\SeedingDbMigrationConsumer.cs" />
+    <Compile Include="Media\v4\Search\MediaSearchResult.cs" />
     <Compile Include="Media\v4\Tracking\IMediaTrackDetector.cs" />
     <Compile Include="Media\v4\Tracking\IMediaTracker.cs" />
     <Compile Include="Media\v4\Tracking\MediaTracker.cs" />

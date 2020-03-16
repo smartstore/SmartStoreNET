@@ -5,7 +5,6 @@ namespace SmartStore.Admin.Models.Store
 {
     public class StoreDashboardReportModel : ModelBase
     {
-        public Dictionary<string, int> StoreStatisticsReport { get; set; } = new Dictionary<string, int>();        
-
+        public Dictionary<string, string> StoreStatisticsReport { get; set; } = new Dictionary<string, string>();
     }
 }

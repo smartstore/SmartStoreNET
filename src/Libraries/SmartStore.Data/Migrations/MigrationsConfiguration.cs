@@ -512,7 +512,11 @@
 
             builder.AddOrUpdate("Admin.SalesReport.ByQuantity", "By quantity", "Nach Anzahl");
             builder.AddOrUpdate("Admin.SalesReport.ByAmount", "By amount", "Nach Betrag");
+            builder.AddOrUpdate("Admin.Report.LastWeek", "Last 7 days", "Letzte 7 Tage");
+            builder.AddOrUpdate("Admin.Report.LastMonth", "Last 28 days", "Letzte 28 Tage");
             builder.AddOrUpdate("Time.Today", "Today", "Heute");
+            builder.AddOrUpdate("Time.Yesterday", "Yesterday", "Gestern");
+            builder.AddOrUpdate("Admin.SalesReport.StoreStatistics", "Statistics", "Statistiken");
 
             builder.AddOrUpdate("Common.Amount.Financial", "Amount", "Betrag");
             builder.AddOrUpdate("Common.Amount", "Amount", "Betrag");

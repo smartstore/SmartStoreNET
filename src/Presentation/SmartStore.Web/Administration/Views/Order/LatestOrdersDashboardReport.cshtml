@@ -22,31 +22,39 @@
             <tbody>
                 @foreach (var x in Model.LatestOrders)
                 {
-                    <tr class="order-row" index="@x.OrderId">
-                        <td class="display-row">
-                            @Html.ActionLink(x.CustomerDisplayName, "Edit", "Customer", new { id = x.Customer.Id }, new { })
-                        </td>
-                        <td class="display-row text-center">@x.ProductsTotal</td>
-                        <td class="display-row text-right">@x.TotalAmount</td>
-                        <td class="display-row" style="padding-left: 32px">@x.Created</td>
+                <tr class="order-row" index="@x.OrderId">
+                    <td class="display-row">
+                        @Html.ActionLink(x.Customer.Username, "Edit", "Customer", new { id = x.Customer.Id }, new { })
+                    </td>
+                    <td class="display-row text-center">@x.ProductsTotal</td>
+                    <td class="display-row text-right">@x.TotalAmount</td>
+                    <td class="display-row" style="padding-left: 32px">@x.Created</td>
 
-                        @if (x.OrderState == OrderStatus.Pending)
-                        {
-                            <td class="display-row"><a href="/Admin/Order/Edit/@x.OrderId" class="text-white bg-warning px-3 py-1 rounded">@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending")</a></td>
-                        }
-                        else if (x.OrderState == OrderStatus.Processing)
-                        {
-                            <td class="display-row"><a href="/Admin/Order/Edit/@x.OrderId" class="text-white bg-primary px-3 py-1 rounded">@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing")</a></td>
-                        }
-                        else if (x.OrderState == OrderStatus.Complete)
-                        {
-                            <td class="display-row"><a href="/Admin/Order/Edit/@x.OrderId" class="text-white bg-success px-3 py-1 rounded">@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")</a></td>
-                        }
-                        else if (x.OrderState == OrderStatus.Cancelled)
-                        {
-                            <td class="display-row"><a href="/Admin/Order/Edit/@x.OrderId" class="text-white bg-danger px-3 py-1 rounded">@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled")</a></td>
-                        }
-                    </tr>
+                    @if (x.OrderState == OrderStatus.Pending)
+                    {
+                        <td class="display-row">
+                            @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending"), "Edit", "Order", new { id = x.OrderId }, new { @class = "text-white bg-warning px-3 py-1 rounded" })
+                        </td>
+                    }
+                    else if (x.OrderState == OrderStatus.Processing)
+                    {
+                        <td class="display-row">
+                            @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing"), "Edit", "Order", new { id = x.OrderId }, new { @class = "text-white bg-primary px-3 py-1 rounded" })
+                        </td>
+                    }
+                    else if (x.OrderState == OrderStatus.Complete)
+                    {
+                        <td class="display-row">
+                            @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete"), "Edit", "Order", new { id = x.OrderId }, new { @class = "text-white bg-success px-3 py-1 rounded" })
+                        </td>
+                    }
+                    else if (x.OrderState == OrderStatus.Cancelled)
+                    {
+                        <td class="display-row">
+                            @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled"), "Edit", "Order", new { id = x.OrderId }, new { @class = "text-white bg-danger px-3 py-1 rounded" })
+                        </td>
+                    }
+                </tr>
                 }
             </tbody>
         </table>

@@ -219,6 +219,14 @@ namespace SmartStore.Admin.Controllers
             var model = new StoreDashboardReportModel();
 
             model.StoreStatisticsReport.Add("Produkte", 128372);
+            model.StoreStatisticsReport.Add("Varianten", 128372);
+            model.StoreStatisticsReport.Add("Attribute", 128372);
+            model.StoreStatisticsReport.Add("Warengruppen", 128372);
+            model.StoreStatisticsReport.Add("Hersteller", 128372);
+            model.StoreStatisticsReport.Add("Customer", 128372);
+			model.StoreStatisticsReport.Add("Sales", 128372);
+			model.StoreStatisticsReport.Add("Orders", 128372);
+			model.StoreStatisticsReport.Add("Medien", 128372);
 
             return PartialView(model);
 

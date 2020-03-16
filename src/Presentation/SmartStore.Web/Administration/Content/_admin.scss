@@ -1169,32 +1169,6 @@ textarea:not([class*="form-control"]) {
     }
 }
 
-.marketplace-feed {
-    .marketplace-feed-title {
-        text-transform: uppercase;
-        font-size: 18px;
-        margin-bottom: 30px;
-
-        i {
-            font-size: 20px;
-        }
-    }
-
-    .marketplace-feed-item {
-        margin-bottom: 15px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #ddd;
-
-        &:last-child {
-            border-bottom: none;
-        }
-    }
-
-    .marketplace-feed-item-title {
-        margin-bottom: 4px;
-    }
-}
-
 
 // Plugins & Providers
 // --------------------------------------------------------------

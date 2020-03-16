@@ -184,3 +184,28 @@
         }
     }
 }
+
+.marketplace-feed {
+    grid-column: 11 / 13;
+    grid-row: 1 / 5;
+
+    .marketplace-feed-body {
+        padding: 1rem 1.5rem 0rem 1.5rem;
+
+        .marketplace-feed-item {
+            margin-bottom: 1.25rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid #ddd;
+
+            &:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0.25rem;
+            }
+        }
+
+        .marketplace-feed-item-title {
+            margin-bottom: .5rem;
+        }
+    }
+}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,29 +9,38 @@ using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Media
 {
-    public class InsertFileCommand
+    [Flags]
+    public enum MediaLoadFlags
     {
-        public byte[] Data { get; set; }
-        public int FolderId { get; set; }
-        public string Name { get; set; }
-        public string MimeType { get; set; }
-        public bool IsNew { get; set; }
-        public bool IsTransient { get; set; } = true;
-        public bool ValidateBinary { get; set; } = true;
-        public Size Dimensions { get; set; }
+        None = 0,
+        WithBlob = 1 << 0,
+        WithTags = 1 << 1,
+        WithTracks = 1 << 2,
+        WithFolder = 1 << 3,
+        AsNoTracking  = 1 << 4,
+        Full = WithBlob | WithTags | WithTracks | WithFolder,
+        FullNoTracking = Full | AsNoTracking
     }
-    
-    public interface IMediaService
+
+    public partial interface IMediaService
     {
-        MediaFileInfo GetFileByPath(string path);
-        void CopyFile(MediaFile file, string newPath, bool overwrite = false);
-        int CountFiles(MediaQuery query);
-        IEnumerable<MediaFileInfo> SearchFiles(MediaQuery query);
+        int CountFiles(MediaSearchQuery query);
+        Task<int> CountFilesAsync(MediaSearchQuery query);
+        MediaSearchResult SearchFiles(MediaSearchQuery query, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
+        Task<MediaSearchResult> SearchFilesAsync(MediaSearchQuery query, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
+
         bool FileExists(string path);
+        MediaFileInfo GetFileByPath(string path);
+        MediaFileInfo GetFileById(int id, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
+        IList<MediaFileInfo> GetFilesByIds(int[] ids, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
 
         MediaFileInfo CreateFile(string path);
         MediaFileInfo CreateFile(int folderId, string fileName);
-        MediaFileInfo InsertFile(InsertFileCommand command);
-        void DeleteFile(MediaFile file);
+        MediaFileInfo InsertFile(MediaFile file, Stream stream, bool validate = true);
+        void DeleteFile(MediaFile file, bool permanent);
+
+        void CopyFile(MediaFile file, string newPath, bool overwrite = false);
+
+        string GetUrl(MediaFileInfo file, ProcessImageQuery query, string host = null);
     }
 }

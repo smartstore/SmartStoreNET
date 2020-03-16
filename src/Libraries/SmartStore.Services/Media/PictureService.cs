@@ -126,7 +126,6 @@ namespace SmartStore.Services.Media
 
 			_host = _host.EmptyNull().EnsureEndsWith("/");
 			_appPath = appPath.EnsureEndsWith("/");
-
 		}
 
 		public ILogger Logger { get; set; }

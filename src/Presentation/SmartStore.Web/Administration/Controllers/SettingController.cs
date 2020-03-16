@@ -77,6 +77,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly PluginMediator _pluginMediator;
 		private readonly IPluginFinder _pluginFinder;
 		private readonly Lazy<IMediaMover> _mediaMover;
+		private readonly Lazy<IMediaTracker> _mediaTracker;
 		private readonly Lazy<ICatalogSearchQueryAliasMapper> _catalogSearchQueryAliasMapper;
         private readonly Lazy<IForumSearchQueryAliasMapper> _forumSearchQueryAliasMapper;
         private readonly Lazy<IMenuService> _menuService;
@@ -106,6 +107,7 @@ namespace SmartStore.Admin.Controllers
 			PluginMediator pluginMediator,
 			IPluginFinder pluginFinder,
 			Lazy<IMediaMover> mediaMover,
+			Lazy<IMediaTracker> mediaTracker,
 			Lazy<ICatalogSearchQueryAliasMapper> catalogSearchQueryAliasMapper,
             Lazy<IForumSearchQueryAliasMapper> forumSearchQueryAliasMapper,
             Lazy<IMenuService> menuService)
@@ -128,6 +130,7 @@ namespace SmartStore.Admin.Controllers
 			_pluginMediator = pluginMediator;
 			_pluginFinder = pluginFinder;
 			_mediaMover = mediaMover;
+			_mediaTracker = mediaTracker;
 			_catalogSearchQueryAliasMapper = catalogSearchQueryAliasMapper;
             _forumSearchQueryAliasMapper = forumSearchQueryAliasMapper;
             _menuService = menuService;
@@ -1126,8 +1129,9 @@ namespace SmartStore.Admin.Controllers
 
 			// PDF.
 			var pdfSettings = Services.Settings.LoadSetting<PdfSettings>(storeScope);
-			MediaHelper.UpdatePictureTransientState(pdfSettings.LogoPictureId, model.PdfSettings.LogoPictureId, true);
+			var prevLogoId = pdfSettings.LogoPictureId;
 			MiniMapper.Map(model.PdfSettings, pdfSettings);
+			_mediaTracker.Value.Track(pdfSettings, prevLogoId, x => x.LogoPictureId);
 
 			// Localization.
 			var localizationSettings = Services.Settings.LoadSetting<LocalizationSettings>(storeScope);

@@ -7,9 +7,6 @@ namespace SmartStore.Services.Media
 {
     public interface IFolderService
     {
-        int GetAlbumIdByName(string albumName);
-        TreeNode<MediaFolderNode> FindAlbum(MediaFile mediaFile);
-
         TreeNode<MediaFolderNode> GetRootNode();
         TreeNode<MediaFolderNode> GetNodeById(int id);
         TreeNode<MediaFolderNode> GetNodeByPath(string path);

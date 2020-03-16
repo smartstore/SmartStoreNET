@@ -42,15 +42,23 @@ namespace SmartStore.Services.Configuration
         /// <returns>Setting</returns>
         Setting GetSettingById(int settingId);
 
-        /// <summary>
-        /// Get setting value by key
-        /// </summary>
-        /// <typeparam name="T">Type</typeparam>
-        /// <param name="key">Key</param>
-        /// <param name="defaultValue">Default value</param>
+		/// <summary>
+		/// Gets a setting by key
+		/// </summary>
+		/// <param name="key">Unique setting key</param>
 		/// <param name="storeId">Store identifier</param>
-		/// <param name="loadSharedValueIfNotFound">A value indicating whether a shared (for all stores) value should be loaded if a value specific for a certain is not found</param>
-        /// <returns>Setting value</returns>
+		/// <returns>Setting</returns>
+		Setting GetSettingEntityByKey(string key, int storeId = 0);
+
+		/// <summary>
+		/// Get setting value by key
+		/// </summary>
+		/// <typeparam name="T">Type</typeparam>
+		/// <param name="key">Key</param>
+		/// <param name="defaultValue">Default value</param>
+		/// <param name="storeId">Store identifier</param>
+		/// <param name="loadSharedValueIfNotFound">A value indicating whether a shared (for all stores) value should be loaded if a value specific for a certain store is not found</param>
+		/// <returns>Setting value</returns>
 		T GetSettingByKey<T>(string key, T defaultValue = default(T), int storeId = 0, bool loadSharedValueIfNotFound = false);
 
 		/// <summary>

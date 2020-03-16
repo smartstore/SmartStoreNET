@@ -345,7 +345,7 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			_writer.Write("Id", entity.Id.ToString());
-			_writer.Write("SeoFilename", (string)picture.SeoFilename);
+			_writer.Write("SeoFilename", (string)picture.Name);
 			_writer.Write("MimeType", (string)picture.MimeType);
 			_writer.Write("ThumbImageUrl", (string)picture._ThumbImageUrl);
 			_writer.Write("ImageUrl", (string)picture._ImageUrl);

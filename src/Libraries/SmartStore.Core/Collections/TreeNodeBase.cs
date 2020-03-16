@@ -27,6 +27,98 @@ namespace SmartStore.Collections
 
 		#region Id
 
+		private void PropagateNodeId(object value /* Id */, IDictionary<object, TreeNodeBase<T>> idNodeMap)
+		{
+			if (value != null)
+			{
+				// We support multi-keys for single nodes
+				var ids = value as IEnumerable<object> ?? new object[] { value };
+				foreach (var id in ids)
+				{
+					idNodeMap[id] = this;
+				}
+			}
+		}
+
+		private void RemoveNodeId(object value /* Id */, IDictionary<object, TreeNodeBase<T>> idNodeMap)
+		{
+			if (value != null)
+			{
+				// We support multi-keys for single nodes
+				var ids = value as IEnumerable<object> ?? new object[] { value };
+				foreach (var id in ids)
+				{
+					if (idNodeMap.ContainsKey(id))
+					{
+						idNodeMap.Remove(id);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Responsible for propagating node ids when detaching/attaching nodes
+		/// </summary>
+		private void FixIdNodeMap(T prevParent, T newParent)
+		{
+			ICollection<TreeNodeBase<T>> keyedNodes = null;
+
+			if (prevParent != null)
+			{
+				// A node is moved. We need to detach first.
+				keyedNodes = new List<TreeNodeBase<T>>();
+
+				// Detach ids from prev map
+				var prevMap = prevParent.GetIdNodeMap();
+
+				Traverse(x =>
+				{
+					// Collect all child node's ids
+					if (x._id != null)
+					{
+						keyedNodes.Add(x);
+						// Remove from map
+						RemoveNodeId(x._id, prevMap);
+					}
+				}, true);
+			}
+
+			if (keyedNodes == null && _idNodeMap != null)
+			{
+				// An orphan/root node is attached
+				keyedNodes = _idNodeMap.Values;
+			}
+
+			if (newParent != null)
+			{
+				// Get new *root map
+				var map = newParent.GetIdNodeMap();
+
+				// Merge *this map with *root map
+				if (keyedNodes != null)
+				{
+					foreach (var node in keyedNodes)
+					{
+						node.PropagateNodeId(node._id, map);
+					}
+
+					// Get rid of *this map after memorizing keyed nodes
+					if (_idNodeMap != null)
+					{
+						_idNodeMap.Clear();
+						_idNodeMap = null;
+					}
+				}
+
+				if (prevParent == null && _id != null)
+				{
+					// When *this was a root, but is keyed, then *this id
+					// was most likely missing in the prev id-node-map.
+					PropagateNodeId(_id, map);
+				}
+			}
+		}
+
 		public object Id
 		{
 			get
@@ -35,6 +127,7 @@ namespace SmartStore.Collections
 			}
 			set
 			{
+				var prevId = _id;
 				_id = value;
 
 				if (_parent != null)
@@ -42,28 +135,10 @@ namespace SmartStore.Collections
 					var map = GetIdNodeMap();
 
 					// Remove old id(s) from map
-					if (_id != null)
-					{
-						// We support multi-keys for single nodes
-						var ids = _id as IEnumerable<object> ?? new object[] { _id };
-						foreach (var id in ids)
-						{
-							if (map.ContainsKey(id))
-							{
-								map.Remove(id);
-							}
-						}
-					}
+					RemoveNodeId(prevId, map);
 
 					// Set id
-					if (value != null)
-					{
-						var ids = value as IEnumerable<object> ?? new object[] { value };
-						foreach (var id in ids)
-						{
-							map[id] = this;
-						}
-					}
+					PropagateNodeId(value, map);
 				}
 			}
 		}
@@ -243,72 +318,6 @@ namespace SmartStore.Collections
 			_parent = newParent;
 
 			FixIdNodeMap(prevParent, newParent);
-		}
-
-		/// <summary>
-		/// Responsible for propagating node ids when detaching/attaching nodes
-		/// </summary>
-		private void FixIdNodeMap(T prevParent, T newParent)
-		{
-			ICollection<TreeNodeBase<T>> keyedNodes = null;
-
-			if (prevParent != null)
-			{
-				// A node is moved. We need to detach first.
-				keyedNodes = new List<TreeNodeBase<T>>();
-
-				// Detach ids from prev map
-				var prevMap = prevParent.GetIdNodeMap();
-
-				Traverse(x => 
-				{
-					// Collect all child node's ids
-					if (x._id != null)
-					{
-						keyedNodes.Add(x);
-						if (prevMap.ContainsKey(x._id))
-						{
-							// Remove from map
-							prevMap.Remove(x._id);
-						}
-					}
-				}, true);
-			}
-
-			if (keyedNodes == null && _idNodeMap != null)
-			{
-				// An orphan/root node is attached
-				keyedNodes = _idNodeMap.Values;
-			}
-
-			if (newParent != null)
-			{
-				// Get new *root map
-				var map = newParent.GetIdNodeMap();
-
-				// Merge *this map with *root map
-				if (keyedNodes != null)
-				{
-					foreach (var node in keyedNodes)
-					{
-						map[node._id] = node;
-					}
-
-					// Get rid of *this map after memorizing keyed nodes
-					if (_idNodeMap != null)
-					{
-						_idNodeMap.Clear();
-						_idNodeMap = null;
-					}
-				}
-
-				if (prevParent == null && _id != null)
-				{
-					// When *this was a root, but is keyed, then *this id
-					// was most likely missing in the prev id-node-map.
-					map[_id] = (T)this;
-				}
-			}
 		}
 
 		[JsonIgnore]

@@ -451,7 +451,7 @@ namespace SmartStore.Services.DataExchange.Export
 						entities =>
 						{
 							ctx.ManufacturerExportContext = new ManufacturerExportContext(entities,
-								x => _manufacturerService.Value.GetProductManufacturersByManufacturerIds(x),
+								x => _manufacturerService.Value.GetProductManufacturersByManufacturerIds(x, true),
 								x => _pictureService.Value.GetPicturesByIds(x)
 							);
 						},
@@ -830,10 +830,10 @@ namespace SmartStore.Services.DataExchange.Export
 				x => _specificationAttributeService.Value.GetProductSpecificationAttributesByProductIds(x),
 				x => _productService.Value.GetTierPricesByProductIds(x, customer, storeId.GetValueOrDefault()),
 				x => _categoryService.Value.GetProductCategoriesByProductIds(x, null, includeHidden),
-				x => _manufacturerService.Value.GetProductManufacturersByProductIds(x),
+				x => _manufacturerService.Value.GetProductManufacturersByProductIds(x, includeHidden),
 				x => _productService.Value.GetAppliedDiscountsByProductIds(x),
 				x => _productService.Value.GetBundleItemsByProductIds(x, includeHidden),
-                x => _productService.Value.GetAssociatedProductsByProductIds(x),
+                x => _productService.Value.GetAssociatedProductsByProductIds(x, includeHidden),
 				x => _pictureService.Value.GetPicturesByProductIds(x, maxPicturesPerProduct, true),
 				x => _productService.Value.GetProductPicturesByProductIds(x),
 				x => _productService.Value.GetProductTagsByProductIds(x, includeHidden),

@@ -13,6 +13,7 @@ namespace SmartStore.Data.Mapping.Media
 
             Property(x => x.EntityId);
             Property(x => x.EntityName).IsRequired().HasMaxLength(255);
+            Property(x => x.Property).HasMaxLength(255);
             Property(x => x.Album).IsRequired().HasMaxLength(50);
 
             HasRequired(x => x.MediaFile)

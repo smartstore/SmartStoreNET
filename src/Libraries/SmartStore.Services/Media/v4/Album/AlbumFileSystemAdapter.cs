@@ -82,12 +82,12 @@ namespace SmartStore.Services.Media
                 throw new ArgumentException("Directory '" + path + "' does not exist.");
             }
 
-            var query = new MediaQuery
+            var query = new MediaSearchQuery
             {
-                FolderIds = new int[] { node.Value.Id }
+                FolderId = node.Value.Id
             };
 
-            return _mediaService.SearchFiles(query);
+            return _mediaService.SearchFiles(query).Files;
         }
 
         public IEnumerable<IFolder> ListFolders(string path)
@@ -109,13 +109,10 @@ namespace SmartStore.Services.Media
                 return 0;
             }
 
-            var folderIds = !deep
-                ? new int[] { node.Value.Id }
-                : node.Flatten(true).Select(x => x.Id).ToArray();
-
-            var query = new MediaQuery
+            var query = new MediaSearchQuery
             {
-                FolderIds = folderIds,
+                FolderId = node.Value.Id,
+                DeepSearch = deep,
                 Term = pattern
             };
 
@@ -130,20 +127,17 @@ namespace SmartStore.Services.Media
                 throw new ArgumentException("Directory '" + path + "' does not exist.");
             }
 
-            var folderIds = !deep
-                ? new int[] { node.Value.Id }
-                : node.Flatten(true).Select(x => x.Id).ToArray();
-
-            var query = new MediaQuery
+            var query = new MediaSearchQuery
             {
-                FolderIds = folderIds,
+                FolderId = node.Value.Id,
+                DeepSearch = deep,
                 Term = pattern
             };
 
             // Get relative from absolute path
             var index = _rootPath.EmptyNull().Length;
 
-            return _mediaService.SearchFiles(query).Select(x => x.Path.Substring(index));
+            return _mediaService.SearchFiles(query).Files.Select(x => x.Path.Substring(index));
         }
 
         public IFile CreateFile(string path)
@@ -164,9 +158,9 @@ namespace SmartStore.Services.Media
         public void DeleteFile(string path)
         {
             var file = _mediaService.GetFileByPath(MakeAbsolute(path));
-            if (file != null)
+            if (file?.Exists == true)
             {
-                _mediaService.DeleteFile(file);
+                _mediaService.DeleteFile(file, false);
             }
         }
 

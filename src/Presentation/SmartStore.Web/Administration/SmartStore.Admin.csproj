@@ -643,6 +643,7 @@
     <Content Include="Views\Shared\EditorTemplates\RuleSets.cshtml" />
     <Content Include="Views\Shared\Layouts\_SettingLayout.cshtml" />
     <Content Include="Views\Shared\Menus\Settings.cshtml" />
+    <Content Include="Views\Rule\Preview.cshtml" />
     <Content Include="Views\Shared\Layouts\_MinimalLayout.cshtml" />
     <Content Include="Views\Customer\TopCustomersDashboardReport.cshtml" />
     <Content Include="Views\Order\LatestOrdersDashboardReport.cshtml" />

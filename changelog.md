@@ -9,6 +9,7 @@
 * *Install\UninstallPermissions* has been removed from *IPermissionService*. No longer needs to be called by plugins. Permissions are now automatically installed\uninstalled.
 * *IDiscountRequirementRule* and *IShippingMethodFilter* has been removed. Discounts and shipping methods can now be filtered by rule sets.
 * Customer navigation property *CustomerRoles* has been replaced by *CustomerRoleMappings*, a new entity for role mappings.
+* Search index must be recreated if numeric values are used for specification attributes.
 
 ### New Features
 * #1598 Add published property to ProductTag entity.
@@ -60,6 +61,7 @@
 	* #1716 Price facet filter bypasses Call for Pricing and shows the approximate price of a product.
 	* The number of hits for product review facets was wrong in some cases.
 	* Do not show facets for manufacturers or categories if they are limited to stores or subject to ACL.
+	* #1823 Ghost facet filter groups will appear if a numeric value is assigned that matches to a different spec option.
 * **Page Builder**:
 	* #1689 Block with z-index < 0 can not be selected in story view - Block tools can reduce z-index below 0.
 	* #1691 Manually editing/removing block cols/rows does not refresh grid state correctly.

@@ -3,25 +3,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartStore.Collections;
+using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Media
 {
     public static class IFolderServiceExtensions
     {
-        public static IEnumerable<MediaFolderNode> GetFoldersFlattened(this IFolderService service, string albumName, bool includeAlbumNode = true)
+        public static TreeNode<MediaFolderNode> FindFolder(this IFolderService service, MediaFile mediaFile)
         {
-            return GetFoldersFlattened(service, service.GetAlbumIdByName(albumName), includeAlbumNode);
+            return service.GetNodeById(mediaFile?.FolderId ?? 0);
         }
 
-        public static IEnumerable<MediaFolderNode> GetFoldersFlattened(this IFolderService service, int albumId, bool includeAlbumNode = true)
+        public static TreeNode<MediaFolderNode> FindAlbum(this IFolderService service, MediaFile mediaFile)
         {
-            var albumNode = service.GetNodeById(albumId);
-            if (albumNode == null || !albumNode.Value.IsAlbum)
+            return FindFolder(service, mediaFile)?.Closest(x => x.Value.IsAlbum);
+        }
+
+        public static IEnumerable<MediaFolderNode> GetFoldersFlattened(this IFolderService service, string path, bool includeSelf = true)
+        {
+            var node = service.GetNodeByPath(path);
+            if (node == null)
             {
                 return Enumerable.Empty<MediaFolderNode>();
             }
 
-            return albumNode.FlattenNodes(includeAlbumNode).Select(x => x.Value);
+            return node.FlattenNodes(includeSelf).Select(x => x.Value);
+        }
+
+        public static IEnumerable<MediaFolderNode> GetFoldersFlattened(this IFolderService service, int folderId, bool includeSelf = true)
+        {
+            var node = service.GetNodeById(folderId);
+            if (node == null)
+            {
+                return Enumerable.Empty<MediaFolderNode>();
+            }
+
+            return node.FlattenNodes(includeSelf).Select(x => x.Value);
         }
     }
 }

@@ -150,6 +150,24 @@ namespace SmartStore.Services.Configuration
             return setting;
         }
 
+		public virtual Setting GetSettingEntityByKey(string key, int storeId = 0)
+		{
+			Guard.NotEmpty(key, nameof(key));
+
+			var query = _settingRepository.Table.Where(x => x.Name == key);
+
+			if (storeId > 0)
+			{
+				query = query.Where(x => x.StoreId == storeId || x.StoreId == 0).OrderByDescending(x => x.StoreId);
+			}
+			else
+			{
+				query = query.Where(x => x.StoreId == 0);
+			}
+
+			return query.FirstOrDefault();
+		}
+
 		public virtual T GetSettingByKey<T>(
 			string key, 
 			T defaultValue = default, 
@@ -239,7 +257,7 @@ namespace SmartStore.Services.Configuration
 
 				if (!allSettings.TryGetValue(CreateCacheKey(key, storeId), out var cachedSetting) && storeId > 0)
 				{
-					// // Fallback to shared (storeId = 0)
+					// Fallback to shared (storeId = 0)
 					allSettings.TryGetValue(CreateCacheKey(key, 0), out cachedSetting);
 				}
 

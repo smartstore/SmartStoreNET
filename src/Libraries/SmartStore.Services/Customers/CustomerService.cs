@@ -742,7 +742,7 @@ namespace SmartStore.Services.Customers
         }
 
         public virtual IPagedList<CustomerRoleMapping> GetCustomerRoleMappings(
-            int[] customerIds, 
+            int[] customerIds,
             int[] customerRoleIds,
             bool? isSystemMapping,
             int pageIndex,
@@ -769,7 +769,16 @@ namespace SmartStore.Services.Customers
                 query = query.Where(x => x.IsSystemMapping == isSystemMapping.Value);
             }
 
-            query = query.OrderByDescending(x => x.IsSystemMapping);
+            if (withCustomers)
+            {
+                query = query
+                    .OrderBy(x => x.IsSystemMapping)
+                    .ThenByDescending(x => x.Customer.CreatedOnUtc);
+            }
+            else
+            {
+                query = query.OrderBy(x => x.IsSystemMapping);
+            }
 
             var mappings = new PagedList<CustomerRoleMapping>(query, pageIndex, pageSize);
             return mappings;

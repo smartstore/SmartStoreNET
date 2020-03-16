@@ -110,7 +110,6 @@ namespace SmartStore.Admin.Controllers
 			if (ModelState.IsValid)
 			{
 				var store = model.ToEntity();
-				MediaHelper.UpdatePictureTransientStateFor(store, s => s.LogoMediaFileId);
 
                 // Ensure we have "/" at the end.
                 store.Url = store.Url.EnsureEndsWith("/");
@@ -153,8 +152,6 @@ namespace SmartStore.Admin.Controllers
 			if (ModelState.IsValid)
 			{
 				store = model.ToEntity(store);
-
-				MediaHelper.UpdatePictureTransientStateFor(store, s => s.LogoMediaFileId);
 
 				// Ensure we have "/" at the end.
 				store.Url = store.Url.EnsureEndsWith("/");

@@ -97,7 +97,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="manufacturerId">Manufacturer identifier</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
+        /// <param name="showHidden">Indicates whether to load hidden records.</param>
         /// <returns>Product manufacturer collection</returns>
         IPagedList<ProductManufacturer> GetProductManufacturersByManufacturerId(int manufacturerId,
             int pageIndex, int pageSize, bool showHidden = false);
@@ -106,23 +106,25 @@ namespace SmartStore.Services.Catalog
         /// Gets a product manufacturer mapping collection
         /// </summary>
         /// <param name="productId">Product identifier</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
+        /// <param name="showHidden">Indicates whether to load hidden records.</param>
         /// <returns>Product manufacturer mapping collection</returns>
         IList<ProductManufacturer> GetProductManufacturersByProductId(int productId, bool showHidden = false);
 
-		/// <summary>
-		/// Get product manufacturers by manufacturer identifiers
-		/// </summary>
-		/// <param name="manufacturerIds">Manufacturer identifiers</param>
-		/// <returns>Product manufacturers</returns>
-		Multimap<int, ProductManufacturer> GetProductManufacturersByManufacturerIds(int[] manufacturerIds);
+        /// <summary>
+        /// Get product manufacturers by manufacturer identifiers
+        /// </summary>
+        /// <param name="manufacturerIds">Manufacturer identifiers</param>
+        /// <param name="showHidden">Indicates whether to load hidden records.</param>
+        /// <returns>Product manufacturers</returns>
+        Multimap<int, ProductManufacturer> GetProductManufacturersByManufacturerIds(int[] manufacturerIds, bool showHidden = false);
 
-		/// <summary>
-		/// Get product manufacturers by product identifiers
-		/// </summary>
-		/// <param name="productIds">Product identifiers</param>
-		/// <returns>Product manufacturers</returns>
-		Multimap<int, ProductManufacturer> GetProductManufacturersByProductIds(int[] productIds);
+        /// <summary>
+        /// Get product manufacturers by product identifiers
+        /// </summary>
+        /// <param name="productIds">Product identifiers</param>
+        /// <param name="showHidden">Indicates whether to load hidden records.</param>
+        /// <returns>Product manufacturers</returns>
+        Multimap<int, ProductManufacturer> GetProductManufacturersByProductIds(int[] productIds, bool showHidden = false);
 
         /// <summary>
         /// Gets a product manufacturer mapping 

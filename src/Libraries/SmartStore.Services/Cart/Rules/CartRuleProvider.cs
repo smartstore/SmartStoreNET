@@ -295,6 +295,26 @@ namespace SmartStore.Services.Cart.Rules
                 },
                 new CartRuleDescriptor
                 {
+                    Name = "ProductFromCategoryInCart",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.ProductFromCategoryInCart"),
+                    RuleType = RuleType.IntArray,
+                    Constraints = new IRuleConstraint[0],
+                    ProcessorType = typeof(ProductFromCategoryInCartRule),
+                    SelectList = new RemoteRuleValueSelectList("Category") { Multiple = true },
+                    IsComparingSequences = true
+                },
+                new CartRuleDescriptor
+                {
+                    Name = "ProductFromManufacturerInCart",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.ProductFromManufacturerInCart"),
+                    RuleType = RuleType.IntArray,
+                    Constraints = new IRuleConstraint[0],
+                    ProcessorType = typeof(ProductFromManufacturerInCartRule),
+                    SelectList = new RemoteRuleValueSelectList("Manufacturer") { Multiple = true },
+                    IsComparingSequences = true
+                },
+                new CartRuleDescriptor
+                {
                     Name = "ProductInWishlist",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.ProductOnWishlist"),
                     RuleType = RuleType.IntArray,

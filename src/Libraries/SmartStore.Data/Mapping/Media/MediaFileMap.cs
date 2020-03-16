@@ -10,10 +10,6 @@ namespace SmartStore.Data.Mapping.Media
             ToTable("MediaFile");
             HasKey(x => x.Id);
 
-#pragma warning disable 612, 618
-            Property(p => p.PictureBinary).IsMaxLength();
-#pragma warning restore 612, 618
-
             Property(x => x.Name).HasMaxLength(300).HasColumnName("Name");
             Property(x => x.Extension).HasMaxLength(50);
             Property(x => x.MimeType).IsRequired().HasMaxLength(100);

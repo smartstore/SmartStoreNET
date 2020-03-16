@@ -183,6 +183,7 @@ namespace SmartStore.Core.Plugins
 
 				hashCombiner.Add(Path.Combine(p.PhysicalPath, "Description.txt"));
 				hashCombiner.Add(Path.Combine(p.PhysicalPath, "web.config"));
+				hashCombiner.Add(p.Installed);
 			}
 
 			return hashCombiner.CombinedHash;

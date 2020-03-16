@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Customers;
@@ -11,6 +12,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
 using SmartStore.Rules;
 using SmartStore.Services.Customers;
+using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -25,6 +27,8 @@ namespace SmartStore.Admin.Controllers
         private readonly ICustomerService _customerService;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IRuleStorage _ruleStorage;
+        private readonly Lazy<ITaskScheduler> _taskScheduler;
+        private readonly Lazy<IScheduleTaskService> _scheduleTaskService;
         private readonly CustomerSettings _customerSettings;
         private readonly AdminAreaSettings _adminAreaSettings;
 
@@ -32,12 +36,16 @@ namespace SmartStore.Admin.Controllers
             ICustomerService customerService,
             ICustomerActivityService customerActivityService,
             IRuleStorage ruleStorage,
+            Lazy<ITaskScheduler> taskScheduler,
+            Lazy<IScheduleTaskService> scheduleTaskService,
             CustomerSettings customerSettings,
             AdminAreaSettings adminAreaSettings)
         {
             _customerService = customerService;
             _customerActivityService = customerActivityService;
             _ruleStorage = ruleStorage;
+            _taskScheduler = taskScheduler;
+            _scheduleTaskService = scheduleTaskService;
             _customerSettings = customerSettings;
             _adminAreaSettings = adminAreaSettings;
         }
@@ -244,7 +252,7 @@ namespace SmartStore.Admin.Controllers
                     _customerActivityService.InsertActivity("EditCustomerRole", T("ActivityLog.EditCustomerRole"), customerRole.Name);
 
                     NotifySuccess(T("Admin.Customers.CustomerRoles.Updated"));
-                    return continueEditing ? RedirectToAction("Edit", customerRole.Id) : RedirectToAction("List");
+                    return continueEditing ? RedirectToAction("Edit", new { id = customerRole.Id }) : RedirectToAction("List");
                 }
 
                 return View(model);
@@ -303,6 +311,8 @@ namespace SmartStore.Admin.Controllers
                     Email = x.Customer.Email.NullEmpty() ?? emailFallbackStr,
                     Username = x.Customer.Username,
                     FullName = x.Customer.GetFullName(),
+                    CreatedOn = Services.DateTimeHelper.ConvertToUserTime(x.Customer.CreatedOnUtc, DateTimeKind.Utc),
+                    LastActivityDate = Services.DateTimeHelper.ConvertToUserTime(x.Customer.LastActivityDateUtc, DateTimeKind.Utc),
                     IsSystemMapping = x.IsSystemMapping
                 };
 
@@ -313,6 +323,33 @@ namespace SmartStore.Admin.Controllers
             model.Total = mappings.TotalCount;
 
             return new JsonResult { Data = model };
+        }
+
+        [HttpPost]
+        public ActionResult ApplyRules(int id)
+        {
+            var customerRole = _customerService.GetCustomerRoleById(id);
+            if (customerRole == null)
+            {
+                return RedirectToAction("List");
+            }
+
+            var task = _scheduleTaskService.Value.GetTaskByType<TargetGroupEvaluatorTask>();
+            if (task != null)
+            {
+                _taskScheduler.Value.RunSingleTask(task.Id, new Dictionary<string, string>
+                {
+                    { "CustomerRoleIds", customerRole.Id.ToString() }
+                });
+
+                NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
+            }
+            else
+            {
+                NotifyError(T("Admin.System.ScheduleTasks.TaskNotFound", nameof(TargetGroupEvaluatorTask)));
+            }
+
+            return RedirectToAction("Edit", new { id = customerRole.Id });
         }
 
         #endregion

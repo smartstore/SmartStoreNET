@@ -292,6 +292,8 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CartTotal", "Total amount of cart", "Gesamtbetrag des Warenkorbes");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CartSubtotal", "Subtotal amount of cart", "Zwischensumme des Warenkorbes");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductInCart", "Product in cart", "Produkt im Warenkorb");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductFromCategoryInCart", "Product from category in cart", "Produkt aus Kategorie im Warenkorb");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductFromManufacturerInCart", "Product from manufacturer in cart", "Produkt von Hersteller im Warenkorb");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductOnWishlist", "Product on wishlist", "Produkt auf der Wunschliste");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductReviewCount", "Number of product reviews", "Anzahl der Produkt Rezensionen");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.RewardPointsBalance", "Number of reward points", "Anzahl der Bonuspunkte");
@@ -483,6 +485,7 @@
 
             builder.AddOrUpdate("Products.Condition", "Product condition", "Artikelzustand");
             builder.AddOrUpdate("Common.OpenUrl", "Open URL", "URL öffnen");
+            builder.AddOrUpdate("Common.NoPreview", "A preview is not available.", "Eine Vorschau ist nicht verfügbar.");
 
             builder.AddOrUpdate("Admin.Orders.Shipments.TrackingNumber",
                 "Tracking number",
@@ -509,6 +512,15 @@
                 "Kunden werden automatisch per geplanter Aufgabe dieser Kundengruppe zugeordnet, wenn sie eine der gewählten Regeln erfüllen.");
 
             builder.AddOrUpdate("Admin.CustomerRoleMapping.IsSystemMapping", "Automatic assignment", "Automatische Zuordnung");
+            builder.AddOrUpdate("Admin.CustomerRoleMapping.ReapplyRules", "Reapply rules", "Regeln neu anwenden");
+            
+            builder.AddOrUpdate("Admin.CustomerRoleMapping.RoleMappingListDescription",
+                "The list shows customers who are assigned to this customer role. Customers are automatically assigned by scheduled task as long as the group is active and rules are specified for it. You can make a manual assignment using the customer role selection at the respective customer.",
+                "Die Liste zeigt Kunden, die dieser Kundenruppe zugeordnet sind. Kunden werden automatisch per geplanter Aufgabe zugeordnet, sofern die Gruppe aktiv ist und für sie Regeln festgelegt sind. Eine manuelle Zuordnung können Sie über die Kundengruppenauswahl beim jeweiligen Kunden vornehmen.");
+
+            builder.AddOrUpdate("Admin.System.ScheduleTasks.TaskNotFound",
+                "The scheduled task \"{0}\" was not found.",
+                "Die geplante Aufgabe \"{0}\" wurde nicht gefunden.");
 
             builder.AddOrUpdate("Admin.SalesReport.ByQuantity", "By quantity", "Nach Anzahl");
             builder.AddOrUpdate("Admin.SalesReport.ByAmount", "By amount", "Nach Betrag");

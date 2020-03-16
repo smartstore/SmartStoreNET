@@ -145,9 +145,6 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var blogPost = model.ToEntity();
-                
-                MediaHelper.UpdatePictureTransientStateFor(blogPost, c => c.MediaFileId);
-                MediaHelper.UpdatePictureTransientStateFor(blogPost, c => c.PreviewMediaFileId);
 
                 blogPost.CreatedOnUtc = model.CreatedOnUtc;
                 blogPost.StartDateUtc = model.StartDate;
@@ -213,9 +210,6 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 blogPost = model.ToEntity(blogPost);
-
-                MediaHelper.UpdatePictureTransientStateFor(blogPost, c => c.MediaFileId);
-                MediaHelper.UpdatePictureTransientStateFor(blogPost, c => c.PreviewMediaFileId);
 
                 blogPost.CreatedOnUtc = model.CreatedOnUtc;
                 blogPost.StartDateUtc = model.StartDate;

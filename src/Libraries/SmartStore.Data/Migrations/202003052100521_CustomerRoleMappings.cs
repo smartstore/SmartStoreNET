@@ -100,30 +100,30 @@ namespace SmartStore.Data.Migrations
 
         public void Seed(SmartObjectContext context)
         {
-            if (DataSettings.DatabaseIsInstalled())
+            if (!DataSettings.DatabaseIsInstalled())
+                return;
+
+            try
             {
-                try
-                {
-                    // Copy role mappings.
-                    context.ExecuteSqlCommand("Insert Into [dbo].[CustomerRoleMapping] (CustomerId, CustomerRoleId, IsSystemMapping) Select Customer_Id As Customer_Id, CustomerRole_Id As CustomerRole_Id, 0 As IsSystemMapping From [dbo].[Customer_CustomerRole_Mapping]");
-                }
-                catch { }
-
-                var defaultLang = context.Set<Language>().AsNoTracking().OrderBy(x => x.DisplayOrder).First();
-                var isGerman = defaultLang.UniqueSeoCode.IsCaseInsensitiveEqual("de");
-
-                context.Set<ScheduleTask>().AddOrUpdate(x => x.Type,
-                    new ScheduleTask
-                    {
-                        Name = isGerman ? "Zuordnungen zu Kundengruppen für Regeln aktualisieren" : "Update assignments to customer roles for rules",
-                        CronExpression = "15 2 * * *", // At 02:15
-                        Type = "SmartStore.Services.Customers.CustomerRolesAssignmentsTask, SmartStore.Services",
-                        Enabled = true,
-                        StopOnError = false
-                    }
-                );
-                context.SaveChanges();
+                // Copy role mappings.
+                context.ExecuteSqlCommand("Insert Into [dbo].[CustomerRoleMapping] (CustomerId, CustomerRoleId, IsSystemMapping) Select Customer_Id As Customer_Id, CustomerRole_Id As CustomerRole_Id, 0 As IsSystemMapping From [dbo].[Customer_CustomerRole_Mapping]");
             }
+            catch { }
+
+            var defaultLang = context.Set<Language>().AsNoTracking().OrderBy(x => x.DisplayOrder).First();
+            var isGerman = defaultLang.UniqueSeoCode.IsCaseInsensitiveEqual("de");
+
+            context.Set<ScheduleTask>().AddOrUpdate(x => x.Type,
+                new ScheduleTask
+                {
+                    Name = isGerman ? "Zuordnungen von Kunden zu Kundengruppen aktualisieren" : "Update assignments of customers to customer roles",
+                    CronExpression = "15 2 * * *", // At 02:15
+                    Type = "SmartStore.Services.Customers.TargetGroupEvaluatorTask, SmartStore.Services",
+                    Enabled = true,
+                    StopOnError = false
+                }
+            );
+            context.SaveChanges();
         }
     }
 }

@@ -40,7 +40,7 @@
                 continue;
             }
 
-            var attrs = new RouteValueDictionary(item.LinkHtmlAttributes).PrependCssClass("menu-link");
+            var attrs = item.GetCombinedAttributes().PrependCssClass("menu-link");
 
             <li>
                 <a href="@itemUrl" @Html.Attrs(attrs)>

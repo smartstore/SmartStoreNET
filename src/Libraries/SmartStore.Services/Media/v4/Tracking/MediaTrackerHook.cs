@@ -9,6 +9,7 @@ using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Data;
 
 namespace SmartStore.Services.Media
@@ -17,13 +18,13 @@ namespace SmartStore.Services.Media
     public sealed class MediaTrackerHook : DbSaveHook<BaseEntity>
     {   
         // Track items for the current (SaveChanges) unit.
-        private readonly HashSet<MediaTrackAction> _actionsUnit = new HashSet<MediaTrackAction>();
+        private readonly HashSet<MediaTrack> _actionsUnit = new HashSet<MediaTrack>();
 
         // Track items already processed during the current request.
-        private readonly HashSet<MediaTrackAction> _actionsAll = new HashSet<MediaTrackAction>();
+        private readonly HashSet<MediaTrack> _actionsAll = new HashSet<MediaTrack>();
 
         // Entities that are not saved yet but contain effective changes. We won't track if an error occurred during save.
-        private readonly IDictionary<BaseEntity, HashSet<MediaTrackAction>> _actionsTemp = new Dictionary<BaseEntity, HashSet<MediaTrackAction>>();
+        private readonly IDictionary<BaseEntity, HashSet<MediaTrack>> _actionsTemp = new Dictionary<BaseEntity, HashSet<MediaTrack>>();
 
         private readonly Lazy<IMediaTracker> _mediaTracker;
         private readonly IDbContext _dbContext;
@@ -76,13 +77,13 @@ namespace SmartStore.Services.Media
                 {
                     if (entry.Entry.TryGetModifiedProperty(_dbContext, prop.Name, out object prevValue))
                     {
-                        var actions = new HashSet<MediaTrackAction>();
+                        var actions = new HashSet<MediaTrack>();
                         
                         // Untrack the previous file relation (if not null)
-                        TryAddTrack(prop.Album, entry.Entity, prevValue, MediaTrackOperation.Untrack, actions);
+                        TryAddTrack(prop.Album, entry.Entity, prop.Name, prevValue, MediaTrackOperation.Untrack, actions);
 
                         // Track the new file relation (if not null)
-                        TryAddTrack(prop.Album, entry.Entity, entry.Entry.CurrentValues[prop.Name], MediaTrackOperation.Track, actions);
+                        TryAddTrack(prop.Album, entry.Entity, prop.Name, entry.Entry.CurrentValues[prop.Name], MediaTrackOperation.Track, actions);
 
                         _actionsTemp[entry.Entity] = actions;
                     }
@@ -94,7 +95,7 @@ namespace SmartStore.Services.Media
                         case EntityState.Added:
                         case EntityState.Deleted:
                             var value = FastProperty.GetProperty(type, prop.Name).GetValue(entry.Entity);
-                            TryAddTrack(prop.Album, entry.Entity, value, state == EntityState.Added ? MediaTrackOperation.Track : MediaTrackOperation.Untrack);
+                            TryAddTrack(prop.Album, entry.Entity, prop.Name, value, state == EntityState.Added ? MediaTrackOperation.Track : MediaTrackOperation.Untrack);
                             break;
                         case EntityState.Modified:
                             if (_actionsTemp.TryGetValue(entry.Entity, out var actions))
@@ -107,19 +108,21 @@ namespace SmartStore.Services.Media
             }
         }
 
-        private void TryAddTrack(string album, BaseEntity entity, object value, MediaTrackOperation operation, HashSet<MediaTrackAction> actions = null)
+        private void TryAddTrack(string album, BaseEntity entity, string prop, object value, MediaTrackOperation operation, HashSet<MediaTrack> actions = null)
         {
             if (value == null)
                 return;
 
             if ((int)value > 0)
             {
-                (actions ?? _actionsUnit).Add(new MediaTrackAction 
+                (actions ?? _actionsUnit).Add(new MediaTrack
                 { 
                     Album = album,
                     EntityId = entity.Id, 
                     EntityName = entity.GetEntityName(), 
-                    MediaFileId = (int)value, Operation = operation 
+                    Property = prop,
+                    MediaFileId = (int)value, 
+                    Operation = operation 
                 });
             }
         }

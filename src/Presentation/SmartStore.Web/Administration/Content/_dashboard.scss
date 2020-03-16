@@ -13,52 +13,71 @@
 
 .table-dashboard {
     > table {
+        margin-bottom: 0;
         table-layout: fixed;
 
-        tr > th, 
+        tr > th,
         tr > td {
             overflow-x: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            border-color: rgba(0, 0, 0, .1);
+            border-top: 0;
         }
 
         tr > th {
             border-top: 0;
+            border-color: rgba(0,0,0, 0.05);
+        }
+
+        tr:hover {
+            background-color: rgba(0,0,0, .02);
         }
     }
 
     > .table-3 {
-        tr > th, 
+        tr > th,
         tr > td {
-            padding-left: 5px !important;
-            padding-right: 5px !important;
+            padding-left: 0.25rem !important;
+            padding-right: 0.25rem !important;
 
             &:first-child {
-                padding-left: 24px !important;
+                padding-left: 1.5rem !important;
                 width: 50%;
             }
 
             &:last-child {
                 width: 30%;
-                padding-right: 24px !important;
+                padding-right: 1.5rem !important;
             }
         }
     }
 }
 
-.reports {
-    .title-report {
-        display: inline-block;
-        margin: 0;
-        font-weight: $font-weight-medium !important;
+.report {
+    background-color: white;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow-sm;
+    height: 100%;
+    overflow: hidden;
+
+    .report-title-row {
+        padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+        align-items: center;
+        display: flex;
+
+        .report-title {
+            display: inline-block;
+            font-size: 1.5rem;
+            font-weight: $font-weight-medium;
+        }
     }
+
 
     .table {
         white-space: nowrap;
 
         .display-row {
-            padding: 0.875rem 1.5rem;
+            padding: 1rem 1.5rem;
         }
     }
 
@@ -69,67 +88,6 @@
 
     .canvas-container {
         position: relative;
-    }
-
-    .report-order-fulfillment {
-        grid-column-start: 1;
-        grid-column-end: 7;
-        grid-row-start: 1;
-        grid-row-end: 2;
-    }
-
-    .report-incomplete-orders {
-        grid-column-start: 7;
-        grid-column-end: 9;
-        grid-row-start: 1;
-        grid-row-end: 2;
-    }
-
-    .marketplace-feed {
-        grid-column-start: 11;
-        grid-column-end: 13;
-        grid-row-start: 1;
-        grid-row-end: 5;
-    }
-
-    .report-sales {
-        grid-column-start: 1;
-        grid-column-end: 8;
-        grid-row-start: 1;
-        grid-row-end: 3;
-    }
-
-    .report-bestsellers {
-        grid-column-start: 8;
-        grid-column-end: 11;
-        grid-row-start: 1;
-        grid-row-end: 3;
-    }
-
-    .report-top-customers {
-        grid-column-start: 1;
-        grid-column-end: 4;
-        grid-row-start: 3;
-        grid-row-end: 4;
-    }
-
-    .report-customer-registrations {
-        grid-column: 4 / 11;
-        grid-row: 3 / 4;
-    }
-
-    .report-latest-orders {
-        grid-column-start: 1;
-        grid-column-end: 8;
-        grid-row-start: 4;
-        grid-row-end: 5;
-    }
-
-    .report-store-statistics {
-        grid-column-start: 8;
-        grid-column-end: 11;
-        grid-row-start: 4;
-        grid-row-end: 5;
     }
 
     #orders-chart-legend {
@@ -175,7 +133,6 @@
         &:after {
             @include fontawesome-font("\f077", regular); // chevron-down
             position: absolute;
-            top: 46px;
         }
 
         &.negative:after {
@@ -183,6 +140,16 @@
             transform: rotate(180deg);
         }
     }
+}
+
+.report-order-fulfillment {
+    grid-column: 1 / 7;
+    grid-row: 1 / 2;
+}
+
+.report-incomplete-orders {
+    grid-column: 7 / 9;
+    grid-row: 1 / 2;
 }
 
 .marketplace-feed {
@@ -208,4 +175,34 @@
             margin-bottom: .5rem;
         }
     }
+}
+
+.report-sales {
+    grid-column: 1 / 8;
+    grid-row: 2 / 3;
+}
+
+.report-bestsellers {
+    grid-column: 8 / 11;
+    grid-row: 2 / 3;
+}
+
+.report-top-customers {
+    grid-column: 1 / 4;
+    grid-row: 3 / 4;
+}
+
+.report-customer-registrations {
+    grid-column: 4 / 11;
+    grid-row: 3 / 4;
+}
+
+.report-latest-orders {
+    grid-column: 1 / 7;
+    grid-row: 4 / 5;
+}
+
+.report-store-statistics {
+    grid-column: 7 / 11;
+    grid-row: 4 / 5;
 }

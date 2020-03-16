@@ -1,12 +1,10 @@
 ﻿@model BestsellersDashboardReportModel
 
-<div class="bg-white rounded shadow-sm h-100">
-    <div class="px-4 pt-4 pb-2 d-flex">
-        <div class="p-0 title-report fs-h5 font-weight-700">
-            <i class="fa fa-trophy pr-2"></i>@T("Admin.SalesReport.BestSellers")
-        </div>
+<div class="report">
+    <div class="report-title-row">
+        <div class="report-title">@T("Admin.SalesReport.BestSellers")</div>
 
-        <nav class="p-0 align-self-center ml-auto" style="display: inline-block">
+        <nav class="ml-auto">
             <div class="nav btn-group" role="tablist">
                 <a class="btn btn-secondary btn-dashboard nav-item nav-link active" id="bestsellers-quantity-tab" data-toggle="tab" href="#bestsellers-quantity" role="tab" aria-controls="bestsellers-quantity" aria-selected="true">@T("Admin.SalesReport.ByQuantity")</a>
                 <a class="btn btn-secondary btn-dashboard nav-item nav-link" id="bestsellers-amount-tab" data-toggle="tab" href="#bestsellers-amount" role="tab" aria-controls="bestsellers-amount" aria-selected="false">@T("Admin.SalesReport.ByAmount")</a>
@@ -16,8 +14,8 @@
 
     <div class="tab-content" id="bestsellers-tabcontent">
         <div class="tab-pane fade show active" id="bestsellers-quantity" role="tabpanel" aria-labelledby="bestsellers-quantity-tab">
-            <div class="table-responsive table-dashboard">
-                <table class="table table-3 m-0">
+            <div class="table-responsive table-dashboard table-hover">
+                <table class="table table-3">
                     <thead>
                         <tr>
                             <th class="display-row">@T("Admin.Catalog.Categories.Products.Fields.Product")</th>
@@ -33,7 +31,7 @@
                                     @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint)
                                 </td>
 
-                                <td class="display-row text-center font-weight-500">@x.TotalQuantity</td>
+                                <td class="display-row text-center font-weight-medium">@x.TotalQuantity</td>
                                 <td class="display-row text-right">@x.TotalAmount</td>
                             </tr>
                         }
@@ -42,8 +40,8 @@
             </div>
         </div>
         <div class="tab-pane fade" id="bestsellers-amount" role="tabpanel" aria-labelledby="bestsellers-amount-tab">
-            <div class="table-responsive table-dashboard">
-                <table class="table table-3 m-0">
+            <div class="table-responsive table-dashboard table-hover">
+                <table class="table table-3">
                     <thead>
                         <tr>
                             <th class="display-row">@T("Admin.Catalog.Categories.Products.Fields.Product")</th>
@@ -59,7 +57,7 @@
                                     @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint)
                                 </td>
                                 <td class="display-row text-center">@x.TotalQuantity</td>
-                                <td class="display-row text-right font-weight-500">@x.TotalAmount</td>
+                                <td class="display-row text-right font-weight-medium">@x.TotalAmount</td>
                             </tr>
                         }
                     </tbody>

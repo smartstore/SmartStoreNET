@@ -1,12 +1,10 @@
 ﻿@model TopCustomersDashboardReportModel
 
-<div class="bg-white rounded shadow-sm h-100">
-    <div class="px-4 pt-4 pb-2 d-flex">
-        <div class="p-0 title-report fs-h5 font-weight-700">
-            <i class="fa fa-crown pr-2"></i>@T("Admin.SalesReport.TopCustomers")
-        </div>
+<div class="report">
+    <div class="report-title-row">
+        <div class="report-title">@T("Admin.SalesReport.TopCustomers")</div>
 
-        <nav class="p-0 align-self-center ml-auto" style="display: inline-block">
+        <nav class="ml-auto">
             <div class="nav btn-group" role="tablist">
                 <a class="btn btn-secondary btn-dashboard nav-item nav-link active" id="customers-quantity-tab" data-toggle="tab" href="#customers-quantity" role="tab" aria-controls="customers-quantity" aria-selected="true">@T("Admin.SalesReport.ByQuantity")</a>
                 <a class="btn btn-secondary btn-dashboard nav-item nav-link" id="customers-amount-tab" data-toggle="tab" href="#customers-amount" role="tab" aria-controls="customers-amount" aria-selected="false">@T("Admin.SalesReport.ByAmount")</a>
@@ -16,8 +14,8 @@
 
     <div class="tab-content" id="customers-tabcontent">
         <div class="tab-pane fade show active" id="customers-quantity" role="tabpanel" aria-labelledby="customers-quantity-tab">
-            <div class="table-responsive table-dashboard">
-                <table class="table table-3 m-0">
+            <div class="table-responsive table-dashboard table-hover">
+                <table class="table table-3">
                     <thead>
                         <tr>
                             <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
@@ -33,7 +31,7 @@
                                     @Html.ActionLink(x.CustomerName, "Edit", "Customer", new { id = x.CustomerId }, new { })
                                 </td>
 
-                                <td class="display-row text-center font-weight-500">@x.OrderCount</td>
+                                <td class="display-row text-center font-weight-medium">@x.OrderCount</td>
                                 <td class="display-row text-right">@x.OrderTotal</td>
                             </tr>
                         }
@@ -42,8 +40,8 @@
             </div>
         </div>
         <div class="tab-pane fade" id="customers-amount" role="tabpanel" aria-labelledby="customers-amount-tab">
-            <div class="table-responsive table-dashboard">
-                <table class="table table-3 m-0">
+            <div class="table-responsive table-dashboard table-hover">
+                <table class="table table-3">
                     <thead>
                         <tr>
                             <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
@@ -59,7 +57,7 @@
                                     @Html.ActionLink(x.CustomerName, "Edit", "Customer", new { id = x.CustomerId }, new { })
                                 </td>
                                 <td class="display-row text-center">@x.OrderCount</td>
-                                <td class="display-row text-right font-weight-500">@x.OrderTotal</td>
+                                <td class="display-row text-right font-weight-medium">@x.OrderTotal</td>
                             </tr>
                         }
                     </tbody>

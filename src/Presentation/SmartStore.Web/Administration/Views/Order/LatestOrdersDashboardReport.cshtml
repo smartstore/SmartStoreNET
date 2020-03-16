@@ -1,21 +1,19 @@
 ﻿@model LatestOrdersDashboardReportModel
 @using SmartStore.Core.Domain.Orders
 
-<div class="bg-white rounded shadow-sm">
-    <div class="px-4 pt-4 pb-2">
-        <div class="p-0 title-report fs-h5 font-weight-700">
-            <i class="fa fa-shopping-cart pr-2"></i>@T("Admin.SalesReport.LatestOrders")
-        </div>
+<div class="report">
+    <div class="report-title-row">
+        <div class="report-title">@T("Admin.SalesReport.LatestOrders")</div>
     </div>
     
-    <div class="table-responsive table-dashboard">
-        <table class="table m-0">
+    <div class="table-responsive table-dashboard table-hover">
+        <table class="table">
             <thead>
                 <tr>
                     <th class="display-row" style="width: 30%">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
                     <th class="display-row text-center" style="width: 10%">@T("Admin.Catalog.Categories.Products")</th>
                     <th class="display-row text-right" style="width: 20%">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
-                    <th class="display-row" style="width: 20%; padding-left: 32px">@T("Account.CustomerOrders.OrderDate")</th>
+                    <th class="display-row" style="width: 20%; padding-left: 2rem">@T("Account.CustomerOrders.OrderDate")</th>
                     <th class="display-row" style="width: 20%">@T("Account.CustomerOrders.OrderStatus")</th>
                 </tr>
             </thead>
@@ -28,7 +26,7 @@
                     </td>
                     <td class="display-row text-center">@x.ProductsTotal</td>
                     <td class="display-row text-right">@x.TotalAmount</td>
-                    <td class="display-row" style="padding-left: 32px">@x.Created</td>
+                    <td class="display-row" style="padding-left: 2rem">@x.Created</td>
 
                     @if (x.OrderState == OrderStatus.Pending)
                     {

@@ -1,30 +1,45 @@
 ﻿@model StoreDashboardReportModel
 @using SmartStore.Admin.Models.Store
+@{
+    var x = Model.StoreStatisticsReport;
+}
 
-<div class="bg-white rounded shadow-sm">
-    <div class="px-4 pt-4 pb-2">
-        <div class="p-0 title-report fs-h5 font-weight-700">
-            <i class="fa fa-chart-line pr-2"></i>@T("Admin.SalesReport.StoreStatistics")
-        </div>
+
+<div class="report">
+    <div class="report-title-row">
+        <div class="report-title">@T("Admin.SalesReport.StoreStatistics")</div>
     </div>
 
-    <div class="table-responsive table-dashboard">
-        <table class="table m-0">
+    <div class="table-responsive table-dashboard table-hover">
+        <table class="table">
             <thead>
                 <tr>
                     <th class="display-row">@T("Attribute")</th>
-                    <th class="display-row text-right">@T("Value")</th>
+                    <th class="display-row">@T("Value")</th>
+                    <th class="display-row">@T("Attribute")</th>
+                    <th class="display-row">@T("Value")</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.StoreStatisticsReport)
-                {
-                <tr>
-                    <td class="display-row">@item.Key</td>
-                    <td class="display-row text-right">@item.Value</td>
-
-                </tr>
+                @for (int i = 0; i < Model.StoreStatisticsReport.Count; i += 2)
+                    {
+                        <tr>
+                            <td class="display-row">@Model.StoreStatisticsReport.ElementAt(i).Key</td>
+                            <td class="display-row">@Model.StoreStatisticsReport.ElementAt(i).Value</td>
+                            @if (i + 1 < @Model.StoreStatisticsReport.Count)
+                            {
+                                <td class="display-row">@Model.StoreStatisticsReport.ElementAt(i + 1).Key</td>
+                                <td class="display-row">@Model.StoreStatisticsReport.ElementAt(i + 1).Value</td>
+                            }
+                        </tr>
                 }
+                @*@foreach (var item in Model.StoreStatisticsReport)
+                {
+                    <tr>
+                        <td class="display-row">@item.Key</td>
+                        <td class="display-row text-right">@item.Value</td>
+                    </tr>
+                }*@
             </tbody>
         </table>
     </div>

@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Helpers;
+using SmartStore.Core.Domain.Dashboard;
 
 namespace SmartStore.Services.Orders
 {
@@ -27,6 +28,7 @@ namespace SmartStore.Services.Orders
 
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly IProductService _productService;
+        private readonly IPriceFormatter _priceFormatter;
 
         #endregion
 
@@ -43,13 +45,16 @@ namespace SmartStore.Services.Orders
         public OrderReportService(IRepository<Order> orderRepository,
             IRepository<OrderItem> orderItemRepository,
             IRepository<Product> productRepository,
-            IDateTimeHelper dateTimeHelper, IProductService productService)
+            IDateTimeHelper dateTimeHelper,
+            IProductService productService,
+            IPriceFormatter priceFormatter)
         {
-            this._orderRepository = orderRepository;
-            this._orderItemRepository = orderItemRepository;
-            this._productRepository = productRepository;
-            this._dateTimeHelper = dateTimeHelper;
-            this._productService = productService;
+            _orderRepository = orderRepository;
+            _orderItemRepository = orderItemRepository;
+            _productRepository = productRepository;
+            _dateTimeHelper = dateTimeHelper;
+            _productService = productService;
+            _priceFormatter = priceFormatter;
         }
 
         #endregion
@@ -402,6 +407,131 @@ namespace SmartStore.Services.Orders
             return profit;
         }
 
+        public virtual DashboardChartReportLine GetOrdersDashboardDayReportLine(IPagedList<Order> allOrders, DateTime startTime, DateTime? endTime = null)
+        {
+            if (endTime == null)
+                endTime = startTime;
+
+            var report = new DashboardChartReportLine(4, 24);
+
+            var orders = allOrders.Where(x => x.CreatedOnUtc < startTime.AddDays(1).Date && x.CreatedOnUtc >= startTime.Date).Select(x => x).ToList();
+            var ordersReports = GetOrderReports(orders);
+
+            for (int i = 0; i < 24; i++)
+            {
+                var startDate = startTime.Date.AddHours(i - _dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours);
+                report.Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("t");
+                GetReportPointData(report, ordersReports, startDate, startDate.AddHours(1), i);
+            }
+
+            CalculateOrdersAmount(report, allOrders, orders, startTime.Date.AddDays(-1), endTime.Value);
+
+            return report;
+        }
+
+        public virtual DashboardChartReportLine GetOrdersDashboardWeekReportLine(IPagedList<Order> allOrders)
+        {
+            var report = new DashboardChartReportLine(4, 7);
+
+            var currentDate = DateTime.UtcNow.Date;
+            var orders = allOrders.Where(x => x.CreatedOnUtc < currentDate.AddDays(1) && x.CreatedOnUtc >= currentDate.AddDays(-6)).Select(x => x).ToList();
+            var ordersReports = GetOrderReports(orders);
+
+            for (int i = 0; i < 7; i++)
+            {
+                var date = currentDate.AddDays(-(6 - i));
+                report.Labels[i] = date.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("m");
+                GetReportPointData(report, ordersReports, date, date.AddDays(1), i);
+            }
+
+            CalculateOrdersAmount(report, allOrders, orders, currentDate.AddDays(-14), currentDate.AddDays(-7));
+
+            return report;
+        }
+
+        public virtual DashboardChartReportLine GetOrdersDashboardMonthReportLine(IPagedList<Order> allOrders)
+        {
+            var report = new DashboardChartReportLine(4, 4);
+
+            var currentDate = DateTime.UtcNow.Date;
+            var orders = allOrders.Where(x => x.CreatedOnUtc < currentDate.AddDays(1) && x.CreatedOnUtc >= currentDate.AddDays(-27)).Select(x => x).ToList();
+            var ordersReports = GetOrderReports(orders);
+
+            for (int i = 0; i < 4; i++)
+            {
+                var fromDate = currentDate.AddDays(-(3 - i + 1) * 7 + 1);
+                var toDate = currentDate.AddDays(-((3 - i) * 7) + 1);
+                report.Labels[i] = fromDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("m") + " - " + toDate.AddDays(-1).ToString("m");
+                GetReportPointData(report, ordersReports, fromDate, toDate, i);
+            }
+
+            CalculateOrdersAmount(report, allOrders, orders, currentDate.AddDays(-56), currentDate.AddDays(-28));
+
+            return report;
+        }
+
+        public virtual DashboardChartReportLine GetOrdersDashboardYearReportLine(IPagedList<Order> allOrders)
+        {
+            var report = new DashboardChartReportLine(4, 12);
+
+            var currentDate = DateTime.UtcNow.Date;
+            var orders = allOrders.Where(x => x.CreatedOnUtc < currentDate.AddDays(1) && x.CreatedOnUtc >= currentDate.AddYears(-1)).Select(x => x).ToList();
+            var ordersReports = GetOrderReports(orders);
+
+            for (int i = 0; i < 12; i++)
+            {
+                var date = currentDate.AddMonths(-(11 - i)).Date;
+                var fromDate = currentDate.AddMonths(-(11 - i)).Date;
+                var toDate = fromDate.AddMonths(1);
+                report.Labels[i] = date.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("Y");
+                GetReportPointData(report, ordersReports, fromDate, toDate, i);
+            }
+
+            CalculateOrdersAmount(report, allOrders, orders, currentDate.AddYears(-2), currentDate.AddYears(-1));
+
+            return report;
+        }          
+
+        private List<Order>[] GetOrderReports(List<Order> orders)
+        {
+            var orderReports = new List<Order>[4];
+
+            orderReports[0] = orders.Where(x => x.OrderStatus == OrderStatus.Cancelled).Select(x => x).ToList();
+            orderReports[1] = orders.Where(x => x.OrderStatus == OrderStatus.Pending).Select(x => x).ToList();
+            orderReports[2] = orders.Where(x => x.OrderStatus == OrderStatus.Processing).Select(x => x).ToList();
+            orderReports[3] = orders.Where(x => x.OrderStatus == OrderStatus.Complete).Select(x => x).ToList();
+
+            return orderReports;
+        }
+
+        private void GetReportPointData(DashboardChartReportLine report, List<Order>[] reports, DateTime startDate, DateTime endDate, int index)
+        {
+            for (int j = 0; j < reports.Length; j++)
+            {
+                var point = reports[j].Where(x => x.CreatedOnUtc < endDate && x.CreatedOnUtc >= startDate).ToList();
+                report.DataSets[j].Amount[index] = point.Sum(x => x.OrderTotal);
+                report.DataSets[j].FormattedAmount[index] = _priceFormatter.FormatPrice((int)report.DataSets[j].Amount[index], true, false);
+                report.DataSets[j].Quantity[index] = point.Count;
+            }
+        }
+
+        private void CalculateOrdersAmount(DashboardChartReportLine report, IList<Order> allOrders, List<Order> orders, DateTime fromDate, DateTime toDate)
+        {
+            foreach (var item in report.DataSets)
+            {
+                item.TotalAmount = _priceFormatter.FormatPrice((int)Math.Round(item.Amount.Sum()), true, false);
+            }
+
+            var totalAmount = orders.Where(x => x.OrderStatus != OrderStatus.Cancelled).Sum(x => x.OrderTotal);
+            report.TotalAmount = _priceFormatter.FormatPrice((int)Math.Round(totalAmount), true, false);
+            var sumBefore = Math.Round(allOrders
+                .Where(x => x.CreatedOnUtc < toDate && x.CreatedOnUtc >= fromDate)
+                .Select(x => x)
+                .Sum(x => x.OrderTotal)
+                );
+
+            report.PercentageDelta = sumBefore <= 0 ? 0 : (int)Math.Round(totalAmount / sumBefore * 100 - 100);
+        }
         #endregion
     }
 }

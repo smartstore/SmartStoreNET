@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Dashboard;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
@@ -99,5 +100,11 @@ namespace SmartStore.Services.Orders
         /// <returns>Result</returns>
 		decimal ProfitReport(int storeId, int[] orderStatusIds, int[] paymentStatusIds, int[] shippingStatusIds,
             DateTime? startTimeUtc, DateTime? endTimeUtc, string billingEmail);
+
+
+        DashboardChartReportLine GetOrdersDashboardDayReportLine(IPagedList<Order> allOrders, DateTime startTime, DateTime? endTime = null);
+        DashboardChartReportLine GetOrdersDashboardWeekReportLine(IPagedList<Order> allOrders);
+        DashboardChartReportLine GetOrdersDashboardMonthReportLine(IPagedList<Order> allOrders);
+        DashboardChartReportLine GetOrdersDashboardYearReportLine(IPagedList<Order> allOrders);
     }
 }

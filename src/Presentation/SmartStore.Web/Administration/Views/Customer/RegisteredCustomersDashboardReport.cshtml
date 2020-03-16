@@ -1,31 +1,37 @@
-﻿@model RegisteredCustomersDashboardReportModel
+﻿@model DashboardChartReportModel
 @using Newtonsoft.Json;
 @{
     var jsonData = JsonConvert.SerializeObject(Model);
 }
 
-<div class="bg-white rounded shadow-sm">
-    <div class="px-4 pt-4 pb-0 d-flex">
-        <div class="p-0 title-report fs-h5 font-weight-700">
-            <i class="fa fa-users pr-2"></i>@T("Admin.Customers.Reports.RegisteredCustomers")
+<div class="report">
+    <div class="report-title-row">
+        <div class="report-title">@T("Admin.Customers.Reports.RegisteredCustomers")</div>
+
+        <div class="pl-4 fs-h5">
+            <span id="orders-sum-amount" class="text-muted"></span>
+        </div>
+
+        <div class="pl-3 fs-h5">
+            <span id="customers-delta-percentage"></span><span id="customers-delta-percentage-chevron" class="chevron pl-1 d-none"></span>
         </div>
 
         <div class="btn-group btn-group-toggle ml-auto" data-toggle="buttons">
-            <label class="btn btn-secondary btn-dashboard align-self-center active">
-                <input type="radio" name="orders-toggle" data-period="Day" autocomplete="off" checked>
+            <label class="btn btn-secondary btn-dashboard active">
+                <input type="radio" name="customers-toggle" data-period="0" autocomplete="off" checked>
                 @T("Time.Today")
             </label>
-            <label class="btn btn-secondary btn-dashboard align-self-center">
-                <input type="radio" name="orders-toggle" data-period="Yesterday" autocomplete="off" checked>
+            <label class="btn btn-secondary btn-dashboard">
+                <input type="radio" name="customers-toggle" data-period="1" autocomplete="off">
                 @T("Time.Yesterday")
             </label>
-            <label class="btn btn-secondary btn-dashboard align-self-center">
-                <input type="radio" name="customers-toggle" period="Week" autocomplete="off">
-                @T("Time.Week")
+            <label class="btn btn-secondary btn-dashboard">
+                <input type="radio" name="customers-toggle" data-period="2" autocomplete="off">
+                @T("Admin.Report.LastWeek")
             </label>
-            <label class="btn btn-secondary btn-dashboard align-self-center">
-                <input type="radio" name="customers-toggle" period="Month" autocomplete="off">
-                @T("Time.Month")
+            <label class="btn btn-secondary btn-dashboard">
+                <input type="radio" name="customers-toggle" data-period="3" autocomplete="off">
+                @T("Admin.Report.LastMonth")
             </label>
             <label class="btn btn-secondary btn-dashboard">
                 <input type="radio" name="customers-toggle" data-period="4" autocomplete="off">

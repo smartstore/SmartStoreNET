@@ -526,6 +526,7 @@
             builder.AddOrUpdate("Admin.SalesReport.ByAmount", "By amount", "Nach Betrag");
             builder.AddOrUpdate("Admin.Report.LastWeek", "Last 7 days", "Letzte 7 Tage");
             builder.AddOrUpdate("Admin.Report.LastMonth", "Last 28 days", "Letzte 28 Tage");
+            builder.AddOrUpdate("Admin.Report.ThisYear", "This year", "Dieses Jahr");
             builder.AddOrUpdate("Time.Today", "Today", "Heute");
             builder.AddOrUpdate("Time.Yesterday", "Yesterday", "Gestern");
             builder.AddOrUpdate("Admin.SalesReport.StoreStatistics", "Statistics", "Statistiken");

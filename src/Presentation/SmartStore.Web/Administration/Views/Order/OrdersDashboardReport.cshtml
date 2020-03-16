@@ -4,45 +4,43 @@
     var jsonData = JsonConvert.SerializeObject(Model);
 }
 
-<div class="bg-white rounded shadow-sm h-100">
-    <div class="px-4 pt-4 d-flex pb-0">
-        <div class="p-0 title-report fs-h4">
-            <i class="fa fa-chart-bar pr-2"></i>@T("Account.CustomerOrders")
-        </div>
+<div class="report">
+    <div class="report-title-row">
+        <div class="report-title">@T("Account.CustomerOrders")</div>
 
-        <div class="align-self-center pl-4 fs-h5">
+        <div class="pl-4 fs-h5">
             <span id="orders-sum-amount" class="text-muted"></span>
         </div>
 
-        <div class="align-self-center pl-3 fs-h5">
-            <span id="orders-delta-percentage" class="font-weight-medium"></span><span id="orders-delta-percentage-chevron" class="chevron align-middle pl-1 d-none"></span>
+        <div class="pl-3 fs-h5">
+            <span id="orders-delta-percentage"></span><span id="orders-delta-percentage-chevron" class="chevron pl-1 d-none"></span>
         </div>
 
         <div class="btn-group btn-group-toggle ml-auto" data-toggle="buttons">
-            <label class="btn btn-secondary btn-dashboard align-self-center active">
+            <label class="btn btn-secondary btn-dashboard active">
                 <input type="radio" name="orders-toggle" data-period="0" autocomplete="off" checked>
                 @T("Time.Today")
             </label>
-            <label class="btn btn-secondary btn-dashboard align-self-center">
-                <input type="radio" name="orders-toggle" data-period="1" autocomplete="off" checked>
+            <label class="btn btn-secondary btn-dashboard">
+                <input type="radio" name="orders-toggle" data-period="1" autocomplete="off">
                 @T("Time.Yesterday")
             </label>
-            <label class="btn btn-secondary btn-dashboard align-self-center">
+            <label class="btn btn-secondary btn-dashboard">
                 <input type="radio" name="orders-toggle" data-period="2" autocomplete="off">
                 @T("Admin.Report.LastWeek")
             </label>
-            <label class="btn btn-secondary btn-dashboard align-self-center">
+            <label class="btn btn-secondary btn-dashboard">
                 <input type="radio" name="orders-toggle" data-period="3" autocomplete="off">
                 @T("Admin.Report.LastMonth")
             </label>
-            <label class="btn btn-secondary btn-dashboard align-self-center">
+            <label class="btn btn-secondary btn-dashboard">
                 <input type="radio" name="orders-toggle" data-period="4" autocomplete="off">
                 @T("Admin.Report.ThisYear")
             </label>
         </div>
     </div>
-    <div class="px-4 pt-3" id="orders-chart-legend"></div>
-    <div class="canvas-container" style="height: 75%; transform: translateY(2px); pointer-events: none">
+    <div class="px-4 pt-2" id="orders-chart-legend"></div>
+    <div class="canvas-container" style="height: 75%; transform: translateY(29px); pointer-events: none">
         <canvas id="orders-chart" class="w-100" width="70" height="18" style="position: absolute; pointer-events: all"></canvas>
     </div>
 </div>
@@ -50,8 +48,8 @@
 <script>
     $(function () {
         var ordersData = JSON.parse('@Html.Raw(jsonData)');
-        var $chevronElement = $("#orders-delta-percentage-chevron");
         var $percentageElement = $("#orders-delta-percentage");
+        var $chevronElement = $("#orders-delta-percentage-chevron");
         var $sumElement = $("#orders-sum-amount");
         var currentPeriod = 0;
 
@@ -67,63 +65,63 @@
         // Chartjs
         var $ordersChartElement = $('#orders-chart')[0];
         var orders_ctx = $ordersChartElement.getContext('2d');
-
-        var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight);
+        console.log($ordersChartElement.clientHeight);
+        var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight/0.74);
         //cancelledGradient.addColorStop(0, hexToRgba(colorDanger.substr(1), 1));
         //cancelledGradient.addColorStop(0, hexToRgba(colorDanger.substr(1), .1));
         cancelledGradient.addColorStop(0, 'rgb(232,123,92)');
         cancelledGradient.addColorStop(1, 'white');
 
-        var pendingGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight);
+        var pendingGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight/0.74);
         //pendingGradient.addColorStop(0, hexToRgba(colorWarning.substr(1), 1));
         //pendingGradient.addColorStop(1, hexToRgba(colorWarning.substr(1), .1));
         pendingGradient.addColorStop(0, 'rgb(249,199,125)');
         pendingGradient.addColorStop(1, 'white');
 
-        var processingGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight);
+        var processingGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight/0.74);
         //processingGradient.addColorStop(0, hexToRgba(colorSuccess.substr(1), 1));
         //processingGradient.addColorStop(1, hexToRgba(colorSuccess.substr(1), .1));
         processingGradient.addColorStop(0, 'rgb(92,193,166)');
         processingGradient.addColorStop(1, 'white');
 
-        var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight);
+        var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight/0.74);
         //completeGradient.addColorStop(0, hexToRgba(colorPrimary.substr(1), 1));
         //completeGradient.addColorStop(1, hexToRgba(colorPrimary.substr(1), .1));
         completeGradient.addColorStop(0, 'rgb(123,170,213)');
         completeGradient.addColorStop(1, 'white');
-        
+
         var order_config = {
             type: 'line',
             data: {
                 labels: ordersData.Reports[0].Labels,
                 datasets: [{
                     label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled")',
-                    data: ordersData.Reports[0].Data[0].Amount,
-                    borderColor: whiteTransparent,
-                    backgroundColor: colorDanger,
+                    data: ordersData.Reports[0].DataSets[0].Amount,
+                    borderColor: colorDanger,
+                    backgroundColor: cancelledGradient,
                     pointHoverBackgroundColor: colorDanger,
                     pointHoverBorderColor: 'transparent',
                 }, {
                     label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending")',
-                    data: ordersData.Reports[0].Data[1].Amount,
-                        borderColor: whiteTransparent,
-                        backgroundColor: colorWarning,
+                    data: ordersData.Reports[0].DataSets[1].Amount,
+                    borderColor: colorWarning,
+                    backgroundColor: pendingGradient,
                     hidden: true,
                     pointHoverBackgroundColor: colorWarning,
                     pointHoverBorderColor: 'transparent',
                 }, {
                     label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing")',
-                    data: ordersData.Reports[0].Data[2].Amount,
-                        borderColor: whiteTransparent,
-                        backgroundColor: colorSuccess,
+                    data: ordersData.Reports[0].DataSets[2].Amount,
+                    borderColor: colorSuccess,
+                    backgroundColor: processingGradient,
                     hidden: true,
                     pointHoverBackgroundColor: colorSuccess,
                     pointHoverBorderColor: 'transparent',
                 }, {
                     label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")',
-                        data: ordersData.Reports[0].Data[3].Amount,
-                        borderColor: colorPrimary,
-                        backgroundColor: colorPrimary,
+                    data: ordersData.Reports[0].DataSets[3].Amount,
+                    borderColor: colorPrimary,
+                    backgroundColor: completeGradient,
                     pointHoverBackgroundColor: colorPrimary,
                     pointHoverBorderColor: 'transparent',
                 }]
@@ -170,7 +168,7 @@
 
                         if (chart.data.labels[i]) {
                             text.push('<span>' + chart.data.datasets[i].label + '</span>');
-                            text.push('<span class="font-weight-500 pl-1 total-amount">' + ordersData.Reports[currentPeriod].Data[i].TotalAmount + '</span>');
+                            text.push('<span class="font-weight-500 pl-1 total-amount">' + ordersData.Reports[currentPeriod].DataSets[i].TotalAmount + '</span>');
                         }
                         text.push('</li>');
                     }
@@ -204,7 +202,7 @@
                     bodySpacing: 5,
                     callbacks: {
                         label: function (item) {
-                            return ordersData.Reports[currentPeriod].Data[item.datasetIndex].FormattedAmount[item.index];
+                            return ordersData.Reports[currentPeriod].DataSets[item.datasetIndex].FormattedAmount[item.index];
                         }
                     }
                 },
@@ -270,10 +268,14 @@
             if (val < 0) {
                 $chevronElement.addClass("negative");
                 $chevronElement.removeClass("d-none");
+                $percentageElement.removeClass("text-success");
+                $percentageElement.addClass("text-danger");
             }
             else if (val > 0) {
                 $chevronElement.removeClass("negative");
                 $chevronElement.removeClass("d-none");
+                $percentageElement.addClass("text-success");
+                $percentageElement.removeClass("text-danger");
             }
             else {
                 $chevronElement.addClass("d-none")
@@ -291,7 +293,7 @@
             console.log(period);
             order_config.data.labels = ordersData.Reports[period].Labels;
             for (var i = 0; i < order_config.data.datasets.length; i++) {
-                order_config.data.datasets[i].data = ordersData.Reports[period].Data[i].Amount;
+                order_config.data.datasets[i].data = ordersData.Reports[period].DataSets[i].Amount;
             }
 
             ordersChart = new Chart(orders_ctx, order_config);

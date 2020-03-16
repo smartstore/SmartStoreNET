@@ -7,15 +7,16 @@
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     grid-column-gap: 1rem;
-    grid-template-rows: repeat(4, auto);
     grid-row-gap: 1rem;
+    grid-auto-rows: auto;
 }
 
 .table-dashboard {
     > table {
         table-layout: fixed;
 
-        tr > th, tr > td {
+        tr > th, 
+        tr > td {
             overflow-x: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
@@ -28,7 +29,8 @@
     }
 
     > .table-3 {
-        tr > th, tr > td {
+        tr > th, 
+        tr > td {
             padding-left: 5px !important;
             padding-right: 5px !important;
 
@@ -49,18 +51,14 @@
     .title-report {
         display: inline-block;
         margin: 0;
-        vertical-align: middle;
-        align-self: center;
-        xcolor: var(--gray-dark);
-        xcolor: rgba(0,0,0,.7);
-        color: #000000b3;
+        font-weight: $font-weight-medium !important;
     }
 
     .table {
         white-space: nowrap;
 
         .display-row {
-            padding: 8px 24px;
+            padding: 0.875rem 1.5rem;
         }
     }
 
@@ -97,14 +95,14 @@
     .report-sales {
         grid-column-start: 1;
         grid-column-end: 8;
-        grid-row-start: 2;
+        grid-row-start: 1;
         grid-row-end: 3;
     }
 
     .report-bestsellers {
         grid-column-start: 8;
         grid-column-end: 11;
-        grid-row-start: 2;
+        grid-row-start: 1;
         grid-row-end: 3;
     }
 
@@ -116,10 +114,8 @@
     }
 
     .report-customer-registrations {
-        grid-column-start: 4;
-        grid-column-end: 11;
-        grid-row-start: 3;
-        grid-row-end: 4;
+        grid-column: 4 / 11;
+        grid-row: 3 / 4;
     }
 
     .report-latest-orders {

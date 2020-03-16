@@ -13,14 +13,15 @@ namespace SmartStore.Services.Customers
     /// </summary>
     public partial interface ICustomerService
     {
-		#region Customers
+        #region Customers
+        int CountAllCustomers();
 
-		/// <summary>
-		/// Finds customer records matching all criteria specified by <paramref name="q"/>
-		/// </summary>
-		/// <param name="q">The filter query</param>
-		/// <returns>Customer collection</returns>
-		IPagedList<Customer> SearchCustomers(CustomerSearchQuery q);
+        /// <summary>
+        /// Finds customer records matching all criteria specified by <paramref name="q"/>
+        /// </summary>
+        /// <param name="q">The filter query</param>
+        /// <returns>Customer collection</returns>
+        IPagedList<Customer> SearchCustomers(CustomerSearchQuery q);
 
 		/// <summary>
 		/// Gets all customers by customer format (including deleted ones)

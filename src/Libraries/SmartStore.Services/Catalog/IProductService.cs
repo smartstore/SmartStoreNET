@@ -13,13 +13,16 @@ namespace SmartStore.Services.Catalog
     /// </summary>
     public partial interface IProductService
     {
-		#region Products
+        #region Products
 
-		/// <summary>
-		/// Delete a product
-		/// </summary>
-		/// <param name="product">Product</param>
-		void DeleteProduct(Product product);
+        int CountAllProducts();
+        int CountAllProductVariants();
+
+        /// <summary>
+        /// Delete a product
+        /// </summary>
+        /// <param name="product">Product</param>
+        void DeleteProduct(Product product);
 
         /// <summary>
         /// Gets all products displayed on the home page

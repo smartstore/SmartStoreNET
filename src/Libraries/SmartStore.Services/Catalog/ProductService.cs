@@ -142,6 +142,33 @@ namespace SmartStore.Services.Catalog
 
 		#region Products
 
+		public virtual int CountAllProducts()
+		{
+			var query =
+				from p in _productRepository.Table
+				select p;
+
+			return query.Count();
+		}
+
+		public virtual int CountAllProductVariants()
+		{
+			var query =
+				from p in _productVariantAttributeCombinationRepository.Table
+				select p;
+
+			return query.Count();
+		}
+
+		public virtual int CountAllProductAttributes()
+		{
+			var query =
+				from p in _productAttributeService.GetAllProductAttributes(0, int.MaxValue)
+				select p;
+
+			return query.Count();
+		}
+
 		public virtual void DeleteProduct(Product product)
         {
 			Guard.NotNull(product, nameof(product));

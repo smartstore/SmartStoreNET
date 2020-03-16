@@ -80,6 +80,13 @@ namespace SmartStore.Services.Customers
 
 		#region Customers
 
+		public virtual int CountAllCustomers()
+		{
+			var query = from c in _customerRepository.Table
+						select c;
+			return query.Count();
+		}
+
 		public virtual IPagedList<Customer> SearchCustomers(CustomerSearchQuery q)
 		{
 			Guard.NotNull(q, nameof(q));

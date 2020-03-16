@@ -1,4 +1,4 @@
-﻿@model OrdersDashboardReportModel
+﻿@model DashboardChartReportModel
 @using Newtonsoft.Json;
 @{
     var jsonData = JsonConvert.SerializeObject(Model);
@@ -6,37 +6,37 @@
 
 <div class="bg-white rounded shadow-sm h-100">
     <div class="px-4 pt-4 d-flex pb-0">
-        <div class="p-0 title-report fs-h5 font-weight-700">
+        <div class="p-0 title-report fs-h4">
             <i class="fa fa-chart-bar pr-2"></i>@T("Account.CustomerOrders")
         </div>
 
-        <div class="align-self-center pl-4 fs-h5 font-weight-300">
-            <span id="orders-sum-amount" class="text-muted align-middle"></span>
+        <div class="align-self-center pl-4 fs-h5">
+            <span id="orders-sum-amount" class="text-muted"></span>
         </div>
 
         <div class="align-self-center pl-3 fs-h5">
-            <span id="orders-delta-percentage" class="align-middle"></span><span id="orders-delta-percentage-chevron" class="chevron align-middle pl-1 d-none"></span>
+            <span id="orders-delta-percentage" class="font-weight-medium"></span><span id="orders-delta-percentage-chevron" class="chevron align-middle pl-1 d-none"></span>
         </div>
 
         <div class="btn-group btn-group-toggle ml-auto" data-toggle="buttons">
             <label class="btn btn-secondary btn-dashboard align-self-center active">
-                <input type="radio" name="orders-toggle" data-period="Day" autocomplete="off" checked>
+                <input type="radio" name="orders-toggle" data-period="0" autocomplete="off" checked>
                 @T("Time.Today")
             </label>
             <label class="btn btn-secondary btn-dashboard align-self-center">
-                <input type="radio" name="orders-toggle" data-period="Yesterday" autocomplete="off" checked>
+                <input type="radio" name="orders-toggle" data-period="1" autocomplete="off" checked>
                 @T("Time.Yesterday")
             </label>
             <label class="btn btn-secondary btn-dashboard align-self-center">
-                <input type="radio" name="orders-toggle" data-period="Week" autocomplete="off">
-                @T("Time.Week")
+                <input type="radio" name="orders-toggle" data-period="2" autocomplete="off">
+                @T("Admin.Report.LastWeek")
             </label>
             <label class="btn btn-secondary btn-dashboard align-self-center">
-                <input type="radio" name="orders-toggle" data-period="Month" autocomplete="off">
-                @T("Time.Month")
+                <input type="radio" name="orders-toggle" data-period="3" autocomplete="off">
+                @T("Admin.Report.LastMonth")
             </label>
             <label class="btn btn-secondary btn-dashboard align-self-center">
-                <input type="radio" name="orders-toggle" data-period="Year" autocomplete="off">
+                <input type="radio" name="orders-toggle" data-period="4" autocomplete="off">
                 @T("Time.Year")
             </label>
         </div>
@@ -53,7 +53,7 @@
         var $chevronElement = $("#orders-delta-percentage-chevron");
         var $percentageElement = $("#orders-delta-percentage");
         var $sumElement = $("#orders-sum-amount");
-        var currentPeriod = "Day";
+        var currentPeriod = 0;
 
         var style = getComputedStyle(document.body);
         var colorPrimary = style.getPropertyValue('--primary');
@@ -62,65 +62,68 @@
         var colorSuccess = style.getPropertyValue('--success');
         var colorWarning = style.getPropertyValue('--warning');
         var fontFamily = style.getPropertyValue('--font-family-sans-serif');
-
+        var whiteTransparent = 'rgba(255,255,255, 0.5)';
         //----------------------------------------------------
         // Chartjs
         var $ordersChartElement = $('#orders-chart')[0];
         var orders_ctx = $ordersChartElement.getContext('2d');
 
-        var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight);
-        completeGradient.addColorStop(0, hexToRgba(colorPrimary.substr(1), 1));
-        //completeGradient.addColorStop(1, hexToRgba(colorPrimary.substr(1), .1));
-        completeGradient.addColorStop(1, 'rgb(255,255,255)');
-
-
         var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight);
-        cancelledGradient.addColorStop(0, hexToRgba(colorDanger.substr(1), 1));
+        //cancelledGradient.addColorStop(0, hexToRgba(colorDanger.substr(1), 1));
         //cancelledGradient.addColorStop(0, hexToRgba(colorDanger.substr(1), .1));
-        cancelledGradient.addColorStop(1, 'rgb(255,255,255)');
+        cancelledGradient.addColorStop(0, 'rgb(232,123,92)');
+        cancelledGradient.addColorStop(1, 'white');
 
         var pendingGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight);
-        pendingGradient.addColorStop(0, hexToRgba(colorWarning.substr(1), 1));
+        //pendingGradient.addColorStop(0, hexToRgba(colorWarning.substr(1), 1));
         //pendingGradient.addColorStop(1, hexToRgba(colorWarning.substr(1), .1));
-        pendingGradient.addColorStop(1, 'rgb(255,255,255)');
+        pendingGradient.addColorStop(0, 'rgb(249,199,125)');
+        pendingGradient.addColorStop(1, 'white');
 
         var processingGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight);
-        processingGradient.addColorStop(0, hexToRgba(colorSuccess.substr(1), 1));
+        //processingGradient.addColorStop(0, hexToRgba(colorSuccess.substr(1), 1));
         //processingGradient.addColorStop(1, hexToRgba(colorSuccess.substr(1), .1));
-        processingGradient.addColorStop(1, 'rgb(255,255,255)');
+        processingGradient.addColorStop(0, 'rgb(92,193,166)');
+        processingGradient.addColorStop(1, 'white');
 
+        var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight);
+        //completeGradient.addColorStop(0, hexToRgba(colorPrimary.substr(1), 1));
+        //completeGradient.addColorStop(1, hexToRgba(colorPrimary.substr(1), .1));
+        completeGradient.addColorStop(0, 'rgb(123,170,213)');
+        completeGradient.addColorStop(1, 'white');
+        
         var order_config = {
             type: 'line',
             data: {
-                labels: ordersData.Day.Labels,
+                labels: ordersData.Reports[0].Labels,
                 datasets: [{
                     label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled")',
-                    data: ordersData.Day.Data[0].Amount,
-                    borderColor: colorDanger,
-                    backgroundColor: cancelledGradient,
+                    data: ordersData.Reports[0].Data[0].Amount,
+                    borderColor: whiteTransparent,
+                    backgroundColor: colorDanger,
                     pointHoverBackgroundColor: colorDanger,
                     pointHoverBorderColor: 'transparent',
                 }, {
                     label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending")',
-                    data: ordersData.Day.Data[1].Amount,
-                    borderColor: colorWarning,
-                    backgroundColor: pendingGradient,
+                    data: ordersData.Reports[0].Data[1].Amount,
+                        borderColor: whiteTransparent,
+                        backgroundColor: colorWarning,
                     hidden: true,
                     pointHoverBackgroundColor: colorWarning,
                     pointHoverBorderColor: 'transparent',
                 }, {
                     label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing")',
-                    data: ordersData.Day.Data[2].Amount,
-                    borderColor: colorSuccess,
-                    backgroundColor: processingGradient,
+                    data: ordersData.Reports[0].Data[2].Amount,
+                        borderColor: whiteTransparent,
+                        backgroundColor: colorSuccess,
                     hidden: true,
                     pointHoverBackgroundColor: colorSuccess,
                     pointHoverBorderColor: 'transparent',
                 }, {
                     label: '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")',
-                    data: ordersData.Day.Data[3].Amount,
-                    borderColor: colorPrimary,
-                    backgroundColor: completeGradient,
+                        data: ordersData.Reports[0].Data[3].Amount,
+                        borderColor: colorPrimary,
+                        backgroundColor: colorPrimary,
                     pointHoverBackgroundColor: colorPrimary,
                     pointHoverBorderColor: 'transparent',
                 }]
@@ -167,7 +170,7 @@
 
                         if (chart.data.labels[i]) {
                             text.push('<span>' + chart.data.datasets[i].label + '</span>');
-                            text.push('<span class="font-weight-500 pl-1 total-amount">' + ordersData[currentPeriod].Data[i].TotalAmount + '</span>');
+                            text.push('<span class="font-weight-500 pl-1 total-amount">' + ordersData.Reports[currentPeriod].Data[i].TotalAmount + '</span>');
                         }
                         text.push('</li>');
                     }
@@ -181,7 +184,7 @@
                         hitRadius: 3,
                     },
                     line: {
-                        borderWidth: 2,
+                        borderWidth: 1,
                         lineTension: 0.2,
                         fill: true,
                     }
@@ -200,8 +203,8 @@
                     titleMarginBottom: 8,
                     bodySpacing: 5,
                     callbacks: {
-                        label: function (item, data) {
-                            return " " + (data.datasets[item.datasetIndex].label || '') + ": " + item.yLabel;
+                        label: function (item) {
+                            return ordersData.Reports[currentPeriod].Data[item.datasetIndex].FormattedAmount[item.index];
                         }
                     }
                 },
@@ -262,7 +265,7 @@
         // Functions
 
         function setPercentageDelta(period) {
-            var val = ordersData[period].PercentageDelta;
+            var val = ordersData.Reports[period].PercentageDelta;
 
             if (val < 0) {
                 $chevronElement.addClass("negative");
@@ -279,15 +282,16 @@
             var delta = val == 0 ? "" : val < 0 ? "-" + Math.abs(val) + "%" : "+" + Math.abs(val) + "%";
 
             $percentageElement.html(delta);
-            $sumElement.html(ordersData[period].TotalAmount);
+            $sumElement.html(ordersData.Reports[period].TotalAmount);
         }
 
         function setChartData(period) {
             ordersChart.destroy();
-
-            order_config.data.labels = ordersData[period].Labels;
+            console.log(order_config.data);
+            console.log(period);
+            order_config.data.labels = ordersData.Reports[period].Labels;
             for (var i = 0; i < order_config.data.datasets.length; i++) {
-                order_config.data.datasets[i].data = ordersData[period].Data[i].Amount;
+                order_config.data.datasets[i].data = ordersData.Reports[period].Data[i].Amount;
             }
 
             ordersChart = new Chart(orders_ctx, order_config);

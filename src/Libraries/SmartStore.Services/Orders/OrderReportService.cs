@@ -474,16 +474,15 @@ namespace SmartStore.Services.Orders
         {
             var report = new DashboardChartReportLine(4, 12);
 
-            var currentDate = DateTime.UtcNow.Date;
-            var orders = allOrders.Where(x => x.CreatedOnUtc < currentDate.AddDays(1) && x.CreatedOnUtc >= currentDate.AddYears(-1)).Select(x => x).ToList();
+            var currentDate = DateTime.UtcNow;
+            var orders = allOrders.Where(x => x.CreatedOnUtc < currentDate && x.CreatedOnUtc >= new DateTime(currentDate.Year, 1, 1)).Select(x => x).ToList();
             var ordersReports = GetOrderReports(orders);
 
             for (int i = 0; i < 12; i++)
             {
-                var date = currentDate.AddMonths(-(11 - i)).Date;
-                var fromDate = currentDate.AddMonths(-(11 - i)).Date;
+                var fromDate = new DateTime(DateTime.UtcNow.Year, i+1, 1);
                 var toDate = fromDate.AddMonths(1);
-                report.Labels[i] = date.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("Y");
+                report.Labels[i] = fromDate.ToString("Y");
                 GetReportPointData(report, ordersReports, fromDate, toDate, i);
             }
 

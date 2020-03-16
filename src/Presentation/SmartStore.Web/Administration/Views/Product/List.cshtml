@@ -118,7 +118,7 @@
 						.ClientTemplate("<div class='zoomable-thumb-container'><img alt='<#= Id #>' src='<#= PictureThumbnailUrl #>' <# if (!NoThumb) {#> class='zoomable-thumb' <# } #> /></div>");
 				}
 				columns.Bound(x => x.Name)
-					.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeName, x.ProductTypeLabelHint))
+					.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
 					.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
 				columns.Bound(x => x.Sku);
 				columns.Bound(x => x.Price)

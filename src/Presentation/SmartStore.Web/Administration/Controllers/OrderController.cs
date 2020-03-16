@@ -2515,8 +2515,6 @@ namespace SmartStore.Admin.Controllers
                 if (product != null)
                 {
                     m.ProductName = product.Name;
-                    var maxLength = product.ProductType != ProductType.SimpleProduct ? 18 : 24;
-                    m.ProductDisplayName = m.ProductName.Length > maxLength ? m.ProductName.Truncate(maxLength) + "..." : product.Name;
                     m.ProductTypeName = product.GetProductTypeLabel(_localizationService);
                     m.ProductTypeLabelHint = product.ProductTypeLabelHint;
                 }
@@ -2838,21 +2836,14 @@ namespace SmartStore.Admin.Controllers
             var latestOrders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue).Take(7).ToList();
             foreach (var order in latestOrders)
             {
-                var customerDisplayName = "";
                 var customer = _customerService.GetCustomerById(order.CustomerId);
-                if (customer != null)
-                {
-                    customerDisplayName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
-                    customerDisplayName = customerDisplayName.Length > 30 ? customerDisplayName.Truncate(30) + "..." : customerDisplayName;
-                }
 
                 model.LatestOrders.Add(
                     new DashboardOrderModel(
                         customer,
-                        customerDisplayName,
                         order.OrderItems.Select(x => x.Quantity).Sum(),
                         _priceFormatter.FormatPrice(order.OrderTotal, true, false),
-                        order.CreatedOnUtc.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("dd/MM/yyyy H:mm"),
+                        order.CreatedOnUtc.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("g"),
                         order.OrderStatus,
                         order.Id)
                     );

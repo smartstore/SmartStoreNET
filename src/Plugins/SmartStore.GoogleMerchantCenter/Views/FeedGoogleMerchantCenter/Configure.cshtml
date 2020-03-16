@@ -102,7 +102,7 @@
 				c.Bound(x => x.Name)
 					.ReadOnly().Visible(true)
 					//.Width("30%")
-					.Template(x => @Html.LabeledProductName(x.ProductId, x.Name, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+					.Template(x => @Html.LabeledProductName(x.ProductId, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
 					.ClientTemplate(@Html.LabeledProductName("ProductId", "Name"));
 				c.Bound(x => x.SKU)
 					//.Width(100)

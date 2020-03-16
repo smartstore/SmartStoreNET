@@ -12,8 +12,6 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.SalesReport.Bestsellers.Fields.Name")]
         public string ProductName { get; set; }
 
-        public string ProductDisplayName { get; set; }
-
         [SmartResourceDisplayName("Admin.SalesReport.Bestsellers.Fields.TotalAmount")]
         public string TotalAmount { get; set; }
 

@@ -1363,7 +1363,6 @@ namespace SmartStore.Admin.Controllers
                  if (customer != null)
                  {
                      m.CustomerName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
-                     m.DisplayName = m.CustomerName.Length > 24 ? m.CustomerName.Truncate(24) + "..." : m.CustomerName;
                  }
 
                  return m;

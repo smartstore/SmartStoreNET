@@ -41,7 +41,7 @@
 				.Columns(columns =>
 				{
 					columns.Bound(x => x.ProductName)
-						.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+						.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
 						.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
 				})
 				.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))

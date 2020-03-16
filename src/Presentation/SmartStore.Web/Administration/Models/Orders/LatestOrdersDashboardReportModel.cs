@@ -13,7 +13,6 @@ namespace SmartStore.Admin.Models.Orders
     public class DashboardOrderModel
     {
         public Customer Customer { get; set; }
-        public string CustomerDisplayName { get; set; }
         public int ProductsTotal { get; set; }
         public string TotalAmount { get; set; }
         public string Created { get; set; }
@@ -21,7 +20,6 @@ namespace SmartStore.Admin.Models.Orders
         public int OrderId { get; set; }
         public DashboardOrderModel(
             Customer customer,
-            string customerDisplayName,
             int productsTotal,
             string totalAmount,
             string created,
@@ -29,7 +27,6 @@ namespace SmartStore.Admin.Models.Orders
             int orderId)
         {
             Customer = customer;
-            CustomerDisplayName = customerDisplayName;
             ProductsTotal = productsTotal;
             TotalAmount = totalAmount;
             Created = created;

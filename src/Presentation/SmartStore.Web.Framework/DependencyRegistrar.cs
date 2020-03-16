@@ -44,6 +44,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Catalog.Importer;
 using SmartStore.Services.Catalog.Modelling;
+using SmartStore.Services.Catalog.Rules;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
@@ -1214,6 +1215,11 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<TargetGroupService>()
                 .As<ITargetGroupService>()
                 .Keyed<IRuleProvider>(RuleScope.Customer)
+                .InstancePerRequest();
+
+            builder.RegisterType<ProductRuleProvider>()
+                .As<IProductRuleProvider>()
+                .Keyed<IRuleProvider>(RuleScope.Product)
                 .InstancePerRequest();
 
             builder.RegisterType<DefaultRuleOptionsProvider>().As<IRuleOptionsProvider>().InstancePerRequest();

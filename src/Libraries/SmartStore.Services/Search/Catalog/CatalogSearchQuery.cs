@@ -152,8 +152,10 @@ namespace SmartStore.Services.Search
 
 			if (id == 0)
 			{
-				WithFilter(SearchFilter.ByField("storeid", 0).ExactMatch().NotAnalyzed());
-			}
+                // 0 is ignored in queries, i.e. no filtering takes place. 
+                // This should be kept here so that search engines do not provide different results.
+                //WithFilter(SearchFilter.ByField("storeid", 0).ExactMatch().NotAnalyzed());
+            }
 			else
 			{
 				WithFilter(SearchFilter.Combined(

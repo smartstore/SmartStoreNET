@@ -46,7 +46,6 @@ namespace SmartStore.Admin.Models.Rules
         public IList<AssignedToEntityModel> AssignedToPaymentMethods { get; set; }
 
         public IRuleExpressionGroup ExpressionGroup { get; set; }
-        public IEnumerable<RuleDescriptor> AvailableDescriptors { get; set; }
 
         public string RawRuleData { get; set; }
 
@@ -61,7 +60,9 @@ namespace SmartStore.Admin.Models.Rules
     public class RuleSetPreviewModel : RuleSetModel
     {
         public int GridPageSize { get; set; }
+        public bool IsSingleStoreMode { get; set; }
         public bool UsernamesEnabled { get; set; }
+        public bool DisplayProductPictures { get; set; }
     }
 
 

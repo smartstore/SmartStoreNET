@@ -17,9 +17,12 @@
     {
         { "data-placeholder", T("Common.Unspecified").Text },
         { "data-remote-url", remoteUrl },
-        { "data-tags", list == null },
-        { "multiple", isMultiple }
+        { "data-tags", list == null }
     };
+    if (isMultiple)
+    {
+        attributes["multiple"] = "multiple";
+    }
 }
 <select id="@id" name="@id" @Html.Attrs(attributes)>
     @if (remoteUrl.HasValue())

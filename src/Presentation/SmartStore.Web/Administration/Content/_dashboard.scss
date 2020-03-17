@@ -22,6 +22,16 @@
             white-space: nowrap;
             text-overflow: ellipsis;
             border-top: 0;
+            padding-left: 1rem;
+            padding-right: 1rem;
+
+            &:first-child {
+                padding-left: 1.5rem !important;
+            }
+
+            &:last-child {
+                padding-right: 1.5rem !important;
+            }
         }
 
         tr > th {
@@ -41,13 +51,27 @@
             padding-right: 0.25rem !important;
 
             &:first-child {
-                padding-left: 1.5rem !important;
                 width: 50%;
             }
 
             &:last-child {
                 width: 30%;
-                padding-right: 1.5rem !important;
+            }
+        }
+    }
+
+    > .table-4 {
+        tr > th,
+        tr > td {
+            padding-left: 0.25rem !important;
+            padding-right: 0.25rem !important;
+
+            &:nth-child(2) {
+                width: 15%;
+            }
+
+            &:nth-child(4) {
+                width: 15%;
             }
         }
     }
@@ -143,12 +167,12 @@
 }
 
 .report-order-fulfillment {
-    grid-column: 1 / 7;
+    grid-column: 4 / 11;
     grid-row: 1 / 2;
 }
 
 .report-incomplete-orders {
-    grid-column: 7 / 9;
+    grid-column: 1 / 4;
     grid-row: 1 / 2;
 }
 

@@ -520,7 +520,12 @@
     <Content Include="Content\_telerik.scss" />
     <Content Include="Content\_variables.scss" />
     <Content Include="Content\_admin.scss" />
+    <Content Include="Scripts\Chart.js" />
+    <Content Include="Scripts\Chart.min.js" />
+    <Content Include="Scripts\easypiechart.js" />
+    <Content Include="Scripts\easypiechart.min.js" />
     <Content Include="Scripts\jquery-shims.js" />
+    <Content Include="Scripts\jquery.easypiechart.js" />
     <Content Include="Scripts\jquery.tmpl.min.js" />
     <Content Include="Scripts\admin.globalinit.js" />
     <Content Include="Scripts\smartstore.rules.js" />

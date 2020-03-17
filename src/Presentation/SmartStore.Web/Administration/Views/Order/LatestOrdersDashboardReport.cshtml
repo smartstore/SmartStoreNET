@@ -11,9 +11,9 @@
             <thead>
                 <tr>
                     <th class="display-row" style="width: 30%">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
-                    <th class="display-row text-center" style="width: 10%">@T("Admin.Catalog.Categories.Products")</th>
-                    <th class="display-row text-right" style="width: 20%">@T("Admin.SalesReport.Bestsellers.Fields.TotalAmount")</th>
-                    <th class="display-row" style="width: 20%; padding-left: 2rem">@T("Account.CustomerOrders.OrderDate")</th>
+                    <th class="display-row text-center px-3" style="width: 10%">@T("Admin.Catalog.Categories.Products")</th>
+                    <th class="display-row text-right" style="width: 20%;  padding-right: 2rem !important" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@T("Common.Amount")</th>
+                    <th class="display-row" style="width: 20%;">@T("Account.CustomerOrders.OrderDate")</th>
                     <th class="display-row" style="width: 20%">@T("Account.CustomerOrders.OrderStatus")</th>
                 </tr>
             </thead>
@@ -25,8 +25,8 @@
                         @Html.ActionLink(x.Customer.Username, "Edit", "Customer", new { id = x.Customer.Id }, new { })
                     </td>
                     <td class="display-row text-center">@x.ProductsTotal</td>
-                    <td class="display-row text-right">@x.TotalAmount</td>
-                    <td class="display-row" style="padding-left: 2rem">@x.Created</td>
+                    <td class="display-row text-right"  style="padding-right: 2rem !important">@x.TotalAmount</td>
+                    <td class="display-row">@x.Created</td>
 
                     @if (x.OrderState == OrderStatus.Pending)
                     {

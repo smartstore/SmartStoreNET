@@ -284,5 +284,9 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <returns>Formatted subtotal of cart items for the current user</returns>
         string GetFormattedCurrentCartSubTotal(IList<OrganizedShoppingCartItem> cart);
-    }
+
+		decimal GetAllOpenCartsSubTotal();
+
+		decimal GetAllOpenWishlistsSubTotal();
+	}
 }

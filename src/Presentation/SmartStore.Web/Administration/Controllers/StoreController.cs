@@ -11,6 +11,8 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Payments;
+using SmartStore.Services.Shipping;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -33,6 +35,9 @@ namespace SmartStore.Admin.Controllers
         private readonly IPriceFormatter _priceFormatter;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
         private readonly IShoppingCartService _shoppingCartService;
+        private readonly IShippingService _shippingService;
+        private readonly IPaymentService _paymentService;
+        private readonly IOrderReportService _orderReportService;
 
         public StoreController(
             ICurrencyService currencyService,
@@ -46,7 +51,10 @@ namespace SmartStore.Admin.Controllers
             IPictureService pictureService,
             IPriceFormatter priceFormatter,
             INewsLetterSubscriptionService newsLetterSubscriptionService,
-            IShoppingCartService shoppingCartService)
+            IShoppingCartService shoppingCartService,
+            IShippingService shippingService,
+            IPaymentService paymentService,
+            IOrderReportService orderReportService)
         {
             _currencyService = currencyService;
             _productService = productService;
@@ -61,6 +69,9 @@ namespace SmartStore.Admin.Controllers
             _priceFormatter = priceFormatter;
             _newsLetterSubscriptionService = newsLetterSubscriptionService;
             _shoppingCartService = shoppingCartService;
+            _shippingService = shippingService;
+            _paymentService = paymentService;
+            _orderReportService = orderReportService;
         }
 
         private void PrepareStoreModel(StoreModel model, Store store)
@@ -258,65 +269,68 @@ namespace SmartStore.Admin.Controllers
             var model = new StoreDashboardReportModel();
 
             model.StoreStatisticsReport.Add(
-                T("Admin.Catalog.Products"), 
+                T("Admin.Catalog.Products") + ":",
                 string.Format("{0:#,##0}", _productService.CountAllProducts()));
 
             model.StoreStatisticsReport.Add(
-                T("Admin.Catalog.Attributes"), 
-                string.Format("{0:#,##0}", _productAttributeService.GetAllProductAttributes(0, int.MaxValue).Count));
-
-            model.StoreStatisticsReport.Add(
-                T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations"), 
-                string.Format("{0:#,##0}", _productService.CountAllProductVariants()));
-
-            model.StoreStatisticsReport.Add(
-                T("Admin.Catalog.Categories"), 
-                string.Format("{0:#,##0}", _categoryService.GetAllCategories().Count));
-
-            model.StoreStatisticsReport.Add(
-                T("Admin.Catalog.Manufacturers"), 
-                string.Format("{0:#,##0}", _manufacturerService.GetAllManufacturers().Count));
-
-            model.StoreStatisticsReport.Add(
-                T("Admin.Customers.Customers"), string.Format("{0:#,##0}", 
-                _customerService.CountAllCustomers()));
-
-            model.StoreStatisticsReport.Add(
-                T("Account.CustomerOrders"), 
-                string.Format("{0:#,##0}", _orderService.GetAllOrders(0, 0, int.MaxValue).Count));
-
-            model.StoreStatisticsReport.Add(
-                T("Admin.Sales"), 
-                _priceFormatter.FormatPrice(_orderService.GetAllOrders(0, 0, int.MaxValue).Sum(x => x.OrderTotal), true, false));
-
-            model.StoreStatisticsReport.Add(
-                T("Admin.Catalog.Products.Pictures"), 
+                T("Admin.Catalog.Products.Pictures") + ":",
                 string.Format("{0:#,##0}", _pictureService.GetPictures(0, int.MaxValue).TotalCount));
 
             model.StoreStatisticsReport.Add(
-                T("Newsletter"), 
+                T("Admin.Catalog.Categories") + ":",
+                string.Format("{0:#,##0}", _categoryService.GetAllCategories().Count));
+
+            model.StoreStatisticsReport.Add(
+                T("Admin.Catalog.Manufacturers") + ":",
+                string.Format("{0:#,##0}", _manufacturerService.GetAllManufacturers().Count));
+
+            model.StoreStatisticsReport.Add(
+                T("Admin.Catalog.Attributes") + ":",
+                string.Format("{0:#,##0}", _productAttributeService.GetAllProductAttributes(0, int.MaxValue).Count));
+
+            model.StoreStatisticsReport.Add(
+                T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations") + ":",
+                string.Format("{0:#,##0}", _productService.CountAllProductVariants()));
+
+            model.StoreStatisticsReport.Add(
+                T("Account.CustomerOrders") + ":",
+                string.Format("{0:#,##0}", _orderService.GetAllOrders(0, 0, int.MaxValue).Count));
+
+            model.StoreStatisticsReport.Add(
+                T("Admin.Sales") + ":",
+                _priceFormatter.FormatPrice(_orderService.GetAllOrders(0, 0, int.MaxValue).Sum(x => x.OrderTotal), true, false));
+
+            model.StoreStatisticsReport.Add(
+                T("Admin.Customers.OnlineCustomers") + ":",
+                string.Format("{0:#,##0}", _customerService.GetOnlineCustomers(DateTime.UtcNow.AddMinutes(-15), null, 0, int.MaxValue).Count));
+
+            model.StoreStatisticsReport.Add(
+                T("Admin.Customers.Customers") + ":",
+                string.Format("{0:#,##0}", _customerService.CountAllCustomers()));
+
+            model.StoreStatisticsReport.Add(
+                T("Admin.Promotions.NewsLetterSubscriptions.Short") + ":",
                 string.Format("{0:#,##0}", _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions("", 0, int.MaxValue).Count));
 
             model.StoreStatisticsReport.Add(
-                T("online customers"),
-                string.Format("{0:#,##0}", _customerService.GetOnlineCustomers(DateTime.UtcNow.AddMinutes(-15), null, 0, int.MaxValue).Count));
+               T("Admin.CurrentCarts") + ":",
+               _priceFormatter.FormatPrice(_shoppingCartService.GetAllOpenCartsSubTotal(), true, false));
+            
+            model.StoreStatisticsReport.Add(
+                T("Admin.Configuration.Shipping.Methods") + ":",
+                string.Format("{0:#,##0}", _shippingService.GetAllShippingMethods().Count));
 
-            //model.StoreStatisticsReport.Add(
-            //   T("open carts"),
-            //   string.Format("{0:#,##0}",   .GetOnlineCustomers(DateTime.UtcNow.AddMinutes(-15), null, 0, int.MaxValue).Count));
+            model.StoreStatisticsReport.Add(
+               T("Admin.CurrentWishlists") + ":",
+               _priceFormatter.FormatPrice(_shoppingCartService.GetAllOpenWishlistsSubTotal(), true, false));
 
-            ////_shoppingCartService.GetCartItems();
-            //product specification
-            //countries
-            //languages
-            //shipping methods
-            //payment methods
-            //curenncies
+            model.StoreStatisticsReport.Add(
+                T("Admin.Configuration.Payment.Methods") + ":",
+                string.Format("{0:#,##0}", _paymentService.GetAllPaymentMethods().Count));
 
-            // online customer
-            // offene warenkörbe $
-            // offene wunschlisten $
-
+            model.StoreStatisticsReport.Add(
+                T("Admin.SalesReport.NeverSold") + ":",
+                string.Format("{0:#,##0} " + T("Admin.Catalog.Products"), _orderReportService.ProductsNeverSold(null, null, 0, int.MaxValue).Count));
 
             return PartialView(model);
         }

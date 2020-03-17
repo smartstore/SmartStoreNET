@@ -1,9 +1,5 @@
 ﻿@model StoreDashboardReportModel
 @using SmartStore.Admin.Models.Store
-@{
-    var x = Model.StoreStatisticsReport;
-}
-
 
 <div class="report">
     <div class="report-title-row">
@@ -11,35 +7,28 @@
     </div>
 
     <div class="table-responsive table-dashboard table-hover">
-        <table class="table">
+        <table class="table table-4">
             <thead>
                 <tr>
-                    <th class="display-row">@T("Attribute")</th>
-                    <th class="display-row">@T("Value")</th>
-                    <th class="display-row">@T("Attribute")</th>
-                    <th class="display-row">@T("Value")</th>
+                    <th class="display-row">@T("Admin.SalesReport.Attribute")</th>
+                    <th class="display-row" style="width: 15%;">@T("Admin.SalesReport.Value")</th>
+                    <th class="display-row">@T("Admin.SalesReport.Attribute")</th>
+                    <th class="display-row" style="width: 25%;">@T("Admin.SalesReport.Value")</th>
                 </tr>
             </thead>
             <tbody>
                 @for (int i = 0; i < Model.StoreStatisticsReport.Count; i += 2)
-                    {
-                        <tr>
-                            <td class="display-row">@Model.StoreStatisticsReport.ElementAt(i).Key</td>
-                            <td class="display-row">@Model.StoreStatisticsReport.ElementAt(i).Value</td>
-                            @if (i + 1 < @Model.StoreStatisticsReport.Count)
-                            {
-                                <td class="display-row">@Model.StoreStatisticsReport.ElementAt(i + 1).Key</td>
-                                <td class="display-row">@Model.StoreStatisticsReport.ElementAt(i + 1).Value</td>
-                            }
-                        </tr>
-                }
-                @*@foreach (var item in Model.StoreStatisticsReport)
                 {
                     <tr>
-                        <td class="display-row">@item.Key</td>
-                        <td class="display-row text-right">@item.Value</td>
+                        <td class="display-row font-weight-medium">@Model.StoreStatisticsReport.ElementAt(i).Key</td>
+                        <td class="display-row">@Model.StoreStatisticsReport.ElementAt(i).Value</td>
+                        @if (i + 1 < @Model.StoreStatisticsReport.Count)
+                        {
+                            <td class="display-row font-weight-medium">@Model.StoreStatisticsReport.ElementAt(i + 1).Key</td>
+                            <td class="display-row">@Model.StoreStatisticsReport.ElementAt(i + 1).Value</td>
+                        }
                     </tr>
-                }*@
+                }
             </tbody>
         </table>
     </div>

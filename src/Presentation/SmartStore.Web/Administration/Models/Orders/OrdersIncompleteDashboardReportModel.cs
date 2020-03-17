@@ -3,7 +3,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Orders
 {
-    public partial class OrderIncompleteReportLineModel : ModelBase
+    public partial class OrdersIncompleteDashboardReportModel : ModelBase
     {
         [SmartResourceDisplayName("Admin.SalesReport.Incomplete.Item")]
         public string Item { get; set; }

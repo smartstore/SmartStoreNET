@@ -2767,13 +2767,13 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
-        protected virtual IList<OrderIncompleteReportLineModel> GetOrderIncompleteReportModel()
+        protected virtual IList<OrdersIncompleteDashboardReportModel> GetOrdersIncompleteReportModel()
         {
-            var model = new List<OrderIncompleteReportLineModel>();
+            var model = new List<OrdersIncompleteDashboardReportModel>();
 
             // Not paid.
             var psPending = _orderReportService.GetOrderAverageReportLine(0, null, new int[] { (int)PaymentStatus.Pending }, null, null, null, null, true);
-            model.Add(new OrderIncompleteReportLineModel
+            model.Add(new OrdersIncompleteDashboardReportModel
             {
                 Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalUnpaidOrders"),
                 Count = psPending.CountOrders,
@@ -2783,7 +2783,7 @@ namespace SmartStore.Admin.Controllers
 
             // Not shipped.
             var ssPending = _orderReportService.GetOrderAverageReportLine(0, null, null, new int[] { (int)ShippingStatus.NotYetShipped }, null, null, null, true);
-            model.Add(new OrderIncompleteReportLineModel
+            model.Add(new OrdersIncompleteDashboardReportModel
             {
                 Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalNotShippedOrders"),
                 Count = ssPending.CountOrders,
@@ -2793,7 +2793,7 @@ namespace SmartStore.Admin.Controllers
 
             // Pending.
             var osPending = _orderReportService.GetOrderAverageReportLine(0, new int[] { (int)OrderStatus.Pending }, null, null, null, null, null, true);
-            model.Add(new OrderIncompleteReportLineModel
+            model.Add(new OrdersIncompleteDashboardReportModel
             {
                 Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalIncompleteOrders"),
                 Count = osPending.CountOrders,
@@ -2804,11 +2804,10 @@ namespace SmartStore.Admin.Controllers
             return model;
         }
 
-        [ChildActionOnly]
         [Permission(Permissions.Order.Read, false)]
-        public ActionResult OrderIncompleteReport()
+        public ActionResult OrdersIncompleteDashboardReport()
         {
-            var model = GetOrderIncompleteReportModel();
+            var model = GetOrdersIncompleteReportModel();
             return PartialView(model);
         }
 
@@ -2816,8 +2815,8 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Order.Read)]
         public ActionResult OrderIncompleteReportList(GridCommand command)
         {
-            var model = GetOrderIncompleteReportModel();
-            var gridModel = new GridModel<OrderIncompleteReportLineModel>
+            var model = GetOrdersIncompleteReportModel();
+            var gridModel = new GridModel<OrdersIncompleteDashboardReportModel>
             {
                 Data = model,
                 Total = model.Count

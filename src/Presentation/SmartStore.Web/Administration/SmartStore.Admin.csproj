@@ -332,7 +332,7 @@
     <Compile Include="Models\Affiliates\AffiliateModel.cs" />
     <Compile Include="Models\Messages\CampaignModel.cs" />
     <Compile Include="Models\Blogs\BlogPostModel.cs" />
-    <Compile Include="Models\Orders\OrderIncompleteReportLineModel.cs" />
+    <Compile Include="Models\Orders\OrdersIncompleteDashboardReportModel.cs" />
     <Compile Include="Models\Orders\OrderAverageReportLineSummaryModel.cs" />
     <Compile Include="Models\Settings\BlogSettingsModel.cs" />
     <Compile Include="Models\Blogs\BlogCommentModel.cs" />
@@ -1103,7 +1103,7 @@
     <Content Include="Views\Order\OrderAverageReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Order\OrderIncompleteReport.cshtml" />
+    <Content Include="Views\Order\OrdersIncompleteDashboardReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Common\Maintenance.cshtml" />

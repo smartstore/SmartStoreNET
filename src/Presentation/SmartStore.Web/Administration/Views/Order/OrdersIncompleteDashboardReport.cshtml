@@ -1,0 +1,100 @@
+﻿@model IList<OrdersIncompleteDashboardReportModel>
+
+<div class="report">
+    <div class="report-title-row">
+        <div class="report-title">@T("Admin.SalesReport.Incomplete")</div>
+    </div>
+
+</div>
+
+<style>
+</style>
+
+<script>
+    var $incompleteOrdersChartElement = $('#incomplete-orders-chart')[0];
+    var incompleteOrdersCtx = $incompleteOrdersChartElement.getContext('2d');
+
+    var data = {
+        datasets: [{
+            data: [10, 20, 30],
+            backgroundColor: 'rgba(0,0,0, 0.1)',
+            borderAlign: 'center',
+            borderColor: '#fff',
+            borderWidth: 2,
+            weight: 1,
+            hoverBackgroundColor: '#fff',
+            hoverBorderColor: '#fff',
+            hoverBorderWidth: 1,
+        }],
+        labels: [
+            'Red',
+            'Yellow',
+            'Blue',
+        ]
+    };
+
+    var options = {
+        cutoutPercentage: 50,
+        rotation: -0.5 * Math.PI,
+        circumfernce: 2 * Math.PI,
+        animation: {
+            animateRotate: true,
+            animateScale: false,
+        }
+    }
+
+    var myDoughnutChart = new Chart(incompleteOrdersCtx, {
+        type: 'doughnut',
+        data: data,
+        options: options
+    });
+</script>
+
+
+
+
+
+
+@*<div class="card shadow-sm mb-4">
+        <h6 class="card-header font-weight-medium border-bottom-0">
+            <i class="fa fa-signal pr-2"></i>
+            @T("Admin.SalesReport.Incomplete")
+        </h6>
+
+        <div class="table-responsive">
+            <table class="table table-striped m-0">
+                <thead>
+                    <tr>
+                        <th>@T("Admin.SalesReport.Incomplete.Item")</th>
+                        <th>@T("Admin.SalesReport.Incomplete.Total")</th>
+                        <th>@T("Admin.SalesReport.Incomplete.Count")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var x in Model)
+                    {
+                        <tr>
+                            <td>
+                                @if (x.Url.HasValue())
+                                {
+                                    <a href="@x.Url">@x.Item</a>
+                                }
+                                else
+                                {
+                                    @x.Item
+                                }
+                            </td>
+                            <td>@x.Total</td>
+                            <td>@x.Count</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>*@
+

@@ -2833,7 +2833,7 @@ namespace SmartStore.Admin.Controllers
         {
             var model = new LatestOrdersDashboardReportModel();
 
-            var latestOrders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue).Take(7).ToList();
+            var latestOrders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue).Take(8).ToList();
             foreach (var order in latestOrders)
             {
                 var customer = _customerService.GetCustomerById(order.CustomerId);
@@ -2866,128 +2866,12 @@ namespace SmartStore.Admin.Controllers
             model.Reports[3] = _orderReportService.GetOrdersDashboardMonthReportLine(orders); //Last 28 Days
             model.Reports[4] = _orderReportService.GetOrdersDashboardYearReportLine(orders); // This Year
             
-
-            //_orderReportService.GetOrdersDashboardDayReportLine(orders, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(-1).Date); // Yesterday
-            //model.Reports[2] = _orderReportService.GetDashboardChartReportLine(4, 7); // Last 7 days
-            //model.Reports[3] = _orderReportService.GetDashboardChartReportLine(4, 4); // Last 4 weeks
-            //model.Reports[4] = _orderReportService.GetDashboardChartReportLine(4, 12); // This year
-
-            //var currentTime = DateTime.UtcNow;
-            //var ordersDay = orders.Where(x => x.CreatedOnUtc < currentTime.Date.AddDays(1) && x.CreatedOnUtc >= currentTime.Date).Select(x => x).ToList();
-            //var ordersReports = GetOrderReports(ordersDay);
-
-            //// Create for today period (24 hours)
-            //for (int i = 0; i < 24; i++)
-            //{
-            //    var startDate = currentTime.Date.AddHours(i - _dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours);
-            //    model.Reports[0].Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("t");
-            //    GetReportPointData(model.Reports[0], ordersReports, startDate, startDate.AddHours(1), i);
-            //}
-            //CalculateOrdersAmount(model.Reports[0], orders, ordersDay, currentTime.Date.AddDays(-1), currentTime.AddDays(-1));
-
-
-            //// Yesterday
-            //var ordersYesterday = orders.Where(x => x.CreatedOnUtc < currentTime.Date && x.CreatedOnUtc >= currentTime.AddDays(-1).Date).Select(x => x).ToList();
-            //ordersReports = GetOrderReports(ordersYesterday);
-
-            //// Create for today period (24 hours)
-            //for (int i = 0; i < 24; i++)
-            //{
-            //    var startDate = currentTime.AddDays(-1).Date.AddHours(i - _dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours);
-            //    model.Reports[1].Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("t");
-            //    GetReportPointData(model.Reports[1], ordersReports, startDate, startDate.AddHours(1), i);
-            //}
-            //CalculateOrdersAmount(model.Reports[1], orders, ordersYesterday, currentTime.AddDays(-2).Date, currentTime.AddDays(-1).Date);
-
-
-            //// Create for week period (7 days)
-            //currentTime = currentTime.Date;
-            //var ordersWeek = orders.Where(x => x.CreatedOnUtc < currentTime.AddDays(1) && x.CreatedOnUtc >= currentTime.AddDays(-6)).Select(x => x).ToList();
-            //ordersReports = GetOrderReports(ordersWeek);
-
-            //for (int i = 0; i < 7; i++)
-            //{
-            //    var date = currentTime.AddDays(-(6 - i));
-            //    model.Reports[2].Labels[i] = date.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("m");
-            //    GetReportPointData(model.Reports[2], ordersReports, date, date.AddDays(1), i);
-            //}
-            //CalculateOrdersAmount(model.Reports[2], orders, ordersWeek, currentTime.AddDays(-14), currentTime.AddDays(-7));
-
-            //// Create for month period (4 weeks)
-            //var ordersMonth = orders.Where(x => x.CreatedOnUtc < currentTime.AddDays(1) && x.CreatedOnUtc >= currentTime.AddDays(-27)).Select(x => x).ToList();
-            //ordersReports = GetOrderReports(ordersMonth);
-
-            //for (int i = 0; i < 4; i++)
-            //{
-            //    var fromDate = currentTime.AddDays(-(3 - i + 1) * 7 + 1);
-            //    var toDate = currentTime.AddDays(-((3 - i) * 7) + 1);
-            //    model.Reports[3].Labels[i] = fromDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("m") + " - " + toDate.AddDays(-1).ToString("m");
-            //    GetReportPointData(model.Reports[3], ordersReports, fromDate, toDate, i);
-            //}
-            //CalculateOrdersAmount(model.Reports[3], orders, ordersMonth, currentTime.AddDays(-56), currentTime.AddDays(-28));
-
-            //// Create for year period (12 months)
-            //var ordersYear = orders.Where(x => x.CreatedOnUtc < currentTime.AddDays(1) && x.CreatedOnUtc >= currentTime.AddYears(-1)).Select(x => x).ToList();
-            //ordersReports = GetOrderReports(ordersYear);
-
-            //for (int i = 0; i < 12; i++)
-            //{
-            //    var date = currentTime.AddMonths(-(11 - i)).Date;
-            //    var fromDate = currentTime.AddMonths(-(11 - i)).Date;
-            //    var toDate = fromDate.AddMonths(1);
-            //    model.Reports[4].Labels[i] = date.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("Y");
-            //    GetReportPointData(model.Reports[4], ordersReports, fromDate, toDate, i);
-            //}
-            //CalculateOrdersAmount(model.Reports[4], orders, ordersYear, currentTime.AddYears(-2), currentTime.AddYears(-1));
-
             watch.Stop();
             Debug.WriteLine(watch.ElapsedMilliseconds);
 
             return PartialView(model);
         }
 
-        //[NonAction]
-        //private List<Order>[] GetOrderReports(List<Order> list)
-        //{
-        //    var orderReports = new List<Order>[4];
-        //    orderReports[0] = list.Where(x => x.OrderStatus == OrderStatus.Cancelled).Select(x => x).ToList();
-        //    orderReports[1] = list.Where(x => x.OrderStatus == OrderStatus.Pending).Select(x => x).ToList();
-        //    orderReports[2] = list.Where(x => x.OrderStatus == OrderStatus.Processing).Select(x => x).ToList();
-        //    orderReports[3] = list.Where(x => x.OrderStatus == OrderStatus.Complete).Select(x => x).ToList();
-
-        //    return orderReports;
-        //}
-
-        //[NonAction]
-        //private void GetReportPointData(DashboardChartReportLine model, List<Order>[] reports, DateTime startDate, DateTime endDate, int index)
-        //{
-        //    for (int j = 0; j < reports.Length; j++)
-        //    {
-        //        var point = reports[j].Where(x => x.CreatedOnUtc < endDate && x.CreatedOnUtc >= startDate).ToList();
-        //        model.Data[j].Amount[index] = point.Sum(x => x.OrderTotal);
-        //        model.Data[j].FormattedAmount[index] = _priceFormatter.FormatPrice((int)model.Data[j].Amount[index], true, false);
-        //        model.Data[j].Quantity[index] = point.Count;
-        //    }
-        //}
-
-        //[NonAction]
-        //private void CalculateOrdersAmount(DashboardChartReportLineModel model, IList<Order> allOrders, List<Order> orders, DateTime fromDate, DateTime toDate)
-        //{
-        //    foreach (var item in model.Data)
-        //    {
-        //        item.TotalAmount = _priceFormatter.FormatPrice((int)Math.Round(item.Amount.Sum()), true, false);
-        //    }
-
-        //    var totalAmount = orders.Where(x => x.OrderStatus != OrderStatus.Cancelled).Sum(x => x.OrderTotal);
-        //    model.TotalAmount = _priceFormatter.FormatPrice((int)Math.Round(totalAmount), true, false);
-        //    var sumBefore = Math.Round(allOrders
-        //        .Where(x => x.CreatedOnUtc < toDate && x.CreatedOnUtc >= fromDate)
-        //        .Select(x => x)
-        //        .Sum(x => x.OrderTotal)
-        //        );
-
-        //    model.PercentageDelta = sumBefore <= 0 ? 0 : (int)Math.Round(totalAmount / sumBefore * 100 - 100);
-        //}
 
         [Permission(Permissions.Order.Read, false)]
         public ActionResult OrderFulfillmentDashboardReport()

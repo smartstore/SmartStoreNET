@@ -284,6 +284,7 @@
     <Compile Include="Models\Messages\MessageTemplatePreviewModel.cs" />
     <Compile Include="Models\News\NewsItemListModel.cs" />
     <Compile Include="Models\Orders\AutoUpdateOrderItemModel.cs" />
+    <Compile Include="Models\Orders\OrderFulfillmentDashboardReportModel.cs" />
     <Compile Include="Models\Orders\DashboardChartReportModel.cs" />
     <Compile Include="Models\Orders\BestsellersDashboardReportModel.cs" />
     <Compile Include="Models\Orders\CheckoutAttributeListModel.cs" />
@@ -650,6 +651,7 @@
     <Content Include="Views\Store\StoreDashboardReport.cshtml" />
     <Content Include="Views\Order\OrdersDashboardReport.cshtml" />
     <Content Include="Views\Customer\RegisteredCustomersDashboardReport.cshtml" />
+    <Content Include="Views\Order\OrderFulfillmentDashboardReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

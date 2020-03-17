@@ -2990,6 +2990,15 @@ namespace SmartStore.Admin.Controllers
         //    model.PercentageDelta = sumBefore <= 0 ? 0 : (int)Math.Round(totalAmount / sumBefore * 100 - 100);
         //}
 
+        [Permission(Permissions.Order.Read, false)]
+        public ActionResult OrderFulfillmentDashboardReport()
+        {
+            var model = new OrderFulfillmentDashboardReportModel();
+
+
+            return PartialView(model);
+        }
+      
         #endregion
     }
 }

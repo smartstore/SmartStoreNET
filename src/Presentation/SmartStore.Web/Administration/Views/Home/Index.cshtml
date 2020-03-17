@@ -4,8 +4,14 @@
 
 }
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-@* PIE CHARTs *@
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/easy-pie-chart/2.1.6/easypiechart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/easy-pie-chart/2.1.6/jquery.easypiechart.js"></script>
+@*<script src="~/Administrator/Scripts/easypiechart.js"></script>*@
+@*<link rel="stylesheet" type="text/css" href="/path/to/jquery.easy-pie-chart.css">*@
+
+@Scripts.Render("~/bundles/charts")
+
 
 <div class="section-header">
     <div class="title">
@@ -17,13 +23,13 @@
 <div class="dashboard-grid">
     @{ Html.RenderWidget("admin_dashboard_top"); }
     <div class="report-order-fulfillment">
-        @*@{ Html.RenderAction("OrderFulfillmentReport", "Order"); }*@
+        @{ Html.RenderAction("OrderFulfillmentDashboardReport", "Order"); }
     </div>
     <div class="report-incomplete-orders">
-        @*@{ Html.RenderAction("OrderIncompleteReport", "Order"); }*@
+        @{ Html.RenderAction("OrdersIncompleteDashboardReport", "Order"); }
     </div>
     <div class="report-sales">
-        @{ Html.RenderAction("OrdersDashboardReport", "Order"); }
+        @{ Html.RenderAction("OrdersDashboardReport", "Order"); }  @*rename to sales*@
     </div>
     <div class="report-bestsellers">
         @{ Html.RenderAction("BestsellersDashboardReport", "Order"); }

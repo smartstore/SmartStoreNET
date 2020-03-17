@@ -530,9 +530,15 @@
             builder.AddOrUpdate("Time.Today", "Today", "Heute");
             builder.AddOrUpdate("Time.Yesterday", "Yesterday", "Gestern");
             builder.AddOrUpdate("Admin.SalesReport.StoreStatistics", "Statistics", "Statistiken");
-
             builder.AddOrUpdate("Common.Amount.Financial", "Amount", "Betrag");
             builder.AddOrUpdate("Common.Amount", "Amount", "Betrag");
+            builder.AddOrUpdate("Admin.Promotions.NewsLetterSubscriptions.Short", "Newsletter abos", "Newsletter Abos");
+            builder.AddOrUpdate("Admin.Promotions.SalesReport.Sales", "Sales", "Verkäufe");
+            builder.AddOrUpdate("Admin.SalesReport.Attribute", "Attributes", "Attribute");
+            builder.AddOrUpdate("Admin.SalesReport.Value", "Values", "Werte");
+            builder.AddOrUpdate("Admin.Salesreport.OrderFulfillmentReport", "Order fulfillment", "Auftragsabwicklung");
+            builder.AddOrUpdate("Admin.Report.OlderOrders", "Older orders", "Ältere Aufträge");
+
         }
     }
 }

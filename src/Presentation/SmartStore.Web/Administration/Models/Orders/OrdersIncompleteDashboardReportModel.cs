@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -5,15 +6,20 @@ namespace SmartStore.Admin.Models.Orders
 {
     public partial class OrdersIncompleteDashboardReportModel : ModelBase
     {
-        [SmartResourceDisplayName("Admin.SalesReport.Incomplete.Item")]
-        public string Item { get; set; }
+        public List<OrdersIncompleteDashboardReportLine> Reports { get; set; } = new List<OrdersIncompleteDashboardReportLine>();
+    }
+
+    public class OrdersIncompleteDashboardReportLine
+    {
+        //[SmartResourceDisplayName("Admin.SalesReport.Incomplete.Item")]
+        //public string Item { get; set; }
 
         [SmartResourceDisplayName("Admin.SalesReport.Incomplete.Total")]
-        public string Total { get; set; }
+        public string AmountTotal { get; set; }
 
         [SmartResourceDisplayName("Admin.SalesReport.Incomplete.Count")]
-        public int Count { get; set; }
+        public int Quantity { get; set; }
 
-		public string Url { get; set; }
+        //public string Url { get; set; }
     }
 }

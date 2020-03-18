@@ -2767,38 +2767,38 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
-        protected virtual IList<OrdersIncompleteDashboardReportModel> GetOrdersIncompleteReportModel()
+        protected virtual OrdersIncompleteDashboardReportModel GetOrdersIncompleteReportModel()
         {
-            var model = new List<OrdersIncompleteDashboardReportModel>();
+            var model = new OrdersIncompleteDashboardReportModel();
 
             // Not paid.
             var psPending = _orderReportService.GetOrderAverageReportLine(0, null, new int[] { (int)PaymentStatus.Pending }, null, null, null, null, true);
-            model.Add(new OrdersIncompleteDashboardReportModel
+            model.Reports.Add(new OrdersIncompleteDashboardReportLine
             {
-                Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalUnpaidOrders"),
-                Count = psPending.CountOrders,
-                Total = _priceFormatter.FormatPrice(psPending.SumOrders, true, false),
-                Url = Url.Action("List", "Order", new { PaymentStatusIds = (int)PaymentStatus.Pending })
+                Quantity = psPending.CountOrders,
+                AmountTotal = _priceFormatter.FormatPrice(psPending.SumOrders, true, false),
+                //Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalUnpaidOrders"),
+                //Url = Url.Action("List", "Order", new { PaymentStatusIds = (int)PaymentStatus.Pending })
             });
 
             // Not shipped.
             var ssPending = _orderReportService.GetOrderAverageReportLine(0, null, null, new int[] { (int)ShippingStatus.NotYetShipped }, null, null, null, true);
-            model.Add(new OrdersIncompleteDashboardReportModel
+            model.Reports.Add(new OrdersIncompleteDashboardReportLine
             {
-                Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalNotShippedOrders"),
-                Count = ssPending.CountOrders,
-                Total = _priceFormatter.FormatPrice(ssPending.SumOrders, true, false),
-                Url = Url.Action("List", "Order", new { ShippingStatusIds = (int)ShippingStatus.NotYetShipped })
+                Quantity = ssPending.CountOrders,
+                AmountTotal = _priceFormatter.FormatPrice(ssPending.SumOrders, true, false),
+                //Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalNotShippedOrders"),
+                //Url = Url.Action("List", "Order", new { ShippingStatusIds = (int)ShippingStatus.NotYetShipped })
             });
 
             // Pending.
             var osPending = _orderReportService.GetOrderAverageReportLine(0, new int[] { (int)OrderStatus.Pending }, null, null, null, null, null, true);
-            model.Add(new OrdersIncompleteDashboardReportModel
+            model.Reports.Add(new OrdersIncompleteDashboardReportLine
             {
-                Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalIncompleteOrders"),
-                Count = osPending.CountOrders,
-                Total = _priceFormatter.FormatPrice(osPending.SumOrders, true, false),
-                Url = Url.Action("List", "Order", new { OrderStatusIds = (int)OrderStatus.Pending })
+                Quantity = osPending.CountOrders,
+                AmountTotal = _priceFormatter.FormatPrice(osPending.SumOrders, true, false),
+                //Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalIncompleteOrders"),
+                //Url = Url.Action("List", "Order", new { OrderStatusIds = (int)OrderStatus.Pending })
             });
 
             return model;
@@ -2813,13 +2813,13 @@ namespace SmartStore.Admin.Controllers
 
         [GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Order.Read)]
-        public ActionResult OrderIncompleteReportList(GridCommand command)
+        public ActionResult OrderIncompleteReportList(GridCommand command) // Is this method even used?
         {
             var model = GetOrdersIncompleteReportModel();
-            var gridModel = new GridModel<OrdersIncompleteDashboardReportModel>
+            var gridModel = new GridModel<OrdersIncompleteDashboardReportLine>
             {
-                Data = model,
-                Total = model.Count
+                Data = model.Reports,
+                Total = model.Reports.Count
             };
 
             return new JsonResult
@@ -2858,14 +2858,14 @@ namespace SmartStore.Admin.Controllers
             var watch = new Stopwatch();
             watch.Start();
 
-            var orders = _orderService.SearchOrders(0, 0, DateTime.UtcNow.AddDays(-730), null, null, null, null, null, null, null, 0, int.MaxValue);            
+            var orders = _orderService.SearchOrders(0, 0, DateTime.UtcNow.AddDays(-730), null, null, null, null, null, null, null, 0, int.MaxValue);
             var model = new DashboardChartReportModel();
             model.Reports[0] = _orderReportService.GetOrdersDashboardDayReportLine(orders, DateTime.UtcNow); //Today
             model.Reports[1] = _orderReportService.GetOrdersDashboardDayReportLine(orders, DateTime.UtcNow.AddDays(-1).Date); //Yesterday
             model.Reports[2] = _orderReportService.GetOrdersDashboardWeekReportLine(orders); //Last 7 Days
             model.Reports[3] = _orderReportService.GetOrdersDashboardMonthReportLine(orders); //Last 28 Days
             model.Reports[4] = _orderReportService.GetOrdersDashboardYearReportLine(orders); // This Year
-            
+
             watch.Stop();
             Debug.WriteLine(watch.ElapsedMilliseconds);
 

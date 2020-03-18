@@ -1,59 +1,140 @@
-﻿@model IList<OrdersIncompleteDashboardReportModel>
+﻿@model OrdersIncompleteDashboardReportModel
+@using Newtonsoft.Json;
+@{
+    var jsonData = JsonConvert.SerializeObject(Model);
+}
 
 <div class="report">
     <div class="report-title-row">
         <div class="report-title">@T("Admin.SalesReport.Incomplete")</div>
     </div>
-
+    <div class="incomplete-orders-chart-text">
+        <div class="font-weight-bold fs-h4">2.123</div>
+        <div class="pt-1 small">@T("Admin.SalesReport.Incomplete")</div>
+    </div>
+    <div class="canvas-container" style="height: 75%; transform: translateY(29px); pointer-events: none">
+        <canvas id="incomplete-orders-chart" width="5" height="3" style="width: 100%; pointer-events: all">
+            Your browser does not support the HTML5 canvas tag. // Errors
+        </canvas>
+    </div>
 </div>
 
 <style>
+    .incomplete-orders-chart-text {
+        position: absolute;
+        padding-left: 7.8%;
+        padding-top: 6.6%;
+        text-align: center;
+        font-size: 1rem;
+        padding-right: 82.5%;
+    }
 </style>
 
 <script>
+
+    var dataSets = JSON.parse('@Html.Raw(jsonData)');
+
+    var colorIndigo = style.getPropertyValue('--danger');
+    var colorWarning = style.getPropertyValue('--warning');
+    var fontFamily = style.getPropertyValue('--font-family');
+    var bgColor = [colorIndigo, colorWarning];
+
     var $incompleteOrdersChartElement = $('#incomplete-orders-chart')[0];
-    var incompleteOrdersCtx = $incompleteOrdersChartElement.getContext('2d');
+    var $incompleteOrdersCtx = $incompleteOrdersChartElement.getContext('2d');
+
+    console.log($incompleteOrdersChartElement.clientWidth);
+
+    var indigoGradient = $incompleteOrdersCtx.createRadialGradient(
+        $incompleteOrdersChartElement.clientWidth / 2,
+        $incompleteOrdersChartElement.clientHeight / 2,
+        $incompleteOrdersChartElement.clientWidth / 6,
+        $incompleteOrdersChartElement.clientWidth / 2,
+        $incompleteOrdersChartElement.clientHeight / 2,
+        $incompleteOrdersChartElement.clientWidth / 3.6
+    );
+    indigoGradient.addColorStop(0, colorIndigo);
+    indigoGradient.addColorStop(0.65, colorIndigo);
+    indigoGradient.addColorStop(1, 'white');
+
+    var warningGradient = $incompleteOrdersCtx.createRadialGradient(
+        $incompleteOrdersChartElement.clientWidth / 2,
+        $incompleteOrdersChartElement.clientHeight / 2,
+        $incompleteOrdersChartElement.clientWidth / 6,
+        $incompleteOrdersChartElement.clientWidth / 2,
+        $incompleteOrdersChartElement.clientHeight / 2,
+        $incompleteOrdersChartElement.clientWidth / 3.6
+    );
+    warningGradient.addColorStop(0, colorWarning);
+    warningGradient.addColorStop(0.65, colorWarning);
+    warningGradient.addColorStop(1, 'white');
 
     var data = {
+        labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")","@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")"],
         datasets: [{
-            data: [10, 20, 30],
-            backgroundColor: 'rgba(0,0,0, 0.1)',
+            data: [dataSets.Reports[0].Quantity, dataSets.Reports[1].Quantity],
+            backgroundColor: [indigoGradient, warningGradient],
             borderAlign: 'center',
             borderColor: '#fff',
-            borderWidth: 2,
+            borderWidth: 10,
             weight: 1,
-            hoverBackgroundColor: '#fff',
+            hoverBackgroundColor: [indigoGradient, warningGradient],
             hoverBorderColor: '#fff',
-            hoverBorderWidth: 1,
+            hoverBorderWidth: 0,
         }],
-        labels: [
-            'Red',
-            'Yellow',
-            'Blue',
-        ]
     };
 
     var options = {
-        cutoutPercentage: 50,
+        responsive: true,
+        responsiveAnimationDuration: 1000,
+        maintainAspectRatio: false,
+        cutoutPercentage: 80,
         rotation: -0.5 * Math.PI,
         circumfernce: 2 * Math.PI,
         animation: {
             animateRotate: true,
-            animateScale: false,
-        }
-    }
+            animateScale: true,
+            duration: 1000,
+            easing: 'easeInOutSine',
+        },
+        layout: {
+            padding: {
+                left: 0,
+                right: 0,
+                top: 5,
+                bottom: 25
+            }
+        },
+        legend: false,
+        tooltips: {
+            enabled: true,
+            mode: 'nearest',
+            intersect: true,
+            titleFontFamily: fontFamily,
+            bodyFontFamily: fontFamily,
+            xPadding: 10,
+            yPadding: 8,
+            caretPadding: 6,
+            caretSize: 8,
+            cornerRadius: 4,
+            titleMarginBottom: 8,
+            bodySpacing: 5,
+            //callbacks: {
+            //    label: function (item) {
+            //        return ordersData.Reports[currentPeriod].DataSets[item.datasetIndex].FormattedAmount[item.index];
+            //    }
+            //}
+        },
+        //title: {
+        //    display: false,
+        //}
+    };
 
-    var myDoughnutChart = new Chart(incompleteOrdersCtx, {
+    var myDoughnutChart = new Chart($incompleteOrdersCtx, {
         type: 'doughnut',
         data: data,
         options: options
     });
 </script>
-
-
-
-
-
 
 @*<div class="card shadow-sm mb-4">
         <h6 class="card-header font-weight-medium border-bottom-0">
@@ -97,4 +178,3 @@
             </table>
         </div>
     </div>*@
-

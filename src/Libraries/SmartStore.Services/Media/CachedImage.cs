@@ -10,12 +10,12 @@ namespace SmartStore.Services.Media
     /// An instance of this object is always returned, even when
     /// the requested image does not physically exists in the storage.
     /// </remarks>
-    public class CachedImageResult
+    public class CachedImage
     {
 		private bool? _exists;
 		private string _mimeType;
 
-		public CachedImageResult(IFile file)
+		public CachedImage(IFile file)
 		{
 			Guard.NotNull(file, nameof(file));
 

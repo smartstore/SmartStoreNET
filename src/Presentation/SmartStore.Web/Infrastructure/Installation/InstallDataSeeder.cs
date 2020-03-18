@@ -388,7 +388,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					{
 						if (mediaFile.MediaStorage?.Data?.LongLength > 0)
 						{
-							fileSystemStorageProvider.Save(mediaFile, mediaFile.MediaStorage.Data);
+							fileSystemStorageProvider.Save(mediaFile, mediaFile.MediaStorage.Data.ToStream());
 							mediaFile.MediaStorageId = null;
 							mediaFile.MediaStorage = null;
 						}

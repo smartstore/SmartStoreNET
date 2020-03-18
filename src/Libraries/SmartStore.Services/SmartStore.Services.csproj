@@ -372,8 +372,10 @@
     <Compile Include="Media\v4\Album\FolderService.cs" />
     <Compile Include="Media\v4\Album\SystemAlbumProvider.cs" />
     <Compile Include="Media\v4\IMediaService.cs" />
+    <Compile Include="Media\v4\IMediaUrlGenerator.cs" />
     <Compile Include="Media\v4\MediaFileInfo.cs" />
     <Compile Include="Media\v4\MediaModule.cs" />
+    <Compile Include="Media\v4\MediaUrlGenerator.cs" />
     <Compile Include="Media\v4\Search\MediaSearchQuery.cs" />
     <Compile Include="Media\v4\MediaService.cs" />
     <Compile Include="Media\v4\MediaTypes\MediaType.cs" />
@@ -503,7 +505,7 @@
     <Compile Include="ICommonServices.cs" />
     <Compile Include="Hooks\LocalizedEntityHook.cs" />
     <Compile Include="Logging\DeleteLogsTask.cs" />
-    <Compile Include="Media\CachedImageResult.cs" />
+    <Compile Include="Media\CachedImage.cs" />
     <Compile Include="Media\IImageCache.cs" />
     <Compile Include="Media\IImageProcessor.cs" />
     <Compile Include="Media\ImageCache.cs" />
@@ -783,7 +785,9 @@
       <CachedSettingsPropName>Nop_Services_EuropaCheckVatService_checkVatService</CachedSettingsPropName>
     </WebReferenceUrl>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Media\v4\Imaging\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Cart\Readme.txt">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>

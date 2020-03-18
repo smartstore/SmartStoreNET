@@ -36,10 +36,13 @@ namespace SmartStore.Services.Media
 
         MediaFileInfo CreateFile(string path);
         MediaFileInfo CreateFile(int folderId, string fileName);
-        MediaFileInfo InsertFile(MediaFile file, Stream stream, bool validate = true);
+        MediaFileInfo InsertFile(string album, MediaFile file, Stream stream, bool validate = true);
         void DeleteFile(MediaFile file, bool permanent);
 
-        void CopyFile(MediaFile file, string newPath, bool overwrite = false);
+        MediaFileInfo CopyFile(MediaFile file, string newPath, bool overwrite = false);
+        MediaFileInfo MoveFile(MediaFile file, int destinationFolderId);
+        MediaFileInfo ReplaceFile(MediaFile file, string fileName, string mimeType, Stream stream);
+        MediaFileInfo RenameFile(MediaFile file, string newFileName);
 
         string GetUrl(MediaFileInfo file, ProcessImageQuery query, string host = null);
     }

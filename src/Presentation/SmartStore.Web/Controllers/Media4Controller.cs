@@ -21,6 +21,7 @@ using SmartStore.Utilities.Threading;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Seo;
 using SmartStore.Web.Framework.Localization;
+using System.Web.Routing;
 
 namespace SmartStore.Web.Controllers
 {
@@ -30,46 +31,50 @@ namespace SmartStore.Web.Controllers
 	[OverrideResultFilters]
 	//[OverrideActionFilters] // TBD: (mc) really?
 	[OverrideExceptionFilters]
-	public partial class MediaController : Controller
+	public partial class Media4Controller : Controller
     {
 		private readonly static bool _streamRemoteMedia = CommonHelper.GetAppSetting<bool>("sm:StreamRemoteMedia");
 
-		private readonly IPictureService _pictureService;
+		private readonly IMediaService _mediaService;
+		private readonly IFolderService _folderService;
 		private readonly IImageProcessor _imageProcessor;
 		private readonly IImageCache _imageCache;
 		private readonly IUserAgent _userAgent;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly IMediaFileSystem _mediaFileSystem;
 		private readonly MediaSettings _mediaSettings;
+		private readonly MediaHelper _mediaHelper;
 
 		private readonly Lazy<SeoSettings> _seoSettings;
 		private readonly Lazy<IXmlSitemapGenerator> _sitemapGenerator;
 
-		public MediaController(
-			IPictureService pictureService,
+		public Media4Controller(
+			IMediaService mediaService,
+			IFolderService folderService,
 			IImageProcessor imageProcessor,
 			IImageCache imageCache,
 			IUserAgent userAgent,
 			IEventPublisher eventPublisher,
 			IMediaFileSystem mediaFileSystem,
 			MediaSettings mediaSettings,
+			MediaHelper mediaHelper,
 			Lazy<SeoSettings> seoSettings,
 			Lazy<IXmlSitemapGenerator> sitemapGenerator)
         {
-			_pictureService = pictureService;
+			_mediaService = mediaService;
+			_folderService = folderService;
 			_imageProcessor = imageProcessor;
 			_imageCache = imageCache;
 			_userAgent = userAgent;
 			_eventPublisher = eventPublisher;
 			_mediaFileSystem = mediaFileSystem;
 			_mediaSettings = mediaSettings;
+			_mediaHelper = mediaHelper;
 			_seoSettings = seoSettings;
 			_sitemapGenerator = sitemapGenerator;
-
-			Logger = NullLogger.Instance;
         }
 
-		public ILogger Logger { get; set; }
+		public ILogger Logger { get; set; } = NullLogger.Instance;
 
 		#region XML sitemap
 
@@ -98,166 +103,58 @@ namespace SmartStore.Web.Controllers
 
 		#endregion
 
-		public async Task<ActionResult> Image(int id /* pictureId*/, string name)
+		/// <summary>
+		/// Redirect legacy URL "/uploaded/some/file.png" to "/file/1234/some/file.png"
+		/// </summary>
+		public ActionResult Uploaded(string path)
 		{
-			string nameWithoutExtension = null;
-			string mime = null;
-			string extension = null;
-			MediaFile picture = null;
+			path = SystemAlbumProvider.Files + "/" + path;
 
-			if (name.HasValue())
-			{
-				// Requested file name was passed with the URL: fetch all required data without harassing DB.
-				name.SplitToPair(out nameWithoutExtension, out extension, ".", true);
-				mime = MimeTypes.MapNameToMimeType(name);
-			}
-
-			if (nameWithoutExtension.IsEmpty() || extension.IsEmpty())
-			{
-				// Missing or malformed Uri: get picture from DB and determine correct metadata by id
-				picture = _pictureService.GetPictureById(id);
-				if (picture == null) return NotFound(mime ?? "text/html");
-
-				mime = picture.MimeType;
-				nameWithoutExtension = picture.Name;
-				extension = MimeTypes.MapMimeTypeToExtension(mime);
-				name = String.Concat(nameWithoutExtension, ".", extension);
-			}
-			
-			extension = extension.ToLower();
-
-			var query = CreateImageQuery(mime, extension);
-			var cachedImage = _imageCache.Get(id, nameWithoutExtension, extension, query);
-
-			return await HandleImageAsync(
-				query,
-				cachedImage,
-				nameWithoutExtension,
-				mime,
-				extension,
-				getSourceBufferAsync);
-
-			async Task<byte[]> getSourceBufferAsync(string prevMime)
-			{
-				byte[] source;
-
-				if (picture != null)
-				{
-					source = await _pictureService.LoadPictureBinaryAsync(picture);
-				}
-				else
-				{
-					if (id == 0)
-					{
-						// This is most likely a request for a default placeholder image
-						var mappedPath = CommonHelper.MapPath(Path.Combine(PictureService.FallbackImagesRootPath, name), false);
-						if (!System.IO.File.Exists(mappedPath))
-							return null;
-
-						source = System.IO.File.ReadAllBytes(mappedPath);
-					}
-					else
-					{
-						// Get metadata from DB
-						picture = _pictureService.GetPictureById(id);
-
-						// Picture must exist
-						if (picture == null)
-							return null;
-
-						// Picture's mime must match requested mime
-						if (!picture.MimeType.IsCaseInsensitiveEqual(prevMime ?? mime))
-							return null;
-
-						// When Picture has SeoFileName, it must match requested name
-						// When Picture has NO SeoFileName, requested name must match Id
-						if (picture.Name.HasValue() && !picture.Name.IsCaseInsensitiveEqual(name))
-							return null;
-						//else if (picture.Name.IsEmpty() && picture.Id.ToString(ImageCache.IdFormatString) != nameWithoutExtension)
-						//	return null;
-
-						source = await _pictureService.LoadPictureBinaryAsync(picture);
-					}
-				}
-
-				return source;
-			}
-		}
-
-		public async Task<ActionResult> File(string path)
-		{
-			string name = null;
-			string mime = null;
-
-			if (path.IsEmpty())
+			var mediaFile = _mediaService.GetFileByPath(path);
+			if (mediaFile == null)
 			{
 				return NotFound(null);
 			}
 
-			var tenantPrefix = DataSettings.Current.TenantName + "/";
-			if (path.StartsWith(tenantPrefix))
+			var routeValues = new RouteValueDictionary(RouteData.Values);
+			routeValues["id"] = mediaFile.Id;
+			routeValues["path"] = path;
+
+			return RedirectToActionPermanent("File", routeValues);
+		}
+
+		public async Task<ActionResult> File(int id /* mediaFileId */, string path)
+		{
+			if (!_mediaHelper.TokenizePath(path, out var pathData))
 			{
-				// V3.0.x compat: in previous versions the file path
-				// contained the tenant name. Strip it out.
-				path = path.Substring(tenantPrefix.Length);
+				return NotFound(null);
 			}
 
-			name = Path.GetFileName(path);
-
-			name.SplitToPair(out var nameWithoutExtension, out var extension, ".", true);
-			mime = MimeTypes.MapNameToMimeType(name);
-
-			if (nameWithoutExtension.IsEmpty() || extension.IsEmpty())
-			{
-				return NotFound(mime ?? "text/html");
-			}
-
-			extension = extension.ToLower();
-
-			var file = _mediaFileSystem.GetFile(path);
-
-			if (!file.Exists)
-			{
-				return NotFound(mime);
-			}
-
-			var query = CreateImageQuery(mime, extension);
-			var isProcessableImage = query.NeedsProcessing(true) && _imageProcessor.IsSupportedImage(file.Extension);
+			var query = CreateImageQuery(pathData.MimeType, pathData.Extension);
+			var isProcessableImage = query.NeedsProcessing(true) && _imageProcessor.IsSupportedImage(pathData.Extension);
 			if (isProcessableImage)
 			{
-				var cachedImage = _imageCache.Get(file, query);
+				var cachedImage = _imageCache.Get4(id, pathData, query);
 				return await HandleImageAsync(
 					query,
 					cachedImage,
-					nameWithoutExtension,
-					mime,
-					extension,
-					getSourceBufferAsync);
+					pathData,
+					getSourceStream);
 			}
 
-
 			// It's no image... proceed with standard stuff...
-
+			
 			if (Request.HttpMethod == "HEAD")
 			{
 				return new HttpStatusCodeResult(200);
 			}
 
-			if (_mediaFileSystem.IsCloudStorage && !_streamRemoteMedia)
-			{
-				// Redirect to existing remote file
-				Response.ContentType = mime;
-				return Redirect(_mediaFileSystem.GetPublicUrl(path, true));
-			}
-			else
-			{
-				// Open existing stream
-				return new CachedFileResult(file, mime);
-			}
+			return null;
 
-			async Task<byte[]> getSourceBufferAsync(string prevMime)
+			Stream getSourceStream(string prevMime)
 			{
-				return await file.OpenRead().ToByteArrayAsync();
+				var mediaFile = _mediaService.GetFileById(id);
+				return mediaFile.OpenRead();
 			}
 		}
 
@@ -265,20 +162,18 @@ namespace SmartStore.Web.Controllers
 		private async Task<ActionResult> HandleImageAsync(
 			ProcessImageQuery query,
 			CachedImage cachedImage,
-			string nameWithoutExtension,
-			string mime,
-			string extension,
-			Func<string, Task<byte[]>> getSourceBufferAsync)
+			MediaPathData pathData,
+			Func<string, Stream> getSourceStream)
 		{
 			string prevMime = null;
 
-			if (extension != cachedImage.Extension)
+			if (pathData.Extension != cachedImage.Extension)
 			{
 				// The query requests another format. 
 				// Adjust extension and mime type fo proper ETag creation.
-				extension = cachedImage.Extension;
-				prevMime = mime;
-				mime = MimeTypes.MapNameToMimeType(cachedImage.FileName);
+				pathData.Extension = cachedImage.Extension;
+				prevMime = pathData.MimeType;
+				pathData.MimeType = MimeTypes.MapNameToMimeType(cachedImage.FileName);
 			}
 
 			try
@@ -294,14 +189,14 @@ namespace SmartStore.Web.Controllers
 						if (!cachedImage.Exists)
 						{
 							// Call inner function
-							byte[] source = await getSourceBufferAsync(prevMime);
-							if (source == null || source.Length == 0)
+							var stream = getSourceStream(prevMime);
+							if (stream == null || stream.Length == 0)
 							{
-								return NotFound(mime);
+								return NotFound(pathData.MimeType);
 							}
 
-							source = await ProcessAndPutToCacheAsync(cachedImage, source, query);
-							return new CachedFileResult(mime, cachedImage.LastModifiedUtc.GetValueOrDefault(), () => source, source.LongLength);
+							stream = await ProcessAndPutToCacheAsync(cachedImage, stream, query);
+							return new CachedFileResult(pathData.MimeType, cachedImage.LastModifiedUtc.GetValueOrDefault(), () => stream, stream.Length);
 						}
 					}
 				}
@@ -314,13 +209,13 @@ namespace SmartStore.Web.Controllers
 				if (cachedImage.IsRemote && !_streamRemoteMedia)
 				{
 					// Redirect to existing remote file
-					Response.ContentType = mime;
+					Response.ContentType = pathData.MimeType;
 					return Redirect(_imageCache.GetPublicUrl(cachedImage.Path));
 				}
 				else
 				{
 					// Open existing stream
-					return new CachedFileResult(cachedImage.File, mime);
+					return new CachedFileResult(cachedImage.File, pathData.MimeType);
 				}
 			}
 			catch (Exception ex)
@@ -334,18 +229,18 @@ namespace SmartStore.Web.Controllers
 			}
 		}
 
-		private async Task<byte[]> ProcessAndPutToCacheAsync(CachedImage cachedImage, byte[] buffer, ProcessImageQuery query)
+		private async Task<Stream> ProcessAndPutToCacheAsync(CachedImage cachedImage, Stream stream, ProcessImageQuery query)
 		{
 			if (!query.NeedsProcessing())
 			{
-				await _imageCache.PutAsync(cachedImage, buffer);
-				return buffer;
+				await _imageCache.Put4Async(cachedImage, stream);
+				return stream;
 			}
 			else
 			{
 				var processQuery = new ProcessImageQuery(query)
 				{
-					Source = buffer,
+					Source = stream,
 					Format = query.Format ?? cachedImage.Extension,
 					FileName = cachedImage.FileName,
 					DisposeSource = true
@@ -353,9 +248,7 @@ namespace SmartStore.Web.Controllers
 
 				using (var result = _imageProcessor.ProcessImage(processQuery))
 				{
-					var outBuffer = result.OutputStream.ToArray();
-
-					await _imageCache.PutAsync(cachedImage, outBuffer);
+					await _imageCache.Put4Async(cachedImage, result.OutputStream);
 
 					if (cachedImage.Extension != result.FileExtension)
 					{
@@ -366,7 +259,7 @@ namespace SmartStore.Web.Controllers
 
 					Logger.DebugFormat($"Processed image '{cachedImage.FileName}' in {result.ProcessTimeMs} ms.", null);
 
-					return outBuffer;
+					return result.OutputStream;
 				}
 			}
 		}

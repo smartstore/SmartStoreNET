@@ -48,7 +48,7 @@ namespace SmartStore.Services.Media
 			if (updateDataStorage)
 			{
 				// save to storage
-				_storageProvider.Value.Save(download.MediaFile, downloadBinary);
+				_storageProvider.Value.Save(download.MediaFile, downloadBinary.ToStream());
 			}
 		}
 
@@ -176,7 +176,7 @@ namespace SmartStore.Services.Media
             _downloadRepository.Insert(download);
 
             // Save to storage
-            _storageProvider.Value.Save(download.MediaFile, downloadBinary);
+            _storageProvider.Value.Save(download.MediaFile, downloadBinary.ToStream());
         }
 
         public virtual void UpdateDownload(Download download)

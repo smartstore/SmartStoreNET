@@ -83,7 +83,7 @@ namespace SmartStore.Services.Media.Storage
 			return (await _fileSystem.ReadAllBytesAsync(filePath)) ?? new byte[0];
 		}
 
-		public void Save(MediaFile mediaFile, byte[] data)
+		public void Save(MediaFile mediaFile, Stream stream)
 		{
 			Guard.NotNull(mediaFile, nameof(mediaFile));
 
@@ -91,9 +91,12 @@ namespace SmartStore.Services.Media.Storage
 
 			var filePath = GetPath(mediaFile);
 
-			if (data != null && data.LongLength > 0)
+			if (stream != null)
 			{
-				_fileSystem.WriteAllBytes(filePath, data);
+				using (stream)
+				{
+					_fileSystem.SaveStream(filePath, stream);
+				}	
 			}
 			else if (_fileSystem.FileExists(filePath))
 			{
@@ -102,7 +105,7 @@ namespace SmartStore.Services.Media.Storage
 			}
 		}
 
-		public async Task SaveAsync(MediaFile mediaFile, byte[] data)
+		public async Task SaveAsync(MediaFile mediaFile, Stream stream)
 		{
 			Guard.NotNull(mediaFile, nameof(mediaFile));
 
@@ -110,12 +113,16 @@ namespace SmartStore.Services.Media.Storage
 
 			var filePath = GetPath(mediaFile);
 
-			if (data != null && data.LongLength != 0)
+			if (stream != null)
 			{
-				await _fileSystem.WriteAllBytesAsync(filePath, data);
+				using (stream)
+				{
+					await _fileSystem.SaveStreamAsync(filePath, stream);
+				}
 			}
 			else if (_fileSystem.FileExists(filePath))
 			{
+				// Remove media storage if any
 				_fileSystem.DeleteFile(filePath);
 			}
 		}

@@ -72,6 +72,7 @@ namespace SmartStore.Services.Media
                     {
                         Name = album.Name,
                         ProviderType = provider.GetType(),
+                        IsSystemAlbum = typeof(SystemAlbumProvider) == provider.GetType(),
                         DisplayHint = provider.GetDisplayHint(album) ?? new AlbumDisplayHint()
                     };
 
@@ -119,7 +120,7 @@ namespace SmartStore.Services.Media
 
         public void UninstallAlbum(string albumName)
         {
-            Guard.NotEmpty(albumName, nameof(albumName));
+            var album = GetAlbumValidated(albumName, true);
 
             throw new NotImplementedException();
 
@@ -128,12 +129,31 @@ namespace SmartStore.Services.Media
 
         public void DeleteAlbum(string albumName, string moveFilesToAlbum)
         {
-            Guard.NotEmpty(albumName, nameof(albumName));
-            Guard.NotEmpty(moveFilesToAlbum, nameof(moveFilesToAlbum));
+            var album = GetAlbumValidated(albumName, true);
+            var destinationAlbum = GetAlbumValidated(moveFilesToAlbum, false);
 
             throw new NotImplementedException();
 
             //ClearCache();
+        }
+
+        private AlbumInfo GetAlbumValidated(string albumName, bool throwWhenSystemAlbum)
+        {
+            Guard.NotEmpty(albumName, nameof(albumName));
+
+            var album = GetAlbumByName(albumName);
+
+            if (album == null)
+            {
+                throw new InvalidOperationException($"The album '{albumName}' does not exist.");
+            }
+
+            if (album.IsSystemAlbum && throwWhenSystemAlbum)
+            {
+                throw new InvalidOperationException($"The media album '{albumName}' is a system album and cannot be deleted.");
+            }
+
+            return album;
         }
 
         public void ClearCache()

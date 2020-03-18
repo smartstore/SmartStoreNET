@@ -723,11 +723,13 @@ namespace SmartStore.Services.Media
 				}
 			}
 
-			file.RefreshMetadata(pictureBinary);
+			var stream = pictureBinary?.ToStream();
+
+			file.RefreshMetadata(stream);
 			_pictureRepository.Insert(file);
 
 			// Save to storage.
-			_storageProvider.Value.Save(file, pictureBinary);
+			_storageProvider.Value.Save(file, stream);
 
 			return file;
 		}
@@ -776,17 +778,19 @@ namespace SmartStore.Services.Media
 
 			picture.MediaType = _mediaTypeResolver.Resolve(picture);
 
-			if (pictureBinary != null)
+			var stream = pictureBinary?.ToStream();
+
+			if (stream != null)
 			{
-				picture.RefreshMetadata(pictureBinary);
+				picture.RefreshMetadata(stream);
 			}
 			
 			_pictureRepository.Update(picture);
 
 			// save to storage
-			if (pictureBinary != null)
+			if (stream != null)
 			{
-				_storageProvider.Value.Save(picture, pictureBinary);
+				_storageProvider.Value.Save(picture, stream);
 			}		
 		}
 

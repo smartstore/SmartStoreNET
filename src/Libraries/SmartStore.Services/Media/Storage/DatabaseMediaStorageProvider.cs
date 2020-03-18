@@ -57,18 +57,28 @@ namespace SmartStore.Services.Media.Storage
 			return Task.FromResult(Load(mediaFile));
 		}
 
-		public void Save(MediaFile mediaFile, byte[] data)
+		public void Save(MediaFile mediaFile, Stream stream)
 		{
 			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-			mediaFile.ApplyBlob(data);
+			using (stream ?? new MemoryStream())
+			{
+				mediaFile.ApplyBlob(stream.ToByteArray());
+			}
+
 			_mediaFileRepo.Update(mediaFile);
 		}
 
-		public Task SaveAsync(MediaFile mediaFile, byte[] data)
+		public async Task SaveAsync(MediaFile mediaFile, Stream stream)
 		{
-			Save(mediaFile, data);
-			return Task.FromResult(0);
+			Guard.NotNull(mediaFile, nameof(mediaFile));
+
+			using (stream ?? new MemoryStream())
+			{
+				mediaFile.ApplyBlob(await stream.ToByteArrayAsync());
+			}
+
+			_mediaFileRepo.Update(mediaFile);
 		}
 
 		public void Remove(params MediaFile[] mediaFiles)

@@ -1,6 +1,7 @@
 ﻿using System.Web.Mvc;
 using System.Web.Mvc.Routing.Constraints;
 using System.Web.Routing;
+using SmartStore.Core.Data;
 using SmartStore.Services.Media;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework;
@@ -24,6 +25,32 @@ namespace SmartStore.Web.Infrastructure
 			// or - in case of blob storage - redirect the client to the computed public url.
 
 			var mediaPublicPath = MediaFileSystem.GetMediaPublicPath();
+			var media4PublicPath = "media4/"; // TODO: (mm) change
+
+			Route RegisterMediaRoute(string routeName, string actionName, string pattern, string url)
+			{
+				SmartUrlRoutingModule.RegisterRoutablePath("/{0}/{1}/.*?$".FormatInvariant(media4PublicPath, pattern), "GET|HEAD");
+				return routes.MapRoute(routeName,
+					media4PublicPath + url + "/{*path}",
+					new { controller = "Media4", action = actionName },
+					new[] { "SmartStore.Web.Controllers" });
+			}
+
+			#region V4 Media routes
+
+			// Legacy URL redirection: match URL pattern /{pub}/uploaded/{path}[?{query}], e.g. '/media/uploaded/subfolder/image.png' 
+			RegisterMediaRoute("Media4Uploaded", "Uploaded", "uploaded", "uploaded");
+
+			// Legacy tenant URL redirection: match URL pattern /{pub}/{tenant}/uploaded/{path}[?{query}], e.g. '/media/default/uploaded/subfolder/image.png' 
+			var str = DataSettings.Current.TenantName + "/uploaded";
+			RegisterMediaRoute("Media4UploadedWithTenant", "Uploaded", str, str);
+
+			// Match URL pattern /{pub}/media/{id}/{path}[?{query}], e.g. '/media/234/{album}/myproduct.png?size=250' 
+			RegisterMediaRoute("Media4", "File", @"([1-9]\d*|0)", "{id}");
+
+			#endregion
+
+			#region V3 Media routes
 
 			// Match URL pattern /{pub}/image/{id}/{path}[?{query}], e.g. '/media/image/234/myproduct.png?size=250' 
 			SmartUrlRoutingModule.RegisterRoutablePath(@"/{0}image/([1-9]\d*|0)/.*?$".FormatInvariant(mediaPublicPath), "GET|HEAD");
@@ -39,6 +66,8 @@ namespace SmartStore.Web.Infrastructure
 				mediaPublicPath + "{*path}",
 				new { controller = "Media", action = "File" },
 				new[] { "SmartStore.Web.Controllers" });
+
+			#endregion
 
 
 			/* Common

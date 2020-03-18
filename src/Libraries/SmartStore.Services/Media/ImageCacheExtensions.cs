@@ -7,13 +7,13 @@ namespace SmartStore.Services.Media
     public static class ImageCacheExtensions
     {
 		/// <summary>
-		/// Gets an instance of the <see cref="CachedImageResult"/> object, which contains information about a cached image.
+		/// Gets an instance of the <see cref="CachedImage"/> object, which contains information about a cached image.
 		/// </summary>
 		/// <param name="picture">The picture object for which to resolve a cached image.</param>
 		/// <param name="query">The image processing query.</param>
-		/// <returns>An instance of the <see cref="CachedImageResult"/> object</returns>
+		/// <returns>An instance of the <see cref="CachedImage"/> object</returns>
 		/// <remarks>If the requested image does not exist in the cache, the value of the <c>Exists</c> property will be <c>false</c>.</remarks>
-		public static CachedImageResult Get(this IImageCache imageCache, MediaFile picture, ProcessImageQuery query = null)
+		public static CachedImage Get(this IImageCache imageCache, MediaFile picture, ProcessImageQuery query = null)
         {
             Guard.NotNull(picture, nameof(picture));
 

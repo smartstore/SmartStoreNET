@@ -87,7 +87,7 @@ namespace SmartStore.Services.Media
                 FolderId = node.Value.Id
             };
 
-            return _mediaService.SearchFiles(query).Files;
+            return _mediaService.SearchFiles(query);
         }
 
         public IEnumerable<IFolder> ListFolders(string path)
@@ -137,7 +137,7 @@ namespace SmartStore.Services.Media
             // Get relative from absolute path
             var index = _rootPath.EmptyNull().Length;
 
-            return _mediaService.SearchFiles(query).Files.Select(x => x.Path.Substring(index));
+            return _mediaService.SearchFiles(query).Select(x => x.Path.Substring(index));
         }
 
         public IFile CreateFile(string path)

@@ -10,9 +10,9 @@ namespace SmartStore.Services.Media
         /// <summary>
         /// Determines whether the given file name is processable by the image resizer
         /// </summary>
-        /// <param name="fileName">The name of the file (without path but including extension)</param>
+        /// <param name="extension">The file extension to check.</param>
         /// <returns>A value indicating whether processing is possible</returns>
-        bool IsSupportedImage(string fileName);
+        bool IsSupportedImage(string extension);
 
 		/// <summary>
 		/// Processes an image

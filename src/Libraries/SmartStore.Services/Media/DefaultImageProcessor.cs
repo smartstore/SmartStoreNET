@@ -22,24 +22,25 @@ namespace SmartStore.Services.Media
 		public DefaultImageProcessor(IEventPublisher eventPublisher)
 		{
 			_eventPublisher = eventPublisher;
-
-			Logger = NullLogger.Instance;
 		}
 
-		public ILogger Logger { get; set; }
+		public ILogger Logger { get; set; } = NullLogger.Instance;
 
-		public bool IsSupportedImage(string fileName)
+		public bool IsSupportedImage(string extension)
         {
-            var ext = Path.GetExtension(fileName);
-            if (ext != null)
-            {
-                var extension = ext.Trim('.').ToLower();
-                return ImageProcessorBootstrapper.Instance.SupportedImageFormats
-					.SelectMany(x => x.FileExtensions)
-					.Any(x => x == extension);
-            }
+			if (extension.IsEmpty())
+			{
+				return false;
+			}		
+			
+			if (extension[0] == '.' && extension.Length > 1)
+			{
+				extension = extension.Substring(1);
+			}
 
-            return false;
+            return ImageProcessorBootstrapper.Instance.SupportedImageFormats
+				.SelectMany(x => x.FileExtensions)
+				.Any(x => x.Equals(extension, StringComparison.OrdinalIgnoreCase));
         }
 
 		public ProcessImageResult ProcessImage(ProcessImageQuery query)

@@ -1,5 +1,8 @@
 ﻿@model OrderFulfillmentDashboardReportModel
-
+@using Newtonsoft.Json;
+@{
+    var jsonData = JsonConvert.SerializeObject(Model);
+}
 <div class="report">
     <div class="report-title-row">
         <div class="report-title">@T("Admin.Salesreport.OrderFulfillmentReport")</div>
@@ -9,9 +12,9 @@
             <div class="pie-chart-title">
                 @T("Time.Today")
             </div>
-            <div class="report-pie-chart" data-percent="55">
+            <div class="report-pie-chart" id="report-today" data-percent="@Model.Percentages[0]">
                 <div class="pie-chart-text">
-                    <div class="pie-chart-value">874</div>
+                    <div class="font-weight-bold fs-h5">@Model.UnfinishedOrders[0]</div>
                     <div class="pt-1 small">@T("Admin.SalesReport.Incomplete.Item")</div>
                 </div>
             </div>
@@ -20,9 +23,9 @@
             <div class="pie-chart-title">
                 @T("Time.Yesterday")
             </div>
-            <div class="report-pie-chart" data-percent="87">
+            <div class="report-pie-chart" id="report-yesterday" data-percent="@Model.Percentages[1]">
                 <div class="pie-chart-text">
-                    <div class="pie-chart-value">474</div>
+                    <div class="font-weight-bold fs-h5">@Model.UnfinishedOrders[1]</div>
                     <div class="pt-1 small">@T("Admin.SalesReport.Incomplete.Item")</div>
                 </div>
             </div>
@@ -31,9 +34,9 @@
             <div class="pie-chart-title">
                 @T("Admin.Report.LastWeek")
             </div>
-            <div class="report-pie-chart" data-percent="71">
+            <div class="report-pie-chart" id="report-last-7-days" data-percent="@Model.Percentages[2]">
                 <div class="pie-chart-text">
-                    <div class="pie-chart-value">1584</div>
+                    <div class="font-weight-bold fs-h5">@Model.UnfinishedOrders[2]</div>
                     <div class="pt-1 small">@T("Admin.SalesReport.Incomplete.Item")</div>
                 </div>
             </div>
@@ -42,9 +45,9 @@
             <div class="pie-chart-title">
                 @T("Admin.Report.OlderOrders")
             </div>
-            <div class="report-pie-chart" data-percent="100">
+            <div class="report-pie-chart" id="report-older" data-percent="@Model.Percentages[3]">
                 <div class="pie-chart-text">
-                    <div class="pie-chart-value">0</div>
+                    <div class="font-weight-bold fs-h5">@Model.UnfinishedOrders[3]</div>
                     <div class="pt-1 small">@T("Admin.SalesReport.Incomplete.Item")</div>
                 </div>
             </div>
@@ -78,11 +81,6 @@
         padding-right: 2.1rem;
     }
 
-    .pie-chart-value {
-        font-weight: bold !important;
-        font-size: 1.25rem !important;
-    }
-
     .pie-chart-title {
         font-weight: bold !important;
         font-size: 1rem !important;
@@ -92,48 +90,80 @@
 </style>
 
 <script>
+    var $data = JSON.parse('@Html.Raw(jsonData)');
 
     var defaultSize = 200;
+
     var style = getComputedStyle(document.body);
-    var $colorPrimary = style.getPropertyValue('--primary');
-    var $colorSuccess = style.getPropertyValue('--success');
+
+    var $colorIndigo = { r: 24, g: 80, b: 159 };
+    var $colorPrimary = { r: 48, g: 122, b: 190 };
+    var $colorSuccess = { r: 0, g: 158, b: 116 };
+    var $colorWarning = { r: 247, g: 168, b: 51 };
+    var $colorDanger = { r: 220, g: 48, b: 0 };
     var $colorLight = style.getPropertyValue('--light');
-    var $pieChart = $('.report-pie-chart');
+    var $whiteTransparent = 'rgba(255,255,255, .9)';
+
+    var $pieCharts = [$('#report-today'), $('#report-yesterday'), $('#report-last-7-days'), $('#report-older')];
+
+    var percentColors = [
+        { pct: 0.2, color: { r: $colorDanger.r, g: $colorDanger.g, b: $colorDanger.b } },
+        { pct: 0.4, color: { r: $colorWarning.r, g: $colorWarning.g, b: $colorWarning.b } },
+        { pct: 1.0, color: { r: $colorSuccess.r, g: $colorSuccess.g, b: $colorSuccess.b } },
+    ];
+
+    var getColorForPercentage = function (pct) {
+        for (var i = 1; i < percentColors.length - 1; i++) {
+            if (pct < percentColors[i].pct) {
+                break;
+            }
+        }
+        var lower = percentColors[i - 1];
+        var upper = percentColors[i];
+        var range = upper.pct - lower.pct;
+        var rangePct = (pct - lower.pct) / range;
+        var pctLower = 1 - rangePct;
+        var pctUpper = rangePct;
+        var color = {
+            r: Math.floor(lower.color.r * pctLower + upper.color.r * pctUpper),
+            g: Math.floor(lower.color.g * pctLower + upper.color.g * pctUpper),
+            b: Math.floor(lower.color.b * pctLower + upper.color.b * pctUpper)
+        };
+        return 'rgb(' + [color.r, color.g, color.b].join(',') + ')';
+    };
+
+    var $pieChartOptions = {
+        barColor: $colorLight,
+        trackColor: $colorLight,
+        scaleColor: $colorLight,
+        scaleLength: 0,
+        lineCap: 'round',
+        lineWidth: 16,
+        size: defaultSize,
+        rotate: 0,
+        animate: {
+            enabled: true,
+            duration: 1000,
+        },
+        easing: 'easyInOutSine',
+    };
 
     $(function () {
-        $pieChart.easyPieChart({
-            //barColor: '#ef1e25',
-            barColor: function (percent) {
+        $pieCharts.forEach(function (value, index) {
+            var options = $pieChartOptions;
+            var gradient = function (percent) {
                 var ctx = this.renderer.getCtx();
                 var canvas = this.renderer.getCanvas();
-                var gradient = ctx.createLinearGradient(canvas.height / 1.2, 0, canvas.height / 2, canvas.width);
-                gradient.addColorStop(0, $colorSuccess);
-                gradient.addColorStop(0.2, $colorPrimary);
+                var gradient = ctx.createRadialGradient(0, 0, canvas.width / 4, 0, 0, canvas.width / 1.8);
+                gradient.addColorStop(0, getColorForPercentage($data.Percentages[index] / 100));
+                gradient.addColorStop(0.65, getColorForPercentage($data.Percentages[index] / 100));
+                gradient.addColorStop(1, 'white');
                 return gradient;
-            },
-            trackColor: '#f2f2f2',
-            scaleColor: '#dfe0e0',
-            scaleLength: 0,
-            lineCap: 'round',
-            lineWidth: 8,
-            size: defaultSize,
-            rotate: 0,
-            animate: {
-                enabled: true,
-                duration: 1500,
-            },
-            easing: 'easyInOutSine',
-            //onStart = function (from, to) {
-
-            //},
-            //onStep = function (from, to, currentValue) {
-            //    //this.$el = access DOM
-            //},
-            //onStop = function (from, to) {
-
-            //},
+            };
+            options.barColor = gradient;
+            value.easyPieChart(options);
+            value.css("width", defaultSize);
+            value.css("height", defaultSize);
         });
-        $pieChart.css("width", defaultSize);
-        $pieChart.css("height", defaultSize);
     });
 </script>

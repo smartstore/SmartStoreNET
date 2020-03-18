@@ -2877,11 +2877,24 @@ namespace SmartStore.Admin.Controllers
         public ActionResult OrderFulfillmentDashboardReport()
         {
             var model = new OrderFulfillmentDashboardReportModel();
+            var allOrders = _orderService.GetAllOrders(0, 0, int.MaxValue);
 
+            var orders = new List<Order>[4] {
+                allOrders.Where(x => x.CreatedOnUtc >= DateTime.UtcNow.Date && x.CreatedOnUtc < DateTime.UtcNow.Date.AddDays(1)).ToList(),
+                allOrders.Where(x => x.CreatedOnUtc >= DateTime.UtcNow.AddDays(-1).Date && x.CreatedOnUtc < DateTime.UtcNow.Date).ToList(),
+                allOrders.Where(x => x.CreatedOnUtc >= DateTime.UtcNow.AddDays(-6).Date && x.CreatedOnUtc < DateTime.UtcNow.Date.AddDays(1)).ToList(),
+                allOrders.Where(x => x.CreatedOnUtc < DateTime.UtcNow.AddDays(-6).Date).ToList()
+            };
+
+            for (int i = 0; i < orders.Length; i++)
+            {
+                model.UnfinishedOrders[i] = orders[i].Where(x => x.OrderStatusId != (int)OrderStatus.Cancelled && x.OrderStatusId != (int)OrderStatus.Complete).Count();
+                model.Percentages[i] = orders[i].Count() == 0 ? 100 : 100 - (int)Math.Round(model.UnfinishedOrders[i] / (float)orders[i].Count() * 100);
+            }
 
             return PartialView(model);
         }
-      
+
         #endregion
     }
 }

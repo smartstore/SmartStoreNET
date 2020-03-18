@@ -1,7 +1,42 @@
-﻿@model IRuleExpression
+﻿@using SmartStore.Rules
+@using SmartStore.Admin.Models.Rules
+@model IRuleExpression
+@{
+    var id = string.Concat("left-rule-value-", Model.Id);
+    var list = Model.Descriptor.LeftSelectList;
+    string remoteUrl = null;
 
-@using SmartStore.Rules
+    if (list is RemoteRuleValueSelectList remoteList)
+    {
+        remoteUrl = Url.Action("RuleOptions", "Rule", new { reason = RuleOptionsRequestReason.LeftSelectListOptions, ruleId = Model.Id, rootRuleSetId = (int)ViewBag.RootRuleSetId });
+    }
+}
+<div class="rule-descriptor" title="@Model.Descriptor.DisplayName (@(Model.Descriptor.Name))">
+    @if (remoteUrl.HasValue())
+    {
+        var selectedItems = Model.Metadata.TryGetValue("LeftSelectedItems", out var objSelectedItems)
+            ? (Dictionary<string, RuleSelectItem>)objSelectedItems
+            : new Dictionary<string, RuleSelectItem>();
+        var values = new string[0];
 
-<div class="rule-descriptor font-weight-medium form-control-plaintext text-truncate text-gray" title="@Model.Descriptor.DisplayName (@(Model.Descriptor.Name))">
-    @Model.Descriptor.DisplayName
+        <select id="@id" name="@id" class="form-control" data-remote-url="@remoteUrl">
+            @foreach (var value in values)
+            {
+                selectedItems.TryGetValue(value, out var selectedItem);
+                <option value="@value" selected="selected" @Html.Attr("data-hint", selectedItem?.Hint, selectedItem?.Hint?.HasValue() ?? false)>
+                @(selectedItem?.Text.NullEmpty() ?? value)</option>
+            }
+        </select>
+        <script>
+            $(function () {
+                $('#@id').selectWrapper();
+	        });
+        </script>
+    }
+    else
+    {
+        <div class="font-weight-medium form-control-plaintext text-truncate text-gray">
+            @Model.Descriptor.DisplayName
+        </div>
+    }    
 </div>

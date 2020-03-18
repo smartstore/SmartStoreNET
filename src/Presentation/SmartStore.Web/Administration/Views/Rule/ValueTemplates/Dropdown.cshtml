@@ -10,7 +10,7 @@
 
     if (list is RemoteRuleValueSelectList remoteList)
     {
-        remoteUrl = Url.Action("RuleOptions", "Rule", new { ruleId = Model.Id, rootRuleSetId = (int)ViewBag.RootRuleSetId });
+        remoteUrl = Url.Action("RuleOptions", "Rule", new { reason = RuleOptionsRequestReason.SelectListOptions, ruleId = Model.Id, rootRuleSetId = (int)ViewBag.RootRuleSetId });
     }
 
     var attributes = new Dictionary<string, object>

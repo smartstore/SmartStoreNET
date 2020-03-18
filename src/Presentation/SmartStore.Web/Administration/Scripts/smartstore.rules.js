@@ -163,6 +163,12 @@
         onRuleValueChanged();
     });
 
+    // Left rule value changed.
+    $(document).on('change', ':input[name^="left-rule-value-"]', function () {
+        var val = $(this).val();
+
+    });
+
     // Save rules.
     $(document).on('click', 'button.ruleset-save', function () {
         var data = getRuleData();

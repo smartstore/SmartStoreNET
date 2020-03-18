@@ -116,12 +116,22 @@ namespace SmartStore.Services.Catalog.Rules
                     SelectList = new LocalRuleValueSelectList(stores),
                     Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
                 },
-                new SearchFilterDescriptor<int[]>(x => SearchFilter.Combined(x.Select(x => SearchFilter.ByField("manufacturerid", x).ExactMatch().NotAnalyzed()).ToArray()))
+                new SearchFilterDescriptor<int[]>(x => SearchFilter.Combined(x.Select(id => SearchFilter.ByField("manufacturerid", id).ExactMatch().NotAnalyzed()).ToArray()))
                 {
                     Name = "Manufacturer",
                     DisplayName = T("Admin.Rules.FilterDescriptor.Manufacturer"),
                     RuleType = RuleType.IntArray,
                     SelectList = new RemoteRuleValueSelectList("Manufacturer") { Multiple = true },
+                    Operators = new RuleOperator[] { RuleOperator.In }
+                },
+                // TODO: HasParent(parentId)
+                new SearchFilterDescriptor<int[]>(x => SearchFilter.Combined(x.Select(id => SearchFilter.ByField("attrvalueid", id).ExactMatch().NotAnalyzed()).ToArray()))
+                {
+                    Name = "Attribute",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.SpecificationAttribute"),
+                    RuleType = RuleType.IntArray,
+                    LeftSelectList = new RemoteRuleValueSelectList("Attribute"),
+                    SelectList = new RemoteRuleValueSelectList("AttributeOption") { Multiple = true },
                     Operators = new RuleOperator[] { RuleOperator.In }
                 },
             };

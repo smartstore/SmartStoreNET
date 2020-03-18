@@ -315,6 +315,7 @@
 
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Manufacturer", "Manufacturer", "Hersteller");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Published", "Published", "Veröffentlicht");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.SpecificationAttribute", "Specification Attribute", "Spezifikationsattribut");
 
             // Rule operators
             builder.AddOrUpdate("Admin.Rules.RuleOperator.ContainsOperator", "Contains", "Enthält");

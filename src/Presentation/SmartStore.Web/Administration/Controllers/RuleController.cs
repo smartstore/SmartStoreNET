@@ -543,7 +543,12 @@ namespace SmartStore.Admin.Controllers
         }
 
         // Ajax.
-        public ActionResult RuleOptions(int ruleId, int rootRuleSetId, string term, int? page)
+        public ActionResult RuleOptions(
+            RuleOptionsRequestReason reason,
+            int ruleId,
+            int rootRuleSetId,
+            string term,
+            int? page)
         {
             var rule = _ruleStorage.GetRuleById(ruleId, false);
             if (rule == null)
@@ -554,15 +559,16 @@ namespace SmartStore.Admin.Controllers
             var provider = _ruleProvider(rule.RuleSet.Scope);
             var expression = provider.VisitRule(rule);
 
-            Func<RuleValueSelectListOption, bool> optionsPredicate = x => true;
             RuleOptionsResult options = null;
+            Func<RuleValueSelectListOption, bool> optionsPredicate = x => true;
+            var selectList = reason == RuleOptionsRequestReason.LeftSelectListOptions ? expression.Descriptor.LeftSelectList : expression.Descriptor.SelectList;
 
-            if (expression.Descriptor.SelectList is RemoteRuleValueSelectList list)
+            if (selectList is RemoteRuleValueSelectList list)
             {
                 var optionsProvider = _ruleOptionsProviders.FirstOrDefault(x => x.Matches(list.DataSource));
                 if (optionsProvider != null)
                 {
-                    options = optionsProvider.GetOptions(RuleOptionsRequestReason.SelectListOptions, expression, page ?? 0, 100, term);
+                    options = optionsProvider.GetOptions(reason, expression, page ?? 0, 100, term);
                     if (list.DataSource == "CartRule" || list.DataSource == "TargetGroup")
                     {
                         optionsPredicate = x => x.Value != rootRuleSetId.ToString();
@@ -581,7 +587,10 @@ namespace SmartStore.Admin.Controllers
                 .ToList();
 
             // Mark selected items.
-            var selectedValues = expression.RawValue.SplitSafe(",");
+            var selectedValues = reason == RuleOptionsRequestReason.LeftSelectListOptions
+                ? new string[0]
+                : expression.RawValue.SplitSafe(",");
+
             data.Each(x => x.Selected = selectedValues.Contains(x.Id));
 
             return new JsonResult
@@ -625,6 +634,19 @@ namespace SmartStore.Admin.Controllers
                         var options = optionsProvider.GetOptions(RuleOptionsRequestReason.SelectedDisplayNames, expression, 0, int.MaxValue, null);
 
                         expression.Metadata["SelectedItems"] = options.Options.ToDictionarySafe(
+                            x => x.Value,
+                            x => new RuleSelectItem { Text = x.Text, Hint = x.Hint });
+                    }
+                }
+
+                if (expression.Descriptor.LeftSelectList is RemoteRuleValueSelectList leftList)
+                {
+                    var optionsProvider = _ruleOptionsProviders.FirstOrDefault(x => x.Matches(leftList.DataSource));
+                    if (optionsProvider != null)
+                    {
+                        var options = optionsProvider.GetOptions(RuleOptionsRequestReason.SelectedDisplayNames, expression, 0, int.MaxValue, null);
+
+                        expression.Metadata["LeftSelectedItems"] = options.Options.ToDictionarySafe(
                             x => x.Value,
                             x => new RuleSelectItem { Text = x.Text, Hint = x.Hint });
                     }

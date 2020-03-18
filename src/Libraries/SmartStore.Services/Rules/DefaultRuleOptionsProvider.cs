@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Plugins;
@@ -29,7 +30,8 @@ namespace SmartStore.Services.Rules
         protected readonly Lazy<IProductService> _productService;
         protected readonly Lazy<ICategoryService> _categoryService;
         protected readonly Lazy<IManufacturerService> _manufacturerService;
-        protected readonly IShippingService _shippingService;
+        protected readonly Lazy<IShippingService> _shippingService;
+        protected readonly Lazy<ISpecificationAttributeService> _specificationAttributeService;
         protected readonly Lazy<IRuleStorage> _ruleStorage;
         protected readonly Lazy<IProviderManager> _providerManager;
         protected readonly Lazy<SearchSettings> _searchSettings;
@@ -44,7 +46,8 @@ namespace SmartStore.Services.Rules
             Lazy<IProductService> productService,
             Lazy<ICategoryService> categoryService,
             Lazy<IManufacturerService> manufacturerService,
-            IShippingService shippingService,
+            Lazy<IShippingService> shippingService,
+            Lazy<ISpecificationAttributeService> specificationAttributeService,
             Lazy<IRuleStorage> ruleStorage,
             Lazy<IProviderManager> providerManager,
             Lazy<SearchSettings> searchSettings)
@@ -59,6 +62,7 @@ namespace SmartStore.Services.Rules
             _categoryService = categoryService;
             _manufacturerService = manufacturerService;
             _shippingService = shippingService;
+            _specificationAttributeService = specificationAttributeService;
             _ruleStorage = ruleStorage;
             _providerManager = providerManager;
             _searchSettings = searchSettings;
@@ -80,6 +84,8 @@ namespace SmartStore.Services.Rules
                 case "ShippingMethod":
                 case "ShippingRateComputationMethod":
                 case "TargetGroup":
+                case "Attribute":
+                case "AttributeOption":
                     return true;
                 default:
                     return false;
@@ -97,8 +103,9 @@ namespace SmartStore.Services.Rules
             Guard.NotNull(expression.Descriptor, nameof(expression.Descriptor));
 
             var result = new RuleOptionsResult();
-            var list = expression.Descriptor.SelectList as RemoteRuleValueSelectList;
-            if (list == null)
+            var selectList = reason == RuleOptionsRequestReason.LeftSelectListOptions ? expression.Descriptor.LeftSelectList : expression.Descriptor.SelectList;
+
+            if (!(selectList is RemoteRuleValueSelectList list))
             {
                 return result;
             }
@@ -201,9 +208,35 @@ namespace SmartStore.Services.Rules
                         .ToList();
                     break;
                 case "ShippingMethod":
-                    options = _shippingService.GetAllShippingMethods()
+                    options = _shippingService.Value.GetAllShippingMethods()
                         .Select(x => new RuleValueSelectListOption { Value = byId ? x.Id.ToString() : x.Name, Text = byId ? x.GetLocalized(y => y.Name, language, true, false) : x.Name })
                         .ToList();
+                    break;
+                case "Attribute":
+                    if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
+                    {
+                        options = new List<RuleValueSelectListOption>();
+                    }
+                    else
+                    {
+                        var specAttributes = new PagedList<SpecificationAttribute>(_specificationAttributeService.Value.GetSpecificationAttributes(), pageIndex, pageSize);
+                        result.IsPaged = true;
+                        result.HasMoreData = specAttributes.HasNextPage;
+
+                        options = specAttributes
+                            .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false) })
+                            .ToList();
+                    }
+                    break;
+                case "AttributeOption":
+                    if (expression.Metadata.TryGetValue("ParentId", out var objParentId))
+                    {
+                        var parentId = (int)objParentId;
+                    }
+                    else
+                    {
+                        options = new List<RuleValueSelectListOption>();
+                    }
                     break;
                 default:
                     throw new SmartException($"Unknown data source \"{list.DataSource.NaIfEmpty()}\".");

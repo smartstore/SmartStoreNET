@@ -9,17 +9,17 @@
         <div class="report-title">@T("Admin.SalesReport.Incomplete")</div>
     </div>
     <div class="incomplete-orders-chart-text">
-        <div class="font-weight-bold fs-h4">2.123</div>
-        <div class="pt-1 small">@T("Admin.SalesReport.Incomplete")</div>
+        <div class="font-weight-bold fs-h4 fade-in">@Model.Reports[Model.Reports.Count - 1].FormattedQuantity</div>
+        <div class="pt-1 small fade-in" style="width: 150px">@T("Admin.SalesReport.Incomplete")</div>
     </div>
     <div class="canvas-container" style="height: 75%; transform: translateY(29px); pointer-events: none">
         <canvas id="incomplete-orders-chart" width="5" height="3" style="width: 100%; pointer-events: all">
-            Your browser does not support the HTML5 canvas tag. // Errors
         </canvas>
     </div>
 </div>
 
 <style>
+
 </style>
 
 <script>
@@ -93,7 +93,7 @@
                 left: 0,
                 right: 0,
                 top: 5,
-                bottom: 25
+                bottom: 20
             }
         },
         legend: false,
@@ -110,15 +110,17 @@
             cornerRadius: 4,
             titleMarginBottom: 8,
             bodySpacing: 5,
-            //callbacks: {
-            //    label: function (item) {
-            //        return ordersData.Reports[currentPeriod].DataSets[item.datasetIndex].FormattedAmount[item.index];
-            //    }
-            //}
+            callbacks: {
+                label: function (item, data) {
+                    return " " + data.labels[item.index] + ": " + dataSets.Reports[item.index].FormattedQuantity;
+                },
+                labelColor: function(tooltipItem, chart) {
+                    return {
+                        backgroundColor: bgColor[tooltipItem.index],
+                    }
+                },
+            }
         },
-        //title: {
-        //    display: false,
-        //}
     };
 
     var myDoughnutChart = new Chart($incompleteOrdersCtx, {

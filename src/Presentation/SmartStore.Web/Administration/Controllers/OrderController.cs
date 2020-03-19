@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -2863,6 +2864,8 @@ namespace SmartStore.Admin.Controllers
         public ActionResult OrderFulfillmentDashboardReport()
         {
             var model = new OrderFulfillmentDashboardReportModel();
+            var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
+            numberFormat.NumberDecimalDigits = 0;
             var allOrders = _orderService.GetAllOrders(0, 0, int.MaxValue);
 
             var orders = new List<Order>[4] {
@@ -2874,10 +2877,10 @@ namespace SmartStore.Admin.Controllers
 
             for (int i = 0; i < orders.Length; i++)
             {
-                model.UnfinishedOrders[i] = orders[i].Where(x => x.OrderStatusId != (int)OrderStatus.Cancelled && x.OrderStatusId != (int)OrderStatus.Complete).Count();
-                model.Percentages[i] = orders[i].Count() == 0 ? 100 : 100 - (int)Math.Round(model.UnfinishedOrders[i] / (float)orders[i].Count() * 100);
+                var ordersCount = orders[i].Where(x => x.OrderStatusId != (int)OrderStatus.Cancelled && x.OrderStatusId != (int)OrderStatus.Complete).Count();
+                model.UnfinishedOrders[i] = ordersCount.ToString("N", numberFormat);
+                model.Percentages[i] = orders[i].Count() == 0 ? 100 : 100 - (int)Math.Round(ordersCount / (float)orders[i].Count() * 100);
             }
-
             return PartialView(model);
         }
 

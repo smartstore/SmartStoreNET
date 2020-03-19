@@ -480,7 +480,7 @@ namespace SmartStore.Services.Orders
 
             for (int i = 0; i < 12; i++)
             {
-                var fromDate = new DateTime(DateTime.UtcNow.Year, i+1, 1);
+                var fromDate = new DateTime(DateTime.UtcNow.Year, i + 1, 1);
                 var toDate = fromDate.AddMonths(1);
                 report.Labels[i] = fromDate.ToString("Y");
                 GetReportPointData(report, ordersReports, fromDate, toDate, i);
@@ -489,7 +489,7 @@ namespace SmartStore.Services.Orders
             CalculateOrdersAmount(report, allOrders, orders, currentDate.AddYears(-2), currentDate.AddYears(-1));
 
             return report;
-        }          
+        }
 
         private List<Order>[] GetOrderReports(List<Order> orders)
         {
@@ -505,24 +505,31 @@ namespace SmartStore.Services.Orders
 
         private void GetReportPointData(DashboardChartReportLine report, List<Order>[] reports, DateTime startDate, DateTime endDate, int index)
         {
+            var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
+            numberFormat.CurrencyDecimalDigits = 0;
+
             for (int j = 0; j < reports.Length; j++)
             {
                 var point = reports[j].Where(x => x.CreatedOnUtc < endDate && x.CreatedOnUtc >= startDate).ToList();
                 report.DataSets[j].Amount[index] = point.Sum(x => x.OrderTotal);
-                report.DataSets[j].FormattedAmount[index] = _priceFormatter.FormatPrice((int)report.DataSets[j].Amount[index], true, false);
+                report.DataSets[j].FormattedAmount[index] = ((int)Math.Round(report.DataSets[j].Amount[index])).ToString("C", numberFormat);
+                //report.DataSets[j].FormattedAmount[index] = _priceFormatter.FormatPrice((int)report.DataSets[j].Amount[index], true, false);
                 report.DataSets[j].Quantity[index] = point.Count;
             }
         }
 
         private void CalculateOrdersAmount(DashboardChartReportLine report, IList<Order> allOrders, List<Order> orders, DateTime fromDate, DateTime toDate)
         {
+            var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
+            numberFormat.NumberDecimalDigits = 0;
+
             foreach (var item in report.DataSets)
             {
-                item.TotalAmount = _priceFormatter.FormatPrice((int)Math.Round(item.Amount.Sum()), true, false);
+                item.TotalAmount = ((int)Math.Round(item.Amount.Sum())).ToString("C", numberFormat);
             }
 
             var totalAmount = orders.Where(x => x.OrderStatus != OrderStatus.Cancelled).Sum(x => x.OrderTotal);
-            report.TotalAmount = _priceFormatter.FormatPrice((int)Math.Round(totalAmount), true, false);
+            report.TotalAmount = ((int)Math.Round(totalAmount)).ToString("C", numberFormat);
             var sumBefore = Math.Round(allOrders
                 .Where(x => x.CreatedOnUtc < toDate && x.CreatedOnUtc >= fromDate)
                 .Select(x => x)

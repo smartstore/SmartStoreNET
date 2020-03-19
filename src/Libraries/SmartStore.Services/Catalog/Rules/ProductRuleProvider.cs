@@ -3,6 +3,7 @@ using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Localization;
+using SmartStore.Core.Plugins;
 using SmartStore.Core.Search;
 using SmartStore.Rules;
 using SmartStore.Rules.Domain;
@@ -16,16 +17,19 @@ namespace SmartStore.Services.Catalog.Rules
         private readonly IRuleFactory _ruleFactory;
         private readonly ICommonServices _services;
         private readonly ICatalogSearchService _catalogSearchService;
+        private readonly IPluginFinder _pluginFinder;
 
         public ProductRuleProvider(
             IRuleFactory ruleFactory,
             ICommonServices services,
-            ICatalogSearchService catalogSearchService)
+            ICatalogSearchService catalogSearchService,
+            IPluginFinder pluginFinder)
             : base(RuleScope.Product)
         {
             _ruleFactory = ruleFactory;
             _services = services;
             _catalogSearchService = catalogSearchService;
+            _pluginFinder = pluginFinder;
         }
 
         public Localizer T { get; set; } = NullLocalizer.Instance;
@@ -101,14 +105,7 @@ namespace SmartStore.Services.Catalog.Rules
 
             var descriptors = new List<SearchFilterDescriptor>
             {
-                new SearchFilterDescriptor<bool>(x => SearchFilter.ByField("published", x).Mandatory().ExactMatch().NotAnalyzed())
-                {
-                    Name = "Published",
-                    DisplayName = T("Admin.Rules.FilterDescriptor.Published"),
-                    RuleType = RuleType.Boolean,
-                    Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
-                },
-                new SearchFilterDescriptor<int>(x => x > 0 ? SearchFilter.Combined(SearchFilter.ByField("storeid", 0).ExactMatch().NotAnalyzed(), SearchFilter.ByField("storeid", x).ExactMatch().NotAnalyzed()) : null)
+                new SearchFilterDescriptor<int>((q, x) => q.HasStoreId(x))
                 {
                     Name = "Store",
                     DisplayName = T("Admin.Rules.FilterDescriptor.Store"),
@@ -116,7 +113,29 @@ namespace SmartStore.Services.Catalog.Rules
                     SelectList = new LocalRuleValueSelectList(stores),
                     Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
                 },
-                new SearchFilterDescriptor<int[]>(x => SearchFilter.Combined(x.Select(id => SearchFilter.ByField("manufacturerid", id).ExactMatch().NotAnalyzed()).ToArray()))
+                new SearchFilterDescriptor<int[]>((q, x) => q.AllowedCustomerRoles(x))
+                {
+                    Name = "CustomerRole",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.IsInCustomerRole"),
+                    RuleType = RuleType.IntArray,
+                    SelectList = new RemoteRuleValueSelectList("CustomerRole") { Multiple = true },
+                    Operators = new RuleOperator[] { RuleOperator.In }
+                },
+                new SearchFilterDescriptor<bool>((q, x) => q.PublishedOnly(x))
+                {
+                    Name = "Published",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.Published"),
+                    RuleType = RuleType.Boolean,
+                    Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
+                },
+                new SearchFilterDescriptor<bool>((q, x) => q.AvailableOnly(x))
+                {
+                    Name = "Available",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.Available"),
+                    RuleType = RuleType.Boolean,
+                    Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
+                },
+                new SearchFilterDescriptor<int[]>((q, x) => q.WithManufacturerIds(null, x))
                 {
                     Name = "Manufacturer",
                     DisplayName = T("Admin.Rules.FilterDescriptor.Manufacturer"),
@@ -124,8 +143,12 @@ namespace SmartStore.Services.Catalog.Rules
                     SelectList = new RemoteRuleValueSelectList("Manufacturer") { Multiple = true },
                     Operators = new RuleOperator[] { RuleOperator.In }
                 },
+            };
+
+            if (_pluginFinder.GetPluginDescriptorBySystemName("SmartStore.MegaSearchPlus") != null)
+            {
                 // TODO: HasParent(parentId)
-                new SearchFilterDescriptor<int[]>(x => SearchFilter.Combined(x.Select(id => SearchFilter.ByField("attrvalueid", id).ExactMatch().NotAnalyzed()).ToArray()))
+                descriptors.Add(new SearchFilterDescriptor<int[]>((q, x) => q.WithFilter(SearchFilter.Combined(x.Select(id => SearchFilter.ByField("attrvalueid", id).ExactMatch().NotAnalyzed()).ToArray())))
                 {
                     Name = "Attribute",
                     DisplayName = T("Admin.Rules.FilterDescriptor.SpecificationAttribute"),
@@ -133,8 +156,8 @@ namespace SmartStore.Services.Catalog.Rules
                     LeftSelectList = new RemoteRuleValueSelectList("Attribute"),
                     SelectList = new RemoteRuleValueSelectList("AttributeOption") { Multiple = true },
                     Operators = new RuleOperator[] { RuleOperator.In }
-                },
-            };
+                });
+            }
 
             descriptors
                 .Where(x => x.RuleType == RuleType.Money)

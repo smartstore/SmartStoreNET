@@ -41,11 +41,7 @@ namespace SmartStore.Services.Catalog.Rules
 
             foreach (var expression in Expressions.Cast<SearchFilterExpression>())
             {
-                var filter = expression.Descriptor.GetFilter(expression.Value);
-                if (filter != null)
-                {
-                    query = query.WithFilter(filter);
-                }
+                query = expression.Descriptor.ApplyFilter(query, expression.Value);
             }
 
             return query;

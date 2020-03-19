@@ -1,6 +1,6 @@
 ﻿using System;
-using SmartStore.Core.Search;
 using SmartStore.Rules;
+using SmartStore.Services.Search;
 
 namespace SmartStore.Services.Catalog.Rules
 {
@@ -11,23 +11,23 @@ namespace SmartStore.Services.Catalog.Rules
         {
         }
 
-        public abstract ISearchFilter GetFilter(object value);
+        public abstract CatalogSearchQuery ApplyFilter(CatalogSearchQuery query, object value);
     }
 
     public class SearchFilterDescriptor<TValue> : SearchFilterDescriptor
     {
-        public SearchFilterDescriptor(Func<TValue, ISearchFilter> filter)
+        public SearchFilterDescriptor(Func<CatalogSearchQuery, TValue, CatalogSearchQuery> filter)
         {
             Guard.NotNull(filter, nameof(filter));
 
             Filter = filter;
         }
 
-        public Func<TValue, ISearchFilter> Filter { get; protected set; }
+        public Func<CatalogSearchQuery, TValue, CatalogSearchQuery> Filter { get; protected set; }
 
-        public override ISearchFilter GetFilter(object value)
+        public override CatalogSearchQuery ApplyFilter(CatalogSearchQuery query, object value)
         {
-            return Filter(value.Convert<TValue>());
+            return Filter(query, value.Convert<TValue>());
         }
     }
 }

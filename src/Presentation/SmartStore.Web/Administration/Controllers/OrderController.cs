@@ -2770,37 +2770,23 @@ namespace SmartStore.Admin.Controllers
         protected virtual OrdersIncompleteDashboardReportModel GetOrdersIncompleteReportModel()
         {
             var model = new OrdersIncompleteDashboardReportModel();
+            var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
+            numberFormat.NumberDecimalDigits = 0;
 
-            // Not paid.
-            var psPending = _orderReportService.GetOrderAverageReportLine(0, null, new int[] { (int)PaymentStatus.Pending }, null, null, null, null, true);
-            model.Reports.Add(new OrdersIncompleteDashboardReportLine
+            var ordersPending = new OrderAverageReportLine[3];
+            ordersPending[0] = _orderReportService.GetOrderAverageReportLine(0, null, null, new int[] { (int)ShippingStatus.NotYetShipped }, null, null, null, true);
+            ordersPending[1] = _orderReportService.GetOrderAverageReportLine(0, null, new int[] { (int)PaymentStatus.Pending }, null, null, null, null, true);
+            ordersPending[2] = _orderReportService.GetOrderAverageReportLine(0, new int[] { (int)OrderStatus.Pending, (int)OrderStatus.Processing }, null, null, null, null, null, true);
+
+            foreach (var pending in ordersPending)
             {
-                Quantity = psPending.CountOrders,
-                AmountTotal = _priceFormatter.FormatPrice(psPending.SumOrders, true, false),
-                //Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalUnpaidOrders"),
-                //Url = Url.Action("List", "Order", new { PaymentStatusIds = (int)PaymentStatus.Pending })
-            });
-
-            // Not shipped.
-            var ssPending = _orderReportService.GetOrderAverageReportLine(0, null, null, new int[] { (int)ShippingStatus.NotYetShipped }, null, null, null, true);
-            model.Reports.Add(new OrdersIncompleteDashboardReportLine
-            {
-                Quantity = ssPending.CountOrders,
-                AmountTotal = _priceFormatter.FormatPrice(ssPending.SumOrders, true, false),
-                //Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalNotShippedOrders"),
-                //Url = Url.Action("List", "Order", new { ShippingStatusIds = (int)ShippingStatus.NotYetShipped })
-            });
-
-            // Pending.
-            var osPending = _orderReportService.GetOrderAverageReportLine(0, new int[] { (int)OrderStatus.Pending }, null, null, null, null, null, true);
-            model.Reports.Add(new OrdersIncompleteDashboardReportLine
-            {
-                Quantity = osPending.CountOrders,
-                AmountTotal = _priceFormatter.FormatPrice(osPending.SumOrders, true, false),
-                //Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalIncompleteOrders"),
-                //Url = Url.Action("List", "Order", new { OrderStatusIds = (int)OrderStatus.Pending })
-            });
-
+                model.Reports.Add(new OrdersIncompleteDashboardReportLine
+                {
+                    Quantity = pending.CountOrders,
+                    FormattedQuantity = (pending.CountOrders).ToString("N", numberFormat),
+                    AmountTotal = _priceFormatter.FormatPrice(pending.SumOrders, true, false),
+                });
+            }
             return model;
         }
 

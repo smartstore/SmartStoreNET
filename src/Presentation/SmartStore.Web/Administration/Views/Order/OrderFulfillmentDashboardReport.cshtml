@@ -13,9 +13,9 @@
                 @T("Time.Today")
             </div>
             <div class="report-pie-chart" id="report-today" data-percent="@Model.Percentages[0]">
-                <div class="pie-chart-text">
+                <div class="pie-chart-text fade-in">
                     <div class="font-weight-bold fs-h5">@Model.UnfinishedOrders[0]</div>
-                    <div class="pt-1 small">@T("Admin.SalesReport.Incomplete.Item")</div>
+                    <div class="pt-1 small">@T("Admin.SalesReport.Incomplete")</div>
                 </div>
             </div>
         </div>
@@ -24,9 +24,9 @@
                 @T("Time.Yesterday")
             </div>
             <div class="report-pie-chart" id="report-yesterday" data-percent="@Model.Percentages[1]">
-                <div class="pie-chart-text">
+                <div class="pie-chart-text fade-in">
                     <div class="font-weight-bold fs-h5">@Model.UnfinishedOrders[1]</div>
-                    <div class="pt-1 small">@T("Admin.SalesReport.Incomplete.Item")</div>
+                    <div class="pt-1 small">@T("Admin.SalesReport.Incomplete")</div>
                 </div>
             </div>
         </div>
@@ -35,9 +35,9 @@
                 @T("Admin.Report.LastWeek")
             </div>
             <div class="report-pie-chart" id="report-last-7-days" data-percent="@Model.Percentages[2]">
-                <div class="pie-chart-text">
+                <div class="pie-chart-text fade-in">
                     <div class="font-weight-bold fs-h5">@Model.UnfinishedOrders[2]</div>
-                    <div class="pt-1 small">@T("Admin.SalesReport.Incomplete.Item")</div>
+                    <div class="pt-1 small">@T("Admin.SalesReport.Incomplete")</div>
                 </div>
             </div>
         </div>
@@ -46,9 +46,9 @@
                 @T("Admin.Report.OlderOrders")
             </div>
             <div class="report-pie-chart" id="report-older" data-percent="@Model.Percentages[3]">
-                <div class="pie-chart-text">
+                <div class="pie-chart-text fade-in">
                     <div class="font-weight-bold fs-h5">@Model.UnfinishedOrders[3]</div>
-                    <div class="pt-1 small">@T("Admin.SalesReport.Incomplete.Item")</div>
+                    <div class="pt-1 small">@T("Admin.SalesReport.Incomplete")</div>
                 </div>
             </div>
         </div>

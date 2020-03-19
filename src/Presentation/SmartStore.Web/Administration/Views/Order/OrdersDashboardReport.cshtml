@@ -6,13 +6,13 @@
 
 <div class="report">
     <div class="report-title-row">
-        <div class="report-title">@T("Account.CustomerOrders")</div>
+        <div class="report-title pr-1">@T("Account.CustomerOrders")</div>
 
-        <div class="pl-4 fs-h5">
+        <div class="pl-3 fs-h5">
             <span id="orders-sum-amount" class="text-muted"></span>
         </div>
 
-        <div class="pl-3 fs-h5">
+        <div class="pl-3 fs-h6 font-weight-bold">
             <span id="orders-delta-percentage"></span><span id="orders-delta-percentage-chevron" class="chevron pl-1 d-none"></span>
         </div>
 
@@ -40,8 +40,8 @@
         </div>
     </div>
     <div class="px-4 pt-2" id="orders-chart-legend"></div>
-    <div class="canvas-container" style="height: 75%; transform: translateY(29px); pointer-events: none">
-        <canvas id="orders-chart" class="w-100" width="70" height="18" style="position: absolute; pointer-events: all"></canvas>
+    <div class="canvas-container" style="height: 75%; transform: translateY(27px); pointer-events: none">
+        <canvas id="orders-chart" width="70" height="18" style="width: 100%; position: absolute; pointer-events: all"></canvas>
     </div>
 </div>
 
@@ -150,8 +150,8 @@
                     padding: {
                         left: 0,
                         right: 0,
-                        top: 5,
-                        bottom: 4
+                        top: 0,
+                        bottom: 0
                     }
                 },
                 legend: false,
@@ -201,10 +201,22 @@
                     titleMarginBottom: 8,
                     bodySpacing: 5,
                     callbacks: {
-                        label: function (item) {
-                            return ordersData.Reports[currentPeriod].DataSets[item.datasetIndex].FormattedAmount[item.index];
-                        }
-                    }
+                        label: function (item, data) {
+                            return /*data.datasets[item.datasetIndex].label + ": " +*/ " " + ordersData.Reports[currentPeriod].DataSets[item.datasetIndex].FormattedAmount[item.index];
+                        },
+                        labelColor: function(tooltipItem, chart) {
+                            var dataset = chart.config.data.datasets[tooltipItem.datasetIndex];
+                            return {
+                                backgroundColor: dataset.borderColor,
+                            }
+                        },
+                    },
+                     //custom: function(tooltip) {
+                     //   if (!tooltip) return;
+                     //    // disable displaying the color box;
+                     //    tooltip.labelColors = [colorDanger, colorWarning, colorSuccess, colorPrimary];
+
+                     //},
                 },
                 scales: {
                     yAxes: [{
@@ -335,14 +347,14 @@
             chart.update();
         }
 
-        function hexToRgba(hex, opacity) {
-            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            var rgb = result ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            } : null;
-            return 'rgba(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', ' + opacity + ')';
-        }
+        //function hexToRgba(hex, opacity) {
+        //    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        //    var rgb = result ? {
+        //        r: parseInt(result[1], 16),
+        //        g: parseInt(result[2], 16),
+        //        b: parseInt(result[3], 16)
+        //    } : null;
+        //    return 'rgba(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', ' + opacity + ')';
+        //}
     });
 </script>

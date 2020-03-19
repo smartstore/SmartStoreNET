@@ -30,26 +30,27 @@
 
                     @if (x.OrderState == OrderStatus.Pending)
                     {
-                        <td class="display-row">
-                            @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending"), "Edit", "Order", new { id = x.OrderId }, new { @class = "text-white bg-warning px-3 py-1 rounded" })
-                        </td>
+                <td class="display-row flex items-center">
+                    <div class="bg-warning " style="width: 10px; height: 10px; border-radius: 50%; display: inline-block;"></div>
+                    @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending"), "Edit", "Order", new { id = x.OrderId }, new { @class = "pl-2 text-dark" })
+                </td>
                     }
                     else if (x.OrderState == OrderStatus.Processing)
                     {
                         <td class="display-row">
-                            @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing"), "Edit", "Order", new { id = x.OrderId }, new { @class = "text-white bg-primary px-3 py-1 rounded" })
+                            @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing"), "Edit", "Order", new { id = x.OrderId }, new { @class = "bg-primary badge" })
                         </td>
                     }
                     else if (x.OrderState == OrderStatus.Complete)
                     {
                         <td class="display-row">
-                            @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete"), "Edit", "Order", new { id = x.OrderId }, new { @class = "text-white bg-success px-3 py-1 rounded" })
+                            @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete"), "Edit", "Order", new { id = x.OrderId }, new { @class = "bg-success badge" })
                         </td>
                     }
                     else if (x.OrderState == OrderStatus.Cancelled)
                     {
                         <td class="display-row">
-                            @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled"), "Edit", "Order", new { id = x.OrderId }, new { @class = "text-white bg-danger px-3 py-1 rounded" })
+                            @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled"), "Edit", "Order", new { id = x.OrderId }, new { @class = "bg-danger badge" })
                         </td>
                     }
                 </tr>

@@ -561,9 +561,8 @@ namespace SmartStore.Admin.Controllers
 
             RuleOptionsResult options = null;
             Func<RuleValueSelectListOption, bool> optionsPredicate = x => true;
-            var selectList = reason == RuleOptionsRequestReason.LeftSelectListOptions ? expression.Descriptor.LeftSelectList : expression.Descriptor.SelectList;
 
-            if (selectList is RemoteRuleValueSelectList list)
+            if (expression.Descriptor.SelectList is RemoteRuleValueSelectList list)
             {
                 var optionsProvider = _ruleOptionsProviders.FirstOrDefault(x => x.Matches(list.DataSource));
                 if (optionsProvider != null)
@@ -587,9 +586,7 @@ namespace SmartStore.Admin.Controllers
                 .ToList();
 
             // Mark selected items.
-            var selectedValues = reason == RuleOptionsRequestReason.LeftSelectListOptions
-                ? new string[0]
-                : expression.RawValue.SplitSafe(",");
+            var selectedValues = expression.RawValue.SplitSafe(",");
 
             data.Each(x => x.Selected = selectedValues.Contains(x.Id));
 
@@ -634,19 +631,6 @@ namespace SmartStore.Admin.Controllers
                         var options = optionsProvider.GetOptions(RuleOptionsRequestReason.SelectedDisplayNames, expression, 0, int.MaxValue, null);
 
                         expression.Metadata["SelectedItems"] = options.Options.ToDictionarySafe(
-                            x => x.Value,
-                            x => new RuleSelectItem { Text = x.Text, Hint = x.Hint });
-                    }
-                }
-
-                if (expression.Descriptor.LeftSelectList is RemoteRuleValueSelectList leftList)
-                {
-                    var optionsProvider = _ruleOptionsProviders.FirstOrDefault(x => x.Matches(leftList.DataSource));
-                    if (optionsProvider != null)
-                    {
-                        var options = optionsProvider.GetOptions(RuleOptionsRequestReason.SelectedDisplayNames, expression, 0, int.MaxValue, null);
-
-                        expression.Metadata["LeftSelectedItems"] = options.Options.ToDictionarySafe(
                             x => x.Value,
                             x => new RuleSelectItem { Text = x.Text, Hint = x.Hint });
                     }

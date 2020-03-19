@@ -28,7 +28,6 @@ namespace SmartStore.Rules
 
         public RuleType RuleType { get; set; }
         public RuleValueSelectList SelectList { get; set; }
-        public RuleValueSelectList LeftSelectList { get; set; }
 
         /// <summary>
         /// Indicates whether the rule compares the values of two sequences.

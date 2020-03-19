@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Search;
+using SmartStore.Data.Utilities;
 using SmartStore.Rules;
 using SmartStore.Rules.Domain;
 using SmartStore.Rules.Filters;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
 
 namespace SmartStore.Services.Catalog.Rules
@@ -17,18 +20,21 @@ namespace SmartStore.Services.Catalog.Rules
         private readonly IRuleFactory _ruleFactory;
         private readonly ICommonServices _services;
         private readonly ICatalogSearchService _catalogSearchService;
+        private readonly ISpecificationAttributeService _specificationAttributeService;
         private readonly IPluginFinder _pluginFinder;
 
         public ProductRuleProvider(
             IRuleFactory ruleFactory,
             ICommonServices services,
             ICatalogSearchService catalogSearchService,
+            ISpecificationAttributeService specificationAttributeService,
             IPluginFinder pluginFinder)
             : base(RuleScope.Product)
         {
             _ruleFactory = ruleFactory;
             _services = services;
             _catalogSearchService = catalogSearchService;
+            _specificationAttributeService = specificationAttributeService;
             _pluginFinder = pluginFinder;
         }
 
@@ -99,6 +105,8 @@ namespace SmartStore.Services.Catalog.Rules
 
         protected override IEnumerable<RuleDescriptor> LoadDescriptors()
         {
+            var language = _services.WorkContext.WorkingLanguage;
+
             var stores = _services.StoreService.GetAllStores()
                 .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.Name })
                 .ToArray();
@@ -147,16 +155,28 @@ namespace SmartStore.Services.Catalog.Rules
 
             if (_pluginFinder.GetPluginDescriptorBySystemName("SmartStore.MegaSearchPlus") != null)
             {
-                // TODO: HasParent(parentId)
-                descriptors.Add(new SearchFilterDescriptor<int[]>((q, x) => q.WithFilter(SearchFilter.Combined(x.Select(id => SearchFilter.ByField("attrvalueid", id).ExactMatch().NotAnalyzed()).ToArray())))
+                ISearchFilter[] optionFilters(int attrId, int[] optionIds)
+                    => optionIds.Select(id => SearchFilter.ByField("attrvalueid", id).ExactMatch().NotAnalyzed().HasParent(attrId)).ToArray();
+
+                var pager = new FastPager<SpecificationAttribute>(_specificationAttributeService.GetSpecificationAttributes().Where(x => x.AllowFiltering), 500);
+
+                while (pager.ReadNextPage(out var page))
                 {
-                    Name = "Attribute",
-                    DisplayName = T("Admin.Rules.FilterDescriptor.SpecificationAttribute"),
-                    RuleType = RuleType.IntArray,
-                    LeftSelectList = new RemoteRuleValueSelectList("Attribute"),
-                    SelectList = new RemoteRuleValueSelectList("AttributeOption") { Multiple = true },
-                    Operators = new RuleOperator[] { RuleOperator.In }
-                });
+                    foreach (var attr in page)
+                    {
+                        var descriptor = new SearchFilterDescriptor<int[]>((q, x) => q.WithFilter(SearchFilter.Combined(optionFilters(attr.Id, x))))
+                        {
+                            Name = $"Attribute{attr.Id}",
+                            DisplayName = attr.GetLocalized(x => x.Name, language, true, false),
+                            RuleType = RuleType.IntArray,
+                            SelectList = new RemoteRuleValueSelectList("AttributeOption") { Multiple = true },
+                            Operators = new RuleOperator[] { RuleOperator.In }
+                        };
+                        descriptor.Metadata["ParentId"] = attr.Id;
+
+                        descriptors.Add(descriptor);
+                    }
+                }
             }
 
             descriptors

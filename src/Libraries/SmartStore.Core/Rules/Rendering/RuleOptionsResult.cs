@@ -11,11 +11,6 @@ namespace SmartStore.Rules
         SelectListOptions = 0,
 
         /// <summary>
-        /// Get options for left select list.
-        /// </summary>
-        LeftSelectListOptions,
-
-        /// <summary>
         /// Get display names of selected options.
         /// </summary>
         SelectedDisplayNames

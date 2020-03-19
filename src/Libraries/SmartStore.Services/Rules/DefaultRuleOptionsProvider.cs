@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Plugins;
@@ -103,9 +102,8 @@ namespace SmartStore.Services.Rules
             Guard.NotNull(expression.Descriptor, nameof(expression.Descriptor));
 
             var result = new RuleOptionsResult();
-            var selectList = reason == RuleOptionsRequestReason.LeftSelectListOptions ? expression.Descriptor.LeftSelectList : expression.Descriptor.SelectList;
 
-            if (!(selectList is RemoteRuleValueSelectList list))
+            if (!(expression.Descriptor.SelectList is RemoteRuleValueSelectList list))
             {
                 return result;
             }
@@ -212,56 +210,52 @@ namespace SmartStore.Services.Rules
                         .Select(x => new RuleValueSelectListOption { Value = byId ? x.Id.ToString() : x.Name, Text = byId ? x.GetLocalized(y => y.Name, language, true, false) : x.Name })
                         .ToList();
                     break;
-                case "Attribute":
+                case "AttributeOption":
+                    IList<SpecificationAttributeOption> attrOptions = null;
+
                     if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
                     {
-                        options = new List<RuleValueSelectListOption>();
+                        attrOptions = _specificationAttributeService.Value.GetSpecificationAttributeOptionsByIds(expression.RawValue.ToIntArray());
                     }
-                    else
+                    else if (expression.Descriptor.Metadata.TryGetValue("ParentId", out var objParentId))
                     {
-                        var specAttributes = new PagedList<SpecificationAttribute>(_specificationAttributeService.Value.GetSpecificationAttributes(), pageIndex, pageSize);
-                        result.IsPaged = true;
-                        result.HasMoreData = specAttributes.HasNextPage;
+                        attrOptions = _specificationAttributeService.Value.GetSpecificationAttributeOptionsBySpecificationAttribute((int)objParentId);
+                    }
 
-                        options = specAttributes
+                    if (attrOptions != null)
+                    {
+                        options = attrOptions
                             .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false) })
                             .ToList();
-                    }
-                    break;
-                case "AttributeOption":
-                    if (expression.Metadata.TryGetValue("ParentId", out var objParentId))
-                    {
-                        var parentId = (int)objParentId;
-                    }
-                    else
-                    {
-                        options = new List<RuleValueSelectListOption>();
                     }
                     break;
                 default:
                     throw new SmartException($"Unknown data source \"{list.DataSource.NaIfEmpty()}\".");
             }
 
-            if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
+            if (options != null)
             {
-                // Get display names of selected options.
-                if (expression.RawValue.HasValue())
+                if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
                 {
-                    var selectedValues = expression.RawValue.SplitSafe(",");
-                    result.Options.AddRange(options.Where(x => selectedValues.Contains(x.Value)));
-                }
-            }
-            else
-            {
-                // Get select list options.
-                if (!result.IsPaged && searchTerm.HasValue() && options.Any())
-                {
-                    // Apply the search term if the options are not paged.
-                    result.Options.AddRange(options.Where(x => (x.Text?.IndexOf(searchTerm, 0, StringComparison.CurrentCultureIgnoreCase) ?? -1) != -1));
+                    // Get display names of selected options.
+                    if (expression.RawValue.HasValue())
+                    {
+                        var selectedValues = expression.RawValue.SplitSafe(",");
+                        result.Options.AddRange(options.Where(x => selectedValues.Contains(x.Value)));
+                    }
                 }
                 else
                 {
-                    result.Options.AddRange(options);
+                    // Get select list options.
+                    if (!result.IsPaged && searchTerm.HasValue() && options.Any())
+                    {
+                        // Apply the search term if the options are not paged.
+                        result.Options.AddRange(options.Where(x => (x.Text?.IndexOf(searchTerm, 0, StringComparison.CurrentCultureIgnoreCase) ?? -1) != -1));
+                    }
+                    else
+                    {
+                        result.Options.AddRange(options);
+                    }
                 }
             }
 

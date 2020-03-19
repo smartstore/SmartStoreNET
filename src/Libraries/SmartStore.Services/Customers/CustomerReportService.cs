@@ -177,22 +177,21 @@ namespace SmartStore.Services.Customers
                         select new { Date = (DateTime)dg.Key, Count = dg.Count() };
 
             var data = new List<RegistredCustomersDate>();
-            data.Add(new RegistredCustomersDate(DateTime.Now.AddDays(-760).ToString("MM/dd/yyyy"), 0));
+            data.Add(new RegistredCustomersDate(DateTime.Now.AddDays(-760), 0));
             foreach (var item in query.ToList())
             {
-                data.Add(new RegistredCustomersDate(item.Date.ToString("MM/dd/yyyy"), item.Count));
+                data.Add(new RegistredCustomersDate(item.Date, item.Count));
             }
-
-
+            
             return data;
         }
 
         public struct RegistredCustomersDate
         {
-            public string Date { get; set; }
+            public DateTime Date { get; set; }
             public int Count { get; set; }
 
-            public RegistredCustomersDate(string date, int count)
+            public RegistredCustomersDate(DateTime date, int count)
             {
                 Date = date;
                 Count = count;

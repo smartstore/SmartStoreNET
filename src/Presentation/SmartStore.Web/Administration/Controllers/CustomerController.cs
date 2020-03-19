@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Admin.Models.Customers;
+using SmartStore.Admin.Models.Orders;
 using SmartStore.Admin.Models.ShoppingCart;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Dashboard;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
@@ -70,6 +73,7 @@ namespace SmartStore.Admin.Controllers
         private readonly PluginMediator _pluginMediator;
         private readonly IAffiliateService _affiliateService;
         private readonly Lazy<IGdprTool> _gdprTool;
+        private readonly IDateTimeHelper _dateTimeHelper;
 
         public CustomerController(
             ICommonServices services,
@@ -77,28 +81,29 @@ namespace SmartStore.Admin.Controllers
             INewsLetterSubscriptionService newsLetterSubscriptionService,
             IGenericAttributeService genericAttributeService,
             ICustomerRegistrationService customerRegistrationService,
-            ICustomerReportService customerReportService, 
+            ICustomerReportService customerReportService,
             DateTimeSettings dateTimeSettings,
-            TaxSettings taxSettings, 
+            TaxSettings taxSettings,
             RewardPointsSettings rewardPointsSettings,
-            ICountryService countryService, 
+            ICountryService countryService,
             IStateProvinceService stateProvinceService,
             IAddressService addressService,
-            CustomerSettings customerSettings, 
+            CustomerSettings customerSettings,
             ITaxService taxService,
             IPriceFormatter priceFormatter,
             IOrderService orderService,
             IPriceCalculationService priceCalculationService,
             AdminAreaSettings adminAreaSettings,
             IQueuedEmailService queuedEmailService,
-            IEmailAccountService emailAccountService, 
+            IEmailAccountService emailAccountService,
             ForumSettings forumSettings,
-            IForumService forumService, 
+            IForumService forumService,
             IOpenAuthenticationService openAuthenticationService,
-            AddressSettings addressSettings, 
+            AddressSettings addressSettings,
             PluginMediator pluginMediator,
             IAffiliateService affiliateService,
-            Lazy<IGdprTool> gdprTool)
+            Lazy<IGdprTool> gdprTool,
+            IDateTimeHelper dateTimeHelper)
         {
             _services = services;
             _customerService = customerService;
@@ -127,6 +132,7 @@ namespace SmartStore.Admin.Controllers
             _pluginMediator = pluginMediator;
             _affiliateService = affiliateService;
             _gdprTool = gdprTool;
+            _dateTimeHelper = dateTimeHelper;
         }
 
         #region Utilities
@@ -1042,7 +1048,7 @@ namespace SmartStore.Admin.Controllers
                     throw new SmartException(T("PrivateMessages.Disabled"));
                 if (customer.IsGuest())
                     throw new SmartException(T("Common.MethodNotSupportedForGuests"));
-                
+
                 var privateMessage = new PrivateMessage
                 {
                     StoreId = Services.StoreContext.CurrentStore.Id,
@@ -1385,8 +1391,28 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult RegisteredCustomersDashboardReport()
         {
-            var model = new RegisteredCustomersDashboardReportModel();
+            var model = new DashboardChartReportModel();
+            var registredCustomers = _customerReportService.GetRegisteredCustomersDate();
 
+            var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
+            numberFormat.NumberDecimalDigits = 0;
+            
+            var report = new DashboardChartReportLine(4, 24);
+            var customers = registredCustomers.Where(x => x.Date < DateTime.UtcNow.AddDays(1).Date && x.Date >= DateTime.UtcNow.Date).Select(x => x).ToList();
+                       
+            for (int i = 0; i < 24; i++)
+            {
+                var startDate = DateTime.UtcNow.Date.AddHours(i - _dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours);
+                report.Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("t");
+
+                var point = customers.Where(x => x.Date < startDate.AddDays(1).Date && x.Date >= startDate).ToList();
+                report.DataSets[0].Amount[i] = point.Sum(x => x.Count);
+                report.DataSets[0].FormattedAmount[i] = ((int)Math.Round(report.DataSets[0].Amount[i])).ToString("N", numberFormat);
+                report.DataSets[0].Quantity[i] = point.Count;
+            }
+
+            CalculateOrdersAmount(report, registredCustomers, customers, DateTime.UtcNow.Date.AddDays(-1), DateTime.UtcNow);
+                        
             return PartialView(model);
         }
 
@@ -1442,7 +1468,7 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Customer.Read)]
         public ActionResult ReportTopCustomersByNumberOfOrdersList(GridCommand command, TopCustomersReportModel model)
         {
-            DateTime? startDateValue = (model.StartDate == null) 
+            DateTime? startDateValue = (model.StartDate == null)
                 ? null
                 : (DateTime?)Services.DateTimeHelper.ConvertToUtcTime(model.StartDate.Value, Services.DateTimeHelper.CurrentTimeZone);
 
@@ -1468,23 +1494,30 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        [ChildActionOnly]
-        [Permission(Permissions.Customer.Read, false)]
-        public ActionResult ReportRegisteredCustomers()
+        private void CalculateOrdersAmount(DashboardChartReportLine report, IList<RegistredCustomersDate> allCustomers, List<RegistredCustomersDate> customers, DateTime fromDate, DateTime toDate)
         {
-            var model = GetReportRegisteredCustomersModel();
-            //ViewBag.RegistredCustomers = _customerReportService.GetRegisteredCustomersDate();
-            var registredCustomers = _customerReportService.GetRegisteredCustomersDate();
+            var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
+            numberFormat.NumberDecimalDigits = 0;
 
-            ViewBag.QuantityArray = registredCustomers.Select(x => x.Count).ToArray();
-            ViewBag.DateArray = registredCustomers.Select(x => x.Date).ToArray();
+            foreach (var item in report.DataSets)
+            {
+                item.TotalAmount = ((int)Math.Round(item.Amount.Sum())).ToString("N", numberFormat);
+            }
 
-            return PartialView(model);
+            var totalAmount = customers.Sum(x => x.Count);
+            report.TotalAmount = ((int)Math.Round((double)totalAmount)).ToString("N", numberFormat);
+            var sumBefore = (int)Math.Round((double)allCustomers
+                .Where(x => x.Date < toDate && x.Date >= fromDate)
+                .Select(x => x)
+                .Count()
+                );
+
+            report.PercentageDelta = sumBefore <= 0 ? 0 : (int)Math.Round(totalAmount / (double)sumBefore * 100 - 100);
         }
-
+               
         [GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Customer.Read)]
-        public ActionResult ReportRegisteredCustomersList(GridCommand command)
+        public ActionResult ReportRegisteredCustomersList(GridCommand command) // Not used anymore?
         {
             var model = GetReportRegisteredCustomersModel();
 

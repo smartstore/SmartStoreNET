@@ -315,8 +315,14 @@
 
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Manufacturer", "Manufacturer", "Hersteller");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Published", "Published", "Veröffentlicht");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Available", "Available", "Verfügbar");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.SpecificationAttribute", "Specification Attribute", "Spezifikationsattribut");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.AvailableByStock", "In stock", "Vorrätig");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.AvailableByDate", "Available by date", "Nach Datum verfügbar");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Visibility", "Visibility", "Sichtbarkeit");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductType", "Product type", "Produkttyp");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.HomepageProduct", "Homepage product", "Homepage-Produkt");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Product", "Product", "Produkt");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Category", "Category", "Warengruppe");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductTag", "Product tag", "Produkt-Tag");
 
             // Rule operators
             builder.AddOrUpdate("Admin.Rules.RuleOperator.ContainsOperator", "Contains", "Enthält");

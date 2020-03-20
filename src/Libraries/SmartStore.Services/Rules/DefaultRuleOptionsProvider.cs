@@ -27,6 +27,7 @@ namespace SmartStore.Services.Rules
         protected readonly Lazy<ICountryService> _countryService;
         protected readonly Lazy<ICatalogSearchService> _catalogSearchService;
         protected readonly Lazy<IProductService> _productService;
+        protected readonly Lazy<IProductTagService> _productTagService;
         protected readonly Lazy<ICategoryService> _categoryService;
         protected readonly Lazy<IManufacturerService> _manufacturerService;
         protected readonly Lazy<IShippingService> _shippingService;
@@ -43,6 +44,7 @@ namespace SmartStore.Services.Rules
             Lazy<ICountryService> countryService,
             Lazy<ICatalogSearchService> catalogSearchService,
             Lazy<IProductService> productService,
+            Lazy<IProductTagService> productTagService,
             Lazy<ICategoryService> categoryService,
             Lazy<IManufacturerService> manufacturerService,
             Lazy<IShippingService> shippingService,
@@ -58,6 +60,7 @@ namespace SmartStore.Services.Rules
             _countryService = countryService;
             _catalogSearchService = catalogSearchService;
             _productService = productService;
+            _productTagService = productTagService;
             _categoryService = categoryService;
             _manufacturerService = manufacturerService;
             _shippingService = shippingService;
@@ -80,6 +83,7 @@ namespace SmartStore.Services.Rules
                 case "Manufacturer":
                 case "PaymentMethod":
                 case "Product":
+                case "ProductTag":
                 case "ShippingMethod":
                 case "ShippingRateComputationMethod":
                 case "TargetGroup":
@@ -228,6 +232,12 @@ namespace SmartStore.Services.Rules
                             .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false) })
                             .ToList();
                     }
+                    break;
+                case "ProductTag":
+                    options = _productTagService.Value.GetAllProductTags(true)
+                        .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false) })
+                        .OrderBy(x => x.Text)
+                        .ToList();
                     break;
                 default:
                     throw new SmartException($"Unknown data source \"{list.DataSource.NaIfEmpty()}\".");

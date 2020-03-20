@@ -376,7 +376,13 @@ namespace SmartStore.Admin.Controllers
                 Operator = op.Operator
             };
 
-            if (op == RuleOperator.In || op == RuleOperator.NotIn)
+            if (descriptor.RuleType == RuleType.Boolean)
+            {
+                // Do not store NULL. Irritating because UI indicates 'yes'.
+                var val = op == RuleOperator.IsEqualTo;
+                rule.Value = val.ToString(CultureInfo.InvariantCulture).ToLower();
+            }
+            else if (op == RuleOperator.In || op == RuleOperator.NotIn)
             {
                 // Avoid ArgumentException "The 'In' operator only supports non-null instances from types that implement 'ICollection<T>'."
                 rule.Value = string.Empty;

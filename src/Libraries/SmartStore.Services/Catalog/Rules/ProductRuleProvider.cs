@@ -6,7 +6,6 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Search;
-using SmartStore.Data.Utilities;
 using SmartStore.Rules;
 using SmartStore.Rules.Domain;
 using SmartStore.Rules.Filters;
@@ -21,21 +20,27 @@ namespace SmartStore.Services.Catalog.Rules
         private readonly ICommonServices _services;
         private readonly ICatalogSearchService _catalogSearchService;
         private readonly ISpecificationAttributeService _specificationAttributeService;
+        private readonly ICategoryService _categoryService;
         private readonly IPluginFinder _pluginFinder;
+        private readonly CatalogSettings _catalogSettings;
 
         public ProductRuleProvider(
             IRuleFactory ruleFactory,
             ICommonServices services,
             ICatalogSearchService catalogSearchService,
             ISpecificationAttributeService specificationAttributeService,
-            IPluginFinder pluginFinder)
+            ICategoryService categoryService,
+            IPluginFinder pluginFinder,
+            CatalogSettings catalogSettings)
             : base(RuleScope.Product)
         {
             _ruleFactory = ruleFactory;
             _services = services;
             _catalogSearchService = catalogSearchService;
             _specificationAttributeService = specificationAttributeService;
+            _categoryService = categoryService;
             _pluginFinder = pluginFinder;
+            _catalogSettings = catalogSettings;
         }
 
         public Localizer T { get; set; } = NullLocalizer.Instance;
@@ -111,6 +116,40 @@ namespace SmartStore.Services.Catalog.Rules
                 .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.Name })
                 .ToArray();
 
+            var visibilities = ((ProductVisibility[])Enum.GetValues(typeof(ProductVisibility)))
+                .Select(x => new RuleValueSelectListOption { Value = ((int)x).ToString(), Text = x.GetLocalizedEnum(_services.Localization) })
+                .ToArray();
+
+            var productTypes = ((ProductType[])Enum.GetValues(typeof(ProductType)))
+                .Select(x => new RuleValueSelectListOption { Value = ((int)x).ToString(), Text = x.GetLocalizedEnum(_services.Localization) })
+                .ToArray();
+
+            CatalogSearchQuery categoryFilter(CatalogSearchQuery q, int[] x)
+            {
+                if (x?.Any() ?? false)
+                {
+                    var ids = new HashSet<int>(x);
+
+                    if (_catalogSettings.ShowProductsFromSubcategories)
+                    {
+                        var tree = _categoryService.GetCategoryTree(includeHidden: true);
+
+                        foreach (var id in x)
+                        {
+                            var node = tree.SelectNodeById(id);
+                            if (node != null)
+                            {
+                                ids.AddRange(node.Flatten(false).Select(x => x.Id));
+                            }
+                        }
+                    }
+
+                    q = q.WithCategoryIds(_catalogSettings.IncludeFeaturedProductsInNormalLists ? (bool?)null : false, ids.ToArray());
+                }
+
+                return q;
+            }
+
             var descriptors = new List<SearchFilterDescriptor>
             {
                 new SearchFilterDescriptor<int>((q, x) => q.HasStoreId(x))
@@ -138,10 +177,56 @@ namespace SmartStore.Services.Catalog.Rules
                 },
                 new SearchFilterDescriptor<bool>((q, x) => q.AvailableOnly(x))
                 {
-                    Name = "Available",
-                    DisplayName = T("Admin.Rules.FilterDescriptor.Available"),
+                    Name = "AvailableByStock",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.AvailableByStock"),
                     RuleType = RuleType.Boolean,
                     Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
+                },
+                new SearchFilterDescriptor<bool>((q, x) => q.AvailableByDate(x))
+                {
+                    Name = "AvailableByDate",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.AvailableByDate"),
+                    RuleType = RuleType.Boolean,
+                    Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
+                },
+                new SearchFilterDescriptor<int>((q, x) => q.WithVisibility((ProductVisibility)x))
+                {
+                    Name = "Visibility",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.Visibility"),
+                    RuleType = RuleType.Int,
+                    SelectList = new LocalRuleValueSelectList(visibilities),
+                    Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
+                },
+                new SearchFilterDescriptor<int[]>((q, x) => q.WithProductIds(x))
+                {
+                    Name = "Product",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.Product"),
+                    RuleType = RuleType.IntArray,
+                    SelectList = new RemoteRuleValueSelectList("Product") { Multiple = true },
+                    Operators = new RuleOperator[] { RuleOperator.In }
+                },
+                new SearchFilterDescriptor<bool>((q, x) => q.HomePageProductsOnly(x))
+                {
+                    Name = "HomepageProduct",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.HomepageProduct"),
+                    RuleType = RuleType.Boolean,
+                    Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
+                },
+                new SearchFilterDescriptor<int>((q, x) => q.IsProductType((ProductType)x))
+                {
+                    Name = "ProductType",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.ProductType"),
+                    RuleType = RuleType.Int,
+                    SelectList = new LocalRuleValueSelectList(productTypes),
+                    Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
+                },
+                new SearchFilterDescriptor<int[]>(categoryFilter)
+                {
+                    Name = "Category",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.Category"),
+                    RuleType = RuleType.IntArray,
+                    SelectList = new RemoteRuleValueSelectList("Category") { Multiple = true },
+                    Operators = new RuleOperator[] { RuleOperator.In }
                 },
                 new SearchFilterDescriptor<int[]>((q, x) => q.WithManufacturerIds(null, x))
                 {
@@ -151,6 +236,14 @@ namespace SmartStore.Services.Catalog.Rules
                     SelectList = new RemoteRuleValueSelectList("Manufacturer") { Multiple = true },
                     Operators = new RuleOperator[] { RuleOperator.In }
                 },
+                new SearchFilterDescriptor<int[]>((q, x) => q.WithProductTagIds(x))
+                {
+                    Name = "ProductTag",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.ProductTag"),
+                    RuleType = RuleType.IntArray,
+                    SelectList = new RemoteRuleValueSelectList("ProductTag") { Multiple = true },
+                    Operators = new RuleOperator[] { RuleOperator.In }
+                },
             };
 
             if (_pluginFinder.GetPluginDescriptorBySystemName("SmartStore.MegaSearchPlus") != null)
@@ -158,24 +251,24 @@ namespace SmartStore.Services.Catalog.Rules
                 ISearchFilter[] optionFilters(int attrId, int[] optionIds)
                     => optionIds.Select(id => SearchFilter.ByField("attrvalueid", id).ExactMatch().NotAnalyzed().HasParent(attrId)).ToArray();
 
-                var pager = new FastPager<SpecificationAttribute>(_specificationAttributeService.GetSpecificationAttributes().Where(x => x.AllowFiltering), 500);
+                var attributes = _specificationAttributeService.GetSpecificationAttributes()
+                    .Where(x => x.AllowFiltering)
+                    .ToList();
 
-                while (pager.ReadNextPage(out var page))
+                foreach (var attr in attributes)
                 {
-                    foreach (var attr in page)
+                    var descriptor = new SearchFilterDescriptor<int[]>((q, x) => q.WithFilter(SearchFilter.Combined(optionFilters(attr.Id, x))))
                     {
-                        var descriptor = new SearchFilterDescriptor<int[]>((q, x) => q.WithFilter(SearchFilter.Combined(optionFilters(attr.Id, x))))
-                        {
-                            Name = $"Attribute{attr.Id}",
-                            DisplayName = attr.GetLocalized(x => x.Name, language, true, false),
-                            RuleType = RuleType.IntArray,
-                            SelectList = new RemoteRuleValueSelectList("AttributeOption") { Multiple = true },
-                            Operators = new RuleOperator[] { RuleOperator.In }
-                        };
-                        descriptor.Metadata["ParentId"] = attr.Id;
+                        Name = $"Attribute{attr.Id}",
+                        DisplayName = attr.GetLocalized(x => x.Name, language, true, false),
+                        GroupKey = "Admin.Catalog.Attributes.SpecificationAttributes",
+                        RuleType = RuleType.IntArray,
+                        SelectList = new RemoteRuleValueSelectList("AttributeOption") { Multiple = true },
+                        Operators = new RuleOperator[] { RuleOperator.In }
+                    };
+                    descriptor.Metadata["ParentId"] = attr.Id;
 
-                        descriptors.Add(descriptor);
-                    }
+                    descriptors.Add(descriptor);
                 }
             }
 

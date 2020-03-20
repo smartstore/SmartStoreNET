@@ -77,9 +77,9 @@ namespace SmartStore.Services.Search
 		}
 
 		/// <summary>
-		/// Only products that are visible in frontend
+		/// Only products that are visible in frontend.
 		/// </summary>
-		/// <param name="customer">Customer whose customer roles should be checked, can be <c>null</c></param>
+		/// <param name="customer">Customer whose customer roles are to be checked. Can be <c>null</c>.</param>
 		/// <returns>Catalog search query</returns>
 		public CatalogSearchQuery VisibleOnly(Customer customer)
 		{
@@ -94,19 +94,13 @@ namespace SmartStore.Services.Search
 		}
 
 		/// <summary>
-		/// Only products that are visible in frontend
+		/// Only products that are visible in frontend.
 		/// </summary>
-		/// <param name="allowedCustomerRoleIds">Allowed customer role id, can be <c>null</c></param>
-		/// <returns>Catalog search query</returns>
+		/// <param name="allowedCustomerRoleIds">List of allowed customer role ids. Can be <c>null</c>.</param>
 		public CatalogSearchQuery VisibleOnly(params int[] allowedCustomerRoleIds)
 		{
-            var utcNow = DateTime.UtcNow;
-
             PublishedOnly(true);
-
-            WithFilter(SearchFilter.ByRange("availablestart", null, utcNow, false, false).Mandatory().NotAnalyzed());
-            WithFilter(SearchFilter.ByRange("availableend", utcNow, null, false, false).Mandatory().NotAnalyzed());
-
+            AvailableByDate(true);
             AllowedCustomerRoles(allowedCustomerRoleIds);
 
 			return this;
@@ -114,7 +108,7 @@ namespace SmartStore.Services.Search
 
         public CatalogSearchQuery AllowedCustomerRoles(params int[] customerRoleIds)
         {
-            if (customerRoleIds != null && customerRoleIds.Length > 0)
+            if (customerRoleIds != null && customerRoleIds.Any())
             {
                 var roleIds = customerRoleIds.Where(x => x != 0).Distinct().ToList();
                 if (roleIds.Any())
@@ -132,6 +126,35 @@ namespace SmartStore.Services.Search
 			return WithFilter(SearchFilter.ByField("published", value).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
+        /// <summary>
+        /// Filters products based on their stock level.
+        /// </summary>
+        public CatalogSearchQuery AvailableOnly(bool value)
+        {
+            return WithFilter(SearchFilter.ByField("available", value).Mandatory().ExactMatch().NotAnalyzed());
+        }
+
+        /// <summary>
+        /// Filters products by their availability date.
+        /// </summary>
+        public CatalogSearchQuery AvailableByDate(bool value)
+        {
+            var utcNow = DateTime.UtcNow;
+
+            if (value)
+            {
+                WithFilter(SearchFilter.ByRange("availablestart", null, utcNow, false, false).Mandatory().NotAnalyzed());
+                WithFilter(SearchFilter.ByRange("availableend", utcNow, null, false, false).Mandatory().NotAnalyzed());
+            }
+            else
+            {
+                WithFilter(SearchFilter.ByRange("availablestart", utcNow, null, false, false).Mandatory().NotAnalyzed());
+                WithFilter(SearchFilter.ByRange("availableend", null, utcNow, false, false).Mandatory().NotAnalyzed());
+            }
+
+            return this;
+        }
+
         public CatalogSearchQuery WithVisibility(ProductVisibility value)
         {
             return WithFilter(SearchFilter.ByField("visibility", (int)value).Mandatory().ExactMatch().NotAnalyzed());
@@ -144,8 +167,8 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery HasParentGroupedProduct(params int[] parentProductIds)
 		{
-			if (parentProductIds.Length == 0)
-			{
+            if (!(parentProductIds?.Any() ?? false))
+            {
 				return this;
 			}
 
@@ -180,8 +203,8 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithProductIds(params int[] ids)
 		{
-			if (ids.Length == 0)
-			{
+            if (!(ids?.Any() ?? false))
+            {
 				return this;
 			}
 
@@ -209,8 +232,8 @@ namespace SmartStore.Services.Search
 		/// <returns>Query</returns>
 		public CatalogSearchQuery WithCategoryIds(bool? featuredOnly, params int[] ids)
 		{
-			if (ids.Length == 0)
-			{
+            if (!(ids?.Any() ?? false))
+            {
 				return this;
 			}
 
@@ -236,8 +259,8 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithManufacturerIds(bool? featuredOnly, params int[] ids)
 		{
-			if (ids.Length == 0)
-			{
+            if (!(ids?.Any() ?? false))
+            {
 				return this;
 			}
 
@@ -263,7 +286,7 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithProductTagIds(params int[] ids)
 		{
-			if (ids.Length == 0)
+			if (!(ids?.Any() ?? false))
 			{
 				return this;
 			}
@@ -280,11 +303,6 @@ namespace SmartStore.Services.Search
 
 			return WithFilter(SearchFilter.ByRange("stockquantity", fromQuantity, toQuantity, fromQuantity.HasValue, toQuantity.HasValue).Mandatory().ExactMatch().NotAnalyzed());
 		}
-
-        public CatalogSearchQuery AvailableOnly(bool value)
-        {
-            return WithFilter(SearchFilter.ByField("available", value).Mandatory().ExactMatch().NotAnalyzed());
-        }
 
         public CatalogSearchQuery PriceBetween(decimal? fromPrice, decimal? toPrice)
 		{
@@ -335,8 +353,8 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithDeliveryTimeIds(params int[] ids)
 		{
-			if (ids.Length == 0)
-			{
+            if (!(ids?.Any() ?? false))
+            {
 				return this;
 			}
 

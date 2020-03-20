@@ -17,6 +17,7 @@ namespace SmartStore.Rules
         public string Name { get; set; }
         public string DisplayName { get; set; }
         public string Description { get; set; }
+        public string GroupKey { get; set; }
 
         public bool IsValid
         {

@@ -12,6 +12,8 @@
 }
 
 .table-dashboard {
+    background-color: var(--secondary);
+
     > table {
         margin-bottom: 0;
         table-layout: fixed;
@@ -37,10 +39,17 @@
         tr > th {
             border-top: 0;
             border-color: rgba(0,0,0, 0.05);
+            border-bottom-width: 3px;
         }
 
-        tr:hover {
-            background-color: rgba(0,0,0, .02);
+        tbody tr {
+            transition: all .25s ease-out;
+        }
+
+        tbody tr:hover {
+            transform: translateY(-3px);
+            transition: all .25s ease-out;
+            background-color: rgba(0,0,0, 0.05);
         }
     }
 
@@ -77,12 +86,68 @@
     }
 }
 
+.fade-in-up {
+    animation: fade-in-up 1s ease-in-out forwards;
+}
+
+.fade-in-right {
+    animation: fade-in-right 1s ease-in-out forwards;
+}
+
+.fade-in-left {
+    animation: fade-in-left 1s ease-in-out forwards;
+}
+
+@keyframes fade-in-up {
+    0% {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0px);
+        opacity: 1;
+    }
+}
+
+@keyframes fade-in-left {
+    0% {
+        transform: translateX(30px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0px);
+        opacity: 1;
+    }
+}
+
+
+@keyframes fade-in-right {
+    0% {
+        transform: translateX(-30px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0px);
+        opacity: 1;
+    }
+}
+
 .report {
     background-color: white;
     border-radius: $border-radius;
     box-shadow: $box-shadow-sm-var;
     height: 100%;
     overflow: hidden;
+    opacity: 0;
+
+    &.sticky-report {
+        position: sticky;
+        top: 10px;
+        height: auto;
+    }
 
     .report-title-row {
         padding: 1.5rem 1.5rem 0.5rem 1.5rem;
@@ -141,20 +206,30 @@
         animation: fadeInDown .6s ease-out 1.2s forwards;
     }
 
+    .rise {
+        transition: all .4s;
+    }
+
+    .rise:hover {
+        transform: translateY(-5px);
+        transition: all .4s;
+    }
+
     .table {
         white-space: nowrap;
 
         .display-row {
             padding: .75rem 1rem;
+            background-color: white;
 
-            .badge {
+            .order-status-badge {
                 color: white;
-                padding: .33rem .66rem;
+                padding: .25rem .5rem;
                 border-radius: .25rem;
                 font-size: .75rem;
                 font-weight: $font-weight-medium;
                 position: absolute;
-                transform: translateY(-4px);
+                transform: translateY(-5px);
             }
         }
 
@@ -239,7 +314,7 @@
     grid-row: 1 / 5;
 
     .marketplace-feed-body {
-        padding: 1rem 1.5rem 0rem 1.5rem;
+        padding: 1rem 2rem 0rem 2rem;
 
         .marketplace-feed-item {
             margin-bottom: 1.25rem;

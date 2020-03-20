@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Services.Media
 {
@@ -24,6 +25,11 @@ namespace SmartStore.Services.Media
 
     public partial interface IMediaService
     {
+        /// <summary>
+        /// Gets the underlying storage provider
+        /// </summary>
+        IMediaStorageProvider StorageProvider { get; }
+
         int CountFiles(MediaSearchQuery query);
         Task<int> CountFilesAsync(MediaSearchQuery query);
         MediaSearchResult SearchFiles(MediaSearchQuery query, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);

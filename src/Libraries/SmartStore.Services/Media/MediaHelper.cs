@@ -8,58 +8,9 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.IO;
 
 namespace SmartStore.Services.Media
 {	
-	public class MediaPathData
-	{
-		private string _title;
-		private string _ext;
-		private string _mime;
-
-		public MediaPathData(MediaFolderNode folder, string fileName)
-		{
-			Folder = folder;
-			FileName = fileName;
-		}
-
-		public MediaFolderNode Folder { get; }
-		public string FileName { get; }
-
-		public string FileTitle 
-		{ 
-			get
-			{
-				return _title ?? (_title = Path.GetFileNameWithoutExtension(FileName));
-			} 
-		}
-
-		public string Extension
-		{
-			get
-			{
-				return _ext ?? (_ext = Path.GetExtension(FileName).EmptyNull());
-			}
-			set
-			{
-				_ext = value;
-			}
-		}
-
-		public string MimeType
-		{
-			get
-			{
-				return _mime ?? (_mime = MimeTypes.MapNameToMimeType(FileName));
-			}
-			set
-			{
-				_mime = value;
-			}
-		}
-	}
-	
 	public partial class MediaHelper
 	{
 		private readonly IFolderService _folderService;

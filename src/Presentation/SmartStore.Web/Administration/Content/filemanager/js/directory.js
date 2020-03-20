@@ -507,7 +507,7 @@ function Directory(fullPath, numDirs, numFiles) {
 				success: function (files) {
 					for (i = 0; i < files.length; i++) {
 						var f = files[i];
-						ret.push(new File(f.p, f.s, f.t, f.w, f.h, f.m));
+						ret.push(new File(f.p, f.s, f.t, f.w, f.h, f.m));	
 					}
 					item.FilesLoaded(ret, selectedFile);
 				},

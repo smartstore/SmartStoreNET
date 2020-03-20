@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace SmartStore.Services.Media.Storage
 		const string MediaRootPath = "Storage";
 		
 		private readonly IMediaFileSystem _fileSystem;
+		private readonly IDictionary<int, string> _pathCache = new Dictionary<int, string>();
 
 		public FileSystemMediaStorageProvider(IMediaFileSystem fileSystem)
 		{
@@ -29,15 +31,36 @@ namespace SmartStore.Services.Media.Storage
 			get { return "MediaStorage.SmartStoreFileSystem"; }
 		}
 
+		public bool IsCloudStorage 
+		{ 
+			get => _fileSystem.IsCloudStorage;
+		}
+
+		public string GetPublicUrl(MediaFile mediaFile)
+		{
+			return _fileSystem.GetPublicUrl(GetPath(mediaFile), true);
+		}
+
 		protected string GetPath(MediaFile mediaFile)
 		{
+			Guard.NotNull(mediaFile, nameof(mediaFile));
+
+			if (_pathCache.TryGetValue(mediaFile.Id, out var path))
+			{
+				return path;
+			}
+
 			var ext = mediaFile.Extension.NullEmpty() ?? MimeTypes.MapMimeTypeToExtension(mediaFile.MimeType);
 
 			var fileName = mediaFile.Id.ToString(ImageCache.IdFormatString).Grow(ext, ".");
 			var subfolder = fileName.Substring(0, ImageCache.MaxDirLength);
-			var path = _fileSystem.Combine(subfolder, fileName);
 
-			return _fileSystem.Combine(MediaRootPath, path);
+			path = _fileSystem.Combine(subfolder, fileName);
+			path = _fileSystem.Combine(MediaRootPath, path);
+
+			_pathCache[mediaFile.Id] = path;
+
+			return path;
 		}
 
 		public long GetSize(MediaFile mediaFile)

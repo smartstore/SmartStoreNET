@@ -414,14 +414,15 @@ namespace SmartStore.Core.IO
 
 			using (var outputStream = file.OpenWrite())
 			{
-				var buffer = new byte[8192];
-				for (;;)
-				{
-					var length = inputStream.Read(buffer, 0, buffer.Length);
-					if (length <= 0)
-						break;
-					outputStream.Write(buffer, 0, length);
-				}
+				inputStream.CopyTo(outputStream);
+				//var buffer = new byte[8192];
+				//for (;;)
+				//{
+				//	var length = inputStream.Read(buffer, 0, buffer.Length);
+				//	if (length <= 0)
+				//		break;
+				//	outputStream.Write(buffer, 0, length);
+				//}
 			}
 		}
 
@@ -433,14 +434,15 @@ namespace SmartStore.Core.IO
 
 			using (var outputStream = file.OpenWrite())
 			{
-				var buffer = new byte[8192];
-				for (;;)
-				{
-					var length = await inputStream.ReadAsync(buffer, 0, buffer.Length);
-					if (length <= 0)
-						break;
-					await outputStream.WriteAsync(buffer, 0, length);
-				}
+				await inputStream.CopyToAsync(outputStream);
+				//var buffer = new byte[8192];
+				//for (;;)
+				//{
+				//	var length = await inputStream.ReadAsync(buffer, 0, buffer.Length);
+				//	if (length <= 0)
+				//		break;
+				//	await outputStream.WriteAsync(buffer, 0, length);
+				//}
 			}
 		}
 
@@ -482,7 +484,7 @@ namespace SmartStore.Core.IO
 			return mappedPath;
 		}
 
-        private class LocalFile : IFile
+        public class LocalFile : IFile
         {
             private readonly string _localPath;
             private readonly string _relativePath;
@@ -596,7 +598,7 @@ namespace SmartStore.Core.IO
             }
         }
 
-		private class LocalFolder : IFolder
+		public class LocalFolder : IFolder
 		{
             private readonly string _localPath;
             private readonly string _relativePath;

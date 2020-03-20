@@ -65,6 +65,11 @@ namespace SmartStore.Services.Media
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
+        public IMediaStorageProvider StorageProvider
+        {
+            get => _storageProvider;
+        }
+
         #region Query
 
         public int CountFiles(MediaSearchQuery query)

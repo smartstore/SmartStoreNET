@@ -346,6 +346,7 @@
     <Compile Include="Logging\ILogService.cs" />
     <Compile Include="Media\Events.cs" />
     <Compile Include="Media\MediaFileSystem.cs" />
+    <Compile Include="Media\MediaPathData.cs" />
     <Compile Include="Media\ProcessImageException.cs" />
     <Compile Include="Media\ProcessImageQuery.cs" />
     <Compile Include="Media\ProcessImageResult.cs" />
@@ -371,6 +372,12 @@
     <Compile Include="Media\v4\Album\MediaFolderNode.cs" />
     <Compile Include="Media\v4\Album\FolderService.cs" />
     <Compile Include="Media\v4\Album\SystemAlbumProvider.cs" />
+    <Compile Include="Media\v4\Handlers\ImageHandler.cs" />
+    <Compile Include="Media\v4\Handlers\ImageHandlerBase.cs" />
+    <Compile Include="Media\v4\Handlers\IMediaHandler.cs" />
+    <Compile Include="Media\v4\Handlers\MediaHandlerContext.cs" />
+    <Compile Include="Media\v4\Handlers\PdfHandler.cs" />
+    <Compile Include="Media\v4\Handlers\VideoHandler.cs" />
     <Compile Include="Media\v4\IMediaService.cs" />
     <Compile Include="Media\v4\IMediaUrlGenerator.cs" />
     <Compile Include="Media\v4\MediaFileInfo.cs" />

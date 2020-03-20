@@ -25,7 +25,7 @@ namespace SmartStore.Services.Media
 
         static MediaUrlGenerator()
         {
-            _processedImagesRootPath = MediaFileSystem.GetMediaPublicPath();
+			_processedImagesRootPath = "media4/"; // MediaFileSystem.GetMediaPublicPath(); // TODO: (mm) change
             _fallbackImagesRootPath = "content/images/";
         }
 
@@ -66,7 +66,7 @@ namespace SmartStore.Services.Media
 
 		public static string FallbackImagesRootPath
 		{
-			get { return "~/" + _fallbackImagesRootPath; }
+			get { return _fallbackImagesRootPath; }
 		}
 
 		protected virtual string GetFallbackImageFileName(FallbackPictureType defaultPictureType = FallbackPictureType.Entity)
@@ -86,10 +86,7 @@ namespace SmartStore.Services.Media
 			return defaultImageFileName;
 		}
 
-		public virtual string GenerateUrl(
-			MediaFileInfo file, 
-			ProcessImageQuery imageQuery,
-			string host = null)
+		public virtual string GenerateUrl(MediaFileInfo file, ProcessImageQuery imageQuery, string host = null)
 		{
 			// TODO: (mm) DoFallback
 			

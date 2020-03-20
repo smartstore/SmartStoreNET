@@ -31,6 +31,13 @@ namespace SmartStore.Services.Media.Storage
 			get { return "MediaStorage.SmartStoreDatabase"; }
 		}
 
+		public bool IsCloudStorage { get; } = false;
+
+		public string GetPublicUrl(MediaFile mediaFile)
+		{
+			return null;
+		}
+
 		public long GetSize(MediaFile mediaFile)
 		{
 			Guard.NotNull(mediaFile, nameof(mediaFile));

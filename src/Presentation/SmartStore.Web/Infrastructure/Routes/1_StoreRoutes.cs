@@ -27,9 +27,8 @@ namespace SmartStore.Web.Infrastructure
 			var mediaPublicPath = MediaFileSystem.GetMediaPublicPath();
 			var media4PublicPath = "media4/"; // TODO: (mm) change
 
-			Route RegisterMediaRoute(string routeName, string actionName, string pattern, string url)
+			Route RegisterMediaRoute(string routeName, string actionName, string url)
 			{
-				SmartUrlRoutingModule.RegisterRoutablePath("/{0}/{1}/.*?$".FormatInvariant(media4PublicPath, pattern), "GET|HEAD");
 				return routes.MapRoute(routeName,
 					media4PublicPath + url + "/{*path}",
 					new { controller = "Media4", action = actionName },
@@ -39,14 +38,17 @@ namespace SmartStore.Web.Infrastructure
 			#region V4 Media routes
 
 			// Legacy URL redirection: match URL pattern /{pub}/uploaded/{path}[?{query}], e.g. '/media/uploaded/subfolder/image.png' 
-			RegisterMediaRoute("Media4Uploaded", "Uploaded", "uploaded", "uploaded");
+			SmartUrlRoutingModule.RegisterRoutablePath(@"/{0}uploaded/.*?$".FormatInvariant(media4PublicPath), "GET|HEAD");
+			RegisterMediaRoute("Media4Uploaded", "Uploaded", "uploaded");
 
 			// Legacy tenant URL redirection: match URL pattern /{pub}/{tenant}/uploaded/{path}[?{query}], e.g. '/media/default/uploaded/subfolder/image.png' 
 			var str = DataSettings.Current.TenantName + "/uploaded";
-			RegisterMediaRoute("Media4UploadedWithTenant", "Uploaded", str, str);
+			SmartUrlRoutingModule.RegisterRoutablePath(@"/{0}{1}/.*?$".FormatInvariant(media4PublicPath, str), "GET|HEAD");
+			RegisterMediaRoute("Media4UploadedWithTenant", "Uploaded", str);
 
-			// Match URL pattern /{pub}/media/{id}/{path}[?{query}], e.g. '/media/234/{album}/myproduct.png?size=250' 
-			RegisterMediaRoute("Media4", "File", @"([1-9]\d*|0)", "{id}");
+			// Match URL pattern /{pub}/media/{id}/{path}[?{query}], e.g. '/media/234/{album}/myproduct.png?size=250'
+			SmartUrlRoutingModule.RegisterRoutablePath(@"/{0}([1-9]\d*|0)/.*?$".FormatInvariant(media4PublicPath), "GET|HEAD");
+			RegisterMediaRoute("Media4", "File", "{id}");
 
 			#endregion
 

@@ -40,6 +40,11 @@ namespace SmartStore.Services.Media
             {
                 builder.RegisterType(type).As<IAlbumProvider>().Keyed<IAlbumProvider>(type).InstancePerRequest();
             }
+
+            // Handlers
+            builder.RegisterType<ImageHandler>().As<IMediaHandler>().InstancePerRequest();
+            builder.RegisterType<VideoHandler>().As<IMediaHandler>().InstancePerRequest();
+            builder.RegisterType<PdfHandler>().As<IMediaHandler>().InstancePerRequest();
         }
     }
 }

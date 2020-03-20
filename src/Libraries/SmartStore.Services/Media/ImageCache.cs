@@ -341,7 +341,7 @@ namespace SmartStore.Services.Media
 			// xxxxxxx
 			if (mediaFileId.GetValueOrDefault() > 0)
 			{
-				result = mediaFileId.Value.ToString(IdFormatString).Grow(data.FileTitle, "-");
+				result = mediaFileId.Value.ToString(IdFormatString);
 			}
 
 			// xxxxxxx-f

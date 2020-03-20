@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Autofac.Features.Indexed;
 using SmartStore.Collections;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;

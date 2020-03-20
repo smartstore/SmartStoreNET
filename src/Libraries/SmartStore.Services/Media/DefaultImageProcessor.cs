@@ -43,7 +43,7 @@ namespace SmartStore.Services.Media
 				.Any(x => x.Equals(extension, StringComparison.OrdinalIgnoreCase));
         }
 
-		public ProcessImageResult ProcessImage(ProcessImageQuery query)
+		public ProcessImageResult ProcessImage(ProcessImageQuery query, bool disposeOutput = true)
 		{
 			Guard.NotNull(query, nameof(query));
 
@@ -99,7 +99,8 @@ namespace SmartStore.Services.Media
 						Query = query,
 						SourceWidth = processor.Image.Width,
 						SourceHeight = processor.Image.Height,
-						SourceMimeType = processor.CurrentImageFormat.MimeType
+						SourceMimeType = processor.CurrentImageFormat.MimeType,
+						DisposeOutputStream = disposeOutput
 					};
 
 					// Core processing

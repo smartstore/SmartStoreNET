@@ -499,6 +499,8 @@
         public static class Media
         {
             public const string Self = "media";
+            public const string Update = "media.update";
+            public const string Delete = "media.delete";
             public const string Upload = "media.upload";
 
             public static class Download

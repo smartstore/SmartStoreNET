@@ -12,6 +12,13 @@ namespace SmartStore.Services.Tests.Media.Storage
 			return new MemoryStream(media.MediaStorage.Data);
 		}
 
+		public bool IsCloudStorage { get; } = false;
+
+		public string GetPublicUrl(MediaFile mediaFile)
+		{
+			return null;
+		}
+
 		public byte[] Load(MediaFile media)
 		{
 			return media.MediaStorage.Data;

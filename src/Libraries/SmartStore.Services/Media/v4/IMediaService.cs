@@ -45,7 +45,7 @@ namespace SmartStore.Services.Media
         MediaFileInfo InsertFile(string album, MediaFile file, Stream stream, bool validate = true);
         void DeleteFile(MediaFile file, bool permanent);
 
-        MediaFileInfo CopyFile(MediaFile file, string newPath, bool overwrite = false);
+        MediaFileInfo CopyFile(MediaFile file, int destinationFolderId);
         MediaFileInfo MoveFile(MediaFile file, int destinationFolderId);
         MediaFileInfo ReplaceFile(MediaFile file, string fileName, string mimeType, Stream stream);
         MediaFileInfo RenameFile(MediaFile file, string newFileName);

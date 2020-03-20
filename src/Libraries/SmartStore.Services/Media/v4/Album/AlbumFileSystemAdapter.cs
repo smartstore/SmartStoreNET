@@ -70,7 +70,8 @@ namespace SmartStore.Services.Media
                 throw new ArgumentException("File '" + path + "' does not exist.");
             }
 
-            _mediaService.CopyFile(sourceFile, MakeAbsolute(newPath), overwrite);
+            // TODO: (mm) implement
+            //_mediaService.CopyFile(sourceFile, MakeAbsolute(newPath), overwrite);
         }
 
         public IEnumerable<IFile> ListFiles(string path)

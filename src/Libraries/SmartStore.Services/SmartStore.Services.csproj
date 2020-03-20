@@ -366,7 +366,7 @@
     <Compile Include="Media\v4\Album\IAlbumProvider.cs" />
     <Compile Include="Media\v4\Album\IAlbumRegistry.cs" />
     <Compile Include="Media\v4\Album\IFolderService.cs" />
-    <Compile Include="Media\v4\Album\IFolderServiceExtensions.cs" />
+    <Compile Include="Media\v4\Extensions\IFolderServiceExtensions.cs" />
     <Compile Include="Media\v4\Album\AlbumInfo.cs" />
     <Compile Include="Media\v4\Album\MediaFolderInfo.cs" />
     <Compile Include="Media\v4\Album\MediaFolderNode.cs" />

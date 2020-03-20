@@ -36,6 +36,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IMediaService _mediaService;
 		private readonly IFolderService _folderService;
 		private readonly IAlbumRegistry _albumRegistry;
+		private readonly MediaHelper _mediaHelper;
 		private readonly Lazy<IImageProcessor> _imageProcessor;
 		private readonly Lazy<IImageCache> _imageCache;
 		//private readonly IMediaFileSystem _fileSystem;
@@ -50,6 +51,7 @@ namespace SmartStore.Admin.Controllers
 			IMediaService mediaService,
 			IFolderService folderService,
 			IAlbumRegistry albumRegistry,
+			MediaHelper mediaHelper,
 			Lazy<IImageProcessor> imageProcessor,
 			Lazy<IImageCache> imageCache,
 			//IMediaFileSystem fileSystem,
@@ -60,6 +62,7 @@ namespace SmartStore.Admin.Controllers
 			_mediaService = mediaService;
 			_folderService = folderService;
 			_albumRegistry = albumRegistry;
+			_mediaHelper = mediaHelper;
 			_imageProcessor = imageProcessor;
 			_imageCache = imageCache;
 			//_fileSystem = fileSystem;
@@ -382,39 +385,38 @@ namespace SmartStore.Admin.Controllers
 			Write(result);
 		}
 
-		private void DownloadFile(string path)
+		private void DownloadFile(int id)
 		{
-			//path = GetRelativePath(path);
-			//if (!_fileSystem.FileExists(path))
-			//	return;
+			var file = _mediaService.GetFileById(id, MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithBlob);
+			if (file == null)
+				return;
 
-			//var len = 0;
-			//var buffer = new byte[BUFFER_SIZE];
-			//var file = _fileSystem.GetFile(path);
+			var len = 0;
+			var buffer = new byte[BUFFER_SIZE];
 
-			//try
-			//{
-			//	using (var stream = file.OpenRead())
-			//	{
-			//		Response.Clear();
-			//		Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + file.Name + "\"");
-			//		Response.ContentType = MimeTypes.MapNameToMimeType(file.Name);
+			try
+			{
+				using (var stream = file.OpenRead())
+				{
+					Response.Clear();
+					Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + file.Name + "\"");
+					Response.ContentType = file.MimeType;
 
-			//		while (Response.IsClientConnected && (len = stream.Read(buffer, 0, BUFFER_SIZE)) > 0)
-			//		{
-			//			Response.OutputStream.Write(buffer, 0, len);
-			//			Response.Flush();
+					while (Response.IsClientConnected && (len = stream.Read(buffer, 0, BUFFER_SIZE)) > 0)
+					{
+						Response.OutputStream.Write(buffer, 0, len);
+						Response.Flush();
 
-			//			Array.Clear(buffer, 0, BUFFER_SIZE);
-			//		}
+						Array.Clear(buffer, 0, BUFFER_SIZE);
+					}
 
-			//		Response.End();
-			//	}
-			//}
-			//catch (IOException)
-			//{
-			//	throw new Exception(T("Admin.Common.FileInUse"));
-			//}
+					Response.End();
+				}
+			}
+			catch (IOException)
+			{
+				throw new Exception(T("Admin.Common.FileInUse"));
+			}
 		}
 
 		private void DownloadDir(string path)
@@ -521,8 +523,29 @@ namespace SmartStore.Admin.Controllers
 
 		private void MoveFile(string path, string newPath)
 		{
-			//path = GetRelativePath(path);
-			//newPath = GetRelativePath(newPath);
+			path = GetRelativePath(path);
+			newPath = GetRelativePath(newPath);
+
+			if (!_mediaHelper.TokenizePath(newPath, out var pathData))
+			{
+				throw new Exception(LangRes("E_MoveFileInvalisPath"));
+			}
+
+			var file = _mediaService.GetFileByPath(path);
+			if (file == null)
+			{
+				throw new Exception(LangRes("E_MoveFileInvalisPath"));
+			}
+
+			try
+			{
+				_mediaService.MoveFile(file, pathData.Folder.Id);
+				Response.Write(GetResultString());
+			}
+			catch
+			{
+				throw new Exception(LangRes("E_MoveFile") + " \"" + path + "\"");
+			}
 
 			//if (!_fileSystem.FileExists(path))
 			//{
@@ -583,7 +606,7 @@ namespace SmartStore.Admin.Controllers
 		private void CopyFile(string path, string newPath)
 		{
 			//path = GetRelativePath(path);
-
+			
 			//var file = _fileSystem.GetFile(path);
 
 			//if (!file.Exists)
@@ -877,7 +900,7 @@ namespace SmartStore.Admin.Controllers
 						DeleteFile(Request["f"]);
 						break;
 					case "DOWNLOAD":
-						DownloadFile(Request["f"]);
+						DownloadFile(Request["id"].ToInt());
 						break;
 					case "DOWNLOADDIR":
 						DownloadDir(Request["d"]);

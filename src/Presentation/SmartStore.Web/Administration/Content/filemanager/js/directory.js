@@ -55,11 +55,11 @@ $(function () {
 	});
 });
 
-function Directory(id, fullPath, numDirs, numFiles) {
+function Directory(id, fullPath, name, numDirs, numFiles) {
 	if (!fullPath) fullPath = '';
 	this.id = id;
 	this.fullPath = fullPath;
-	this.name = RoxyUtils.GetFilename(fullPath);
+	this.name = name || RoxyUtils.GetFilename(fullPath);
 	if (!this.name)
 		this.name = 'My files';
 	this.path = RoxyUtils.GetPath(fullPath);
@@ -71,10 +71,10 @@ function Directory(id, fullPath, numDirs, numFiles) {
 		var html = this.GetHtml();
 		var el = null;
 		el = $('li[data-path="' + this.path + '"]');
-		if (el.length == 0)
+		if (el.length === 0)
 			el = $('#pnlDirList');
 		else {
-			if (el.children('ul').length == 0)
+			if (el.children('ul').length === 0)
 				el.append('<ul></ul>');
 			el = el.children('ul');
 		}
@@ -103,7 +103,7 @@ function Directory(id, fullPath, numDirs, numFiles) {
 	this.GetHtml = function () {
 		var dirClass = (this.dirs > 0 ? "" : " invisible");
 
-		var html = '<li data-id="' + this.id + '" data-path="' + this.fullPath + '" data-dirs="' + this.dirs + '" data-files="' + this.files + '" class="directory">';
+		var html = '<li data-id="' + this.id + '" data-path="' + this.fullPath + '" data-name="' + this.name + '" data-dirs="' + this.dirs + '" data-files="' + this.files + '" class="directory">';
 		html += '<div class="d-flex flex-row flex-nowrap align-items-center dir-item"><i class="fa fa-chevron-right dirPlus' + dirClass + '"></i>';
 		html += '<img src="' + RoxyUtils.GetAssetPath("images/folder.png") + '" class="dir mr-1"><span class="name">' + this.name + (parseInt(this.files) ? ' (' + this.files + ')' : '') + '</span></div>';
 		html += '</li>';
@@ -111,7 +111,7 @@ function Directory(id, fullPath, numDirs, numFiles) {
 		return html;
 	};
 	this.SetStatusBar = function () {
-		$('#pnlStatus').html(this.files + ' ' + (this.files == 1 ? t('file') : t('files')));
+		$('#pnlStatus').html(this.files + ' ' + (this.files === 1 ? t('file') : t('files')));
 	};
 	this.SetSelectedFile = function (path) {
 		if (path) {
@@ -127,7 +127,7 @@ function Directory(id, fullPath, numDirs, numFiles) {
 		var currentSelected = getSelectedDir();
 
 		if (indeterm && currentSelected) {
-			if (currentSelected.fullPath != li.data('path')) {
+			if (currentSelected.fullPath !== li.data('path')) {
 				$('#pnlDirList').data('indeterm', dir);
 				$('#pnlDirList .indeterm').removeClass('indeterm');
 				dir.addClass('indeterm');
@@ -159,7 +159,7 @@ function Directory(id, fullPath, numDirs, numFiles) {
 		return el.is(".indeterm");
 	};
 	this.IsListed = function () {
-		if ($('#hdDir').val() == this.fullPath)
+		if ($('#hdDir').val() === this.fullPath)
 			return true;
 		return false;
 	};
@@ -237,8 +237,7 @@ function Directory(id, fullPath, numDirs, numFiles) {
 				$('#pnlDirList').children('li').remove();
 				var d;
 				for (i = 0; i < dirs.length; i++) {
-					console.log(dirs[i]);
-					d = new Directory(dirs[i].i, dirs[i].p, dirs[i].d, dirs[i].f);
+					d = new Directory(dirs[i].i, dirs[i].p, dirs[i].n, dirs[i].d, dirs[i].f);
 					d.Show();
 				}
 				$('#pnlLoadingDirs').hide();
@@ -286,7 +285,7 @@ function Directory(id, fullPath, numDirs, numFiles) {
 			async: false,
 			cache: false,
 			success: function (data) {
-				if (data.res.toLowerCase() == 'ok') {
+				if (data.res.toLowerCase() === 'ok') {
 					item.LoadAll(RoxyUtils.MakePath(item.fullPath, newName));
 					ret = true;
 				} else {
@@ -317,7 +316,7 @@ function Directory(id, fullPath, numDirs, numFiles) {
 			async: false,
 			cache: false,
 			success: function (data) {
-				if (data.res.toLowerCase() == 'ok') {
+				if (data.res.toLowerCase() === 'ok') {
 					var parent = item.GetParent();
 					parent.dirs--;
 					parent.Update();
@@ -356,7 +355,7 @@ function Directory(id, fullPath, numDirs, numFiles) {
 			async: false,
 			cache: false,
 			success: function (data) {
-				if (data.res.toLowerCase() == 'ok') {
+				if (data.res.toLowerCase() === 'ok') {
 					var newPath = RoxyUtils.MakePath(item.path, newName);
 					item.Update(newPath);
 					item.Select();
@@ -391,7 +390,7 @@ function Directory(id, fullPath, numDirs, numFiles) {
 			async: false,
 			cache: false,
 			success: function (data) {
-				if (data.res.toLowerCase() == 'ok') {
+				if (data.res.toLowerCase() === 'ok') {
 					var d = Directory.Parse(newPath);
 					if (d) {
 						d.LoadAll(d.fullPath);
@@ -429,7 +428,7 @@ function Directory(id, fullPath, numDirs, numFiles) {
 			async: false,
 			cache: false,
 			success: function (data) {
-				if (data.res.toLowerCase() == 'ok') {
+				if (data.res.toLowerCase() === 'ok') {
 					item.LoadAll(RoxyUtils.MakePath(newPath, item.name));
 					ret = true;
 				}
@@ -476,7 +475,7 @@ function Directory(id, fullPath, numDirs, numFiles) {
 		$('#hdDir').val(this.fullPath);
 		$('#pnlLoading').hide();
 		var liLen = list.children('li').length;
-		if (liLen == 0)
+		if (liLen === 0)
 			$('#pnlEmptyDir').show();
 		this.files = liLen;
 		this.Update();
@@ -531,7 +530,7 @@ function Directory(id, fullPath, numDirs, numFiles) {
 
 	this.SortByName = function (files, order) {
 		files.sort(function (a, b) {
-			var x = (order == 'desc' ? 0 : 2)
+			var x = (order === 'desc' ? 0 : 2);
 			a = a.name.toLowerCase();
 			b = b.name.toLowerCase();
 			if (a > b)
@@ -546,7 +545,7 @@ function Directory(id, fullPath, numDirs, numFiles) {
 	};
 	this.SortBySize = function (files, order) {
 		files.sort(function (a, b) {
-			var x = (order == 'desc' ? 0 : 2)
+			var x = (order === 'desc' ? 0 : 2);
 			a = parseInt(a.size);
 			b = parseInt(b.size);
 			if (a > b)
@@ -561,7 +560,7 @@ function Directory(id, fullPath, numDirs, numFiles) {
 	};
 	this.SortByTime = function (files, order) {
 		files.sort(function (a, b) {
-			var x = (order == 'desc' ? 0 : 2)
+			var x = (order === 'desc' ? 0 : 2);
 			a = parseInt(a.time);
 			b = parseInt(b.time);
 			if (a > b)
@@ -606,7 +605,7 @@ Directory.Parse = function (path) {
 	var ret = false;
 	var li = $('#pnlDirList').find('li[data-path="' + path + '"]');
 	if (li.length > 0)
-		ret = new Directory(li.data('id'), li.data('path'), li.data('dirs'), li.data('files'));
+		ret = new Directory(li.data('id'), li.data('path'), li.data('name'), li.data('dirs'), li.data('files'));
 
 	return ret;
 };

@@ -134,7 +134,7 @@ function File(id, filePath, fileSize, modTime, w, h, mime) {
 			dataType: 'json',
 			async: false,
 			success: function (data) {
-				if (data.res.toLowerCase() == 'ok') {
+				if (data.res.toLowerCase() === 'ok') {
 					$('li[data-path="' + item.fullPath + '"]').remove();
 					var d = Directory.Parse(item.path);
 					if (d) {
@@ -172,12 +172,12 @@ function File(id, filePath, fileSize, modTime, w, h, mime) {
 			dataType: 'json',
 			async: false,
 			success: function (data) {
-				if (data.res.toLowerCase() == 'ok') {
+				if (data.res.toLowerCase() === 'ok') {
 					var newPath = RoxyUtils.MakePath(this.path, newName);
 					var fileType = RoxyUtils.GetFileIcon(newName);
 					var icon = RoxyIconHints[fileType];
 					var li = $('li[data-path="' + item.fullPath + '"]');
-					li.toggleClass('file-image', fileType == 'image');
+					li.toggleClass('file-image', fileType === 'image');
 					$('.file-icon', li).attr('class', "").addClass('file-icon fa-fw ' + icon.name).css('color', icon.color);
 					$('.name', li).text(newName);
 					$('li[data-path="' + newPath + '"]').attr('data-path', newPath);
@@ -211,7 +211,7 @@ function File(id, filePath, fileSize, modTime, w, h, mime) {
 			dataType: 'json',
 			async: false,
 			success: function (data) {
-				if (data.res.toLowerCase() == 'ok') {
+				if (data.res.toLowerCase() === 'ok') {
 					var d = Directory.Parse(newPath);
 					if (d) {
 						d.files++;
@@ -252,7 +252,7 @@ function File(id, filePath, fileSize, modTime, w, h, mime) {
 			dataType: 'json',
 			async: false,
 			success: function (data) {
-				if (data.res.toLowerCase() == 'ok') {
+				if (data.res.toLowerCase() === 'ok') {
 					$('li[data-path="' + item.fullPath + '"]').remove();
 					var d = Directory.Parse(item.path);
 					if (d) {

@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Linq.Dynamic;
-using System.Data.Entity;
-using System.Text;
 using System.Threading.Tasks;
+using SmartStore.Core;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
-using SmartStore.Services.Media.Storage;
+using SmartStore.Core.Events;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Configuration;
-using SmartStore.Core.Data;
-using SmartStore.Core.Events;
-using System.Web;
-using SmartStore.Core;
-using SmartStore.Core.Logging;
-using System.Web.Hosting;
+using SmartStore.Services.Media.Storage;
 using SmartStore.Utilities;
+using SmartStore.Collections;
 
 namespace SmartStore.Services.Media
 {
@@ -385,39 +383,73 @@ namespace SmartStore.Services.Media
 
         #region Copy/Move/Replace/Rename/Update etc.
 
-        public MediaFileInfo CopyFile(MediaFile file, string newPath, bool overwrite = false)
+        public MediaFileInfo CopyFile(MediaFile file, int destinationFolderId)
         {
             Guard.NotNull(file, nameof(file));
+            Guard.IsPositive(destinationFolderId, nameof(destinationFolderId));
 
-            if (_mediaHelper.TokenizePath(newPath, out var tokens))
+            var folder = _folderService.GetNodeById(destinationFolderId)?.Value;
+            if (folder == null)
             {
-                var newFile = new MediaFile
-                {
-                    Alt = file.Alt,
-                    Deleted = file.Deleted,
-                    Name = tokens.FileName,
-                    FolderId = tokens.Folder.Id
-                };
-
-                // TODO: (mm) Copy localized values (Alt, Title)
-                // [...]
-
-                return InsertFile(
-                    null, // album
-                    newFile,
-                    _storageProvider.OpenRead(file),
-                    false);
+                // TODO: (mm) throw
             }
 
-            return ConvertMediaFile(file, tokens.Folder);
+            if (!_folderService.AreInSameAlbum(file.FolderId.Value, destinationFolderId))
+            {
+                // TODO: (mm) throw
+            }
+
+            // TODO: (mm) create unique filename in destination folder
+
+            var newFile = new MediaFile
+            {
+                Alt = file.Alt,
+                Title = file.Title,
+                Hidden = file.Hidden,
+                Deleted = file.Deleted,
+                Name = file.Name,
+                FolderId = destinationFolderId,
+                Extension = file.Extension,
+                Height = file.Height,
+                IsTransient = false, // TBD: (mm) really?
+                MediaType = file.MediaType,
+                Metadata = file.Metadata,
+                MimeType = file.MimeType,
+                PixelSize = file.PixelSize,
+                Size = file.Size,
+                Version = file.Version,
+                Width = file.Width
+            };
+
+            // TODO: (mm) copy tags
+            // TODO: (mm) Copy localized values (Alt, Title)
+
+            // Save to DB
+            _fileRepo.Insert(newFile);
+
+            // Save BLOB to storage.
+            _storageProvider.Save(newFile, _storageProvider.OpenRead(file));
+
+            return ConvertMediaFile(file, folder);
         }
 
         public MediaFileInfo MoveFile(MediaFile file, int destinationFolderId)
         {
             Guard.NotNull(file, nameof(file));
+            Guard.IsPositive(destinationFolderId, nameof(destinationFolderId));
 
             var folder = _folderService.GetNodeById(destinationFolderId)?.Value;
             if (folder == null)
+            {
+                // TODO: (mm) throw
+            }
+
+            if (file.FolderId == destinationFolderId)
+            {
+                // TODO: (mm) throw
+            }
+
+            if (!_folderService.AreInSameAlbum(file.FolderId.Value, destinationFolderId))
             {
                 // TODO: (mm) throw
             }

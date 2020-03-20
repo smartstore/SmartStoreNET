@@ -170,7 +170,7 @@ RoxyUtils.GetUrlParam = function (varName, url) {
 		url = url.split('&');
 		for (i = 0; i < url.length; i++) {
 			var tmp = url[i].split('=');
-			if (tmp[0] && tmp[1] && tmp[0] == varName) {
+			if (tmp[0] && tmp[1] && tmp[0] === varName) {
 				ret = tmp[1];
 				break;
 			}
@@ -397,10 +397,10 @@ RoxyUtils.SelectText = function (field_id, start, end) {
 			field.selectionEnd = end;
 		}
 		field.focus();
-	} catch (ex) { }
+	} catch (ex) { /**/ }
 };
 
-function RoxyFilemanConf() { }
+RoxyFilemanConf = {};
 RoxyUtils.LoadConfig = function () {
 	$.ajax({
 		url: RoxyUtils.GetAssetPath('conf.json'),
@@ -475,7 +475,7 @@ RoxyUtils.SetCookie = function (key, val, hours, path) {
 RoxyUtils.ToBool = function (val) {
 	var ret = false;
 	val = val.toString().toLowerCase();
-	if (val == 'true' || val == 'on' || val == 'yes' || val == '1')
+	if (val === 'true' || val === 'on' || val === 'yes' || val === '1')
 		ret = true;
 
 	return ret;

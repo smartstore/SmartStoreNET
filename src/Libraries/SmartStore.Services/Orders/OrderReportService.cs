@@ -406,87 +406,91 @@ namespace SmartStore.Services.Orders
 
             return profit;
         }
-
-        public virtual DashboardChartReportLine GetOrdersDashboardDayReportLine(IPagedList<Order> allOrders, DateTime startTime, DateTime? endTime = null)
+        public virtual DashboardChartReportLine GetOrdersDashboardReportLine(IPagedList<Order> allOrders, int periodId)
         {
-            if (endTime == null)
-                endTime = startTime;
+            //startTime, endTime, orders, Reports
+            var period = 0;
+            var startTime = DateTime.UtcNow;
+            var endTime = startTime;
+            var startTimeBefore = startTime;
+            var endTimeBefore = startTime;
 
-            var report = new DashboardChartReportLine(4, 24);
+            if (periodId == 0)
+            {
+                period = 24;
+                endTime = endTime.AddDays(1);
+                startTimeBefore = startTime.Date.AddDays(-1);
+                endTimeBefore = startTime.Date;
+            }
+            else if (periodId == 1)
+            {
+                period = 24;
+                startTime = startTime.AddDays(-1);
+                startTimeBefore = startTime.Date.AddDays(-1);
+                endTimeBefore = startTime.Date;
+            }
+            else if (periodId == 2)
+            {
+                period = 7;
+                startTime = startTime.AddDays(-6);
+                endTime = endTime.AddDays(1);
+                startTimeBefore = startTime.Date.AddDays(-6);
+                endTimeBefore = startTime.Date;
+            }
+            else if (periodId == 3)
+            {
+                period = 4;
+                startTime = startTime.AddDays(-27);
+                endTime = endTime.AddDays(1);
+                startTimeBefore = startTime.Date.AddDays(-28);
+                endTimeBefore = startTime;
+            }
+            else if (periodId == 4)
+            {
+                period = 12;
+                startTime = new DateTime(startTime.Year, 1, 1);
+                startTimeBefore = startTime.Date.AddYears(-1);
+                endTimeBefore = startTime;
+            }
+            var report = new DashboardChartReportLine(4, period);
 
-            var orders = allOrders.Where(x => x.CreatedOnUtc < startTime.AddDays(1).Date && x.CreatedOnUtc >= startTime.Date).Select(x => x).ToList();
+            var orders = allOrders.Where(x => x.CreatedOnUtc < endTime.Date && x.CreatedOnUtc >= startTime.Date).Select(x => x).ToList();
             var ordersReports = GetOrderReports(orders);
 
-            for (int i = 0; i < 24; i++)
+            for (int i = 0; i < period; i++)
             {
-                var startDate = startTime.Date.AddHours(i - _dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours);
-                report.Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("t");
-                GetReportPointData(report, ordersReports, startDate, startDate.AddHours(1), i);
+                var startDate = startTime.Date;
+                var endDate = startDate;
+                if (period == 24)
+                {
+                    startDate = startDate.AddHours(i - _dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours);
+                    endDate = startDate.AddHours(1);
+                    report.Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("t");
+                }
+                else if (period == 7)
+                {
+                    startDate = startDate.AddDays(i);
+                    endDate = startDate.AddDays(1);
+                    report.Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("m");
+                }
+                else if (period == 4)
+                {
+                    endDate = startDate.AddDays((i + 1) * 7);
+                    startDate = startDate.AddDays(i * 7);
+                    report.Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("m") + " - " + endDate.AddDays(-1).ToString("m");
+                }
+                else if (period == 12)
+                {
+                    startDate = new DateTime(startTime.Year, i + 1, 1);
+                    endDate = startDate.AddMonths(1);
+                    report.Labels[i] = startDate.ToString("Y");
+                }
+
+                GetReportPointData(report, ordersReports, startDate, endDate, i);
             }
 
-            CalculateOrdersAmount(report, allOrders, orders, startTime.Date.AddDays(-1), endTime.Value);
+            CalculateOrdersAmount(report, allOrders, orders, startTimeBefore, endTimeBefore);
 
-            return report;
-        }
-
-        public virtual DashboardChartReportLine GetOrdersDashboardWeekReportLine(IPagedList<Order> allOrders)
-        {
-            var report = new DashboardChartReportLine(4, 7);
-
-            var currentDate = DateTime.UtcNow.Date;
-            var orders = allOrders.Where(x => x.CreatedOnUtc < currentDate.AddDays(1) && x.CreatedOnUtc >= currentDate.AddDays(-6)).Select(x => x).ToList();
-            var ordersReports = GetOrderReports(orders);
-
-            for (int i = 0; i < 7; i++)
-            {
-                var date = currentDate.AddDays(-(6 - i));
-                report.Labels[i] = date.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("m");
-                GetReportPointData(report, ordersReports, date, date.AddDays(1), i);
-            }
-
-            CalculateOrdersAmount(report, allOrders, orders, currentDate.AddDays(-14), currentDate.AddDays(-7));
-
-            return report;
-        }
-
-        public virtual DashboardChartReportLine GetOrdersDashboardMonthReportLine(IPagedList<Order> allOrders)
-        {
-            var report = new DashboardChartReportLine(4, 4);
-
-            var currentDate = DateTime.UtcNow.Date;
-            var orders = allOrders.Where(x => x.CreatedOnUtc < currentDate.AddDays(1) && x.CreatedOnUtc >= currentDate.AddDays(-27)).Select(x => x).ToList();
-            var ordersReports = GetOrderReports(orders);
-
-            for (int i = 0; i < 4; i++)
-            {
-                var fromDate = currentDate.AddDays(-(3 - i + 1) * 7 + 1);
-                var toDate = currentDate.AddDays(-((3 - i) * 7) + 1);
-                report.Labels[i] = fromDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("m") + " - " + toDate.AddDays(-1).ToString("m");
-                GetReportPointData(report, ordersReports, fromDate, toDate, i);
-            }
-
-            CalculateOrdersAmount(report, allOrders, orders, currentDate.AddDays(-56), currentDate.AddDays(-28));
-
-            return report;
-        }
-
-        public virtual DashboardChartReportLine GetOrdersDashboardYearReportLine(IPagedList<Order> allOrders)
-        {
-            var report = new DashboardChartReportLine(4, 12);
-
-            var currentDate = DateTime.UtcNow;
-            var orders = allOrders.Where(x => x.CreatedOnUtc < currentDate && x.CreatedOnUtc >= new DateTime(currentDate.Year, 1, 1)).Select(x => x).ToList();
-            var ordersReports = GetOrderReports(orders);
-
-            for (int i = 0; i < 12; i++)
-            {
-                var fromDate = new DateTime(DateTime.UtcNow.Year, i + 1, 1);
-                var toDate = fromDate.AddMonths(1);
-                report.Labels[i] = fromDate.ToString("Y");
-                GetReportPointData(report, ordersReports, fromDate, toDate, i);
-            }
-
-            CalculateOrdersAmount(report, allOrders, orders, currentDate.AddYears(-2), currentDate.AddYears(-1));
 
             return report;
         }

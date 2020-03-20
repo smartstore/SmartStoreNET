@@ -2847,14 +2847,14 @@ namespace SmartStore.Admin.Controllers
 
             var orders = _orderService.SearchOrders(0, 0, DateTime.UtcNow.AddDays(-730), null, null, null, null, null, null, null, 0, int.MaxValue);
             var model = new DashboardChartReportModel();
-            model.Reports[0] = _orderReportService.GetOrdersDashboardDayReportLine(orders, DateTime.UtcNow); //Today
-            model.Reports[1] = _orderReportService.GetOrdersDashboardDayReportLine(orders, DateTime.UtcNow.AddDays(-1).Date); //Yesterday
-            model.Reports[2] = _orderReportService.GetOrdersDashboardWeekReportLine(orders); //Last 7 Days
-            model.Reports[3] = _orderReportService.GetOrdersDashboardMonthReportLine(orders); //Last 28 Days
-            model.Reports[4] = _orderReportService.GetOrdersDashboardYearReportLine(orders); // This Year
+
+            for (int i = 0; i < model.Reports.Length; i++)
+            {
+                model.Reports[i] = _orderReportService.GetOrdersDashboardReportLine(orders, i);
+            }
 
             watch.Stop();
-            Debug.WriteLine(watch.ElapsedMilliseconds);
+            Debug.WriteLine("OrdersDashboardReport >>> " + watch.ElapsedMilliseconds);
 
             return PartialView(model);
         }

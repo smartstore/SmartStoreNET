@@ -27,16 +27,16 @@ namespace SmartStore.Services.Orders
         /// <param name="ignoreCancelledOrders">A value indicating whether to ignore cancelled orders</param>
         /// <returns>Result</returns>
 		OrderAverageReportLine GetOrderAverageReportLine(int storeId, int[] orderStatusIds,
-			int[] paymentStatusIds, int[] shippingStatusIds, DateTime? startTimeUtc,
-			DateTime? endTimeUtc, string billingEmail, bool ignoreCancelledOrders = false);
-        
+            int[] paymentStatusIds, int[] shippingStatusIds, DateTime? startTimeUtc,
+            DateTime? endTimeUtc, string billingEmail, bool ignoreCancelledOrders = false);
+
         /// <summary>
         /// Get order average report
         /// </summary>
-		/// <param name="storeId">Store identifier</param>
+        /// <param name="storeId">Store identifier</param>
         /// <param name="os">Order status</param>
         /// <returns>Result</returns>
-		OrderAverageReportLineSummary OrderAverageReport(int storeId, OrderStatus os);
+        OrderAverageReportLineSummary OrderAverageReport(int storeId, OrderStatus os);
 
         /// <summary>
         /// Get best sellers report
@@ -53,10 +53,10 @@ namespace SmartStore.Services.Orders
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Result</returns>
 		IList<BestsellersReportLine> BestSellersReport(int storeId,
-			DateTime? startTime, DateTime? endTime,
-			OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
+            DateTime? startTime, DateTime? endTime,
+            OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
             int billingCountryId = 0, int recordsToReturn = 5,
-			int orderBy = 1, bool showHidden = false);
+            int orderBy = 1, bool showHidden = false);
 
         /// <summary>
         /// Gets a the count of purchases for a product
@@ -100,11 +100,7 @@ namespace SmartStore.Services.Orders
         /// <returns>Result</returns>
 		decimal ProfitReport(int storeId, int[] orderStatusIds, int[] paymentStatusIds, int[] shippingStatusIds,
             DateTime? startTimeUtc, DateTime? endTimeUtc, string billingEmail);
-
-
-        DashboardChartReportLine GetOrdersDashboardDayReportLine(IPagedList<Order> allOrders, DateTime startTime, DateTime? endTime = null);
-        DashboardChartReportLine GetOrdersDashboardWeekReportLine(IPagedList<Order> allOrders);
-        DashboardChartReportLine GetOrdersDashboardMonthReportLine(IPagedList<Order> allOrders);
-        DashboardChartReportLine GetOrdersDashboardYearReportLine(IPagedList<Order> allOrders);
+        
+        DashboardChartReportLine GetOrdersDashboardReportLine(IPagedList<Order> allOrders, int periodId);
     }
 }

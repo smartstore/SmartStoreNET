@@ -1,6 +1,6 @@
 ﻿@model List<FeedItemModel>
 
-<div class="report h-auto pb-4">
+<div class="report sticky-report pb-4 fade-in-left">
     <div class="report-title-row">
         <div class="report-title">@T("Admin.Marketplace.News")</div>
     </div>
@@ -17,7 +17,7 @@
     }
 
     <div class="marketplace-feed-body">
-        @foreach (var item in Model.Take(10))
+        @foreach (var item in Model.Take(5))
         {
             <div class="marketplace-feed-item">
                 <div class="marketplace-feed-item-title">
@@ -43,7 +43,7 @@
 
     </div>
     <div class="marketplace-feed-body">
-    <a class="btn btn-primary btn-block" href="http://community.smartstore.com/marketplace/" target="MarketplaceWindow">
+    <a class="btn btn-primary btn-block btn-3d" href="http://community.smartstore.com/marketplace/" target="MarketplaceWindow">
         <span>@T("Admin.Marketplace.Visit")</span>
     </a>
     </div>

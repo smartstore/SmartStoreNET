@@ -4,7 +4,7 @@
     var jsonData = JsonConvert.SerializeObject(Model);
 }
 
-<div class="report">
+<div class="report fade-in-right">
     <div class="report-title-row">
         <div class="report-title">@T("Admin.SalesReport.Incomplete")</div>
     </div>
@@ -19,7 +19,6 @@
 </div>
 
 <style>
-
 </style>
 
 <script>
@@ -110,15 +109,20 @@
             cornerRadius: 4,
             titleMarginBottom: 8,
             bodySpacing: 5,
+            //custom: function(tooltip) {
+            //    if (!tooltip) return;
+            //    // disable displaying the color box;
+            //    tooltip.displayColors = false;
+            //},
             callbacks: {
                 label: function (item, data) {
                     return " " + data.labels[item.index] + ": " + dataSets.Reports[item.index].FormattedQuantity;
                 },
-                labelColor: function(tooltipItem, chart) {
-                    return {
-                        backgroundColor: bgColor[tooltipItem.index],
-                    }
-                },
+                //labelColor: function(tooltipItem, chart) {                    
+                //    return {
+                //        backgroundColor: bgColor[tooltipItem.index],
+                //    }
+                //},
             }
         },
     };

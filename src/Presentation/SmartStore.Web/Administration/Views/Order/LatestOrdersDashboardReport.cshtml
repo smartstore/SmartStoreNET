@@ -1,11 +1,11 @@
 ﻿@model LatestOrdersDashboardReportModel
 @using SmartStore.Core.Domain.Orders
 
-<div class="report">
+<div class="report fade-in-right">
     <div class="report-title-row">
         <div class="report-title">@T("Admin.SalesReport.LatestOrders")</div>
     </div>
-    
+
     <div class="table-responsive table-dashboard table-hover">
         <table class="table small">
             <thead>
@@ -20,40 +20,43 @@
             <tbody>
                 @foreach (var x in Model.LatestOrders)
                 {
-                <tr class="order-row" index="@x.OrderId">
-                    <td class="display-row">
-                        @Html.ActionLink(x.Customer.Username, "Edit", "Customer", new { id = x.Customer.Id }, new { })
-                    </td>
-                    <td class="display-row text-center">@x.ProductsTotal</td>
-                    <td class="display-row text-right"  style="padding-right: 2rem !important">@x.TotalAmount</td>
-                    <td class="display-row">@x.Created</td>
+                    <tr class="order-row" index="@x.OrderId">
+                        <td class="display-row">
+                            @Html.ActionLink(x.Customer.Username, "Edit", "Customer", new { id = x.Customer.Id }, new { })
+                        </td>
+                        <td class="display-row text-center">@x.ProductsTotal</td>
+                        <td class="display-row text-right" style="padding-right: 2rem !important">@x.TotalAmount</td>
+                        <td class="display-row">@x.Created</td>
 
-                    @if (x.OrderState == OrderStatus.Pending)
-                    {
-                <td class="display-row flex items-center">
-                    <div class="bg-warning " style="width: 10px; height: 10px; border-radius: 50%; display: inline-block;"></div>
-                    @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending"), "Edit", "Order", new { id = x.OrderId }, new { @class = "pl-2 text-dark" })
-                </td>
-                    }
-                    else if (x.OrderState == OrderStatus.Processing)
-                    {
-                        <td class="display-row">
-                            @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing"), "Edit", "Order", new { id = x.OrderId }, new { @class = "bg-primary badge" })
-                        </td>
-                    }
-                    else if (x.OrderState == OrderStatus.Complete)
-                    {
-                        <td class="display-row">
-                            @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete"), "Edit", "Order", new { id = x.OrderId }, new { @class = "bg-success badge" })
-                        </td>
-                    }
-                    else if (x.OrderState == OrderStatus.Cancelled)
-                    {
-                        <td class="display-row">
-                            @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled"), "Edit", "Order", new { id = x.OrderId }, new { @class = "bg-danger badge" })
-                        </td>
-                    }
-                </tr>
+                        @if (x.OrderState == OrderStatus.Pending)
+                        {
+                            <td class="display-row flex items-center">
+                                <div class="bg-warning" style="width: 10px; height: 10px; border-radius: 50%; display: inline-block;"></div>
+                                @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending"), "Edit", "Order", new { id = x.OrderId }, new { @class = "pl-2 text-dark" })
+                            </td>
+                        }
+                        else if (x.OrderState == OrderStatus.Processing)
+                        {
+                            <td class="display-row flex items-center">
+                                <div class="bg-primary" style="width: 10px; height: 10px; border-radius: 50%; display: inline-block;"></div>
+                                @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing"), "Edit", "Order", new { id = x.OrderId }, new { @class = "pl-2 text-dark" })
+                            </td>
+                        }
+                        else if (x.OrderState == OrderStatus.Complete)
+                        {
+                            <td class="display-row flex items-center">
+                                <div class="bg-success" style="width: 10px; height: 10px; border-radius: 50%; display: inline-block;"></div>
+                                @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete"), "Edit", "Order", new { id = x.OrderId }, new { @class = "pl-2 text-dark" })
+                            </td>
+                        }
+                        else if (x.OrderState == OrderStatus.Cancelled)
+                        {
+                            <td class="display-row flex items-center">
+                                <div class="bg-danger" style="width: 10px; height: 10px; border-radius: 50%; display: inline-block;"></div>
+                                @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled"), "Edit", "Order", new { id = x.OrderId }, new { @class = "pl-2 text-dark" })
+                            </td>
+                        }
+                    </tr>
                 }
             </tbody>
         </table>

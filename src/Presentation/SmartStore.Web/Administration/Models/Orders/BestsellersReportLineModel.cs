@@ -16,6 +16,6 @@ namespace SmartStore.Admin.Models.Orders
         public string TotalAmount { get; set; }
 
         [SmartResourceDisplayName("Admin.SalesReport.Bestsellers.Fields.TotalQuantity")]
-        public decimal TotalQuantity { get; set; }
+        public string TotalQuantity { get; set; }
     }
 }

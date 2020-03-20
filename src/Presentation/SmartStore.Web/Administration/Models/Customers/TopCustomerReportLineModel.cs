@@ -15,6 +15,6 @@ namespace SmartStore.Admin.Models.Customers
         public string OrderTotal { get; set; }
 
         [SmartResourceDisplayName("Admin.Customers.Reports.BestBy.Fields.OrderCount")]
-        public decimal OrderCount { get; set; }
+        public string OrderCount { get; set; }
     }
 }

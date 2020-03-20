@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -1356,13 +1357,16 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         private List<TopCustomerReportLineModel> CreateCustomerReportLineModel(IList<TopCustomerReportLine> items)
         {
+            var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
+            numberFormat.NumberDecimalDigits = 0;
+
             return items.Select(x =>
              {
                  var m = new TopCustomerReportLineModel()
                  {
                      CustomerId = x.CustomerId,
                      OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
-                     OrderCount = x.OrderCount,
+                     OrderCount = x.OrderCount.ToString("N", numberFormat),
                  };
 
                  var customer = _customerService.GetCustomerById(x.CustomerId);
@@ -1378,19 +1382,26 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Customer.Read, false)]
         public ActionResult TopCustomersDashboardReport()
         {
+            var watch = new Stopwatch();
+            watch.Start();
+
             var model = new TopCustomersDashboardReportModel()
             {
                 TopCustomersByAmount = CreateCustomerReportLineModel(_customerReportService.GetTopCustomersReport(null, null, null, null, null, 1, 7)),
                 TopCustomersByQuantity = CreateCustomerReportLineModel(_customerReportService.GetTopCustomersReport(null, null, null, null, null, 2, 7))
             };
-
-            // format price and get customer by id
+            
+            watch.Stop();
+            Debug.WriteLine("TopCustomersDashboardReport >>> " + watch.ElapsedMilliseconds);
 
             return PartialView(model);
         }
 
         public ActionResult RegisteredCustomersDashboardReport()
         {
+            var watch = new Stopwatch();
+            watch.Start();
+
             var model = new DashboardChartReportModel();
             var registredCustomers = _customerReportService.GetRegisteredCustomersDate();
 
@@ -1412,7 +1423,10 @@ namespace SmartStore.Admin.Controllers
             }
 
             CalculateOrdersAmount(report, registredCustomers, customers, DateTime.UtcNow.Date.AddDays(-1), DateTime.UtcNow);
-                        
+
+            watch.Stop();
+            Debug.WriteLine("RegistredCustomersDashboardReport >>> " + watch.ElapsedMilliseconds);
+                                    
             return PartialView(model);
         }
 

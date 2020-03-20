@@ -2501,6 +2501,9 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected IList<BestsellersReportLineModel> GetBestsellersBriefReportModel(int recordsToReturn, int orderBy)
         {
+            var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
+            numberFormat.NumberDecimalDigits = 0;
+
             var report = _orderReportService.BestSellersReport(0, null, null, null, null, null, 0, recordsToReturn, orderBy, true);
 
             var model = report.Select(x =>
@@ -2511,7 +2514,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     ProductId = x.ProductId,
                     TotalAmount = _priceFormatter.FormatPrice(x.TotalAmount, true, false),
-                    TotalQuantity = x.TotalQuantity,
+                    TotalQuantity = x.TotalQuantity.ToString("N", numberFormat),
                 };
 
                 if (product != null)
@@ -2529,11 +2532,17 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Order.Read, false)]
         public ActionResult BestsellersDashboardReport()
         {
+            var watch = new Stopwatch();
+            watch.Start();
+
             var model = new BestsellersDashboardReportModel
             {
                 BestsellersByQuantity = GetBestsellersBriefReportModel(7, 1),
                 BestsellersByAmount = GetBestsellersBriefReportModel(7, 2)
             };
+
+            watch.Stop();
+            Debug.WriteLine("BestsellersDashboardReport >>> " + watch.ElapsedMilliseconds);
 
             return PartialView(model);
         }
@@ -2632,7 +2641,7 @@ namespace SmartStore.Admin.Controllers
                     {
                         ProductId = x.ProductId,
                         TotalAmount = _priceFormatter.FormatPrice(x.TotalAmount, true, false),
-                        TotalQuantity = x.TotalQuantity
+                        TotalQuantity = x.TotalQuantity.ToString()
                     };
 
                     if (product != null)
@@ -2794,30 +2803,39 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Order.Read, false)]
         public ActionResult OrdersIncompleteDashboardReport()
         {
+            var watch = new Stopwatch();
+            watch.Start();
+
             var model = GetOrdersIncompleteReportModel();
+
+            watch.Stop();
+            Debug.WriteLine("OrdersIncompleteDashboardReport >>> " + watch.ElapsedMilliseconds);
             return PartialView(model);
         }
 
-        [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Order.Read)]
-        public ActionResult OrderIncompleteReportList(GridCommand command) // Is this method even used?
-        {
-            var model = GetOrdersIncompleteReportModel();
-            var gridModel = new GridModel<OrdersIncompleteDashboardReportLine>
-            {
-                Data = model.Reports,
-                Total = model.Reports.Count
-            };
+        //[GridAction(EnableCustomBinding = true)]
+        //[Permission(Permissions.Order.Read)]
+        //public ActionResult OrderIncompleteReportList(GridCommand command) // Is this method even used?
+        //{
+        //    var model = GetOrdersIncompleteReportModel();
+        //    var gridModel = new GridModel<OrdersIncompleteDashboardReportLine>
+        //    {
+        //        Data = model.Reports,
+        //        Total = model.Reports.Count
+        //    };
 
-            return new JsonResult
-            {
-                Data = gridModel
-            };
-        }
+        //    return new JsonResult
+        //    {
+        //        Data = gridModel
+        //    };
+        //}
 
         [Permission(Permissions.Order.Read, false)]
         public ActionResult LatestOrdersDashboardReport()
         {
+            var watch = new Stopwatch();
+            watch.Start();
+
             var model = new LatestOrdersDashboardReportModel();
 
             var latestOrders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue).Take(8).ToList();
@@ -2835,6 +2853,8 @@ namespace SmartStore.Admin.Controllers
                         order.Id)
                     );
             }
+            watch.Stop();
+            Debug.WriteLine("LatestOrdersDashboardReport >>> " + watch.ElapsedMilliseconds);
 
             return PartialView(model);
         }
@@ -2863,6 +2883,9 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Order.Read, false)]
         public ActionResult OrderFulfillmentDashboardReport()
         {
+            var watch = new Stopwatch();
+            watch.Start();
+
             var model = new OrderFulfillmentDashboardReportModel();
             var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
             numberFormat.NumberDecimalDigits = 0;
@@ -2881,6 +2904,9 @@ namespace SmartStore.Admin.Controllers
                 model.UnfinishedOrders[i] = ordersCount.ToString("N", numberFormat);
                 model.Percentages[i] = orders[i].Count() == 0 ? 100 : 100 - (int)Math.Round(ordersCount / (float)orders[i].Count() * 100);
             }
+
+            watch.Stop();
+            Debug.WriteLine("OrderFulfillmentDashboardReport >>> " + watch.ElapsedMilliseconds);
             return PartialView(model);
         }
 

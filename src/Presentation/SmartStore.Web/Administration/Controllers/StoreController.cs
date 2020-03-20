@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Store;
@@ -266,6 +267,9 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Customer.Read, false)]
         public ActionResult StoreDashboardReport()
         {
+            var watch = new Stopwatch();
+            watch.Start();
+            
             var model = new StoreDashboardReportModel();
 
             model.StoreStatisticsReport.Add(
@@ -331,6 +335,10 @@ namespace SmartStore.Admin.Controllers
             model.StoreStatisticsReport.Add(
                 T("Admin.SalesReport.NeverSold") + ":",
                 string.Format("{0:#,##0} " + T("Admin.Catalog.Products"), _orderReportService.ProductsNeverSold(null, null, 0, int.MaxValue).Count));
+
+
+            watch.Stop();
+            Debug.WriteLine("StoreDashboardReport >>> " + watch.ElapsedMilliseconds);
 
             return PartialView(model);
         }

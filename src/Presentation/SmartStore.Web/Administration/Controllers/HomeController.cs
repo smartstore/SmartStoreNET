@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.ServiceModel.Syndication;
@@ -49,6 +50,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Index()
         {
+			Debug.WriteLine("--------------------------");
             return View();
         }
 
@@ -96,6 +98,9 @@ namespace SmartStore.Admin.Controllers
 		[ChildActionOnly]
 		public ActionResult MarketplaceFeed()
 		{
+			var watch = new Stopwatch();
+			watch.Start();
+
 			var result = _services.Cache.Get("admin:marketplacefeed", () => {
 				try
 				{
@@ -143,6 +148,9 @@ namespace SmartStore.Admin.Controllers
 			{
 				ModelState.AddModelError("", result.First().Summary);
 			}
+
+			watch.Stop();
+			Debug.WriteLine("MarketplaceFeed >>> " + watch.ElapsedMilliseconds);
 
 			return PartialView(result);
 		}

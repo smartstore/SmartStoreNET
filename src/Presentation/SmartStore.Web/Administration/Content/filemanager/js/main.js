@@ -69,13 +69,16 @@ function dragFileOut() {
 
 function makeDragFile(e) {
 	var li = $(e.target).closest('li');
-	var f = new File(li.data('path'));
+	var f = new File(li.data('id'), li.data('path'));
 	var i = li.find('.file-icon');
-	return '<div class="pnlDragFile" data-path="' + f.fullPath + '">' + i[0].outerHTML + '&nbsp;' + f.name + '</div>';
+	return '<div class="pnlDragFile" data-id="' + f.id + '" data-path="' + f.fullPath + '">' + i[0].outerHTML + '&nbsp;' + f.name + '</div>';
 }
 
 function makeDragDir(e) {
-	var f = new Directory($(e.target).attr('data-path') ? $(e.target).attr('data-path') : $(e.target).closest('li').attr('data-path'));
+	var target = $(e.target);
+	var id = target.data('id') || target.closest('li').data('id');
+	var path = target.data('path') || target.closest('li').data('path');
+	var f = new Directory(id, path);
 	return '<div class="pnlDragDir" data-path="' + f.fullPath + '"><img src="' + RoxyUtils.GetAssetPath('images/folder.png') + '" align="absmiddle">&nbsp;' + f.name + '</div>';
 }
 
@@ -92,7 +95,7 @@ function moveFile(e, ui, obj) {
 	var f = new File(ui.draggable.attr('data-path'));
 	var d = Directory.Parse($(obj).parent('li').attr('data-path'));
 	var src = Directory.Parse(f.path);
-	if (f.path != d.fullPath)
+	if (f.path !== d.fullPath)
 		f.Move(d.fullPath);
 
 	$(obj).removeClass('dragover');
@@ -440,8 +443,11 @@ function renameFile() {
 
 function getSelectedFile() {
 	var ret = null;
-	if ($('#pnlFileList .selected').length > 0)
-		ret = new File($('#pnlFileList .selected').attr('data-path'));
+	if ($('#pnlFileList .selected').length > 0) {
+		var el = $('#pnlFileList .selected');
+		ret = new File(el.data('id'), el.data('path'));
+	}
+		
 	return ret;
 }
 
@@ -488,7 +494,7 @@ function previewFile() {
 function downloadFile() {
 	var f = getSelectedFile();
 	if (f && RoxyFilemanConf.DOWNLOAD) {
-		var url = RoxyUtils.AddParam(RoxyUtils.GetRootPath(RoxyFilemanConf.DOWNLOAD), 'f', f.fullPath);
+		var url = RoxyUtils.AddParam(RoxyUtils.GetRootPath(RoxyFilemanConf.DOWNLOAD), 'f', f.id);
 		window.frames['frmUploadFile'].location.href = url;
 	} else if (!RoxyFilemanConf.DOWNLOAD)
 		alert(t('E_ActionDisabled'));
@@ -497,7 +503,7 @@ function downloadFile() {
 function downloadDir() {
 	var d = getSelectedDir();
 	if (d && RoxyFilemanConf.DOWNLOADDIR) {
-		var url = RoxyUtils.AddParam(RoxyUtils.GetRootPath(RoxyFilemanConf.DOWNLOADDIR), 'd', d.fullPath);
+		var url = RoxyUtils.AddParam(RoxyUtils.GetRootPath(RoxyFilemanConf.DOWNLOADDIR), 'd', d.id);
 		window.frames['frmUploadFile'].location.href = url;
 	} else if (!RoxyFilemanConf.DOWNLOAD)
 		alert(t('E_ActionDisabled'));
@@ -734,62 +740,62 @@ function ResizeLists() {
 }
 
 function removeDisabledActions() {
-	if (RoxyFilemanConf.CREATEDIR == '') {
+	if (RoxyFilemanConf.CREATEDIR === '') {
 		$('#mnuCreateDir').next().remove();
 		$('#mnuCreateDir').remove();
 		$('#btnAddDir').remove();
 	}
-	if (RoxyFilemanConf.DELETEDIR == '') {
+	if (RoxyFilemanConf.DELETEDIR === '') {
 		$('#mnuDeleteDir').prev().remove();
 		$('#mnuDeleteDir').remove();
 		$('#btnDeleteDir').remove();
 	}
-	if (RoxyFilemanConf.MOVEDIR == '') {
+	if (RoxyFilemanConf.MOVEDIR === '') {
 		$('#mnuDirCut').next().remove();
 		$('#mnuDirCut').remove();
 	}
-	if (RoxyFilemanConf.COPYDIR == '') {
+	if (RoxyFilemanConf.COPYDIR === '') {
 		$('#mnuDirCopy').next().remove();
 		$('#mnuDirCopy').remove();
 	}
-	if (RoxyFilemanConf.COPYDIR == '' && RoxyFilemanConf.MOVEDIR == '') {
+	if (RoxyFilemanConf.COPYDIR === '' && RoxyFilemanConf.MOVEDIR == '') {
 		$('#mnuDirPaste').next().remove();
 		$('#mnuDirPaste').remove();
 	}
-	if (RoxyFilemanConf.RENAMEDIR == '') {
+	if (RoxyFilemanConf.RENAMEDIR === '') {
 		$('#mnuRenameDir').next().remove();
 		$('#mnuRenameDir').remove();
 		$('#btnRenameDir').remove();
 	}
-	if (RoxyFilemanConf.UPLOAD == '') {
+	if (RoxyFilemanConf.UPLOAD === '') {
 		$('#btnAddFile').remove();
 	}
-	if (RoxyFilemanConf.DOWNLOAD == '') {
+	if (RoxyFilemanConf.DOWNLOAD === '') {
 		$('#mnuDownload').next().remove();
 		$('#mnuDownload').remove();
 	}
-	if (RoxyFilemanConf.DOWNLOADDIR == '') {
+	if (RoxyFilemanConf.DOWNLOADDIR === '') {
 		$('#mnuDownloadDir').next().remove();
 		$('#mnuDownloadDir').remove();
 	}
-	if (RoxyFilemanConf.DELETEFILE == '') {
+	if (RoxyFilemanConf.DELETEFILE === '') {
 		$('#mnuDeleteFile').prev().remove();
 		$('#mnuDeleteFile').remove();
 		$('#btnDeleteFile').remove();
 	}
-	if (RoxyFilemanConf.MOVEFILE == '') {
+	if (RoxyFilemanConf.MOVEFILE === '') {
 		$('#mnuFileCut').next().remove();
 		$('#mnuFileCut').remove();
 	}
-	if (RoxyFilemanConf.COPYFILE == '') {
+	if (RoxyFilemanConf.COPYFILE === '') {
 		$('#mnuFileCopy').next().remove();
 		$('#mnuFileCopy').remove();
 	}
-	if (RoxyFilemanConf.COPYFILE == '' && RoxyFilemanConf.MOVEFILE == '') {
+	if (RoxyFilemanConf.COPYFILE === '' && RoxyFilemanConf.MOVEFILE === '') {
 		$('#mnuFilePaste').next().remove();
 		$('#mnuFilePaste').remove();
 	}
-	if (RoxyFilemanConf.RENAMEFILE == '') {
+	if (RoxyFilemanConf.RENAMEFILE === '') {
 		$('#mnuRenameFile').next().remove();
 		$('#mnuRenameFile').remove();
 		$('#btnRenameFile').remove();

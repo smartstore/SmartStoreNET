@@ -75,7 +75,8 @@ $(function () {
 	});
 });
 
-function File(filePath, fileSize, modTime, w, h, mime) {
+function File(id, filePath, fileSize, modTime, w, h, mime) {
+	this.id = id;
 	this.fullPath = filePath;
 	this.mime = mime;
 	this.type = RoxyUtils.GetFileType(filePath, mime);
@@ -91,6 +92,7 @@ function File(filePath, fileSize, modTime, w, h, mime) {
 	this.thumb = this.type === 'image' ? filePath : RoxyUtils.GetAssetPath("images/blank.gif");
 	this.GenerateHtml = function () {
 		var attrs = [
+			'data-id="' + this.id + '"',
 			'data-mime="' + this.mime + '"',
 			'data-path="' + this.fullPath + '"',
 			'data-time="' + this.time + '"',
@@ -278,7 +280,7 @@ File.Parse = function (path) {
 	var ret = false;
 	var li = $('#pnlFileList').find('li[data-path="' + path + '"]');
 	if (li.length > 0)
-		ret = new File(li.data('path'), li.data('size'), li.data('time'), li.data('w'), li.data('h'));
+		ret = new File(li.data('id'), li.data('path'), li.data('size'), li.data('time'), li.data('w'), li.data('h'));
 
 	return ret;
 };

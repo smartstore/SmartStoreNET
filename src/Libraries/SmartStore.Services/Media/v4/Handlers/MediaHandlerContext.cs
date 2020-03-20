@@ -41,11 +41,6 @@ namespace SmartStore.Services.Media
 		public IFile ResultFile { get; set; }
 		public Stream ResultStream { get; set; }
 
-		//public MediaFileInfo MediaFile 
-		//{
-		//	get => _sourceFile.Value as MediaFileInfo; 
-		//}
-
 		private IFile GetSourceFile()
         {
 			if (MediaFileId == 0)

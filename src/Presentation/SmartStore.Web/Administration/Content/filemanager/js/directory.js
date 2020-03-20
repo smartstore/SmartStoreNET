@@ -55,8 +55,9 @@ $(function () {
 	});
 });
 
-function Directory(fullPath, numDirs, numFiles) {
+function Directory(id, fullPath, numDirs, numFiles) {
 	if (!fullPath) fullPath = '';
+	this.id = id;
 	this.fullPath = fullPath;
 	this.name = RoxyUtils.GetFilename(fullPath);
 	if (!this.name)
@@ -102,7 +103,7 @@ function Directory(fullPath, numDirs, numFiles) {
 	this.GetHtml = function () {
 		var dirClass = (this.dirs > 0 ? "" : " invisible");
 
-		var html = '<li data-path="' + this.fullPath + '" data-dirs="' + this.dirs + '" data-files="' + this.files + '" class="directory">';
+		var html = '<li data-id="' + this.id + '" data-path="' + this.fullPath + '" data-dirs="' + this.dirs + '" data-files="' + this.files + '" class="directory">';
 		html += '<div class="d-flex flex-row flex-nowrap align-items-center dir-item"><i class="fa fa-chevron-right dirPlus' + dirClass + '"></i>';
 		html += '<img src="' + RoxyUtils.GetAssetPath("images/folder.png") + '" class="dir mr-1"><span class="name">' + this.name + (parseInt(this.files) ? ' (' + this.files + ')' : '') + '</span></div>';
 		html += '</li>';
@@ -167,8 +168,9 @@ function Directory(fullPath, numDirs, numFiles) {
 		if (!el)
 			el = $('#pnlDirList');
 		el.children('li').each(function () {
-			var path = $(this).attr('data-path');
-			var d = new Directory(path);
+			var id = $(this).data('id');
+			var path = $(this).data('path');
+			var d = new Directory(id, path);
 			if (d) {
 				if (d.IsExpanded() && path)
 					ret.push(path);
@@ -235,7 +237,8 @@ function Directory(fullPath, numDirs, numFiles) {
 				$('#pnlDirList').children('li').remove();
 				var d;
 				for (i = 0; i < dirs.length; i++) {
-					d = new Directory(dirs[i].p, dirs[i].d, dirs[i].f);
+					console.log(dirs[i]);
+					d = new Directory(dirs[i].i, dirs[i].p, dirs[i].d, dirs[i].f);
 					d.Show();
 				}
 				$('#pnlLoadingDirs').hide();
@@ -507,7 +510,7 @@ function Directory(fullPath, numDirs, numFiles) {
 				success: function (files) {
 					for (i = 0; i < files.length; i++) {
 						var f = files[i];
-						ret.push(new File(f.p, f.s, f.t, f.w, f.h, f.m));	
+						ret.push(new File(f.i, f.p, f.s, f.t, f.w, f.h, f.m));	
 					}
 					item.FilesLoaded(ret, selectedFile);
 				},
@@ -517,7 +520,8 @@ function Directory(fullPath, numDirs, numFiles) {
 			});
 		} else {
 			$('#pnlFileList li').each(function () {
-				ret.push(new File($(this).attr('data-path'), $(this).attr('data-size'), $(this).attr('data-time'), $(this).attr('data-w'), $(this).attr('data-h')));
+				var li = $(this);
+				ret.push(new File(li.data('id'), li.data('path'), li.data('size'), li.data('time'), li.data('w'), li.data('h')));
 			});
 			item.FilesLoaded(ret, selectedFile);
 		}
@@ -602,7 +606,7 @@ Directory.Parse = function (path) {
 	var ret = false;
 	var li = $('#pnlDirList').find('li[data-path="' + path + '"]');
 	if (li.length > 0)
-		ret = new Directory(li.attr('data-path'), li.attr('data-dirs'), li.attr('data-files'));
+		ret = new Directory(li.data('id'), li.data('path'), li.data('dirs'), li.data('files'));
 
 	return ret;
 };

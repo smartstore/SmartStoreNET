@@ -349,9 +349,12 @@ namespace SmartStore.Admin.Controllers
 				.Select(x => 
 				{
 					var numFiles = CountFiles(x.Value.Id, type);
+					string displayName = x.Value.ResKey.HasValue() ? T(x.Value.ResKey).Text : null;
 					return new 
 					{
+						i = x.Value.Id,
 						p = x.Value.Path,
+						n = displayName,
 						f = numFiles.ToString(),
 						d = x.Children.Count
 					};
@@ -367,6 +370,7 @@ namespace SmartStore.Admin.Controllers
 
 			var result = files.Select(x => new 
 			{ 
+				i = x.Id,
 				p = _mediaService.GetUrl(x, null, string.Empty),
 				t = x.LastUpdated.ToUnixTime().ToString(),
 				m = x.MimeType,

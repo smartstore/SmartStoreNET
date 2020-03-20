@@ -12,7 +12,7 @@
             @ViewBag.Title @Html.ActionLink("(" + @T("Admin.Common.BackToList") + ")", "List")
         </div>
         <div class="options">
-			@if (Model.Id != 0 && Model.Scope == RuleScope.Customer)
+			@if (Model.Id != 0 && (Model.Scope == RuleScope.Customer || Model.Scope == RuleScope.Product))
 			{
 				<a href="@Url.Action("Preview", new { id = Model.Id })" class="btn btn-secondary">
 					<i class="far fa-eye"></i>

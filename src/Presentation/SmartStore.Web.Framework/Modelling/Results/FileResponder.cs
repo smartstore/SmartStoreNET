@@ -26,8 +26,8 @@ namespace SmartStore.Web.Framework.Modelling
 			response.ContentType = FileResponse.ContentType;
 			// We support byte ranges
 			response.AppendHeader("Accept-Ranges", "bytes");
-			// Set the expires header for HTTP 1.0 cliets
-			response.Cache.SetExpires(utcNow.Add(FileResponse.MaxAge));
+			//// Set the expires header for HTTP 1.0 cliets
+			//response.Cache.SetExpires(utcNow.Add(FileResponse.MaxAge));
 			// How often the browser should check that it has the latest version
 			response.Cache.SetMaxAge(FileResponse.MaxAge);
 			// The unique identifier for the entity

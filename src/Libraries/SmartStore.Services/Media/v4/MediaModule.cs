@@ -19,11 +19,14 @@ namespace SmartStore.Services.Media
         {
             // Migration utils
             builder.RegisterType<MediaMigrator>().InstancePerRequest();
+            builder.RegisterType<MediaHelper>().InstancePerRequest();
 
             builder.RegisterType<MediaTypeResolver>().As<IMediaTypeResolver>().InstancePerRequest();
+            builder.RegisterType<MediaUrlGenerator>().As<IMediaUrlGenerator>().InstancePerRequest();
             builder.RegisterType<AlbumRegistry>().As<IAlbumRegistry>().InstancePerRequest();
             builder.RegisterType<FolderService>().As<IFolderService>().InstancePerRequest();
             builder.RegisterType<MediaTracker>().As<IMediaTracker>().InstancePerRequest();
+            builder.RegisterType<MediaService>().As<IMediaService>().InstancePerRequest();
 
             builder.RegisterType<DownloadService>().As<IDownloadService>().InstancePerRequest();
             builder.RegisterType<ImageCache>().As<IImageCache>().InstancePerRequest();
@@ -37,6 +40,11 @@ namespace SmartStore.Services.Media
             {
                 builder.RegisterType(type).As<IAlbumProvider>().Keyed<IAlbumProvider>(type).InstancePerRequest();
             }
+
+            // Handlers
+            builder.RegisterType<ImageHandler>().As<IMediaHandler>().InstancePerRequest();
+            builder.RegisterType<VideoHandler>().As<IMediaHandler>().InstancePerRequest();
+            builder.RegisterType<PdfHandler>().As<IMediaHandler>().InstancePerRequest();
         }
     }
 }

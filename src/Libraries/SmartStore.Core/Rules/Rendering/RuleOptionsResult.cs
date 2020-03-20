@@ -16,6 +16,7 @@ namespace SmartStore.Rules
         SelectedDisplayNames
     }
 
+
     public class RuleOptionsResult
     {
         public RuleOptionsResult() : this(null)

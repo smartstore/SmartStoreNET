@@ -3,7 +3,9 @@
 @using SmartStore.Rules
 @using SmartStore.Admin.Models.Rules
 @{
-	Html.AddScriptParts(true, "~/Administration/Scripts/smartstore.rules.js");
+    Html.AddScriptParts(true, "~/Administration/Scripts/smartstore.rules.js");
+    // Required to avoid client exception "jQuery.telerik.load is not a function".
+    Html.AddScriptParts(true, "~/Administration/Content/telerik/js/2012.2.607/telerik.common.min.js");
 }
 
 @Html.ValidationSummary(false)

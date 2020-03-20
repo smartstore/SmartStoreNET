@@ -10,16 +10,19 @@
 
     if (list is RemoteRuleValueSelectList remoteList)
     {
-        remoteUrl = Url.Action("RuleOptions", "Rule", new { ruleId = Model.Id, rootRuleSetId = (int)ViewBag.RootRuleSetId });
+        remoteUrl = Url.Action("RuleOptions", "Rule", new { reason = RuleOptionsRequestReason.SelectListOptions, ruleId = Model.Id, rootRuleSetId = (int)ViewBag.RootRuleSetId });
     }
 
     var attributes = new Dictionary<string, object>
     {
         { "data-placeholder", T("Common.Unspecified").Text },
         { "data-remote-url", remoteUrl },
-        { "data-tags", list == null },
-        { "multiple", isMultiple }
+        { "data-tags", list == null }
     };
+    if (isMultiple)
+    {
+        attributes["multiple"] = "multiple";
+    }
 }
 <select id="@id" name="@id" @Html.Attrs(attributes)>
     @if (remoteUrl.HasValue())

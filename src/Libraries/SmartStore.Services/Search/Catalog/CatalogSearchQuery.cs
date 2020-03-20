@@ -2,12 +2,11 @@
 using System.Linq;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Search;
 
 namespace SmartStore.Services.Search
 {
-	public partial class CatalogSearchQuery : SearchQuery<CatalogSearchQuery>, ICloneable<CatalogSearchQuery>
+    public partial class CatalogSearchQuery : SearchQuery<CatalogSearchQuery>, ICloneable<CatalogSearchQuery>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CatalogSearchQuery"/> class without a search term being set
@@ -101,27 +100,34 @@ namespace SmartStore.Services.Search
 		/// <returns>Catalog search query</returns>
 		public CatalogSearchQuery VisibleOnly(params int[] allowedCustomerRoleIds)
 		{
-			var utcNow = DateTime.UtcNow;
+            var utcNow = DateTime.UtcNow;
 
-			PublishedOnly(true);
+            PublishedOnly(true);
 
-			WithFilter(SearchFilter.ByRange("availablestart", null, utcNow, false, false).Mandatory().NotAnalyzed());
-			WithFilter(SearchFilter.ByRange("availableend", utcNow, null, false, false).Mandatory().NotAnalyzed());
+            WithFilter(SearchFilter.ByRange("availablestart", null, utcNow, false, false).Mandatory().NotAnalyzed());
+            WithFilter(SearchFilter.ByRange("availableend", utcNow, null, false, false).Mandatory().NotAnalyzed());
 
-			if (allowedCustomerRoleIds != null && allowedCustomerRoleIds.Length > 0)
-			{
-				var roleIds = allowedCustomerRoleIds.Where(x => x != 0).Distinct().ToList();
-				if (roleIds.Any())
-				{
-					roleIds.Insert(0, 0);
-					WithFilter(SearchFilter.Combined(roleIds.Select(x => SearchFilter.ByField("roleid", x).ExactMatch().NotAnalyzed()).ToArray()));
-				}
-			}
+            AllowedCustomerRoles(allowedCustomerRoleIds);
 
 			return this;
 		}
 
-		public CatalogSearchQuery PublishedOnly(bool value)
+        public CatalogSearchQuery AllowedCustomerRoles(params int[] customerRoleIds)
+        {
+            if (customerRoleIds != null && customerRoleIds.Length > 0)
+            {
+                var roleIds = customerRoleIds.Where(x => x != 0).Distinct().ToList();
+                if (roleIds.Any())
+                {
+                    roleIds.Insert(0, 0);
+                    WithFilter(SearchFilter.Combined(roleIds.Select(x => SearchFilter.ByField("roleid", x).ExactMatch().NotAnalyzed()).ToArray()));
+                }
+            }
+
+            return this;
+        }
+
+        public CatalogSearchQuery PublishedOnly(bool value)
 		{
 			return WithFilter(SearchFilter.ByField("published", value).Mandatory().ExactMatch().NotAnalyzed());
 		}
@@ -152,8 +158,10 @@ namespace SmartStore.Services.Search
 
 			if (id == 0)
 			{
-				WithFilter(SearchFilter.ByField("storeid", 0).ExactMatch().NotAnalyzed());
-			}
+                // 0 is ignored in queries, i.e. no filtering takes place. 
+                // This should be kept here so that search engines do not provide different results.
+                //WithFilter(SearchFilter.ByField("storeid", 0).ExactMatch().NotAnalyzed());
+            }
 			else
 			{
 				WithFilter(SearchFilter.Combined(
@@ -273,12 +281,12 @@ namespace SmartStore.Services.Search
 			return WithFilter(SearchFilter.ByRange("stockquantity", fromQuantity, toQuantity, fromQuantity.HasValue, toQuantity.HasValue).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
-		public CatalogSearchQuery AvailableOnly(bool value)
-		{
-			return WithFilter(SearchFilter.ByField("available", value).Mandatory().ExactMatch().NotAnalyzed());
-		}
+        public CatalogSearchQuery AvailableOnly(bool value)
+        {
+            return WithFilter(SearchFilter.ByField("available", value).Mandatory().ExactMatch().NotAnalyzed());
+        }
 
-		public CatalogSearchQuery PriceBetween(decimal? fromPrice, decimal? toPrice)
+        public CatalogSearchQuery PriceBetween(decimal? fromPrice, decimal? toPrice)
 		{
 			if (fromPrice == null && toPrice == null)
 			{

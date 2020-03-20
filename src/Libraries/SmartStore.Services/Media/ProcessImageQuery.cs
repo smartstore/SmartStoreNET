@@ -88,7 +88,7 @@ namespace SmartStore.Services.Media
 		public string FileName { get; set; }
 
 		/// <summary>
-		/// Whether to dispose the source stream after resizing completes
+		/// Whether to dispose the source stream after processing completes
 		/// </summary>
 		public bool DisposeSource { get; set; }
 

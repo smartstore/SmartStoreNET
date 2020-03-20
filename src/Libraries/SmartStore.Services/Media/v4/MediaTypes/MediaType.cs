@@ -11,9 +11,9 @@ namespace SmartStore.Services.Media
         private readonly static IDictionary<string, string[]> _defaultExtensionsMap = new Dictionary<string, string[]>
         {
             ["image"] = new[] { "png", "jpg", "jpeg", "gif", "webp", "bmp", "svg", "tiff", "tif", "eps" },
-            ["video"] = new[] { "mp4", "mkv", "wmv", "avi", "asf", "mpg", "mpeg", "webm", "flv", "ogv", "ogg", "mov" },
-            ["audio"] = new[] { "mp3", "wav", "wma", "aac", "flac", "oga", "wav" },
-            ["document"] = new[] { "pdf", "doc", "docx", "docm", "odt", "dot", "dotx", "dotm" },
+            ["video"] = new[] { "mp4", "m4v", "mkv", "wmv", "avi", "asf", "mpg", "mpeg", "webm", "flv", "ogv", "mov", "3gp" },
+            ["audio"] = new[] { "mp3", "wav", "wma", "aac", "flac", "oga", "wav", "m4a", "ogg" },
+            ["document"] = new[] { "pdf", "doc", "docx", "ppt", "pptx", "pps", "ppsx", "docm", "odt", "dot", "dotx", "dotm", "psd", "xls", "xlsx" },
             ["text"] = new[] { "txt", "xml", "csv", "htm", "html", "json", "css", "js" }
         };
         

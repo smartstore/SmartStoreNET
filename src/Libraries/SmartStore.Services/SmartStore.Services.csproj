@@ -222,6 +222,10 @@
     <Compile Include="Catalog\Modelling\ProductVariantQueryItem.cs" />
     <Compile Include="Catalog\Modelling\ProductVariantQueryModelBinder.cs" />
     <Compile Include="Catalog\PriceCalculationContext.cs" />
+    <Compile Include="Catalog\Rules\IProductRuleProvider.cs" />
+    <Compile Include="Catalog\Rules\SearchFilterDescriptor.cs" />
+    <Compile Include="Catalog\Rules\ProductRuleProvider.cs" />
+    <Compile Include="Catalog\Rules\SearchFilterExpressionGroup.cs" />
     <Compile Include="Cms\Blocks\BlockHandlerBase.cs" />
     <Compile Include="Cms\Blocks\BlockMetadata.cs" />
     <Compile Include="Cms\Blocks\IBindableBlock.cs" />
@@ -342,6 +346,7 @@
     <Compile Include="Logging\ILogService.cs" />
     <Compile Include="Media\Events.cs" />
     <Compile Include="Media\MediaFileSystem.cs" />
+    <Compile Include="Media\MediaPathData.cs" />
     <Compile Include="Media\ProcessImageException.cs" />
     <Compile Include="Media\ProcessImageQuery.cs" />
     <Compile Include="Media\ProcessImageResult.cs" />
@@ -367,9 +372,17 @@
     <Compile Include="Media\v4\Album\MediaFolderNode.cs" />
     <Compile Include="Media\v4\Album\FolderService.cs" />
     <Compile Include="Media\v4\Album\SystemAlbumProvider.cs" />
+    <Compile Include="Media\v4\Handlers\ImageHandler.cs" />
+    <Compile Include="Media\v4\Handlers\ImageHandlerBase.cs" />
+    <Compile Include="Media\v4\Handlers\IMediaHandler.cs" />
+    <Compile Include="Media\v4\Handlers\MediaHandlerContext.cs" />
+    <Compile Include="Media\v4\Handlers\PdfHandler.cs" />
+    <Compile Include="Media\v4\Handlers\VideoHandler.cs" />
     <Compile Include="Media\v4\IMediaService.cs" />
+    <Compile Include="Media\v4\IMediaUrlGenerator.cs" />
     <Compile Include="Media\v4\MediaFileInfo.cs" />
     <Compile Include="Media\v4\MediaModule.cs" />
+    <Compile Include="Media\v4\MediaUrlGenerator.cs" />
     <Compile Include="Media\v4\Search\MediaSearchQuery.cs" />
     <Compile Include="Media\v4\MediaService.cs" />
     <Compile Include="Media\v4\MediaTypes\MediaType.cs" />
@@ -499,7 +512,7 @@
     <Compile Include="ICommonServices.cs" />
     <Compile Include="Hooks\LocalizedEntityHook.cs" />
     <Compile Include="Logging\DeleteLogsTask.cs" />
-    <Compile Include="Media\CachedImageResult.cs" />
+    <Compile Include="Media\CachedImage.cs" />
     <Compile Include="Media\IImageCache.cs" />
     <Compile Include="Media\IImageProcessor.cs" />
     <Compile Include="Media\ImageCache.cs" />
@@ -779,7 +792,9 @@
       <CachedSettingsPropName>Nop_Services_EuropaCheckVatService_checkVatService</CachedSettingsPropName>
     </WebReferenceUrl>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Media\v4\Imaging\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Cart\Readme.txt">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>

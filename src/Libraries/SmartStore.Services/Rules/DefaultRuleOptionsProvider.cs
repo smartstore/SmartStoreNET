@@ -29,7 +29,8 @@ namespace SmartStore.Services.Rules
         protected readonly Lazy<IProductService> _productService;
         protected readonly Lazy<ICategoryService> _categoryService;
         protected readonly Lazy<IManufacturerService> _manufacturerService;
-        protected readonly IShippingService _shippingService;
+        protected readonly Lazy<IShippingService> _shippingService;
+        protected readonly Lazy<ISpecificationAttributeService> _specificationAttributeService;
         protected readonly Lazy<IRuleStorage> _ruleStorage;
         protected readonly Lazy<IProviderManager> _providerManager;
         protected readonly Lazy<SearchSettings> _searchSettings;
@@ -44,7 +45,8 @@ namespace SmartStore.Services.Rules
             Lazy<IProductService> productService,
             Lazy<ICategoryService> categoryService,
             Lazy<IManufacturerService> manufacturerService,
-            IShippingService shippingService,
+            Lazy<IShippingService> shippingService,
+            Lazy<ISpecificationAttributeService> specificationAttributeService,
             Lazy<IRuleStorage> ruleStorage,
             Lazy<IProviderManager> providerManager,
             Lazy<SearchSettings> searchSettings)
@@ -59,6 +61,7 @@ namespace SmartStore.Services.Rules
             _categoryService = categoryService;
             _manufacturerService = manufacturerService;
             _shippingService = shippingService;
+            _specificationAttributeService = specificationAttributeService;
             _ruleStorage = ruleStorage;
             _providerManager = providerManager;
             _searchSettings = searchSettings;
@@ -80,6 +83,8 @@ namespace SmartStore.Services.Rules
                 case "ShippingMethod":
                 case "ShippingRateComputationMethod":
                 case "TargetGroup":
+                case "Attribute":
+                case "AttributeOption":
                     return true;
                 default:
                     return false;
@@ -97,8 +102,8 @@ namespace SmartStore.Services.Rules
             Guard.NotNull(expression.Descriptor, nameof(expression.Descriptor));
 
             var result = new RuleOptionsResult();
-            var list = expression.Descriptor.SelectList as RemoteRuleValueSelectList;
-            if (list == null)
+
+            if (!(expression.Descriptor.SelectList is RemoteRuleValueSelectList list))
             {
                 return result;
             }
@@ -201,34 +206,56 @@ namespace SmartStore.Services.Rules
                         .ToList();
                     break;
                 case "ShippingMethod":
-                    options = _shippingService.GetAllShippingMethods()
+                    options = _shippingService.Value.GetAllShippingMethods()
                         .Select(x => new RuleValueSelectListOption { Value = byId ? x.Id.ToString() : x.Name, Text = byId ? x.GetLocalized(y => y.Name, language, true, false) : x.Name })
                         .ToList();
+                    break;
+                case "AttributeOption":
+                    IList<SpecificationAttributeOption> attrOptions = null;
+
+                    if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
+                    {
+                        attrOptions = _specificationAttributeService.Value.GetSpecificationAttributeOptionsByIds(expression.RawValue.ToIntArray());
+                    }
+                    else if (expression.Descriptor.Metadata.TryGetValue("ParentId", out var objParentId))
+                    {
+                        attrOptions = _specificationAttributeService.Value.GetSpecificationAttributeOptionsBySpecificationAttribute((int)objParentId);
+                    }
+
+                    if (attrOptions != null)
+                    {
+                        options = attrOptions
+                            .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false) })
+                            .ToList();
+                    }
                     break;
                 default:
                     throw new SmartException($"Unknown data source \"{list.DataSource.NaIfEmpty()}\".");
             }
 
-            if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
+            if (options != null)
             {
-                // Get display names of selected options.
-                if (expression.RawValue.HasValue())
+                if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
                 {
-                    var selectedValues = expression.RawValue.SplitSafe(",");
-                    result.Options.AddRange(options.Where(x => selectedValues.Contains(x.Value)));
-                }
-            }
-            else
-            {
-                // Get select list options.
-                if (!result.IsPaged && searchTerm.HasValue() && options.Any())
-                {
-                    // Apply the search term if the options are not paged.
-                    result.Options.AddRange(options.Where(x => (x.Text?.IndexOf(searchTerm, 0, StringComparison.CurrentCultureIgnoreCase) ?? -1) != -1));
+                    // Get display names of selected options.
+                    if (expression.RawValue.HasValue())
+                    {
+                        var selectedValues = expression.RawValue.SplitSafe(",");
+                        result.Options.AddRange(options.Where(x => selectedValues.Contains(x.Value)));
+                    }
                 }
                 else
                 {
-                    result.Options.AddRange(options);
+                    // Get select list options.
+                    if (!result.IsPaged && searchTerm.HasValue() && options.Any())
+                    {
+                        // Apply the search term if the options are not paged.
+                        result.Options.AddRange(options.Where(x => (x.Text?.IndexOf(searchTerm, 0, StringComparison.CurrentCultureIgnoreCase) ?? -1) != -1));
+                    }
+                    else
+                    {
+                        result.Options.AddRange(options);
+                    }
                 }
             }
 

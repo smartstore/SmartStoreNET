@@ -48,6 +48,11 @@ namespace SmartStore.Core.Domain.Media
 		/// </summary>
 		public bool AutoGenerateAbsoluteUrls { get; set; } = true;
 
+		/// <summary>
+		/// Whether orphaned files should automatically be marked as transient so that the daily cleanup task may delete them.
+		/// </summary>
+		public bool MakeFilesTransientWhenOrphaned { get; set; } = true;
+
 		#region MediaTypes
 
 		/// <summary>

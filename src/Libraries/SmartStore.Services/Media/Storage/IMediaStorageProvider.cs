@@ -8,6 +8,19 @@ namespace SmartStore.Services.Media.Storage
 	public interface IMediaStorageProvider : IProvider
 	{
 		/// <summary>
+		/// Gets a value indicating whether the provider saves data in a remote cloud storage (e.g. Azure)
+		/// </summary>
+		bool IsCloudStorage { get; }
+
+		/// <summary>
+		/// Retrieves the public URL for a given file within the storage provider.
+		/// Returns <c>null</c> if the file is stored as a database BLOB.
+		/// </summary>
+		/// <param name="mediaFile">Media file item</param>
+		/// <returns>The public URL.</returns>
+		string GetPublicUrl(MediaFile mediaFile);
+
+		/// <summary>
 		/// Gets the size of the media item in bytes.
 		/// </summary>
 		/// <param name="mediaFile">Media file item</param>
@@ -35,15 +48,15 @@ namespace SmartStore.Services.Media.Storage
 		/// Saves media item data
 		/// </summary>
 		/// <param name="mediaFile">Media file item</param>
-		/// <param name="data">New binary data</param>
-		void Save(MediaFile mediaFile, byte[] data);
+		/// <param name="stream">File stream</param>
+		void Save(MediaFile mediaFile, Stream stream);
 
 		/// <summary>
 		/// Asynchronously saves media item data
 		/// </summary>
 		/// <param name="mediaFile">Media file item</param>
-		/// <param name="data">New binary data</param>
-		Task SaveAsync(MediaFile mediaFile, byte[] data);
+		/// <param name="stream">File stream</param>
+		Task SaveAsync(MediaFile mediaFile, Stream stream);
 
 		/// <summary>
 		/// Remove media storage item(s)

@@ -232,6 +232,9 @@
             builder.AddOrUpdate("Admin.Rules.Execute.MatchCustomers",
                 "<b class=\"font-weight-medium\">{0}</b> customers match the rule conditions.",
                 "<b class=\"font-weight-medium\">{0}</b> Kunden entsprechen den Regelbedingungen.");
+            builder.AddOrUpdate("Admin.Rules.Execute.MatchProducts",
+                "<b class=\"font-weight-medium\">{0}</b> products match the rule conditions.",
+                "<b class=\"font-weight-medium\">{0}</b> Produkte entsprechen den Regelbedingungen.");
             builder.AddOrUpdate("Admin.Rules.Execute.MatchCart",
                 "The rule conditions are <b class=\"font-weight-medium\">true</b> for the current customer {0}.",
                 "Die Regelbedingungen sind für den aktuellen Kunden {0} <b class=\"font-weight-medium\">wahr</b>.");
@@ -309,6 +312,11 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingMethod", "Shipping method", "Versandart");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingStatus", "Shipping status", "Lieferstatus");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ReturnRequestCount", "Number of return requests", "Anzahl Rücksendeaufträge");
+
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Manufacturer", "Manufacturer", "Hersteller");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Published", "Published", "Veröffentlicht");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Available", "Available", "Verfügbar");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.SpecificationAttribute", "Specification Attribute", "Spezifikationsattribut");
 
             // Rule operators
             builder.AddOrUpdate("Admin.Rules.RuleOperator.ContainsOperator", "Contains", "Enthält");

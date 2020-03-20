@@ -103,7 +103,21 @@ namespace SmartStore.Services.Catalog
 			return _specificationAttributeOptionRepository.GetById(specificationAttributeOptionId);
 		}
 
-		public virtual IList<SpecificationAttributeOption> GetSpecificationAttributeOptionsBySpecificationAttribute(int specificationAttributeId)
+        public virtual IList<SpecificationAttributeOption> GetSpecificationAttributeOptionsByIds(int[] ids)
+        {
+            if (!(ids?.Any() ?? false))
+            {
+                return new List<SpecificationAttributeOption>();
+            }
+
+            var options = _specificationAttributeOptionRepository.TableUntracked
+                .Where(x => ids.Contains(x.Id))
+                .ToList();
+
+            return options.OrderBySequence(ids).ToList();
+        }
+
+        public virtual IList<SpecificationAttributeOption> GetSpecificationAttributeOptionsBySpecificationAttribute(int specificationAttributeId)
 		{
             if (specificationAttributeId == 0)
             {

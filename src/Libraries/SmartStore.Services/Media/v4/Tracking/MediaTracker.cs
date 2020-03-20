@@ -30,6 +30,7 @@ namespace SmartStore.Services.Media
         private readonly IStoreContext _storeContext;
         private readonly IAlbumRegistry _albumRegistry;
         private readonly IFolderService _folderService;
+        private readonly MediaSettings _mediaSettings;
         private readonly IIndex<Type, IAlbumProvider> _albumProviderFactory;
 
         private bool _makeFilesTransientWhenOrphaned;
@@ -41,6 +42,7 @@ namespace SmartStore.Services.Media
             IStoreContext storeContext,
             IAlbumRegistry albumRegistry,
             IFolderService folderService,
+            MediaSettings mediaSettings,
             IIndex<Type, IAlbumProvider> albumProviderFactory)
         {
             _cache = cache;
@@ -49,7 +51,10 @@ namespace SmartStore.Services.Media
             _storeContext = storeContext;
             _albumRegistry = albumRegistry;
             _folderService = folderService;
+            _mediaSettings = mediaSettings;
             _albumProviderFactory = albumProviderFactory;
+
+            _makeFilesTransientWhenOrphaned = _mediaSettings.MakeFilesTransientWhenOrphaned;
         }
 
         public IDisposable BeginScope(bool makeFilesTransientWhenOrphaned)
@@ -121,10 +126,15 @@ namespace SmartStore.Services.Media
             var file = _dbContext.Set<MediaFile>().Find(mediaFileId);
             if (file != null)
             {
-                var albumName = _folderService.FindAlbum(file)?.Value?.Name;
-                if (albumName.IsEmpty())
+                var album = _folderService.FindAlbum(file)?.Value;
+                if (album == null)
                 {
                     throw new InvalidOperationException("Cannot track a media file that is not assigned to any album.");
+                }
+                else if (!album.CanDetectTracks)
+                {
+                    // No support for tracking on album level, so get outta here.
+                    return;
                 }
 
                 var track = new MediaTrack
@@ -133,7 +143,7 @@ namespace SmartStore.Services.Media
                     EntityName = entity.GetEntityName(),
                     MediaFileId = mediaFileId,
                     Property = propertyName,
-                    Album = albumName
+                    Album = album.Name
                 };
 
                 if (operation == MediaTrackOperation.Track)
@@ -191,9 +201,9 @@ namespace SmartStore.Services.Media
                 hooksEnabled: false, 
                 autoDetectChanges: false))
             {
-                // Get the id for an album (necessary later to set FolderId)...
-                int? albumId = albumName.HasValue() 
-                    ? _albumRegistry.GetAlbumByName(albumName)?.Id
+                // Get the album (necessary later to set FolderId)...
+                MediaFolderNode albumNode = albumName.HasValue() 
+                    ? _folderService.GetNodeByPath(albumName)?.Value
                     : null;
 
                 // Get distinct ids of all detected files...
@@ -216,7 +226,7 @@ namespace SmartStore.Services.Media
                         if (isMigration)
                         {
                             // set album id as folder id (during initial migration there are no sub-folders)
-                            file.FolderId = albumId;
+                            file.FolderId = albumNode?.Id;
 
                             // remember that we processed tracks for this file already
                             file.Version = 2;
@@ -224,20 +234,24 @@ namespace SmartStore.Services.Media
 
                         if (track.Album.IsEmpty())
                         {
-                            if (albumName.HasValue())
+                            if (albumNode != null)
                             {
                                 // Overwrite track album if scope album was passed.
-                                track.Album = albumName;
+                                track.Album = albumNode.Name;
                             }
                             else if (file.FolderId.HasValue)
                             {
                                 // Determine album from file
-                                track.Album = _folderService.FindAlbum(file)?.Value?.Name;
+                                albumNode = _folderService.FindAlbum(file)?.Value;
+                                track.Album = albumNode?.Name;
                             }
                         }
 
                         if (track.Album.IsEmpty())
-                            continue; // cannot track without album name
+                            continue; // cannot track without album
+
+                        if ((albumNode ?? _folderService.FindAlbum(file).Value).CanDetectTracks == false)
+                            continue; // should not track in albums that do not support track detection
 
                         // add or remove the track from file
                         if (track.Operation == MediaTrackOperation.Track)

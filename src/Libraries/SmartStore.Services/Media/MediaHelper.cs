@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using SmartStore.ComponentModel;
@@ -10,8 +11,40 @@ using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Services.Media
 {	
-	public static class MediaHelper
+	public partial class MediaHelper
 	{
+		private readonly IFolderService _folderService;
+		
+		public MediaHelper(IFolderService folderService)
+		{
+			_folderService = folderService;
+		}
+
+		public bool TokenizePath(string path, out MediaPathData data)
+		{
+			data = null;
+
+			if (path.IsEmpty())
+			{
+				return false;
+			}
+
+			var dir = Path.GetDirectoryName(path);
+			if (dir.HasValue())
+			{
+				var node = _folderService.GetNodeByPath(dir);
+				if (node != null)
+				{
+					data = new MediaPathData(node.Value, path.Substring(dir.Length + 1));
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		#region Legacy (remove later)
+
 		public static void UpdateDownloadTransientStateFor<TEntity>(TEntity entity, Expression<Func<TEntity, int>> downloadIdProp, bool save = false) where TEntity : BaseEntity
 		{
 			Guard.NotNull(entity, nameof(entity));
@@ -138,6 +171,7 @@ namespace SmartStore.Services.Media
 				rs.AutoCommitEnabled = autoCommit;
 			}
 		}
-	}
 
+        #endregion
+    }
 }

@@ -10,22 +10,18 @@ using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Services.Media
 {
-    public partial class AlbumFileSystemAdapter : IFileSystem
+    public partial class AlbumFileSystemAdapter : IMediaFileSystem
     {
         private readonly IMediaService _mediaService;
         private readonly IFolderService _folderService;
         private readonly IMediaStorageProvider _storageProvider;
         private readonly string _rootPath;
 
-        public AlbumFileSystemAdapter(
-            AlbumInfo album,
-            IMediaService mediaService,
-            IFolderService folderService,
-            IMediaStorageProvider storageProvider)
+        public AlbumFileSystemAdapter(AlbumInfo album, IMediaService mediaService, IFolderService folderService)
         {
             _mediaService = mediaService;
             _folderService = folderService;
-            _storageProvider = storageProvider;
+            _storageProvider = mediaService.StorageProvider;
 
             Album = album;
             Node = _folderService.GetNodeById(album.Id);
@@ -54,7 +50,10 @@ namespace SmartStore.Services.Media
 
         #region IFileSystem
 
-        public bool IsCloudStorage => false;
+        public bool IsCloudStorage
+        {
+            get => _storageProvider.IsCloudStorage;
+        }
 
         public string Root => _rootPath;
 
@@ -87,7 +86,7 @@ namespace SmartStore.Services.Media
                 FolderId = node.Value.Id
             };
 
-            return _mediaService.SearchFiles(query).Files;
+            return _mediaService.SearchFiles(query);
         }
 
         public IEnumerable<IFolder> ListFolders(string path)
@@ -137,7 +136,7 @@ namespace SmartStore.Services.Media
             // Get relative from absolute path
             var index = _rootPath.EmptyNull().Length;
 
-            return _mediaService.SearchFiles(query).Files.Select(x => x.Path.Substring(index));
+            return _mediaService.SearchFiles(query).Select(x => x.Path.Substring(index));
         }
 
         public IFile CreateFile(string path)

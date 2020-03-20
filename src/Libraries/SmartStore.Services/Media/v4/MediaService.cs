@@ -16,6 +16,7 @@ using System.Web;
 using SmartStore.Core;
 using SmartStore.Core.Logging;
 using System.Web.Hosting;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Media
 {
@@ -25,81 +26,49 @@ namespace SmartStore.Services.Media
         private readonly IAlbumRegistry _albumRegistry;
         private readonly IFolderService _folderService;
         private readonly IMediaTypeResolver _mediaTypeResolver;
-        private readonly ISettingService _settingService;
+        private readonly IMediaUrlGenerator _mediaUrlGenerator;
         private readonly IEventPublisher _eventPublisher;
         private readonly MediaSettings _mediaSettings;
         private readonly IImageProcessor _imageProcessor;
         private readonly IImageCache _imageCache;
         private readonly IMediaStorageProvider _storageProvider;
-        private readonly HttpContextBase _httpContext;
-
-        private readonly string _host;
-        private readonly string _appPath;
-
-        private static readonly string _processedImagesRootPath;
-        private static readonly string _fallbackImagesRootPath;
-
-        static MediaService()
-        {
-            _processedImagesRootPath = MediaFileSystem.GetMediaPublicPath() + "image/";
-            _fallbackImagesRootPath = "content/images/";
-        }
+        private readonly MediaHelper _mediaHelper;
 
         public MediaService(
             IRepository<MediaFile> fileRepo,
             IAlbumRegistry albumRegistry,
             IFolderService folderService,
             IMediaTypeResolver mediaTypeResolver,
+            IMediaUrlGenerator mediaUrlGenerator,
             ISettingService settingService,
             IEventPublisher eventPublisher,
             MediaSettings mediaSettings,
             IImageProcessor imageProcessor,
             IImageCache imageCache,
             IProviderManager providerManager,
-            IStoreContext storeContext,
-            HttpContextBase httpContext)
+            MediaHelper mediaHelper)
         {
             _fileRepo = fileRepo;
             _albumRegistry = albumRegistry;
             _folderService = folderService;
             _mediaTypeResolver = mediaTypeResolver;
-            _settingService = settingService;
+            _mediaUrlGenerator = mediaUrlGenerator;
             _eventPublisher = eventPublisher;
             _mediaSettings = mediaSettings;
             _imageProcessor = imageProcessor;
             _imageCache = imageCache;
-            _httpContext = httpContext;
+            _mediaHelper = mediaHelper;
 
             var systemName = settingService.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
             _storageProvider = providerManager.GetProvider<IMediaStorageProvider>(systemName).Value;
-
-            string appPath = "/";
-
-            if (HostingEnvironment.IsHosted)
-            {
-                appPath = HostingEnvironment.ApplicationVirtualPath.EmptyNull();
-
-                var cdn = storeContext.CurrentStore.ContentDeliveryNetwork;
-                if (cdn.HasValue() && !_httpContext.IsDebuggingEnabled && !_httpContext.Request.IsLocal)
-                {
-                    _host = cdn;
-                }
-                else if (mediaSettings.AutoGenerateAbsoluteUrls)
-                {
-                    var uri = httpContext.Request.Url;
-                    _host = "//{0}{1}".FormatInvariant(uri.Authority, appPath);
-                }
-                else
-                {
-                    _host = appPath;
-                }
-            }
-
-            _host = _host.EmptyNull().EnsureEndsWith("/");
-            _appPath = appPath.EnsureEndsWith("/");
         }
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
+
+        public IMediaStorageProvider StorageProvider
+        {
+            get => _storageProvider;
+        }
 
         #region Query
 
@@ -134,8 +103,13 @@ namespace SmartStore.Services.Media
 
         protected virtual MediaFileInfo ConvertMediaFile(MediaFile file)
         {
-            var path = _folderService.FindFolder(file)?.Value?.Path;
-            return new MediaFileInfo(file, _storageProvider, path);
+            var folder = _folderService.FindFolder(file)?.Value;
+            return new MediaFileInfo(file, _storageProvider, folder?.Path);
+        }
+
+        private MediaFileInfo ConvertMediaFile(MediaFile file, MediaFolderNode folder)
+        {
+            return new MediaFileInfo(file, _storageProvider, folder?.Path);
         }
 
         protected virtual IQueryable<MediaFile> PrepareQuery(MediaSearchQuery query, MediaLoadFlags flags)
@@ -256,9 +230,9 @@ namespace SmartStore.Services.Media
         {
             Guard.NotEmpty(path, nameof(path));
 
-            if (TokenizePath(path, out var folder, out var fileName))
+            if (_mediaHelper.TokenizePath(path, out var tokens))
             {
-                return _fileRepo.Table.Any(x => x.FolderId == folder.Id && x.Name == fileName);
+                return _fileRepo.Table.Any(x => x.FolderId == tokens.Folder.Id && x.Name == tokens.FileName);
             }
             
             return false;
@@ -268,16 +242,16 @@ namespace SmartStore.Services.Media
         {
             Guard.NotEmpty(path, nameof(path));
 
-            if (TokenizePath(path, out var folder, out var fileName))
+            if (_mediaHelper.TokenizePath(path, out var tokens))
             {
                 var table = _fileRepo.Table;
 
                 // TODO: (mm) LoadFlags > Blob | Tags | Tracks
 
-                var entity = table.FirstOrDefault(x => x.FolderId == folder.Id && x.Name == fileName);
+                var entity = table.FirstOrDefault(x => x.FolderId == tokens.Folder.Id && x.Name == tokens.FileName);
                 if (entity != null)
                 {
-                    return new MediaFileInfo(entity, _storageProvider, folder.Path);
+                    return new MediaFileInfo(entity, _storageProvider, tokens.Folder.Path);
                 }
             }
 
@@ -311,67 +285,180 @@ namespace SmartStore.Services.Media
             return result.OrderBySequence(ids).Select(ConvertMediaFile).ToList();
         }
 
-        private bool TokenizePath(string path, out MediaFolderNode folder, out string fileName)
-        {
-            var dir = Path.GetDirectoryName(path);
-            if (dir.HasValue())
-            {
-                var node = _folderService.GetNodeByPath(dir);
-                if (node != null)
-                {
-                    folder = node.Value;
-                    fileName = path.Substring(dir.Length + 1);
-                    return true;
-                }
-            }
-
-            folder = null;
-            fileName = null;
-
-            return false;
-        }
-
         #endregion
 
         #region Create/Update/Delete
 
         public MediaFileInfo CreateFile(string path)
         {
-            throw new NotImplementedException();
+            if (_mediaHelper.TokenizePath(path, out var tokens))
+            {
+                return InsertFile(
+                    null, // album
+                    new MediaFile { Name = tokens.FileName, FolderId = tokens.Folder.Id },
+                    null, // stream
+                    false);
+            }
+
+            // TODO: (mm) throw
+            throw new Exception();
         }
 
         public MediaFileInfo CreateFile(int folderId, string fileName)
         {
-            throw new NotImplementedException();
+            var folder = _folderService.GetNodeById(folderId)?.Value;
+            if (folder == null)
+            {
+                // TODO: (mm) throw
+            }
+
+            return InsertFile(
+                null, // album
+                new MediaFile { Name = fileName, FolderId = folderId }, 
+                null, // stream
+                false);
         }
 
-        public MediaFileInfo InsertFile(MediaFile file, Stream stream, bool validate = true)
+        public MediaFileInfo InsertFile(string album, MediaFile file, Stream stream, bool validate = true)
         {
-            throw new NotImplementedException();
+            Guard.NotNull(file, nameof(file));
+
+            if (file.Name.IsEmpty())
+            {
+                throw new ArgumentException("The 'Name' property must be a valid file name.", nameof(file));
+            }
+
+            if (album.HasValue() && file.FolderId == null)
+            {
+                var albumId = _albumRegistry.GetAlbumByName(album)?.Id;
+                if (albumId > 0)
+                {
+                    file.FolderId = albumId;
+                }
+            }
+
+            if (file.FolderId == null)
+            {
+                // TODO: (mm) throw
+            }
+
+            // [...]
+
+            file.Name = SeoHelper.GetSeName(file.Name, true, false, false);
+            file.MediaType = _mediaTypeResolver.Resolve(file);
+
+            // [...]
+
+            // Save to DB
+            file.RefreshMetadata(stream);
+            _fileRepo.Insert(file);
+
+            // Save BLOB to storage.
+            _storageProvider.Save(file, stream);
+
+            return ConvertMediaFile(file);
         }
 
         public void DeleteFile(MediaFile file, bool permanent)
         {
-            throw new NotImplementedException();
+            Guard.NotNull(file, nameof(file));
+
+            if (!permanent)
+            {
+                file.Deleted = true;
+                _fileRepo.Update(file);
+            }
+            else
+            {
+                // TODO: (mm) Remove from image cache
+                // [...]
+
+                // Delete from storage
+                _storageProvider.Remove(file);
+
+                // Delete entity
+                _fileRepo.Delete(file);
+            }
         }
 
         #endregion
 
-        #region Copy/Move/Touch
+        #region Copy/Move/Replace/Rename/Update etc.
 
-        public void CopyFile(MediaFile file, string newPath, bool overwrite = false)
+        public MediaFileInfo CopyFile(MediaFile file, string newPath, bool overwrite = false)
         {
+            Guard.NotNull(file, nameof(file));
+
+            if (_mediaHelper.TokenizePath(newPath, out var tokens))
+            {
+                var newFile = new MediaFile
+                {
+                    Alt = file.Alt,
+                    Deleted = file.Deleted,
+                    Name = tokens.FileName,
+                    FolderId = tokens.Folder.Id
+                };
+
+                // TODO: (mm) Copy localized values (Alt, Title)
+                // [...]
+
+                return InsertFile(
+                    null, // album
+                    newFile,
+                    _storageProvider.OpenRead(file),
+                    false);
+            }
+
+            return ConvertMediaFile(file, tokens.Folder);
+        }
+
+        public MediaFileInfo MoveFile(MediaFile file, int destinationFolderId)
+        {
+            Guard.NotNull(file, nameof(file));
+
+            var folder = _folderService.GetNodeById(destinationFolderId)?.Value;
+            if (folder == null)
+            {
+                // TODO: (mm) throw
+            }
+
+            file.FolderId = destinationFolderId;
+            _fileRepo.Update(file);
+
+            return ConvertMediaFile(file, folder);
+        }
+
+        public MediaFileInfo ReplaceFile(MediaFile file, string fileName, string mimeType, Stream stream)
+        {
+            Guard.NotNull(file, nameof(file));
+            Guard.NotNull(stream, nameof(stream));
+            Guard.NotEmpty(fileName, nameof(fileName));
+
+            // TODO: (mm) new TYPE must match current TYPE
+
             throw new NotImplementedException();
+        }
+
+        public MediaFileInfo RenameFile(MediaFile file, string newFileName)
+        {
+            Guard.NotNull(file, nameof(file));
+            Guard.NotEmpty(newFileName, nameof(newFileName));
+
+            // TODO: (mm) new Extension must match current Extension
+
+            file.Name = SeoHelper.GetSeName(newFileName, true, false, false);
+
+            return ConvertMediaFile(file);
         }
 
         #endregion
 
         #region URL generation
 
-        public string GetUrl(MediaFileInfo file, ProcessImageQuery query, string host = null)
+        public string GetUrl(MediaFileInfo file, ProcessImageQuery imageQuery, string host = null)
         {
-            throw new NotImplementedException();
-            
+            // TODO: (mm) DoFallback
+            return _mediaUrlGenerator.GenerateUrl(file, imageQuery, host);
         }
 
         #endregion

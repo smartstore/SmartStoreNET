@@ -62,7 +62,14 @@ namespace SmartStore.Services.Catalog
         SpecificationAttributeOption GetSpecificationAttributeOptionById(int specificationAttributeOption);
 
         /// <summary>
-        /// Gets a specification attribute option by specification attribute id
+        /// /// Gets specification attribute options by identifiers.
+        /// </summary>
+        /// <param name="ids">Specification attribute option identifiers.</param>
+        /// <returns>Specification attribute options.</returns>
+        IList<SpecificationAttributeOption> GetSpecificationAttributeOptionsByIds(int[] ids);
+
+        /// <summary>
+        /// Gets specification attribute options by specification attribute id
         /// </summary>
         /// <param name="specificationAttributeId">The specification attribute identifier</param>
         /// <returns>Specification attribute option</returns>

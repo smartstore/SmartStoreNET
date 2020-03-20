@@ -9,7 +9,7 @@
 * *Install\UninstallPermissions* has been removed from *IPermissionService*. No longer needs to be called by plugins. Permissions are now automatically installed\uninstalled.
 * *IDiscountRequirementRule* and *IShippingMethodFilter* has been removed. Discounts and shipping methods can now be filtered by rule sets.
 * Customer navigation property *CustomerRoles* has been replaced by *CustomerRoleMappings*, a new entity for role mappings.
-* Search index must be recreated if numeric values are used for specification attributes.
+* The search index must be rebuilt due to various enhancements.
 
 ### New Features
 * #1598 Add published property to ProductTag entity.

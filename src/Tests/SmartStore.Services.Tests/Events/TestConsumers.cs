@@ -122,6 +122,6 @@ namespace SmartStore.Services.Tests.Events
 
 	public class InvalidConsumer6 : IConsumer
 	{
-		public void HandleEvent(AppStartedEvent msg, ref CachedImageResult result) { }
+		public void HandleEvent(AppStartedEvent msg, ref CachedImage result) { }
 	}
 }

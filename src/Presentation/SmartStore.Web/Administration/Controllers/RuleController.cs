@@ -4,20 +4,25 @@ using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using Newtonsoft.Json;
+using SmartStore.Admin.Models.Catalog;
 using SmartStore.Admin.Models.Customers;
 using SmartStore.Admin.Models.Rules;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
 using SmartStore.Rules;
 using SmartStore.Rules.Domain;
 using SmartStore.Rules.Filters;
 using SmartStore.Services.Cart.Rules;
+using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Rules;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.Payments;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -32,37 +37,40 @@ namespace SmartStore.Admin.Controllers
     {
         private readonly IRuleFactory _ruleFactory;
         private readonly IRuleStorage _ruleStorage;
-        private readonly ITargetGroupService _targetGroupService;
         private readonly IRuleTemplateSelector _ruleTemplateSelector;
         private readonly Func<RuleScope, IRuleProvider> _ruleProvider;
         private readonly IEnumerable<IRuleOptionsProvider> _ruleOptionsProviders;
         private readonly Lazy<IPaymentService> _paymentService;
         private readonly Lazy<PluginMediator> _pluginMediator;
+        private readonly Lazy<IPictureService> _pictureService;
         private readonly AdminAreaSettings _adminAreaSettings;
-        private readonly CustomerSettings _customerSettings;
+        private readonly Lazy<CustomerSettings> _customerSettings;
+        private readonly Lazy<MediaSettings> _mediaSettings;
 
         public RuleController(
             IRuleFactory ruleFactory,
             IRuleStorage ruleStorage,
-            ITargetGroupService targetGroupService,
             IRuleTemplateSelector ruleTemplateSelector,
             Func<RuleScope, IRuleProvider> ruleProvider,
             IEnumerable<IRuleOptionsProvider> ruleOptionsProviders,
             Lazy<IPaymentService> paymentService,
             Lazy<PluginMediator> pluginMediator,
+            Lazy<IPictureService> pictureService,
             AdminAreaSettings adminAreaSettings,
-            CustomerSettings customerSettings)
+            Lazy<CustomerSettings> customerSettings,
+            Lazy<MediaSettings> mediaSettings)
         {
             _ruleFactory = ruleFactory;
             _ruleStorage = ruleStorage;
-            _targetGroupService = targetGroupService;
             _ruleTemplateSelector = ruleTemplateSelector;
             _ruleProvider = ruleProvider;
             _ruleOptionsProviders = ruleOptionsProviders;
             _paymentService = paymentService;
             _pluginMediator = pluginMediator;
+            _pictureService = pictureService;
             _adminAreaSettings = adminAreaSettings;
             _customerSettings = customerSettings;
+            _mediaSettings = mediaSettings;
         }
 
         // Ajax.
@@ -165,12 +173,11 @@ namespace SmartStore.Admin.Controllers
                 return HttpNotFound();
             }
 
-            var model = MiniMapper.Map<RuleSetEntity, RuleSetModel>(entity);
-            model.ScopeName = entity.Scope.GetLocalizedEnum(Services.Localization, Services.WorkContext);
-
             var provider = _ruleProvider(entity.Scope);
+            var model = MiniMapper.Map<RuleSetEntity, RuleSetModel>(entity);
+
+            model.ScopeName = entity.Scope.GetLocalizedEnum(Services.Localization, Services.WorkContext);
             model.ExpressionGroup = _ruleFactory.CreateExpressionGroup(entity, provider, true);
-            model.AvailableDescriptors = _targetGroupService.RuleDescriptors;
 
             model.AssignedToDiscounts = entity.Discounts
                 .Select(x => new RuleSetModel.AssignedToEntityModel { Id = x.Id, Name = x.Name.NullEmpty() ?? x.Id.ToString() })
@@ -264,7 +271,9 @@ namespace SmartStore.Admin.Controllers
 
             var model = MiniMapper.Map<RuleSetEntity, RuleSetPreviewModel>(entity);
             model.GridPageSize = _adminAreaSettings.GridPageSize;
-            model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
+            model.IsSingleStoreMode = Services.StoreService.IsSingleStoreMode();
+            model.UsernamesEnabled = _customerSettings.Value.CustomerLoginType != CustomerLoginType.Email;
+            model.DisplayProductPictures = _adminAreaSettings.DisplayProductPictures;
 
             return View(model);
         }
@@ -279,8 +288,9 @@ namespace SmartStore.Admin.Controllers
             {
                 case RuleScope.Customer:
                     {
-                        var expression = _ruleFactory.CreateExpressionGroup(entity, _targetGroupService, true) as FilterExpression;
-                        var customers = _targetGroupService.ProcessFilter(new[] { expression }, LogicalRuleOperator.And, command.Page - 1, command.PageSize);
+                        var provider = _ruleProvider(entity.Scope) as ITargetGroupService;
+                        var expression = _ruleFactory.CreateExpressionGroup(entity, provider, true) as FilterExpression;
+                        var customers = provider.ProcessFilter(new[] { expression }, LogicalRuleOperator.And, command.Page - 1, command.PageSize);
                         var guestStr = T("Admin.Customers.Guest").Text;
 
                         var model = new GridModel<CustomerModel>
@@ -307,8 +317,46 @@ namespace SmartStore.Admin.Controllers
 
                         return new JsonResult { Data = model };
                     }
-            }
+                case RuleScope.Product:
+                    {
+                        var provider = _ruleProvider(entity.Scope) as IProductRuleProvider;
+                        var expression = _ruleFactory.CreateExpressionGroup(entity, provider, true) as SearchFilterExpression;
+                        var products = provider.Search(new[] { expression }, command.Page - 1, command.PageSize);
+                        var pictureInfos = _pictureService.Value.GetPictureInfos(products);
 
+                        var model = new GridModel<ProductModel>
+                        {
+                            Total = products.TotalCount
+                        };
+
+                        model.Data = products.Select(x =>
+                        {
+                            var productModel = new ProductModel
+                            {
+                                Id = x.Id,
+                                Sku = x.Sku,
+                                Published = x.Published,
+                                ProductTypeLabelHint = x.ProductTypeLabelHint,
+                                ProductTypeName = x.GetProductTypeLabel(Services.Localization),
+                                Name = x.Name,
+                                StockQuantity = x.StockQuantity,
+                                Price = x.Price,
+                                LimitedToStores = x.LimitedToStores,
+                                UpdatedOn = Services.DateTimeHelper.ConvertToUserTime(x.UpdatedOnUtc, DateTimeKind.Utc),
+                                CreatedOn = Services.DateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc)
+                            };
+
+                            var defaultPicture = pictureInfos.Get(x.MainPictureId.GetValueOrDefault());
+                            productModel.PictureThumbnailUrl = _pictureService.Value.GetUrl(defaultPicture, _mediaSettings.Value.CartThumbPictureSize, true);
+                            productModel.NoThumb = defaultPicture == null;
+
+                            return productModel;
+                        })
+                        .ToList();
+
+                        return new JsonResult { Data = model };
+                    }
+            }
 
             return new JsonResult { Data = null };            
         }
@@ -450,23 +498,32 @@ namespace SmartStore.Admin.Controllers
 
                 switch (entity.Scope)
                 {
-                    case RuleScope.Customer:
-                        {
-                            var expression = _ruleFactory.CreateExpressionGroup(entity, _targetGroupService, true) as FilterExpression;
-                            var result = _targetGroupService.ProcessFilter(new[] { expression }, LogicalRuleOperator.And, 0, 1);
-
-                            message = T("Admin.Rules.Execute.MatchCustomers", result.TotalCount.ToString("N0"));
-                        }
-                        break;
                     case RuleScope.Cart:
                         {
                             var customer = Services.WorkContext.CurrentCustomer;
                             var provider = _ruleProvider(entity.Scope) as ICartRuleProvider;
                             var expression = _ruleFactory.CreateExpressionGroup(entity, provider, true) as RuleExpression;
-
                             var match = provider.RuleMatches(new[] { expression }, LogicalRuleOperator.And);
 
                             message = T(match ? "Admin.Rules.Execute.MatchCart" : "Admin.Rules.Execute.DoesNotMatchCart", customer.Username.NullEmpty() ?? customer.Email);
+                        }
+                        break;
+                    case RuleScope.Customer:
+                        {
+                            var provider = _ruleProvider(entity.Scope) as ITargetGroupService;
+                            var expression = _ruleFactory.CreateExpressionGroup(entity, provider, true) as FilterExpression;
+                            var result = provider.ProcessFilter(new[] { expression }, LogicalRuleOperator.And, 0, 1);
+
+                            message = T("Admin.Rules.Execute.MatchCustomers", result.TotalCount.ToString("N0"));
+                        }
+                        break;
+                    case RuleScope.Product:
+                        {
+                            var provider = _ruleProvider(entity.Scope) as IProductRuleProvider;
+                            var expression = _ruleFactory.CreateExpressionGroup(entity, provider, true) as SearchFilterExpression;
+                            var result = provider.Search(new[] { expression }, 0, 1);
+
+                            message = T("Admin.Rules.Execute.MatchProducts", result.TotalCount.ToString("N0"));
                         }
                         break;
                 }
@@ -486,7 +543,12 @@ namespace SmartStore.Admin.Controllers
         }
 
         // Ajax.
-        public ActionResult RuleOptions(int ruleId, int rootRuleSetId, string term, int? page)
+        public ActionResult RuleOptions(
+            RuleOptionsRequestReason reason,
+            int ruleId,
+            int rootRuleSetId,
+            string term,
+            int? page)
         {
             var rule = _ruleStorage.GetRuleById(ruleId, false);
             if (rule == null)
@@ -497,15 +559,15 @@ namespace SmartStore.Admin.Controllers
             var provider = _ruleProvider(rule.RuleSet.Scope);
             var expression = provider.VisitRule(rule);
 
-            Func<RuleValueSelectListOption, bool> optionsPredicate = x => true;
             RuleOptionsResult options = null;
+            Func<RuleValueSelectListOption, bool> optionsPredicate = x => true;
 
             if (expression.Descriptor.SelectList is RemoteRuleValueSelectList list)
             {
                 var optionsProvider = _ruleOptionsProviders.FirstOrDefault(x => x.Matches(list.DataSource));
                 if (optionsProvider != null)
                 {
-                    options = optionsProvider.GetOptions(RuleOptionsRequestReason.SelectListOptions, expression, page ?? 0, 100, term);
+                    options = optionsProvider.GetOptions(reason, expression, page ?? 0, 100, term);
                     if (list.DataSource == "CartRule" || list.DataSource == "TargetGroup")
                     {
                         optionsPredicate = x => x.Value != rootRuleSetId.ToString();
@@ -525,6 +587,7 @@ namespace SmartStore.Admin.Controllers
 
             // Mark selected items.
             var selectedValues = expression.RawValue.SplitSafe(",");
+
             data.Each(x => x.Selected = selectedValues.Contains(x.Id));
 
             return new JsonResult

@@ -12,6 +12,13 @@ namespace SmartStore.Services.Tests.Media.Storage
 			return new MemoryStream(media.MediaStorage.Data);
 		}
 
+		public bool IsCloudStorage { get; } = false;
+
+		public string GetPublicUrl(MediaFile mediaFile)
+		{
+			return null;
+		}
+
 		public byte[] Load(MediaFile media)
 		{
 			return media.MediaStorage.Data;
@@ -22,11 +29,11 @@ namespace SmartStore.Services.Tests.Media.Storage
 			return Task.FromResult(Load(media));
 		}
 
-		public void Save(MediaFile media, byte[] data)
+		public void Save(MediaFile media, Stream stream)
 		{
 		}
 
-		public Task SaveAsync(MediaFile media, byte[] data)
+		public Task SaveAsync(MediaFile media, Stream stream)
 		{
 			return Task.FromResult(0);
 		}

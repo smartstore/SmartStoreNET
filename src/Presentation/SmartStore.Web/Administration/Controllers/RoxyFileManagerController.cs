@@ -18,6 +18,8 @@ using SmartStore.Services.Media;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Services.Media.Storage;
+using SmartStore.Collections;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -31,30 +33,54 @@ namespace SmartStore.Admin.Controllers
 		private Dictionary<string, string> _lang = null;
 		private Dictionary<string, string> _roxySettings = null;
 
+		private readonly IMediaService _mediaService;
+		private readonly IFolderService _folderService;
+		private readonly IAlbumRegistry _albumRegistry;
 		private readonly Lazy<IImageProcessor> _imageProcessor;
 		private readonly Lazy<IImageCache> _imageCache;
-		private readonly IMediaFileSystem _fileSystem;
+		//private readonly IMediaFileSystem _fileSystem;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly ILocalizationFileResolver _locFileResolver;
 		private readonly Lazy<MediaSettings> _mediaSettings;
 
+		private readonly AlbumInfo _album;
+		private readonly TreeNode<MediaFolderNode> _rootNode;
+
 		public RoxyFileManagerController(
+			IMediaService mediaService,
+			IFolderService folderService,
+			IAlbumRegistry albumRegistry,
 			Lazy<IImageProcessor> imageProcessor,
 			Lazy<IImageCache> imageCache,
-			IMediaFileSystem fileSystem,
+			//IMediaFileSystem fileSystem,
 			IEventPublisher eventPublisher,
 			ILocalizationFileResolver locFileResolver,
 			Lazy<MediaSettings> mediaSettings)
 		{
+			_mediaService = mediaService;
+			_folderService = folderService;
+			_albumRegistry = albumRegistry;
 			_imageProcessor = imageProcessor;
 			_imageCache = imageCache;
-			_fileSystem = fileSystem;
+			//_fileSystem = fileSystem;
 			_eventPublisher = eventPublisher;
 			_locFileResolver = locFileResolver;
 			_mediaSettings = mediaSettings;
+
+			_album = _albumRegistry.GetAlbumByName(SystemAlbumProvider.Files);
+			_rootNode = _folderService.GetNodeById(_album.Id);
+
+			//var albumInfo = albumRegistry.GetAlbumByName(SystemAlbumProvider.Files);
+			//_fileSystem = new AlbumFileSystemAdapter(albumInfo, mediaService, folderService);
 		}
 
 		#region Utilities
+
+		private void Write(object obj)
+		{
+			var json = JsonConvert.SerializeObject(obj);
+			Response.Write(json);
+		}
 
 		private Dictionary<string, string> ParseJson(string path)
 		{
@@ -263,7 +289,7 @@ namespace SmartStore.Admin.Controllers
 						_fileRoot = (string)Session[GetSetting("SESSION_PATH_KEY")];
 
 					if (_fileRoot.IsEmpty())
-						_fileRoot = "Uploaded";
+						_fileRoot = SystemAlbumProvider.Files;
 				}
 
 				return _fileRoot;
@@ -278,569 +304,530 @@ namespace SmartStore.Admin.Controllers
 				path = uri.PathAndQuery;
 			}
 
-			return (_fileSystem.GetStoragePath(path) ?? path).TrimStart('/', '\\');
+			return path;
+
+			//return (_fileSystem.GetStoragePath(path) ?? path).TrimStart('/', '\\');
 		}
 
-		private IEnumerable<IFile> GetFiles(string path, string type)
+		private MediaFolderNode GetNodeByPath(string path)
 		{
-			var files = _fileSystem.ListFiles(path);
-
-			if (type.IsEmpty() || type == "#")
-				return files;
-
-			return files.Where(x => GetFileContentType(x.Extension).IsCaseInsensitiveEqual(type));
+			return _folderService.GetNodeByPath(path).Value;
 		}
 
-		private long CountFiles(string path, string type)
+		private MediaSearchQuery CreateSearchQuery(int folderId, string type)
 		{
-			if (_fileSystem.IsCloudStorage)
+			var query = new MediaSearchQuery
 			{
-				// Dont't count, it's expensive!
-				return 0;
-			}
-
-			Func<string, bool> predicate = null;
+				FolderId = folderId,
+				Deleted = false
+			};
 
 			if (type.HasValue() && type != "#")
 			{
-				type = type.ToLowerInvariant();
-				predicate = x => GetFileContentType(Path.GetExtension(x)) == type;
+				query.MediaTypes = new[] { type };
 			}
 
-			return _fileSystem.CountFiles(path, "*", predicate, false);
+			return query;
 		}
 
-		private List<RoxyFolder> ListDirs(string path)
+		private IEnumerable<MediaFileInfo> GetFiles(int folderId, string type)
 		{
-			var result = new List<RoxyFolder>();
+			var query = CreateSearchQuery(folderId, type);
+			var files = _mediaService.SearchFiles(query);
+			return files;
+		}
 
-			_fileSystem.ListFolders(path).Each(x =>
-			{
-				var subFolders = ListDirs(x.Path);
-
-				result.Add(new RoxyFolder
-				{
-					Folder = x,
-					SubFolders = subFolders.Count
-				});
-
-				result.AddRange(subFolders);
-			});
-
-			return result;
+		private long CountFiles(int folderId, string type)
+		{
+			var query = CreateSearchQuery(folderId, type);
+			return _mediaService.CountFiles(query);
 		}
 
 		private void ListDirTree(string type)
 		{
-			var isFirstItem = true;
-			var folders = ListDirs(FileRoot);
+			var result = _rootNode.FlattenNodes(true)
+				.Select(x => 
+				{
+					var numFiles = CountFiles(x.Value.Id, type);
+					return new 
+					{
+						p = x.Value.Path,
+						f = numFiles.ToString(),
+						d = x.Children.Count
+					};
+				})
+				.ToArray();
 
-			folders.Insert(0, new RoxyFolder
-			{
-				Folder = _fileSystem.GetFolder(FileRoot),
-				SubFolders = folders.Count
-			});
-
-			Response.Write("[");
-
-			foreach (var folder in folders)
-			{
-				if (isFirstItem)
-					isFirstItem = false;
-				else
-					Response.Write(",");
-
-				var fileCount = CountFiles(folder.Folder.Path, type);
-
-				Response.Write(
-					"{\"p\":\"/" + folder.Folder.Path.Replace("\\", "/")
-					+ "\",\"f\":\"" + fileCount.ToString()
-					+ "\",\"d\":\"" + folder.SubFolders.ToString()
-					+ "\"}"
-				);
-			}
-
-			Response.Write("]");
+			Write(result);
 		}
 
 		private void ListFiles(string path, string type)
 		{
-			var isFirstItem = true;
-			var files = GetFiles(GetRelativePath(path), type);
+			var files = GetFiles(GetNodeByPath(path).Id, type);
 
-			Response.Write("[");
+			var result = files.Select(x => new 
+			{ 
+				p = _mediaService.GetUrl(x, null, string.Empty),
+				t = x.LastUpdated.ToUnixTime().ToString(),
+				m = x.MimeType,
+				s = x.Size.ToString(),
+				w = x.Dimensions.Width.ToString(),
+				h = x.Dimensions.Height.ToString()
+			}).ToArray();
 
-			foreach (var file in files)
-			{
-				if (isFirstItem)
-					isFirstItem = false;
-				else
-					Response.Write(",");
-
-				var url = _fileSystem.GetPublicUrl(file.Path);
-				var size = file.Dimensions;
-
-				Response.Write("{");
-				Response.Write("\"p\":\"" + url + "\"");
-				Response.Write(",\"t\":\"" + file.LastUpdated.ToUnixTime().ToString() + "\"");
-				Response.Write(",\"m\":\"" + MimeTypes.MapNameToMimeType(file.Name) + "\"");
-				Response.Write(",\"s\":\"" + file.Size.ToString() + "\"");
-				Response.Write(",\"w\":\"" + size.Width.ToString() + "\"");
-				Response.Write(",\"h\":\"" + size.Height.ToString() + "\"");
-				Response.Write("}");
-			}
-
-			Response.Write("]");
+			Write(result);
 		}
 
 		private void DownloadFile(string path)
 		{
-			path = GetRelativePath(path);
-			if (!_fileSystem.FileExists(path))
-				return;
+			//path = GetRelativePath(path);
+			//if (!_fileSystem.FileExists(path))
+			//	return;
 
-			var len = 0;
-			var buffer = new byte[BUFFER_SIZE];
-			var file = _fileSystem.GetFile(path);
+			//var len = 0;
+			//var buffer = new byte[BUFFER_SIZE];
+			//var file = _fileSystem.GetFile(path);
 
-			try
-			{
-				using (var stream = file.OpenRead())
-				{
-					Response.Clear();
-					Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + file.Name + "\"");
-					Response.ContentType = MimeTypes.MapNameToMimeType(file.Name);
+			//try
+			//{
+			//	using (var stream = file.OpenRead())
+			//	{
+			//		Response.Clear();
+			//		Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + file.Name + "\"");
+			//		Response.ContentType = MimeTypes.MapNameToMimeType(file.Name);
 
-					while (Response.IsClientConnected && (len = stream.Read(buffer, 0, BUFFER_SIZE)) > 0)
-					{
-						Response.OutputStream.Write(buffer, 0, len);
-						Response.Flush();
+			//		while (Response.IsClientConnected && (len = stream.Read(buffer, 0, BUFFER_SIZE)) > 0)
+			//		{
+			//			Response.OutputStream.Write(buffer, 0, len);
+			//			Response.Flush();
 
-						Array.Clear(buffer, 0, BUFFER_SIZE);
-					}
+			//			Array.Clear(buffer, 0, BUFFER_SIZE);
+			//		}
 
-					Response.End();
-				}
-			}
-			catch (IOException)
-			{
-				throw new Exception(T("Admin.Common.FileInUse"));
-			}
+			//		Response.End();
+			//	}
+			//}
+			//catch (IOException)
+			//{
+			//	throw new Exception(T("Admin.Common.FileInUse"));
+			//}
 		}
 
 		private void DownloadDir(string path)
 		{
-			path = GetRelativePath(path);
-			if (!_fileSystem.FolderExists(path))
-			{
-				throw new Exception(LangRes("E_CreateArchive"));
-			}
+			//path = GetRelativePath(path);
+			//if (!_fileSystem.FolderExists(path))
+			//{
+			//	throw new Exception(LangRes("E_CreateArchive"));
+			//}
 
-			var folder = _fileSystem.GetFolder(path);
+			//var folder = _fileSystem.GetFolder(path);
 
-			// copy files from file storage to temp folder
-			var tempDir = FileSystemHelper.TempDirTenant("roxy " + folder.Name);	
-			FileSystemHelper.ClearDirectory(tempDir, false);
-			var files = GetFiles(path, null);
+			//// copy files from file storage to temp folder
+			//var tempDir = FileSystemHelper.TempDirTenant("roxy " + folder.Name);	
+			//FileSystemHelper.ClearDirectory(tempDir, false);
+			//var files = GetFiles(path, null);
 
-			foreach (var file in files)
-			{
-				var bytes = _fileSystem.ReadAllBytes(file.Path);
-				if (bytes != null && bytes.Length > 0)
-				{
-					System.IO.File.WriteAllBytes(Path.Combine(tempDir, file.Name), bytes);
-				}
-			}
+			//foreach (var file in files)
+			//{
+			//	var bytes = _fileSystem.ReadAllBytes(file.Path);
+			//	if (bytes != null && bytes.Length > 0)
+			//	{
+			//		System.IO.File.WriteAllBytes(Path.Combine(tempDir, file.Name), bytes);
+			//	}
+			//}
 
-			// create zip from temp folder
-			var tempZip = Path.Combine(FileSystemHelper.TempDirTenant(), folder.Name + ".zip");
-			FileSystemHelper.DeleteFile(tempZip);
+			//// create zip from temp folder
+			//var tempZip = Path.Combine(FileSystemHelper.TempDirTenant(), folder.Name + ".zip");
+			//FileSystemHelper.DeleteFile(tempZip);
 
-			ZipFile.CreateFromDirectory(tempDir, tempZip, CompressionLevel.Fastest, false);
+			//ZipFile.CreateFromDirectory(tempDir, tempZip, CompressionLevel.Fastest, false);
 
-			Response.Clear();
-			Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + folder.Name + ".zip\"");
-			Response.ContentType = "application/zip";
-			Response.TransmitFile(tempZip);
-			Response.Flush();
+			//Response.Clear();
+			//Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + folder.Name + ".zip\"");
+			//Response.ContentType = "application/zip";
+			//Response.TransmitFile(tempZip);
+			//Response.Flush();
 
-			FileSystemHelper.DeleteFile(tempZip);
-			FileSystemHelper.ClearDirectory(tempDir, true);
+			//FileSystemHelper.DeleteFile(tempZip);
+			//FileSystemHelper.ClearDirectory(tempDir, true);
 
-			Response.End();
+			//Response.End();
 		}
 
 		private void RenameFile(string oldPath, string name)
 		{
-			oldPath = GetRelativePath(oldPath);
+			//oldPath = GetRelativePath(oldPath);
 
-			if (!_fileSystem.FileExists(oldPath))
-			{
-				throw new Exception(LangRes("E_RenameFileInvalidPath"));
-			}
+			//if (!_fileSystem.FileExists(oldPath))
+			//{
+			//	throw new Exception(LangRes("E_RenameFileInvalidPath"));
+			//}
 
-			var fileType = Path.GetExtension(name);
+			//var fileType = Path.GetExtension(name);
 
-			if (!IsAllowedFileType(fileType))
-			{
-				throw new Exception(LangRes("E_FileExtensionForbidden"));
-			}
+			//if (!IsAllowedFileType(fileType))
+			//{
+			//	throw new Exception(LangRes("E_FileExtensionForbidden"));
+			//}
 
-			try
-			{
-				var folder = _fileSystem.GetFolderForFile(oldPath);
-				var newPath = _fileSystem.Combine(folder.Path, name);
+			//try
+			//{
+			//	var folder = _fileSystem.GetFolderForFile(oldPath);
+			//	var newPath = _fileSystem.Combine(folder.Path, name);
 
-				_fileSystem.RenameFile(oldPath, newPath);
+			//	_fileSystem.RenameFile(oldPath, newPath);
 
-				Response.Write(GetResultString());
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(ex.Message + "; " + LangRes("E_RenameFile") + " \"" + oldPath + "\"");
-			}
+			//	Response.Write(GetResultString());
+			//}
+			//catch (Exception ex)
+			//{
+			//	throw new Exception(ex.Message + "; " + LangRes("E_RenameFile") + " \"" + oldPath + "\"");
+			//}
 		}
 
 		private void RenameDir(string path, string name)
 		{
-			path = GetRelativePath(path);
+			//path = GetRelativePath(path);
 
-			if (!_fileSystem.FolderExists(path))
-			{
-				throw new Exception(LangRes("E_RenameDirInvalidPath"));
-			}
+			//if (!_fileSystem.FolderExists(path))
+			//{
+			//	throw new Exception(LangRes("E_RenameDirInvalidPath"));
+			//}
 
-			if (path == FileRoot)
-			{
-				throw new Exception(LangRes("E_CannotRenameRoot"));
-			}
+			//if (path == FileRoot)
+			//{
+			//	throw new Exception(LangRes("E_CannotRenameRoot"));
+			//}
 
-			try
-			{
-				var folder = _fileSystem.GetFolder(path);
-				var newPath = _fileSystem.Combine(folder.Parent.Path, name);
+			//try
+			//{
+			//	var folder = _fileSystem.GetFolder(path);
+			//	var newPath = _fileSystem.Combine(folder.Parent.Path, name);
 
-				_fileSystem.RenameFolder(path, newPath);
+			//	_fileSystem.RenameFolder(path, newPath);
 
-				Response.Write(GetResultString());
-			}
-			catch
-			{
-				throw new Exception(LangRes("E_RenameDir") + " \"" + path + "\"");
-			}
+			//	Response.Write(GetResultString());
+			//}
+			//catch
+			//{
+			//	throw new Exception(LangRes("E_RenameDir") + " \"" + path + "\"");
+			//}
 		}
 
 		private void MoveFile(string path, string newPath)
 		{
-			path = GetRelativePath(path);
-			newPath = GetRelativePath(newPath);
+			//path = GetRelativePath(path);
+			//newPath = GetRelativePath(newPath);
 
-			if (!_fileSystem.FileExists(path))
-			{
-				throw new Exception(LangRes("E_MoveFileInvalisPath"));
-			}
+			//if (!_fileSystem.FileExists(path))
+			//{
+			//	throw new Exception(LangRes("E_MoveFileInvalisPath"));
+			//}
 
-			if (_fileSystem.FileExists(newPath))
-			{
-				throw new Exception(LangRes("E_MoveFileAlreadyExists"));
-			}
+			//if (_fileSystem.FileExists(newPath))
+			//{
+			//	throw new Exception(LangRes("E_MoveFileAlreadyExists"));
+			//}
 
-			try
-			{
-				_fileSystem.RenameFile(path, newPath);
+			//try
+			//{
+			//	_fileSystem.RenameFile(path, newPath);
 
-				Response.Write(GetResultString());
-			}
-			catch
-			{
-				throw new Exception(LangRes("E_MoveFile") + " \"" + path + "\"");
-			}
+			//	Response.Write(GetResultString());
+			//}
+			//catch
+			//{
+			//	throw new Exception(LangRes("E_MoveFile") + " \"" + path + "\"");
+			//}
 		}
 
 		private void MoveDir(string path, string newPath)
 		{
-			path = GetRelativePath(path);
+			//path = GetRelativePath(path);
 			
-			if (!_fileSystem.FolderExists(path))
-			{
-				throw new Exception(LangRes("E_MoveDirInvalisPath"));
-			}
+			//if (!_fileSystem.FolderExists(path))
+			//{
+			//	throw new Exception(LangRes("E_MoveDirInvalisPath"));
+			//}
 
-			var folder = _fileSystem.GetFolder(path);
-			newPath = _fileSystem.Combine(GetRelativePath(newPath), folder.Name).Replace("\\", "/");
+			//var folder = _fileSystem.GetFolder(path);
+			//newPath = _fileSystem.Combine(GetRelativePath(newPath), folder.Name).Replace("\\", "/");
 
-			if (_fileSystem.FolderExists(newPath))
-			{
-				throw new Exception(LangRes("E_DirAlreadyExists"));
-			}
+			//if (_fileSystem.FolderExists(newPath))
+			//{
+			//	throw new Exception(LangRes("E_DirAlreadyExists"));
+			//}
 
-			if (newPath.IndexOf(path) == 0)
-			{
-				throw new Exception(LangRes("E_CannotMoveDirToChild"));
-			}
+			//if (newPath.IndexOf(path) == 0)
+			//{
+			//	throw new Exception(LangRes("E_CannotMoveDirToChild"));
+			//}
 
-			try
-			{
-				_fileSystem.RenameFolder(path, newPath);
+			//try
+			//{
+			//	_fileSystem.RenameFolder(path, newPath);
 
-				Response.Write(GetResultString());
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(LangRes("E_MoveDir") + " \"" + path + "\"" + ": (" + ex.Message + ")");
-			}
+			//	Response.Write(GetResultString());
+			//}
+			//catch (Exception ex)
+			//{
+			//	throw new Exception(LangRes("E_MoveDir") + " \"" + path + "\"" + ": (" + ex.Message + ")");
+			//}
 		}
 
 		private void CopyFile(string path, string newPath)
 		{
-			path = GetRelativePath(path);
+			//path = GetRelativePath(path);
 
-			var file = _fileSystem.GetFile(path);
+			//var file = _fileSystem.GetFile(path);
 
-			if (!file.Exists)
-			{
-				throw new Exception(LangRes("E_CopyFileInvalisPath"));
-			}
+			//if (!file.Exists)
+			//{
+			//	throw new Exception(LangRes("E_CopyFileInvalisPath"));
+			//}
 
-			try
-			{
-				newPath = _fileSystem.Combine(GetRelativePath(newPath), file.Name);
-				if (_fileSystem.CheckFileUniqueness(newPath, out var newFile))
-				{
-					newPath = newFile.Path;
-				}
+			//try
+			//{
+			//	newPath = _fileSystem.Combine(GetRelativePath(newPath), file.Name);
+			//	if (_fileSystem.CheckFileUniqueness(newPath, out var newFile))
+			//	{
+			//		newPath = newFile.Path;
+			//	}
 
-				_fileSystem.CopyFile(path, newPath);
+			//	_fileSystem.CopyFile(path, newPath);
 
-				Response.Write(GetResultString());
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(LangRes("E_CopyFile") + ": " + ex.Message);
-			}
+			//	Response.Write(GetResultString());
+			//}
+			//catch (Exception ex)
+			//{
+			//	throw new Exception(LangRes("E_CopyFile") + ": " + ex.Message);
+			//}
 		}
 
 		private void DeleteFile(string path)
 		{
-			path = GetRelativePath(path);
-			var file = _fileSystem.GetFile(path);
-			if (!file.Exists)
-			{
-				throw new Exception(LangRes("E_DeleteFileInvalidPath"));
-			}
+			//path = GetRelativePath(path);
+			//var file = _fileSystem.GetFile(path);
+			//if (!file.Exists)
+			//{
+			//	throw new Exception(LangRes("E_DeleteFileInvalidPath"));
+			//}
 			
-			try
-			{
-				_fileSystem.DeleteFile(path);
-				_imageCache.Value.Delete(file);
+			//try
+			//{
+			//	_fileSystem.DeleteFile(path);
+			//	_imageCache.Value.Delete(file);
 
-				Response.Write(GetResultString());
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(LangRes("E_DeletеFile") + ": " + ex.Message);
-			}
+			//	Response.Write(GetResultString());
+			//}
+			//catch (Exception ex)
+			//{
+			//	throw new Exception(LangRes("E_DeletеFile") + ": " + ex.Message);
+			//}
 		}
 
 		private void DeleteDir(string path)
 		{
-			path = GetRelativePath(path);
+			//path = GetRelativePath(path);
 
-			if (!_fileSystem.FolderExists(path))
-			{
-				throw new Exception(LangRes("E_DeleteDirInvalidPath"));
-			}
+			//if (!_fileSystem.FolderExists(path))
+			//{
+			//	throw new Exception(LangRes("E_DeleteDirInvalidPath"));
+			//}
 
-			if (path == FileRoot)
-			{
-				throw new Exception(LangRes("E_CannotDeleteRoot"));
-			}
+			//if (path == FileRoot)
+			//{
+			//	throw new Exception(LangRes("E_CannotDeleteRoot"));
+			//}
 
-			//throw new Exception(LangRes("E_DeleteNonEmpty"));
+			////throw new Exception(LangRes("E_DeleteNonEmpty"));
 
-			try
-			{
-				_fileSystem.DeleteFolder(path);
+			//try
+			//{
+			//	_fileSystem.DeleteFolder(path);
 
-				Response.Write(GetResultString());
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(LangRes("E_CannotDeleteDir") + ": " + ex.Message);
-			}
+			//	Response.Write(GetResultString());
+			//}
+			//catch (Exception ex)
+			//{
+			//	throw new Exception(LangRes("E_CannotDeleteDir") + ": " + ex.Message);
+			//}
 		}
 
 		private void CreateDir(string path, string name)
 		{
-			path = GetRelativePath(path);
+			//path = GetRelativePath(path);
 
-			if (!_fileSystem.FolderExists(path))
-			{
-				throw new Exception(LangRes("E_CreateDirInvalidPath"));
-			}
+			//if (!_fileSystem.FolderExists(path))
+			//{
+			//	throw new Exception(LangRes("E_CreateDirInvalidPath"));
+			//}
 
-			try
-			{
-				path = _fileSystem.Combine(path, name);
+			//try
+			//{
+			//	path = _fileSystem.Combine(path, name);
 
-				if (!_fileSystem.FolderExists(path))
-					_fileSystem.CreateFolder(path);
+			//	if (!_fileSystem.FolderExists(path))
+			//		_fileSystem.CreateFolder(path);
 
-				Response.Write(GetResultString());
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(LangRes("E_CreateDirFailed") + ": " + ex.Message);
-			}
+			//	Response.Write(GetResultString());
+			//}
+			//catch (Exception ex)
+			//{
+			//	throw new Exception(LangRes("E_CreateDirFailed") + ": " + ex.Message);
+			//}
 		}
 
 		private void CopyDirCore(string path, string targetPath)
 		{
-			if (!_fileSystem.FolderExists(targetPath))
-			{
-				_fileSystem.CreateFolder(targetPath);
-			}
+			//if (!_fileSystem.FolderExists(targetPath))
+			//{
+			//	_fileSystem.CreateFolder(targetPath);
+			//}
 
-			foreach (var file in _fileSystem.ListFiles(path))
-			{
-				var newPath = _fileSystem.Combine(targetPath, file.Name);
+			//foreach (var file in _fileSystem.ListFiles(path))
+			//{
+			//	var newPath = _fileSystem.Combine(targetPath, file.Name);
 
-				if (!_fileSystem.FileExists(newPath))
-				{
-					_fileSystem.CopyFile(file.Path, newPath);
-				}
-			}
+			//	if (!_fileSystem.FileExists(newPath))
+			//	{
+			//		_fileSystem.CopyFile(file.Path, newPath);
+			//	}
+			//}
 
-			foreach (var folder in _fileSystem.ListFolders(path))
-			{
-				var newPath = _fileSystem.Combine(targetPath, folder.Name);
+			//foreach (var folder in _fileSystem.ListFolders(path))
+			//{
+			//	var newPath = _fileSystem.Combine(targetPath, folder.Name);
 
-				CopyDirCore(folder.Path, newPath);
-			}
+			//	CopyDirCore(folder.Path, newPath);
+			//}
 		}
 
 		private void CopyDir(string path, string targetPath)
 		{
-			path = GetRelativePath(path);
-			targetPath = GetRelativePath(targetPath);
+			//path = GetRelativePath(path);
+			//targetPath = GetRelativePath(targetPath);
 
-			if (!_fileSystem.FolderExists(path))
-			{
-				throw new Exception(LangRes("E_CopyDirInvalidPath"));
-			}
+			//if (!_fileSystem.FolderExists(path))
+			//{
+			//	throw new Exception(LangRes("E_CopyDirInvalidPath"));
+			//}
 
-			var folder = _fileSystem.GetFolder(path);
+			//var folder = _fileSystem.GetFolder(path);
 
-			targetPath = _fileSystem.Combine(targetPath, folder.Name);
+			//targetPath = _fileSystem.Combine(targetPath, folder.Name);
 
-			if (_fileSystem.FolderExists(targetPath))
-			{
-				throw new Exception(LangRes("E_DirAlreadyExists"));
-			}
+			//if (_fileSystem.FolderExists(targetPath))
+			//{
+			//	throw new Exception(LangRes("E_DirAlreadyExists"));
+			//}
 
-			if (targetPath.Contains(path))
-			{
-				throw new Exception(T("Common.CannotCopyFolderIntoItself"));
-			}
+			//if (targetPath.Contains(path))
+			//{
+			//	throw new Exception(T("Common.CannotCopyFolderIntoItself"));
+			//}
 
-			CopyDirCore(path, targetPath);
+			//CopyDirCore(path, targetPath);
 
-			Response.Write(GetResultString());
+			//Response.Write(GetResultString());
 		}
 
 		private async Task UploadAsync(string path, bool external = false)
 		{
-			path = GetRelativePath(path);
+			await Task.FromResult(0);
+			
+			//path = GetRelativePath(path);
 
-			string message = null;
-			var hasError = false;
-			string url = null;
+			//string message = null;
+			//var hasError = false;
+			//string url = null;
 
-			int.TryParse(GetSetting("MAX_IMAGE_WIDTH"), out var width);
-			int.TryParse(GetSetting("MAX_IMAGE_HEIGHT"), out var height);
+			//int.TryParse(GetSetting("MAX_IMAGE_WIDTH"), out var width);
+			//int.TryParse(GetSetting("MAX_IMAGE_HEIGHT"), out var height);
 
-			var tempDir = FileSystemHelper.TempDirTenant("roxy " + CommonHelper.GenerateRandomInteger().ToString());
+			//var tempDir = FileSystemHelper.TempDirTenant("roxy " + CommonHelper.GenerateRandomInteger().ToString());
 
-			try
-			{
-				var notify = Request.Files.Count < 4;
+			//try
+			//{
+			//	var notify = Request.Files.Count < 4;
 
-				// copy uploaded files to temp folder and resize them
-				for (var i = 0; i < Request.Files.Count; ++i)
-				{
-					var file = Request.Files[i];
-					var extension = Path.GetExtension(file.FileName);
+			//	// copy uploaded files to temp folder and resize them
+			//	for (var i = 0; i < Request.Files.Count; ++i)
+			//	{
+			//		var file = Request.Files[i];
+			//		var extension = Path.GetExtension(file.FileName);
 
-					if (IsAllowedFileType(extension))
-					{
-						var dest = Path.Combine(tempDir, file.FileName);
-						file.SaveAs(dest);
+			//		if (IsAllowedFileType(extension))
+			//		{
+			//			var dest = Path.Combine(tempDir, file.FileName);
+			//			file.SaveAs(dest);
 
-						if (GetFileContentType(extension) == "image" && extension != ".svg")
-						{
-							ImageResize(dest, dest, width, height, notify);
-						}
-					}
-					else
-					{
-						message = LangRes("E_UploadNotAll");
-					}
-				}
+			//			if (GetFileContentType(extension) == "image" && extension != ".svg")
+			//			{
+			//				ImageResize(dest, dest, width, height, notify);
+			//			}
+			//		}
+			//		else
+			//		{
+			//			message = LangRes("E_UploadNotAll");
+			//		}
+			//	}
 
-				// Copy files to file storage
-				foreach (var tempPath in Directory.EnumerateFiles(tempDir, "*", SearchOption.TopDirectoryOnly))
-				{
-					using (var stream = new FileStream(tempPath, FileMode.Open, FileAccess.Read))
-					{
-						var name = Path.GetFileName(tempPath);
-						var newPath = _fileSystem.Combine(path, name);
-						if (_fileSystem.CheckFileUniqueness(newPath, out var file))
-						{
-							newPath = file.Path;
-						}
+			//	// Copy files to file storage
+			//	foreach (var tempPath in Directory.EnumerateFiles(tempDir, "*", SearchOption.TopDirectoryOnly))
+			//	{
+			//		using (var stream = new FileStream(tempPath, FileMode.Open, FileAccess.Read))
+			//		{
+			//			var name = Path.GetFileName(tempPath);
+			//			var newPath = _fileSystem.Combine(path, name);
+			//			if (_fileSystem.CheckFileUniqueness(newPath, out var file))
+			//			{
+			//				newPath = file.Path;
+			//			}
 
-						await _fileSystem.SaveStreamAsync(newPath, stream);
-						url = _fileSystem.GetPublicUrl(newPath);
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				hasError = true;
-				message = ex.Message;
-			}
-			finally
-			{
-				FileSystemHelper.ClearDirectory(tempDir, true);
-			}
+			//			await _fileSystem.SaveStreamAsync(newPath, stream);
+			//			url = _fileSystem.GetPublicUrl(newPath);
+			//		}
+			//	}
+			//}
+			//catch (Exception ex)
+			//{
+			//	hasError = true;
+			//	message = ex.Message;
+			//}
+			//finally
+			//{
+			//	FileSystemHelper.ClearDirectory(tempDir, true);
+			//}
 
-			if (IsAjaxUpload())
-			{
-				if (external)
-				{
-					var result = new
-					{
-						Success = !hasError,
-						Url = url,
-						Message = message
-					};
-					Response.ContentType = "text/json";
-					Response.Write(JsonConvert.SerializeObject(result));
-				}
-				else
-				{
-					if (message.HasValue())
-					{
-						Response.Write(GetResultString(message, hasError ? "error" : "ok"));
-					}
-				}
-			}
-			else
-			{
-				Response.Write("<script>");
-				Response.Write("parent.fileUploaded(" + GetResultString(message, hasError ? "error" : "ok") + ");");
-				Response.Write("</script>");
-			}
+			//if (IsAjaxUpload())
+			//{
+			//	if (external)
+			//	{
+			//		var result = new
+			//		{
+			//			Success = !hasError,
+			//			Url = url,
+			//			Message = message
+			//		};
+			//		Response.ContentType = "text/json";
+			//		Response.Write(JsonConvert.SerializeObject(result));
+			//	}
+			//	else
+			//	{
+			//		if (message.HasValue())
+			//		{
+			//			Response.Write(GetResultString(message, hasError ? "error" : "ok"));
+			//		}
+			//	}
+			//}
+			//else
+			//{
+			//	Response.Write("<script>");
+			//	Response.Write("parent.fileUploaded(" + GetResultString(message, hasError ? "error" : "ok") + ");");
+			//	Response.Write("</script>");
+			//}
 		}
 
 		#endregion

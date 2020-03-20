@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Services.Media
 {
@@ -24,6 +25,11 @@ namespace SmartStore.Services.Media
 
     public partial interface IMediaService
     {
+        /// <summary>
+        /// Gets the underlying storage provider
+        /// </summary>
+        IMediaStorageProvider StorageProvider { get; }
+
         int CountFiles(MediaSearchQuery query);
         Task<int> CountFilesAsync(MediaSearchQuery query);
         MediaSearchResult SearchFiles(MediaSearchQuery query, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
@@ -36,10 +42,13 @@ namespace SmartStore.Services.Media
 
         MediaFileInfo CreateFile(string path);
         MediaFileInfo CreateFile(int folderId, string fileName);
-        MediaFileInfo InsertFile(MediaFile file, Stream stream, bool validate = true);
+        MediaFileInfo InsertFile(string album, MediaFile file, Stream stream, bool validate = true);
         void DeleteFile(MediaFile file, bool permanent);
 
-        void CopyFile(MediaFile file, string newPath, bool overwrite = false);
+        MediaFileInfo CopyFile(MediaFile file, string newPath, bool overwrite = false);
+        MediaFileInfo MoveFile(MediaFile file, int destinationFolderId);
+        MediaFileInfo ReplaceFile(MediaFile file, string fileName, string mimeType, Stream stream);
+        MediaFileInfo RenameFile(MediaFile file, string newFileName);
 
         string GetUrl(MediaFileInfo file, ProcessImageQuery query, string host = null);
     }

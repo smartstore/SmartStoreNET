@@ -1,0 +1,245 @@
+﻿using System;
+using System.IO;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using System.Linq;
+using System.Web.SessionState;
+using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Events;
+using SmartStore.Core.Logging;
+using SmartStore.Services.Media;
+using SmartStore.Services.Seo;
+using SmartStore.Utilities;
+using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Seo;
+using SmartStore.Web.Framework.Localization;
+using System.Web.Routing;
+using SmartStore.Core.Security;
+using System.Collections.Generic;
+
+namespace SmartStore.Web.Controllers
+{
+	[SessionState(SessionStateBehavior.Disabled)]
+	[OverrideAuthentication]
+	[OverrideAuthorization]
+	[OverrideResultFilters]
+	//[OverrideActionFilters] // TBD: (mc) really?
+	[OverrideExceptionFilters]
+	public partial class Media4Controller : Controller
+    {
+		//private readonly static bool _streamRemoteMedia = CommonHelper.GetAppSetting<bool>("sm:StreamRemoteMedia");
+
+		private readonly IMediaService _mediaService;
+		private readonly IPermissionService _permissionService;
+		private readonly IEventPublisher _eventPublisher;
+		//private readonly IMediaFileSystem _mediaFileSystem;
+		private readonly MediaSettings _mediaSettings;
+		private readonly MediaHelper _mediaHelper;
+
+		private readonly Lazy<IEnumerable<IMediaHandler>> _mediaHandlers;
+		private readonly Lazy<SeoSettings> _seoSettings;
+		private readonly Lazy<IXmlSitemapGenerator> _sitemapGenerator;
+
+		public Media4Controller(
+			IMediaService mediaService,
+			IPermissionService permissionService,
+			IEventPublisher eventPublisher,
+			//IMediaFileSystem mediaFileSystem,
+			MediaSettings mediaSettings,
+			MediaHelper mediaHelper,
+			Lazy<IEnumerable<IMediaHandler>> mediaHandlers,
+			Lazy<SeoSettings> seoSettings,
+			Lazy<IXmlSitemapGenerator> sitemapGenerator)
+        {
+			_mediaService = mediaService;
+			_permissionService = permissionService;
+			_eventPublisher = eventPublisher;
+			//_mediaFileSystem = mediaFileSystem;
+			_mediaSettings = mediaSettings;
+			_mediaHelper = mediaHelper;
+			_mediaHandlers = mediaHandlers;
+			_seoSettings = seoSettings;
+			_sitemapGenerator = sitemapGenerator;
+        }
+
+		public ILogger Logger { get; set; } = NullLogger.Instance;
+
+		#region XML sitemap
+
+		[RewriteUrl(SslRequirement.No)]
+		[LanguageSeoCode(Order = 1)]
+		[SetWorkingCulture(Order = 2)]
+		public async Task<ActionResult> XmlSitemap(int? index = null)
+		{
+			if (!_seoSettings.Value.XmlSitemapEnabled)
+				return HttpNotFound();
+
+			try
+			{
+				var partition = await _sitemapGenerator.Value.GetSitemapPartAsync(index ?? 0);
+				return new FileStreamResult(partition.Stream, "text/xml");
+			}
+			catch (IndexOutOfRangeException)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Sitemap index is out of range.");
+			}
+			catch (Exception ex)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, ex.Message);
+			}
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Redirect legacy URL "/uploaded/some/file.png" to "/file/1234/some/file.png"
+		/// </summary>
+		public ActionResult Uploaded(string path)
+		{
+			path = SystemAlbumProvider.Files + "/" + path;
+
+			var mediaFile = _mediaService.GetFileByPath(path);
+			if (mediaFile == null)
+			{
+				return NotFound(null);
+			}
+
+			var routeValues = new RouteValueDictionary(RouteData.Values);
+			routeValues["id"] = mediaFile.Id;
+			routeValues["path"] = path;
+
+			return RedirectToActionPermanent("File", routeValues);
+		}
+
+		[AcceptVerbs("GET", "HEAD")]
+		public async Task<ActionResult> File(int id /* mediaFileId */, string path)
+		{
+			MediaFileInfo mediaFile = null;
+
+			if (!_mediaHelper.TokenizePath(path, out var pathData))
+			{
+				// Missing or malformed Uri: get file metadata from DB by id, but only when current user has media manage rights
+				if (!_permissionService.Authorize(Permissions.Media.Update))
+				{
+					return NotFound(null);
+				}
+				
+				mediaFile = _mediaService.GetFileById(id);
+				if (mediaFile == null || mediaFile.FolderId == null)
+				{
+					return NotFound(pathData.MimeType);
+				}
+
+				pathData = new MediaPathData(null, mediaFile.Name)
+				{
+					Extension = mediaFile.Extension,
+					MimeType = mediaFile.MimeType
+				};
+			}
+
+			var handlerContext = new MediaHandlerContext
+			{
+				HttpContext = HttpContext,
+				MediaFileId = id,
+				RawPath = path,
+				MediaService = _mediaService,
+				PathData = pathData,
+				SourceFile = mediaFile,
+				ImageQuery = CreateImageQuery(pathData.MimeType, pathData.Extension)
+			};
+
+			var handlers = _mediaHandlers.Value.OrderBy(x => x.Order).ToArray();
+
+			IMediaHandler currentHandler;
+			for (var i = 0; i < handlers.Length; i++)
+			{
+				currentHandler = handlers[i];
+
+				// Execute handler
+				await currentHandler.ExecuteAsync(handlerContext);
+
+				if (handlerContext.Exception != null)
+				{
+					return new HttpStatusCodeResult(500, handlerContext.Exception.Message);
+				}
+
+				if (handlerContext.Executed || handlerContext.ResultFile != null)
+				{
+					// Get out if the handler produced a result file or has been executed in any way
+					break;
+				}
+			}
+
+			var responseFile = handlerContext.ResultFile ?? handlerContext.SourceFile;
+			if (responseFile == null || !responseFile.Exists)
+			{
+				return NotFound(pathData.MimeType);
+			}
+
+			//if (!_streamRemoteMedia && _mediaService.StorageProvider.IsCloudStorage && responseFile is MediaFile)
+			//{
+			//	// Redirect to existing remote file
+			//	Response.ContentType = pathData.MimeType;
+			//	return Redirect(_mediaService.StorageProvider.GetPublicUrl((MediaFile)responseFile));
+			//}
+
+			if (handlerContext.ResultStream != null)
+			{
+				// A result stream instance is given when the file has just been processed by a media handler during this request.
+				// In this case there is no need to open the stream from storage again.
+				return new CachedFileResult(pathData.MimeType, responseFile.LastUpdated, () => handlerContext.ResultStream, handlerContext.ResultStream.Length);
+			}
+			else
+			{
+				return new CachedFileResult(responseFile, pathData.MimeType);
+			}
+		}
+
+		private ActionResult NotFound(string mime)
+		{
+			Response.ContentType = mime.NullEmpty() ?? "text/html";
+			Response.StatusCode = 404;
+			return Content("404: Not Found");
+		}
+
+		protected virtual ProcessImageQuery CreateImageQuery(string mimeType, string extension)
+		{
+			if (extension == "svg")
+			{
+				return new ProcessImageQuery { Format = "svg" };
+			}
+
+			var qs = Request.QueryString;
+
+			// TODO: (mc) implement "raw" image handling later
+			//if (qs.GetValues(null).Contains("raw", StringComparer.OrdinalIgnoreCase) || qs["raw"] != null)
+			//{
+			//	return null;
+			//}
+
+			var query = new ProcessImageQuery(null, qs);
+
+			if (query.MaxWidth == null && query.MaxHeight == null && query.Contains("size"))
+			{
+				int size = query["size"].Convert<int>();
+				query.MaxWidth = size;
+				query.MaxHeight = size;
+
+				query.Remove("size");
+			}
+
+			if (query.Quality == null)
+			{
+				query.Quality = _mediaSettings.DefaultImageQuality;
+			}
+
+			_eventPublisher.Publish(new ImageQueryCreatedEvent(query, this.HttpContext, mimeType, extension));
+
+			return query;
+		}
+	}
+}

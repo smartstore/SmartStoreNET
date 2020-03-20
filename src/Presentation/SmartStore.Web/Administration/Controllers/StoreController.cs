@@ -282,7 +282,7 @@ namespace SmartStore.Admin.Controllers
 
             model.StoreStatisticsReport.Add(
                 T("Admin.Catalog.Categories") + ":",
-                string.Format("{0:#,##0}", _categoryService.GetAllCategories().Count));
+                string.Format("{0:#,##0}", _categoryService.GetAllCategories().TotalCount));
 
             model.StoreStatisticsReport.Add(
                 T("Admin.Catalog.Manufacturers") + ":",
@@ -290,7 +290,7 @@ namespace SmartStore.Admin.Controllers
 
             model.StoreStatisticsReport.Add(
                 T("Admin.Catalog.Attributes") + ":",
-                string.Format("{0:#,##0}", _productAttributeService.GetAllProductAttributes(0, int.MaxValue).Count));
+                string.Format("{0:#,##0}", _productAttributeService.GetAllProductAttributes(0, int.MaxValue).TotalCount));
 
             model.StoreStatisticsReport.Add(
                 T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations") + ":",
@@ -298,7 +298,7 @@ namespace SmartStore.Admin.Controllers
 
             model.StoreStatisticsReport.Add(
                 T("Account.CustomerOrders") + ":",
-                string.Format("{0:#,##0}", _orderService.GetAllOrders(0, 0, int.MaxValue).Count));
+                string.Format("{0:#,##0}", _orderService.GetAllOrders(0, 0, int.MaxValue).TotalCount));
 
             model.StoreStatisticsReport.Add(
                 T("Admin.Sales") + ":",
@@ -306,7 +306,7 @@ namespace SmartStore.Admin.Controllers
 
             model.StoreStatisticsReport.Add(
                 T("Admin.Customers.OnlineCustomers") + ":",
-                string.Format("{0:#,##0}", _customerService.GetOnlineCustomers(DateTime.UtcNow.AddMinutes(-15), null, 0, int.MaxValue).Count));
+                string.Format("{0:#,##0}", _customerService.GetOnlineCustomers(DateTime.UtcNow.AddMinutes(-15), null, 0, int.MaxValue).TotalCount));
 
             model.StoreStatisticsReport.Add(
                 T("Admin.Customers.Customers") + ":",
@@ -314,7 +314,7 @@ namespace SmartStore.Admin.Controllers
 
             model.StoreStatisticsReport.Add(
                 T("Admin.Promotions.NewsLetterSubscriptions.Short") + ":",
-                string.Format("{0:#,##0}", _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions("", 0, int.MaxValue).Count));
+                string.Format("{0:#,##0}", _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions("", 0, int.MaxValue).TotalCount));
 
             model.StoreStatisticsReport.Add(
                T("Admin.CurrentCarts") + ":",

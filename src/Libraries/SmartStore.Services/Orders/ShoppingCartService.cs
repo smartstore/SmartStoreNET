@@ -1408,13 +1408,23 @@ namespace SmartStore.Services.Orders
 
 		public decimal GetAllOpenCartsSubTotal()
 		{
-			var allProductIdsInCarts = _sciRepository.Table.Where(x=>x.ShoppingCartTypeId == (int)ShoppingCartType.ShoppingCart).Select(x => new { x.ProductId, x.Quantity }).ToDictionary(x => x.ProductId, x => x.Quantity);			
+			// TODO: (dash) Fix
+			var allProductIdsInCarts = _sciRepository.Table
+				.Where(x=> x.ShoppingCartTypeId == (int)ShoppingCartType.ShoppingCart)
+				.Select(x => new { x.ProductId, x.Quantity })
+				.ToDictionarySafe(x => x.ProductId, x => x.Quantity);		
+			
 			return _productService.GetProductsByIds(allProductIdsInCarts.Keys.ToArray()).Sum(x => x.Price * allProductIdsInCarts[x.Id]);
 		}
 
 		public decimal GetAllOpenWishlistsSubTotal()
 		{
-			var allProductIdsInCarts = _sciRepository.Table.Where(x => x.ShoppingCartTypeId == (int)ShoppingCartType.Wishlist).Select(x => new { x.ProductId, x.Quantity }).ToDictionary(x => x.ProductId, x => x.Quantity); 
+			// TODO: (dash) Fix
+			var allProductIdsInCarts = _sciRepository.Table
+				.Where(x => x.ShoppingCartTypeId == (int)ShoppingCartType.Wishlist)
+				.Select(x => new { x.ProductId, x.Quantity })
+				.ToDictionarySafe(x => x.ProductId, x => x.Quantity); 
+
 			return _productService.GetProductsByIds(allProductIdsInCarts.Keys.ToArray()).Sum(x => x.Price * allProductIdsInCarts[x.Id]);
 		}
 	}

@@ -6,6 +6,9 @@ namespace SmartStore.Admin.Models.Orders
 {
     public partial class OrdersIncompleteDashboardReportModel : ModelBase
     {
+        public string AmountTotal { get; set; }
+        public string QuantityTotal { get; set; }
+
         public List<OrdersIncompleteDashboardReportLine> Reports { get; set; } = new List<OrdersIncompleteDashboardReportLine>();
     }
 
@@ -15,12 +18,14 @@ namespace SmartStore.Admin.Models.Orders
         //public string Item { get; set; }
 
         //[SmartResourceDisplayName("Admin.SalesReport.Incomplete.Total")]
-        public string AmountTotal { get; set; }
+        public decimal AmountTotal { get; set; }
+        
+        public string AmountTotalFormatted { get; set; }
 
         //[SmartResourceDisplayName("Admin.SalesReport.Incomplete.Count")]
         public int Quantity { get; set; }
 
-        public string FormattedQuantity { get; set; }
+        public string QuantityFormatted { get; set; }
 
         //public string Url { get; set; }
     }

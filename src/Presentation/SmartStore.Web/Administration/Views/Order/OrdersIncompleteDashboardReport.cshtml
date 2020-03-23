@@ -4,71 +4,68 @@
     var jsonData = JsonConvert.SerializeObject(Model);
 }
 
-<div class="report fade-in-right">
+<div class="report">
     <div class="report-title-row">
-        <div class="report-title">@T("Admin.SalesReport.Incomplete")</div>
+        <div class="report-title">@T("Admin.SalesReport.Incomplete") Insgesamt</div>
     </div>
-    <div class="incomplete-orders-chart-text">
-        <div class="font-weight-bold fs-h4 fade-in">@Model.Reports[Model.Reports.Count - 1].FormattedQuantity</div>
-        <div class="pt-1 small fade-in" style="width: 150px">@T("Admin.SalesReport.Incomplete")</div>
-    </div>
-    <div class="canvas-container" style="height: 75%; transform: translateY(29px); pointer-events: none">
-        <canvas id="incomplete-orders-chart" width="5" height="3" style="width: 100%; pointer-events: all">
-        </canvas>
+    <div class="incomplete-orders-chart-container">
+        <div class="incomplete-orders-chart-text">
+            <div class="fs-h4 text-bold fade-in">@Model.QuantityTotal</div>
+            <div class="fs-h5 fade-in">@Model.AmountTotal</div>
+        </div>
+        <div class="canvas-container w-100 h-100">
+            <canvas id="incomplete-orders-chart" width="4" height="3" style="pointer-events: all">
+            </canvas>
+        </div>
     </div>
 </div>
 
-<style>
-</style>
-
 <script>
-
+    var style = getComputedStyle(document.body);
     var dataSets = JSON.parse('@Html.Raw(jsonData)');
 
-    var colorIndigo = style.getPropertyValue('--danger');
+    var colorSuccess = style.getPropertyValue('--success');
+    var colorPrimary = style.getPropertyValue('--primary');
     var colorWarning = style.getPropertyValue('--warning');
     var fontFamily = style.getPropertyValue('--font-family');
-    var bgColor = [colorIndigo, colorWarning];
 
     var $incompleteOrdersChartElement = $('#incomplete-orders-chart')[0];
     var $incompleteOrdersCtx = $incompleteOrdersChartElement.getContext('2d');
 
-    console.log($incompleteOrdersChartElement.clientWidth);
+    //var indigoGradient = $incompleteOrdersCtx.createRadialGradient(
+    //    $incompleteOrdersChartElement.clientWidth / 2,
+    //    $incompleteOrdersChartElement.clientHeight / 2,
+    //    $incompleteOrdersChartElement.clientWidth / 6,
+    //    $incompleteOrdersChartElement.clientWidth / 2,
+    //    $incompleteOrdersChartElement.clientHeight / 2,
+    //    $incompleteOrdersChartElement.clientWidth / 3.6
+    //);
+    //indigoGradient.addColorStop(0, colorSuccess);
+    //indigoGradient.addColorStop(0.65, colorSuccess);
+    //indigoGradient.addColorStop(1, 'white');
 
-    var indigoGradient = $incompleteOrdersCtx.createRadialGradient(
-        $incompleteOrdersChartElement.clientWidth / 2,
-        $incompleteOrdersChartElement.clientHeight / 2,
-        $incompleteOrdersChartElement.clientWidth / 6,
-        $incompleteOrdersChartElement.clientWidth / 2,
-        $incompleteOrdersChartElement.clientHeight / 2,
-        $incompleteOrdersChartElement.clientWidth / 3.6
-    );
-    indigoGradient.addColorStop(0, colorIndigo);
-    indigoGradient.addColorStop(0.65, colorIndigo);
-    indigoGradient.addColorStop(1, 'white');
-
-    var warningGradient = $incompleteOrdersCtx.createRadialGradient(
-        $incompleteOrdersChartElement.clientWidth / 2,
-        $incompleteOrdersChartElement.clientHeight / 2,
-        $incompleteOrdersChartElement.clientWidth / 6,
-        $incompleteOrdersChartElement.clientWidth / 2,
-        $incompleteOrdersChartElement.clientHeight / 2,
-        $incompleteOrdersChartElement.clientWidth / 3.6
-    );
-    warningGradient.addColorStop(0, colorWarning);
-    warningGradient.addColorStop(0.65, colorWarning);
-    warningGradient.addColorStop(1, 'white');
+    //var warningGradient = $incompleteOrdersCtx.createRadialGradient(
+    //    $incompleteOrdersChartElement.clientWidth / 2,
+    //    $incompleteOrdersChartElement.clientHeight / 2,
+    //    $incompleteOrdersChartElement.clientWidth / 6,
+    //    $incompleteOrdersChartElement.clientWidth / 2,
+    //    $incompleteOrdersChartElement.clientHeight / 2,
+    //    $incompleteOrdersChartElement.clientWidth / 3.6
+    //);
+    //warningGradient.addColorStop(0, colorWarning);
+    //warningGradient.addColorStop(0.65, colorWarning);
+    //warningGradient.addColorStop(1, 'white');
 
     var data = {
-        labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")","@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")"],
+        labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
         datasets: [{
-            data: [dataSets.Reports[0].Quantity, dataSets.Reports[1].Quantity],
-            backgroundColor: [indigoGradient, warningGradient],
+            data: [dataSets.Reports[0].Quantity, dataSets.Reports[1].Quantity, dataSets.Reports[2].Quantity],
+            backgroundColor: [colorWarning, colorPrimary, colorSuccess],
             borderAlign: 'center',
             borderColor: '#fff',
             borderWidth: 10,
             weight: 1,
-            hoverBackgroundColor: [indigoGradient, warningGradient],
+            hoverBackgroundColor: [colorWarning, colorPrimary, colorSuccess],
             hoverBorderColor: '#fff',
             hoverBorderWidth: 0,
         }],
@@ -91,7 +88,7 @@
             padding: {
                 left: 0,
                 right: 0,
-                top: 5,
+                top: 20,
                 bottom: 20
             }
         },
@@ -109,20 +106,10 @@
             cornerRadius: 4,
             titleMarginBottom: 8,
             bodySpacing: 5,
-            //custom: function(tooltip) {
-            //    if (!tooltip) return;
-            //    // disable displaying the color box;
-            //    tooltip.displayColors = false;
-            //},
             callbacks: {
                 label: function (item, data) {
-                    return " " + data.labels[item.index] + ": " + dataSets.Reports[item.index].FormattedQuantity;
+                    return " " + data.labels[item.index] + ": " + dataSets.Reports[item.index].QuantityFormatted;
                 },
-                //labelColor: function(tooltipItem, chart) {                    
-                //    return {
-                //        backgroundColor: bgColor[tooltipItem.index],
-                //    }
-                //},
             }
         },
     };
@@ -133,46 +120,3 @@
         options: options
     });
 </script>
-
-@*<div class="card shadow-sm mb-4">
-        <h6 class="card-header font-weight-medium border-bottom-0">
-            <i class="fa fa-signal pr-2"></i>
-            @T("Admin.SalesReport.Incomplete")
-        </h6>
-
-        <div class="table-responsive">
-            <table class="table table-striped m-0">
-                <thead>
-                    <tr>
-                        <th>@T("Admin.SalesReport.Incomplete.Item")</th>
-                        <th>@T("Admin.SalesReport.Incomplete.Total")</th>
-                        <th>@T("Admin.SalesReport.Incomplete.Count")</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var x in Model)
-                    {
-                        <tr>
-                            <td>
-                                @if (x.Url.HasValue())
-                                {
-                                    <a href="@x.Url">@x.Item</a>
-                                }
-                                else
-                                {
-                                    @x.Item
-                                }
-                            </td>
-                            <td>@x.Total</td>
-                            <td>@x.Count</td>
-                        </tr>
-                    }
-                    <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>*@

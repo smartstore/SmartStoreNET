@@ -4,7 +4,7 @@
     var jsonData = JsonConvert.SerializeObject(Model);
 }
 
-<div class="report fade-in-right">
+<div class="report">
     <div class="report-title-row">
         <div class="report-title pr-1">@T("Account.CustomerOrders")</div>
 
@@ -40,7 +40,7 @@
         </div>
     </div>
     <div class="px-4 pt-2" id="orders-chart-legend"></div>
-    <div class="canvas-container" style="height: 75%; transform: translateY(27px); pointer-events: none">
+    <div class="canvas-container" style="height: 75%; transform: translateY(23px); pointer-events: none">
         <canvas id="orders-chart" width="70" height="18" style="width: 100%; position: absolute; pointer-events: all"></canvas>
     </div>
 </div>
@@ -65,8 +65,8 @@
         // Chartjs
         var $ordersChartElement = $('#orders-chart')[0];
         var orders_ctx = $ordersChartElement.getContext('2d');
-        console.log($ordersChartElement.clientHeight);
-        var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight/0.74);
+
+        var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight / 0.74);
         //cancelledGradient.addColorStop(0, hexToRgba(colorDanger.substr(1), 1));
         //cancelledGradient.addColorStop(0, hexToRgba(colorDanger.substr(1), .1));
         cancelledGradient.addColorStop(0, 'rgb(232,123,92)');

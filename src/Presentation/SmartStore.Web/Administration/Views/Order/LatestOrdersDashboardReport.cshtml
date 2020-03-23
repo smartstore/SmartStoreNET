@@ -1,9 +1,9 @@
 ﻿@model LatestOrdersDashboardReportModel
 
 @using SmartStore.Core.Domain.Orders
-@using SmartStore.Services.Customers;
+@using SmartStore.Services.Customers
 
-<div class="report fade-in-right">
+<div class="report">
     <div class="report-title-row">
         <div class="report-title">@T("Admin.SalesReport.LatestOrders")</div>
     </div>
@@ -23,8 +23,8 @@
                 @foreach (var x in Model.LatestOrders)
                 {
                     <tr class="order-row" index="@x.OrderId">
-                        <td class="display-row">
-                            @Html.ActionLink(x.Customer.FormatUserName(), "Edit", "Customer", new { id = x.Customer.Id }, new { })
+                        <td class="display-row" title="@x.Customer.Username"> @*Use FormatUserName or so*@
+                            @Html.ActionLink(x.Customer.FindEmail(), "Edit", "Customer", new { id = x.Customer.Id }, new { })
                         </td>
                         <td class="display-row text-center">@x.ProductsTotal</td>
                         <td class="display-row text-right" style="padding-right: 2rem !important">@x.TotalAmount</td>

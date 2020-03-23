@@ -25,6 +25,7 @@ namespace SmartStore.Services.Rules
         protected readonly Lazy<ICustomerService> _customerService;
         protected readonly Lazy<ILanguageService> _languageService;
         protected readonly Lazy<ICountryService> _countryService;
+        protected readonly Lazy<IDeliveryTimeService> _deliveryTimeService;
         protected readonly Lazy<ICatalogSearchService> _catalogSearchService;
         protected readonly Lazy<IProductService> _productService;
         protected readonly Lazy<IProductTagService> _productTagService;
@@ -42,6 +43,7 @@ namespace SmartStore.Services.Rules
             Lazy<ICustomerService> customerService,
             Lazy<ILanguageService> languageService,
             Lazy<ICountryService> countryService,
+            Lazy<IDeliveryTimeService> deliveryTimeService,
             Lazy<ICatalogSearchService> catalogSearchService,
             Lazy<IProductService> productService,
             Lazy<IProductTagService> productTagService,
@@ -58,6 +60,7 @@ namespace SmartStore.Services.Rules
             _customerService = customerService;
             _languageService = languageService;
             _countryService = countryService;
+            _deliveryTimeService = deliveryTimeService;
             _catalogSearchService = catalogSearchService;
             _productService = productService;
             _productTagService = productTagService;
@@ -78,6 +81,7 @@ namespace SmartStore.Services.Rules
                 case "Category":
                 case "Country":
                 case "Currency":
+                case "DeliveryTime":
                 case "CustomerRole":
                 case "Language":
                 case "Manufacturer":
@@ -139,6 +143,11 @@ namespace SmartStore.Services.Rules
                 case "Currency":
                     options = _currencyService.Value.GetAllCurrencies(true)
                         .Select(x => new RuleValueSelectListOption { Value = byId ? x.Id.ToString() : x.CurrencyCode, Text = x.GetLocalized(y => y.Name, language, true, false) })
+                        .ToList();
+                    break;
+                case "DeliveryTime":
+                    options = _deliveryTimeService.Value.GetAllDeliveryTimes()
+                        .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false) })
                         .ToList();
                     break;
                 case "CustomerRole":

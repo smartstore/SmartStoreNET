@@ -38,13 +38,15 @@ namespace SmartStore.Services.Catalog.Rules
         public CatalogSearchQuery ApplyFilters(CatalogSearchQuery query)
         {
             // HOWTO: LogicalRuleOperator.Or? LinqCatalogSearchService doesn't support it. Really ICombinedSearchFilter of all filters for MegaSearch (weird)?
+            var ctx = new SearchFilterContext { Query = query };
 
             foreach (var expression in Expressions.Cast<SearchFilterExpression>())
             {
-                query = expression.Descriptor.ApplyFilter(query, expression.Value);
+                ctx.Expression = expression;
+                ctx.Query = expression.Descriptor.ApplyFilter(ctx);
             }
 
-            return query;
+            return ctx.Query;
         }
     }
 }

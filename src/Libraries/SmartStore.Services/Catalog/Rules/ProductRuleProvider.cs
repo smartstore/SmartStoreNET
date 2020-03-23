@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
@@ -11,6 +12,7 @@ using SmartStore.Rules.Domain;
 using SmartStore.Rules.Filters;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
+using SmartStore.Services.Search.Extensions;
 
 namespace SmartStore.Services.Catalog.Rules
 {
@@ -124,7 +126,19 @@ namespace SmartStore.Services.Catalog.Rules
                 .Select(x => new RuleValueSelectListOption { Value = ((int)x).ToString(), Text = x.GetLocalizedEnum(_services.Localization) })
                 .ToArray();
 
-            CatalogSearchQuery categoryFilter(CatalogSearchQuery q, int[] x)
+            var ratings = FacetUtility.GetRatings()
+                .Reverse()
+                .Skip(1)
+                .Select(x => new RuleValueSelectListOption
+                {
+                    Value = ((double)x.Value).ToString(CultureInfo.InvariantCulture),
+                    Text = T((double)x.Value == 1 ? "Search.Facet.1StarAndMore" : "Search.Facet.XStarsAndMore", x.Value).Text
+                })
+                .ToArray();
+
+            #region Special filters
+
+            CatalogSearchQuery categoryFilter(SearchFilterContext ctx, int[] x)
             {
                 if (x?.Any() ?? false)
                 {
@@ -139,20 +153,76 @@ namespace SmartStore.Services.Catalog.Rules
                             var node = tree.SelectNodeById(id);
                             if (node != null)
                             {
-                                ids.AddRange(node.Flatten(false).Select(x => x.Id));
+                                ids.AddRange(node.Flatten(false).Select(y => y.Id));
                             }
                         }
                     }
 
-                    q = q.WithCategoryIds(_catalogSettings.IncludeFeaturedProductsInNormalLists ? (bool?)null : false, ids.ToArray());
+                    return ctx.Query.WithCategoryIds(_catalogSettings.IncludeFeaturedProductsInNormalLists ? (bool?)null : false, ids.ToArray());
                 }
 
-                return q;
-            }
+                return ctx.Query;
+            };
+
+            CatalogSearchQuery stockQuantityFilter(SearchFilterContext ctx, int x)
+            {
+                if (ctx.Expression.Operator == RuleOperator.IsEqualTo || ctx.Expression.Operator == RuleOperator.IsNotEqualTo)
+                {
+                    return ctx.Query.WithStockQuantity(x, x, ctx.Expression.Operator == RuleOperator.IsEqualTo, ctx.Expression.Operator == RuleOperator.IsEqualTo);
+                }
+                else if (ctx.Expression.Operator == RuleOperator.GreaterThanOrEqualTo || ctx.Expression.Operator == RuleOperator.GreaterThan)
+                {
+                    return ctx.Query.WithStockQuantity(x, null, ctx.Expression.Operator == RuleOperator.GreaterThanOrEqualTo, null);
+                }
+                else if (ctx.Expression.Operator == RuleOperator.LessThanOrEqualTo || ctx.Expression.Operator == RuleOperator.LessThan)
+                {
+                    return ctx.Query.WithStockQuantity(null, x, null, ctx.Expression.Operator == RuleOperator.LessThanOrEqualTo);
+                }
+
+                return ctx.Query;
+            };
+
+            CatalogSearchQuery priceFilter(SearchFilterContext ctx, decimal x)
+            {
+                if (ctx.Expression.Operator == RuleOperator.IsEqualTo || ctx.Expression.Operator == RuleOperator.IsNotEqualTo)
+                {
+                    return ctx.Query.PriceBetween(x, x, ctx.Expression.Operator == RuleOperator.IsEqualTo, ctx.Expression.Operator == RuleOperator.IsEqualTo);
+                }
+                else if (ctx.Expression.Operator == RuleOperator.GreaterThanOrEqualTo || ctx.Expression.Operator == RuleOperator.GreaterThan)
+                {
+                    return ctx.Query.PriceBetween(x, null, ctx.Expression.Operator == RuleOperator.GreaterThanOrEqualTo, null);
+                }
+                else if (ctx.Expression.Operator == RuleOperator.LessThanOrEqualTo || ctx.Expression.Operator == RuleOperator.LessThan)
+                {
+                    return ctx.Query.PriceBetween(null, x, null, ctx.Expression.Operator == RuleOperator.LessThanOrEqualTo);
+                }
+
+                return ctx.Query;
+            };
+
+            CatalogSearchQuery createdFilter(SearchFilterContext ctx, DateTime x)
+            {
+                if (ctx.Expression.Operator == RuleOperator.IsEqualTo || ctx.Expression.Operator == RuleOperator.IsNotEqualTo)
+                {
+                    return ctx.Query.CreatedBetween(x, x, ctx.Expression.Operator == RuleOperator.IsEqualTo, ctx.Expression.Operator == RuleOperator.IsEqualTo);
+                }
+                else if (ctx.Expression.Operator == RuleOperator.GreaterThanOrEqualTo || ctx.Expression.Operator == RuleOperator.GreaterThan)
+                {
+                    return ctx.Query.CreatedBetween(x, null, ctx.Expression.Operator == RuleOperator.GreaterThanOrEqualTo, null);
+                }
+                else if (ctx.Expression.Operator == RuleOperator.LessThanOrEqualTo || ctx.Expression.Operator == RuleOperator.LessThan)
+                {
+                    return ctx.Query.CreatedBetween(null, x, null, ctx.Expression.Operator == RuleOperator.LessThanOrEqualTo);
+                }
+
+                return ctx.Query;
+            };
+
+            #endregion
 
             var descriptors = new List<SearchFilterDescriptor>
             {
-                new SearchFilterDescriptor<int>((q, x) => q.HasStoreId(x))
+                new SearchFilterDescriptor<int>((ctx, x) => ctx.Query.HasStoreId(x))
                 {
                     Name = "Store",
                     DisplayName = T("Admin.Rules.FilterDescriptor.Store"),
@@ -160,7 +230,7 @@ namespace SmartStore.Services.Catalog.Rules
                     SelectList = new LocalRuleValueSelectList(stores),
                     Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
                 },
-                new SearchFilterDescriptor<int[]>((q, x) => q.AllowedCustomerRoles(x))
+                new SearchFilterDescriptor<int[]>((ctx, x) => ctx.Query.AllowedCustomerRoles(x))
                 {
                     Name = "CustomerRole",
                     DisplayName = T("Admin.Rules.FilterDescriptor.IsInCustomerRole"),
@@ -168,28 +238,28 @@ namespace SmartStore.Services.Catalog.Rules
                     SelectList = new RemoteRuleValueSelectList("CustomerRole") { Multiple = true },
                     Operators = new RuleOperator[] { RuleOperator.In }
                 },
-                new SearchFilterDescriptor<bool>((q, x) => q.PublishedOnly(x))
+                new SearchFilterDescriptor<bool>((ctx, x) => ctx.Query.PublishedOnly(x))
                 {
                     Name = "Published",
                     DisplayName = T("Admin.Rules.FilterDescriptor.Published"),
                     RuleType = RuleType.Boolean,
                     Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
                 },
-                new SearchFilterDescriptor<bool>((q, x) => q.AvailableOnly(x))
+                new SearchFilterDescriptor<bool>((ctx, x) => ctx.Query.AvailableOnly(x))
                 {
                     Name = "AvailableByStock",
                     DisplayName = T("Admin.Rules.FilterDescriptor.AvailableByStock"),
                     RuleType = RuleType.Boolean,
                     Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
                 },
-                new SearchFilterDescriptor<bool>((q, x) => q.AvailableByDate(x))
+                new SearchFilterDescriptor<bool>((ctx, x) => ctx.Query.AvailableByDate(x))
                 {
                     Name = "AvailableByDate",
                     DisplayName = T("Admin.Rules.FilterDescriptor.AvailableByDate"),
                     RuleType = RuleType.Boolean,
                     Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
                 },
-                new SearchFilterDescriptor<int>((q, x) => q.WithVisibility((ProductVisibility)x))
+                new SearchFilterDescriptor<int>((ctx, x) => ctx.Query.WithVisibility((ProductVisibility)x))
                 {
                     Name = "Visibility",
                     DisplayName = T("Admin.Rules.FilterDescriptor.Visibility"),
@@ -197,7 +267,7 @@ namespace SmartStore.Services.Catalog.Rules
                     SelectList = new LocalRuleValueSelectList(visibilities),
                     Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
                 },
-                new SearchFilterDescriptor<int[]>((q, x) => q.WithProductIds(x))
+                new SearchFilterDescriptor<int[]>((ctx, x) => ctx.Query.WithProductIds(x))
                 {
                     Name = "Product",
                     DisplayName = T("Admin.Rules.FilterDescriptor.Product"),
@@ -205,14 +275,14 @@ namespace SmartStore.Services.Catalog.Rules
                     SelectList = new RemoteRuleValueSelectList("Product") { Multiple = true },
                     Operators = new RuleOperator[] { RuleOperator.In }
                 },
-                new SearchFilterDescriptor<bool>((q, x) => q.HomePageProductsOnly(x))
+                new SearchFilterDescriptor<bool>((ctx, x) => ctx.Query.HomePageProductsOnly(x))
                 {
                     Name = "HomepageProduct",
                     DisplayName = T("Admin.Rules.FilterDescriptor.HomepageProduct"),
                     RuleType = RuleType.Boolean,
                     Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
                 },
-                new SearchFilterDescriptor<int>((q, x) => q.IsProductType((ProductType)x))
+                new SearchFilterDescriptor<int>((ctx, x) => ctx.Query.IsProductType((ProductType)x))
                 {
                     Name = "ProductType",
                     DisplayName = T("Admin.Rules.FilterDescriptor.ProductType"),
@@ -228,7 +298,7 @@ namespace SmartStore.Services.Catalog.Rules
                     SelectList = new RemoteRuleValueSelectList("Category") { Multiple = true },
                     Operators = new RuleOperator[] { RuleOperator.In }
                 },
-                new SearchFilterDescriptor<int[]>((q, x) => q.WithManufacturerIds(null, x))
+                new SearchFilterDescriptor<int[]>((ctx, x) => ctx.Query.WithManufacturerIds(null, x))
                 {
                     Name = "Manufacturer",
                     DisplayName = T("Admin.Rules.FilterDescriptor.Manufacturer"),
@@ -236,13 +306,47 @@ namespace SmartStore.Services.Catalog.Rules
                     SelectList = new RemoteRuleValueSelectList("Manufacturer") { Multiple = true },
                     Operators = new RuleOperator[] { RuleOperator.In }
                 },
-                new SearchFilterDescriptor<int[]>((q, x) => q.WithProductTagIds(x))
+                new SearchFilterDescriptor<int[]>((ctx, x) => ctx.Query.WithProductTagIds(x))
                 {
                     Name = "ProductTag",
                     DisplayName = T("Admin.Rules.FilterDescriptor.ProductTag"),
                     RuleType = RuleType.IntArray,
                     SelectList = new RemoteRuleValueSelectList("ProductTag") { Multiple = true },
                     Operators = new RuleOperator[] { RuleOperator.In }
+                },
+                new SearchFilterDescriptor<int[]>((ctx, x) => ctx.Query.WithDeliveryTimeIds(x))
+                {
+                    Name = "DeliveryTime",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.DeliveryTime"),
+                    RuleType = RuleType.IntArray,
+                    Operators = new RuleOperator[] { RuleOperator.In },
+                    SelectList = new RemoteRuleValueSelectList("DeliveryTime") { Multiple = true }
+                },
+                new SearchFilterDescriptor<int>(stockQuantityFilter)
+                {
+                    Name = "StockQuantity",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.StockQuantity"),
+                    RuleType = RuleType.Int
+                },
+                new SearchFilterDescriptor<decimal>(priceFilter)
+                {
+                    Name = "Price",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.Price"),
+                    RuleType = RuleType.Money
+                },
+                new SearchFilterDescriptor<DateTime>(createdFilter)
+                {
+                    Name = "CreatedOn",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.CreatedOn"),
+                    RuleType = RuleType.DateTime
+                },
+                new SearchFilterDescriptor<double>((ctx, x) => ctx.Query.WithRating(x, null))
+                {
+                    Name = "Rating",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.Rating"),
+                    RuleType = RuleType.Float,
+                    Operators = new RuleOperator[] { RuleOperator.GreaterThanOrEqualTo },
+                    SelectList = new LocalRuleValueSelectList(ratings)
                 },
             };
 
@@ -257,7 +361,7 @@ namespace SmartStore.Services.Catalog.Rules
 
                 foreach (var attr in attributes)
                 {
-                    var descriptor = new SearchFilterDescriptor<int[]>((q, x) => q.WithFilter(SearchFilter.Combined(optionFilters(attr.Id, x))))
+                    var descriptor = new SearchFilterDescriptor<int[]>((ctx, x) => ctx.Query.WithFilter(SearchFilter.Combined(optionFilters(attr.Id, x))))
                     {
                         Name = $"Attribute{attr.Id}",
                         DisplayName = attr.GetLocalized(x => x.Name, language, true, false),

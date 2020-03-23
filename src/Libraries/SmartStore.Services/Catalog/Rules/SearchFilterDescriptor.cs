@@ -4,6 +4,13 @@ using SmartStore.Services.Search;
 
 namespace SmartStore.Services.Catalog.Rules
 {
+    public class SearchFilterContext
+    {
+        public CatalogSearchQuery Query { get; set; }
+        public SearchFilterExpression Expression { get; set; }
+    }
+
+
     public abstract class SearchFilterDescriptor : RuleDescriptor
     {
         public SearchFilterDescriptor()
@@ -11,23 +18,23 @@ namespace SmartStore.Services.Catalog.Rules
         {
         }
 
-        public abstract CatalogSearchQuery ApplyFilter(CatalogSearchQuery query, object value);
+        public abstract CatalogSearchQuery ApplyFilter(SearchFilterContext ctx);
     }
 
     public class SearchFilterDescriptor<TValue> : SearchFilterDescriptor
     {
-        public SearchFilterDescriptor(Func<CatalogSearchQuery, TValue, CatalogSearchQuery> filter)
+        public SearchFilterDescriptor(Func<SearchFilterContext, TValue, CatalogSearchQuery> filter)
         {
             Guard.NotNull(filter, nameof(filter));
 
             Filter = filter;
         }
 
-        public Func<CatalogSearchQuery, TValue, CatalogSearchQuery> Filter { get; protected set; }
+        public Func<SearchFilterContext, TValue, CatalogSearchQuery> Filter { get; protected set; }
 
-        public override CatalogSearchQuery ApplyFilter(CatalogSearchQuery query, object value)
+        public override CatalogSearchQuery ApplyFilter(SearchFilterContext ctx)
         {
-            return Filter(query, value.Convert<TValue>());
+            return Filter(ctx, ctx.Expression.Value.Convert<TValue>());
         }
     }
 }

@@ -323,6 +323,11 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Product", "Product", "Produkt");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Category", "Category", "Warengruppe");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductTag", "Product tag", "Produkt-Tag");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.DeliveryTime", "Delivery time", "Lieferzeit");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.StockQuantity", "Stock quantity", "Lagerbestand");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Price", "Price", "Preis");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CreatedOn", "Created on", "Erstellt am");
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Rating", "Rating", "Bewertung");
 
             // Rule operators
             builder.AddOrUpdate("Admin.Rules.RuleOperator.ContainsOperator", "Contains", "Enthält");

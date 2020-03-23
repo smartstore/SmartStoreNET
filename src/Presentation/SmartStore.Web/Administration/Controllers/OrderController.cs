@@ -12,6 +12,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Dashboard;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
@@ -2501,9 +2502,6 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected IList<BestsellersReportLineModel> GetBestsellersBriefReportModel(int recordsToReturn, int orderBy)
         {
-            var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
-            numberFormat.NumberDecimalDigits = 0;
-
             var report = _orderReportService.BestSellersReport(0, null, null, null, null, null, 0, recordsToReturn, orderBy, true);
 
             var model = report.Select(x =>
@@ -2513,8 +2511,8 @@ namespace SmartStore.Admin.Controllers
                 var m = new BestsellersReportLineModel
                 {
                     ProductId = x.ProductId,
-                    TotalAmount = _priceFormatter.FormatPrice(x.TotalAmount, true, false),
-                    TotalQuantity = x.TotalQuantity.ToString("N", numberFormat),
+                    TotalAmount = x.TotalAmount.ToString("C0"),
+                    TotalQuantity = x.TotalQuantity.ToString("D"),
                 };
 
                 if (product != null)
@@ -2777,26 +2775,28 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
-        protected virtual OrdersIncompleteDashboardReportModel GetOrdersIncompleteReportModel()
+        protected virtual OrdersIncompleteDashboardReportModel GetOrdersIncompleteReportModel(DateTime? startTime = null, DateTime? endTime = null)
         {
             var model = new OrdersIncompleteDashboardReportModel();
-            var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
-            numberFormat.NumberDecimalDigits = 0;
 
             var ordersPending = new OrderAverageReportLine[3];
-            ordersPending[0] = _orderReportService.GetOrderAverageReportLine(0, null, null, new int[] { (int)ShippingStatus.NotYetShipped }, null, null, null, true);
-            ordersPending[1] = _orderReportService.GetOrderAverageReportLine(0, null, new int[] { (int)PaymentStatus.Pending }, null, null, null, null, true);
-            ordersPending[2] = _orderReportService.GetOrderAverageReportLine(0, new int[] { (int)OrderStatus.Pending, (int)OrderStatus.Processing }, null, null, null, null, null, true);
+            ordersPending[0] = _orderReportService.GetOrderAverageReportLine(0, null, null, new int[] { (int)ShippingStatus.NotYetShipped }, startTime, endTime, null, true);
+            ordersPending[1] = _orderReportService.GetOrderAverageReportLine(0, null, new int[] { (int)PaymentStatus.Pending }, null, startTime, endTime, null, true);
+            ordersPending[2] = _orderReportService.GetOrderAverageReportLine(0, new int[] { (int)OrderStatus.Pending }, null, null, startTime, endTime, null, true);
 
             foreach (var pending in ordersPending)
             {
                 model.Reports.Add(new OrdersIncompleteDashboardReportLine
                 {
                     Quantity = pending.CountOrders,
-                    FormattedQuantity = (pending.CountOrders).ToString("N", numberFormat),
-                    AmountTotal = _priceFormatter.FormatPrice(pending.SumOrders, true, false),
+                    QuantityFormatted = pending.CountOrders.ToString("D"),
+                    AmountTotal = pending.SumOrders,
+                    AmountTotalFormatted = _priceFormatter.FormatPrice(pending.SumOrders, true, false),
                 });
             }
+            model.QuantityTotal = model.Reports[0].Quantity > model.Reports[1].Quantity ? model.Reports[0].Quantity.ToString("D") : model.Reports[1].Quantity.ToString("D");  //model.Reports.Sum(x => x.Quantity).ToString("D");
+            model.AmountTotal = model.Reports[0].AmountTotal > model.Reports[1].AmountTotal ? model.Reports[0].AmountTotal.ToString("C0") : model.Reports[1].AmountTotal.ToString("C0");  //model.Reports.Sum(x => x.AmountTotal).ToString("C0");
+
             return model;
         }
 
@@ -2847,7 +2847,7 @@ namespace SmartStore.Admin.Controllers
                     new DashboardOrderModel(
                         customer,
                         order.OrderItems.Select(x => x.Quantity).Sum(),
-                        _priceFormatter.FormatPrice(order.OrderTotal, true, false),
+                        order.OrderTotal.ToString("C0"),
                         order.CreatedOnUtc.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("g"),
                         order.OrderStatus,
                         order.Id)
@@ -2865,12 +2865,12 @@ namespace SmartStore.Admin.Controllers
             var watch = new Stopwatch();
             watch.Start();
 
-            var orders = _orderService.SearchOrders(0, 0, DateTime.UtcNow.AddDays(-730), null, null, null, null, null, null, null, 0, int.MaxValue);
+            var orders = _orderService.SearchOrders(0, 0, DateTime.UtcNow.AddYears(-2), null, null, null, null, null, null, null, 0, int.MaxValue);
             var model = new DashboardChartReportModel();
 
             for (int i = 0; i < model.Reports.Length; i++)
             {
-                model.Reports[i] = _orderReportService.GetOrdersDashboardReportLine(orders, i);
+                model.Reports[i] = _orderReportService.GetOrdersDashboardReportLine(orders, (PeriodState)i);
             }
 
             watch.Stop();
@@ -2887,24 +2887,12 @@ namespace SmartStore.Admin.Controllers
             watch.Start();
 
             var model = new OrderFulfillmentDashboardReportModel();
-            var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
-            numberFormat.NumberDecimalDigits = 0;
-            var allOrders = _orderService.GetAllOrders(0, 0, int.MaxValue);
 
-            var orders = new List<Order>[4] {
-                allOrders.Where(x => x.CreatedOnUtc >= DateTime.UtcNow.Date && x.CreatedOnUtc < DateTime.UtcNow.Date.AddDays(1)).ToList(),
-                allOrders.Where(x => x.CreatedOnUtc >= DateTime.UtcNow.AddDays(-1).Date && x.CreatedOnUtc < DateTime.UtcNow.Date).ToList(),
-                allOrders.Where(x => x.CreatedOnUtc >= DateTime.UtcNow.AddDays(-6).Date && x.CreatedOnUtc < DateTime.UtcNow.Date.AddDays(1)).ToList(),
-                allOrders.Where(x => x.CreatedOnUtc < DateTime.UtcNow.AddDays(-6).Date).ToList()
-            };
-
-            for (int i = 0; i < orders.Length; i++)
-            {
-                var ordersCount = orders[i].Where(x => x.OrderStatusId != (int)OrderStatus.Cancelled && x.OrderStatusId != (int)OrderStatus.Complete).Count();
-                model.UnfinishedOrders[i] = ordersCount.ToString("N", numberFormat);
-                model.Percentages[i] = orders[i].Count() == 0 ? 100 : 100 - (int)Math.Round(ordersCount / (float)orders[i].Count() * 100);
-            }
-
+            model.OrdersIncompleteReport[0] = GetOrdersIncompleteReportModel(DateTime.UtcNow.Date, DateTime.UtcNow.AddDays(1).Date); // Today
+            model.OrdersIncompleteReport[1] = GetOrdersIncompleteReportModel(DateTime.UtcNow.AddDays(-1).Date, DateTime.UtcNow.Date); // Yesterday
+            model.OrdersIncompleteReport[2] = GetOrdersIncompleteReportModel(DateTime.UtcNow.AddDays(-6).Date, DateTime.UtcNow.AddDays(1).Date); // Last Week
+            model.OrdersIncompleteReport[3] = GetOrdersIncompleteReportModel(null, DateTime.UtcNow.AddDays(-6).Date); // Older            
+          
             watch.Stop();
             Debug.WriteLine("OrderFulfillmentDashboardReport >>> " + watch.ElapsedMilliseconds);
             return PartialView(model);

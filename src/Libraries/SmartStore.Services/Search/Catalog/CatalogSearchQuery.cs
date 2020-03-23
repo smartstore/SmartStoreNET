@@ -114,7 +114,7 @@ namespace SmartStore.Services.Search
                 if (roleIds.Any())
                 {
                     roleIds.Insert(0, 0);
-                    WithFilter(SearchFilter.Combined(roleIds.Select(x => SearchFilter.ByField("roleid", x).ExactMatch().NotAnalyzed()).ToArray()));
+                    return WithFilter(SearchFilter.Combined(roleIds.Select(x => SearchFilter.ByField("roleid", x).ExactMatch().NotAnalyzed()).ToArray()));
                 }
             }
 
@@ -160,19 +160,9 @@ namespace SmartStore.Services.Search
             return WithFilter(SearchFilter.ByField("visibility", (int)value).Mandatory().ExactMatch().NotAnalyzed());
         }
 
-        public CatalogSearchQuery HomePageProductsOnly(bool value)
-		{
-			return WithFilter(SearchFilter.ByField("showonhomepage", value).Mandatory().ExactMatch().NotAnalyzed());
-		}
-
 		public CatalogSearchQuery HasParentGroupedProduct(params int[] parentProductIds)
 		{
-            if (!(parentProductIds?.Any() ?? false))
-            {
-				return this;
-			}
-
-			return WithFilter(SearchFilter.Combined(parentProductIds.Select(x => SearchFilter.ByField("parentid", x).ExactMatch().NotAnalyzed()).ToArray()));
+            return CreateFilter("parentid", parentProductIds);
 		}
 
 		public override CatalogSearchQuery HasStoreId(int id)
@@ -203,12 +193,7 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithProductIds(params int[] ids)
 		{
-            if (!(ids?.Any() ?? false))
-            {
-				return this;
-			}
-
-			return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField("id", x).ExactMatch().NotAnalyzed()).ToArray()));
+            return CreateFilter("id", ids);
 		}
 
 		public CatalogSearchQuery WithProductId(int? fromId, int? toId)
@@ -232,16 +217,11 @@ namespace SmartStore.Services.Search
 		/// <returns>Search query.</returns>
 		public CatalogSearchQuery WithCategoryIds(bool? featuredOnly, params int[] ids)
 		{
-            if (!(ids?.Any() ?? false))
-            {
-				return this;
-			}
-
 			var fieldName = featuredOnly.HasValue
                 ? featuredOnly.Value ? "featuredcategoryid" : "notfeaturedcategoryid"
                 : "categoryid";
 
-			return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField(fieldName, x).ExactMatch().NotAnalyzed()).ToArray()));
+            return CreateFilter(fieldName, ids);
 		}
 
 		/// <remarks>Includes only published categories.</remarks>
@@ -259,16 +239,11 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithManufacturerIds(bool? featuredOnly, params int[] ids)
 		{
-            if (!(ids?.Any() ?? false))
-            {
-				return this;
-			}
-
 			var fieldName = featuredOnly.HasValue
                 ? featuredOnly.Value ? "featuredmanufacturerid" : "notfeaturedmanufacturerid"
                 : "manufacturerid";
 
-			return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField(fieldName, x).ExactMatch().NotAnalyzed()).ToArray()));
+            return CreateFilter(fieldName, ids);
 		}
 
 		/// <remarks>Includes only published manufacturers.</remarks>
@@ -286,22 +261,58 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithProductTagIds(params int[] ids)
 		{
-			if (!(ids?.Any() ?? false))
-			{
-				return this;
-			}
-
-			return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField("tagid", x).ExactMatch().NotAnalyzed()).ToArray()));
+            return CreateFilter("tagid", ids);
 		}
 
         public CatalogSearchQuery WithDeliveryTimeIds(params int[] ids)
         {
-            if (!(ids?.Any() ?? false))
+            return CreateFilter("deliveryid", ids);
+        }
+
+        public CatalogSearchQuery WithCondition(params ProductCondition[] conditions)
+        {
+            var len = conditions?.Length ?? 0;
+            if (len > 0)
             {
-                return this;
+                if (len == 1)
+                {
+                    return WithFilter(SearchFilter.ByField("condition", (int)conditions[0]).Mandatory().ExactMatch().NotAnalyzed());
+                }
+
+                return WithFilter(SearchFilter.Combined(conditions.Select(x => SearchFilter.ByField("condition", (int)x).ExactMatch().NotAnalyzed()).ToArray()));
             }
 
-            return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField("deliveryid", x).ExactMatch().NotAnalyzed()).ToArray()));
+            return this;
+        }
+
+        public CatalogSearchQuery HomePageProductsOnly(bool value)
+        {
+            return WithFilter(SearchFilter.ByField("showonhomepage", value).Mandatory().ExactMatch().NotAnalyzed());
+        }
+
+        public CatalogSearchQuery DownloadOnly(bool value)
+        {
+            return WithFilter(SearchFilter.ByField("download", value).Mandatory().ExactMatch().NotAnalyzed());
+        }
+
+        public CatalogSearchQuery RecurringOnly(bool value)
+        {
+            return WithFilter(SearchFilter.ByField("recurring", value).Mandatory().ExactMatch().NotAnalyzed());
+        }
+
+        public CatalogSearchQuery ShipEnabledOnly(bool value)
+        {
+            return WithFilter(SearchFilter.ByField("shipenabled", value).Mandatory().ExactMatch().NotAnalyzed());
+        }
+
+        public CatalogSearchQuery FreeShippingOnly(bool value)
+        {
+            return WithFilter(SearchFilter.ByField("shipfree", value).Mandatory().ExactMatch().NotAnalyzed());
+        }
+
+        public CatalogSearchQuery TaxExemptOnly(bool value)
+        {
+            return WithFilter(SearchFilter.ByField("taxexempt", value).Mandatory().ExactMatch().NotAnalyzed());
         }
 
         public CatalogSearchQuery WithStockQuantity(
@@ -435,6 +446,6 @@ namespace SmartStore.Services.Search
             }
 		}
 
-		#endregion
-	}
+        #endregion
+    }
 }

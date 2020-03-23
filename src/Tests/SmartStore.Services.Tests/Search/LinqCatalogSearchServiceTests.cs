@@ -659,11 +659,37 @@ namespace SmartStore.Services.Tests.Search
 			Assert.That(result.Hits.Count, Is.EqualTo(1));
 		}
 
-		#endregion
+        [Test]
+        public void LinqSearch_filter_with_condition()
+        {
+            var products = new List<Product>
+            {
+                new SearchProduct(1) { Condition = ProductCondition.New },
+                new SearchProduct(2) { Condition = ProductCondition.Used },
+                new SearchProduct(3) { Condition = ProductCondition.New },
+                new SearchProduct(4) { Condition = ProductCondition.Damaged },
+                new SearchProduct(5) { Condition = ProductCondition.New },
+                new SearchProduct(6) { Condition = ProductCondition.Refurbished }
+            };
 
-		#region SearchProduct
+            var result = Search(new CatalogSearchQuery().WithCondition(ProductCondition.New), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(3));
 
-		internal class SearchProduct : Product
+            result = Search(new CatalogSearchQuery().WithCondition(ProductCondition.Used, ProductCondition.Damaged), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(2));
+
+            result = Search(new CatalogSearchQuery().WithCondition(ProductCondition.Refurbished), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(1));
+
+            result = Search(new CatalogSearchQuery().WithCondition(ProductCondition.New, ProductCondition.Used), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(4));
+        }
+
+        #endregion
+
+        #region SearchProduct
+
+        internal class SearchProduct : Product
 		{
 			internal SearchProduct()
 				: this(0, null, null, null)
@@ -696,7 +722,7 @@ namespace SmartStore.Services.Tests.Search
 				ICollection<ProductManufacturer> manufacturers,
 				ICollection<ProductTag> tags)
 			{
-				Id = (id == 0 ? (new Random()).Next(100, int.MaxValue) : id);
+				Id = id == 0 ? (new Random()).Next(100, int.MaxValue) : id;
 				ProductCategories = categories ?? new HashSet<ProductCategory>();
 				ProductManufacturers = manufacturers ?? new HashSet<ProductManufacturer>();
 				ProductTags = tags ?? new HashSet<ProductTag>();

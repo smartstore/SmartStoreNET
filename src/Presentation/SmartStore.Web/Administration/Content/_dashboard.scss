@@ -12,7 +12,7 @@
 }
 
 .table-dashboard {
-    background-color: var(--secondary);
+    xbackground-color: var(--secondary);
 
     > table {
         margin-bottom: 0;
@@ -43,13 +43,13 @@
         }
 
         tbody tr {
-            transition: all .25s ease-out;
+            transition: all .33s ease-out;
         }
 
         tbody tr:hover {
-            transform: translateY(-3px);
-            transition: all .25s ease-out;
-            background-color: rgba(0,0,0, 0.05);
+            xtransform: translateY(-3px);
+            transition: all .33s ease-out;
+            background-color: rgba(0,0,0, 0.025);
         }
     }
 
@@ -141,7 +141,6 @@
     box-shadow: $box-shadow-sm-var;
     height: 100%;
     overflow: hidden;
-    opacity: 0;
 
     &.sticky-report {
         position: sticky;
@@ -194,10 +193,16 @@
         }
     }
 
+    .incomplete-orders-chart-container {
+        display: flex;
+        height: 100%;
+        justify-content: center;
+        text-align: center;
+        align-items: center;
+    }
+
     .incomplete-orders-chart-text {
         position: absolute;
-        transform: translate(150px, 130px);
-        text-align: center;
         font-size: 1rem;
     }
 
@@ -205,22 +210,20 @@
         opacity: 0;
         animation: fadeInDown .6s ease-out 1.2s forwards;
     }
-
-    .rise {
+    /*.rise {
         transition: all .4s;
     }
 
     .rise:hover {
         transform: translateY(-5px);
         transition: all .4s;
-    }
-
+    }*/
     .table {
         white-space: nowrap;
 
         .display-row {
             padding: .75rem 1rem;
-            background-color: white;
+            xbackground-color: white;
 
             .order-status-badge {
                 color: white;
@@ -362,4 +365,9 @@
 .report-store-statistics {
     grid-column: 7 / 11;
     grid-row: 4 / 5;
+}
+
+
+.text-bold {
+    font-weight: $font-weight-bold;
 }

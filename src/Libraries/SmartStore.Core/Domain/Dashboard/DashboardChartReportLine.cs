@@ -16,7 +16,7 @@ namespace SmartStore.Core.Domain.Dashboard
         public int PercentageDelta { get; set; }
         public string[] Labels { get; set; }
 
-        public ChartDataPoint[] DataSets { get; set; }       
+        public ChartDataPoint[] DataSets { get; set; }
     }
 
     public class ChartDataPoint
@@ -32,5 +32,14 @@ namespace SmartStore.Core.Domain.Dashboard
         public int[] Quantity { get; set; }
         public decimal[] Amount { get; set; }
         public string[] FormattedAmount { get; set; }
+    }
+
+    public enum PeriodState
+    {
+        Today,
+        Yesterday,
+        Week,
+        Month,
+        Year,
     }
 }

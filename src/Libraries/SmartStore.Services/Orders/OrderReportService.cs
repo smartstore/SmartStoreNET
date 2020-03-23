@@ -406,30 +406,29 @@ namespace SmartStore.Services.Orders
 
             return profit;
         }
-        public virtual DashboardChartReportLine GetOrdersDashboardReportLine(IPagedList<Order> allOrders, int periodId)
+        public virtual DashboardChartReportLine GetOrdersDashboardReportLine(IPagedList<Order> allOrders, PeriodState state)
         {
-            //startTime, endTime, orders, Reports
-            var period = 0;
             var startTime = DateTime.UtcNow;
             var endTime = startTime;
             var startTimeBefore = startTime;
             var endTimeBefore = startTime;
+            var period = 0;
 
-            if (periodId == 0)
+            if (state == PeriodState.Today)
             {
                 period = 24;
                 endTime = endTime.AddDays(1);
                 startTimeBefore = startTime.Date.AddDays(-1);
                 endTimeBefore = startTime.Date;
             }
-            else if (periodId == 1)
+            else if (state == PeriodState.Yesterday)
             {
                 period = 24;
                 startTime = startTime.AddDays(-1);
                 startTimeBefore = startTime.Date.AddDays(-1);
                 endTimeBefore = startTime.Date;
             }
-            else if (periodId == 2)
+            else if (state == PeriodState.Week)
             {
                 period = 7;
                 startTime = startTime.AddDays(-6);
@@ -437,7 +436,7 @@ namespace SmartStore.Services.Orders
                 startTimeBefore = startTime.Date.AddDays(-6);
                 endTimeBefore = startTime.Date;
             }
-            else if (periodId == 3)
+            else if (state == PeriodState.Month)
             {
                 period = 4;
                 startTime = startTime.AddDays(-27);
@@ -445,7 +444,7 @@ namespace SmartStore.Services.Orders
                 startTimeBefore = startTime.Date.AddDays(-28);
                 endTimeBefore = startTime;
             }
-            else if (periodId == 4)
+            else if (state == PeriodState.Year)
             {
                 period = 12;
                 startTime = new DateTime(startTime.Year, 1, 1);
@@ -461,25 +460,25 @@ namespace SmartStore.Services.Orders
             {
                 var startDate = startTime.Date;
                 var endDate = startDate;
-                if (period == 24)
+                if (state == PeriodState.Today || state == PeriodState.Yesterday)
                 {
                     startDate = startDate.AddHours(i - _dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours);
                     endDate = startDate.AddHours(1);
                     report.Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("t");
                 }
-                else if (period == 7)
+                else if (state == PeriodState.Week)
                 {
                     startDate = startDate.AddDays(i);
                     endDate = startDate.AddDays(1);
                     report.Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("m");
                 }
-                else if (period == 4)
+                else if (state == PeriodState.Month)
                 {
                     endDate = startDate.AddDays((i + 1) * 7);
                     startDate = startDate.AddDays(i * 7);
                     report.Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("m") + " - " + endDate.AddDays(-1).ToString("m");
                 }
-                else if (period == 12)
+                else if (state == PeriodState.Year)
                 {
                     startDate = new DateTime(startTime.Year, i + 1, 1);
                     endDate = startDate.AddMonths(1);
@@ -509,14 +508,11 @@ namespace SmartStore.Services.Orders
 
         private void GetReportPointData(DashboardChartReportLine report, List<Order>[] reports, DateTime startDate, DateTime endDate, int index)
         {
-            var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
-            numberFormat.CurrencyDecimalDigits = 0;
-
             for (int j = 0; j < reports.Length; j++)
             {
                 var point = reports[j].Where(x => x.CreatedOnUtc < endDate && x.CreatedOnUtc >= startDate).ToList();
                 report.DataSets[j].Amount[index] = point.Sum(x => x.OrderTotal);
-                report.DataSets[j].FormattedAmount[index] = ((int)Math.Round(report.DataSets[j].Amount[index])).ToString("C", numberFormat);
+                report.DataSets[j].FormattedAmount[index] = ((int)Math.Round(report.DataSets[j].Amount[index])).ToString("C0");
                 //report.DataSets[j].FormattedAmount[index] = _priceFormatter.FormatPrice((int)report.DataSets[j].Amount[index], true, false);
                 report.DataSets[j].Quantity[index] = point.Count;
             }
@@ -524,16 +520,13 @@ namespace SmartStore.Services.Orders
 
         private void CalculateOrdersAmount(DashboardChartReportLine report, IList<Order> allOrders, List<Order> orders, DateTime fromDate, DateTime toDate)
         {
-            var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
-            numberFormat.NumberDecimalDigits = 0;
-
             foreach (var item in report.DataSets)
             {
-                item.TotalAmount = ((int)Math.Round(item.Amount.Sum())).ToString("C", numberFormat);
+                item.TotalAmount = ((int)Math.Round(item.Amount.Sum())).ToString("C0");
             }
 
             var totalAmount = orders.Where(x => x.OrderStatus != OrderStatus.Cancelled).Sum(x => x.OrderTotal);
-            report.TotalAmount = ((int)Math.Round(totalAmount)).ToString("C", numberFormat);
+            report.TotalAmount = ((int)Math.Round(totalAmount)).ToString("C0");
             var sumBefore = Math.Round(allOrders
                 .Where(x => x.CreatedOnUtc < toDate && x.CreatedOnUtc >= fromDate)
                 .Select(x => x)

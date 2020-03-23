@@ -1357,16 +1357,13 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         private List<TopCustomerReportLineModel> CreateCustomerReportLineModel(IList<TopCustomerReportLine> items)
         {
-            var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
-            numberFormat.NumberDecimalDigits = 0;
-
             return items.Select(x =>
              {
                  var m = new TopCustomerReportLineModel()
                  {
                      CustomerId = x.CustomerId,
-                     OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
-                     OrderCount = x.OrderCount.ToString("N", numberFormat),
+                     OrderTotal = x.OrderTotal.ToString("C0"),
+                     OrderCount = x.OrderCount.ToString("D"),
                  };
 
                  var customer = _customerService.GetCustomerById(x.CustomerId);
@@ -1404,9 +1401,6 @@ namespace SmartStore.Admin.Controllers
 
             var model = new DashboardChartReportModel();
             var registredCustomers = _customerReportService.GetRegisteredCustomersDate();
-
-            var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
-            numberFormat.NumberDecimalDigits = 0;
             
             var report = new DashboardChartReportLine(4, 24);
             var customers = registredCustomers.Where(x => x.Date < DateTime.UtcNow.AddDays(1).Date && x.Date >= DateTime.UtcNow.Date).Select(x => x).ToList();
@@ -1418,7 +1412,7 @@ namespace SmartStore.Admin.Controllers
 
                 var point = customers.Where(x => x.Date < startDate.AddDays(1).Date && x.Date >= startDate).ToList();
                 report.DataSets[0].Amount[i] = point.Sum(x => x.Count);
-                report.DataSets[0].FormattedAmount[i] = ((int)Math.Round(report.DataSets[0].Amount[i])).ToString("N", numberFormat);
+                report.DataSets[0].FormattedAmount[i] = ((int)Math.Round(report.DataSets[0].Amount[i])).ToString("N");
                 report.DataSets[0].Quantity[i] = point.Count;
             }
 
@@ -1510,16 +1504,13 @@ namespace SmartStore.Admin.Controllers
 
         private void CalculateOrdersAmount(DashboardChartReportLine report, IList<RegistredCustomersDate> allCustomers, List<RegistredCustomersDate> customers, DateTime fromDate, DateTime toDate)
         {
-            var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
-            numberFormat.NumberDecimalDigits = 0;
-
             foreach (var item in report.DataSets)
             {
-                item.TotalAmount = ((int)Math.Round(item.Amount.Sum())).ToString("N", numberFormat);
+                item.TotalAmount = ((int)Math.Round(item.Amount.Sum())).ToString("N");
             }
 
             var totalAmount = customers.Sum(x => x.Count);
-            report.TotalAmount = ((int)Math.Round((double)totalAmount)).ToString("N", numberFormat);
+            report.TotalAmount = ((int)Math.Round((double)totalAmount)).ToString("N");
             var sumBefore = (int)Math.Round((double)allCustomers
                 .Where(x => x.Date < toDate && x.Date >= fromDate)
                 .Select(x => x)

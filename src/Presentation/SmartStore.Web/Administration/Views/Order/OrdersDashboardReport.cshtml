@@ -67,21 +67,21 @@
         var ordersChartElement = $('#orders-chart')[0];
         var orders_ctx = ordersChartElement.getContext('2d');
 
-        var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight / 0.74);
+        var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight / 0.8);
 
-        cancelledGradient.addColorStop(0, 'rgb(247,146,146)');
+        cancelledGradient.addColorStop(0, 'rgb(250,190,190)');
         cancelledGradient.addColorStop(1, 'white');
 
-        var pendingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight/0.74);
-        pendingGradient.addColorStop(0, 'rgb(251,215,162)');
+        var pendingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight / 0.8);
+        pendingGradient.addColorStop(0, 'rgb(253,244,229)');
         pendingGradient.addColorStop(1, 'white');
 
-        var processingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight/0.74);
-        processingGradient.addColorStop(0, 'rgb(170,220,199)');
+        var processingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight / 0.8);
+        processingGradient.addColorStop(0, 'rgb(231,245,239)');
         processingGradient.addColorStop(1, 'white');
 
-        var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight/0.74);
-        completeGradient.addColorStop(0, 'rgb(160,194,225)');
+        var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight / 0.8);
+        completeGradient.addColorStop(0, 'rgb(229,238,246)');
         completeGradient.addColorStop(1, 'white');
 
         var order_config = {

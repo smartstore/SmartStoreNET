@@ -62,10 +62,8 @@
         var customersChartElement = $('#customers-chart')[0];
         var customers_ctx = customersChartElement.getContext('2d');
 
-        var successGradient = customers_ctx.createLinearGradient(0, 0, 0, customersChartElement.clientHeight/0.74);
-        //successGradient.addColorStop(0, hexToRgba(colorSuccess.substr(1), 1));
-        //successGradient.addColorStop(1, hexToRgba(colorSuccess.substr(1), .1));
-        successGradient.addColorStop(0, 'rgb(92,193,166)');
+        var successGradient = customers_ctx.createLinearGradient(0, 0, 0, customersChartElement.clientHeight / 0.8);
+        successGradient.addColorStop(0, 'rgb(231,245,239)');
         successGradient.addColorStop(1, 'white');
 
         var customer_config = {

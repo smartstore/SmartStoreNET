@@ -6,70 +6,83 @@
 
 <div class="report">
     <div class="report-title-row">
-        <div class="report-title">@T("Admin.SalesReport.Incomplete") Insgesamt</div>
+        <div class="report-title">@T("Admin.SalesReport.Incomplete")</div>
     </div>
-    <div class="incomplete-orders-chart-container">
-        <div class="incomplete-orders-chart-text">
-            <div class="fs-h4 text-bold fade-in">@Model.QuantityTotal</div>
-            <div class="fs-h5 fade-in">@Model.AmountTotal</div>
+    <div class="d-flex justify-content-between px-4 pt-4">
+        <div class="chart-title text-muted">@T("Time.Today")</div>
+        <div class="chart-title text-muted">@T("Time.Yesterday")</div>
+        <div class="chart-title text-muted">@T("Admin.Report.LastWeek")</div>
+        <div class="chart-title text-muted">@T("Admin.Report.LastMonth")</div>
+        <div class="chart-title text-muted">@T("Admin.Report.Overall")</div>
+    </div>
+    <div class="d-flex justify-content-between px-4 pb-4" style="height:300px">
+        <div class="incomplete-orders-chart-container">
+            <div class="incomplete-orders-chart-text">
+                <div class="fs-h4 text-bold fade-in">@Model.Reports[0].QuantityTotal</div>
+                <div class="fs-h5 fade-in">@Model.Reports[0].AmountTotal</div>
+            </div>
+            <div class="canvas-container w-100 h-100">
+                <canvas id="incomplete-orders-chart-day" width="4" height="3" style="pointer-events: all">
+                </canvas>
+            </div>
         </div>
-        <div class="canvas-container w-100 h-100">
-            <canvas id="incomplete-orders-chart" width="4" height="3" style="pointer-events: all">
-            </canvas>
+        <div class="incomplete-orders-chart-container">
+            <div class="incomplete-orders-chart-text">
+                <div class="fs-h4 text-bold fade-in">@Model.Reports[1].QuantityTotal</div>
+                <div class="fs-h5 fade-in">@Model.Reports[1].AmountTotal</div>
+            </div>
+            <div class="canvas-container w-100 h-100">
+                <canvas id="incomplete-orders-chart-yesterday" width="4" height="3" style="pointer-events: all">
+                </canvas>
+            </div>
+        </div>
+        <div class="incomplete-orders-chart-container">
+            <div class="incomplete-orders-chart-text">
+                <div class="fs-h4 text-bold fade-in">@Model.Reports[2].QuantityTotal</div>
+                <div class="fs-h5 fade-in">@Model.Reports[2].AmountTotal</div>
+            </div>
+            <div class="canvas-container w-100 h-100">
+                <canvas id="incomplete-orders-chart-week" width="4" height="3" style="pointer-events: all">
+                </canvas>
+            </div>
+        </div>
+        <div class="incomplete-orders-chart-container">
+            <div class="incomplete-orders-chart-text">
+                <div class="fs-h4 text-bold fade-in">@Model.Reports[3].QuantityTotal</div>
+                <div class="fs-h5 fade-in">@Model.Reports[3].AmountTotal</div>
+            </div>
+            <div class="canvas-container w-100 h-100">
+                <canvas id="incomplete-orders-chart-month" width="4" height="3" style="pointer-events: all">
+                </canvas>
+            </div>
+        </div>
+        <div class="incomplete-orders-chart-container">
+            <div class="incomplete-orders-chart-text">
+                <div class="fs-h4 text-bold fade-in">@Model.Reports[3].QuantityTotal</div>
+                <div class="fs-h5 fade-in">@Model.Reports[3].AmountTotal</div>
+            </div>
+            <div class="canvas-container w-100 h-100">
+                <canvas id="incomplete-orders-chart-overall" width="4" height="3" style="pointer-events: all">
+                </canvas>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
     var style = getComputedStyle(document.body);
-    var dataSets = JSON.parse('@Html.Raw(jsonData)');
-
     var colorSuccess = style.getPropertyValue('--success');
     var colorPrimary = style.getPropertyValue('--primary');
     var colorWarning = style.getPropertyValue('--warning');
     var fontFamily = style.getPropertyValue('--font-family');
 
-    var $incompleteOrdersChartElement = $('#incomplete-orders-chart')[0];
-    var $incompleteOrdersCtx = $incompleteOrdersChartElement.getContext('2d');
+    var dataSets = JSON.parse('@Html.Raw(jsonData)');
 
-    //var indigoGradient = $incompleteOrdersCtx.createRadialGradient(
-    //    $incompleteOrdersChartElement.clientWidth / 2,
-    //    $incompleteOrdersChartElement.clientHeight / 2,
-    //    $incompleteOrdersChartElement.clientWidth / 6,
-    //    $incompleteOrdersChartElement.clientWidth / 2,
-    //    $incompleteOrdersChartElement.clientHeight / 2,
-    //    $incompleteOrdersChartElement.clientWidth / 3.6
-    //);
-    //indigoGradient.addColorStop(0, colorSuccess);
-    //indigoGradient.addColorStop(0.65, colorSuccess);
-    //indigoGradient.addColorStop(1, 'white');
-
-    //var warningGradient = $incompleteOrdersCtx.createRadialGradient(
-    //    $incompleteOrdersChartElement.clientWidth / 2,
-    //    $incompleteOrdersChartElement.clientHeight / 2,
-    //    $incompleteOrdersChartElement.clientWidth / 6,
-    //    $incompleteOrdersChartElement.clientWidth / 2,
-    //    $incompleteOrdersChartElement.clientHeight / 2,
-    //    $incompleteOrdersChartElement.clientWidth / 3.6
-    //);
-    //warningGradient.addColorStop(0, colorWarning);
-    //warningGradient.addColorStop(0.65, colorWarning);
-    //warningGradient.addColorStop(1, 'white');
-
-    var data = {
-        labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
-        datasets: [{
-            data: [dataSets.Reports[0].Quantity, dataSets.Reports[1].Quantity, dataSets.Reports[2].Quantity],
-            backgroundColor: [colorWarning, colorPrimary, colorSuccess],
-            borderAlign: 'center',
-            borderColor: '#fff',
-            borderWidth: 10,
-            weight: 1,
-            hoverBackgroundColor: [colorWarning, colorPrimary, colorSuccess],
-            hoverBorderColor: '#fff',
-            hoverBorderWidth: 0,
-        }],
-    };
+    for (var i = 0; i < dataSets.length; i++) {
+        if (dataSets.Reports[i].Data[0].Quantity == 0 && dataSets.Reports[i].Data[1].Quantity == 0) {
+            dataSets.Reports[i].Data[2].Quantity = 1
+        }
+    }
 
     var options = {
         responsive: true,
@@ -88,8 +101,8 @@
             padding: {
                 left: 0,
                 right: 0,
-                top: 20,
-                bottom: 20
+                top: 10,
+                bottom: 10
             }
         },
         legend: false,
@@ -108,15 +121,183 @@
             bodySpacing: 5,
             callbacks: {
                 label: function (item, data) {
-                    return " " + data.labels[item.index] + ": " + dataSets.Reports[item.index].QuantityFormatted;
+                    if (item.index == 2 && data.datasets[0].data[0] == 0 && data.datasets[0].data[1] == 0) {
+                        return " " + '@T("Admin.SalesReport.NoIncompleteOrders")';
+                    }
+                    // Use formatted Version....figure out how to access DataSet index....
+                    return " " + data.labels[item.index] + ": " + data.datasets[0].data[item.index] + ", " + data.datasets[1].data[item.index] ; // dataSets.Reports[item.datasetIndex].Data[item.index].QuantityFormatted;
                 },
             }
         },
     };
 
-    var myDoughnutChart = new Chart($incompleteOrdersCtx, {
+    // Day
+    var dataDay = {
+        labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
+        datasets: [{
+            data: [dataSets.Reports[0].Data[0].Quantity, dataSets.Reports[0].Data[1].Quantity, dataSets.Reports[0].Data[2].Quantity],
+            backgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            borderAlign: 'center',
+            borderColor: '#fff',
+            borderWidth: 10,
+            weight: 1,
+            hoverBackgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            hoverBorderColor: '#fff',
+            hoverBorderWidth: 0,
+        },{
+            data: [dataSets.Reports[0].Data[0].Amount, dataSets.Reports[0].Data[1].Amount, dataSets.Reports[0].Data[2].Amount],
+            backgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            borderAlign: 'center',
+            borderColor: '#fff',
+            borderWidth: 10,
+            weight: 1,
+            hoverBackgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            hoverBorderColor: '#fff',
+            hoverBorderWidth: 0,
+            hidden: true,
+        }],
+    };
+
+    var chartCtxDay = $('#incomplete-orders-chart-day')[0].getContext('2d');
+    var chartDay = new Chart(chartCtxDay, {
         type: 'doughnut',
-        data: data,
+        data: dataDay,
+        options: options
+    });
+
+    // Yesterday
+    var dataYesterday = {
+        labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
+        datasets: [{
+            data: [dataSets.Reports[1].Data[0].Quantity, dataSets.Reports[1].Data[1].Quantity, dataSets.Reports[1].Data[2].Quantity],
+            backgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            borderAlign: 'center',
+            borderColor: '#fff',
+            borderWidth: 10,
+            weight: 1,
+            hoverBackgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            hoverBorderColor: '#fff',
+            hoverBorderWidth: 0,
+        },{
+            data: [dataSets.Reports[1].Data[0].Amount, dataSets.Reports[1].Data[1].Amount, dataSets.Reports[1].Data[2].Amount],
+            backgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            borderAlign: 'center',
+            borderColor: '#fff',
+            borderWidth: 10,
+            weight: 1,
+            hoverBackgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            hoverBorderColor: '#fff',
+            hoverBorderWidth: 0,
+            hidden: true,
+        }],
+    };
+
+    var chartCtxYesterday = $('#incomplete-orders-chart-yesterday')[0].getContext('2d');
+    var chartYesterday = new Chart(chartCtxYesterday, {
+        type: 'doughnut',
+        data: dataYesterday,
+        options: options
+    });
+
+    // Week
+    var dataWeek = {
+        labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
+        datasets: [{
+            data: [dataSets.Reports[2].Data[0].Quantity, dataSets.Reports[2].Data[1].Quantity, dataSets.Reports[2].Data[2].Quantity],
+            backgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            borderAlign: 'center',
+            borderColor: '#fff',
+            borderWidth: 10,
+            weight: 1,
+            hoverBackgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            hoverBorderColor: '#fff',
+            hoverBorderWidth: 0,
+        },{
+            data: [dataSets.Reports[2].Data[0].Amount, dataSets.Reports[2].Data[1].Amount, dataSets.Reports[2].Data[2].Amount],
+            backgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            borderAlign: 'center',
+            borderColor: '#fff',
+            borderWidth: 10,
+            weight: 1,
+            hoverBackgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            hoverBorderColor: '#fff',
+            hoverBorderWidth: 0,
+            hidden: true,
+        }],
+    };
+
+    var chartCtxWeek = $('#incomplete-orders-chart-week')[0].getContext('2d');
+    var chartWeek = new Chart(chartCtxWeek, {
+        type: 'doughnut',
+        data: dataWeek,
+        options: options
+    });
+
+    // Month
+    var dataMonth = {
+        labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
+        datasets: [{
+            data: [dataSets.Reports[3].Data[0].Quantity, dataSets.Reports[3].Data[1].Quantity, dataSets.Reports[3].Data[2].Quantity],
+            backgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            borderAlign: 'center',
+            borderColor: '#fff',
+            borderWidth: 10,
+            weight: 1,
+            hoverBackgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            hoverBorderColor: '#fff',
+            hoverBorderWidth: 0,
+        },{
+            data: [dataSets.Reports[3].Data[0].Amount, dataSets.Reports[3].Data[1].Amount, dataSets.Reports[3].Data[2].Amount],
+            backgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            borderAlign: 'center',
+            borderColor: '#fff',
+            borderWidth: 10,
+            weight: 1,
+            hoverBackgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            hoverBorderColor: '#fff',
+            hoverBorderWidth: 0,
+            hidden: true,
+        }],
+    };
+
+    var chartCtxMonth = $('#incomplete-orders-chart-month')[0].getContext('2d');
+    var chartMonth = new Chart(chartCtxMonth, {
+        type: 'doughnut',
+        data: dataMonth,
+        options: options
+    });
+
+    // Overall
+    var dataOverall = {
+        labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
+        datasets: [{
+            data: [dataSets.Reports[4].Data[0].Quantity, dataSets.Reports[4].Data[1].Quantity, dataSets.Reports[4].Data[2].Quantity],
+            backgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            borderAlign: 'center',
+            borderColor: '#fff',
+            borderWidth: 10,
+            weight: 1,
+            hoverBackgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            hoverBorderColor: '#fff',
+            hoverBorderWidth: 0,
+        },{
+            data: [dataSets.Reports[4].Data[0].Amount, dataSets.Reports[4].Data[1].Amount, dataSets.Reports[4].Data[2].Amount],
+            backgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            borderAlign: 'center',
+            borderColor: '#fff',
+            borderWidth: 10,
+            weight: 1,
+            hoverBackgroundColor: [colorWarning, colorPrimary, colorSuccess],
+            hoverBorderColor: '#fff',
+            hoverBorderWidth: 0,
+            hidden: true,
+        }],
+    };
+
+    var chartCtxOverall = $('#incomplete-orders-chart-overall')[0].getContext('2d');
+    var chartOverall = new Chart(chartCtxOverall, {
+        type: 'doughnut',
+        data: dataOverall,
         options: options
     });
 </script>

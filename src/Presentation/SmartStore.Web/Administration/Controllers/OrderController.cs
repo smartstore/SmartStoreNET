@@ -2775,27 +2775,31 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
-        protected virtual OrdersIncompleteDashboardReportModel GetOrdersIncompleteReportModel(DateTime? startTime = null, DateTime? endTime = null)
+        protected virtual OrdersIncompleteDashboardReportLine GetOrdersIncompleteReportLine(DateTime? startTime = null, DateTime? endTime = null)
         {
-            var model = new OrdersIncompleteDashboardReportModel();
+            var model = new OrdersIncompleteDashboardReportLine();
 
+            // this doesnt work, we need order id or something to distinct all orders, since orders can have 1 or n states...we can not simply add all orders of diffrent states together....
             var ordersPending = new OrderAverageReportLine[3];
             ordersPending[0] = _orderReportService.GetOrderAverageReportLine(0, null, null, new int[] { (int)ShippingStatus.NotYetShipped }, startTime, endTime, null, true);
             ordersPending[1] = _orderReportService.GetOrderAverageReportLine(0, null, new int[] { (int)PaymentStatus.Pending }, null, startTime, endTime, null, true);
             ordersPending[2] = _orderReportService.GetOrderAverageReportLine(0, new int[] { (int)OrderStatus.Pending }, null, null, startTime, endTime, null, true);
-
-            foreach (var pending in ordersPending)
+            
+            for (int i = 0; i < model.Data.Length; i++)
             {
-                model.Reports.Add(new OrdersIncompleteDashboardReportLine
+                model.Data[i] = new OrdersIncompleteDashboardReportData
                 {
-                    Quantity = pending.CountOrders,
-                    QuantityFormatted = pending.CountOrders.ToString("D"),
-                    AmountTotal = pending.SumOrders,
-                    AmountTotalFormatted = _priceFormatter.FormatPrice(pending.SumOrders, true, false),
-                });
+                    Quantity = ordersPending[i].CountOrders,
+                    QuantityFormatted = ordersPending[i].CountOrders.ToString("D"),
+                    Amount = ordersPending[i].SumOrders,
+                    AmountFormatted = ordersPending[i].SumOrders.ToString("C0")
+                };                
             }
-            model.QuantityTotal = model.Reports[0].Quantity > model.Reports[1].Quantity ? model.Reports[0].Quantity.ToString("D") : model.Reports[1].Quantity.ToString("D");  //model.Reports.Sum(x => x.Quantity).ToString("D");
-            model.AmountTotal = model.Reports[0].AmountTotal > model.Reports[1].AmountTotal ? model.Reports[0].AmountTotal.ToString("C0") : model.Reports[1].AmountTotal.ToString("C0");  //model.Reports.Sum(x => x.AmountTotal).ToString("C0");
+
+            //var id = model.Data.OrderByDescending(x => x.Quantity).FirstOrDefault();
+
+            model.QuantityTotal = model.Data.Sum(x => x.Quantity).ToString("D"); // model.Data[0].Quantity > model.Data[1].Quantity ? model.Data[0].Quantity.ToString("D") : model.Data[1].Quantity.ToString("D");  
+            model.AmountTotal = model.Data.Sum(x => x.Amount).ToString("C0");  // model.Data[0].Amount > model.Data[1].Amount ? model.Data[0].Amount.ToString("C0") : model.Data[1].Amount.ToString("C0");
 
             return model;
         }
@@ -2806,29 +2810,18 @@ namespace SmartStore.Admin.Controllers
             var watch = new Stopwatch();
             watch.Start();
 
-            var model = GetOrdersIncompleteReportModel();
+            var model = new OrdersIncompleteDashboardReportModel();
+
+            model.Reports[0] = GetOrdersIncompleteReportLine(DateTime.UtcNow.Date, DateTime.UtcNow.AddDays(1).Date); // Today
+            model.Reports[1] = GetOrdersIncompleteReportLine(DateTime.UtcNow.AddDays(-1).Date, DateTime.UtcNow.Date); // Yesterday
+            model.Reports[2] = GetOrdersIncompleteReportLine(DateTime.UtcNow.AddDays(-6).Date, DateTime.UtcNow.AddDays(1).Date); // Week
+            model.Reports[3] = GetOrdersIncompleteReportLine(DateTime.UtcNow.AddDays(-27).Date, DateTime.UtcNow.AddDays(1).Date); // Month
+            model.Reports[4] = GetOrdersIncompleteReportLine(null, null); // Overall
 
             watch.Stop();
             Debug.WriteLine("OrdersIncompleteDashboardReport >>> " + watch.ElapsedMilliseconds);
             return PartialView(model);
         }
-
-        //[GridAction(EnableCustomBinding = true)]
-        //[Permission(Permissions.Order.Read)]
-        //public ActionResult OrderIncompleteReportList(GridCommand command) // Is this method even used?
-        //{
-        //    var model = GetOrdersIncompleteReportModel();
-        //    var gridModel = new GridModel<OrdersIncompleteDashboardReportLine>
-        //    {
-        //        Data = model.Reports,
-        //        Total = model.Reports.Count
-        //    };
-
-        //    return new JsonResult
-        //    {
-        //        Data = gridModel
-        //    };
-        //}
 
         [Permission(Permissions.Order.Read, false)]
         public ActionResult LatestOrdersDashboardReport()
@@ -2878,26 +2871,6 @@ namespace SmartStore.Admin.Controllers
 
             return PartialView(model);
         }
-
-
-        [Permission(Permissions.Order.Read, false)]
-        public ActionResult OrderFulfillmentDashboardReport()
-        {
-            var watch = new Stopwatch();
-            watch.Start();
-
-            var model = new OrderFulfillmentDashboardReportModel();
-
-            model.OrdersIncompleteReport[0] = GetOrdersIncompleteReportModel(DateTime.UtcNow.Date, DateTime.UtcNow.AddDays(1).Date); // Today
-            model.OrdersIncompleteReport[1] = GetOrdersIncompleteReportModel(DateTime.UtcNow.AddDays(-1).Date, DateTime.UtcNow.Date); // Yesterday
-            model.OrdersIncompleteReport[2] = GetOrdersIncompleteReportModel(DateTime.UtcNow.AddDays(-6).Date, DateTime.UtcNow.AddDays(1).Date); // Last Week
-            model.OrdersIncompleteReport[3] = GetOrdersIncompleteReportModel(null, DateTime.UtcNow.AddDays(-6).Date); // Older            
-          
-            watch.Stop();
-            Debug.WriteLine("OrderFulfillmentDashboardReport >>> " + watch.ElapsedMilliseconds);
-            return PartialView(model);
-        }
-
         #endregion
     }
 }

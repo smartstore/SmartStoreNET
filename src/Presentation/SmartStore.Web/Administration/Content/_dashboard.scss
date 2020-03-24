@@ -41,16 +41,6 @@
             border-color: rgba(0,0,0, 0.05);
             border-bottom-width: 3px;
         }
-
-        tbody tr {
-            transition: all .33s ease-out;
-        }
-
-        tbody tr:hover {
-            xtransform: translateY(-3px);
-            transition: all .33s ease-out;
-            background-color: rgba(0,0,0, 0.025);
-        }
     }
 
     > .table-3 {

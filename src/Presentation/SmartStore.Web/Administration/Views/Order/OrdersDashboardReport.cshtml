@@ -40,17 +40,17 @@
         </div>
     </div>
     <div class="px-4 pt-2" id="orders-chart-legend"></div>
-    <div class="canvas-container" style="height: 75%; transform: translateY(23px); pointer-events: none">
-        <canvas id="orders-chart" width="70" height="18" style="width: 100%; position: absolute; pointer-events: all"></canvas>
+    <div class="canvas-container" style="transform: translateY(8px);">
+        <canvas id="orders-chart" width="70" height="18" class="w-100"></canvas>
     </div>
 </div>
 
 <script>
     $(function () {
         var ordersData = JSON.parse('@Html.Raw(jsonData)');
-        var $percentageElement = $("#orders-delta-percentage");
-        var $chevronElement = $("#orders-delta-percentage-chevron");
-        var $sumElement = $("#orders-sum-amount");
+        var percentageElement = $("#orders-delta-percentage");
+        var chevronElement = $("#orders-delta-percentage-chevron");
+        var sumElement = $("#orders-sum-amount");
         var currentPeriod = 0;
 
         var style = getComputedStyle(document.body);
@@ -61,33 +61,27 @@
         var colorWarning = style.getPropertyValue('--warning');
         var fontFamily = style.getPropertyValue('--font-family-sans-serif');
         var whiteTransparent = 'rgba(255,255,255, 0.5)';
+
         //----------------------------------------------------
         // Chartjs
-        var $ordersChartElement = $('#orders-chart')[0];
-        var orders_ctx = $ordersChartElement.getContext('2d');
+        var ordersChartElement = $('#orders-chart')[0];
+        var orders_ctx = ordersChartElement.getContext('2d');
 
-        var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight / 0.74);
-        //cancelledGradient.addColorStop(0, hexToRgba(colorDanger.substr(1), 1));
-        //cancelledGradient.addColorStop(0, hexToRgba(colorDanger.substr(1), .1));
-        cancelledGradient.addColorStop(0, 'rgb(232,123,92)');
+        var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight / 0.74);
+
+        cancelledGradient.addColorStop(0, 'rgb(247,146,146)');
         cancelledGradient.addColorStop(1, 'white');
 
-        var pendingGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight/0.74);
-        //pendingGradient.addColorStop(0, hexToRgba(colorWarning.substr(1), 1));
-        //pendingGradient.addColorStop(1, hexToRgba(colorWarning.substr(1), .1));
-        pendingGradient.addColorStop(0, 'rgb(249,199,125)');
+        var pendingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight/0.74);
+        pendingGradient.addColorStop(0, 'rgb(251,215,162)');
         pendingGradient.addColorStop(1, 'white');
 
-        var processingGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight/0.74);
-        //processingGradient.addColorStop(0, hexToRgba(colorSuccess.substr(1), 1));
-        //processingGradient.addColorStop(1, hexToRgba(colorSuccess.substr(1), .1));
-        processingGradient.addColorStop(0, 'rgb(92,193,166)');
+        var processingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight/0.74);
+        processingGradient.addColorStop(0, 'rgb(170,220,199)');
         processingGradient.addColorStop(1, 'white');
 
-        var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.clientHeight/0.74);
-        //completeGradient.addColorStop(0, hexToRgba(colorPrimary.substr(1), 1));
-        //completeGradient.addColorStop(1, hexToRgba(colorPrimary.substr(1), .1));
-        completeGradient.addColorStop(0, 'rgb(123,170,213)');
+        var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight/0.74);
+        completeGradient.addColorStop(0, 'rgb(160,194,225)');
         completeGradient.addColorStop(1, 'white');
 
         var order_config = {
@@ -140,7 +134,6 @@
                         },
                     },
                     easing: 'easeInOutSine',
-
                 },
                 hover: {
                     mode: 'nearest',
@@ -150,7 +143,7 @@
                     padding: {
                         left: 0,
                         right: 0,
-                        top: 0,
+                        top: 6,
                         bottom: 0
                     }
                 },
@@ -202,7 +195,7 @@
                     bodySpacing: 5,
                     callbacks: {
                         label: function (item, data) {
-                            return /*data.datasets[item.datasetIndex].label + ": " +*/ " " + ordersData.Reports[currentPeriod].DataSets[item.datasetIndex].FormattedAmount[item.index];
+                            return " " + ordersData.Reports[currentPeriod].DataSets[item.datasetIndex].FormattedAmount[item.index];
                         },
                         labelColor: function(tooltipItem, chart) {
                             var dataset = chart.config.data.datasets[tooltipItem.datasetIndex];
@@ -211,12 +204,6 @@
                             }
                         },
                     },
-                     //custom: function(tooltip) {
-                     //   if (!tooltip) return;
-                     //    // disable displaying the color box;
-                     //    tooltip.labelColors = [colorDanger, colorWarning, colorSuccess, colorPrimary];
-
-                     //},
                 },
                 scales: {
                     yAxes: [{
@@ -243,26 +230,9 @@
         var ordersChart = new Chart(orders_ctx, order_config);
         setPercentageDelta(currentPeriod);
 
-        var $ordersLegendContainer = $("#orders-chart-legend")[0];
+        var ordersLegendContainer = $("#orders-chart-legend")[0];
         createLegend();
 
-        //$("#orders-chart").outerHeight($("#orders-chart-container").outerHeight());
-        //$(window).on("resize", function () {
-        //    $("#orders-chart").outerHeight($(window).height() - $("#orders-chart").offset().top - Math.abs($("#orders-chart").outerHeight(true) - $("#orders-chart").outerHeight()));
-        //});
-
-        //resizeChart();
-
-
-        //$(window).on("resize", function(){
-        //    resizeChart();
-        //});
-
-        //function resizeChart(){
-        //    // $("#orders-chart").outerHeight($(window).height()-$("#orders-chart").offset().top - Math.abs($("#orders-chart").outerHeight(true) - $("#orders-chart").outerHeight()));
-        //    $($ordersChartElement).attr('width', $('orders-chart-container').width()); //max width
-        //    $($ordersChartElement).attr('height', $('orders-chart-container').height());
-        //}
         ////----------------------------------------------------
         // EventHandler
 
@@ -277,25 +247,25 @@
             var val = ordersData.Reports[period].PercentageDelta;
 
             if (val < 0) {
-                $chevronElement.addClass("negative");
-                $chevronElement.removeClass("d-none");
-                $percentageElement.removeClass("text-success");
-                $percentageElement.addClass("text-danger");
+                chevronElement.addClass("negative");
+                chevronElement.removeClass("d-none");
+                percentageElement.removeClass("text-success");
+                percentageElement.addClass("text-danger");
             }
             else if (val > 0) {
-                $chevronElement.removeClass("negative");
-                $chevronElement.removeClass("d-none");
-                $percentageElement.addClass("text-success");
-                $percentageElement.removeClass("text-danger");
+                chevronElement.removeClass("negative");
+                chevronElement.removeClass("d-none");
+                percentageElement.addClass("text-success");
+                percentageElement.removeClass("text-danger");
             }
             else {
-                $chevronElement.addClass("d-none")
+                chevronElement.addClass("d-none")
             }
 
             var delta = val == 0 ? "" : val < 0 ? "-" + Math.abs(val) + "%" : "+" + Math.abs(val) + "%";
 
-            $percentageElement.html(delta);
-            $sumElement.html(ordersData.Reports[period].TotalAmount);
+            percentageElement.html(delta);
+            sumElement.html(ordersData.Reports[period].TotalAmount);
         }
 
         function setChartData(period) {
@@ -314,8 +284,8 @@
         }
 
         function createLegend() {
-            $($ordersLegendContainer).html(ordersChart.generateLegend());
-            var legendItems = $ordersLegendContainer.getElementsByTagName('li');
+            $(ordersLegendContainer).html(ordersChart.generateLegend());
+            var legendItems = ordersLegendContainer.getElementsByTagName('li');
             for (var i = 0; i < legendItems.length; i++) {
                 legendItems[i].addEventListener("click", legendClickCallback, false);
             }
@@ -323,7 +293,6 @@
 
         function legendClickCallback(event) {
             event = event || window.event;
-
             var target = event.target || event.srcElement;
             while (target.nodeName !== 'LI') {
                 target = target.parentElement;
@@ -343,18 +312,7 @@
 
             meta.hidden = !chart.data.datasets[index].hidden;
             chart.data.datasets[index].hidden = !chart.data.datasets[index].hidden;
-
             chart.update();
         }
-
-        //function hexToRgba(hex, opacity) {
-        //    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        //    var rgb = result ? {
-        //        r: parseInt(result[1], 16),
-        //        g: parseInt(result[2], 16),
-        //        b: parseInt(result[3], 16)
-        //    } : null;
-        //    return 'rgba(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', ' + opacity + ')';
-        //}
     });
 </script>

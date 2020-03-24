@@ -1399,24 +1399,18 @@ namespace SmartStore.Admin.Controllers
             var watch = new Stopwatch();
             watch.Start();
 
-            var model = new DashboardChartReportModel();
-            var registredCustomers = _customerReportService.GetRegisteredCustomersDate();
-            
-            var report = new DashboardChartReportLine(4, 24);
-            var customers = registredCustomers.Where(x => x.Date < DateTime.UtcNow.AddDays(1).Date && x.Date >= DateTime.UtcNow.Date).Select(x => x).ToList();
-                       
-            for (int i = 0; i < 24; i++)
+            var query = new CustomerSearchQuery
             {
-                var startDate = DateTime.UtcNow.Date.AddHours(i - _dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours);
-                report.Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("t");
+                RegistrationFromUtc = DateTime.UtcNow.AddYears(-2)
+            };
 
-                var point = customers.Where(x => x.Date < startDate.AddDays(1).Date && x.Date >= startDate).ToList();
-                report.DataSets[0].Amount[i] = point.Sum(x => x.Count);
-                report.DataSets[0].FormattedAmount[i] = ((int)Math.Round(report.DataSets[0].Amount[i])).ToString("N");
-                report.DataSets[0].Quantity[i] = point.Count;
+            var customers = _customerService.SearchCustomers(query);
+            var model = new DashboardChartReportModel();
+
+            for (int i = 0; i < model.Reports.Length; i++)
+            {
+                model.Reports[i] = _customerReportService.GetCustomersDashboardReportLine(customers, (PeriodState)i);
             }
-
-            CalculateOrdersAmount(report, registredCustomers, customers, DateTime.UtcNow.Date.AddDays(-1), DateTime.UtcNow);
 
             watch.Stop();
             Debug.WriteLine("RegistredCustomersDashboardReport >>> " + watch.ElapsedMilliseconds);

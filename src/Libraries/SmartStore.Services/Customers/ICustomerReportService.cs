@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Dashboard;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
@@ -32,5 +34,7 @@ namespace SmartStore.Services.Customers
         /// <returns>Number of registered customers</returns>
         int GetRegisteredCustomersReport(int days);
         List<RegistredCustomersDate> GetRegisteredCustomersDate();
+
+        DashboardChartReportLine GetCustomersDashboardReportLine(IPagedList<Customer> allCustomers, PeriodState state);
     }
 }

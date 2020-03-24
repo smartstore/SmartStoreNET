@@ -12,7 +12,6 @@
 }
 
 .table-dashboard {
-    xbackground-color: var(--secondary);
 
     > table {
         margin-bottom: 0;
@@ -76,55 +75,6 @@
     }
 }
 
-.fade-in-up {
-    animation: fade-in-up 1s ease-in-out forwards;
-}
-
-.fade-in-right {
-    animation: fade-in-right 1s ease-in-out forwards;
-}
-
-.fade-in-left {
-    animation: fade-in-left 1s ease-in-out forwards;
-}
-
-@keyframes fade-in-up {
-    0% {
-        transform: translateY(30px);
-        opacity: 0;
-    }
-
-    100% {
-        transform: translateY(0px);
-        opacity: 1;
-    }
-}
-
-@keyframes fade-in-left {
-    0% {
-        transform: translateX(30px);
-        opacity: 0;
-    }
-
-    100% {
-        transform: translateX(0px);
-        opacity: 1;
-    }
-}
-
-
-@keyframes fade-in-right {
-    0% {
-        transform: translateX(-30px);
-        opacity: 0;
-    }
-
-    100% {
-        transform: translateX(0px);
-        opacity: 1;
-    }
-}
-
 .report {
     background-color: white;
     border-radius: $border-radius;
@@ -144,43 +94,11 @@
         display: flex;
 
         .report-title {
-            display: inline-block;
             font-size: 1.25rem;
             font-weight: $font-weight-medium;
         }
     }
 
-    .report-pie-row {
-        padding: 1.5rem 3rem 2.5rem 3rem;
-        align-items: center;
-        display: flex;
-
-        .pie-chart-title {
-            font-weight: bold !important;
-            font-size: .875rem !important;
-            text-align: center;
-            padding-bottom: 1.25rem;
-        }
-
-        .report-pie-chart {
-            position: relative;
-            display: inline-block;
-            text-align: center;
-
-            & canvas {
-                position: absolute;
-                top: 0;
-                left: 0;
-            }
-        }
-
-        .pie-chart-text {
-            opacity: 0;
-            padding-top: 35%;
-            font-size: 1rem;
-            padding-left: 2.1rem;
-            padding-right: 2.1rem;
-        }
     }
 
     .incomplete-orders-chart-container {
@@ -200,30 +118,11 @@
         opacity: 0;
         animation: fadeInDown .6s ease-out 1.2s forwards;
     }
-    /*.rise {
-        transition: all .4s;
-    }
-
-    .rise:hover {
-        transform: translateY(-5px);
-        transition: all .4s;
-    }*/
     .table {
         white-space: nowrap;
 
         .display-row {
             padding: .75rem 1rem;
-            xbackground-color: white;
-
-            .order-status-badge {
-                color: white;
-                padding: .25rem .5rem;
-                border-radius: .25rem;
-                font-size: .75rem;
-                font-weight: $font-weight-medium;
-                position: absolute;
-                transform: translateY(-5px);
-            }
         }
 
         td.display-row {
@@ -290,11 +189,6 @@
             transform: rotate(180deg);
         }
     }
-}
-
-.report-order-fulfillment {
-    grid-column: 4 / 11;
-    grid-row: 1 / 2;
 }
 
 .report-incomplete-orders {

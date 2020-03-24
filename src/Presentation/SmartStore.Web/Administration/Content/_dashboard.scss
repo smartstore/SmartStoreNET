@@ -12,6 +12,7 @@
 }
 
 .table-dashboard {
+    padding-bottom: 0.75rem;
 
     > table {
         margin-bottom: 0;
@@ -84,7 +85,7 @@
 
     &.sticky-report {
         position: sticky;
-        top: 10px;
+        top: 0.625rem;
         height: auto;
     }
 
@@ -99,11 +100,18 @@
         }
     }
 
+    .chart-title {
+        width: 100%;
+        text-align: center;
+        font-weight: $font-weight-bold;
+        font-size: 1rem;
     }
 
     .incomplete-orders-chart-container {
         display: flex;
+        flex-direction: column;
         height: 100%;
+        width: 20%;
         justify-content: center;
         text-align: center;
         align-items: center;
@@ -114,10 +122,6 @@
         font-size: 1rem;
     }
 
-    .fade-in {
-        opacity: 0;
-        animation: fadeInDown .6s ease-out 1.2s forwards;
-    }
     .table {
         white-space: nowrap;
 
@@ -180,7 +184,7 @@
         color: var(--success);
 
         &:after {
-            @include fontawesome-font("\f077", regular); // chevron-down
+            @include fontawesome-font("\f077", regular);
             position: absolute;
         }
 
@@ -192,7 +196,7 @@
 }
 
 .report-incomplete-orders {
-    grid-column: 1 / 4;
+    grid-column: 1 / 11;
     grid-row: 1 / 2;
 }
 
@@ -221,7 +225,7 @@
     }
 }
 
-.report-sales {
+.report-orders {
     grid-column: 1 / 8;
     grid-row: 2 / 3;
 }
@@ -251,7 +255,25 @@
     grid-row: 4 / 5;
 }
 
-
+// Not Dashboard specific
+//--------------------------------------
 .text-bold {
     font-weight: $font-weight-bold;
+}
+
+.fade-in {
+    opacity: 0;
+    animation: fadeInUp .6s ease-out 1.2s forwards;
+}
+
+@keyframes fadeInUp {
+    0% {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0px);
+        opacity: 1;
+    }
 }

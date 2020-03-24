@@ -552,7 +552,8 @@
             builder.AddOrUpdate("Admin.SalesReport.Value", "Values", "Werte");
             builder.AddOrUpdate("Admin.Salesreport.OrderFulfillmentReport", "Order fulfillment", "Auftragsabwicklung");
             builder.AddOrUpdate("Admin.Report.OlderOrders", "Older orders", "Ältere Aufträge");
-
+            builder.AddOrUpdate("Admin.Report.Overall", "Overall", "Insgesamt");
+            builder.AddOrUpdate("Admin.Report.CustomerRegistrations", "Customer registrations", "Kundenregistrierungen");
         }
     }
 }

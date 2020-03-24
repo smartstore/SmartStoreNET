@@ -538,22 +538,20 @@
 
             builder.AddOrUpdate("Admin.SalesReport.ByQuantity", "By quantity", "Nach Anzahl");
             builder.AddOrUpdate("Admin.SalesReport.ByAmount", "By amount", "Nach Betrag");
+            builder.AddOrUpdate("Admin.SalesReport.Attribute", "Attributes", "Attribute");
+            builder.AddOrUpdate("Admin.SalesReport.Value", "Values", "Werte");
+            builder.AddOrUpdate("Admin.SalesReport.NewOrders", "Total new orders", "Neue Aufträge");
+            builder.AddOrUpdate("Admin.Report.StoreStatistics", "Statistics", "Statistiken");
+            builder.AddOrUpdate("Admin.Report.CustomerRegistrations", "Customer registrations", "Kundenregistrierungen");
+            builder.AddOrUpdate("Admin.Report.Today", "Today", "Heute");
+            builder.AddOrUpdate("Admin.Report.Yesterday", "Yesterday", "Gestern");
             builder.AddOrUpdate("Admin.Report.LastWeek", "Last 7 days", "Letzte 7 Tage");
             builder.AddOrUpdate("Admin.Report.LastMonth", "Last 28 days", "Letzte 28 Tage");
             builder.AddOrUpdate("Admin.Report.ThisYear", "This year", "Dieses Jahr");
-            builder.AddOrUpdate("Time.Today", "Today", "Heute");
-            builder.AddOrUpdate("Time.Yesterday", "Yesterday", "Gestern");
-            builder.AddOrUpdate("Admin.SalesReport.StoreStatistics", "Statistics", "Statistiken");
-            builder.AddOrUpdate("Common.Amount.Financial", "Amount", "Betrag");
-            builder.AddOrUpdate("Common.Amount", "Amount", "Betrag");
+            builder.AddOrUpdate("Admin.Report.Overall", "Overall", "Insgesamt");
             builder.AddOrUpdate("Admin.Promotions.NewsLetterSubscriptions.Short", "Newsletter abos", "Newsletter Abos");
             builder.AddOrUpdate("Admin.Promotions.SalesReport.Sales", "Sales", "Verkäufe");
-            builder.AddOrUpdate("Admin.SalesReport.Attribute", "Attributes", "Attribute");
-            builder.AddOrUpdate("Admin.SalesReport.Value", "Values", "Werte");
-            builder.AddOrUpdate("Admin.Salesreport.OrderFulfillmentReport", "Order fulfillment", "Auftragsabwicklung");
-            builder.AddOrUpdate("Admin.Report.OlderOrders", "Older orders", "Ältere Aufträge");
-            builder.AddOrUpdate("Admin.Report.Overall", "Overall", "Insgesamt");
-            builder.AddOrUpdate("Admin.Report.CustomerRegistrations", "Customer registrations", "Kundenregistrierungen");
+            builder.AddOrUpdate("Common.Amount", "Amount", "Betrag");
         }
     }
 }

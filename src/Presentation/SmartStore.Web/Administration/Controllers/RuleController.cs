@@ -433,9 +433,16 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.System.Rule.Update)]
         public ActionResult ChangeOperator(int ruleSetId, string op)
         {
+            var andOp = op.IsCaseInsensitiveEqual("and");
             var ruleSet = _ruleStorage.GetRuleSetById(ruleSetId, false, false);
 
-            ruleSet.LogicalOperator = op.IsCaseInsensitiveEqual("and") ? LogicalRuleOperator.And : LogicalRuleOperator.Or;
+            if (ruleSet.Scope == RuleScope.Product && !andOp)
+            {
+                NotifyError(T("Admin.Rules.OperatorNotSupported"));
+                return Json(new { Success = false });
+            }
+
+            ruleSet.LogicalOperator = andOp ? LogicalRuleOperator.And : LogicalRuleOperator.Or;
 
             _ruleStorage.UpdateRuleSet(ruleSet);
 

@@ -19,7 +19,7 @@
                     <thead>
                         <tr>
                             <th class="display-row">@T("Admin.Catalog.Categories.Products.Fields.Product")</th>
-                            <th class="display-row text-center">@T("Common.Count")</th>
+                            <th class="display-row text-center">@T("Admin.Promotions.SalesReport.Sales")</th>
                             <th class="display-row text-right" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@T("Common.Amount")</th>
                         </tr>
                     </thead>
@@ -27,7 +27,7 @@
                         @foreach (var x in Model.BestsellersByQuantity)
                         {
                             <tr>
-                                <td class="display-row">
+                                <td class="display-row" title="@x.ProductName">
                                     @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint)
                                 </td>
 
@@ -45,7 +45,7 @@
                     <thead>
                         <tr>
                             <th class="display-row">@T("Admin.Catalog.Categories.Products.Fields.Product")</th>
-                            <th class="display-row text-center">@T("Common.Count")</th>
+                            <th class="display-row text-center">@T("Admin.Promotions.SalesReport.Sales")</th>
                             <th class="display-row text-right" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax	")">@T("Common.Amount")</th>
                         </tr>
                     </thead>
@@ -53,7 +53,7 @@
                         @foreach (var x in Model.BestsellersByAmount)
                         {
                             <tr>
-                                <td class="display-row">
+                                <td class="display-row" title="@x.ProductName">
                                     @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint)
                                 </td>
                                 <td class="display-row text-center">@x.TotalQuantity</td>

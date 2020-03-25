@@ -1394,6 +1394,14 @@ namespace SmartStore.Admin.Controllers
             return PartialView(model);
         }
 
+        [ChildActionOnly]
+        [Permission(Permissions.Customer.Read, false)]
+        public ActionResult ReportRegisteredCustomers()
+        {
+            var model = GetReportRegisteredCustomersModel();
+            return PartialView(model);
+        }
+
         public ActionResult RegisteredCustomersDashboardReport()
         {
             var watch = new Stopwatch();

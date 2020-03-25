@@ -63,7 +63,7 @@ namespace SmartStore.Services.Customers
             }
 
             var roles = await roleQuery
-                .Where(x => x.Active)
+                .Where(x => x.Active && x.RuleSets.Any(y => y.IsActive))
                 .ToListAsync();
 
             using (var scope = new DbContextScope(ctx: _customerRoleMappingRepository.Context, autoDetectChanges: false, validateOnSave: false, hooksEnabled: false, autoCommit: false))

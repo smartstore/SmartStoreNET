@@ -160,7 +160,8 @@ namespace SmartStore.Services.Search
 					var stepPrefix = searchEngine.GetType().Name + " - ";
 
 					int totalCount = 0;
-					string[] spellCheckerSuggestions = null;
+                    int[] hitsEntityIds = null;
+                    string[] spellCheckerSuggestions = null;
 					IEnumerable<ISearchHit> searchHits;
 					Func<IList<Product>> hitsFactory = null;
 					IDictionary<string, FacetGroup> facets = null;
@@ -188,8 +189,8 @@ namespace SmartStore.Services.Search
 
 							using (_services.Chronometer.Step(stepPrefix + "Collect"))
 							{
-								var productIds = searchHits.Select(x => x.EntityId).ToArray();
-								hitsFactory = () => _productService.Value.GetProductsByIds(productIds, loadFlags);
+                                hitsEntityIds = searchHits.Select(x => x.EntityId).ToArray();
+								hitsFactory = () => _productService.Value.GetProductsByIds(hitsEntityIds, loadFlags);
 							}
 						}
 
@@ -230,7 +231,8 @@ namespace SmartStore.Services.Search
 						searchEngine,
 						searchQuery,
 						totalCount,
-						hitsFactory,
+                        hitsEntityIds,
+                        hitsFactory,
 						spellCheckerSuggestions,
 						facets);
 

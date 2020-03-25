@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Data.Utilities;
 using SmartStore.Rules;
 using SmartStore.Services.Catalog.Rules;
 using SmartStore.Services.Tasks;
@@ -39,6 +38,7 @@ namespace SmartStore.Services.Catalog
             var count = 0;
             var numDeleted = 0;
             var numAdded = 0;
+            var pageSize = 500;
             var categoryQuery = _categoryRepository.TableUntracked.Expand(x => x.RuleSets);
 
             if (ctx.Parameters.ContainsKey("CategoryIds"))
@@ -58,7 +58,7 @@ namespace SmartStore.Services.Catalog
             }
 
             var categories = await categoryQuery
-                .Where(x => x.Published && !x.Deleted)
+                .Where(x => x.Published && !x.Deleted && x.RuleSets.Any(y => y.IsActive))
                 .ToListAsync();
 
             using (var scope = new DbContextScope(ctx: _productCategoryRepository.Context, autoDetectChanges: false, validateOnSave: false, hooksEnabled: false, autoCommit: false))
@@ -80,12 +80,14 @@ namespace SmartStore.Services.Catalog
                             var pageIndex = -1;
                             while (true)
                             {
-                                // What a waste! We just need ProductId.
-                                var searchResult = _productRuleProvider.Search(new SearchFilterExpression[] { expression }, ++pageIndex, 500);
+                                // Do not touch searchResult.Hits. We only need the product identifiers.
+                                var searchResult = _productRuleProvider.Search(new SearchFilterExpression[] { expression }, ++pageIndex, pageSize);
+                                if (searchResult.HitsEntityIds.Any())
+                                {
+                                    ruleSetProductIds.AddRange(searchResult.HitsEntityIds);
+                                }
 
-                                ruleSetProductIds.AddRange(searchResult.Select(x => x.Id));
-
-                                if (!searchResult.HasNextPage)
+                                if (pageIndex >= (searchResult.TotalHitsCount / pageSize))
                                 {
                                     break;
                                 }

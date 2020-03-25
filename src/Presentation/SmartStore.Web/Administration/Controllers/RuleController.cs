@@ -321,15 +321,15 @@ namespace SmartStore.Admin.Controllers
                     {
                         var provider = _ruleProvider(entity.Scope) as IProductRuleProvider;
                         var expression = _ruleFactory.CreateExpressionGroup(entity, provider, true) as SearchFilterExpression;
-                        var products = provider.Search(new[] { expression }, command.Page - 1, command.PageSize);
-                        var pictureInfos = _pictureService.Value.GetPictureInfos(products);
+                        var searchResult = provider.Search(new[] { expression }, command.Page - 1, command.PageSize);
+                        var pictureInfos = _pictureService.Value.GetPictureInfos(searchResult.Hits);
 
                         var model = new GridModel<ProductModel>
                         {
-                            Total = products.TotalCount
+                            Total = searchResult.TotalHitsCount
                         };
 
-                        model.Data = products.Select(x =>
+                        model.Data = searchResult.Hits.Select(x =>
                         {
                             var productModel = new ProductModel
                             {
@@ -536,7 +536,7 @@ namespace SmartStore.Admin.Controllers
                             var expression = _ruleFactory.CreateExpressionGroup(entity, provider, true) as SearchFilterExpression;
                             var result = provider.Search(new[] { expression }, 0, 1);
 
-                            message = T("Admin.Rules.Execute.MatchProducts", result.TotalCount.ToString("N0"));
+                            message = T("Admin.Rules.Execute.MatchProducts", result.TotalHitsCount.ToString("N0"));
                         }
                         break;
                 }

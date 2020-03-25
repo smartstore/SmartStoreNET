@@ -62,7 +62,8 @@ namespace SmartStore.Services.Search
 					var searchEngine = provider.GetSearchEngine(indexStore, searchQuery);
 					var stepPrefix = searchEngine.GetType().Name + " - ";
 					var totalCount = 0;
-					string[] spellCheckerSuggestions = null;
+                    int[] hitsEntityIds = null;
+                    string[] spellCheckerSuggestions = null;
 					IEnumerable<ISearchHit> searchHits;
 					Func<IList<ForumPost>> hitsFactory = null;
                     IDictionary<string, FacetGroup> facets = null;
@@ -90,8 +91,8 @@ namespace SmartStore.Services.Search
 						{
 							using (_services.Chronometer.Step(stepPrefix + "Collect"))
 							{
-                                var postIds = searchHits.Select(x => x.EntityId).ToArray();
-                                hitsFactory = () => _forumService.Value.GetPostsByIds(postIds);
+                                hitsEntityIds = searchHits.Select(x => x.EntityId).ToArray();
+                                hitsFactory = () => _forumService.Value.GetPostsByIds(hitsEntityIds);
                             }
                         }
 
@@ -131,7 +132,8 @@ namespace SmartStore.Services.Search
 						searchEngine,
 						searchQuery,
 						totalCount,
-						hitsFactory,
+                        hitsEntityIds,
+                        hitsFactory,
 						spellCheckerSuggestions,
                         facets);
 

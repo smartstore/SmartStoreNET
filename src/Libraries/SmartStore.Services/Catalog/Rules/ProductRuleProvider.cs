@@ -79,11 +79,20 @@ namespace SmartStore.Services.Catalog.Rules
             return group;
         }
 
-        public IPagedList<Product> Search(SearchFilterExpression[] filters, int pageIndex = 0, int pageSize = int.MaxValue)
+        public CatalogSearchResult Search(SearchFilterExpression[] filters, int pageIndex = 0, int pageSize = int.MaxValue)
         {
+            var searchQuery = new CatalogSearchQuery()
+                .OriginatesFrom("Rule/Search")
+                .WithLanguage(_services.WorkContext.WorkingLanguage)
+                .WithCurrency(_services.WorkContext.WorkingCurrency)
+                .BuildFacetMap(false)
+                .CheckSpelling(0)
+                .Slice(pageIndex * pageSize, pageSize)
+                .SortBy(ProductSortingEnum.CreatedOn);
+
             if ((filters?.Length ?? 0) == 0)
             {
-                return new PagedList<Product>(Enumerable.Empty<Product>(), 0, int.MaxValue);
+                return new CatalogSearchResult(searchQuery);
             }
 
             SearchFilterExpressionGroup group;
@@ -98,20 +107,10 @@ namespace SmartStore.Services.Catalog.Rules
                 group.AddExpressions(filters);
             }
 
-            var searchQuery = new CatalogSearchQuery()
-                .OriginatesFrom("Rule/Search")
-                .WithLanguage(_services.WorkContext.WorkingLanguage)
-                .WithCurrency(_services.WorkContext.WorkingCurrency)
-                .BuildFacetMap(false)
-                .CheckSpelling(0)
-                .Slice(pageIndex * pageSize, pageSize)
-                .SortBy(ProductSortingEnum.CreatedOn);
-
             searchQuery = group.ApplyFilters(searchQuery);
 
             var searchResult = _catalogSearchService.Search(searchQuery);
-
-            return searchResult.Hits;
+            return searchResult;
         }
 
         protected override IEnumerable<RuleDescriptor> LoadDescriptors()

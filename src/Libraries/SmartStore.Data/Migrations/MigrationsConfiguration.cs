@@ -532,6 +532,7 @@
             builder.AddOrUpdate("Admin.SalesReport.Attribute", "Attributes", "Attribute");
             builder.AddOrUpdate("Admin.SalesReport.Value", "Values", "Werte");
             builder.AddOrUpdate("Admin.SalesReport.NewOrders", "Total new orders", "Neue Aufträge");
+            builder.AddOrUpdate("Admin.SalesReport.NoIncompleteOrders", "No incomplete orders", "Keine unvollständigen Aufträge");
             builder.AddOrUpdate("Admin.Report.StoreStatistics", "Statistics", "Statistiken");
             builder.AddOrUpdate("Admin.Report.CustomerRegistrations", "Customer registrations", "Kundenregistrierungen");
             builder.AddOrUpdate("Admin.Report.Today", "Today", "Heute");
@@ -543,7 +544,6 @@
             builder.AddOrUpdate("Admin.Promotions.NewsLetterSubscriptions.Short", "Newsletter abos", "Newsletter Abos");
             builder.AddOrUpdate("Admin.Promotions.SalesReport.Sales", "Sales", "Verkäufe");
             builder.AddOrUpdate("Common.Amount", "Amount", "Betrag");
-            builder.AddOrUpdate("Admin.SalesReport.NoIncompleteOrders", "Values", "Werte");
 
         }
     }

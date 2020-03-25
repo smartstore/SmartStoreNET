@@ -230,11 +230,12 @@ namespace SmartStore.Services.Customers
             {
                 period = 12;
                 startTime = new DateTime(startTime.Year, 1, 1);
+                endTime = endTime.AddDays(1);
                 startTimeBefore = startTime.Date.AddYears(-1);
                 endTimeBefore = startTime;
             }
-            var report = new DashboardChartReportLine(1, period);
 
+            var report = new DashboardChartReportLine(1, period);
             var customers = allCustomers.Where(x => x.CreatedOnUtc < endTime.Date && x.CreatedOnUtc >= startTime.Date).Select(x => x).ToList();
 
             for (int i = 0; i < period; i++)

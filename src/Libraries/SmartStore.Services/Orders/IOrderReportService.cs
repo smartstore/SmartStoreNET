@@ -101,6 +101,12 @@ namespace SmartStore.Services.Orders
 		decimal ProfitReport(int storeId, int[] orderStatusIds, int[] paymentStatusIds, int[] shippingStatusIds,
             DateTime? startTimeUtc, DateTime? endTimeUtc, string billingEmail);
         
+        /// <summary>
+        /// Get orders chart report
+        /// </summary>
+        /// <param name="allOrders">List of orders</param>
+        /// <param name="period">Time period</param>
+        /// <returns>Orders chart report</returns>
         DashboardChartReportLine GetOrdersDashboardReportLine(IPagedList<Order> allOrders, PeriodState period);
     }
 }

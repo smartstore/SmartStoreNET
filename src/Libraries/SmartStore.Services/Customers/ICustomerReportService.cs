@@ -33,8 +33,19 @@ namespace SmartStore.Services.Customers
         /// <param name="days">Customers registered in the last days</param>
         /// <returns>Number of registered customers</returns>
         int GetRegisteredCustomersReport(int days);
+
+        /// <summary>
+        /// Get customers registrations sorted by date
+        /// </summary>
+        /// <returns>Customer registrations</returns>
         List<RegistredCustomersDate> GetRegisteredCustomersDate();
 
+        /// <summary>
+        /// Get customer chart report
+        /// </summary>
+        /// <param name="allCustomers">List of customers</param>
+        /// <param name="state">Time period</param>
+        /// <returns>Customers chart report</returns>
         DashboardChartReportLine GetCustomersDashboardReportLine(IPagedList<Customer> allCustomers, PeriodState state);
     }
 }

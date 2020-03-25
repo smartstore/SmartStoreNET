@@ -448,11 +448,12 @@ namespace SmartStore.Services.Orders
             {
                 period = 12;
                 startTime = new DateTime(startTime.Year, 1, 1);
+                endTime = endTime.AddDays(1);
                 startTimeBefore = startTime.Date.AddYears(-1);
                 endTimeBefore = startTime;
             }
-            var report = new DashboardChartReportLine(4, period);
 
+            var report = new DashboardChartReportLine(4, period);
             var orders = allOrders.Where(x => x.CreatedOnUtc < endTime.Date && x.CreatedOnUtc >= startTime.Date).Select(x => x).ToList();
             var ordersReports = GetOrderReports(orders);
 

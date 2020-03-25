@@ -16,14 +16,14 @@
         <div class="chart-title text-muted">@T("Admin.Report.LastMonth")</div>
         <div class="chart-title text-muted">@T("Admin.Report.Overall")</div>
     </div>
-    <div class="d-flex justify-content-between px-4 pb-4" style="height:300px">
+    <div class="d-flex justify-content-between px-4 pb-4" style="height: 300px">
         <div class="incomplete-orders-chart-container">
             <div class="incomplete-orders-chart-text">
                 <div class="fs-h4 text-bold fade-in">@Model.Reports[0].QuantityTotal</div>
                 <div class="fs-h5 fade-in">@Model.Reports[0].AmountTotal</div>
             </div>
             <div class="canvas-container w-100 h-100">
-                <canvas id="incomplete-orders-chart-day" width="4" height="3" style="pointer-events: all">
+                <canvas id="incomplete-orders-chart-day">
                 </canvas>
             </div>
         </div>
@@ -33,7 +33,7 @@
                 <div class="fs-h5 fade-in">@Model.Reports[1].AmountTotal</div>
             </div>
             <div class="canvas-container w-100 h-100">
-                <canvas id="incomplete-orders-chart-yesterday" width="4" height="3" style="pointer-events: all">
+                <canvas id="incomplete-orders-chart-yesterday">
                 </canvas>
             </div>
         </div>
@@ -43,7 +43,7 @@
                 <div class="fs-h5 fade-in">@Model.Reports[2].AmountTotal</div>
             </div>
             <div class="canvas-container w-100 h-100">
-                <canvas id="incomplete-orders-chart-week" width="4" height="3" style="pointer-events: all">
+                <canvas id="incomplete-orders-chart-week">
                 </canvas>
             </div>
         </div>
@@ -53,7 +53,7 @@
                 <div class="fs-h5 fade-in">@Model.Reports[3].AmountTotal</div>
             </div>
             <div class="canvas-container w-100 h-100">
-                <canvas id="incomplete-orders-chart-month" width="4" height="3" style="pointer-events: all">
+                <canvas id="incomplete-orders-chart-month">
                 </canvas>
             </div>
         </div>
@@ -63,7 +63,7 @@
                 <div class="fs-h5 fade-in">@Model.Reports[3].AmountTotal</div>
             </div>
             <div class="canvas-container w-100 h-100">
-                <canvas id="incomplete-orders-chart-overall" width="4" height="3" style="pointer-events: all">
+                <canvas id="incomplete-orders-chart-overall">
                 </canvas>
             </div>
         </div>
@@ -74,12 +74,10 @@
     var colorIndigo = 'rgba(25, 80, 159)';
     var colorLightBlue = 'rgba(120, 192, 224)';
     var colorPrimary = 'rgba(48, 123, 191)';
-
     var style = getComputedStyle(document.body);
     var fontFamily = style.getPropertyValue('--font-family');
 
     var dataSets = JSON.parse('@Html.Raw(jsonData)');
-
     for (var i = 0; i < dataSets.Reports.length; i++) {
         if (dataSets.Reports[i].Data[0].Quantity == 0 && dataSets.Reports[i].Data[1].Quantity == 0) {
             dataSets.Reports[i].Data[2].Quantity = 1
@@ -88,7 +86,7 @@
 
     var options = {
         responsive: true,
-        responsiveAnimationDuration: 1000,
+        responsiveAnimationDuration: 0,
         maintainAspectRatio: false,
         cutoutPercentage: 80,
         rotation: -0.5 * Math.PI,
@@ -133,7 +131,6 @@
         },
     };
 
-    // Day
     var dataDay = {
         labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
         datasets: [{
@@ -159,15 +156,15 @@
             hidden: true,
         }],
     };
+    var chartDay = new Chart(
+        $('#incomplete-orders-chart-day')[0].getContext('2d'),
+        {
+            type: 'doughnut',
+            data: dataDay,
+            options: options
+        }
+    );
 
-    var chartCtxDay = $('#incomplete-orders-chart-day')[0].getContext('2d');
-    var chartDay = new Chart(chartCtxDay, {
-        type: 'doughnut',
-        data: dataDay,
-        options: options
-    });
-
-    // Yesterday
     var dataYesterday = {
         labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
         datasets: [{
@@ -193,15 +190,15 @@
             hidden: true,
         }],
     };
+    var chartYesterday = new Chart(
+        $('#incomplete-orders-chart-yesterday')[0].getContext('2d'),
+        {
+            type: 'doughnut',
+            data: dataYesterday,
+            options: options
+        }
+    );
 
-    var chartCtxYesterday = $('#incomplete-orders-chart-yesterday')[0].getContext('2d');
-    var chartYesterday = new Chart(chartCtxYesterday, {
-        type: 'doughnut',
-        data: dataYesterday,
-        options: options
-    });
-
-    // Week
     var dataWeek = {
         labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
         datasets: [{
@@ -227,15 +224,15 @@
             hidden: true,
         }],
     };
+    var chartWeek = new Chart(
+        $('#incomplete-orders-chart-week')[0].getContext('2d'),
+        {
+            type: 'doughnut',
+            data: dataWeek,
+            options: options
+        }
+    );
 
-    var chartCtxWeek = $('#incomplete-orders-chart-week')[0].getContext('2d');
-    var chartWeek = new Chart(chartCtxWeek, {
-        type: 'doughnut',
-        data: dataWeek,
-        options: options
-    });
-
-    // Month
     var dataMonth = {
         labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
         datasets: [{
@@ -261,15 +258,15 @@
             hidden: true,
         }],
     };
+    var chartMonth = new Chart(
+        $('#incomplete-orders-chart-month')[0].getContext('2d'),
+        {
+            type: 'doughnut',
+            data: dataMonth,
+            options: options
+        }
+    );
 
-    var chartCtxMonth = $('#incomplete-orders-chart-month')[0].getContext('2d');
-    var chartMonth = new Chart(chartCtxMonth, {
-        type: 'doughnut',
-        data: dataMonth,
-        options: options
-    });
-
-    // Overall
     var dataOverall = {
         labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
         datasets: [{
@@ -295,11 +292,12 @@
             hidden: true,
         }],
     };
-
-    var chartCtxOverall = $('#incomplete-orders-chart-overall')[0].getContext('2d');
-    var chartOverall = new Chart(chartCtxOverall, {
-        type: 'doughnut',
-        data: dataOverall,
-        options: options
-    });
+    var chartOverall = new Chart(
+        $('#incomplete-orders-chart-overall')[0].getContext('2d'),
+        {
+            type: 'doughnut',
+            data: dataOverall,
+            options: options
+        }
+    );
 </script>

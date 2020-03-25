@@ -856,7 +856,8 @@ namespace SmartStore.Services.Search
             _services.EventPublisher.Publish(new CatalogSearchingEvent(searchQuery, true));
 
 			var totalHits = 0;
-			Func<IList<Product>> hitsFactory = null;
+            int[] hitsEntityIds = null;
+            Func<IList<Product>> hitsFactory = null;
 			IDictionary<string, FacetGroup> facets = null;
 
 			if (searchQuery.Take > 0)
@@ -879,8 +880,8 @@ namespace SmartStore.Services.Search
 						.Skip(() => skip)
 						.Take(() => searchQuery.Take);
 
-					var ids = query.Select(x => x.Id).ToArray();
-					hitsFactory = () => _productService.GetProductsByIds(ids, loadFlags);
+                    hitsEntityIds = query.Select(x => x.Id).ToArray();
+					hitsFactory = () => _productService.GetProductsByIds(hitsEntityIds, loadFlags);
 				}
 
 				if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithFacets) && searchQuery.FacetDescriptors.Any())
@@ -893,7 +894,8 @@ namespace SmartStore.Services.Search
 				null,
 				searchQuery,
 				totalHits,
-				hitsFactory,
+                hitsEntityIds,
+                hitsFactory,
 				null,
 				facets);
 

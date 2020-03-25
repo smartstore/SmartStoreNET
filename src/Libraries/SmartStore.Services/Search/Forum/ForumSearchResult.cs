@@ -16,7 +16,8 @@ namespace SmartStore.Services.Search
 			ISearchEngine engine,
             ForumSearchQuery query,
 			int totalHitsCount,
-			Func<IList<ForumPost>> hitsFactory,
+            int[] hitsEntityIds,
+            Func<IList<ForumPost>> hitsFactory,
 			string[] spellCheckerSuggestions,
             IDictionary<string, FacetGroup> facets)
 		{
@@ -28,7 +29,8 @@ namespace SmartStore.Services.Search
             Facets = facets ?? new Dictionary<string, FacetGroup>();
 
             _hitsFactory = hitsFactory ?? (() => new List<ForumPost>());
-			TotalHitsCount = totalHitsCount;
+            HitsEntityIds = hitsEntityIds ?? new int[0];
+            TotalHitsCount = totalHitsCount;
 		}
 
         /// <summary>
@@ -36,9 +38,14 @@ namespace SmartStore.Services.Search
         /// </summary>
         /// <param name="query">Forum search query</param>
         public ForumSearchResult(ForumSearchQuery query)
-			: this(null, query, 0, () => new List<ForumPost>(), null, null)
+			: this(null, query, 0, null, () => new List<ForumPost>(), null, null)
 		{
 		}
+
+        /// <summary>
+        /// Entity identifiers of found forum posts.
+        /// </summary>
+        public int[] HitsEntityIds { get; private set; }
 
         /// <summary>
         /// Forum posts found.

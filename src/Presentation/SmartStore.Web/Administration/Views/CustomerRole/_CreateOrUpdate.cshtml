@@ -150,8 +150,8 @@
                 columns.Bound(x => x.CreatedOn);
                 columns.Bound(x => x.LastActivityDate);
 			    columns.Bound(x => x.IsSystemMapping)
-					    .ClientTemplate(Html.SymbolForBool("IsSystemMapping"))
-					    .Centered();
+					.ClientTemplate(Html.SymbolForBool("IsSystemMapping"))
+					.Centered();
 		    })
             .ToolBar(commands => commands.Template(RoleMappingsGridCommands))
 		    .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
@@ -197,7 +197,7 @@
 {
 	<button type="button" id="btnReapplyRules" class="t-button t-grid-save-changes" data-url="@Url.Action("ApplyRules", new { id = Model.Id })" data-ask="@T("Admin.Common.AskToProceed")">
 		<i class="fa fa-play"></i>
-		<span>@T("Admin.CustomerRoleMapping.ReapplyRules")</span>
+		<span>@T("Admin.Rules.ReapplyRules")</span>
 	</button>
 }
 

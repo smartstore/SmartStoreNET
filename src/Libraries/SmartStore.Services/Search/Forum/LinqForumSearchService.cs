@@ -385,7 +385,8 @@ namespace SmartStore.Services.Search
             _services.EventPublisher.Publish(new ForumSearchingEvent(searchQuery));
 
 			var totalHits = 0;
-			Func<IList<ForumPost>> hitsFactory = null;
+            int[] hitsEntityIds = null;
+            Func<IList<ForumPost>> hitsFactory = null;
             IDictionary<string, FacetGroup> facets = null;
 
             if (searchQuery.Take > 0)
@@ -406,8 +407,8 @@ namespace SmartStore.Services.Search
                         .Skip(() => skip)
                         .Take(() => searchQuery.Take);
 
-                    var ids = query.Select(x => x.Id).ToArray();
-                    hitsFactory = () => _forumService.GetPostsByIds(ids);
+                    hitsEntityIds = query.Select(x => x.Id).ToArray();
+                    hitsFactory = () => _forumService.GetPostsByIds(hitsEntityIds);
                 }
 
                 if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithFacets) && searchQuery.FacetDescriptors.Any())
@@ -420,7 +421,8 @@ namespace SmartStore.Services.Search
 				null,
 				searchQuery,
 				totalHits,
-				hitsFactory,
+                hitsEntityIds,
+                hitsFactory,
 				null,
                 facets);
 

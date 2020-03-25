@@ -1,6 +1,5 @@
-﻿using SmartStore.Core;
-using SmartStore.Core.Domain.Catalog;
-using SmartStore.Rules;
+﻿using SmartStore.Rules;
+using SmartStore.Services.Search;
 
 namespace SmartStore.Services.Catalog.Rules
 {
@@ -8,6 +7,6 @@ namespace SmartStore.Services.Catalog.Rules
     {
         SearchFilterExpressionGroup CreateExpressionGroup(int ruleSetId);
 
-        IPagedList<Product> Search(SearchFilterExpression[] filters, int pageIndex = 0, int pageSize = int.MaxValue);
+        CatalogSearchResult Search(SearchFilterExpression[] filters, int pageIndex = 0, int pageSize = int.MaxValue);
     }
 }

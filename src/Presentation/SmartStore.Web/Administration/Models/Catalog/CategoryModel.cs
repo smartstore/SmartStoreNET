@@ -7,6 +7,7 @@ using FluentValidation.Attributes;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
+using SmartStore.Rules;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -146,6 +147,12 @@ namespace SmartStore.Admin.Models.Catalog
         public string DefaultViewMode { get; set; }
         public IList<SelectListItem> AvailableDefaultViewModes { get; private set; }
 
+        [UIHint("RuleSets")]
+        [AdditionalMetadata("multiple", true)]
+        [AdditionalMetadata("scope", RuleScope.Product)]
+        [SmartResourceDisplayName("Admin.Catalog.Categories.AutomatedAssignmentRules")]
+        public int[] SelectedRuleSetIds { get; set; }
+
         #region Nested classes
 
         public class CategoryProductModel : EntityModelBase
@@ -170,11 +177,14 @@ namespace SmartStore.Admin.Models.Catalog
             [SmartResourceDisplayName("Admin.Catalog.Categories.Products.Fields.IsFeaturedProduct")]
             public bool IsFeaturedProduct { get; set; }
 
+            // We don't name it DisplayOrder because Telerik has a small bug 
+            // "if we have one more editor with the same name on a page, it doesn't allow editing".
+            // In our case it's category.DisplayOrder.
             [SmartResourceDisplayName("Common.DisplayOrder")]
-            //we don't name it DisplayOrder because Telerik has a small bug 
-            //"if we have one more editor with the same name on a page, it doesn't allow editing"
-            //in our case it's category.DisplayOrder
             public int DisplayOrder1 { get; set; }
+
+            [SmartResourceDisplayName("Admin.Rules.AutomaticAssignment")]
+            public bool IsSystemMapping { get; set; }
         }
 
         #endregion

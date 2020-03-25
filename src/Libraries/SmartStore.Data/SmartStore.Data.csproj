@@ -449,6 +449,10 @@
     <Compile Include="Migrations\202003112359492_MediaManager2.Designer.cs">
       <DependentUpon>202003112359492_MediaManager2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202003251118391_CategoryRuleSets.cs" />
+    <Compile Include="Migrations\202003251118391_CategoryRuleSets.Designer.cs">
+      <DependentUpon>202003251118391_CategoryRuleSets.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -815,6 +819,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202003112359492_MediaManager2.resx">
       <DependentUpon>202003112359492_MediaManager2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003251118391_CategoryRuleSets.resx">
+      <DependentUpon>202003251118391_CategoryRuleSets.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

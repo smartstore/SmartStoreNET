@@ -39,17 +39,17 @@
 			.Columns(columns =>
 			{
 				columns.Bound(x => x.Category)
-					.Width("60%")
-					.Template(x => Html.ActionLink(x.Category, "Edit", "Category", new { id = x.CategoryId }))
-					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Category/Edit/") + "<#= CategoryId #>\"><#= Category #></a>");
+					.Width("50%")
+					.ClientTemplate("<a href=\"" + Url.Content("~/Admin/Category/Edit/") + "<#= CategoryId #>\"><#= Category #></a>");
 				columns.Bound(x => x.IsFeaturedProduct)
-					.Width(100)
-					.Template(item => @Html.SymbolForBool(item.IsFeaturedProduct))
-					.ClientTemplate(@Html.SymbolForBool("IsFeaturedProduct"))
+					.ClientTemplate(Html.SymbolForBool("IsFeaturedProduct"))
 					.Centered();
 				columns.Bound(x => x.DisplayOrder)
-					.Centered()
-					.Width(100);
+					.Centered();
+			    columns.Bound(x => x.IsSystemMapping)
+                    .ReadOnly()
+					.ClientTemplate(Html.SymbolForBool("IsSystemMapping"))
+					.Centered();
 				columns.Command(commands =>
 				{
 					commands.Edit().Localize(T);

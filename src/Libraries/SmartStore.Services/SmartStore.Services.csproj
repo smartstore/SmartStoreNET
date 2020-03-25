@@ -223,6 +223,7 @@
     <Compile Include="Catalog\Modelling\ProductVariantQueryModelBinder.cs" />
     <Compile Include="Catalog\PriceCalculationContext.cs" />
     <Compile Include="Catalog\Rules\IProductRuleProvider.cs" />
+    <Compile Include="Catalog\Rules\ProductRuleEvaluatorTask.cs" />
     <Compile Include="Catalog\Rules\SearchFilterDescriptor.cs" />
     <Compile Include="Catalog\Rules\ProductRuleProvider.cs" />
     <Compile Include="Catalog\Rules\SearchFilterExpressionGroup.cs" />

@@ -16,7 +16,8 @@ namespace SmartStore.Services.Search
 			ISearchEngine engine,
 			CatalogSearchQuery query,
 			int totalHitsCount,
-			Func<IList<Product>> hitsFactory,
+            int[] hitsEntityIds,
+            Func<IList<Product>> hitsFactory,
 			string[] spellCheckerSuggestions,
 			IDictionary<string, FacetGroup> facets)
 		{
@@ -28,6 +29,7 @@ namespace SmartStore.Services.Search
 			Facets = facets ?? new Dictionary<string, FacetGroup>();
 
 			_hitsFactory = hitsFactory ?? (() => new List<Product>());
+            HitsEntityIds = hitsEntityIds ?? new int[0];
 			TotalHitsCount = totalHitsCount;
 		}
 
@@ -36,9 +38,14 @@ namespace SmartStore.Services.Search
 		/// </summary>
 		/// <param name="query">Catalog search query</param>
 		public CatalogSearchResult(CatalogSearchQuery query)
-			: this(null, query, 0, () => new List<Product>(), null, null)
+			: this(null, query, 0, null, () => new List<Product>(), null, null)
 		{
 		}
+
+        /// <summary>
+        /// Entity identifiers of found products.
+        /// </summary>
+        public int[] HitsEntityIds { get; private set; }
 
 		/// <summary>
 		/// Products found

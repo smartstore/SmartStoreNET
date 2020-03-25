@@ -3,19 +3,17 @@
 @{
     var jsonData = JsonConvert.SerializeObject(Model);
 }
+<script src="~/Administration/Scripts/Chart.js"></script>
 
 <div class="report">
     <div class="report-title-row">
         <div class="report-title pr-1">@T("Account.CustomerOrders")</div>
-
         <div class="pl-3 fs-h5">
             <span id="orders-sum-amount" class="text-muted"></span>
         </div>
-
         <div class="pl-3 fs-h6 font-weight-bold">
             <span id="orders-delta-percentage"></span><span id="orders-delta-percentage-chevron" class="chevron pl-1 d-none"></span>
         </div>
-
         <div class="btn-group btn-group-toggle ml-auto" data-toggle="buttons">
             <label class="btn btn-secondary btn-dashboard active">
                 <input type="radio" name="orders-toggle" data-period="0" autocomplete="off" checked>
@@ -40,8 +38,8 @@
         </div>
     </div>
     <div class="px-4 pt-2" id="orders-chart-legend"></div>
-    <div class="canvas-container" style="transform: translateY(8px);">
-        <canvas id="orders-chart" width="70" height="18" class="w-100"></canvas>
+    <div class="canvas-container h-100" style="min-height: 380px; max-height: 380px;">
+        <canvas id="orders-chart"></canvas>
     </div>
 </div>
 
@@ -52,23 +50,16 @@
         var chevronElement = $("#orders-delta-percentage-chevron");
         var sumElement = $("#orders-sum-amount");
         var currentPeriod = 0;
-
         var style = getComputedStyle(document.body);
         var colorPrimary = style.getPropertyValue('--primary');
-        var colorIndigo = style.getPropertyValue('--indigo');
         var colorDanger = style.getPropertyValue('--danger');
         var colorSuccess = style.getPropertyValue('--success');
         var colorWarning = style.getPropertyValue('--warning');
         var fontFamily = style.getPropertyValue('--font-family-sans-serif');
-        var whiteTransparent = 'rgba(255,255,255, 0.5)';
 
-        //----------------------------------------------------
-        // Chartjs
         var ordersChartElement = $('#orders-chart')[0];
         var orders_ctx = ordersChartElement.getContext('2d');
-
         var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight / 0.8);
-
         cancelledGradient.addColorStop(0, 'rgb(250,190,190)');
         cancelledGradient.addColorStop(1, 'white');
 
@@ -83,6 +74,9 @@
         var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight / 0.8);
         completeGradient.addColorStop(0, 'rgb(229,238,246)');
         completeGradient.addColorStop(1, 'white');
+
+        // Chartjs
+        //----------------------------------------------------
 
         var order_config = {
             type: 'line',
@@ -229,7 +223,6 @@
 
         var ordersChart = new Chart(orders_ctx, order_config);
         setPercentageDelta(currentPeriod);
-
         var ordersLegendContainer = $("#orders-chart-legend")[0];
         createLegend();
 
@@ -245,7 +238,6 @@
 
         function setPercentageDelta(period) {
             var val = ordersData.Reports[period].PercentageDelta;
-
             if (val < 0) {
                 chevronElement.addClass("negative");
                 chevronElement.removeClass("d-none");
@@ -261,22 +253,17 @@
             else {
                 chevronElement.addClass("d-none")
             }
-
             var delta = val == 0 ? "" : val < 0 ? "-" + Math.abs(val) + "%" : "+" + Math.abs(val) + "%";
-
             percentageElement.html(delta);
             sumElement.html(ordersData.Reports[period].TotalAmount);
         }
 
         function setChartData(period) {
             ordersChart.destroy();
-            console.log(order_config.data);
-            console.log(period);
             order_config.data.labels = ordersData.Reports[period].Labels;
             for (var i = 0; i < order_config.data.datasets.length; i++) {
                 order_config.data.datasets[i].data = ordersData.Reports[period].DataSets[i].Amount;
             }
-
             ordersChart = new Chart(orders_ctx, order_config);
             setPercentageDelta(period, ordersData);
             currentPeriod = period;
@@ -302,14 +289,12 @@
             var chart = Chart.instances[chartId];
             var index = (ordersChart.data.datasets.length - 1) - Array.prototype.slice.call(parent.children).indexOf(target);
             var meta = chart.getDatasetMeta(index);
-
             if (chart.data.datasets[index].hidden) {
                 target.classList.remove('hidden');
-
-            } else {
+            }
+            else {
                 target.classList.add('hidden');
             }
-
             meta.hidden = !chart.data.datasets[index].hidden;
             chart.data.datasets[index].hidden = !chart.data.datasets[index].hidden;
             chart.update();

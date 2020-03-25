@@ -3,6 +3,7 @@
 @{
     var jsonData = JsonConvert.SerializeObject(Model);
 }
+<script src="~/Administration/Scripts/Chart.js"></script>
 
 <div class="report">
     <div class="report-title-row">
@@ -39,32 +40,30 @@
             </label>
         </div>
     </div>
-    <div class="canvas-container" style="transform: translateY(16px);">
-        <canvas id="customers-chart" width="70" height="19" class="w-100"></canvas>
+    <div class="canvas-container w-100 h-100 mt-2" style="min-height: 400px; max-height: 400px">
+        <canvas id="customers-chart"></canvas>
     </div>
 </div>
 
 <script>
     $(function () {
         var customersData = JSON.parse('@Html.Raw(jsonData)');
-
         var percentageElement = $("#customers-delta-percentage");
         var chevronElement = $("#customers-delta-percentage-chevron");
         var sumElement = $("#customer-quantity-total");
         var currentPeriod = 0;
-
-        var style = getComputedStyle(document.body);        
+        var style = getComputedStyle(document.body);
         var colorSuccess = style.getPropertyValue('--success');
         var fontFamily = style.getPropertyValue('--font-family-sans-serif');
-        var whiteTransparent = 'rgba(255,255,255, 0.5)';
-        //----------------------------------------------------
-        // Chartjs
+
         var customersChartElement = $('#customers-chart')[0];
         var customers_ctx = customersChartElement.getContext('2d');
-
         var successGradient = customers_ctx.createLinearGradient(0, 0, 0, customersChartElement.clientHeight / 0.8);
         successGradient.addColorStop(0, 'rgb(231,245,239)');
         successGradient.addColorStop(1, 'white');
+
+        // Chart.js
+        //----------------------------------------------------
 
         var customer_config = {
             type: 'line',
@@ -107,7 +106,7 @@
                         bottom: 0
                     }
                 },
-                legend: false,                
+                legend: false,
                 elements: {
                     point: {
                         radius: 0,
@@ -135,7 +134,7 @@
                     bodySpacing: 5,
                     callbacks: {
                         label: function (item, data) {
-                            return /*data.datasets[item.datasetIndex].label + ": " +*/ " " + customersData.Reports[currentPeriod].DataSets[item.datasetIndex].FormattedAmount[item.index];
+                            return " " + customersData.Reports[currentPeriod].DataSets[item.datasetIndex].FormattedAmount[item.index];
                         },
                         labelColor: function(tooltipItem, chart) {
                             var dataset = chart.config.data.datasets[tooltipItem.datasetIndex];
@@ -144,12 +143,6 @@
                             }
                         },
                     },
-                     //custom: function(tooltip) {
-                     //   if (!tooltip) return;
-                     //    // disable displaying the color box;
-                     //    tooltip.displayColors = false;
-
-                     //},
                 },
                 scales: {
                     yAxes: [{
@@ -175,20 +168,19 @@
 
         var customersChart = new Chart(customers_ctx, customer_config);
         setPercentageDelta(currentPeriod);
-    
-        ////----------------------------------------------------
+
         // EventHandler
+        //----------------------------------------------------
 
         $('input[type=radio][name=customers-toggle]').on('change', function () {
             setChartData($('input:radio[name=customers-toggle]:checked').data("period"));
         });
 
-        //----------------------------------------------------
         // Functions
+        //----------------------------------------------------
 
         function setPercentageDelta(period) {
             var val = customersData.Reports[period].PercentageDelta;
-
             if (val < 0) {
                 chevronElement.addClass("negative");
                 chevronElement.removeClass("d-none");
@@ -204,9 +196,7 @@
             else {
                 chevronElement.addClass("d-none")
             }
-
             var delta = val == 0 ? "" : val < 0 ? "-" + Math.abs(val) + "%" : "+" + Math.abs(val) + "%";
-
             percentageElement.html(delta);
             sumElement.html(customersData.Reports[period].TotalAmount);
         }
@@ -217,7 +207,6 @@
             for (var i = 0; i < customer_config.data.datasets.length; i++) {
                 customer_config.data.datasets[i].data = customersData.Reports[period].DataSets[i].Quantity;
             }
-
             customersChart = new Chart(customers_ctx, customer_config);
             setPercentageDelta(period, customersData);
             currentPeriod = period;

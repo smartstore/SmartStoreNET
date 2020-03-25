@@ -27,8 +27,8 @@
                         @foreach (var x in Model.TopCustomersByQuantity)
                         {
                             <tr>
-                                <td class="display-row" title="@x.CustomerName">
-                                    @Html.ActionLink(x.CustomerName, "Edit", "Customer", new { id = x.CustomerId }, new { })
+                                <td class="display-row" title="@x.CustomerDisplayName">
+                                    @Html.ActionLink(x.CustomerDisplayName, "Edit", "Customer", new { id = x.CustomerId }, new { })
                                 </td>
 
                                 <td class="display-row text-center font-weight-medium">@x.OrderCount</td>
@@ -53,8 +53,8 @@
                         @foreach (var x in Model.TopCustomersByAmount)
                         {
                             <tr>
-                                <td class="display-row" title="@x.CustomerName">
-                                    @Html.ActionLink(x.CustomerName, "Edit", "Customer", new { id = x.CustomerId }, new { })
+                                <td class="display-row" title="@x.CustomerDisplayName">
+                                    @Html.ActionLink(x.CustomerDisplayName, "Edit", "Customer", new { id = x.CustomerId }, new { })
                                 </td>
                                 <td class="display-row text-center">@x.OrderCount</td>
                                 <td class="display-row text-right font-weight-medium">@x.OrderTotal</td>

@@ -2838,7 +2838,8 @@ namespace SmartStore.Admin.Controllers
 
                 model.LatestOrders.Add(
                     new DashboardOrderModel(
-                        customer,
+                        customer.Id,
+                        customer.FormatUserName() ?? customer.FindEmail(),
                         order.OrderItems.Select(x => x.Quantity).Sum(),
                         order.OrderTotal.ToString("C0"),
                         order.CreatedOnUtc.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("g"),

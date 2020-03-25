@@ -1369,7 +1369,7 @@ namespace SmartStore.Admin.Controllers
                  var customer = _customerService.GetCustomerById(x.CustomerId);
                  if (customer != null)
                  {
-                     m.CustomerName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
+                     m.CustomerDisplayName = customer.FormatUserName() ?? customer.FindEmail();
                  }
 
                  return m;

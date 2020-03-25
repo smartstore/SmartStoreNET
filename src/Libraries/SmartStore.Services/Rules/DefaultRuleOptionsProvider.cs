@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
+using SmartStore.Core;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Plugins;
@@ -21,50 +23,56 @@ namespace SmartStore.Services.Rules
     public class DefaultRuleOptionsProvider : IRuleOptionsProvider
     {
         protected readonly ICommonServices _services;
+        protected readonly Lazy<IRepository<SpecificationAttributeOption>> _attrOptionRepository;
+        protected readonly Lazy<IRepository<ProductVariantAttributeValue>> _variantValueRepository;
         protected readonly Lazy<ICurrencyService> _currencyService;
         protected readonly Lazy<ICustomerService> _customerService;
         protected readonly Lazy<ILanguageService> _languageService;
         protected readonly Lazy<ICountryService> _countryService;
+        protected readonly Lazy<IDeliveryTimeService> _deliveryTimeService;
         protected readonly Lazy<ICatalogSearchService> _catalogSearchService;
         protected readonly Lazy<IProductService> _productService;
         protected readonly Lazy<IProductTagService> _productTagService;
         protected readonly Lazy<ICategoryService> _categoryService;
         protected readonly Lazy<IManufacturerService> _manufacturerService;
         protected readonly Lazy<IShippingService> _shippingService;
-        protected readonly Lazy<ISpecificationAttributeService> _specificationAttributeService;
         protected readonly Lazy<IRuleStorage> _ruleStorage;
         protected readonly Lazy<IProviderManager> _providerManager;
         protected readonly Lazy<SearchSettings> _searchSettings;
 
         public DefaultRuleOptionsProvider(
             ICommonServices services,
+            Lazy<IRepository<SpecificationAttributeOption>> attrOptionRepository,
+            Lazy<IRepository<ProductVariantAttributeValue>> variantValueRepository,
             Lazy<ICurrencyService> currencyService,
             Lazy<ICustomerService> customerService,
             Lazy<ILanguageService> languageService,
             Lazy<ICountryService> countryService,
+            Lazy<IDeliveryTimeService> deliveryTimeService,
             Lazy<ICatalogSearchService> catalogSearchService,
             Lazy<IProductService> productService,
             Lazy<IProductTagService> productTagService,
             Lazy<ICategoryService> categoryService,
             Lazy<IManufacturerService> manufacturerService,
             Lazy<IShippingService> shippingService,
-            Lazy<ISpecificationAttributeService> specificationAttributeService,
             Lazy<IRuleStorage> ruleStorage,
             Lazy<IProviderManager> providerManager,
             Lazy<SearchSettings> searchSettings)
         {
             _services = services;
+            _attrOptionRepository = attrOptionRepository;
+            _variantValueRepository = variantValueRepository;
             _currencyService = currencyService;
             _customerService = customerService;
             _languageService = languageService;
             _countryService = countryService;
+            _deliveryTimeService = deliveryTimeService;
             _catalogSearchService = catalogSearchService;
             _productService = productService;
             _productTagService = productTagService;
             _categoryService = categoryService;
             _manufacturerService = manufacturerService;
             _shippingService = shippingService;
-            _specificationAttributeService = specificationAttributeService;
             _ruleStorage = ruleStorage;
             _providerManager = providerManager;
             _searchSettings = searchSettings;
@@ -78,6 +86,7 @@ namespace SmartStore.Services.Rules
                 case "Category":
                 case "Country":
                 case "Currency":
+                case "DeliveryTime":
                 case "CustomerRole":
                 case "Language":
                 case "Manufacturer":
@@ -87,7 +96,7 @@ namespace SmartStore.Services.Rules
                 case "ShippingMethod":
                 case "ShippingRateComputationMethod":
                 case "TargetGroup":
-                case "Attribute":
+                case "VariantValue":
                 case "AttributeOption":
                     return true;
                 default:
@@ -139,6 +148,11 @@ namespace SmartStore.Services.Rules
                 case "Currency":
                     options = _currencyService.Value.GetAllCurrencies(true)
                         .Select(x => new RuleValueSelectListOption { Value = byId ? x.Id.ToString() : x.CurrencyCode, Text = x.GetLocalized(y => y.Name, language, true, false) })
+                        .ToList();
+                    break;
+                case "DeliveryTime":
+                    options = _deliveryTimeService.Value.GetAllDeliveryTimes()
+                        .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false) })
                         .ToList();
                     break;
                 case "CustomerRole":
@@ -214,30 +228,85 @@ namespace SmartStore.Services.Rules
                         .Select(x => new RuleValueSelectListOption { Value = byId ? x.Id.ToString() : x.Name, Text = byId ? x.GetLocalized(y => y.Name, language, true, false) : x.Name })
                         .ToList();
                     break;
-                case "AttributeOption":
-                    IList<SpecificationAttributeOption> attrOptions = null;
-
-                    if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
-                    {
-                        attrOptions = _specificationAttributeService.Value.GetSpecificationAttributeOptionsByIds(expression.RawValue.ToIntArray());
-                    }
-                    else if (expression.Descriptor.Metadata.TryGetValue("ParentId", out var objParentId))
-                    {
-                        attrOptions = _specificationAttributeService.Value.GetSpecificationAttributeOptionsBySpecificationAttribute((int)objParentId);
-                    }
-
-                    if (attrOptions != null)
-                    {
-                        options = attrOptions
-                            .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false) })
-                            .ToList();
-                    }
-                    break;
                 case "ProductTag":
                     options = _productTagService.Value.GetAllProductTags(true)
                         .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false) })
                         .OrderBy(x => x.Text)
                         .ToList();
+                    break;
+                case "VariantValue":
+                    if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
+                    {
+                        var ids = expression.RawValue.ToIntArray();
+                        var variantValues = _variantValueRepository.Value.TableUntracked
+                            .Where(x => ids.Contains(x.Id))
+                            .ToList();
+
+                        options = variantValues
+                            .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false) })
+                            .ToList();
+                    }
+                    else if (expression.Descriptor.Metadata.TryGetValue("ParentId", out var objParentId))
+                    {
+                        options = new List<RuleValueSelectListOption>();
+                        var pIndex = -1;
+                        var existingValues = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+                        var multiValueTypeIds = new int[] { (int)AttributeControlType.Checkboxes, (int)AttributeControlType.RadioList, (int)AttributeControlType.DropdownList, (int)AttributeControlType.Boxes };
+                        var query = _variantValueRepository.Value.TableUntracked
+                            .Where(x =>
+                                x.ProductVariantAttribute.ProductAttributeId == (int)objParentId &&
+                                x.ProductVariantAttribute.ProductAttribute.AllowFiltering &&
+                                multiValueTypeIds.Contains(x.ProductVariantAttribute.AttributeControlTypeId) &&
+                                x.ValueTypeId == (int)ProductVariantAttributeValueType.Simple
+                            )
+                            .OrderBy(x => x.DisplayOrder);
+
+                        while (true)
+                        {
+                            var variantValues = PagedList.Create(query, ++pIndex, 500);
+                            foreach (var value in variantValues)
+                            {
+                                var name = value.GetLocalized(x => x.Name, language, true, false);
+                                if (!existingValues.Contains(name))
+                                {
+                                    existingValues.Add(name);
+                                    options.Add(new RuleValueSelectListOption { Value = value.Id.ToString(), Text = name });
+                                }
+                            }
+                            if (!variantValues.HasNextPage)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case "AttributeOption":
+                    if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
+                    {
+                        var ids = expression.RawValue.ToIntArray();
+                        var attributeOptions = _attrOptionRepository.Value.TableUntracked
+                            .Where(x => ids.Contains(x.Id))
+                            .ToList();
+
+                        options = attributeOptions
+                            .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false) })
+                            .ToList();
+                    }
+                    else if (expression.Descriptor.Metadata.TryGetValue("ParentId", out var objParentId))
+                    {
+                        var query = _attrOptionRepository.Value.TableUntracked
+                            .Where(x => x.SpecificationAttributeId == (int)objParentId)
+                            .OrderBy(x => x.DisplayOrder);
+
+                        var attributeOptions = PagedList.Create(query, pageIndex, pageSize);
+
+                        result.IsPaged = true;
+                        result.HasMoreData = attributeOptions.HasNextPage;
+
+                        options = attributeOptions
+                            .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false) })
+                            .ToList();
+                    }
                     break;
                 default:
                     throw new SmartException($"Unknown data source \"{list.DataSource.NaIfEmpty()}\".");

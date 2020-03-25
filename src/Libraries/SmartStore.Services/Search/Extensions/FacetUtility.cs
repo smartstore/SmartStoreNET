@@ -40,18 +40,6 @@ namespace SmartStore.Services.Search.Extensions
 			{ 50000000, 5000000 }
 		};
 
-        private static string GetPublicName(string firstName, string lastName)
-        {
-            string result = firstName;
-
-            if (!string.IsNullOrWhiteSpace(result) && !string.IsNullOrWhiteSpace(lastName))
-            {
-                result = string.Concat(result, " ", lastName.First(), ".");
-            }
-
-            return result;
-        }
-
 		public static double GetNextPrice(double price)
 		{
 			for (var i = 0; i <= _priceThresholds.GetUpperBound(0); ++i)

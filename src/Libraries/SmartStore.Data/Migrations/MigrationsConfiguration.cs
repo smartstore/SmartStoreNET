@@ -224,6 +224,7 @@
             builder.AddOrUpdate("Admin.Rules.NotFound", "The rule with ID {0} was not found.", "Die Regel mit der ID {0} wurde nicht gefunden.");
             builder.AddOrUpdate("Admin.Rules.GroupNotFound", "The group with ID {0} was not found.", "Die Gruppe mit der ID {0} wurde nicht gefunden.");
             builder.AddOrUpdate("Admin.Rules.NumberOfRules", "Number of rules", "Anzahl an Regeln");
+            builder.AddOrUpdate("Admin.Rules.OperatorNotSupported", "The rule scope does not support this operator.", "Die Regelart unterstützt diesen Operator nicht.");
 
             builder.AddOrUpdate("Admin.Rules.InvalidDescriptor",
                 "Invalid rule. This rule is no longer supported and should be deleted.",
@@ -312,17 +313,7 @@
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingMethod", "Shipping method", "Versandart");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ShippingStatus", "Shipping status", "Lieferstatus");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ReturnRequestCount", "Number of return requests", "Anzahl Rücksendeaufträge");
-
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Manufacturer", "Manufacturer", "Hersteller");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Published", "Published", "Veröffentlicht");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.AvailableByStock", "In stock", "Vorrätig");
             builder.AddOrUpdate("Admin.Rules.FilterDescriptor.AvailableByDate", "Available by date", "Nach Datum verfügbar");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Visibility", "Visibility", "Sichtbarkeit");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductType", "Product type", "Produkttyp");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.HomepageProduct", "Homepage product", "Homepage-Produkt");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Product", "Product", "Produkt");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Category", "Category", "Warengruppe");
-            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.ProductTag", "Product tag", "Produkt-Tag");
 
             // Rule operators
             builder.AddOrUpdate("Admin.Rules.RuleOperator.ContainsOperator", "Contains", "Enthält");

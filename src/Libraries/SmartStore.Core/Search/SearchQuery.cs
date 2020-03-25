@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
@@ -288,5 +289,25 @@ namespace SmartStore.Core.Search
 
 			return psb.ToStringAndReturn();
 		}
-	}
+
+        #region Utilities
+
+        protected TQuery CreateFilter(string fieldName, params int[] values)
+        {
+            var len = values?.Length ?? 0;
+            if (len > 0)
+            {
+                if (len == 1)
+                {
+                    return WithFilter(SearchFilter.ByField(fieldName, values[0]).Mandatory().ExactMatch().NotAnalyzed());
+                }
+
+                return WithFilter(SearchFilter.Combined(values.Select(x => SearchFilter.ByField(fieldName, x).ExactMatch().NotAnalyzed()).ToArray()));
+            }
+
+            return this as TQuery;
+        }
+
+        #endregion
+    }
 }

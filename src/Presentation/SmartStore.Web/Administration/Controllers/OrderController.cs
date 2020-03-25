@@ -2820,6 +2820,7 @@ namespace SmartStore.Admin.Controllers
 
             watch.Stop();
             Debug.WriteLine("OrdersIncompleteDashboardReport >>> " + watch.ElapsedMilliseconds);
+            // TODO: Way to slow - reduce queries, improve performance
             return PartialView(model);
         }
 

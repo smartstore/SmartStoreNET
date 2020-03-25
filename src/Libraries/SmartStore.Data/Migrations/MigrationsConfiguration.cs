@@ -543,6 +543,8 @@
             builder.AddOrUpdate("Admin.Promotions.NewsLetterSubscriptions.Short", "Newsletter abos", "Newsletter Abos");
             builder.AddOrUpdate("Admin.Promotions.SalesReport.Sales", "Sales", "Verkäufe");
             builder.AddOrUpdate("Common.Amount", "Amount", "Betrag");
+            builder.AddOrUpdate("Admin.SalesReport.NoIncompleteOrders", "Values", "Werte");
+
         }
     }
 }

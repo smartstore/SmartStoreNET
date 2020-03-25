@@ -3,6 +3,7 @@
 @{
     var jsonData = JsonConvert.SerializeObject(Model);
 }
+<script src="~/Administration/Scripts/Chart.js"></script>
 
 <div class="report">
     <div class="report-title-row">
@@ -79,7 +80,7 @@
 
     var dataSets = JSON.parse('@Html.Raw(jsonData)');
 
-    for (var i = 0; i < dataSets.length; i++) {
+    for (var i = 0; i < dataSets.Reports.length; i++) {
         if (dataSets.Reports[i].Data[0].Quantity == 0 && dataSets.Reports[i].Data[1].Quantity == 0) {
             dataSets.Reports[i].Data[2].Quantity = 1
         }

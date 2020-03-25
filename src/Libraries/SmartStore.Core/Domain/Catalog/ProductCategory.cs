@@ -35,6 +35,13 @@ namespace SmartStore.Core.Domain.Catalog
         public int DisplayOrder { get; set; }
 
         /// <summary>
+        /// Indicates whether the mapping is created by the user or by the system.
+        /// </summary>
+        [DataMember]
+        [Index]
+        public bool IsSystemMapping { get; set; }
+
+        /// <summary>
         /// Gets the category
         /// </summary>
         [DataMember]

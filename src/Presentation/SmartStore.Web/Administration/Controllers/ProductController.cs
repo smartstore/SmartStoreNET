@@ -1458,7 +1458,8 @@ namespace SmartStore.Admin.Controllers
 						ProductId = x.ProductId,
 						CategoryId = x.CategoryId,
 						IsFeaturedProduct = x.IsFeaturedProduct,
-						DisplayOrder = x.DisplayOrder
+						DisplayOrder = x.DisplayOrder,
+                        IsSystemMapping = x.IsSystemMapping
 					};
 				})
 				.ToList();

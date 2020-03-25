@@ -484,6 +484,9 @@ namespace SmartStore.Admin.Models.Catalog
 
             [SmartResourceDisplayName("Common.DisplayOrder")]
             public int DisplayOrder { get; set; }
+
+            [SmartResourceDisplayName("Admin.Rules.AutomaticAssignment")]
+            public bool IsSystemMapping { get; set; }
         }
 
         public class ProductManufacturerModel : EntityModelBase

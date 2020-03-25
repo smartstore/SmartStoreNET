@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Events;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
+using SmartStore.Rules;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Discounts;
@@ -21,6 +22,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
+using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
@@ -49,11 +51,14 @@ namespace SmartStore.Admin.Controllers
         private readonly IStoreMappingService _storeMappingService;
         private readonly IWorkContext _workContext;
         private readonly ICustomerActivityService _customerActivityService;
+        private readonly IRuleStorage _ruleStorage;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly CatalogSettings _catalogSettings;
         private readonly IEventPublisher _eventPublisher;
         private readonly Lazy<IGenericAttributeService> _genericAttributeService;
+        private readonly Lazy<ITaskScheduler> _taskScheduler;
+        private readonly Lazy<IScheduleTaskService> _scheduleTaskService;
 
         #endregion
 
@@ -74,11 +79,14 @@ namespace SmartStore.Admin.Controllers
             IStoreMappingService storeMappingService,
             IWorkContext workContext,
             ICustomerActivityService customerActivityService,
+            IRuleStorage ruleStorage,
             IDateTimeHelper dateTimeHelper,
             AdminAreaSettings adminAreaSettings,
             CatalogSettings catalogSettings,
             IEventPublisher eventPublisher,
-            Lazy<IGenericAttributeService> genericAttributeService)
+            Lazy<IGenericAttributeService> genericAttributeService,
+            Lazy<ITaskScheduler> taskScheduler,
+            Lazy<IScheduleTaskService> scheduleTaskService)
         {
             _categoryService = categoryService;
             _categoryTemplateService = categoryTemplateService;
@@ -94,11 +102,14 @@ namespace SmartStore.Admin.Controllers
             _storeMappingService = storeMappingService;
             _workContext = workContext;
             _customerActivityService = customerActivityService;
+            _ruleStorage = ruleStorage;
             _dateTimeHelper = dateTimeHelper;
             _adminAreaSettings = adminAreaSettings;
             _catalogSettings = catalogSettings;
             _eventPublisher = eventPublisher;
             _genericAttributeService = genericAttributeService;
+            _taskScheduler = taskScheduler;
+            _scheduleTaskService = scheduleTaskService;
         }
 
         #endregion
@@ -162,6 +173,7 @@ namespace SmartStore.Admin.Controllers
                 model.SelectedDiscountIds = category.AppliedDiscounts.Select(d => d.Id).ToArray();
                 model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(category);
                 model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(category);
+                model.SelectedRuleSetIds = category.RuleSets.Select(x => x.Id).ToArray();
             }
 
             model.AvailableDefaultViewModes.Add(
@@ -463,8 +475,13 @@ namespace SmartStore.Admin.Controllers
                         category.AppliedDiscounts.Add(discount);
                     }
                 }
-                _categoryService.UpdateCategory(category);
 
+                if (model.SelectedRuleSetIds?.Any() ?? false)
+                {
+                    _ruleStorage.ApplyRuleSetMappings(category, model.SelectedRuleSetIds);
+                }
+
+                _categoryService.UpdateCategory(category);
                 _categoryService.UpdateHasDiscountsApplied(category);
 
                 UpdatePictureSeoNames(category);
@@ -579,6 +596,10 @@ namespace SmartStore.Admin.Controllers
                             category.AppliedDiscounts.Remove(discount);
                     }
                 }
+
+                // Add\remove assigned rule sets.
+                _ruleStorage.ApplyRuleSetMappings(category, model.SelectedRuleSetIds);
+
                 _categoryService.UpdateCategory(category);
 
                 _categoryService.UpdateHasDiscountsApplied(category);
@@ -671,7 +692,8 @@ namespace SmartStore.Admin.Controllers
                     CategoryId = x.CategoryId,
                     ProductId = x.ProductId,
                     IsFeaturedProduct = x.IsFeaturedProduct,
-                    DisplayOrder1 = x.DisplayOrder
+                    DisplayOrder1 = x.DisplayOrder,
+                    IsSystemMapping = x.IsSystemMapping
                 };
 
                 var product = products.FirstOrDefault(y => y.Id == x.ProductId);
@@ -753,6 +775,33 @@ namespace SmartStore.Admin.Controllers
             }
 
             return new EmptyResult();
+        }
+
+        [HttpPost]
+        public ActionResult ApplyRules(int id)
+        {
+            var category = _categoryService.GetCategoryById(id);
+            if (category == null || category.Deleted)
+            {
+                return RedirectToAction("Index");
+            }
+
+            var task = _scheduleTaskService.Value.GetTaskByType<ProductRuleEvaluatorTask>();
+            if (task != null)
+            {
+                _taskScheduler.Value.RunSingleTask(task.Id, new Dictionary<string, string>
+                {
+                    { "CategoryIds", category.Id.ToString() }
+                });
+
+                NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
+            }
+            else
+            {
+                NotifyError(T("Admin.System.ScheduleTasks.TaskNotFound", nameof(ProductRuleEvaluatorTask)));
+            }
+
+            return RedirectToAction("Edit", new { id = category.Id });
         }
 
         #endregion

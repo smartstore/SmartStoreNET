@@ -294,6 +294,15 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedRuleSetIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedRuleSetIds)
+                @Html.ValidationMessageFor(model => model.SelectedRuleSetIds)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SelectedStoreIds)
             </td>
             <td class="adminData">
@@ -443,57 +452,58 @@
 {
 	if (Model.Id > 0)
 	{
+        <div class="alert alert-info">
+            @T("Admin.Catalog.Categories.ProductListDescription")
+        </div>
 		<div>
 			@(Html.Telerik().Grid<CategoryModel.CategoryProductModel>()
-                    .Name("products-grid")
-                    .DataKeys(keys => { keys.Add(x => x.Id); })
-                    .DataBinding(dataBinding =>
+                .Name("products-grid")
+                .DataKeys(keys => { keys.Add(x => x.Id); })
+                .DataBinding(dataBinding =>
+                {
+                    dataBinding.Ajax()
+                        .Select("ProductList", "Category", new { categoryId = Model.Id })
+                        .Update("ProductUpdate", "Category")
+                        .Delete("ProductDelete", "Category");
+                })
+                .Columns(columns =>
+                {
+                    columns.Bound(x => x.ProductName)
+                        .ReadOnly()
+                        .ClientTemplate(Html.LabeledProductName("ProductId", "ProductName"));
+                    columns.Bound(x => x.Sku)
+                        .ReadOnly();
+                    columns.Bound(x => x.Published)
+                        .ReadOnly()
+                        .ClientTemplate(Html.SymbolForBool("Published"))
+                        .Centered();
+                    columns.Bound(x => x.IsFeaturedProduct)
+                        .ClientTemplate(Html.SymbolForBool("IsFeaturedProduct"))
+                        .Centered();
+                    columns.Bound(x => x.DisplayOrder1)
+                        .Centered();
+			        columns.Bound(x => x.IsSystemMapping)
+                        .ReadOnly()
+					    .ClientTemplate(Html.SymbolForBool("IsSystemMapping"))
+					    .Centered();
+                    columns.Command(commands =>
                     {
-                        dataBinding.Ajax()
-                            .Select("ProductList", "Category", new { categoryId = Model.Id })
-                            .Update("ProductUpdate", "Category")
-                            .Delete("ProductDelete", "Category");
+                        commands.Edit().Localize(T);
+                        commands.Delete().Localize(T);
                     })
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.ProductName)
-                            .ReadOnly()
-                            .Width("50%")
-                            .ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-                        columns.Bound(x => x.Sku)
-                            .Width("20%")
-                            .ReadOnly();
-                        columns.Bound(x => x.Published)
-                            .ReadOnly()
-                            .Width("5%")
-                            .ClientTemplate(@Html.SymbolForBool("Published"))
-                            .Centered();
-                        columns.Bound(x => x.IsFeaturedProduct)
-                            .ClientTemplate(@Html.SymbolForBool("IsFeaturedProduct"))
-                            .Width("5%")
-                            .Centered();
-                        columns.Bound(x => x.DisplayOrder1)
-                            .Width("5%")
-                            .Centered();
-                        columns.Command(commands =>
-                        {
-                            commands.Edit().Localize(T);
-                            commands.Delete().Localize(T);
-                        })
-                        .HtmlAttributes(new { align = "right" })
-                        .Width("15%");
-                    })
-                    .ToolBar(commands => commands.Template(CategoryProductsGridCommands))
-                    .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-                    .PreserveGridState()
-                    .EnableCustomBinding(true))
+                    .HtmlAttributes(new { align = "right" });
+                })
+                .ToolBar(commands => commands.Template(CategoryProductsGridCommands))
+                .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+                .PreserveGridState()
+                .EnableCustomBinding(true))
 		</div>
 	}
 	else
 	{
-		<p class="muted">
+		<div class="alert alert-warning">
 			@T("Admin.SaveBeforeEdit")
-		</p>
+		</div>
 	}
 }
 
@@ -504,6 +514,11 @@
 		.HtmlAttribute("class", "t-button t-grid-add")
 		.Caption(T("Admin.Catalog.Categories.Products.AddNew").Text.EncodeJsString('\'', false))
 		.OnSelectionCompleted("PickProducts_Completed"))
+
+	<button type="button" id="btnReapplyRules" class="t-button t-grid-save-changes" data-url="@Url.Action("ApplyRules", new { id = Model.Id })" data-ask="@T("Admin.Common.AskToProceed")">
+		<i class="fa fa-play"></i>
+		<span>@T("Admin.Rules.ReapplyRules")</span>
+	</button>
 }
 
 <script>
@@ -518,7 +533,12 @@
 		// toggle top\bottom description
 		$('.description-toggle-button').click(function() {
 			$('.description-container').toggleClass("d-none");
-		});
+        });
+
+        // Reapply rules.
+        $('#btnReapplyRules').on('click', function () {
+    		$(this).doPostData({ });
+        });
 	});
 
 	function PickProducts_Completed(ids) {

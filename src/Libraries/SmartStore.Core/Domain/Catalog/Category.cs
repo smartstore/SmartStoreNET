@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Rules.Domain;
 
 namespace SmartStore.Core.Domain.Catalog
 {
@@ -14,8 +15,9 @@ namespace SmartStore.Core.Domain.Catalog
     /// </summary>
     [DataContract]
 	[DebuggerDisplay("{Id}: {Name} (Parent: {ParentCategoryId})")]
-	public partial class Category : BaseEntity, ICategoryNode, IAuditable, ISoftDeletable, IPagingOptions
+	public partial class Category : BaseEntity, ICategoryNode, IAuditable, ISoftDeletable, IPagingOptions, IRulesContainer
     {
+        private ICollection<RuleSetEntity> _ruleSets;
         private ICollection<Discount> _appliedDiscounts;
 
         /// <summary>
@@ -197,6 +199,15 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         [DataMember]
         public string DefaultViewMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets assigned rule sets.
+        /// </summary>
+        public virtual ICollection<RuleSetEntity> RuleSets
+        {
+            get { return _ruleSets ?? (_ruleSets = new HashSet<RuleSetEntity>()); }
+            protected set { _ruleSets = value; }
+        }
 
         /// <summary>
         /// Gets or sets the collection of applied discounts

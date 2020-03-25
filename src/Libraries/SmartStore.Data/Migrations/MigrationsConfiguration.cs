@@ -516,12 +516,22 @@
                 "Customers are automatically assigned to this customer group by scheduled task if they fulfill one of the selected rules.",
                 "Kunden werden automatisch per geplanter Aufgabe dieser Kundengruppe zugeordnet, wenn sie eine der gewählten Regeln erfüllen.");
 
-            builder.AddOrUpdate("Admin.CustomerRoleMapping.IsSystemMapping", "Automatic assignment", "Automatische Zuordnung");
-            builder.AddOrUpdate("Admin.CustomerRoleMapping.ReapplyRules", "Reapply rules", "Regeln neu anwenden");
+            builder.AddOrUpdate("Admin.Catalog.Categories.AutomatedAssignmentRules",
+                "Rules for automated assignment",
+                "Regeln für automatische Zuordnung",
+                "Products are automatically assigned to this category by scheduled task if they fulfill one of the selected rules.",
+                "Produkte werden automatisch per geplanter Aufgabe dieser Warengruppe zugeordnet, wenn sie eine der gewählten Regeln erfüllen.");
+
+            builder.AddOrUpdate("Admin.Rules.AutomaticAssignment", "Automatic assignment", "Automatische Zuordnung");
+            builder.AddOrUpdate("Admin.Rules.ReapplyRules", "Reapply rules", "Regeln neu anwenden");
             
             builder.AddOrUpdate("Admin.CustomerRoleMapping.RoleMappingListDescription",
                 "The list shows customers who are assigned to this customer role. Customers are automatically assigned by scheduled task as long as the group is active and rules are specified for it. You can make a manual assignment using the customer role selection at the respective customer.",
-                "Die Liste zeigt Kunden, die dieser Kundenruppe zugeordnet sind. Kunden werden automatisch per geplanter Aufgabe zugeordnet, sofern die Gruppe aktiv ist und für sie Regeln festgelegt sind. Eine manuelle Zuordnung können Sie über die Kundengruppenauswahl beim jeweiligen Kunden vornehmen.");
+                "Die Liste zeigt Kunden, die dieser Kundengruppe zugeordnet sind. Kunden werden automatisch per geplanter Aufgabe zugeordnet, sofern die Gruppe aktiv ist und für sie Regeln festgelegt sind. Eine manuelle Zuordnung können Sie über die Kundengruppenauswahl beim jeweiligen Kunden vornehmen.");
+
+            builder.AddOrUpdate("Admin.Catalog.Categories.ProductListDescription",
+                "The list shows products that are assigned to this category. Products are automatically assigned by scheduled task as long as the category is published and rules are specified for it.",
+                "Die Liste zeigt Produkte, die dieser Warenruppe zugeordnet sind. Produkte werden automatisch per geplanter Aufgabe zugeordnet, sofern die Warengruppe veröffentlicht ist und für sie Regeln festgelegt sind.");
 
             builder.AddOrUpdate("Admin.System.ScheduleTasks.TaskNotFound",
                 "The scheduled task \"{0}\" was not found.",

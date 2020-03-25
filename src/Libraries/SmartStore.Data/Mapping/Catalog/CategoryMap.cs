@@ -24,6 +24,10 @@ namespace SmartStore.Data.Mapping.Catalog
 				.WithMany()
 				.HasForeignKey(p => p.MediaFileId)
 				.WillCascadeOnDelete(false);
+
+            HasMany(d => d.RuleSets)
+                .WithMany(rs => rs.Categories)
+                .Map(m => m.ToTable("RuleSet_Category_Mapping"));
         }
     }
 }

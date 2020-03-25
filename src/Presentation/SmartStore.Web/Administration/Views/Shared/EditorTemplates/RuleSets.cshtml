@@ -25,7 +25,7 @@
     $(function () {
         $('#@id')
             .selectWrapper()
-            .on('select2:selecting', function (e) {
+            .on('select2:selecting select2:unselecting', function (e) {
                 try {
                     // Prevent selection when a link has been clicked.
                     if ($(e.params.args.originalEvent.target).hasClass('prevent-selection')) {

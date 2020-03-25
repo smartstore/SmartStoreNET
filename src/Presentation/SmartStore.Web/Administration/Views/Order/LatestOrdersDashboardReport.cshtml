@@ -1,20 +1,17 @@
 ﻿@model LatestOrdersDashboardReportModel
-
 @using SmartStore.Core.Domain.Orders
-@using SmartStore.Services.Customers
 
 <div class="report">
     <div class="report-title-row">
         <div class="report-title">@T("Admin.SalesReport.LatestOrders")</div>
     </div>
-
-    <div class="table-responsive table-dashboard table-hover">
+    <div class="table-responsive table-dashboard table-hover table-prevent-overflow">
         <table class="table small">
             <thead>
                 <tr>
                     <th class="display-row" style="width: 30%">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
                     <th class="display-row text-center px-3" style="width: 10%">@T("Admin.Catalog.Categories.Products")</th>
-                    <th class="display-row text-right" style="width: 20%;  padding-right: 2rem !important" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@T("Common.Amount")</th>
+                    <th class="display-row text-right" style="width: 20%; padding-right: 2rem" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@T("Common.Amount")</th>
                     <th class="display-row" style="width: 20%;">@T("Account.CustomerOrders.OrderDate")</th>
                     <th class="display-row" style="width: 20%">@T("Account.CustomerOrders.OrderStatus")</th>
                 </tr>

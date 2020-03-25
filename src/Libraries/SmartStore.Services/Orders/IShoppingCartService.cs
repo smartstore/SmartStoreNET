@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
@@ -285,8 +286,16 @@ namespace SmartStore.Services.Orders
         /// <returns>Formatted subtotal of cart items for the current user</returns>
         string GetFormattedCurrentCartSubTotal(IList<OrganizedShoppingCartItem> cart);
 
-		decimal GetAllOpenCartsSubTotal();
+		/// <summary>
+		/// Get all cart items from open carts
+		/// </summary>
+		/// <returns>Paged list of items from open carts</returns>
+		public IPagedList<ShoppingCartItem> GetAllOpenCartItems();
 
-		decimal GetAllOpenWishlistsSubTotal();
+		/// <summary>
+		/// Get all cart items from open wishlists
+		/// </summary>
+		/// <returns>Paged list of items from open wishlists</returns>
+		public IPagedList<ShoppingCartItem> GetAllOpenWishlistItems();
 	}
 }

@@ -80,11 +80,12 @@ namespace SmartStore.Services.Customers
 
 		#region Customers
 
-		public virtual int CountAllCustomers()
+		public virtual IPagedList<Customer> GetAllCustomers()
 		{
-			var query = from c in _customerRepository.Table
-						select c;
-			return query.Count();
+			var query = _customerRepository.Table;
+			query = query.Where(x => !x.Deleted);
+
+			return new PagedList<Customer>(query, 0, int.MaxValue);
 		}
 
 		public virtual IPagedList<Customer> SearchCustomers(CustomerSearchQuery q)

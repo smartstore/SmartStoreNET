@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Collections;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
@@ -14,9 +16,17 @@ namespace SmartStore.Services.Catalog
     public partial interface IProductService
     {
         #region Products
+        /// <summary>
+        /// Get all products
+        /// </summary>
+        /// <returns>Paged list of products</returns>
+        IPagedList<Product> GetAllProducts();
 
-        int CountAllProducts();
-        int CountAllProductVariants();
+        /// <summary>
+        /// Get all product variant combinations
+        /// </summary>
+        /// <returns>Paged list of product variant combinations</returns>
+        IPagedList<ProductVariantAttributeCombination> GetAllProductVariants();
 
         /// <summary>
         /// Delete a product

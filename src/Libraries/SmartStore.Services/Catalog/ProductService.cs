@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using SmartStore.Collections;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
@@ -142,31 +143,22 @@ namespace SmartStore.Services.Catalog
 
 		#region Products
 
-		public virtual int CountAllProducts()
+		public virtual IPagedList<Product> GetAllProducts()
 		{
-			var query =
-				from p in _productRepository.Table
-				select p;
+			var query = _productRepository.Table;
+			query = query.Where(x => !x.Deleted);
+			query = query.Where(x => x.Published);
 
-			return query.Count();
+			return new PagedList<Product>(query, 0, int.MaxValue);
+
 		}
 
-		public virtual int CountAllProductVariants()
+		public virtual IPagedList<ProductVariantAttributeCombination> GetAllProductVariants()
 		{
-			var query =
-				from p in _productVariantAttributeCombinationRepository.Table
-				select p;
-
-			return query.Count();
-		}
-
-		public virtual int CountAllProductAttributes()
-		{
-			var query =
-				from p in _productAttributeService.GetAllProductAttributes(0, int.MaxValue)
-				select p;
-
-			return query.Count();
+			var query = _productVariantAttributeCombinationRepository.Table;
+			query = query.Where(x => x.IsActive);
+			
+			return new PagedList<ProductVariantAttributeCombination>(query, 0, int.MaxValue);			
 		}
 
 		public virtual void DeleteProduct(Product product)

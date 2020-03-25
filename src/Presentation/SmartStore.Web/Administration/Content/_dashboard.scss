@@ -251,12 +251,164 @@
 .report-store-statistics {
     grid-column: 7 / 11;
     grid-row: 4 / 5;
-}
 
+
+    .statistics-value {
+        font-size: 1rem;
+        font-weight: $font-weight-bold;
+        border-bottom: 1px solid var(--primary);
+    }
+
+    .statistics-attribute {
+        font-size: .9rem;
+        border-top: 1px solid var(--primary)
+    }
+
+    .statistics-row {
+        display: flex;
+        padding: 1.5rem 2rem;
+    }
+
+    .statistics-col {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        padding: 0;
+    }
+
+    .statistics-container-outer {
+        display: flex;
+        width: 80%;
+        justify-content: center;
+        padding-left: 2.75rem;
+    }
+
+    .statistics-container-inner {
+        width: 100%;
+        text-align: center;
+    }
+
+    .statistics-icon {
+        font-size: 1.75rem;
+        color: var(--primary);
+        opacity: .5;
+    }
+
+    .products-icon {
+        &:before {
+            @include fontawesome-font("\f1b3", regular);
+            position: absolute;
+            transform: translateY(-50%);
+        }
+    }
+
+    .categories-icon {
+        &:before {
+            @include fontawesome-font("\f0e8", regular);
+            position: absolute;
+            transform: translateY(-50%);
+        }
+    }
+
+    .manufacturer-icon {
+        color: var(--primary);
+
+        &:before {
+            @include fontawesome-font("\f1ad", regular);
+            position: absolute;
+            transform: translateY(-50%);
+        }
+    }
+
+    .attribute-icon {
+        &:before {
+            @include fontawesome-font("\f022", regular);
+            position: absolute;
+            transform: translateY(-50%);
+        }
+    }
+
+    .attribute-combinations-icon {
+        &:before {
+            @include fontawesome-font("\f5fd", regular);
+            position: absolute;
+            transform: translateY(-50%);
+        }
+    }
+
+    .media-icon {
+        &:before {
+            @include fontawesome-font("\f302", regular);
+            position: absolute;
+            transform: translateY(-50%);
+        }
+    }
+
+    .customers-icon {
+        color: var(--primary);
+
+        &:before {
+            @include fontawesome-font("\f0c0", regular);
+            position: absolute;
+            transform: translateY(-50%);
+        }
+    }
+
+    .orders-icon {
+        &:before {
+            @include fontawesome-font("\f080", regular);
+            position: absolute;
+            transform: translateY(-50%);
+        }
+    }
+
+    .sales-icon {
+        &:before {
+            @include fontawesome-font("\f09d", regular);
+            position: absolute;
+            transform: translateY(-50%);
+        }
+    }
+
+    .customers-online-icon {
+        &:before {
+            @include fontawesome-font("\f4fc", regular);
+            position: absolute;
+            transform: translateY(-50%);
+        }
+    }
+
+    .wishlist-icon {
+        &:before {
+            @include fontawesome-font("\f004", regular);
+            position: absolute;
+            transform: translateY(-50%);
+        }
+    }
+
+    .cart-icon {
+        &:before {
+            @include fontawesome-font("\f218", regular);
+            position: absolute;
+            transform: translateY(-50%);
+        }
+    }
+}
 // Not Dashboard specific
 //--------------------------------------
 .text-bold {
     font-weight: $font-weight-bold;
+}
+
+.table-prevent-overflow {
+    tr > th,
+    tr > td {
+        overflow-x: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
 }
 
 .fade-in {

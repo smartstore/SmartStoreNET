@@ -544,7 +544,11 @@
             builder.AddOrUpdate("Admin.Promotions.NewsLetterSubscriptions.Short", "Newsletter abos", "Newsletter Abos");
             builder.AddOrUpdate("Admin.Promotions.SalesReport.Sales", "Sales", "Verkäufe");
             builder.AddOrUpdate("Common.Amount", "Amount", "Betrag");
-
+            builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Short", "Combinations", "Kombinationen");
+            builder.AddOrUpdate("Admin.CurrentWishlists.Short", "Whishlists", "Wunschlisten");
+            builder.AddOrUpdate("Admin.CurrentCarts.Short", "Shopping carts", "Warenkörbe");
+            builder.AddOrUpdate("Admin.SalesReport.Sales", "Sales", "Umsatz");
+            builder.AddOrUpdate("Admin.Report.OnlineCustomers.Note", "within last 15 minutes", "in den letzten 15 Minuten");            
         }
     }
 }

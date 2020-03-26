@@ -2832,7 +2832,7 @@ namespace SmartStore.Admin.Controllers
 
             var model = new LatestOrdersDashboardReportModel();
 
-            var latestOrders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue).Take(8).ToList();
+            var latestOrders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue).Take(7).ToList();
             foreach (var order in latestOrders)
             {
                 var customer = _customerService.GetCustomerById(order.CustomerId);

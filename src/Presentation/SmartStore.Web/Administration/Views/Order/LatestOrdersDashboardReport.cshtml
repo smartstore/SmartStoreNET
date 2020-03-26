@@ -37,14 +37,14 @@
                         else if (x.OrderState == OrderStatus.Processing)
                         {
                             <td class="display-row d-flex align-items-center">
-                                <div class="bg-primary indicator"></div>
+                                <div class="bg-success indicator"></div>
                                 @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing"), "Edit", "Order", new { id = x.OrderId }, new { @class = "pl-2 text-dark" })
                             </td>
                         }
                         else if (x.OrderState == OrderStatus.Complete)
                         {
                             <td class="display-row d-flex align-items-center">
-                                <div class="bg-success indicator"></div>
+                                <div class="bg-primary indicator"></div>
                                 @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete"), "Edit", "Order", new { id = x.OrderId }, new { @class = "pl-2 text-dark" })
                             </td>
                         }

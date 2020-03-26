@@ -46,6 +46,6 @@ namespace SmartStore.Services.Customers
         /// <param name="allCustomers">List of customers</param>
         /// <param name="state">Time period</param>
         /// <returns>Customers chart report</returns>
-        DashboardChartReportLine GetCustomersDashboardReportLine(IPagedList<Customer> allCustomers, PeriodState state);
+        DashboardChartReportLine GetCustomersDashboardReport(IPagedList<Customer> allCustomers, PeriodState state);
     }
 }

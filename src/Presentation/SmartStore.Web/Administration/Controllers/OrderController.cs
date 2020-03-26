@@ -2860,7 +2860,7 @@ namespace SmartStore.Admin.Controllers
 
             for (int i = 0; i < model.Reports.Length; i++)
             {
-                model.Reports[i] = _orderReportService.GetOrdersDashboardReportLine(orders, (PeriodState)i);
+                model.Reports[i] = _orderReportService.GetOrdersDashboardReport(orders, (PeriodState)i);
             }
 
             watch.Stop();

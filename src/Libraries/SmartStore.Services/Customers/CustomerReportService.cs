@@ -188,7 +188,7 @@ namespace SmartStore.Services.Customers
             return data;
         }
 
-        public virtual DashboardChartReportLine GetCustomersDashboardReportLine(IPagedList<Customer> allCustomers, PeriodState state)
+        public virtual DashboardChartReportLine GetCustomersDashboardReport(IPagedList<Customer> allCustomers, PeriodState state)
         {
             var startTime = DateTime.UtcNow;
             var endTime = startTime;

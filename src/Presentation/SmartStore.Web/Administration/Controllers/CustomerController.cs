@@ -1417,7 +1417,7 @@ namespace SmartStore.Admin.Controllers
 
             for (int i = 0; i < model.Reports.Length; i++)
             {
-                model.Reports[i] = _customerReportService.GetCustomersDashboardReportLine(customers, (PeriodState)i);
+                model.Reports[i] = _customerReportService.GetCustomersDashboardReport(customers, (PeriodState)i);
             }
 
             watch.Stop();

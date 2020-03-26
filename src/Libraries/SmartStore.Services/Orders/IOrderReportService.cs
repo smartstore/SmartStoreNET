@@ -118,6 +118,6 @@ namespace SmartStore.Services.Orders
         /// <param name="allOrders">List of orders</param>
         /// <param name="period">Time period</param>
         /// <returns>Orders chart report</returns>
-        DashboardChartReportLine GetOrdersDashboardReportLine(IPagedList<Order> allOrders, PeriodState period);
+        DashboardChartReportLine GetOrdersDashboardReport(IPagedList<Order> allOrders, PeriodState period);
     }
 }

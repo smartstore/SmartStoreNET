@@ -366,7 +366,7 @@ namespace SmartStore.Services.Orders
             return profit;
         }
 
-        public virtual DashboardChartReportLine GetOrdersDashboardReportLine(IPagedList<Order> allOrders, PeriodState state)
+        public virtual DashboardChartReportLine GetOrdersDashboardReport(IPagedList<Order> allOrders, PeriodState state)
         {
             var startTime = DateTime.UtcNow;
             var endTime = startTime;

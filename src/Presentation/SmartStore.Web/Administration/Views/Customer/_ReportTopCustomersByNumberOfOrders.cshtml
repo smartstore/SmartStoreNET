@@ -43,8 +43,8 @@
 			.Centered()
 			.Width(160);
 		columns.Bound(x => x.CustomerId)
-			.Template(x => Html.ActionLink(x.CustomerName, "Edit", "Customer", new { id = x.CustomerId }, new { }))
-			.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerName #></a>");
+			.Template(x => Html.ActionLink(x.CustomerDisplayName, "Edit", "Customer", new { id = x.CustomerId }, new { }))
+			.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerDisplayName #></a>");
 	})
 	.DataBinding(dataBinding => dataBinding.Ajax().Select("ReportTopCustomersByNumberOfOrdersList", "Customer"))
 	.EnableCustomBinding(true))

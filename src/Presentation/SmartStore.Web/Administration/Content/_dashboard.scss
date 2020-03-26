@@ -267,12 +267,12 @@
     .statistics-value {
         font-size: 1rem;
         font-weight: $font-weight-bold;
-        border-bottom: 1px solid var(--primary);
+        border-bottom: 1px solid #eee;
     }
 
     .statistics-attribute {
         font-size: .9rem;
-        border-top: 1px solid var(--primary)
+        border-top: 1px solid #eee;
     }
 
     .statistics-row {
@@ -303,8 +303,7 @@
 
     .statistics-icon {
         font-size: 1.75rem;
-        color: var(--primary);
-        opacity: .5;
+        color: #ccc;
     }
 
     .products-icon {
@@ -324,7 +323,6 @@
     }
 
     .manufacturer-icon {
-        color: var(--primary);
 
         &:before {
             @include fontawesome-font("\f1ad", regular);
@@ -358,7 +356,6 @@
     }
 
     .customers-icon {
-        color: var(--primary);
 
         &:before {
             @include fontawesome-font("\f0c0", regular);

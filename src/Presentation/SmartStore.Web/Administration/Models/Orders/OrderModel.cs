@@ -361,10 +361,9 @@ namespace SmartStore.Admin.Models.Orders
         public bool CanVoid { get; set; }
         public bool CanVoidOffline { get; set; }
         
-        //aggergator proeprties
-        public string aggregatorprofit { get; set; }
-        public string aggregatortax { get; set; }
-        public string aggregatortotal { get; set; }
+        public string AggregatorProfit { get; set; }
+        public string AggregatorTax { get; set; }
+        public string AggregatorTotal { get; set; }
 
 		public AutoUpdateOrderItemModel AutoUpdateOrderItem { get; set; }
 		public string AutoUpdateOrderItemInfo { get; set; }

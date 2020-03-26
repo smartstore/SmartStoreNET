@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
-using Newtonsoft.Json;
 using SmartStore.Admin.Models.Orders;
-using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -992,9 +989,12 @@ namespace SmartStore.Admin.Controllers
 
                 if (x.ShippingAddress != null && orderModel.IsShippable)
                 {
-                    orderModel.ShippingAddressString = string.Concat(x.ShippingAddress.Address1,
-                        ", ", x.ShippingAddress.ZipPostalCode,
-                            " ", x.ShippingAddress.City);
+                    orderModel.ShippingAddressString = string.Concat(
+                        x.ShippingAddress.Address1,
+                        ", ",
+                        x.ShippingAddress.ZipPostalCode,
+                        " ",
+                        x.ShippingAddress.City);
 
                     if (x.ShippingAddress.CountryId > 0)
                     {
@@ -1013,20 +1013,15 @@ namespace SmartStore.Admin.Controllers
 
             // Summary report.
             // Implemented as a workaround described here: http://www.telerik.com/community/forums/aspnet-mvc/grid/gridmodel-aggregates-how-to-use.aspx.
-            var reportSummary = _orderReportService.GetOrderAverageReportLine(model.StoreId, orderStatusIds,
-                paymentStatusIds, shippingStatusIds, startDateValue, endDateValue, model.CustomerEmail);
+            var summary = _orderReportService.GetOrderAverageReportLine(orders.SourceQuery);
+            var profit = _orderReportService.GetProfit(orders.SourceQuery);
 
-            var profit = _orderReportService.ProfitReport(model.StoreId, orderStatusIds,
-                paymentStatusIds, shippingStatusIds, startDateValue, endDateValue, model.CustomerEmail);
-
-            var aggregator = new OrderModel
+            gridModel.Aggregates = new OrderModel
             {
-                aggregatorprofit = _priceFormatter.FormatPrice(profit, true, false),
-                aggregatortax = _priceFormatter.FormatPrice(reportSummary.SumTax, true, false),
-                aggregatortotal = _priceFormatter.FormatPrice(reportSummary.SumOrders, true, false)
+                AggregatorProfit = _priceFormatter.FormatPrice(profit, true, false),
+                AggregatorTax = _priceFormatter.FormatPrice(summary.SumTax, true, false),
+                AggregatorTotal = _priceFormatter.FormatPrice(summary.SumOrders, true, false)
             };
-
-            gridModel.Aggregates = aggregator;
 
             return new JsonResult
             {

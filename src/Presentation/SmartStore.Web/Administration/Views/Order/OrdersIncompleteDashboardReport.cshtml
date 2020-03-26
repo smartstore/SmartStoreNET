@@ -125,8 +125,8 @@
                         if (item.index == 2 && data.datasets[0].data[0] == 0 && data.datasets[0].data[1] == 0) {
                             return " " + '@T("Admin.SalesReport.NoIncompleteOrders")';
                         }
-                        // Use formatted Version....figure out how to access DataSet index....
-                        return " " + data.labels[item.index] + ": " + data.datasets[0].data[item.index] + ", " + data.datasets[1].data[item.index] ; // dataSets.Reports[item.datasetIndex].Data[item.index].QuantityFormatted;
+                        return " " + data.labels[item.index] + ": " + dataSets.Reports[this._chart.id + alreadyExistingCharts].Data[item.index].QuantityFormatted
+                            + ", " + dataSets.Reports[this._chart.id + alreadyExistingCharts].Data[item.index].AmountFormatted; 
                     },
                 }
             },
@@ -165,6 +165,7 @@
                 options: options
             }
         );
+        var alreadyExistingCharts = chartDay.id;
 
         var dataYesterday = {
             labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],

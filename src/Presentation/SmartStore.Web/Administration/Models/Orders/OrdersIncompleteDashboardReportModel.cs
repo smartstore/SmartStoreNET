@@ -4,7 +4,7 @@ namespace SmartStore.Admin.Models.Orders
 {
     public partial class OrdersIncompleteDashboardReportModel : ModelBase
     {
-        public OrdersIncompleteDashboardReportLine[] Reports { get; set; } = new OrdersIncompleteDashboardReportLine[5];
+        public OrdersIncompleteDashboardReportLine[] Reports { get; set; }
     }
 
     public class OrdersIncompleteDashboardReportLine

@@ -457,12 +457,13 @@ namespace SmartStore.Services.Orders
 
         private List<Order>[] GetOrderReports(List<Order> orders)
         {
-            var orderReports = new List<Order>[4];
-
-            orderReports[0] = orders.Where(x => x.OrderStatus == OrderStatus.Cancelled).Select(x => x).ToList();
-            orderReports[1] = orders.Where(x => x.OrderStatus == OrderStatus.Pending).Select(x => x).ToList();
-            orderReports[2] = orders.Where(x => x.OrderStatus == OrderStatus.Processing).Select(x => x).ToList();
-            orderReports[3] = orders.Where(x => x.OrderStatus == OrderStatus.Complete).Select(x => x).ToList();
+            var orderReports = new List<Order>[4]
+            {
+                orders.Where(x => x.OrderStatus == OrderStatus.Cancelled).Select(x => x).ToList(),
+                orders.Where(x => x.OrderStatus == OrderStatus.Pending).Select(x => x).ToList(),
+                orders.Where(x => x.OrderStatus == OrderStatus.Processing).Select(x => x).ToList(),
+                orders.Where(x => x.OrderStatus == OrderStatus.Complete).Select(x => x).ToList()
+            };
 
             return orderReports;
         }
@@ -474,7 +475,6 @@ namespace SmartStore.Services.Orders
                 var point = reports[j].Where(x => x.CreatedOnUtc < endDate && x.CreatedOnUtc >= startDate).ToList();
                 report.DataSets[j].Amount[index] = point.Sum(x => x.OrderTotal);
                 report.DataSets[j].FormattedAmount[index] = ((int)Math.Round(report.DataSets[j].Amount[index])).ToString("C0");
-                //report.DataSets[j].FormattedAmount[index] = _priceFormatter.FormatPrice((int)report.DataSets[j].Amount[index], true, false);
                 report.DataSets[j].Quantity[index] = point.Count;
             }
         }

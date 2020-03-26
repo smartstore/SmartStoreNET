@@ -75,8 +75,7 @@ $(function () {
 	});
 });
 
-function File(id, filePath, fileSize, modTime, w, h, mime) {
-	this.id = id;
+function File(filePath, fileSize, modTime, w, h, mime) {
 	this.fullPath = filePath;
 	this.mime = mime;
 	this.type = RoxyUtils.GetFileType(filePath, mime);
@@ -85,14 +84,13 @@ function File(id, filePath, fileSize, modTime, w, h, mime) {
 	this.ext = RoxyUtils.GetFileExt(filePath);
 	this.path = RoxyUtils.GetPath(filePath);
 	this.image = filePath;
-	this.size = (fileSize ? fileSize : RoxyUtils.GetFileSize(filePath));
+	this.size = fileSize || RoxyUtils.GetFileSize(filePath);
 	this.time = modTime;
-	this.width = (w ? w : 0);
-	this.height = (h ? h : 0);
+	this.width = w || 0;
+	this.height = h || 0;
 	this.thumb = this.type === 'image' ? filePath : RoxyUtils.GetAssetPath("images/blank.gif");
 	this.GenerateHtml = function () {
 		var attrs = [
-			'data-id="' + this.id + '"',
 			'data-mime="' + this.mime + '"',
 			'data-path="' + this.fullPath + '"',
 			'data-time="' + this.time + '"',
@@ -280,7 +278,7 @@ File.Parse = function (path) {
 	var ret = false;
 	var li = $('#pnlFileList').find('li[data-path="' + path + '"]');
 	if (li.length > 0)
-		ret = new File(li.data('id'), li.data('path'), li.data('size'), li.data('time'), li.data('w'), li.data('h'));
+		ret = new File(li.data('path'), li.data('size'), li.data('time'), li.data('w'), li.data('h'));
 
 	return ret;
 };

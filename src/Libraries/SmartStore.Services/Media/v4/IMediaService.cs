@@ -34,6 +34,7 @@ namespace SmartStore.Services.Media
         Task<int> CountFilesAsync(MediaSearchQuery query);
         MediaSearchResult SearchFiles(MediaSearchQuery query, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
         Task<MediaSearchResult> SearchFilesAsync(MediaSearchQuery query, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
+        IQueryable<MediaFile> PrepareQuery(MediaSearchQuery query, MediaLoadFlags flags);
 
         bool FileExists(string path);
         MediaFileInfo GetFileByPath(string path);

@@ -42,7 +42,7 @@ namespace SmartStore.Services.Media
 
         public override string ToString() => Name;
 
-        public static implicit operator string(MediaType obj) => obj.Name;
+        public static implicit operator string(MediaType obj) => obj?.Name;
 
         public static implicit operator MediaType(string obj) => GetMediaType(obj);
 

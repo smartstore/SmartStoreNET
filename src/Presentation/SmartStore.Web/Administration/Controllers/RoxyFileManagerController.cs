@@ -18,8 +18,6 @@ using SmartStore.Services.Media;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
-using SmartStore.Services.Media.Storage;
-using SmartStore.Collections;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -33,48 +31,48 @@ namespace SmartStore.Admin.Controllers
 		private Dictionary<string, string> _lang = null;
 		private Dictionary<string, string> _roxySettings = null;
 
-		private readonly IMediaService _mediaService;
-		private readonly IFolderService _folderService;
 		private readonly IAlbumRegistry _albumRegistry;
+		private readonly IMediaTypeResolver _mediaTypeResolver;
 		private readonly MediaHelper _mediaHelper;
 		private readonly Lazy<IImageProcessor> _imageProcessor;
 		private readonly Lazy<IImageCache> _imageCache;
-		//private readonly IMediaFileSystem _fileSystem;
+		private readonly IMediaFileSystem _fileSystem;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly ILocalizationFileResolver _locFileResolver;
 		private readonly Lazy<MediaSettings> _mediaSettings;
 
 		private readonly AlbumInfo _album;
-		private readonly TreeNode<MediaFolderNode> _rootNode;
 
 		public RoxyFileManagerController(
 			IMediaService mediaService,
 			IFolderService folderService,
 			IAlbumRegistry albumRegistry,
+			IMediaTypeResolver mediaTypeResolver,
 			MediaHelper mediaHelper,
 			Lazy<IImageProcessor> imageProcessor,
 			Lazy<IImageCache> imageCache,
-			//IMediaFileSystem fileSystem,
+			IMediaFileSystem fileSystem,
 			IEventPublisher eventPublisher,
 			ILocalizationFileResolver locFileResolver,
 			Lazy<MediaSettings> mediaSettings)
 		{
-			_mediaService = mediaService;
-			_folderService = folderService;
+			//_mediaService = mediaService;
+			//_folderService = folderService;
 			_albumRegistry = albumRegistry;
+			_mediaTypeResolver = mediaTypeResolver;
 			_mediaHelper = mediaHelper;
 			_imageProcessor = imageProcessor;
 			_imageCache = imageCache;
-			//_fileSystem = fileSystem;
+			_fileSystem = fileSystem;
 			_eventPublisher = eventPublisher;
 			_locFileResolver = locFileResolver;
 			_mediaSettings = mediaSettings;
 
-			_album = _albumRegistry.GetAlbumByName(SystemAlbumProvider.Files);
-			_rootNode = _folderService.GetNodeById(_album.Id);
+			_album = albumRegistry.GetAlbumByName(SystemAlbumProvider.Files);
+			_fileSystem = new MediaServiceFileSystemAdapter(mediaService, folderService, _mediaHelper);
+			_fileRoot = _album.Name;
 
-			//var albumInfo = albumRegistry.GetAlbumByName(SystemAlbumProvider.Files);
-			//_fileSystem = new AlbumFileSystemAdapter(albumInfo, mediaService, folderService);
+			//_fileRoot = "Uploaded";
 		}
 
 		#region Utilities
@@ -101,8 +99,6 @@ namespace SmartStore.Admin.Controllers
 
 		private string LangRes(string name)
 		{
-			var result = name;
-
 			if (_lang == null)
 			{
 				var locFile = _locFileResolver.Resolve(Services.WorkContext.WorkingLanguage.UniqueSeoCode, "~/Administration/Content/filemanager/lang/", "*.js");
@@ -124,51 +120,17 @@ namespace SmartStore.Admin.Controllers
 
 		private string GetSetting(string name)
 		{
-			var result = "";
-
 			if (_roxySettings == null)
-				_roxySettings = ParseJson(CommonHelper.MapPath(CONFIG_FILE));
-
-			if (_roxySettings.ContainsKey(name))
-				result = _roxySettings[name];
-
-			return result;
-		}
-
-		private string GetFileContentType(string extension)
-		{
-			extension = extension.EmptyNull().ToLower();
-
-			var mimeType = MimeTypes.MapNameToMimeType(extension).EmptyNull();
-			var slashIndex = mimeType.IndexOf('/');
-			if (slashIndex < 0)
-				return "file";
-
-			var mediaType = mimeType.Substring(0, slashIndex);
-			var subType = mimeType.Substring(slashIndex + 1);
-
-			switch (mediaType)
 			{
-				case "image":
-				case "audio":
-				case "video":
-					return mediaType;
-				case "application":
-					if (extension == ".pdf")
-					{
-						return "pdf";
-					}
-					else if (extension == ".swf")
-					{
-						return "flash";
-					}
-					else
-					{
-						return "file";
-					}
-				default:
-					return "file";
+				_roxySettings = ParseJson(CommonHelper.MapPath(CONFIG_FILE));
+			}			
+
+			if (_roxySettings.TryGetValue(name, out var result))
+			{
+				return result;
 			}
+
+			return result.EmptyNull();
 		}
 
 		private bool IsAllowedFileType(string extension)
@@ -249,7 +211,7 @@ namespace SmartStore.Admin.Controllers
 			var result = new
 			{
 				res = type,
-				msg = message
+				msg = message.EmptyNull().Replace("\"", "\\\"")
 			};
 
 			return JsonConvert.SerializeObject(result);
@@ -264,6 +226,7 @@ namespace SmartStore.Admin.Controllers
 		internal class RoxyFolder
 		{
 			public IFolder Folder { get; set; }
+			public string DisplayName { get; set; }
 			public int SubFolders { get; set; }
 		}
 
@@ -287,12 +250,14 @@ namespace SmartStore.Admin.Controllers
 				if (_fileRoot == null)
 				{
 					_fileRoot = GetSetting("FILES_ROOT");
-					
-					if (GetSetting("SESSION_PATH_KEY") != "" && Session[GetSetting("SESSION_PATH_KEY")] != null)
+
+					var sessionPathKey = GetSetting("SESSION_PATH_KEY");
+
+					if (sessionPathKey.HasValue() && Session[sessionPathKey] != null)
 						_fileRoot = (string)Session[GetSetting("SESSION_PATH_KEY")];
 
 					if (_fileRoot.IsEmpty())
-						_fileRoot = SystemAlbumProvider.Files;
+						_fileRoot = _album.Name;
 				}
 
 				return _fileRoot;
@@ -307,59 +272,64 @@ namespace SmartStore.Admin.Controllers
 				path = uri.PathAndQuery;
 			}
 
-			return path;
-
-			//return (_fileSystem.GetStoragePath(path) ?? path).TrimStart('/', '\\');
+			return (_fileSystem.GetStoragePath(path) ?? path).TrimStart('/', '\\');
 		}
 
-		private MediaFolderNode GetNodeByPath(string path)
+		private IEnumerable<IFile> GetFiles(string path, string type)
 		{
-			return _folderService.GetNodeByPath(path).Value;
-		}
+			var files = _fileSystem.ListFiles(GetRelativePath(path));
 
-		private MediaSearchQuery CreateSearchQuery(int folderId, string type)
-		{
-			var query = new MediaSearchQuery
+			if (type.IsEmpty() || type == "#")
 			{
-				FolderId = folderId,
-				Deleted = false
-			};
+				return files;
+			}
+
+			type = type.ToLowerInvariant();
+			bool predicate(IFile x) => _mediaTypeResolver.Resolve(x.Extension) == type;
+
+			return files.Where(predicate);
+		}
+
+		private long CountFiles(string path, string type)
+		{
+			if (_fileSystem.IsCloudStorage)
+			{
+				// Dont't count, it's expensive!
+				return 0;
+			}
+
+			Func<string, bool> predicate = null;
 
 			if (type.HasValue() && type != "#")
 			{
-				query.MediaTypes = new[] { type };
+				type = type.ToLowerInvariant();
+				predicate = x => _mediaTypeResolver.Resolve(Path.GetExtension(x)) == type;
 			}
-
-			return query;
-		}
-
-		private IEnumerable<MediaFileInfo> GetFiles(int folderId, string type)
-		{
-			var query = CreateSearchQuery(folderId, type);
-			var files = _mediaService.SearchFiles(query);
-			return files;
-		}
-
-		private long CountFiles(int folderId, string type)
-		{
-			var query = CreateSearchQuery(folderId, type);
-			return _mediaService.CountFiles(query);
+			
+			return _fileSystem.CountFiles(path, "*", predicate, false);
 		}
 
 		private void ListDirTree(string type)
 		{
-			var result = _rootNode.FlattenNodes(true)
+			var folders = ListDirs(FileRoot);
+
+			folders.Insert(0, new RoxyFolder
+			{
+				Folder = _fileSystem.GetFolder(FileRoot),
+				DisplayName = FileRoot,
+				SubFolders = folders.Count
+			});
+
+			var result = folders
 				.Select(x => 
 				{
-					var numFiles = CountFiles(x.Value.Id, type);
-					string displayName = x.Value.ResKey.HasValue() ? T(x.Value.ResKey).Text : null;
+					var numFiles = CountFiles(x.Folder.Path, type);
 					return new 
 					{
-						i = x.Value.Id,
-						p = x.Value.Path,
-						n = displayName,
-						f = numFiles.ToString(),
-						d = x.Children.Count
+						p = x.Folder.Path.Replace('\\', '/'),
+						n = x.DisplayName,
+						f = numFiles,
+						d = x.SubFolders
 					};
 				})
 				.ToArray();
@@ -367,16 +337,35 @@ namespace SmartStore.Admin.Controllers
 			Write(result);
 		}
 
+		private List<RoxyFolder> ListDirs(string path)
+		{
+			var result = new List<RoxyFolder>();
+
+			_fileSystem.ListFolders(path).Each(x =>
+			{
+				var subFolders = ListDirs(x.Path);
+
+				result.Add(new RoxyFolder
+				{
+					Folder = x,
+					SubFolders = subFolders.Count
+				});
+
+				result.AddRange(subFolders);
+			});
+
+			return result;
+		}
+
 		private void ListFiles(string path, string type)
 		{
-			var files = GetFiles(GetNodeByPath(path).Id, type);
+			var files = GetFiles(GetRelativePath(path), type);
 
-			var result = files.Select(x => new 
+			var result = files.Select(x => new
 			{ 
-				i = x.Id,
-				p = _mediaService.GetUrl(x, null, string.Empty),
+				p = _fileSystem.GetPublicUrl(x),
 				t = x.LastUpdated.ToUnixTime().ToString(),
-				m = x.MimeType,
+				m = (x as MediaFileInfo)?.MimeType ?? MimeTypes.MapNameToMimeType(x.Name),
 				s = x.Size.ToString(),
 				w = x.Dimensions.Width.ToString(),
 				h = x.Dimensions.Height.ToString()
@@ -385,38 +374,38 @@ namespace SmartStore.Admin.Controllers
 			Write(result);
 		}
 
-		private void DownloadFile(int id)
+		private void DownloadFile(string path)
 		{
-			var file = _mediaService.GetFileById(id, MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithBlob);
-			if (file == null)
-				return;
+			//var file = _mediaService.GetFileById(id, MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithBlob);
+			//if (file == null)
+			//	return;
 
-			var len = 0;
-			var buffer = new byte[BUFFER_SIZE];
+			//var len = 0;
+			//var buffer = new byte[BUFFER_SIZE];
 
-			try
-			{
-				using (var stream = file.OpenRead())
-				{
-					Response.Clear();
-					Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + file.Name + "\"");
-					Response.ContentType = file.MimeType;
+			//try
+			//{
+			//	using (var stream = file.OpenRead())
+			//	{
+			//		Response.Clear();
+			//		Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + file.Name + "\"");
+			//		Response.ContentType = file.MimeType;
 
-					while (Response.IsClientConnected && (len = stream.Read(buffer, 0, BUFFER_SIZE)) > 0)
-					{
-						Response.OutputStream.Write(buffer, 0, len);
-						Response.Flush();
+			//		while (Response.IsClientConnected && (len = stream.Read(buffer, 0, BUFFER_SIZE)) > 0)
+			//		{
+			//			Response.OutputStream.Write(buffer, 0, len);
+			//			Response.Flush();
 
-						Array.Clear(buffer, 0, BUFFER_SIZE);
-					}
+			//			Array.Clear(buffer, 0, BUFFER_SIZE);
+			//		}
 
-					Response.End();
-				}
-			}
-			catch (IOException)
-			{
-				throw new Exception(T("Admin.Common.FileInUse"));
-			}
+			//		Response.End();
+			//	}
+			//}
+			//catch (IOException)
+			//{
+			//	throw new Exception(T("Admin.Common.FileInUse"));
+			//}
 		}
 
 		private void DownloadDir(string path)
@@ -461,37 +450,6 @@ namespace SmartStore.Admin.Controllers
 			//Response.End();
 		}
 
-		private void RenameFile(string oldPath, string name)
-		{
-			//oldPath = GetRelativePath(oldPath);
-
-			//if (!_fileSystem.FileExists(oldPath))
-			//{
-			//	throw new Exception(LangRes("E_RenameFileInvalidPath"));
-			//}
-
-			//var fileType = Path.GetExtension(name);
-
-			//if (!IsAllowedFileType(fileType))
-			//{
-			//	throw new Exception(LangRes("E_FileExtensionForbidden"));
-			//}
-
-			//try
-			//{
-			//	var folder = _fileSystem.GetFolderForFile(oldPath);
-			//	var newPath = _fileSystem.Combine(folder.Path, name);
-
-			//	_fileSystem.RenameFile(oldPath, newPath);
-
-			//	Response.Write(GetResultString());
-			//}
-			//catch (Exception ex)
-			//{
-			//	throw new Exception(ex.Message + "; " + LangRes("E_RenameFile") + " \"" + oldPath + "\"");
-			//}
-		}
-
 		private void RenameDir(string path, string name)
 		{
 			//path = GetRelativePath(path);
@@ -526,47 +484,40 @@ namespace SmartStore.Admin.Controllers
 			path = GetRelativePath(path);
 			newPath = GetRelativePath(newPath);
 
-			if (!_mediaHelper.TokenizePath(newPath, out var pathData))
+			try
 			{
-				throw new Exception(LangRes("E_MoveFileInvalisPath"));
+				_fileSystem.RenameFile(path, newPath);
+				Response.Write(GetResultString());
 			}
-
-			var file = _mediaService.GetFileByPath(path);
-			if (file == null)
+			catch (Exception ex)
 			{
-				throw new Exception(LangRes("E_MoveFileInvalisPath"));
+				throw ex;
+			}
+		}
+
+		private void RenameFile(string path, string newName)
+		{
+			path = GetRelativePath(path);
+
+			var fileType = Path.GetExtension(newName);
+			if (!IsAllowedFileType(fileType))
+			{
+				throw new Exception(LangRes("E_FileExtensionForbidden"));
 			}
 
 			try
 			{
-				_mediaService.MoveFile(file, pathData.Folder.Id);
+				var folder = _fileSystem.GetFolderForFile(path);
+				var newPath = _fileSystem.Combine(folder.Path, newName);
+
+				_fileSystem.RenameFile(path, newPath);
+
 				Response.Write(GetResultString());
 			}
-			catch
+			catch (Exception ex)
 			{
-				throw new Exception(LangRes("E_MoveFile") + " \"" + path + "\"");
+				throw ex;
 			}
-
-			//if (!_fileSystem.FileExists(path))
-			//{
-			//	throw new Exception(LangRes("E_MoveFileInvalisPath"));
-			//}
-
-			//if (_fileSystem.FileExists(newPath))
-			//{
-			//	throw new Exception(LangRes("E_MoveFileAlreadyExists"));
-			//}
-
-			//try
-			//{
-			//	_fileSystem.RenameFile(path, newPath);
-
-			//	Response.Write(GetResultString());
-			//}
-			//catch
-			//{
-			//	throw new Exception(LangRes("E_MoveFile") + " \"" + path + "\"");
-			//}
 		}
 
 		private void MoveDir(string path, string newPath)
@@ -605,31 +556,32 @@ namespace SmartStore.Admin.Controllers
 
 		private void CopyFile(string path, string newPath)
 		{
-			//path = GetRelativePath(path);
-			
-			//var file = _fileSystem.GetFile(path);
+			path = GetRelativePath(path);
 
-			//if (!file.Exists)
-			//{
-			//	throw new Exception(LangRes("E_CopyFileInvalisPath"));
-			//}
+			var file = _fileSystem.GetFile(path);
 
-			//try
-			//{
-			//	newPath = _fileSystem.Combine(GetRelativePath(newPath), file.Name);
-			//	if (_fileSystem.CheckFileUniqueness(newPath, out var newFile))
-			//	{
-			//		newPath = newFile.Path;
-			//	}
+			if (!file.Exists)
+			{
+				throw new Exception(LangRes("E_CopyFileInvalisPath"));
+			}
 
-			//	_fileSystem.CopyFile(path, newPath);
+			try
+			{
+				newPath = _fileSystem.Combine(GetRelativePath(newPath), file.Name);
+				//// TODO: (mm) implement CheckFileUniqueness on interface level, not as extension method
+				//if (_fileSystem.CheckFileUniqueness(newPath, out var newFile))
+				//{
+				//	newPath = newFile.Path;
+				//}
 
-			//	Response.Write(GetResultString());
-			//}
-			//catch (Exception ex)
-			//{
-			//	throw new Exception(LangRes("E_CopyFile") + ": " + ex.Message);
-			//}
+				_fileSystem.CopyFile(path, newPath);
+
+				Response.Write(GetResultString());
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(LangRes("E_CopyFile") + ": " + ex.Message);
+			}
 		}
 
 		private void DeleteFile(string path)
@@ -900,7 +852,7 @@ namespace SmartStore.Admin.Controllers
 						DeleteFile(Request["f"]);
 						break;
 					case "DOWNLOAD":
-						DownloadFile(Request["id"].ToInt());
+						DownloadFile(Request["f"]);
 						break;
 					case "DOWNLOADDIR":
 						DownloadDir(Request["d"]);

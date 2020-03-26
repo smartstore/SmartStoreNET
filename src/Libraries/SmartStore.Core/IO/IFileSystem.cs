@@ -20,6 +20,17 @@ namespace SmartStore.Core.IO
 		/// <summary>
 		/// Retrieves the public URL for a given file within the storage provider.
 		/// </summary>
+		/// <param name="file">The file to resolve the public url for.</param>
+		/// <param name="forCloud">
+		/// If <c>true</c> and the storage is in the cloud, returns the actual remote cloud URL to the resource.
+		/// If <c>false</c>, retrieves an app relative URL to delegate further processing to the media middleware (which can handle remote files)
+		/// </param>
+		/// <returns>The public URL.</returns>
+		string GetPublicUrl(IFile file, bool forCloud = false);
+
+		/// <summary>
+		/// Retrieves the public URL for a given file within the storage provider.
+		/// </summary>
 		/// <param name="path">The relative path within the storage provider.</param>
 		/// <param name="forCloud">
 		/// If <c>true</c> and the storage is in the cloud, returns the actual remote cloud URL to the resource.
@@ -78,7 +89,7 @@ namespace SmartStore.Core.IO
 		/// </summary>
 		/// <param name="path">The relative path to the folder in which to retrieve file count.</param>
 		/// <param name="pattern">The file pattern to match</param>
-		/// <param name="predicate">Optional. Files matching the predicate are excluded.</param>
+		/// <param name="predicate">Optional. Files not matching the predicate are excluded.</param>
 		/// <param name="deep">Whether to count files in all subfolders also</param>
 		/// <returns>Total count of files.</returns>
 		long CountFiles(string path, string pattern, Func<string, bool> predicate, bool deep = true);

@@ -57,8 +57,8 @@ namespace SmartStore.Admin.Controllers
 			_locFileResolver = locFileResolver;
 			_mediaSettings = mediaSettings;
 
-			var albumInfo = albumRegistry.GetAlbumByName(SystemAlbumProvider.Files);
-			_fileSystem = new AlbumFileSystemAdapter(albumInfo, mediaService, folderService);
+			//var albumInfo = albumRegistry.GetAlbumByName(SystemAlbumProvider.Files);
+			//_fileSystem = new MediaServiceFileSystemAdapter(albumInfo, mediaService, folderService);
 		}
 
 		#region Utilities

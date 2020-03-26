@@ -69,16 +69,15 @@ function dragFileOut() {
 
 function makeDragFile(e) {
 	var li = $(e.target).closest('li');
-	var f = new File(li.data('id'), li.data('path'));
+	var f = new File(li.data('path'));
 	var i = li.find('.file-icon');
-	return '<div class="pnlDragFile" data-id="' + f.id + '" data-path="' + f.fullPath + '">' + i[0].outerHTML + '&nbsp;' + f.name + '</div>';
+	return '<div class="pnlDragFile" data-path="' + f.fullPath + '">' + i[0].outerHTML + '&nbsp;' + f.name + '</div>';
 }
 
 function makeDragDir(e) {
 	var target = $(e.target);
-	var id = target.data('id') || target.closest('li').data('id');
 	var path = target.data('path') || target.closest('li').data('path');
-	var f = new Directory(id, path);
+	var f = new Directory(path);
 	return '<div class="pnlDragDir" data-path="' + f.fullPath + '"><img src="' + RoxyUtils.GetAssetPath('images/folder.png') + '" align="absmiddle">&nbsp;' + f.name + '</div>';
 }
 
@@ -93,7 +92,7 @@ function moveDir(e, ui, obj) {
 
 function moveFile(e, ui, obj) {
 	var li = $(obj).parent('li');
-	var f = new File(ui.draggable.data('id'), ui.draggable.data('path'));
+	var f = new File(ui.draggable.data('path'));
 	var d = Directory.Parse(li.data('path'));
 	var src = Directory.Parse(f.path);
 	if (f.path !== d.fullPath)
@@ -447,7 +446,7 @@ function getSelectedFile() {
 	var ret = null;
 	if ($('#pnlFileList .selected').length > 0) {
 		var el = $('#pnlFileList .selected');
-		ret = new File(el.data('id'), el.data('path'));
+		ret = new File(el.data('path'));
 	}
 		
 	return ret;
@@ -496,7 +495,7 @@ function previewFile() {
 function downloadFile() {
 	var f = getSelectedFile();
 	if (f && RoxyFilemanConf.DOWNLOAD) {
-		var url = RoxyUtils.AddParam(RoxyUtils.GetRootPath(RoxyFilemanConf.DOWNLOAD), 'id', f.id);
+		var url = RoxyUtils.AddParam(RoxyUtils.GetRootPath(RoxyFilemanConf.DOWNLOAD), 'f', f.fullPath);
 		window.frames['frmUploadFile'].location.href = url;
 	} else if (!RoxyFilemanConf.DOWNLOAD)
 		alert(t('E_ActionDisabled'));
@@ -505,7 +504,7 @@ function downloadFile() {
 function downloadDir() {
 	var d = getSelectedDir();
 	if (d && RoxyFilemanConf.DOWNLOADDIR) {
-		var url = RoxyUtils.AddParam(RoxyUtils.GetRootPath(RoxyFilemanConf.DOWNLOADDIR), 'd', d.id);
+		var url = RoxyUtils.AddParam(RoxyUtils.GetRootPath(RoxyFilemanConf.DOWNLOADDIR), 'd', d.fullPath);
 		window.frames['frmUploadFile'].location.href = url;
 	} else if (!RoxyFilemanConf.DOWNLOAD)
 		alert(t('E_ActionDisabled'));

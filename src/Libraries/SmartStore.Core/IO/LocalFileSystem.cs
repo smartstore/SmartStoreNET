@@ -138,6 +138,11 @@ namespace SmartStore.Core.IO
 							 : path.TrimStart('/', '\\');
 		}
 
+		public string GetPublicUrl(IFile file, bool forCloud = false)
+		{
+			return MapPublic(file.Path);
+		}
+
 		public string GetPublicUrl(string path, bool forCloud = false)
 		{
 			return MapPublic(path);
@@ -186,12 +191,12 @@ namespace SmartStore.Core.IO
 			var fileInfo = new FileInfo(MapStorage(path));
 			if (!fileInfo.Exists)
 			{
-				throw new ArgumentException("File " + path + " does not exist");
+				throw new FileNotFoundException("File " + path + " does not exist");
 			}
 
 			if (!fileInfo.Directory.Exists)
 			{
-				throw new ArgumentException("Folder " + path + " does not exist");
+				throw new DirectoryNotFoundException("Folder " + path + " does not exist");
 			}
 
 			// get relative path of the folder
@@ -230,7 +235,7 @@ namespace SmartStore.Core.IO
 
 			if (!directoryInfo.Exists)
 			{
-				throw new ArgumentException("Directory " + path + " does not exist");
+				throw new DirectoryNotFoundException("Directory " + path + " does not exist");
 			}
 
 			return directoryInfo
@@ -288,7 +293,7 @@ namespace SmartStore.Core.IO
 
 			if (!directoryInfo.Exists)
 			{
-				throw new ArgumentException("Directory " + path + " does not exist");
+				throw new DirectoryNotFoundException("Directory " + path + " does not exist");
 			}
 
 			directoryInfo.Delete(true);
@@ -299,7 +304,7 @@ namespace SmartStore.Core.IO
 			var sourceDirectory = new DirectoryInfo(MapStorage(path));
 			if (!sourceDirectory.Exists)
 			{
-				throw new ArgumentException("Directory " + path + "does not exist");
+				throw new DirectoryNotFoundException("Directory " + path + "does not exist");
 			}
 
 			var targetDirectory = new DirectoryInfo(MapStorage(newPath));
@@ -373,13 +378,13 @@ namespace SmartStore.Core.IO
 			var sourceFileInfo = new FileInfo(MapStorage(path));
 			if (!sourceFileInfo.Exists)
 			{
-				throw new ArgumentException("File " + path + " does not exist");
+				throw new FileNotFoundException("File " + path + " does not exist.");
 			}
 
 			var targetFileInfo = new FileInfo(MapStorage(newPath));
 			if (targetFileInfo.Exists)
 			{
-				throw new ArgumentException("File " + newPath + " already exists");
+				throw new ArgumentException("File " + newPath + " already exists.");
 			}
 
 			File.Move(sourceFileInfo.FullName, targetFileInfo.FullName);
@@ -390,7 +395,7 @@ namespace SmartStore.Core.IO
 			var sourceFileInfo = new FileInfo(MapStorage(path));
 			if (!sourceFileInfo.Exists)
 			{
-				throw new ArgumentException("File " + path + " does not exist");
+				throw new FileNotFoundException("File " + path + " does not exist");
 			}
 
 			var targetPath = MapStorage(newPath);
@@ -554,7 +559,7 @@ namespace SmartStore.Core.IO
                         try
                         {
                             var mime = MimeTypes.MapNameToMimeType(Name);
-                            _dimensions = ImageHeader.GetDimensions(OpenRead(), mime, false);
+							_dimensions = ImageHeader.GetDimensions(OpenRead(), mime, false);
                         }
                         catch
                         {

@@ -110,7 +110,7 @@ namespace SmartStore.Services.Media
             return new MediaFileInfo(file, _storageProvider, folder?.Path);
         }
 
-        protected virtual IQueryable<MediaFile> PrepareQuery(MediaSearchQuery query, MediaLoadFlags flags)
+        public virtual IQueryable<MediaFile> PrepareQuery(MediaSearchQuery query, MediaLoadFlags flags)
         {
             Guard.NotNull(query, nameof(query));
 
@@ -167,7 +167,7 @@ namespace SmartStore.Services.Media
             }
 
             // Term
-            if (query.Term.HasValue())
+            if (query.Term.HasValue() && query.Term != "*")
             {
                 // TODO: (mm) Convert pattern to 'LIKE'
                 q = q.Where(x => x.Name.Contains(query.Term) || x.Alt.Contains(query.Term));
@@ -476,9 +476,11 @@ namespace SmartStore.Services.Media
             Guard.NotNull(file, nameof(file));
             Guard.NotEmpty(newFileName, nameof(newFileName));
 
-            // TODO: (mm) new Extension must match current Extension
+            // TODO: (mm) new extension must match current extension
 
-            file.Name = SeoHelper.GetSeName(newFileName, true, false, false);
+            file.Name = newFileName; // SeoHelper.GetSeName(newFileName, true, false, false);
+
+            _fileRepo.Update(file);
 
             return ConvertMediaFile(file);
         }

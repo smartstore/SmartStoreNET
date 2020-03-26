@@ -106,11 +106,11 @@ namespace SmartStore.Services.Media.Migration
 
             ctx.MigrateSettings(x =>
             {
-                x.Add(prefix + nameof(MediaSettings.ImageTypes), MediaType.Image.DefaultExtensions);
-                x.Add(prefix + nameof(MediaSettings.VideoTypes), MediaType.Video.DefaultExtensions);
-                x.Add(prefix + nameof(MediaSettings.AudioTypes), MediaType.Audio.DefaultExtensions);
-                x.Add(prefix + nameof(MediaSettings.DocumentTypes), MediaType.Document.DefaultExtensions);
-                x.Add(prefix + nameof(MediaSettings.TextTypes), MediaType.Text.DefaultExtensions);
+                x.Add(prefix + nameof(MediaSettings.ImageTypes), string.Join(" ", MediaType.Image.DefaultExtensions));
+                x.Add(prefix + nameof(MediaSettings.VideoTypes), string.Join(" ", MediaType.Video.DefaultExtensions));
+                x.Add(prefix + nameof(MediaSettings.AudioTypes), string.Join(" ", MediaType.Audio.DefaultExtensions));
+                x.Add(prefix + nameof(MediaSettings.DocumentTypes), string.Join(" ", MediaType.Document.DefaultExtensions));
+                x.Add(prefix + nameof(MediaSettings.TextTypes), string.Join(" ", MediaType.Text.DefaultExtensions));
             });
         }
 

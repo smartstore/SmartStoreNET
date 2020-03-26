@@ -29,6 +29,7 @@ namespace SmartStore
 			{
 				exc.Dump();
 			}
+
 			return defaultValue;
 		}
 

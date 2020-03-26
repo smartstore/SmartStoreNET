@@ -33,28 +33,29 @@ namespace SmartStore.Services.Media
             _mediaSettings = mediaSettings;
         }
 
-        public MediaType Resolve(MediaFile file)
+        public MediaType Resolve(string extension, string mimeType = null)
         {
-            Guard.NotNull(file, nameof(file));
-
-            var extension = file.Extension;
-
-            if (extension.IsEmpty())
+            if (extension.IsEmpty() && mimeType.HasValue())
             {
-                extension = MimeTypes.MapMimeTypeToExtension(file.MimeType);
+                extension = MimeTypes.MapMimeTypeToExtension(mimeType);
             }
 
             var map = GetExtensionMediaTypeMap();
 
-            if (extension.HasValue() && map.TryGetValue(file.Extension.ToLower(), out var mediaType))
+            string mediaType = null;
+            if (extension.HasValue() && map.TryGetValue(extension.TrimStart('.').ToLower(), out mediaType))
             {
                 return (MediaType)mediaType;
             }
 
-            // Get first mime token (e.g. IMAGE/png, VIDEO/mp4 etc.)
-            var type = file.MimeType.Split('/')[0];
+            if (mimeType.HasValue())
+            {
+                // Get first mime token (e.g. IMAGE/png, VIDEO/mp4 etc.)
+                var mimeGroup = mimeType.Split('/')[0];
+                mediaType = MediaType.GetMediaType(mimeGroup);
+            }
 
-            return MediaType.GetMediaType(type) ?? MediaType.Binary;
+            return (MediaType)mediaType ?? MediaType.Binary;
         }
 
         private Dictionary<string, string> GetExtensionMediaTypeMap()

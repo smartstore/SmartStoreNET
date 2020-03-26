@@ -10,10 +10,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Media;
-using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
-using SmartStore.Services.Payments;
-using SmartStore.Services.Shipping;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -31,14 +28,8 @@ namespace SmartStore.Admin.Controllers
         private readonly IManufacturerService _manufacturerService;
         private readonly ICustomerService _customerService;
         private readonly IOrderService _orderService;
-        //private readonly IMediaService _mediaService;
         private readonly IPictureService _pictureService;
-        private readonly IPriceFormatter _priceFormatter;
-        private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
         private readonly IShoppingCartService _shoppingCartService;
-        private readonly IShippingService _shippingService;
-        private readonly IPaymentService _paymentService;
-        private readonly IOrderReportService _orderReportService;
 
         public StoreController(
             ICurrencyService currencyService,
@@ -48,14 +39,8 @@ namespace SmartStore.Admin.Controllers
             IManufacturerService manufacturerService,
             ICustomerService customerService,
             IOrderService orderService,
-            //IMediaService mediaService,
             IPictureService pictureService,
-            IPriceFormatter priceFormatter,
-            INewsLetterSubscriptionService newsLetterSubscriptionService,
-            IShoppingCartService shoppingCartService,
-            IShippingService shippingService,
-            IPaymentService paymentService,
-            IOrderReportService orderReportService)
+            IShoppingCartService shoppingCartService)
         {
             _currencyService = currencyService;
             _productService = productService;
@@ -65,14 +50,8 @@ namespace SmartStore.Admin.Controllers
             _customerService = customerService;
             _categoryService = categoryService;
             _orderService = orderService;
-            //_mediaService = mediaService;
             _pictureService = pictureService;
-            _priceFormatter = priceFormatter;
-            _newsLetterSubscriptionService = newsLetterSubscriptionService;
             _shoppingCartService = shoppingCartService;
-            _shippingService = shippingService;
-            _paymentService = paymentService;
-            _orderReportService = orderReportService;
         }
 
         private void PrepareStoreModel(StoreModel model, Store store)

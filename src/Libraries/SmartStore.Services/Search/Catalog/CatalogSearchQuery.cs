@@ -315,6 +315,16 @@ namespace SmartStore.Services.Search
             return WithFilter(SearchFilter.ByField("taxexempt", value).Mandatory().ExactMatch().NotAnalyzed());
         }
 
+        public CatalogSearchQuery EsdOnly(bool value)
+        {
+            return WithFilter(SearchFilter.ByField("esd", value).Mandatory().ExactMatch().NotAnalyzed());
+        }
+
+        public CatalogSearchQuery HasDiscount(bool value)
+        {
+            return WithFilter(SearchFilter.ByField("discount", value).Mandatory().ExactMatch().NotAnalyzed());
+        }
+
         public CatalogSearchQuery WithStockQuantity(
             int? fromQuantity,
             int? toQuantity,

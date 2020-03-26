@@ -67,7 +67,7 @@ namespace SmartStore.Services.Catalog
                 {
                     var ruleSetProductIds = new HashSet<int>();
 
-                    ctx.SetProgress(++count, categories.Count, $"Add product assignments for category \"{category.Name.NaIfEmpty()}\".");
+                    ctx.SetProgress(++count, categories.Count, $"Add product mappings for category \"{category.Name.NaIfEmpty()}\".");
 
                     // Execute active rule sets and collect product ids.
                     foreach (var ruleSet in category.RuleSets.Where(x => x.IsActive))
@@ -82,10 +82,7 @@ namespace SmartStore.Services.Catalog
                             {
                                 // Do not touch searchResult.Hits. We only need the product identifiers.
                                 var searchResult = _productRuleProvider.Search(new SearchFilterExpression[] { expression }, ++pageIndex, pageSize);
-                                if (searchResult.HitsEntityIds.Any())
-                                {
-                                    ruleSetProductIds.AddRange(searchResult.HitsEntityIds);
-                                }
+                                ruleSetProductIds.AddRange(searchResult.HitsEntityIds);
 
                                 if (pageIndex >= (searchResult.TotalHitsCount / pageSize))
                                 {

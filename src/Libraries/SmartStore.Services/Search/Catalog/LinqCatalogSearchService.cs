@@ -383,6 +383,14 @@ namespace SmartStore.Services.Search
                 {
                     query = query.Where(p => p.IsTaxExempt == (bool)filter.Term);
                 }
+                else if (filter.FieldName == "esd")
+                {
+                    query = query.Where(p => p.IsEsd == (bool)filter.Term);
+                }
+                else if (filter.FieldName == "discount")
+                {
+                    query = query.Where(p => p.HasDiscountsApplied == (bool)filter.Term);
+                }
                 else if (filter.FieldName == "typeid")
                 {
                     query = query.Where(x => x.ProductTypeId == (int)filter.Term);

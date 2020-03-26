@@ -304,6 +304,21 @@ namespace SmartStore.Services.Catalog.Rules
                     SelectList = new RemoteRuleValueSelectList("Manufacturer") { Multiple = true },
                     Operators = new RuleOperator[] { RuleOperator.In }
                 },
+                // Same logic as the filter above product list.
+                new SearchFilterDescriptor<bool>((ctx, x) => ctx.Query.HasAnyCategory(!x))
+                {
+                    Name = "WithoutCategory",
+                    DisplayName = T("Admin.Catalog.Products.List.SearchWithoutCategories"),
+                    RuleType = RuleType.Boolean,
+                    Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
+                },
+                new SearchFilterDescriptor<bool>((ctx, x) => ctx.Query.HasAnyManufacturer(!x))
+                {
+                    Name = "WithoutManufacturer",
+                    DisplayName = T("Admin.Catalog.Products.List.SearchWithoutManufacturers"),
+                    RuleType = RuleType.Boolean,
+                    Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
+                },
                 new SearchFilterDescriptor<int[]>((ctx, x) => ctx.Query.WithProductTagIds(x))
                 {
                     Name = "ProductTag",
@@ -385,6 +400,20 @@ namespace SmartStore.Services.Catalog.Rules
                 {
                     Name = "TaxExempt",
                     DisplayName = T("Admin.Catalog.Products.Fields.IsTaxExempt"),
+                    RuleType = RuleType.Boolean,
+                    Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
+                },
+                new SearchFilterDescriptor<bool>((ctx, x) => ctx.Query.EsdOnly(x))
+                {
+                    Name = "Esd",
+                    DisplayName = T("Admin.Catalog.Products.Fields.IsEsd"),
+                    RuleType = RuleType.Boolean,
+                    Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
+                },
+                new SearchFilterDescriptor<bool>((ctx, x) => ctx.Query.HasDiscount(x))
+                {
+                    Name = "Discount",
+                    DisplayName = T("Admin.Catalog.Products.Fields.HasDiscountsApplied"),
                     RuleType = RuleType.Boolean,
                     Operators = new RuleOperator[] { RuleOperator.IsEqualTo }
                 }

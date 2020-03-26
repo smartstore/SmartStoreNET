@@ -223,28 +223,26 @@ namespace SmartStore.Services.DataExchange.Import
 			UrlRecord urlRecord = null;
 
 			var urlRecordService = context.Services.Resolve<IUrlRecordService>();
-			var urlRecordRepository = context.Services.Resolve<IRepository<UrlRecord>>();
 			var seoSettings = context.Services.Resolve<SeoSettings>();
 
-			Func<string, UrlRecord> slugLookup = ((s) =>
-			{
-				return (slugMap.ContainsKey(s) ? slugMap[s] : null);
-			});
+            UrlRecord slugLookup(string s)
+            {
+                return slugMap.ContainsKey(s) ? slugMap[s] : null;
+            }
 
-			foreach (var row in batch)
+            foreach (var row in batch)
 			{
 				try
 				{
-					string seName = null;
-					string localizedName = null;
+                    string localizedName = null;
 
-					if (row.TryGetDataValue("SeName", out seName) || row.IsNew || row.NameChanged)
+                    if (row.TryGetDataValue("SeName", out string seName) || row.IsNew || row.NameChanged)
 					{
 						seName = row.Entity.ValidateSeName(seName, row.EntityDisplayName, true, urlRecordService, seoSettings, extraSlugLookup: slugLookup);
 
 						if (row.IsNew)
 						{
-							// dont't bother validating SeName for new entities.
+							// Don't bother validating SeName for new entities.
 							urlRecord = new UrlRecord
 							{
 								EntityId = row.Entity.Id,
@@ -253,7 +251,7 @@ namespace SmartStore.Services.DataExchange.Import
 								LanguageId = 0,
 								IsActive = true,
 							};
-							urlRecordRepository.Insert(urlRecord);
+                            urlRecordService.InsertUrlRecord(urlRecord);
 						}
 						else
 						{
@@ -262,12 +260,12 @@ namespace SmartStore.Services.DataExchange.Import
 
 						if (urlRecord != null)
 						{
-							// a new record was inserted to the store: keep track of it for this batch.
+							// A new record was inserted to the store: keep track of it for this batch.
 							slugMap[seName] = urlRecord;
 						}
 					}
 
-					// process localized SeNames
+					// Process localized SeNames.
 					foreach (var lang in context.Languages)
 					{
 						var hasSeName = row.TryGetDataValue("SeName", lang.UniqueSeoCode, out seName);
@@ -284,13 +282,13 @@ namespace SmartStore.Services.DataExchange.Import
 						}
 					}
 				}
-				catch (Exception exception)
+				catch (Exception ex)
 				{
-					context.Result.AddWarning(exception.Message, row.GetRowInfo(), "SeName");
+					context.Result.AddWarning(ex.Message, row.GetRowInfo(), "SeName");
 				}
 			}
 
-			// commit whole batch at once
+			// Commit whole batch at once.
 			return context.Services.DbContext.SaveChanges();
 		}
 	}

@@ -90,6 +90,7 @@
 * #1794 Menu display order is ignored for widget zone header_menu_special_after.
 * #1451 RTL: Manage categories tree view.
 * Biz-Importer: If the TaxRate table was missing, the assignment of the tax category to the product was not set.
+* #1832 Import: adding URL records requires cache to be cleared.
 
 
 ## SmartStore.NET 3.2.2

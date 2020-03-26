@@ -3,6 +3,15 @@
 /// <reference path="../../Content/shared/_mixins.scss" />
 /// <reference path="../../Content/bs4/scss/bootstrap.scss" />
 
+:root {
+    --primary-dark: #{$primary-dark};
+    --primary-light: #{$primary-light};
+    --chart-color-danger: #{$chart-color-danger};
+    --chart-color-warning: #{$chart-color-warning};
+    --chart-color-success: #{$chart-color-success};
+    --chart-color-primary: #{$chart-color-primary};
+}
+
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(12, 1fr);

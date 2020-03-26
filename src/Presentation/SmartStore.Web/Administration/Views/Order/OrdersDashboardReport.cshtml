@@ -46,9 +46,9 @@
 <script>
     $(function () {
         var ordersData = JSON.parse('@Html.Raw(jsonData)');
-        var percentageElement = $("#orders-delta-percentage");
-        var chevronElement = $("#orders-delta-percentage-chevron");
-        var sumElement = $("#orders-sum-amount");
+        var $percentageElement = $("#orders-delta-percentage");
+        var $chevronElement = $("#orders-delta-percentage-chevron");
+        var $sumElement = $("#orders-sum-amount");
         var currentPeriod = 0;
         var style = getComputedStyle(document.body);
         var colorPrimary = style.getPropertyValue('--primary');
@@ -57,22 +57,22 @@
         var colorWarning = style.getPropertyValue('--warning');
         var fontFamily = style.getPropertyValue('--font-family-sans-serif');
 
-        var ordersChartElement = $('#orders-chart')[0];
-        var orders_ctx = ordersChartElement.getContext('2d');
-        var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight / 0.8);
-        cancelledGradient.addColorStop(0, 'rgb(250,190,190)');
+        var $ordersChartElement = $('#orders-chart')[0];
+        var orders_ctx = $ordersChartElement.getContext('2d');
+        var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.parentElement.clientHeight);
+        cancelledGradient.addColorStop(0, style.getPropertyValue('--chart-color-danger'));
         cancelledGradient.addColorStop(1, 'white');
 
-        var pendingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight / 0.8);
-        pendingGradient.addColorStop(0, 'rgb(253,244,229)');
+        var pendingGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.parentElement.clientHeight);
+        pendingGradient.addColorStop(0, style.getPropertyValue('--chart-color-warning'));
         pendingGradient.addColorStop(1, 'white');
 
-        var processingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight / 0.8);
-        processingGradient.addColorStop(0, 'rgb(231,245,239)');
+        var processingGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.parentElement.clientHeight);
+        processingGradient.addColorStop(0, style.getPropertyValue('--chart-color-success'));
         processingGradient.addColorStop(1, 'white');
 
-        var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.clientHeight / 0.8);
-        completeGradient.addColorStop(0, 'rgb(229,238,246)');
+        var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.parentElement.clientHeight);
+        completeGradient.addColorStop(0, style.getPropertyValue('--chart-color-primary'));
         completeGradient.addColorStop(1, 'white');
 
         // Chartjs
@@ -223,7 +223,7 @@
 
         var ordersChart = new Chart(orders_ctx, order_config);
         setPercentageDelta(currentPeriod);
-        var ordersLegendContainer = $("#orders-chart-legend")[0];
+        var $ordersLegendElement = $("#orders-chart-legend")[0];
         createLegend();
 
         ////----------------------------------------------------
@@ -239,23 +239,23 @@
         function setPercentageDelta(period) {
             var val = ordersData.Reports[period].PercentageDelta;
             if (val < 0) {
-                chevronElement.addClass("negative");
-                chevronElement.removeClass("d-none");
-                percentageElement.removeClass("text-success");
-                percentageElement.addClass("text-danger");
+                $chevronElement.addClass("negative");
+                $chevronElement.removeClass("d-none");
+                $percentageElement.removeClass("text-success");
+                $percentageElement.addClass("text-danger");
             }
             else if (val > 0) {
-                chevronElement.removeClass("negative");
-                chevronElement.removeClass("d-none");
-                percentageElement.addClass("text-success");
-                percentageElement.removeClass("text-danger");
+                $chevronElement.removeClass("negative");
+                $chevronElement.removeClass("d-none");
+                $percentageElement.addClass("text-success");
+                $percentageElement.removeClass("text-danger");
             }
             else {
-                chevronElement.addClass("d-none")
+                $chevronElement.addClass("d-none")
             }
             var delta = val == 0 ? "" : val < 0 ? "-" + Math.abs(val) + "%" : "+" + Math.abs(val) + "%";
-            percentageElement.html(delta);
-            sumElement.html(ordersData.Reports[period].TotalAmount);
+            $percentageElement.html(delta);
+            $sumElement.html(ordersData.Reports[period].TotalAmount);
         }
 
         function setChartData(period) {
@@ -271,8 +271,8 @@
         }
 
         function createLegend() {
-            $(ordersLegendContainer).html(ordersChart.generateLegend());
-            var legendItems = ordersLegendContainer.getElementsByTagName('li');
+            $($ordersLegendElement).html(ordersChart.generateLegend());
+            var legendItems = $ordersLegendElement.getElementsByTagName('li');
             for (var i = 0; i < legendItems.length; i++) {
                 legendItems[i].addEventListener("click", legendClickCallback, false);
             }

@@ -72,10 +72,10 @@
 
 <script>
     $(function () {
-        var colorIndigo = 'rgba(25, 80, 159)';
-        var colorLightBlue = 'rgba(120, 192, 224)';
-        var colorPrimary = 'rgba(48, 123, 191)';
         var style = getComputedStyle(document.body);
+        var colorPrimaryLighter = style.getPropertyValue('--primary-light');
+        var colorPrimary = style.getPropertyValue('--primary');
+        var colorPrimaryDarker = style.getPropertyValue('--primary-dark');
         var fontFamily = style.getPropertyValue('--font-family');
 
         var dataSets = JSON.parse('@Html.Raw(jsonData)');
@@ -136,22 +136,22 @@
             labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
             datasets: [{
                 data: [dataSets.Reports[0].Data[0].Quantity, dataSets.Reports[0].Data[1].Quantity, dataSets.Reports[0].Data[2].Quantity],
-                backgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                backgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 borderAlign: 'center',
                 borderColor: '#fff',
                 borderWidth: 10,
                 weight: 1,
-                hoverBackgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                hoverBackgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 hoverBorderColor: '#fff',
                 hoverBorderWidth: 0,
             },{
                 data: [dataSets.Reports[0].Data[0].Amount, dataSets.Reports[0].Data[1].Amount, dataSets.Reports[0].Data[2].Amount],
-                backgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                backgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 borderAlign: 'center',
                 borderColor: '#fff',
                 borderWidth: 10,
                 weight: 1,
-                hoverBackgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                hoverBackgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 hoverBorderColor: '#fff',
                 hoverBorderWidth: 0,
                 hidden: true,
@@ -171,22 +171,22 @@
             labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
             datasets: [{
                 data: [dataSets.Reports[1].Data[0].Quantity, dataSets.Reports[1].Data[1].Quantity, dataSets.Reports[1].Data[2].Quantity],
-                backgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                backgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 borderAlign: 'center',
                 borderColor: '#fff',
                 borderWidth: 10,
                 weight: 1,
-                hoverBackgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                hoverBackgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 hoverBorderColor: '#fff',
                 hoverBorderWidth: 0,
             },{
                 data: [dataSets.Reports[1].Data[0].Amount, dataSets.Reports[1].Data[1].Amount, dataSets.Reports[1].Data[2].Amount],
-                backgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                backgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 borderAlign: 'center',
                 borderColor: '#fff',
                 borderWidth: 10,
                 weight: 1,
-                hoverBackgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                hoverBackgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 hoverBorderColor: '#fff',
                 hoverBorderWidth: 0,
                 hidden: true,
@@ -205,22 +205,22 @@
             labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
             datasets: [{
                 data: [dataSets.Reports[2].Data[0].Quantity, dataSets.Reports[2].Data[1].Quantity, dataSets.Reports[2].Data[2].Quantity],
-                backgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                backgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 borderAlign: 'center',
                 borderColor: '#fff',
                 borderWidth: 10,
                 weight: 1,
-                hoverBackgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                hoverBackgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 hoverBorderColor: '#fff',
                 hoverBorderWidth: 0,
             },{
                 data: [dataSets.Reports[2].Data[0].Amount, dataSets.Reports[2].Data[1].Amount, dataSets.Reports[2].Data[2].Amount],
-                backgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                backgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 borderAlign: 'center',
                 borderColor: '#fff',
                 borderWidth: 10,
                 weight: 1,
-                hoverBackgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                hoverBackgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 hoverBorderColor: '#fff',
                 hoverBorderWidth: 0,
                 hidden: true,
@@ -239,22 +239,22 @@
             labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
             datasets: [{
                 data: [dataSets.Reports[3].Data[0].Quantity, dataSets.Reports[3].Data[1].Quantity, dataSets.Reports[3].Data[2].Quantity],
-                backgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                backgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 borderAlign: 'center',
                 borderColor: '#fff',
                 borderWidth: 10,
                 weight: 1,
-                hoverBackgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                hoverBackgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 hoverBorderColor: '#fff',
                 hoverBorderWidth: 0,
             },{
                 data: [dataSets.Reports[3].Data[0].Amount, dataSets.Reports[3].Data[1].Amount, dataSets.Reports[3].Data[2].Amount],
-                backgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                backgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 borderAlign: 'center',
                 borderColor: '#fff',
                 borderWidth: 10,
                 weight: 1,
-                hoverBackgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                hoverBackgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 hoverBorderColor: '#fff',
                 hoverBorderWidth: 0,
                 hidden: true,
@@ -273,22 +273,22 @@
             labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
             datasets: [{
                 data: [dataSets.Reports[4].Data[0].Quantity, dataSets.Reports[4].Data[1].Quantity, dataSets.Reports[4].Data[2].Quantity],
-                backgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                backgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 borderAlign: 'center',
                 borderColor: '#fff',
                 borderWidth: 10,
                 weight: 1,
-                hoverBackgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                hoverBackgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 hoverBorderColor: '#fff',
                 hoverBorderWidth: 0,
             },{
                 data: [dataSets.Reports[4].Data[0].Amount, dataSets.Reports[4].Data[1].Amount, dataSets.Reports[4].Data[2].Amount],
-                backgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                backgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 borderAlign: 'center',
                 borderColor: '#fff',
                 borderWidth: 10,
                 weight: 1,
-                hoverBackgroundColor: [colorPrimary, colorIndigo, colorLightBlue],
+                hoverBackgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
                 hoverBorderColor: '#fff',
                 hoverBorderWidth: 0,
                 hidden: true,

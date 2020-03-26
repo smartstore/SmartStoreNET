@@ -237,3 +237,14 @@ $custom-range-thumb-box-shadow:             0 1px .25rem rgba($primary, .2);
 $custom-range-thumb-focus-box-shadow:       0 0 0 1px $body-bg, 0 0 0 3px $input-btn-focus-color;
 $custom-range-thumb-focus-box-shadow-width: 1px; // For focus box shadow issue in IE/Edge
 $custom-range-thumb-active-bg:              lighten($primary, 20%);
+
+
+// Dashboard
+
+$primary-light: lighten($primary, 20%);
+$primary-dark: darken($primary, 20%);
+
+$chart-color-danger: lighten($danger, 50%);
+$chart-color-warning: lighten($warning, 40%);
+$chart-color-success: lighten($success, 65%);
+$chart-color-primary: lighten($primary, 50%);

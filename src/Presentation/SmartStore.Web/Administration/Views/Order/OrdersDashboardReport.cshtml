@@ -87,6 +87,7 @@
                     data: ordersData.Reports[0].DataSets[0].Amount,
                     borderColor: colorDanger,
                     backgroundColor: cancelledGradient,
+                    pointBackgroundColor: colorDanger,
                     pointHoverBackgroundColor: colorDanger,
                     pointHoverBorderColor: 'transparent',
                 }, {
@@ -95,6 +96,7 @@
                     borderColor: colorWarning,
                     backgroundColor: pendingGradient,
                     hidden: true,
+                    pointBackgroundColor: colorWarning,
                     pointHoverBackgroundColor: colorWarning,
                     pointHoverBorderColor: 'transparent',
                 }, {
@@ -103,6 +105,7 @@
                     borderColor: colorSuccess,
                     backgroundColor: processingGradient,
                     hidden: true,
+                    pointBackgroundColor: colorSuccess,
                     pointHoverBackgroundColor: colorSuccess,
                     pointHoverBorderColor: 'transparent',
                 }, {
@@ -110,6 +113,7 @@
                     data: ordersData.Reports[0].DataSets[3].Amount,
                     borderColor: colorPrimary,
                     backgroundColor: completeGradient,
+                    pointBackgroundColor: colorPrimary,
                     pointHoverBackgroundColor: colorPrimary,
                     pointHoverBorderColor: 'transparent',
                 }]
@@ -132,6 +136,7 @@
                 hover: {
                     mode: 'nearest',
                     intersect: false,
+                    animationDuration: 250,                    
                 },
                 layout: {
                     padding: {

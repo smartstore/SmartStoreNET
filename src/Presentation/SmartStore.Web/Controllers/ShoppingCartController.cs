@@ -2151,25 +2151,30 @@ namespace SmartStore.Web.Controllers
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 			var model = new ShoppingCartModel();
 
-			_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
-				 SystemCustomerAttributeNames.DiscountCouponCode, null);
+			_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.DiscountCouponCode, null);
 
             PrepareShoppingCartModel(model, cart);
             return View(model);
         }
 
         [HttpPost, ActionName("Cart")]
-        [FormValueRequired("removegiftcard")]
-        public ActionResult RemoveGiftardCode(int giftCardId)
+        [FormValueRequired(FormValueRequirement.StartsWith, "removegiftcard-")]
+        public ActionResult RemoveGiftCardCode(FormCollection form)
         {
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
             var model = new ShoppingCartModel();
+            var prefix = "removegiftcard-";
 
-            var gc = _giftCardService.GetGiftCardById(giftCardId);
-            if (gc != null)
+            var key = form.AllKeys.FirstOrDefault(x => x.StartsWith(prefix));
+            if (key.HasValue())
             {
-                _workContext.CurrentCustomer.RemoveGiftCardCouponCode(gc.GiftCardCouponCode);
-                _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+                var giftCardId = form[key].Substring(prefix.Length).ToInt();
+                var gc = _giftCardService.GetGiftCardById(giftCardId);
+                if (gc != null)
+                {
+                    _workContext.CurrentCustomer.RemoveGiftCardCouponCode(gc.GiftCardCouponCode);
+                    _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+                }
             }
 
             PrepareShoppingCartModel(model, cart);

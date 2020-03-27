@@ -93,6 +93,7 @@
 * Biz-Importer: If the TaxRate table was missing, the assignment of the tax category to the product was not set.
 * #1832 Import: adding URL records requires cache to be cleared.
 * #1818 The order list summary do not respect all list filters and shows wrong aggregate values.
+* #1835 Removing gift card issue.
 
 
 ## SmartStore.NET 3.2.2

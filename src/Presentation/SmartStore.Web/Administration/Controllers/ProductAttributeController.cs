@@ -9,7 +9,6 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -304,7 +303,7 @@ namespace SmartStore.Admin.Controllers
 
 		[HttpPost, GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Catalog.Variant.Read)]
-        public ActionResult OptionsSetList(int productAttributeId, GridCommand command)
+        public ActionResult OptionsSetList(int productAttributeId)
 		{
 			var gridModel = new GridModel<ProductAttributeOptionsSetModel>();
 			var optionsSets = _productAttributeService.GetProductAttributeOptionsSetsByAttributeId(productAttributeId);
@@ -328,10 +327,10 @@ namespace SmartStore.Admin.Controllers
 
 		[HttpPost, GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Catalog.Variant.Read)]
-        public ActionResult OptionsSetListDetails(int id)
+        public ActionResult OptionsSetListDetails(int optionsSetId)
 		{
 			var gridModel = new GridModel<ProductAttributeOptionModel>();
-			var options = _productAttributeService.GetProductAttributeOptionsByOptionsSetId(id);
+			var options = _productAttributeService.GetProductAttributeOptionsByOptionsSetId(optionsSetId);
 
 			gridModel.Total = options.Count();
 			gridModel.Data = options.Select(x =>
@@ -349,7 +348,7 @@ namespace SmartStore.Admin.Controllers
 
 		[GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Catalog.Variant.EditSet)]
-        public ActionResult OptionsSetInsert(ProductAttributeOptionsSetModel model, GridCommand command)
+        public ActionResult OptionsSetInsert(ProductAttributeOptionsSetModel model)
 		{
 			var entity = new ProductAttributeOptionsSet
 			{
@@ -359,30 +358,30 @@ namespace SmartStore.Admin.Controllers
 
 			_productAttributeService.InsertProductAttributeOptionsSet(entity);
 
-			return OptionsSetList(model.ProductAttributeId, command);
+			return OptionsSetList(model.ProductAttributeId);
 		}
 
 		[GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Catalog.Variant.EditSet)]
-        public ActionResult OptionsSetUpdate(ProductAttributeOptionsSetModel model, GridCommand command)
+        public ActionResult OptionsSetUpdate(ProductAttributeOptionsSetModel model)
 		{
 			var entity = _productAttributeService.GetProductAttributeOptionsSetById(model.Id);
 			entity.Name = model.Name;
 
 			_productAttributeService.UpdateProductAttributeOptionsSet(entity);
 
-			return OptionsSetList(model.ProductAttributeId, command);
+			return OptionsSetList(model.ProductAttributeId);
 		}
 
 		[GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Catalog.Variant.EditSet)]
-        public ActionResult OptionsSetDelete(int id, int productAttributeId, GridCommand command)
+        public ActionResult OptionsSetDelete(int id, int productAttributeId)
 		{
 			var entity = _productAttributeService.GetProductAttributeOptionsSetById(id);
 
 			_productAttributeService.DeleteProductAttributeOptionsSet(entity);
 
-			return OptionsSetList(productAttributeId, command);
+			return OptionsSetList(productAttributeId);
 		}
 
         #endregion

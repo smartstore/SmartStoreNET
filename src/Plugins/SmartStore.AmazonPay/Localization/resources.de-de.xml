@@ -337,4 +337,7 @@ Textvorschläge:</div><ul>
 	<LocaleResource Name="InformCustomerAddErrors.Hint">
 		<Value>Legt fest, ob der genaue Wortlaut der Fehlermeldung der Auftragsnotiz bzw. E-Mail angehängt werden soll.</Value>
 	</LocaleResource>
+  <LocaleResource Name="CookieInfo">
+    <Value>Amazon Pay nutzt Cookies zur Darstellung und Abwicklung des Zahlungsvorgangs über Amazon.</Value>
+  </LocaleResource>
 </Language>

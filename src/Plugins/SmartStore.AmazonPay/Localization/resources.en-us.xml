@@ -337,4 +337,7 @@ Text suggestions:</div><ul>
 	<LocaleResource Name="InformCustomerAddErrors.Hint">
 		<Value>Specifies to append the error message to the order note and email.</Value>
 	</LocaleResource>
+  <LocaleResource Name="CookieInfo">
+    <Value>Amazon Pay uses cookies to display and process the payment transaction via Amazon.</Value>
+  </LocaleResource>
 </Language>

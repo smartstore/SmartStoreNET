@@ -18,7 +18,7 @@ namespace SmartStore.AmazonPay
 	[DependentWidgets("Widgets.AmazonPay")]
 	[FriendlyName("Amazon Pay")]
 	[DisplayOrder(-1)]
-	public class AmazonPayPlugin : PaymentPluginBase, IExternalAuthenticationMethod, IConfigurable
+	public class AmazonPayPlugin : PaymentPluginBase, IExternalAuthenticationMethod, IConfigurable, ICookiePublisher
 	{
 		private readonly IAmazonPayService _apiService;
 		private readonly ICommonServices _services;
@@ -44,6 +44,22 @@ namespace SmartStore.AmazonPay
 		public static string SystemName
 		{
 			get { return "SmartStore.AmazonPay"; }
+		}
+
+		/// <summary>
+		/// Gets CookieInfos for display in CookieManager dialog.
+		/// </summary>
+		/// <returns>CookieInfo containing plugin name, cookie purpose description & cookie type</returns>
+		public CookieInfo GetCookieInfo()
+		{
+			var cookieInfo = new CookieInfo
+			{
+				Name = _services.Localization.GetResource("Plugins.FriendlyName.Widgets.AmazonPay"),
+				Description = _services.Localization.GetResource("Plugins.Payments.AmazonPay.CookieInfo"),
+				CookieType = CookieType.Required
+			};
+
+			return cookieInfo;
 		}
 
 		public override void Install()

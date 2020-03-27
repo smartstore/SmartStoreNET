@@ -49,8 +49,9 @@
 * #1752 Export: let a provider directly export to a file stream instead of a memory stream.
 * #1763 Topic editor should display all menu item nodes that reference the current topic.
 * #1665 UI: ACL, discount and store selection should be done via multiple select2.
-* Updated UserAgent Parser
-* TinyImage: updated WebP detection patterns
+* Updated UserAgent Parser.
+* TinyImage: updated WebP detection patterns.
+* PayPal PLUS: apply order of payment methods in backend to the list of third-party payment methods in checkout.
 
 ### Bugfixes
 * Export: Fixed KeyNotFoundException when batch size was 1.

@@ -34,7 +34,7 @@
 			@if (Model.ThirdPartyPaymentMethods.Any())
 			{
 				<text>thirdPartyPaymentMethods: [</text>
-				foreach (var method in Model.ThirdPartyPaymentMethods)
+				foreach (var method in Model.ThirdPartyPaymentMethods.OrderBy(x => x.DisplayOrder))
 				{
 					<text>{ redirectUrl: "</text>@Html.Raw(method.RedirectUrl)<text>",</text>
 					<text>methodName: </text>@Html.Raw(method.MethodName.EncodeJsString())<text>,</text>

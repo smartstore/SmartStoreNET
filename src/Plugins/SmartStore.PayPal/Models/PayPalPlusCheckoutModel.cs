@@ -20,11 +20,13 @@ namespace SmartStore.PayPal.Models
 
 		public class ThirdPartyPaymentMethod
 		{
-			public string RedirectUrl { get; set; }
-			public string MethodName { get; set; }
+            public string SystemName { get; set; }
+            public string MethodName { get; set; }
+            public string RedirectUrl { get; set; }
 			public string ImageUrl { get; set; }
 			public string Description { get; set; }
 			public string PaymentFee { get; set; }
-		}
+            public int DisplayOrder { get; set; }
+        }
 	}
 }

@@ -84,6 +84,8 @@ namespace SmartStore.PayPal.Controllers
 
 			try
 			{
+                model.SystemName = provider.Metadata.SystemName;
+                model.DisplayOrder = provider.Metadata.DisplayOrder;
                 model.RedirectUrl = Url.Action("CheckoutReturn", "PayPalPlus", new { area = Plugin.SystemName, systemName = provider.Metadata.SystemName }, store.SslEnabled ? "https" : "http");
 
                 if (provider.Metadata.SystemName == PayPalInstalmentsProvider.SystemName)
@@ -255,7 +257,7 @@ namespace SmartStore.PayPal.Controllers
 				model.BillingAddressCountryCode = customer.BillingAddress.Country.TwoLetterIsoCode;
 			}
 
-			foreach (var systemName in settings.ThirdPartyPaymentMethods)
+            foreach (var systemName in settings.ThirdPartyPaymentMethods)
 			{
 				var provider = methods.FirstOrDefault(x => x.Metadata.SystemName == systemName);
 				if (provider != null)

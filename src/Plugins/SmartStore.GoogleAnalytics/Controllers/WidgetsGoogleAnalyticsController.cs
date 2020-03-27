@@ -7,11 +7,14 @@ using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Plugins;
 using SmartStore.GoogleAnalytics.Models;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.Customers;
 using SmartStore.Services.Orders;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 
@@ -24,20 +27,23 @@ namespace SmartStore.GoogleAnalytics.Controllers
         private readonly ISettingService _settingService;
         private readonly IOrderService _orderService;
         private readonly ICategoryService _categoryService;
+        private readonly ICookieManager _cookieManager;
 
         public WidgetsGoogleAnalyticsController(
 			IWorkContext workContext,
 			IStoreContext storeContext,
 			ISettingService settingService,
 			IOrderService orderService,
-            ICategoryService categoryService)
+            ICategoryService categoryService,
+            ICookieManager cookieManager)
         {
             _workContext = workContext;
 			_storeContext = storeContext;
             _settingService = settingService;
             _orderService = orderService;
             _categoryService = categoryService;
-		}
+            _cookieManager = cookieManager;
+        }
 
 		[AdminAuthorize, ChildActionOnly, LoadSetting]
         public ActionResult Configure(GoogleAnalyticsSettings settings)
@@ -84,17 +90,19 @@ namespace SmartStore.GoogleAnalytics.Controllers
             var routeData = ((System.Web.UI.Page)this.HttpContext.CurrentHandler).RouteData;
 
             try
-            {			
-				// Special case, if we are in last step of checkout, we can use order total for conversion value
-				if (routeData.Values["controller"].ToString().Equals("checkout", StringComparison.InvariantCultureIgnoreCase) &&
+            {
+                var cookiesAllowed = _cookieManager.IsCookieAllowed(this.ControllerContext, CookieType.Analytics);
+
+                // Special case, if we are in last step of checkout, we can use order total for conversion value
+                if (routeData.Values["controller"].ToString().Equals("checkout", StringComparison.InvariantCultureIgnoreCase) &&
                     routeData.Values["action"].ToString().Equals("completed", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var lastOrder = GetLastOrder();
-                    globalScript += GetEcommerceScript(lastOrder);
+                    globalScript += GetEcommerceScript(lastOrder, cookiesAllowed);
                 }
                 else
                 {
-                    globalScript += GetTrackingScript();
+                    globalScript += GetTrackingScript(cookiesAllowed);
                 }
             }
             catch (Exception ex)
@@ -134,20 +142,34 @@ namespace SmartStore.GoogleAnalytics.Controllers
 
 			return script;
 		}
-		
-		private string GetTrackingScript()
+
+        private string GetStorageScript()
+        {
+            // If no consent to analytical cookies was given, set storage to none.
+            var script = @"
+				ga('set', 'storage', 'none'); 
+	            ga('set', 'clientId', '{0}'); 
+			";
+
+            script = script + "\n";
+            script = script.FormatWith(_workContext.CurrentCustomer.CustomerGuid);
+
+            return script;
+        }
+
+        private string GetTrackingScript(bool cookiesAllowed)
         {
 			var settings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
-            var script = "";
-            script = settings.TrackingScript + "\n";
+            var script = settings.TrackingScript + "\n";
             script = script.Replace("{GOOGLEID}", settings.GoogleId);
             script = script.Replace("{ECOMMERCE}", "");
 			script = script.Replace("{OPTOUTCOOKIE}", GetOptOutCookieScript());
+            script = script.Replace("{STORAGETYPE}", cookiesAllowed ? "" : GetStorageScript());
 
-			return script;
+            return script;
         }
         
-        private string GetEcommerceScript(Order order)
+        private string GetEcommerceScript(Order order, bool cookiesAllowed)
         {
 			var settings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
             var usCulture = new CultureInfo("en-US");
@@ -207,6 +229,9 @@ namespace SmartStore.GoogleAnalytics.Controllers
 
                 ecScript = ecScript.Replace("{DETAILS}", sb.ToString());
                 script = script.Replace("{ECOMMERCE}", ecScript);
+
+                // If no consent to third party cookies was given, set storage to none.
+                script = script.Replace("{STORAGETYPE}", cookiesAllowed ? "" : GetStorageScript());
             }
 
             return script;
@@ -214,7 +239,7 @@ namespace SmartStore.GoogleAnalytics.Controllers
 
         private string FixIllegalJavaScriptChars(string text)
         {
-            if (String.IsNullOrEmpty(text))
+            if (!text.HasValue())
                 return text;
 
             //replace ' with \' (http://stackoverflow.com/questions/4292761/need-to-url-encode-labels-when-tracking-events-with-google-analytics)

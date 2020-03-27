@@ -10,7 +10,7 @@ namespace SmartStore.GoogleAnalytics
 	/// <summary>
 	/// Google Analytics Plugin
 	/// </summary>
-	public class GoogleAnalyticPlugin : BasePlugin, IWidget, IConfigurable
+	public class GoogleAnalyticPlugin : BasePlugin, IWidget, IConfigurable, ICookiePublisher
 	{
 		#region Scripts
 
@@ -26,6 +26,8 @@ namespace SmartStore.GoogleAnalytics
     ga('create', '{GOOGLEID}', 'auto');
 	ga('set', 'anonymizeIp', true); 
     ga('send', 'pageview');
+
+	{STORAGETYPE}
 
     {ECOMMERCE}
 </script>";
@@ -115,6 +117,22 @@ ga('ecommerce:send');";
 				{"area", "SmartStore.GoogleAnalytics"},
 				{"widgetZone", widgetZone}
 			};
+		}
+
+		/// <summary>
+		/// Gets CookieInfos for display in CookieManager dialog.
+		/// </summary>
+		/// <returns>CookieInfo containing plugin name, cookie purpose description & cookie type</returns>
+		public CookieInfo GetCookieInfo()
+		{
+			var cookieInfo = new CookieInfo
+			{
+				Name = _localizationService.GetResource("Plugins.FriendlyName.SmartStore.GoogleAnalytics"),
+				Description = _localizationService.GetResource("Plugins.Widgets.GoogleAnalytics.CookieInfo"),
+				CookieType = CookieType.Analytics
+			};
+
+			return cookieInfo;
 		}
 
 		public override void Install()

@@ -46,6 +46,9 @@
     <Value>Kopieren Sie den von Google erzeugten Tracking-Code in dieses Feld. {ORDERID}, {PRODUCTSKU}, {PRODUCTNAME}, {CATEGORYNAME}, {UNITPRICE} und {QUANTITY} werden automatisch ersetzt.</Value>
   </LocaleResource>
   <LocaleResource Name="OptOutNotification">
-	<Value>Das Tracking ist jetzt deaktiviert</Value>
+	  <Value>Das Tracking ist jetzt deaktiviert</Value>
+  </LocaleResource>
+  <LocaleResource Name="CookieInfo">
+    <Value>Google Analytics hilft uns das Nutzerverhalten unserer Webseite zu analysieren und aufgrund dessen zu verbessern, um Ihnen die bestmögliche Nutzererfahrung zu bieten.</Value>
   </LocaleResource>
 </Language>

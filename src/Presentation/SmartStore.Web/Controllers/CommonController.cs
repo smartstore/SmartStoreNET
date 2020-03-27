@@ -18,6 +18,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
+using SmartStore.Core.Plugins;
 using SmartStore.Core.Security;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
@@ -67,8 +68,9 @@ namespace SmartStore.Web.Controllers
         private readonly ForumSettings _forumSettings;
         private readonly LocalizationSettings _localizationSettings;
 		private readonly Lazy<SocialSettings> _socialSettings;
-		
-		public CommonController(
+        private readonly ICookieManager _cookieManager;
+
+        public CommonController(
 			Lazy<ILanguageService> languageService,
             Lazy<ICurrencyService> currencyService,
 			IThemeContext themeContext,
@@ -89,7 +91,8 @@ namespace SmartStore.Web.Controllers
 			ForumSettings forumSettings,
             LocalizationSettings localizationSettings, 
 			Lazy<SocialSettings> socialSettings,
-            ThemeSettings themeSettings)
+            ThemeSettings themeSettings,
+            ICookieManager cookieManager)
         {
             _languageService = languageService;
             _currencyService = currencyService;
@@ -112,7 +115,8 @@ namespace SmartStore.Web.Controllers
             _localizationSettings = localizationSettings;
 			_socialSettings = socialSettings;
             _themeSettings = themeSettings;
-		}
+            _cookieManager = cookieManager;
+        }
 
         #region Utilities
 
@@ -778,48 +782,65 @@ namespace SmartStore.Web.Controllers
 			}, TimeSpan.FromMinutes(1) /* 1 min. (just for the duration of pdf processing) */);
 		}
 
-		[ChildActionOnly]
-		public ActionResult CookieConsentBadge()
-		{
-			if (!_privacySettings.EnableCookieConsent)
-			{
-				return new EmptyResult();
-			}
+        #region CookieManager
 
-            if (CookieConsent.GetStatus(this.ControllerContext.ParentActionViewContext) != CookieConsentStatus.Asked)
+        public ActionResult CookieManager()
+        {
+            if (!_privacySettings.EnableCookieConsent)
             {
                 return new EmptyResult();
             }
 
-            var model = new CookieConsentModel();
+            // TODO: If current country doesnt need cookie consent
+            //return new EmptyResult();
 
-			if (!_privacySettings.CookieConsentBadgetext.HasValue())
-			{
-				// Loads default value if it's empty (must be done this way as localized values can't be initial values of settings)
-				model.BadgeText = T("CookieConsent.BadgeText", Services.StoreContext.CurrentStore.Name, Url.Topic("PrivacyInfo"));
-			}
-			else
-			{
-				model.BadgeText = _privacySettings.GetLocalized(x => x.CookieConsentBadgetext).Value.FormatWith(Services.StoreContext.CurrentStore.Name, Url.Topic("PrivacyInfo"));
-			}
+            var cookieData = _cookieManager.GetCookieData(this.ControllerContext);
 
-			return PartialView(model);
-		}
+            if (cookieData != null && !HttpContext.Request.IsAjaxRequest())
+            {
+                return new EmptyResult();
+            }
 
-		[HttpPost]
-		public ActionResult SetCookieConsentBadge(CookieConsentModel model)
-		{
-			CookieConsent.SetCookie(Response, CookieConsentStatus.Consented);
+            var model = new CookieManagerModel();
 
-			if (!HttpContext.Request.IsAjaxRequest() && !ControllerContext.IsChildAction)
-			{
-				return RedirectToReferrer();
-			}
+            PrepareCookieManagerModel(model);
+
+            return PartialView(model);
+        }
+
+        private void PrepareCookieManagerModel(CookieManagerModel model)
+        {
+            // Get cookie infos from plugins.
+            model.CookiesInfos = _cookieManager.GetAllCookieInfos();
+
+            var cookie = _cookieManager.GetCookieData(this.ControllerContext);
+            
+            model.AnalyticsConsent = cookie != null ? cookie.AllowAnalytics : false;
+            model.ThirdPartyConsent = cookie != null ? cookie.AllowThirdParty : false;
+        }
+
+        [HttpPost]
+        public ActionResult SetCookieManagerConsent(CookieManagerModel model)
+        {
+            if (model.AcceptAll)
+            {
+                model.AnalyticsConsent = true;
+                model.ThirdPartyConsent = true;
+            }
+
+            _cookieManager.SetConsentCookie(Response, model.AnalyticsConsent, model.ThirdPartyConsent);
+
+            if (!HttpContext.Request.IsAjaxRequest() && !ControllerContext.IsChildAction)
+            {
+                return RedirectToReferrer();
+            }
 
             return Json(new { Success = true });
         }
 
-		[ChildActionOnly]
+        #endregion
+
+        [ChildActionOnly]
 		public ActionResult GdprConsent(bool isSmall)
 		{
 			if (!_privacySettings.DisplayGdprConsentOnForms)

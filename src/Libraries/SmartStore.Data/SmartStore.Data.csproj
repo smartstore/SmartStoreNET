@@ -453,6 +453,10 @@
     <Compile Include="Migrations\202003251118391_CategoryRuleSets.Designer.cs">
       <DependentUpon>202003251118391_CategoryRuleSets.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202003171812584_CookieManager.cs" />
+    <Compile Include="Migrations\202003171812584_CookieManager.Designer.cs">
+      <DependentUpon>202003171812584_CookieManager.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -822,6 +826,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202003251118391_CategoryRuleSets.resx">
       <DependentUpon>202003251118391_CategoryRuleSets.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003171812584_CookieManager.resx">
+      <DependentUpon>202003171812584_CookieManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

@@ -209,6 +209,7 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<PermissionService>().As<IPermissionService>().InstancePerRequest();
             builder.RegisterType<AclService>().As<IAclService>().InstancePerRequest();
 			builder.RegisterType<GdprTool>().As<IGdprTool>().InstancePerRequest();
+			builder.RegisterType<CookieManager>().As<ICookieManager>().InstancePerRequest();
 
 			builder.RegisterType<GeoCountryLookup>().As<IGeoCountryLookup>().SingleInstance();
 			builder.RegisterType<CountryService>().As<ICountryService>().InstancePerRequest();

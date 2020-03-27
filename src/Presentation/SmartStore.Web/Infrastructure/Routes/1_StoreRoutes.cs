@@ -183,6 +183,10 @@ namespace SmartStore.Web.Infrastructure
 				new { controller = "Catalog", action = "CompareProducts" },
                 new[] { "SmartStore.Web.Controllers" });
 
+			routes.MapLocalizedRoute("CookieManager",
+				"cookiemanager/",
+				new { controller = "Common", action = "CookieManager" },
+				new[] { "SmartStore.Web.Controllers" });
 
 			/* Shopping Cart
 			----------------------------------------*/

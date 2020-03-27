@@ -99,6 +99,33 @@
                 });
             }
         },
+        // cookie manager
+        function (ctx) {
+            ctx.find('.cookie-manager').on("click", function (e) {
+                e.preventDefault();
+
+                var dialog = $("#cookie-manager-window");
+
+                if (dialog.length > 0) {
+                    // Dialog was already loaded > just open dialog.
+                    $('#cookie-manager-window').modal('show');
+                }
+                else {
+
+                    // Dialog wasn't loaded yet > get view via ajax call.
+                    var url = $(this).attr("href");
+
+                    $.ajax({
+                        cache: false,
+                        type: "POST",
+                        url: url,
+                        success: function (data) {
+                            $("body").append(data);
+                        }
+                    }); 
+                }
+            });
+        },
         // slick carousel
         function (ctx) {
         	if ($.fn.slick === undefined)

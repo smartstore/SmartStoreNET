@@ -20,11 +20,6 @@ namespace SmartStore.Core.Domain.Customers
 		public bool EnableCookieConsent { get; set; }
 
 		/// <summary>
-		/// Specifies the text which will be display to customers using the frontend
-		/// </summary>
-		public string CookieConsentBadgetext { get; set; }
-
-		/// <summary>
 		/// Gets or sets a value indicating whether to store last IP address for each customer
 		/// </summary>
 		public bool StoreLastIpAddress { get; set; }

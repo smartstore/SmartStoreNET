@@ -930,16 +930,9 @@ namespace SmartStore.Admin.Controllers
 
 			StoreDependingSettings.GetOverrideKeys(privacySettings, model.PrivacySettings, storeScope, Services.Settings, false);
 
-			// Loads default value if it's empty (must be done this way as localized values can't be initial values of settings).
-			if (!privacySettings.CookieConsentBadgetext.HasValue())
-			{
-				model.PrivacySettings.CookieConsentBadgetext = Services.Localization.GetResource("CookieConsent.BadgeText");
-			}
-			
 			AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Salutations = addressSettings.GetLocalized(x => x.Salutations, languageId, false, false);
-				locale.CookieConsentBadgetext = privacySettings.GetLocalized(x => x.CookieConsentBadgetext, languageId, false, false);
 			});
 
 			return View(model);
@@ -986,7 +979,6 @@ namespace SmartStore.Admin.Controllers
 			foreach (var localized in model.Locales)
 			{
 				_localizedEntityService.SaveLocalizedValue(addressSettings, x => x.Salutations, localized.Salutations, localized.LanguageId);
-				_localizedEntityService.SaveLocalizedValue(privacySettings, x => x.CookieConsentBadgetext, localized.CookieConsentBadgetext, localized.LanguageId);
 			}
 			
 			return NotifyAndRedirect("CustomerUser");

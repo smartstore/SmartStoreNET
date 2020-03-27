@@ -335,6 +335,7 @@
     <Compile Include="Models\Catalog\ProductAskQuestionModel.cs" />
     <Compile Include="Models\Catalog\ProductSummaryModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerOverviewModel.cs" />
+    <Compile Include="Models\Common\CookieManagerModel.cs" />
     <Compile Include="Models\Search\SearchBoxModel.cs" />
     <Compile Include="Models\Catalog\ProductsByTagModel.cs" />
     <Compile Include="Models\Catalog\PopularProductTagsModel.cs" />
@@ -1809,7 +1810,6 @@
     <Content Include="Views\Shared\DisplayTemplates\DateTime.cshtml" />
     <Content Include="Themes\Flex\Content\_fonts.scss" />
     <Content Include="Views\ShoppingCart\Partials\_RefreshCartScript.cshtml" />
-    <Content Include="Views\Common\Partials\CookieConsentBadge.cshtml" />
     <Content Include="Views\Common\Partials\GdprConsent.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Byte.cshtml" />
     <Content Include="Views\Boards\Partials\Filters.cshtml" />
@@ -1837,6 +1837,7 @@
     <Content Include="Views\Blog\Partials\BlogSummaryList.cshtml" />
     <Content Include="Views\Blog\Partials\BlogSummaryHeading.cshtml" />
     <Content Include="Views\Blog\Partials\BlogSummary.cshtml" />
+    <Content Include="Views\Common\Partials\CookieManager.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

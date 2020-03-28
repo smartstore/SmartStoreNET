@@ -158,6 +158,17 @@ namespace SmartStore.Services.Media.Storage
 			}
 		}
 
+		public void ChangeExtension(MediaFile mediaFile, string extension)
+		{
+			Guard.NotNull(mediaFile, nameof(mediaFile));
+			Guard.NotEmpty(extension, nameof(extension));
+
+			var sourcePath = GetPath(mediaFile);
+			var newPath = Path.ChangeExtension(sourcePath, extension);
+
+			_fileSystem.RenameFile(sourcePath, newPath);
+		}
+
 		public void MoveTo(ISupportsMediaMoving target, MediaMoverContext context, MediaFile mediaFile)
 		{
 			Guard.NotNull(target, nameof(target));

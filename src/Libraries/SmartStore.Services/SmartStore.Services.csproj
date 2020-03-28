@@ -360,6 +360,7 @@
     <Compile Include="Media\Storage\IMediaMover.cs" />
     <Compile Include="Media\Storage\ISupportsMediaMoving.cs" />
     <Compile Include="Media\Storage\MediaMoverContext.cs" />
+    <Compile Include="Media\v4\Exceptions.cs" />
     <Compile Include="Media\v4\Extensions\IMediaTrackerExtensions.cs" />
     <Compile Include="Media\v4\Extensions\MediaFileExtensions.cs" />
     <Compile Include="Media\Storage\MediaMover.cs" />

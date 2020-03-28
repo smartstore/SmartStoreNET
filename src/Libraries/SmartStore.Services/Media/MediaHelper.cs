@@ -35,7 +35,7 @@ namespace SmartStore.Services.Media
 				var node = _folderService.GetNodeByPath(dir);
 				if (node != null)
 				{
-					data = new MediaPathData(node.Value, path.Substring(dir.Length + 1));
+					data = new MediaPathData(node, path.Substring(dir.Length + 1));
 					return true;
 				}
 			}

@@ -34,9 +34,9 @@ namespace SmartStore.Web.Controllers
 		//private readonly static bool _streamRemoteMedia = CommonHelper.GetAppSetting<bool>("sm:StreamRemoteMedia");
 
 		private readonly IMediaService _mediaService;
+		private readonly IFolderService _folderService;
 		private readonly IPermissionService _permissionService;
 		private readonly IEventPublisher _eventPublisher;
-		//private readonly IMediaFileSystem _mediaFileSystem;
 		private readonly MediaSettings _mediaSettings;
 		private readonly MediaHelper _mediaHelper;
 
@@ -46,9 +46,9 @@ namespace SmartStore.Web.Controllers
 
 		public Media4Controller(
 			IMediaService mediaService,
+			IFolderService folderService,
 			IPermissionService permissionService,
 			IEventPublisher eventPublisher,
-			//IMediaFileSystem mediaFileSystem,
 			MediaSettings mediaSettings,
 			MediaHelper mediaHelper,
 			Lazy<IEnumerable<IMediaHandler>> mediaHandlers,
@@ -56,6 +56,7 @@ namespace SmartStore.Web.Controllers
 			Lazy<IXmlSitemapGenerator> sitemapGenerator)
         {
 			_mediaService = mediaService;
+			_folderService = folderService;
 			_permissionService = permissionService;
 			_eventPublisher = eventPublisher;
 			//_mediaFileSystem = mediaFileSystem;
@@ -102,15 +103,17 @@ namespace SmartStore.Web.Controllers
 		{
 			path = SystemAlbumProvider.Files + "/" + path;
 
-			var mediaFile = _mediaService.GetFileByPath(path);
+			var mediaFile = _mediaService.GetFileByPath(path, MediaLoadFlags.AsNoTracking);
 			if (mediaFile == null)
 			{
 				return NotFound(null);
 			}
 
-			var routeValues = new RouteValueDictionary(RouteData.Values);
-			routeValues["id"] = mediaFile.Id;
-			routeValues["path"] = path;
+			var routeValues = new RouteValueDictionary(RouteData.Values)
+			{
+				["id"] = mediaFile.Id,
+				["path"] = path
+			};
 
 			return RedirectToActionPermanent("File", routeValues);
 		}
@@ -128,13 +131,13 @@ namespace SmartStore.Web.Controllers
 					return NotFound(null);
 				}
 				
-				mediaFile = _mediaService.GetFileById(id);
+				mediaFile = _mediaService.GetFileById(id, MediaLoadFlags.AsNoTracking);
 				if (mediaFile == null || mediaFile.FolderId == null)
 				{
 					return NotFound(pathData.MimeType);
 				}
 
-				pathData = new MediaPathData(null, mediaFile.Name)
+				pathData = new MediaPathData(_folderService.GetNodeById(mediaFile.FolderId.Value), mediaFile.Name)
 				{
 					Extension = mediaFile.Extension,
 					MimeType = mediaFile.MimeType

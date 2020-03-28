@@ -612,9 +612,9 @@ namespace SmartStore.Admin.Controllers
 			try
 			{
 				newPath = _fileSystem.Combine(GetRelativePath(newPath), file.Name);
-				if (_fileSystem.CheckFileUniqueness(newPath, out var newFile))
+				if (_fileSystem.CheckUniqueFileName(newPath, out var uniqueFilePath))
 				{
-					newPath = newFile.Path;
+					newPath = uniqueFilePath;
 				}
 
 				_fileSystem.CopyFile(path, newPath);
@@ -801,9 +801,9 @@ namespace SmartStore.Admin.Controllers
 					{
 						var name = Path.GetFileName(tempPath);
 						var newPath = _fileSystem.Combine(path, name);
-						if (_fileSystem.CheckFileUniqueness(newPath, out var file))
+						if (_fileSystem.CheckUniqueFileName(newPath, out var uniqueFilePath))
 						{
-							newPath = file.Path;
+							newPath = uniqueFilePath;
 						}
 
 						await _fileSystem.SaveStreamAsync(newPath, stream);

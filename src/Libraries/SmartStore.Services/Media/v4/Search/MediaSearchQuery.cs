@@ -36,6 +36,12 @@ namespace SmartStore.Services.Media
         [JsonProperty("term")]
         public string Term { get; set; }
 
+        [JsonProperty("exact")]
+        public bool ExactMatch { get; set; }
+
+        [JsonProperty("includeAlt")]
+        public bool IncludeAltForTerm { get; set; }
+
 
         [JsonProperty("page")]
         public int PageIndex { get; set; }

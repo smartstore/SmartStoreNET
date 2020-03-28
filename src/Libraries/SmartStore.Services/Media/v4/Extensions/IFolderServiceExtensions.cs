@@ -25,14 +25,16 @@ namespace SmartStore.Services.Media
             return service.GetNodeById(folderId)?.Closest(x => x.Value.IsAlbum);
         }
 
-        public static bool AreInSameAlbum(this IFolderService service, MediaFile file1, MediaFile file2)
+        public static bool AreInSameAlbum(this IFolderService service, params MediaFile[] files)
         {
-            return FindAlbum(service, file1) == FindAlbum(service, file2);
+            //return files.Select(x => FindAlbum(service, x)).All(x => x.Value.Id == files[0].FolderId);
+            return files.Select(x => FindAlbum(service, x)).Distinct().Count() <= 1;
         }
 
-        public static bool AreInSameAlbum(this IFolderService service, int folderId1, int folderId2)
+        public static bool AreInSameAlbum(this IFolderService service, params int[] folderIds)
         {
-            return FindAlbum(service, folderId1) == FindAlbum(service, folderId2);
+            //return folderIds.Select(x => FindAlbum(service, x)).All(x => x.Value.Id == folderIds[0]);
+            return folderIds.Select(x => FindAlbum(service, x)).Distinct().Count() <= 1;
         }
 
         public static IEnumerable<MediaFolderNode> GetFoldersFlattened(this IFolderService service, string path, bool includeSelf = true)

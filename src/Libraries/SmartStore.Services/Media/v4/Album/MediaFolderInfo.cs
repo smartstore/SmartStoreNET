@@ -36,13 +36,13 @@ namespace SmartStore.Services.Media
         public long Size => 0;
 
         [JsonIgnore]
-        public bool Exists => true;
+        public bool Exists => Node.Value.Id > 0;
 
         [JsonIgnore]
         public DateTime LastUpdated => DateTime.UtcNow;
 
         [JsonIgnore]
-        public IFolder Parent => new MediaFolderInfo(Node.Parent);
+        public IFolder Parent => Node.Parent == null ? null : new MediaFolderInfo(Node.Parent);
 
         #endregion
     }

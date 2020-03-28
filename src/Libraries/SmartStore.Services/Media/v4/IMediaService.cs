@@ -37,19 +37,19 @@ namespace SmartStore.Services.Media
         IQueryable<MediaFile> PrepareQuery(MediaSearchQuery query, MediaLoadFlags flags);
 
         bool FileExists(string path);
-        MediaFileInfo GetFileByPath(string path);
-        MediaFileInfo GetFileById(int id, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
+        MediaFileInfo GetFileByPath(string path, MediaLoadFlags flags = MediaLoadFlags.None);
+        MediaFileInfo GetFileById(int id, MediaLoadFlags flags = MediaLoadFlags.None);
         IList<MediaFileInfo> GetFilesByIds(int[] ids, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
+        bool CheckUniqueFileName(string path, out string newPath);
 
         MediaFileInfo CreateFile(string path);
         MediaFileInfo CreateFile(int folderId, string fileName);
         MediaFileInfo InsertFile(string album, MediaFile file, Stream stream, bool validate = true);
         void DeleteFile(MediaFile file, bool permanent);
 
-        MediaFileInfo CopyFile(MediaFile file, int destinationFolderId);
-        MediaFileInfo MoveFile(MediaFile file, int destinationFolderId);
+        MediaFileInfo CopyFile(MediaFile file, string destinationFileName, bool overwrite = false);
+        MediaFileInfo MoveFile(MediaFile file, string destinationFileName);
         MediaFileInfo ReplaceFile(MediaFile file, string fileName, string mimeType, Stream stream);
-        MediaFileInfo RenameFile(MediaFile file, string newFileName);
 
         string GetUrl(MediaFileInfo file, ProcessImageQuery query, string host = null);
     }

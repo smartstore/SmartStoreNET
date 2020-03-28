@@ -63,5 +63,12 @@ namespace SmartStore.Services.Media.Storage
 		/// </summary>
 		/// <param name="mediaFiles">Media file items</param>
 		void Remove(params MediaFile[] mediaFiles);
+
+		/// <summary>
+		/// Changes the extension of the stored file if the provider supports
+		/// </summary>
+		/// <param name="mediaFile">Media file item</param>
+		/// <param name="extension">The nex file extension</param>
+		void ChangeExtension(MediaFile mediaFile, string extension);
 	}
 }

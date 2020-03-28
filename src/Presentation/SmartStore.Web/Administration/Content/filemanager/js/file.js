@@ -172,9 +172,10 @@ function File(filePath, fileSize, modTime, w, h, mime) {
 			success: function (data) {
 				if (data.res.toLowerCase() === 'ok') {
 					var newPath = RoxyUtils.MakePath(this.path, newName);
-					var fileType = RoxyUtils.GetFileIcon(newName);
+					var fileType = RoxyUtils.GetFileType(newName);
 					var icon = RoxyIconHints[fileType];
 					var li = $('li[data-path="' + item.fullPath + '"]');
+
 					li.toggleClass('file-image', fileType === 'image');
 					$('.file-icon', li).attr('class', "").addClass('file-icon fa-fw ' + icon.name).css('color', icon.color);
 					$('.name', li).text(newName);

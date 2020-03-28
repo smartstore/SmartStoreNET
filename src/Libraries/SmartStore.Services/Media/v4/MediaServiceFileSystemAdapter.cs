@@ -90,12 +90,13 @@ namespace SmartStore.Services.Media
             var node = _folderService.GetNodeByPath(path);
             if (node == null)
             {
-                throw new DirectoryNotFoundException("Directory '" + path + "' does not exist.");
+                throw new MediaFolderNotFoundException(path);
             }
 
             var query = new MediaSearchQuery
             {
-                FolderId = node.Value.Id
+                FolderId = node.Value.Id,
+                Deleted = false
             };
 
             return _mediaService.SearchFiles(query);
@@ -106,7 +107,7 @@ namespace SmartStore.Services.Media
             var node = _folderService.GetNodeByPath(path);
             if (node == null)
             {
-                throw new DirectoryNotFoundException("Directory '" + path + "' does not exist.");
+                throw new MediaFolderNotFoundException(path);
             }
 
             return node.Children.Select(x => new MediaFolderInfo(x));
@@ -119,14 +120,15 @@ namespace SmartStore.Services.Media
                 var node = _folderService.GetNodeByPath(path);
                 if (node == null)
                 {
-                    throw new DirectoryNotFoundException("Directory '" + path + "' does not exist.");
+                    throw new MediaFolderNotFoundException(path);
                 }
 
                 var query = new MediaSearchQuery
                 {
                     FolderId = node.Value.Id,
                     DeepSearch = deep,
-                    Term = pattern
+                    Term = pattern,
+                    Deleted = false
                 };
 
                 return _mediaService.CountFiles(query);
@@ -141,14 +143,15 @@ namespace SmartStore.Services.Media
             var node = _folderService.GetNodeByPath(path);
             if (node == null)
             {
-                throw new DirectoryNotFoundException("Directory '" + path + "' does not exist.");
+                throw new MediaFolderNotFoundException(path);
             }
             
             var query = new MediaSearchQuery
             {
                 FolderId = node.Value.Id,
                 DeepSearch = deep,
-                Term = pattern
+                Term = pattern,
+                Deleted = false
             };
 
             return _mediaService.SearchFiles(query).Select(x => x.Path).ToList();
@@ -174,7 +177,7 @@ namespace SmartStore.Services.Media
             var file = _mediaService.GetFileByPath(path);
             if (file?.Exists == true)
             {
-                _mediaService.DeleteFile(file, false);
+                _mediaService.DeleteFile((MediaFile)file, false);
             }
         }
 
@@ -203,25 +206,45 @@ namespace SmartStore.Services.Media
 
         public IFile GetFile(string path)
         {
-            return _mediaService.GetFileByPath(path);
+            var file = _mediaService.GetFileByPath(path);
+            if (file == null)
+            {
+                var mediaFile = new MediaFile 
+                { 
+                    Name = Path.GetFileName(path),
+                    Extension = Path.GetExtension(path).TrimStart('.'),
+                    MimeType = MimeTypes.MapNameToMimeType(path)
+                };
+                file = new MediaFileInfo(mediaFile, null, Fix(Path.GetDirectoryName(path)));
+            }
+
+            return file;
         }
 
         public IFolder GetFolder(string path)
         {
             var node = _folderService.GetNodeByPath(path);
-            if (node != null)
+            if (node == null)
             {
-                return new MediaFolderInfo(node);
+                node = new TreeNode<MediaFolderNode>(new MediaFolderNode { Path = path, Name = Path.GetFileName(Fix(path)) });
             }
 
-            // TODO: (mm) return Node > .Exists = false;
-            return null;
+            return new MediaFolderInfo(node);
         }
 
         public IFolder GetFolderForFile(string path)
         {
-            var dir = Fix(Path.GetDirectoryName(path));
-            return GetFolder(dir);
+            if (!_mediaHelper.TokenizePath(path, out var pathData))
+            {
+                throw new MediaFolderNotFoundException(Fix(Path.GetDirectoryName(path)));
+            }
+
+            return new MediaFolderInfo(pathData.Node);
+        }
+
+        public bool CheckUniqueFileName(string path, out string newPath)
+        {
+            return _mediaService.CheckUniqueFileName(path, out newPath);
         }
 
         public void CopyFile(string path, string newPath, bool overwrite = false)
@@ -232,28 +255,10 @@ namespace SmartStore.Services.Media
             var sourceFile = (MediaFile)_mediaService.GetFileByPath(path);
             if (sourceFile == null)
             {
-                throw new FileNotFoundException("File " + path + " does not exist.");
+                throw new MediaFileNotFoundException(path);
             }
 
-            var targetFile = _mediaService.GetFileByPath(newPath);
-            if (targetFile != null)
-            {
-                throw new ArgumentException("File " + newPath + " already exists.");
-            }
-
-            if (!_mediaHelper.TokenizePath(newPath, out var newPathData))
-            {
-                throw new DirectoryNotFoundException("Directory " + Fix(Path.GetDirectoryName(newPath)) + " does not exist.");
-            }
-
-            if (sourceFile.FolderId != newPathData.Folder.Id)
-            {
-                targetFile = _mediaService.CopyFile(sourceFile, newPathData.Folder.Id);
-                if (!targetFile.Name.IsCaseInsensitiveEqual(newPathData.FileName))
-                {
-                    _mediaService.RenameFile(sourceFile, newPathData.FileName);
-                }
-            }
+            _mediaService.CopyFile(sourceFile, newPath, false);
         }
 
         public void RenameFile(string path, string newPath)
@@ -264,34 +269,30 @@ namespace SmartStore.Services.Media
             var sourceFile = (MediaFile)_mediaService.GetFileByPath(path);
             if (sourceFile == null)
             {
-                throw new FileNotFoundException("File " + path + " does not exist.");
+                throw new MediaFileNotFoundException(path);
             }
 
-            var targetFile = _mediaService.GetFileByPath(newPath);
-            if (targetFile != null)
-            {
-                throw new ArgumentException("File " + newPath + " already exists.");
-            }
-
-            if (!_mediaHelper.TokenizePath(newPath, out var newPathData))
-            {
-                throw new DirectoryNotFoundException("Directory " + Fix(Path.GetDirectoryName(newPath)) + " does not exist.");
-            }
-
-            if (!sourceFile.Name.IsCaseInsensitiveEqual(newPathData.FileName))
-            {
-                _mediaService.RenameFile(sourceFile, newPathData.FileName);
-            }
-
-            if (sourceFile.FolderId != newPathData.Folder.Id)
-            {
-                _mediaService.MoveFile(sourceFile, newPathData.Folder.Id);
-            }
+            _mediaService.MoveFile(sourceFile, newPath);
         }
 
         public void RenameFolder(string path, string newPath)
         {
-            throw new NotImplementedException();
+            Guard.NotEmpty(path, nameof(path));
+            Guard.NotEmpty(newPath, nameof(newPath));
+
+            var sourceNode = _folderService.GetNodeByPath(path);
+            if (sourceNode == null)
+            {
+                throw new MediaFolderNotFoundException(path);
+            }
+
+            var sourceFolder = _folderService.GetFolderById(sourceNode.Value.Id);
+            if (sourceFolder == null)
+            {
+                throw new MediaFolderNotFoundException(path);
+            }
+
+            _folderService.MoveFolder(sourceFolder, newPath);
         }
 
         public void SaveStream(string path, Stream inputStream)

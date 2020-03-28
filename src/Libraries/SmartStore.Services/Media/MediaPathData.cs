@@ -1,38 +1,68 @@
 ﻿using System;
 using System.IO;
+using SmartStore.Collections;
 using SmartStore.Core.IO;
 
 namespace SmartStore.Services.Media
 {
 	public class MediaPathData
 	{
+		private string _name;
 		private string _title;
 		private string _ext;
 		private string _mime;
 
-		public MediaPathData(MediaFolderNode folder, string fileName)
+		public MediaPathData(TreeNode<MediaFolderNode> node, string fileName)
 		{
-			Folder = folder;
-			FileName = fileName;
+			Guard.NotNull(node, nameof(node));
+			Guard.NotEmpty(fileName, nameof(fileName));
+
+			Node = node;
+			_name = fileName;
 		}
 
 		public MediaPathData(MediaPathData pathData)
 		{
-			Folder = pathData.Folder;
-			FileName = pathData.FileName;
+			Node = pathData.Node;
+			_name = pathData.FileName;
 			_title = pathData._title;
 			_ext = pathData._ext;
 			_mime = pathData._mime;
 		}
 
-		public MediaFolderNode Folder { get; }
-		public string FileName { get; }
+		public TreeNode<MediaFolderNode> Node { get; }
+		public MediaFolderNode Folder 
+		{
+			get => Node.Value;
+		}
+
+		public string FileName 
+		{
+			get
+			{
+				return _name;
+			}
+			set
+			{
+				Guard.NotEmpty(value, nameof(value));
+
+				_name = value;
+				_title = null;
+				_ext = null;
+				_mime = null;
+			}
+		}
+
+		public string FullPath 
+		{
+			get => Folder.Path + "/" + _name;
+		}
 
 		public string FileTitle
 		{
 			get
 			{
-				return _title ?? (_title = Path.GetFileNameWithoutExtension(FileName));
+				return _title ?? (_title = Path.GetFileNameWithoutExtension(_name));
 			}
 		}
 
@@ -40,7 +70,7 @@ namespace SmartStore.Services.Media
 		{
 			get
 			{
-				return _ext ?? (_ext = Path.GetExtension(FileName).EmptyNull().TrimStart('.'));
+				return _ext ?? (_ext = Path.GetExtension(_name).EmptyNull().TrimStart('.'));
 			}
 			set
 			{
@@ -52,7 +82,7 @@ namespace SmartStore.Services.Media
 		{
 			get
 			{
-				return _mime ?? (_mime = MimeTypes.MapNameToMimeType(FileName));
+				return _mime ?? (_mime = MimeTypes.MapNameToMimeType(_name));
 			}
 			set
 			{

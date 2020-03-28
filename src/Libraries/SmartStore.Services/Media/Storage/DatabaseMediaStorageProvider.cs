@@ -101,6 +101,11 @@ namespace SmartStore.Services.Media.Storage
 			}
 		}
 
+		public void ChangeExtension(MediaFile mediaFile, string extension)
+		{
+			// Do nothing
+		}
+
 		public void MoveTo(ISupportsMediaMoving target, MediaMoverContext context, MediaFile mediaFile)
 		{
 			Guard.NotNull(target, nameof(target));

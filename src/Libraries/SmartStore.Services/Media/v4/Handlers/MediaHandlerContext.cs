@@ -56,7 +56,7 @@ namespace SmartStore.Services.Media
 			else
 			{
 				// Get file from DB
-				var mediaFile = MediaService.GetFileById(MediaFileId);
+				var mediaFile = MediaService.GetFileById(MediaFileId, MediaLoadFlags.AsNoTracking);
 
 				// File must exist
 				if (mediaFile == null)

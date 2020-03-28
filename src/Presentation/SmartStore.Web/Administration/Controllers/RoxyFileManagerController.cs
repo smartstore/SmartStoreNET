@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -35,7 +36,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IMediaTypeResolver _mediaTypeResolver;
 		private readonly MediaHelper _mediaHelper;
 		private readonly Lazy<IImageProcessor> _imageProcessor;
-		private readonly Lazy<IImageCache> _imageCache;
 		private readonly IMediaFileSystem _fileSystem;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly ILocalizationFileResolver _locFileResolver;
@@ -50,7 +50,6 @@ namespace SmartStore.Admin.Controllers
 			IMediaTypeResolver mediaTypeResolver,
 			MediaHelper mediaHelper,
 			Lazy<IImageProcessor> imageProcessor,
-			Lazy<IImageCache> imageCache,
 			IMediaFileSystem fileSystem,
 			IEventPublisher eventPublisher,
 			ILocalizationFileResolver locFileResolver,
@@ -62,7 +61,6 @@ namespace SmartStore.Admin.Controllers
 			_mediaTypeResolver = mediaTypeResolver;
 			_mediaHelper = mediaHelper;
 			_imageProcessor = imageProcessor;
-			_imageCache = imageCache;
 			_fileSystem = fileSystem;
 			_eventPublisher = eventPublisher;
 			_locFileResolver = locFileResolver;
@@ -223,6 +221,12 @@ namespace SmartStore.Admin.Controllers
 			return Request.IsAjaxRequest() || (Request["method"] != null && Request["method"].ToString() == "ajax");
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private string GetMimeType(IFile file)
+		{
+			return (file as MediaFileInfo)?.MimeType ?? MimeTypes.MapNameToMimeType(file.Name);
+		}
+
 		internal class RoxyFolder
 		{
 			public IFolder Folder { get; set; }
@@ -365,7 +369,7 @@ namespace SmartStore.Admin.Controllers
 			{ 
 				p = _fileSystem.GetPublicUrl(x),
 				t = x.LastUpdated.ToUnixTime().ToString(),
-				m = (x as MediaFileInfo)?.MimeType ?? MimeTypes.MapNameToMimeType(x.Name),
+				m = GetMimeType(x),
 				s = x.Size.ToString(),
 				w = x.Dimensions.Width.ToString(),
 				h = x.Dimensions.Height.ToString()
@@ -376,82 +380,105 @@ namespace SmartStore.Admin.Controllers
 
 		private void DownloadFile(string path)
 		{
-			//var file = _mediaService.GetFileById(id, MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithBlob);
-			//if (file == null)
-			//	return;
+			path = GetRelativePath(path);
+			if (!_fileSystem.FileExists(path))
+				return;
 
-			//var len = 0;
-			//var buffer = new byte[BUFFER_SIZE];
+			var len = 0;
+			var buffer = new byte[BUFFER_SIZE];
+			var file = _fileSystem.GetFile(path);
 
-			//try
-			//{
-			//	using (var stream = file.OpenRead())
-			//	{
-			//		Response.Clear();
-			//		Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + file.Name + "\"");
-			//		Response.ContentType = file.MimeType;
+			try
+			{
+				using (var stream = file.OpenRead())
+				{
+					Response.Clear();
+					Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + file.Name + "\"");
+					Response.ContentType = GetMimeType(file);
 
-			//		while (Response.IsClientConnected && (len = stream.Read(buffer, 0, BUFFER_SIZE)) > 0)
-			//		{
-			//			Response.OutputStream.Write(buffer, 0, len);
-			//			Response.Flush();
+					while (Response.IsClientConnected && (len = stream.Read(buffer, 0, BUFFER_SIZE)) > 0)
+					{
+						Response.OutputStream.Write(buffer, 0, len);
+						Response.Flush();
 
-			//			Array.Clear(buffer, 0, BUFFER_SIZE);
-			//		}
+						Array.Clear(buffer, 0, BUFFER_SIZE);
+					}
 
-			//		Response.End();
-			//	}
-			//}
-			//catch (IOException)
-			//{
-			//	throw new Exception(T("Admin.Common.FileInUse"));
-			//}
+					Response.End();
+				}
+			}
+			catch (IOException)
+			{
+				throw new Exception(T("Admin.Common.FileInUse"));
+			}
 		}
 
 		private void DownloadDir(string path)
 		{
-			//path = GetRelativePath(path);
-			//if (!_fileSystem.FolderExists(path))
-			//{
-			//	throw new Exception(LangRes("E_CreateArchive"));
-			//}
+			// TODO: (mm) limit zip creation to 1000 files or a max size.
+			
+			path = GetRelativePath(path);
 
-			//var folder = _fileSystem.GetFolder(path);
+			var folder = _fileSystem.GetFolder(path);
+			if (!folder.Exists)
+			{
+				throw new DirectoryNotFoundException($"Directory '{path}' does not exist.");
+			}
 
-			//// copy files from file storage to temp folder
-			//var tempDir = FileSystemHelper.TempDirTenant("roxy " + folder.Name);	
-			//FileSystemHelper.ClearDirectory(tempDir, false);
-			//var files = GetFiles(path, null);
+			// copy files from file storage to temp folder
+			var tempDir = FileSystemHelper.TempDirTenant("roxy " + folder.Name);
+			FileSystemHelper.ClearDirectory(tempDir, false);
+			var files = GetFiles(path, null);
 
-			//foreach (var file in files)
-			//{
-			//	var bytes = _fileSystem.ReadAllBytes(file.Path);
-			//	if (bytes != null && bytes.Length > 0)
-			//	{
-			//		System.IO.File.WriteAllBytes(Path.Combine(tempDir, file.Name), bytes);
-			//	}
-			//}
+			foreach (var file in files)
+			{
+				using (var stream = file.OpenRead())
+				{
+					if (stream.Length > 0)
+					{
+						using (var outputStream = System.IO.File.OpenWrite(Path.Combine(tempDir, file.Name)))
+						{
+							stream.CopyTo(outputStream);
+						}
+					}
+				}
+			}
 
-			//// create zip from temp folder
-			//var tempZip = Path.Combine(FileSystemHelper.TempDirTenant(), folder.Name + ".zip");
-			//FileSystemHelper.DeleteFile(tempZip);
+			// create zip from temp folder
+			var tempZip = Path.Combine(FileSystemHelper.TempDirTenant(), folder.Name + ".zip");
+			FileSystemHelper.DeleteFile(tempZip);
 
-			//ZipFile.CreateFromDirectory(tempDir, tempZip, CompressionLevel.Fastest, false);
+			ZipFile.CreateFromDirectory(tempDir, tempZip, CompressionLevel.Fastest, false);
 
-			//Response.Clear();
-			//Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + folder.Name + ".zip\"");
-			//Response.ContentType = "application/zip";
-			//Response.TransmitFile(tempZip);
-			//Response.Flush();
+			Response.Clear();
+			Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + folder.Name + ".zip\"");
+			Response.ContentType = "application/zip";
+			Response.TransmitFile(tempZip);
+			Response.Flush();
 
-			//FileSystemHelper.DeleteFile(tempZip);
-			//FileSystemHelper.ClearDirectory(tempDir, true);
+			FileSystemHelper.DeleteFile(tempZip);
+			FileSystemHelper.ClearDirectory(tempDir, true);
 
-			//Response.End();
+			Response.End();
 		}
 
 		private void RenameDir(string path, string name)
 		{
+			////////try
+			////////{
+			////////	path = GetRelativePath(path);
+
+			////////	var newPath = _fileSystem.Combine(path, name);
+			////////	_fileSystem.RenameFolder(path, newPath);
+			////////	Response.Write(GetResultString());
+			////////}
+			////////catch (Exception ex)
+			////////{
+			////////	throw ex;
+			////////}
+
+
+
 			//path = GetRelativePath(path);
 
 			//if (!_fileSystem.FolderExists(path))
@@ -481,12 +508,9 @@ namespace SmartStore.Admin.Controllers
 
 		private void MoveFile(string path, string newPath)
 		{
-			path = GetRelativePath(path);
-			newPath = GetRelativePath(newPath);
-
 			try
 			{
-				_fileSystem.RenameFile(path, newPath);
+				_fileSystem.RenameFile(GetRelativePath(path), GetRelativePath(newPath));
 				Response.Write(GetResultString());
 			}
 			catch (Exception ex)
@@ -511,7 +535,6 @@ namespace SmartStore.Admin.Controllers
 				var newPath = _fileSystem.Combine(folder.Path, newName);
 
 				_fileSystem.RenameFile(path, newPath);
-
 				Response.Write(GetResultString());
 			}
 			catch (Exception ex)
@@ -522,36 +545,16 @@ namespace SmartStore.Admin.Controllers
 
 		private void MoveDir(string path, string newPath)
 		{
-			//path = GetRelativePath(path);
-			
-			//if (!_fileSystem.FolderExists(path))
-			//{
-			//	throw new Exception(LangRes("E_MoveDirInvalisPath"));
-			//}
-
-			//var folder = _fileSystem.GetFolder(path);
-			//newPath = _fileSystem.Combine(GetRelativePath(newPath), folder.Name).Replace("\\", "/");
-
-			//if (_fileSystem.FolderExists(newPath))
-			//{
-			//	throw new Exception(LangRes("E_DirAlreadyExists"));
-			//}
-
-			//if (newPath.IndexOf(path) == 0)
-			//{
-			//	throw new Exception(LangRes("E_CannotMoveDirToChild"));
-			//}
-
-			//try
-			//{
-			//	_fileSystem.RenameFolder(path, newPath);
-
-			//	Response.Write(GetResultString());
-			//}
-			//catch (Exception ex)
-			//{
-			//	throw new Exception(LangRes("E_MoveDir") + " \"" + path + "\"" + ": (" + ex.Message + ")");
-			//}
+			try
+			{
+				newPath = _fileSystem.Combine(GetRelativePath(newPath), Path.GetFileName(path));
+				_fileSystem.RenameFolder(GetRelativePath(path), newPath);
+				Response.Write(GetResultString());
+			}
+			catch (Exception ex)
+			{
+				throw ex;
+			}
 		}
 
 		private void CopyFile(string path, string newPath)
@@ -559,51 +562,47 @@ namespace SmartStore.Admin.Controllers
 			path = GetRelativePath(path);
 
 			var file = _fileSystem.GetFile(path);
-
 			if (!file.Exists)
 			{
-				throw new Exception(LangRes("E_CopyFileInvalisPath"));
+				throw new FileNotFoundException($"File {path} does not exist.", path);
 			}
 
 			try
 			{
 				newPath = _fileSystem.Combine(GetRelativePath(newPath), file.Name);
-				//// TODO: (mm) implement CheckFileUniqueness on interface level, not as extension method
-				//if (_fileSystem.CheckFileUniqueness(newPath, out var newFile))
-				//{
-				//	newPath = newFile.Path;
-				//}
 
-				_fileSystem.CopyFile(path, newPath);
+				if (_fileSystem.CheckUniqueFileName(newPath, out var uniquePath))
+				{
+					newPath = uniquePath;
+				}
 
+				_fileSystem.CopyFile(path, newPath, false);
 				Response.Write(GetResultString());
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(LangRes("E_CopyFile") + ": " + ex.Message);
+				throw ex;
 			}
 		}
 
 		private void DeleteFile(string path)
 		{
-			//path = GetRelativePath(path);
-			//var file = _fileSystem.GetFile(path);
-			//if (!file.Exists)
-			//{
-			//	throw new Exception(LangRes("E_DeleteFileInvalidPath"));
-			//}
-			
-			//try
-			//{
-			//	_fileSystem.DeleteFile(path);
-			//	_imageCache.Value.Delete(file);
+			path = GetRelativePath(path);
+			var file = _fileSystem.GetFile(path);
+			if (!file.Exists)
+			{
+				throw new FileNotFoundException($"File {path} does not exist.", path);
+			}
 
-			//	Response.Write(GetResultString());
-			//}
-			//catch (Exception ex)
-			//{
-			//	throw new Exception(LangRes("E_DeletеFile") + ": " + ex.Message);
-			//}
+			try
+			{
+				_fileSystem.DeleteFile(path);
+				Response.Write(GetResultString());
+			}
+			catch (Exception ex)
+			{
+				throw ex;
+			}
 		}
 
 		private void DeleteDir(string path)
@@ -714,99 +713,97 @@ namespace SmartStore.Admin.Controllers
 
 		private async Task UploadAsync(string path, bool external = false)
 		{
-			await Task.FromResult(0);
-			
-			//path = GetRelativePath(path);
+			path = GetRelativePath(path);
 
-			//string message = null;
-			//var hasError = false;
-			//string url = null;
+			string message = null;
+			var hasError = false;
+			string url = null;
 
-			//int.TryParse(GetSetting("MAX_IMAGE_WIDTH"), out var width);
-			//int.TryParse(GetSetting("MAX_IMAGE_HEIGHT"), out var height);
+			int.TryParse(GetSetting("MAX_IMAGE_WIDTH"), out var width);
+			int.TryParse(GetSetting("MAX_IMAGE_HEIGHT"), out var height);
 
-			//var tempDir = FileSystemHelper.TempDirTenant("roxy " + CommonHelper.GenerateRandomInteger().ToString());
+			var tempDir = FileSystemHelper.TempDirTenant("roxy " + CommonHelper.GenerateRandomInteger().ToString());
 
-			//try
-			//{
-			//	var notify = Request.Files.Count < 4;
+			try
+			{
+				var notify = Request.Files.Count < 4;
 
-			//	// copy uploaded files to temp folder and resize them
-			//	for (var i = 0; i < Request.Files.Count; ++i)
-			//	{
-			//		var file = Request.Files[i];
-			//		var extension = Path.GetExtension(file.FileName);
+				// Copy uploaded files to temp folder and resize them
+				for (var i = 0; i < Request.Files.Count; ++i)
+				{
+					var file = Request.Files[i];
+					var extension = Path.GetExtension(file.FileName);
 
-			//		if (IsAllowedFileType(extension))
-			//		{
-			//			var dest = Path.Combine(tempDir, file.FileName);
-			//			file.SaveAs(dest);
+					if (IsAllowedFileType(extension))
+					{
+						var dest = Path.Combine(tempDir, file.FileName);
+						file.SaveAs(dest);
 
-			//			if (GetFileContentType(extension) == "image" && extension != ".svg")
-			//			{
-			//				ImageResize(dest, dest, width, height, notify);
-			//			}
-			//		}
-			//		else
-			//		{
-			//			message = LangRes("E_UploadNotAll");
-			//		}
-			//	}
+						if (_mediaTypeResolver.Resolve(extension) == MediaType.Image && extension != ".svg")
+						{
+							ImageResize(dest, dest, width, height, notify);
+						}
+					}
+					else
+					{
+						message = LangRes("E_UploadNotAll");
+					}
+				}
 
-			//	// Copy files to file storage
-			//	foreach (var tempPath in Directory.EnumerateFiles(tempDir, "*", SearchOption.TopDirectoryOnly))
-			//	{
-			//		using (var stream = new FileStream(tempPath, FileMode.Open, FileAccess.Read))
-			//		{
-			//			var name = Path.GetFileName(tempPath);
-			//			var newPath = _fileSystem.Combine(path, name);
-			//			if (_fileSystem.CheckFileUniqueness(newPath, out var file))
-			//			{
-			//				newPath = file.Path;
-			//			}
+				// Copy files to file storage
+				foreach (var tempPath in Directory.EnumerateFiles(tempDir, "*", SearchOption.TopDirectoryOnly))
+				{
+					using (var stream = new FileStream(tempPath, FileMode.Open, FileAccess.Read))
+					{
+						var name = Path.GetFileName(tempPath);
+						var newPath = _fileSystem.Combine(path, name);
+						if (_fileSystem.CheckUniqueFileName(newPath, out var uniquePath))
+						{
+							newPath = uniquePath;
+						}
 
-			//			await _fileSystem.SaveStreamAsync(newPath, stream);
-			//			url = _fileSystem.GetPublicUrl(newPath);
-			//		}
-			//	}
-			//}
-			//catch (Exception ex)
-			//{
-			//	hasError = true;
-			//	message = ex.Message;
-			//}
-			//finally
-			//{
-			//	FileSystemHelper.ClearDirectory(tempDir, true);
-			//}
+						await _fileSystem.SaveStreamAsync(newPath, stream);
+						url = _fileSystem.GetPublicUrl(newPath);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				hasError = true;
+				message = ex.Message;
+			}
+			finally
+			{
+				FileSystemHelper.ClearDirectory(tempDir, true);
+			}
 
-			//if (IsAjaxUpload())
-			//{
-			//	if (external)
-			//	{
-			//		var result = new
-			//		{
-			//			Success = !hasError,
-			//			Url = url,
-			//			Message = message
-			//		};
-			//		Response.ContentType = "text/json";
-			//		Response.Write(JsonConvert.SerializeObject(result));
-			//	}
-			//	else
-			//	{
-			//		if (message.HasValue())
-			//		{
-			//			Response.Write(GetResultString(message, hasError ? "error" : "ok"));
-			//		}
-			//	}
-			//}
-			//else
-			//{
-			//	Response.Write("<script>");
-			//	Response.Write("parent.fileUploaded(" + GetResultString(message, hasError ? "error" : "ok") + ");");
-			//	Response.Write("</script>");
-			//}
+			if (IsAjaxUpload())
+			{
+				if (external)
+				{
+					var result = new
+					{
+						Success = !hasError,
+						Url = url,
+						Message = message
+					};
+					Response.ContentType = "text/json";
+					Response.Write(JsonConvert.SerializeObject(result));
+				}
+				else
+				{
+					if (message.HasValue())
+					{
+						Response.Write(GetResultString(message, hasError ? "error" : "ok"));
+					}
+				}
+			}
+			else
+			{
+				Response.Write("<script>");
+				Response.Write("parent.fileUploaded(" + GetResultString(message, hasError ? "error" : "ok") + ");");
+				Response.Write("</script>");
+			}
 		}
 
 		#endregion

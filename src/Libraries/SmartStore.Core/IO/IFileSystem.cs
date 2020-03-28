@@ -138,12 +138,24 @@ namespace SmartStore.Core.IO
 		/// <param name="newPath">The relative path to the new folder.</param>
 		void RenameFolder(string path, string newPath);
 
-        /// <summary>
-        /// Deletes a file in the storage provider.
-        /// </summary>
-        /// <param name="path">The relative path to the file to be deleted.</param>
-        /// <exception cref="ArgumentException">If the file doesn't exist.</exception>
-        void DeleteFile(string path);
+		/// <summary>
+		/// Checks whether the name of the file is unique within its directory.
+		/// When given file exists, this method appends [1...n] to the file title until
+		/// the check returns false.
+		/// </summary>
+		/// <param name="path">The path of file to check</param>
+		/// <param name="newPath">The new unique path, or <c>null</c> if method returns <c>false</c></param>
+		/// <returns>
+		/// <c>false</c> when <paramref name="path"/> does not exist yet. <c>true</c> otherwise.
+		/// </returns>
+		bool CheckUniqueFileName(string path, out string newPath);
+
+		/// <summary>
+		/// Deletes a file in the storage provider.
+		/// </summary>
+		/// <param name="path">The relative path to the file to be deleted.</param>
+		/// <exception cref="ArgumentException">If the file doesn't exist.</exception>
+		void DeleteFile(string path);
 
 		/// <summary>
 		/// Renames a file in the storage provider.
@@ -177,7 +189,7 @@ namespace SmartStore.Core.IO
 		void CopyFile(string path, string newPath, bool overwrite = false);
 
 		/// <summary>
-		/// Saves a stream in the storage provider.
+		/// Saves a stream in the storage provider. If the file already exists, it will be overwritten.
 		/// </summary>
 		/// <param name="path">The relative path to the file to be created.</param>
 		/// <param name="inputStream">The stream to be saved.</param>
@@ -185,7 +197,7 @@ namespace SmartStore.Core.IO
 		void SaveStream(string path, Stream inputStream);
 
 		/// <summary>
-		/// Asynchronously saves a stream in the storage provider.
+		/// Asynchronously saves a stream in the storage provider. If the file already exists, it will be overwritten.
 		/// </summary>
 		/// <param name="path">The relative path to the file to be created.</param>
 		/// <param name="inputStream">The stream to be saved.</param>

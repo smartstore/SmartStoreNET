@@ -14,10 +14,10 @@ namespace SmartStore.Services.Media
     {
         private readonly IMediaStorageProvider _storageProvider;
 
-        public MediaFileInfo(MediaFile file, IMediaStorageProvider storageProvider, string path)
+        public MediaFileInfo(MediaFile file, IMediaStorageProvider storageProvider, string directory)
         {
             File = file;
-            Directory = path.EmptyNull();
+            Directory = directory.EmptyNull();
 
             if (File.Width.HasValue && File.Height.HasValue)
             {
@@ -54,7 +54,7 @@ namespace SmartStore.Services.Media
         [JsonProperty("createdOn")]
         public DateTime CreatedOn => File.CreatedOnUtc;
 
-        public static implicit operator MediaFile(MediaFileInfo fileInfo) => fileInfo.File;
+        public static explicit operator MediaFile(MediaFileInfo fileInfo) => fileInfo.File;
 
         #region IFile
 
@@ -87,7 +87,7 @@ namespace SmartStore.Services.Media
 
         public Stream OpenRead()
         {
-            return _storageProvider.OpenRead(File);
+            return _storageProvider?.OpenRead(File);
         }
 
         public Stream CreateFile()

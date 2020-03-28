@@ -15,8 +15,9 @@ namespace SmartStore.Services.Media
         MediaFolder GetFolderById(int id);
         bool FolderExists(string path);
 
-        void InsertFolder(MediaFolder folder);
+        MediaFolderInfo InsertFolder(MediaFolder folder);
         void UpdateFolder(MediaFolder folder);
         void DeleteFolder(MediaFolder folder);
+        MediaFolderInfo MoveFolder(MediaFolder folder, string destinationPath);
     }
 }

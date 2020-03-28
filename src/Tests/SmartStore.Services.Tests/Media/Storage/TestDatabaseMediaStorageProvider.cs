@@ -46,5 +46,9 @@ namespace SmartStore.Services.Tests.Media.Storage
 		{
 			return media.MediaStorage?.Data?.Length ?? 0;
 		}
-	}
+
+        public void ChangeExtension(MediaFile mediaFile, string extension)
+        {
+        }
+    }
 }

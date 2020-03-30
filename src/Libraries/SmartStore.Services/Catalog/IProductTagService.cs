@@ -6,7 +6,7 @@ namespace SmartStore.Services.Catalog
     /// <summary>
     /// Product tag service interface
     /// </summary>
-    public partial interface IProductTagService
+    public partial interface IProductTagService : IScopedService
     {
         /// <summary>
         /// Delete a product tag
@@ -52,6 +52,13 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <param name="productTag">Product tag</param>
         void UpdateProductTag(ProductTag productTag);
+
+        /// <summary>
+        /// Updates the product tags.
+        /// </summary>
+        /// <param name="product">Product.</param>
+        /// <param name="tagNames">New tags for the product.</param>
+        void UpdateProductTags(Product product, string[] tagNames);
 
         /// <summary>
         /// Get number of products

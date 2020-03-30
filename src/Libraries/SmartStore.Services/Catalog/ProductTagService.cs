@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -9,7 +10,7 @@ using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.Catalog
 {
-    public partial class ProductTagService : IProductTagService
+    public partial class ProductTagService : ScopedServiceBase, IProductTagService
     {
         /// <summary>
         /// Key for caching
@@ -51,16 +52,6 @@ namespace SmartStore.Services.Catalog
 		}
 
 		public DbQuerySettings QuerySettings { get; set; }
-
-        public virtual void DeleteProductTag(ProductTag productTag)
-        {
-            if (productTag != null)
-            {
-                _productTagRepository.Delete(productTag);
-
-                _cacheManager.RemoveByPattern(PRODUCTTAG_PATTERN_KEY);
-            }
-        }
 
 		public virtual IList<ProductTag> GetAllProductTags(bool includeHidden = false)
         {
@@ -104,13 +95,33 @@ namespace SmartStore.Services.Catalog
             return productTag;
         }
 
+        public virtual void DeleteProductTag(ProductTag productTag)
+        {
+            if (productTag != null)
+            {
+                _productTagRepository.Delete(productTag);
+
+                HasChanges = true;
+
+                if (!IsInScope)
+                {
+                    _cacheManager.RemoveByPattern(PRODUCTTAG_PATTERN_KEY);
+                }
+            }
+        }
+
         public virtual void InsertProductTag(ProductTag productTag)
         {
             Guard.NotNull(productTag, nameof(productTag));
 
             _productTagRepository.Insert(productTag);
 
-			_cacheManager.RemoveByPattern(PRODUCTTAG_PATTERN_KEY);
+            HasChanges = true;
+
+            if (!IsInScope)
+            {
+                _cacheManager.RemoveByPattern(PRODUCTTAG_PATTERN_KEY);
+            }
         }
 
         public virtual void UpdateProductTag(ProductTag productTag)
@@ -119,10 +130,109 @@ namespace SmartStore.Services.Catalog
 
             _productTagRepository.Update(productTag);
 
-			_cacheManager.RemoveByPattern(PRODUCTTAG_PATTERN_KEY);
+            HasChanges = true;
+
+            if (!IsInScope)
+            {
+                _cacheManager.RemoveByPattern(PRODUCTTAG_PATTERN_KEY);
+            }
         }
 
-		public virtual int GetProductCount(int productTagId, int storeId, bool includeHidden = false)
+        public virtual void UpdateProductTags(Product product, string[] tagNames)
+        {
+            Guard.NotNull(product, nameof(product));
+
+            _productTagRepository.Context.LoadCollection(product, (Product x) => x.ProductTags);
+
+            if (!(tagNames?.Any() ?? false))
+            {
+                // Remove all tag mappings.
+                if (product.ProductTags.Any())
+                {
+                    HasChanges = true;
+                    product.ProductTags.Clear();
+                }
+            }
+            else
+            {
+                // Remove tag mappings.
+                var tagsToRemove = new List<ProductTag>();
+                var newTagNames = new HashSet<string>(tagNames
+                    .Select(x => x.TrimSafe())
+                    .Where(x => x.HasValue()),
+                    StringComparer.OrdinalIgnoreCase);
+
+                foreach (var existingTag in product.ProductTags)
+                {
+                    var found = false;
+                    foreach (var tagName in newTagNames)
+                    {
+                        if (existingTag.Name.IsCaseInsensitiveEqual(tagName))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                    {
+                        tagsToRemove.Add(existingTag);
+                    }
+                }
+
+                foreach (var tag in tagsToRemove)
+                {
+                    HasChanges = true;
+                    product.ProductTags.Remove(tag);
+                }
+
+                // Add tag mappings.
+                if (newTagNames.Any())
+                {
+                    var oldAutoCommit = _productTagRepository.AutoCommitEnabled;
+
+                    // True because tags must be saved and assigned an id prior adding a mapping.
+                    _productTagRepository.AutoCommitEnabled = true;
+
+                    try
+                    {
+                        foreach (var name in newTagNames)
+                        {
+                            ProductTag tag = null;
+                            var existingTag = GetProductTagByName(name);
+
+                            if (existingTag == null)
+                            {
+                                tag = new ProductTag { Name = name, Published = true };
+
+                                HasChanges = true;
+                                _productTagRepository.Insert(tag);
+                            }
+                            else
+                            {
+                                tag = existingTag;
+                            }
+
+                            if (!product.ProductTags.Any(x => x.Id == tag.Id))
+                            {
+                                HasChanges = true;
+                                product.ProductTags.Add(tag);
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        _productTagRepository.AutoCommitEnabled = oldAutoCommit;
+                    }
+                }
+            }
+
+            if (HasChanges && !IsInScope)
+            {
+                _cacheManager.RemoveByPattern(PRODUCTTAG_PATTERN_KEY);
+            }
+        }
+
+        public virtual int GetProductCount(int productTagId, int storeId, bool includeHidden = false)
 		{
 			var dictionary = GetProductCount(storeId, includeHidden);
 
@@ -138,6 +248,8 @@ namespace SmartStore.Services.Catalog
         {
             var storeToken = QuerySettings.IgnoreMultiStore ? "0" : storeId.ToString();
             var key = string.Format(PRODUCTTAG_COUNT_KEY, storeId, includeHidden.ToString().ToLower());
+
+            // TODO: ACL. Remove stored procedure.
 
             return _cacheManager.Get(key, () =>
             {
@@ -183,6 +295,11 @@ namespace SmartStore.Services.Catalog
 
                 return tagCount.ToDictionary(x => x.ProductTagId, x => x.ProductCount);
             });
+        }
+
+        protected override void OnClearCache()
+        {
+            _cacheManager.RemoveByPattern(PRODUCTTAG_PATTERN_KEY);
         }
 
         private class ProductTagWithCount

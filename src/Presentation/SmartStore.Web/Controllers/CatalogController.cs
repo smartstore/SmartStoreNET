@@ -505,16 +505,22 @@ namespace SmartStore.Web.Controllers
 		public ActionResult ProductsByTag(int productTagId, CatalogSearchQuery query)
 		{
 			var productTag = _productTagService.GetProductTagById(productTagId);
-			if (productTag == null)
-				return HttpNotFound();
+            if (productTag == null)
+            {
+                return HttpNotFound();
+            }
 
-			var model = new ProductsByTagModel()
+            if (!productTag.Published && !Services.Permissions.Authorize(Permissions.Catalog.Product.Read))
+            {
+                return HttpNotFound();
+            }
+
+            var model = new ProductsByTagModel
 			{
 				Id = productTag.Id,
 				TagName = productTag.GetLocalized(y => y.Name)
 			};
 
-			// Products
 			query.WithProductTagIds(new int[] { productTagId });
 
 			var searchResult = _catalogSearchService.Search(query);
@@ -523,7 +529,7 @@ namespace SmartStore.Web.Controllers
 			var mappingSettings = _helper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
 			model.Products = _helper.MapProductSummaryModel(searchResult.Hits, mappingSettings);
 
-			// Prepare paging/sorting/mode stuff
+			// Prepare paging/sorting/mode stuff.
 			_helper.MapListActions(model.Products, null, _catalogSettings.DefaultPageSizeOptions);
 
 			return View(model);

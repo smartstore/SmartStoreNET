@@ -621,18 +621,25 @@ namespace SmartStore.Services.Catalog
                 return map;
             }
 
-            var query = _productRepository.TableUntracked
-				.Expand(x => x.ProductTags)
-				.Where(x => productIds.Contains(x.Id))
-				.Select(x => new
-				{
-					ProductId = x.Id,
-					Tags = x.ProductTags.Where(y => includeHidden || y.Published)
-				});
+            /// <seealso cref="ProductTagService.GetProductCount(int, bool)"/>
+            var productQuery = _productRepository.TableUntracked
+                .Expand(x => x.ProductTags)
+                .Where(x => productIds.Contains(x.Id) && !x.Deleted && !x.IsSystemProduct);
 
-			var list = query.ToList();
+            if (!includeHidden)
+            {
+                productQuery = productQuery.Where(x => x.Visibility == ProductVisibility.Full && x.Published);
+            }
 
-			foreach (var item in list)
+            var items = productQuery
+                .Select(x => new
+                {
+                    ProductId = x.Id,
+                    Tags = x.ProductTags.Where(y => includeHidden || y.Published)
+                })
+                .ToList();
+
+			foreach (var item in items)
 			{
                 foreach (var tag in item.Tags)
                 {

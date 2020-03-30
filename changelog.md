@@ -74,8 +74,10 @@
 	* Customer roles sometimes inserted several times.
 	* Changed billing\shipping address was added instead of updating the existing one.
 	* Region assigned to an address was not updated.
+* **Product tags**:
+	* #1730 Product tag count should filter also based on Visibility.
+	* Product tag count sometimes not up-to-date due to missing cache clearance.
 * Multistore mapping was ignored for manufacturers in sitemap.
-* #1730 Product tag count should filter also based on Visibility.
 * Categories limited to stores were not displayed in tree view.
 * Debitoor: avoid errors due to invalid product unitId of 0.
 * Fixed InvalidOperationException in CreatePdfInvoiceAttachment when an order is placed by a guest.

@@ -306,83 +306,6 @@ namespace SmartStore.Admin.Controllers
             }
         }
         
-        [NonAction]
-		protected void UpdateProductTags(Product product, params string[] rawProductTags)
-		{
-			Guard.NotNull(product, nameof(product));
-
-			if (rawProductTags == null || rawProductTags.Length == 0)
-			{
-				product.ProductTags.Clear();
-				_productService.UpdateProduct(product);
-				return;
-			}
-
-			var productTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-			foreach (string str in rawProductTags)
-			{
-				string tag = str.TrimSafe();
-				if (tag.HasValue())
-					productTags.Add(tag);
-			}
-
-			var existingProductTags = product.ProductTags;
-			var productTagsToRemove = new List<ProductTag>();
-
-			foreach (var existingProductTag in existingProductTags)
-			{
-				bool found = false;
-				foreach (string newProductTag in productTags)
-				{
-					if (existingProductTag.Name.Equals(newProductTag, StringComparison.InvariantCultureIgnoreCase))
-					{
-						found = true;
-						break;
-					}
-				}
-				if (!found)
-				{
-					productTagsToRemove.Add(existingProductTag);
-				}
-			}
-
-			foreach (var productTag in productTagsToRemove)
-			{
-				product.ProductTags.Remove(productTag);
-				_productService.UpdateProduct(product);
-				_services.DbContext.ChangeState(product, System.Data.Entity.EntityState.Modified);
-			}
-
-			foreach (string productTagName in productTags)
-			{
-				ProductTag productTag = null;
-				var productTag2 = _productTagService.GetProductTagByName(productTagName);
-
-				if (productTag2 == null)
-				{
-					// Add new product tag
-					productTag = new ProductTag 
-                    {
-                        Name = productTagName,
-                        Published = true
-                    };
-					_productTagService.InsertProductTag(productTag);
-				}
-				else
-				{
-					productTag = productTag2;
-				}
-
-				if (!product.ProductTagExists(productTag.Id))
-				{
-					product.ProductTags.Add(productTag);
-					_productService.UpdateProduct(product);
-					_services.DbContext.ChangeState(product, System.Data.Entity.EntityState.Modified);
-				}
-			}
-		}
-
 		[NonAction]
 		protected void UpdateProductInventory(Product product, ProductModel model)
 		{
@@ -549,7 +472,7 @@ namespace SmartStore.Admin.Controllers
 
 			//var seoTabLoaded = m.LoadedTabs.Contains("SEO", StringComparer.OrdinalIgnoreCase);
 
-            // Handle Download transiency
+            // Handle download transiency.
             var download = _downloadService.GetDownloadsFor(p).FirstOrDefault();
             if (download != null)
             {
@@ -557,13 +480,13 @@ namespace SmartStore.Admin.Controllers
             }
 			MediaHelper.UpdateDownloadTransientStateFor(p, x => x.SampleDownloadId);
             
-            // SEO
+            // SEO.
             m.SeName = p.ValidateSeName(m.SeName, p.Name, true, _urlRecordService, _seoSettings);
 			_urlRecordService.SaveSlug(p, m.SeName, 0);
 
 			if (editMode)
 			{
-				// we need the event to be fired
+				// We need the event to be fired.
 				_productService.UpdateProduct(p);
 			}
 
@@ -573,18 +496,18 @@ namespace SmartStore.Admin.Controllers
 				_localizedEntityService.SaveLocalizedValue(product, x => x.ShortDescription, localized.ShortDescription, localized.LanguageId);
 				_localizedEntityService.SaveLocalizedValue(product, x => x.FullDescription, localized.FullDescription, localized.LanguageId);
 
-				// search engine name
 				var localizedSeName = p.ValidateSeName(localized.SeName, localized.Name, false, _urlRecordService, _seoSettings, localized.LanguageId);
 				_urlRecordService.SaveSlug(p, localizedSeName, localized.LanguageId);
 			}
 
-			// picture seo names
+			// Picture SEO names.
 			if (nameChanged)
 			{
 				UpdatePictureSeoNames(p);
 			}
-			
-			UpdateProductTags(p, m.ProductTags);
+
+            _productTagService.UpdateProductTags(p, m.ProductTags);
+
             SaveStoreMappings(p, model.SelectedStoreIds);
             SaveAclMappings(p, model.SelectedCustomerRoleIds);
         }

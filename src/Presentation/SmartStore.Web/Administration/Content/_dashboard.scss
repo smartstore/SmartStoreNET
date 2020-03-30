@@ -98,6 +98,7 @@
         padding: 1.5rem 1.5rem 0.5rem 1.5rem;
         align-items: center;
         display: flex;
+        flex-wrap: wrap;
 
         .report-title {
             font-size: 1.25rem;
@@ -106,23 +107,35 @@
     }
 
     .chart-title {
-        width: 100%;
         text-align: center;
         font-weight: $font-weight-bold;
         font-size: 1rem;
     }
 
+    .incomplete-orders-container {
+        width: 100%;
+        height: 100%;
+        padding-top: 1rem;
+    }
+
     .incomplete-orders-chart-container {
         display: flex;
-        width: 20%;
         justify-content: center;
         text-align: center;
         align-items: center;
+        height: 250px;
     }
 
     .incomplete-orders-chart-text {
         position: absolute;
         font-size: 1rem;
+        max-width: 30%;
+        z-index: 1;
+    }
+
+    .incomplete-orders-value {
+        text-overflow: ellipsis;
+        overflow: hidden;
     }
 
     .table {
@@ -137,9 +150,85 @@
         }
     }
 
+    .marketplace-feed-body {
+        padding: 1rem 2rem 0rem 2rem;
+
+        .marketplace-feed-item {
+            margin-bottom: 1.25rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid #ddd;
+
+            &:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0.25rem;
+            }
+        }
+
+        .marketplace-feed-item-title {
+            margin-bottom: .5rem;
+        }
+    }
+
+    .statistics-value {
+        font-size: 1rem;
+        font-weight: $font-weight-bold;
+        border-bottom: 1px solid #eee;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .statistics-attribute {
+        font-size: .9rem;
+        border-top: 1px solid #eee;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .statistics-container {
+        width: 100%;
+    }
+
+    .statistics-content {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        padding-left: .5rem;
+    }
+
+    .statistics-col {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        padding: 1.5rem 1rem;
+    }
+
+    .statistics-container-outer {
+        display: flex;
+        width: 80%;
+        justify-content: center;
+        padding-left: 1rem;
+    }
+
+    .statistics-container-inner {
+        width: 100%;
+        text-align: center;
+    }
+
+    .statistics-icon {
+        font-size: 1.5rem;
+        color: #ccc;
+    }
+
     .indicator {
         width: 10px;
+        min-width: 10px;
         height: 10px;
+        min-height: 10px;
         border-radius: 50%;
     }
 
@@ -202,212 +291,270 @@
             transform: rotate(180deg);
         }
     }
-}
-
-.report-incomplete-orders {
-    grid-column: 1 / 11;
-    grid-row: 1 / 2;
-}
-
-.marketplace-feed {
-    grid-column: 11 / 13;
-    grid-row: 1 / 5;
-
-    .marketplace-feed-body {
-        padding: 1rem 2rem 0rem 2rem;
-
-        .marketplace-feed-item {
-            margin-bottom: 1.25rem;
-            padding-bottom: 1.25rem;
-            border-bottom: 1px solid #ddd;
-
-            &:last-child {
-                border-bottom: none;
-                margin-bottom: 0;
-                padding-bottom: 0.25rem;
-            }
-        }
-
-        .marketplace-feed-item-title {
-            margin-bottom: .5rem;
-        }
-    }
-}
-
-.report-orders {
-    grid-column: 1 / 8;
-    grid-row: 2 / 3;
-}
-
-.report-bestsellers {
-    grid-column: 8 / 11;
-    grid-row: 2 / 3;
-}
-
-.report-top-customers {
-    grid-column: 1 / 4;
-    grid-row: 3 / 4;
-}
-
-.report-customer-registrations {
-    grid-column: 4 / 11;
-    grid-row: 3 / 4;
-}
-
-.report-latest-orders {
-    grid-column: 1 / 7;
-    grid-row: 4 / 5;
-}
-
-.report-store-statistics {
-    grid-column: 7 / 11;
-    grid-row: 4 / 5;
-
-
-    .statistics-value {
-        font-size: 1rem;
-        font-weight: $font-weight-bold;
-        border-bottom: 1px solid #eee;
-    }
-
-    .statistics-attribute {
-        font-size: .9rem;
-        border-top: 1px solid #eee;
-    }
-
-    .statistics-row {
-        display: flex;
-        padding: 1.5rem 2rem;
-    }
-
-    .statistics-col {
-        display: flex;
-        width: 100%;
-        align-items: center;
-        justify-content: center;
-        border: 0;
-        padding: 0;
-    }
-
-    .statistics-container-outer {
-        display: flex;
-        width: 80%;
-        justify-content: center;
-        padding-left: 2.75rem;
-    }
-
-    .statistics-container-inner {
-        width: 100%;
-        text-align: center;
-    }
-
-    .statistics-icon {
-        font-size: 1.75rem;
-        color: #ccc;
-    }
 
     .products-icon {
         &:before {
             @include fontawesome-font("\f1b3", regular);
-            position: absolute;
-            transform: translateY(-50%);
         }
     }
 
     .categories-icon {
         &:before {
             @include fontawesome-font("\f0e8", regular);
-            position: absolute;
-            transform: translateY(-50%);
         }
     }
 
     .manufacturer-icon {
-
         &:before {
             @include fontawesome-font("\f1ad", regular);
-            position: absolute;
-            transform: translateY(-50%);
         }
     }
 
     .attribute-icon {
         &:before {
             @include fontawesome-font("\f022", regular);
-            position: absolute;
-            transform: translateY(-50%);
         }
     }
 
     .attribute-combinations-icon {
         &:before {
             @include fontawesome-font("\f5fd", regular);
-            position: absolute;
-            transform: translateY(-50%);
         }
     }
 
     .media-icon {
         &:before {
             @include fontawesome-font("\f302", regular);
-            position: absolute;
-            transform: translateY(-50%);
         }
     }
 
     .customers-icon {
-
         &:before {
             @include fontawesome-font("\f0c0", regular);
-            position: absolute;
-            transform: translateY(-50%);
         }
     }
 
     .orders-icon {
         &:before {
             @include fontawesome-font("\f080", regular);
-            position: absolute;
-            transform: translateY(-50%);
         }
     }
 
     .sales-icon {
         &:before {
             @include fontawesome-font("\f09d", regular);
-            position: absolute;
-            transform: translateY(-50%);
         }
     }
 
     .customers-online-icon {
         &:before {
             @include fontawesome-font("\f4fc", regular);
-            position: absolute;
-            transform: translateY(-50%);
         }
     }
 
     .wishlist-icon {
         &:before {
             @include fontawesome-font("\f004", regular);
-            position: absolute;
-            transform: translateY(-50%);
         }
     }
 
     .cart-icon {
         &:before {
             @include fontawesome-font("\f218", regular);
-            position: absolute;
-            transform: translateY(-50%);
         }
+    }
+}
+
+.report-incomplete-orders {
+    grid-column: 1 / 13;
+    grid-row: 1 / 2;
+}
+
+.marketplace-feed {
+    grid-column: 1 / 13;
+    grid-row: 8 / 9;
+}
+
+.report-orders {
+    grid-column: 1 / 13;
+    grid-row: 2 / 3;
+}
+
+.report-bestsellers {
+    grid-column: 1 / 13;
+    grid-row: 3 / 4;
+}
+
+.report-top-customers {
+    grid-column: 1 / 13;
+    grid-row: 4 / 5;
+}
+
+.report-customer-registrations {
+    grid-column: 1 / 13;
+    grid-row: 5 / 6;
+}
+
+.report-latest-orders {
+    grid-column: 1 / 13;
+    grid-row: 6 / 7;
+}
+
+.report-store-statistics {
+    grid-column: 1 / 13;
+    grid-row: 7 / 8;
+}
+
+@include media-breakpoint-up(sm) {
+    .incomplete-orders-container {
+        width: 50% !important;
+    }
+
+    .incomplete-orders-chart-text {
+        max-width: 22%;
+    }
+    /*.incomplete-orders-chart-container {
+        height: 250px;
+    }*/
+}
+
+@include media-breakpoint-up(md) {
+    .report-incomplete-orders {
+        .incomplete-orders-container {
+            width: 25% !important;
+        }
+
+        .incomplete-orders-chart-text {
+            max-width: 15%;
+        }
+    }
+
+    .marketplace-feed {
+        grid-row: 7 / 8;
+    }
+
+    .report-orders {
+        grid-row: 2 / 3;
+    }
+
+    .report-bestsellers {
+        grid-column: 1 / 7;
+        grid-row: 3 / 4;
+    }
+
+    .report-top-customers {
+        grid-column: 7 / 13;
+        grid-row: 3 / 4;
+    }
+
+    .report-customer-registrations {
+        grid-row: 4 / 5;
+    }
+
+    .report-latest-orders {
+        grid-row: 5 / 6;
+    }
+
+    .report-store-statistics {
+        grid-row: 6 / 7;
+    }
+}
+
+@include media-breakpoint-up(xl) {
+    .report-incomplete-orders {
+        grid-column: 1 / 9;
+
+        .incomplete-orders-chart-text {
+            max-width: 11%;
+        }
+    }
+
+    .marketplace-feed {
+        grid-column: 9 / 13;
+        grid-row: 1 / 7;
+    }
+
+    .report-orders {
+        grid-column: 1 / 9;
+    }
+
+    .report-bestsellers {
+        grid-column: 1 / 5;
+    }
+
+    .report-top-customers {
+        grid-column: 5 / 9;
+        grid-row: 3 / 4;
+    }
+
+    .report-customer-registrations {
+        grid-column: 1 / 9;
+    }
+
+    .report-latest-orders {
+        grid-column: 1 / 9;
+    }
+
+    .report-store-statistics {
+        grid-column: 1 / 9;
+    }
+}
+
+@media screen and (min-width: 1600px) {
+    .report-incomplete-orders {
+        grid-column: 1 / 11;
+
+        .incomplete-orders-chart-container {
+            height: 300px;
+        }
+
+        .incomplete-orders-chart-text {
+            max-width: 8%;
+        }
+    }
+
+    .marketplace-feed {
+        grid-column: 11 / 13;
+        grid-row: 1 / 5;
+    }
+
+    .report-orders {
+        grid-column: 1 / 8;
+    }
+
+    .report-bestsellers {
+        grid-column: 8 / 11;
+        grid-row: 2 / 3;
+    }
+
+    .report-top-customers {
+        grid-column: 1 / 4;
+    }
+
+    .report-customer-registrations {
+        grid-column: 4 / 11;
+        grid-row: 3 / 4;
+    }
+
+    .report-latest-orders {
+        grid-column: 1 / 7;
+        grid-row: 4 / 5;
+    }
+
+    .report-store-statistics {
+        grid-column: 7 / 11;
+        grid-row: 4 / 5;
     }
 }
 // Not Dashboard specific
 //--------------------------------------
 .text-bold {
     font-weight: $font-weight-bold;
+}
+
+.text-truncate {
+    overflow: hidden;    
+    text-overflow: ellipsis;
 }
 
 .table-prevent-overflow {

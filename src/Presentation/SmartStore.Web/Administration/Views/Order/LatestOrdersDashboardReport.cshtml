@@ -10,9 +10,9 @@
             <thead>
                 <tr>
                     <th class="display-row" style="width: 30%">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
-                    <th class="display-row text-center px-3" style="width: 10%">@T("Admin.Catalog.Categories.Products")</th>
+                    <th class="display-row text-center px-3 d-none d-sm-table-cell" style="width: 10%">@T("Admin.Catalog.Categories.Products")</th>
                     <th class="display-row text-right" style="width: 20%; padding-right: 2rem" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@T("Common.Amount")</th>
-                    <th class="display-row" style="width: 20%;">@T("Account.CustomerOrders.OrderDate")</th>
+                    <th class="display-row d-none d-sm-table-cell" style="width: 20%;">@T("Account.CustomerOrders.OrderDate")</th>
                     <th class="display-row" style="width: 20%">@T("Account.CustomerOrders.OrderStatus")</th>
                 </tr>
             </thead>
@@ -23,36 +23,36 @@
                         <td class="display-row" title="@x.CustomerDisplayName">
                             @Html.ActionLink(x.CustomerDisplayName, "Edit", "Customer", new { id = x.CustomerId }, new { })
                         </td>
-                        <td class="display-row text-center">@x.ProductsTotal</td>
-                        <td class="display-row text-right" style="padding-right: 2rem !important">@x.TotalAmount</td>
-                        <td class="display-row">@x.Created</td>
+                        <td class="display-row text-center d-none d-sm-table-cell">@x.ProductsTotal</td>
+                        <td class="display-row text-right" style="padding-right: 2rem">@x.TotalAmount</td>
+                        <td class="display-row d-none d-sm-table-cell">@x.Created</td>
 
                         @if (x.OrderState == OrderStatus.Pending)
                         {
                             <td class="display-row d-flex align-items-center">
                                 <div class="bg-warning indicator"></div>
-                                @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending"), "Edit", "Order", new { id = x.OrderId }, new { @class = "pl-2 text-dark" })
+                                @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending"), "Edit", "Order", new { id = x.OrderId }, new { @class = "pl-2 text-dark text-truncate" })
                             </td>
                         }
                         else if (x.OrderState == OrderStatus.Processing)
                         {
                             <td class="display-row d-flex align-items-center">
                                 <div class="bg-success indicator"></div>
-                                @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing"), "Edit", "Order", new { id = x.OrderId }, new { @class = "pl-2 text-dark" })
+                                @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing"), "Edit", "Order", new { id = x.OrderId }, new { @class = "pl-2 text-dark text-truncate" })
                             </td>
                         }
                         else if (x.OrderState == OrderStatus.Complete)
                         {
                             <td class="display-row d-flex align-items-center">
                                 <div class="bg-primary indicator"></div>
-                                @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete"), "Edit", "Order", new { id = x.OrderId }, new { @class = "pl-2 text-dark" })
+                                @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete"), "Edit", "Order", new { id = x.OrderId }, new { @class = "pl-2 text-dark text-truncate" })
                             </td>
                         }
                         else if (x.OrderState == OrderStatus.Cancelled)
                         {
                             <td class="display-row d-flex align-items-center">
                                 <div class="bg-danger indicator"></div>
-                                @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled"), "Edit", "Order", new { id = x.OrderId }, new { @class = "pl-2 text-dark" })
+                                @Html.ActionLink(@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled"), "Edit", "Order", new { id = x.OrderId }, new { @class = "pl-2 text-dark text-truncate" })
                             </td>
                         }
                     </tr>

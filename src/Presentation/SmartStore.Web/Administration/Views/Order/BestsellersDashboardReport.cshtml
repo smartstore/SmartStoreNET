@@ -30,7 +30,7 @@
                                 </td>
 
                                 <td class="display-row text-center font-weight-medium">@x.TotalQuantity</td>
-                                <td class="display-row text-right">@x.TotalAmount</td>
+                                <td class="display-row text-right" title="@x.TotalAmount">@x.TotalAmount</td>
                             </tr>
                         }
                     </tbody>
@@ -44,7 +44,7 @@
                         <tr>
                             <th class="display-row">@T("Admin.Catalog.Categories.Products.Fields.Product")</th>
                             <th class="display-row text-center">@T("Admin.Promotions.SalesReport.Sales")</th>
-                            <th class="display-row text-right" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax	")">@T("Common.Amount")</th>
+                            <th class="display-row text-right" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@T("Common.Amount")</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -55,7 +55,7 @@
                                     @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint)
                                 </td>
                                 <td class="display-row text-center">@x.TotalQuantity</td>
-                                <td class="display-row text-right font-weight-medium">@x.TotalAmount</td>
+                                <td class="display-row text-right font-weight-medium" title="@x.TotalAmount">@x.TotalAmount</td>
                             </tr>
                         }
                     </tbody>

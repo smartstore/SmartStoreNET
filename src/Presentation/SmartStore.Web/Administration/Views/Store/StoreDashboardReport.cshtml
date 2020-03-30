@@ -4,151 +4,198 @@
 <div class="report">
     <div class="report-title-row">
         <div class="report-title">@T("Admin.Report.StoreStatistics")</div>
-    </div>    
-    <div class="table-responsive table-prevent-overflow pt-1">
-        <table class="table small">
-            <tbody>
-                <tr class="statistics-row">
-                    <td class="statistics-col">
-                        <div class="statistics-icon">
-                            <div class="products-icon"></div>
-                        </div>
-                        <div class="statistics-container-outer">
-                            <div class="statistics-container-inner">
-                                <div class="statistics-value">@Model.ProductsCount</div>
-                                <div class="statistics-attribute">@T("Admin.Catalog.Products")</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="statistics-col">
-                        <div class="statistics-icon">
-                            <div class="attribute-icon"></div>
-                        </div>
-                        <div class="statistics-container-outer">
-                            <div class="statistics-container-inner">
-                                <div class="statistics-value">@Model.AttributesCount</div>
-                                <div class="statistics-attribute">@T("Admin.Catalog.Attributes")</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="statistics-col">
-                        <div class="statistics-icon">
-                            <div class="attribute-combinations-icon"></div>
-                        </div>
-                        <div class="statistics-container-outer">
-                            <div class="statistics-container-inner">
-                                <div class="statistics-value">@Model.AttributeCombinationsCount</div>
-                                <div class="statistics-attribute">@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Short")</div>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr class="statistics-row">
-                    <td class="statistics-col">
-                        <div class="statistics-icon">
-                            <div class="categories-icon"></div>
-                        </div>
-                        <div class="statistics-container-outer">
-                            <div class="statistics-container-inner">
-                                <div class="statistics-value">@Model.CategoriesCount</div>
-                                <div class="statistics-attribute">@T("Admin.Catalog.Categories")</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="statistics-col">
-                        <div class="statistics-icon">
-                            <div class="manufacturer-icon"></div>
-                        </div>
-                        <div class="statistics-container-outer">
-                            <div class="statistics-container-inner">
-                                <div class="statistics-value">@Model.ManufacturersCount</div>
-                                <div class="statistics-attribute">@T("Admin.Catalog.Manufacturers")</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="statistics-col">
-                        <div class="statistics-icon">
-                            <div class="media-icon"></div>
-                        </div>
-                        <div class="statistics-container-outer">
-                            <div class="statistics-container-inner">
-                                <div class="statistics-value">@Model.MediaCount</div>
-                                <div class="statistics-attribute">@T("Admin.Catalog.Products.Pictures")</div>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr class="statistics-row">
-                    <td class="statistics-col">
-                        <div class="statistics-icon">
-                            <div class="customers-icon"></div>
-                        </div>
-                        <div class="statistics-container-outer">
-                            <div class="statistics-container-inner">
-                                <div class="statistics-value">@Model.CustomersCount</div>
-                                <div class="statistics-attribute">@T("Admin.Customers.Customers")</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="statistics-col">
-                        <div class="statistics-icon">
-                            <div class="orders-icon"></div>
-                        </div>
-                        <div class="statistics-container-outer">
-                            <div class="statistics-container-inner">
-                                <div class="statistics-value">@Model.OrdersCount</div>
-                                <div class="statistics-attribute">@T("Admin.Customers.Customers.Orders")</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="statistics-col">
-                        <div class="statistics-icon">
-                            <div class="sales-icon"></div>
-                        </div>
-                        <div class="statistics-container-outer">
-                            <div class="statistics-container-inner">
-                                <div class="statistics-value" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@Model.Sales</div>
-                                <div class="statistics-attribute">@T("Admin.SalesReport.Sales")</div>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr class="statistics-row">
-                    <td class="statistics-col">
-                        <div class="statistics-icon">
-                            <div class="customers-online-icon"></div>
-                        </div>
-                        <div class="statistics-container-outer">
-                            <div class="statistics-container-inner">
-                                <div class="statistics-value">@Model.OnlineCustomersCount</div>
-                                <div class="statistics-attribute" title="@T("Admin.Report.OnlineCustomers.Note")">@T("Admin.Customers.OnlineCustomers")</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="statistics-col">
-                        <div class="statistics-icon">
-                            <div class="cart-icon"></div>
-                        </div>
-                        <div class="statistics-container-outer">
-                            <div class="statistics-container-inner">
-                                <div class="statistics-value" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@Model.CartsValue</div>
-                                <div class="statistics-attribute">@T("Admin.CurrentCarts.Short")</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="statistics-col">
-                        <div class="statistics-icon">
-                            <div class="wishlist-icon"></div>
-                        </div>
-                        <div class="statistics-container-outer">
-                            <div class="statistics-container-inner">
-                                <div class="statistics-value" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@Model.WishlistsValue</div>
-                                <div class="statistics-attribute">@T("Admin.CurrentWishlists.Short") </div>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
     </div>
+    <div class="statistics-container pt-1 pb-3">
+        <div class="row pl-4 pr-3 m-0">
+            <div class="col-6 col-md-4 statistics-col">
+                <div class="statistics-content">
+                    <div class="statistics-icon">
+                        <div class="products-icon"></div>
+                    </div>
+                    <div class="statistics-container-outer">
+                        <div class="statistics-container-inner">
+                            <div class="statistics-value">@Model.ProductsCount</div>
+                            <div class="statistics-attribute">@T("Admin.Catalog.Products")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 statistics-col">
+                <div class="statistics-content">
+                    <div class="statistics-icon">
+                        <div class="attribute-icon"></div>
+                    </div>
+                    <div class="statistics-container-outer">
+                        <div class="statistics-container-inner">
+                            <div class="statistics-value">@Model.AttributesCount</div>
+                            <div class="statistics-attribute">@T("Admin.Catalog.Attributes")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 statistics-col">
+                <div class="statistics-content">
+                    <div class="statistics-icon">
+                        <div class="attribute-combinations-icon"></div>
+                    </div>
+                    <div class="statistics-container-outer">
+                        <div class="statistics-container-inner">
+                            <div class="statistics-value">@Model.AttributeCombinationsCount</div>
+                            <div class="statistics-attribute">@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Short")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 statistics-col">
+                <div class="statistics-content">
+                    <div class="statistics-icon">
+                        <div class="categories-icon"></div>
+                    </div>
+                    <div class="statistics-container-outer">
+                        <div class="statistics-container-inner">
+                            <div class="statistics-value">@Model.CategoriesCount</div>
+                            <div class="statistics-attribute">@T("Admin.Catalog.Categories")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 statistics-col">
+                <div class="statistics-content">
+                    <div class="statistics-icon">
+                        <div class="manufacturer-icon"></div>
+                    </div>
+                    <div class="statistics-container-outer">
+                        <div class="statistics-container-inner">
+                            <div class="statistics-value">@Model.ManufacturersCount</div>
+                            <div class="statistics-attribute">@T("Admin.Catalog.Manufacturers")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 statistics-col">
+                <div class="statistics-content">
+                    <div class="statistics-icon">
+                        <div class="media-icon"></div>
+                    </div>
+                    <div class="statistics-container-outer">
+                        <div class="statistics-container-inner">
+                            <div class="statistics-value">@Model.MediaCount</div>
+                            <div class="statistics-attribute">@T("Admin.Catalog.Products.Pictures")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 statistics-col">
+                <div class="statistics-content">
+                    <div class="statistics-icon">
+                        <div class="customers-icon"></div>
+                    </div>
+                    <div class="statistics-container-outer">
+                        <div class="statistics-container-inner">
+                            <div class="statistics-value">@Model.CustomersCount</div>
+                            <div class="statistics-attribute">@T("Admin.Customers.Customers")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 statistics-col">
+                <div class="statistics-content">
+                    <div class="statistics-icon">
+                        <div class="orders-icon"></div>
+                    </div>
+                    <div class="statistics-container-outer">
+                        <div class="statistics-container-inner">
+                            <div class="statistics-value">@Model.OrdersCount</div>
+                            <div class="statistics-attribute">@T("Admin.Customers.Customers.Orders")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 statistics-col">
+                <div class="statistics-content">
+                    <div class="statistics-icon">
+                        <div class="sales-icon"></div>
+                    </div>
+                    <div class="statistics-container-outer">
+                        <div class="statistics-container-inner">
+                            <div class="statistics-value" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@Model.Sales</div>
+                            <div class="statistics-attribute">@T("Admin.SalesReport.Sales")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 statistics-col">
+                <div class="statistics-content">
+                    <div class="statistics-icon">
+                        <div class="customers-online-icon"></div>
+                    </div>
+                    <div class="statistics-container-outer">
+                        <div class="statistics-container-inner">
+                            <div class="statistics-value">@Model.OnlineCustomersCount</div>
+                            <div class="statistics-attribute" title="@T("Admin.Report.OnlineCustomers.Note")">@T("Admin.Customers.OnlineCustomers")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 statistics-col">
+                <div class="statistics-content">
+                    <div class="statistics-icon">
+                        <div class="cart-icon"></div>
+                    </div>
+                    <div class="statistics-container-outer">
+                        <div class="statistics-container-inner">
+                            <div class="statistics-value" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@Model.CartsValue</div>
+                            <div class="statistics-attribute">@T("Admin.CurrentCarts.Short")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 statistics-col">
+                <div class="statistics-content">
+                    <div class="statistics-icon">
+                        <div class="wishlist-icon"></div>
+                    </div>
+                    <div class="statistics-container-outer">
+                        <div class="statistics-container-inner">
+                            <div class="statistics-value" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@Model.WishlistsValue</div>
+                            <div class="statistics-attribute">@T("Admin.CurrentWishlists.Short") </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @*<div class="table-responsive table-prevent-overflow pt-1">
+            <table class="table small">
+                <tbody>
+
+                        </td>
+                        <td class="statistics-col">
+                            <div class="statistics-icon">
+                                <div class="cart-icon"></div>
+                            </div>
+                            <div class="statistics-container-outer">
+                                <div class="statistics-container-inner">
+                                    <div class="statistics-value" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@Model.CartsValue</div>
+                                    <div class="statistics-attribute">@T("Admin.CurrentCarts.Short")</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="statistics-col">
+                            <div class="statistics-icon">
+                                <div class="wishlist-icon"></div>
+                            </div>
+                            <div class="statistics-container-outer">
+                                <div class="statistics-container-inner">
+                                    <div class="statistics-value" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@Model.WishlistsValue</div>
+                                    <div class="statistics-attribute">@T("Admin.CurrentWishlists.Short") </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>*@
 </div>

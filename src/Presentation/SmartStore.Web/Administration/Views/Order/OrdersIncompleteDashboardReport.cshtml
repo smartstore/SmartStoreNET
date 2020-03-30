@@ -9,62 +9,57 @@
     <div class="report-title-row">
         <div class="report-title">@T("Admin.SalesReport.Incomplete")</div>
     </div>
-    <div class="d-flex justify-content-between px-4 pt-4">
-        <div class="chart-title text-muted">@T("Admin.Report.Today")</div>
-        <div class="chart-title text-muted">@T("Admin.Report.Yesterday")</div>
-        <div class="chart-title text-muted">@T("Admin.Report.LastWeek")</div>
-        <div class="chart-title text-muted">@T("Admin.Report.LastMonth")</div>
-        <div class="chart-title text-muted">@T("Admin.Report.Overall")</div>
-    </div>
-    <div class="d-flex justify-content-between px-4 pb-4" style="height: 300px">
-        <div class="incomplete-orders-chart-container">
-            <div class="incomplete-orders-chart-text">
-                <div class="fs-h4 text-bold fade-in">@Model.Reports[0].QuantityTotal</div>
-                <div class="fs-h5 fade-in">@Model.Reports[0].AmountTotal</div>
-            </div>
-            <div class="canvas-container w-100 h-100">
-                <canvas id="incomplete-orders-chart-day">
-                </canvas>
+    <div class="d-flex justify-content-around px-4 pb-4 flex-wrap incomplete-orders-row">
+        <div class="incomplete-orders-container">
+            <div class="chart-title text-muted">@T("Admin.Report.Today")</div>
+            <div class="incomplete-orders-chart-container">
+                <div class="incomplete-orders-chart-text">
+                    <div class="fs-h4 text-bold fade-in incomplete-orders-value">@Model.Reports[0].QuantityTotal</div>
+                    <div class="fs-h5 fade-in incomplete-orders-value" title="@Model.Reports[0].AmountTotal @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model.Reports[0].AmountTotal</div>
+                </div>
+                <div class="canvas-container w-100 h-100">
+                    <canvas id="incomplete-orders-chart-day">
+                    </canvas>
+                </div>
             </div>
         </div>
-        <div class="incomplete-orders-chart-container">
-            <div class="incomplete-orders-chart-text">
-                <div class="fs-h4 text-bold fade-in">@Model.Reports[1].QuantityTotal</div>
-                <div class="fs-h5 fade-in">@Model.Reports[1].AmountTotal</div>
-            </div>
-            <div class="canvas-container w-100 h-100">
-                <canvas id="incomplete-orders-chart-yesterday">
-                </canvas>
-            </div>
-        </div>
-        <div class="incomplete-orders-chart-container">
-            <div class="incomplete-orders-chart-text">
-                <div class="fs-h4 text-bold fade-in">@Model.Reports[2].QuantityTotal</div>
-                <div class="fs-h5 fade-in">@Model.Reports[2].AmountTotal</div>
-            </div>
-            <div class="canvas-container w-100 h-100">
-                <canvas id="incomplete-orders-chart-week">
-                </canvas>
+        <div class="incomplete-orders-container">
+            <div class="chart-title text-muted">@T("Admin.Report.LastWeek")</div>
+            <div class="incomplete-orders-chart-container">
+                <div class="incomplete-orders-chart-text">
+                    <div class="fs-h4 text-bold fade-in incomplete-orders-value">@Model.Reports[2].QuantityTotal</div>
+                    <div class="fs-h5 fade-in incomplete-orders-value" title="@Model.Reports[2].AmountTotal @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model.Reports[2].AmountTotal</div>
+                </div>
+                <div class="canvas-container w-100 h-100">
+                    <canvas id="incomplete-orders-chart-week">
+                    </canvas>
+                </div>
             </div>
         </div>
-        <div class="incomplete-orders-chart-container">
-            <div class="incomplete-orders-chart-text">
-                <div class="fs-h4 text-bold fade-in">@Model.Reports[3].QuantityTotal</div>
-                <div class="fs-h5 fade-in">@Model.Reports[3].AmountTotal</div>
-            </div>
-            <div class="canvas-container w-100 h-100">
-                <canvas id="incomplete-orders-chart-month">
-                </canvas>
+        <div class="incomplete-orders-container">
+            <div class="chart-title text-muted">@T("Admin.Report.LastMonth")</div>
+            <div class="incomplete-orders-chart-container">
+                <div class="incomplete-orders-chart-text">
+                    <div class="fs-h4 text-bold fade-in incomplete-orders-value">@Model.Reports[3].QuantityTotal</div>
+                    <div class="fs-h5 fade-in incomplete-orders-value" title="@Model.Reports[3].AmountTotal @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model.Reports[3].AmountTotal</div>
+                </div>
+                <div class="canvas-container w-100 h-100">
+                    <canvas id="incomplete-orders-chart-month">
+                    </canvas>
+                </div>
             </div>
         </div>
-        <div class="incomplete-orders-chart-container">
-            <div class="incomplete-orders-chart-text">
-                <div class="fs-h4 text-bold fade-in">@Model.Reports[3].QuantityTotal</div>
-                <div class="fs-h5 fade-in">@Model.Reports[3].AmountTotal</div>
-            </div>
-            <div class="canvas-container w-100 h-100">
-                <canvas id="incomplete-orders-chart-overall">
-                </canvas>
+        <div class="incomplete-orders-container">
+            <div class="chart-title text-muted">@T("Admin.Report.Overall")</div>
+            <div class="incomplete-orders-chart-container">
+                <div class="incomplete-orders-chart-text">
+                    <div class="fs-h4 text-bold fade-in incomplete-orders-value">@Model.Reports[4].QuantityTotal</div>
+                    <div class="fs-h5 fade-in incomplete-orders-value" title="@Model.Reports[4].AmountTotal @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model.Reports[4].AmountTotal</div>
+                </div>
+                <div class="canvas-container w-100 h-100">
+                    <canvas id="incomplete-orders-chart-overall">
+                    </canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -129,7 +124,7 @@
                             return " " + '@T("Admin.SalesReport.NoIncompleteOrders")';
                         }
                         return " " + data.labels[item.index] + ": " + dataSets.Reports[this._chart.id + alreadyExistingCharts].Data[item.index].QuantityFormatted
-                            + ", " + dataSets.Reports[this._chart.id + alreadyExistingCharts].Data[item.index].AmountFormatted; 
+                            + ", " + dataSets.Reports[this._chart.id + alreadyExistingCharts].Data[item.index].AmountFormatted;
                     },
                 }
             },
@@ -169,40 +164,6 @@
             }
         );
         var alreadyExistingCharts = chartDay.id;
-
-        var dataYesterday = {
-            labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],
-            datasets: [{
-                data: [dataSets.Reports[1].Data[0].Quantity, dataSets.Reports[1].Data[1].Quantity, dataSets.Reports[1].Data[2].Quantity],
-                backgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
-                borderAlign: 'center',
-                borderColor: '#fff',
-                borderWidth: 10,
-                weight: 1,
-                hoverBackgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
-                hoverBorderColor: '#fff',
-                hoverBorderWidth: 0,
-            },{
-                data: [dataSets.Reports[1].Data[0].Amount, dataSets.Reports[1].Data[1].Amount, dataSets.Reports[1].Data[2].Amount],
-                backgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
-                borderAlign: 'center',
-                borderColor: '#fff',
-                borderWidth: 10,
-                weight: 1,
-                hoverBackgroundColor: [colorPrimary, colorPrimaryDarker, colorPrimaryLighter],
-                hoverBorderColor: '#fff',
-                hoverBorderWidth: 0,
-                hidden: true,
-            }],
-        };
-        var chartYesterday = new Chart(
-            $('#incomplete-orders-chart-yesterday')[0].getContext('2d'),
-            {
-                type: 'doughnut',
-                data: dataYesterday,
-                options: options
-            }
-        );
 
         var dataWeek = {
             labels: ["@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")", "@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")", "@T("Admin.SalesReport.NewOrders")"],

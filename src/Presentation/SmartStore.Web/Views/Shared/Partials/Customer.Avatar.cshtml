@@ -6,10 +6,11 @@
         Model.AvatarColor = "light";
     }
 }
+
 <div class="@(Model.Large ? "customer-avatar-lg" : "customer-avatar")">
     @if (Model.LinkUrl.HasValue())
     {
-        <a href="@Model.LinkUrl">@Avatar()</a>
+        <a class="avatar-link" href="@Model.LinkUrl">@Avatar()</a>
     }
     else
     {
@@ -23,12 +24,12 @@
 
     if (Model.PictureUrl.HasValue())
     {
-        <img src="@Model.PictureUrl" title="@Model.UserName" />
+        <img class="avatar-img" src="@Model.PictureUrl" title="@Model.UserName" />
     }
     else
     {
-        <span class="letter bg-@(Model.AvatarColor) @(textColor)" title="@Model.UserName">
-            <span>@Model.AvatarLetter</span>
+        <span class="avatar-letter bg-@(Model.AvatarColor) @(textColor)" title="@Model.UserName">
+            @Model.AvatarLetter
         </span>
     }
 }

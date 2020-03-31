@@ -77,40 +77,37 @@
 }
 
 //
-// Customer
+// Customer avatar
 // -------------------------------------------------
 .customer-avatar,
 .customer-avatar-lg {
-    display: inline-block;
+    display: inline-flex;
 
-    a {
+    .avatar-link {
         text-decoration: none;
         color: inherit;
     }
 
-    img, .letter {
-        display: inline-block;
+    .avatar-link, .avatar-img, .avatar-letter {
         border-radius: 50%;
         border: 0;
+        width: 100%;
+        height: 100%;
     }
 
-    .letter {
+    .avatar-letter {
+        display: flex;
+        justify-content: center;
         font-weight: bold;
-        text-align: center;
     }
 }
 
 .customer-avatar {
-    width: 45px;
-    height: 45px;
+    width: 50px;
+    height: 50px;
 
-    img, .letter {
-        width: 45px;
-        height: 45px;
-    }
-
-    .letter {
-        font-size: 30px;
+    .avatar-letter {
+        font-size: $h2-font-size;
     }
 }
 
@@ -118,57 +115,48 @@
     width: 120px;
     height: 120px;
 
-    img, .letter {
-        width: 120px;
-        height: 120px;
-    }
-
-    .letter {
-        font-size: 80px;
+    .avatar-letter {
+        font-size: $display3-size;
     }
 }
 
 //
 // Other stuff
 // -------------------------------------------------
-
 #iframe-backinstocksubsription {
     max-width: 100%;
 }
 
 .pm-unread {
-	font-weight: bold;
-	background: $gray-100;
+    font-weight: bold;
+    background: $gray-100;
 }
-
-
 //
 // Hacks
 // -------------------------------------------------
-
 .ie11 {
     .pd-offer-actions .col,
     .offcanvas-cart-footer-row .col {
         width: auto;
         -ms-flex-preferred-size: auto;
     }
+
     .megamenu-dropdown-container.simple {
         position: static;
     }
+
     .instasearch-button {
         height: 100%;
     }
 }
+
 .edge .offcanvas-cart-footer-col.d-flex {
     display: -webkit-box !important;
     display: -ms-flexbox !important;
 }
-
-
 //
 // Vars
 // -------------------------------------------------
-
 :root {
     $varnames: ();
 
@@ -184,7 +172,7 @@
         $varnames: $varnames + '--gray-' + $color + ",";
         --gray-#{$color}: #{$value};
     }
-  
+
     $varnames: $varnames + '--body,--muted,--black';
 
     --varnames: #{$varnames};
@@ -203,7 +191,6 @@
         --fa-font-family: 'Font Awesome 5 Pro';
     }
 }
-
 // admin edit
 .btn-admin-edit {
     display: none;
@@ -219,9 +206,7 @@
 .pd-section-top:hover .btn-admin-edit {
     display: inline-block;
 }
-
 // masonary grid
-
 .masonary-grid {
     display: grid;
     grid-gap: $list-group-item-padding-x;

@@ -1,7 +1,5 @@
-﻿@model IRuleExpressionGroup
-
-@using SmartStore.Rules
-@using SmartStore.Admin.Models.Rules
+﻿@using SmartStore.Rules
+@model IRuleExpressionGroup
 
 <div class="ruleset" data-ruleset-id="@Model.Id" data-refrule-id="@Model.RefRuleId">
     <div class="ruleset-header d-flex justify-content-between">
@@ -91,7 +89,7 @@
         </button>
         <div class="dropdown-menu logical-operator-chooser">
             <a href="#" class="dropdown-item" data-value="And">@T("Admin.Rules.Operator.All")</a>
-            <a href="#" class="dropdown-item" data-value="Or">@T("Admin.Rules.Operator.One")</a>
+            <a href="#" class="dropdown-item@(Model.Provider.Scope == RuleScope.Product ? " disabled" : "")" data-value="Or">@T("Admin.Rules.Operator.One")</a>
         </div>
     </div>
 }

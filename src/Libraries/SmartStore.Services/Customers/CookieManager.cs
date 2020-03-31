@@ -27,10 +27,8 @@ namespace SmartStore.Services.Customers
 		private readonly ITypeFinder _typeFinder;
 		private readonly HttpContextBase _httpContext;
 
-		private List<CookieInfo> _cookieInfos;
 		public const string ConsentCookieName = "CookieConsent";
 
-		private readonly static object _lock = new object();
 		private static IList<Type> _cookiePublisherTypes = null;
 
 		public CookieManager(
@@ -41,30 +39,25 @@ namespace SmartStore.Services.Customers
 			_services = services;
 			_typeFinder = typeFinder;
 			_httpContext = httpContext;
-
-			_cookieInfos = new List<CookieInfo>();
 		}
 
 		public LocalizerEx T { get; set; } = NullLocalizer.InstanceEx;
 
 		public ILogger Logger { get; set; } = NullLogger.Instance;
 
-		public virtual IList<ICookiePublisher> GetAllCookiePublishers()
+		protected virtual IEnumerable<ICookiePublisher> GetAllCookiePublishers()
 		{
 			if (_cookiePublisherTypes == null)
 			{
-				lock (_lock)
+				lock (_cookiePublisherTypes)
 				{
-					if (_cookiePublisherTypes == null)
-					{
-						_cookiePublisherTypes = _typeFinder.FindClassesOfType<ICookiePublisher>(ignoreInactivePlugins: true).ToList();
-					}
+					_cookiePublisherTypes = _typeFinder.FindClassesOfType<ICookiePublisher>(ignoreInactivePlugins: true).ToList();
 				}
 			}
 
 			var cookiePublishers = _cookiePublisherTypes
 				.Select(x => EngineContext.Current.ContainerManager.ResolveUnregistered(x) as ICookiePublisher)
-				.ToList();
+				.ToArray();
 
 			return cookiePublishers;
 		}
@@ -89,10 +82,16 @@ namespace SmartStore.Services.Customers
 			var cookie = context.HttpContext.Request.Cookies[ConsentCookieName];
 			if (cookie != null)
 			{
-				var cookieData = JsonConvert.DeserializeObject<ConsentCookie>(cookie.Value);
-					
-				if ((cookieData.AllowAnalytics && cookieType == CookieType.Analytics) || (cookieData.AllowThirdParty && cookieType == CookieType.ThirdParty))
+				try
 				{
+					var cookieData = JsonConvert.DeserializeObject<ConsentCookie>(cookie.Value);
+					if ((cookieData.AllowAnalytics && cookieType == CookieType.Analytics) || (cookieData.AllowThirdParty && cookieType == CookieType.ThirdParty))
+					{
+						return true;
+					}
+				}
+				catch {
+					// Lets be tolerant in case of error.
 					return true;
 				}
 			}

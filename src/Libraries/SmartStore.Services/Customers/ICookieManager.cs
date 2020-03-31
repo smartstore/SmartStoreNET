@@ -12,12 +12,6 @@ namespace SmartStore.Services.Customers
 		/// </summary>
 		/// <returns>List of CookieInfos.</returns>
 		List<CookieInfo> GetAllCookieInfos();
-
-		/// <summary>
-		/// Gets all plugins which are setting cookies.
-		/// </summary>
-		/// <returns>List of plugins which are publishing cookies.</returns>
-		IList<ICookiePublisher> GetAllCookiePublishers();
 		
 		/// <summary>
 		/// Gets a value which specifies whether it is allowed to set a cookie of a certain type.

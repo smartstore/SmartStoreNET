@@ -14,7 +14,7 @@
         .Name("quantity-unit-grid")
         .DataKeys(x =>
         {
-            x.Add(y => y.Id).RouteKey("valueId");
+            x.Add(y => y.Id);
         })
         .Columns(columns =>
         {
@@ -27,7 +27,7 @@
                 .Width(180)
                 .Centered();
             columns.Bound(x => x.IsDefault)
-                .ClientTemplate(@Html.SymbolForBool("IsDefault"))
+                .ClientTemplate(Html.SymbolForBool("IsDefault"))
                 .Width(180)
                 .Centered();
             columns.Command(commands =>

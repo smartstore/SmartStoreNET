@@ -2343,12 +2343,13 @@ namespace SmartStore.Admin.Controllers
 					return new ProductTagModel
 					{
 						Id = x.Id,
-						Name = x.Name,
+                        Name = x.Name,
                         Published = x.Published,
 						ProductCount = _productTagService.GetProductCount(x.Id, 0, true)
 					};
 				})
-				.ForCommand(command);
+				.ForCommand(command)
+                .ToList();
 
 			model.Data = tags.PagedForCommand(command);
 			model.Total = tags.Count();
@@ -2359,7 +2360,7 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        [GridAction(EnableCustomBinding = true)]
+        [HttpPost, GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Catalog.Product.EditTag)]
         public ActionResult ProductTagDelete(int id, GridCommand command)
         {

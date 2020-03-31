@@ -374,9 +374,9 @@ namespace SmartStore.Admin.Controllers
 
         [GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Configuration.Country.Update)]
-        public ActionResult StateDelete(int valueId, GridCommand command)
+        public ActionResult StateDelete(int id, GridCommand command)
         {
-            var state = _stateProvinceService.GetStateProvinceById(valueId);
+            var state = _stateProvinceService.GetStateProvinceById(id);
             var countryId = state.CountryId;
 
             if (_addressService.GetAddressTotalByStateProvinceId(state.Id) > 0)

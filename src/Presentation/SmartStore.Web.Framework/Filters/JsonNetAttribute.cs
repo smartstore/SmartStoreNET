@@ -26,7 +26,7 @@ namespace SmartStore.Web.Framework.Filters
             if (filterContext.IsChildAction)
                 return;
 
-            // Hndle JsonResult only.
+            // Handle JsonResult only.
             if (filterContext.Result.GetType() != typeof(JsonResult))
                 return;
 

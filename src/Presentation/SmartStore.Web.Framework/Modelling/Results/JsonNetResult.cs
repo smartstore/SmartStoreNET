@@ -82,7 +82,7 @@ namespace SmartStore.Web.Framework.Modelling
 				jsonWriter.CloseOutput = false;
 				var jsonSerializer = JsonSerializer.Create(serializerSettings);
 				jsonSerializer.Serialize(jsonWriter, this.Data);
-			}
+            }
 		}
 
 		class UTCDateTimeConverter : DateTimeConverterBase

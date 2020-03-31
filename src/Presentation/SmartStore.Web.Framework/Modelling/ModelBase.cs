@@ -6,7 +6,7 @@ using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.Modelling
 {
-	[Serializable]
+    [Serializable]
 	public sealed class CustomPropertiesDictionary : Dictionary<string, object>
 	{
 	}
@@ -109,11 +109,18 @@ namespace SmartStore.Web.Framework.Modelling
 		}
 	}
 
-
     public abstract partial class EntityModelBase : ModelBase
     {
         [SmartResourceDisplayName("Admin.Common.Entity.Fields.Id")]
         public virtual int Id { get; set; }
+
+        /// <remarks>
+        /// This property is required for serialization JSON data of Telerik grids.
+        /// Without a lower case Id property in JSON results its AJAX operations do not work correctly.
+        /// Occurs since RouteCollection.LowercaseUrls was set to true in Global.asax.
+        /// </remarks>
+        [JsonProperty("id")]
+        internal int EntityId => Id;
     }
 
 
@@ -121,5 +128,4 @@ namespace SmartStore.Web.Framework.Modelling
 	{
 		public virtual string[] LoadedTabs { get; set; }
 	}
-
 }

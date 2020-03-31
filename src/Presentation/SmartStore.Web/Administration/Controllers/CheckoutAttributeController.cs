@@ -379,9 +379,9 @@ namespace SmartStore.Admin.Controllers
 
         [GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Cart.CheckoutAttribute.Update)]
-        public ActionResult ValueDelete(int valueId, int checkoutAttributeId, GridCommand command)
+        public ActionResult ValueDelete(int id, int checkoutAttributeId, GridCommand command)
         {
-            var cav = _checkoutAttributeService.GetCheckoutAttributeValueById(valueId);
+            var cav = _checkoutAttributeService.GetCheckoutAttributeValueById(id);
 
             _checkoutAttributeService.DeleteCheckoutAttributeValue(cav);
 

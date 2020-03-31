@@ -29,6 +29,7 @@ namespace SmartStore.Services.Customers
 
 		public const string ConsentCookieName = "CookieConsent";
 
+		private readonly static object _lock = new object();
 		private static IList<Type> _cookiePublisherTypes = null;
 
 		public CookieManager(
@@ -49,7 +50,7 @@ namespace SmartStore.Services.Customers
 		{
 			if (_cookiePublisherTypes == null)
 			{
-				lock (_cookiePublisherTypes)
+				lock (_lock)
 				{
 					_cookiePublisherTypes = _typeFinder.FindClassesOfType<ICookiePublisher>(ignoreInactivePlugins: true).ToList();
 				}

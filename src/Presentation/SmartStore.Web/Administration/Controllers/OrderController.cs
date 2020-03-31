@@ -2770,15 +2770,29 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
-        protected virtual OrdersIncompleteDashboardReportLine GetOrdersIncompleteReportLine(DateTime? startTime = null, DateTime? endTime = null)
+        protected virtual OrdersIncompleteDashboardReportLine GetOrdersIncompleteReportLine(List<Order> orders)
         {
-            // Create alternative Model to also store dateTimes and status (payment, shipping, order) or sort directly...reduce queries to 6
-            // 3x for 'today' until 'last 28 days' (sort with where afterwards) and 3x for overall (this way we dont get every order ever, just those pending and processing)
-            var ordersPending = new OrderAverageReportLine[]
+            var shippingOrders = orders.Where(x => x.ShippingStatus == ShippingStatus.NotYetShipped);
+            var paymentOrders = orders.Where(x => x.PaymentStatus == PaymentStatus.Pending);
+            var pendingOrders = orders.Where(x => x.OrderStatus == OrderStatus.Pending);
+
+            var reports = new OrderAverageReportLine[]
             {
-                _orderReportService.GetOrderAverageReportLine(0, null, null, new int[] { (int)ShippingStatus.NotYetShipped }, startTime, endTime, null, true),
-                _orderReportService.GetOrderAverageReportLine(0, null, new int[] { (int)PaymentStatus.Pending }, null, startTime, endTime, null, true),
-                _orderReportService.GetOrderAverageReportLine(0, new int[] { (int)OrderStatus.Pending, (int)OrderStatus.Processing }, null, null, startTime, endTime, null, true)
+                new OrderAverageReportLine
+                {
+                    SumOrders = shippingOrders.Sum(x => x.OrderTotal),
+                    CountOrders = shippingOrders.Count(),
+                },
+                new OrderAverageReportLine
+                {
+                    SumOrders = paymentOrders.Sum(x => x.OrderTotal),
+                    CountOrders = paymentOrders.Count(),
+                },
+                new OrderAverageReportLine
+                {
+                    SumOrders = pendingOrders.Sum(x => x.OrderTotal),
+                    CountOrders = pendingOrders.Count(),
+                }
             };
 
             var model = new OrdersIncompleteDashboardReportLine();
@@ -2786,15 +2800,16 @@ namespace SmartStore.Admin.Controllers
             {
                 model.Data[i] = new OrdersIncompleteDashboardReportData
                 {
-                    Quantity = ordersPending[i].CountOrders,
-                    QuantityFormatted = ordersPending[i].CountOrders.ToString("D"),
-                    Amount = ordersPending[i].SumOrders,
-                    AmountFormatted = ordersPending[i].SumOrders.ToString("C0")
+                    Quantity = reports[i].CountOrders,
+                    QuantityFormatted = reports[i].CountOrders.ToString("D"),
+                    Amount = reports[i].SumOrders,
+                    AmountFormatted = reports[i].SumOrders.ToString("C0")
                 };
             }
 
-            model.QuantityTotal = ordersPending[2].CountOrders.ToString("D");
-            model.AmountTotal = ordersPending[2].SumOrders.ToString("C0");
+            var ordersTotal = orders.Where(x => x.OrderStatus == OrderStatus.Pending || x.OrderStatus == OrderStatus.Processing);
+            model.QuantityTotal = ordersTotal.Count().ToString("D");
+            model.AmountTotal = ordersTotal.Sum(x => x.OrderTotal).ToString("C0");
 
             return model;
         }
@@ -2805,14 +2820,15 @@ namespace SmartStore.Admin.Controllers
             var watch = new Stopwatch();
             watch.Start();
 
+            var orders = _orderReportService.GetIncompleteOrders(0, null, null).ToList();
             var model = new OrdersIncompleteDashboardReportModel()
             {
                 Reports = new OrdersIncompleteDashboardReportLine[]
                 {
-                    GetOrdersIncompleteReportLine(DateTime.UtcNow.Date, DateTime.UtcNow.AddDays(1).Date),               // Today
-                    GetOrdersIncompleteReportLine(DateTime.UtcNow.AddDays(-6).Date, DateTime.UtcNow.AddDays(1).Date),   // Week
-                    GetOrdersIncompleteReportLine(DateTime.UtcNow.AddDays(-27).Date, DateTime.UtcNow.AddDays(1).Date),  // Month
-                    GetOrdersIncompleteReportLine(null, null)                                                           // Overall
+                    GetOrdersIncompleteReportLine(orders.Where(x=>x.CreatedOnUtc >= DateTime.UtcNow.Date).ToList()),                // Today
+                    GetOrdersIncompleteReportLine(orders.Where(x=>x.CreatedOnUtc >= DateTime.UtcNow.AddDays(-6).Date).ToList()),    // Week
+                    GetOrdersIncompleteReportLine(orders.Where(x=>x.CreatedOnUtc >= DateTime.UtcNow.AddDays(-27).Date).ToList()),   // Month
+                    GetOrdersIncompleteReportLine(orders)                                                                           // Overall
                 }
             };
 

@@ -112,6 +112,16 @@ namespace SmartStore.Services.Orders
         /// <returns>Order profit.</returns>
         decimal GetProfit(IQueryable<Order> orderQuery);
 
+
+        /// <summary>
+        /// Get paged list of incomplete orders
+        /// </summary>
+        /// <param name="storeId">Store identifier</param>
+        /// <param name="startTimeUtc">Start time limitation</param>
+        /// <param name="endTimeUtc">End time limitation</param>
+        /// <returns>List of incomplete orders</returns>
+        IPagedList<Order> GetIncompleteOrders(int storeId, DateTime? startTimeUtc, DateTime? endTimeUtc);
+
         /// <summary>
         /// Get orders chart report
         /// </summary>

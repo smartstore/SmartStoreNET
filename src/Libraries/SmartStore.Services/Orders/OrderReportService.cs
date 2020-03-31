@@ -366,6 +366,33 @@ namespace SmartStore.Services.Orders
             return profit;
         }
 
+        public virtual IList<Order> GetIncompleteOrders(int storeId, DateTime? startTimeUtc, DateTime? endTimeUtc)
+        {
+            var query = _orderRepository.Table;
+            query = query.Where(o => !o.Deleted && o.OrderStatusId != (int)OrderStatus.Cancelled);
+
+            if (storeId > 0)
+            {
+                query = query.Where(o => o.StoreId == storeId);
+            }
+            if (startTimeUtc.HasValue)
+            {
+                query = query.Where(o => startTimeUtc.Value <= o.CreatedOnUtc);
+            }
+            if (endTimeUtc.HasValue)
+            {
+                query = query.Where(o => endTimeUtc.Value >= o.CreatedOnUtc);
+            }
+
+            query = query.Where(x => 
+                x.ShippingStatusId == (int)ShippingStatus.NotYetShipped 
+                || x.PaymentStatusId == (int)PaymentStatus.Pending 
+                || x.OrderStatusId == (int)OrderStatus.Pending
+            );
+
+            return new PagedList<Order>(query, 0, int.MaxValue);
+        }
+
         public virtual DashboardChartReportLine GetOrdersDashboardReport(IPagedList<Order> allOrders, PeriodState state)
         {
             var startTime = DateTime.UtcNow;
@@ -450,7 +477,6 @@ namespace SmartStore.Services.Orders
             }
 
             CalculateOrdersAmount(report, allOrders, orders, startTimeBefore, endTimeBefore);
-
 
             return report;
         }

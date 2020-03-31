@@ -53,13 +53,13 @@
         var $sumElement = $("#customer-quantity-total");
         var currentPeriod = 0;
         var style = getComputedStyle(document.body);
-        var colorSuccess = style.getPropertyValue('--success');
+        var colorSuccess = style.getPropertyValue('--primary');
         var fontFamily = style.getPropertyValue('--font-family-sans-serif');
 
         var $customersChartElement = $('#customers-chart')[0];
         var customers_ctx = $customersChartElement.getContext('2d');
         var successGradient = customers_ctx.createLinearGradient(0, 0, 0, $customersChartElement.parentElement.clientHeight);
-        successGradient.addColorStop(0, style.getPropertyValue('--chart-color-success'));
+        successGradient.addColorStop(0, style.getPropertyValue('--chart-color-primary'));
         successGradient.addColorStop(1, 'white');
 
         // Chart.js

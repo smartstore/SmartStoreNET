@@ -14,8 +14,8 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value">@Model.ProductsCount</div>
-                            <div class="statistics-attribute">@T("Admin.Catalog.Products")</div>
+                            <div class="statistics-value" title="@Model.ProductsCount">@Model.ProductsCount</div>
+                            <div class="statistics-attribute" title="@T("Admin.Catalog.Products")">@T("Admin.Catalog.Products")</div>
                         </div>
                     </div>
                 </div>
@@ -27,8 +27,8 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value">@Model.AttributesCount</div>
-                            <div class="statistics-attribute">@T("Admin.Catalog.Attributes")</div>
+                            <div class="statistics-value" title="@Model.AttributesCount">@Model.AttributesCount</div>
+                            <div class="statistics-attribute" title="@T("Admin.Catalog.Attributes.ProductAttributes")">@T("Admin.Catalog.Attributes")</div>
                         </div>
                     </div>
                 </div>
@@ -40,8 +40,8 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value">@Model.AttributeCombinationsCount</div>
-                            <div class="statistics-attribute">@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Short")</div>
+                            <div class="statistics-value" title="@Model.AttributeCombinationsCount">@Model.AttributeCombinationsCount</div>
+                            <div class="statistics-attribute" title="@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations")">@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Short")</div>
                         </div>
                     </div>
                 </div>
@@ -53,8 +53,8 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value">@Model.CategoriesCount</div>
-                            <div class="statistics-attribute">@T("Admin.Catalog.Categories")</div>
+                            <div class="statistics-value" title="@Model.CategoriesCount">@Model.CategoriesCount</div>
+                            <div class="statistics-attribute" title="@T("Admin.Catalog.Categories")">@T("Admin.Catalog.Categories")</div>
                         </div>
                     </div>
                 </div>
@@ -66,8 +66,8 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value">@Model.ManufacturersCount</div>
-                            <div class="statistics-attribute">@T("Admin.Catalog.Manufacturers")</div>
+                            <div class="statistics-value" title="@Model.ManufacturersCount">@Model.ManufacturersCount</div>
+                            <div class="statistics-attribute" title="@T("Admin.Catalog.Manufacturers")">@T("Admin.Catalog.Manufacturers")</div>
                         </div>
                     </div>
                 </div>
@@ -79,8 +79,8 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value">@Model.MediaCount</div>
-                            <div class="statistics-attribute">@T("Admin.Catalog.Products.Pictures")</div>
+                            <div class="statistics-value" title="@Model.MediaCount">@Model.MediaCount</div>
+                            <div class="statistics-attribute" title="@T("Admin.Catalog.Products.Pictures")">@T("Admin.Catalog.Products.Pictures")</div>
                         </div>
                     </div>
                 </div>
@@ -92,8 +92,8 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value">@Model.CustomersCount</div>
-                            <div class="statistics-attribute">@T("Admin.Customers.Customers")</div>
+                            <div class="statistics-value" title="@Model.CustomersCount">@Model.CustomersCount</div>
+                            <div class="statistics-attribute" title="@T("Admin.Customers.Reports.RegisteredCustomers")">@T("Admin.Customers.Customers")</div>
                         </div>
                     </div>
                 </div>
@@ -105,8 +105,8 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value">@Model.OrdersCount</div>
-                            <div class="statistics-attribute">@T("Admin.Customers.Customers.Orders")</div>
+                            <div class="statistics-value" title="@Model.OrdersCount">@Model.OrdersCount</div>
+                            <div class="statistics-attribute" title="@T("Admin.Orders.Overall")">@T("Admin.Orders")</div>
                         </div>
                     </div>
                 </div>
@@ -118,8 +118,8 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@Model.Sales</div>
-                            <div class="statistics-attribute">@T("Admin.SalesReport.Sales")</div>
+                            <div class="statistics-value" title="@Model.Sales @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model.Sales</div>
+                            <div class="statistics-attribute" title="@T("Admin.SalesReport.Sales.Hint")">@T("Admin.SalesReport.Sales")</div>
                         </div>
                     </div>
                 </div>
@@ -131,8 +131,8 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value">@Model.OnlineCustomersCount</div>
-                            <div class="statistics-attribute" title="@T("Admin.Report.OnlineCustomers.Note")">@T("Admin.Customers.OnlineCustomers")</div>
+                            <div class="statistics-value" title="@Model.OnlineCustomersCount">@Model.OnlineCustomersCount</div>
+                            <div class="statistics-attribute" title="@T("Admin.Report.OnlineCustomers")">@T("Admin.Customers.OnlineCustomers")</div>
                         </div>
                     </div>
                 </div>
@@ -144,8 +144,8 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@Model.CartsValue</div>
-                            <div class="statistics-attribute">@T("Admin.CurrentCarts.Short")</div>
+                            <div class="statistics-value" title="@Model.CartsValue @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model.CartsValue</div>
+                            <div class="statistics-attribute" title="@T("Admin.CurrentCarts")">@T("Admin.CurrentCarts.Short")</div>
                         </div>
                     </div>
                 </div>
@@ -157,45 +157,12 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@Model.WishlistsValue</div>
-                            <div class="statistics-attribute">@T("Admin.CurrentWishlists.Short") </div>
+                            <div class="statistics-value" title="@Model.WishlistsValue @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model.WishlistsValue</div>
+                            <div class="statistics-attribute" title="@T("Admin.CurrentWishlists")">@T("Admin.CurrentWishlists.Short") </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-
-    @*<div class="table-responsive table-prevent-overflow pt-1">
-            <table class="table small">
-                <tbody>
-
-                        </td>
-                        <td class="statistics-col">
-                            <div class="statistics-icon">
-                                <div class="cart-icon"></div>
-                            </div>
-                            <div class="statistics-container-outer">
-                                <div class="statistics-container-inner">
-                                    <div class="statistics-value" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@Model.CartsValue</div>
-                                    <div class="statistics-attribute">@T("Admin.CurrentCarts.Short")</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="statistics-col">
-                            <div class="statistics-icon">
-                                <div class="wishlist-icon"></div>
-                            </div>
-                            <div class="statistics-container-outer">
-                                <div class="statistics-container-inner">
-                                    <div class="statistics-value" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@Model.WishlistsValue</div>
-                                    <div class="statistics-attribute">@T("Admin.CurrentWishlists.Short") </div>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>*@
 </div>

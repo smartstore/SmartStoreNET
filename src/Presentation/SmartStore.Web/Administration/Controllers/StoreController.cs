@@ -257,7 +257,7 @@ namespace SmartStore.Admin.Controllers
                 AttributesCount = _productAttributeService.GetAllProductAttributes(0, int.MaxValue).TotalCount.ToString("D"),
                 AttributeCombinationsCount = _productService.GetAllProductVariants().TotalCount.ToString("D"),
                 MediaCount = _pictureService.GetPictures(0, int.MaxValue).TotalCount.ToString("D"),
-                CustomersCount = _customerService.GetAllCustomers().TotalCount.ToString("D"),
+                CustomersCount = _customerService.GetAllCustomers().Where(x => x.IsRegistered() && !x.Deleted).Count().ToString("D"),
                 OrdersCount = _orderService.GetAllOrders(0, 0, int.MaxValue).TotalCount.ToString("D"),
                 Sales = _orderService.GetAllOrders(0, 0, int.MaxValue).Sum(x => x.OrderTotal).ToString("C0"),
                 OnlineCustomersCount = _customerService.GetOnlineCustomers(DateTime.UtcNow.AddMinutes(-15), null, 0, int.MaxValue).TotalCount.ToString("D"),
@@ -267,7 +267,7 @@ namespace SmartStore.Admin.Controllers
 
             watch.Stop();
             Debug.WriteLine("StoreDashboardReport >>> " + watch.ElapsedMilliseconds);
-            
+
             return PartialView(model);
         }
     }

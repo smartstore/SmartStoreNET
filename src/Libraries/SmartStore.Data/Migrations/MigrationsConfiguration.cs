@@ -558,7 +558,9 @@
             builder.AddOrUpdate("Admin.CurrentWishlists.Short", "Whishlists", "Wunschlisten");
             builder.AddOrUpdate("Admin.CurrentCarts.Short", "Shopping carts", "Warenkörbe");
             builder.AddOrUpdate("Admin.SalesReport.Sales", "Sales", "Umsatz");
-            builder.AddOrUpdate("Admin.Report.OnlineCustomers.Note", "within last 15 minutes", "in den letzten 15 Minuten");            
+            builder.AddOrUpdate("Admin.SalesReport.Sales.Hint", "Total value of all orders", "Gesamtwert aller Aufträge");
+            builder.AddOrUpdate("Admin.Report.OnlineCustomers", "Customers online within last 15 minutes", "Kunden in den letzten 15 Minuten online");
+            builder.AddOrUpdate("Admin.Orders.Overall", "Orders overall", "Aufträge insgesamt");
         }
     }
 }

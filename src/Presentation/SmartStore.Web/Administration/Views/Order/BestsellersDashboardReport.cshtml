@@ -29,7 +29,7 @@
                                     @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint)
                                 </td>
 
-                                <td class="display-row text-center font-weight-medium">@x.TotalQuantity</td>
+                                <td class="display-row text-center font-weight-medium" title="@x.TotalQuantity">@x.TotalQuantity</td>
                                 <td class="display-row text-right" title="@x.TotalAmount">@x.TotalAmount</td>
                             </tr>
                         }
@@ -54,7 +54,7 @@
                                 <td class="display-row" title="@x.ProductName">
                                     @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint)
                                 </td>
-                                <td class="display-row text-center">@x.TotalQuantity</td>
+                                <td class="display-row text-center" title="@x.TotalQuantity">@x.TotalQuantity</td>
                                 <td class="display-row text-right font-weight-medium" title="@x.TotalAmount">@x.TotalAmount</td>
                             </tr>
                         }

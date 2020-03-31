@@ -236,7 +236,7 @@ namespace SmartStore.Services.Customers
             }
 
             var report = new DashboardChartReportLine(1, period);
-            var customers = allCustomers.Where(x => x.CreatedOnUtc < endTime.Date && x.CreatedOnUtc >= startTime.Date).Select(x => x).ToList();
+            var customers = allCustomers.Where(x => x.CreatedOnUtc < endTime.Date && x.CreatedOnUtc >= startTime.Date).Where(x => x.IsRegistered()).Select(x => x).ToList();
 
             for (int i = 0; i < period; i++)
             {

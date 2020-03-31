@@ -2810,7 +2810,6 @@ namespace SmartStore.Admin.Controllers
                 Reports = new OrdersIncompleteDashboardReportLine[]
                 {
                     GetOrdersIncompleteReportLine(DateTime.UtcNow.Date, DateTime.UtcNow.AddDays(1).Date),               // Today
-                    GetOrdersIncompleteReportLine(DateTime.UtcNow.AddDays(-1).Date, DateTime.UtcNow.Date),              // Yesterday
                     GetOrdersIncompleteReportLine(DateTime.UtcNow.AddDays(-6).Date, DateTime.UtcNow.AddDays(1).Date),   // Week
                     GetOrdersIncompleteReportLine(DateTime.UtcNow.AddDays(-27).Date, DateTime.UtcNow.AddDays(1).Date),  // Month
                     GetOrdersIncompleteReportLine(null, null)                                                           // Overall

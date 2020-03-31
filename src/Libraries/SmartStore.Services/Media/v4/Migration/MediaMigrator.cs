@@ -32,6 +32,7 @@ namespace SmartStore.Services.Media.Migration
         private readonly IMediaTracker _mediaTracker;
         private readonly IMediaStorageProvider _mediaStorageProvider;
         private readonly IMediaFileSystem _mediaFileSystem;
+        private readonly IImageCache _imageCache;
         private readonly bool _isFsProvider;
 
         public MediaMigrator(
@@ -41,6 +42,7 @@ namespace SmartStore.Services.Media.Migration
             IAlbumRegistry albumRegistry,
             IFolderService folderService,
             IMediaTracker mediaTracker,
+            IImageCache imageCache,
             IMediaFileSystem mediaFileSystem)
         {
             _services = services;
@@ -50,6 +52,7 @@ namespace SmartStore.Services.Media.Migration
             _folderService = folderService;
             _mediaTracker = mediaTracker;
             _mediaFileSystem = mediaFileSystem;
+            _imageCache = imageCache;
 
             var storageProviderSystemName = _services.Settings.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
             _mediaStorageProvider = _providerManager.GetProvider<IMediaStorageProvider>(storageProviderSystemName).Value;
@@ -75,6 +78,7 @@ namespace SmartStore.Services.Media.Migration
                 Execute("MigrateMediaFiles", () => MigrateMediaFiles(ctx));
                 Execute("MigrateUploadedFiles", () => MigrateUploadedFiles(ctx));
                 Execute("DetectTracks", () => DetectTracks());
+                Execute("ClearImageCache", () => ClearImageCache());
 
                 _folderService.ClearCache();
             }
@@ -489,6 +493,11 @@ namespace SmartStore.Services.Media.Migration
                 
                 _mediaTracker.DetectAllTracks(albumName, true);
             }
+        }
+
+        public void ClearImageCache()
+        {
+            _imageCache.Clear();
         }
 
         private string GetStoragePath(DownloadStub stub)

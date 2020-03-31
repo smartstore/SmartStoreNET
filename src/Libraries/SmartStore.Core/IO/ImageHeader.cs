@@ -145,6 +145,10 @@ namespace SmartStore.Core.IO
 				{
 					input.Dispose();
 				}
+				else
+				{
+					input.Seek(0, SeekOrigin.Begin);
+				}
 			}
 		}
 

@@ -10,14 +10,14 @@ namespace SmartStore.Services.Media
 {
     public static class IFolderServiceExtensions
     {
-        public static TreeNode<MediaFolderNode> FindFolder(this IFolderService service, MediaFile mediaFile)
+        public static TreeNode<MediaFolderNode> FindNode(this IFolderService service, MediaFile mediaFile)
         {
             return service.GetNodeById(mediaFile?.FolderId ?? 0);
         }
 
         public static TreeNode<MediaFolderNode> FindAlbum(this IFolderService service, MediaFile mediaFile)
         {
-            return FindFolder(service, mediaFile)?.Closest(x => x.Value.IsAlbum);
+            return FindNode(service, mediaFile)?.Closest(x => x.Value.IsAlbum);
         }
 
         public static TreeNode<MediaFolderNode> FindAlbum(this IFolderService service, int folderId)
@@ -37,7 +37,7 @@ namespace SmartStore.Services.Media
             return folderIds.Select(x => FindAlbum(service, x)).Distinct().Count() <= 1;
         }
 
-        public static IEnumerable<MediaFolderNode> GetFoldersFlattened(this IFolderService service, string path, bool includeSelf = true)
+        public static IEnumerable<MediaFolderNode> GetNodesFlattened(this IFolderService service, string path, bool includeSelf = true)
         {
             var node = service.GetNodeByPath(path);
             if (node == null)
@@ -48,7 +48,7 @@ namespace SmartStore.Services.Media
             return node.FlattenNodes(includeSelf).Select(x => x.Value);
         }
 
-        public static IEnumerable<MediaFolderNode> GetFoldersFlattened(this IFolderService service, int folderId, bool includeSelf = true)
+        public static IEnumerable<MediaFolderNode> GetNodesFlattened(this IFolderService service, int folderId, bool includeSelf = true)
         {
             var node = service.GetNodeById(folderId);
             if (node == null)

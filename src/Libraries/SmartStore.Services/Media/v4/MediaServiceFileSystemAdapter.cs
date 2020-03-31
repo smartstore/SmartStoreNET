@@ -159,7 +159,7 @@ namespace SmartStore.Services.Media
 
         public IFile CreateFile(string path)
         {
-            return _mediaService.CreateFile(path);
+            return _mediaService.SaveFile(path, null, false, false);
         }
 
         public Task<IFile> CreateFileAsync(string path)
@@ -297,12 +297,13 @@ namespace SmartStore.Services.Media
 
         public void SaveStream(string path, Stream inputStream)
         {
-            throw new NotImplementedException();
+            _mediaService.SaveFile(path, inputStream, false, true);
         }
 
         public Task SaveStreamAsync(string path, Stream inputStream)
         {
-            throw new NotImplementedException();
+            SaveStream(path, inputStream);
+            return Task.FromResult(0);
         }
 
         #endregion

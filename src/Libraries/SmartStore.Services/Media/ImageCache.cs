@@ -295,22 +295,12 @@ namespace SmartStore.Services.Media
         {
 			for (int i = 0; i < 10; i++)
             {
-                try
+				
+				try
                 {
-                    foreach (var file in _fileSystem.ListFiles(_thumbsRootDir))
-                    {
-						if (!file.Name.IsCaseInsensitiveEqual("placeholder") && !file.Name.IsCaseInsensitiveEqual("placeholder.txt"))
-						{
-							_fileSystem.DeleteFile(file.Path);
-						}
-                    }
-                    foreach (var dir in _fileSystem.ListFolders(_thumbsRootDir))
-                    {
-						_fileSystem.DeleteFolder(dir.Path);
-					}
-
-                    return;
-                }
+					_fileSystem.DeleteFolder(_thumbsRootDir);
+					_fileSystem.TryCreateFolder(_thumbsRootDir);
+				}
                 catch (Exception ex)
                 {
 					Logger.Error(ex);
@@ -344,11 +334,12 @@ namespace SmartStore.Services.Media
 				result = mediaFileId.Value.ToString(IdFormatString);
 			}
 
-			// xxxxxxx-f
-			if (data.Folder != null)
-			{
-				result = result.Grow(data.Folder.Id.ToString(CultureInfo.InvariantCulture), "-");
-			}
+			//// INFO: (mm) don't include folder id in pathes for now. It results in more complex image cache invalidation code.
+			//// xxxxxxx-f
+			//if (data.Folder != null)
+			//{
+			//	result = result.Grow(data.Folder.Id.ToString(CultureInfo.InvariantCulture), "-");
+			//}
 
 			// xxxxxxx-f-abc
 			result = result.Grow(data.FileTitle, "-");

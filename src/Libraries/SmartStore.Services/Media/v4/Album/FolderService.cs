@@ -249,8 +249,6 @@ namespace SmartStore.Services.Media
             // Commit
             _folderRepo.Update(folder);
 
-            // TODO: (mm) Clear image cache for all files contained within folder.
-
             ClearCache();
 
             return new MediaFolderInfo(GetNodeById(folder.Id));

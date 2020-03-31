@@ -464,46 +464,17 @@ namespace SmartStore.Admin.Controllers
 
 		private void RenameDir(string path, string name)
 		{
-			////////try
-			////////{
-			////////	path = GetRelativePath(path);
-
-			////////	var newPath = _fileSystem.Combine(path, name);
-			////////	_fileSystem.RenameFolder(path, newPath);
-			////////	Response.Write(GetResultString());
-			////////}
-			////////catch (Exception ex)
-			////////{
-			////////	throw ex;
-			////////}
-
-
-
-			//path = GetRelativePath(path);
-
-			//if (!_fileSystem.FolderExists(path))
-			//{
-			//	throw new Exception(LangRes("E_RenameDirInvalidPath"));
-			//}
-
-			//if (path == FileRoot)
-			//{
-			//	throw new Exception(LangRes("E_CannotRenameRoot"));
-			//}
-
-			//try
-			//{
-			//	var folder = _fileSystem.GetFolder(path);
-			//	var newPath = _fileSystem.Combine(folder.Parent.Path, name);
-
-			//	_fileSystem.RenameFolder(path, newPath);
-
-			//	Response.Write(GetResultString());
-			//}
-			//catch
-			//{
-			//	throw new Exception(LangRes("E_RenameDir") + " \"" + path + "\"");
-			//}
+			try
+			{
+				path = GetRelativePath(path);
+				var newPath = _fileSystem.Combine(Path.GetDirectoryName(path), name);
+				_fileSystem.RenameFolder(path, newPath);
+				Response.Write(GetResultString());
+			}
+			catch (Exception ex)
+			{
+				throw ex;
+			}
 		}
 
 		private void MoveFile(string path, string newPath)
@@ -717,7 +688,6 @@ namespace SmartStore.Admin.Controllers
 
 			string message = null;
 			var hasError = false;
-			string url = null;
 
 			int.TryParse(GetSetting("MAX_IMAGE_WIDTH"), out var width);
 			int.TryParse(GetSetting("MAX_IMAGE_HEIGHT"), out var height);
@@ -763,7 +733,6 @@ namespace SmartStore.Admin.Controllers
 						}
 
 						await _fileSystem.SaveStreamAsync(newPath, stream);
-						url = _fileSystem.GetPublicUrl(newPath);
 					}
 				}
 			}
@@ -784,7 +753,6 @@ namespace SmartStore.Admin.Controllers
 					var result = new
 					{
 						Success = !hasError,
-						Url = url,
 						Message = message
 					};
 					Response.ContentType = "text/json";

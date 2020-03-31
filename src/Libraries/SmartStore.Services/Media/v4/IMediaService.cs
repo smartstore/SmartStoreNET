@@ -42,14 +42,13 @@ namespace SmartStore.Services.Media
         IList<MediaFileInfo> GetFilesByIds(int[] ids, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
         bool CheckUniqueFileName(string path, out string newPath);
 
-        MediaFileInfo CreateFile(string path);
-        MediaFileInfo CreateFile(int folderId, string fileName);
-        MediaFileInfo InsertFile(string album, MediaFile file, Stream stream, bool validate = true);
+        //MediaFileInfo CreateFile(string path);
+        //MediaFileInfo CreateFile(int folderId, string fileName);
+        MediaFileInfo SaveFile(string path, Stream stream, bool isTransient = true, bool overwrite = false);
         void DeleteFile(MediaFile file, bool permanent);
 
         MediaFileInfo CopyFile(MediaFile file, string destinationFileName, bool overwrite = false);
         MediaFileInfo MoveFile(MediaFile file, string destinationFileName);
-        MediaFileInfo ReplaceFile(MediaFile file, string fileName, string mimeType, Stream stream);
 
         string GetUrl(MediaFileInfo file, ProcessImageQuery query, string host = null);
     }

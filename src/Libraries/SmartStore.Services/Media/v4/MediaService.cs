@@ -15,6 +15,7 @@ using SmartStore.Services.Configuration;
 using SmartStore.Services.Media.Storage;
 using SmartStore.Utilities;
 using SmartStore.Collections;
+using SmartStore.Core.IO;
 
 namespace SmartStore.Services.Media
 {
@@ -101,7 +102,7 @@ namespace SmartStore.Services.Media
 
         protected virtual MediaFileInfo ConvertMediaFile(MediaFile file)
         {
-            var folder = _folderService.FindFolder(file)?.Value;
+            var folder = _folderService.FindNode(file)?.Value;
             return new MediaFileInfo(file, _storageProvider, folder?.Path);
         }
 
@@ -127,7 +128,7 @@ namespace SmartStore.Services.Media
             {
                 if (query.DeepSearch)
                 {
-                    var folderIds = _folderService.GetFoldersFlattened(query.FolderId.Value, true).Select(x => x.Id).ToArray();
+                    var folderIds = _folderService.GetNodesFlattened(query.FolderId.Value, true).Select(x => x.Id).ToArray();
                     q = q.Where(x => x.FolderId != null && folderIds.Contains(x.FolderId.Value));
                 }
                 else
@@ -287,6 +288,7 @@ namespace SmartStore.Services.Media
                 var entity = table.FirstOrDefault(x => x.FolderId == tokens.Folder.Id && x.Name == tokens.FileName);
                 if (entity != null)
                 {
+                    EnsureMetadataResolved(entity, true);
                     return new MediaFileInfo(entity, _storageProvider, tokens.Folder.Path);
                 }
             }
@@ -304,7 +306,26 @@ namespace SmartStore.Services.Media
 
             if (entity != null)
             {
-                var dir = _folderService.FindFolder(entity)?.Value?.Path;
+                EnsureMetadataResolved(entity, true);
+                var dir = _folderService.FindNode(entity)?.Value?.Path;
+                return new MediaFileInfo(entity, _storageProvider, dir);
+            }
+
+            return null;
+        }
+
+        public MediaFileInfo GetFileByName(int folderId, string fileName, MediaLoadFlags flags = MediaLoadFlags.None)
+        {
+            Guard.IsPositive(folderId, nameof(folderId));
+            Guard.NotEmpty(fileName, nameof(fileName));
+
+            var query = _fileRepo.Table.Where(x => x.Name == fileName && x.FolderId == folderId);
+            var entity = ApplyLoadFlags(query, flags).FirstOrDefault();
+
+            if (entity != null)
+            {
+                EnsureMetadataResolved(entity, true);
+                var dir = _folderService.FindNode(entity)?.Value?.Path;
                 return new MediaFileInfo(entity, _storageProvider, dir);
             }
 
@@ -387,74 +408,73 @@ namespace SmartStore.Services.Media
 
         #region Create/Update/Delete
 
-        public MediaFileInfo CreateFile(string path)
+        //public MediaFileInfo CreateFile(string path)
+        //{
+        //    if (_mediaHelper.TokenizePath(path, out var tokens))
+        //    {
+        //        return SaveFile(
+        //            null, // album
+        //            new MediaFile { Name = tokens.FileName, FolderId = tokens.Folder.Id },
+        //            null, // stream
+        //            false);
+        //    }
+
+        //    // TODO: (mm) throw
+        //    throw new Exception();
+        //}
+
+        public MediaFileInfo SaveFile(string path, Stream stream, bool isTransient = true, bool overwrite = false)
         {
-            if (_mediaHelper.TokenizePath(path, out var tokens))
+            Guard.NotEmpty(path, nameof(path));
+
+            if (!_mediaHelper.TokenizePath(path, out var pathData))
             {
-                return InsertFile(
-                    null, // album
-                    new MediaFile { Name = tokens.FileName, FolderId = tokens.Folder.Id },
-                    null, // stream
-                    false);
+                throw new ArgumentException("Invalid path '{0}'. Valid path expression is: {albumName}[/subfolders]/{fileName}.{extension}".FormatInvariant(path), nameof(path));
             }
 
-            // TODO: (mm) throw
-            throw new Exception();
-        }
-
-        public MediaFileInfo CreateFile(int folderId, string fileName)
-        {
-            var folder = _folderService.GetNodeById(folderId)?.Value;
-            if (folder == null)
+            if (pathData.Extension.IsEmpty())
             {
-                // TODO: (mm) throw
+                throw new ArgumentException($"Cannot process files without file extension. Path: {path}", nameof(path));
             }
 
-            return InsertFile(
-                null, // album
-                new MediaFile { Name = fileName, FolderId = folderId }, 
-                null, // stream
-                false);
-        }
+            var file = _fileRepo.Table.FirstOrDefault(x => x.Name == pathData.FileName && x.FolderId == pathData.Folder.Id);
 
-        public MediaFileInfo InsertFile(string album, MediaFile file, Stream stream, bool validate = true)
-        {
-            Guard.NotNull(file, nameof(file));
-
-            if (file.Name.IsEmpty())
+            if (file != null && !overwrite)
             {
-                throw new ArgumentException("The 'Name' property must be a valid file name.", nameof(file));
+                throw new DuplicateMediaFileException(pathData.FullPath);
             }
 
-            if (album.HasValue() && file.FolderId == null)
+            if (file != null)
             {
-                var albumId = _albumRegistry.GetAlbumByName(album)?.Id;
-                if (albumId > 0)
-                {
-                    file.FolderId = albumId;
-                }
+                ValidateMimeTypes("Save", file.MimeType, pathData.MimeType);
+                _imageCache.Delete(file);
             }
 
-            if (file.FolderId == null)
+            file = file ?? new MediaFile
             {
-                // TODO: (mm) throw
-            }
+                IsTransient = isTransient,
+                FolderId = pathData.Node.Value.Id
+            };
 
-            // [...]
+            // TODO: (mm) Get pretty SeName
 
-            file.Name = SeoHelper.GetSeName(file.Name, true, false, false);
-            file.MediaType = _mediaTypeResolver.Resolve(file);
+            file.Name = pathData.FileName;
+            file.Extension = pathData.Extension;
+            file.MimeType = pathData.MimeType;
+            file.MediaType = file.MediaType ?? _mediaTypeResolver.Resolve(pathData.Extension, pathData.MimeType);
 
-            // [...]
+            // TODO: (mm) Validate (process image resize)
 
-            // Save to DB
             file.RefreshMetadata(stream);
-            _fileRepo.Insert(file);
 
-            // Save BLOB to storage.
+            if (file.Id == 0)
+            {
+                _fileRepo.Insert(file);
+            }
+
             _storageProvider.Save(file, stream);
 
-            return ConvertMediaFile(file);
+            return ConvertMediaFile(file, pathData.Folder);
         }
 
         public void DeleteFile(MediaFile file, bool permanent)
@@ -480,7 +500,7 @@ namespace SmartStore.Services.Media
 
         #endregion
 
-        #region Copy/Move/Replace/Rename/Update etc.
+        #region Copy/Move/Rename/Update etc.
 
         public MediaFileInfo CopyFile(MediaFile file, string destinationFileName, bool overwrite = false)
         {
@@ -548,17 +568,6 @@ namespace SmartStore.Services.Media
             }
 
             return ConvertMediaFile(file, destPathData.Folder);
-        }
-
-        public MediaFileInfo ReplaceFile(MediaFile file, string fileName, string mimeType, Stream stream)
-        {
-            Guard.NotNull(file, nameof(file));
-            Guard.NotNull(stream, nameof(stream));
-            Guard.NotEmpty(fileName, nameof(fileName));
-
-            // TODO: (mm) new TYPE must match current TYPE
-
-            throw new NotImplementedException();
         }
 
         private bool ValidateMoveOperation(MediaFile file, string destinationFileName, out bool nameChanged, out MediaPathData destPathData)
@@ -636,6 +645,61 @@ namespace SmartStore.Services.Media
         #endregion
 
         #region Utils
+
+        private void EnsureMetadataResolved(MediaFile file, bool saveOnResolve)
+        {
+            var mediaType = _mediaTypeResolver.Resolve(file.Extension, file.MimeType);
+
+            var resolveDimensions = mediaType == MediaType.Image && file.Width == null && file.Height == null;
+            var resolveSize = file.Size <= 0;
+
+            Stream stream = null;
+
+            if (resolveDimensions || resolveSize)
+            {
+                stream = _storageProvider.OpenRead(file);
+            }
+
+            // Resolve image dimensions
+            if (stream != null)
+            {
+                try
+                {
+                    if (resolveSize)
+                    {
+                        file.Size = (int)stream.Length;
+                    }
+
+                    if (resolveDimensions)
+                    {
+                        var size = ImageHeader.GetDimensions(stream, file.MimeType, true);
+                        file.Width = size.Width;
+                        file.Height = size.Height;
+                        file.PixelSize = size.Width * size.Height;
+                    }
+
+                    if (saveOnResolve)
+                    {
+                        try
+                        {
+                            _fileRepo.Update(file);
+                        }
+                        catch (InvalidOperationException ioe)
+                        {
+                            // Ignore exception for pictures that already have been processed.
+                            if (!ioe.IsAlreadyAttachedEntityException())
+                            {
+                                throw;
+                            }
+                        }
+                    }
+                }
+                finally
+                {
+                    stream.Dispose();
+                }
+            }
+        }
 
         private void MapMediaFile(MediaFile from, MediaFile to)
         {

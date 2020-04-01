@@ -482,40 +482,40 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 		}
 
-		private dynamic ToDynamic(DataExporterContext ctx, MediaFile picture, int thumbPictureSize, int detailsPictureSize)
+		private dynamic ToDynamic(DataExporterContext ctx, MediaFile file, int thumbPictureSize, int detailsPictureSize)
 		{
-            if (picture == null)
+            return ToDynamic(ctx, new MediaFileInfo(file, null, string.Empty), thumbPictureSize, detailsPictureSize);
+        }
+
+        private dynamic ToDynamic(DataExporterContext ctx, MediaFileInfo file, int thumbPictureSize, int detailsPictureSize)
+        {
+            if (file == null)
             {
                 return null;
             }
 
             try
             {
-                // TODO: (mc) Refactor > GetPictureInfo
-                dynamic result = new DynamicEntity(picture);
-
-                var pictureInfo = _pictureService.Value.GetPictureInfo(picture);
                 var host = _services.StoreService.GetHost(ctx.Store);
 
-                if (pictureInfo != null)
-                {
-                    result._FileName = System.IO.Path.GetFileName(pictureInfo.Path);
-                    result._RelativeUrl = _pictureService.Value.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback);
-                    result._ThumbImageUrl = _pictureService.Value.GetUrl(pictureInfo, thumbPictureSize, FallbackPictureType.NoFallback, host);
-                    result._ImageUrl = _pictureService.Value.GetUrl(pictureInfo, detailsPictureSize, FallbackPictureType.NoFallback, host);
-                    result._FullSizeImageUrl = _pictureService.Value.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback, host);
-                }
+                dynamic result = new DynamicEntity(file.File);
+
+                result._FileName = file.Name;
+                result._RelativeUrl = _mediaService.Value.GetUrl(file, null, null);
+                result._ThumbImageUrl = _mediaService.Value.GetUrl(file, new ProcessImageQuery { MaxWidth = thumbPictureSize }, host);
+                result._ImageUrl = _mediaService.Value.GetUrl(file, new ProcessImageQuery { MaxWidth = detailsPictureSize }, host);
+                result._FullSizeImageUrl = _mediaService.Value.GetUrl(file, null, host);
 
                 return result;
             }
             catch (Exception ex)
             {
-                ctx.Log.ErrorFormat(ex, $"Failed to get picture infos for picture with ID {picture.Id}.");
+                ctx.Log.ErrorFormat(ex, $"Failed to get details for file with ID {file.File.Id}.");
                 return null;
             }
-		}
+        }
 
-		private dynamic ToDynamic(DataExporterContext ctx, ProductVariantAttribute pva)
+        private dynamic ToDynamic(DataExporterContext ctx, ProductVariantAttribute pva)
 		{
             if (pva == null)
             {
@@ -829,7 +829,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 					dyn.Picture = ToDynamic(ctx, x.MediaFile, _mediaSettings.Value.ProductThumbPictureSize, productDetailsPictureSize);
 
-					return dyn;
+                    return dyn;
 				})
 				.ToList();
 
@@ -1403,18 +1403,19 @@ namespace SmartStore.Services.DataExchange.Export
 		private List<dynamic> Convert(DataExporterContext ctx, Manufacturer manufacturer)
 		{
 			var result = new List<dynamic>();
-
 			var productManufacturers = ctx.ManufacturerExportContext.ProductManufacturers.GetOrLoad(manufacturer.Id);
 
 			dynamic dynObject = ToDynamic(ctx, manufacturer);
 
 			if (manufacturer.MediaFileId.HasValue)
 			{
-				var numberOfPictures = (ctx.Projection.NumberOfMediaFiles ?? int.MaxValue);
-				var pictures = ctx.ManufacturerExportContext.Pictures.GetOrLoad(manufacturer.MediaFileId.Value).Take(numberOfPictures);
+				var numberOfFiles = ctx.Projection.NumberOfMediaFiles ?? int.MaxValue;
+				var files = ctx.ManufacturerExportContext.Files.GetOrLoad(manufacturer.MediaFileId.Value).Take(numberOfFiles);
 
-				if (pictures.Any())
-					dynObject.Picture = ToDynamic(ctx, pictures.First(), _mediaSettings.Value.ManufacturerThumbPictureSize, _mediaSettings.Value.ManufacturerThumbPictureSize);
+                if (files.Any())
+                {
+                    dynObject.Picture = ToDynamic(ctx, files.First(), _mediaSettings.Value.ManufacturerThumbPictureSize, _mediaSettings.Value.ManufacturerThumbPictureSize);
+                }
 			}
 
 			dynObject.ProductManufacturers = productManufacturers
@@ -1422,7 +1423,6 @@ namespace SmartStore.Services.DataExchange.Export
 				.Select(x =>
 				{
 					dynamic dyn = new DynamicEntity(x);
-
 					return dyn;
 				})
 				.ToList();
@@ -1443,18 +1443,19 @@ namespace SmartStore.Services.DataExchange.Export
 		private List<dynamic> Convert(DataExporterContext ctx, Category category)
 		{
 			var result = new List<dynamic>();
-
 			var productCategories = ctx.CategoryExportContext.ProductCategories.GetOrLoad(category.Id);
 
 			dynamic dynObject = ToDynamic(ctx, category);
 
 			if (category.MediaFileId.HasValue)
 			{
-				var numberOfPictures = (ctx.Projection.NumberOfMediaFiles ?? int.MaxValue);
-				var pictures = ctx.CategoryExportContext.Pictures.GetOrLoad(category.MediaFileId.Value).Take(numberOfPictures);
+				var numberOfFiles = ctx.Projection.NumberOfMediaFiles ?? int.MaxValue;
+				var files = ctx.CategoryExportContext.Files.GetOrLoad(category.MediaFileId.Value).Take(numberOfFiles);
 
-				if (pictures.Any())
-					dynObject.Picture = ToDynamic(ctx, pictures.First(), _mediaSettings.Value.CategoryThumbPictureSize, _mediaSettings.Value.CategoryThumbPictureSize);
+                if (files.Any())
+                {
+                    dynObject.Picture = ToDynamic(ctx, files.First(), _mediaSettings.Value.CategoryThumbPictureSize, _mediaSettings.Value.CategoryThumbPictureSize);
+                }
 			}
 
 			dynObject.ProductCategories = productCategories
@@ -1462,7 +1463,6 @@ namespace SmartStore.Services.DataExchange.Export
 				.Select(x =>
 				{
 					dynamic dyn = new DynamicEntity(x);
-
 					return dyn;
 				})
 				.ToList();

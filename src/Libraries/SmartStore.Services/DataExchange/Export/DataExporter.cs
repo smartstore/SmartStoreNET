@@ -61,6 +61,7 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly Lazy<ILanguageService> _languageService;
         private readonly Lazy<IUrlRecordService> _urlRecordService;
 		private readonly Lazy<IPictureService> _pictureService;
+        private readonly Lazy<IMediaService> _mediaService;
 		private readonly Lazy<IPriceCalculationService> _priceCalculationService;
 		private readonly Lazy<ICurrencyService> _currencyService;
 		private readonly Lazy<ITaxService> _taxService;
@@ -110,7 +111,8 @@ namespace SmartStore.Services.DataExchange.Export
 			Lazy<ILanguageService> languageService,
 			Lazy<IUrlRecordService> urlRecordService,
 			Lazy<IPictureService> pictureService,
-			Lazy<IPriceCalculationService> priceCalculationService,
+            Lazy<IMediaService> mediaService,
+            Lazy<IPriceCalculationService> priceCalculationService,
 			Lazy<ICurrencyService> currencyService,
 			Lazy<ITaxService> taxService,
 			Lazy<ICategoryService> categoryService,
@@ -156,6 +158,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_languageService = languageService;
 			_urlRecordService = urlRecordService;
 			_pictureService = pictureService;
+            _mediaService = mediaService;
 			_priceCalculationService = priceCalculationService;
 			_currencyService = currencyService;
 			_taxService = taxService;
@@ -452,8 +455,8 @@ namespace SmartStore.Services.DataExchange.Export
 						{
 							ctx.ManufacturerExportContext = new ManufacturerExportContext(entities,
 								x => _manufacturerService.Value.GetProductManufacturersByManufacturerIds(x, true),
-								x => _pictureService.Value.GetPicturesByIds(x)
-							);
+                                x => _mediaService.Value.GetFilesByIds(x)
+                            );
 						},
 						entity => Convert(ctx, entity),
 						offset, PageSize, limit, recordsPerSegment, totalRecords
@@ -468,7 +471,7 @@ namespace SmartStore.Services.DataExchange.Export
 						{
 							ctx.CategoryExportContext = new CategoryExportContext(entities,
 								x => _categoryService.Value.GetProductCategoriesByCategoryIds(x),
-								x => _pictureService.Value.GetPicturesByIds(x)
+                                x => _mediaService.Value.GetFilesByIds(x)
 							);
 						},
 						entity => Convert(ctx, entity),
@@ -1807,7 +1810,6 @@ namespace SmartStore.Services.DataExchange.Export
 
                     // lazyLoading: false, proxyCreation: false impossible due to price calculation.
                     using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
-                    using (_pictureService.Value.BeginScope(false))
                     {
                         ctx.DeliveryTimes = _deliveryTimeService.Value.GetAllDeliveryTimes().ToDictionary(x => x.Id);
                         ctx.QuantityUnits = _quantityUnitService.Value.GetAllQuantityUnits().ToDictionary(x => x.Id);

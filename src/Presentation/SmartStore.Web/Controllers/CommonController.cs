@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -55,8 +56,12 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<IUrlRecordService> _urlRecordService;
 		private readonly IPageAssetsBuilder _pageAssetsBuilder;
 		private readonly Lazy<IPictureService> _pictureService;
+        private readonly ICookieManager _cookieManager;
+        private readonly IGeoCountryLookup _geoCountryLookup;
+        private readonly IWebHelper _webHelper;
+        private readonly ICountryService _countryService;
 
-		private readonly CustomerSettings _customerSettings;
+        private readonly CustomerSettings _customerSettings;
 		private readonly PrivacySettings _privacySettings;
 		private readonly TaxSettings _taxSettings;
         private readonly CatalogSettings _catalogSettings;
@@ -68,7 +73,6 @@ namespace SmartStore.Web.Controllers
         private readonly ForumSettings _forumSettings;
         private readonly LocalizationSettings _localizationSettings;
 		private readonly Lazy<SocialSettings> _socialSettings;
-        private readonly ICookieManager _cookieManager;
 
         public CommonController(
 			Lazy<ILanguageService> languageService,
@@ -92,7 +96,10 @@ namespace SmartStore.Web.Controllers
             LocalizationSettings localizationSettings, 
 			Lazy<SocialSettings> socialSettings,
             ThemeSettings themeSettings,
-            ICookieManager cookieManager)
+            ICookieManager cookieManager,
+            IGeoCountryLookup geoCountryLookup,
+            IWebHelper webHelper,
+            ICountryService countryService)
         {
             _languageService = languageService;
             _currencyService = currencyService;
@@ -116,6 +123,9 @@ namespace SmartStore.Web.Controllers
 			_socialSettings = socialSettings;
             _themeSettings = themeSettings;
             _cookieManager = cookieManager;
+            _geoCountryLookup = geoCountryLookup;
+            _webHelper = webHelper;
+            _countryService = countryService;
         }
 
         #region Utilities
@@ -791,8 +801,11 @@ namespace SmartStore.Web.Controllers
                 return new EmptyResult();
             }
 
-            // TODO: If current country doesnt need cookie consent
-            //return new EmptyResult();
+            // If current country doesnt need cookie consent, don't display cookie manager.
+            if (!DisplayForCountry())
+            {
+                return new EmptyResult();
+            }
 
             var cookieData = _cookieManager.GetCookieData(this.ControllerContext);
 
@@ -806,6 +819,27 @@ namespace SmartStore.Web.Controllers
             PrepareCookieManagerModel(model);
 
             return PartialView(model);
+        }
+
+        private bool DisplayForCountry()
+        {
+            var ipAddress = _webHelper.GetCurrentIpAddress();
+            var lookUpCountryResponse = _geoCountryLookup.LookupCountry(ipAddress);
+            if (lookUpCountryResponse == null || lookUpCountryResponse.IsoCode == null)
+            {
+                // No country was found (e.g. localhost), so we better return true.
+                return true;
+            }
+
+            var country = _countryService.GetCountryByTwoLetterIsoCode(lookUpCountryResponse.IsoCode);
+
+            if (country != null && country.DisplayCookieManager)
+            {
+                // Country was configured to display cookie manager.
+                return true;
+            }
+
+            return false;
         }
 
         private void PrepareCookieManagerModel(CookieManagerModel model)

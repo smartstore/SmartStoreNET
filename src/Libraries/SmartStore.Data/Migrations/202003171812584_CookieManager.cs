@@ -75,7 +75,7 @@ namespace SmartStore.Data.Migrations
                 "Cookies von Drittanbietern");
             builder.AddOrUpdate("CookieManager.Dialog.ThirdParty.Intro",
                 "These cookies help us to use comfort functions of other service providers and integrate them into our shop.",
-                "Diese Cookies helfen uns Komfort-Funktionen von anderen Dienstanbietern zu nutzen und in unseren Shop einzubinden.");
+                "Diese Cookies helfen uns, Komfort-Funktionen von anderen Dienstanbietern zu nutzen und in unseren Shop einzubinden.");
 
             builder.AddOrUpdate("CookieManager.Dialog.Show", "Show", "Anzeigen");
             builder.AddOrUpdate("CookieManager.Dialog.ReadMore", "Read more", "Weiterlesen");

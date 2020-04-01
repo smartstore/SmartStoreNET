@@ -43,6 +43,9 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.Countries.Fields.SubjectToVat")]
         public bool SubjectToVat { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Countries.Fields.DisplayCookieManager")]
+        public bool DisplayCookieManager { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Countries.Fields.Published")]
         public bool Published { get; set; }
 

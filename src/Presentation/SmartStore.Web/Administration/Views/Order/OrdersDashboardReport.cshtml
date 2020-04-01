@@ -7,7 +7,7 @@
 
 <div class="report">
     <div class="report-title-row">
-        <div class="report-title pr-3">@T("Account.CustomerOrders")</div>
+        <div class="report-title pr-3">@T("Admin.Orders")</div>
         <div class="pl-1 fs-h5 pr-3">
             <span id="orders-sum-amount" class="text-muted text-nowrap"></span>
         </div>
@@ -136,7 +136,7 @@
                 hover: {
                     mode: 'nearest',
                     intersect: false,
-                    animationDuration: 250,                    
+                    animationDuration: 250,
                 },
                 layout: {
                     padding: {
@@ -184,9 +184,11 @@
                     mode: 'nearest',
                     intersect: false,
                     titleFontFamily: fontFamily,
+                    titleFontSize: 13,
                     bodyFontFamily: fontFamily,
-                    xPadding: 10,
-                    yPadding: 8,
+                    bodyFontSize: 12,
+                    xPadding: 12,
+                    yPadding: 10,
                     caretPadding: 6,
                     caretSize: 8,
                     cornerRadius: 4,
@@ -194,7 +196,8 @@
                     bodySpacing: 5,
                     callbacks: {
                         label: function (item, data) {
-                            return " " + ordersData.Reports[currentPeriod].DataSets[item.datasetIndex].FormattedAmount[item.index];
+                            return " @T("Admin.Orders"):  " + ordersData.Reports[currentPeriod].DataSets[item.datasetIndex].FormattedQuantity[item.index]
+                                + "    " + ordersData.Reports[currentPeriod].DataSets[item.datasetIndex].FormattedAmount[item.index];                            
                         },
                         labelColor: function(tooltipItem, chart) {
                             var dataset = chart.config.data.datasets[tooltipItem.datasetIndex];

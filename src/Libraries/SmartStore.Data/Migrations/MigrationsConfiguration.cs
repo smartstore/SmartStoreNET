@@ -561,6 +561,7 @@
             builder.AddOrUpdate("Admin.SalesReport.Sales.Hint", "Total value of all orders", "Gesamtwert aller Aufträge");
             builder.AddOrUpdate("Admin.Report.OnlineCustomers", "Customers online within last 15 minutes", "Kunden in den letzten 15 Minuten online");
             builder.AddOrUpdate("Admin.Orders.Overall", "Orders overall", "Aufträge insgesamt");
+            builder.AddOrUpdate("Admin.Report.Registrations", "Registrations", "Registrierungen");
         }
     }
 }

@@ -26,10 +26,12 @@ namespace SmartStore.Core.Domain.Dashboard
             Quantity = new int[amountDataPoints];
             Amount = new decimal[amountDataPoints];
             FormattedAmount = new string[amountDataPoints];
+            FormattedQuantity = new string[amountDataPoints];
         }
 
         public string TotalAmount { get; set; }
         public int[] Quantity { get; set; }
+        public string[] FormattedQuantity { get; set; }
         public decimal[] Amount { get; set; }
         public string[] FormattedAmount { get; set; }
     }

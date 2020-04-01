@@ -269,7 +269,7 @@ namespace SmartStore.Services.Customers
 
                 var count = customers.Where(x => x.CreatedOnUtc < endDate && x.CreatedOnUtc >= startDate).Count();
                 report.DataSets[0].Quantity[i] = count;
-                report.DataSets[0].FormattedAmount[i] = count.ToString("D");
+                report.DataSets[0].FormattedQuantity[i] = count.ToString("D");
             }
 
             foreach (var item in report.DataSets)

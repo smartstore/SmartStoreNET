@@ -86,14 +86,13 @@
                 stacked: true,
                 animation: {
                     duration: 400,
+                    easing: 'easeInOutSine',
                     hide: {
                         visible: {
                             type: true,
                             easing: 'easeInOutSine'
                         },
                     },
-                    easing: 'easeInOutSine',
-
                 },
                 hover: {
                     mode: 'nearest',
@@ -126,9 +125,11 @@
                     mode: 'nearest',
                     intersect: false,
                     titleFontFamily: fontFamily,
+                    titleFontSize: 13,
                     bodyFontFamily: fontFamily,
-                    xPadding: 10,
-                    yPadding: 8,
+                    bodyFontSize: 12,
+                    xPadding: 12,
+                    yPadding: 10,
                     caretPadding: 6,
                     caretSize: 8,
                     cornerRadius: 4,
@@ -136,7 +137,8 @@
                     bodySpacing: 5,
                     callbacks: {
                         label: function (item, data) {
-                            return " " + customersData.Reports[currentPeriod].DataSets[item.datasetIndex].FormattedAmount[item.index];
+                            return " @T("Admin.Report.Registrations"):  "
+                                + customersData.Reports[currentPeriod].DataSets[item.datasetIndex].FormattedQuantity[item.index];
                         },
                         labelColor: function(tooltipItem, chart) {
                             var dataset = chart.config.data.datasets[tooltipItem.datasetIndex];

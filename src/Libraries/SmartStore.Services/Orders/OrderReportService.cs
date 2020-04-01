@@ -366,7 +366,7 @@ namespace SmartStore.Services.Orders
             return profit;
         }
 
-        public virtual IList<Order> GetIncompleteOrders(int storeId, DateTime? startTimeUtc, DateTime? endTimeUtc)
+        public virtual IPagedList<Order> GetIncompleteOrders(int storeId, DateTime? startTimeUtc, DateTime? endTimeUtc)
         {
             var query = _orderRepository.Table;
             query = query.Where(o => !o.Deleted && o.OrderStatusId != (int)OrderStatus.Cancelled);

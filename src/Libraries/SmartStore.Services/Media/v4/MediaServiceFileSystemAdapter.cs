@@ -300,10 +300,9 @@ namespace SmartStore.Services.Media
             _mediaService.SaveFile(path, inputStream, false, true);
         }
 
-        public Task SaveStreamAsync(string path, Stream inputStream)
+        public async Task SaveStreamAsync(string path, Stream inputStream)
         {
-            SaveStream(path, inputStream);
-            return Task.FromResult(0);
+            await _mediaService.SaveFileAsync(path, inputStream, false, true);
         }
 
         #endregion

@@ -32,14 +32,10 @@ namespace SmartStore.Admin.Controllers
 		private Dictionary<string, string> _lang = null;
 		private Dictionary<string, string> _roxySettings = null;
 
-		private readonly IAlbumRegistry _albumRegistry;
 		private readonly IMediaTypeResolver _mediaTypeResolver;
 		private readonly MediaHelper _mediaHelper;
-		private readonly Lazy<IImageProcessor> _imageProcessor;
 		private readonly IMediaFileSystem _fileSystem;
-		private readonly IEventPublisher _eventPublisher;
 		private readonly ILocalizationFileResolver _locFileResolver;
-		private readonly Lazy<MediaSettings> _mediaSettings;
 
 		private readonly AlbumInfo _album;
 
@@ -49,27 +45,18 @@ namespace SmartStore.Admin.Controllers
 			IAlbumRegistry albumRegistry,
 			IMediaTypeResolver mediaTypeResolver,
 			MediaHelper mediaHelper,
-			Lazy<IImageProcessor> imageProcessor,
-			IMediaFileSystem fileSystem,
-			IEventPublisher eventPublisher,
-			ILocalizationFileResolver locFileResolver,
-			Lazy<MediaSettings> mediaSettings)
+			//IMediaFileSystem fileSystem,
+			ILocalizationFileResolver locFileResolver)
 		{
-			//_mediaService = mediaService;
-			//_folderService = folderService;
-			_albumRegistry = albumRegistry;
 			_mediaTypeResolver = mediaTypeResolver;
-			_mediaHelper = mediaHelper;
-			_imageProcessor = imageProcessor;
-			_fileSystem = fileSystem;
-			_eventPublisher = eventPublisher;
+			_mediaHelper = mediaHelper;		
 			_locFileResolver = locFileResolver;
-			_mediaSettings = mediaSettings;
 
 			_album = albumRegistry.GetAlbumByName(SystemAlbumProvider.Files);
 			_fileSystem = new MediaServiceFileSystemAdapter(mediaService, folderService, _mediaHelper);
 			_fileRoot = _album.Name;
 
+			//_fileSystem = fileSystem;
 			//_fileRoot = "Uploaded";
 		}
 
@@ -155,53 +142,6 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			return result;
-		}
-
-		private void ImageResize(string path, string dest, int maxWidth, int maxHeight, bool notify = true)
-		{
-			if (dest.IsEmpty())
-				return;
-
-			if (maxWidth == 0 && maxHeight == 0)
-			{
-				maxWidth = _mediaSettings.Value.MaximumImageSize;
-				maxHeight = _mediaSettings.Value.MaximumImageSize;
-			}
-
-			var buffer = System.IO.File.ReadAllBytes(path);
-
-			var query = new ProcessImageQuery(buffer)
-			{
-				Quality = _mediaSettings.Value.DefaultImageQuality,
-				Format = Path.GetExtension(path).Trim('.').ToLower(),
-				IsValidationMode = true,
-				Notify = notify
-			};
-
-			var originalSize = ImageHeader.GetDimensions(buffer, MimeTypes.MapNameToMimeType(path));
-
-			if (originalSize.IsEmpty || (originalSize.Height <= maxHeight && originalSize.Width <= maxWidth))
-			{
-				// Give subscribers the chance to (pre)-process
-				var evt = new ImageUploadValidatedEvent(query, originalSize);
-				_eventPublisher.Publish(evt);
-
-				if (evt.ResultBuffer != null)
-				{
-					System.IO.File.WriteAllBytes(dest, evt.ResultBuffer);
-				}
-
-				return;
-			}
-
-			if (maxWidth > 0) query.MaxWidth = maxWidth;
-			if (maxHeight > 0) query.MaxHeight = maxHeight;
-
-			using (var result = _imageProcessor.Value.ProcessImage(query))
-			{
-				buffer = result.OutputStream.ToArray();
-				System.IO.File.WriteAllBytes(dest, buffer);
-			}
 		}
 
 		private string GetResultString(string message = null, string type = "ok")
@@ -425,39 +365,43 @@ namespace SmartStore.Admin.Controllers
 				throw new DirectoryNotFoundException($"Directory '{path}' does not exist.");
 			}
 
-			// copy files from file storage to temp folder
-			var tempDir = FileSystemHelper.TempDirTenant("roxy " + folder.Name);
-			FileSystemHelper.ClearDirectory(tempDir, false);
-			var files = GetFiles(path, null);
 
-			foreach (var file in files)
+			var files = GetFiles(path, null).DistinctBy(x => x.Name).ToList();
+
+			// Create zip file
+			var zipFilePath = Path.Combine(FileSystemHelper.TempDirTenant(), folder.Name + "-media.zip");
+			FileSystemHelper.DeleteFile(zipFilePath);
+
+			using (var zipFile = ZipFile.Open(zipFilePath, ZipArchiveMode.Create))
 			{
-				using (var stream = file.OpenRead())
+				foreach (var file in files)
 				{
-					if (stream.Length > 0)
+					using (var fileStream = file.OpenRead())
 					{
-						using (var outputStream = System.IO.File.OpenWrite(Path.Combine(tempDir, file.Name)))
+						var entry = zipFile.CreateEntry(file.Name, CompressionLevel.Fastest);
+
+						DateTime lastWriteTime = file.LastUpdated;
+						if ((lastWriteTime.Year < 1980) || (lastWriteTime.Year > 2107))
 						{
-							stream.CopyTo(outputStream);
+							lastWriteTime = new DateTime(1980, 1, 1, 0, 0, 0);
+						}
+						entry.LastWriteTime = lastWriteTime;
+
+						using (var entryStream = entry.Open())
+						{
+							fileStream.CopyTo(entryStream);
 						}
 					}
 				}
 			}
 
-			// create zip from temp folder
-			var tempZip = Path.Combine(FileSystemHelper.TempDirTenant(), folder.Name + ".zip");
-			FileSystemHelper.DeleteFile(tempZip);
-
-			ZipFile.CreateFromDirectory(tempDir, tempZip, CompressionLevel.Fastest, false);
-
 			Response.Clear();
-			Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + folder.Name + ".zip\"");
+			Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + folder.Name + "-media.zip\"");
 			Response.ContentType = "application/zip";
-			Response.TransmitFile(tempZip);
+			Response.TransmitFile(zipFilePath);
 			Response.Flush();
 
-			FileSystemHelper.DeleteFile(tempZip);
-			FileSystemHelper.ClearDirectory(tempDir, true);
+			FileSystemHelper.DeleteFile(zipFilePath);
 
 			Response.End();
 		}
@@ -682,57 +626,34 @@ namespace SmartStore.Admin.Controllers
 			//Response.Write(GetResultString());
 		}
 
-		private async Task UploadAsync(string path, bool external = false)
+		private async Task UploadAsync(string destinationPath, bool external = false)
 		{
-			path = GetRelativePath(path);
+			destinationPath = GetRelativePath(destinationPath);
 
 			string message = null;
 			var hasError = false;
 
-			int.TryParse(GetSetting("MAX_IMAGE_WIDTH"), out var width);
-			int.TryParse(GetSetting("MAX_IMAGE_HEIGHT"), out var height);
-
-			var tempDir = FileSystemHelper.TempDirTenant("roxy " + CommonHelper.GenerateRandomInteger().ToString());
-
 			try
 			{
-				var notify = Request.Files.Count < 4;
-
-				// Copy uploaded files to temp folder and resize them
+				// Copy uploaded files to file storage
 				for (var i = 0; i < Request.Files.Count; ++i)
 				{
-					var file = Request.Files[i];
-					var extension = Path.GetExtension(file.FileName);
+					var uploadedFile = Request.Files[i];
+					var extension = Path.GetExtension(uploadedFile.FileName);
 
 					if (IsAllowedFileType(extension))
 					{
-						var dest = Path.Combine(tempDir, file.FileName);
-						file.SaveAs(dest);
-
-						if (_mediaTypeResolver.Resolve(extension) == MediaType.Image && extension != ".svg")
+						var path = _fileSystem.Combine(destinationPath, uploadedFile.FileName);
+						if (_fileSystem.CheckUniqueFileName(path, out var uniquePath))
 						{
-							ImageResize(dest, dest, width, height, notify);
+							path = uniquePath;
 						}
+
+						await _fileSystem.SaveStreamAsync(path, uploadedFile.InputStream);
 					}
 					else
 					{
 						message = LangRes("E_UploadNotAll");
-					}
-				}
-
-				// Copy files to file storage
-				foreach (var tempPath in Directory.EnumerateFiles(tempDir, "*", SearchOption.TopDirectoryOnly))
-				{
-					using (var stream = new FileStream(tempPath, FileMode.Open, FileAccess.Read))
-					{
-						var name = Path.GetFileName(tempPath);
-						var newPath = _fileSystem.Combine(path, name);
-						if (_fileSystem.CheckUniqueFileName(newPath, out var uniquePath))
-						{
-							newPath = uniquePath;
-						}
-
-						await _fileSystem.SaveStreamAsync(newPath, stream);
 					}
 				}
 			}
@@ -740,10 +661,6 @@ namespace SmartStore.Admin.Controllers
 			{
 				hasError = true;
 				message = ex.Message;
-			}
-			finally
-			{
-				FileSystemHelper.ClearDirectory(tempDir, true);
 			}
 
 			if (IsAjaxUpload())

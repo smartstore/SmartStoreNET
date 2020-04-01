@@ -193,11 +193,11 @@ namespace SmartStore.Services.Media
 				var evt = new ImageUploadValidatedEvent(query, originalSize);
 				_eventPublisher.Publish(evt);
 
-				if (evt.ResultBuffer != null)
+				if (evt.ResultStream != null)
 				{
 					// Maybe subscriber forgot to set this, so check
 					size = evt.ResultSize.IsEmpty ? originalSize : evt.ResultSize;
-					return evt.ResultBuffer;
+					return evt.ResultStream.ToByteArray();
 				}
 				else
 				{
@@ -212,7 +212,7 @@ namespace SmartStore.Services.Media
 			using (var result = _imageProcessor.ProcessImage(query))
 			{
 				size = new Size(result.Width, result.Height);
-				var buffer = result.OutputStream.ToArray();
+				var buffer = result.OutputStream.ToByteArray();
 				return buffer;
 			}
 		}

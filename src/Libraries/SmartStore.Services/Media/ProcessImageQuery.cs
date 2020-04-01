@@ -81,7 +81,7 @@ namespace SmartStore.Services.Media
 		}
 
 		/// <summary>
-		/// The source image's physical path, app-relative virtual path, or a Stream, byte array or Image instance.
+		/// The source image's physical path, app-relative virtual path, or a Stream, byte array, Image or IFile instance.
 		/// </summary>
 		public object Source { get; set; }
 

@@ -36,7 +36,7 @@ namespace SmartStore.Services.Media
 		}
 
 		/// <summary>
-		/// Refreshes file metadata like size, dimensions rtc.
+		/// Refreshes file metadata like size, dimensions etc.
 		/// </summary>
 		/// <param name="stream">The file stream (can be null)</param>
 		public static void RefreshMetadata(this MediaFile file, Stream stream)

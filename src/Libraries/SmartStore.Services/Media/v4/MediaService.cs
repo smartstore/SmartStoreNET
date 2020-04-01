@@ -16,6 +16,7 @@ using SmartStore.Services.Media.Storage;
 using SmartStore.Utilities;
 using SmartStore.Collections;
 using SmartStore.Core.IO;
+using System.Drawing;
 
 namespace SmartStore.Services.Media
 {
@@ -404,6 +405,43 @@ namespace SmartStore.Services.Media
             }
         }
 
+        public byte[] FindEqualFile(byte[] fileBuffer, IEnumerable<MediaFile> files, out int equalFileId)
+        {
+            Guard.NotNull(fileBuffer, nameof(fileBuffer));
+            Guard.NotNull(files, nameof(files));
+
+            equalFileId = 0;
+
+            var myStream = new MemoryStream(fileBuffer);
+
+            try
+            {
+                foreach (var file in files)
+                {
+                    myStream.Seek(0, SeekOrigin.Begin);
+
+                    using (var otherStream = _storageProvider.OpenRead(file))
+                    {
+                        if (myStream.ContentsEqual(otherStream))
+                        {
+                            equalFileId = file.Id;
+                            return null;
+                        }
+                    }
+                }
+
+                return fileBuffer;
+            }
+            catch
+            {
+                return fileBuffer;
+            }
+            finally
+            {
+                myStream.Dispose();
+            }
+        }
+
         #endregion
 
         #region Create/Update/Delete
@@ -425,54 +463,44 @@ namespace SmartStore.Services.Media
 
         public MediaFileInfo SaveFile(string path, Stream stream, bool isTransient = true, bool overwrite = false)
         {
-            Guard.NotEmpty(path, nameof(path));
-
-            if (!_mediaHelper.TokenizePath(path, out var pathData))
-            {
-                throw new ArgumentException("Invalid path '{0}'. Valid path expression is: {albumName}[/subfolders]/{fileName}.{extension}".FormatInvariant(path), nameof(path));
-            }
-
-            if (pathData.Extension.IsEmpty())
-            {
-                throw new ArgumentException($"Cannot process files without file extension. Path: {path}", nameof(path));
-            }
+            var pathData = CreatePathData(path);
 
             var file = _fileRepo.Table.FirstOrDefault(x => x.Name == pathData.FileName && x.FolderId == pathData.Folder.Id);
+            stream = ProcessFile(ref file, pathData, stream, isTransient, overwrite);
 
-            if (file != null && !overwrite)
+            using (var scope = new DbContextScope(_fileRepo.Context, autoCommit: false))
             {
-                throw new DuplicateMediaFileException(pathData.FullPath);
+                if (file.Id == 0)
+                {
+                    _fileRepo.Insert(file);
+                    scope.Commit();
+                }
+
+                _storageProvider.Save(file, stream);
+                scope.Commit();
             }
 
-            if (file != null)
+            return ConvertMediaFile(file, pathData.Folder);
+        }
+
+        public async Task<MediaFileInfo> SaveFileAsync(string path, Stream stream, bool isTransient = true, bool overwrite = false)
+        {
+            var pathData = CreatePathData(path);
+
+            var file = await _fileRepo.Table.FirstOrDefaultAsync(x => x.Name == pathData.FileName && x.FolderId == pathData.Folder.Id);
+            stream = ProcessFile(ref file, pathData, stream, isTransient, overwrite);
+
+            using (var scope = new DbContextScope(_fileRepo.Context, autoCommit: false))
             {
-                ValidateMimeTypes("Save", file.MimeType, pathData.MimeType);
-                _imageCache.Delete(file);
+                if (file.Id == 0)
+                {
+                    _fileRepo.Insert(file);
+                    await scope.CommitAsync();
+                }
+
+                await _storageProvider.SaveAsync(file, stream);
+                await scope.CommitAsync();
             }
-
-            file = file ?? new MediaFile
-            {
-                IsTransient = isTransient,
-                FolderId = pathData.Node.Value.Id
-            };
-
-            // TODO: (mm) Get pretty SeName
-
-            file.Name = pathData.FileName;
-            file.Extension = pathData.Extension;
-            file.MimeType = pathData.MimeType;
-            file.MediaType = file.MediaType ?? _mediaTypeResolver.Resolve(pathData.Extension, pathData.MimeType);
-
-            // TODO: (mm) Validate (process image resize)
-
-            file.RefreshMetadata(stream);
-
-            if (file.Id == 0)
-            {
-                _fileRepo.Insert(file);
-            }
-
-            _storageProvider.Save(file, stream);
 
             return ConvertMediaFile(file, pathData.Folder);
         }
@@ -495,6 +523,123 @@ namespace SmartStore.Services.Media
 
                 // Delete entity
                 _fileRepo.Delete(file);
+            }
+        }
+
+        protected MediaPathData CreatePathData(string path)
+        {
+            Guard.NotEmpty(path, nameof(path));
+
+            if (!_mediaHelper.TokenizePath(path, out var pathData))
+            {
+                throw new ArgumentException("Invalid path '{0}'. Valid path expression is: {albumName}[/subfolders]/{fileName}.{extension}".FormatInvariant(path), nameof(path));
+            }
+
+            if (pathData.Extension.IsEmpty())
+            {
+                throw new ArgumentException($"Cannot process files without file extension. Path: {path}", nameof(path));
+            }
+
+            return pathData;
+        }
+
+        protected Stream ProcessFile(ref MediaFile file, MediaPathData pathData, Stream inStream, bool isTransient = true, bool overwrite = false)
+        {
+            if (file != null && !overwrite)
+            {
+                throw new DuplicateMediaFileException(pathData.FullPath);
+            }
+
+            if (file != null)
+            {
+                ValidateMimeTypes("Save", file.MimeType, pathData.MimeType);
+                _imageCache.Delete(file);
+            }
+
+            file = file ?? new MediaFile
+            {
+                IsTransient = isTransient,
+                FolderId = pathData.Node.Value.Id
+            };
+
+            // TODO: (mm) Get pretty SeName
+
+            file.Name = pathData.FileName;
+            file.Extension = pathData.Extension;
+            file.MimeType = pathData.MimeType;
+            if (file.MediaType == null)
+            {
+                file.MediaType = _mediaTypeResolver.Resolve(pathData.Extension, pathData.MimeType);
+            }
+
+            // Process image
+            if (inStream != null && inStream.Length > 0 && file.MediaType == MediaType.Image && ProcessImage(file, inStream, out var outStream, out var size))
+            {
+                inStream = outStream;
+                file.Size = (int)outStream.Length;
+                file.Width = size.Width;
+                file.Height = size.Height;
+                file.PixelSize = size.Width * size.Height;
+            }
+            else
+            {
+                file.RefreshMetadata(inStream);
+            }  
+
+            return inStream;
+        }
+
+        protected bool ProcessImage(MediaFile file, Stream inStream, out Stream outStream, out Size size)
+        {
+            outStream = null;
+            size = Size.Empty;
+
+            var originalSize = ImageHeader.GetDimensions(inStream, file.MimeType);
+
+            if (!_imageProcessor.IsSupportedImage(file.Extension))
+            {
+                size = originalSize; // e.g.: image/svg+xml
+                return true;
+            }    
+
+            var maxSize = _mediaSettings.MaximumImageSize;
+
+            var query = new ProcessImageQuery(inStream)
+            {
+                Quality = _mediaSettings.DefaultImageQuality,
+                Format = file.Extension,
+                DisposeSource = true,
+                IsValidationMode = true
+            };
+
+            if (originalSize.IsEmpty || (originalSize.Height <= maxSize && originalSize.Width <= maxSize))
+            {
+                // Give subscribers the chance to (pre)-process
+                var evt = new ImageUploadValidatedEvent(query, originalSize);
+                _eventPublisher.Publish(evt);
+
+                if (evt.ResultStream != null)
+                {
+                    outStream = evt.ResultStream;
+                    // Maybe subscriber forgot to set this, so check
+                    size = evt.ResultSize.IsEmpty ? originalSize : evt.ResultSize;
+                }
+                else
+                {
+                    size = originalSize;
+                }
+
+                return true;
+            }
+
+            query.MaxWidth = maxSize;
+            query.MaxHeight = maxSize;
+
+            using (var result = _imageProcessor.ProcessImage(query, false))
+            {
+                size = new Size(result.Width, result.Height);
+                outStream = result.OutputStream;
+                return true;
             }
         }
 

@@ -42,9 +42,19 @@ namespace SmartStore.Services.Media
         IList<MediaFileInfo> GetFilesByIds(int[] ids, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
         bool CheckUniqueFileName(string path, out string newPath);
 
+        /// <summary>
+        /// Finds an equal file by comparing the binary buffer
+        /// </summary>
+        /// <param name="fileBuffer">Binary source file data to find a match for.</param>
+        /// <param name="files">The sequence of files to seek within for duplicates.</param>
+        /// <param name="equalFileId">Id of equal file if any</param>
+        /// <returns>The passed file binary when no file equals in the sequence, <c>null</c> otherwise.</returns>
+        byte[] FindEqualFile(byte[] fileBuffer, IEnumerable<MediaFile> files, out int equalFileId);
+
         //MediaFileInfo CreateFile(string path);
         //MediaFileInfo CreateFile(int folderId, string fileName);
         MediaFileInfo SaveFile(string path, Stream stream, bool isTransient = true, bool overwrite = false);
+        Task<MediaFileInfo> SaveFileAsync(string path, Stream stream, bool isTransient = true, bool overwrite = false);
         void DeleteFile(MediaFile file, bool permanent);
 
         MediaFileInfo CopyFile(MediaFile file, string destinationFileName, bool overwrite = false);

@@ -177,49 +177,49 @@ namespace SmartStore.Admin.Controllers
 
 		private void ImageResize(string path, string dest, int maxWidth, int maxHeight, bool notify = true)
 		{
-			if (dest.IsEmpty())
-				return;
+			//if (dest.IsEmpty())
+			//	return;
 
-			if (maxWidth == 0 && maxHeight == 0)
-			{
-				maxWidth = _mediaSettings.Value.MaximumImageSize;
-				maxHeight = _mediaSettings.Value.MaximumImageSize;
-			}
+			//if (maxWidth == 0 && maxHeight == 0)
+			//{
+			//	maxWidth = _mediaSettings.Value.MaximumImageSize;
+			//	maxHeight = _mediaSettings.Value.MaximumImageSize;
+			//}
 
-			var buffer = System.IO.File.ReadAllBytes(path);
+			//var buffer = System.IO.File.ReadAllBytes(path);
 
-			var query = new ProcessImageQuery(buffer)
-			{
-				Quality = _mediaSettings.Value.DefaultImageQuality,
-				Format = Path.GetExtension(path).Trim('.').ToLower(),
-				IsValidationMode = true,
-				Notify = notify
-			};
+			//var query = new ProcessImageQuery(buffer)
+			//{
+			//	Quality = _mediaSettings.Value.DefaultImageQuality,
+			//	Format = Path.GetExtension(path).Trim('.').ToLower(),
+			//	IsValidationMode = true,
+			//	Notify = notify
+			//};
 
-			var originalSize = ImageHeader.GetDimensions(buffer, MimeTypes.MapNameToMimeType(path));
+			//var originalSize = ImageHeader.GetDimensions(buffer, MimeTypes.MapNameToMimeType(path));
 
-			if (originalSize.IsEmpty || (originalSize.Height <= maxHeight && originalSize.Width <= maxWidth))
-			{
-				// Give subscribers the chance to (pre)-process
-				var evt = new ImageUploadValidatedEvent(query, originalSize);
-				_eventPublisher.Publish(evt);
+			//if (originalSize.IsEmpty || (originalSize.Height <= maxHeight && originalSize.Width <= maxWidth))
+			//{
+			//	// Give subscribers the chance to (pre)-process
+			//	var evt = new ImageUploadValidatedEvent(query, originalSize);
+			//	_eventPublisher.Publish(evt);
 
-				if (evt.ResultBuffer != null)
-				{
-					System.IO.File.WriteAllBytes(dest, evt.ResultBuffer);
-				}
+			//	if (evt.ResultBuffer != null)
+			//	{
+			//		System.IO.File.WriteAllBytes(dest, evt.ResultBuffer);
+			//	}
 
-				return;
-			}
+			//	return;
+			//}
 
-			if (maxWidth > 0) query.MaxWidth = maxWidth;
-			if (maxHeight > 0) query.MaxHeight = maxHeight;
+			//if (maxWidth > 0) query.MaxWidth = maxWidth;
+			//if (maxHeight > 0) query.MaxHeight = maxHeight;
 
-			using (var result = _imageProcessor.Value.ProcessImage(query))
-			{
-				buffer = result.OutputStream.ToArray();
-				System.IO.File.WriteAllBytes(dest, buffer);
-			}
+			//using (var result = _imageProcessor.Value.ProcessImage(query))
+			//{
+			//	buffer = result.OutputStream.ToArray();
+			//	System.IO.File.WriteAllBytes(dest, buffer);
+			//}
 		}
 
 		private string GetResultString(string message = null, string type = "ok")
@@ -783,10 +783,10 @@ namespace SmartStore.Admin.Controllers
 						var dest = Path.Combine(tempDir, file.FileName);
 						file.SaveAs(dest);
 
-						if (GetFileContentType(extension) == "image" && extension != ".svg")
-						{
-							ImageResize(dest, dest, width, height, notify);
-						}
+						//if (GetFileContentType(extension) == "image" && extension != ".svg")
+						//{
+						//	ImageResize(dest, dest, width, height, notify);
+						//}
 					}
 					else
 					{

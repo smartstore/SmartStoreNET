@@ -10,6 +10,7 @@ using SmartStore.Core.Logging;
 using ImageProcessor.Configuration;
 using SmartStore.Core.Events;
 using SmartStore.Utilities;
+using SmartStore.Core.IO;
 
 namespace SmartStore.Services.Media
 {
@@ -81,6 +82,13 @@ namespace SmartStore.Services.Media
 							inBuffer = fs.ToByteArray();
 						}
 					}
+					else if (source is IFile file)
+					{
+						using (var fs = file.OpenRead())
+						{
+							inBuffer = fs.ToByteArray();
+						}
+					}
 					else
 					{
 						throw new ProcessImageException("Invalid source type '{0}' in query.".FormatInvariant(query.Source.GetType().FullName), query);
@@ -134,7 +142,7 @@ namespace SmartStore.Services.Media
 							// ...and format has not changed
 							&& result.MimeType == result.SourceMimeType;
 
-						if (compare && inBuffer.LongLength <= outStream.GetBuffer().LongLength)
+						if (compare && inBuffer.LongLength <= outStream.Length)
 						{
 							// Source is smaller. Throw away result and get back to source.
 							outStream.Dispose();

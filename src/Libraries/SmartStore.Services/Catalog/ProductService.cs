@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Data.Caching;
+using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Catalog
@@ -969,39 +970,54 @@ namespace SmartStore.Services.Catalog
             return productPictures;
         }
 
-		public virtual Multimap<int, ProductMediaFile> GetProductPicturesByProductIds(int[] productIds, bool onlyFirstPicture = false)
+		public virtual Multimap<int, ProductMediaFile> GetProductPicturesByProductIds(
+            int[] productIds,
+            int? maxPicturesPerProduct = null,
+            MediaLoadFlags flags = MediaLoadFlags.None)
 		{
-            Guard.NotNull(productIds, nameof(productIds));
-
-            if (!productIds.Any())
+            if (!(productIds?.Any() ?? false))
             {
                 return new Multimap<int, ProductMediaFile>();
             }
 
-            var query = 
-				from pp in _productPictureRepository.TableUntracked.Expand(x => x.MediaFile)
-				where productIds.Contains(pp.ProductId)
-				orderby pp.ProductId, pp.DisplayOrder
-				select pp;
+            var take = maxPicturesPerProduct ?? int.MaxValue;
 
-			if (onlyFirstPicture)
-			{
-				var map = query.GroupBy(x => x.ProductId, x => x)
-					.Select(x => x.FirstOrDefault())
-					.ToList()
-					.ToMultimap(x => x.ProductId, x => x);
+            var query = _productPictureRepository.TableUntracked
+                .Where(pp => productIds.Contains(pp.ProductId))
+                .GroupBy(pp => pp.ProductId, x => x)
+                .SelectMany(pp => pp.OrderBy(x => x.DisplayOrder).Take(take));
 
-				return map;
-			}
-			else
-			{
-				var map = query
-					.ToList()
-					.ToMultimap(x => x.ProductId, x => x);
+            // For eager loading apply Include() after GroupBy().
+            if (flags == MediaLoadFlags.None)
+            {
+                query = query.Include(pp => pp.MediaFile);
+            }
+            else
+            {
+                if (flags.HasFlag(MediaLoadFlags.WithBlob))
+                {
+                    query = query.Include(pp => pp.MediaFile.MediaStorage);
+                }
+                if (flags.HasFlag(MediaLoadFlags.WithFolder))
+                {
+                    query = query.Include(pp => pp.MediaFile.Folder);
+                }
+                if (flags.HasFlag(MediaLoadFlags.WithTags))
+                {
+                    query = query.Include(pp => pp.MediaFile.Tags);
+                }
+                if (flags.HasFlag(MediaLoadFlags.WithTracks))
+                {
+                    query = query.Include(pp => pp.MediaFile.Tracks);
+                }
+            }
 
-				return map;
-			}
-		}
+            var map = query
+                .ToList()
+                .ToMultimap(x => x.ProductId, x => x);
+
+            return map;
+        }
 
         public virtual ProductMediaFile GetProductPictureById(int productPictureId)
         {

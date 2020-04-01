@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Services.Media;
 
 namespace SmartStore.Services.Catalog
 {
@@ -341,13 +341,17 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product pictures</returns>
         IList<ProductMediaFile> GetProductPicturesByProductId(int productId);
 
-		/// <summary>
-		/// Get product pictures by product identifiers
-		/// </summary>
-		/// <param name="productIds">Product identifiers</param>
-		/// <param name="onlyFirstPicture">Whether to only load the first picture for each product</param>
-		/// <returns>Product pictures</returns>
-		Multimap<int, ProductMediaFile> GetProductPicturesByProductIds(int[] productIds, bool onlyFirstPicture = false);
+        /// <summary>
+        /// Get product pictures by product identifiers.
+        /// </summary>
+        /// <param name="productIds">Product identifiers.</param>
+        /// <param name="maxPicturesPerProduct">Maximum number of pictures to load.</param>
+        /// <param name="flags">Eager loading flags.</param>
+        /// <returns>Product pictures.</returns>
+        Multimap<int, ProductMediaFile> GetProductPicturesByProductIds(
+            int[] productIds,
+            int? maxPicturesPerProduct = null,
+            MediaLoadFlags flags = MediaLoadFlags.None);
 
         /// <summary>
         /// Gets a product picture

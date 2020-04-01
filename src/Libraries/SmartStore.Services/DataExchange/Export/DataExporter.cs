@@ -834,8 +834,7 @@ namespace SmartStore.Services.DataExchange.Export
 				x => _productService.Value.GetAppliedDiscountsByProductIds(x),
 				x => _productService.Value.GetBundleItemsByProductIds(x, includeHidden),
                 x => _productService.Value.GetAssociatedProductsByProductIds(x, includeHidden),
-				x => _pictureService.Value.GetPicturesByProductIds(x, maxPicturesPerProduct, true),
-				x => _productService.Value.GetProductPicturesByProductIds(x),
+				x => _productService.Value.GetProductPicturesByProductIds(x, maxPicturesPerProduct, MediaLoadFlags.WithBlob),
 				x => _productService.Value.GetProductTagsByProductIds(x, includeHidden),
                 x => _downloadService.Value.GetDownloadsByEntityIds(x, nameof(Product))
 			);

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 using System.Web;
 using System.Web.Hosting;
 using SmartStore.Core;
@@ -86,12 +81,23 @@ namespace SmartStore.Services.Media
 			return defaultImageFileName;
 		}
 
-		public virtual string GenerateUrl(MediaFileInfo file, ProcessImageQuery imageQuery, string host = null)
+		public virtual string GenerateUrl(
+            MediaFileInfo file,
+            ProcessImageQuery imageQuery,
+            string host = null,
+            FallbackPictureType fallbackType = FallbackPictureType.Entity)
 		{
-			// TODO: (mm) DoFallback
-			
-			// Build virtual path with pattern "media/{id}/{album}/{dir}/{NameWithExt}"
-			var path = _processedImagesRootPath + file.Id.ToString(CultureInfo.InvariantCulture) + "/" + file.Path;
+            string path = null;
+
+            // Build virtual path with pattern "media/{id}/{album}/{dir}/{NameWithExt}"
+            if (file?.Path?.HasValue() ?? false)
+            {
+                path = string.Concat(_processedImagesRootPath, file.Id.ToString(CultureInfo.InvariantCulture), "/", file.Path);
+            }
+            else if (fallbackType > FallbackPictureType.NoFallback)
+            {
+                path = string.Concat(_processedImagesRootPath, "0/", GetFallbackImageFileName(fallbackType));
+            }
 
 			if (host == null)
 			{

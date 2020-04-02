@@ -60,7 +60,6 @@ namespace SmartStore.Services.DataExchange.Export
         private readonly Lazy<ILocalizedEntityService> _localizedEntityService;
 		private readonly Lazy<ILanguageService> _languageService;
         private readonly Lazy<IUrlRecordService> _urlRecordService;
-		private readonly Lazy<IPictureService> _pictureService;
         private readonly Lazy<IMediaService> _mediaService;
 		private readonly Lazy<IPriceCalculationService> _priceCalculationService;
 		private readonly Lazy<ICurrencyService> _currencyService;
@@ -110,7 +109,6 @@ namespace SmartStore.Services.DataExchange.Export
             Lazy<ILocalizedEntityService> localizedEntityService,
 			Lazy<ILanguageService> languageService,
 			Lazy<IUrlRecordService> urlRecordService,
-			Lazy<IPictureService> pictureService,
             Lazy<IMediaService> mediaService,
             Lazy<IPriceCalculationService> priceCalculationService,
 			Lazy<ICurrencyService> currencyService,
@@ -157,7 +155,6 @@ namespace SmartStore.Services.DataExchange.Export
 			_localizedEntityService = localizedEntityService;
 			_languageService = languageService;
 			_urlRecordService = urlRecordService;
-			_pictureService = pictureService;
             _mediaService = mediaService;
 			_priceCalculationService = priceCalculationService;
 			_currencyService = currencyService;
@@ -197,11 +194,9 @@ namespace SmartStore.Services.DataExchange.Export
 			_localizationSettings = localizationSettings;
 			_taxSettings = taxSettings;
             _seoSettings = seoSettings;
-
-			T = NullLocalizer.Instance;
 		}
 
-		public Localizer T { get; set; }
+		public Localizer T { get; set; } = NullLocalizer.Instance;
 
         #endregion
 

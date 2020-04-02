@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Media.Storage;
@@ -69,6 +66,6 @@ namespace SmartStore.Services.Media
         MediaFolderInfo CopyFolder(string path, string destinationPath, bool overwrite = false);
         void DeleteFolder(string path, FileDeleteStrategy strategy = FileDeleteStrategy.SoftDelete);
 
-        string GetUrl(MediaFileInfo file, ProcessImageQuery query, string host = null);
+        string GetUrl(MediaFileInfo file, ProcessImageQuery query, string host = null, FallbackPictureType fallbackType = FallbackPictureType.Entity);
     }
 }

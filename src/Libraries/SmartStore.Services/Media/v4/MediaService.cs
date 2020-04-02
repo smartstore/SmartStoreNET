@@ -615,10 +615,13 @@ namespace SmartStore.Services.Media
 
         #region URL generation
 
-        public string GetUrl(MediaFileInfo file, ProcessImageQuery imageQuery, string host = null)
+        public string GetUrl(
+            MediaFileInfo file,
+            ProcessImageQuery imageQuery,
+            string host = null,
+            FallbackPictureType fallbackType = FallbackPictureType.Entity)
         {
-            // TODO: (mm) DoFallback
-            return _urlGenerator.GenerateUrl(file, imageQuery, host);
+            return _urlGenerator.GenerateUrl(file, imageQuery, host, fallbackType);
         }
 
         #endregion

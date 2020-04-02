@@ -724,8 +724,9 @@ namespace SmartStore.Services.DataExchange.Export
 
 			var numberOfPictures = ctx.Projection.NumberOfMediaFiles ?? int.MaxValue;
 			var productDetailsPictureSize = ctx.Projection.PictureSize > 0 ? ctx.Projection.PictureSize : _mediaSettings.Value.ProductDetailsPictureSize;
+            var imageQuery = ctx.Projection.PictureSize > 0 ? new ProcessImageQuery { MaxWidth = ctx.Projection.PictureSize } : null;
 
-			IEnumerable<ProductMediaFile> productPictures = ctx.ProductExportContext.ProductPictures.GetOrLoad(product.Id);
+            IEnumerable<ProductMediaFile> productPictures = ctx.ProductExportContext.ProductPictures.GetOrLoad(product.Id);
 			var productManufacturers = ctx.ProductExportContext.ProductManufacturers.GetOrLoad(product.Id);
 			var productCategories = ctx.ProductExportContext.ProductCategories.GetOrLoad(product.Id);
 			var productAttributes = ctx.ProductExportContext.Attributes.GetOrLoad(product.Id);
@@ -745,10 +746,10 @@ namespace SmartStore.Services.DataExchange.Export
 
             if (productContext.Combination != null)
             {
-                var pictureIds = productContext.Combination.GetAssignedMediaIds();
-				if (pictureIds.Any())
+                var mediaIds = productContext.Combination.GetAssignedMediaIds();
+				if (mediaIds.Any())
 				{
-					productPictures = productPictures.Where(x => pictureIds.Contains(x.MediaFileId));
+					productPictures = productPictures.Where(x => mediaIds.Contains(x.MediaFileId));
 				}
 
                 attributesXml = productContext.Combination.AttributesXml;
@@ -1003,15 +1004,17 @@ namespace SmartStore.Services.DataExchange.Export
 			{
 				if (productPictures != null && productPictures.Any())
 				{
-					var firstPicture = productPictures.First().MediaFile;
-					dynObject._MainPictureUrl = _pictureService.Value.GetUrl(firstPicture, ctx.Projection.PictureSize, host: _services.StoreService.GetHost(ctx.Store));
-					dynObject._MainPictureRelativeUrl = _pictureService.Value.GetUrl(firstPicture, ctx.Projection.PictureSize);
+					var file = new MediaFileInfo(productPictures.First().MediaFile, null, string.Empty);
+
+                    dynObject._MainPictureUrl = _mediaService.Value.GetUrl(file, imageQuery, _services.StoreService.GetHost(ctx.Store));
+                    dynObject._MainPictureRelativeUrl = _mediaService.Value.GetUrl(file, imageQuery);
 				}
 				else if (!_catalogSettings.Value.HideProductDefaultPictures)
 				{
-					dynObject._MainPictureUrl = _pictureService.Value.GetFallbackUrl(ctx.Projection.PictureSize, host: _services.StoreService.GetHost(ctx.Store));
-					dynObject._MainPictureRelativeUrl = _pictureService.Value.GetFallbackUrl(ctx.Projection.PictureSize);
-				}
+                    // Get fallback image URL.
+                    dynObject._MainPictureUrl = _mediaService.Value.GetUrl(null, imageQuery, _services.StoreService.GetHost(ctx.Store));
+                    dynObject._MainPictureRelativeUrl = _mediaService.Value.GetUrl(null, imageQuery);
+                }
 				else
 				{
 					dynObject._MainPictureUrl = null;
@@ -1501,16 +1504,18 @@ namespace SmartStore.Services.DataExchange.Export
 
 			dynObject._HasNewsletterSubscription = ctx.NewsletterSubscriptions.Contains(customer.Email, StringComparer.CurrentCultureIgnoreCase);
 			dynObject._FullName = customer.GetFullName();
+            dynObject._AvatarPictureUrl = null;
 
-			if (_customerSettings.Value.AllowCustomersToUploadAvatars)
-			{
-				var pictureId = genericAttributes.FirstOrDefault(x => x.Key == SystemCustomerAttributeNames.AvatarPictureId);
-				if (pictureId != null)
-				{
-					// reduce traffic and do not export default avatar
-					dynObject._AvatarPictureUrl = _pictureService.Value.GetUrl(pictureId.Value.ToInt(), _mediaSettings.Value.AvatarPictureSize, false, _services.StoreService.GetHost(ctx.Store));
-				}
-			}
+            if (_customerSettings.Value.AllowCustomersToUploadAvatars)
+            {
+                // Reduce traffic and do not export default avatar.
+                var fileId = genericAttributes.FirstOrDefault(x => x.Key == SystemCustomerAttributeNames.AvatarPictureId)?.Value?.ToInt() ?? 0;
+                var file = _mediaService.Value.GetFileById(fileId);
+                if (file != null)
+                {
+                    dynObject._AvatarPictureUrl = _mediaService.Value.GetUrl(file, new ProcessImageQuery { MaxWidth = _mediaSettings.Value.AvatarPictureSize }, _services.StoreService.GetHost(ctx.Store));
+                }
+            }
 
 			result.Add(dynObject);
 

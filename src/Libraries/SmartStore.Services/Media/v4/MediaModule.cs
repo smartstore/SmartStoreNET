@@ -1,6 +1,8 @@
 ﻿using System;
 using Autofac;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Plugins;
+using SmartStore.Services.Configuration;
 using SmartStore.Services.Media.Migration;
 using SmartStore.Services.Media.Storage;
 
@@ -26,6 +28,8 @@ namespace SmartStore.Services.Media
             builder.RegisterType<AlbumRegistry>().As<IAlbumRegistry>().InstancePerRequest();
             builder.RegisterType<FolderService>().As<IFolderService>().InstancePerRequest();
             builder.RegisterType<MediaTracker>().As<IMediaTracker>().InstancePerRequest();
+            builder.RegisterType<MediaSearcher>().As<IMediaSearcher>().InstancePerRequest();
+            builder.Register(MediaStorageProviderFactory).As<IMediaStorageProvider>().InstancePerRequest();
             builder.RegisterType<MediaService>().As<IMediaService>().InstancePerRequest();
 
             builder.RegisterType<DownloadService>().As<IDownloadService>().InstancePerRequest();
@@ -45,6 +49,12 @@ namespace SmartStore.Services.Media
             builder.RegisterType<ImageHandler>().As<IMediaHandler>().InstancePerRequest();
             builder.RegisterType<VideoHandler>().As<IMediaHandler>().InstancePerRequest();
             builder.RegisterType<PdfHandler>().As<IMediaHandler>().InstancePerRequest();
+        }
+
+        private static IMediaStorageProvider MediaStorageProviderFactory(IComponentContext ctx)
+        {
+            var systemName = ctx.Resolve<ISettingService>().GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
+            return ctx.Resolve<IProviderManager>().GetProvider<IMediaStorageProvider>(systemName).Value;
         }
     }
 }

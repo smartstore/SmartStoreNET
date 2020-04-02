@@ -10,57 +10,52 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Events;
 using SmartStore.Core.Logging;
-using SmartStore.Core.Plugins;
-using SmartStore.Services.Configuration;
 using SmartStore.Services.Media.Storage;
-using SmartStore.Utilities;
-using SmartStore.Collections;
 using SmartStore.Core.IO;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore.Services.Media
 {
     public partial class MediaService : IMediaService
     {
         private readonly IRepository<MediaFile> _fileRepo;
-        private readonly IAlbumRegistry _albumRegistry;
         private readonly IFolderService _folderService;
-        private readonly IMediaTypeResolver _mediaTypeResolver;
-        private readonly IMediaUrlGenerator _mediaUrlGenerator;
+        private readonly IMediaSearcher _searcher;
+        private readonly IMediaTypeResolver _typeResolver;
+        private readonly IMediaUrlGenerator _urlGenerator;
         private readonly IEventPublisher _eventPublisher;
         private readonly MediaSettings _mediaSettings;
         private readonly IImageProcessor _imageProcessor;
         private readonly IImageCache _imageCache;
         private readonly IMediaStorageProvider _storageProvider;
-        private readonly MediaHelper _mediaHelper;
+        private readonly MediaHelper _helper;
 
         public MediaService(
             IRepository<MediaFile> fileRepo,
             IAlbumRegistry albumRegistry,
             IFolderService folderService,
-            IMediaTypeResolver mediaTypeResolver,
-            IMediaUrlGenerator mediaUrlGenerator,
-            ISettingService settingService,
+            IMediaSearcher searcher,
+            IMediaTypeResolver typeResolver,
+            IMediaUrlGenerator urlGenerator,
             IEventPublisher eventPublisher,
             MediaSettings mediaSettings,
             IImageProcessor imageProcessor,
             IImageCache imageCache,
-            IProviderManager providerManager,
-            MediaHelper mediaHelper)
+            IMediaStorageProvider storageProvider,
+            MediaHelper helper)
         {
             _fileRepo = fileRepo;
-            _albumRegistry = albumRegistry;
             _folderService = folderService;
-            _mediaTypeResolver = mediaTypeResolver;
-            _mediaUrlGenerator = mediaUrlGenerator;
+            _searcher = searcher;
+            _typeResolver = typeResolver;
+            _urlGenerator = urlGenerator;
             _eventPublisher = eventPublisher;
             _mediaSettings = mediaSettings;
             _imageProcessor = imageProcessor;
             _imageCache = imageCache;
-            _mediaHelper = mediaHelper;
-
-            var systemName = settingService.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
-            _storageProvider = providerManager.GetProvider<IMediaStorageProvider>(systemName).Value;
+            _storageProvider = storageProvider;
+            _helper = helper;
         }
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
@@ -74,190 +69,29 @@ namespace SmartStore.Services.Media
 
         public int CountFiles(MediaSearchQuery query)
         {
-            var q = PrepareQuery(query, MediaLoadFlags.None);
+            var q = _searcher.PrepareQuery(query, MediaLoadFlags.None);
             var count = q.Count();
             return count;
         }
 
         public Task<int> CountFilesAsync(MediaSearchQuery query)
         {
-            var q = PrepareQuery(query, MediaLoadFlags.None);
+            var q = _searcher.PrepareQuery(query, MediaLoadFlags.None);
             return q.CountAsync();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public MediaSearchResult SearchFiles(MediaSearchQuery query, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking)
         {
-            var q = PrepareQuery(query, flags);
-            var result = new PagedList<MediaFile>(q, query.PageIndex, query.PageSize);
-            
-            return new MediaSearchResult(result.Load(), ConvertMediaFile);
+            var files = _searcher.SearchFiles(query, flags);
+            return new MediaSearchResult(files.Load(), ConvertMediaFile);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task<MediaSearchResult> SearchFilesAsync(MediaSearchQuery query, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking)
         {
-            var q = PrepareQuery(query, flags);
-            var result = new PagedList<MediaFile>(q, query.PageIndex, query.PageSize);
-
-            return new MediaSearchResult(await result.LoadAsync(), ConvertMediaFile);
-        }
-
-        protected virtual MediaFileInfo ConvertMediaFile(MediaFile file)
-        {
-            var folder = _folderService.FindNode(file)?.Value;
-            return new MediaFileInfo(file, _storageProvider, folder?.Path);
-        }
-
-        private MediaFileInfo ConvertMediaFile(MediaFile file, MediaFolderNode folder)
-        {
-            return new MediaFileInfo(file, _storageProvider, folder?.Path);
-        }
-
-        public virtual IQueryable<MediaFile> PrepareQuery(MediaSearchQuery query, MediaLoadFlags flags)
-        {
-            Guard.NotNull(query, nameof(query));
-
-            var q = _fileRepo.TableUntracked;
-
-            // Deleted
-            if (query.Deleted != null)
-            {
-                q = q.Where(x => x.Deleted == query.Deleted.Value);
-            }
-
-            // Folder
-            if (query.FolderId > 0)
-            {
-                if (query.DeepSearch)
-                {
-                    var folderIds = _folderService.GetNodesFlattened(query.FolderId.Value, true).Select(x => x.Id).ToArray();
-                    q = q.Where(x => x.FolderId != null && folderIds.Contains(x.FolderId.Value));
-                }
-                else
-                {
-                    q = q.Where(x => x.FolderId == query.FolderId);
-                }
-            }
-
-            // MimeType
-            if (query.MimeTypes != null && query.MimeTypes.Length > 0)
-            {
-                q = q.Where(x => query.MimeTypes.Contains(x.MimeType));
-            }
-
-            // Extension
-            if (query.Extensions != null && query.Extensions.Length > 0)
-            {
-                q = q.Where(x => query.Extensions.Contains(x.Extension));
-            }
-
-            // MediaType
-            if (query.MediaTypes != null && query.MediaTypes.Length > 0)
-            {
-                q = q.Where(x => query.MediaTypes.Contains(x.MediaType));
-            }
-
-            // Tag
-            if (query.Tags != null && query.Tags.Length > 0)
-            {
-                q = q.Where(x => x.Tags.Any(t => query.Tags.Contains(t.Id)));
-            }
-
-            // Hidden
-            if (query.Hidden != null)
-            {
-                q = q.Where(x => x.Hidden == query.Hidden.Value);
-            }
-
-            // Term
-            if (query.Term.HasValue() && query.Term != "*")
-            {
-                // Convert file pattern to SQL 'LIKE' expression
-                q = ApplySearchTerm(q, query.Term, query.IncludeAltForTerm, query.ExactMatch);
-            }
-
-            // Sorting
-            if (query.SortBy.HasValue())
-            {
-                var ordering = query.SortBy;
-                if (query.SortDescending) ordering += " descending";
-
-                q = q.OrderBy(ordering);
-            }
-
-            return ApplyLoadFlags(q, flags);
-        }
-
-        private IQueryable<MediaFile> ApplySearchTerm(IQueryable<MediaFile> query, string term, bool includeAlt, bool exactMatch)
-        {
-            var hasAnyCharToken = term.IndexOf('*') > - 1;
-            var hasSingleCharToken = term.IndexOf('?') > -1;
-            var hasAnyWildcard = hasAnyCharToken || hasSingleCharToken;
-
-            if (!hasAnyWildcard)
-            {
-                return !includeAlt
-                    ? (exactMatch ? query.Where(x => x.Name == term) : query.Where(x => x.Name.Contains(term)))
-                    : (exactMatch ? query.Where(x => x.Name == term || x.Alt == term) : query.Where(x => x.Name.Contains(term) || x.Alt.Contains(term)));
-            }
-            else
-            {
-                // Convert file pattern to SQL LIKE expression:
-                // my*new_file-?.png > my%new/_file-_.png
-                
-                var hasUnderscore = term.IndexOf('_') > -1;
-
-                if (hasUnderscore)
-                {
-                    term = term.Replace("_", "/_");
-                }
-                if (hasAnyCharToken)
-                {
-                    term = term.Replace('*', '%');
-                }
-                if (hasSingleCharToken)
-                {
-                    term = term.Replace('?', '_');
-                }
-
-                return !includeAlt
-                    ? query.Where(x => DbFunctions.Like(x.Name, term, "/"))
-                    : query.Where(x => DbFunctions.Like(x.Name, term, "/") || DbFunctions.Like(x.Alt, term, "/"));
-            }
-        }
-
-        private IQueryable<MediaFile> ApplyLoadFlags(IQueryable<MediaFile> query, MediaLoadFlags flags)
-        {
-            if (flags == MediaLoadFlags.None)
-            {
-                return query;
-            }
-
-            if (flags.HasFlag(MediaLoadFlags.AsNoTracking))
-            {
-                query = query.AsNoTracking();
-            }
-
-            if (flags.HasFlag(MediaLoadFlags.WithBlob))
-            {
-                query = query.Include(x => x.MediaStorage);
-            }
-
-            if (flags.HasFlag(MediaLoadFlags.WithFolder))
-            {
-                query = query.Include(x => x.Folder);
-            }
-
-            if (flags.HasFlag(MediaLoadFlags.WithTags))
-            {
-                query = query.Include(x => x.Tags);
-            }
-
-            if (flags.HasFlag(MediaLoadFlags.WithTracks))
-            {
-                query = query.Include(x => x.Tracks);
-            }
-
-            return query;
+            var files = _searcher.SearchFiles(query, flags);
+            return new MediaSearchResult(await files.LoadAsync(), ConvertMediaFile);
         }
 
         #endregion
@@ -268,7 +102,7 @@ namespace SmartStore.Services.Media
         {
             Guard.NotEmpty(path, nameof(path));
 
-            if (_mediaHelper.TokenizePath(path, out var tokens))
+            if (_helper.TokenizePath(path, out var tokens))
             {
                 return _fileRepo.Table.Any(x => x.FolderId == tokens.Folder.Id && x.Name == tokens.FileName);
             }
@@ -280,7 +114,7 @@ namespace SmartStore.Services.Media
         {
             Guard.NotEmpty(path, nameof(path));
 
-            if (_mediaHelper.TokenizePath(path, out var tokens))
+            if (_helper.TokenizePath(path, out var tokens))
             {
                 var table = _fileRepo.Table;
 
@@ -303,7 +137,7 @@ namespace SmartStore.Services.Media
                 return null;
 
             var query = _fileRepo.Table.Where(x => x.Id == id);
-            var entity = ApplyLoadFlags(query, flags).FirstOrDefault();
+            var entity = _searcher.ApplyLoadFlags(query, flags).FirstOrDefault();
 
             if (entity != null)
             {
@@ -321,7 +155,7 @@ namespace SmartStore.Services.Media
             Guard.NotEmpty(fileName, nameof(fileName));
 
             var query = _fileRepo.Table.Where(x => x.Name == fileName && x.FolderId == folderId);
-            var entity = ApplyLoadFlags(query, flags).FirstOrDefault();
+            var entity = _searcher.ApplyLoadFlags(query, flags).FirstOrDefault();
 
             if (entity != null)
             {
@@ -338,7 +172,7 @@ namespace SmartStore.Services.Media
             Guard.NotNull(ids, nameof(ids));
 
             var query = _fileRepo.Table.Where(x => ids.Contains(x.Id));
-            var result = ApplyLoadFlags(query, flags).ToList();
+            var result = _searcher.ApplyLoadFlags(query, flags).ToList();
 
             return result.OrderBySequence(ids).Select(ConvertMediaFile).ToList();
         }
@@ -351,7 +185,7 @@ namespace SmartStore.Services.Media
 
             newPath = null;
 
-            if (!_mediaHelper.TokenizePath(path, out var pathData))
+            if (!_helper.TokenizePath(path, out var pathData))
             {
                 return false;
             }
@@ -379,7 +213,7 @@ namespace SmartStore.Services.Media
                 Term = string.Concat(pathData.FileTitle, "-*", pathData.Extension)
             };
 
-            var query = PrepareQuery(q, MediaLoadFlags.AsNoTracking).Select(x => x.Name);
+            var query = _searcher.PrepareQuery(q, MediaLoadFlags.AsNoTracking).Select(x => x.Name);
             var files = new HashSet<string>(query.ToList(), StringComparer.OrdinalIgnoreCase);
 
             if (files.Count == 0)
@@ -530,7 +364,7 @@ namespace SmartStore.Services.Media
         {
             Guard.NotEmpty(path, nameof(path));
 
-            if (!_mediaHelper.TokenizePath(path, out var pathData))
+            if (!_helper.TokenizePath(path, out var pathData))
             {
                 throw new ArgumentException("Invalid path '{0}'. Valid path expression is: {albumName}[/subfolders]/{fileName}.{extension}".FormatInvariant(path), nameof(path));
             }
@@ -569,7 +403,7 @@ namespace SmartStore.Services.Media
             file.MimeType = pathData.MimeType;
             if (file.MediaType == null)
             {
-                file.MediaType = _mediaTypeResolver.Resolve(pathData.Extension, pathData.MimeType);
+                file.MediaType = _typeResolver.Resolve(pathData.Extension, pathData.MimeType);
             }
 
             // Process image
@@ -784,16 +618,27 @@ namespace SmartStore.Services.Media
         public string GetUrl(MediaFileInfo file, ProcessImageQuery imageQuery, string host = null)
         {
             // TODO: (mm) DoFallback
-            return _mediaUrlGenerator.GenerateUrl(file, imageQuery, host);
+            return _urlGenerator.GenerateUrl(file, imageQuery, host);
         }
 
         #endregion
 
         #region Utils
 
+        protected MediaFileInfo ConvertMediaFile(MediaFile file)
+        {
+            var folder = _folderService.FindNode(file)?.Value;
+            return new MediaFileInfo(file, _storageProvider, folder?.Path);
+        }
+
+        protected MediaFileInfo ConvertMediaFile(MediaFile file, MediaFolderNode folder)
+        {
+            return new MediaFileInfo(file, _storageProvider, folder?.Path);
+        }
+
         private void EnsureMetadataResolved(MediaFile file, bool saveOnResolve)
         {
-            var mediaType = _mediaTypeResolver.Resolve(file.Extension, file.MimeType);
+            var mediaType = _typeResolver.Resolve(file.Extension, file.MimeType);
 
             var resolveDimensions = mediaType == MediaType.Image && file.Width == null && file.Height == null;
             var resolveSize = file.Size <= 0;
@@ -846,7 +691,7 @@ namespace SmartStore.Services.Media
             }
         }
 
-        private void MapMediaFile(MediaFile from, MediaFile to)
+        private static void MapMediaFile(MediaFile from, MediaFile to)
         {
             to.Alt = from.Alt;
             to.Deleted = from.Deleted;
@@ -868,7 +713,7 @@ namespace SmartStore.Services.Media
 
         private MediaPathData CreateDestinationPathData(MediaFile file, string destinationFileName)
         {
-            if (!_mediaHelper.TokenizePath(destinationFileName, out var pathData))
+            if (!_helper.TokenizePath(destinationFileName, out var pathData))
             {
                 // Passed path is NOT a path, but a file name
 
@@ -889,7 +734,7 @@ namespace SmartStore.Services.Media
             return pathData;
         }
 
-        private void ValidateMimeTypes(string operation, string mime1, string mime2)
+        private static void ValidateMimeTypes(string operation, string mime1, string mime2)
         {
             if (!mime1.Equals(mime2, StringComparison.OrdinalIgnoreCase))
             {

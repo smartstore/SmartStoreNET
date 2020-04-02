@@ -10,6 +10,11 @@ namespace SmartStore.Services.Media
 {
     public static class IFolderServiceExtensions
     {
+        public static MediaFolder GetFolderByPath(this IFolderService service, string path, bool withFiles = false)
+        {
+            return service.GetFolderById(service.GetNodeByPath(path)?.Value?.Id ?? 0, withFiles);
+        }
+
         public static TreeNode<MediaFolderNode> FindNode(this IFolderService service, MediaFile mediaFile)
         {
             return service.GetNodeById(mediaFile?.FolderId ?? 0);
@@ -27,13 +32,11 @@ namespace SmartStore.Services.Media
 
         public static bool AreInSameAlbum(this IFolderService service, params MediaFile[] files)
         {
-            //return files.Select(x => FindAlbum(service, x)).All(x => x.Value.Id == files[0].FolderId);
             return files.Select(x => FindAlbum(service, x)).Distinct().Count() <= 1;
         }
 
         public static bool AreInSameAlbum(this IFolderService service, params int[] folderIds)
         {
-            //return folderIds.Select(x => FindAlbum(service, x)).All(x => x.Value.Id == folderIds[0]);
             return folderIds.Select(x => FindAlbum(service, x)).Distinct().Count() <= 1;
         }
 

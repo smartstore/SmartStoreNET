@@ -162,14 +162,14 @@ namespace SmartStore.Services.Media
             return _mediaService.SaveFile(path, null, false, false);
         }
 
-        public Task<IFile> CreateFileAsync(string path)
+        public async Task<IFile> CreateFileAsync(string path)
         {
-            return Task.FromResult(CreateFile(path));
+            return await _mediaService.SaveFileAsync(path, null, false, false);
         }
 
-        public void CreateFolder(string path)
+        public IFolder CreateFolder(string path)
         {
-            throw new NotImplementedException();
+            return _mediaService.CreateFolder(path);
         }
 
         public void DeleteFile(string path)
@@ -177,21 +177,13 @@ namespace SmartStore.Services.Media
             var file = _mediaService.GetFileByPath(path);
             if (file?.Exists == true)
             {
-                _mediaService.DeleteFile((MediaFile)file, false);
+                _mediaService.DeleteFile((MediaFile)file, true);
             }
         }
 
         public void DeleteFolder(string path)
         {
-            var node = _folderService.GetNodeByPath(path);
-            if (node != null)
-            {
-                var folder = _folderService.GetFolderById(node.Value.Id);
-                if (folder != null)
-                {
-                    _folderService.DeleteFolder(folder);
-                }
-            }
+            _mediaService.DeleteFolder(path, FileDeleteStrategy.Delete);
         }
 
         public bool FileExists(string path)
@@ -201,7 +193,7 @@ namespace SmartStore.Services.Media
 
         public bool FolderExists(string path)
         {
-            return _folderService.FolderExists(path);
+            return _mediaService.FolderExists(path);
         }
 
         public IFile GetFile(string path)
@@ -277,22 +269,12 @@ namespace SmartStore.Services.Media
 
         public void RenameFolder(string path, string newPath)
         {
-            Guard.NotEmpty(path, nameof(path));
-            Guard.NotEmpty(newPath, nameof(newPath));
+            _mediaService.MoveFolder(path, newPath);
+        }
 
-            var sourceNode = _folderService.GetNodeByPath(path);
-            if (sourceNode == null)
-            {
-                throw new MediaFolderNotFoundException(path);
-            }
-
-            var sourceFolder = _folderService.GetFolderById(sourceNode.Value.Id);
-            if (sourceFolder == null)
-            {
-                throw new MediaFolderNotFoundException(path);
-            }
-
-            _folderService.MoveFolder(sourceFolder, newPath);
+        public void CopyFolder(string path, string destinationPath, bool overwrite = true)
+        {
+            _mediaService.CopyFolder(path, destinationPath, overwrite);
         }
 
         public void SaveStream(string path, Stream inputStream)

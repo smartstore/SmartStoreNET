@@ -275,16 +275,9 @@ namespace SmartStore.Core.IO
 			return (di.Attributes & FileAttributes.Hidden) != 0;
 		}
 
-		public void CreateFolder(string path)
+		public IFolder CreateFolder(string path)
 		{
-			var directoryInfo = new DirectoryInfo(MapStorage(path));
-
-			if (directoryInfo.Exists)
-			{
-				throw new ArgumentException("Directory " + path + " already exists.");
-			}
-
-			Directory.CreateDirectory(directoryInfo.FullName);
+			return new LocalFolder(path, Directory.CreateDirectory(MapStorage(path)));
 		}
 
 		public void DeleteFolder(string path)
@@ -314,6 +307,29 @@ namespace SmartStore.Core.IO
 			}
 
 			Directory.Move(sourceDirectory.FullName, targetDirectory.FullName);
+		}
+
+		public void CopyFolder(string path, string destinationPath, bool overwrite = true)
+		{
+			var sourceDirectory = new DirectoryInfo(MapStorage(path));
+			if (!sourceDirectory.Exists)
+			{
+				throw new DirectoryNotFoundException("Directory " + path + "does not exist.");
+			}
+
+			var targetPath = Combine(MapStorage(destinationPath), sourceDirectory.Name);
+			var destDirectory = new DirectoryInfo(targetPath);
+			if (!overwrite && destDirectory.Exists)
+			{
+				throw new ArgumentException("Directory " + destinationPath + " already exists.");
+			}
+
+			if (!destDirectory.Exists)
+			{
+				destDirectory.Create();
+			}
+
+			FileSystemHelper.CopyDirectory(sourceDirectory, destDirectory, overwrite);
 		}
 
 		public bool CheckUniqueFileName(string path, out string newPath)

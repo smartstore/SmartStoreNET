@@ -121,8 +121,8 @@ namespace SmartStore.Core.IO
         /// Creates a folder in the storage provider.
         /// </summary>
         /// <param name="path">The relative path to the folder to be created.</param>
-        /// <exception cref="ArgumentException">If the folder already exists.</exception>
-        void CreateFolder(string path);
+        /// <returns>The folder instance.</returns>
+        IFolder CreateFolder(string path);
 
         /// <summary>
         /// Deletes a folder in the storage provider.
@@ -137,6 +137,14 @@ namespace SmartStore.Core.IO
 		/// <param name="path">The relative path to the folder to be renamed.</param>
 		/// <param name="newPath">The relative path to the new folder.</param>
 		void RenameFolder(string path, string newPath);
+
+		/// <summary>
+		/// Copies a folder and all its content to another folder.
+		/// </summary>
+		/// <param name="path">Path of source folder</param>
+		/// <param name="destinationPath">Path of destination folder</param>
+		/// <param name="overwrite">Whether to overwrite existing files</param>
+		void CopyFolder(string path, string destinationPath, bool overwrite = true);
 
 		/// <summary>
 		/// Checks whether the name of the file is unique within its directory.

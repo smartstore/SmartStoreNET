@@ -365,6 +365,7 @@
     <Compile Include="Media\v4\Extensions\MediaFileExtensions.cs" />
     <Compile Include="Media\Storage\MediaMover.cs" />
     <Compile Include="Media\TransientMediaClearTask.cs" />
+    <Compile Include="Media\v4\MediaService.Folder.cs" />
     <Compile Include="Media\v4\MediaServiceFileSystemAdapter.cs" />
     <Compile Include="Media\v4\Album\AlbumRegistry.cs" />
     <Compile Include="Media\v4\Album\IAlbumProvider.cs" />
@@ -387,6 +388,8 @@
     <Compile Include="Media\v4\MediaFileInfo.cs" />
     <Compile Include="Media\v4\MediaModule.cs" />
     <Compile Include="Media\v4\MediaUrlGenerator.cs" />
+    <Compile Include="Media\v4\Search\IMediaSearcher.cs" />
+    <Compile Include="Media\v4\Search\MediaSearcher.cs" />
     <Compile Include="Media\v4\Search\MediaSearchQuery.cs" />
     <Compile Include="Media\v4\MediaService.cs" />
     <Compile Include="Media\v4\MediaTypes\MediaType.cs" />

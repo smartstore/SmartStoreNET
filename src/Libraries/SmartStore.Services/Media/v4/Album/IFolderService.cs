@@ -5,19 +5,15 @@ using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Media
 {
-    public interface IFolderService
+    public interface IFolderService : IScopedService
     {
         TreeNode<MediaFolderNode> GetRootNode();
         TreeNode<MediaFolderNode> GetNodeById(int id);
         TreeNode<MediaFolderNode> GetNodeByPath(string path);
-        void ClearCache();
 
-        MediaFolder GetFolderById(int id);
-        bool FolderExists(string path);
-
-        MediaFolderInfo InsertFolder(MediaFolder folder);
-        void UpdateFolder(MediaFolder folder);
+        MediaFolder GetFolderById(int id, bool withFiles = false);
+        void InsertFolder(MediaFolder folder);
         void DeleteFolder(MediaFolder folder);
-        MediaFolderInfo MoveFolder(MediaFolder folder, string destinationPath);
+        void UpdateFolder(MediaFolder folder);
     }
 }

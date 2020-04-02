@@ -14,7 +14,7 @@ namespace SmartStore.Services.Media
 	public partial class MediaHelper
 	{
 		private readonly IFolderService _folderService;
-		
+
 		public MediaHelper(IFolderService folderService)
 		{
 			_folderService = folderService;
@@ -44,6 +44,8 @@ namespace SmartStore.Services.Media
 		}
 
 		#region Legacy (remove later)
+
+		// TODO: (mm) remove this stuff
 
 		public static void UpdateDownloadTransientStateFor<TEntity>(TEntity entity, Expression<Func<TEntity, int>> downloadIdProp, bool save = false) where TEntity : BaseEntity
 		{

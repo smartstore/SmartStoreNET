@@ -522,54 +522,80 @@ namespace SmartStore.Admin.Controllers
 
 		private void DeleteDir(string path)
 		{
-			//path = GetRelativePath(path);
+			path = GetRelativePath(path);
 
-			//if (!_fileSystem.FolderExists(path))
-			//{
-			//	throw new Exception(LangRes("E_DeleteDirInvalidPath"));
-			//}
+			if (path == FileRoot)
+			{
+				throw new Exception(LangRes("E_CannotDeleteRoot"));
+			}
 
-			//if (path == FileRoot)
-			//{
-			//	throw new Exception(LangRes("E_CannotDeleteRoot"));
-			//}
-
-			////throw new Exception(LangRes("E_DeleteNonEmpty"));
-
-			//try
-			//{
-			//	_fileSystem.DeleteFolder(path);
-
-			//	Response.Write(GetResultString());
-			//}
-			//catch (Exception ex)
-			//{
-			//	throw new Exception(LangRes("E_CannotDeleteDir") + ": " + ex.Message);
-			//}
+			try
+			{
+				_fileSystem.DeleteFolder(path);
+				Response.Write(GetResultString());
+			}
+			catch (Exception ex)
+			{
+				throw ex;
+			}
 		}
 
 		private void CreateDir(string path, string name)
 		{
+			path = GetRelativePath(path);
+
+			try
+			{
+				path = _fileSystem.Combine(path, name);
+				_fileSystem.CreateFolder(path);
+				Response.Write(GetResultString());
+			}
+			catch (Exception ex)
+			{
+				throw ex;
+			}
+		}
+
+		private void CopyDir(string path, string targetPath)
+		{
+			path = GetRelativePath(path);
+			targetPath = GetRelativePath(targetPath);
+
+			try
+			{
+				_fileSystem.CopyFolder(path, targetPath, false);
+				Response.Write(GetResultString());
+			}
+			catch (Exception ex)
+			{
+				throw ex;
+			}
+
 			//path = GetRelativePath(path);
+			//targetPath = GetRelativePath(targetPath);
 
 			//if (!_fileSystem.FolderExists(path))
 			//{
-			//	throw new Exception(LangRes("E_CreateDirInvalidPath"));
+			//	throw new Exception(LangRes("E_CopyDirInvalidPath"));
 			//}
 
-			//try
+			//var folder = _fileSystem.GetFolder(path);
+
+			//targetPath = _fileSystem.Combine(targetPath, folder.Name);
+
+			//if (_fileSystem.FolderExists(targetPath))
 			//{
-			//	path = _fileSystem.Combine(path, name);
-
-			//	if (!_fileSystem.FolderExists(path))
-			//		_fileSystem.CreateFolder(path);
-
-			//	Response.Write(GetResultString());
+			//	throw new Exception(LangRes("E_DirAlreadyExists"));
 			//}
-			//catch (Exception ex)
+
+			//if (targetPath.Contains(path))
 			//{
-			//	throw new Exception(LangRes("E_CreateDirFailed") + ": " + ex.Message);
+			//	throw new Exception(T("Common.CannotCopyFolderIntoItself"));
 			//}
+
+			//InternalCopyDir(path, targetPath);
+
+			//Response.Write(GetResultString());
 		}
 
 		private void CopyDirCore(string path, string targetPath)
@@ -595,35 +621,6 @@ namespace SmartStore.Admin.Controllers
 
 			//	CopyDirCore(folder.Path, newPath);
 			//}
-		}
-
-		private void CopyDir(string path, string targetPath)
-		{
-			//path = GetRelativePath(path);
-			//targetPath = GetRelativePath(targetPath);
-
-			//if (!_fileSystem.FolderExists(path))
-			//{
-			//	throw new Exception(LangRes("E_CopyDirInvalidPath"));
-			//}
-
-			//var folder = _fileSystem.GetFolder(path);
-
-			//targetPath = _fileSystem.Combine(targetPath, folder.Name);
-
-			//if (_fileSystem.FolderExists(targetPath))
-			//{
-			//	throw new Exception(LangRes("E_DirAlreadyExists"));
-			//}
-
-			//if (targetPath.Contains(path))
-			//{
-			//	throw new Exception(T("Common.CannotCopyFolderIntoItself"));
-			//}
-
-			//CopyDirCore(path, targetPath);
-
-			//Response.Write(GetResultString());
 		}
 
 		private async Task UploadAsync(string destinationPath, bool external = false)

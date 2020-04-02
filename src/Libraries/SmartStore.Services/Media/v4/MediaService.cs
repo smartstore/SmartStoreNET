@@ -366,7 +366,7 @@ namespace SmartStore.Services.Media
 
             if (!_helper.TokenizePath(path, out var pathData))
             {
-                throw new ArgumentException("Invalid path '{0}'. Valid path expression is: {albumName}[/subfolders]/{fileName}.{extension}".FormatInvariant(path), nameof(path));
+                throw new ArgumentException("Invalid path '{0}'. Valid path expression is: {{albumName}}[/subfolders]/{{fileName}}.{{extension}}".FormatInvariant(path), nameof(path));
             }
 
             if (pathData.Extension.IsEmpty())
@@ -432,6 +432,7 @@ namespace SmartStore.Services.Media
 
             if (!_imageProcessor.IsSupportedImage(file.Extension))
             {
+                outStream = inStream;
                 size = originalSize; // e.g.: image/svg+xml
                 return true;
             }    
@@ -460,6 +461,7 @@ namespace SmartStore.Services.Media
                 }
                 else
                 {
+                    outStream = inStream;
                     size = originalSize;
                 }
 

@@ -290,13 +290,12 @@ namespace SmartStore.Services.Orders
 		/// Get open carts subtotal
 		/// </summary>
 		/// <returns>subtotal</returns>
-		public decimal GetAllOpenCartSubTotal();
+		decimal GetAllOpenCartSubTotal();
 
 		/// <summary>
 		/// Get open wishlists subtotal
 		/// </summary>
 		/// <returns>subtotal</returns>
-		public decimal GetAllOpenWishlistSubTotal();
-
+		decimal GetAllOpenWishlistSubTotal();
 	}
 }

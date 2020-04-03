@@ -7,7 +7,7 @@ using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
-using SmartStore.Core.Domain.Media;
+using SmartStore.Core.IO;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.DataExchange.Import.Events;
 using SmartStore.Services.Localization;
@@ -19,10 +19,9 @@ namespace SmartStore.Services.Catalog.Importer
     public class CategoryImporter : EntityImporterBase
 	{
 		private readonly IRepository<Category> _categoryRepository;
-		private readonly IRepository<MediaFile> _pictureRepository;
 		private readonly ICategoryTemplateService _categoryTemplateService;
-		private readonly IPictureService _pictureService;
-		private readonly ILocalizedEntityService _localizedEntityService;
+        private readonly IMediaService _mediaService;
+        private readonly ILocalizedEntityService _localizedEntityService;
 		private readonly FileDownloadManager _fileDownloadManager;
 
 		private static readonly Dictionary<string, Expression<Func<Category, string>>> _localizableProperties = new Dictionary<string, Expression<Func<Category, string>>>
@@ -38,16 +37,14 @@ namespace SmartStore.Services.Catalog.Importer
 
 		public CategoryImporter(
 			IRepository<Category> categoryRepository,
-			IRepository<MediaFile> pictureRepository,
 			ICategoryTemplateService categoryTemplateService,
-			IPictureService pictureService,
-			ILocalizedEntityService localizedEntityService,
+            IMediaService mediaService,
+            ILocalizedEntityService localizedEntityService,
 			FileDownloadManager fileDownloadManager)
 		{
 			_categoryRepository = categoryRepository;
-			_pictureRepository = pictureRepository;
 			_categoryTemplateService = categoryTemplateService;
-			_pictureService = pictureService;
+            _mediaService = mediaService;
 			_localizedEntityService = localizedEntityService;
 			_fileDownloadManager = fileDownloadManager;
 		}
@@ -190,7 +187,7 @@ namespace SmartStore.Services.Catalog.Importer
                         continue;
                     }
 
-                    var seoName = _pictureService.GetPictureSeName(row.EntityDisplayName);
+                    var seoName = SeoHelper.GetSeName(row.EntityDisplayName, true, false, false);
                     var image = CreateDownloadImage(context, imageUrl, seoName, 1);
 
                     if (image.Url.HasValue() && !image.Success.HasValue)
@@ -201,35 +198,34 @@ namespace SmartStore.Services.Catalog.Importer
                     if ((image.Success ?? false) && File.Exists(image.Path))
                     {
                         Succeeded(image);
-                        var pictureBinary = File.ReadAllBytes(image.Path);
+                        var fileBinary = File.ReadAllBytes(image.Path);
 
-                        if (pictureBinary != null && pictureBinary.Length > 0)
+                        if (fileBinary != null && fileBinary.Length > 0)
                         {
-                            var currentPictures = new List<MediaFile>();
-                            var pictureId = row.Entity.MediaFileId ?? 0;
-                            if (pictureId != 0)
+                            var currentFiles = new List<MediaFileInfo>();
+                            var file = _mediaService.GetFileById(row.Entity.MediaFileId ?? 0, MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithBlob);
+                            if (file != null)
                             {
-                                var picture = _pictureRepository.TableUntracked.Expand(x => x.MediaStorage).FirstOrDefault(x => x.Id == pictureId);
-                                if (picture != null)
-                                {
-                                    currentPictures.Add(picture);
-                                }
+                                currentFiles.Add(file);
                             }
 
-                            pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out var equalPictureId);
+                            fileBinary = _mediaService.FindEqualFile(fileBinary, currentFiles.Select(x => x.File), out var _);
 
-                            if (pictureBinary != null && pictureBinary.Length > 0)
+                            if (fileBinary != null && fileBinary.Length > 0)
                             {
-                                var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, false, false, "category");
-                                if (picture != null)
+                                var extension = MimeTypes.MapMimeTypeToExtension(image.MimeType).NullEmpty() ?? ".jpg";
+                                var path = string.Concat("category/", seoName.ToValidFileName(), extension.EnsureStartsWith("."));
+
+                                var newFile = _mediaService.SaveFile(path, fileBinary.ToStream(), false, true);
+                                if (newFile != null)
                                 {
-                                    row.Entity.MediaFileId = picture.Id;
+                                    row.Entity.MediaFileId = newFile.Id;
                                     _categoryRepository.Update(row.Entity);
                                 }
                             }
                             else
                             {
-                                context.Result.AddInfo("Found equal picture in data store. Skipping field.", row.GetRowInfo(), "ImageUrls");
+                                context.Result.AddInfo("Found equal image in data store. Skipping field.", row.GetRowInfo(), "ImageUrls");
                             }
                         }
                     }

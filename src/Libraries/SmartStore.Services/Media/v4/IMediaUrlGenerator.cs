@@ -4,6 +4,10 @@ namespace SmartStore.Services.Media
 {
     public interface IMediaUrlGenerator
     {
-        string GenerateUrl(MediaFileInfo file, ProcessImageQuery imageQuery, string host = null, FallbackPictureType fallbackType = FallbackPictureType.Entity);
+        string GenerateUrl(
+            MediaFileInfo file, 
+            ProcessImageQuery imageQuery, 
+            string host = null,
+            bool doFallback = true);
     }
 }

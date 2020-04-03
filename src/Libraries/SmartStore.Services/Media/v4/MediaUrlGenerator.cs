@@ -9,16 +9,16 @@ namespace SmartStore.Services.Media
 {
     public partial class MediaUrlGenerator : IMediaUrlGenerator
     {
-		private readonly ISettingService _settingService;
 		private readonly HttpContextBase _httpContext;
 
         private readonly string _host;
         private readonly string _appPath;
+		private readonly string _fallbackImageFileName;
 
-        private static readonly string _processedImagesRootPath;
-        private static readonly string _fallbackImagesRootPath;
+		private static readonly string _processedImagesRootPath;
+        private static readonly string _fallbackImagesRootPath;		
 
-        static MediaUrlGenerator()
+		static MediaUrlGenerator()
         {
 			_processedImagesRootPath = "media4/"; // MediaFileSystem.GetMediaPublicPath(); // TODO: (mm) change
             _fallbackImagesRootPath = "content/images/";
@@ -30,7 +30,6 @@ namespace SmartStore.Services.Media
 			IStoreContext storeContext,
 			HttpContextBase httpContext)
         {
-			_settingService = settingService;
 			_httpContext = httpContext;
 
 			string appPath = "/";
@@ -57,6 +56,7 @@ namespace SmartStore.Services.Media
 
 			_host = _host.EmptyNull().EnsureEndsWith("/");
 			_appPath = appPath.EnsureEndsWith("/");
+			_fallbackImageFileName = settingService.GetSettingByKey("Media.DefaultImageName", "default-image.png");
 		}
 
 		public static string FallbackImagesRootPath
@@ -64,40 +64,27 @@ namespace SmartStore.Services.Media
 			get { return _fallbackImagesRootPath; }
 		}
 
-		protected virtual string GetFallbackImageFileName(FallbackPictureType defaultPictureType = FallbackPictureType.Entity)
-		{
-			string defaultImageFileName;
-
-			switch (defaultPictureType)
-			{
-				case FallbackPictureType.Entity:
-					defaultImageFileName = _settingService.GetSettingByKey("Media.DefaultImageName", "default-image.png");
-					break;
-				default:
-					defaultImageFileName = _settingService.GetSettingByKey("Media.DefaultImageName", "default-image.png");
-					break;
-			}
-
-			return defaultImageFileName;
-		}
-
 		public virtual string GenerateUrl(
             MediaFileInfo file,
             ProcessImageQuery imageQuery,
             string host = null,
-            FallbackPictureType fallbackType = FallbackPictureType.Entity)
+            bool doFallback = true)
 		{
-            string path = null;
+            string path;
 
             // Build virtual path with pattern "media/{id}/{album}/{dir}/{NameWithExt}"
-            if (file?.Path?.HasValue() ?? false)
+            if (file?.Path != null)
             {
-                path = string.Concat(_processedImagesRootPath, file.Id.ToString(CultureInfo.InvariantCulture), "/", file.Path);
-            }
-            else if (fallbackType > FallbackPictureType.NoFallback)
+				path = _processedImagesRootPath + file.Id.ToString(CultureInfo.InvariantCulture) + "/" + file.Path;
+			}
+            else if (doFallback)
             {
-                path = string.Concat(_processedImagesRootPath, "0/", GetFallbackImageFileName(fallbackType));
-            }
+				path = _processedImagesRootPath + "0/" + _fallbackImageFileName;
+			}
+			else
+			{
+				return null;
+			}
 
 			if (host == null)
 			{

@@ -666,13 +666,14 @@ namespace SmartStore.Services.Media
 
         #region URL generation
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string GetUrl(
             MediaFileInfo file,
             ProcessImageQuery imageQuery,
             string host = null,
-            FallbackPictureType fallbackType = FallbackPictureType.Entity)
+            bool doFallback = true)
         {
-            return _urlGenerator.GenerateUrl(file, imageQuery, host, fallbackType);
+            return _urlGenerator.GenerateUrl(file, imageQuery, host, doFallback);
         }
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Web;
@@ -45,6 +46,7 @@ namespace SmartStore.Web.Framework.Modelling
 			Transmitter = new FileStreamTransmitter(file.OpenRead);
 			ContentType = contentType.NullEmpty() ?? MimeTypes.MapNameToMimeType(file.Name);
 			FileLength = file.Size;
+			Dimensions = file.Dimensions;
 			LastModifiedUtc = file.LastUpdated;
 		}
 
@@ -125,6 +127,8 @@ namespace SmartStore.Web.Framework.Modelling
 
 		public long? FileLength { get; set; }
 
+		public Size? Dimensions { get; set; }
+
 		public DateTime LastModifiedUtc { get; set; }
 
 		public TimeSpan MaxAge { get; set; } = TimeSpan.FromDays(7);
@@ -195,14 +199,20 @@ namespace SmartStore.Web.Framework.Modelling
 
 		private FileResponder ResolveResponder(HttpRequestBase request)
 		{
-			// is this a request for an unmodified file?
+			// Is this a HEAD request
+			if (request.HttpMethod == "HEAD")
+			{
+				return new HeadFileResponder(this);
+			}
+
+			// Is this a request for an unmodified file?
 			var ifNoneMatch = request.Headers["If-None-Match"];
 			if (ifNoneMatch.HasValue() && ETag == ifNoneMatch)
 			{
 				return new UnmodifiedFileResponder(this);
 			}
 
-			// is this a Range request?
+			// Is this a Range request?
 			var rangeHeader = request.Headers["Range"];
 			if (rangeHeader.HasValue() && rangeHeader.StartsWith("bytes", StringComparison.OrdinalIgnoreCase))
 			{

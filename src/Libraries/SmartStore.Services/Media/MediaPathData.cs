@@ -21,6 +21,13 @@ namespace SmartStore.Services.Media
 			_name = fileName;
 		}
 
+		public MediaPathData(string path)
+		{
+			Guard.NotEmpty(path, nameof(path));
+
+			_name = Path.GetFileName(path);
+		}
+
 		public MediaPathData(MediaPathData pathData)
 		{
 			Node = pathData.Node;

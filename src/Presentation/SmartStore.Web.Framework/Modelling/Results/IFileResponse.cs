@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 namespace SmartStore.Web.Framework.Modelling
 {
@@ -6,6 +7,7 @@ namespace SmartStore.Web.Framework.Modelling
 	{
 		string ContentType { get; }
 		long? FileLength { get; }
+		Size? Dimensions { get; }
 		DateTime LastModifiedUtc { get; }
 		TimeSpan MaxAge { get; }
 		string ETag { get; }

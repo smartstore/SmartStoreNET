@@ -47,7 +47,7 @@ namespace SmartStore.Web.Infrastructure
 			RegisterMediaRoute("Media4UploadedWithTenant", "Uploaded", str);
 
 			// Match URL pattern /{pub}/media/{id}/{path}[?{query}], e.g. '/media/234/{album}/myproduct.png?size=250'
-			SmartUrlRoutingModule.RegisterRoutablePath(@"/{0}([1-9]\d*|0)/.*?$".FormatInvariant(media4PublicPath), "GET|HEAD");
+			SmartUrlRoutingModule.RegisterRoutablePath(@"/{0}[0-9]*/.*?$".FormatInvariant(media4PublicPath), "GET|HEAD");
 			RegisterMediaRoute("Media4", "File", "{id}");
 
 			#endregion

@@ -20,6 +20,7 @@ using SmartStore.Web.Framework.Localization;
 using System.Web.Routing;
 using SmartStore.Core.Security;
 using System.Collections.Generic;
+using SmartStore.Core.IO;
 
 namespace SmartStore.Web.Controllers
 {
@@ -122,8 +123,14 @@ namespace SmartStore.Web.Controllers
 		public async Task<ActionResult> File(int id /* mediaFileId */, string path)
 		{
 			MediaFileInfo mediaFile = null;
+			MediaPathData pathData = null;
 
-			if (!_mediaHelper.TokenizePath(path, out var pathData))
+			if (id == 0)
+			{
+				// This is most likely a request for a default placeholder image
+				pathData = new MediaPathData(path);
+			}
+			else if (!_mediaHelper.TokenizePath(path, out pathData))
 			{
 				// Missing or malformed Uri: get file metadata from DB by id, but only when current user has media manage rights
 				if (!_permissionService.Authorize(Permissions.Media.Update))
@@ -134,7 +141,7 @@ namespace SmartStore.Web.Controllers
 				mediaFile = _mediaService.GetFileById(id, MediaLoadFlags.AsNoTracking);
 				if (mediaFile == null || mediaFile.FolderId == null || mediaFile.Deleted)
 				{
-					return NotFound(pathData.MimeType);
+					return NotFound(mediaFile?.MimeType);
 				}
 
 				pathData = new MediaPathData(_folderService.GetNodeById(mediaFile.FolderId.Value), mediaFile.Name)

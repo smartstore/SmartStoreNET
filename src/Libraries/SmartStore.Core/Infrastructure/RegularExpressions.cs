@@ -16,7 +16,7 @@ namespace SmartStore
         public static readonly Regex IsAlpha = new Regex("[^a-zA-Z]", RegexOptions.Compiled);
         public static readonly Regex IsAlphaNumeric = new Regex("[^a-zA-Z0-9]", RegexOptions.Compiled);
         public static readonly Regex IsNotNumber = new Regex("[^0-9.-]", RegexOptions.Compiled);
-        public static readonly Regex IsPositiveInteger = new Regex(@"\d{1,10}", RegexOptions.Compiled);
+        public static readonly Regex IsPositiveInteger = new Regex(@"^\d{1,10}", RegexOptions.Compiled);
         public static readonly Regex IsNumeric = new Regex("(" + ValidRealPattern + ")|(" + ValidIntegerPattern + ")", RegexOptions.Compiled);
 
   //      //public static readonly Regex IsWebUrl = new Regex(@"(http|https)://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?", RegexOptions.Singleline | RegexOptions.Compiled);

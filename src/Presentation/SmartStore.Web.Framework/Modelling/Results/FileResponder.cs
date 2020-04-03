@@ -46,6 +46,39 @@ namespace SmartStore.Web.Framework.Modelling
 	}
 
 
+	internal sealed class HeadFileResponder : FileResponder
+	{
+		public HeadFileResponder(IFileResponse fileResponse)
+			: base(fileResponse)
+		{
+		}
+
+		public override bool TrySendHeaders(HttpContextBase context)
+		{
+			var response = context.Response;
+
+			base.TrySendHeaders(context);
+
+			response.StatusCode = (int)HttpStatusCode.OK;
+			response.AddHeader("Content-Length", (FileResponse.FileLength ?? 0).ToString(CultureInfo.InvariantCulture));
+
+			if (FileResponse.Dimensions != null)
+			{
+				response.AddHeader("X-Width", FileResponse.Dimensions.Value.Width.ToString(CultureInfo.InvariantCulture));
+				response.AddHeader("X-Height", FileResponse.Dimensions.Value.Height.ToString(CultureInfo.InvariantCulture));
+			}
+
+			response.End();
+
+			return true;
+		}
+
+		public override void SendFile(HttpContextBase context)
+		{
+			// Don't send any file.
+		}
+	}
+
 
 	internal sealed class UnmodifiedFileResponder : FileResponder
 	{

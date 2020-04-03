@@ -8,8 +8,8 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Forums;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.IO;
 using SmartStore.Core.Security;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Common;
@@ -28,12 +28,11 @@ namespace SmartStore.Services.Customers.Importer
 
 		private readonly IRepository<Customer> _customerRepository;
 		private readonly IRepository<CustomerRole> _customerRoleRepository;
-        private readonly IRepository<MediaFile> _pictureRepository;
 		private readonly ICommonServices _services;
         private readonly ICustomerService _customerService;
         private readonly IGenericAttributeService _genericAttributeService;
-        private readonly IPictureService _pictureService;
-		private readonly IAffiliateService _affiliateService;
+        private readonly IMediaService _mediaService;
+        private readonly IAffiliateService _affiliateService;
 		private readonly ICountryService _countryService;
 		private readonly IStateProvinceService _stateProvinceService;
 		private readonly FileDownloadManager _fileDownloadManager;
@@ -46,12 +45,11 @@ namespace SmartStore.Services.Customers.Importer
         public CustomerImporter(
 			IRepository<Customer> customerRepository,
 			IRepository<CustomerRole> customerRoleRepository,
-            IRepository<MediaFile> pictureRepository,
 			ICommonServices services,
             ICustomerService customerService,
             IGenericAttributeService genericAttributeService,
-			IPictureService pictureService,
-			IAffiliateService affiliateService,
+            IMediaService mediaService,
+            IAffiliateService affiliateService,
 			ICountryService countryService,
 			IStateProvinceService stateProvinceService,
 			FileDownloadManager fileDownloadManager,
@@ -63,11 +61,10 @@ namespace SmartStore.Services.Customers.Importer
 		{
 			_customerRepository = customerRepository;
 			_customerRoleRepository = customerRoleRepository;
-			_pictureRepository = pictureRepository;
+            _mediaService = mediaService;
 			_services = services;
             _customerService = customerService;
 			_genericAttributeService = genericAttributeService;
-			_pictureService = pictureService;
 			_affiliateService = affiliateService;
 			_countryService = countryService;
 			_stateProvinceService = stateProvinceService;
@@ -603,16 +600,13 @@ namespace SmartStore.Services.Customers.Importer
 			foreach (var row in batch)
 			{
 				var urlOrPath = row.GetDataValue<string>("AvatarPictureUrl");
-				if (urlOrPath.IsEmpty())
-					continue;
+                if (urlOrPath.IsEmpty())
+                {
+                    continue;
+                }
 
-				var equalPictureId = 0;
-				var currentPictures = new List<MediaFile>();
-				var seoName = _pictureService.GetPictureSeName(row.EntityDisplayName);
-
+				var seoName = SeoHelper.GetSeName(row.EntityDisplayName, true, false, false);
 				var image = CreateDownloadImage(context, urlOrPath, seoName, 1);
-				if (image == null)
-					continue;
 
 				if (image.Url.HasValue() && !image.Success.HasValue)
 				{
@@ -622,37 +616,37 @@ namespace SmartStore.Services.Customers.Importer
 				if ((image.Success ?? false) && File.Exists(image.Path))
 				{
 					Succeeded(image);
-					var pictureBinary = File.ReadAllBytes(image.Path);
+                    var fileBinary = File.ReadAllBytes(image.Path);
 
-					if (pictureBinary != null && pictureBinary.Length > 0)
-					{
-						var pictureId = row.Entity.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
-						if (pictureId != 0)
-						{
-							var picture = _pictureRepository.TableUntracked.Expand(x => x.MediaStorage).FirstOrDefault(x => x.Id == pictureId);
-							if (picture != null)
-							{
-								currentPictures.Add(picture);
-							}
-						}
-                        
-						pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
+                    if (fileBinary != null && fileBinary.Length > 0)
+                    {
+                        var currentFiles = new List<MediaFileInfo>();
+                        var fileId = row.Entity.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
+                        var file = _mediaService.GetFileById(fileId, MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithBlob);
+                        if (file != null)
+                        {
+                            currentFiles.Add(file);
+                        }
 
-						if (pictureBinary != null && pictureBinary.Length > 0)
-						{
-                            var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, false, false, "customer");
+                        fileBinary = _mediaService.FindEqualFile(fileBinary, currentFiles.Select(x => x.File), out var _);
 
-                            if (picture != null)
-							{
-								SaveAttribute(row, SystemCustomerAttributeNames.AvatarPictureId, picture.Id);
-							}
-						}
-						else
-						{
-							context.Result.AddInfo("Found equal picture in data store. Skipping field.", row.GetRowInfo(), "AvatarPictureUrl");
-						}
-					}
-				}
+                        if (fileBinary != null && fileBinary.Length > 0)
+                        {
+                            var extension = MimeTypes.MapMimeTypeToExtension(image.MimeType).NullEmpty() ?? ".jpg";
+                            var path = string.Concat(SystemAlbumProvider.Customers, "/", seoName.ToValidFileName(), extension.EnsureStartsWith("."));
+
+                            var newFile = _mediaService.SaveFile(path, fileBinary.ToStream(), false, true);
+                            if (newFile != null)
+                            {
+                                SaveAttribute(row, SystemCustomerAttributeNames.AvatarPictureId, newFile.Id);
+                            }
+                        }
+                        else
+                        {
+                            context.Result.AddInfo("Found equal image in data store. Skipping field.", row.GetRowInfo(), "AvatarPictureUrl");
+                        }
+                    }
+                }
 				else
 				{
 					context.Result.AddInfo("Download of an image failed.", row.GetRowInfo(), "AvatarPictureUrl");

@@ -214,7 +214,7 @@ namespace SmartStore.Services.Catalog.Importer
                             if (fileBinary != null && fileBinary.Length > 0)
                             {
                                 var extension = MimeTypes.MapMimeTypeToExtension(image.MimeType).NullEmpty() ?? ".jpg";
-                                var path = string.Concat("category/", seoName.ToValidFileName(), extension.EnsureStartsWith("."));
+                                var path = string.Concat(SystemAlbumProvider.Categories, "/", seoName.ToValidFileName(), extension.EnsureStartsWith("."));
 
                                 var newFile = _mediaService.SaveFile(path, fileBinary.ToStream(), false, true);
                                 if (newFile != null)

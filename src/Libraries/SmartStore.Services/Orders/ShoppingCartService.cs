@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using SmartStore.Core;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Events;
 using SmartStore.Core.Localization;
+using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
@@ -17,10 +20,6 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
-using SmartStore.Core.Domain.Discounts;
-using SmartStore.Services.Catalog.Extensions;
-using SmartStore.Core.Caching;
-using SmartStore.Core.Security;
 
 namespace SmartStore.Services.Orders
 {
@@ -1373,27 +1372,14 @@ namespace SmartStore.Services.Orders
 
         public virtual decimal GetCurrentCartSubTotal(IList<OrganizedShoppingCartItem> cart)
         {
-            decimal subtotal = 0;
-
-            if (cart.Count > 0)
+            if (cart.Any())
             {
-                decimal subtotalBase = decimal.Zero;
-                decimal orderSubTotalDiscountAmountBase = decimal.Zero;
-                Discount orderSubTotalAppliedDiscount = null;
-                decimal subTotalWithoutDiscountBase = decimal.Zero;
-                decimal subTotalWithDiscountBase = decimal.Zero;
+                _orderTotalCalculationService.GetShoppingCartSubTotal(cart, out _, out _, out var subTotalWithoutDiscountBase, out _);
 
-                _orderTotalCalculationService.GetShoppingCartSubTotal(cart,
-                    out orderSubTotalDiscountAmountBase,
-                    out orderSubTotalAppliedDiscount,
-                    out subTotalWithoutDiscountBase,
-                    out subTotalWithDiscountBase);
-
-                subtotalBase = subTotalWithoutDiscountBase;
-                subtotal = _currencyService.ConvertFromPrimaryStoreCurrency(subtotalBase, _workContext.WorkingCurrency);
+                return _currencyService.ConvertFromPrimaryStoreCurrency(subTotalWithoutDiscountBase, _workContext.WorkingCurrency);
             }
 
-            return subtotal;
+            return decimal.Zero;
         }
 
         public virtual string GetFormattedCurrentCartSubTotal()
@@ -1410,8 +1396,7 @@ namespace SmartStore.Services.Orders
         {
             var subTotal = _sciRepository.Table
                 .Where(x => x.ShoppingCartTypeId == (int)ShoppingCartType.ShoppingCart)
-                .Select(x => x.Product.Price * x.Quantity)
-                .Sum();
+                .Sum(x => (decimal?)(x.Product.Price * x.Quantity)) ?? decimal.Zero;
 
             return subTotal;
         }
@@ -1420,8 +1405,7 @@ namespace SmartStore.Services.Orders
         {
             var subTotal = _sciRepository.Table
                 .Where(x => x.ShoppingCartTypeId == (int)ShoppingCartType.Wishlist)
-                .Select(x => x.Product.Price * x.Quantity)
-                .Sum();
+                .Sum(x => (decimal?)(x.Product.Price * x.Quantity)) ?? decimal.Zero;
 
             return subTotal;
         }

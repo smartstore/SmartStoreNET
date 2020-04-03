@@ -14,6 +14,7 @@ using SmartStore.Services.Media.Storage;
 using SmartStore.Core.IO;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using SmartStore.Collections;
 
 namespace SmartStore.Services.Media
 {
@@ -127,7 +128,7 @@ namespace SmartStore.Services.Media
                 throw new NotSameAlbumException(node.Value.Path, destParent);
             }
 
-            if (destParentNode.IsDescendantOf(node))
+            if (destParentNode.IsDescendantOfOrSelf(node))
             {
                 throw new ArgumentException("Destination folder '" + destinationPath + "' is not allowed to be a descendant of source folder '" + node.Value.Path + "'.");
             }
@@ -144,13 +145,19 @@ namespace SmartStore.Services.Media
             return new MediaFolderInfo(_folderService.GetNodeById(folder.Id));
         }
 
-        public MediaFolderInfo CopyFolder(string path, string destinationPath, bool overwrite = false)
+        public MediaFolderInfo CopyFolder(string path, string destinationPath, DuplicateEntryHandling dupeEntryHandling = DuplicateEntryHandling.Skip)
         {
             Guard.NotEmpty(path, nameof(path));
             Guard.NotEmpty(destinationPath, nameof(destinationPath));
 
             path = FolderService.NormalizePath(path);
-            ValidateFolderPath(path, "MoveFolder", nameof(path));
+            ValidateFolderPath(path, "CopyFolder", nameof(path));
+
+            destinationPath = FolderService.NormalizePath(destinationPath);
+            if (destinationPath.EnsureEndsWith("/").StartsWith(path.EnsureEndsWith("/")))
+            {
+                throw new ArgumentException("Destination folder '" + destinationPath + "' is not allowed to be a descendant of source folder '" + path + "'.", nameof(destinationPath));
+            }
 
             var node = _folderService.GetNodeByPath(path);
             if (node == null)
@@ -160,56 +167,118 @@ namespace SmartStore.Services.Media
 
             if (node.Value.IsAlbum)
             {
-                throw new NotSupportedException($"Moving or renaming root album folders is not supported. Folder: {node.Value.Name}.");
+                throw new NotSupportedException($"Copying root album folders is not supported. Folder: {node.Value.Name}.");
             }
 
-            var folder = _folderService.GetFolderById(node.Value.Id);
-            if (folder == null)
-            {
-                throw new MediaFolderNotFoundException(path);
-            }
-
-            ValidateFolderPath(destinationPath, "MoveFolder", nameof(destinationPath));
-
-            // Destination must not exist
-            if (FolderExists(destinationPath))
-            {
-                throw new ArgumentException("Folder '" + destinationPath + "' already exists.");
-            }
-
-            var destParent = FolderService.NormalizePath(Path.GetDirectoryName(destinationPath));
-
-            // Get destination parent
-            var destParentNode = _folderService.GetNodeByPath(destParent);
-            if (destParentNode == null)
-            {
-                throw new MediaFolderNotFoundException(destinationPath);
-            }
-
-            // Cannot move outside source album
-            if (!_folderService.AreInSameAlbum(folder.Id, destParentNode.Value.Id))
-            {
-                throw new NotSameAlbumException(node.Value.Path, destParent);
-            }
-
-            if (destParentNode.IsDescendantOf(node))
-            {
-                throw new ArgumentException("Destination folder '" + destinationPath + "' is not allowed to be a descendant of source folder '" + node.Value.Path + "'.");
-            }
-
-            // Set new values
-            folder.ParentId = destParentNode.Value.Id;
-            folder.Name = Path.GetFileName(destinationPath);
-
-            // Commit
-            _folderService.UpdateFolder(folder);
-
-            _folderService.ClearCache();
-
-            return new MediaFolderInfo(_folderService.GetNodeById(folder.Id));
+            destinationPath += "/" + node.Value.Name;
+            return InternalCopyFolder(node, destinationPath, dupeEntryHandling);
         }
 
-        public void DeleteFolder(string path, FileDeleteStrategy strategy = FileDeleteStrategy.SoftDelete)
+        private MediaFolderInfo InternalCopyFolder(TreeNode<MediaFolderNode> source, string destPath, DuplicateEntryHandling dupeEntryHandling)
+        {
+            // Get dest node
+            var destNode = _folderService.GetNodeByPath(destPath);
+
+            // Dupe handling
+            if (destNode != null)
+            {
+                switch (dupeEntryHandling)
+                {
+                    case DuplicateEntryHandling.ThrowError:
+                        throw new DuplicateMediaFolderException(source.Value.Path);
+                    case DuplicateEntryHandling.Skip:
+                        return new MediaFolderInfo(destNode);
+                    case DuplicateEntryHandling.Rename:
+                    case DuplicateEntryHandling.Overwrite:
+                        break;
+                }
+            }
+
+            var doDupeCheck = destNode != null;
+
+            // Create dest folder
+            if (destNode == null)
+            {
+                destNode = CreateFolder(destPath);
+            }
+
+            var ctx = _fileRepo.Context;
+
+            // INFO: we gonna change file name during the files loop later.
+            var destPathData = new MediaPathData(destNode, "placeholder.txt");
+
+            // Get all source files in one go
+            var files = _searcher.SearchFiles(
+                new MediaSearchQuery { FolderId = source.Value.Id }, 
+                MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithBlob | MediaLoadFlags.WithTags);
+
+            IDictionary<string, MediaFile> destFiles = null;
+            HashSet<string> destNames = null;
+
+            if (doDupeCheck)
+            {
+                // Get all files in destination folder for faster dupe selection
+                destFiles = _searcher.SearchFiles(new MediaSearchQuery { FolderId = destNode.Value.Id }, MediaLoadFlags.None).ToDictionarySafe(x => x.Name);
+
+                // Make a HashSet from all file names in the destination folder for faster unique file name lookups
+                destNames = new HashSet<string>(destFiles.Keys, StringComparer.CurrentCultureIgnoreCase);
+            }
+
+            // Holds source and copy together, 'cause we perform a two-pass copy (file first, then data)
+            var tuples = new List<Tuple<MediaFile, MediaFile>>(500);
+
+            // Copy files batched
+            foreach (var batch in files.Slice(500))
+            {
+                foreach (var file in batch)
+                {
+                    destPathData.FileName = file.Name;
+                    var copy = InternalCopyFile(
+                        file,
+                        destPathData,
+                        false /* copyData */,
+                        dupeEntryHandling,
+                        () => destFiles?.Get(file.Name),
+                        UniqueFileNameChecker);
+
+                    tuples.Add(new Tuple<MediaFile, MediaFile>(file, copy));
+                }
+
+                // Save batch to DB (1st pass)
+                ctx.SaveChanges();
+
+                // Now copy file data
+                foreach (var op in tuples)
+                {
+                    InternalCopyFileData(op.Item1, op.Item2);
+                }
+
+                // Save batch to DB (2nd pass)
+                ctx.SaveChanges();
+
+                ctx.DetachEntities<MediaFile>();
+                tuples.Clear();
+            }
+
+            // Copy folders
+            foreach (var node in source.Children)
+            {
+                destPath = destNode.Value.Path + "/" + node.Value.Name;
+                InternalCopyFolder(node, destPath, dupeEntryHandling);
+            }
+
+            return new MediaFolderInfo(destNode);
+
+            void UniqueFileNameChecker(MediaPathData pathData)
+            {
+                if (destNames != null && InternalCheckUniqueFileName(pathData.FileTitle, pathData.Extension, destNames, out var uniqueName))
+                {
+                    pathData.FileName = uniqueName;
+                }
+            }
+        }
+
+        public void DeleteFolder(string path, FileHandling fileHandling = FileHandling.SoftDelete)
         {
             Guard.NotEmpty(path, nameof(path));
 
@@ -225,7 +294,7 @@ namespace SmartStore.Services.Media
             // Collect all affected subfolder ids also
             var folderIds = _folderService.GetNodesFlattened(node.Value.Id, true).Select(x => x.Id).Reverse().ToArray();
 
-            using (new DbContextScope(autoCommit: false))
+            using (new DbContextScope(autoDetectChanges: false, autoCommit: false))
             {
                 using (_folderService.BeginScope(true))
                 {
@@ -235,21 +304,21 @@ namespace SmartStore.Services.Media
                         var folder = _folderService.GetFolderById(folderId);
                         if (folder != null)
                         {
-                            InternalDeleteFolder(folder, strategy);
+                            InternalDeleteFolder(folder, fileHandling);
                         }
                     }
                 }
             }
         }
 
-        private int InternalDeleteFolder(MediaFolder folder, FileDeleteStrategy strategy)
+        private int InternalDeleteFolder(MediaFolder folder, FileHandling strategy)
         {
             int numFiles = 0;
 
             // First delete files
             if (folder.Files.Any())
             {
-                var albumId = strategy == FileDeleteStrategy.MoveToRoot 
+                var albumId = strategy == FileHandling.MoveToRoot 
                     ? _folderService.FindAlbum(folder.Id).Value.Id 
                     : (int?)null;
 
@@ -259,22 +328,24 @@ namespace SmartStore.Services.Media
                     {
                         numFiles++;
 
-                        if (strategy == FileDeleteStrategy.Delete)
+                        if (strategy == FileHandling.Delete)
                         {
                             DeleteFile(file, true);
                         }
-                        else if (strategy == FileDeleteStrategy.SoftDelete)
+                        else if (strategy == FileHandling.SoftDelete)
                         {
-                            file.Deleted = true;
+                            DeleteFile(file, false);
                             file.FolderId = null;
                         }
-                        else if (strategy == FileDeleteStrategy.MoveToRoot)
+                        else if (strategy == FileHandling.MoveToRoot)
                         {
                             file.FolderId = albumId;
                         }
                     }
 
                     _fileRepo.Context.SaveChanges();
+
+                    _fileRepo.Context.DetachEntities<MediaFile>(batch);
                 }     
             }
 

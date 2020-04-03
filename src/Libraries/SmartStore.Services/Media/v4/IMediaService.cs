@@ -20,11 +20,27 @@ namespace SmartStore.Services.Media
         FullNoTracking = Full | AsNoTracking
     }
 
-    public enum FileDeleteStrategy
+    public enum FileHandling
     {
         SoftDelete,
         MoveToRoot,
         Delete
+    }
+
+    public enum DuplicateFileHandling
+    {
+        ThrowError,
+        Overwrite,
+        Rename
+    }
+
+    public enum DuplicateEntryHandling
+    {
+        ThrowError,
+        Overwrite,
+        // Folder: Overwrite, File: Rename
+        Rename,
+        Skip
     }
 
     public partial interface IMediaService
@@ -57,14 +73,14 @@ namespace SmartStore.Services.Media
         MediaFileInfo SaveFile(string path, Stream stream, bool isTransient = true, bool overwrite = false);
         Task<MediaFileInfo> SaveFileAsync(string path, Stream stream, bool isTransient = true, bool overwrite = false);
         void DeleteFile(MediaFile file, bool permanent);
-        MediaFileInfo CopyFile(MediaFile file, string destinationFileName, bool overwrite = false);
+        MediaFileInfo CopyFile(MediaFile file, string destinationFileName, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError);
         MediaFileInfo MoveFile(MediaFile file, string destinationFileName);
 
         bool FolderExists(string path);
         MediaFolderInfo CreateFolder(string path);
         MediaFolderInfo MoveFolder(string path, string destinationPath);
-        MediaFolderInfo CopyFolder(string path, string destinationPath, bool overwrite = false);
-        void DeleteFolder(string path, FileDeleteStrategy strategy = FileDeleteStrategy.SoftDelete);
+        MediaFolderInfo CopyFolder(string path, string destinationPath, DuplicateEntryHandling dupeEntryHandling = DuplicateEntryHandling.Skip);
+        void DeleteFolder(string path, FileHandling fileHandling = FileHandling.SoftDelete);
 
         string GetUrl(MediaFileInfo file, ProcessImageQuery query, string host = null, FallbackPictureType fallbackType = FallbackPictureType.Entity);
     }

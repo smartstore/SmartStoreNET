@@ -132,7 +132,7 @@ namespace SmartStore.Web.Controllers
 				}
 				
 				mediaFile = _mediaService.GetFileById(id, MediaLoadFlags.AsNoTracking);
-				if (mediaFile == null || mediaFile.FolderId == null)
+				if (mediaFile == null || mediaFile.FolderId == null || mediaFile.Deleted)
 				{
 					return NotFound(pathData.MimeType);
 				}

@@ -90,7 +90,7 @@ namespace SmartStore.Services.Media
 
             return root;
 
-            /*static*/ void AddChildTreeNodes(TreeNode<MediaFolderNode> parentNode, int parentId, Multimap<int, MediaFolderNode> nodeMap)
+            static void AddChildTreeNodes(TreeNode<MediaFolderNode> parentNode, int parentId, Multimap<int, MediaFolderNode> nodeMap)
             {
                 var parent = parentNode?.Value;
                 if (parent == null)
@@ -142,6 +142,38 @@ namespace SmartStore.Services.Media
         {
             Guard.NotEmpty(path, nameof(path));
             return GetRootNode().SelectNodeById(NormalizePath(path));
+        }
+
+        public bool CheckUniqueFolderName(string path, out string newName)
+        {
+            Guard.NotEmpty(path, nameof(path));
+
+            // TODO: (mm) throw when path is not a folder path
+
+            newName = null;
+
+            var node = GetNodeByPath(path);
+            if (node == null)
+            {
+                return false;
+            }
+
+            var sourceName = node.Value.Name;
+            var names = new HashSet<string>(node.Parent.Children.Select(x => x.Value.Name), StringComparer.OrdinalIgnoreCase);
+
+            int i = 1;
+            while (true)
+            {
+                var test = sourceName + "-" + i;
+                if (!names.Contains(test))
+                {
+                    // Found our gap
+                    newName = test;
+                    return true;
+                }
+
+                i++;
+            }
         }
 
         protected override void OnClearCache()

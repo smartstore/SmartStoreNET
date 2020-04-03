@@ -210,28 +210,38 @@ namespace SmartStore.Services.Media
             var q = new MediaSearchQuery
             {
                 FolderId = pathData.Folder.Id,
-                Term = string.Concat(pathData.FileTitle, "-*", pathData.Extension)
+                Term = string.Concat(pathData.FileTitle, "*.", pathData.Extension)
             };
 
             var query = _searcher.PrepareQuery(q, MediaLoadFlags.AsNoTracking).Select(x => x.Name);
-            var files = new HashSet<string>(query.ToList(), StringComparer.OrdinalIgnoreCase);
+            var files = new HashSet<string>(query.ToList(), StringComparer.CurrentCultureIgnoreCase);
 
-            if (files.Count == 0)
+            if (InternalCheckUniqueFileName(pathData.FileTitle, pathData.Extension, files, out var uniqueName))
+            {
+                pathData.FileName = uniqueName;
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool InternalCheckUniqueFileName(string title, string ext, HashSet<string> fileNames, out string uniqueName)
+        {
+            uniqueName = null;
+
+            if (fileNames.Count == 0)
             {
                 return false;
             }
 
-            var title = pathData.FileTitle;
-            var ext = pathData.Extension;
-
             int i = 1;
             while (true)
             {
-                var fileName = string.Concat(title, "-", i, ext);
-                if (!files.Contains(fileName))
+                var test = string.Concat(title, "-", i, ".", ext.TrimStart('.'));
+                if (!fileNames.Contains(test))
                 {
                     // Found our gap
-                    pathData.FileName = fileName;
+                    uniqueName = test;
                     return true;
                 }
 
@@ -343,6 +353,8 @@ namespace SmartStore.Services.Media
         {
             Guard.NotNull(file, nameof(file));
 
+            _imageCache.Delete(file);
+
             if (!permanent)
             {
                 file.Deleted = true;
@@ -350,8 +362,6 @@ namespace SmartStore.Services.Media
             }
             else
             {
-                _imageCache.Delete(file);
-
                 // Delete from storage
                 _storageProvider.Remove(file);
 
@@ -481,46 +491,109 @@ namespace SmartStore.Services.Media
 
         #endregion
 
-        #region Copy/Move/Rename/Update etc.
+        #region Copy & Move
 
-        public MediaFileInfo CopyFile(MediaFile file, string destinationFileName, bool overwrite = false)
+        public MediaFileInfo CopyFile(MediaFile file, string destinationFileName, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError)
         {
-            ValidateCopyOperation(file, destinationFileName, overwrite, out var existingFile, out var destPathData);
+            Guard.NotNull(file, nameof(file));
+            Guard.NotEmpty(destinationFileName, nameof(destinationFileName));
 
-            var isOverwrite = existingFile != null;
-            var newFile = existingFile ?? new MediaFile();
+            var destPathData = CreateDestinationPathData(file, destinationFileName);
+            var destFileName = destPathData.FileName;
+            var destFolderId = destPathData.Folder.Id;
 
-            // Simple clone
-            MapMediaFile(file, newFile);
+            var dupe = file.FolderId == destPathData.Folder.Id
+                // Source folder equals dest folder, so same file
+                ? file
+                // Another dest folder, check for duplicate by file name
+                : _fileRepo.Table.FirstOrDefault(x => x.Name == destFileName && x.FolderId == destFolderId);
 
-            // Set folder id
-            newFile.FolderId = destPathData.Folder.Id;
+            var copy = InternalCopyFile(
+                file,
+                destPathData,
+                true /* copyData */,
+                (DuplicateEntryHandling)((int)dupeFileHandling),
+                () => dupe,
+                p => CheckUniqueFileName(p));
 
-            // Set name stuff
-            if (!newFile.Name.IsCaseInsensitiveEqual(destPathData.FileName))
+            return ConvertMediaFile(copy, destPathData.Folder);
+        }
+
+        private MediaFile InternalCopyFile(
+            MediaFile file,
+            MediaPathData destPathData,
+            bool copyData,
+            DuplicateEntryHandling dupeEntryHandling,
+            Func<MediaFile> dupeFileSelector,
+            Action<MediaPathData> uniqueFileNameChecker)
+        {
+            // Find dupe and handle
+            var dupe = dupeFileSelector();
+            if (dupe != null)
             {
-                newFile.Name = destPathData.FileName;
-                newFile.Extension = destPathData.Extension;
-                newFile.MimeType = destPathData.MimeType;
+                switch (dupeEntryHandling)
+                {
+                    case DuplicateEntryHandling.Skip:
+                        return null;
+                    case DuplicateEntryHandling.ThrowError:
+                        throw new DuplicateMediaFileException(destPathData.FullPath);
+                    case DuplicateEntryHandling.Rename:
+                        uniqueFileNameChecker(destPathData);
+                        if (dupe == file)
+                        {
+                            dupe = null;
+                        }
+                        break;
+                    case DuplicateEntryHandling.Overwrite:
+                        if (file.FolderId == destPathData.Folder.Id)
+                        {
+                            throw new IOException("Overwrite operation is not possible if source and destination folders are identical.");
+                        }
+                        break;
+                }
             }
 
-            // TODO: (mm) copy tags
-            // TODO: (mm) Copy localized values (Alt, Title)
+            var isOverwrite = dupe != null;
+            var copy = dupe ?? new MediaFile();
+
+            // Simple clone
+            MapMediaFile(file, copy);
+
+            // Set folder id
+            copy.FolderId = destPathData.Folder.Id;
+
+            // Set name stuff
+            if (!copy.Name.IsCaseInsensitiveEqual(destPathData.FileName))
+            {
+                copy.Name = destPathData.FileName;
+                copy.Extension = destPathData.Extension;
+                copy.MimeType = destPathData.MimeType;
+            }
 
             // Save to DB
             if (isOverwrite)
             {
-                _fileRepo.Update(newFile);
+                _fileRepo.Update(copy);
             }
             else
             {
-                _fileRepo.Insert(newFile);
-            }           
+                _fileRepo.Insert(copy);
+            }
 
-            // Save BLOB to storage.
-            _storageProvider.Save(newFile, _storageProvider.OpenRead(file));
+            // Copy data: blob, alt, title etc.
+            if (copyData)
+            {
+                InternalCopyFileData(file, copy);
+            }
 
-            return ConvertMediaFile(newFile, destPathData.Folder);
+            return copy;
+        }
+
+        private void InternalCopyFileData(MediaFile file, MediaFile copy)
+        {
+            // TODO: (mm) copy tags
+            // TODO: (mm) Copy localized values (Alt, Title)
+            _storageProvider.Save(copy, _storageProvider.OpenRead(file));
         }
 
         public MediaFileInfo MoveFile(MediaFile file, string destinationFileName)
@@ -551,7 +624,11 @@ namespace SmartStore.Services.Media
             return ConvertMediaFile(file, destPathData.Folder);
         }
 
-        private bool ValidateMoveOperation(MediaFile file, string destinationFileName, out bool nameChanged, out MediaPathData destPathData)
+        private bool ValidateMoveOperation(
+            MediaFile file, 
+            string destinationFileName, 
+            out bool nameChanged, 
+            out MediaPathData destPathData)
         {
             Guard.NotNull(file, nameof(file));
             Guard.NotEmpty(destinationFileName, nameof(destinationFileName));
@@ -583,34 +660,6 @@ namespace SmartStore.Services.Media
             }
 
             return folderChanged || nameChanged;
-        }
-
-        private bool ValidateCopyOperation(MediaFile file, string destinationFileName, bool overwrite, out MediaFile existing, out MediaPathData destPathData)
-        {
-            Guard.NotNull(file, nameof(file));
-            Guard.NotEmpty(destinationFileName, nameof(destinationFileName));
-
-            existing = null;
-            destPathData = CreateDestinationPathData(file, destinationFileName);
-
-            var destFileName = destPathData.FileName;
-            var destFolderId = destPathData.Folder.Id;
-
-            if (file.FolderId == destPathData.Folder.Id)
-            {
-                CheckUniqueFileName(destPathData);
-            }
-            else
-            {
-                // Check whether destination file exists
-                existing = _fileRepo.Table.FirstOrDefault(x => x.FolderId == destFolderId && x.Name == destFileName);
-                if (existing != null && !overwrite)
-                {
-                    throw new DuplicateMediaFileException(destPathData.FullPath);
-                }
-            }
-
-            return true;
         }
 
         #endregion

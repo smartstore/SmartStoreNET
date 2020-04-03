@@ -59,7 +59,7 @@ namespace SmartStore.Services.Media
 				var mediaFile = MediaService.GetFileById(MediaFileId, MediaLoadFlags.AsNoTracking);
 
 				// File must exist
-				if (mediaFile == null)
+				if (mediaFile == null || mediaFile.Deleted || mediaFile.Hidden)
 					return null;
 
 				//// File's mime must match requested mime

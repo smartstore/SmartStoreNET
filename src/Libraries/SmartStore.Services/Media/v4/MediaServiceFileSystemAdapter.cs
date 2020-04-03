@@ -183,7 +183,7 @@ namespace SmartStore.Services.Media
 
         public void DeleteFolder(string path)
         {
-            _mediaService.DeleteFolder(path, FileDeleteStrategy.Delete);
+            _mediaService.DeleteFolder(path, FileHandling.Delete);
         }
 
         public bool FileExists(string path)
@@ -250,7 +250,10 @@ namespace SmartStore.Services.Media
                 throw new MediaFileNotFoundException(path);
             }
 
-            _mediaService.CopyFile(sourceFile, newPath, false);
+            _mediaService.CopyFile(
+                sourceFile, 
+                newPath,
+                overwrite ? DuplicateFileHandling.Overwrite : DuplicateFileHandling.ThrowError);
         }
 
         public void RenameFile(string path, string newPath)
@@ -274,7 +277,11 @@ namespace SmartStore.Services.Media
 
         public void CopyFolder(string path, string destinationPath, bool overwrite = true)
         {
-            _mediaService.CopyFolder(path, destinationPath, overwrite);
+            var dupeEntryHandling = overwrite 
+                ? DuplicateEntryHandling.Overwrite 
+                : DuplicateEntryHandling.ThrowError;
+
+            _mediaService.CopyFolder(path, destinationPath, dupeEntryHandling);
         }
 
         public void SaveStream(string path, Stream inputStream)

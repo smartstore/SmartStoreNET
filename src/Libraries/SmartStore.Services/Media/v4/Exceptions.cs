@@ -26,6 +26,14 @@ namespace SmartStore.Services.Media
         }
     }
 
+    public sealed class DuplicateMediaFolderException : SmartException
+    {
+        public DuplicateMediaFolderException(string fullPath)
+            : base($"Folder {fullPath} already exists.")
+        {
+        }
+    }
+
     public sealed class NotSameAlbumException : SmartException
     {
         public NotSameAlbumException(string path1, string path2)

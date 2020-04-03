@@ -287,15 +287,16 @@ namespace SmartStore.Services.Orders
         string GetFormattedCurrentCartSubTotal(IList<OrganizedShoppingCartItem> cart);
 
 		/// <summary>
-		/// Get all cart items from open carts
+		/// Get open carts subtotal
 		/// </summary>
-		/// <returns>Paged list of items from open carts</returns>
-		public IPagedList<ShoppingCartItem> GetAllOpenCartItems();
+		/// <returns>subtotal</returns>
+		public decimal GetAllOpenCartSubTotal();
 
 		/// <summary>
-		/// Get all cart items from open wishlists
+		/// Get open wishlists subtotal
 		/// </summary>
-		/// <returns>Paged list of items from open wishlists</returns>
-		public IPagedList<ShoppingCartItem> GetAllOpenWishlistItems();
+		/// <returns>subtotal</returns>
+		public decimal GetAllOpenWishlistSubTotal();
+
 	}
 }

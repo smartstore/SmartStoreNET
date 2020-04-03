@@ -14,11 +14,6 @@ namespace SmartStore.Services.Customers
     public partial interface ICustomerService
     {
         #region Customers
-        /// <summary>
-        /// Get all customers
-        /// </summary>
-        /// <returns>Paged list of customers</returns>
-        IPagedList<Customer> GetAllCustomers();
 
         /// <summary>
         /// Finds customer records matching all criteria specified by <paramref name="q"/>

@@ -78,15 +78,7 @@ namespace SmartStore.Services.Customers
 
 		public ILogger Logger { get; set; }
 
-		#region Customers
-
-		public virtual IPagedList<Customer> GetAllCustomers()
-		{
-			var query = _customerRepository.Table;
-			query = query.Where(x => !x.Deleted);
-
-			return new PagedList<Customer>(query, 0, int.MaxValue);
-		}
+        #region Customers
 
 		public virtual IPagedList<Customer> SearchCustomers(CustomerSearchQuery q)
 		{

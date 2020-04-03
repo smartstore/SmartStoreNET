@@ -1406,20 +1406,24 @@ namespace SmartStore.Services.Orders
             return _priceFormatter.FormatPrice(GetCurrentCartSubTotal(cart));
         }
 
-        public IPagedList<ShoppingCartItem> GetAllOpenCartItems()
+        public decimal GetAllOpenCartSubTotal()
         {
-            var cartItems = _sciRepository.Table
-                .Where(x => x.ShoppingCartTypeId == (int)ShoppingCartType.ShoppingCart);
+            var subTotal = _sciRepository.Table
+                .Where(x => x.ShoppingCartTypeId == (int)ShoppingCartType.ShoppingCart)
+                .Select(x => x.Product.Price * x.Quantity)
+                .Sum();
 
-            return new PagedList<ShoppingCartItem>(cartItems, 0, int.MaxValue);
+            return subTotal;
         }
 
-        public IPagedList<ShoppingCartItem> GetAllOpenWishlistItems()
+        public decimal GetAllOpenWishlistSubTotal()
         {
-            var wishlistItems = _sciRepository.Table
-                .Where(x => x.ShoppingCartTypeId == (int)ShoppingCartType.Wishlist);
+            var subTotal = _sciRepository.Table
+                .Where(x => x.ShoppingCartTypeId == (int)ShoppingCartType.Wishlist)
+                .Select(x => x.Product.Price * x.Quantity)
+                .Sum();
 
-            return new PagedList<ShoppingCartItem>(wishlistItems, 0, int.MaxValue);
+            return subTotal;
         }
     }
 }

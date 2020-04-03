@@ -249,6 +249,7 @@ namespace SmartStore.Admin.Controllers
             var watch = new Stopwatch();
             watch.Start();
 
+            var allOrders = _orderService.GetOrders(0, 0, null, null, null, null, null, null, null);
             var model = new StoreDashboardReportModel
             {
                 ProductsCount = _productService.GetAllProducts().TotalCount.ToString("D"),
@@ -257,12 +258,18 @@ namespace SmartStore.Admin.Controllers
                 AttributesCount = _productAttributeService.GetAllProductAttributes(0, int.MaxValue).TotalCount.ToString("D"),
                 AttributeCombinationsCount = _productService.GetAllProductVariants().TotalCount.ToString("D"),
                 MediaCount = _pictureService.GetPictures(0, int.MaxValue).TotalCount.ToString("D"),
-                CustomersCount = _customerService.GetAllCustomers().Where(x => x.IsRegistered() && !x.Deleted).Count().ToString("D"),
-                OrdersCount = _orderService.GetAllOrders(0, 0, int.MaxValue).TotalCount.ToString("D"),
-                Sales = _orderService.GetAllOrders(0, 0, int.MaxValue).Sum(x => x.OrderTotal).ToString("C0"),
+                CustomersCount = _customerService.SearchCustomers(
+                    new CustomerSearchQuery()
+                    {
+                        Deleted = false,
+                        CustomerRoleIds = new int[] { 3 }
+                    }
+                ).TotalCount.ToString("D"),
+                OrdersCount = allOrders.Count().ToString("D"),
+                Sales = allOrders.Sum(x => x.OrderTotal).ToString("C0"),
                 OnlineCustomersCount = _customerService.GetOnlineCustomers(DateTime.UtcNow.AddMinutes(-15), null, 0, int.MaxValue).TotalCount.ToString("D"),
-                CartsValue = _shoppingCartService.GetAllOpenCartItems().Select(x => x.Product.Price * x.Quantity).Sum().ToString("C0"),
-                WishlistsValue = _shoppingCartService.GetAllOpenWishlistItems().Select(x => x.Product.Price * x.Quantity).Sum().ToString("C0")
+                CartsValue = _shoppingCartService.GetAllOpenCartSubTotal().ToString("C0"),
+                WishlistsValue = _shoppingCartService.GetAllOpenWishlistSubTotal().ToString("C0")
             };
 
             watch.Stop();

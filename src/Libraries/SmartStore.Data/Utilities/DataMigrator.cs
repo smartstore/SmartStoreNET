@@ -288,7 +288,7 @@ namespace SmartStore.Data.Utilities
 						{
 							// Create subfolder "Storage/0000"
 							subfolder = fs.Combine("Storage", dirName);
-							fs.TryCreateFolder(subfolder);
+							fs.CreateFolder(subfolder);
 							subfolders[dirName] = subfolder;
 						}
 

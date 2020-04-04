@@ -152,6 +152,16 @@ namespace SmartStore.Core
 
 		public int PageSize { get; set; }
 
+		public async Task<int> GetTotalCountAsync()
+		{
+			if (!_totalCount.HasValue)
+			{
+				_totalCount = await SourceQuery.CountAsync();
+			}
+
+			return _totalCount.Value;
+		}
+
 		public int TotalCount
         {
             get

@@ -458,7 +458,7 @@ namespace SmartStore.Admin.Models.Catalog
         {
             public int ProductId { get; set; }
 
-            [UIHint("Picture"), AdditionalMetadata("album", "product")]
+            [UIHint("Media"), AdditionalMetadata("album", "product")]
             [SmartResourceDisplayName("Admin.Catalog.Products.Pictures.Fields.Picture")]
             public int PictureId { get; set; }
 
@@ -694,7 +694,7 @@ namespace SmartStore.Admin.Models.Catalog
 			public string Color { get; set; }
 			public bool IsListTypeAttribute { get; set; }
 
-            [UIHint("Picture"), AdditionalMetadata("album", "product")]
+            [UIHint("Media"), AdditionalMetadata("album", "product")]
             [SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Picture")]
             public int PictureId { get; set; }
             

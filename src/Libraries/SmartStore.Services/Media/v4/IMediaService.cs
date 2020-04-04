@@ -60,6 +60,7 @@ namespace SmartStore.Services.Media
         MediaFileInfo GetFileById(int id, MediaLoadFlags flags = MediaLoadFlags.None);
         IList<MediaFileInfo> GetFilesByIds(int[] ids, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
         bool CheckUniqueFileName(string path, out string newPath);
+        string CombinePaths(params string[] paths);
 
         /// <summary>
         /// Finds an equal file by comparing the binary buffer
@@ -82,10 +83,6 @@ namespace SmartStore.Services.Media
         MediaFolderInfo CopyFolder(string path, string destinationPath, DuplicateEntryHandling dupeEntryHandling = DuplicateEntryHandling.Skip);
         void DeleteFolder(string path, FileHandling fileHandling = FileHandling.SoftDelete);
 
-        string GetUrl(
-            MediaFileInfo file, 
-            ProcessImageQuery query, 
-            string host = null,
-            bool doFallback = true);
+        string GetUrl(MediaFileInfo file, ProcessImageQuery query, string host = null, bool doFallback = true);
     }
 }

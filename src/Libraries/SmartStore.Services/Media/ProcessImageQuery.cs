@@ -101,14 +101,20 @@ namespace SmartStore.Services.Media
 
 		public int? MaxWidth
 		{
-			get { return Get<int?>("w"); }
+			get { return Get<int?>("w") ?? Get<int?>("size"); }
 			set { Set("w", value); }
 		}
 
 		public int? MaxHeight
 		{
-			get { return Get<int?>("h"); }
+			get { return Get<int?>("h") ?? Get<int?>("size"); }
 			set { Set("h", value); }
+		}
+
+		public int? MaxSize
+		{
+			get { return Get<int?>("size"); }
+			set { Set("size", value); }
 		}
 
 		public int? Quality

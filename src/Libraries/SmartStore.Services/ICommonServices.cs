@@ -30,6 +30,7 @@ namespace SmartStore.Services
 		ILocalizationService Localization { get; }
 		ICustomerActivityService CustomerActivity { get; }
 		IPictureService PictureService { get; }
+		IMediaService MediaService { get; }
 		INotifier Notifier { get; }
         IPermissionService Permissions { get; }
         ISettingService Settings { get; }

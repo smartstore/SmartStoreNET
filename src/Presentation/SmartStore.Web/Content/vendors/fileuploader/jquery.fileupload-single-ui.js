@@ -249,8 +249,8 @@
 						}
 
 						var cnt = el.closest('.fileupload-container');
-						cnt.find('.fileupload-thumb').css('background-image', 'url("' + data.result.imageUrl + '")');
-                        cnt.find('.hidden').val(data.result.pictureId).trigger('change');
+						cnt.find('.fileupload-thumb').css('background-image', 'url("' + result.url + '")');
+                        cnt.find('.hidden').val(result.fileId).trigger('change');
 
 						elCancel.hide();
 						elFile.show();

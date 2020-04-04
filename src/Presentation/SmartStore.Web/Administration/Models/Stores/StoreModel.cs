@@ -36,7 +36,7 @@ namespace SmartStore.Admin.Models.Stores
 		public string Hosts { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.StoreLogo")]
-		[UIHint("Picture")]
+		[UIHint("Media")]
 		public int LogoPictureId { get; set; }
 
 		[SmartResourceDisplayName("Common.DisplayOrder")]

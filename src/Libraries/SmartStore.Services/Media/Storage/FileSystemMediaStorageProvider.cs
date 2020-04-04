@@ -116,6 +116,9 @@ namespace SmartStore.Services.Media.Storage
 
 			if (stream != null)
 			{
+				// create folder if it does not exist yet
+				_fileSystem.CreateFolder(Path.GetDirectoryName(filePath));
+
 				using (stream)
 				{
 					_fileSystem.SaveStream(filePath, stream);

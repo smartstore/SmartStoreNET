@@ -92,44 +92,6 @@ namespace SmartStore
 					if (contentType == null && this.FileExtension.HasValue())
 					{
 						contentType = MimeTypes.MapNameToMimeType(this.FileExtension);
-
-						// ContentType is not always available.
-						// That's why we manually update it here
-						if (contentType.IsEmpty())
-						{
-							switch (this.FileExtension.ToLowerInvariant())
-							{
-								case ".bmp":
-									contentType = "image/bmp";
-									break;
-								case ".gif":
-									contentType = "image/gif";
-									break;
-								case ".jpeg":
-								case ".jpg":
-								case ".jpe":
-								case ".jfif":
-								case ".pjpeg":
-								case ".pjp":
-									contentType = "image/jpeg";
-									break;
-								case ".png":
-									contentType = "image/png";
-									break;
-								case ".tiff":
-								case ".tif":
-									contentType = "image/tiff";
-									break;
-								case ".svg":
-									contentType = "image/svg+xml";
-									break;
-								case ".ico":
-									contentType = "image/x-icon";
-									break;
-								default:
-									break;
-							}
-						}
 					}
 
 					_contentType = contentType.EmptyNull();

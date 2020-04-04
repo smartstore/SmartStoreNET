@@ -29,6 +29,7 @@ namespace SmartStore.Services
 		private readonly Lazy<ILocalizationService> _localization;
 		private readonly Lazy<ICustomerActivityService> _customerActivity;
 		private readonly Lazy<IPictureService> _pictureService;
+		private readonly Lazy<IMediaService> _mediaService;
 		private readonly Lazy<INotifier> _notifier;
         private readonly Lazy<IPermissionService> _permissions;
         private readonly Lazy<ISettingService> _settings;
@@ -51,6 +52,7 @@ namespace SmartStore.Services
 			Lazy<ILocalizationService> localization,
 			Lazy<ICustomerActivityService> customerActivity,
 			Lazy<IPictureService> pictureService,
+			Lazy<IMediaService> mediaService,
 			Lazy<INotifier> notifier,
             Lazy<IPermissionService> permissions,
             Lazy<ISettingService> settings,
@@ -72,6 +74,7 @@ namespace SmartStore.Services
 			_localization = localization;
 			_customerActivity = customerActivity;
 			_pictureService = pictureService;
+			_mediaService = mediaService;
 			_notifier = notifier;
             _permissions = permissions;
 			_settings = settings;
@@ -94,6 +97,7 @@ namespace SmartStore.Services
 		public ILocalizationService Localization => _localization.Value;
 		public ICustomerActivityService CustomerActivity => _customerActivity.Value;
 		public IPictureService PictureService => _pictureService.Value;
+		public IMediaService MediaService => _mediaService.Value;
 		public INotifier Notifier => _notifier.Value;
         public IPermissionService Permissions => _permissions.Value;
         public ISettingService Settings => _settings.Value;

@@ -30,7 +30,8 @@
 				@Html.SmartLabelFor(model => model.PaymentMethodLogo)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.PaymentMethodLogo, Html.EditorFor(m => m.PaymentMethodLogo, "Picture", new { transientUpload = true, validate = true }))
+				@* TODO: (mm) Album for payment logos? *@
+				@Html.SettingEditorFor(model => model.PaymentMethodLogo, Html.EditorFor(m => m.PaymentMethodLogo, "Media", new { transientUpload = true, path = "file" }))
 				@Html.ValidationMessageFor(model => model.PaymentMethodLogo)
 			</td>
 		</tr>

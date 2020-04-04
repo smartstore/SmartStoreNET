@@ -170,8 +170,11 @@ namespace SmartStore.Services.Media
                 throw new NotSupportedException($"Copying root album folders is not supported. Folder: {node.Value.Name}.");
             }
 
-            destinationPath += "/" + node.Value.Name;
-            return InternalCopyFolder(node, destinationPath, dupeEntryHandling);
+            using (new DbContextScope(autoCommit: false, validateOnSave: false, autoDetectChanges: false))
+            {
+                destinationPath += "/" + node.Value.Name;
+                return InternalCopyFolder(node, destinationPath, dupeEntryHandling);
+            }
         }
 
         private MediaFolderInfo InternalCopyFolder(TreeNode<MediaFolderNode> source, string destPath, DuplicateEntryHandling dupeEntryHandling)
@@ -210,7 +213,7 @@ namespace SmartStore.Services.Media
             // Get all source files in one go
             var files = _searcher.SearchFiles(
                 new MediaSearchQuery { FolderId = source.Value.Id }, 
-                MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithBlob | MediaLoadFlags.WithTags);
+                MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithBlob | MediaLoadFlags.WithTags).Load();
 
             IDictionary<string, MediaFile> destFiles = null;
             HashSet<string> destNames = null;

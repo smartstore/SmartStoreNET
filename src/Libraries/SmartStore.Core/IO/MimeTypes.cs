@@ -434,6 +434,7 @@ namespace SmartStore.Core.IO
 				{".pgm", "image/x-portable-graymap"},
 				{".pic", "image/pict"},
 				{".pict", "image/pict"},
+				{".pjp", "image/jpeg"},
 				{".pkgdef", "text/plain"},
 				{".pkgundef", "text/plain"},
 				{".pko", "application/vnd.ms-pki.pko"},

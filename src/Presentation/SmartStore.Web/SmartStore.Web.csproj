@@ -1815,7 +1815,7 @@
     <Content Include="Views\Boards\Partials\Filters.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Html.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Liquid.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\Picture.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Media.cshtml" />
     <Content Include="Views\Boards\Partials\InstantSearch.cshtml" />
     <Content Include="Views\Boards\Partials\SearchHits.cshtml" />
     <Content Include="Views\Shared\Partials\Customer.Avatar.cshtml" />

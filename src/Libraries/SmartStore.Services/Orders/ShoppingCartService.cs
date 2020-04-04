@@ -1395,7 +1395,7 @@ namespace SmartStore.Services.Orders
         public decimal GetAllOpenCartSubTotal()
         {
             var subTotal = _sciRepository.Table
-                .Where(x => x.ShoppingCartTypeId == (int)ShoppingCartType.ShoppingCart)
+                .Where(x => x.ShoppingCartTypeId == (int)ShoppingCartType.ShoppingCart && x.Product != null)
                 .Sum(x => (decimal?)(x.Product.Price * x.Quantity)) ?? decimal.Zero;
 
             return subTotal;
@@ -1404,7 +1404,7 @@ namespace SmartStore.Services.Orders
         public decimal GetAllOpenWishlistSubTotal()
         {
             var subTotal = _sciRepository.Table
-                .Where(x => x.ShoppingCartTypeId == (int)ShoppingCartType.Wishlist)
+                .Where(x => x.ShoppingCartTypeId == (int)ShoppingCartType.Wishlist && x.Product != null)
                 .Sum(x => (decimal?)(x.Product.Price * x.Quantity)) ?? decimal.Zero;
 
             return subTotal;

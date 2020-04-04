@@ -173,7 +173,7 @@ namespace SmartStore.Admin.Models.Settings
             public bool LetterPageSizeEnabled { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.PdfLogo")]
-            [UIHint("Picture")]
+            [UIHint("Media")] // TODO: (mm) which album?
             public int LogoPictureId { get; set; }
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.AttachOrderPdfToOrderPlacedEmail")]

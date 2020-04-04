@@ -232,16 +232,6 @@ namespace SmartStore.Web.Controllers
 			//}
 
 			var query = new ProcessImageQuery(null, qs);
-
-			if (query.MaxWidth == null && query.MaxHeight == null && query.Contains("size"))
-			{
-				int size = query["size"].Convert<int>();
-				query.MaxWidth = size;
-				query.MaxHeight = size;
-
-				query.Remove("size");
-			}
-
 			if (query.Quality == null)
 			{
 				query.Quality = _mediaSettings.DefaultImageQuality;

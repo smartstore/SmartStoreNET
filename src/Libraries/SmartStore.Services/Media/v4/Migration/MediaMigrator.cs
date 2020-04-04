@@ -512,14 +512,14 @@ namespace SmartStore.Services.Media.Migration
             return _mediaFileSystem.Combine("QueuedEmailAttachment", fileName);
         }
 
-        private string GetStoragePath(MediaFile file, bool tryCreateFolder = true)
+        private string GetStoragePath(MediaFile file, bool createFolder = true)
         {
             var fileName = BuildFileName(file.Id, file.Extension, file.MimeType);
             var subfolder = _mediaFileSystem.Combine("Storage", fileName.Substring(0, ImageCache.MaxDirLength));
 
-            if (tryCreateFolder)
+            if (createFolder)
             {
-                _mediaFileSystem.TryCreateFolder(subfolder);
+                _mediaFileSystem.CreateFolder(subfolder);
             }          
 
             return _mediaFileSystem.Combine(subfolder, fileName);

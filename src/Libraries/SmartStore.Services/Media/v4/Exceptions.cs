@@ -41,4 +41,12 @@ namespace SmartStore.Services.Media
         {
         }
     }
+
+    public sealed class DeniedMediaTypeException : SmartException
+    {
+        public DeniedMediaTypeException(string fileName, string currentType, string[] acceptedTypes)
+            : base($"The media type of '{fileName}' does not match the list of accesped media types. Accepted: {string.Join(", ", acceptedTypes)}, current: {currentType}")
+        {
+        }
+    }
 }

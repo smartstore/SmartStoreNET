@@ -1,0 +1,75 @@
+﻿@model int?
+
+@using SmartStore.Core.Domain.Media;
+@using SmartStore.Services.Media;
+@using SmartStore.Web.Framework.UI;
+@using SmartStore.Utilities;
+
+@functions {
+	private bool TransientUpload
+	{
+		get
+		{
+			return GetMetadata<bool>("transientUpload");
+		}
+	}
+
+	private bool Compact
+	{
+		get
+		{
+			return GetMetadata<bool>("compact");
+		}
+	}
+
+	private string Path
+	{
+		get
+		{
+			return GetMetadata<string>("path") ?? GetMetadata<string>("album");
+		}
+	}
+}
+
+@{
+	var random = CommonHelper.GenerateRandomInteger();
+	var mediaService = this.CommonServices.MediaService;
+	var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
+	var fileId = Model;
+}
+
+<div class="fileupload-container">
+	<div class="fileupload-thumb-stage">
+		<div class="fileupload-thumb" style="background-image: url('@Url.Media(fileId, mediaSettings.ProductThumbPictureSize)')">
+			@Html.HiddenFor(x => x, new { @class = "hidden" })
+			@*<img src="@Url.Picture(fileId, mediaSettings.ProductThumbPictureSize)" style="max-width: 64px; max-height: 64px" class="yimg-thumbnail" alt="" />*@
+		</div>
+	</div>
+
+	<div class="fileupload-controls">
+		@(Html.SmartStore().FileUploader()
+			.UploadUrl(Url.Action("Upload", "Media", new { isTransient = TransientUpload, path = Path, area = "Admin" }))
+			.HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
+			.AcceptedFileTypes("gif|jpe?g|png|svg")
+			.ShowRemoveButton(Model.HasValue)
+			.ShowRemoveButtonAfterUpload(true)
+			.Compact(ViewData["compact"].Convert<bool?>() == true)
+			.OnUploadCompletedHandlerName("onUploadCompleted_" + random)
+		)
+	</div>
+</div>
+
+<script>
+	window['onUploadCompleted_@random'] = function (e, el, data) {
+		$("#add-product-picture").removeAttr('disabled');
+	}
+	window['onFileRemove_@random'] = function (e, el) {
+		$("#add-product-picture").attr('disabled', 'disabled');
+	}
+	@*window['onAborted_@random'] = function (el) {
+		//console.log("onAborted", arguments);
+	}
+	window['onError_@random'] = function (el, textStatus, errorThrown) {
+		//console.log("onError", arguments);
+	}*@
+</script>

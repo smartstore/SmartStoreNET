@@ -122,7 +122,7 @@ namespace SmartStore.Services.Media
 			string imageDir = System.IO.Path.GetDirectoryName(cachedImage.Path);
 			if (imageDir.HasValue())
 			{
-				_fileSystem.TryCreateFolder(BuildPath(imageDir));
+				_fileSystem.CreateFolder(BuildPath(imageDir));
 			}
 
 			return true;
@@ -146,7 +146,7 @@ namespace SmartStore.Services.Media
 			string imageDir = System.IO.Path.GetDirectoryName(cachedImage.Path);
 			if (imageDir.HasValue())
 			{
-				_fileSystem.TryCreateFolder(BuildPath(imageDir));
+				_fileSystem.CreateFolder(BuildPath(imageDir));
 			}
 
 			return true;
@@ -299,7 +299,7 @@ namespace SmartStore.Services.Media
 				try
                 {
 					_fileSystem.DeleteFolder(_thumbsRootDir);
-					_fileSystem.TryCreateFolder(_thumbsRootDir);
+					_fileSystem.CreateFolder(_thumbsRootDir);
 				}
                 catch (Exception ex)
                 {

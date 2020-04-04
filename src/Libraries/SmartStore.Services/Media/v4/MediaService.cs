@@ -249,6 +249,11 @@ namespace SmartStore.Services.Media
             }
         }
 
+        public string CombinePaths(params string[] paths)
+        {
+            return FolderService.NormalizePath(Path.Combine(paths));
+        }
+
         public byte[] FindEqualFile(byte[] fileBuffer, IEnumerable<MediaFile> files, out int equalFileId)
         {
             Guard.NotNull(fileBuffer, nameof(fileBuffer));
@@ -478,8 +483,7 @@ namespace SmartStore.Services.Media
                 return true;
             }
 
-            query.MaxWidth = maxSize;
-            query.MaxHeight = maxSize;
+            query.MaxSize = maxSize;
 
             using (var result = _imageProcessor.ProcessImage(query, false))
             {
@@ -667,11 +671,7 @@ namespace SmartStore.Services.Media
         #region URL generation
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string GetUrl(
-            MediaFileInfo file,
-            ProcessImageQuery imageQuery,
-            string host = null,
-            bool doFallback = true)
+        public string GetUrl(MediaFileInfo file, ProcessImageQuery imageQuery, string host = null, bool doFallback = true)
         {
             return _urlGenerator.GenerateUrl(file, imageQuery, host, doFallback);
         }

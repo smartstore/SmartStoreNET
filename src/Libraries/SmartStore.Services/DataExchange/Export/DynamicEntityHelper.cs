@@ -502,8 +502,8 @@ namespace SmartStore.Services.DataExchange.Export
 
                 result._FileName = file.Name;
                 result._RelativeUrl = _mediaService.Value.GetUrl(file, null, null);
-                result._ThumbImageUrl = _mediaService.Value.GetUrl(file, new ProcessImageQuery { MaxWidth = thumbPictureSize }, host);
-                result._ImageUrl = _mediaService.Value.GetUrl(file, new ProcessImageQuery { MaxWidth = detailsPictureSize }, host);
+                result._ThumbImageUrl = _mediaService.Value.GetUrl(file, thumbPictureSize, host);
+                result._ImageUrl = _mediaService.Value.GetUrl(file, detailsPictureSize, host);
                 result._FullSizeImageUrl = _mediaService.Value.GetUrl(file, null, host);
 
                 return result;
@@ -1513,7 +1513,7 @@ namespace SmartStore.Services.DataExchange.Export
                 var file = _mediaService.Value.GetFileById(fileId);
                 if (file != null)
                 {
-                    dynObject._AvatarPictureUrl = _mediaService.Value.GetUrl(file, new ProcessImageQuery { MaxWidth = _mediaSettings.Value.AvatarPictureSize }, _services.StoreService.GetHost(ctx.Store));
+                    dynObject._AvatarPictureUrl = _mediaService.Value.GetUrl(file, new ProcessImageQuery { MaxSize = _mediaSettings.Value.AvatarPictureSize }, _services.StoreService.GetHost(ctx.Store));
                 }
             }
 

@@ -114,6 +114,11 @@ namespace SmartStore.Core
 		/// <param name="force">When <c>true</c>, always reloads data. When <c>false</c>, first checks to see whether data has been loaded already and skips if so.</param>
 		/// <returns>Returns itself for chaining.</returns>
 		Task<IPagedList<T>> LoadAsync(bool force = false);
-	}
+
+        /// <summary>
+        /// The total number of items asynchronously.
+        /// </summary>
+        Task<int> GetTotalCountAsync();
+    }
 
 }

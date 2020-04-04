@@ -210,7 +210,7 @@
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\PackagingController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
-    <Compile Include="Controllers\PictureController.cs" />
+    <Compile Include="Controllers\MediaController.cs" />
     <Compile Include="Controllers\PluginController.cs" />
     <Compile Include="Controllers\PollController.cs" />
     <Compile Include="Controllers\ProductAttributeController.cs" />

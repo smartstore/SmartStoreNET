@@ -199,31 +199,6 @@ namespace SmartStore.Core.IO
 			return true;
 		}
 
-		/// <summary>
-		/// Tries to create a folder in the storage provider if it does not exist yet.
-		/// </summary>
-		/// <param name="path">The relative path to the folder to be created.</param>
-		/// <returns>True if success; False otherwise.</returns>
-		public static bool TryCreateFolder(this IFileSystem fileSystem, string path)
-		{
-			try
-			{
-				// prevent unnecessary exception
-				if (fileSystem.FolderExists(path))
-				{
-					return false;
-				}
-
-				fileSystem.CreateFolder(path);
-			}
-			catch
-			{
-				return false;
-			}
-
-			return true;
-		}
-
         /// <summary>
         /// Retrieves the count of files within a path.
         /// </summary>

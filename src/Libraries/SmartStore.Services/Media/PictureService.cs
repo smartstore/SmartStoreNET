@@ -206,8 +206,7 @@ namespace SmartStore.Services.Media
 				}
 			}
 
-			query.MaxWidth = maxSize;
-			query.MaxHeight = maxSize;
+			query.MaxSize = maxSize;
 
 			using (var result = _imageProcessor.ProcessImage(query))
 			{

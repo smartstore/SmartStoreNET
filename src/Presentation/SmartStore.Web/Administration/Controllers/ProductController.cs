@@ -586,7 +586,6 @@ namespace SmartStore.Admin.Controllers
 				model.CopyProductModel.Id = product.Id;
 				model.CopyProductModel.Name = T("Admin.Common.CopyOf", product.Name);
 				model.CopyProductModel.Published = true;
-				model.CopyProductModel.CopyImages = true;
 			}
 
 			// Templates.
@@ -1340,7 +1339,7 @@ namespace SmartStore.Admin.Controllers
                 for (var i = 1; i <= copyModel.NumberOfCopies; ++i)
                 {
                     var newName = copyModel.NumberOfCopies > 1 ? $"{copyModel.Name} {i}" : copyModel.Name;
-                    newProduct = _copyProductService.CopyProduct(product, newName, copyModel.Published, copyModel.CopyImages);
+                    newProduct = _copyProductService.CopyProduct(product, newName, copyModel.Published);
                 }
 
                 if (newProduct != null)

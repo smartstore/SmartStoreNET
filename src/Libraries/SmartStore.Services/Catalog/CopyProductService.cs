@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -14,7 +13,6 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Search;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
-using SmartStore.Utilities;
 
 namespace SmartStore.Services.Catalog
 {
@@ -28,7 +26,6 @@ namespace SmartStore.Services.Catalog
         private readonly IProductAttributeService _productAttributeService;
         private readonly ILanguageService _languageService;
         private readonly ILocalizedEntityService _localizedEntityService;
-        private readonly IMediaService _mediaService;
         private readonly IDownloadService _downloadService;
         private readonly IProductAttributeParser _productAttributeParser;
         private readonly IUrlRecordService _urlRecordService;
@@ -45,7 +42,6 @@ namespace SmartStore.Services.Catalog
             IProductAttributeService productAttributeService,
 			ILanguageService languageService,
             ILocalizedEntityService localizedEntityService,
-            IMediaService mediaService,
             IDownloadService downloadService,
             IProductAttributeParser productAttributeParser,
 			IUrlRecordService urlRecordService,
@@ -61,7 +57,6 @@ namespace SmartStore.Services.Catalog
             _productAttributeService = productAttributeService;
             _languageService = languageService;
             _localizedEntityService = localizedEntityService;
-            _mediaService = mediaService;
             _downloadService = downloadService;
             _productAttributeParser = productAttributeParser;
 			_urlRecordService = urlRecordService;
@@ -76,7 +71,6 @@ namespace SmartStore.Services.Catalog
 			Product product, 
 			string newName, 
 			bool isPublished, 
-			bool copyImages, 
 			bool copyAssociatedProducts = true)
         {
 			Guard.NotNull(product, nameof(product));
@@ -87,10 +81,7 @@ namespace SmartStore.Services.Catalog
 				Product clone = null;
 				var utcNow = DateTime.UtcNow;
 				var languages = _languageService.GetAllLanguages(true);
-
-				// Media stuff
 				int? sampleDownloadId = null;
-				var clonedPictures = new Dictionary<int, MediaFile>(); // Key = former ID, Value = cloned file.
 
 				using (var scope = new DbContextScope(ctx: _productRepository.Context,
 					autoCommit: false,
@@ -106,11 +97,6 @@ namespace SmartStore.Services.Catalog
 						var sampleDownloadClone = CopyDownload(sampleDownload);
                         sampleDownloadId = sampleDownloadClone.Id;
                     }
-
-					if (copyImages)
-					{
-						clonedPictures = CopyFiles(product, newName);
-					}
 
 					// Product
 					clone = new Product
@@ -235,30 +221,23 @@ namespace SmartStore.Services.Catalog
 						});
 					}
 
-					// Picture mappings
-					if (copyImages)
-					{
-						foreach (var pp in product.ProductPictures)
-						{
-							var fileClone = clonedPictures.Get(pp.MediaFileId);
-							if (fileClone != null)
-							{
-								clone.ProductPictures.Add(new ProductMediaFile
-								{
-									MediaFileId = fileClone.Id,
-									DisplayOrder = pp.DisplayOrder
-								});
+                    // Picture mappings
+                    foreach (var pp in product.ProductPictures)
+                    {
+                        clone.ProductPictures.Add(new ProductMediaFile
+                        {
+                            MediaFileId = pp.MediaFileId,
+                            DisplayOrder = pp.DisplayOrder
+                        });
 
-                                if (!clone.MainPictureId.HasValue)
-                                {
-                                    clone.MainPictureId = fileClone.Id;
-                                }
-							}
-						}
-					}
+                        if (!clone.MainPictureId.HasValue)
+                        {
+                            clone.MainPictureId = pp.MediaFileId;
+                        }
+                    }
 
-					// Product specifications
-					foreach (var psa in product.ProductSpecificationAttributes)
+                    // Product specifications
+                    foreach (var psa in product.ProductSpecificationAttributes)
 					{
 						clone.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
 						{
@@ -335,15 +314,15 @@ namespace SmartStore.Services.Catalog
 					ProcessLocalization(product, clone, languages);
 
 					// Attributes and attribute combinations.
-					ProcessAttributes(product, clone, newName, copyImages, clonedPictures, languages);
+                    ProcessAttributes(product, clone, languages);
 
-					// Update computed properties.
-					clone.LowestAttributeCombinationPrice = _productAttributeService.GetLowestCombinationPrice(clone.Id);
+                    // Update computed properties.
+                    clone.LowestAttributeCombinationPrice = _productAttributeService.GetLowestCombinationPrice(clone.Id);
 
 					// Associated products.
 					if (copyAssociatedProducts && product.ProductType != ProductType.BundledProduct)
 					{
-						ProcessAssociatedProducts(product, clone, isPublished, copyImages);
+						ProcessAssociatedProducts(product, clone, isPublished);
 					}
 
 					// Bundle items
@@ -409,32 +388,6 @@ namespace SmartStore.Services.Catalog
             return clone;
         }
 
-        private Dictionary<int, MediaFile> CopyFiles(Product product, string newProductName)
-		{
-			var clonedFiles = new Dictionary<int, MediaFile>();
-			var seoFilename = SeoHelper.GetSeName(newProductName, true, false, false);
-
-			foreach (var pp in product.ProductPictures)
-			{
-                var clone = CopyFile(pp.MediaFile, seoFilename);
-
-				clonedFiles[pp.MediaFileId] = clone;
-			}
-
-			return clonedFiles;
-		}
-
-        private MediaFile CopyFile(MediaFile file, string seoFilename)
-        {
-            using (var scope = new DbContextScope(ctx: _productRepository.Context, autoCommit: true))
-            {
-                var path = _mediaService.CreatePath(SystemAlbumProvider.Products, file.MimeType, seoFilename, false);
-                var clone = _mediaService.CopyFile(file, path, DuplicateFileHandling.Rename);
-
-                return clone.File;
-            }
-        }
-
         private void ProcessSlug(Product clone)
 		{
 			using (var scope = new DbContextScope(ctx: _productRepository.Context, autoCommit: true))
@@ -485,7 +438,7 @@ namespace SmartStore.Services.Catalog
 			}
 		}
 
-		private void ProcessAssociatedProducts(Product product, Product clone, bool isPublished, bool copyImages)
+		private void ProcessAssociatedProducts(Product product, Product clone, bool isPublished)
 		{
 			var searchQuery = new CatalogSearchQuery().HasParentGroupedProduct(product.Id);
 
@@ -494,7 +447,7 @@ namespace SmartStore.Services.Catalog
 
 			foreach (var associatedProduct in associatedProducts)
 			{
-				var associatedProductCopy = CopyProduct(associatedProduct, T("Admin.Common.CopyOf", associatedProduct.Name), isPublished, copyImages, false);
+				var associatedProductCopy = CopyProduct(associatedProduct, T("Admin.Common.CopyOf", associatedProduct.Name), isPublished, false);
 				associatedProductCopy.ParentGroupedProductId = clone.Id;
 			}
 		}
@@ -520,13 +473,7 @@ namespace SmartStore.Services.Catalog
 			}
 		}
 
-        private void ProcessAttributes(
-            Product product,
-            Product clone,
-            string newName,
-            bool copyImages,
-            Dictionary<int, MediaFile> clonedFiles,
-            IEnumerable<Language> languages)
+        private void ProcessAttributes(Product product, Product clone, IEnumerable<Language> languages)
         {
             using (var scope = new DbContextScope(lazyLoading: false, forceNoTracking: false))
             {
@@ -538,17 +485,6 @@ namespace SmartStore.Services.Catalog
             var pvaMap = new Dictionary<int, ProductVariantAttribute>();
             // Former attribute value id > clone.
             var pvavMap = new Dictionary<int, ProductVariantAttributeValue>();
-            var fileSeName = SeoHelper.GetSeName(newName, true, false, false);
-            
-            var fileIds = product.ProductVariantAttributes
-                .SelectMany(x => x.ProductVariantAttributeValues)
-                .Where(x => x.MediaFileId > 0)
-                .Select(x => x.MediaFileId)
-                .ToArray();
-
-            var allFiles = _mediaService.GetFilesByIds(fileIds, MediaLoadFlags.WithBlob)
-                .Select(x => x.File)
-                .ToList();
 
             // Product attributes.
             foreach (var pva in product.ProductVariantAttributes)
@@ -588,19 +524,9 @@ namespace SmartStore.Services.Catalog
                         DisplayOrder = pvav.DisplayOrder,
                         ValueTypeId = pvav.ValueTypeId,
                         LinkedProductId = pvav.LinkedProductId,
-                        Quantity = pvav.Quantity
+                        Quantity = pvav.Quantity,
+                        MediaFileId = pvav.MediaFileId
                     };
-
-                    if (copyImages && pvav.MediaFileId > 0)
-                    {
-                        var file = allFiles.FirstOrDefault(x => x.Id == pvav.MediaFileId);
-                        if (file != null)
-                        {
-                            var fileClone = CopyFile(file, fileSeName);
-                            clonedFiles[pvav.MediaFileId] = fileClone;
-                            pvavClone.MediaFileId = fileClone.Id;
-                        }
-                    }
 
                     _productAttributeService.InsertProductVariantAttributeValue(pvavClone);
 
@@ -668,16 +594,6 @@ namespace SmartStore.Services.Catalog
                     }
                 }
 
-                var newAssignedPictureIds = new HashSet<string>();
-                foreach (var strPicId in combination.AssignedMediaFileIds.EmptyNull().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    var newPic = clonedFiles.Get(strPicId.ToInt());
-                    if (newPic != null)
-                    {
-                        newAssignedPictureIds.Add(newPic.Id.ToString(CultureInfo.InvariantCulture));
-                    }
-                }
-
                 var combinationClone = new ProductVariantAttributeCombination
                 {
                     ProductId = clone.Id,
@@ -688,7 +604,7 @@ namespace SmartStore.Services.Catalog
                     Gtin = combination.Gtin,
                     ManufacturerPartNumber = combination.ManufacturerPartNumber,
                     Price = combination.Price,
-                    AssignedMediaFileIds = copyImages ? string.Join(",", newAssignedPictureIds) : null,
+                    AssignedMediaFileIds = combination.AssignedMediaFileIds,
                     Length = combination.Length,
                     Width = combination.Width,
                     Height = combination.Height,

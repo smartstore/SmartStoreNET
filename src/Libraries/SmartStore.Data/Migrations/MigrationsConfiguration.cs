@@ -194,7 +194,8 @@
                 "Admin.Catalog.Products.Fields.VisibleIndividually",
                 "Admin.Catalog.Products.Fields.VisibleIndividually.Hint",
                 "Admin.Promotions.Discounts.NoDiscountsAvailable",
-                "Admin.Orders.Shipments.TrackingNumber.Button");
+                "Admin.Orders.Shipments.TrackingNumber.Button",
+                "Admin.Catalog.Products.Copy.CopyImages");
 
             // Rule
             builder.AddOrUpdate("Admin.Rules.SystemName", "System name", "Systemname");

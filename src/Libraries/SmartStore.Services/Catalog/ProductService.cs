@@ -148,7 +148,6 @@ namespace SmartStore.Services.Catalog
 		{
 			var query = _productRepository.Table;
 			query = query.Where(x => !x.Deleted);
-			query = query.Where(x => x.Published);
 
 			return new PagedList<Product>(query, 0, int.MaxValue);
 

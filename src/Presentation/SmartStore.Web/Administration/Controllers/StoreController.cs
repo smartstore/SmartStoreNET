@@ -28,7 +28,6 @@ namespace SmartStore.Admin.Controllers
         private readonly IManufacturerService _manufacturerService;
         private readonly ICustomerService _customerService;
         private readonly IOrderService _orderService;
-        //private readonly IPictureService _pictureService;
         private readonly IMediaService _mediaService;
         private readonly IShoppingCartService _shoppingCartService;
 
@@ -40,7 +39,6 @@ namespace SmartStore.Admin.Controllers
             IManufacturerService manufacturerService,
             ICustomerService customerService,
             IOrderService orderService,
-            //IPictureService pictureService,
             IMediaService mediaService,
             IShoppingCartService shoppingCartService)
         {
@@ -52,7 +50,6 @@ namespace SmartStore.Admin.Controllers
             _customerService = customerService;
             _categoryService = categoryService;
             _orderService = orderService;
-            //_pictureService = pictureService;
             _mediaService = mediaService;
             _shoppingCartService = shoppingCartService;
         }
@@ -260,7 +257,7 @@ namespace SmartStore.Admin.Controllers
                 ManufacturersCount = _manufacturerService.GetAllManufacturers().Count.ToString("D"),
                 AttributesCount = _productAttributeService.GetAllProductAttributes(0, int.MaxValue).TotalCount.ToString("D"),
                 AttributeCombinationsCount = _productService.GetAllProductVariants().TotalCount.ToString("D"),
-                MediaCount = _mediaService.CountFiles(new MediaSearchQuery { Deleted = false }).ToString("D"), // _pictureService.GetPictures(0, int.MaxValue).TotalCount.ToString("D"),
+                MediaCount = _mediaService.CountFiles(new MediaSearchQuery { Deleted = false }).ToString("D"),
                 CustomersCount = _customerService.SearchCustomers(
                     new CustomerSearchQuery()
                     {

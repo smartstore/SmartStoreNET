@@ -1357,6 +1357,7 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         private List<TopCustomerReportLineModel> CreateCustomerReportLineModel(IList<TopCustomerReportLine> items)
         {
+            var customers = _customerService.GetCustomersByIds(items.Select(x=>x.CustomerId).ToArray());
             return items.Select(x =>
              {
                  var m = new TopCustomerReportLineModel()
@@ -1366,7 +1367,7 @@ namespace SmartStore.Admin.Controllers
                      OrderCount = x.OrderCount.ToString("D"),
                  };
 
-                 var customer = _customerService.GetCustomerById(x.CustomerId);
+                 var customer = customers.Where(y => y.Id == x.CustomerId).FirstOrDefault();
                  if (customer != null)
                  {
                      m.CustomerDisplayName = customer.FormatUserName() ?? customer.FindEmail();
@@ -1409,7 +1410,8 @@ namespace SmartStore.Admin.Controllers
 
             var query = new CustomerSearchQuery
             {
-                RegistrationFromUtc = DateTime.UtcNow.AddYears(-2)
+                RegistrationFromUtc = DateTime.UtcNow.AddYears(-2),
+                CustomerRoleIds = new int[] { 3 }
             };
 
             var customers = _customerService.SearchCustomers(query);

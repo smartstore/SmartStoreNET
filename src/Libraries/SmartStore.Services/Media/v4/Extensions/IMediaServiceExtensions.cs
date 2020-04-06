@@ -1,5 +1,5 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
+using SmartStore.Core.IO;
 
 namespace SmartStore.Services.Media
 {
@@ -36,6 +36,28 @@ namespace SmartStore.Services.Media
                 : null;
 
             return service.GetUrl((MediaFileInfo)null, query, null, true);
+        }
+
+        public static string CreatePath(
+            this IMediaService service,
+            string album,
+            string mimeType,
+            string fileName,
+            bool unique = true)
+        {
+            Guard.NotEmpty(album, nameof(album));
+            Guard.NotEmpty(mimeType, nameof(mimeType));
+            Guard.NotEmpty(fileName, nameof(fileName));
+
+            var extension = MimeTypes.MapMimeTypeToExtension(mimeType).NullEmpty() ?? ".jpg";
+            var path = string.Concat(album, "/", fileName.ToValidFileName(), extension.EnsureStartsWith("."));
+
+            if (unique && service.CheckUniqueFileName(path, out var uniquePath))
+            {
+                path = uniquePath;
+            }
+
+            return path;
         }
     }
 }

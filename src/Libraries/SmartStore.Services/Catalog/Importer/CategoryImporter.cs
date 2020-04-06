@@ -198,34 +198,32 @@ namespace SmartStore.Services.Catalog.Importer
                     if ((image.Success ?? false) && File.Exists(image.Path))
                     {
                         Succeeded(image);
-                        var fileBinary = File.ReadAllBytes(image.Path);
-
-                        if (fileBinary != null && fileBinary.Length > 0)
+                        using (var stream = File.OpenRead(image.Path))
                         {
-                            var currentFiles = new List<MediaFileInfo>();
-                            var file = _mediaService.GetFileById(row.Entity.MediaFileId ?? 0, MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithBlob);
-                            if (file != null)
+                            if ((stream?.Length ?? 0) > 0)
                             {
-                                currentFiles.Add(file);
-                            }
-
-                            fileBinary = _mediaService.FindEqualFile(fileBinary, currentFiles.Select(x => x.File), out var _);
-
-                            if (fileBinary != null && fileBinary.Length > 0)
-                            {
-                                var extension = MimeTypes.MapMimeTypeToExtension(image.MimeType).NullEmpty() ?? ".jpg";
-                                var path = string.Concat(SystemAlbumProvider.Categories, "/", seoName.ToValidFileName(), extension.EnsureStartsWith("."));
-
-                                var newFile = _mediaService.SaveFile(path, fileBinary.ToStream(), false, true);
-                                if (newFile != null)
+                                var currentFiles = new List<MediaFileInfo>();
+                                var file = _mediaService.GetFileById(row.Entity.MediaFileId ?? 0, MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithBlob);
+                                if (file != null)
                                 {
-                                    row.Entity.MediaFileId = newFile.Id;
-                                    _categoryRepository.Update(row.Entity);
+                                    currentFiles.Add(file);
                                 }
-                            }
-                            else
-                            {
-                                context.Result.AddInfo("Found equal image in data store. Skipping field.", row.GetRowInfo(), "ImageUrls");
+
+                                var fileBuffer = _mediaService.FindEqualFile(stream.ToByteArray(), currentFiles.Select(x => x.File), out var _);
+                                if ((fileBuffer?.Length ?? 0) > 0)
+                                {
+                                    var path = _mediaService.CreatePath(SystemAlbumProvider.Categories, image.MimeType, seoName);
+                                    var newFile = _mediaService.SaveFile(path, stream, false, true);
+                                    if ((newFile?.Id ?? 0) != 0)
+                                    {
+                                        row.Entity.MediaFileId = newFile.Id;
+                                        _categoryRepository.Update(row.Entity);
+                                    }
+                                }
+                                else
+                                {
+                                    context.Result.AddInfo("Found equal image in data store. Skipping field.", row.GetRowInfo(), "ImageUrls");
+                                }
                             }
                         }
                     }

@@ -46,16 +46,23 @@ namespace SmartStore.Services.DataExchange.Import
 
 		private string GetLocalizedPropertyName(ImportEntityType type, string property)
 		{
-			if (property.IsEmpty())
-				return "";
+            // TODO: find a better solution for this.
+            if (property.IsEmpty())
+            {
+                return string.Empty;
+            }
 
 			string key = null;
 			string prefixKey = null;
 
-			if (property.StartsWith("BillingAddress."))
-				prefixKey = "Admin.Orders.Fields.BillingAddress";
-			else if (property.StartsWith("ShippingAddress."))
-				prefixKey = "Admin.Orders.Fields.ShippingAddress";
+            if (property.StartsWith("BillingAddress."))
+            {
+                prefixKey = "Admin.Orders.Fields.BillingAddress";
+            }
+            else if (property.StartsWith("ShippingAddress."))
+            {
+                prefixKey = "Admin.Orders.Fields.ShippingAddress";
+            }
 
 			#region Get resource key
 
@@ -63,9 +70,6 @@ namespace SmartStore.Services.DataExchange.Import
 			{
 				case "Id":
 					key = "Admin.Common.Entity.Fields.Id";
-					break;
-				case "LimitedToStores":
-					key = "Admin.Common.Store.LimitedTo";
 					break;
 				case "DisplayOrder":
                 case "HomePageDisplayOrder":
@@ -94,7 +98,13 @@ namespace SmartStore.Services.DataExchange.Import
 				case "StoreId":
 					key = "Admin.Common.Store";
 					break;
-				case "ParentGroupedProductId":
+                case "LimitedToStores":
+                    key = "Admin.Common.Store.LimitedTo";
+                    break;
+                case "SubjectToAcl":
+                    key = "Admin.Common.CustomerRole.LimitedTo";
+                    break;
+                case "ParentGroupedProductId":
 					key = "Admin.Catalog.Products.Fields.AssociatedToProductName";
 					break;
 				case "PasswordFormatId":
@@ -111,9 +121,6 @@ namespace SmartStore.Services.DataExchange.Import
                     break;
                 case "Salutation":
                     key = "Address.Fields.Salutation";
-                    break;
-                case "SubjectToAcl":
-                    key = "Admin.Catalog.Products.Acl";
                     break;
                 case "VisibleIndividually":
                     key = "Admin.Catalog.Products.Fields.Visibility";
@@ -140,19 +147,25 @@ namespace SmartStore.Services.DataExchange.Import
 					break;
 			}
 
-			#endregion
+            #endregion
 
-			if (key.IsEmpty())
-				return "";
+            if (key.IsEmpty())
+            {
+                return string.Empty;
+            }
 
 			var result = _localizationService.GetResource(key, 0, false, "", true);
 
 			if (result.IsEmpty())
 			{
-				if (key.EndsWith("Id"))
-					result = _localizationService.GetResource(key.Substring(0, key.Length - 2), 0, false, "", true);
-				else if (key.EndsWith("Utc"))
-					result = _localizationService.GetResource(key.Substring(0, key.Length - 3), 0, false, "", true);
+                if (key.EndsWith("Id"))
+                {
+                    result = _localizationService.GetResource(key.Substring(0, key.Length - 2), 0, false, "", true);
+                }
+                else if (key.EndsWith("Utc"))
+                {
+                    result = _localizationService.GetResource(key.Substring(0, key.Length - 3), 0, false, "", true);
+                }
 			}
 
 			if (result.IsEmpty())

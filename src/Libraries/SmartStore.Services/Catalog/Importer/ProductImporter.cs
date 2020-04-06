@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.IO;
 using SmartStore.Core.Localization;
 using SmartStore.Data.Utilities;
 using SmartStore.Services.DataExchange.Import;
@@ -24,7 +25,6 @@ namespace SmartStore.Services.Catalog.Importer
 {
     public class ProductImporter : EntityImporterBase
     {
-        private readonly IRepository<ProductMediaFile> _productPictureRepository;
         private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
         private readonly IRepository<ProductCategory> _productCategoryRepository;
         private readonly IRepository<ProductTag> _productTagRepository;
@@ -32,8 +32,7 @@ namespace SmartStore.Services.Catalog.Importer
         private readonly IRepository<TierPrice> _tierPriceRepository;
         private readonly IRepository<ProductVariantAttributeValue> _attributeValueRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _attributeCombinationRepository;
-        private readonly ILocalizedEntityService _localizedEntityService;
-        private readonly IPictureService _pictureService;
+        private readonly IMediaService _mediaService;
         private readonly IManufacturerService _manufacturerService;
         private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
@@ -53,7 +52,6 @@ namespace SmartStore.Services.Catalog.Importer
         };
 
         public ProductImporter(
-            IRepository<ProductMediaFile> productPictureRepository,
             IRepository<ProductManufacturer> productManufacturerRepository,
             IRepository<ProductCategory> productCategoryRepository,
             IRepository<ProductTag> productTagRepository,
@@ -61,8 +59,7 @@ namespace SmartStore.Services.Catalog.Importer
             IRepository<TierPrice> tierPriceRepository,
             IRepository<ProductVariantAttributeValue> attributeValueRepository,
             IRepository<ProductVariantAttributeCombination> attributeCombinationRepository,
-            ILocalizedEntityService localizedEntityService,
-            IPictureService pictureService,
+            IMediaService mediaService,
             IManufacturerService manufacturerService,
             ICategoryService categoryService,
             IProductService productService,
@@ -70,7 +67,6 @@ namespace SmartStore.Services.Catalog.Importer
             IProductAttributeService productAttributeService,
             FileDownloadManager fileDownloadManager)
         {
-            _productPictureRepository = productPictureRepository;
             _productManufacturerRepository = productManufacturerRepository;
             _productCategoryRepository = productCategoryRepository;
             _productTagRepository = productTagRepository;
@@ -78,19 +74,16 @@ namespace SmartStore.Services.Catalog.Importer
             _tierPriceRepository = tierPriceRepository;
             _attributeValueRepository = attributeValueRepository;
             _attributeCombinationRepository = attributeCombinationRepository;
-            _localizedEntityService = localizedEntityService;
-            _pictureService = pictureService;
+            _mediaService = mediaService;
             _manufacturerService = manufacturerService;
             _categoryService = categoryService;
             _productService = productService;
             _productTemplateService = productTemplateService;
             _productAttributeService = productAttributeService;
             _fileDownloadManager = fileDownloadManager;
-
-            T = NullLocalizer.Instance;
         }
 
-        public Localizer T { get; set; }
+        public Localizer T { get; set; } = NullLocalizer.Instance;
 
         protected override void Import(ImportExecuteContext context)
         {
@@ -300,7 +293,7 @@ namespace SmartStore.Services.Catalog.Importer
 
             // ===========================================================================
             // 10.) PostProcess: normalization
-            // ===========================================================================
+            // ===========================================================================          
             DataMigrator.FixProductMainPictureIds(_productRepository.Context, UtcNow);
         }
 
@@ -859,21 +852,21 @@ namespace SmartStore.Services.Catalog.Importer
 
 		protected virtual void ProcessProductPictures(ImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
 		{
-			// true, cause pictures must be saved and assigned an id prior adding a mapping.
-			_productPictureRepository.AutoCommitEnabled = true;
+            _productRepository.AutoCommitEnabled = false;
 
-			var equalPictureId = 0;
-			var numberOfPictures = (context.ExtraData.NumberOfPictures ?? int.MaxValue);
+            var numberOfPictures = context.ExtraData.NumberOfPictures ?? int.MaxValue;
 
 			foreach (var row in batch)
 			{
 				var imageUrls = row.GetDataValue<List<string>>("ImageUrls");
-				if (imageUrls.IsNullOrEmpty())
-					continue;
+                if (imageUrls.IsNullOrEmpty())
+                {
+                    continue;
+                }
 
 				var imageNumber = 0;
 				var displayOrder = -1;
-				var seoName = _pictureService.GetPictureSeName(row.EntityDisplayName);
+				var seoName = SeoHelper.GetSeName(row.EntityDisplayName, true, false, false);
 				var imageFiles = new List<FileDownloadManagerItem>();
 
 				// Collect required image file infos.
@@ -892,7 +885,7 @@ namespace SmartStore.Services.Catalog.Importer
 				if (imageFiles.Any(x => x.Url.HasValue()))
 				{
 					// Async downloading in batch processing is inefficient cause only the image processing benefits from async,
-					// not the record processing itself. a per record processing may speed up the import.
+					// not the record processing itself. A per record processing may speed up the import.
 
 					AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, imageFiles.Where(x => x.Url.HasValue() && !x.Success.HasValue)));
 				}
@@ -905,51 +898,51 @@ namespace SmartStore.Services.Catalog.Importer
 						if ((image.Success ?? false) && File.Exists(image.Path))
 						{
 							Succeeded(image);
-							var pictureBinary = File.ReadAllBytes(image.Path);
+                            using (var stream = File.OpenRead(image.Path))
+                            {
+                                if ((stream?.Length ?? 0) > 0)
+                                {
+                                    var tmpFileMap = _productService.GetProductPicturesByProductIds(new int[] { row.Entity.Id }, null, MediaLoadFlags.WithBlob);                                    
+                                    
+                                    var currentFiles = tmpFileMap.ContainsKey(row.Entity.Id)
+                                        ? tmpFileMap[row.Entity.Id]
+                                        : Enumerable.Empty<ProductMediaFile>();
 
-							if (pictureBinary != null && pictureBinary.Length > 0)
-							{
-								var currentProductPictures = _productPictureRepository.TableUntracked
-									.Expand(x => x.MediaFile.MediaStorage)
-									.Where(x => x.ProductId == row.Entity.Id)
-									.ToList();
+                                    if (displayOrder == -1)
+                                    {
+                                        displayOrder = currentFiles.Any() ? currentFiles.Select(x => x.DisplayOrder).Max() : 0;
+                                    }
 
-								var currentPictures = currentProductPictures
-									.Select(x => x.MediaFile)
-									.ToList();
+                                    var fileBuffer = _mediaService.FindEqualFile(stream.ToByteArray(), currentFiles.Select(x => x.MediaFile), out var _);
+                                    if ((fileBuffer?.Length ?? 0) > 0)
+                                    {
+                                        var path = _mediaService.CreatePath(SystemAlbumProvider.Products, image.MimeType, seoName);
+                                        var newFile = _mediaService.SaveFile(path, stream, false, false);
+                                        if ((newFile?.Id ?? 0) != 0)
+                                        {
+                                            _productService.InsertProductPicture(new ProductMediaFile
+                                            {
+                                                ProductId = row.Entity.Id,
+                                                MediaFileId = newFile.Id,
+                                                DisplayOrder = ++displayOrder
+                                            });
 
-								if (displayOrder == -1)
-								{
-									displayOrder = currentProductPictures.Any() ? currentProductPictures.Select(x => x.DisplayOrder).Max() : 0;
-								}
-                                
-								pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
-
-								if (pictureBinary != null && pictureBinary.Length > 0)
-								{
-                                    var newPicture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, false, false, "product");
-
-                                    if (newPicture != null)
-									{
-										var mapping = new ProductMediaFile
-										{
-											ProductId = row.Entity.Id,
-											MediaFileId = newPicture.Id,
-											DisplayOrder = ++displayOrder
-										};
-
-										_productPictureRepository.Insert(mapping);
-									}
-								}
-								else
-								{
-									context.Result.AddInfo($"Found equal picture in data store for {image.Url}. Skipping field.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
-								}
-							}
+                                            // Update for FixProductMainPictureIds.
+                                            row.Entity.UpdatedOnUtc = DateTime.UtcNow;
+                                            // Required otherwise nothing updated.
+                                            _productRepository.Update(row.Entity);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        context.Result.AddInfo($"Found equal image in data store for {image.Url}. Skipping field.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
+                                    }
+                                }
+                            }
 						}
 						else if (image.Url.HasValue())
 						{
-							context.Result.AddInfo($"Download failed for picture {image.Url}.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
+							context.Result.AddInfo($"Download failed for image {image.Url}.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
 						}
 					}
 					catch (Exception ex)
@@ -958,7 +951,9 @@ namespace SmartStore.Services.Catalog.Importer
 					}
 				}
 			}
-		}
+
+            _productRepository.Context.SaveChanges();
+        }
 
 		protected virtual int ProcessProductManufacturers(ImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
 		{
@@ -1048,7 +1043,7 @@ namespace SmartStore.Services.Catalog.Importer
 
         protected virtual void ProcessProductTags(ImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
         {
-            // true, cause product tags must be saved and assigned an id prior adding a mapping.
+            // True, cause product tags must be saved and assigned an id prior adding a mapping.
             _productTagRepository.AutoCommitEnabled = true;
 
             var productIds = batch.Select(x => x.Entity.Id).ToList();

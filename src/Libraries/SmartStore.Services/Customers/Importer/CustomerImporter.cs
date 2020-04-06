@@ -616,34 +616,33 @@ namespace SmartStore.Services.Customers.Importer
 				if ((image.Success ?? false) && File.Exists(image.Path))
 				{
 					Succeeded(image);
-                    var fileBinary = File.ReadAllBytes(image.Path);
-
-                    if (fileBinary != null && fileBinary.Length > 0)
+                    using (var stream = File.OpenRead(image.Path))
                     {
-                        var currentFiles = new List<MediaFileInfo>();
-                        var fileId = row.Entity.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
-                        var file = _mediaService.GetFileById(fileId, MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithBlob);
-                        if (file != null)
+                        if ((stream?.Length ?? 0) > 0)
                         {
-                            currentFiles.Add(file);
-                        }
-
-                        fileBinary = _mediaService.FindEqualFile(fileBinary, currentFiles.Select(x => x.File), out var _);
-
-                        if (fileBinary != null && fileBinary.Length > 0)
-                        {
-                            var extension = MimeTypes.MapMimeTypeToExtension(image.MimeType).NullEmpty() ?? ".jpg";
-                            var path = string.Concat(SystemAlbumProvider.Customers, "/", seoName.ToValidFileName(), extension.EnsureStartsWith("."));
-
-                            var newFile = _mediaService.SaveFile(path, fileBinary.ToStream(), false, true);
-                            if (newFile != null)
+                            var currentFiles = new List<MediaFileInfo>();
+                            var fileId = row.Entity.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
+                            var file = _mediaService.GetFileById(fileId, MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithBlob);
+                            if (file != null)
                             {
-                                SaveAttribute(row, SystemCustomerAttributeNames.AvatarPictureId, newFile.Id);
+                                currentFiles.Add(file);
                             }
-                        }
-                        else
-                        {
-                            context.Result.AddInfo("Found equal image in data store. Skipping field.", row.GetRowInfo(), "AvatarPictureUrl");
+
+                            var fileBuffer = _mediaService.FindEqualFile(stream.ToByteArray(), currentFiles.Select(x => x.File), out var _);
+                            if ((fileBuffer?.Length ?? 0) > 0)
+                            {
+                                // Overwrite existing avatar.
+                                var path = _mediaService.CreatePath(SystemAlbumProvider.Customers, image.MimeType, seoName, false);
+                                var newFile = _mediaService.SaveFile(path, fileBuffer.ToStream(), false, true);
+                                if ((newFile?.Id ?? 0) != 0)
+                                {
+                                    SaveAttribute(row, SystemCustomerAttributeNames.AvatarPictureId, newFile.Id);
+                                }
+                            }
+                            else
+                            {
+                                context.Result.AddInfo("Found equal image in data store. Skipping field.", row.GetRowInfo(), "AvatarPictureUrl");
+                            }
                         }
                     }
                 }

@@ -334,13 +334,13 @@ namespace SmartStore.Services.Catalog
 					// Localization
 					ProcessLocalization(product, clone, languages);
 
-					// Attr stuff ...
+					// Attributes and attribute combinations.
 					ProcessAttributes(product, clone, newName, copyImages, clonedPictures, languages);
 
 					// Update computed properties.
 					clone.LowestAttributeCombinationPrice = _productAttributeService.GetLowestCombinationPrice(clone.Id);
 
-					// Associated products
+					// Associated products.
 					if (copyAssociatedProducts && product.ProductType != ProductType.BundledProduct)
 					{
 						ProcessAssociatedProducts(product, clone, isPublished, copyImages);
@@ -520,187 +520,191 @@ namespace SmartStore.Services.Catalog
 			}
 		}
 
-		private void ProcessAttributes(
-			Product product, 
-			Product clone, 
-			string newName, 
-			bool copyImages,
-			Dictionary<int, MediaFile> clonedFiles,
-			IEnumerable<Language> languages)
-		{
-			// Former attribute id > clone.
-			var pvaMap = new Dictionary<int, ProductVariantAttribute>();
+        private void ProcessAttributes(
+            Product product,
+            Product clone,
+            string newName,
+            bool copyImages,
+            Dictionary<int, MediaFile> clonedFiles,
+            IEnumerable<Language> languages)
+        {
+            using (var scope = new DbContextScope(lazyLoading: false, forceNoTracking: false))
+            {
+                scope.LoadCollection(product, (Product p) => p.ProductVariantAttributes);
+                scope.LoadCollection(product, (Product p) => p.ProductVariantAttributeCombinations);
+            }
 
-			// Former attribute value id > clone.
-			var pvavMap = new Dictionary<int, ProductVariantAttributeValue>();
-			var fileSeName = SeoHelper.GetSeName(newName, true, false, false);
+            // Former attribute id > clone.
+            var pvaMap = new Dictionary<int, ProductVariantAttribute>();
+            // Former attribute value id > clone.
+            var pvavMap = new Dictionary<int, ProductVariantAttributeValue>();
+            var fileSeName = SeoHelper.GetSeName(newName, true, false, false);
+            
+            var fileIds = product.ProductVariantAttributes
+                .SelectMany(x => x.ProductVariantAttributeValues)
+                .Where(x => x.MediaFileId > 0)
+                .Select(x => x.MediaFileId)
+                .ToArray();
 
+            var allFiles = _mediaService.GetFilesByIds(fileIds, MediaLoadFlags.WithBlob)
+                .Select(x => x.File)
+                .ToList();
+
+            // Product attributes.
             foreach (var pva in product.ProductVariantAttributes)
-			{
-				var pvaClone = new ProductVariantAttribute
-				{
-					ProductAttributeId = pva.ProductAttributeId,
-					TextPrompt = pva.TextPrompt,
-					IsRequired = pva.IsRequired,
-					AttributeControlTypeId = pva.AttributeControlTypeId,
-					DisplayOrder = pva.DisplayOrder
-				};
+            {
+                var pvaClone = new ProductVariantAttribute
+                {
+                    ProductId = clone.Id,
+                    ProductAttributeId = pva.ProductAttributeId,
+                    TextPrompt = pva.TextPrompt,
+                    IsRequired = pva.IsRequired,
+                    AttributeControlTypeId = pva.AttributeControlTypeId,
+                    DisplayOrder = pva.DisplayOrder
+                };
+                _productAttributeService.InsertProductVariantAttribute(pvaClone);
 
-				clone.ProductVariantAttributes.Add(pvaClone);
+                // Save associated value (used for combinations copying).
+                pvaMap[pva.Id] = pvaClone;
+            }
 
-				// Save associated value (used for combinations copying).
-				pvaMap[pva.Id] = pvaClone;
+            // >>>>>> Commit attributes.
+            Commit();
 
-				// Product variant attribute values.
-				foreach (var pvav in pva.ProductVariantAttributeValues)
-				{
-					var pvavClone = new ProductVariantAttributeValue
-					{
-						Name = pvav.Name,
-						Color = pvav.Color,
-						PriceAdjustment = pvav.PriceAdjustment,
-						WeightAdjustment = pvav.WeightAdjustment,
-						IsPreSelected = pvav.IsPreSelected,
-						DisplayOrder = pvav.DisplayOrder,
-						ValueTypeId = pvav.ValueTypeId,
-						LinkedProductId = pvav.LinkedProductId,
-						Quantity = pvav.Quantity,
-						MediaFileId = copyImages ? pvav.MediaFileId : 0 // we'll clone this later
-					};
+            // Product variant attribute values.
+            foreach (var pva in product.ProductVariantAttributes)
+            {
+                var pvaClone = pvaMap[pva.Id];
+                foreach (var pvav in pva.ProductVariantAttributeValues)
+                {
+                    var pvavClone = new ProductVariantAttributeValue
+                    {
+                        ProductVariantAttributeId = pvaClone.Id,
+                        Name = pvav.Name,
+                        Color = pvav.Color,
+                        PriceAdjustment = pvav.PriceAdjustment,
+                        WeightAdjustment = pvav.WeightAdjustment,
+                        IsPreSelected = pvav.IsPreSelected,
+                        DisplayOrder = pvav.DisplayOrder,
+                        ValueTypeId = pvav.ValueTypeId,
+                        LinkedProductId = pvav.LinkedProductId,
+                        Quantity = pvav.Quantity
+                    };
 
-					pvaClone.ProductVariantAttributeValues.Add(pvavClone);
+                    if (copyImages && pvav.MediaFileId > 0)
+                    {
+                        var file = allFiles.FirstOrDefault(x => x.Id == pvav.MediaFileId);
+                        if (file != null)
+                        {
+                            var fileClone = CopyFile(file, fileSeName);
+                            clonedFiles[pvav.MediaFileId] = fileClone;
+                            pvavClone.MediaFileId = fileClone.Id;
+                        }
+                    }
 
-					// Save associated value (used for combinations copying)
-					pvavMap.Add(pvav.Id, pvavClone);
-				}
-			}
+                    _productAttributeService.InsertProductVariantAttributeValue(pvavClone);
 
-			// >>>>>> Commit
-			Commit();
+                    // Save associated value (used for combinations copying)
+                    pvavMap.Add(pvav.Id, pvavClone);
+                }
+            }
+
+            // >>>>>> Commit attribute values.
+            Commit();
 
             // Attribute value localization.
             foreach (var pvav in product.ProductVariantAttributes.SelectMany(x => x.ProductVariantAttributeValues).ToArray())
-			{
-				foreach (var lang in languages)
-				{
-					var name = pvav.GetLocalized(x => x.Name, lang, false, false);
-					if (!string.IsNullOrEmpty(name))
-					{
-						var pvavClone = pvavMap.Get(pvav.Id);
-						if (pvavClone != null)
-						{
-							_localizedEntityService.SaveLocalizedValue(pvavClone, x => x.Name, name, lang.Id);
-						}
-					}					
-				}
-			}			
+            {
+                foreach (var lang in languages)
+                {
+                    var name = pvav.GetLocalized(x => x.Name, lang, false, false);
+                    if (!string.IsNullOrEmpty(name))
+                    {
+                        var pvavClone = pvavMap.Get(pvav.Id);
+                        if (pvavClone != null)
+                        {
+                            _localizedEntityService.SaveLocalizedValue(pvavClone, x => x.Name, name, lang.Id);
+                        }
+                    }
+                }
+            }
 
-			// Clone attribute value images.
-			if (copyImages)
-			{
-				// Reduce value set to those with assigned pictures.
-				var allValueClonesWithFiles = pvavMap.Values.Where(x => x.MediaFileId > 0).ToArray();
-				// Get those files for cloning.
-                var allFiles = _mediaService.GetFilesByIds(allValueClonesWithFiles.Select(x => x.MediaFileId).ToArray(), MediaLoadFlags.WithBlob)
-                    .Select(x => x.File)
-                    .ToList();
-                
-                foreach (var pvavClone in allValueClonesWithFiles)
-				{
-                    var file = allFiles.FirstOrDefault(x => x.Id == pvavClone.MediaFileId);
-					if (file != null)
-					{
-                        var fileClone = CopyFile(file, fileSeName);
-                        clonedFiles[pvavClone.MediaFileId] = fileClone;
-						pvavClone.MediaFileId = fileClone.Id;
-					}
-				}
-			}
+            // Attribute combinations.
+            foreach (var combination in product.ProductVariantAttributeCombinations)
+            {
+                // Generate new AttributesXml according to new value IDs.
+                string newAttributesXml = "";
+                var parsedProductVariantAttributes = _productAttributeParser.ParseProductVariantAttributes(combination.AttributesXml);
+                foreach (var oldPva in parsedProductVariantAttributes)
+                {
+                    if (!pvaMap.ContainsKey(oldPva.Id))
+                        continue;
 
-			// >>>>>> Commit attributes & values
-			Commit();
+                    var newPva = pvaMap.Get(oldPva.Id);
 
-			// Attribute combinations.
-			using (var scope = new DbContextScope(lazyLoading: false, forceNoTracking: false))
-			{
-				scope.LoadCollection(product, (Product p) => p.ProductVariantAttributeCombinations);
-			}
+                    if (newPva == null)
+                        continue;
 
-			foreach (var combination in product.ProductVariantAttributeCombinations)
-			{
-				// Generate new AttributesXml according to new value IDs.
-				string newAttributesXml = "";
-				var parsedProductVariantAttributes = _productAttributeParser.ParseProductVariantAttributes(combination.AttributesXml);
-				foreach (var oldPva in parsedProductVariantAttributes)
-				{
-					if (!pvaMap.ContainsKey(oldPva.Id))
-						continue;
+                    var oldPvaValuesStr = _productAttributeParser.ParseValues(combination.AttributesXml, oldPva.Id);
+                    foreach (var oldPvaValueStr in oldPvaValuesStr)
+                    {
+                        if (newPva.ShouldHaveValues())
+                        {
+                            var oldPvaValue = oldPvaValueStr.ToInt();
+                            if (pvavMap.ContainsKey(oldPvaValue))
+                            {
+                                var newPvav = pvavMap.Get(oldPvaValue);
+                                if (newPvav != null)
+                                {
+                                    newAttributesXml = _productAttributeParser.AddProductAttribute(newAttributesXml, newPva, newPvav.Id.ToString());
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Simple text value.
+                            newAttributesXml = _productAttributeParser.AddProductAttribute(newAttributesXml, newPva, oldPvaValueStr);
+                        }
+                    }
+                }
 
-					var newPva = pvaMap.Get(oldPva.Id);
+                var newAssignedPictureIds = new HashSet<string>();
+                foreach (var strPicId in combination.AssignedMediaFileIds.EmptyNull().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    var newPic = clonedFiles.Get(strPicId.ToInt());
+                    if (newPic != null)
+                    {
+                        newAssignedPictureIds.Add(newPic.Id.ToString(CultureInfo.InvariantCulture));
+                    }
+                }
 
-					if (newPva == null)
-						continue;
+                var combinationClone = new ProductVariantAttributeCombination
+                {
+                    ProductId = clone.Id,
+                    AttributesXml = newAttributesXml,
+                    StockQuantity = combination.StockQuantity,
+                    AllowOutOfStockOrders = combination.AllowOutOfStockOrders,
+                    Sku = combination.Sku,
+                    Gtin = combination.Gtin,
+                    ManufacturerPartNumber = combination.ManufacturerPartNumber,
+                    Price = combination.Price,
+                    AssignedMediaFileIds = copyImages ? string.Join(",", newAssignedPictureIds) : null,
+                    Length = combination.Length,
+                    Width = combination.Width,
+                    Height = combination.Height,
+                    BasePriceAmount = combination.BasePriceAmount,
+                    BasePriceBaseAmount = combination.BasePriceBaseAmount,
+                    DeliveryTimeId = combination.DeliveryTimeId,
+                    QuantityUnitId = combination.QuantityUnitId,
+                    IsActive = combination.IsActive
+                    //IsDefaultCombination = combination.IsDefaultCombination
+                };
 
-					var oldPvaValuesStr = _productAttributeParser.ParseValues(combination.AttributesXml, oldPva.Id);
-					foreach (var oldPvaValueStr in oldPvaValuesStr)
-					{
-						if (newPva.ShouldHaveValues())
-						{
-							// attribute values
-							int oldPvaValue = oldPvaValueStr.Convert<int>();
-							if (pvavMap.ContainsKey(oldPvaValue))
-							{
-								var newPvav = pvavMap.Get(oldPvaValue);
-								if (newPvav != null)
-								{
-									newAttributesXml = _productAttributeParser.AddProductAttribute(newAttributesXml, newPva, newPvav.Id.ToString());
-								}
-							}
-						}
-						else
-						{
-							// just a text
-							newAttributesXml = _productAttributeParser.AddProductAttribute(newAttributesXml, newPva, oldPvaValueStr);
-						}
-					}
-				}
+                _productAttributeService.InsertProductVariantAttributeCombination(combinationClone);
+            }
 
-				var newAssignedPictureIds = new HashSet<string>();
-				foreach (var strPicId in combination.AssignedMediaFileIds.EmptyNull().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-				{
-					var newPic = clonedFiles.Get(strPicId.Convert<int>());
-					if (newPic != null)
-					{
-						newAssignedPictureIds.Add(newPic.Id.ToString(CultureInfo.InvariantCulture));
-					}
-				}
-
-				var combinationClone = new ProductVariantAttributeCombination
-				{
-					AttributesXml = newAttributesXml,
-					StockQuantity = combination.StockQuantity,
-					AllowOutOfStockOrders = combination.AllowOutOfStockOrders,
-					Sku = combination.Sku,
-					Gtin = combination.Gtin,
-					ManufacturerPartNumber = combination.ManufacturerPartNumber,
-					Price = combination.Price,
-					AssignedMediaFileIds = copyImages ? String.Join(",", newAssignedPictureIds) : null,
-					Length = combination.Length,
-					Width = combination.Width,
-					Height = combination.Height,
-					BasePriceAmount = combination.BasePriceAmount,
-					BasePriceBaseAmount = combination.BasePriceBaseAmount,
-					DeliveryTimeId = combination.DeliveryTimeId,
-					QuantityUnitId = combination.QuantityUnitId,
-					IsActive = combination.IsActive
-					//IsDefaultCombination = combination.IsDefaultCombination
-				};
-
-				clone.ProductVariantAttributeCombinations.Add(combinationClone);
-			}
-
-			// >>>>>> Commit combinations
-			Commit();
-		}
+            // >>>>>> Commit combinations.
+            Commit();
+        }
 	}
 }

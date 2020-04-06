@@ -2499,10 +2499,9 @@ namespace SmartStore.Admin.Controllers
         {
             var report = _orderReportService.BestSellersReport(0, null, null, null, null, null, 0, recordsToReturn, orderBy, true);
 
+            var products = _productService.GetProductsByIds(report.Select(x=>x.ProductId).ToArray());
             var model = report.Select(x =>
             {
-                var product = _productService.GetProductById(x.ProductId);
-
                 var m = new BestsellersReportLineModel
                 {
                     ProductId = x.ProductId,
@@ -2510,6 +2509,7 @@ namespace SmartStore.Admin.Controllers
                     TotalQuantity = x.TotalQuantity.ToString("D"),
                 };
 
+                var product = products.Where(y => y.Id == x.ProductId).FirstOrDefault();
                 if (product != null)
                 {
                     m.ProductName = product.Name;
@@ -2527,7 +2527,7 @@ namespace SmartStore.Admin.Controllers
         {
             var watch = new Stopwatch();
             watch.Start();
-
+                        
             var model = new BestsellersDashboardReportModel
             {
                 BestsellersByQuantity = GetBestsellersBriefReportModel(7, 1),
@@ -2774,7 +2774,8 @@ namespace SmartStore.Admin.Controllers
         {
             var shippingOrders = orders.Where(x => x.ShippingStatus == ShippingStatus.NotYetShipped);
             var paymentOrders = orders.Where(x => x.PaymentStatus == PaymentStatus.Pending);
-            var pendingOrders = orders.Where(x => x.OrderStatus == OrderStatus.Pending);
+            var ordersTotal = orders.Where(x => x.OrderStatus == OrderStatus.Pending || x.OrderStatus == OrderStatus.Processing);
+            var pendingOrders = ordersTotal.Where(x => x.OrderStatus == OrderStatus.Pending);
 
             var reports = new OrderAverageReportLine[]
             {
@@ -2807,7 +2808,6 @@ namespace SmartStore.Admin.Controllers
                 };
             }
 
-            var ordersTotal = orders.Where(x => x.OrderStatus == OrderStatus.Pending || x.OrderStatus == OrderStatus.Processing);
             model.QuantityTotal = ordersTotal.Count().ToString("D");
             model.AmountTotal = ordersTotal.Sum(x => x.OrderTotal).ToString("C0");
 
@@ -2825,7 +2825,7 @@ namespace SmartStore.Admin.Controllers
             {
                 Reports = new OrdersIncompleteDashboardReportLine[]
                 {
-                    GetOrdersIncompleteReportLine(orders.Where(x=>x.CreatedOnUtc >= DateTime.UtcNow.Date).ToList()),                // Today
+                    GetOrdersIncompleteReportLine(orders.Where(x=>x.CreatedOnUtc >= DateTime.UtcNow.Date).ToList()),                // Day
                     GetOrdersIncompleteReportLine(orders.Where(x=>x.CreatedOnUtc >= DateTime.UtcNow.AddDays(-6).Date).ToList()),    // Week
                     GetOrdersIncompleteReportLine(orders.Where(x=>x.CreatedOnUtc >= DateTime.UtcNow.AddDays(-27).Date).ToList()),   // Month
                     GetOrdersIncompleteReportLine(orders)                                                                           // Overall

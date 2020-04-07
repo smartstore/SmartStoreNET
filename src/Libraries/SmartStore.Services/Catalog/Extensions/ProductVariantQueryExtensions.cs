@@ -93,15 +93,17 @@ namespace SmartStore.Services.Catalog.Extensions
 							var download = downloadService.GetDownloadByGuid(downloadGuid);
 							if (download != null)
 							{
-								download.IsTransient = false;
-								downloadService.UpdateDownload(download);
+                                if (download.IsTransient)
+                                {
+                                    download.IsTransient = false;
+                                    downloadService.UpdateDownload(download);
+                                }
 
 								result = productAttributeParser.AddProductAttribute(result, pva, download.DownloadGuid.ToString());
 							}
 						}
 						else
 						{
-                            // TODO: obsolete? Looks like all uploads now go to ShoppingCartController.UploadFileProductAttribute.
                             var postedFile = request.Files[ProductVariantQueryItem.CreateKey(productId, bundleItemId, pva.ProductAttributeId, pva.Id)];
 							if (postedFile != null && postedFile.FileName.HasValue())
 							{
@@ -116,8 +118,10 @@ namespace SmartStore.Services.Catalog.Extensions
 										DownloadGuid = Guid.NewGuid(),
 										UseDownloadUrl = false,
 										DownloadUrl = "",
-										UpdatedOnUtc = DateTime.UtcNow
-									};
+										UpdatedOnUtc = DateTime.UtcNow,
+                                        EntityId = productId,
+                                        EntityName = "ProductAttribute"
+                                    };
 
                                     downloadService.InsertDownload(download, postedFile.InputStream, postedFile.FileName);
 

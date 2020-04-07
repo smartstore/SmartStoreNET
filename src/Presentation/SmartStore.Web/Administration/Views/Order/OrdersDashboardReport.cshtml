@@ -50,29 +50,30 @@
         var $chevronElement = $("#orders-delta-percentage-chevron");
         var $sumElement = $("#orders-sum-amount");
         var currentPeriod = 0;
+        var root = $('html');
         var style = getComputedStyle(document.body);
-        var colorPrimary = style.getPropertyValue('--primary');
-        var colorDanger = style.getPropertyValue('--danger');
-        var colorSuccess = style.getPropertyValue('--success');
-        var colorWarning = style.getPropertyValue('--warning');
-        var fontFamily = style.getPropertyValue('--font-family-sans-serif');
+        var colorPrimary = root.css('--primary');
+        var colorDanger = root.css('--danger');
+        var colorSuccess = root.css('--success');
+        var colorWarning = root.css('--warning');
+        var fontFamily = root.css('--font-family-sans-serif');
 
-        var $ordersChartElement = $('#orders-chart')[0];
-        var orders_ctx = $ordersChartElement.getContext('2d');
-        var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.parentElement.clientHeight);
-        cancelledGradient.addColorStop(0, style.getPropertyValue('--chart-color-danger'));
+        var $ordersChartElement = $('#orders-chart');
+        var orders_ctx = $ordersChartElement.get(0).getContext('2d');
+        var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.parent().height());
+        cancelledGradient.addColorStop(0, root.css('--chart-color-danger'));
         cancelledGradient.addColorStop(1, 'white');
 
         var pendingGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.parentElement.clientHeight);
-        pendingGradient.addColorStop(0, style.getPropertyValue('--chart-color-warning'));
+        pendingGradient.addColorStop(0, root.css('--chart-color-warning'));
         pendingGradient.addColorStop(1, 'white');
 
         var processingGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.parentElement.clientHeight);
-        processingGradient.addColorStop(0, style.getPropertyValue('--chart-color-success'));
+        processingGradient.addColorStop(0, root.css('--chart-color-success'));
         processingGradient.addColorStop(1, 'white');
 
         var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, $ordersChartElement.parentElement.clientHeight);
-        completeGradient.addColorStop(0, style.getPropertyValue('--chart-color-primary'));
+        completeGradient.addColorStop(0, root.css('--chart-color-primary'));
         completeGradient.addColorStop(1, 'white');
 
         // Chartjs

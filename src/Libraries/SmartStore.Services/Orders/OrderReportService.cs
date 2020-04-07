@@ -441,7 +441,7 @@ namespace SmartStore.Services.Orders
             }
 
             var report = new DashboardChartReportLine(4, period);
-            var orders = allOrders.Where(x => x.CreatedOnUtc < endTime.Date && x.CreatedOnUtc >= startTime.Date).Select(x => x).ToList();
+            var orders = allOrders.Where(x => x.CreatedOnUtc < endTime.Date && x.CreatedOnUtc >= startTime.Date).ToList();
             var ordersReports = GetOrderReports(orders);
 
             for (int i = 0; i < period; i++)
@@ -485,10 +485,10 @@ namespace SmartStore.Services.Orders
         {
             var orderReports = new List<Order>[4]
             {
-                orders.Where(x => x.OrderStatus == OrderStatus.Cancelled).Select(x => x).ToList(),
-                orders.Where(x => x.OrderStatus == OrderStatus.Pending).Select(x => x).ToList(),
-                orders.Where(x => x.OrderStatus == OrderStatus.Processing).Select(x => x).ToList(),
-                orders.Where(x => x.OrderStatus == OrderStatus.Complete).Select(x => x).ToList()
+                orders.Where(x => x.OrderStatus == OrderStatus.Cancelled).ToList(),
+                orders.Where(x => x.OrderStatus == OrderStatus.Pending).ToList(),
+                orders.Where(x => x.OrderStatus == OrderStatus.Processing).ToList(),
+                orders.Where(x => x.OrderStatus == OrderStatus.Complete).ToList()
             };
 
             return orderReports;
@@ -518,8 +518,7 @@ namespace SmartStore.Services.Orders
             var sumBefore = Math.Round(allOrders
                 .Where(x => x.CreatedOnUtc < toDate && x.CreatedOnUtc >= fromDate)
                 .Select(x => x)
-                .Sum(x => x.OrderTotal)
-                );
+                .Sum(x => x.OrderTotal));
 
             report.PercentageDelta = sumBefore <= 0 ? 0 : (int)Math.Round(totalAmount / sumBefore * 100 - 100);
         }

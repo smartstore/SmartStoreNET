@@ -2497,10 +2497,10 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected IList<BestsellersReportLineModel> GetBestsellersBriefReportModel(int recordsToReturn, int orderBy)
         {
-            var report = _orderReportService.BestSellersReport(0, null, null, null, null, null, 0, recordsToReturn, orderBy, true);
+            var reportLines = _orderReportService.BestSellersReport(0, null, null, null, null, null, 0, recordsToReturn, orderBy, true);
+            var products = _productService.GetProductsByIds(reportLines.Select(x => x.ProductId).ToArray()).ToDictionary(x => x.Id);
 
-            var products = _productService.GetProductsByIds(report.Select(x=>x.ProductId).ToArray());
-            var model = report.Select(x =>
+            var model = reportLines.Select(x =>
             {
                 var m = new BestsellersReportLineModel
                 {
@@ -2509,7 +2509,7 @@ namespace SmartStore.Admin.Controllers
                     TotalQuantity = x.TotalQuantity.ToString("D"),
                 };
 
-                var product = products.Where(y => y.Id == x.ProductId).FirstOrDefault();
+                var product = products.Get(x.ProductId);
                 if (product != null)
                 {
                     m.ProductName = product.Name;
@@ -2527,7 +2527,7 @@ namespace SmartStore.Admin.Controllers
         {
             var watch = new Stopwatch();
             watch.Start();
-                        
+
             var model = new BestsellersDashboardReportModel
             {
                 BestsellersByQuantity = GetBestsellersBriefReportModel(7, 1),
@@ -2772,27 +2772,27 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected virtual OrdersIncompleteDashboardReportLine GetOrdersIncompleteReportLine(List<Order> orders)
         {
-            var shippingOrders = orders.Where(x => x.ShippingStatus == ShippingStatus.NotYetShipped);
-            var paymentOrders = orders.Where(x => x.PaymentStatus == PaymentStatus.Pending);
-            var ordersTotal = orders.Where(x => x.OrderStatus == OrderStatus.Pending || x.OrderStatus == OrderStatus.Processing);
-            var pendingOrders = ordersTotal.Where(x => x.OrderStatus == OrderStatus.Pending);
+            var shippingOrders = orders.Where(x => x.ShippingStatus == ShippingStatus.NotYetShipped).ToList();
+            var paymentOrders = orders.Where(x => x.PaymentStatus == PaymentStatus.Pending).ToList();
+            var ordersTotal = orders.Where(x => x.OrderStatus == OrderStatus.Pending || x.OrderStatus == OrderStatus.Processing).ToList();
+            var pendingOrders = ordersTotal.Where(x => x.OrderStatus == OrderStatus.Pending).ToList();
 
             var reports = new OrderAverageReportLine[]
             {
                 new OrderAverageReportLine
                 {
                     SumOrders = shippingOrders.Sum(x => x.OrderTotal),
-                    CountOrders = shippingOrders.Count(),
+                    CountOrders = shippingOrders.Count,
                 },
                 new OrderAverageReportLine
                 {
                     SumOrders = paymentOrders.Sum(x => x.OrderTotal),
-                    CountOrders = paymentOrders.Count(),
+                    CountOrders = paymentOrders.Count,
                 },
                 new OrderAverageReportLine
                 {
                     SumOrders = pendingOrders.Sum(x => x.OrderTotal),
-                    CountOrders = pendingOrders.Count(),
+                    CountOrders = pendingOrders.Count,
                 }
             };
 
@@ -2808,7 +2808,7 @@ namespace SmartStore.Admin.Controllers
                 };
             }
 
-            model.QuantityTotal = ordersTotal.Count().ToString("D");
+            model.QuantityTotal = ordersTotal.Count.ToString("D");
             model.AmountTotal = ordersTotal.Sum(x => x.OrderTotal).ToString("C0");
 
             return model;
@@ -2825,10 +2825,14 @@ namespace SmartStore.Admin.Controllers
             {
                 Reports = new OrdersIncompleteDashboardReportLine[]
                 {
-                    GetOrdersIncompleteReportLine(orders.Where(x=>x.CreatedOnUtc >= DateTime.UtcNow.Date).ToList()),                // Day
-                    GetOrdersIncompleteReportLine(orders.Where(x=>x.CreatedOnUtc >= DateTime.UtcNow.AddDays(-6).Date).ToList()),    // Week
-                    GetOrdersIncompleteReportLine(orders.Where(x=>x.CreatedOnUtc >= DateTime.UtcNow.AddDays(-27).Date).ToList()),   // Month
-                    GetOrdersIncompleteReportLine(orders)                                                                           // Overall
+                    // Day
+                    GetOrdersIncompleteReportLine(orders.Where(x => x.CreatedOnUtc >= DateTime.UtcNow.Date).ToList()),                
+                    // Week
+                    GetOrdersIncompleteReportLine(orders.Where(x => x.CreatedOnUtc >= DateTime.UtcNow.AddDays(-6).Date).ToList()),    
+                    // Month
+                    GetOrdersIncompleteReportLine(orders.Where(x => x.CreatedOnUtc >= DateTime.UtcNow.AddDays(-27).Date).ToList()),   
+                    // Overall
+                    GetOrdersIncompleteReportLine(orders)                                                                           
                 }
             };
 
@@ -2846,7 +2850,7 @@ namespace SmartStore.Admin.Controllers
 
             var model = new LatestOrdersDashboardReportModel();
 
-            var latestOrders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue).Take(7).ToList();
+            var latestOrders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, 7).ToList();
             foreach (var order in latestOrders)
             {
                 var customer = _customerService.GetCustomerById(order.CustomerId);
@@ -2887,6 +2891,7 @@ namespace SmartStore.Admin.Controllers
 
             return PartialView(model);
         }
+
         #endregion
     }
 }

@@ -287,6 +287,16 @@ namespace SmartStore.Services.Customers
             return report;
         }
 
+        //public class MyTuple : Tuple<DateTime, int>
+        //{
+        //    public MyTuple(DateTime dt, int count) : base(dt, count)
+        //    {
+        //    }
+
+        //    public DateTime Date => base.Item1;
+        //    public int Count => base.Item2;
+        //}
+
         public struct RegistredCustomersDate
         {
             public DateTime Date { get; set; }
@@ -299,17 +309,6 @@ namespace SmartStore.Services.Customers
             }
         }
 
-        public struct customerCountDay
-        {
-            public int Key { get; set; }
-            public int Value { get; set; }
-
-            public customerCountDay(int key, int value)
-            {
-                Key = key;
-                Value = value;
-            }
-        };
         #endregion
     }
 }

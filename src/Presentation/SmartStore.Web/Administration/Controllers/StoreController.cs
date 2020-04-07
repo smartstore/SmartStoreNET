@@ -88,7 +88,7 @@ namespace SmartStore.Admin.Controllers
             return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
-        #region list
+        #region List
 
         [Permission(Permissions.Configuration.Store.Read)]
         public ActionResult List()
@@ -243,7 +243,7 @@ namespace SmartStore.Admin.Controllers
 
         #endregion
 
-        [Permission(Permissions.Customer.Read, false)]
+        [Permission(Permissions.Configuration.Store.ReadStats, false)]
         public ActionResult StoreDashboardReport()
         {
             var watch = new Stopwatch();
@@ -254,12 +254,12 @@ namespace SmartStore.Admin.Controllers
             {
                 ProductsCount = _productService.GetAllProducts().TotalCount.ToString("D"),
                 CategoriesCount = _categoryService.GetAllCategories().TotalCount.ToString("D"),
-                ManufacturersCount = _manufacturerService.GetAllManufacturers().Count.ToString("D"),
+                ManufacturersCount = _manufacturerService.GetManufacturers().Count().ToString("D"),
                 AttributesCount = _productAttributeService.GetAllProductAttributes(0, int.MaxValue).TotalCount.ToString("D"),
                 AttributeCombinationsCount = _productService.GetAllProductVariants().TotalCount.ToString("D"),
                 MediaCount = _mediaService.CountFiles(new MediaSearchQuery { Deleted = false }).ToString("D"),
                 CustomersCount = _customerService.SearchCustomers(
-                    new CustomerSearchQuery()
+                    new CustomerSearchQuery
                     {
                         Deleted = false,
                         CustomerRoleIds = new int[] { 3 }

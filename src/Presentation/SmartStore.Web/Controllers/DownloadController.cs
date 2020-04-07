@@ -3,7 +3,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Html;
@@ -38,7 +37,7 @@ namespace SmartStore.Web.Controllers
 			_customerSettings = customerSettings;
 		}
 
-		private ActionResult GetFileContentResultFor(Download download, Product product, byte[] data)
+		private ActionResult GetFileContentResultFor(Download download, byte[] data)
 		{
 			if (data == null || data.LongLength == 0)
             {
@@ -55,9 +54,9 @@ namespace SmartStore.Web.Controllers
 			};
 		}
 
-		private ActionResult GetFileContentResultFor(Download download, Product product)
+		private ActionResult GetFileContentResultFor(Download download)
 		{
-			return GetFileContentResultFor(download, product, _downloadService.LoadDownloadBinary(download));
+			return GetFileContentResultFor(download, _downloadService.LoadDownloadBinary(download));
 		}
         
 		public ActionResult Sample(int productId)
@@ -82,7 +81,7 @@ namespace SmartStore.Web.Controllers
             if (download.UseDownloadUrl)
                 return new RedirectResult(download.DownloadUrl);
 
-			return GetFileContentResultFor(download, product);
+			return GetFileContentResultFor(download);
         }
 
 		public ActionResult GetDownload(Guid id, bool agree = false, string fileVersion = "")
@@ -163,13 +162,13 @@ namespace SmartStore.Web.Controllers
 				if (data == null || data.LongLength == 0)
                 {
                     NotifyError(T("Common.Download.NoDataAvailable"));
-                    return RedirectToAction("UserAgreement", "Customer", new { id = id });
+                    return RedirectToAction("UserAgreement", "Customer", new { id });
                 }
                 
                 orderItem.DownloadCount++;
                 _orderService.UpdateOrder(order);
 
-				return GetFileContentResultFor(download, product, data);
+				return GetFileContentResultFor(download, data);
             }
         }
 
@@ -214,7 +213,7 @@ namespace SmartStore.Web.Controllers
             if (download.UseDownloadUrl)
                 return new RedirectResult(download.DownloadUrl);
 
-			return GetFileContentResultFor(download, product);
+			return GetFileContentResultFor(download);
 		}
 
         public ActionResult GetFileUpload(Guid downloadId)
@@ -227,10 +226,12 @@ namespace SmartStore.Web.Controllers
             }
 
             if (download.UseDownloadUrl)
+            {
                 return new RedirectResult(download.DownloadUrl);
+            }
 
-			return GetFileContentResultFor(download, null);
-		}
+            return GetFileContentResultFor(download);
+        }
 
 		public ActionResult GetUserAgreement(int productId, bool? asPlainText)
 		{

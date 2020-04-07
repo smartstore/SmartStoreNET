@@ -88,8 +88,8 @@ namespace SmartStore.Services.Catalog.Extensions
 						if (request == null)
 						{
 							var firstItemValue = selectedItems.FirstOrDefault()?.Value;
-							Guid downloadGuid;
-							Guid.TryParse(firstItemValue, out downloadGuid);
+							Guid.TryParse(firstItemValue, out var downloadGuid);
+
 							var download = downloadService.GetDownloadByGuid(downloadGuid);
 							if (download != null)
 							{
@@ -101,7 +101,8 @@ namespace SmartStore.Services.Catalog.Extensions
 						}
 						else
 						{
-							var postedFile = request.Files[ProductVariantQueryItem.CreateKey(productId, bundleItemId, pva.ProductAttributeId, pva.Id)];
+                            // TODO: obsolete? Looks like all uploads now go to ShoppingCartController.UploadFileProductAttribute.
+                            var postedFile = request.Files[ProductVariantQueryItem.CreateKey(productId, bundleItemId, pva.ProductAttributeId, pva.Id)];
 							if (postedFile != null && postedFile.FileName.HasValue())
 							{
 								if (postedFile.ContentLength > catalogSettings.FileUploadMaximumSizeBytes)
@@ -118,8 +119,7 @@ namespace SmartStore.Services.Catalog.Extensions
 										UpdatedOnUtc = DateTime.UtcNow
 									};
 
-									var buffer = postedFile.InputStream != null ? postedFile.InputStream.ToByteArray() : (byte[])null;
-									downloadService.InsertDownload(download, buffer, postedFile.FileName, postedFile.ContentType);
+                                    downloadService.InsertDownload(download, postedFile.InputStream, postedFile.FileName);
 
 									result = productAttributeParser.AddProductAttribute(result, pva, download.DownloadGuid.ToString());
 								}

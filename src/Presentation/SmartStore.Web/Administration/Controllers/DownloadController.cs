@@ -85,7 +85,6 @@ namespace SmartStore.Admin.Controllers
 				throw new ArgumentException(T("Common.NoFileUploaded"));
 			}
 
-            // TODO: (mm) migrate
             var download = new Download
             {
                 EntityId = entityId,
@@ -96,7 +95,7 @@ namespace SmartStore.Admin.Controllers
 				UpdatedOnUtc = DateTime.UtcNow
             };
 
-            _downloadService.InsertDownload(download, postedFile.Buffer, postedFile.FileName, postedFile.ContentType);
+            _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
 
             return Json(new 
             { 

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using Newtonsoft.Json;
@@ -26,7 +24,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Messages
 {
-	public partial class MessageFactory : IMessageFactory
+    public partial class MessageFactory : IMessageFactory
 	{
 		const string LoremIpsum = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.";
 
@@ -39,7 +37,7 @@ namespace SmartStore.Services.Messages
 		private readonly ILanguageService _languageService;
 		private readonly IEmailAccountService _emailAccountService;
 		private readonly EmailAccountSettings _emailAccountSettings;
-		private readonly IPictureService _mediaService;
+		private readonly IMediaService _mediaService;
 
 		public MessageFactory(
 			ICommonServices services,
@@ -51,7 +49,7 @@ namespace SmartStore.Services.Messages
 			ILanguageService languageService,
 			IEmailAccountService emailAccountService,
 			EmailAccountSettings emailAccountSettings,
-			IPictureService mediaService)
+            IMediaService mediaService)
 		{
 			_services = services;
 			_templateEngine = templateEngine;
@@ -268,7 +266,7 @@ namespace SmartStore.Services.Messages
 			var messageTemplate = messageContext.MessageTemplate;
 			var languageId = messageContext.Language.Id;
 
-			// create attachments if any
+			// Create attachments if any.
 			var fileIds = (new int?[]
 				{
 					messageTemplate.GetLocalized(x => x.Attachment1FileId, languageId),
@@ -281,7 +279,7 @@ namespace SmartStore.Services.Messages
 
 			if (fileIds.Any())
 			{
-				var files = _mediaService.GetPicturesByIds(fileIds, true);
+                var files = _mediaService.GetFilesByIds(fileIds, MediaLoadFlags.WithBlob);
 				foreach (var file in files)
 				{
 					queuedEmail.Attachments.Add(new QueuedEmailAttachment

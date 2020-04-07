@@ -1272,7 +1272,7 @@ namespace SmartStore.Web.Controllers
                         EntityName = "CheckoutAttribute"
                     };
 
-                    _downloadService.InsertDownload(download, postedFile.Buffer, postedFile.FileName, postedFile.ContentType);
+                    _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
 
                     return Json(new
                     {
@@ -1582,7 +1582,7 @@ namespace SmartStore.Web.Controllers
                 EntityName = "ProductAttribute"
             };
 
-            _downloadService.InsertDownload(download, postedFile.Buffer, postedFile.FileName, postedFile.ContentType);
+            _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
 
             return Json(new
             {

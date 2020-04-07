@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Media;
@@ -73,7 +74,14 @@ namespace SmartStore.Services.Media
         /// </summary>
         /// <param name="download">Download</param>
         void InsertDownload(Download download);
-        void InsertDownload(Download download, byte[] downloadBinary, string fileName, string mimeType = null);
+
+        /// <summary>
+        /// Inserts a download.
+        /// </summary>
+        /// <param name="download">Download entity.</param>
+        /// <param name="stream">Data stream.</param>
+        /// <param name="fileName">File name.</param>
+        void InsertDownload(Download download, Stream stream, string fileName);
 
         /// <summary>
         /// Updates the download but leaves the binary data untouched

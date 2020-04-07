@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
 using SmartStore.ComponentModel;
 using SmartStore.Core;
@@ -10,8 +8,8 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Services.Media
-{	
-	public partial class MediaHelper
+{
+    public partial class MediaHelper
 	{
 		private readonly IFolderService _folderService;
 
@@ -81,17 +79,6 @@ namespace SmartStore.Services.Media
 		{
 			var rs = EngineContext.Current.Resolve<IRepository<Download>>();
 			UpdateTransientStateCore(prevDownloadId, currentDownloadId, rs, null, save);
-		}
-
-		private static Action<object> GetPictureDeleteAction()
-		{
-			Action<object> deleteAction = pic =>
-			{
-				var svc = EngineContext.Current.Resolve<IPictureService>();
-				svc.DeletePicture((MediaFile)pic);
-			};
-
-			return deleteAction;
 		}
 
 		internal static void UpdateTransientStateForEntityInternal<TEntity, TMedia>(

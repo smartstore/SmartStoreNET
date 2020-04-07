@@ -7,7 +7,6 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Email;
-using SmartStore.Core.Events;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
@@ -16,7 +15,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Tests.Messages
 {
-	[TestFixture]
+    [TestFixture]
 	public class QueuedEmailServiceTests : ServiceTest
     {
 		IRepository<QueuedEmail> _qeRepository;
@@ -27,8 +26,7 @@ namespace SmartStore.Services.Tests.Messages
 		IDownloadService _downloadService;
 		QueuedEmailService _queuedEmailService;
 		ISettingService _settingService;
-		IEventPublisher _eventPublisher;
-        IPictureService _mediaService;
+        IMediaService _mediaService;
 
         [SetUp]
 		public new void SetUp()
@@ -38,13 +36,12 @@ namespace SmartStore.Services.Tests.Messages
 			_downloadRepository = MockRepository.GenerateMock<IRepository<Download>>();
 			_emailSender = MockRepository.GenerateMock<IEmailSender>();
 			_services = MockRepository.GenerateMock<ICommonServices>();
-			_eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
-            _mediaService = MockRepository.GenerateMock<IPictureService>();
+            _mediaService = MockRepository.GenerateMock<IMediaService>();
 
             _settingService = new ConfigFileSettingService(null, null);
 			_services.Expect(x => x.Settings).Return(_settingService);
 
-			_downloadService = new DownloadService(_downloadRepository, _eventPublisher, _mediaService, _settingService, ProviderManager);
+			_downloadService = new DownloadService(_downloadRepository, _mediaService, _settingService, ProviderManager);
 
 			_queuedEmailService = new QueuedEmailService(_qeRepository, _qeaRepository, _emailSender, _services);
 		}

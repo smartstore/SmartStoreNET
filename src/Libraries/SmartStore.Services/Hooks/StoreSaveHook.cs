@@ -1,24 +1,20 @@
-﻿using System;
-using SmartStore.Services.Media;
+﻿using System.Web;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Services.Tasks;
 using SmartStore.Services.Stores;
-using System.Web;
+using SmartStore.Services.Tasks;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Hooks
 {
-	public class StoreSaveHook : DbSaveHook<Store>
+    public class StoreSaveHook : DbSaveHook<Store>
 	{
-		private readonly IPictureService _pictureService;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly IStoreService _storeService;
 		private readonly HttpContextBase _httpContext;
 
-		public StoreSaveHook(IPictureService pictureService, ITaskScheduler taskScheduler, IStoreService storeService, HttpContextBase httpContext)
+		public StoreSaveHook(ITaskScheduler taskScheduler, IStoreService storeService, HttpContextBase httpContext)
 		{
-			_pictureService = pictureService;
 			_taskScheduler = taskScheduler;
 			_storeService = storeService;
 			_httpContext = httpContext;
@@ -26,10 +22,6 @@ namespace SmartStore.Services.Hooks
 
 		protected override void OnUpdating(Store entity, IHookedEntity entry)
 		{
-			if (entry.IsPropertyModified(nameof(entity.ContentDeliveryNetwork)))
-			{
-				_pictureService.ClearCache();
-			}
 		}
 
 		protected override void OnInserted(Store entity, IHookedEntity entry)
@@ -44,7 +36,6 @@ namespace SmartStore.Services.Hooks
 
 		protected override void OnDeleted(Store entity, IHookedEntity entry)
 		{
-			_pictureService.ClearCache();
 			TryChangeSchedulerBaseUrl();
 		}
 

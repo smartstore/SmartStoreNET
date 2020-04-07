@@ -10,24 +10,24 @@ namespace SmartStore.Services.Media
 {
     /// <summary>
     /// Represents a task for deleting transient media from the database
-	/// (pictures and downloads which have been uploaded but never assigned to an entity).
+	/// (files and downloads which have been uploaded but never assigned to an entity).
     /// </summary>
     public partial class TransientMediaClearTask : AsyncTask
     {
-		private readonly IPictureService _pictureService;
+        private readonly IMediaService _mediaService;
         private readonly IDownloadService _downloadService;
-		private readonly IRepository<MediaFile> _pictureRepository;
+		private readonly IRepository<MediaFile> _fileRepository;
 		private readonly IRepository<Download> _downloadRepository;
 
 		public TransientMediaClearTask(
-			IPictureService pictureService,
+            IMediaService mediaService,
             IDownloadService downloadService,
-            IRepository<MediaFile> pictureRepository, 
+            IRepository<MediaFile> fileRepository, 
 			IRepository<Download> downloadRepository)
         {
-			_pictureService = pictureService;
+            _mediaService = mediaService;
             _downloadService = downloadService;
-			_pictureRepository = pictureRepository;
+			_fileRepository = fileRepository;
 			_downloadRepository = downloadRepository;
         }
 
@@ -35,23 +35,23 @@ namespace SmartStore.Services.Media
         {
 			// Delete all media records which are in transient state since at least 3 hours.
 			var olderThan = DateTime.UtcNow.AddHours(-3);
-			var pictureAutoCommit = _pictureRepository.AutoCommitEnabled;
+			var fileAutoCommit = _fileRepository.AutoCommitEnabled;
             var downloadAutoCommit = _downloadRepository.AutoCommitEnabled;
 			
-            _pictureRepository.AutoCommitEnabled = false;
+            _fileRepository.AutoCommitEnabled = false;
             _downloadRepository.AutoCommitEnabled = false;
 
 			try
 			{
 				using (var scope = new DbContextScope(autoDetectChanges: false, validateOnSave: false, hooksEnabled: false))
 				{
-					var pictures = await _pictureRepository.Table.Where(x => x.IsTransient && x.UpdatedOnUtc < olderThan).ToListAsync();
-					foreach (var picture in pictures)
+					var files = await _fileRepository.Table.Where(x => x.IsTransient && x.UpdatedOnUtc < olderThan).ToListAsync();
+					foreach (var file in files)
 					{
-						_pictureService.DeletePicture(picture);
+                        _mediaService.DeleteFile(file, true);
 					}
 
-					await _pictureRepository.Context.SaveChangesAsync();
+					await _fileRepository.Context.SaveChangesAsync();
 
                     var downloads = await _downloadRepository.Table.Where(x => x.IsTransient && x.UpdatedOnUtc < olderThan).ToListAsync();
                     foreach (var download in downloads)
@@ -61,11 +61,11 @@ namespace SmartStore.Services.Media
 
                     await _downloadRepository.Context.SaveChangesAsync();
 
-                    if (DataSettings.Current.IsSqlServer && (pictures.Any() || downloads.Any()))
+                    if (DataSettings.Current.IsSqlServer && (files.Any() || downloads.Any()))
                     {
                         try
                         {
-                            _pictureRepository.Context.ExecuteSqlCommand("DBCC SHRINKDATABASE(0)", true);
+                            _fileRepository.Context.ExecuteSqlCommand("DBCC SHRINKDATABASE(0)", true);
                         }
                         catch { }
                     }
@@ -73,7 +73,7 @@ namespace SmartStore.Services.Media
             }
             finally
 			{
-				_pictureRepository.AutoCommitEnabled = pictureAutoCommit;
+				_fileRepository.AutoCommitEnabled = fileAutoCommit;
                 _downloadRepository.AutoCommitEnabled = downloadAutoCommit;
 			}
         }

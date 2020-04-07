@@ -5,18 +5,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Data.Entity;
 using System.Threading.Tasks;
 
 namespace SmartStore.Core.Data
 {   
     public static class RepositoryExtensions
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T GetFirst<T>(this IRepository<T> rs, Func<T, bool> predicate) where T : BaseEntity
-        {
-            return rs.Table.FirstOrDefault(predicate);
-        }
-
         public static IEnumerable<T> GetMany<T>(this IRepository<T> rs, IEnumerable<int> ids) where T : BaseEntity
         {
             foreach (var chunk in ids.Slice(128))
@@ -29,7 +24,20 @@ namespace SmartStore.Core.Data
             }
         }
 
-        public static void Delete<T>(this IRepository<T> rs, int id) where T : BaseEntity
+		public static async Task<IEnumerable<T>> GetManyAsync<T>(this IRepository<T> rs, IEnumerable<int> ids) where T : BaseEntity
+		{
+			var result = new List<T>();
+			
+			foreach (var chunk in ids.Slice(128))
+			{
+				var items = await rs.Table.Where(a => chunk.Contains(a.Id)).ToListAsync();
+				result.AddRange(items);
+			}
+
+			return result;
+		}
+
+		public static void Delete<T>(this IRepository<T> rs, int id) where T : BaseEntity
         {
 			Guard.NotZero(id, nameof(id));
 			
@@ -87,7 +95,7 @@ namespace SmartStore.Core.Data
 				}
 				else
 				{
-					var ids = query.Select(x => new { Id = x.Id }).ToList();
+					var ids = query.Select(x => new { x.Id }).ToList();
 					foreach (var chunk in ids.Slice(500))
 					{
 						rs.DeleteRange(chunk.Select(x => x.Id));

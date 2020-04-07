@@ -6,6 +6,7 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Data.Caching;
@@ -69,6 +70,12 @@ namespace SmartStore.Data
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual Task<T> GetByIdAsync(object id)
+        {
+            return this.Entities.FindAsync(id);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual T Attach(T entity)
 		{
 			return this.Entities.Attach(entity);
@@ -79,58 +86,30 @@ namespace SmartStore.Data
 			Guard.NotNull(entity, nameof(entity));
 
 			this.Entities.Add(entity);
-
 			if (this.AutoCommitEnabledInternal)
-			{
 				_context.SaveChanges();
-			}
         }
 
-		public virtual void InsertRange(IEnumerable<T> entities, int batchSize = 100)
+        public virtual async Task InsertAsync(T entity)
         {
+            Guard.NotNull(entity, nameof(entity));
+
+            this.Entities.Add(entity);
+            if (this.AutoCommitEnabledInternal)
+                await _context.SaveChangesAsync();
+        }
+
+        public virtual void InsertRange(IEnumerable<T> entities, int batchSize = 100)
+        {
+            Guard.NotNull(entities, nameof(entities));
+
             try
             {
-				Guard.NotNull(entities, nameof(entities));
-
-				if (entities.Any())
+                foreach (var batch in entities.Slice(batchSize <= 0 ? int.MaxValue : batchSize))
                 {
-                    if (batchSize <= 0)
-                    {
-						// insert all in one step
-						this.Entities.AddRange(entities);
-						if (this.AutoCommitEnabledInternal)
-						{
-							_context.SaveChanges();
-						}   
-                    }
-                    else
-                    {
-                        int i = 1;
-                        bool saved = false;
-                        foreach (var entity in entities)
-                        {
-                            this.Entities.Add(entity);
-                            saved = false;
-                            if (i % batchSize == 0)
-                            {
-								if (this.AutoCommitEnabledInternal)
-								{
-									_context.SaveChanges();
-								}  
-                                i = 0;
-                                saved = true;
-                            }
-                            i++;
-                        }
-
-                        if (!saved)
-                        {
-							if (this.AutoCommitEnabledInternal)
-							{
-								_context.SaveChanges();
-							} 
-                        }
-                    }
+                    this.Entities.AddRange(batch);
+                    if (this.AutoCommitEnabledInternal)
+                        _context.SaveChanges();
                 }
             }
             catch (DbEntityValidationException ex)
@@ -139,19 +118,44 @@ namespace SmartStore.Data
             }
         }
 
-		public virtual void Update(T entity)
+        public virtual async Task InsertRangeAsync(IEnumerable<T> entities, int batchSize = 100)
+        {
+            Guard.NotNull(entities, nameof(entities));
+
+            try
+            {
+                foreach (var batch in entities.Slice(batchSize <= 0 ? int.MaxValue : batchSize))
+                {
+                    this.Entities.AddRange(batch);
+                    if (this.AutoCommitEnabledInternal)
+                        await _context.SaveChangesAsync();
+                }
+            }
+            catch (DbEntityValidationException ex)
+            {
+                throw ex;
+            }
+        }
+
+        public virtual void Update(T entity)
         {
 			Guard.NotNull(entity, nameof(entity));
 
 			ChangeStateToModifiedIfApplicable(entity);
-
 			if (this.AutoCommitEnabledInternal)
-			{
 				_context.SaveChanges();
-			}
         }
 
-		public virtual void UpdateRange(IEnumerable<T> entities)
+        public virtual async Task UpdateAsync(T entity)
+        {
+            Guard.NotNull(entity, nameof(entity));
+
+            ChangeStateToModifiedIfApplicable(entity);
+            if (this.AutoCommitEnabledInternal)
+                await _context.SaveChangesAsync();
+        }
+
+        public virtual void UpdateRange(IEnumerable<T> entities)
 		{
 			Guard.NotNull(entities, nameof(entities));
 
@@ -166,7 +170,22 @@ namespace SmartStore.Data
 			}
 		}
 
-		private void ChangeStateToModifiedIfApplicable(T entity)
+        public virtual async Task UpdateRangeAsync(IEnumerable<T> entities)
+        {
+            Guard.NotNull(entities, nameof(entities));
+
+            foreach (var entity in entities)
+            {
+                ChangeStateToModifiedIfApplicable(entity);
+            }
+
+            if (this.AutoCommitEnabledInternal)
+            {
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private void ChangeStateToModifiedIfApplicable(T entity)
 		{
 			if (entity.IsTransientRecord())
 				return;
@@ -196,14 +215,20 @@ namespace SmartStore.Data
 			Guard.NotNull(entity, nameof(entity));
 
 			InternalContext.Entry(entity).State = EfState.Deleted;
-
 			if (this.AutoCommitEnabledInternal)
-			{
-				_context.SaveChanges();
-			}   
+				_context.SaveChanges(); 
         }
 
-		public virtual void DeleteRange(IEnumerable<T> entities)
+        public virtual async Task DeleteAsync(T entity)
+        {
+            Guard.NotNull(entity, nameof(entity));
+
+            InternalContext.Entry(entity).State = EfState.Deleted;
+            if (this.AutoCommitEnabledInternal)
+                await _context.SaveChangesAsync();
+        }
+
+        public virtual void DeleteRange(IEnumerable<T> entities)
 		{
 			Guard.NotNull(entities, nameof(entities));
 
@@ -218,7 +243,22 @@ namespace SmartStore.Data
 			}	
 		}
 
-		[Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
+        public virtual async Task DeleteRangeAsync(IEnumerable<T> entities)
+        {
+            Guard.NotNull(entities, nameof(entities));
+
+            foreach (var entity in entities)
+            {
+                InternalContext.Entry(entity).State = EfState.Deleted;
+            }
+
+            if (this.AutoCommitEnabledInternal)
+            {
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        [Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
         public IQueryable<T> Expand(IQueryable<T> query, string path)
         {
             Guard.NotNull(query, "query");

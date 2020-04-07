@@ -1,4 +1,8 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Runtime.CompilerServices;
+using SmartStore.Core.Domain.Media;
+using SmartStore.Core.IO;
 
 namespace SmartStore.Services.Media
 {
@@ -35,6 +39,25 @@ namespace SmartStore.Services.Media
                 : null;
 
             return service.GetUrl((MediaFileInfo)null, query, null, true);
+        }
+
+        /// <summary>
+        /// Tries to find an equal file by comparing the source buffer to a list of files.
+        /// </summary>
+        /// <param name="source">Binary source file data to find a match for.</param>
+        /// <param name="files">The sequence of files to seek within for duplicates.</param>
+        /// <param name="equalFileId">Id of equal file if any</param>
+        /// <returns>The passed file binary when no file equals in the sequence, <c>null</c> otherwise.</returns>
+        public static byte[] FindEqualFile(this IMediaService service, byte[] sourceBuffer, IEnumerable<MediaFile> files, out int equalFileId)
+        {
+            Guard.NotNull(sourceBuffer, nameof(sourceBuffer));
+
+            if (!service.FindEqualFile(new MemoryStream(sourceBuffer), files, false, out equalFileId))
+            {
+                return sourceBuffer;
+            }
+
+            return null;
         }
     }
 }

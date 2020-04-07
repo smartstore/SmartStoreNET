@@ -228,7 +228,7 @@ namespace SmartStore.Services.Media
             }
 
             // Holds source and copy together, 'cause we perform a two-pass copy (file first, then data)
-            var tuples = new List<Tuple<MediaFile, MediaFile>>(500);
+            var tuples = new List<(MediaFile, MediaFile)>(500);
 
             // Copy files batched
             foreach (var batch in files.Slice(500))
@@ -244,7 +244,7 @@ namespace SmartStore.Services.Media
                         () => destFiles?.Get(file.Name),
                         UniqueFileNameChecker);
 
-                    tuples.Add(new Tuple<MediaFile, MediaFile>(file, copy));
+                    tuples.Add((file, copy));
                 }
 
                 // Save batch to DB (1st pass)
@@ -259,6 +259,7 @@ namespace SmartStore.Services.Media
                 // Save batch to DB (2nd pass)
                 ctx.SaveChanges();
 
+                ctx.DetachEntities<MediaFolder>();
                 ctx.DetachEntities<MediaFile>();
                 tuples.Clear();
             }
@@ -325,7 +326,9 @@ namespace SmartStore.Services.Media
                     ? _folderService.FindAlbum(folder.Id).Value.Id 
                     : (int?)null;
 
-                foreach (var batch in folder.Files.Slice(500))
+                var files = folder.Files.ToList();
+
+                foreach (var batch in files.Slice(500))
                 {
                     foreach (var file in batch)
                     {
@@ -347,8 +350,6 @@ namespace SmartStore.Services.Media
                     }
 
                     _fileRepo.Context.SaveChanges();
-
-                    _fileRepo.Context.DetachEntities<MediaFile>(batch);
                 }     
             }
 

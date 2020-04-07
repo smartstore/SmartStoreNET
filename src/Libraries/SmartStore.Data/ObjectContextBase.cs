@@ -424,13 +424,13 @@ namespace SmartStore.Data
 
 			using (new DbContextScope(this, autoDetectChanges: false, lazyLoading: false))
 			{
-				var entries = base.ChangeTracker.Entries<BaseEntity>().Where(Match).ToList();
+				var entries = this.ChangeTracker.Entries<BaseEntity>().Where(Match).ToList();
 
 				HashSet<BaseEntity> objSet = deep ? new HashSet<BaseEntity>() : null;
 
 				foreach (var entry in entries)
 				{
-					numDetached += DetachInternal(entry.Entity, objSet, deep);
+					numDetached += DetachInternal(entry, objSet, deep);
 				}
 
 				return numDetached;
@@ -449,11 +449,18 @@ namespace SmartStore.Data
 			}
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal int DetachInternal(BaseEntity obj, ISet<BaseEntity> objSet, bool deep)
 		{
 			if (obj == null)
 				return 0;
 
+			return DetachInternal(this.Entry(obj), objSet, deep);
+		}
+
+		internal int DetachInternal(DbEntityEntry<BaseEntity> entry, ISet<BaseEntity> objSet, bool deep)
+		{
+			var obj = entry.Entity;
 			int numDetached = 0;
 
 			if (deep)
@@ -484,7 +491,8 @@ namespace SmartStore.Data
 				}
 			}
 
-			base.Entry(obj).State = EfState.Detached;
+			entry.State = EfState.Detached;
+			
 			numDetached++;
 
 			return numDetached;

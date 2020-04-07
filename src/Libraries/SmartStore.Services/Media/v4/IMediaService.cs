@@ -63,13 +63,14 @@ namespace SmartStore.Services.Media
         string CombinePaths(params string[] paths);
 
         /// <summary>
-        /// Finds an equal file by comparing the binary buffer
+        /// Tries to find an equal file by comparing the source stream to a list of files.
         /// </summary>
-        /// <param name="fileBuffer">Binary source file data to find a match for.</param>
+        /// <param name="source">The source stream to find a match for.</param>
         /// <param name="files">The sequence of files to seek within for duplicates.</param>
-        /// <param name="equalFileId">Id of equal file if any</param>
-        /// <returns>The passed file binary when no file equals in the sequence, <c>null</c> otherwise.</returns>
-        byte[] FindEqualFile(byte[] fileBuffer, IEnumerable<MediaFile> files, out int equalFileId);
+        /// <param name="leaveOpen">Whether to leave the <paramref name="source"/>source stream</param> open.
+        /// <param name="equalFileId">Id of equal file if any.</param>
+        /// <returns><c>true</c> when a duplicate file was found, <c>false</c> otherwise.</returns>
+        bool FindEqualFile(Stream source, IEnumerable<MediaFile> files, bool leaveOpen, out int equalFileId);
 
         MediaFileInfo SaveFile(string path, Stream stream, bool isTransient = true, bool overwrite = false);
         Task<MediaFileInfo> SaveFileAsync(string path, Stream stream, bool isTransient = true, bool overwrite = false);

@@ -14,6 +14,7 @@ using SmartStore.Services.Media.Storage;
 using SmartStore.Core.IO;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 namespace SmartStore.Services.Media
 {
@@ -254,40 +255,41 @@ namespace SmartStore.Services.Media
             return FolderService.NormalizePath(Path.Combine(paths));
         }
 
-        public byte[] FindEqualFile(byte[] fileBuffer, IEnumerable<MediaFile> files, out int equalFileId)
+        public bool FindEqualFile(Stream source, IEnumerable<MediaFile> files, bool leaveOpen, out int equalFileId)
         {
-            Guard.NotNull(fileBuffer, nameof(fileBuffer));
+            Guard.NotNull(source, nameof(source));
             Guard.NotNull(files, nameof(files));
 
             equalFileId = 0;
-
-            var myStream = new MemoryStream(fileBuffer);
 
             try
             {
                 foreach (var file in files)
                 {
-                    myStream.Seek(0, SeekOrigin.Begin);
+                    source.Seek(0, SeekOrigin.Begin);
 
-                    using (var otherStream = _storageProvider.OpenRead(file))
+                    using (var other = _storageProvider.OpenRead(file))
                     {
-                        if (myStream.ContentsEqual(otherStream))
+                        if (source.ContentsEqual(other, true))
                         {
                             equalFileId = file.Id;
-                            return null;
+                            return true;
                         }
                     }
                 }
 
-                return fileBuffer;
+                return false;
             }
             catch
             {
-                return fileBuffer;
+                return false;
             }
             finally
             {
-                myStream.Dispose();
+                if (!leaveOpen)
+                {
+                    source.Dispose();
+                }
             }
         }
 

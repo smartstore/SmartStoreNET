@@ -605,9 +605,7 @@ namespace SmartStore.Services.Customers.Importer
                     continue;
                 }
 
-				var seoName = SeoHelper.GetSeName(row.EntityDisplayName, true, false, false);
-				var image = CreateDownloadImage(context, urlOrPath, seoName, 1);
-
+				var image = CreateDownloadImage(context, urlOrPath, 1);
 				if (image.Url.HasValue() && !image.Success.HasValue)
 				{
 					AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, new FileDownloadManagerItem[] { image }));
@@ -631,8 +629,9 @@ namespace SmartStore.Services.Customers.Importer
                             var fileBuffer = _mediaService.FindEqualFile(stream.ToByteArray(), currentFiles.Select(x => x.File), out var _);
                             if ((fileBuffer?.Length ?? 0) > 0)
                             {
-                                // Overwrite existing avatar.
-                                var path = _mediaService.CreatePath(SystemAlbumProvider.Customers, image.MimeType, seoName, false);
+                                // Don't manage avatar files. Just overwrite existing file.
+                                var path = string.Concat(SystemAlbumProvider.Customers, "/", image.FileName);
+
                                 var newFile = _mediaService.SaveFile(path, fileBuffer.ToStream(), false, true);
                                 if ((newFile?.Id ?? 0) != 0)
                                 {

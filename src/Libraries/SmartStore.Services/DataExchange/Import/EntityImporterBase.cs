@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Net.Mime;
 using Autofac;
 using SmartStore.Core;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
@@ -28,6 +28,9 @@ namespace SmartStore.Services.DataExchange.Import
 			private set;
 		}
 
+        /// <summary>
+        /// URL > file name. To avoid downloading image several times.
+        /// </summary>
 		public Dictionary<string, string> DownloadedItems
 		{
 			get;
@@ -86,56 +89,61 @@ namespace SmartStore.Services.DataExchange.Import
 			context.Result.TotalRecords = context.DataSegmenter.TotalRows;
 		}
 
-		public FileDownloadManagerItem CreateDownloadImage(ImportExecuteContext context, string urlOrPath, string seoName, int displayOrder)
+		public FileDownloadManagerItem CreateDownloadImage(ImportExecuteContext context, string urlOrPath, int displayOrder)
 		{
-			var item = new FileDownloadManagerItem
-			{
-				Id = displayOrder,
-				DisplayOrder = displayOrder,
-				MimeType = MimeTypes.MapNameToMimeType(urlOrPath)
-			};
+            var item = new FileDownloadManagerItem
+            {
+                Id = displayOrder,
+                DisplayOrder = displayOrder
+            };
 
-			if (item.MimeType.IsEmpty())
-			{
-				item.MimeType = MediaTypeNames.Image.Jpeg;
-			}
-
-			if (urlOrPath.IsWebUrl())
-			{
+            if (urlOrPath.IsWebUrl())
+            {
+                // We append quality to avoid importing of image duplicates.
                 item.Url = context.Services.WebHelper.ModifyQueryString(urlOrPath, "q=100", null);
-                item.FileName = "{0}-{1}".FormatInvariant(seoName, item.Id).ToValidFileName();
 
                 if (DownloadedItems.ContainsKey(urlOrPath))
-				{
-					item.Path = Path.Combine(ImageDownloadFolder, DownloadedItems[urlOrPath]);
-					item.Success = true;
-				}
-				else
-				{
-					var extension = MimeTypes.MapMimeTypeToExtension(item.MimeType).NullEmpty() ?? ".jpg";
+                {
+                    // URL has already been downloaded.
+                    item.Success = true;
+                    item.FileName = DownloadedItems[urlOrPath];
+                }
+                else
+                {
+                    var localPath = string.Empty;
 
-					item.Path = Path.Combine(ImageDownloadFolder, item.FileName + extension.EnsureStartsWith("."));
-				}
-			}
-			else if (Path.IsPathRooted(urlOrPath))
-			{
-				item.Path = urlOrPath;
-				item.Success = true;
-			}
-			else
-			{
-				item.Path = Path.Combine(ImageFolder, urlOrPath);
-				item.Success = true;
-			}
+                    try
+                    {
+                        // Exclude query string parts!
+                        localPath = new Uri(urlOrPath).LocalPath;
+                    }
+                    catch { }
 
-			return item;
-		}
+                    item.FileName = Path.GetFileName(localPath).ToValidFileName().NullEmpty() ?? Path.GetRandomFileName();
+                }
+
+                item.Path = Path.Combine(ImageDownloadFolder, item.FileName);
+            }
+            else
+            {
+                item.Success = true;
+                item.FileName = Path.GetFileName(urlOrPath).ToValidFileName().NullEmpty() ?? Path.GetRandomFileName();
+
+                item.Path = Path.IsPathRooted(urlOrPath)
+                    ? urlOrPath
+                    : Path.Combine(ImageFolder, urlOrPath);
+            }
+
+            item.MimeType = MimeTypes.MapNameToMimeType(item.FileName);
+
+            return item;
+        }
 
 		public void Succeeded(FileDownloadManagerItem item)
 		{
 			if ((item.Success ?? false) && item.Url.HasValue() && !DownloadedItems.ContainsKey(item.Url))
 			{
-				DownloadedItems.Add(item.Url, Path.GetFileName(item.Path));
+                DownloadedItems.Add(item.Url, Path.GetFileName(item.Path));
 			}
 		}
 

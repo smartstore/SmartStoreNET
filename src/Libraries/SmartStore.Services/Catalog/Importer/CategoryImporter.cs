@@ -187,9 +187,7 @@ namespace SmartStore.Services.Catalog.Importer
                         continue;
                     }
 
-                    var seoName = SeoHelper.GetSeName(row.EntityDisplayName, true, false, false);
-                    var image = CreateDownloadImage(context, imageUrl, seoName, 1);
-
+                    var image = CreateDownloadImage(context, imageUrl, 1);
                     if (image.Url.HasValue() && !image.Success.HasValue)
                     {
                         AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, new FileDownloadManagerItem[] { image }));
@@ -212,8 +210,14 @@ namespace SmartStore.Services.Catalog.Importer
                                 var fileBuffer = _mediaService.FindEqualFile(stream.ToByteArray(), currentFiles.Select(x => x.File), out var _);
                                 if ((fileBuffer?.Length ?? 0) > 0)
                                 {
-                                    var path = _mediaService.CreatePath(SystemAlbumProvider.Categories, image.MimeType, seoName);
-                                    var newFile = _mediaService.SaveFile(path, stream, false, true);
+                                    var path = string.Concat(SystemAlbumProvider.Categories, "/", image.FileName);
+
+                                    if (_mediaService.CheckUniqueFileName(path, out var uniquePath))
+                                    {
+                                        path = uniquePath;
+                                    }
+
+                                    var newFile = _mediaService.SaveFile(path, stream, false, false);
                                     if ((newFile?.Id ?? 0) != 0)
                                     {
                                         row.Entity.MediaFileId = newFile.Id;

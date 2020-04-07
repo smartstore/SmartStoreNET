@@ -866,13 +866,12 @@ namespace SmartStore.Services.Catalog.Importer
 
 				var imageNumber = 0;
 				var displayOrder = -1;
-				var seoName = SeoHelper.GetSeName(row.EntityDisplayName, true, false, false);
 				var imageFiles = new List<FileDownloadManagerItem>();
 
 				// Collect required image file infos.
 				foreach (var urlOrPath in imageUrls)
 				{
-					var image = CreateDownloadImage(context, urlOrPath, seoName, ++imageNumber);
+					var image = CreateDownloadImage(context, urlOrPath, ++imageNumber);
 
 					if (image != null)
 						imageFiles.Add(image);
@@ -916,7 +915,13 @@ namespace SmartStore.Services.Catalog.Importer
                                     var fileBuffer = _mediaService.FindEqualFile(stream.ToByteArray(), currentFiles.Select(x => x.MediaFile), out var _);
                                     if ((fileBuffer?.Length ?? 0) > 0)
                                     {
-                                        var path = _mediaService.CreatePath(SystemAlbumProvider.Products, image.MimeType, seoName);
+                                        var path = string.Concat(SystemAlbumProvider.Products, "/", image.FileName);
+
+                                        if (_mediaService.CheckUniqueFileName(path, out var uniquePath))
+                                        {
+                                            path = uniquePath;
+                                        }
+
                                         var newFile = _mediaService.SaveFile(path, stream, false, false);
                                         if ((newFile?.Id ?? 0) != 0)
                                         {

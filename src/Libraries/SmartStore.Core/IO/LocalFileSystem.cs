@@ -416,7 +416,7 @@ namespace SmartStore.Core.IO
 
 			if (fileInfo.Exists)
 			{
-				fileInfo.Delete();
+				WaitForUnlockAndExecute(fileInfo, x => x.Delete());
 			}
 		}
 
@@ -434,7 +434,7 @@ namespace SmartStore.Core.IO
 				throw new ArgumentException("File " + newPath + " already exists.");
 			}
 
-			File.Move(sourceFileInfo.FullName, targetFileInfo.FullName);
+			WaitForUnlockAndExecute(sourceFileInfo, x => File.Move(x.FullName, targetFileInfo.FullName));
 		}
 
 		public void CopyFile(string path, string newPath, bool overwrite = false)
@@ -455,7 +455,7 @@ namespace SmartStore.Core.IO
 				}
 			}
 
-			File.Copy(sourceFileInfo.FullName, targetPath, overwrite);
+			WaitForUnlockAndExecute(sourceFileInfo, x => File.Copy(x.FullName, targetPath, overwrite));
 		}
 
 		public void SaveStream(string path, Stream inputStream)
@@ -479,6 +479,24 @@ namespace SmartStore.Core.IO
 		public string Combine(string path1, string path2)
 		{
 			return Path.Combine(path1, path2);
+		}
+
+		static int _num = 0;
+		private static void WaitForUnlockAndExecute(FileInfo fi, Action<FileInfo> action)
+		{
+			try
+			{
+				action(fi);
+			}
+			catch (IOException)
+			{
+				if (!fi.WaitForUnlock(250))
+				{
+					throw;
+				}
+
+				action(fi);
+			}
 		}
 
 		/// <summary>

@@ -220,7 +220,6 @@
     <Compile Include="Controllers\RecurringPaymentController.cs" />
     <Compile Include="Controllers\ReturnRequestController.cs" />
     <Compile Include="Controllers\RoxyFileManagerController.cs" />
-    <Compile Include="Controllers\RoxyFileManagerController_V3.cs" />
     <Compile Include="Controllers\RuleController.cs" />
     <Compile Include="Controllers\ScheduleTaskController.cs" />
     <Compile Include="Controllers\AdminModelHelper.cs" />

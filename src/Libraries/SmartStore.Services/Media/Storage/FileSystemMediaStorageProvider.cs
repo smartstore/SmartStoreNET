@@ -231,7 +231,6 @@ namespace SmartStore.Services.Media.Storage
 				var filePath = GetPath(mediaFile);
 
 				await _fileSystem.WriteAllBytesAsync(filePath, data);
-
 				context.AffectedFiles.Add(filePath);
 			}
 		}

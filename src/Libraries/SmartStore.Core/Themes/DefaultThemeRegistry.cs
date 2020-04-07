@@ -335,23 +335,6 @@ namespace SmartStore.Core.Themes
 			}
 		}
 
-		private void WaitForUnlock(string fullPath)
-		{
-			try
-			{
-				var fi = new FileInfo(fullPath);
-				for (var i = 0; i < 5; i++)
-				{
-					if (!fi.IsFileLocked())
-					{
-						return;
-					}
-					Thread.Sleep(50);
-				}
-			}
-			finally { }
-		}
-
 		private void OnThemeFileChanged(string name, string fullPath, ThemeFileChangeType changeType)
 		{
 			// Enable event throttling by allowing the very same event to be published only all 500 ms.
@@ -398,8 +381,9 @@ namespace SmartStore.Core.Themes
 				try
 				{
 					// FS watcher in conjunction with some text editors fires change events twice and locks the file.
-					// Let's wait max. 250 ms till the lock is gone (hopefully).
-					WaitForUnlock(fullPath);
+					// Let's wait max. 250ms till the lock is gone (hopefully).
+					var fi = new FileInfo(fullPath);
+					fi.WaitForUnlock(250);
 
 					var newManifest = ThemeManifest.Create(di.FullName, _themesBasePath);
 					if (newManifest != null)

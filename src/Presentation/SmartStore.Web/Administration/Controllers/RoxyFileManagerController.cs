@@ -570,57 +570,6 @@ namespace SmartStore.Admin.Controllers
 			{
 				throw ex;
 			}
-
-			//path = GetRelativePath(path);
-			//targetPath = GetRelativePath(targetPath);
-
-			//if (!_fileSystem.FolderExists(path))
-			//{
-			//	throw new Exception(LangRes("E_CopyDirInvalidPath"));
-			//}
-
-			//var folder = _fileSystem.GetFolder(path);
-
-			//targetPath = _fileSystem.Combine(targetPath, folder.Name);
-
-			//if (_fileSystem.FolderExists(targetPath))
-			//{
-			//	throw new Exception(LangRes("E_DirAlreadyExists"));
-			//}
-
-			//if (targetPath.Contains(path))
-			//{
-			//	throw new Exception(T("Common.CannotCopyFolderIntoItself"));
-			//}
-
-			//InternalCopyDir(path, targetPath);
-
-			//Response.Write(GetResultString());
-		}
-
-		private void CopyDirCore(string path, string targetPath)
-		{
-			//if (!_fileSystem.FolderExists(targetPath))
-			//{
-			//	_fileSystem.CreateFolder(targetPath);
-			//}
-
-			//foreach (var file in _fileSystem.ListFiles(path))
-			//{
-			//	var newPath = _fileSystem.Combine(targetPath, file.Name);
-
-			//	if (!_fileSystem.FileExists(newPath))
-			//	{
-			//		_fileSystem.CopyFile(file.Path, newPath);
-			//	}
-			//}
-
-			//foreach (var folder in _fileSystem.ListFolders(path))
-			//{
-			//	var newPath = _fileSystem.Combine(targetPath, folder.Name);
-
-			//	CopyDirCore(folder.Path, newPath);
-			//}
 		}
 
 		private async Task UploadAsync(string destinationPath, bool external = false)

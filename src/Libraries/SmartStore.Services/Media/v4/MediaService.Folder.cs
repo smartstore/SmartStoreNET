@@ -308,16 +308,17 @@ namespace SmartStore.Services.Media
                         var folder = _folderService.GetFolderById(folderId);
                         if (folder != null)
                         {
-                            InternalDeleteFolder(folder, fileHandling);
+                            InternalDeleteFolder(folder, node.Value, fileHandling);
                         }
                     }
                 }
             }
         }
 
-        private int InternalDeleteFolder(MediaFolder folder, FileHandling strategy)
+        private int InternalDeleteFolder(MediaFolder folder, MediaFolderNode node, FileHandling strategy)
         {
             int numFiles = 0;
+            List<MediaFile> lockedFiles = null;
 
             // First delete files
             if (folder.Files.Any())
@@ -327,16 +328,23 @@ namespace SmartStore.Services.Media
                     : (int?)null;
 
                 var files = folder.Files.ToList();
+                
+                lockedFiles = new List<MediaFile>(files.Count);
 
                 foreach (var batch in files.Slice(500))
                 {
                     foreach (var file in batch)
                     {
-                        numFiles++;
-
                         if (strategy == FileHandling.Delete)
                         {
-                            DeleteFile(file, true);
+                            try
+                            {
+                                DeleteFile(file, true);
+                            }
+                            catch (IOException)
+                            {
+                                lockedFiles.Add(file);
+                            }  
                         }
                         else if (strategy == FileHandling.SoftDelete)
                         {
@@ -347,16 +355,42 @@ namespace SmartStore.Services.Media
                         {
                             file.FolderId = albumId;
                         }
+
+                        numFiles++;
                     }
 
                     _fileRepo.Context.SaveChanges();
-                }     
+                }
+
+                if (lockedFiles.Any())
+                {
+                    // Retry deletion of failed files due to locking.
+                    // INFO: By default "LocalFileSystem" waits for 500ms until the lock is revoked or it throws.
+                    foreach (var lockedFile in lockedFiles.ToArray())
+                    {
+                        try
+                        {
+                            DeleteFile(lockedFile, true);
+                            lockedFiles.Remove(lockedFile);
+                        }
+                        catch { }
+                    }
+
+                    _fileRepo.Context.SaveChanges();
+                }
             }
 
-            // Now delete folder itself
-            _folderService.DeleteFolder(folder);
-            
-            _fileRepo.Context.SaveChanges();
+            if (lockedFiles == null || lockedFiles.Count == 0)
+            {
+                // Don't delete folder if a containing file could not be deleted.
+                _folderService.DeleteFolder(folder);
+                _fileRepo.Context.SaveChanges();
+            }
+            else
+            {
+                var fullPath = CombinePaths(node.Path, lockedFiles[0].Name);
+                throw new IOException("Cannot delete file '{0}' because it is being used by another process.".FormatCurrent(fullPath));
+            }
 
             return numFiles;
         }

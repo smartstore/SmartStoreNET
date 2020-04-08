@@ -41,7 +41,7 @@ namespace SmartStore.Web.Controllers
 		private readonly IProductService _productService;
 		private readonly IProductAttributeService _productAttributeService;
 		private readonly ITaxService _taxService;
-		private readonly IPictureService _pictureService;
+        private readonly IMediaService _mediaService;
 		private readonly ICustomerContentService _customerContentService;
 		private readonly ICustomerService _customerService;
 		private readonly IRecentlyViewedProductsService _recentlyViewedProductsService;
@@ -67,8 +67,8 @@ namespace SmartStore.Web.Controllers
 			IProductService productService,
 			IProductAttributeService productAttributeService,
 			ITaxService taxService,
-			IPictureService pictureService,
-			ICustomerContentService customerContentService, 
+            IMediaService mediaService,
+            ICustomerContentService customerContentService, 
 			ICustomerService customerService,
 			IRecentlyViewedProductsService recentlyViewedProductsService, 
 			IProductTagService productTagService,
@@ -92,7 +92,7 @@ namespace SmartStore.Web.Controllers
 			_productService = productService;
 			_productAttributeService = productAttributeService;
 			_taxService = taxService;
-			_pictureService = pictureService;
+            _mediaService = mediaService;
 			_customerContentService = customerContentService;
 			_customerService = customerService;
 			_recentlyViewedProductsService = recentlyViewedProductsService;
@@ -203,9 +203,10 @@ namespace SmartStore.Web.Controllers
 						var m = x.Manufacturer.ToModel();
 						if (preparePictureModel)
 						{
-							m.PictureModel.ImageUrl = _pictureService.GetUrl(x.Manufacturer.MediaFileId.GetValueOrDefault(), 0, !_catalogSettings.HideManufacturerDefaultPictures);
-							var pictureUrl = _pictureService.GetUrl(x.Manufacturer.MediaFileId.GetValueOrDefault());
-							if (pictureUrl != null)
+                            m.PictureModel.ImageUrl = _mediaService.GetUrl(x.Manufacturer.MediaFileId.GetValueOrDefault(), 0, null, !_catalogSettings.HideManufacturerDefaultPictures);
+
+                            var fileUrl = _mediaService.GetUrl(x.Manufacturer.MediaFileId.GetValueOrDefault(), 0);
+							if (fileUrl != null)
 							{
 								m.PictureModel.PictureId = x.Manufacturer.MediaFileId.GetValueOrDefault();
 								m.PictureModel.Title = string.Format(T("Media.Product.ImageLinkTitleFormat"), m.Name);
@@ -532,31 +533,33 @@ namespace SmartStore.Web.Controllers
 				// Update bundle item thumbnail.
 				if (!bundleItem.Item.HideThumbnail)
 				{
-					var picture = m.GetAssignedPicture(_pictureService, null, bundleItem.Item.ProductId);
-					dynamicThumbUrl = _pictureService.GetUrl(picture, _mediaSettings.BundledProductPictureSize, false);
+                    var file = _helper.GetAssignedMediaFile(m, null, bundleItem.Item.ProductId);
+                    dynamicThumbUrl = _mediaService.GetUrl(file.Id, _mediaSettings.BundledProductPictureSize, null, false);
 				}
 			}
 			else if (isAssociated)
 			{
-				// Update associated product thumbnail.
-				var picture = m.GetAssignedPicture(_pictureService, null, productId);
-				dynamicThumbUrl = _pictureService.GetUrl(picture, _mediaSettings.AssociatedProductPictureSize, false);
+                // Update associated product thumbnail.
+                var file = _helper.GetAssignedMediaFile(m, null, productId);
+                dynamicThumbUrl = _mediaService.GetUrl(file.Id, _mediaSettings.AssociatedProductPictureSize, null, false);
 			}
 			else if (product.ProductType != ProductType.BundledProduct)
 			{
-				// Update image gallery.
-				var pictures = _pictureService.GetPicturesByProductId(productId);
+                // Update image gallery.
+                var files = _productService.GetProductPicturesByProductId(productId)
+                    .Select(x => x.MediaFile)
+                    .ToList();
 
-                if (product.HasPreviewPicture && pictures.Count > 1)
+                if (product.HasPreviewPicture && files.Count > 1)
                 {
-                    pictures.RemoveAt(0);
+                    files.RemoveAt(0);
                 }
 
-                if (pictures.Count <= _catalogSettings.DisplayAllImagesNumber)
+                if (files.Count <= _catalogSettings.DisplayAllImagesNumber)
 				{
-					// All pictures rendered... only index is required.
-					var picture = m.GetAssignedPicture(_pictureService, pictures);
-					galleryStartIndex = (picture == null ? 0 : pictures.IndexOf(picture));
+                    // All pictures rendered... only index is required.
+                    var picture = _helper.GetAssignedMediaFile(m, files);
+					galleryStartIndex = picture == null ? 0 : files.IndexOf(picture);
 				}
 				else
 				{
@@ -564,7 +567,7 @@ namespace SmartStore.Web.Controllers
 
 					_helper.PrepareProductDetailsPictureModel(
 						pictureModel,
-						pictures,
+						files,
 						product.GetLocalized(x => x.Name),
 						allCombinationPictureIds,
 						false,

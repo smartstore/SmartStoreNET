@@ -481,7 +481,6 @@ namespace SmartStore.Core.IO
 			return Path.Combine(path1, path2);
 		}
 
-		static int _num = 0;
 		private static void WaitForUnlockAndExecute(FileInfo fi, Action<FileInfo> action)
 		{
 			try

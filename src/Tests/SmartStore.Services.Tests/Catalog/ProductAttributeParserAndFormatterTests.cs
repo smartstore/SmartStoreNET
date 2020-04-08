@@ -32,7 +32,6 @@ namespace SmartStore.Services.Tests.Catalog
 		IProductAttributeService _productAttributeService;
         IProductAttributeParser _productAttributeParser;
 		IPriceCalculationService _priceCalculationService;
-        IPictureService _pictureService;
 
         IWorkContext _workContext;
         ICurrencyService _currencyService;
@@ -148,7 +147,7 @@ namespace SmartStore.Services.Tests.Catalog
             #endregion
 
             _productAttributeRepo = MockRepository.GenerateMock<IRepository<ProductAttribute>>();
-            _productAttributeRepo.Expect(x => x.Table).Return(new List<ProductAttribute>() { pa1, pa2, pa3 }.AsQueryable());
+            _productAttributeRepo.Expect(x => x.Table).Return(new List<ProductAttribute> { pa1, pa2, pa3 }.AsQueryable());
             _productAttributeRepo.Expect(x => x.GetById(pa1.Id)).Return(pa1);
             _productAttributeRepo.Expect(x => x.GetById(pa2.Id)).Return(pa2);
             _productAttributeRepo.Expect(x => x.GetById(pa3.Id)).Return(pa3);
@@ -157,7 +156,7 @@ namespace SmartStore.Services.Tests.Catalog
 			_productAttributeOptionsSetRepo = MockRepository.GenerateMock<IRepository<ProductAttributeOptionsSet>>();
 
 			_productVariantAttributeRepo = MockRepository.GenerateMock<IRepository<ProductVariantAttribute>>();
-            _productVariantAttributeRepo.Expect(x => x.Table).Return(new List<ProductVariantAttribute>() { pva1_1, pva2_1, pva3_1 }.AsQueryable());
+            _productVariantAttributeRepo.Expect(x => x.Table).Return(new List<ProductVariantAttribute> { pva1_1, pva2_1, pva3_1 }.AsQueryable());
             _productVariantAttributeRepo.Expect(x => x.GetById(pva1_1.Id)).Return(pva1_1);
             _productVariantAttributeRepo.Expect(x => x.GetById(pva2_1.Id)).Return(pva2_1);
             _productVariantAttributeRepo.Expect(x => x.GetById(pva3_1.Id)).Return(pva3_1);
@@ -166,7 +165,7 @@ namespace SmartStore.Services.Tests.Catalog
             _productVariantAttributeCombinationRepo.Expect(x => x.Table).Return(new List<ProductVariantAttributeCombination>().AsQueryable());
 
             _productVariantAttributeValueRepo = MockRepository.GenerateMock<IRepository<ProductVariantAttributeValue>>();
-            _productVariantAttributeValueRepo.Expect(x => x.Table).Return(new List<ProductVariantAttributeValue>() { pvav1_1, pvav1_2, pvav2_1, pvav2_2 }.AsQueryable());
+            _productVariantAttributeValueRepo.Expect(x => x.Table).Return(new List<ProductVariantAttributeValue> { pvav1_1, pvav1_2, pvav2_1, pvav2_2 }.AsQueryable());
             _productVariantAttributeValueRepo.Expect(x => x.GetById(pvav1_1.Id)).Return(pvav1_1);
             _productVariantAttributeValueRepo.Expect(x => x.GetById(pvav1_2.Id)).Return(pvav1_2);
             _productVariantAttributeValueRepo.Expect(x => x.GetById(pvav2_1.Id)).Return(pvav2_1);
@@ -174,8 +173,6 @@ namespace SmartStore.Services.Tests.Catalog
 
 			_productBundleItemAttributeFilter = MockRepository.GenerateMock<IRepository<ProductBundleItemAttributeFilter>>();
 			_localizedEntityService = MockRepository.GenerateMock<ILocalizedEntityService>();
-
-            _pictureService = MockRepository.GenerateMock<IPictureService>();
 
             var cacheManager = new NullCache();
 
@@ -188,8 +185,7 @@ namespace SmartStore.Services.Tests.Catalog
                 _productVariantAttributeCombinationRepo,
                 _productVariantAttributeValueRepo,
 				_productBundleItemAttributeFilter,
-				_localizedEntityService,
-                _pictureService);
+				_localizedEntityService);
 			
             _productAttributeParser = new ProductAttributeParser(_productAttributeService, new MemoryRepository<ProductVariantAttributeCombination>(), NullRequestCache.Instance);
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Blogs;
@@ -10,8 +9,6 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Domain.Media;
-using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Seo;
@@ -19,7 +16,6 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
-using SmartStore.Core.Plugins;
 using SmartStore.Core.Security;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
@@ -55,7 +51,7 @@ namespace SmartStore.Web.Controllers
         private readonly Lazy<IGenericAttributeService> _genericAttributeService;
 		private readonly Lazy<IUrlRecordService> _urlRecordService;
 		private readonly IPageAssetsBuilder _pageAssetsBuilder;
-		private readonly Lazy<IPictureService> _pictureService;
+        private readonly Lazy<IMediaService> _mediaService;
         private readonly ICookieManager _cookieManager;
         private readonly IGeoCountryLookup _geoCountryLookup;
         private readonly IWebHelper _webHelper;
@@ -83,8 +79,8 @@ namespace SmartStore.Web.Controllers
             Lazy<IGenericAttributeService> genericAttributeService, 
 			Lazy<IUrlRecordService> urlRecordService,
 			IPageAssetsBuilder pageAssetsBuilder,
-			Lazy<IPictureService> pictureService,
-			CustomerSettings customerSettings,
+            Lazy<IMediaService> mediaService,
+            CustomerSettings customerSettings,
 			PrivacySettings privacySettings,
 			TaxSettings taxSettings, 
 			CatalogSettings catalogSettings,
@@ -109,7 +105,7 @@ namespace SmartStore.Web.Controllers
             _genericAttributeService = genericAttributeService;
 			_urlRecordService = urlRecordService;
 			_pageAssetsBuilder = pageAssetsBuilder;
-			_pictureService = pictureService;
+            _mediaService = mediaService;
 			_customerSettings = customerSettings;
 			_privacySettings = privacySettings;
 			_taxSettings = taxSettings;
@@ -288,19 +284,23 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult Logo()
         {
-			var logoPictureInfo = _pictureService.Value.GetPictureInfo(Services.StoreContext.CurrentStore.LogoMediaFileId);
-			var hasLogo = logoPictureInfo != null;
+            var store = Services.StoreContext.CurrentStore;
+            var logo = _mediaService.Value.GetFileById(store.LogoMediaFileId);
 
-			var model = new ShopHeaderModel
-			{
-				LogoUploaded = hasLogo,
-				LogoUrl = _pictureService.Value.GetUrl(logoPictureInfo, 0, FallbackPictureType.NoFallback),
-				LogoWidth = logoPictureInfo?.Width ?? 0,
-				LogoHeight = logoPictureInfo?.Height ?? 0,
-				LogoTitle = Services.StoreContext.CurrentStore.Name
+            var model = new ShopHeaderModel
+            {
+                LogoUploaded = logo != null,
+				LogoTitle = store.Name
 			};
 
-			return PartialView(model);
+            if (logo != null)
+            {
+                model.LogoUrl = _mediaService.Value.GetUrl(logo, 0, null, false);
+                model.LogoWidth = logo.Dimensions.Width;
+                model.LogoHeight = logo.Dimensions.Height;
+            }
+
+            return PartialView(model);
         }
 
         public ActionResult SetLanguage(int langid, string returnUrl = "")
@@ -772,16 +772,15 @@ namespace SmartStore.Web.Controllers
 				model.StoreName = store.Name;
 				model.StoreUrl = store.Url;
 
-				var logoPicture = _pictureService.Value.GetPictureById(pdfSettings.LogoPictureId);
-				if (logoPicture == null)
-				{
-					logoPicture = _pictureService.Value.GetPictureById(store.LogoMediaFileId);
-				}
-
-				if (logoPicture != null)
-				{
-					model.LogoUrl = _pictureService.Value.GetUrl(logoPicture, 0, false);
-				}
+                var logo = _mediaService.Value.GetFileById(pdfSettings.LogoPictureId);
+                if (logo == null)
+                {
+                    logo = _mediaService.Value.GetFileById(store.LogoMediaFileId);
+                }
+                if (logo != null)
+                {
+                    model.LogoUrl = _mediaService.Value.GetUrl(logo, 0, null, false);
+                }
 
 				model.MerchantCompanyInfo = companyInfoSettings;
 				model.MerchantBankAccount = bankSettings;

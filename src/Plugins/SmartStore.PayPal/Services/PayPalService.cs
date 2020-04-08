@@ -45,7 +45,7 @@ namespace SmartStore.PayPal.Services
 		private readonly IPriceCalculationService _priceCalculationService;
 		private readonly ITaxService _taxService;
 		private readonly ICurrencyService _currencyService;
-		private readonly Lazy<IPictureService> _pictureService;
+        private readonly Lazy<IMediaService> _mediaService;
         private readonly Lazy<ICountryService> _countryService;
         private readonly Lazy<CompanyInformationSettings> _companyInfoSettings;
 
@@ -59,7 +59,7 @@ namespace SmartStore.PayPal.Services
 			IPriceCalculationService priceCalculationService,
 			ITaxService taxService,
 			ICurrencyService currencyService,
-			Lazy<IPictureService> pictureService,
+            Lazy<IMediaService> mediaService,
             Lazy<ICountryService> countryService,
             Lazy<CompanyInformationSettings> companyInfoSettings)
 		{
@@ -72,18 +72,15 @@ namespace SmartStore.PayPal.Services
 			_priceCalculationService = priceCalculationService;
 			_taxService = taxService;
 			_currencyService = currencyService;
-			_pictureService = pictureService;
+            _mediaService = mediaService;
             _countryService = countryService;
 			_companyInfoSettings = companyInfoSettings;
-
-			T = NullLocalizer.Instance;
-			Logger = NullLogger.Instance;
 		}
 
-		public Localizer T { get; set; }
-		public ILogger Logger { get; set; }
+		public Localizer T { get; set; } = NullLocalizer.Instance;
+        public ILogger Logger { get; set; } = NullLogger.Instance;
 
-		private Dictionary<string, object> CreateAddress(Address addr, bool addRecipientName)
+        private Dictionary<string, object> CreateAddress(Address addr, bool addRecipientName)
 		{
 			var dic = new Dictionary<string, object>();
 
@@ -994,7 +991,7 @@ namespace SmartStore.PayPal.Services
 		{
 			PayPalResponse result;
 			var name = store.Name;
-			var logo = _pictureService.Value.GetPictureById(store.LogoMediaFileId);
+            var logo = _mediaService.Value.GetFileById(store.LogoMediaFileId);
 			var path = "/v1/payment-experience/web-profiles";
 
 			var data = new Dictionary<string, object>();
@@ -1024,7 +1021,7 @@ namespace SmartStore.PayPal.Services
 
             if (logo != null)
             {
-                presentation.Add("logo_image", _pictureService.Value.GetUrl(logo, 0, false, _services.StoreService.GetHost(store)));
+                presentation.Add("logo_image", _mediaService.Value.GetUrl(logo, 0, _services.StoreService.GetHost(store), false));
             }
 
 			inpuFields.Add("allow_note", false);

@@ -338,8 +338,9 @@ namespace SmartStore.Services.Catalog
         /// Gets a product pictures by product identifier
         /// </summary>
         /// <param name="productId">The product identifier</param>
+        /// <param name="numberOfPictures">Number of pictures to return. By default value of 0, all pictures are returned.</param>
         /// <returns>Product pictures</returns>
-        IList<ProductMediaFile> GetProductPicturesByProductId(int productId);
+        IList<ProductMediaFile> GetProductPicturesByProductId(int productId, int numberOfPictures = 0);
 
         /// <summary>
         /// Get product pictures by product identifiers.

@@ -23,7 +23,7 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<RelatedProduct> _relatedProductRepository;
         private readonly IRepository<CrossSellProduct> _crossSellProductRepository;
         private readonly IRepository<TierPrice> _tierPriceRepository;
-        private readonly IRepository<ProductMediaFile> _productPictureRepository;
+        private readonly IRepository<ProductMediaFile> _productFileRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository;
 		private readonly IRepository<ProductBundleItem> _productBundleItemRepository;
 		private readonly IRepository<ShoppingCartItem> _shoppingCartItemRepository;
@@ -52,7 +52,7 @@ namespace SmartStore.Services.Catalog
             _relatedProductRepository = relatedProductRepository;
             _crossSellProductRepository = crossSellProductRepository;
             _tierPriceRepository = tierPriceRepository;
-            _productPictureRepository = productPictureRepository;
+            _productFileRepository = productPictureRepository;
             _productVariantAttributeCombinationRepository = productVariantAttributeCombinationRepository;
 			_productBundleItemRepository = productBundleItemRepository;
 			_shoppingCartItemRepository = shoppingCartItemRepository;
@@ -926,7 +926,7 @@ namespace SmartStore.Services.Catalog
 
 			UnassignDeletedPictureFromVariantCombinations(productPicture);
 
-            _productPictureRepository.Delete(productPicture);
+            _productFileRepository.Delete(productPicture);
         }
 
         private void UnassignDeletedPictureFromVariantCombinations(ProductMediaFile productPicture)
@@ -959,14 +959,30 @@ namespace SmartStore.Services.Catalog
             }
         }
 
-        public virtual IList<ProductMediaFile> GetProductPicturesByProductId(int productId)
+        public virtual IList<ProductMediaFile> GetProductPicturesByProductId(int productId, int numberOfPictures = 0)
         {
-            var query = from pp in _productPictureRepository.Table
-                        where pp.ProductId == productId
-                        orderby pp.DisplayOrder
-                        select pp;
-            var productPictures = query.ToList();
-            return productPictures;
+            if (productId == 0)
+            {
+                return new List<ProductMediaFile>();
+            }
+
+            var query = _productFileRepository.Table
+                .Include(x => x.MediaFile)
+                .Where(x => x.ProductId == productId);
+
+            if (numberOfPictures > 0)
+            {
+                query = query
+                    .OrderBy(x => x.DisplayOrder)
+                    .Take(() => numberOfPictures);
+            }
+            else
+            {
+                query = query.OrderBy(x => x.DisplayOrder);
+            }
+
+            var productFiles = query.ToList();
+            return productFiles;
         }
 
 		public virtual Multimap<int, ProductMediaFile> GetProductPicturesByProductIds(
@@ -981,10 +997,10 @@ namespace SmartStore.Services.Catalog
 
             var take = maxPicturesPerProduct ?? int.MaxValue;
 
-            var query = _productPictureRepository.TableUntracked
-                .Where(pp => productIds.Contains(pp.ProductId))
-                .GroupBy(pp => pp.ProductId, x => x)
-                .SelectMany(pp => pp.OrderBy(x => x.DisplayOrder).Take(take));
+            var query = _productFileRepository.TableUntracked
+                .Where(pf => productIds.Contains(pf.ProductId))
+                .GroupBy(pf => pf.ProductId, x => x)
+                .SelectMany(pf => pf.OrderBy(x => x.DisplayOrder).Take(take));
 
             // For eager loading apply Include() after GroupBy().
             if (flags == MediaLoadFlags.None)
@@ -1023,7 +1039,7 @@ namespace SmartStore.Services.Catalog
             if (productPictureId == 0)
                 return null;
 
-            var pp = _productPictureRepository.GetById(productPictureId);
+            var pp = _productFileRepository.GetById(productPictureId);
             return pp;
         }
 
@@ -1031,7 +1047,7 @@ namespace SmartStore.Services.Catalog
         {
 			Guard.NotNull(productPicture, nameof(productPicture));
 
-			_productPictureRepository.Insert(productPicture);
+			_productFileRepository.Insert(productPicture);
         }
 
         /// <summary>
@@ -1042,7 +1058,7 @@ namespace SmartStore.Services.Catalog
         {
 			Guard.NotNull(productPicture, nameof(productPicture));
 
-			_productPictureRepository.Update(productPicture);
+			_productFileRepository.Update(productPicture);
         }
 
         #endregion

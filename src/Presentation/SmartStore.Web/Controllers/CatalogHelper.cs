@@ -54,7 +54,8 @@ namespace SmartStore.Web.Controllers
 		private readonly ITaxService _taxService;
 		private readonly ICurrencyService _currencyService;
 		private readonly IPictureService _pictureService;
-		private readonly ILocalizationService _localizationService;
+        private readonly IMediaService _mediaService;
+        private readonly ILocalizationService _localizationService;
 		private readonly IPriceCalculationService _priceCalculationService;
 		private readonly IPriceFormatter _priceFormatter;
 		private readonly ISpecificationAttributeService _specificationAttributeService;
@@ -93,7 +94,8 @@ namespace SmartStore.Web.Controllers
 			ITaxService taxService,
 			ICurrencyService currencyService,
 			IPictureService pictureService,
-			IPriceCalculationService priceCalculationService,
+            IMediaService mediaService,
+            IPriceCalculationService priceCalculationService,
 			IPriceFormatter priceFormatter,
 			ISpecificationAttributeService specificationAttributeService,
 			IDateTimeHelper dateTimeHelper,
@@ -130,6 +132,7 @@ namespace SmartStore.Web.Controllers
 			_taxService = taxService;
 			_currencyService = currencyService;
 			_pictureService = pictureService;
+            _mediaService = mediaService;
 			_localizationService = _services.Localization;
 			_priceCalculationService = priceCalculationService;
 			_priceFormatter = priceFormatter;
@@ -1436,7 +1439,32 @@ namespace SmartStore.Web.Controllers
 			}
 		}
 
-		public List<ManufacturerOverviewModel> PrepareManufacturersOverviewModel(
+        public MediaFile GetAssignedMediaFile(ProductDetailsModel model, IList<MediaFile> files, int productId = 0)
+        {
+            MediaFile file = null;
+
+            if ((model?.SelectedCombination ?? null) != null)
+            {
+                var combiAssignedImages = model.SelectedCombination.GetAssignedMediaIds();
+
+                if (combiAssignedImages.Any())
+                {
+                    file = files == null
+                        ? _mediaService.GetFileById(combiAssignedImages[0])?.File
+                        : files.FirstOrDefault(p => p.Id == combiAssignedImages[0]);
+
+                    if (file != null && productId != 0)
+                    {
+                        var productFile = _productService.GetProductPicturesByProductId(productId, 1);
+                        file = productFile.FirstOrDefault()?.MediaFile;
+                    }
+                }
+            }
+
+            return file;
+        }
+
+        public List<ManufacturerOverviewModel> PrepareManufacturersOverviewModel(
 			ICollection<ProductManufacturer> manufacturers, 
 			IDictionary<int, ManufacturerOverviewModel> cachedModels = null,
 			bool withPicture = false)

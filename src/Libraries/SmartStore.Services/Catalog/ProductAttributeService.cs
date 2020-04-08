@@ -8,11 +8,9 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Localization;
 using SmartStore.Data.Caching;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 
 namespace SmartStore.Services.Catalog
 {
@@ -35,7 +33,6 @@ namespace SmartStore.Services.Catalog
 		private readonly IRepository<ProductBundleItemAttributeFilter> _productBundleItemAttributeFilterRepository;
 		private readonly ILocalizedEntityService _localizedEntityService;
         private readonly IRequestCache _requestCache;
-		private readonly IPictureService _pictureService;
 
         public ProductAttributeService(
 			IRequestCache requestCache,
@@ -46,8 +43,7 @@ namespace SmartStore.Services.Catalog
             IRepository<ProductVariantAttributeCombination> pvacRepository,
             IRepository<ProductVariantAttributeValue> productVariantAttributeValueRepository,
 			IRepository<ProductBundleItemAttributeFilter> productBundleItemAttributeFilterRepository,
-			ILocalizedEntityService localizedEntityService,
-			IPictureService pictureService)
+			ILocalizedEntityService localizedEntityService)
         {
             _requestCache = requestCache;
             _productAttributeRepository = productAttributeRepository;
@@ -58,14 +54,11 @@ namespace SmartStore.Services.Catalog
             _productVariantAttributeValueRepository = productVariantAttributeValueRepository;
 			_productBundleItemAttributeFilterRepository = productBundleItemAttributeFilterRepository;
 			_localizedEntityService = localizedEntityService;
-			_pictureService = pictureService;
-
-			T = NullLocalizer.Instance;
 		}
 
-		public Localizer T { get; set; }
+		public Localizer T { get; set; } = NullLocalizer.Instance;
 
-		private IList<ProductVariantAttribute> GetSwitchedLoadedAttributeMappings(ICollection<int> productVariantAttributeIds)
+        private IList<ProductVariantAttribute> GetSwitchedLoadedAttributeMappings(ICollection<int> productVariantAttributeIds)
 		{
 			if (productVariantAttributeIds != null && productVariantAttributeIds.Count > 0)
 			{
@@ -187,8 +180,10 @@ namespace SmartStore.Services.Catalog
 
 		public virtual ProductAttributeOption GetProductAttributeOptionById(int id)
 		{
-			if (id == 0)
-				return null;
+            if (id == 0)
+            {
+                return null;
+            }
 
 			return _productAttributeOptionRepository.GetById(id);
 		}
@@ -446,8 +441,10 @@ namespace SmartStore.Services.Catalog
 			if (deleteExistingValues)
 			{
 				var existingValues = productVariantAttribute.ProductVariantAttributeValues.ToList();
-				if (!existingValues.Any())
-					existingValues = GetProductVariantAttributeValues(productVariantAttribute.Id).ToList();
+                if (!existingValues.Any())
+                {
+                    existingValues = GetProductVariantAttributeValues(productVariantAttribute.Id).ToList();
+                }
 
 				existingValues.Each(x => DeleteProductVariantAttributeValue(x));
 			}
@@ -457,8 +454,10 @@ namespace SmartStore.Services.Catalog
 				.Where(x => x.ProductAttributeOptionsSetId == productAttributeOptionsSetId)
 				.ToList();
 
-			if (!attributeOptions.Any())
-				return result;
+            if (!attributeOptions.Any())
+            {
+                return result;
+            }
 
 			// Do not insert already existing values (identified by name field).
 			var existingValueNames = new HashSet<string>(_productVariantAttributeValueRepository.TableUntracked
@@ -466,42 +465,20 @@ namespace SmartStore.Services.Catalog
 				.Select(x => x.Name)
 				.ToList());
 
-			MediaFile picture = null;
-			ProductVariantAttributeValue productVariantAttributeValue = null;
-			var pictureIds = attributeOptions.Where(x => x.MediaFileId != 0).Select(x => x.MediaFileId).Distinct().ToArray();
-			var pictures = _pictureService.GetPicturesByIds(pictureIds, true).ToDictionarySafe(x => x.Id);
-
 			using (_localizedEntityService.BeginScope())
 			{
 				foreach (var option in attributeOptions)
 				{
-					if (existingValueNames.Contains(option.Name))
-						continue;
+                    if (existingValueNames.Contains(option.Name))
+                    {
+                        continue;
+                    }
 
-					productVariantAttributeValue = option.Clone();
-					productVariantAttributeValue.MediaFileId = 0;
-					productVariantAttributeValue.ProductVariantAttributeId = productVariantAttribute.Id;
-
-					// Copy picture.
-					if (option.MediaFileId != 0 && pictures.TryGetValue(option.MediaFileId, out picture))
-					{
-						var pictureBinary = _pictureService.LoadPictureBinary(picture);
-
-						var newPicture = _pictureService.InsertPicture(
-							pictureBinary,
-							picture.MimeType,
-							picture.Name,
-							picture.Width ?? 0,
-							picture.Height ?? 0,
-							picture.IsTransient,
-							"product"
-						);
-
-						productVariantAttributeValue.MediaFileId = newPicture.Id;
-					}
+					var pvav = option.Clone();
+					pvav.ProductVariantAttributeId = productVariantAttribute.Id;
 
 					// No scope commit, we need new entity id.
-					_productVariantAttributeValueRepository.Insert(productVariantAttributeValue);
+					_productVariantAttributeValueRepository.Insert(pvav);
 					++result;
 
 					// Copy localized properties too.
@@ -511,7 +488,7 @@ namespace SmartStore.Services.Catalog
 					{
 						_localizedEntityService.InsertLocalizedProperty(new LocalizedProperty
 						{
-							EntityId = productVariantAttributeValue.Id,
+							EntityId = pvav.Id,
 							LocaleKeyGroup = "ProductVariantAttributeValue",
 							LocaleKey = property.LocaleKey,
 							LocaleValue = property.LocaleValue,

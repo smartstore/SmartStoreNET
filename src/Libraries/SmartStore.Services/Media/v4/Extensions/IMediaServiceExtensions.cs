@@ -29,9 +29,7 @@ namespace SmartStore.Services.Media
                 ? new ProcessImageQuery { MaxSize = thumbnailSize }
                 : null;
 
-            var fileInfo = file != null ? new MediaFileInfo(file, null, string.Empty) : null;
-
-            return service.GetUrl(fileInfo, query, host, doFallback);
+            return service.GetUrl(file != null ? service.ConvertMediaFile(file) : null, query, host, doFallback);
         }
 
         public static string GetUrl(this IMediaService service, MediaFileInfo file, int thumbnailSize, string host = null, bool doFallback = true)

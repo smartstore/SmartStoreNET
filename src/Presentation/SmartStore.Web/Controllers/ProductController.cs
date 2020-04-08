@@ -203,12 +203,13 @@ namespace SmartStore.Web.Controllers
 						var m = x.Manufacturer.ToModel();
 						if (preparePictureModel)
 						{
-                            m.PictureModel.ImageUrl = _mediaService.GetUrl(x.Manufacturer.MediaFileId.GetValueOrDefault(), 0, null, !_catalogSettings.HideManufacturerDefaultPictures);
+                            var fileId = x.Manufacturer.MediaFileId.GetValueOrDefault();
+                            m.PictureModel.ImageUrl = _mediaService.GetUrl(fileId, 0, null, !_catalogSettings.HideManufacturerDefaultPictures);
 
-                            var fileUrl = _mediaService.GetUrl(x.Manufacturer.MediaFileId.GetValueOrDefault(), 0);
+                            var fileUrl = _mediaService.GetUrl(fileId, 0);
 							if (fileUrl != null)
 							{
-								m.PictureModel.PictureId = x.Manufacturer.MediaFileId.GetValueOrDefault();
+								m.PictureModel.PictureId = fileId;
 								m.PictureModel.Title = string.Format(T("Media.Product.ImageLinkTitleFormat"), m.Name);
 								m.PictureModel.AlternateText = string.Format(T("Media.Product.ImageAlternateTextFormat"), m.Name);
 							}
@@ -505,7 +506,7 @@ namespace SmartStore.Web.Controllers
 			var product = _productService.GetProductById(productId);
 			var bItem = _productService.GetBundleItemById(bundleItemId);
 			IList<ProductBundleItemData> bundleItems = null;
-			ProductBundleItemData bundleItem = (bItem == null ? null : new ProductBundleItemData(bItem));
+			ProductBundleItemData bundleItem = bItem == null ? null : new ProductBundleItemData(bItem);
 
 			// Quantity required for tier prices.
 			string quantityKey = form.AllKeys.FirstOrDefault(k => k.EndsWith("EnteredQuantity"));
@@ -535,16 +536,30 @@ namespace SmartStore.Web.Controllers
 				// Update bundle item thumbnail.
 				if (!bundleItem.Item.HideThumbnail)
 				{
-                    var file = _helper.GetAssignedMediaFile(m, null, bundleItem.Item.ProductId);
-                    dynamicThumbUrl = _mediaService.GetUrl(file, _mediaSettings.BundledProductPictureSize, null, false);
-				}
+                    var assignedMediaIds = m.SelectedCombination?.GetAssignedMediaIds() ?? new int[0];
+                    if (assignedMediaIds.Any() && _mediaService.GetFileById(assignedMediaIds[0]) != null)
+                    {
+                        var file = _productService.GetProductPicturesByProductId(bundleItem.Item.ProductId, 1)
+                            .Select(x => x.MediaFile)
+                            .FirstOrDefault();
+
+                        dynamicThumbUrl = _mediaService.GetUrl(file, _mediaSettings.BundledProductPictureSize, null, false);
+                    }
+                }
 			}
 			else if (isAssociated)
 			{
                 // Update associated product thumbnail.
-                var file = _helper.GetAssignedMediaFile(m, null, productId);
-                dynamicThumbUrl = _mediaService.GetUrl(file, _mediaSettings.AssociatedProductPictureSize, null, false);
-			}
+                var assignedMediaIds = m.SelectedCombination?.GetAssignedMediaIds() ?? new int[0];
+                if (assignedMediaIds.Any() && _mediaService.GetFileById(assignedMediaIds[0]) != null)
+                {
+                    var file = _productService.GetProductPicturesByProductId(productId, 1)
+                        .Select(x => x.MediaFile)
+                        .FirstOrDefault();
+
+                    dynamicThumbUrl = _mediaService.GetUrl(file, _mediaSettings.AssociatedProductPictureSize, null, false);
+                }
+            }
 			else if (product.ProductType != ProductType.BundledProduct)
 			{
                 // Update image gallery.
@@ -560,10 +575,16 @@ namespace SmartStore.Web.Controllers
                 if (files.Count <= _catalogSettings.DisplayAllImagesNumber)
 				{
                     // All pictures rendered... only index is required.
-                    var file = _helper.GetAssignedMediaFile(m, files);
-					galleryStartIndex = file == null ? 0 : files.IndexOf(file);
-				}
-				else
+                    galleryStartIndex = 0;
+
+                    var assignedMediaIds = m.SelectedCombination?.GetAssignedMediaIds() ?? new int[0];
+                    if (assignedMediaIds.Any())
+                    {
+                        var file = files.FirstOrDefault(p => p.Id == assignedMediaIds[0]);
+                        galleryStartIndex = file == null ? 0 : files.IndexOf(file);
+                    }
+                }
+                else
 				{
 					var allCombinationPictureIds = _productAttributeService.GetAllProductVariantAttributeCombinationPictureIds(product.Id);
 

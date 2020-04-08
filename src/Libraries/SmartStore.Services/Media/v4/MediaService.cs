@@ -682,7 +682,7 @@ namespace SmartStore.Services.Media
 
         #region Utils
 
-        protected MediaFileInfo ConvertMediaFile(MediaFile file)
+        public MediaFileInfo ConvertMediaFile(MediaFile file)
         {
             var folder = _folderService.FindNode(file)?.Value;
             return new MediaFileInfo(file, _storageProvider, folder?.Path);

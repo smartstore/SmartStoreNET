@@ -484,7 +484,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private dynamic ToDynamic(DataExporterContext ctx, MediaFile file, int thumbPictureSize, int detailsPictureSize)
 		{
-            return ToDynamic(ctx, new MediaFileInfo(file, null, string.Empty), thumbPictureSize, detailsPictureSize);
+            return ToDynamic(ctx, _mediaService.Value.ConvertMediaFile(file), thumbPictureSize, detailsPictureSize);
         }
 
         private dynamic ToDynamic(DataExporterContext ctx, MediaFileInfo file, int thumbPictureSize, int detailsPictureSize)
@@ -1004,7 +1004,7 @@ namespace SmartStore.Services.DataExchange.Export
 			{
 				if (productPictures != null && productPictures.Any())
 				{
-					var file = new MediaFileInfo(productPictures.First().MediaFile, null, string.Empty);
+                    var file = _mediaService.Value.ConvertMediaFile(productPictures.Select(x => x.MediaFile).First());
 
                     dynObject._MainPictureUrl = _mediaService.Value.GetUrl(file, imageQuery, _services.StoreService.GetHost(ctx.Store));
                     dynObject._MainPictureRelativeUrl = _mediaService.Value.GetUrl(file, imageQuery);

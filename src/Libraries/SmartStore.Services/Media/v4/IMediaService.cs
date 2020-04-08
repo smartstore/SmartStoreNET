@@ -85,5 +85,7 @@ namespace SmartStore.Services.Media
         void DeleteFolder(string path, FileHandling fileHandling = FileHandling.SoftDelete);
 
         string GetUrl(MediaFileInfo file, ProcessImageQuery query, string host = null, bool doFallback = true);
+
+        public MediaFileInfo ConvertMediaFile(MediaFile file);
     }
 }

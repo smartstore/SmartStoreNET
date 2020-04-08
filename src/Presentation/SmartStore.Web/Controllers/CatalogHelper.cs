@@ -1439,31 +1439,6 @@ namespace SmartStore.Web.Controllers
 			}
 		}
 
-        public MediaFile GetAssignedMediaFile(ProductDetailsModel model, IList<MediaFile> files, int productId = 0)
-        {
-            MediaFile file = null;
-
-            if ((model?.SelectedCombination ?? null) != null)
-            {
-                var combiAssignedImages = model.SelectedCombination.GetAssignedMediaIds();
-
-                if (combiAssignedImages.Any())
-                {
-                    file = files == null
-                        ? _mediaService.GetFileById(combiAssignedImages[0])?.File
-                        : files.FirstOrDefault(p => p.Id == combiAssignedImages[0]);
-
-                    if (file != null && productId != 0)
-                    {
-                        var productFile = _productService.GetProductPicturesByProductId(productId, 1);
-                        file = productFile.FirstOrDefault()?.MediaFile;
-                    }
-                }
-            }
-
-            return file;
-        }
-
         public List<ManufacturerOverviewModel> PrepareManufacturersOverviewModel(
 			ICollection<ProductManufacturer> manufacturers, 
 			IDictionary<int, ManufacturerOverviewModel> cachedModels = null,

@@ -53,7 +53,6 @@ namespace SmartStore.Web.Controllers
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
         private readonly IShoppingCartService _shoppingCartService;
-        private readonly IPictureService _pictureService;
         private readonly IMediaService _mediaService;
         private readonly ILocalizationService _localizationService;
         private readonly IProductAttributeService _productAttributeService;
@@ -108,7 +107,6 @@ namespace SmartStore.Web.Controllers
 			IWorkContext workContext,
 			IStoreContext storeContext,
             IShoppingCartService shoppingCartService, 
-			IPictureService pictureService,
             IMediaService mediaService,
             ILocalizationService localizationService, 
             IProductAttributeService productAttributeService, 
@@ -157,7 +155,6 @@ namespace SmartStore.Web.Controllers
             _workContext = workContext;
 			_storeContext = storeContext;
             _shoppingCartService = shoppingCartService;
-            _pictureService = pictureService;
             _mediaService = mediaService;
             _localizationService = localizationService;
             _productAttributeService = productAttributeService;
@@ -211,45 +208,54 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected PictureModel PrepareCartItemPictureModel(Product product, int pictureSize, string productName, string attributesXml)
         {
-            if (product == null)
-                throw new ArgumentNullException("product");
+            Guard.NotNull(product, nameof(product));
 
 			var combination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, attributesXml);
 
             var pictureCacheKey = string.Format(ModelCacheEventConsumer.CART_PICTURE_MODEL_KEY, product.Id, combination == null ? 0 : combination.Id,
 				pictureSize, true, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
 
-			// TODO: (mc) refactor > GetPictureInfos()
             var model = _cacheManager.Get(pictureCacheKey, () =>
             {
-				MediaFile picture = null;
+                MediaFileInfo file = null;
 
-				if (combination != null)
-				{
-					var picturesIds = combination.GetAssignedMediaIds();
-					if (picturesIds != null && picturesIds.Length > 0)
-						picture = _pictureService.GetPictureById(picturesIds[0]);
-				}
-
-                // no attribute combination image, then load product picture
-				if (picture == null)
-					picture = _pictureService.GetPicturesByProductId(product.Id, 1).FirstOrDefault();
-
-				if (picture == null && product.Visibility == ProductVisibility.Hidden && product.ParentGroupedProductId > 0)
-				{
-					//let's check whether this product has some parent "grouped" product
-					picture = _pictureService.GetPicturesByProductId(product.ParentGroupedProductId, 1).FirstOrDefault();
-				}
-
-                return new PictureModel
+                if (combination != null)
                 {
-                    PictureId = picture != null ? picture.Id : 0,
-					Size = pictureSize,
-					ImageUrl = _pictureService.GetUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
-                    Title = string.Format(_localizationService.GetResource("Media.Product.ImageLinkTitleFormat"), productName),
-                    AlternateText = string.Format(_localizationService.GetResource("Media.Product.ImageAlternateTextFormat"), productName),
+                    var fileIds = combination.GetAssignedMediaIds();
+                    if (fileIds?.Any() ?? false)
+                    {
+                        file = _mediaService.GetFileById(fileIds[0]);
+                    }
+                }
+
+                // No attribute combination image, then load product picture.
+                if (file == null)
+                {
+                    file = _productService.GetProductPicturesByProductId(product.Id, 1)
+                        .Select(x => _mediaService.ConvertMediaFile(x.MediaFile))
+                        .FirstOrDefault();
+                }
+
+                // Let's check whether this product has some parent "grouped" product.
+                if (file == null && product.Visibility == ProductVisibility.Hidden && product.ParentGroupedProductId > 0)
+                {
+                    file = _productService.GetProductPicturesByProductId(product.ParentGroupedProductId, 1)
+                        .Select(x => _mediaService.ConvertMediaFile(x.MediaFile))
+                        .FirstOrDefault();
+                }
+
+                var pm = new PictureModel
+                {
+                    PictureId = file?.Id ?? 0,
+                    Size = pictureSize,
+                    ImageUrl = _mediaService.GetUrl(file, pictureSize, null, !_catalogSettings.HideProductDefaultPictures),
+                    Title = T("Media.Product.ImageLinkTitleFormat", productName),
+                    AlternateText = T("Media.Product.ImageAlternateTextFormat", productName)
                 };
+
+                return pm;
             });
+
             return model;
         }
 

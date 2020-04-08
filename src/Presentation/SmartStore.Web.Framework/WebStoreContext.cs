@@ -158,31 +158,34 @@ namespace SmartStore.Web.Framework
 			{
 				var entry = new StoreEntityCache();
 
-				var allStores = _rs.Value.TableUntracked
-					.Expand(x => x.PrimaryStoreCurrency)
-					.Expand(x => x.PrimaryExchangeRateCurrency)
-					.OrderBy(x => x.DisplayOrder)
-					.ThenBy(x => x.Name)
-					.ToList();
-
-				// Detach all entities... you never know.
-				allStores.Each(x => _rs.Value.Context.DetachEntity(x));
-
-				entry.Stores = allStores.ToDictionary(x => x.Id);
-				entry.HostMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-
-				foreach (var store in allStores)
+				using (var scope = new DbContextScope(_rs.Value.Context, proxyCreation: false, lazyLoading: false))
 				{
-					var hostValues = store.ParseHostValues();
-					foreach (var host in hostValues)
+					var allStores = _rs.Value.TableUntracked
+						.Expand(x => x.PrimaryStoreCurrency)
+						.Expand(x => x.PrimaryExchangeRateCurrency)
+						.OrderBy(x => x.DisplayOrder)
+						.ThenBy(x => x.Name)
+						.ToList();
+
+					// Detach all entities... you never know.
+					allStores.Each(x => _rs.Value.Context.DetachEntity(x));
+
+					entry.Stores = allStores.ToDictionary(x => x.Id);
+					entry.HostMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+					foreach (var store in allStores)
 					{
-						entry.HostMap[host] = store.Id;
+						var hostValues = store.ParseHostValues();
+						foreach (var host in hostValues)
+						{
+							entry.HostMap[host] = store.Id;
+						}
 					}
-				}
 
-				if (allStores.Count > 0)
-				{
-					entry.PrimaryStoreId = allStores.FirstOrDefault().Id;
+					if (allStores.Count > 0)
+					{
+						entry.PrimaryStoreId = allStores.FirstOrDefault().Id;
+					}
 				}
 
 				return entry;

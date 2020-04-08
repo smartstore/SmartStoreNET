@@ -54,6 +54,7 @@ namespace SmartStore.Web.Controllers
 		private readonly IStoreContext _storeContext;
         private readonly IShoppingCartService _shoppingCartService;
         private readonly IPictureService _pictureService;
+        private readonly IMediaService _mediaService;
         private readonly ILocalizationService _localizationService;
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeFormatter _productAttributeFormatter;
@@ -108,6 +109,7 @@ namespace SmartStore.Web.Controllers
 			IStoreContext storeContext,
             IShoppingCartService shoppingCartService, 
 			IPictureService pictureService,
+            IMediaService mediaService,
             ILocalizationService localizationService, 
             IProductAttributeService productAttributeService, 
 			IProductAttributeFormatter productAttributeFormatter,
@@ -156,6 +158,7 @@ namespace SmartStore.Web.Controllers
 			_storeContext = storeContext;
             _shoppingCartService = shoppingCartService;
             _pictureService = pictureService;
+            _mediaService = mediaService;
             _localizationService = localizationService;
             _productAttributeService = productAttributeService;
             _productAttributeFormatter = productAttributeFormatter;
@@ -1101,18 +1104,19 @@ namespace SmartStore.Web.Controllers
 								ProductSeName = childItem.Item.Product.GetSeName(),
 							};
 
-							bundleItemModel.ProductUrl = _productUrlHelper.GetProductUrl(
-								childItem.Item.ProductId, bundleItemModel.ProductSeName, childItem.Item.AttributesXml);
+							bundleItemModel.ProductUrl = _productUrlHelper.GetProductUrl(childItem.Item.ProductId, bundleItemModel.ProductSeName, childItem.Item.AttributesXml);
 
-							var itemPicture = _pictureService.GetPicturesByProductId(childItem.Item.ProductId, 1).FirstOrDefault();
-							if (itemPicture != null)
-								bundleItemModel.PictureUrl = _pictureService.GetUrl(itemPicture, 32);
+                            var file = _productService.GetProductPicturesByProductId(childItem.Item.ProductId, 1).FirstOrDefault();
+                            if (file != null)
+                            {
+                                bundleItemModel.PictureUrl = _mediaService.GetUrl(file.MediaFile, 32);
+                            }
 
-							cartItemModel.BundleItems.Add(bundleItemModel);
+                            cartItemModel.BundleItems.Add(bundleItemModel);
 						}
 					}
 
-                    //unit prices
+                    // Unit prices.
                     if (product.CallForPrice)
                     {
                         cartItemModel.UnitPrice = _localizationService.GetResource("Products.CallForPrice");
@@ -1128,7 +1132,7 @@ namespace SmartStore.Web.Controllers
                         cartItemModel.UnitPrice = _priceFormatter.FormatPrice(shoppingCartUnitPriceWithDiscount);
                     }
 
-                    //picture
+                    // Picture.
                     if (_shoppingCartSettings.ShowProductImagesInMiniShoppingCart)
                     {
                         cartItemModel.Picture = PrepareCartItemPictureModel(product, _mediaSettings.MiniCartThumbPictureSize, cartItemModel.ProductName, item.AttributesXml);

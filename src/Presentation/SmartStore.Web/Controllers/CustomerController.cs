@@ -69,6 +69,7 @@ namespace SmartStore.Web.Controllers
         private readonly IPaymentService _paymentService;
         private readonly IPriceFormatter _priceFormatter;
         private readonly IPictureService _pictureService;
+        private readonly IMediaService _mediaService;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
         private readonly IForumService _forumService;
         private readonly IShoppingCartService _shoppingCartService;
@@ -106,7 +107,9 @@ namespace SmartStore.Web.Controllers
             ICurrencyService currencyService,
             IPaymentService paymentService,
             IPriceFormatter priceFormatter,
-            IPictureService pictureService, INewsLetterSubscriptionService newsLetterSubscriptionService,
+            IPictureService pictureService,
+            IMediaService mediaService,
+            INewsLetterSubscriptionService newsLetterSubscriptionService,
             IForumService forumService, IShoppingCartService shoppingCartService,
             IOpenAuthenticationService openAuthenticationService, 
             IBackInStockSubscriptionService backInStockSubscriptionService, 
@@ -144,6 +147,7 @@ namespace SmartStore.Web.Controllers
             _paymentService = paymentService;
             _priceFormatter = priceFormatter;
             _pictureService = pictureService;
+            _mediaService = mediaService;
             _newsLetterSubscriptionService = newsLetterSubscriptionService;
             _forumService = forumService;
             _shoppingCartService = shoppingCartService;
@@ -1562,7 +1566,7 @@ namespace SmartStore.Web.Controllers
             }
 
 			var model = new CustomerAvatarEditModel();
-            model.Avatar = _workContext.CurrentCustomer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, null, true);
+            model.Avatar = _workContext.CurrentCustomer.ToAvatarModel(_genericAttributeService, _mediaService, _customerSettings, _mediaSettings, Url, null, true);
             model.MaxFileSize = Prettifier.BytesToString(_customerSettings.AvatarMaximumSizeBytes);
 
             return View(model);

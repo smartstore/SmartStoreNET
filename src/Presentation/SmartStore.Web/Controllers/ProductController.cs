@@ -219,8 +219,10 @@ namespace SmartStore.Web.Controllers
 				return model;
 			}, TimeSpan.FromHours(6));
 
-			if (cacheModel.Count == 0)
-				return Content("");
+            if (cacheModel.Count == 0)
+            {
+                return new EmptyResult();
+            }
 
 			return PartialView(cacheModel);
 		}
@@ -534,14 +536,14 @@ namespace SmartStore.Web.Controllers
 				if (!bundleItem.Item.HideThumbnail)
 				{
                     var file = _helper.GetAssignedMediaFile(m, null, bundleItem.Item.ProductId);
-                    dynamicThumbUrl = _mediaService.GetUrl(file.Id, _mediaSettings.BundledProductPictureSize, null, false);
+                    dynamicThumbUrl = _mediaService.GetUrl(file, _mediaSettings.BundledProductPictureSize, null, false);
 				}
 			}
 			else if (isAssociated)
 			{
                 // Update associated product thumbnail.
                 var file = _helper.GetAssignedMediaFile(m, null, productId);
-                dynamicThumbUrl = _mediaService.GetUrl(file.Id, _mediaSettings.AssociatedProductPictureSize, null, false);
+                dynamicThumbUrl = _mediaService.GetUrl(file, _mediaSettings.AssociatedProductPictureSize, null, false);
 			}
 			else if (product.ProductType != ProductType.BundledProduct)
 			{
@@ -558,8 +560,8 @@ namespace SmartStore.Web.Controllers
                 if (files.Count <= _catalogSettings.DisplayAllImagesNumber)
 				{
                     // All pictures rendered... only index is required.
-                    var picture = _helper.GetAssignedMediaFile(m, files);
-					galleryStartIndex = picture == null ? 0 : files.IndexOf(picture);
+                    var file = _helper.GetAssignedMediaFile(m, files);
+					galleryStartIndex = file == null ? 0 : files.IndexOf(file);
 				}
 				else
 				{

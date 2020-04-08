@@ -1,6 +1,4 @@
-﻿using System;
-using System.Web.Mvc;
-using SmartStore.Core.Domain.Media;
+﻿using System.Web.Mvc;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Media;
@@ -129,20 +127,6 @@ namespace SmartStore.Web.Framework
 		}
 
 		#region Media
-
-		public static string Picture(this UrlHelper urlHelper, int? pictureId, int thumbnailSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
-		{
-			// TODO: (mm) Remove later
-			var pictureService = EngineContext.Current.Resolve<IPictureService>();
-			return pictureService.GetUrl(pictureId.GetValueOrDefault(), thumbnailSize, fallbackType, host);
-		}
-
-		public static string Picture(this UrlHelper urlHelper, MediaFile picture, int thumbnailSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
-		{
-			// TODO: (mm) Remove later
-			var pictureService = EngineContext.Current.Resolve<IPictureService>();
-			return pictureService.GetUrl(picture, thumbnailSize, fallbackType, host);
-		}
 
 		public static string Media(this UrlHelper urlHelper, int? fileId, int thumbnailSize = 0, string host = null, bool doFallback = true)
 		{

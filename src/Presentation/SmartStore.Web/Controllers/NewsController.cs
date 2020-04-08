@@ -37,11 +37,10 @@ namespace SmartStore.Web.Controllers
     [RewriteUrl(SslRequirement.No)]
     public partial class NewsController : PublicControllerBase
     {
-        #region Fields
-
         private readonly ICommonServices _services;
         private readonly INewsService _newsService;
         private readonly IPictureService _pictureService;
+        private readonly IMediaService _mediaService;
         private readonly ICustomerContentService _customerContentService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly IWebHelper _webHelper;
@@ -57,14 +56,11 @@ namespace SmartStore.Web.Controllers
         private readonly CustomerSettings _customerSettings;
         private readonly CaptchaSettings _captchaSettings;
 
-        #endregion
-
-        #region Constructors
-
         public NewsController(
             ICommonServices services,
             INewsService newsService,
-			IPictureService pictureService, 
+			IPictureService pictureService,
+            IMediaService mediaService,
             ICustomerContentService customerContentService, 
             IDateTimeHelper dateTimeHelper,
             IWebHelper webHelper,
@@ -82,6 +78,7 @@ namespace SmartStore.Web.Controllers
             _services = services;
             _newsService = newsService;
             _pictureService = pictureService;
+            _mediaService = mediaService;
             _customerContentService = customerContentService;
             _dateTimeHelper = dateTimeHelper;
             _webHelper = webHelper;
@@ -97,8 +94,6 @@ namespace SmartStore.Web.Controllers
             _customerSettings = customerSettings;
             _captchaSettings = captchaSettings;
         }
-
-        #endregion
 
         #region Utilities
 
@@ -147,7 +142,7 @@ namespace SmartStore.Web.Controllers
                         AllowViewingProfiles = _customerSettings.AllowViewingProfiles && !isGuest,
                     };
 
-                    commentModel.Avatar = nc.Customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, commentModel.CustomerName);
+                    commentModel.Avatar = nc.Customer.ToAvatarModel(_genericAttributeService, _mediaService, _customerSettings, _mediaSettings, Url, commentModel.CustomerName);
 
                     model.Comments.Comments.Add(commentModel);
                 }

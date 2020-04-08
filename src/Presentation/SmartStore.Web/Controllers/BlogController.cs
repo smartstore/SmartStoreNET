@@ -44,6 +44,7 @@ namespace SmartStore.Web.Controllers
         private readonly ICommonServices _services;
         private readonly IBlogService _blogService;
         private readonly IPictureService _pictureService;
+        private readonly IMediaService _mediaService;
         private readonly ICustomerContentService _customerContentService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly IWebHelper _webHelper;
@@ -64,9 +65,11 @@ namespace SmartStore.Web.Controllers
 
         #region Constructors
 
-        public BlogController(ICommonServices services, 
+        public BlogController(
+            ICommonServices services, 
             IBlogService blogService,
             IPictureService pictureService,
+            IMediaService mediaService,
             ICustomerContentService customerContentService,
             IDateTimeHelper dateTimeHelper,
             IWebHelper webHelper,
@@ -85,6 +88,7 @@ namespace SmartStore.Web.Controllers
             _services = services;
             _blogService = blogService;
             _pictureService = pictureService;
+            _mediaService = mediaService;
             _customerContentService = customerContentService;
             _dateTimeHelper = dateTimeHelper;
             _webHelper = webHelper;
@@ -190,7 +194,7 @@ namespace SmartStore.Web.Controllers
 						AllowViewingProfiles = _customerSettings.AllowViewingProfiles && !isGuest
                     };
 
-                    commentModel.Avatar = bc.Customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, commentModel.CustomerName);
+                    commentModel.Avatar = bc.Customer.ToAvatarModel(_genericAttributeService, _mediaService, _customerSettings, _mediaSettings, Url, commentModel.CustomerName);
 
                     model.Comments.Comments.Add(commentModel);
                 }

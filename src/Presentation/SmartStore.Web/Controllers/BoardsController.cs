@@ -41,6 +41,7 @@ namespace SmartStore.Web.Controllers
     {
         private readonly IForumService _forumService;
         private readonly IPictureService _pictureService;
+        private readonly IMediaService _mediaService;
         private readonly ICountryService _countryService;
         private readonly IForumSearchService _forumSearchService;
         private readonly IGenericAttributeService _genericAttributeService;
@@ -60,6 +61,7 @@ namespace SmartStore.Web.Controllers
         public BoardsController(
             IForumService forumService,
             IPictureService pictureService,
+            IMediaService mediaService,
             ICountryService countryService,
             IForumSearchService forumSearchService,
             IGenericAttributeService genericAttributeService,
@@ -78,6 +80,7 @@ namespace SmartStore.Web.Controllers
         {
             _forumService = forumService;
             _pictureService = pictureService;
+            _mediaService = mediaService;
             _countryService = countryService;
             _forumSearchService = forumSearchService;
             _genericAttributeService = genericAttributeService;
@@ -123,7 +126,7 @@ namespace SmartStore.Web.Controllers
                 PostsPageSize = _forumSettings.PostsPageSize
             };
 
-            model.Avatar = customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, model.CustomerName);
+            model.Avatar = customer.ToAvatarModel(_genericAttributeService, _mediaService, _customerSettings, _mediaSettings, Url, model.CustomerName);
 
             if (topic.LastPostId != 0 && lastPosts.TryGetValue(topic.LastPostId, out var lastPost))
             {
@@ -735,7 +738,7 @@ namespace SmartStore.Web.Controllers
                     ? post.CreatedOnUtc.RelativeFormat(true, "f")
                     : _dateTimeHelper.ConvertToUserTime(post.CreatedOnUtc, DateTimeKind.Utc).ToString("f");
 
-                postModel.Avatar = post.Customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, postModel.CustomerName, true);
+                postModel.Avatar = post.Customer.ToAvatarModel(_genericAttributeService, _mediaService, _customerSettings, _mediaSettings, Url, postModel.CustomerName, true);
 
                 // Location.
                 postModel.ShowCustomersLocation = _customerSettings.ShowCustomersLocation;

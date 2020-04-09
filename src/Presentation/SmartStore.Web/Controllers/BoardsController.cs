@@ -40,7 +40,6 @@ namespace SmartStore.Web.Controllers
     public partial class BoardsController : PublicControllerBase
     {
         private readonly IForumService _forumService;
-        private readonly IPictureService _pictureService;
         private readonly IMediaService _mediaService;
         private readonly ICountryService _countryService;
         private readonly IForumSearchService _forumSearchService;
@@ -60,7 +59,6 @@ namespace SmartStore.Web.Controllers
 
         public BoardsController(
             IForumService forumService,
-            IPictureService pictureService,
             IMediaService mediaService,
             ICountryService countryService,
             IForumSearchService forumSearchService,
@@ -79,7 +77,6 @@ namespace SmartStore.Web.Controllers
             IForumSearchQueryFactory queryFactory)
         {
             _forumService = forumService;
-            _pictureService = pictureService;
             _mediaService = mediaService;
             _countryService = countryService;
             _forumSearchService = forumSearchService;

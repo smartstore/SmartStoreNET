@@ -915,7 +915,7 @@ namespace SmartStore.Services.Catalog.Importer
                                     var fileBuffer = _mediaService.FindEqualFile(stream.ToByteArray(), currentFiles.Select(x => x.MediaFile), out var _);
                                     if ((fileBuffer?.Length ?? 0) > 0)
                                     {
-                                        var path = string.Concat(SystemAlbumProvider.Products, "/", image.FileName);
+                                        var path = string.Concat(SystemAlbumProvider.Products, "/", image.FileName.ToValidFileName());
 
                                         if (_mediaService.CheckUniqueFileName(path, out var uniquePath))
                                         {

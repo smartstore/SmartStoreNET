@@ -39,7 +39,6 @@ namespace SmartStore.Web.Controllers
     {
         private readonly ICommonServices _services;
         private readonly INewsService _newsService;
-        private readonly IPictureService _pictureService;
         private readonly IMediaService _mediaService;
         private readonly ICustomerContentService _customerContentService;
         private readonly IDateTimeHelper _dateTimeHelper;
@@ -59,7 +58,6 @@ namespace SmartStore.Web.Controllers
         public NewsController(
             ICommonServices services,
             INewsService newsService,
-			IPictureService pictureService,
             IMediaService mediaService,
             ICustomerContentService customerContentService, 
             IDateTimeHelper dateTimeHelper,
@@ -77,7 +75,6 @@ namespace SmartStore.Web.Controllers
         {
             _services = services;
             _newsService = newsService;
-            _pictureService = pictureService;
             _mediaService = mediaService;
             _customerContentService = customerContentService;
             _dateTimeHelper = dateTimeHelper;
@@ -362,18 +359,18 @@ namespace SmartStore.Web.Controllers
         }
 
         [NonAction]
-        protected PictureModel PrepareNewsItemPictureModel(NewsItem newsItem, int? pictureId)
+        protected PictureModel PrepareNewsItemPictureModel(NewsItem newsItem, int? fileId)
         {
-            var pictureInfo = _pictureService.GetPictureInfo(pictureId);
+            var file = _mediaService.GetFileById(fileId ?? 0);
 
             var pictureModel = new PictureModel
             {
                 PictureId = newsItem.MediaFileId.GetValueOrDefault(),
                 Size = 512,
-                ImageUrl = _pictureService.GetUrl(pictureInfo, 512, false),
-                FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, false),
-                FullSizeImageWidth = pictureInfo?.Width,
-                FullSizeImageHeight = pictureInfo?.Height,
+                ImageUrl = _mediaService.GetUrl(file, 512, null, false),
+                FullSizeImageUrl = _mediaService.GetUrl(file, 0, null, false),
+                FullSizeImageWidth = file?.Dimensions.Width,
+                FullSizeImageHeight = file?.Dimensions.Height,
                 Title = newsItem.Title,
                 AlternateText = newsItem.Title
             };

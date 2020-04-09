@@ -167,7 +167,7 @@ namespace SmartStore.Services.Media
         {
             Guard.NotNull(download, nameof(download));
 
-            var path = string.Concat(SystemAlbumProvider.Downloads, "/", fileName);
+            var path = string.Concat(SystemAlbumProvider.Downloads, "/", fileName.ToValidFileName());
 
             if (_mediaService.CheckUniqueFileName(path, out var uniquePath))
             {

@@ -68,7 +68,6 @@ namespace SmartStore.Web.Controllers
         private readonly ICurrencyService _currencyService;
         private readonly IPaymentService _paymentService;
         private readonly IPriceFormatter _priceFormatter;
-        private readonly IPictureService _pictureService;
         private readonly IMediaService _mediaService;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
         private readonly IForumService _forumService;
@@ -92,33 +91,43 @@ namespace SmartStore.Web.Controllers
 		public CustomerController(
             IAuthenticationService authenticationService,
             IDateTimeHelper dateTimeHelper,
-            DateTimeSettings dateTimeSettings, TaxSettings taxSettings,
+            DateTimeSettings dateTimeSettings, 
+            TaxSettings taxSettings,
             ILocalizationService localizationService,
-			IWorkContext workContext, IStoreContext storeContext,
+			IWorkContext workContext, 
+            IStoreContext storeContext,
 			ICustomerService customerService,
             IGenericAttributeService genericAttributeService,
             ICustomerRegistrationService customerRegistrationService,
-            ITaxService taxService, RewardPointsSettings rewardPointsSettings,
-            CustomerSettings customerSettings,AddressSettings addressSettings, ForumSettings forumSettings,
-            OrderSettings orderSettings, IAddressService addressService,
-            ICountryService countryService, IStateProvinceService stateProvinceService,
+            ITaxService taxService, 
+            RewardPointsSettings rewardPointsSettings,
+            CustomerSettings customerSettings,
+            AddressSettings addressSettings, 
+            ForumSettings forumSettings,
+            OrderSettings orderSettings, 
+            IAddressService addressService,
+            ICountryService countryService, 
+            IStateProvinceService stateProvinceService,
             IOrderTotalCalculationService orderTotalCalculationService,
-            IOrderProcessingService orderProcessingService, IOrderService orderService,
+            IOrderProcessingService orderProcessingService,
+            IOrderService orderService,
             ICurrencyService currencyService,
             IPaymentService paymentService,
             IPriceFormatter priceFormatter,
-            IPictureService pictureService,
             IMediaService mediaService,
             INewsLetterSubscriptionService newsLetterSubscriptionService,
-            IForumService forumService, IShoppingCartService shoppingCartService,
+            IForumService forumService, 
+            IShoppingCartService shoppingCartService,
             IOpenAuthenticationService openAuthenticationService, 
             IBackInStockSubscriptionService backInStockSubscriptionService, 
-            IDownloadService downloadService, IWebHelper webHelper,
+            IDownloadService downloadService,
+            IWebHelper webHelper,
             ICustomerActivityService customerActivityService, 
 			ProductUrlHelper productUrlHelper,
 			MediaSettings mediaSettings,
             LocalizationSettings localizationSettings,
-            CaptchaSettings captchaSettings, ExternalAuthenticationSettings externalAuthenticationSettings,
+            CaptchaSettings captchaSettings, 
+            ExternalAuthenticationSettings externalAuthenticationSettings,
 			PluginMediator pluginMediator)
         {
             _authenticationService = authenticationService;
@@ -146,7 +155,6 @@ namespace SmartStore.Web.Controllers
             _currencyService = currencyService;
             _paymentService = paymentService;
             _priceFormatter = priceFormatter;
-            _pictureService = pictureService;
             _mediaService = mediaService;
             _newsLetterSubscriptionService = newsLetterSubscriptionService;
             _forumService = forumService;
@@ -1590,20 +1598,28 @@ namespace SmartStore.Web.Controllers
 						throw new SmartException(T("Account.Avatar.MaximumUploadedFileSize", Prettifier.BytesToString(_customerSettings.AvatarMaximumSizeBytes)));
 					}
 
-					var customerAvatar = _pictureService.GetPictureById(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId));
-					if (customerAvatar != null)
-					{
-						// Remove from cache.
-						_pictureService.DeletePicture(customerAvatar);
-					}
+                    var oldAvatar = _mediaService.GetFileById(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId));
+                    if (oldAvatar != null)
+                    {
+                        _mediaService.DeleteFile(oldAvatar.File, true);
+                    }
 
-					customerAvatar = _pictureService.InsertPicture(uploadedFile.Buffer, uploadedFile.ContentType, null, false, album: "customer");
+                    var path = string.Concat(SystemAlbumProvider.Customers, "/", uploadedFile.FileName.ToValidFileName());
 
-					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, customerAvatar.Id);
+                    if (_mediaService.CheckUniqueFileName(path, out var uniquePath))
+                    {
+                        path = uniquePath;
+                    }
 
-					avatarUrl = _pictureService.GetUrl(customerAvatar.Id, _mediaSettings.AvatarPictureSize, false);
-					success = avatarUrl.HasValue();
-				}
+                    var newAvatar = _mediaService.SaveFile(path, uploadedFile.Stream, false, false);
+                    if (newAvatar != null)
+                    {
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, newAvatar.Id);
+
+                        avatarUrl = _mediaService.GetUrl(newAvatar, _mediaSettings.AvatarPictureSize, null, false);
+                        success = avatarUrl.HasValue();
+                    }
+                }
 			}
 
 			return Json(new { success, avatarUrl });
@@ -1616,11 +1632,11 @@ namespace SmartStore.Web.Controllers
 
             if (IsCurrentUserRegistered() && _customerSettings.AllowCustomersToUploadAvatars)
 			{
-				var customerAvatar = _pictureService.GetPictureById(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId));
-				if (customerAvatar != null)
-				{
-					_pictureService.DeletePicture(customerAvatar);
-				}
+                var avatar = _mediaService.GetFileById(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId));
+                if (avatar != null)
+                {
+                    _mediaService.DeleteFile(avatar.File, true);
+                }
 
 				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, 0);
                 _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarColor, (string)null);

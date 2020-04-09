@@ -4,13 +4,17 @@ using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Web.Mvc;
 using System.Web.Routing;
+using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Security;
+using SmartStore.Services;
 using SmartStore.Services.Blogs;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -29,10 +33,6 @@ using SmartStore.Web.Framework.Seo;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Blogs;
 using SmartStore.Web.Models.Common;
-using SmartStore.Core.Domain.Seo;
-using SmartStore.ComponentModel;
-using SmartStore.Core.Security;
-using SmartStore.Services;
 using SmartStore.Web.Models.Media;
 
 namespace SmartStore.Web.Controllers
@@ -40,10 +40,8 @@ namespace SmartStore.Web.Controllers
     [RewriteUrl(SslRequirement.No)]
     public partial class BlogController : PublicControllerBase
     {
-        #region Fields
         private readonly ICommonServices _services;
         private readonly IBlogService _blogService;
-        private readonly IPictureService _pictureService;
         private readonly IMediaService _mediaService;
         private readonly ICustomerContentService _customerContentService;
         private readonly IDateTimeHelper _dateTimeHelper;
@@ -61,14 +59,9 @@ namespace SmartStore.Web.Controllers
         private readonly CaptchaSettings _captchaSettings;
         private readonly SeoSettings _seoSettings;
 
-        #endregion
-
-        #region Constructors
-
         public BlogController(
             ICommonServices services, 
             IBlogService blogService,
-            IPictureService pictureService,
             IMediaService mediaService,
             ICustomerContentService customerContentService,
             IDateTimeHelper dateTimeHelper,
@@ -87,7 +80,6 @@ namespace SmartStore.Web.Controllers
         {
             _services = services;
             _blogService = blogService;
-            _pictureService = pictureService;
             _mediaService = mediaService;
             _customerContentService = customerContentService;
             _dateTimeHelper = dateTimeHelper;
@@ -106,22 +98,21 @@ namespace SmartStore.Web.Controllers
             _seoSettings = seoSettings;
         }
 
-        #endregion
-
         #region Utilities
 
         [NonAction]
-        protected PictureModel PrepareBlogPostPictureModel(BlogPost blogPost, int? pictureId)
+        protected PictureModel PrepareBlogPostPictureModel(BlogPost blogPost, int? fileId)
         {
-            var pictureInfo = _pictureService.GetPictureInfo(pictureId);
+            var file = _mediaService.GetFileById(fileId ?? 0);
 
-            var pictureModel = new PictureModel {
+            var pictureModel = new PictureModel
+            {
                 PictureId = blogPost.MediaFileId.GetValueOrDefault(),
                 Size = 512,
-                ImageUrl = _pictureService.GetUrl(pictureInfo, 512, false),
-                FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, false),
-                FullSizeImageWidth = pictureInfo?.Width,
-                FullSizeImageHeight = pictureInfo?.Height,
+                ImageUrl = _mediaService.GetUrl(file, 512, null, false),
+                FullSizeImageUrl = _mediaService.GetUrl(file, 0, null, false),
+                FullSizeImageWidth = file?.Dimensions.Width,
+                FullSizeImageHeight = file?.Dimensions.Height,
                 Title = blogPost.Title,
                 AlternateText = blogPost.Title
             };

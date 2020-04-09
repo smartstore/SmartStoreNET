@@ -305,7 +305,6 @@ namespace SmartStore.Web.Controllers
 					{
 						BatchContext = batchContext,
 						CachedManufacturerModels = cachedManufacturerModels,
-						PictureInfos = _pictureService.GetPictureInfos(products),
 						Currency = currency,
 						LegalInfo = legalInfo,
 						Model = model,
@@ -319,7 +318,18 @@ namespace SmartStore.Web.Controllers
 						TaxDisplayType = taxDisplayType
 					};
 
-					foreach (var product in products)
+                    if (settings.MapPictures)
+                    {
+                        var fileIds = products
+                            .Select(x => x.MainPictureId ?? 0)
+                            .Where(x => x != 0)
+                            .Distinct()
+                            .ToArray();
+
+                        mapItemContext.MediaFiles = _mediaService.GetFilesByIds(fileIds).ToDictionarySafe(x => x.Id);
+                    }
+
+                    foreach (var product in products)
 					{
 						MapProductSummaryItem(product, mapItemContext);
 					}
@@ -380,10 +390,7 @@ namespace SmartStore.Web.Controllers
 			// (Color) Attributes
 			if (settings.MapColorAttributes || settings.MapAttributes)
 			{
-				#region Map (color) attributes
-
 				var attributes = ctx.BatchContext.Attributes.GetOrLoad(contextProduct.Id);
-
 				var cachedAttributeNames = new Dictionary<int, LocalizedValue<string>>();
 
 				// Color squares
@@ -439,32 +446,26 @@ namespace SmartStore.Web.Controllers
 						});
 					}
 				}
-
-				#endregion
 			}
 
 			// Picture
 			if (settings.MapPictures)
 			{
-				#region Map product picture
-
-				var pictureInfo = ctx.PictureInfos.Get(product.MainPictureId.GetValueOrDefault());
-				var fallbackType = _catalogSettings.HideProductDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
 				var thumbSize = model.ThumbSize ?? _mediaSettings.ProductThumbPictureSize;
 
-				item.Picture = new PictureModel
+                ctx.MediaFiles.TryGetValue(product.MainPictureId ?? 0, out var file);
+
+                item.Picture = new PictureModel
 				{
-					PictureId = pictureInfo?.Id ?? 0,
+					PictureId = file?.Id ?? 0,
 					Size = thumbSize,
-					ImageUrl = _pictureService.GetUrl(pictureInfo, thumbSize, fallbackType),
-					FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback),
-					FullSizeImageWidth = pictureInfo?.Width,
-					FullSizeImageHeight = pictureInfo?.Height,
+					ImageUrl = _mediaService.GetUrl(file, thumbSize, null, !_catalogSettings.HideProductDefaultPictures),
+					FullSizeImageUrl = _mediaService.GetUrl(file, 0, null, !_catalogSettings.HideProductDefaultPictures),
+					FullSizeImageWidth = file?.Dimensions.Width,
+					FullSizeImageHeight = file?.Dimensions.Height,
 					Title = string.Format(ctx.Resources["Media.Product.ImageLinkTitleFormat"], item.Name),
 					AlternateText = string.Format(ctx.Resources["Media.Product.ImageAlternateTextFormat"], item.Name),
 				};
-
-				#endregion
 			}
 
 			// Manufacturers
@@ -500,8 +501,6 @@ namespace SmartStore.Web.Controllers
 			item.HideDeliveryTime = (product.ProductType == ProductType.GroupedProduct);
 			if (model.ShowDeliveryTimes && !item.HideDeliveryTime)
 			{
-				#region Delivery Time
-
 				// We cannot include ManageInventoryMethod.ManageStockByAttributes because it's only functional with MergeWithCombination.
 				//item.StockAvailablity = contextProduct.FormatStockMessage(_localizationService);
 				//item.DisplayDeliveryTimeAccordingToStock = contextProduct.DisplayDeliveryTimeAccordingToStock(_catalogSettings);
@@ -545,8 +544,6 @@ namespace SmartStore.Web.Controllers
                             : T("Products.Availability.Backordering");
 					}
 				}
-
-				#endregion
 			}
 			
 			item.LegalInfo = ctx.LegalInfo;
@@ -783,16 +780,21 @@ namespace SmartStore.Web.Controllers
 			});
 		}
 
-		private class MapProductSummaryItemContext
-		{
-			public ProductSummaryModel Model { get; set; }
+        private class MapProductSummaryItemContext
+        {
+            public MapProductSummaryItemContext()
+            {
+                MediaFiles = new Dictionary<int, MediaFileInfo>();
+            }
+
+            public ProductSummaryModel Model { get; set; }
 			public ProductSummaryMappingSettings Settings { get; set; }
 			public ProductExportContext BatchContext { get; set; }
             public ProductExportContext AssociatedProductBatchContext { get; set; }
             public Multimap<int, Product> GroupedProducts { get; set; }
 			public Dictionary<int, ManufacturerOverviewModel> CachedManufacturerModels { get; set; }
-			public IDictionary<int, PictureInfo> PictureInfos { get; set; }
-			public Dictionary<string, LocalizedString> Resources { get; set; }
+            public Dictionary<int, MediaFileInfo> MediaFiles { get; set; }
+            public Dictionary<string, LocalizedString> Resources { get; set; }
 			public string LegalInfo { get; set; }
 			public Customer Customer { get; set; }
 			public Store Store { get; set; }

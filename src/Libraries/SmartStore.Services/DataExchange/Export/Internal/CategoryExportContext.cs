@@ -31,7 +31,10 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 			else
 			{
 				_categoryIds = new List<int>(categories.Select(x => x.Id));
-				_fileIds = new List<int>(categories.Where(x => (x.MediaFileId ?? 0) != 0).Select(x => x.MediaFileId ?? 0));
+				_fileIds = categories.Select(x => x.MediaFileId ?? 0)
+                    .Where(x => x != 0)
+                    .Distinct()
+                    .ToList();
 			}
 
 			_funcProductCategories = productCategories;

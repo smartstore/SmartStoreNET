@@ -190,9 +190,10 @@ namespace SmartStore.Web.Controllers
                         var fileIds = products
                             .Select(x => x.MainPictureId ?? 0)
                             .Where(x => x != 0)
+                            .Distinct()
                             .ToArray();
 
-                        var files = _mediaService.GetFilesByIds(fileIds).ToDictionary(x => x.Id);
+                        var files = _mediaService.GetFilesByIds(fileIds).ToDictionarySafe(x => x.Id);
 
                         model.SearchResult = products
                             .Select(x =>
@@ -248,9 +249,10 @@ namespace SmartStore.Web.Controllers
                         var fileIds = categories
                             .Select(x => x.MediaFileId ?? 0)
                             .Where(x => x != 0)
+                            .Distinct()
                             .ToArray();
 
-                        var files = _mediaService.GetFilesByIds(fileIds).ToDictionary(x => x.Id);
+                        var files = _mediaService.GetFilesByIds(fileIds).ToDictionarySafe(x => x.Id);
 
                         model.SearchResult = categories
                             .Select(x =>
@@ -288,9 +290,10 @@ namespace SmartStore.Web.Controllers
                         var fileIds = manufacturers
                             .Select(x => x.MediaFileId ?? 0)
                             .Where(x => x != 0)
+                            .Distinct()
                             .ToArray();
 
-                        var files = _mediaService.GetFilesByIds(fileIds).ToDictionary(x => x.Id);
+                        var files = _mediaService.GetFilesByIds(fileIds).ToDictionarySafe(x => x.Id);
 
                         model.SearchResult = manufacturers
                             .Select(x =>

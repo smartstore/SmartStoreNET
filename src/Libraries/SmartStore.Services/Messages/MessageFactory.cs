@@ -275,6 +275,7 @@ namespace SmartStore.Services.Messages
 				})
 				.Where(x => x.HasValue)
 				.Select(x => x.Value)
+                .Distinct()
 				.ToArray();
 
 			if (fileIds.Any())

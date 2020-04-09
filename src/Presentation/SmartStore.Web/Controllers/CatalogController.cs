@@ -8,7 +8,6 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Security;
-using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
@@ -42,6 +41,7 @@ namespace SmartStore.Web.Controllers
         private readonly IAclService _aclService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly ICatalogSearchService _catalogSearchService;
+        private readonly IMediaService _mediaService;
 		private readonly MediaSettings _mediaSettings;
         private readonly CatalogSettings _catalogSettings;
 		private readonly ICompareProductsService _compareProductsService;
@@ -62,7 +62,8 @@ namespace SmartStore.Web.Controllers
 			IAclService aclService,
 			IStoreMappingService storeMappingService,
 			ICatalogSearchService catalogSearchService,
-			MediaSettings mediaSettings, 
+            IMediaService mediaService,
+            MediaSettings mediaSettings, 
 			CatalogSettings catalogSettings,
             CatalogHelper helper,
 			IBreadcrumb breadcrumb)
@@ -80,6 +81,7 @@ namespace SmartStore.Web.Controllers
             _aclService = aclService;
 			_storeMappingService = storeMappingService;
 			_catalogSearchService = catalogSearchService;
+            _mediaService = mediaService;
             _mediaSettings = mediaSettings;
             _catalogSettings = catalogSettings;
             _helper = helper;
@@ -363,10 +365,18 @@ namespace SmartStore.Web.Controllers
 
             // TODO: result isn't cached, DO IT!
             var manufacturers = _manufacturerService.GetAllManufacturers(null, Services.StoreContext.CurrentStore.Id);
+
+            var fileIds = manufacturers
+                .Select(x => x.MediaFileId ?? 0)
+                .Where(x => x != 0)
+                .Distinct()
+                .ToArray();
+            var files = _mediaService.GetFilesByIds(fileIds).ToDictionarySafe(x => x.Id);
+
             foreach (var manufacturer in manufacturers)
             {
                 var manuModel = manufacturer.ToModel();
-                manuModel.PictureModel = _helper.PrepareManufacturerPictureModel(manufacturer, manuModel.Name);
+                manuModel.PictureModel = _helper.PrepareManufacturerPictureModel(manufacturer, manuModel.Name, files);
                 model.Add(manuModel);
             }
 

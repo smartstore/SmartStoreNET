@@ -992,6 +992,8 @@
     <Content Include="Content\vendors\select2\js\select2.js" />
     <Content Include="Content\vendors\select2\js\select2.min.js" />
     <Content Include="Content\vendors\slick\slick.js" />
+    <Content Include="Content\vendors\vue\vue.min.js" />
+    <Content Include="Content\vendors\vue\vue.js" />
     <Content Include="Content\vendors\x-editable\bootstrap-editable.css" />
     <Content Include="Content\vendors\x-editable\bootstrap-editable.js" />
     <Content Include="Content\vendors\drift\LICENSE" />

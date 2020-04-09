@@ -38,6 +38,7 @@ namespace SmartStore.Services.Media.Migration
         public MediaMigrator(
             ICommonServices services, 
             IProviderManager providerManager,
+            Func<IMediaStorageProvider> mediaStorageProvider,
             IMediaTypeResolver mediaTypeResolver,
             IAlbumRegistry albumRegistry,
             IFolderService folderService,
@@ -53,9 +54,7 @@ namespace SmartStore.Services.Media.Migration
             _mediaTracker = mediaTracker;
             _mediaFileSystem = mediaFileSystem;
             _imageCache = imageCache;
-
-            var storageProviderSystemName = _services.Settings.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
-            _mediaStorageProvider = _providerManager.GetProvider<IMediaStorageProvider>(storageProviderSystemName).Value;
+            _mediaStorageProvider = mediaStorageProvider();
             _isFsProvider = _mediaStorageProvider is FileSystemMediaStorageProvider;
         }
 

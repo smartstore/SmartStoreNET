@@ -23,6 +23,7 @@ namespace SmartStore.Services.Media
             return service.GetUrl(service.GetFileById(fileId ?? 0), query, host, doFallback);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetUrl(this IMediaService service, MediaFile file, int thumbnailSize, string host = null, bool doFallback = true)
         {
             ProcessImageQuery query = thumbnailSize > 0

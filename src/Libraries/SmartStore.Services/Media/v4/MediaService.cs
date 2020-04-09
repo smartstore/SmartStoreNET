@@ -43,7 +43,7 @@ namespace SmartStore.Services.Media
             MediaSettings mediaSettings,
             IImageProcessor imageProcessor,
             IImageCache imageCache,
-            IMediaStorageProvider storageProvider,
+            Func<IMediaStorageProvider> storageProvider,
             MediaHelper helper)
         {
             _fileRepo = fileRepo;
@@ -55,7 +55,7 @@ namespace SmartStore.Services.Media
             _mediaSettings = mediaSettings;
             _imageProcessor = imageProcessor;
             _imageCache = imageCache;
-            _storageProvider = storageProvider;
+            _storageProvider = storageProvider();
             _helper = helper;
         }
 

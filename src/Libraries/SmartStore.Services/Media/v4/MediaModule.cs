@@ -29,7 +29,6 @@ namespace SmartStore.Services.Media
             builder.RegisterType<FolderService>().As<IFolderService>().InstancePerRequest();
             builder.RegisterType<MediaTracker>().As<IMediaTracker>().InstancePerRequest();
             builder.RegisterType<MediaSearcher>().As<IMediaSearcher>().InstancePerRequest();
-            builder.Register(MediaStorageProviderFactory).As<IMediaStorageProvider>().InstancePerRequest();
             builder.RegisterType<MediaService>().As<IMediaService>().InstancePerRequest();
 
             builder.RegisterType<DownloadService>().As<IDownloadService>().InstancePerRequest();
@@ -37,6 +36,9 @@ namespace SmartStore.Services.Media
             builder.RegisterType<DefaultImageProcessor>().As<IImageProcessor>().InstancePerRequest();
             builder.RegisterType<PictureService>().As<IPictureService>().InstancePerRequest();
             builder.RegisterType<MediaMover>().As<IMediaMover>().InstancePerRequest();
+
+            // Register factory for currently active media storage provider
+            builder.Register(MediaStorageProviderFactory);
 
             // Register all album providers
             var albumProviderTypes = _typeFinder.FindClassesOfType<IAlbumProvider>(ignoreInactivePlugins: true);
@@ -51,10 +53,11 @@ namespace SmartStore.Services.Media
             builder.RegisterType<PdfHandler>().As<IMediaHandler>().InstancePerRequest();
         }
 
-        private static IMediaStorageProvider MediaStorageProviderFactory(IComponentContext ctx)
+        private static Func<IMediaStorageProvider> MediaStorageProviderFactory(IComponentContext c)
         {
-            var systemName = ctx.Resolve<ISettingService>().GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
-            return ctx.Resolve<IProviderManager>().GetProvider<IMediaStorageProvider>(systemName).Value;
+            var systemName = c.Resolve<ISettingService>().GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
+            var provider = c.Resolve<IProviderManager>().GetProvider<IMediaStorageProvider>(systemName);
+            return () => provider.Value;
         }
     }
 }

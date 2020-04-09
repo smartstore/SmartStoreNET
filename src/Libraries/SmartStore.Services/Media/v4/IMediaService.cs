@@ -84,6 +84,7 @@ namespace SmartStore.Services.Media
         MediaFolderInfo CopyFolder(string path, string destinationPath, DuplicateEntryHandling dupeEntryHandling = DuplicateEntryHandling.Skip);
         void DeleteFolder(string path, FileHandling fileHandling = FileHandling.SoftDelete);
 
+        MediaFileInfo ConvertMediaFile(MediaFile file);
         string GetUrl(MediaFileInfo file, ProcessImageQuery query, string host = null, bool doFallback = true);
 
         public MediaFileInfo ConvertMediaFile(MediaFile file);

@@ -10,6 +10,11 @@ namespace SmartStore.Web.Infrastructure
 	{
 		public void RegisterBundles(BundleCollection bundles)
 		{
+			/* Vue
+			-----------------------------------------------------*/
+			bundles.Add(new CustomScriptBundle("~/bundles/vue").Include(
+				"~/Content/vendors/vue/vue.js"));
+
 			/* Image Gallery
 			-----------------------------------------------------*/
 			bundles.Add(new CustomScriptBundle("~/bundles/smart-gallery").Include(

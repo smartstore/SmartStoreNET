@@ -49,6 +49,7 @@ namespace SmartStore.Services.Media
         private readonly IRepository<ProductMediaFile> _productPictureRepository;
 		private readonly IAlbumRegistry _albumRegistry;
 		private readonly IMediaTypeResolver _mediaTypeResolver;
+		private readonly IMediaUrlGenerator _mediaUrlGenerator;
 		private readonly ISettingService _settingService;
         private readonly IEventPublisher _eventPublisher;
         private readonly MediaSettings _mediaSettings;
@@ -75,6 +76,7 @@ namespace SmartStore.Services.Media
             IRepository<ProductMediaFile> productPictureRepository,
 			IAlbumRegistry albumRegistry,
 			IMediaTypeResolver mediaTypeResolver,
+			IMediaUrlGenerator mediaUrlGenerator,
 			ISettingService settingService, 
             IEventPublisher eventPublisher,
             MediaSettings mediaSettings,
@@ -89,6 +91,7 @@ namespace SmartStore.Services.Media
             _productPictureRepository = productPictureRepository;
 			_albumRegistry = albumRegistry;
 			_mediaTypeResolver = mediaTypeResolver;
+			_mediaUrlGenerator = mediaUrlGenerator;
             _settingService = settingService;
             _eventPublisher = eventPublisher;
             _mediaSettings = mediaSettings;

@@ -303,6 +303,24 @@ body {
     }
 }
 
+.spa-layout {
+    height: 100%;
+    overflow: hidden;
+
+    #page {
+        height: 100%;
+    }
+
+    .page-main {
+        height: 100%;
+        grid-template-columns: 1fr minmax(380px, 20%);
+        grid-template-rows: 72px 72px calc(100vh - 144px);
+    }
+
+    .cph {
+        height: 100%;
+    }
+}
 
 //
 // Minimal admin layout

@@ -18,21 +18,20 @@ using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.OfflinePayment.Controllers
 {
-
     public class OfflinePaymentController : PaymentControllerBase
     {
 		private readonly IComponentContext _ctx;
 		private readonly HttpContextBase _httpContext;
-		private readonly IPictureService _pictureService;
+        private readonly IMediaService _mediaService;
 
-		public OfflinePaymentController(
+        public OfflinePaymentController(
 			HttpContextBase httpContext,
 			IComponentContext ctx,
-			IPictureService pictureService)
+            IMediaService mediaService)
         {
 			_httpContext = httpContext;
 			_ctx = ctx;
-			_pictureService = pictureService;
+            _mediaService = mediaService;
 		}
 
 		#region Global
@@ -114,11 +113,13 @@ namespace SmartStore.OfflinePayment.Controllers
 			where TSetting : PaymentSettingsBase, new()
 		{
 			var settings = _ctx.Resolve<TSetting>();
-			var model = new TModel();
-			model.DescriptionText = GetLocalizedText(settings.DescriptionText);
-			model.ThumbnailUrl = _pictureService.GetUrl(settings.ThumbnailPictureId, 120, false); 
+            var model = new TModel
+            {
+                DescriptionText = GetLocalizedText(settings.DescriptionText),
+                ThumbnailUrl = _mediaService.GetUrl(settings.ThumbnailPictureId, 120, null, false)
+            };
 
-			if (fn != null)
+            if (fn != null)
 			{
 				fn(model, settings);
 			}

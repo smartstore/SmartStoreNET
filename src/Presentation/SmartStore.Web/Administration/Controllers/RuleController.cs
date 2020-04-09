@@ -42,7 +42,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IEnumerable<IRuleOptionsProvider> _ruleOptionsProviders;
         private readonly Lazy<IPaymentService> _paymentService;
         private readonly Lazy<PluginMediator> _pluginMediator;
-        private readonly Lazy<IPictureService> _pictureService;
+        private readonly Lazy<IMediaService> _mediaService;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly Lazy<CustomerSettings> _customerSettings;
         private readonly Lazy<MediaSettings> _mediaSettings;
@@ -55,7 +55,7 @@ namespace SmartStore.Admin.Controllers
             IEnumerable<IRuleOptionsProvider> ruleOptionsProviders,
             Lazy<IPaymentService> paymentService,
             Lazy<PluginMediator> pluginMediator,
-            Lazy<IPictureService> pictureService,
+            Lazy<IMediaService> mediaService,
             AdminAreaSettings adminAreaSettings,
             Lazy<CustomerSettings> customerSettings,
             Lazy<MediaSettings> mediaSettings)
@@ -67,7 +67,7 @@ namespace SmartStore.Admin.Controllers
             _ruleOptionsProviders = ruleOptionsProviders;
             _paymentService = paymentService;
             _pluginMediator = pluginMediator;
-            _pictureService = pictureService;
+            _mediaService = mediaService;
             _adminAreaSettings = adminAreaSettings;
             _customerSettings = customerSettings;
             _mediaSettings = mediaSettings;
@@ -322,7 +322,13 @@ namespace SmartStore.Admin.Controllers
                         var provider = _ruleProvider(entity.Scope) as IProductRuleProvider;
                         var expression = _ruleFactory.CreateExpressionGroup(entity, provider, true) as SearchFilterExpression;
                         var searchResult = provider.Search(new[] { expression }, command.Page - 1, command.PageSize);
-                        var pictureInfos = _pictureService.Value.GetPictureInfos(searchResult.Hits);
+
+                        var fileIds = searchResult.Hits
+                            .Select(x => x.MainPictureId ?? 0)
+                            .Where(x => x != 0)
+                            .Distinct()
+                            .ToArray();
+                        var files = _mediaService.Value.GetFilesByIds(fileIds).ToDictionarySafe(x => x.Id);
 
                         var model = new GridModel<ProductModel>
                         {
@@ -346,9 +352,10 @@ namespace SmartStore.Admin.Controllers
                                 CreatedOn = Services.DateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc)
                             };
 
-                            var defaultPicture = pictureInfos.Get(x.MainPictureId.GetValueOrDefault());
-                            productModel.PictureThumbnailUrl = _pictureService.Value.GetUrl(defaultPicture, _mediaSettings.Value.CartThumbPictureSize, true);
-                            productModel.NoThumb = defaultPicture == null;
+                            files.TryGetValue(x.MainPictureId ?? 0, out var file);
+
+                            productModel.PictureThumbnailUrl = _mediaService.Value.GetUrl(file, _mediaSettings.Value.CartThumbPictureSize, null, true);
+                            productModel.NoThumb = file == null;
 
                             return productModel;
                         })

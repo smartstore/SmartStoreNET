@@ -40,7 +40,7 @@ namespace SmartStore.Web.Controllers
         private readonly IPaymentService _paymentService;
         private readonly ICurrencyService _currencyService;
         private readonly IQuantityUnitService _quantityUnitService;
-        private readonly IPictureService _pictureService;
+        private readonly IMediaService _mediaService;
         private readonly IProductService _productService;
         private readonly IEncryptionService _encryptionService;
 
@@ -56,7 +56,7 @@ namespace SmartStore.Web.Controllers
             IPaymentService paymentService,
             ICurrencyService currencyService,
             IQuantityUnitService quantityUnitService,
-            IPictureService pictureService,
+            IMediaService mediaService,
             IProductService productService,
             IEncryptionService encryptionService)
         {
@@ -71,14 +71,12 @@ namespace SmartStore.Web.Controllers
             _paymentService = paymentService;
             _currencyService = currencyService;
             _quantityUnitService = quantityUnitService;
-            _pictureService = pictureService;
+            _mediaService = mediaService;
             _productService = productService;
             _encryptionService = encryptionService;
-
-            T = NullLocalizer.Instance;
         }
 
-        public Localizer T { get; set; }
+        public Localizer T { get; set; } = NullLocalizer.Instance;
 
         public static string OrderDetailsPrintViewPath
         {
@@ -94,35 +92,39 @@ namespace SmartStore.Web.Controllers
         {
             Guard.NotNull(product, nameof(product));
 
-            MediaFile picture = null;
+            MediaFile file = null;
             var combination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, attributesXml);
 
             if (combination != null)
             {
-                var picturesIds = combination.GetAssignedMediaIds();
-                if (picturesIds != null && picturesIds.Length > 0)
+                var mediaIds = combination.GetAssignedMediaIds();
+                if (mediaIds != null && mediaIds.Length > 0)
                 {
-                    picture = _pictureService.GetPictureById(picturesIds[0]);
+                    file = _mediaService.GetFileById(mediaIds[0])?.File;
                 }
             }
 
             // No attribute combination image, then load product picture
-            if (picture == null)
+            if (file == null)
             {
-                picture = _pictureService.GetPicturesByProductId(product.Id, 1).FirstOrDefault();
+                file = _productService.GetProductPicturesByProductId(product.Id, 1)
+                    .Select(x => x.MediaFile)
+                    .FirstOrDefault();
             }
 
-            if (picture == null && product.Visibility == ProductVisibility.Hidden && product.ParentGroupedProductId > 0)
+            if (file == null && product.Visibility == ProductVisibility.Hidden && product.ParentGroupedProductId > 0)
             {
                 // Let's check whether this product has some parent "grouped" product
-                picture = _pictureService.GetPicturesByProductId(product.ParentGroupedProductId, 1).FirstOrDefault();
+                file = _productService.GetProductPicturesByProductId(product.ParentGroupedProductId, 1)
+                    .Select(x => x.MediaFile)
+                    .FirstOrDefault();
             }
 
             return new PictureModel
             {
-                PictureId = picture != null ? picture.Id : 0,
+                PictureId = file?.Id ?? 0,
                 Size = pictureSize,
-                ImageUrl = _pictureService.GetUrl(picture, pictureSize, !catalogSettings.HideProductDefaultPictures),
+                ImageUrl = _mediaService.GetUrl(file, pictureSize, null, !catalogSettings.HideProductDefaultPictures),
                 Title = T("Media.Product.ImageLinkTitleFormat", productName),
                 AlternateText = T("Media.Product.ImageAlternateTextFormat", productName)
             };

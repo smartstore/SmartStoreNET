@@ -72,8 +72,8 @@ namespace SmartStore.Services.Media
         /// <returns><c>true</c> when a duplicate file was found, <c>false</c> otherwise.</returns>
         bool FindEqualFile(Stream source, IEnumerable<MediaFile> files, bool leaveOpen, out int equalFileId);
 
-        MediaFileInfo SaveFile(string path, Stream stream, bool isTransient = true, bool overwrite = false);
-        Task<MediaFileInfo> SaveFileAsync(string path, Stream stream, bool isTransient = true, bool overwrite = false);
+        MediaFileInfo SaveFile(string path, Stream stream, bool isTransient = true, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError);
+        Task<MediaFileInfo> SaveFileAsync(string path, Stream stream, bool isTransient = true, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError);
         void DeleteFile(MediaFile file, bool permanent);
         MediaFileInfo CopyFile(MediaFile file, string destinationFileName, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError);
         MediaFileInfo MoveFile(MediaFile file, string destinationFileName);

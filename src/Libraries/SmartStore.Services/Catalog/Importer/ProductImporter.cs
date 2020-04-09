@@ -916,13 +916,7 @@ namespace SmartStore.Services.Catalog.Importer
                                     if ((fileBuffer?.Length ?? 0) > 0)
                                     {
                                         var path = _mediaService.CombinePaths(SystemAlbumProvider.Products, image.FileName.ToValidFileName());
-
-                                        if (_mediaService.CheckUniqueFileName(path, out var uniquePath))
-                                        {
-                                            path = uniquePath;
-                                        }
-
-                                        var newFile = _mediaService.SaveFile(path, stream, false, false);
+                                        var newFile = _mediaService.SaveFile(path, stream, false, DuplicateFileHandling.Rename);
                                         if ((newFile?.Id ?? 0) != 0)
                                         {
                                             _productService.InsertProductPicture(new ProductMediaFile

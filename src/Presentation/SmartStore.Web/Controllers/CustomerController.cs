@@ -1605,13 +1605,7 @@ namespace SmartStore.Web.Controllers
                     }
 
                     var path = _mediaService.CombinePaths(SystemAlbumProvider.Customers, uploadedFile.FileName.ToValidFileName());
-
-                    if (_mediaService.CheckUniqueFileName(path, out var uniquePath))
-                    {
-                        path = uniquePath;
-                    }
-
-                    var newAvatar = _mediaService.SaveFile(path, uploadedFile.Stream, false, false);
+                    var newAvatar = _mediaService.SaveFile(path, uploadedFile.Stream, false, DuplicateFileHandling.Rename);
                     if (newAvatar != null)
                     {
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, newAvatar.Id);

@@ -312,12 +312,12 @@ namespace SmartStore.Services.Media
         //    throw new Exception();
         //}
 
-        public MediaFileInfo SaveFile(string path, Stream stream, bool isTransient = true, bool overwrite = false)
+        public MediaFileInfo SaveFile(string path, Stream stream, bool isTransient = true, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError)
         {
             var pathData = CreatePathData(path);
 
             var file = _fileRepo.Table.FirstOrDefault(x => x.Name == pathData.FileName && x.FolderId == pathData.Folder.Id);
-            stream = ProcessFile(ref file, pathData, stream, isTransient, overwrite);
+            stream = ProcessFile(ref file, pathData, stream, isTransient, dupeFileHandling);
 
             using (var scope = new DbContextScope(_fileRepo.Context, autoCommit: false))
             {
@@ -334,12 +334,12 @@ namespace SmartStore.Services.Media
             return ConvertMediaFile(file, pathData.Folder);
         }
 
-        public async Task<MediaFileInfo> SaveFileAsync(string path, Stream stream, bool isTransient = true, bool overwrite = false)
+        public async Task<MediaFileInfo> SaveFileAsync(string path, Stream stream, bool isTransient = true, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError)
         {
             var pathData = CreatePathData(path);
 
             var file = await _fileRepo.Table.FirstOrDefaultAsync(x => x.Name == pathData.FileName && x.FolderId == pathData.Folder.Id);
-            stream = ProcessFile(ref file, pathData, stream, isTransient, overwrite);
+            stream = ProcessFile(ref file, pathData, stream, isTransient, dupeFileHandling);
 
             using (var scope = new DbContextScope(_fileRepo.Context, autoCommit: false))
             {
@@ -394,11 +394,26 @@ namespace SmartStore.Services.Media
             return pathData;
         }
 
-        protected Stream ProcessFile(ref MediaFile file, MediaPathData pathData, Stream inStream, bool isTransient = true, bool overwrite = false)
+        protected Stream ProcessFile(
+            ref MediaFile file, 
+            MediaPathData pathData, 
+            Stream inStream, 
+            bool isTransient = true, 
+            DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError)
         {
-            if (file != null && !overwrite)
+            if (file != null)
             {
-                throw new DuplicateMediaFileException(pathData.FullPath);
+                if (dupeFileHandling == DuplicateFileHandling.ThrowError)
+                {
+                    throw new DuplicateMediaFileException(pathData.FullPath);
+                }
+                else if (dupeFileHandling == DuplicateFileHandling.Rename)
+                {
+                    if (CheckUniqueFileName(pathData))
+                    {
+                        file = null;
+                    }
+                }
             }
 
             if (file != null)
@@ -435,7 +450,7 @@ namespace SmartStore.Services.Media
             else
             {
                 file.RefreshMetadata(inStream);
-            }  
+            }
 
             return inStream;
         }

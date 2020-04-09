@@ -159,12 +159,12 @@ namespace SmartStore.Services.Media
 
         public IFile CreateFile(string path)
         {
-            return _mediaService.SaveFile(path, null, false, false);
+            return _mediaService.SaveFile(path, null, false, DuplicateFileHandling.ThrowError);
         }
 
         public async Task<IFile> CreateFileAsync(string path)
         {
-            return await _mediaService.SaveFileAsync(path, null, false, false);
+            return await _mediaService.SaveFileAsync(path, null, false, DuplicateFileHandling.ThrowError);
         }
 
         public IFolder CreateFolder(string path)
@@ -286,12 +286,12 @@ namespace SmartStore.Services.Media
 
         public void SaveStream(string path, Stream inputStream)
         {
-            _mediaService.SaveFile(path, inputStream, false, true);
+            _mediaService.SaveFile(path, inputStream, false, DuplicateFileHandling.Overwrite);
         }
 
         public async Task SaveStreamAsync(string path, Stream inputStream)
         {
-            await _mediaService.SaveFileAsync(path, inputStream, false, true);
+            await _mediaService.SaveFileAsync(path, inputStream, false, DuplicateFileHandling.Overwrite);
         }
 
         #endregion

@@ -168,13 +168,7 @@ namespace SmartStore.Services.Media
             Guard.NotNull(download, nameof(download));
 
             var path = _mediaService.CombinePaths(SystemAlbumProvider.Downloads, fileName.ToValidFileName());
-
-            if (_mediaService.CheckUniqueFileName(path, out var uniquePath))
-            {
-                path = uniquePath;
-            }
-
-            var file = _mediaService.SaveFile(path, stream);
+            var file = _mediaService.SaveFile(path, stream, dupeFileHandling: DuplicateFileHandling.Rename);
             file.File.Hidden = true;
             download.MediaFile = file.File;
 

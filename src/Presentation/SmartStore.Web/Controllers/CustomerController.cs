@@ -1604,7 +1604,7 @@ namespace SmartStore.Web.Controllers
                         _mediaService.DeleteFile(oldAvatar.File, true);
                     }
 
-                    var path = string.Concat(SystemAlbumProvider.Customers, "/", uploadedFile.FileName.ToValidFileName());
+                    var path = _mediaService.CombinePaths(SystemAlbumProvider.Customers, uploadedFile.FileName.ToValidFileName());
 
                     if (_mediaService.CheckUniqueFileName(path, out var uniquePath))
                     {

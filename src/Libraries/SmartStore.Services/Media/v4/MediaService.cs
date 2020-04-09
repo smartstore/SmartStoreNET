@@ -252,7 +252,7 @@ namespace SmartStore.Services.Media
 
         public string CombinePaths(params string[] paths)
         {
-            return FolderService.NormalizePath(Path.Combine(paths));
+            return FolderService.NormalizePath(Path.Combine(paths), false);
         }
 
         public bool FindEqualFile(Stream source, IEnumerable<MediaFile> files, bool leaveOpen, out int equalFileId)

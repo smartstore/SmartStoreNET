@@ -58,7 +58,7 @@ namespace SmartStore.Admin.Controllers
                         }
                     }
                     
-                    var mediaFile = await _mediaService.SaveFileAsync(filePath, uploadedFile.InputStream, isTransient, false);
+                    var mediaFile = await _mediaService.SaveFileAsync(filePath, uploadedFile.InputStream, isTransient);
 
                     result.Add(new 
                     {

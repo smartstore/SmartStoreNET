@@ -86,7 +86,5 @@ namespace SmartStore.Services.Media
 
         MediaFileInfo ConvertMediaFile(MediaFile file);
         string GetUrl(MediaFileInfo file, ProcessImageQuery query, string host = null, bool doFallback = true);
-
-        public MediaFileInfo ConvertMediaFile(MediaFile file);
     }
 }

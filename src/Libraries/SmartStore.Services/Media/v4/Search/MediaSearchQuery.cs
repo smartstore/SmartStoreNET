@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Media
 {
@@ -50,7 +51,7 @@ namespace SmartStore.Services.Media
         public int PageSize { get; set; } = int.MaxValue;
 
         [JsonProperty("sortBy")]
-        public string SortBy { get; set; }
+        public string SortBy { get; set; } = nameof(MediaFile.Name);
 
         [JsonProperty("sortDesc")]
         public bool SortDescending { get; set; }

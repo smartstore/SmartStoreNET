@@ -1515,6 +1515,34 @@ table.payment-method-features td {
 }
 
 //
+// Pane resizer
+// --------------------------------------------------------------
+
+.resizer,
+.is-resizing {
+    cursor: col-resize;
+}
+
+.resizer {
+    overflow: hidden;
+    position: relative;
+    width: 5px;
+    margin: 0 -2px;
+    user-select: none;
+    z-index: 2;
+
+    &:after {
+        z-index: 3;
+        content: '';
+        position: absolute;
+        width: 1px;
+        left: 2px;
+        height: 100%;
+        background-color: $gray-200;
+    }
+}
+
+//
 // Menus
 // --------------------------------------------------------------
 
@@ -1544,13 +1572,6 @@ table.payment-method-features td {
 //
 // Rules
 // --------------------------------------------------------------
-/*.rule:first-child {
-    margin-top: 0 !important;
-}
-
-.rule:last-child {
-    margin-bottom: 0 !important;
-}*/
 
 .rule,
 .ruleset {
@@ -1568,10 +1589,6 @@ table.payment-method-features td {
     border-left: 3px solid var(--warning);
     background-color: #fff;
 }
-
-/*.ruleset .ruleset {
-    background-color: rgba(0,0,0, 0.03);
-}*/
 
 .ruleset .ruleset {
     border-left-color: var(--primary);

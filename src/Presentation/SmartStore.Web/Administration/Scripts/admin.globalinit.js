@@ -85,6 +85,7 @@
 			SmartStore.Admin.togglePanel(e.target, true);
         });
 
+		// Tooltips
         $("#page").tooltip({
             selector: "a[rel=tooltip], .tooltip-toggle",
             trigger: 'hover'
@@ -145,9 +146,65 @@
             }).trigger('resize');
         }
 
+        // Pane resizer
+        $(document).on('mousedown', '.resizer', function (e) {
+            var resizer = this;
+            var resizeNext = resizer.classList.contains('resize-next');
+            var initialPageX = e.pageX;
+            var pane = resizeNext ? resizer.nextElementSibling : resizer.previousElementSibling;
+
+            if (!pane)
+                return;
+
+            var container = resizer.parentNode;
+            var initialPaneWidth = pane.offsetWidth;
+
+            var usePercentage = !!(pane.style.width + '').match('%');
+
+            var addEventListener = window.addEventListener;
+            var removeEventListener = window.removeEventListener;
+
+            var resize = function (initialSize, offset) {
+                if (offset === void 0) offset = 0;
+
+                if (resizeNext)
+                    offset = offset * -1;
+
+                var containerWidth = container.clientWidth;
+                var paneWidth = initialSize + offset;
+
+                return (pane.style.width = usePercentage
+                    ? paneWidth / containerWidth * 100 + '%'
+                    : paneWidth + 'px');
+            };
+
+            resizer.classList.add('is-resizing');
+
+            // Resize once to get current computed size
+            var size = resize();
+
+            var onMouseMove = function (ref) {
+                var pageX = ref.pageX;
+                size = resize(initialPaneWidth, pageX - initialPageX);
+            };
+
+            var onMouseUp = function () {
+                // Run resize one more time to set computed width/height.
+                size = resize(pane.clientWidth);
+
+                resizer.classList.remove('is-resizing');
+
+                removeEventListener('mousemove', onMouseMove);
+                removeEventListener('mouseup', onMouseUp);
+            };
+
+            addEventListener('mousemove', onMouseMove);
+            addEventListener('mouseup', onMouseUp);
+        });
+
         $(window).on('load', function () {
-        	// swap classes onload and domready
-        	html.removeClass("loading").addClass("loaded");
+			// swap classes onload and domready
+			html.removeClass("loading").addClass("loaded");
         });
 
     });

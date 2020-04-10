@@ -93,13 +93,9 @@ namespace SmartStore.Services.Media
             }
 
             // Sorting
-            if (query.SortBy.HasValue())
-            {
-                var ordering = query.SortBy;
-                if (query.SortDescending) ordering += " descending";
-
-                q = q.OrderBy(ordering);
-            }
+            var ordering = query.SortBy.NullEmpty() ?? nameof(MediaFile.Name);
+            if (query.SortDescending) ordering += " descending";
+            q = q.OrderBy(ordering);
 
             return ApplyLoadFlags(q, flags);
         }

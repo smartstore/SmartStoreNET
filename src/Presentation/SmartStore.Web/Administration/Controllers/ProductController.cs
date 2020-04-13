@@ -67,6 +67,7 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ISpecificationAttributeService _specificationAttributeService;
         private readonly IPictureService _pictureService;
+        private readonly IMediaService _mediaService;
         private readonly ITaxCategoryService _taxCategoryService;
         private readonly IProductTagService _productTagService;
         private readonly ICopyProductService _copyProductService;
@@ -118,6 +119,7 @@ namespace SmartStore.Admin.Controllers
 			ILocalizedEntityService localizedEntityService,
             ISpecificationAttributeService specificationAttributeService,
 			IPictureService pictureService,
+            IMediaService mediaService,
             ITaxCategoryService taxCategoryService,
 			IProductTagService productTagService,
             ICopyProductService copyProductService,
@@ -164,6 +166,7 @@ namespace SmartStore.Admin.Controllers
             _localizedEntityService = localizedEntityService;
             _specificationAttributeService = specificationAttributeService;
             _pictureService = pictureService;
+            _mediaService = mediaService;
             _taxCategoryService = taxCategoryService;
             _productTagService = productTagService;
             _copyProductService = copyProductService;
@@ -288,10 +291,11 @@ namespace SmartStore.Admin.Controllers
             {
                 // Set version info & product id for new download.
                 var newVersion = _downloadService.GetDownloadById(m.NewVersionDownloadId.Value);
-                newVersion.FileVersion = m.NewVersion ?? String.Empty;
+                newVersion.FileVersion = m.NewVersion.EmptyNull();
                 newVersion.EntityId = p.Id;
                 newVersion.IsTransient = false;
-                _downloadService.UpdateDownload(newVersion, _pictureService.LoadPictureBinary(newVersion.MediaFile));
+
+                _downloadService.UpdateDownload(newVersion);
             }
             else if (m.DownloadFileVersion.HasValue())
             {
@@ -301,6 +305,7 @@ namespace SmartStore.Admin.Controllers
                     download.FileVersion = new SemanticVersion(m.DownloadFileVersion).ToString();
                     download.EntityId = p.Id;
                     download.IsTransient = false;
+
                     _downloadService.UpdateDownload(download);
                 }
             }
@@ -570,6 +575,11 @@ namespace SmartStore.Admin.Controllers
 
                 model.DownloadId = currentDownload?.Id;
                 model.DownloadFileVersion = (currentDownload?.FileVersion).EmptyNull();
+
+                // Media files.
+                var file = _mediaService.GetFileById(product.MainPictureId ?? 0);
+                model.PictureThumbnailUrl = _mediaService.GetUrl(file, _mediaSettings.CartThumbPictureSize);
+                model.NoThumb = file == null;
             }
 
             model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
@@ -745,15 +755,6 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-        [NonAction]
-        private void PrepareProductPictureThumbnailModel(ProductModel model, Product product, PictureInfo defaultPicture)
-        {
-			Guard.NotNull(model, nameof(model));
-
-			model.PictureThumbnailUrl = _pictureService.GetUrl(defaultPicture, _mediaSettings.CartThumbPictureSize, true);
-			model.NoThumb = defaultPicture == null;
-		}
-
 		private IQueryable<Product> ApplySorting(IQueryable<Product> query, GridCommand command)
 		{
 			if (command.SortDescriptors != null && command.SortDescriptors.Count > 0)
@@ -842,7 +843,7 @@ namespace SmartStore.Admin.Controllers
 			return query;
 		}
 
-		#endregion Utitilies
+		#endregion
 
 		#region Misc
 
@@ -972,7 +973,12 @@ namespace SmartStore.Admin.Controllers
                 products = new PagedList<Product>(query, command.Page - 1, command.PageSize);
             }
 
-            var pictureInfos = _pictureService.GetPictureInfos(products);
+            var fileIds = products
+                .Select(x => x.MainPictureId ?? 0)
+                .Where(x => x != 0)
+                .Distinct()
+                .ToArray();
+            var files = _mediaService.GetFilesByIds(fileIds).ToDictionarySafe(x => x.Id);
 
 			gridModel.Data = products.Select(x =>
 			{
@@ -988,9 +994,10 @@ namespace SmartStore.Admin.Controllers
 					LimitedToStores = x.LimitedToStores
 				};
 
-				var defaultPicture = pictureInfos.Get(x.MainPictureId.GetValueOrDefault());
-				productModel.PictureThumbnailUrl = _pictureService.GetUrl(defaultPicture, _mediaSettings.CartThumbPictureSize, true);
-				productModel.NoThumb = defaultPicture == null;
+                files.TryGetValue(x.MainPictureId ?? 0, out var file);
+
+				productModel.PictureThumbnailUrl = _mediaService.GetUrl(file, _mediaSettings.CartThumbPictureSize);
+				productModel.NoThumb = file == null;
 
 				productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
 				productModel.UpdatedOn = _dateTimeHelper.ConvertToUserTime(x.UpdatedOnUtc, DateTimeKind.Utc);
@@ -1151,8 +1158,6 @@ namespace SmartStore.Admin.Controllers
 				locale.BundleTitleText = product.GetLocalized(x => x.BundleTitleText, languageId, false, false);
             });
 
-			PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPictureInfo(product.MainPictureId));
-
             return View(model);
         }
 
@@ -1193,15 +1198,14 @@ namespace SmartStore.Admin.Controllers
 
                 _productService.UpdateHasDiscountsApplied(product);
 
-                _customerActivityService.InsertActivity("EditProduct", _localizationService.GetResource("ActivityLog.EditProduct"), product.Name);
+                _customerActivityService.InsertActivity("EditProduct", T("ActivityLog.EditProduct"), product.Name);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Catalog.Products.Updated"));
+                NotifySuccess(T("Admin.Catalog.Products.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = product.Id }) : RedirectToAction("List");
             }
 
-            // If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
 			PrepareProductModel(model, product, false, true);
-			PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPictureInfo(product.MainPictureId));
 
             return View(model);
         }
@@ -1279,8 +1283,6 @@ namespace SmartStore.Admin.Controllers
 					locale.SeName = product.GetSeName(languageId, false, false);
 					locale.BundleTitleText = product.GetLocalized(x => x.BundleTitleText, languageId, false, false);
 				});
-
-				PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPictureInfo(product.MainPictureId));
 
 				return PartialView(viewPath.NullEmpty() ?? "_CreateOrUpdate." + tabName, model);
 			}
@@ -2131,9 +2133,9 @@ namespace SmartStore.Admin.Controllers
         public ActionResult ProductPictureList(GridCommand command, int productId)
         {
 			var model = new GridModel<ProductModel.ProductPictureModel>();
-			var productPictures = _productService.GetProductPicturesByProductId(productId);
+			var files = _productService.GetProductPicturesByProductId(productId);
 
-			var productPicturesModel = productPictures
+			var productPicturesModel = files
 				.Select(x =>
 				{
 					var pictureModel = new ProductModel.ProductPictureModel
@@ -2146,7 +2148,7 @@ namespace SmartStore.Admin.Controllers
 
                     try
                     {
-                        pictureModel.PictureUrl = _pictureService.GetUrl(x.MediaFileId);
+                        pictureModel.PictureUrl = _mediaService.GetUrl(x.MediaFile, 0);
                     }
                     catch (Exception ex)
                     {
@@ -3254,14 +3256,18 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareVariantCombinationPictures(ProductVariantAttributeCombinationModel model, Product product)
 		{
-			var pictures = _pictureService.GetPicturesByProductId(product.Id);
-			foreach (var picture in pictures)
+            var files = _productService.GetProductPicturesByProductId(product.Id)
+                .Select(x => x.MediaFile)
+                .ToList();
+
+			foreach (var file in files)
 			{
-				var assignablePicture = new ProductVariantAttributeCombinationModel.PictureSelectItemModel();
-				assignablePicture.Id = picture.Id;
-				assignablePicture.IsAssigned = model.AssignedPictureIds.Contains(picture.Id);
-				assignablePicture.PictureUrl = _pictureService.GetUrl(picture, 125, FallbackPictureType.NoFallback);
-				model.AssignablePictures.Add(assignablePicture);
+                model.AssignablePictures.Add(new ProductVariantAttributeCombinationModel.PictureSelectItemModel
+                {
+                    Id = file.Id,
+                    IsAssigned = model.AssignedPictureIds.Contains(file.Id),
+                    PictureUrl = _mediaService.GetUrl(file, 125, null, false)
+                });
 			}
 		}
 		private void PrepareViewBag(string btnId, string formId, bool refreshPage = false, bool isEdit = true)

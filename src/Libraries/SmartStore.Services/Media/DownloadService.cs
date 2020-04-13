@@ -36,19 +36,6 @@ namespace SmartStore.Services.Media
 			_storageProvider = providerManager.GetProvider<IMediaStorageProvider>(systemName);
 		}
 
-		private void UpdateDownloadCore(Download download, byte[] downloadBinary, bool updateDataStorage)
-		{
-			download.UpdatedOnUtc = DateTime.UtcNow;
-
-			_downloadRepository.Update(download);
-
-			if (updateDataStorage)
-			{
-				// save to storage
-				_storageProvider.Value.Save(download.MediaFile, downloadBinary.ToStream());
-			}
-		}
-
 		public virtual Download GetDownloadById(int downloadId)
         {
             if (downloadId == 0)
@@ -179,22 +166,16 @@ namespace SmartStore.Services.Media
             //_storageProvider.Value.Save(file.File, stream);
         }
 
-        public virtual void UpdateDownload(Download download)
-		{
-			Guard.NotNull(download, nameof(download));
-
-			// We use an overload because a byte array cannot be nullable.
-			UpdateDownloadCore(download, null, false);
-		}
-
-		public virtual void UpdateDownload(Download download, byte[] downloadBinary)
+		public virtual void UpdateDownload(Download download)
         {
 			Guard.NotNull(download, nameof(download));
 
-			UpdateDownloadCore(download, downloadBinary, true);
+            download.UpdatedOnUtc = DateTime.UtcNow;
+
+            _downloadRepository.Update(download);
         }
 
-		public virtual bool IsDownloadAllowed(OrderItem orderItem)
+        public virtual bool IsDownloadAllowed(OrderItem orderItem)
         {
             if (orderItem == null)
                 return false;
@@ -275,5 +256,5 @@ namespace SmartStore.Services.Media
 
 			return _storageProvider.Value.Load(download.MediaFile);
 		}
-	}
+    }
 }

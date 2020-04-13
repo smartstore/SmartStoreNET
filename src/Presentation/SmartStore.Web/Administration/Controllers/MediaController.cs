@@ -16,18 +16,15 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class MediaController : AdminControllerBase
     {
-        private readonly IPictureService _pictureService;
         private readonly IMediaService _mediaService;
         private readonly IMediaTypeResolver _mediaTypeResolver;
         private readonly MediaSettings _mediaSettings;
 
 		public MediaController(
-			IPictureService pictureService,
             IMediaService mediaService,
             IMediaTypeResolver mediaTypeResolver,
             MediaSettings mediaSettings)
         {
-            _pictureService = pictureService;
             _mediaService = mediaService;
             _mediaTypeResolver = mediaTypeResolver;
 			_mediaSettings = mediaSettings;
@@ -83,32 +80,6 @@ namespace SmartStore.Admin.Controllers
             // TODO: (mm) display error notification for every failed file
 
             return Json(result.Count == 1 ? result[0] : result);
-        }
-
-        [HttpPost]
-        [Permission(Permissions.Media.Upload)]
-        public ActionResult AsyncUpload(bool isTransient = false, bool validate = true, string album = null)
-        {
-			var postedFile = Request.ToPostedFileResult();
-			if (postedFile == null)
-			{
-				return Json(new { success = false });
-			}
-            
-            var picture = _pictureService.InsertPicture(
-                postedFile.Buffer, 
-                postedFile.ContentType, 
-                postedFile.FileName,
-                isTransient, 
-                validate, 
-                album);
-
-            return Json(new
-			{
-                success = true, 
-                fileId = picture.Id,
-                url = _pictureService.GetUrl(picture, _mediaSettings.ProductThumbPictureSize, host: string.Empty) 
-            });
         }
 
 		public ActionResult MoveFsMedia()

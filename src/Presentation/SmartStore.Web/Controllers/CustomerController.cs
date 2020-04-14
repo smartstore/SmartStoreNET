@@ -1586,35 +1586,43 @@ namespace SmartStore.Web.Controllers
 			var success = false;
 			string avatarUrl = null;
 
-			if (IsCurrentUserRegistered() && _customerSettings.AllowCustomersToUploadAvatars)
-			{
-				var customer = _workContext.CurrentCustomer;
-				var uploadedFile = Request.Files["uploadedFile-file"].ToPostedFileResult();
+            try {
 
-				if (uploadedFile != null && uploadedFile.FileName.HasValue())
-				{
-					if (uploadedFile.Size > _customerSettings.AvatarMaximumSizeBytes)
-					{
-						throw new SmartException(T("Account.Avatar.MaximumUploadedFileSize", Prettifier.BytesToString(_customerSettings.AvatarMaximumSizeBytes)));
-					}
+                if (IsCurrentUserRegistered() && _customerSettings.AllowCustomersToUploadAvatars)
+                {
+                    var customer = _workContext.CurrentCustomer;
+                    var uploadedFile = Request.Files["file"].ToPostedFileResult();
 
-                    var oldAvatar = _mediaService.GetFileById(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId));
-                    if (oldAvatar != null)
+                    if (uploadedFile != null && uploadedFile.FileName.HasValue())
                     {
-                        _mediaService.DeleteFile(oldAvatar.File, true);
-                    }
+                        if (uploadedFile.Size > _customerSettings.AvatarMaximumSizeBytes)
+                        {
+                            throw new SmartException(T("Account.Avatar.MaximumUploadedFileSize", Prettifier.BytesToString(_customerSettings.AvatarMaximumSizeBytes)));
+                        }
 
-                    var path = _mediaService.CombinePaths(SystemAlbumProvider.Customers, uploadedFile.FileName.ToValidFileName());
-                    var newAvatar = _mediaService.SaveFile(path, uploadedFile.Stream, false, DuplicateFileHandling.Rename);
-                    if (newAvatar != null)
-                    {
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, newAvatar.Id);
+                        var oldAvatar = _mediaService.GetFileById(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId));
+	                    if (oldAvatar != null)
+	                    {
+	                        _mediaService.DeleteFile(oldAvatar.File, true);
+	                    }
 
-                        avatarUrl = _mediaService.GetUrl(newAvatar, _mediaSettings.AvatarPictureSize, null, false);
-                        success = avatarUrl.HasValue();
+	                    var path = _mediaService.CombinePaths(SystemAlbumProvider.Customers, uploadedFile.FileName.ToValidFileName());
+	                    var newAvatar = _mediaService.SaveFile(path, uploadedFile.Stream, false, DuplicateFileHandling.Rename);
+	                    if (newAvatar != null)
+	                    {
+	                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, newAvatar.Id);
+
+	                        avatarUrl = _mediaService.GetUrl(newAvatar, _mediaSettings.AvatarPictureSize, null, false);
+	                        success = avatarUrl.HasValue();
+	                    }
                     }
                 }
-			}
+            }
+            catch (Exception ex)
+            {
+                NotifyError(ex.Message);
+                return new HttpStatusCodeResult(501, ex.Message);
+            }
 
 			return Json(new { success, avatarUrl });
 		}
@@ -1636,8 +1644,8 @@ namespace SmartStore.Web.Controllers
                 _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarColor, (string)null);
 			}
 
-            return RedirectToAction("Avatar");
-		}
+            return Json(new { success = true });
+        }
 
         #endregion
 

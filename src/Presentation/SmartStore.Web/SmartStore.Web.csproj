@@ -854,6 +854,8 @@
     <Content Include="Content\vendors\beautify\beautify.min.js" />
     <Content Include="Content\vendors\drift\Drift.js" />
     <Content Include="Content\vendors\drift\Drift.min.js" />
+    <Content Include="Content\vendors\dropzone\js\dropzone.js" />
+    <Content Include="Content\vendors\dropzone\js\dropzoneWrapper.js" />
     <Content Include="Content\vendors\fa5\css\all.css" />
     <Content Include="Content\vendors\fa5\css\all.min.css" />
     <Content Include="Content\vendors\fa5\css\brands.css" />
@@ -1061,6 +1063,8 @@
     <Content Include="Content\bs4\scss\bootstrap-head.scss" />
     <Content Include="Content\bs4\scss\bootstrap-main.scss" />
     <Content Include="Content\shared\_custom-scrollbar.scss" />
+    <Content Include="Content\vendors\dropzone\scss\basic.scss" />
+    <Content Include="Content\vendors\dropzone\scss\dropzone.scss" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />
@@ -1841,6 +1845,7 @@
     <Content Include="Views\Blog\Partials\BlogSummaryHeading.cshtml" />
     <Content Include="Views\Blog\Partials\BlogSummary.cshtml" />
     <Content Include="Views\Common\Partials\CookieManager.cshtml" />
+    <Content Include="Views\Shared\Components\_FileUploader.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

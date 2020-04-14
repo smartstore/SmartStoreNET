@@ -22,31 +22,68 @@
 	@(Html.SmartStore().FileUploader()
 		.Name("uploadedFile")
 		.UploadUrl(Url.Action("UploadAvatar", "Customer"))
-		.AcceptedFileTypes("gif|jpe?g|png|svg")
+		.AcceptedFileTypes(".gif,.jpeg,.jpg,.png,.svg")
 		.ShowRemoveButton(Model.Avatar.PictureUrl.HasValue())
 		.ShowRemoveButtonAfterUpload(true)
 		.UploadText(T("Common.FileUploader.Upload"))
 		.OnUploadCompletedHandlerName("onAvatarUploaded")
 		.OnFileRemoveHandlerName("onAvatarRemoved")
+		.Multifile(false)
 	)
 
-	@if (!Model.Avatar.PictureUrl.HasValue())
-	{
-		<div class="alert alert-info mt-2">@T("Account.Avatar.UploadRules", Model.MaxFileSize)</div>
-	}
+	<div id="avatar-picture-hint" class="alert alert-info mt-2@(Model.Avatar.PictureUrl.HasValue() ? " d-none" : "")">
+		@T("Account.Avatar.UploadRules", Model.MaxFileSize)
+	</div>
 </div>
 
 <script>
-	window['onAvatarUploaded'] = function (e, el, data) {
-		var result = data.result;
-		if (result.success) {
-            window.location = '@Url.Action("Avatar", "Customer", new { area = "" })';
-		}
+    window['onAvatarUploaded'] = function (file, response, progress) {
+        if (response.success) {
+            var previewAvatar = $(".avatar-img");
+            if (!previewAvatar.hasClass("d-none")) {
+                // Replace image.
+                previewAvatar.attr("src", response.avatarUrl);
+            }
+            else {
+
+				// Hide letter span.
+                $(".avatar-letter").addClass("d-none");
+
+				// Display image.
+                previewAvatar
+					.attr("src", response.avatarUrl)
+                    .removeClass("d-none");
+            }
+
+			$("#avatar-picture-hint").addClass("d-none");
+        }
 	};
 
     window['onAvatarRemoved'] = function (e, el) {
-		$(this).doPostData({
-			url: '@Url.Action("RemoveAvatar", "Customer", new { area = "" })'
+		$.ajax({
+			async: false,
+			cache: false,
+			type: 'POST',
+            url: '@Url.Action("RemoveAvatar", "Customer")',
+            success: function () {
+
+                var previewAvatar = $(".avatar-img");
+                if (!previewAvatar.hasClass("d-none")) {
+
+                    // Switch display classes for image and letter.
+                    previewAvatar.addClass("d-none");
+                    $(".avatar-letter").removeClass("d-none");
+
+                    // Clear file info.
+                    $("#AvatarUploadContainer").find('.fileupload-filename, .fileupload-filesize').html("");
+
+                    // Display hint.
+                    $("#avatar-picture-hint").removeClass("d-none");
+                }
+                else {
+
+                }
+			}
 		});
 	}
 </script>

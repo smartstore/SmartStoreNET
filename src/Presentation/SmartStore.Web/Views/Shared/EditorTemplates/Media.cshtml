@@ -4,6 +4,7 @@
 @using SmartStore.Services.Media;
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.Utilities;
+@using SmartStore.Admin.Models.Catalog; @* TODO: No admin models are allowed in here *@
 
 @functions {
 	private bool TransientUpload
@@ -29,6 +30,32 @@
 			return GetMetadata<string>("path") ?? GetMetadata<string>("album");
 		}
 	}
+
+	private int EntityId
+	{
+		get
+		{
+			return GetMetadata<int>("entityId");
+		}
+	}
+
+	// TODO: make enum UploadType > Compact, Default, Multifile
+	private bool MultiFile
+	{
+		get
+		{
+			return GetMetadata<bool>("multifile");
+		}
+	}
+
+	// TODO: use generic model.
+	private IList<ProductModel.ProductPictureModel> UploadedFiles
+	{
+		get
+		{
+			return GetMetadata<IList<ProductModel.ProductPictureModel>>("uploadedFiles");
+		}
+	}
 }
 
 @{
@@ -49,14 +76,163 @@
 		@(Html.SmartStore().FileUploader()
 			.UploadUrl(Url.Action("Upload", "Media", new { isTransient = TransientUpload, path = Path, area = "Admin" }))
 			.HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
-			.AcceptedFileTypes("gif|jpe?g|png|svg")
+			.AcceptedFileTypes(".gif,.jpeg,.jpg,.png,.svg")
 			.ShowRemoveButton(Model.HasValue)
 			.ShowRemoveButtonAfterUpload(true)
 			.Compact(ViewData["compact"].Convert<bool?>() == true)
+			.PreviewContainerId("preview-" + random)
+			.Multifile(ViewData["multifile"].Convert<bool?>() == true)
 			.OnUploadCompletedHandlerName("onUploadCompleted_" + random)
 		)
 	</div>
 </div>
+
+@if (MultiFile)
+{
+	<!-- Placeholder to paste preview container into -->
+	<div id="preview-@(random)" class="d-flex flex-wrap preview-container mt-3">
+		@foreach (var file in UploadedFiles)
+		{
+			var fileSize = Prettifier.BytesToString(file.ProductMediaFile.MediaFile.Size);
+			var isMainPic = file.PictureId == fileId;
+
+			<div class="mf-image-preview d-flex flex-column" 
+				 data-display-order="@file.DisplayOrder" 
+				 data-product-picture-id="@file.Id" 
+				 data-picture-id="@file.PictureId">
+
+				<div class="dz-processing dz-image-preview dz-success dz-complete" 
+					 data-toggle="tooltip" 
+					 data-html="true" 
+					 data-placement="bottom"
+					 title='<div class="text-left px-3"><em>@file.ProductMediaFile.MediaFile.Name</em> <br/> <b>@fileSize</b></div>'>
+					<div>
+						<span class="preview align-self-center">
+							<img data-dz-thumbnail src="@file.PictureUrl" />
+						</span>
+					</div>
+
+					@if (isMainPic)
+					{
+						<span class="main-pic-badge badge badge-success">Hauptbild</span>
+					}
+				</div>
+				
+				<a href="#" class="btn btn-danger btn-icon btn-sm btn-circle delete-product-picture">
+					<i class="far fa-trash-alt"></i>
+				</a>
+				<a href="#" class="btn btn-primary btn-icon btn-sm btn-circle set-main-picture">
+					<i class="far fa-eye"></i>
+				</a>
+			</div>
+		}
+	</div>
+
+	<script>
+		$(function () {
+			// Sorting.
+			var sortable = $('.preview-container').sortable({
+				items: '.mf-image-preview'
+			}).on('sortupdate', function (e, ui) {
+				sortPictures($(this));
+			});
+
+            $(".dz-image-preview").tooltip();
+
+			var dropzone = Dropzone.forElement($(".dropzone")[0]);
+
+			// Listen to success
+			dropzone.on("success", function (file, response, progress) {
+
+				// call Admin > Product > ProductPictureAdd(int pictureId, int displayOrder, int productId)
+				$.ajax({
+					async: false,
+					cache: false,
+					type: 'POST',
+					url: '@Url.Action("ProductPictureAdd", "Product")',
+					data: {
+						pictureId: response.fileId,
+						displayOrder: 1000,	/* This value must be very high because items with lowest display order will automatically become MainPic. Real DisplayOrder will be set by sortPictures. */
+						productId: @EntityId
+					}
+				});
+
+				// call sortPictures again to set display-order
+				sortPictures(sortable);
+			});
+
+			// Deleting.
+			$(".delete-product-picture").on("click", function (e) {
+
+				var el = $(this).closest('.mf-image-preview');
+
+				$.ajax({
+					async: false,
+					cache: false,
+					type: 'POST',
+					url: '@Url.Action("ProductPictureDelete", "Product")',
+					data: { id: el.data("product-picture-id") },
+					success: function () {
+						el.removeClass("d-flex")
+							.addClass("d-none");
+					}
+				});
+
+				return false;
+			});
+
+			// Set MainPictureId
+			$(".set-main-picture").on("click", function (e) {
+
+				var el = $(this).closest('.mf-image-preview');
+
+				$.ajax({
+					async: false,
+					cache: false,
+					type: 'POST',
+					url: '@Url.Action("SetMainPictureId", "Product")',
+					data: {
+						pictureId: el.data("picture-id"),
+						productId: @EntityId
+					},
+					success: function () {
+						// Set preview picture.
+						var elDropzone = $('.fileupload-container');
+						var fileName = el.find(".name").text();
+						var fileSize = el.find(".size").text();
+						var fileUrl = el.find(".dz-image-preview img").attr("src");
+
+						elDropzone.find('.fileupload-filename').html(fileName);
+						elDropzone.find('.fileupload-filesize').html(fileSize);
+						elDropzone.find('.fileupload-thumb').css('background-image', 'url("' + fileUrl + '")');
+						elDropzone.find('.hidden').val(el.data("picture-id")).trigger('change');
+					}
+				});
+
+				return false;
+			});
+		});
+
+		// TODO: mf-prefix is bad (already used for mobile friendly)
+		function sortPictures(sortableContainer) {
+			var items = sortableContainer.find('.mf-image-preview');
+
+			var newOrder = [];
+			$.each(items, function (i, val) {
+				newOrder.push($(val).data('product-picture-id'));
+			});
+
+			// Set display order of ProductPicture.
+			$.ajax({
+				async: false,
+				cache: false,
+				type: 'POST',
+				url: '@Url.Action("SortPictures", "Product")',
+				data: { pictures: newOrder.join(",") }
+			});
+        }
+	</script>
+}
 
 <script>
 	window['onUploadCompleted_@random'] = function (e, el, data) {

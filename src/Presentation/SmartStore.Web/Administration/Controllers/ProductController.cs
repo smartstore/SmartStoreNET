@@ -580,7 +580,11 @@ namespace SmartStore.Admin.Controllers
                 var file = _mediaService.GetFileById(product.MainPictureId ?? 0);
                 model.PictureThumbnailUrl = _mediaService.GetUrl(file, _mediaSettings.CartThumbPictureSize);
                 model.NoThumb = file == null;
-            }
+
+				// Pictures.
+				PrepareProductPictureModel(model);
+				model.AddPictureModel.PictureId = (int)product.MainPictureId;
+			}
 
             model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
 			model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.GetLocalized(x => x.Name) ?? string.Empty;
@@ -753,6 +757,49 @@ namespace SmartStore.Admin.Controllers
 				model.Published = true;
                 model.HasPreviewPicture = false;
 			}
+		}
+
+		[NonAction]
+		private void PrepareProductPictureModel(ProductModel model)
+		{
+			Guard.NotNull(model, nameof(model));
+
+			var productPictures = _productService.GetProductPicturesByProductId(model.Id);
+
+			model.ProductPictureModels = productPictures
+				.Select(x =>
+				{
+					var pictureModel = new ProductModel.ProductPictureModel
+					{
+						Id = x.Id,
+						ProductId = x.ProductId,
+						PictureId = x.MediaFileId,
+						DisplayOrder = x.DisplayOrder,
+						ProductMediaFile = x
+					};
+
+					try
+					{
+						pictureModel.PictureUrl = _pictureService.GetUrl(x.MediaFileId);
+					}
+					catch (Exception ex)
+					{
+						// The user must always have the possibility to delete faulty images.
+						Logger.Error(ex);
+					}
+
+					return pictureModel;
+				})
+				.ToList();
+		}
+
+		[NonAction]
+        private void PrepareProductPictureThumbnailModel(ProductModel model, Product product, PictureInfo defaultPicture)
+        {
+			Guard.NotNull(model, nameof(model));
+
+			model.PictureThumbnailUrl = _pictureService.GetUrl(defaultPicture, _mediaSettings.CartThumbPictureSize, true);
+			model.NoThumb = defaultPicture == null;
 		}
 
 		private IQueryable<Product> ApplySorting(IQueryable<Product> query, GridCommand command)
@@ -2096,11 +2143,59 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-        #endregion
+		#endregion
 
-        #region Product pictures
+		#region Product pictures
 
-        [Permission(Permissions.Catalog.Product.EditPicture)]
+		[HttpPost]
+		public ActionResult SetMainPictureId(int pictureId, int productId)
+		{
+			try
+			{
+				var product = _productService.GetProductById(productId);
+				product.MainPictureId = pictureId;
+				_productService.UpdateProduct(product);
+			}
+			catch (Exception ex)
+			{
+				NotifyError(ex.Message);
+				return new HttpStatusCodeResult(501, ex.Message);
+			}
+
+			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+			return new HttpStatusCodeResult(200);
+		}
+
+		[HttpPost]
+		public ActionResult SortPictures(string pictures)
+		{
+			try
+			{
+				var arr = pictures.SplitSafe(",");
+				var ordinal = 5;
+				foreach (var id in arr)
+				{
+					var productPicture = _productService.GetProductPictureById(Convert.ToInt32(id));
+					if (productPicture != null)
+					{
+						productPicture.DisplayOrder = ordinal;
+						_productService.UpdateProductPicture(productPicture);
+					}
+					ordinal += 5;
+				}
+			}
+			catch (Exception ex)
+			{
+				NotifyError(ex.Message);
+				return new HttpStatusCodeResult(501, ex.Message);
+			}
+
+			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+			return new HttpStatusCodeResult(200);
+		}
+
+		[HttpPost]
+		[Permission(Permissions.Catalog.Product.EditPicture)]
         public ActionResult ProductPictureAdd(int pictureId, int displayOrder, int productId)
         {
             if (pictureId == 0)
@@ -2118,7 +2213,7 @@ namespace SmartStore.Admin.Controllers
             {
                 MediaFileId = pictureId,
                 ProductId = productId,
-                DisplayOrder = displayOrder,
+                DisplayOrder = displayOrder
             };
 
             _productService.InsertProductPicture(productPicture);
@@ -2184,9 +2279,9 @@ namespace SmartStore.Admin.Controllers
             return ProductPictureList(command, model.ProductId);
         }
 
-        [GridAction(EnableCustomBinding = true)]
+		[HttpPost]
         [Permission(Permissions.Catalog.Product.EditPicture)]
-        public ActionResult ProductPictureDelete(int id, int productId, GridCommand command)
+        public ActionResult ProductPictureDelete(int id)
         {
 			var productPicture = _productService.GetProductPictureById(id);
 			if (productPicture != null)
@@ -2200,9 +2295,10 @@ namespace SmartStore.Admin.Controllers
 			//{
 			//	_pictureService.DeletePicture(picture);
 			//}
-            
-            return ProductPictureList(command, productId);
-        }
+
+			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+			return new HttpStatusCodeResult(200);
+		}
 
         #endregion
 

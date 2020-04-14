@@ -467,7 +467,9 @@ namespace SmartStore.Admin.Models.Catalog
 
             [SmartResourceDisplayName("Common.DisplayOrder")]
             public int DisplayOrder { get; set; }
-        }
+
+			public ProductMediaFile ProductMediaFile { get; set; }
+		}
         
         public class ProductCategoryModel : EntityModelBase
         {

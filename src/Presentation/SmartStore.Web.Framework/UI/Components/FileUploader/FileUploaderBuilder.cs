@@ -59,6 +59,19 @@ namespace SmartStore.Web.Framework.UI
 			return this;
 		}
 
+		public FileUploaderBuilder<TModel> Multifile(bool value)
+		{
+			base.Component.Multifile = value;
+			return this;
+		}
+
+		public FileUploaderBuilder<TModel> PreviewContainerId(string value)
+		{
+			base.Component.PreviewContainerId = value;
+			return this;
+		}
+
+
 		public FileUploaderBuilder<TModel> AcceptedFileTypes(string value)
 		{
 			if (value.IsEmpty())

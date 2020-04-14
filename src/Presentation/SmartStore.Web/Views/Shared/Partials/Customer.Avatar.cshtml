@@ -25,9 +25,13 @@
     if (Model.PictureUrl.HasValue())
     {
         <img class="avatar-img" src="@Model.PictureUrl" title="@Model.UserName" />
+        <span class="avatar-letter d-none bg-@(Model.AvatarColor) @(textColor)" title="@Model.UserName">
+            @Model.AvatarLetter
+        </span>
     }
     else
     {
+        <img class="avatar-img d-none" src="#" title="@Model.UserName" />
         <span class="avatar-letter bg-@(Model.AvatarColor) @(textColor)" title="@Model.UserName">
             @Model.AvatarLetter
         </span>

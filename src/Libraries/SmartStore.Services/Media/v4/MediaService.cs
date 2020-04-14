@@ -405,7 +405,7 @@ namespace SmartStore.Services.Media
             {
                 if (dupeFileHandling == DuplicateFileHandling.ThrowError)
                 {
-                    throw new DuplicateMediaFileException(pathData.FullPath);
+                    throw new DuplicateMediaFileException(pathData.FullPath, ConvertMediaFile(file));
                 }
                 else if (dupeFileHandling == DuplicateFileHandling.Rename)
                 {
@@ -557,7 +557,7 @@ namespace SmartStore.Services.Media
                     case DuplicateEntryHandling.Skip:
                         return null;
                     case DuplicateEntryHandling.ThrowError:
-                        throw new DuplicateMediaFileException(destPathData.FullPath);
+                        throw new DuplicateMediaFileException(destPathData.FullPath, ConvertMediaFile(dupe));
                     case DuplicateEntryHandling.Rename:
                         uniqueFileNameChecker(destPathData);
                         if (dupe == file)
@@ -674,10 +674,10 @@ namespace SmartStore.Services.Media
             }
 
             // Check whether destination file exists
-            var exists = _fileRepo.Table.Any(x => x.Name == destFileName && x.FolderId == destFolderId);
-            if (exists)
+            var dupe = _fileRepo.Table.FirstOrDefault(x => x.Name == destFileName && x.FolderId == destFolderId);
+            if (dupe != null)
             {
-                throw new DuplicateMediaFileException(destPathData.FullPath);
+                throw new DuplicateMediaFileException(destPathData.FullPath, ConvertMediaFile(dupe));
             }
 
             return folderChanged || nameChanged;

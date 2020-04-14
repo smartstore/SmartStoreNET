@@ -67,13 +67,25 @@ namespace SmartStore.Admin.Controllers
                 }
                 catch (Exception ex)
                 {
-                    result.Add(new
-                    {
+                    var dupe = (ex as DuplicateMediaFileException)?.File;
+
+                    dynamic resultParams = new {
                         success = false,
                         path = filePath,
                         dupe = ex is DuplicateMediaFileException,
-                        message = ex.Message
-                    });
+                        message = ex.Message,
+                        fileId = dupe.Id,
+                        url = _mediaService.GetUrl(dupe, _mediaSettings.ProductThumbPictureSize, host: string.Empty)
+                    };
+
+                    // TODO
+                    //if (dupe != null)
+                    //{
+                    //    resultParams.fileId = dupe.Id;
+                    //    resultParams.url = _mediaService.GetUrl(dupe, _mediaSettings.ProductThumbPictureSize, host: string.Empty);
+                    //}
+                    
+                    result.Add(resultParams);
                 }
             }
 

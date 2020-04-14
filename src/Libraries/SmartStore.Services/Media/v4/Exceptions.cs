@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartStore.Core.Domain.Media;
+using System;
 
 namespace SmartStore.Services.Media
 {
@@ -20,10 +21,13 @@ namespace SmartStore.Services.Media
 
     public sealed class DuplicateMediaFileException : SmartException
     {
-        public DuplicateMediaFileException(string fullPath)
+        public DuplicateMediaFileException(string fullPath, MediaFileInfo dupeFile)
             : base($"File {fullPath} already exists.")
         {
+            File = dupeFile;
         }
+
+        public MediaFileInfo File { get; }
     }
 
     public sealed class DuplicateMediaFolderException : SmartException

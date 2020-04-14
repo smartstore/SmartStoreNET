@@ -49,7 +49,7 @@ namespace SmartStore.WebApi
 			m.EntitySet<Download>("Downloads");
 			m.EntitySet<GenericAttribute>("GenericAttributes");
 			m.EntitySet<Language>("Languages");
-			m.EntitySet<LocalizedProperty>("LocalizedPropertys");   // Naming accident.
+			m.EntitySet<LocalizedProperty>("LocalizedProperties");
 			m.EntitySet<Manufacturer>("Manufacturers");
 			m.EntitySet<MeasureDimension>("MeasureDimensions");
 			m.EntitySet<MeasureWeight>("MeasureWeights");

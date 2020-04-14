@@ -35,58 +35,60 @@ namespace SmartStore.WebApi
 		{
 			var m = configData.ModelBuilder;
 
-			m.EntitySet<Address>(WebApiOdataEntitySet.Addresses);
-			m.EntitySet<BlogComment>(WebApiOdataEntitySet.BlogComments);
-			m.EntitySet<BlogPost>(WebApiOdataEntitySet.BlogPosts);
-			m.EntitySet<Category>(WebApiOdataEntitySet.Categories);
-			m.EntitySet<Country>(WebApiOdataEntitySet.Countries);
-			m.EntitySet<Currency>(WebApiOdataEntitySet.Currencies);
-			m.EntitySet<Customer>(WebApiOdataEntitySet.Customers);
-			m.EntitySet<CustomerRole>(WebApiOdataEntitySet.CustomerRoles);
-            m.EntitySet<CustomerRoleMapping>(WebApiOdataEntitySet.CustomerRoleMappings);
-            m.EntitySet<DeliveryTime>(WebApiOdataEntitySet.DeliveryTimes);
-			m.EntitySet<Discount>(WebApiOdataEntitySet.Discounts);
-			m.EntitySet<Download>(WebApiOdataEntitySet.Downloads);
-			m.EntitySet<GenericAttribute>(WebApiOdataEntitySet.GenericAttributes);
-			m.EntitySet<Language>(WebApiOdataEntitySet.Languages);
-			m.EntitySet<LocalizedProperty>(WebApiOdataEntitySet.LocalizedPropertys);
-			m.EntitySet<Manufacturer>(WebApiOdataEntitySet.Manufacturers);
-			m.EntitySet<MeasureDimension>(WebApiOdataEntitySet.MeasureDimensions);
-			m.EntitySet<MeasureWeight>(WebApiOdataEntitySet.MeasureWeights);
-			m.EntitySet<OrderNote>(WebApiOdataEntitySet.OrderNotes);
-			m.EntitySet<Order>(WebApiOdataEntitySet.Orders);
-			m.EntitySet<OrderItem>(WebApiOdataEntitySet.OrderItems);
-			m.EntitySet<PaymentMethod>(WebApiOdataEntitySet.PaymentMethods);
-			m.EntitySet<MediaFile>(WebApiOdataEntitySet.Pictures);
-			m.EntitySet<ProductAttribute>(WebApiOdataEntitySet.ProductAttributes);
-			m.EntitySet<ProductAttributeOption>(WebApiOdataEntitySet.ProductAttributeOptions);
-			m.EntitySet<ProductAttributeOptionsSet>(WebApiOdataEntitySet.ProductAttributeOptionsSets);
-			m.EntitySet<ProductBundleItem>(WebApiOdataEntitySet.ProductBundleItems);
-			m.EntitySet<ProductCategory>(WebApiOdataEntitySet.ProductCategories);
-			m.EntitySet<ProductManufacturer>(WebApiOdataEntitySet.ProductManufacturers);
-			m.EntitySet<ProductMediaFile>(WebApiOdataEntitySet.ProductPictures);
-			m.EntitySet<Product>(WebApiOdataEntitySet.Products);
-			m.EntitySet<ProductSpecificationAttribute>(WebApiOdataEntitySet.ProductSpecificationAttributes);
-			m.EntitySet<ProductTag>(WebApiOdataEntitySet.ProductTags);
-			m.EntitySet<ProductVariantAttribute>(WebApiOdataEntitySet.ProductVariantAttributes);
-			m.EntitySet<ProductVariantAttributeValue>(WebApiOdataEntitySet.ProductVariantAttributeValues);
-			m.EntitySet<ProductVariantAttributeCombination>(WebApiOdataEntitySet.ProductVariantAttributeCombinations);
-			m.EntitySet<QuantityUnit>(WebApiOdataEntitySet.QuantityUnits);
-			m.EntitySet<RelatedProduct>(WebApiOdataEntitySet.RelatedProducts);
-			m.EntitySet<ReturnRequest>(WebApiOdataEntitySet.ReturnRequests);
-			m.EntitySet<Setting>(WebApiOdataEntitySet.Settings);
-			m.EntitySet<Shipment>(WebApiOdataEntitySet.Shipments);
-			m.EntitySet<ShipmentItem>(WebApiOdataEntitySet.ShipmentItems);
-			m.EntitySet<ShippingMethod>(WebApiOdataEntitySet.ShippingMethods);
-			m.EntitySet<SpecificationAttributeOption>(WebApiOdataEntitySet.SpecificationAttributeOptions);
-			m.EntitySet<SpecificationAttribute>(WebApiOdataEntitySet.SpecificationAttributes);
-			m.EntitySet<StateProvince>(WebApiOdataEntitySet.StateProvinces);
-			m.EntitySet<Store>(WebApiOdataEntitySet.Stores);
-			m.EntitySet<StoreMapping>(WebApiOdataEntitySet.StoreMappings);
-			m.EntitySet<TaxCategory>(WebApiOdataEntitySet.TaxCategories);
-			m.EntitySet<TierPrice>(WebApiOdataEntitySet.TierPrices);
-			m.EntitySet<UrlRecord>(WebApiOdataEntitySet.UrlRecords);
-			m.EntitySet<SyncMapping>(WebApiOdataEntitySet.SyncMappings);
+			m.EntitySet<Address>("Addresses");
+			m.EntitySet<BlogComment>("BlogComments");
+			m.EntitySet<BlogPost>("BlogPosts");
+			m.EntitySet<Category>("Categories");
+			m.EntitySet<Country>("Countries");
+			m.EntitySet<Currency>("Currencies");
+			m.EntitySet<Customer>("Customers");
+			m.EntitySet<CustomerRole>("CustomerRoles");
+            m.EntitySet<CustomerRoleMapping>("CustomerRoleMappings");
+            m.EntitySet<DeliveryTime>("DeliveryTimes");
+			m.EntitySet<Discount>("Discounts");
+			m.EntitySet<Download>("Downloads");
+			m.EntitySet<GenericAttribute>("GenericAttributes");
+			m.EntitySet<Language>("Languages");
+			m.EntitySet<LocalizedProperty>("LocalizedPropertys");   // Naming accident.
+			m.EntitySet<Manufacturer>("Manufacturers");
+			m.EntitySet<MeasureDimension>("MeasureDimensions");
+			m.EntitySet<MeasureWeight>("MeasureWeights");
+            m.EntitySet<MediaFile>("Pictures");
+            m.EntitySet<MediaTag>("MediaTags");
+            m.EntitySet<MediaTrack>("MediaTracks");
+            m.EntitySet<OrderNote>("OrderNotes");
+			m.EntitySet<Order>("Orders");
+			m.EntitySet<OrderItem>("OrderItems");
+			m.EntitySet<PaymentMethod>("PaymentMethods");
+			m.EntitySet<ProductAttribute>("ProductAttributes");
+			m.EntitySet<ProductAttributeOption>("ProductAttributeOptions");
+			m.EntitySet<ProductAttributeOptionsSet>("ProductAttributeOptionsSets");
+			m.EntitySet<ProductBundleItem>("ProductBundleItems");
+			m.EntitySet<ProductCategory>("ProductCategories");
+			m.EntitySet<ProductManufacturer>("ProductManufacturers");
+			m.EntitySet<ProductMediaFile>("ProductPictures");
+			m.EntitySet<Product>("Products");
+			m.EntitySet<ProductSpecificationAttribute>("ProductSpecificationAttributes");
+			m.EntitySet<ProductTag>("ProductTags");
+			m.EntitySet<ProductVariantAttribute>("ProductVariantAttributes");
+			m.EntitySet<ProductVariantAttributeValue>("ProductVariantAttributeValues");
+			m.EntitySet<ProductVariantAttributeCombination>("ProductVariantAttributeCombinations");
+			m.EntitySet<QuantityUnit>("QuantityUnits");
+			m.EntitySet<RelatedProduct>("RelatedProducts");
+			m.EntitySet<ReturnRequest>("ReturnRequests");
+			m.EntitySet<Setting>("Settings");
+			m.EntitySet<Shipment>("Shipments");
+			m.EntitySet<ShipmentItem>("ShipmentItems");
+			m.EntitySet<ShippingMethod>("ShippingMethods");
+			m.EntitySet<SpecificationAttributeOption>("SpecificationAttributeOptions");
+			m.EntitySet<SpecificationAttribute>("SpecificationAttributes");
+			m.EntitySet<StateProvince>("StateProvinces");
+			m.EntitySet<Store>("Stores");
+			m.EntitySet<StoreMapping>("StoreMappings");
+			m.EntitySet<TaxCategory>("TaxCategories");
+			m.EntitySet<TierPrice>("TierPrices");
+			m.EntitySet<UrlRecord>("UrlRecords");
+			m.EntitySet<SyncMapping>("SyncMappings");
 
 			AddActionsToOrder(m.Entity<Order>());
 			AddActionsToOrderItem(m.Entity<OrderItem>());
@@ -144,24 +146,24 @@ namespace SmartStore.WebApi
             config.Action("Pdf");
 
             config.Action("PaymentPending")
-                .ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders);
+                .ReturnsFromEntitySet<Order>("Orders");
 
             config.Action("PaymentPaid")
-                .ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders)
+                .ReturnsFromEntitySet<Order>("Orders")
                 .Parameter<string>("PaymentMethodName");
 
             config.Action("PaymentRefund")
-                .ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders)
+                .ReturnsFromEntitySet<Order>("Orders")
                 .Parameter<bool>("Online");
 
             config.Action("Cancel")
-                .ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders);
+                .ReturnsFromEntitySet<Order>("Orders");
 
             var addShipment = config.Action("AddShipment")
-                .ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders);
+                .ReturnsFromEntitySet<Order>("Orders");
 
             var completeOrder = config.Action("CompleteOrder")
-                .ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders);
+                .ReturnsFromEntitySet<Order>("Orders");
 
             addShipment.Parameter<string>("TrackingNumber");
             addShipment.Parameter<bool?>("SetAsShipped");
@@ -175,7 +177,7 @@ namespace SmartStore.WebApi
         private void AddActionsToProduct(EntityTypeConfiguration<Product> config)
         {
             config.Collection.Action("Search")
-                .ReturnsCollectionFromEntitySet<Product>(WebApiOdataEntitySet.Products);
+                .ReturnsCollectionFromEntitySet<Product>("Products");
 
             config.Action("FinalPrice")
                 .Returns<decimal>();
@@ -184,70 +186,13 @@ namespace SmartStore.WebApi
                 .Returns<decimal>();
 
             config.Action("CreateAttributeCombinations")
-                .ReturnsCollectionFromEntitySet<ProductVariantAttributeCombination>(WebApiOdataEntitySet.ProductVariantAttributeCombinations);
+                .ReturnsCollectionFromEntitySet<ProductVariantAttributeCombination>("ProductVariantAttributeCombinations");
 
             var manageAttributes = config.Action("ManageAttributes")
-                .ReturnsCollectionFromEntitySet<ProductVariantAttribute>(WebApiOdataEntitySet.ProductVariantAttributes);
+                .ReturnsCollectionFromEntitySet<ProductVariantAttribute>("ProductVariantAttributes");
 
             manageAttributes.Parameter<bool>("Synchronize");
             manageAttributes.CollectionParameter<ManageAttributeType>("Attributes");
         }
     }
-
-
-    public static class WebApiOdataEntitySet
-	{
-		public static string Addresses { get { return "Addresses"; } }
-		public static string BlogComments { get { return "BlogComments"; } }
-		public static string BlogPosts { get { return "BlogPosts"; } }
-		public static string Categories { get { return "Categories"; } }
-		public static string Countries { get { return "Countries"; } }
-		public static string Currencies { get { return "Currencies"; } }
-		public static string Customers { get { return "Customers"; } }
-		public static string CustomerRoles { get { return "CustomerRoles"; } }
-        public static string CustomerRoleMappings { get { return "CustomerRoleMappings"; } }
-        public static string DeliveryTimes { get { return "DeliveryTimes"; } }
-		public static string Discounts { get { return "Discounts"; } }
-		public static string Downloads { get { return "Downloads"; } }
-		public static string GenericAttributes { get { return "GenericAttributes"; } }
-		public static string Languages { get { return "Languages"; } }
-		public static string LocalizedPropertys { get { return "LocalizedPropertys"; } }
-		public static string Manufacturers { get { return "Manufacturers"; } }
-		public static string MeasureDimensions { get { return "MeasureDimensions"; } }
-		public static string MeasureWeights { get { return "MeasureWeights"; } }
-		public static string OrderNotes { get { return "OrderNotes"; } }
-		public static string Orders { get { return "Orders"; } }
-		public static string OrderItems { get { return "OrderItems"; } }
-		public static string PaymentMethods { get { return "PaymentMethods"; } }
-		public static string Pictures { get { return "Pictures"; } }
-		public static string ProductAttributes { get { return "ProductAttributes"; } }
-		public static string ProductAttributeOptions { get { return "ProductAttributeOptions"; } }
-		public static string ProductAttributeOptionsSets { get { return "ProductAttributeOptionsSets"; } }
-		public static string ProductBundleItems { get { return "ProductBundleItems"; } }
-		public static string ProductCategories { get { return "ProductCategories"; } }
-		public static string ProductManufacturers { get { return "ProductManufacturers"; } }
-		public static string ProductPictures { get { return "ProductPictures"; } }
-		public static string Products { get { return "Products"; } }
-		public static string ProductSpecificationAttributes { get { return "ProductSpecificationAttributes"; } }
-		public static string ProductTags { get { return "ProductTags"; } }
-		public static string ProductVariantAttributes { get { return "ProductVariantAttributes"; } }
-		public static string ProductVariantAttributeValues { get { return "ProductVariantAttributeValues"; } }
-		public static string ProductVariantAttributeCombinations { get { return "ProductVariantAttributeCombinations"; } }
-		public static string QuantityUnits { get { return "QuantityUnits"; } }
-		public static string RelatedProducts { get { return "RelatedProducts"; } }
-		public static string ReturnRequests { get { return "ReturnRequests"; } }
-		public static string Settings { get { return "Settings"; } }
-		public static string Shipments { get { return "Shipments"; } }
-		public static string ShipmentItems { get { return "ShipmentItems"; } }
-		public static string ShippingMethods { get { return "ShippingMethods"; } }
-		public static string SpecificationAttributeOptions { get { return "SpecificationAttributeOptions"; } }
-		public static string SpecificationAttributes { get { return "SpecificationAttributes"; } }
-		public static string StateProvinces { get { return "StateProvinces"; } }
-		public static string Stores { get { return "Stores"; } }
-		public static string StoreMappings { get { return "StoreMappings"; } }
-		public static string TaxCategories { get { return "TaxCategories"; } }
-		public static string TierPrices { get { return "TierPrices"; } }
-		public static string UrlRecords { get { return "UrlRecords"; } }
-		public static string SyncMappings { get { return "SyncMappings"; } }
-	}
 }

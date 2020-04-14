@@ -45,6 +45,7 @@ namespace SmartStore.Core.Domain.Media
         /// <summary>
         /// Gets or sets the origin album system name.
         /// </summary>
+        [DataMember]
         public string Album { get; set; }
 
         /// <summary>

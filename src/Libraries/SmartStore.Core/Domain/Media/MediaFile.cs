@@ -23,7 +23,6 @@ namespace SmartStore.Core.Domain.Media
 		/// <summary>
 		/// Gets or sets the associated folder.
 		/// </summary>
-		[DataMember]
 		public virtual MediaFolder Folder { get; set; }
 
 		/// <summary>

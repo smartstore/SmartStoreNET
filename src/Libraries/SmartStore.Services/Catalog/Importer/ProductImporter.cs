@@ -864,7 +864,8 @@ namespace SmartStore.Services.Catalog.Importer
                     continue;
                 }
 
-				var imageNumber = 0;
+                var productId = row.Entity.Id;
+                var imageNumber = 0;
 				var displayOrder = -1;
 				var imageFiles = new List<FileDownloadManagerItem>();
 
@@ -901,10 +902,10 @@ namespace SmartStore.Services.Catalog.Importer
                             {
                                 if ((stream?.Length ?? 0) > 0)
                                 {
-                                    var tmpFileMap = _productService.GetProductPicturesByProductIds(new int[] { row.Entity.Id }, null, MediaLoadFlags.WithBlob);                                    
+                                    var tmpFileMap = _productService.GetProductPicturesByProductIds(new int[] { productId }, null, MediaLoadFlags.WithBlob);                                    
                                     
-                                    var currentFiles = tmpFileMap.ContainsKey(row.Entity.Id)
-                                        ? tmpFileMap[row.Entity.Id]
+                                    var currentFiles = tmpFileMap.ContainsKey(productId)
+                                        ? tmpFileMap[productId]
                                         : Enumerable.Empty<ProductMediaFile>();
 
                                     if (displayOrder == -1)
@@ -912,8 +913,7 @@ namespace SmartStore.Services.Catalog.Importer
                                         displayOrder = currentFiles.Any() ? currentFiles.Select(x => x.DisplayOrder).Max() : 0;
                                     }
 
-                                    var fileBuffer = _mediaService.FindEqualFile(stream.ToByteArray(), currentFiles.Select(x => x.MediaFile), out var _);
-                                    if ((fileBuffer?.Length ?? 0) > 0)
+                                    if (!_mediaService.FindEqualFile(stream, currentFiles.Select(x => x.MediaFile), true, out var _))
                                     {
                                         var path = _mediaService.CombinePaths(SystemAlbumProvider.Products, image.FileName.ToValidFileName());
                                         var newFile = _mediaService.SaveFile(path, stream, false, DuplicateFileHandling.Rename);
@@ -921,7 +921,7 @@ namespace SmartStore.Services.Catalog.Importer
                                         {
                                             _productService.InsertProductPicture(new ProductMediaFile
                                             {
-                                                ProductId = row.Entity.Id,
+                                                ProductId = productId,
                                                 MediaFileId = newFile.Id,
                                                 DisplayOrder = ++displayOrder
                                             });

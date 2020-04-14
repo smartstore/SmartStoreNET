@@ -626,13 +626,12 @@ namespace SmartStore.Services.Customers.Importer
                                 currentFiles.Add(file);
                             }
 
-                            var fileBuffer = _mediaService.FindEqualFile(stream.ToByteArray(), currentFiles.Select(x => x.File), out var _);
-                            if ((fileBuffer?.Length ?? 0) > 0)
+                            if (!_mediaService.FindEqualFile(stream, currentFiles.Select(x => x.File), true, out var _))
                             {
                                 // Don't manage avatar files. Just overwrite existing file.
                                 var path = _mediaService.CombinePaths(SystemAlbumProvider.Customers, image.FileName.ToValidFileName());
 
-                                var newFile = _mediaService.SaveFile(path, fileBuffer.ToStream(), false, DuplicateFileHandling.Overwrite);
+                                var newFile = _mediaService.SaveFile(path, stream, false, DuplicateFileHandling.Overwrite);
                                 if ((newFile?.Id ?? 0) != 0)
                                 {
                                     SaveAttribute(row, SystemCustomerAttributeNames.AvatarPictureId, newFile.Id);

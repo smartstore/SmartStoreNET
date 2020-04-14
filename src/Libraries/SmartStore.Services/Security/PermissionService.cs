@@ -408,7 +408,7 @@ namespace SmartStore.Services.Security
 
         public virtual bool Authorize(string permissionSystemName, Customer customer)
         {
-            if (string.IsNullOrEmpty(permissionSystemName))
+            if (customer == null || string.IsNullOrEmpty(permissionSystemName))
             {
                 return false;
             }

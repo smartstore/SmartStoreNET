@@ -207,8 +207,7 @@ namespace SmartStore.Services.Catalog.Importer
                                     currentFiles.Add(file);
                                 }
 
-                                var fileBuffer = _mediaService.FindEqualFile(stream.ToByteArray(), currentFiles.Select(x => x.File), out var _);
-                                if ((fileBuffer?.Length ?? 0) > 0)
+                                if (!_mediaService.FindEqualFile(stream, currentFiles.Select(x => x.File), true, out var _))
                                 {
                                     var path = _mediaService.CombinePaths(SystemAlbumProvider.Categories, image.FileName.ToValidFileName());
                                     var newFile = _mediaService.SaveFile(path, stream, false, DuplicateFileHandling.Rename);

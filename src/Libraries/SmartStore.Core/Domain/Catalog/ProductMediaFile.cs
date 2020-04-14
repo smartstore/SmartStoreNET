@@ -3,11 +3,23 @@ using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Core.Domain.Catalog
 {
+    public interface IMediaFile
+    {
+        /// <summary>
+        /// Gets or sets the media identifier
+        int MediaFileId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the display order
+        /// </summary>
+        int DisplayOrder { get; set; }
+    }
+    
     /// <summary>
     /// Represents a product media file mapping
     /// </summary>
 	[DataContract]
-	public partial class ProductMediaFile : BaseEntity
+	public partial class ProductMediaFile : BaseEntity, IMediaFile
     {
         /// <summary>
         /// Gets or sets the product identifier

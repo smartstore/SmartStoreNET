@@ -11,7 +11,6 @@ using SmartStore.Web.Framework.WebApi.Security;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
-    [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditPicture)]
 	public class PicturesController : WebApiEntityController<MediaFile, IMediaService>
 	{
         protected override IQueryable<MediaFile> GetEntitySet()

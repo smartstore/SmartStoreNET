@@ -7,14 +7,13 @@ using System.Web.Http.OData.Extensions;
 using System.Web.Http.OData.Routing;
 using System.Web.Http.OData.Routing.Conventions;
 using Newtonsoft.Json;
-using SmartStore.ComponentModel;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using SmartStore.Web.Framework.WebApi.OData;
 
 namespace SmartStore.Web.Framework.WebApi
 {
-	public class WebApiStartupTask : IApplicationStart
+    public class WebApiStartupTask : IApplicationStart
     {      
         public void Start()
         {
@@ -30,6 +29,7 @@ namespace SmartStore.Web.Framework.WebApi
 			config.DependencyResolver = new AutofacWebApiDependencyResolver();
 
 			config.Formatters.JsonFormatter.SerializerSettings.Formatting = Formatting.Indented;
+            config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new WebApiContractResolver(config.Formatters.JsonFormatter);
             config.Formatters.JsonFormatter.MediaTypeMappings.Add(new QueryStringMapping("format", "json", "application/json"));
 			config.Formatters.XmlFormatter.MediaTypeMappings.Add(new QueryStringMapping("format", "xml", "application/xml"));

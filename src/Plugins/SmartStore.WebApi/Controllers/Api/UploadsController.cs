@@ -35,8 +35,8 @@ namespace SmartStore.WebApi.Controllers.Api
 		private static readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
 
         private readonly Lazy<IProductService> _productService;
-		private readonly Lazy<IPictureService> _pictureService;
-		private readonly Lazy<IImportProfileService> _importProfileService;
+        private readonly Lazy<IMediaService> _mediaService;
+        private readonly Lazy<IImportProfileService> _importProfileService;
         private readonly Lazy<IStoreService> _storeService;
         private readonly Lazy<IPermissionService> _permissionService;
         private readonly Lazy<ITaskScheduler> _taskScheduler;
@@ -46,8 +46,8 @@ namespace SmartStore.WebApi.Controllers.Api
 
 		public UploadsController(
 			Lazy<IProductService> productService,
-			Lazy<IPictureService> pictureService,
-			Lazy<IImportProfileService> importProfileService,
+            Lazy<IMediaService> mediaService,
+            Lazy<IImportProfileService> importProfileService,
             Lazy<IStoreService> storeService,
             Lazy<IPermissionService> permissionService,
             Lazy<ITaskScheduler> taskScheduler,
@@ -56,7 +56,7 @@ namespace SmartStore.WebApi.Controllers.Api
 			Lazy<MediaSettings> mediaSettings)
 		{
 			_productService = productService;
-			_pictureService = pictureService;
+            _mediaService = mediaService;
 			_importProfileService = importProfileService;
             _storeService = storeService;
             _permissionService = permissionService;
@@ -141,65 +141,75 @@ namespace SmartStore.WebApi.Controllers.Api
 			var storeUrl = _storeService.Value.GetHost(_storeContext.Value.CurrentStore);
 			var pictures = entity.ProductPictures.Select(x => x.MediaFile);
 
-			if (entity.ProductPictures.Count > 0)
-				displayOrder = entity.ProductPictures.Max(x => x.DisplayOrder);
+            if (entity.ProductPictures.Any())
+            {
+                displayOrder = entity.ProductPictures.Max(x => x.DisplayOrder);
+            }
 
 			foreach (var file in provider.FileData)
 			{
 				var image = new UploadImage(file.Headers);
 
-				if (image.FileName.IsEmpty())
-					image.FileName = entity.Name;
+                if (image.FileName.IsEmpty())
+                {
+                    image.FileName = Path.GetRandomFileName();
+                }
 
-				var pictureBinary = File.ReadAllBytes(file.LocalFileName);
+                using (var stream = File.OpenRead(file.LocalFileName))
+                {
+                    if ((stream?.Length ?? 0) > 0)
+                    {
+                        if (image.PictureId != 0 && (image.Picture = pictures.FirstOrDefault(x => x.Id == image.PictureId)) != null)
+                        {
+                            image.Exists = true;
 
-				if (pictureBinary != null && pictureBinary.Length > 0)
-				{
-					if (image.PictureId != 0 && (image.Picture = pictures.FirstOrDefault(x => x.Id == image.PictureId)) != null)
-					{
-						image.Exists = true;
+                            var fileInfo = _mediaService.Value.ConvertMediaFile(image.Picture);
+                            var path = fileInfo.Path;
+                            var existingFile = await _mediaService.Value.SaveFileAsync(path, stream, false, DuplicateFileHandling.Overwrite);
 
-						var seoName = _pictureService.Value.GetPictureSeName(Path.GetFileNameWithoutExtension(image.FileName));
-						_pictureService.Value.UpdatePicture(image.Picture, pictureBinary, image.MediaType, seoName, false);
-					}
-					else
-					{
-						pictureBinary = _pictureService.Value.FindEqualPicture(pictureBinary, pictures, out equalPictureId);
-						if (pictureBinary != null)
-						{
-							var seoName = _pictureService.Value.GetPictureSeName(Path.GetFileNameWithoutExtension(image.FileName));
-                            var newPicture = _pictureService.Value.InsertPicture(pictureBinary, image.MediaType, seoName, false, false, "product");
-                            
-							if (newPicture != null)
-							{
-								_productService.Value.InsertProductPicture(new ProductMediaFile
-								{
-									MediaFileId = newPicture.Id,
-									ProductId = entity.Id,
-									DisplayOrder = ++displayOrder
-								});
+                            if (existingFile == null || existingFile.Id != image.Picture.Id)
+                            {
+                                throw this.ExceptionInternalServerError(new Exception($"Failed to update existing product image: id {image.Picture.Id}, path '{path.NaIfEmpty()}'."));
+                            }
+                        }
+                        else
+                        {
+                            if (!_mediaService.Value.FindEqualFile(stream, pictures, true, out equalPictureId))
+                            {
+                                var path = _mediaService.Value.CombinePaths(SystemAlbumProvider.Products, image.FileName.ToValidFileName());
+                                var newFile = await _mediaService.Value.SaveFileAsync(path, stream, false, DuplicateFileHandling.Rename);
 
-								image.Inserted = true;
-								image.Picture = newPicture;
-							}
-						}
-						else
-						{
-							image.Exists = true;
-							image.Picture = pictures.FirstOrDefault(x => x.Id == equalPictureId);
-						}
-					}
+                                if ((newFile?.Id ?? 0) != 0)
+                                {
+                                    _productService.Value.InsertProductPicture(new ProductMediaFile
+                                    {
+                                        MediaFileId = newFile.Id,
+                                        ProductId = entity.Id,
+                                        DisplayOrder = ++displayOrder
+                                    });
 
-					if (image.Picture != null)
-					{
-						image.PictureId = image.Picture.Id;
-						image.ImageUrl = _pictureService.Value.GetUrl(image.Picture, _mediaSettings.Value.ProductDetailsPictureSize, false, storeUrl);
-						image.ThumbImageUrl = _pictureService.Value.GetUrl(image.Picture, _mediaSettings.Value.ProductThumbPictureSize, false, storeUrl);
-						image.FullSizeImageUrl = _pictureService.Value.GetUrl(image.Picture, 0, false, storeUrl);
-					}
-				}
+                                    image.Inserted = true;
+                                    image.Picture = newFile.File;
+                                }
+                            }
+                            else
+                            {
+                                image.Exists = true;
+                                image.Picture = pictures.FirstOrDefault(x => x.Id == equalPictureId);
+                            }
+                        }
 
-				result.Add(image);
+                        if (image.Picture != null)
+                        {
+                            image.PictureId = image.Picture.Id;
+                            image.ImageUrl = _mediaService.Value.GetUrl(image.Picture, _mediaSettings.Value.ProductDetailsPictureSize, storeUrl, false);
+                            image.ThumbImageUrl = _mediaService.Value.GetUrl(image.Picture, _mediaSettings.Value.ProductThumbPictureSize, storeUrl, false);
+                            image.FullSizeImageUrl = _mediaService.Value.GetUrl(image.Picture, 0, storeUrl, false);
+                        }
+                    }
+                }
+
+                result.Add(image);
 			}
 
 			provider.DeleteLocalFiles();

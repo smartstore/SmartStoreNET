@@ -581,9 +581,8 @@ namespace SmartStore.Admin.Controllers
                 model.PictureThumbnailUrl = _mediaService.GetUrl(file, _mediaSettings.CartThumbPictureSize);
                 model.NoThumb = file == null;
 
-				// Pictures.
 				PrepareProductPictureModel(model);
-				model.AddPictureModel.PictureId = (int)product.MainPictureId;
+				model.AddPictureModel.PictureId = product.MainPictureId ?? 0;
 			}
 
             model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
@@ -759,7 +758,6 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		[NonAction]
 		private void PrepareProductPictureModel(ProductModel model)
 		{
 			Guard.NotNull(model, nameof(model));
@@ -780,7 +778,7 @@ namespace SmartStore.Admin.Controllers
 
 					try
 					{
-						pictureModel.PictureUrl = _pictureService.GetUrl(x.MediaFileId);
+						pictureModel.PictureUrl = _mediaService.GetUrl(x.MediaFileId, 0);
 					}
 					catch (Exception ex)
 					{
@@ -791,15 +789,6 @@ namespace SmartStore.Admin.Controllers
 					return pictureModel;
 				})
 				.ToList();
-		}
-
-		[NonAction]
-        private void PrepareProductPictureThumbnailModel(ProductModel model, Product product, PictureInfo defaultPicture)
-        {
-			Guard.NotNull(model, nameof(model));
-
-			model.PictureThumbnailUrl = _pictureService.GetUrl(defaultPicture, _mediaSettings.CartThumbPictureSize, true);
-			model.NoThumb = defaultPicture == null;
 		}
 
 		private IQueryable<Product> ApplySorting(IQueryable<Product> query, GridCommand command)

@@ -26,31 +26,31 @@ namespace SmartStore.WebApi.Models.Api
 		}
 
 		/// <summary>
-		/// Url of the default size image
+		/// URL of the default size image.
 		/// </summary>
 		[DataMember]
 		public string ImageUrl { get; set; }
 
 		/// <summary>
-		/// Url of the thumbnail image
+		/// URL of the thumbnail image.
 		/// </summary>
 		[DataMember]
 		public string ThumbImageUrl { get; set; }
 
 		/// <summary>
-		/// Url of the full size image
+		/// URL of the full size image.
 		/// </summary>
 		[DataMember]
 		public string FullSizeImageUrl { get; set; }
 
 		/// <summary>
-		/// Picture identifier. Used to update an existing image. Can be 0.
+		/// Optional media file identifier. Can be 0.
 		/// </summary>
 		[DataMember]
 		public int PictureId { get; set; }
 
 		/// <summary>
-		/// The picture entity. Can be <c>null</c>.
+		/// The media file entity. Can be <c>null</c>.
 		/// </summary>
 		[DataMember]
 		public MediaFile Picture { get; set; }

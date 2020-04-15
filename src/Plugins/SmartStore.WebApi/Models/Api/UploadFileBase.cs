@@ -36,7 +36,7 @@ namespace SmartStore.WebApi.Models.Api
 		public string Name { get; set; }
 
 		/// <summary>
-		/// Unquoted filename attribute of content-disposition multipart header
+		/// Unquoted filename attribute of content-disposition multipart header, including file extension.
 		/// </summary>
 		[DataMember]
 		public string FileName { get; set; }

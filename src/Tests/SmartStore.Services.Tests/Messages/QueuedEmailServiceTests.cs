@@ -20,10 +20,8 @@ namespace SmartStore.Services.Tests.Messages
     {
 		IRepository<QueuedEmail> _qeRepository;
 		IRepository<QueuedEmailAttachment> _qeaRepository;
-		IRepository<Download> _downloadRepository;
 		IEmailSender _emailSender;
 		ICommonServices _services;
-		IDownloadService _downloadService;
 		QueuedEmailService _queuedEmailService;
 		ISettingService _settingService;
         IMediaService _mediaService;
@@ -33,17 +31,15 @@ namespace SmartStore.Services.Tests.Messages
 		{
 			_qeRepository = MockRepository.GenerateMock<IRepository<QueuedEmail>>();
 			_qeaRepository = MockRepository.GenerateMock<IRepository<QueuedEmailAttachment>>();
-			_downloadRepository = MockRepository.GenerateMock<IRepository<Download>>();
 			_emailSender = MockRepository.GenerateMock<IEmailSender>();
 			_services = MockRepository.GenerateMock<ICommonServices>();
             _mediaService = MockRepository.GenerateMock<IMediaService>();
 
             _settingService = new ConfigFileSettingService(null, null);
 			_services.Expect(x => x.Settings).Return(_settingService);
+            _services.Expect(x => x.MediaService).Return(_mediaService);
 
-			_downloadService = new DownloadService(_downloadRepository, _mediaService, _settingService, ProviderManager);
-
-			_queuedEmailService = new QueuedEmailService(_qeRepository, _qeaRepository, _emailSender, _services);
+            _queuedEmailService = new QueuedEmailService(_qeRepository, _qeaRepository, _emailSender, _services);
 		}
 
         [Test]
@@ -113,7 +109,7 @@ namespace SmartStore.Services.Tests.Messages
 			qe.Attachments.Add(attachPath1);
 			qe.Attachments.Add(attachPath2);
 
-			var msg = _queuedEmailService.ConvertEmail(qe);
+            var msg = _queuedEmailService.ConvertEmail(qe);
 
 			Assert.IsNotNull(msg);
 			Assert.IsNotNull(msg.To);

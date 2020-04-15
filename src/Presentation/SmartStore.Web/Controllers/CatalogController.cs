@@ -41,7 +41,6 @@ namespace SmartStore.Web.Controllers
         private readonly IAclService _aclService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly ICatalogSearchService _catalogSearchService;
-        private readonly IMediaService _mediaService;
 		private readonly MediaSettings _mediaSettings;
         private readonly CatalogSettings _catalogSettings;
 		private readonly ICompareProductsService _compareProductsService;
@@ -62,7 +61,6 @@ namespace SmartStore.Web.Controllers
 			IAclService aclService,
 			IStoreMappingService storeMappingService,
 			ICatalogSearchService catalogSearchService,
-            IMediaService mediaService,
             MediaSettings mediaSettings, 
 			CatalogSettings catalogSettings,
             CatalogHelper helper,
@@ -81,7 +79,6 @@ namespace SmartStore.Web.Controllers
             _aclService = aclService;
 			_storeMappingService = storeMappingService;
 			_catalogSearchService = catalogSearchService;
-            _mediaService = mediaService;
             _mediaSettings = mediaSettings;
             _catalogSettings = catalogSettings;
             _helper = helper;
@@ -371,7 +368,7 @@ namespace SmartStore.Web.Controllers
                 .Where(x => x != 0)
                 .Distinct()
                 .ToArray();
-            var files = _mediaService.GetFilesByIds(fileIds).ToDictionarySafe(x => x.Id);
+            var files = Services.MediaService.GetFilesByIds(fileIds).ToDictionarySafe(x => x.Id);
 
             foreach (var manufacturer in manufacturers)
             {
@@ -665,13 +662,15 @@ namespace SmartStore.Web.Controllers
 				.Slice(0, _catalogSettings.RecentlyAddedProductsNumber);
 
 			var result = _catalogSearchService.Search(query);
-
 			var storeUrl = Services.StoreService.GetHost(Services.StoreContext.CurrentStore);
 
-			// Prefecthing
-			var allPictureInfos = Services.PictureService.GetPictureInfos(result.Hits);
-
-			//_mediaSettings.ProductDetailsPictureSize, false, storeUrl
+			// Prefetching.
+            var fileIds = result.Hits
+                .Select(x => x.MainPictureId ?? 0)
+                .Where(x => x != 0)
+                .Distinct()
+                .ToArray();
+            var files = Services.MediaService.GetFilesByIds(fileIds).ToDictionarySafe(x => x.Id);
 
 			foreach (var product in result.Hits)
 			{
@@ -687,12 +686,12 @@ namespace SmartStore.Web.Controllers
 
 					try
 					{
-						// we add only the first picture
-						var picture = Services.PictureService.GetPictureById(product.MainPictureId.GetValueOrDefault());
-						if (picture != null)
-						{
-							feed.AddEnclosure(item, picture, Services.PictureService.GetUrl(picture, _mediaSettings.ProductDetailsPictureSize, FallbackPictureType.NoFallback, storeUrl));
-						}
+                        // We add only the first media file.
+                        if (files.TryGetValue(product.MainPictureId ?? 0, out var file))
+                        {
+                            var url = Services.MediaService.GetUrl(file, _mediaSettings.ProductDetailsPictureSize, storeUrl, false);
+                            feed.AddEnclosure(item, file.File, url);
+                        }
 					}
 					catch { }
 

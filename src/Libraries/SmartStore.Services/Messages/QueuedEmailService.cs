@@ -228,9 +228,17 @@ namespace SmartStore.Services.Messages
 						var file = qea.MediaFile;
 						if (file != null)
 						{
-							var data = _services.PictureService.LoadPictureBinary(file);
-							attachment = new Attachment(data.ToStream(), file.Name, file.MimeType);
-						}
+                            // TODO: unit tests. Difficult to mock.
+                            var mediaFile = _services.MediaService.ConvertMediaFile(file);
+
+                            using (var stream = mediaFile.OpenRead())
+                            {
+                                if ((stream?.Length ?? 0) > 0)
+                                {
+                                    attachment = new Attachment(stream, file.Name, file.MimeType);
+                                }
+                            }
+                        }
 					}
 
 					if (attachment != null)

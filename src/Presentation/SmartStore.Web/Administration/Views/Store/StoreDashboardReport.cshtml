@@ -1,11 +1,8 @@
-﻿@model StoreDashboardReportModel
-@using SmartStore.Admin.Models.Store;
-
-<div class="report">
+﻿<div class="report">
     <div class="report-title-row">
         <div class="report-title">@T("Admin.Report.StoreStatistics")</div>
     </div>
-    <div class="statistics-container pt-1 pb-3">
+    <div class="statistics-container pt-2 pb-3">
         <div class="row pl-4 pr-3 m-0">
             <div class="col-6 col-md-4 statistics-col">
                 <div class="statistics-content">
@@ -14,7 +11,7 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value" title="@Model.ProductsCount">@Model.ProductsCount</div>
+                            <div class="statistics-value" id="stats-products"></div>
                             <div class="statistics-attribute" title="@T("Admin.Catalog.Products")">@T("Admin.Catalog.Products")</div>
                         </div>
                     </div>
@@ -27,7 +24,7 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value" title="@Model.AttributesCount">@Model.AttributesCount</div>
+                            <div class="statistics-value" id="stats-attributes"></div>
                             <div class="statistics-attribute" title="@T("Admin.Catalog.Attributes.ProductAttributes")">@T("Admin.Catalog.Attributes")</div>
                         </div>
                     </div>
@@ -40,8 +37,10 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value" title="@Model.AttributeCombinationsCount">@Model.AttributeCombinationsCount</div>
-                            <div class="statistics-attribute" title="@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations")">@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Short")</div>
+                            <div class="statistics-value" id="stats-combinations"></div>
+                            <div class="statistics-attribute" title="@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations")">
+                                @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Short")
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -53,7 +52,7 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value" title="@Model.CategoriesCount">@Model.CategoriesCount</div>
+                            <div class="statistics-value" id="stats-categories"></div>
                             <div class="statistics-attribute" title="@T("Admin.Catalog.Categories")">@T("Admin.Catalog.Categories")</div>
                         </div>
                     </div>
@@ -66,7 +65,7 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value" title="@Model.ManufacturersCount">@Model.ManufacturersCount</div>
+                            <div class="statistics-value" id="stats-manufacturer"></div>
                             <div class="statistics-attribute" title="@T("Admin.Catalog.Manufacturers")">@T("Admin.Catalog.Manufacturers")</div>
                         </div>
                     </div>
@@ -79,7 +78,7 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value" title="@Model.MediaCount">@Model.MediaCount</div>
+                            <div class="statistics-value" id="stats-media"></div>
                             <div class="statistics-attribute" title="@T("Admin.Catalog.Products.Pictures")">@T("Admin.Catalog.Products.Pictures")</div>
                         </div>
                     </div>
@@ -92,7 +91,7 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value" title="@Model.CustomersCount">@Model.CustomersCount</div>
+                            <div class="statistics-value" id="stats-customers"></div>
                             <div class="statistics-attribute" title="@T("Admin.Customers.Reports.RegisteredCustomers")">@T("Admin.Customers.Customers")</div>
                         </div>
                     </div>
@@ -105,7 +104,7 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value" title="@Model.OrdersCount">@Model.OrdersCount</div>
+                            <div class="statistics-value" id="stats-orders"></div>
                             <div class="statistics-attribute" title="@T("Admin.Orders.Overall")">@T("Admin.Orders")</div>
                         </div>
                     </div>
@@ -118,7 +117,7 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value" title="@Model.Sales @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model.Sales</div>
+                            <div class="statistics-value" id="stats-sales"></div>
                             <div class="statistics-attribute" title="@T("Admin.SalesReport.Sales.Hint")">@T("Admin.SalesReport.Sales")</div>
                         </div>
                     </div>
@@ -131,7 +130,7 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value" title="@Model.OnlineCustomersCount">@Model.OnlineCustomersCount</div>
+                            <div class="statistics-value" id="stats-online"></div>
                             <div class="statistics-attribute" title="@T("Admin.Report.OnlineCustomers")">@T("Admin.Customers.OnlineCustomers")</div>
                         </div>
                     </div>
@@ -144,7 +143,7 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value" title="@Model.CartsValue @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model.CartsValue</div>
+                            <div class="statistics-value" id="stats-carts"></div>
                             <div class="statistics-attribute" title="@T("Admin.CurrentCarts")">@T("Admin.CurrentCarts.Short")</div>
                         </div>
                     </div>
@@ -157,7 +156,7 @@
                     </div>
                     <div class="statistics-container-outer">
                         <div class="statistics-container-inner">
-                            <div class="statistics-value" title="@Model.WishlistsValue @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model.WishlistsValue</div>
+                            <div class="statistics-value" id="stats-wishlists"></div>
                             <div class="statistics-attribute" title="@T("Admin.CurrentWishlists")">@T("Admin.CurrentWishlists.Short") </div>
                         </div>
                     </div>
@@ -166,3 +165,47 @@
         </div>
     </div>
 </div>
+ <script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "@(Url.Action("StoreDashboardReport", "Store"))",
+            success: function (data) {
+                $('#stats-products').html(data.model.ProductsCount);
+                $('#stats-products').attr("Title", data.model.ProductsCount);
+
+                $('#stats-attributes').html(data.model.AttributesCount);
+                $('#stats-attributes').attr("Title", data.model.AttributesCount);
+
+                $('#stats-combinations').html(data.model.AttributeCombinationsCount);
+                $('#stats-combinations').attr("Title", data.model.AttributeCombinationsCount);
+
+                $('#stats-categories').html(data.model.CategoriesCount);
+                $('#stats-categories').attr("Title", data.model.CategoriesCount);
+
+                $('#stats-manufacturer').html(data.model.ManufacturersCount);
+                $('#stats-manufacturer').attr("Title", data.model.ManufacturersCount);
+
+                $('#stats-media').html(data.model.MediaCount);
+                $('#stats-media').attr("Title", data.model.MediaCount);
+
+                $('#stats-customers').html(data.model.CustomersCount);
+                $('#stats-customers').attr("Title", data.model.CustomersCount);
+
+                $('#stats-orders').html(data.model.OrdersCount);
+                $('#stats-orders').attr("Title", data.model.OrdersCount);
+
+                $('#stats-sales').html(data.model.Sales);
+                $('#stats-sales').attr("Title", data.model.Sales + " @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")");
+
+                $('#stats-online').html(data.model.OnlineCustomersCount);
+                $('#stats-online').attr("Title", data.model.OnlineCustomersCount);
+
+                $('#stats-carts').html(data.model.CartsValue);
+                $('#stats-carts').attr("Title", data.model.CartsValue + " @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")");
+
+                $('#stats-wishlists').html(data.model.WishlistsValue);
+                $('#stats-wishlists').attr("Title", data.model.WishlistsValue + " @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")");
+            }
+        });
+    });
+ </script>

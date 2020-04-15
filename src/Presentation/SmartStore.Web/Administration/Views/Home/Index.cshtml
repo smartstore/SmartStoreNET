@@ -1,4 +1,4 @@
-﻿@{
+@{
     Layout = "_MinimalLayout";
 }
 
@@ -11,6 +11,7 @@
 
 <div class="dashboard-grid">
     @{ Html.RenderWidget("admin_dashboard_top"); }
+
     <div class="report-incomplete-orders">
         @{ Html.RenderAction("OrdersIncompleteDashboardReport", "Order"); }
     </div>
@@ -30,7 +31,7 @@
         @{ Html.RenderAction("LatestOrdersDashboardReport", "Order"); }
     </div>
     <div class="report-store-statistics">
-        @{ Html.RenderAction("StoreDashboardReport", "Store"); }
+        @{ Html.RenderPartial("~/Administration/Views/Store/StoreDashboardReport.cshtml"); }
     </div>
     <div class="marketplace-feed">
         @{ Html.RenderAction("MarketplaceFeed"); }
@@ -38,4 +39,3 @@
 
     @{ Html.RenderWidget("admin_dashboard_bottom"); }
 </div>
-

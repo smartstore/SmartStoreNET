@@ -244,8 +244,8 @@ namespace SmartStore.Admin.Controllers
         #endregion
 
         [Permission(Permissions.Configuration.Store.ReadStats, false)]
-        public ActionResult StoreDashboardReport()
-        {
+        public JsonResult StoreDashboardReport()
+        {            
             var watch = new Stopwatch();
             watch.Start();
 
@@ -275,7 +275,11 @@ namespace SmartStore.Admin.Controllers
             watch.Stop();
             Debug.WriteLine("StoreDashboardReport >>> " + watch.ElapsedMilliseconds);
 
-            return PartialView(model);
+            return new JsonResult
+            {
+                Data = new { model },
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet
+            };
         }
     }
 }

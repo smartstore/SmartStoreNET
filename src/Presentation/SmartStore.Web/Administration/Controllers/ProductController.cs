@@ -66,7 +66,6 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizationService _localizationService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ISpecificationAttributeService _specificationAttributeService;
-        private readonly IPictureService _pictureService;
         private readonly IMediaService _mediaService;
         private readonly ITaxCategoryService _taxCategoryService;
         private readonly IProductTagService _productTagService;
@@ -118,7 +117,6 @@ namespace SmartStore.Admin.Controllers
             ILocalizationService localizationService,
 			ILocalizedEntityService localizedEntityService,
             ISpecificationAttributeService specificationAttributeService,
-			IPictureService pictureService,
             IMediaService mediaService,
             ITaxCategoryService taxCategoryService,
 			IProductTagService productTagService,
@@ -165,7 +163,6 @@ namespace SmartStore.Admin.Controllers
             _localizationService = localizationService;
             _localizedEntityService = localizedEntityService;
             _specificationAttributeService = specificationAttributeService;
-            _pictureService = pictureService;
             _mediaService = mediaService;
             _taxCategoryService = taxCategoryService;
             _productTagService = productTagService;
@@ -461,15 +458,6 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[NonAction]
-		private void UpdatePictureSeoNames(Product product)
-		{
-			foreach (var pp in product.ProductPictures)
-			{
-				_pictureService.SetSeoFilename(pp.MediaFileId, _pictureService.GetPictureSeName(product.Name));
-			}
-		}
-
-		[NonAction]
 		private void UpdateDataOfExistingProduct(Product product, ProductModel model, bool editMode, bool nameChanged)
 		{
 			var p = product;
@@ -503,12 +491,6 @@ namespace SmartStore.Admin.Controllers
 
 				var localizedSeName = p.ValidateSeName(localized.SeName, localized.Name, false, _urlRecordService, _seoSettings, localized.LanguageId);
 				_urlRecordService.SaveSlug(p, localizedSeName, localized.LanguageId);
-			}
-
-			// Picture SEO names.
-			if (nameChanged)
-			{
-				UpdatePictureSeoNames(p);
 			}
 
             _productTagService.UpdateProductTags(p, m.ProductTags);
@@ -2206,8 +2188,6 @@ namespace SmartStore.Admin.Controllers
             };
 
             _productService.InsertProductPicture(productPicture);
-
-            _pictureService.SetSeoFilename(pictureId, _pictureService.GetPictureSeName(product.Name));
 
             return Json(new { success = true, message = T("Admin.Product.Picture.Added").JsText.ToString() }, JsonRequestBehavior.AllowGet);
         }

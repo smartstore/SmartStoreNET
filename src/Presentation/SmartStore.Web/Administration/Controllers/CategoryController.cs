@@ -18,7 +18,6 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
@@ -41,7 +40,6 @@ namespace SmartStore.Admin.Controllers
         private readonly ICategoryTemplateService _categoryTemplateService;
         private readonly IProductService _productService;
         private readonly IUrlRecordService _urlRecordService;
-        private readonly IPictureService _pictureService;
         private readonly ILanguageService _languageService;
         private readonly ILocalizationService _localizationService;
         private readonly ILocalizedEntityService _localizedEntityService;
@@ -69,7 +67,6 @@ namespace SmartStore.Admin.Controllers
             ICategoryTemplateService categoryTemplateService,
             IProductService productService,
             IUrlRecordService urlRecordService,
-            IPictureService pictureService,
             ILanguageService languageService,
             ILocalizationService localizationService,
             ILocalizedEntityService localizedEntityService,
@@ -92,7 +89,6 @@ namespace SmartStore.Admin.Controllers
             _categoryTemplateService = categoryTemplateService;
             _productService = productService;
             _urlRecordService = urlRecordService;
-            _pictureService = pictureService;
             _languageService = languageService;
             _localizationService = localizationService;
             _localizedEntityService = localizedEntityService;
@@ -134,12 +130,6 @@ namespace SmartStore.Admin.Controllers
                 var seName = category.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
                 _urlRecordService.SaveSlug(category, seName, localized.LanguageId);
             }
-        }
-
-        [NonAction]
-        protected void UpdatePictureSeoNames(Category category)
-        {
-            _pictureService.SetSeoFilename(category.MediaFileId.GetValueOrDefault(), _pictureService.GetPictureSeName(category.Name));
         }
 
         [NonAction]
@@ -484,7 +474,6 @@ namespace SmartStore.Admin.Controllers
                 _categoryService.UpdateCategory(category);
                 _categoryService.UpdateHasDiscountsApplied(category);
 
-                UpdatePictureSeoNames(category);
                 SaveAclMappings(category, model.SelectedCustomerRoleIds);
                 SaveStoreMappings(category, model.SelectedStoreIds);
 
@@ -604,7 +593,6 @@ namespace SmartStore.Admin.Controllers
 
                 _categoryService.UpdateHasDiscountsApplied(category);
 
-                UpdatePictureSeoNames(category);
                 SaveAclMappings(category, model.SelectedCustomerRoleIds);
                 SaveStoreMappings(category, model.SelectedStoreIds);
 

@@ -2506,7 +2506,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     ProductId = x.ProductId,
                     TotalAmount = x.TotalAmount.ToString("C0"),
-                    TotalQuantity = x.TotalQuantity.ToString("D"),
+                    TotalQuantity = x.TotalQuantity.ToString("N0"),
                 };
 
                 var product = products.Get(x.ProductId);
@@ -2802,13 +2802,13 @@ namespace SmartStore.Admin.Controllers
                 model.Data[i] = new OrdersIncompleteDashboardReportData
                 {
                     Quantity = reports[i].CountOrders,
-                    QuantityFormatted = reports[i].CountOrders.ToString("D"),
+                    QuantityFormatted = reports[i].CountOrders.ToString("N0"),
                     Amount = reports[i].SumOrders,
                     AmountFormatted = reports[i].SumOrders.ToString("C0")
                 };
             }
 
-            model.QuantityTotal = ordersTotal.Count.ToString("D");
+            model.QuantityTotal = ordersTotal.Count.ToString("N0");
             model.AmountTotal = ordersTotal.Sum(x => x.OrderTotal).ToString("C0");
 
             return model;

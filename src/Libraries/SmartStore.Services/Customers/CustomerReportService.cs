@@ -269,15 +269,15 @@ namespace SmartStore.Services.Customers
 
                 var count = customers.Where(x => x.CreatedOnUtc < endDate && x.CreatedOnUtc >= startDate).Count();
                 report.DataSets[0].Quantity[i] = count;
-                report.DataSets[0].FormattedQuantity[i] = count.ToString("D");
+                report.DataSets[0].FormattedQuantity[i] = count.ToString("N0");
             }
 
             foreach (var item in report.DataSets)
             {
-                item.TotalAmount = item.Quantity.Sum().ToString("D");
+                item.TotalAmount = item.Quantity.Sum().ToString("N0");
             }
 
-            report.TotalAmount = customers.Count.ToString("D");
+            report.TotalAmount = customers.Count.ToString("N0");
             var sumBefore = allCustomers
                 .Where(x => x.CreatedOnUtc < endTimeBefore && x.CreatedOnUtc >= startTimeBefore)
                 .Select(x => x)

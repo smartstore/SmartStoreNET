@@ -1364,7 +1364,7 @@ namespace SmartStore.Admin.Controllers
                  {
                      CustomerId = x.CustomerId,
                      OrderTotal = x.OrderTotal.ToString("C0"),
-                     OrderCount = x.OrderCount.ToString("D"),
+                     OrderCount = x.OrderCount.ToString("N0"),
                  };
 
                  var customer = customers.Where(y => y.Id == x.CustomerId).FirstOrDefault();

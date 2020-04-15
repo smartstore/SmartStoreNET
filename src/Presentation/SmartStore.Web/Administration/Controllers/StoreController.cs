@@ -252,22 +252,22 @@ namespace SmartStore.Admin.Controllers
             var allOrders = _orderService.GetOrders(0, 0, null, null, null, null, null, null, null);
             var model = new StoreDashboardReportModel
             {
-                ProductsCount = _productService.GetAllProducts().TotalCount.ToString("D"),
-                CategoriesCount = _categoryService.GetAllCategories().TotalCount.ToString("D"),
-                ManufacturersCount = _manufacturerService.GetManufacturers().Count().ToString("D"),
-                AttributesCount = _productAttributeService.GetAllProductAttributes(0, int.MaxValue).TotalCount.ToString("D"),
-                AttributeCombinationsCount = _productService.GetAllProductVariants().TotalCount.ToString("D"),
-                MediaCount = _mediaService.CountFiles(new MediaSearchQuery { Deleted = false }).ToString("D"),
+                ProductsCount = _productService.GetAllProducts().TotalCount.ToString("N0"),
+                CategoriesCount = _categoryService.GetAllCategories().TotalCount.ToString("N0"),
+                ManufacturersCount = _manufacturerService.GetManufacturers().Count().ToString("N0"),
+                AttributesCount = _productAttributeService.GetAllProductAttributes(0, int.MaxValue).TotalCount.ToString("N0"),
+                AttributeCombinationsCount = _productService.GetAllProductVariants().TotalCount.ToString("N0"),
+                MediaCount = _mediaService.CountFiles(new MediaSearchQuery { Deleted = false }).ToString("N0"),
                 CustomersCount = _customerService.SearchCustomers(
                     new CustomerSearchQuery
                     {
                         Deleted = false,
                         CustomerRoleIds = new int[] { 3 }
                     }
-                ).TotalCount.ToString("D"),
-                OrdersCount = allOrders.Count().ToString("D"),
+                ).TotalCount.ToString("N0"),
+                OrdersCount = allOrders.Count().ToString("N0"),
                 Sales = (allOrders.Sum(x => (decimal?)x.OrderTotal) ?? 0).ToString("C0"),
-                OnlineCustomersCount = _customerService.GetOnlineCustomers(DateTime.UtcNow.AddMinutes(-15), null, 0, int.MaxValue).TotalCount.ToString("D"),
+                OnlineCustomersCount = _customerService.GetOnlineCustomers(DateTime.UtcNow.AddMinutes(-15), null, 0, int.MaxValue).TotalCount.ToString("N0"),
                 CartsValue = _shoppingCartService.GetAllOpenCartSubTotal().ToString("C0"),
                 WishlistsValue = _shoppingCartService.GetAllOpenWishlistSubTotal().ToString("C0")
             };

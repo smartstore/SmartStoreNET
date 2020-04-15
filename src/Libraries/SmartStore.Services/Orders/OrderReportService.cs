@@ -502,7 +502,7 @@ namespace SmartStore.Services.Orders
                 report.DataSets[j].Amount[index] = point.Sum(x => x.OrderTotal);
                 report.DataSets[j].FormattedAmount[index] = ((int)Math.Round(report.DataSets[j].Amount[index])).ToString("C0");
                 report.DataSets[j].Quantity[index] = point.Count;
-                report.DataSets[j].FormattedQuantity[index] = point.Count.ToString("D");
+                report.DataSets[j].FormattedQuantity[index] = point.Count.ToString("N0");
             }
         }
 

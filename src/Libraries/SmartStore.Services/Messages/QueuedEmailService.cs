@@ -230,13 +230,10 @@ namespace SmartStore.Services.Messages
 						{
                             // TODO: unit tests. Difficult to mock.
                             var mediaFile = _services.MediaService.ConvertMediaFile(file);
-
-                            using (var stream = mediaFile.OpenRead())
+							var stream = mediaFile.OpenRead();
+                            if (stream != null)
                             {
-                                if ((stream?.Length ?? 0) > 0)
-                                {
-                                    attachment = new Attachment(stream, file.Name, file.MimeType);
-                                }
+                                attachment = new Attachment(stream, file.Name, file.MimeType);
                             }
                         }
 					}

@@ -852,6 +852,8 @@
     <Content Include="Content\vendors\beautify\beautify-css.min.js" />
     <Content Include="Content\vendors\beautify\beautify-html.min.js" />
     <Content Include="Content\vendors\beautify\beautify.min.js" />
+    <Content Include="Content\vendors\Chart.js\Chart.js" />
+    <Content Include="Content\vendors\Chart.js\Chart.min.js" />
     <Content Include="Content\vendors\drift\Drift.js" />
     <Content Include="Content\vendors\drift\Drift.min.js" />
     <Content Include="Content\vendors\dropzone\js\dropzone.js" />

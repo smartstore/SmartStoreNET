@@ -498,6 +498,7 @@
     <Content Include="Content\telerik\img\sprite-vertical.png" />
     <Content Include="Content\telerik\img\sprite.png" />
     <Content Include="favicon.ico" />
+    <Content Include="Scripts\admin.dashboard.js" />
     <Content Include="Scripts\admin.common.js" />
     <Content Include="Content\filemanager\conf.json" />
     <Content Include="Content\filemanager\lang\bg.js" />
@@ -520,10 +521,7 @@
     <Content Include="Content\_telerik.scss" />
     <Content Include="Content\_variables.scss" />
     <Content Include="Content\_admin.scss" />
-    <Content Include="Scripts\Chart.js" />
-    <Content Include="Scripts\Chart.min.js" />
     <Content Include="Scripts\jquery-shims.js" />
-    <Content Include="Scripts\jquery.easypiechart.js" />
     <Content Include="Scripts\jquery.tmpl.min.js" />
     <Content Include="Scripts\admin.globalinit.js" />
     <Content Include="Scripts\smartstore.rules.js" />

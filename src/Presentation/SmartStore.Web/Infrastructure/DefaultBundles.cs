@@ -92,6 +92,13 @@ namespace SmartStore.Web.Infrastructure
 				roxy + "js/jquery-dateFormat.min.js");
 			scriptBundle.Orderer = new NullOrderer();
 			bundles.Add(scriptBundle);
+
+			/* Chart.js
+			------------------------------------------------------*/
+			bundles.Add(new CustomScriptBundle("~/bundles/charting").Include(
+			"~/Content/vendors/Chart.js/Chart.js",
+			"~/Content/vendors/Chart.js/Chart.min.js"
+			));
 		}
 
 		public int Priority

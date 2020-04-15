@@ -4,12 +4,14 @@
 /// <reference path="../../Content/bs4/scss/bootstrap.scss" />
 
 :root {
-    --primary-dark: #{$primary-dark};
-    --primary-light: #{$primary-light};
     --chart-color-danger: #{$chart-color-danger};
     --chart-color-warning: #{$chart-color-warning};
     --chart-color-success: #{$chart-color-success};
     --chart-color-primary: #{$chart-color-primary};
+    --chart-color-danger-light: #{$chart-color-danger-light};
+    --chart-color-warning-light: #{$chart-color-warning-light};
+    --chart-color-success-light: #{$chart-color-success-light};
+    --chart-color-primary-light: #{$chart-color-primary-light};
 }
 
 .dashboard-grid {
@@ -98,7 +100,7 @@
         padding: 1.5rem 1.5rem 0.5rem 1.5rem;
         align-items: center;
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
 
         .report-title {
             font-size: 1.25rem;
@@ -108,7 +110,7 @@
 
     .chart-title {
         text-align: center;
-        font-weight: $font-weight-bold;
+        font-weight: $font-weight-medium;
         font-size: 1rem;
     }
 
@@ -171,20 +173,21 @@
     }
 
     .statistics-value {
-        font-size: 1rem;
-        font-weight: $font-weight-bold;
+        font-size: .9rem;
+        font-weight: $font-weight-medium;
         border-bottom: 1px solid #eee;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        padding-bottom: 2px;
     }
 
     .statistics-attribute {
-        font-size: .9rem;
+        font-size: .8rem;
         border-top: 1px solid #eee;
         white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis;
+        text-overflow: ellipsis;        
     }
 
     .statistics-container {
@@ -195,7 +198,6 @@
         display: flex;
         width: 100%;
         align-items: center;
-        padding-left: .5rem;
     }
 
     .statistics-col {
@@ -204,7 +206,7 @@
         align-items: center;
         justify-content: center;
         border: 0;
-        padding: 1.5rem 1rem;
+        padding: 1.6rem 1rem;
     }
 
     .statistics-container-outer {
@@ -413,9 +415,6 @@
     .incomplete-orders-chart-text {
         max-width: 22%;
     }
-    /*.incomplete-orders-chart-container {
-        height: 250px;
-    }*/
 }
 
 @include media-breakpoint-up(md) {
@@ -548,10 +547,6 @@
 }
 // Not Dashboard specific
 //--------------------------------------
-.text-bold {
-    font-weight: $font-weight-bold;
-}
-
 .text-truncate {
     overflow: hidden;    
     text-overflow: ellipsis;
@@ -566,19 +561,3 @@
     }
 }
 
-.fade-in {
-    opacity: 0;
-    animation: fadeInUp .6s ease-out 1.2s forwards;
-}
-
-@keyframes fadeInUp {
-    0% {
-        transform: translateY(30px);
-        opacity: 0;
-    }
-
-    100% {
-        transform: translateY(0px);
-        opacity: 1;
-    }
-}

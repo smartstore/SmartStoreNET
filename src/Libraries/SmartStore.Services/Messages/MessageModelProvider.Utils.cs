@@ -1,26 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Html;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
-using SmartStore.Services.Topics;
-using SmartStore.Services.Media;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Html;
+using SmartStore.Services.Media;
+using SmartStore.Services.Topics;
 using SmartStore.Utilities;
-using System.Collections.Generic;
-using SmartStore.Core.Domain.Directory;
-using SmartStore.Core;
 
 namespace SmartStore.Services.Messages
 {
-	public partial class MessageModelProvider
+    public partial class MessageModelProvider
 	{
 		private void ApplyCustomerContentPart(IDictionary<string, object> model, CustomerContent content, MessageContext ctx)
 		{
@@ -146,41 +145,46 @@ namespace SmartStore.Services.Messages
 			return new Money(price, currency);
 		}
 
-		private PictureInfo GetPictureFor(Product product, string attributesXml)
-		{
-			var pictureService = _services.PictureService;
-			var attrParser = _services.Resolve<IProductAttributeParser>();
 
-			PictureInfo pictureInfo = null;
+        private MediaFileInfo GetMediaFileFor(Product product, string attributesXml)
+        {
+            var attrParser = _services.Resolve<IProductAttributeParser>();
+            var productService = _services.Resolve<IProductService>();
 
-			if (attributesXml.HasValue())
-			{
-				var combination = attrParser.FindProductVariantAttributeCombination(product.Id, attributesXml);
+            MediaFileInfo file = null;
 
-				if (combination != null)
-				{
-					var picturesIds = combination.GetAssignedMediaIds();
-					if (picturesIds != null && picturesIds.Length > 0)
-					{
-						pictureInfo = pictureService.GetPictureInfo(picturesIds[0]);
-					}	
-				}
-			}
+            if (attributesXml.HasValue())
+            {
+                var combination = attrParser.FindProductVariantAttributeCombination(product.Id, attributesXml);
 
-			if (pictureInfo == null)
-			{
-				pictureInfo = pictureService.GetPictureInfo(product.MainPictureId);
-			}
+                if (combination != null)
+                {
+                    var fileIds = combination.GetAssignedMediaIds();
+                    if (fileIds?.Any() ?? false)
+                    {
+                        file = _services.MediaService.GetFileById(fileIds[0]);
+                    }
+                }
+            }
 
-			if (pictureInfo == null && product.Visibility == ProductVisibility.Hidden && product.ParentGroupedProductId > 0)
-			{
-				pictureInfo = pictureService.GetPictureInfo(pictureService.GetPicturesByProductId(product.ParentGroupedProductId, 1).FirstOrDefault());
-			}
+            if (file == null)
+            {
+                file = _services.MediaService.GetFileById(product.MainPictureId ?? 0);
+            }
 
-			return pictureInfo;
-		}
+            if (file == null && product.Visibility == ProductVisibility.Hidden && product.ParentGroupedProductId > 0)
+            {
+                var productFile = productService.GetProductPicturesByProductId(product.ParentGroupedProductId, 1).FirstOrDefault();
+                if (productFile != null)
+                {
+                    file = _services.MediaService.ConvertMediaFile(productFile.MediaFile);
+                }
+            }
 
-		private object[] Concat(params object[] values)
+            return file;
+        }
+
+        private object[] Concat(params object[] values)
 		{
 			return values.Where(x => CommonHelper.IsTruthy(x)).ToArray();
 		}

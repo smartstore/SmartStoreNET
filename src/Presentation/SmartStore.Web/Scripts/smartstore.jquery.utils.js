@@ -4,6 +4,8 @@
 ;
 (function ($) {
 
+	var $w = $(window);
+
 	$.extend({
 
 		topZIndex: function (selector) {
@@ -185,58 +187,46 @@
 		 *       the user visible viewport of a web browser.
 		 *       only accounts for vertical position, not horizontal.
 		*/
-		visible: function (partial, hidden, direction) {
+		visible: function (partial, hidden, direction, container) {
 			if (this.length < 1)
-				return;
+				return false;
 
-			var $w = $(window);
+			// Set direction default to 'both'.
+			direction = direction || 'both';
+
 			var $t = this.length > 1 ? this.eq(0) : this,
+				isContained = typeof container !== 'undefined' && container !== null,
+				$c = isContained ? $(container) : $w,
+				wPosition = isContained ? $c.position() : 0,
 				t = $t.get(0),
-				vpWidth = $w.width(),
-				vpHeight = $w.height(),
-				direction = (direction) ? direction : 'both',
+				vpWidth = $c.outerWidth(),
+				vpHeight = $c.outerHeight(),
 				clientSize = hidden === true ? t.offsetWidth * t.offsetHeight : true;
 
-			if (typeof t.getBoundingClientRect === 'function') {
+			var rec = t.getBoundingClientRect(),
+				tViz = isContained ?
+					rec.top - wPosition.top >= 0 && rec.top < vpHeight + wPosition.top :
+					rec.top >= 0 && rec.top < vpHeight,
+				bViz = isContained ?
+					rec.bottom - wPosition.top > 0 && rec.bottom <= vpHeight + wPosition.top :
+					rec.bottom > 0 && rec.bottom <= vpHeight,
+				lViz = isContained ?
+					rec.left - wPosition.left >= 0 && rec.left < vpWidth + wPosition.left :
+					rec.left >= 0 && rec.left < vpWidth,
+				rViz = isContained ?
+					rec.right - wPosition.left > 0 && rec.right < vpWidth + wPosition.left :
+					rec.right > 0 && rec.right <= vpWidth,
+				vV = partial ? tViz || bViz : tViz && bViz,
+				hV = partial ? lViz || rViz : lViz && rViz,
+				vVisible = (rec.top < 0 && rec.bottom > vpHeight) ? true : vV,
+				hVisible = (rec.left < 0 && rec.right > vpWidth) ? true : hV;
 
-				// Use this native browser method, if available.
-				var rec = t.getBoundingClientRect(),
-					tViz = rec.top >= 0 && rec.top < vpHeight,
-					bViz = rec.bottom > 0 && rec.bottom <= vpHeight,
-					lViz = rec.left >= 0 && rec.left < vpWidth,
-					rViz = rec.right > 0 && rec.right <= vpWidth,
-					vVisible = partial ? tViz || bViz : tViz && bViz,
-					hVisible = partial ? lViz || rViz : lViz && rViz;
-
-				if (direction === 'both')
-					return clientSize && vVisible && hVisible;
-				else if (direction === 'vertical')
-					return clientSize && vVisible;
-				else if (direction === 'horizontal')
-					return clientSize && hVisible;
-			} else {
-
-				var viewTop = $w.scrollTop(),
-					viewBottom = viewTop + vpHeight,
-					viewLeft = $w.scrollLeft(),
-					viewRight = viewLeft + vpWidth,
-					offset = $t.offset(),
-					_top = offset.top,
-					_bottom = _top + $t.height(),
-					_left = offset.left,
-					_right = _left + $t.width(),
-					compareTop = partial === true ? _bottom : _top,
-					compareBottom = partial === true ? _top : _bottom,
-					compareLeft = partial === true ? _right : _left,
-					compareRight = partial === true ? _left : _right;
-
-				if (direction === 'both')
-					return !!clientSize && ((compareBottom <= viewBottom) && (compareTop >= viewTop)) && ((compareRight <= viewRight) && (compareLeft >= viewLeft));
-				else if (direction === 'vertical')
-					return !!clientSize && ((compareBottom <= viewBottom) && (compareTop >= viewTop));
-				else if (direction === 'horizontal')
-					return !!clientSize && ((compareRight <= viewRight) && (compareLeft >= viewLeft));
-			}
+			if (direction === 'both')
+				return clientSize && vVisible && hVisible;
+			else if (direction === 'vertical')
+				return clientSize && vVisible;
+			else if (direction === 'horizontal')
+				return clientSize && hVisible;
 		},
 
 		moreLess: function () {
@@ -349,7 +339,7 @@
 
                 var timeout;
 
-                $(window).on("resize", function () {
+                $w.on("resize", function () {
                     if (timeout) {
                         window.cancelAnimationFrame(timeout);
                     }

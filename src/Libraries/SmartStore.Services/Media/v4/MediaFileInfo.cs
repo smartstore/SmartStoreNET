@@ -12,9 +12,12 @@ namespace SmartStore.Services.Media
 {
     public partial class MediaFileInfo : IFile
     {
+        private string _url;
+        
         private readonly IMediaStorageProvider _storageProvider;
+        private readonly IMediaUrlGenerator _urlGenerator;
 
-        public MediaFileInfo(MediaFile file, IMediaStorageProvider storageProvider, string directory)
+        public MediaFileInfo(MediaFile file, IMediaStorageProvider storageProvider, IMediaUrlGenerator urlGenerator, string directory)
         {
             File = file;
             Directory = directory.EmptyNull();
@@ -25,6 +28,7 @@ namespace SmartStore.Services.Media
             }
 
             _storageProvider = storageProvider;
+            _urlGenerator = urlGenerator;
         }
 
         [JsonIgnore]
@@ -81,6 +85,12 @@ namespace SmartStore.Services.Media
 
         [JsonProperty("dimensions")]
         public Size Dimensions { get; }
+
+        [JsonProperty("url")]
+        public string Url
+        {
+            get { return _url ?? (_url = _urlGenerator.GenerateUrl(this, null)); }
+        }
 
         [JsonIgnore]
         public bool Exists => File.Id > 0;

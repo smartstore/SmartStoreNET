@@ -205,9 +205,12 @@ namespace SmartStore.Services.Media
                 { 
                     Name = Path.GetFileName(path),
                     Extension = Path.GetExtension(path).TrimStart('.'),
-                    MimeType = MimeTypes.MapNameToMimeType(path)
+                    MimeType = MimeTypes.MapNameToMimeType(path),
+                    FolderId = _folderService.GetNodeByPath(Fix(Path.GetDirectoryName(path)))?.Value.Id
                 };
-                file = new MediaFileInfo(mediaFile, null, Fix(Path.GetDirectoryName(path)));
+                _mediaService.ConvertMediaFile(mediaFile);
+                   
+                file = _mediaService.ConvertMediaFile(mediaFile);
             }
 
             return file;

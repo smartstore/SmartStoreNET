@@ -125,7 +125,7 @@ namespace SmartStore.Services.Media
                 if (entity != null)
                 {
                     EnsureMetadataResolved(entity, true);
-                    return new MediaFileInfo(entity, _storageProvider, tokens.Folder.Path);
+                    return ConvertMediaFile(entity, tokens.Folder);
                 }
             }
 
@@ -143,8 +143,7 @@ namespace SmartStore.Services.Media
             if (entity != null)
             {
                 EnsureMetadataResolved(entity, true);
-                var dir = _folderService.FindNode(entity)?.Value?.Path;
-                return new MediaFileInfo(entity, _storageProvider, dir);
+                return ConvertMediaFile(entity, _folderService.FindNode(entity)?.Value);
             }
 
             return null;
@@ -162,7 +161,7 @@ namespace SmartStore.Services.Media
             {
                 EnsureMetadataResolved(entity, true);
                 var dir = _folderService.FindNode(entity)?.Value?.Path;
-                return new MediaFileInfo(entity, _storageProvider, dir);
+                return ConvertMediaFile(entity, _folderService.FindNode(entity)?.Value);
             }
 
             return null;
@@ -700,12 +699,12 @@ namespace SmartStore.Services.Media
         public MediaFileInfo ConvertMediaFile(MediaFile file)
         {
             var folder = _folderService.FindNode(file)?.Value;
-            return new MediaFileInfo(file, _storageProvider, folder?.Path);
+            return new MediaFileInfo(file, _storageProvider, _urlGenerator, folder?.Path);
         }
 
         protected MediaFileInfo ConvertMediaFile(MediaFile file, MediaFolderNode folder)
         {
-            return new MediaFileInfo(file, _storageProvider, folder?.Path);
+            return new MediaFileInfo(file, _storageProvider, _urlGenerator, folder?.Path);
         }
 
         private void EnsureMetadataResolved(MediaFile file, bool saveOnResolve)

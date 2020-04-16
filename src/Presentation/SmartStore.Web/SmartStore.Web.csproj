@@ -996,6 +996,7 @@
     <Content Include="Content\vendors\select2\js\select2.js" />
     <Content Include="Content\vendors\select2\js\select2.min.js" />
     <Content Include="Content\vendors\slick\slick.js" />
+    <Content Include="Content\vendors\sortable\jquery-sortable.js" />
     <Content Include="Content\vendors\vue\vue.min.js" />
     <Content Include="Content\vendors\vue\vue.js" />
     <Content Include="Content\vendors\x-editable\bootstrap-editable.css" />
@@ -1084,7 +1085,7 @@
     <Content Include="Content\vendors\jquery-ui\position.js" />
     <Content Include="Content\vendors\jquery-ui\widget.js" />
     <Content Include="Content\vendors\touchspin\jquery.bootstrap-touchspin.js" />
-    <Content Include="Content\vendors\jquery\jquery.sortable.js" />
+    <Content Include="Content\vendors\sortable\sortable.js" />
     <Content Include="Content\vendors\jquery\jquery.unobtrusive-ajax.js" />
     <Content Include="Content\vendors\jquery\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Content\bs4\js\bootstrap.bundle.js.map" />

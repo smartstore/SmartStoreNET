@@ -146,13 +146,12 @@
 			// reload page
 			setLocation(location.href);
 			return false;
-		});
+        });
 		
 		$('.sortable-list').sortable({
-			items: '.module-item',
-			forcePlaceholderSize: true,
 			handle: '.sortable-grip'
-		}).on('sortupdate', function (e, ui) {
+        }).on('sort', function (e, ui) {
+
 			var items = $(this).closest('.sortable-list').find('.module-item');
 			var newOrder = [];
 			$.each(items, function (i, val) {

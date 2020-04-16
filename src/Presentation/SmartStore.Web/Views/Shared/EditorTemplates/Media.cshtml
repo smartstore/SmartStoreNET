@@ -118,12 +118,14 @@
 					}
 				</div>
 				
-				<a href="#" class="btn btn-danger btn-icon btn-sm btn-circle delete-product-picture">
-					<i class="far fa-trash-alt"></i>
-				</a>
-				<a href="#" class="btn btn-primary btn-icon btn-sm btn-circle set-main-picture">
-					<i class="far fa-eye"></i>
-				</a>
+				<div class="fu-preview-toolbar">
+					<a href="#" class="fu-preview-control set-main-picture">
+						<i class="far fa-eye"></i>
+					</a>
+					<a href="#" class="fu-preview-control delete-product-picture float-right">
+						<i class="far fa-trash-alt"></i>
+					</a>
+				</div>
 			</div>
 		}
 	</div>
@@ -133,7 +135,7 @@
 			// Sorting.
 			var sortable = $('.preview-container').sortable({
 				items: '.mf-image-preview'
-			}).on('sortupdate', function (e, ui) {
+			}).on('sort', function (e, ui) {
 				sortPictures($(this));
 			});
 

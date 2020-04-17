@@ -45,7 +45,6 @@ namespace SmartStore.Tests
 		public IEventPublisher EventPublisher { get; set; }
 		public ILocalizationService Localization => MockRepository.GenerateMock<ILocalizationService>();
 		public ICustomerActivityService CustomerActivity => MockRepository.GenerateMock<ICustomerActivityService>();
-		public IPictureService PictureService => MockRepository.GenerateMock<IPictureService>();
 		public IMediaService MediaService => MockRepository.GenerateMock<IMediaService>();
 		public INotifier Notifier => MockRepository.GenerateMock<INotifier>();
         public IPermissionService Permissions => MockRepository.GenerateMock<IPermissionService>();

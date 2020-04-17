@@ -629,7 +629,7 @@ namespace SmartStore.Web.Controllers
 
 		public void PrepareProductDetailsPictureModel(
 			ProductDetailsPictureModel model, 
-			IList<MediaFile> pictures, 
+			IList<MediaFile> files, 
 			string name, 
 			IList<int> allCombinationImageIds,
 			bool isAssociatedProduct, 
@@ -641,7 +641,7 @@ namespace SmartStore.Web.Controllers
 			model.PictureZoomType = _mediaSettings.PictureZoomType;
 			model.AlternateText = T("Media.Product.ImageAlternateTextFormat", model.Name);
 
-			MediaFile defaultPicture = null;
+			MediaFile defaultFile = null;
 			var combiAssignedImages = combination?.GetAssignedMediaIds();
 			int defaultPictureSize;
 
@@ -654,61 +654,58 @@ namespace SmartStore.Web.Controllers
 
 			using (var scope = new DbContextScope(_services.DbContext, autoCommit: false))
 			{
-				// Scope this part: it's quite possible that IPictureService.UpdatePicture()
-				// is called when a picture is new or its size is missing in DB.
-
-				if (pictures.Count > 0)
+    			if (files.Count > 0)
 				{
-					if (pictures.Count <= _catalogSettings.DisplayAllImagesNumber)
+					if (files.Count <= _catalogSettings.DisplayAllImagesNumber)
 					{
-						// show all images
-						foreach (var picture in pictures)
+						// Show all images.
+						foreach (var file in files)
 						{
-							model.PictureModels.Add(CreatePictureModel(model, picture, _mediaSettings.ProductDetailsPictureSize));
+							model.PictureModels.Add(CreatePictureModel(model, file, _mediaSettings.ProductDetailsPictureSize));
 
-							if (defaultPicture == null && combiAssignedImages != null && combiAssignedImages.Contains(picture.Id))
+							if (defaultFile == null && combiAssignedImages != null && combiAssignedImages.Contains(file.Id))
 							{
 								model.GalleryStartIndex = model.PictureModels.Count - 1;
-								defaultPicture = picture;
+								defaultFile = file;
 							}
 						}
 					}
 					else
 					{
-						// images not belonging to any combination...
+						// Images not belonging to any combination...
 						allCombinationImageIds = allCombinationImageIds ?? new List<int>();
-						foreach (var picture in pictures.Where(p => !allCombinationImageIds.Contains(p.Id)))
+						foreach (var file in files.Where(p => !allCombinationImageIds.Contains(p.Id)))
 						{
-							model.PictureModels.Add(CreatePictureModel(model, picture, _mediaSettings.ProductDetailsPictureSize));
+							model.PictureModels.Add(CreatePictureModel(model, file, _mediaSettings.ProductDetailsPictureSize));
 						}
 
-						// plus images belonging to selected combination
+						// Plus images belonging to selected combination.
 						if (combiAssignedImages != null)
 						{
-							foreach (var picture in pictures.Where(p => combiAssignedImages.Contains(p.Id)))
+							foreach (var file in files.Where(p => combiAssignedImages.Contains(p.Id)))
 							{
-								model.PictureModels.Add(CreatePictureModel(model, picture, _mediaSettings.ProductDetailsPictureSize));
+								model.PictureModels.Add(CreatePictureModel(model, file, _mediaSettings.ProductDetailsPictureSize));
 
-								if (defaultPicture == null)
+								if (defaultFile == null)
 								{
 									model.GalleryStartIndex = model.PictureModels.Count - 1;
-									defaultPicture = picture;
+									defaultFile = file;
 								}
 							}
 						}
 					}
 
-					if (defaultPicture == null)
+					if (defaultFile == null)
 					{    
                         model.GalleryStartIndex = 0;
-						defaultPicture = pictures.First();
+						defaultFile = files.First();
 					}
 				}
 
 				scope.Commit();
 			}
 
-			if (defaultPicture == null)
+			if (defaultFile == null)
 			{
 				model.DefaultPictureModel = new PictureModel
 				{
@@ -726,7 +723,7 @@ namespace SmartStore.Web.Controllers
 			}
 			else
 			{
-				model.DefaultPictureModel = CreatePictureModel(model, defaultPicture, defaultPictureSize);
+				model.DefaultPictureModel = CreatePictureModel(model, defaultFile, defaultPictureSize);
 			}
 		}
 

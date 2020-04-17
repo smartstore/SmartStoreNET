@@ -2258,12 +2258,12 @@ namespace SmartStore.Admin.Controllers
 				_productService.DeleteProductPicture(productPicture);
 			}
 
-			// TODO: (mm) OPTIONALLY delete file!
-			//var picture = _pictureService.GetPictureById(productPicture.MediaFileId);
-			//if (picture != null)
-			//{
-			//	_pictureService.DeletePicture(picture);
-			//}
+            // TODO: (mm) OPTIONALLY delete file!
+            //var file = _mediaService.GetFileById(productPicture.MediaFileId);
+            //if (file != null)
+            //{
+            //    _mediaService.DeleteFile(file.File, true);
+            //}
 
 			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 			return new HttpStatusCodeResult(200);

@@ -1,20 +1,35 @@
+using System.Collections.Generic;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Orders
 {
     public partial class OrdersIncompleteDashboardReportModel : ModelBase
     {
-        public OrdersIncompleteDashboardReportLine[] Reports { get; set; }
-    }
+        public OrdersIncompleteDashboardReportModel()
+        {
+            Data = new List<OrdersIncompleteDashboardReportData>()
+            {
+                // NotShipped = 0 
+                new OrdersIncompleteDashboardReportData(),
+                // NotPaid = 1
+                new OrdersIncompleteDashboardReportData(),
+                // NewOrders = 2 
+                new OrdersIncompleteDashboardReportData()
+            };
+        }
 
-    public class OrdersIncompleteDashboardReportLine
-    {
-        public OrdersIncompleteDashboardReportData[] Data { get; set; } = new OrdersIncompleteDashboardReportData[3];
+
+        public List<OrdersIncompleteDashboardReportData> Data { get; set; }
+
+        public decimal Amount { get; set; }
 
         public string AmountTotal { get; set; }
 
+        public int Quantity { get; set; }
+
         public string QuantityTotal { get; set; }
     }
+
     public class OrdersIncompleteDashboardReportData
     {
         public decimal Amount { get; set; }

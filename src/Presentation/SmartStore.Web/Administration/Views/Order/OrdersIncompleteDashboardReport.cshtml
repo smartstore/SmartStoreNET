@@ -1,68 +1,38 @@
-﻿@model OrdersIncompleteDashboardReportModel
+﻿@model List<OrdersIncompleteDashboardReportModel>
 @using Newtonsoft.Json;
 @{
     var jsonData = JsonConvert.SerializeObject(Model);
+    var labels = new string[]
+    {
+        @T("Admin.Report.Today"),
+        @T("Admin.Report.LastWeek"),
+        @T("Admin.Report.LastMonth"),
+        @T("Admin.Report.ThisYear")
+    };
     Html.AddScriptParts("~/bundles/charting");
     Html.AddScriptParts(true, "~/Administration/Scripts/admin.dashboard.js");
 }
-
 <div class="report" id="incomplete-orders-report" data-chart="@jsonData">
     <div class="report-title-row">
         <div class="report-title">@T("Admin.SalesReport.Incomplete")</div>
     </div>
     <div class="d-flex justify-content-around px-4 pb-4 flex-wrap incomplete-orders-row">
-        <div class="incomplete-orders-container">
-            <div class="chart-title text-muted">@T("Admin.Report.Today")</div>
-            <div class="incomplete-orders-chart-container">
-                <div class="incomplete-orders-chart-text">
-                    <div class="fs-h4 incomplete-orders-value">@Model.Reports[0].QuantityTotal</div>
-                    <div class="fs-h5 incomplete-orders-value" title="@Model.Reports[0].AmountTotal @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model.Reports[0].AmountTotal</div>
-                </div>
-                <div class="canvas-container w-100 h-100">
-                    <canvas id="incomplete-orders-chart-day">
-                    </canvas>
-                </div>
-            </div>
-        </div>
-        <div class="incomplete-orders-container">
-            <div class="chart-title text-muted">@T("Admin.Report.LastWeek")</div>
-            <div class="incomplete-orders-chart-container">
-                <div class="incomplete-orders-chart-text">
-                    <div class="fs-h4 incomplete-orders-value">@Model.Reports[1].QuantityTotal</div>
-                    <div class="fs-h5 incomplete-orders-value" title="@Model.Reports[1].AmountTotal @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model.Reports[1].AmountTotal</div>
-                </div>
-                <div class="canvas-container w-100 h-100">
-                    <canvas id="incomplete-orders-chart-week">
-                    </canvas>
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <div class="incomplete-orders-container">
+                <div class="chart-title text-muted">@labels[i]</div>
+                <div class="incomplete-orders-chart-container">
+                    <div class="incomplete-orders-chart-text">
+                        <div class="fs-h4 incomplete-orders-value">@Model[i].QuantityTotal</div>
+                        <div class="fs-h5 incomplete-orders-value" title="@Model[i].AmountTotal @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model[i].AmountTotal</div>
+                    </div>
+                    <div class="canvas-container w-100 h-100">
+                        <canvas id="incomplete-orders-chart-@i">
+                        </canvas>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="incomplete-orders-container">
-            <div class="chart-title text-muted">@T("Admin.Report.LastMonth")</div>
-            <div class="incomplete-orders-chart-container">
-                <div class="incomplete-orders-chart-text">
-                    <div class="fs-h4 incomplete-orders-value">@Model.Reports[2].QuantityTotal</div>
-                    <div class="fs-h5 incomplete-orders-value" title="@Model.Reports[2].AmountTotal @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model.Reports[2].AmountTotal</div>
-                </div>
-                <div class="canvas-container w-100 h-100">
-                    <canvas id="incomplete-orders-chart-month">
-                    </canvas>
-                </div>
-            </div>
-        </div>
-        <div class="incomplete-orders-container">
-            <div class="chart-title text-muted">@T("Admin.Report.Overall")</div>
-            <div class="incomplete-orders-chart-container">
-                <div class="incomplete-orders-chart-text">
-                    <div class="fs-h4 incomplete-orders-value">@Model.Reports[3].QuantityTotal</div>
-                    <div class="fs-h5 incomplete-orders-value" title="@Model.Reports[3].AmountTotal @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model.Reports[3].AmountTotal</div>
-                </div>
-                <div class="canvas-container w-100 h-100">
-                    <canvas id="incomplete-orders-chart-overall">
-                    </canvas>
-                </div>
-            </div>
-        </div>
+        }
     </div>
 </div>
 

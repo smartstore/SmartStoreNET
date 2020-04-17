@@ -2770,48 +2770,55 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
-        protected virtual OrdersIncompleteDashboardReportLine GetOrdersIncompleteReportLine(List<Order> orders)
+        protected void IncompleteOrdersReportAddData(Order order, List<OrdersIncompleteDashboardReportModel> reports, int dataIndex)
         {
-            var shippingOrders = orders.Where(x => x.ShippingStatus == ShippingStatus.NotYetShipped).ToList();
-            var paymentOrders = orders.Where(x => x.PaymentStatus == PaymentStatus.Pending).ToList();
-            var ordersTotal = orders.Where(x => x.OrderStatus == OrderStatus.Pending || x.OrderStatus == OrderStatus.Processing).ToList();
-            var pendingOrders = ordersTotal.Where(x => x.OrderStatus == OrderStatus.Pending).ToList();
-
-            var reports = new OrderAverageReportLine[]
+            // Today
+            if (order.CreatedOnUtc >= DateTime.UtcNow.Date)
             {
-                new OrderAverageReportLine
+                // Apply data to all periods
+                for (int i = 0; i < reports.Count; i++)
                 {
-                    SumOrders = shippingOrders.Sum(x => x.OrderTotal),
-                    CountOrders = shippingOrders.Count,
-                },
-                new OrderAverageReportLine
-                {
-                    SumOrders = paymentOrders.Sum(x => x.OrderTotal),
-                    CountOrders = paymentOrders.Count,
-                },
-                new OrderAverageReportLine
-                {
-                    SumOrders = pendingOrders.Sum(x => x.OrderTotal),
-                    CountOrders = pendingOrders.Count,
+                    reports[i].Data[dataIndex].Quantity++;
+                    reports[i].Data[dataIndex].Amount += order.OrderTotal;
                 }
-            };
-
-            var model = new OrdersIncompleteDashboardReportLine();
-            for (int i = 0; i < model.Data.Length; i++)
+                return;
+            }
+            // This week
+            if (order.CreatedOnUtc >= DateTime.UtcNow.AddDays(-6).Date)
             {
-                model.Data[i] = new OrdersIncompleteDashboardReportData
+                // Apply data to all periods but today
+                for (int i = 1; i < reports.Count; i++)
                 {
-                    Quantity = reports[i].CountOrders,
-                    QuantityFormatted = reports[i].CountOrders.ToString("N0"),
-                    Amount = reports[i].SumOrders,
-                    AmountFormatted = reports[i].SumOrders.ToString("C0")
-                };
+                    reports[i].Data[dataIndex].Quantity++;
+                    reports[i].Data[dataIndex].Amount += order.OrderTotal;
+                }
+                return;
+            }
+            // This month
+            if (order.CreatedOnUtc >= DateTime.UtcNow.AddDays(-27).Date)
+            {
+                // Apply data to month and year period
+                for (int i = 2; i < reports.Count; i++)
+                {
+                    reports[i].Data[dataIndex].Quantity++;
+                    reports[i].Data[dataIndex].Amount += order.OrderTotal;
+                }
+                return;
             }
 
-            model.QuantityTotal = ordersTotal.Count.ToString("N0");
-            model.AmountTotal = ordersTotal.Sum(x => x.OrderTotal).ToString("C0");
+            // This year only
+            reports[reports.Count - 1].Data[dataIndex].Quantity++;
+            reports[reports.Count - 1].Data[dataIndex].Amount += order.OrderTotal;
+        }
 
-            return model;
+        [NonAction]
+        protected void IncompleteOrdersReportAddTotal(Order order, List<OrdersIncompleteDashboardReportModel> reports, int startIndex)
+        {
+            for (int i = startIndex; i < reports.Count; i++)
+            {
+                reports[i].Quantity++;
+                reports[i].Amount += order.OrderTotal;
+            }
         }
 
         [Permission(Permissions.Order.Read, false)]
@@ -2820,21 +2827,75 @@ namespace SmartStore.Admin.Controllers
             var watch = new Stopwatch();
             watch.Start();
 
-            var orders = _orderReportService.GetIncompleteOrders(0, null, null).ToList();
-            var model = new OrdersIncompleteDashboardReportModel()
+            var model = new List<OrdersIncompleteDashboardReportModel>()
             {
-                Reports = new OrdersIncompleteDashboardReportLine[]
-                {
-                    // Day
-                    GetOrdersIncompleteReportLine(orders.Where(x => x.CreatedOnUtc >= DateTime.UtcNow.Date).ToList()),                
-                    // Week
-                    GetOrdersIncompleteReportLine(orders.Where(x => x.CreatedOnUtc >= DateTime.UtcNow.AddDays(-6).Date).ToList()),    
-                    // Month
-                    GetOrdersIncompleteReportLine(orders.Where(x => x.CreatedOnUtc >= DateTime.UtcNow.AddDays(-27).Date).ToList()),   
-                    // Overall
-                    GetOrdersIncompleteReportLine(orders)                                                                           
-                }
+                // Today = index 0
+                new OrdersIncompleteDashboardReportModel(),
+                // This week = index 1
+                new OrdersIncompleteDashboardReportModel(),
+                // This month = index 2
+                new OrdersIncompleteDashboardReportModel(),
+                // This year = index 3
+                new OrdersIncompleteDashboardReportModel(),
             };
+
+            // Query to get all incomplete orders of the last 28 days
+            var orders = _orderReportService.GetIncompleteOrders(0, new DateTime(DateTime.UtcNow.Year, 1, 1), null).ToList();
+
+            // Sort pending orders by status and period
+            foreach (var order in orders)
+            {
+                if (order.ShippingStatus == ShippingStatus.NotYetShipped)
+                {
+                    // Not Shipped = index 0
+                    IncompleteOrdersReportAddData(order, model, 0);
+                }
+                if (order.PaymentStatus == PaymentStatus.Pending)
+                {
+                    // Not paid = index 1
+                    IncompleteOrdersReportAddData(order, model, 1);
+                }
+                if (order.OrderStatus == OrderStatus.Pending)
+                {
+                    // New Order = index 2
+                    IncompleteOrdersReportAddData(order, model, 2);
+                }
+                // OrdersTotal
+                if (order.OrderStatus == OrderStatus.Pending || order.OrderStatus == OrderStatus.Processing)
+                {
+                    if (order.CreatedOnUtc >= DateTime.UtcNow.Date)
+                    {
+                        // Today = index 0
+                        IncompleteOrdersReportAddTotal(order, model, 0);
+                    }
+                    else if (order.CreatedOnUtc >= DateTime.UtcNow.AddDays(-6).Date)
+                    {
+                        // This week = index 1
+                        IncompleteOrdersReportAddTotal(order, model, 1);
+                    }
+                    else if (order.CreatedOnUtc >= DateTime.UtcNow.AddDays(-27).Date)
+                    {
+                        // This month = index 2
+                        IncompleteOrdersReportAddTotal(order, model, 2);
+                    }
+                    else
+                    {
+                        // This year = index 3
+                        IncompleteOrdersReportAddTotal(order, model, 3);
+                    }
+                }
+            }
+
+            foreach (var report in model)
+            {
+                report.QuantityTotal = report.Quantity.ToString("N0");
+                report.AmountTotal = report.Amount.ToString("C0");
+                for (int i = 0; i < report.Data.Count; i++)
+                {
+                    report.Data[i].QuantityFormatted = report.Data[i].Quantity.ToString("N0");
+                    report.Data[i].AmountFormatted = report.Data[i].Amount.ToString("C0");
+                }
+            }
 
             watch.Stop();
             Debug.WriteLine("OrdersIncompleteDashboardReport >>> " + watch.ElapsedMilliseconds);
@@ -2853,12 +2914,10 @@ namespace SmartStore.Admin.Controllers
             var latestOrders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, 7).ToList();
             foreach (var order in latestOrders)
             {
-                var customer = _customerService.GetCustomerById(order.CustomerId);
-
                 model.LatestOrders.Add(
                     new DashboardOrderModel(
-                        customer.Id,
-                        customer.FormatUserName() ?? customer.FindEmail(),
+                        order.CustomerId,
+                        order.Customer.FormatUserName() ?? order.Customer.FindEmail(),
                         order.OrderItems.Select(x => x.Quantity).Sum(),
                         order.OrderTotal.ToString("C0"),
                         order.CreatedOnUtc.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("g"),
@@ -2866,6 +2925,7 @@ namespace SmartStore.Admin.Controllers
                         order.Id)
                     );
             }
+
             watch.Stop();
             Debug.WriteLine("LatestOrdersDashboardReport >>> " + watch.ElapsedMilliseconds);
 

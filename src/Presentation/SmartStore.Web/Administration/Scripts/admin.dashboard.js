@@ -8,12 +8,12 @@
     var colorDanger = root.css('--danger');
     var fontFamily = root.css('--font-family-sans-serif');
 
-    createIncompleteOrdersCharts = function (textNoIncomplete, textNotShipped, textNotPayed, textNewOrders) {
+    createIncompleteOrdersCharts = function (textFulfilled, textNotShipped, textNotPayed, textNewOrders) {
         var dataSets = $('#incomplete-orders-report').data('chart');
 
-        for (var i = 0; i < dataSets.Reports.length; i++) {
-            if (dataSets.Reports[i].Data[0].Quantity == 0 && dataSets.Reports[i].Data[1].Quantity == 0) {
-                dataSets.Reports[i].Data[2].Quantity = 1
+        for (var i = 0; i < dataSets.length; i++) {
+            if (dataSets[i].Data[0].Quantity == 0 && dataSets[i].Data[1].Quantity == 0) {
+                dataSets[i].Data[2].Quantity = 1;
             }
         }
 
@@ -33,10 +33,10 @@
             },
             layout: {
                 padding: {
-                    left: 0,
-                    right: 0,
-                    top: 10,
-                    bottom: 10
+                    left: 8,
+                    right: 8,
+                    top: 20,
+                    bottom: 15
                 }
             },
             hover: {
@@ -59,10 +59,10 @@
                 callbacks: {
                     label: function (item, data) {
                         if (item.index == 2 && data.datasets[0].data[0] == 0 && data.datasets[0].data[1] == 0) {
-                            return " " + textNoIncomplete;
+                            return " " + textFulfilled;
                         }
-                        return " " + data.labels[item.index] + ": " + dataSets.Reports[this._chart.id + alreadyExistingCharts].Data[item.index].QuantityFormatted
-                            + ", " + dataSets.Reports[this._chart.id + alreadyExistingCharts].Data[item.index].AmountFormatted;
+                        return " " + data.labels[item.index] + ": " + dataSets[this._chart.id + alreadyExistingCharts].Data[item.index].QuantityFormatted
+                            + ", " + dataSets[this._chart.id + alreadyExistingCharts].Data[item.index].AmountFormatted;
                     },
                 }
             },
@@ -71,7 +71,7 @@
         var dataDay = {
             labels: [textNotShipped, textNotPayed, textNewOrders],
             datasets: [{
-                data: [dataSets.Reports[0].Data[0].Quantity, dataSets.Reports[0].Data[1].Quantity, dataSets.Reports[0].Data[2].Quantity],
+                data: [dataSets[0].Data[0].Quantity, dataSets[0].Data[1].Quantity, dataSets[0].Data[2].Quantity],
                 backgroundColor: [colorDanger, colorWarning, colorPrimary],
                 borderAlign: 'center',
                 borderColor: '#fff',
@@ -83,7 +83,7 @@
             }],
         };
         var chartDay = new Chart(
-            $('#incomplete-orders-chart-day').get(0).getContext('2d'),
+            $('#incomplete-orders-chart-0').get(0).getContext('2d'),
             {
                 type: 'doughnut',
                 data: dataDay,
@@ -96,7 +96,7 @@
         var dataWeek = {
             labels: [textNotShipped, textNotPayed, textNewOrders],
             datasets: [{
-                data: [dataSets.Reports[1].Data[0].Quantity, dataSets.Reports[1].Data[1].Quantity, dataSets.Reports[1].Data[2].Quantity],
+                data: [dataSets[1].Data[0].Quantity, dataSets[1].Data[1].Quantity, dataSets[1].Data[2].Quantity],
                 backgroundColor: [colorDanger, colorWarning, colorPrimary],
                 borderAlign: 'center',
                 borderColor: '#fff',
@@ -108,7 +108,7 @@
             }],
         };
         var chartWeek = new Chart(
-            $('#incomplete-orders-chart-week').get(0).getContext('2d'),
+            $('#incomplete-orders-chart-1').get(0).getContext('2d'),
             {
                 type: 'doughnut',
                 data: dataWeek,
@@ -119,7 +119,7 @@
         var dataMonth = {
             labels: [textNotShipped, textNotPayed, textNewOrders],
             datasets: [{
-                data: [dataSets.Reports[2].Data[0].Quantity, dataSets.Reports[2].Data[1].Quantity, dataSets.Reports[2].Data[2].Quantity],
+                data: [dataSets[2].Data[0].Quantity, dataSets[2].Data[1].Quantity, dataSets[2].Data[2].Quantity],
                 backgroundColor: [colorDanger, colorWarning, colorPrimary],
                 borderAlign: 'center',
                 borderColor: '#fff',
@@ -131,7 +131,7 @@
             }],
         };
         var chartMonth = new Chart(
-            $('#incomplete-orders-chart-month').get(0).getContext('2d'),
+            $('#incomplete-orders-chart-2').get(0).getContext('2d'),
             {
                 type: 'doughnut',
                 data: dataMonth,
@@ -142,7 +142,7 @@
         var dataOverall = {
             labels: [textNotShipped, textNotPayed, textNewOrders],
             datasets: [{
-                data: [dataSets.Reports[3].Data[0].Quantity, dataSets.Reports[3].Data[1].Quantity, dataSets.Reports[3].Data[2].Quantity],
+                data: [dataSets[3].Data[0].Quantity, dataSets[3].Data[1].Quantity, dataSets[3].Data[2].Quantity],
                 backgroundColor: [colorDanger, colorWarning, colorPrimary],
                 borderAlign: 'center',
                 borderColor: '#fff',
@@ -154,7 +154,7 @@
             }],
         };
         var chartOverall = new Chart(
-            $('#incomplete-orders-chart-overall').get(0).getContext('2d'),
+            $('#incomplete-orders-chart-3').get(0).getContext('2d'),
             {
                 type: 'doughnut',
                 data: dataOverall,

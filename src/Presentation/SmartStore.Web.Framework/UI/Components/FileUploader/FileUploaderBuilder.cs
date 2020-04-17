@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartStore.Core.Domain.Catalog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -71,6 +72,47 @@ namespace SmartStore.Web.Framework.UI
 			return this;
 		}
 
+		public FileUploaderBuilder<TModel> MainFileId(int? value)
+		{
+			base.Component.MainFileId = value;
+			return this;
+		}
+
+		public FileUploaderBuilder<TModel> UploadedFiles(IEnumerable<IMediaFile> value)
+		{
+			base.Component.UploadedFiles = value;
+			return this;
+		}
+
+		public FileUploaderBuilder<TModel> EntityType(string value)
+		{
+			base.Component.EntityType = value;
+			return this;
+		}
+
+		public FileUploaderBuilder<TModel> EntityId(int value)
+		{
+			base.Component.EntityId = value;
+			return this;
+		}
+
+		public FileUploaderBuilder<TModel> DeleteUrl(string value)
+		{
+			base.Component.DeleteUrl = value;
+			return this;
+		}
+
+		public FileUploaderBuilder<TModel> SortUrl(string value)
+		{
+			base.Component.SortUrl = value;
+			return this;
+		}
+
+		public FileUploaderBuilder<TModel> EntityAssignmentUrl(string value)
+		{
+			base.Component.EntityAssignmentUrl = value;
+			return this;
+		}
 
 		public FileUploaderBuilder<TModel> AcceptedFileTypes(string value)
 		{

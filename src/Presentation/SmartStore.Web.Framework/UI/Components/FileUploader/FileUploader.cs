@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 
@@ -39,9 +41,20 @@ namespace SmartStore.Web.Framework.UI
 		public bool ShowRemoveButton { get; set; }
 		public bool Compact { get; set; }
 
+
+
 		public bool Multifile { get; set; }
 		public string PreviewContainerId { get; set; }
+		public int? MainFileId { get; set; }
+		public string EntityType { get; set; }
+		public int EntityId { get; set; }
+		public string DeleteUrl { get; set; }
+		public string SortUrl { get; set; }
+		public string EntityAssignmentUrl { get; set; }
 
+
+
+		public IEnumerable<IMediaFile> UploadedFiles { get; set; }
 
 		public string CancelText { get; set; }
 		public string RemoveText { get; set; }

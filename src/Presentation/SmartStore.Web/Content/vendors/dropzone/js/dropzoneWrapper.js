@@ -10,15 +10,17 @@
 			var elDropzone = el.closest('.fileupload-container');
 
 			// If there is no fileupload container > wrap it around. Needed to make the whole Picture Control a dropzone.
+			/*
 			if (elDropzone.length === 0) {
 				el.wrap('<div class="fileupload-container"></div>');
 				elDropzone = el.closest('.fileupload-container');
 			}
+			*/
 
 			// Place multifile upload preview into the designated spot defined by Picture.
 			var previewTemplate;
 			if (options.maxFiles > 1 && options.previewContainerId !== "") {
-				previewTemplate = el.find(".files-preview");
+				previewTemplate = $(".files-preview");
 				$("#" + options.previewContainerId).append(previewTemplate);
 			}
 
@@ -30,8 +32,11 @@
 			elDropzone.addClass("dropzone");
 
 			// File extensions of MediaManager are dotless but dropzone expects dots.
-			var acceptedFiles = "." + el.data('accept').replace(/\,/g, ",.");
-
+			var acceptedFiles = "";
+			if (el.data('accept')) {
+				acceptedFiles = "." + el.data('accept').replace(/\,/g, ",.");
+			}
+			
 			var opts = {
 				url: el.data('upload-url'),
 				clickable: el.find(".fileinput-button")[0],
@@ -164,6 +169,11 @@
 
 				return false;
 			});
+
+			// If multiupload > display tooltips for preview images in preview container.
+			if (opts.maxFiles !== 1) {
+				$(".dz-image-preview").tooltip();
+			}
 		});
 	};
 

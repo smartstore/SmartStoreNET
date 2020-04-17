@@ -13,6 +13,11 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the display order
         /// </summary>
         int DisplayOrder { get; set; }
+
+        /// <summary>
+        /// Gets the media file
+        /// </summary>
+        MediaFile MediaFile { get; set; }
     }
     
     /// <summary>
@@ -38,6 +43,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
 		[DataMember]
 		public int DisplayOrder { get; set; }
+            
 
         /// <summary>
         /// Gets the media file

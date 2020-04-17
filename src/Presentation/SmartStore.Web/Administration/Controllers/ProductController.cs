@@ -746,6 +746,7 @@ namespace SmartStore.Admin.Controllers
 
 			var productPictures = _productService.GetProductPicturesByProductId(model.Id);
 
+			// OBSOLETE
 			model.ProductPictureModels = productPictures
 				.Select(x =>
 				{
@@ -769,6 +770,33 @@ namespace SmartStore.Admin.Controllers
 					}
 
 					return pictureModel;
+				})
+				.ToList();
+
+			model.ProductMediaFiles = productPictures
+				.Select(x =>
+				{
+					var media = new ProductMediaFile
+					{
+						Id = x.Id,
+						ProductId = x.ProductId,
+						MediaFileId = x.MediaFileId,
+						DisplayOrder = x.DisplayOrder,
+						MediaFile = x.MediaFile
+					};
+
+					// TODO
+					//try
+					//{
+					//	media.PictureUrl = _mediaService.GetUrl(x.MediaFileId, 0);
+					//}
+					//catch (Exception ex)
+					//{
+					//	// The user must always have the possibility to delete faulty images.
+					//	Logger.Error(ex);
+					//}
+
+					return media;
 				})
 				.ToList();
 		}
@@ -2138,13 +2166,13 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult SortPictures(string pictures, int productId)
+		public ActionResult SortPictures(string pictures, int entityId)
 		{
 			try
 			{
 				using (var scope = new DbContextScope(ctx: Services.DbContext, validateOnSave: false, autoDetectChanges: false, autoCommit: false))
 				{
-					var files = _productService.GetProductPicturesByProductId(productId);
+					var files = _productService.GetProductPicturesByProductId(entityId);
 					var arr = pictures.SplitSafe(",");
 					var ordinal = 5;
 
@@ -2174,23 +2202,23 @@ namespace SmartStore.Admin.Controllers
 
 		[HttpPost]
 		[Permission(Permissions.Catalog.Product.EditPicture)]
-        public ActionResult ProductPictureAdd(int pictureId, int displayOrder, int productId)
+        public ActionResult ProductPictureAdd(int pictureId, int displayOrder, int entityId)
         {
             if (pictureId == 0)
             {
                 throw new ArgumentException("Missing picture identifier.");
             }
 
-            var product = _productService.GetProductById(productId);
+            var product = _productService.GetProductById(entityId);
             if (product == null)
             {
-                throw new ArgumentException(T("Products.NotFound", productId));
+                throw new ArgumentException(T("Products.NotFound", entityId));
             }
 
 			var productPicture = new ProductMediaFile
             {
                 MediaFileId = pictureId,
-                ProductId = productId,
+                ProductId = entityId,
                 DisplayOrder = displayOrder
             };
 

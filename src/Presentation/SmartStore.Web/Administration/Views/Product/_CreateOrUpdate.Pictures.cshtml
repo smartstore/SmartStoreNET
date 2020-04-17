@@ -1,6 +1,7 @@
 ﻿@model ProductModel
 
 @using SmartStore.Admin.Models.Catalog;
+@using SmartStore.Core.Domain.Catalog;
 
 @if (Model.Id > 0)
 {
@@ -33,7 +34,18 @@
 				@Html.SmartLabelFor(model => model.AddPictureModel.PictureId)
 			</td>
 			<td class="adminData wide">
-				@Html.EditorFor(model => model.AddPictureModel.PictureId, new { entityId = Model.Id, transientUpload = true, album = "product", multifile = true, uploadedFiles = Model.ProductPictureModels })
+				@Html.EditorFor(model => model.AddPictureModel.PictureId, new
+				{
+					entityId = Model.Id,
+					entityType = "Product",
+					transientUpload = true,
+					album = "product",
+					multifile = true,
+					deleteUrl = Url.Action("ProductPictureDelete", "Product", "Admin"),
+					sortUrl = Url.Action("SortPictures", "Product", "Admin"),
+					entityAssignmentUrl = Url.Action("ProductPictureAdd", "Product", "Admin"),
+					uploadedFiles = Model.ProductMediaFiles as IEnumerable<IMediaFile>
+				})
 				@Html.ValidationMessageFor(model => model.AddPictureModel.PictureId)
 			</td>
 		</tr>
@@ -41,7 +53,7 @@
 }
 else
 {
-    <div class="alert alert-danger">
-        @T("Admin.Catalog.Products.Pictures.SaveBeforeEdit")
-    </div>
+	<div class="alert alert-danger">
+		@T("Admin.Catalog.Products.Pictures.SaveBeforeEdit")
+	</div>
 }

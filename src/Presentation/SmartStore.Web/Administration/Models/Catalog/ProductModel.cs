@@ -385,8 +385,10 @@ namespace SmartStore.Admin.Models.Catalog
         public bool HasPreviewPicture { get; set; }
         public ProductPictureModel AddPictureModel { get; set; }
         public IList<ProductPictureModel> ProductPictureModels { get; set; }
-        
-        [UIHint("Discounts")]
+
+		public IList<ProductMediaFile> ProductMediaFiles { get; set; }
+
+		[UIHint("Discounts")]
         [AdditionalMetadata("multiple", true)]
         [AdditionalMetadata("discountType", DiscountType.AssignedToSkus)]
         [SmartResourceDisplayName("Admin.Promotions.Discounts.AppliedDiscounts")]

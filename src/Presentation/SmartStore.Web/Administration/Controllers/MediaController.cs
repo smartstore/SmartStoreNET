@@ -10,6 +10,7 @@ using SmartStore.Data.Utilities;
 using SmartStore.Services.Media;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
+using System.Dynamic;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -69,21 +70,18 @@ namespace SmartStore.Admin.Controllers
                 {
                     var dupe = (ex as DuplicateMediaFileException)?.File;
 
-                    dynamic resultParams = new {
-                        success = false,
-                        path = filePath,
-                        dupe = ex is DuplicateMediaFileException,
-                        message = ex.Message,
-                        fileId = dupe.Id,
-                        url = _mediaService.GetUrl(dupe, _mediaSettings.ProductThumbPictureSize, host: string.Empty)
-                    };
+                    dynamic resultParams = new ExpandoObject();
 
-                    // TODO
-                    //if (dupe != null)
-                    //{
-                    //    resultParams.fileId = dupe.Id;
-                    //    resultParams.url = _mediaService.GetUrl(dupe, _mediaSettings.ProductThumbPictureSize, host: string.Empty);
-                    //}
+                    resultParams.success = false;
+                    resultParams.path = filePath;
+                    resultParams.dupe = ex is DuplicateMediaFileException;
+                    resultParams.message = ex.Message;
+
+                    if (dupe != null)
+                    {
+                        resultParams.fileId = dupe.Id;
+                        resultParams.url = _mediaService.GetUrl(dupe, _mediaSettings.ProductThumbPictureSize, host: string.Empty);
+                    }
                     
                     result.Add(resultParams);
                 }

@@ -2138,21 +2138,28 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult SortPictures(string pictures)
+		public ActionResult SortPictures(string pictures, int productId)
 		{
 			try
 			{
-				var arr = pictures.SplitSafe(",");
-				var ordinal = 5;
-				foreach (var id in arr)
+				using (var scope = new DbContextScope(ctx: Services.DbContext, validateOnSave: false, autoDetectChanges: false, autoCommit: false))
 				{
-					var productPicture = _productService.GetProductPictureById(Convert.ToInt32(id));
-					if (productPicture != null)
+					var files = _productService.GetProductPicturesByProductId(productId);
+					var arr = pictures.SplitSafe(",");
+					var ordinal = 5;
+
+					foreach (var id in arr)
 					{
-						productPicture.DisplayOrder = ordinal;
-						_productService.UpdateProductPicture(productPicture);
+						var productPicture = files.Where(x => x.Id == Convert.ToInt32(id)).FirstOrDefault();
+						if (productPicture != null)
+						{
+							productPicture.DisplayOrder = ordinal;
+							_productService.UpdateProductPicture(productPicture);
+						}
+						ordinal += 5;
 					}
-					ordinal += 5;
+
+					scope.Commit();
 				}
 			}
 			catch (Exception ex)

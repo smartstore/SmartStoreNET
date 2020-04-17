@@ -29,10 +29,13 @@
 
 			elDropzone.addClass("dropzone");
 
+			// File extensions of MediaManager are dotless but dropzone expects dots.
+			var acceptedFiles = "." + el.data('accept').replace(/\,/g, ",.");
+
 			var opts = {
 				url: el.data('upload-url'),
 				clickable: el.find(".fileinput-button")[0],
-				acceptedFiles: el.data('accept'),
+				acceptedFiles: acceptedFiles,
 				maxFiles: options.maxFiles,
 				previewsContainer: options.previewContainerId !== "" ? "#" + options.previewContainerId : null
 			};
@@ -82,7 +85,6 @@
 
 				// Only for singleupload.
 				if (opts.maxFiles === 1) {
-					console.log("ddss");
 					elDropzone.find('.fileupload-filename').html(file.name);
 					elDropzone.find('.fileupload-filesize').html(this.filesize(file.size));
 					elDropzone.find('.fileupload-thumb').css('background-image', 'url("' + response.url + '")');

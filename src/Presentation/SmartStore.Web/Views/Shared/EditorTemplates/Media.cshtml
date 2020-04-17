@@ -73,10 +73,15 @@
 	</div>
 
 	<div class="fileupload-controls">
+
+		@*
+			TODO: If multiupload > other types may be have to be configured. Should be a property of this editor template.
+		*@
+
 		@(Html.SmartStore().FileUploader()
 			.UploadUrl(Url.Action("Upload", "Media", new { isTransient = TransientUpload, path = Path, area = "Admin" }))
 			.HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
-			.AcceptedFileTypes(".gif,.jpeg,.jpg,.png,.svg")
+			.AcceptedFileTypes(mediaSettings.ImageTypes)
 			.ShowRemoveButton(Model.HasValue)
 			.ShowRemoveButtonAfterUpload(true)
 			.Compact(ViewData["compact"].Convert<bool?>() == true)
@@ -230,7 +235,10 @@
 				cache: false,
 				type: 'POST',
 				url: '@Url.Action("SortPictures", "Product")',
-				data: { pictures: newOrder.join(",") }
+                data: {
+                    pictures: newOrder.join(","),
+					productId: @EntityId
+                }
 			});
         }
 	</script>

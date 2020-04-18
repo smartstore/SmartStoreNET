@@ -255,12 +255,19 @@ namespace SmartStore.Admin.Controllers
 
 		private void ListDirTree(string type)
 		{
+			var root = _fileSystem.GetFolder(FileRoot);
 			var folders = ListDirs(FileRoot);
+			var rootName = FileRoot;
+
+			if (root is MediaFolderInfo fi && fi.Node.Value.ResKey.HasValue())
+			{
+				rootName = T(fi.Node.Value.ResKey);
+			}
 
 			folders.Insert(0, new RoxyFolder
 			{
-				Folder = _fileSystem.GetFolder(FileRoot),
-				DisplayName = FileRoot,
+				Folder = root,
+				DisplayName = rootName,
 				SubFolders = folders.Count
 			});
 

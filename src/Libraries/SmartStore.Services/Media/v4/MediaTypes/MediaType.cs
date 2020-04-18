@@ -13,7 +13,7 @@ namespace SmartStore.Services.Media
             ["image"] = new[] { "png", "jpg", "jpeg", "gif", "webp", "bmp", "svg", "tiff", "tif", "eps" },
             ["video"] = new[] { "mp4", "m4v", "mkv", "wmv", "avi", "asf", "mpg", "mpeg", "webm", "flv", "ogv", "mov", "3gp" },
             ["audio"] = new[] { "mp3", "wav", "wma", "aac", "flac", "oga", "wav", "m4a", "ogg" },
-            ["document"] = new[] { "pdf", "doc", "docx", "ppt", "pptx", "pps", "ppsx", "docm", "odt", "dot", "dotx", "dotm", "psd", "xls", "xlsx" },
+            ["document"] = new[] { "pdf", "doc", "docx", "ppt", "pptx", "pps", "ppsx", "docm", "odt", "ods", "dot", "dotx", "dotm", "psd", "xls", "xlsx", "rtf" },
             ["text"] = new[] { "txt", "xml", "csv", "htm", "html", "json", "css", "js" }
         };
         

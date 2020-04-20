@@ -120,14 +120,26 @@ namespace SmartStore.Services.Orders
         /// <param name="startTimeUtc">Start time limitation</param>
         /// <param name="endTimeUtc">End time limitation</param>
         /// <returns>List of incomplete orders</returns>
-        IPagedList<Order> GetIncompleteOrders(int storeId, DateTime? startTimeUtc, DateTime? endTimeUtc);
+        IPagedList<OrderDataPoint> GetIncompleteOrders(int storeId, DateTime? startTimeUtc, DateTime? endTimeUtc);
 
         /// <summary>
-        /// Get orders chart report
+        /// Get paged list of orders as ChartDataPoints
         /// </summary>
-        /// <param name="allOrders">List of orders</param>
-        /// <param name="period">Time period</param>
-        /// <returns>Orders chart report</returns>
-        DashboardChartReportLine GetOrdersDashboardReport(IPagedList<Order> allOrders, PeriodState period);
+        /// <param name="storeId">Store identifier</param>
+        /// <param name="startTimeUtc">Start time UTC</param>
+        /// <param name="endTimeUtc">End time UTC</param>
+        /// <param name="pageIndex">Page index</param>
+        /// <param name="pageSize">Page size</param>
+        /// <returns></returns>
+        IPagedList<OrderDataPoint> GetOrdersDashboardData(int storeId, DateTime? startTimeUtc, DateTime? endTimeUtc, int pageIndex, int pageSize);
+
+        /// <summary>
+        /// Get orders total
+        /// </summary>
+        /// <param name="storeId">Store identifier</param>
+        /// <param name="startTimeUtc">Start time UTC</param>
+        /// <param name="endTimeUtc">End time UTC</param>
+        /// <returns></returns>
+        decimal GetOrdersTotal(int storeId, DateTime? startTimeUtc, DateTime? endTimeUtc);
     }
 }

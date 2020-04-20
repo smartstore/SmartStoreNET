@@ -1,17 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data.Entity;
+using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
-using SmartStore.Services.Helpers;
-using SmartStore.Services.Catalog;
 using SmartStore.Core.Localization;
-using SmartStore.Core.Domain.Dashboard;
-using SmartStore.Core;
+using SmartStore.Services.Catalog;
+using SmartStore.Services.Helpers;
 
 namespace SmartStore.Services.Customers
 {
@@ -151,7 +149,7 @@ namespace SmartStore.Services.Customers
                 return 0;
             }
 
-            var query = 
+            var query =
                 from c in _customerRepository.Table
                 from rm in c.CustomerRoleMappings
                 where !c.Deleted && rm.CustomerRoleId == registeredCustomerRole.Id && c.CreatedOnUtc >= date
@@ -188,114 +186,28 @@ namespace SmartStore.Services.Customers
             return data;
         }
 
-        public virtual DashboardChartReportLine GetCustomersDashboardReport(IPagedList<Customer> allCustomers, PeriodState state)
+        public virtual int GetCustomerRegistrations(DateTime? startTimeUtc, DateTime? endTimeUtc)
         {
-            var startTime = DateTime.UtcNow;
-            var endTime = startTime;
-            var startTimeBefore = startTime;
-            var endTimeBefore = startTime;
-            var period = 0;
-
-            if (state == PeriodState.Today)
+            var registeredCustomerRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered);
+            if(registeredCustomerRole == null)
             {
-                period = 24;
-                endTime = endTime.AddDays(1);
-                startTimeBefore = startTime.Date.AddDays(-1);
-                endTimeBefore = startTime.Date;
-            }
-            else if (state == PeriodState.Yesterday)
-            {
-                period = 24;
-                startTime = startTime.AddDays(-1);
-                startTimeBefore = startTime.Date.AddDays(-1);
-                endTimeBefore = startTime.Date;
-            }
-            else if (state == PeriodState.Week)
-            {
-                period = 7;
-                startTime = startTime.AddDays(-6);
-                endTime = endTime.AddDays(1);
-                startTimeBefore = startTime.Date.AddDays(-6);
-                endTimeBefore = startTime.Date;
-            }
-            else if (state == PeriodState.Month)
-            {
-                period = 4;
-                startTime = startTime.AddDays(-27);
-                endTime = endTime.AddDays(1);
-                startTimeBefore = startTime.Date.AddDays(-28);
-                endTimeBefore = startTime;
-            }
-            else if (state == PeriodState.Year)
-            {
-                period = 12;
-                startTime = new DateTime(startTime.Year, 1, 1);
-                endTime = endTime.AddDays(1);
-                startTimeBefore = startTime.Date.AddYears(-1);
-                endTimeBefore = startTime;
+                return 0;
             }
 
-            var report = new DashboardChartReportLine(1, period);
-            var customers = allCustomers.Where(x => x.CreatedOnUtc < endTime.Date && x.CreatedOnUtc >= startTime.Date).ToList();
-
-            for (int i = 0; i < period; i++)
+            var query = _customerRepository.Table;
+            query = query.Where(x => !x.Deleted);
+            if (startTimeUtc.HasValue)
             {
-                var startDate = startTime.Date;
-                var endDate = startDate;
-                if (state == PeriodState.Today || state == PeriodState.Yesterday)
-                {
-                    startDate = startDate.AddHours(i - _dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours);
-                    endDate = startDate.AddHours(1);
-                    report.Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("t");
-                }
-                else if (state == PeriodState.Week)
-                {
-                    startDate = startDate.AddDays(i);
-                    endDate = startDate.AddDays(1);
-                    report.Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("m");
-                }
-                else if (state == PeriodState.Month)
-                {
-                    endDate = startDate.AddDays((i + 1) * 7);
-                    startDate = startDate.AddDays(i * 7);
-                    report.Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("m") + " - " + endDate.AddDays(-1).ToString("m");
-                }
-                else if (state == PeriodState.Year)
-                {
-                    startDate = new DateTime(startTime.Year, i + 1, 1);
-                    endDate = startDate.AddMonths(1);
-                    report.Labels[i] = startDate.ToString("Y");
-                }
-
-                var count = customers.Where(x => x.CreatedOnUtc < endDate && x.CreatedOnUtc >= startDate).Count();
-                report.DataSets[0].Quantity[i] = count;
-                report.DataSets[0].FormattedQuantity[i] = count.ToString("N0");
+                query = query.Where(x => startTimeUtc.Value <= x.CreatedOnUtc);
             }
-
-            foreach (var item in report.DataSets)
+            if (endTimeUtc.HasValue)
             {
-                item.TotalAmount = item.Quantity.Sum().ToString("N0");
+                query = query.Where(x => endTimeUtc.Value >= x.CreatedOnUtc);
             }
+            query = query.Where(x => x.CustomerRoles.Any(y => y.Id == registeredCustomerRole.Id));
 
-            report.TotalAmount = customers.Count.ToString("N0");
-            var sumBefore = allCustomers
-                .Where(x => x.CreatedOnUtc < endTimeBefore && x.CreatedOnUtc >= startTimeBefore)
-                .Select(x => x)
-                .Count();
-
-            report.PercentageDelta = sumBefore <= 0 ? 0 : (int)Math.Round(customers.Count / (double)sumBefore * 100 - 100);
-            return report;
+            return query.Count();
         }
-
-        //public class MyTuple : Tuple<DateTime, int>
-        //{
-        //    public MyTuple(DateTime dt, int count) : base(dt, count)
-        //    {
-        //    }
-
-        //    public DateTime Date => base.Item1;
-        //    public int Count => base.Item2;
-        //}
 
         public struct RegistredCustomersDate
         {

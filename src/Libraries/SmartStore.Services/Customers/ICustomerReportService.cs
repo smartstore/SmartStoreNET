@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Dashboard;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
@@ -41,11 +39,11 @@ namespace SmartStore.Services.Customers
         List<RegistredCustomersDate> GetRegisteredCustomersDate();
 
         /// <summary>
-        /// Get customer chart report
+        /// Get customer registration count
         /// </summary>
-        /// <param name="allCustomers">List of customers</param>
-        /// <param name="state">Time period</param>
-        /// <returns>Customers chart report</returns>
-        DashboardChartReportLine GetCustomersDashboardReport(IPagedList<Customer> allCustomers, PeriodState state);
+        /// <param name="startTimeUtc">Start time UTC</param>
+        /// <param name="endTimeUtc">End time UTC</param>
+        /// <returns>Number of registrations</returns>
+        int GetCustomerRegistrations(DateTime? startTimeUtc, DateTime? endTimeUtc);
     }
 }

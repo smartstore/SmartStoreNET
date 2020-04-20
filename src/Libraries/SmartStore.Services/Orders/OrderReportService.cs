@@ -114,7 +114,7 @@ namespace SmartStore.Services.Orders
             return item;
         }
 
-		public virtual OrderAverageReportLineSummary OrderAverageReport(int storeId, OrderStatus os)
+        public virtual OrderAverageReportLineSummary OrderAverageReport(int storeId, OrderStatus os)
         {
             var item = new OrderAverageReportLineSummary
             {
@@ -181,7 +181,7 @@ namespace SmartStore.Services.Orders
             return item;
         }
 
-		public virtual IList<BestsellersReportLine> BestSellersReport(
+        public virtual IList<BestsellersReportLine> BestSellersReport(
             int storeId,
             DateTime? startTime,
             DateTime? endTime,
@@ -272,7 +272,7 @@ namespace SmartStore.Services.Orders
                 return 0;
             }
 
-            var query = 
+            var query =
                 from orderItem in _orderItemRepository.Table
                 where orderItem.ProductId == productId
                 group orderItem by orderItem.Id into g
@@ -366,161 +366,88 @@ namespace SmartStore.Services.Orders
             return profit;
         }
 
-        public virtual IPagedList<Order> GetIncompleteOrders(int storeId, DateTime? startTimeUtc, DateTime? endTimeUtc)
+        public virtual IPagedList<OrderDataPoint> GetIncompleteOrders(int storeId, DateTime? startTimeUtc, DateTime? endTimeUtc)
         {
             var query = _orderRepository.Table;
-            query = query.Where(o => !o.Deleted && o.OrderStatusId != (int)OrderStatus.Cancelled);
+            query = query.Where(x => !x.Deleted && x.OrderStatusId != (int)OrderStatus.Cancelled);
 
             if (storeId > 0)
             {
-                query = query.Where(o => o.StoreId == storeId);
+                query = query.Where(x => x.StoreId == storeId);
             }
             if (startTimeUtc.HasValue)
             {
-                query = query.Where(o => startTimeUtc.Value <= o.CreatedOnUtc);
+                query = query.Where(x => startTimeUtc.Value <= x.CreatedOnUtc);
             }
             if (endTimeUtc.HasValue)
             {
-                query = query.Where(o => endTimeUtc.Value >= o.CreatedOnUtc);
+                query = query.Where(x => endTimeUtc.Value >= x.CreatedOnUtc);
             }
 
-            query = query.Where(x => 
-                x.ShippingStatusId == (int)ShippingStatus.NotYetShipped 
-                || x.PaymentStatusId == (int)PaymentStatus.Pending 
+            query = query.Where(x =>
+                x.ShippingStatusId == (int)ShippingStatus.NotYetShipped
+                || x.PaymentStatusId == (int)PaymentStatus.Pending
                 || x.OrderStatusId == (int)OrderStatus.Pending
+                || x.OrderStatusId == (int)OrderStatus.Processing
             );
+            var dataPoints = query.Select(x => new OrderDataPoint
+            {
+                CreatedOnUtc = x.CreatedOnUtc,
+                OrderTotal = x.OrderTotal,
+                OrderStatusId = x.OrderStatusId,
+                PaymentStatusId = x.PaymentStatusId,
+                ShippingStatusId = x.ShippingStatusId
+            });
 
-            return new PagedList<Order>(query, 0, int.MaxValue);
+            return new PagedList<OrderDataPoint>(dataPoints, 0, int.MaxValue);
         }
 
-        public virtual DashboardChartReportLine GetOrdersDashboardReport(IPagedList<Order> allOrders, PeriodState state)
+        public virtual IPagedList<OrderDataPoint> GetOrdersDashboardData(int storeId, DateTime? startTimeUtc, DateTime? endTimeUtc, int pageIndex, int pageSize)
         {
-            var startTime = DateTime.UtcNow;
-            var endTime = startTime;
-            var startTimeBefore = startTime;
-            var endTimeBefore = startTime;
-            var period = 0;
+            var query = _orderRepository.Table;
+            query = query.Where(x => !x.Deleted);
 
-            if (state == PeriodState.Today)
+            if (storeId > 0)
             {
-                period = 24;
-                endTime = endTime.AddDays(1);
-                startTimeBefore = startTime.Date.AddDays(-1);
-                endTimeBefore = startTime.Date;
+                query = query.Where(x => x.StoreId == storeId);
             }
-            else if (state == PeriodState.Yesterday)
+            if (startTimeUtc.HasValue)
             {
-                period = 24;
-                startTime = startTime.AddDays(-1);
-                startTimeBefore = startTime.Date.AddDays(-1);
-                endTimeBefore = startTime.Date;
+                query = query.Where(x => startTimeUtc.Value <= x.CreatedOnUtc);
             }
-            else if (state == PeriodState.Week)
+            if (endTimeUtc.HasValue)
             {
-                period = 7;
-                startTime = startTime.AddDays(-6);
-                endTime = endTime.AddDays(1);
-                startTimeBefore = startTime.Date.AddDays(-6);
-                endTimeBefore = startTime.Date;
-            }
-            else if (state == PeriodState.Month)
-            {
-                period = 4;
-                startTime = startTime.AddDays(-27);
-                endTime = endTime.AddDays(1);
-                startTimeBefore = startTime.Date.AddDays(-28);
-                endTimeBefore = startTime;
-            }
-            else if (state == PeriodState.Year)
-            {
-                period = 12;
-                startTime = new DateTime(startTime.Year, 1, 1);
-                endTime = endTime.AddDays(1);
-                startTimeBefore = startTime.Date.AddYears(-1);
-                endTimeBefore = startTime;
+                query = query.Where(x => endTimeUtc.Value >= x.CreatedOnUtc);
             }
 
-            var report = new DashboardChartReportLine(4, period);
-            var orders = allOrders.Where(x => x.CreatedOnUtc < endTime.Date && x.CreatedOnUtc >= startTime.Date).ToList();
-            var ordersReports = GetOrderReports(orders);
-
-            for (int i = 0; i < period; i++)
+            var dataPoints = query.Select(x => new OrderDataPoint
             {
-                var startDate = startTime.Date;
-                var endDate = startDate;
-                if (state == PeriodState.Today || state == PeriodState.Yesterday)
-                {
-                    startDate = startDate.AddHours(i - _dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours);
-                    endDate = startDate.AddHours(1);
-                    report.Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("t");
-                }
-                else if (state == PeriodState.Week)
-                {
-                    startDate = startDate.AddDays(i);
-                    endDate = startDate.AddDays(1);
-                    report.Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("m");
-                }
-                else if (state == PeriodState.Month)
-                {
-                    endDate = startDate.AddDays((i + 1) * 7);
-                    startDate = startDate.AddDays(i * 7);
-                    report.Labels[i] = startDate.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("m") + " - " + endDate.AddDays(-1).ToString("m");
-                }
-                else if (state == PeriodState.Year)
-                {
-                    startDate = new DateTime(startTime.Year, i + 1, 1);
-                    endDate = startDate.AddMonths(1);
-                    report.Labels[i] = startDate.ToString("Y");
-                }
-
-                GetReportPointData(report, ordersReports, startDate, endDate, i);
-            }
-
-            CalculateOrdersAmount(report, allOrders, orders, startTimeBefore, endTimeBefore);
-
-            return report;
+                CreatedOnUtc = x.CreatedOnUtc,
+                OrderTotal = x.OrderTotal,
+                OrderStatusId = x.OrderStatusId 
+            });
+            return new PagedList<OrderDataPoint>(dataPoints, pageIndex, pageSize);
         }
 
-        private List<Order>[] GetOrderReports(List<Order> orders)
+        public virtual decimal GetOrdersTotal(int storeId, DateTime? startTimeUtc, DateTime? endTimeUtc)
         {
-            var orderReports = new List<Order>[4]
-            {
-                orders.Where(x => x.OrderStatus == OrderStatus.Cancelled).ToList(),
-                orders.Where(x => x.OrderStatus == OrderStatus.Pending).ToList(),
-                orders.Where(x => x.OrderStatus == OrderStatus.Processing).ToList(),
-                orders.Where(x => x.OrderStatus == OrderStatus.Complete).ToList()
-            };
+            var query = _orderRepository.Table;
+            query = query.Where(x => !x.Deleted);
 
-            return orderReports;
-        }
-
-        private void GetReportPointData(DashboardChartReportLine report, List<Order>[] reports, DateTime startDate, DateTime endDate, int index)
-        {
-            for (int j = 0; j < reports.Length; j++)
+            if (storeId > 0)
             {
-                var point = reports[j].Where(x => x.CreatedOnUtc < endDate && x.CreatedOnUtc >= startDate).ToList();
-                report.DataSets[j].Amount[index] = point.Sum(x => x.OrderTotal);
-                report.DataSets[j].FormattedAmount[index] = ((int)Math.Round(report.DataSets[j].Amount[index])).ToString("C0");
-                report.DataSets[j].Quantity[index] = point.Count;
-                report.DataSets[j].FormattedQuantity[index] = point.Count.ToString("N0");
+                query = query.Where(x => x.StoreId == storeId);
             }
-        }
-
-        private void CalculateOrdersAmount(DashboardChartReportLine report, IList<Order> allOrders, List<Order> orders, DateTime fromDate, DateTime toDate)
-        {
-            foreach (var item in report.DataSets)
+            if (startTimeUtc.HasValue)
             {
-                item.TotalAmount = ((int)Math.Round(item.Amount.Sum())).ToString("C0");
+                query = query.Where(x => startTimeUtc.Value <= x.CreatedOnUtc);
+            }
+            if (endTimeUtc.HasValue)
+            {
+                query = query.Where(x => endTimeUtc.Value >= x.CreatedOnUtc);
             }
 
-            var totalAmount = orders.Where(x => x.OrderStatus != OrderStatus.Cancelled).Sum(x => x.OrderTotal);
-            report.TotalAmount = ((int)Math.Round(totalAmount)).ToString("C0");
-            var sumBefore = Math.Round(allOrders
-                .Where(x => x.CreatedOnUtc < toDate && x.CreatedOnUtc >= fromDate)
-                .Select(x => x)
-                .Sum(x => x.OrderTotal));
-
-            report.PercentageDelta = sumBefore <= 0 ? 0 : (int)Math.Round(totalAmount / sumBefore * 100 - 100);
+            return query.Sum(x => (decimal?)x.OrderTotal ?? decimal.Zero);
         }
     }
 }

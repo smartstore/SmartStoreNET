@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Admin.Models.Customers;
-using SmartStore.Admin.Models.Orders;
+using SmartStore.Admin.Models.Dashboard;
 using SmartStore.Admin.Models.ShoppingCart;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Dashboard;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
@@ -1357,7 +1355,7 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         private List<TopCustomerReportLineModel> CreateCustomerReportLineModel(IList<TopCustomerReportLine> items)
         {
-            var customers = _customerService.GetCustomersByIds(items.Select(x=>x.CustomerId).ToArray());
+            var customers = _customerService.GetCustomersByIds(items.Select(x => x.CustomerId).ToArray());
             return items.Select(x =>
              {
                  var m = new TopCustomerReportLineModel()
@@ -1388,7 +1386,7 @@ namespace SmartStore.Admin.Controllers
                 TopCustomersByAmount = CreateCustomerReportLineModel(_customerReportService.GetTopCustomersReport(null, null, null, null, null, 1, 7)),
                 TopCustomersByQuantity = CreateCustomerReportLineModel(_customerReportService.GetTopCustomersReport(null, null, null, null, null, 2, 7))
             };
-            
+
             watch.Stop();
             Debug.WriteLine("TopCustomersDashboardReport >>> " + watch.ElapsedMilliseconds);
 
@@ -1403,28 +1401,185 @@ namespace SmartStore.Admin.Controllers
             return PartialView(model);
         }
 
+
+        [NonAction]
+        public static void SetCustomerReportData(List<DashboardChartReportModel> reports, DateTime dataPoint)
+        {
+            PeriodState periodStatus;
+            // Today (includes all but yesterday)
+            if (dataPoint >= DateTime.UtcNow.Date)
+            {
+                periodStatus = PeriodState.Today;
+            }
+            // Yesterday (includes all but today)
+            else if (dataPoint >= DateTime.UtcNow.AddDays(-1).Date)
+            {
+                periodStatus = PeriodState.Yesterday;
+            }
+            // Last 7 days (older than today and yesterday)
+            else if (dataPoint >= DateTime.UtcNow.AddDays(-7).Date)
+            {
+                periodStatus = PeriodState.Week;
+            }
+            // Last 28 days (older than last 7 days)
+            else if (dataPoint >= DateTime.UtcNow.AddDays(-28).Date)
+            {
+                periodStatus = PeriodState.Month;
+            }
+            // This year (older than last 28 days)
+            else
+            {
+                periodStatus = PeriodState.Year;
+            }
+
+            if (periodStatus == PeriodState.Today)
+            {
+                reports[0].DataSets[0].Quantity[dataPoint.Hour]++;
+                // Ignore yesterday if today
+                reports[2].DataSets[0].Quantity[reports[2].DataSets[0].Quantity.Length - 1]++;
+            }
+            else if (periodStatus == PeriodState.Yesterday)
+            {
+                // Ignore today if yesterday
+                reports[1].DataSets[0].Quantity[reports[1].DataSets[0].Quantity.Length - 1 - dataPoint.Hour]++;
+                reports[2].DataSets[0].Quantity[reports[2].DataSets[0].Quantity.Length - 2]++;
+            }
+            else if (periodStatus == PeriodState.Week)
+            {
+                // Ignore today and yesterday
+                var weekIndex = (DateTime.UtcNow - dataPoint).Days;
+                reports[2].DataSets[0].Quantity[reports[2].DataSets[0].Quantity.Length - weekIndex]++;
+            }
+
+            // Within last 28 days (older than last 7 days)
+            if (periodStatus == PeriodState.Month)
+            {
+                // Ignore last 7 days
+                var delta = (DateTime.UtcNow - dataPoint).Days;
+                var monthIndex = delta / 7 - (delta % 7 == 0 ? delta / 7 > 0 ? 1 : 0 : 0);
+                reports[3].DataSets[0].Quantity[reports[3].DataSets[0].Amount.Length - monthIndex - 1]++;
+            }
+            else if (periodStatus != PeriodState.Year)
+            {
+                // Applies to last 7 days
+                reports[3].DataSets[0].Quantity[reports[3].DataSets[0].Quantity.Length - 1]++;
+            }
+
+            // This year - need to check if still this year when period is not today or this year (0 || 4)
+            if (periodStatus == PeriodState.Today || periodStatus == PeriodState.Year || dataPoint.Year == DateTime.UtcNow.Year)
+            {
+                reports[4].DataSets[0].Quantity[dataPoint.Month - 1]++;
+            }
+        }
+
         public ActionResult RegisteredCustomersDashboardReport()
         {
             var watch = new Stopwatch();
             watch.Start();
 
-            var query = new CustomerSearchQuery
+            // Get customers of at least last 28 days (if year is younger)
+            var beginningOfYear = new DateTime(DateTime.UtcNow.Year, 1, 1);
+            var startDate = (DateTime.UtcNow.Date - beginningOfYear).Days < 28 ? DateTime.UtcNow.AddDays(-27).Date : beginningOfYear;
+            var searchQuery = new CustomerSearchQuery
             {
-                RegistrationFromUtc = DateTime.UtcNow.AddYears(-2),
-                CustomerRoleIds = new int[] { 3 }
+                RegistrationFromUtc = startDate,
+                CustomerRoleIds = new int[] { 3 },
+                PageSize = int.MaxValue
             };
 
-            var customers = _customerService.SearchCustomers(query);
-            var model = new DashboardChartReportModel();
-
-            for (int i = 0; i < model.Reports.Length; i++)
+            var customerDates = _customerService.SearchCustomers(searchQuery).SourceQuery.Select(x => x.CreatedOnUtc).ToList();
+            var model = new List<DashboardChartReportModel>()
             {
-                model.Reports[i] = _customerReportService.GetCustomersDashboardReport(customers, (PeriodState)i);
+                // Today = index 0
+                new DashboardChartReportModel(1, 24),
+                // Yesterday = index 1
+                new DashboardChartReportModel(1, 24),
+                // Last 7 days = index 2
+                new DashboardChartReportModel(1, 7),
+                // Last 28 days = index 3
+                new DashboardChartReportModel(1, 4),
+                // This year = index 4
+                new DashboardChartReportModel(1, 12)
+            };
+
+            foreach (var dataPoint in customerDates)
+            {
+                SetCustomerReportData(model, dataPoint.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours));
+            }
+
+            // Format and sum values, create labels for all dataPoints
+            for (int i = 0; i < model.Count; i++)
+            {
+                foreach (var data in model[i].DataSets)
+                {
+                    for (int j = 0; j < data.Amount.Length; j++)
+                    {
+                        data.QuantityFormatted[j] = data.Quantity[j].ToString("N0");
+                    }
+                    data.TotalAmount = data.Quantity.Sum();
+                    data.TotalAmountFormatted = data.TotalAmount.ToString("N0");
+                }
+                model[i].TotalAmount = model[i].DataSets.Sum(x => x.TotalAmount);
+                model[i].TotalAmountFormatted = model[i].TotalAmount.ToString("N0");
+
+                for (int j = 0; j < model[i].Labels.Length; j++)
+                {
+                    // Today & yesterday
+                    if (i <= 1)
+                    {
+                        model[i].Labels[j] = DateTime.UtcNow.Date.AddHours(j).ToString("t");
+                    }
+                    // This year
+                    else if (i == 4)
+                    {
+                        model[i].Labels[j] = new DateTime(DateTime.UtcNow.Year, j + 1, 1).ToString("Y");
+                    }
+                    // Last 7 days
+                    else if (i == 2)
+                    {
+                        model[i].Labels[j] = DateTime.UtcNow.Date.AddDays(-6 + j).ToString("m");
+                    }
+                    // Last 28 days
+                    else
+                    {
+                        model[i].Labels[j] = DateTime.UtcNow.Date.AddDays(
+                            -(7 * model[i].Labels.Length) + j * 7).ToString("m") + " - "
+                            + DateTime.UtcNow.Date.AddDays(-(7 * model[i].Labels.Length) + (j + 1) * 7 - (j != model[i].Labels.Length - 1 ? 1 : 0)).ToString("m");
+                    }
+                }
+            }
+
+            // Get registrations for corresponding period to calculate change in percentage 
+            var sumBefore = new decimal[]
+            {
+                // Get registration count for day before
+                model[1].TotalAmount,
+                customerDates.Where(
+                    x => x >= DateTime.UtcNow.Date.AddDays(-2) && x < DateTime.UtcNow.Date.AddDays(-1))
+                .Count(),
+
+                // Get registration count for week before
+                customerDates.Where(
+                    x => x >= DateTime.UtcNow.Date.AddDays(-14) && x < DateTime.UtcNow.Date.AddDays(-7))
+                .Count(),
+
+                // Get registration count for month before
+                _customerReportService.GetCustomerRegistrations(beginningOfYear.AddDays(-56), DateTime.UtcNow.Date.AddDays(-28)),
+
+                // Get registration count for year before
+                _customerReportService.GetCustomerRegistrations(beginningOfYear.AddYears(-1), DateTime.UtcNow.AddYears(-1))
+            };
+
+            // Format percentage value
+            for (int i = 0; i < model.Count; i++)
+            {
+                model[i].PercentageDelta = model[i].TotalAmount <= 0 ?
+                    0 : sumBefore[i] <= 0 ? 100 : (int)Math.Round(model[i].TotalAmount / sumBefore[i] * 100 - 100);
             }
 
             watch.Stop();
             Debug.WriteLine("RegistredCustomersDashboardReport >>> " + watch.ElapsedMilliseconds);
-                                    
+
             return PartialView(model);
         }
 
@@ -1476,7 +1631,6 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        [GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Customer.Read)]
         public ActionResult ReportTopCustomersByNumberOfOrdersList(GridCommand command, TopCustomersReportModel model)
         {
@@ -1506,15 +1660,16 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        private void CalculateOrdersAmount(DashboardChartReportLine report, IList<RegistredCustomersDate> allCustomers, List<RegistredCustomersDate> customers, DateTime fromDate, DateTime toDate)
+        [NonAction]
+        protected void CalculateOrdersAmount(DashboardChartReportModel report, IList<RegistredCustomersDate> allCustomers, List<RegistredCustomersDate> customers, DateTime fromDate, DateTime toDate)
         {
             foreach (var item in report.DataSets)
             {
-                item.TotalAmount = ((int)Math.Round(item.Amount.Sum())).ToString("N");
+                item.TotalAmountFormatted = ((int)Math.Round(item.Amount.Sum())).ToString("N");
             }
 
             var totalAmount = customers.Sum(x => x.Count);
-            report.TotalAmount = ((int)Math.Round((double)totalAmount)).ToString("N");
+            report.TotalAmountFormatted = ((int)Math.Round((double)totalAmount)).ToString("N");
             var sumBefore = (int)Math.Round((double)allCustomers
                 .Where(x => x.Date < toDate && x.Date >= fromDate)
                 .Select(x => x)
@@ -1523,10 +1678,10 @@ namespace SmartStore.Admin.Controllers
 
             report.PercentageDelta = sumBefore <= 0 ? 0 : (int)Math.Round(totalAmount / (double)sumBefore * 100 - 100);
         }
-               
+
         [GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Customer.Read)]
-        public ActionResult ReportRegisteredCustomersList(GridCommand command) // Not used anymore?
+        public ActionResult ReportRegisteredCustomersList(GridCommand command)
         {
             var model = GetReportRegisteredCustomersModel();
 

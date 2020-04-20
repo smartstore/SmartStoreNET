@@ -10,7 +10,6 @@
 
     createIncompleteOrdersCharts = function (textFulfilled, textNotShipped, textNotPayed, textNewOrders) {
         var dataSets = $('#incomplete-orders-report').data('chart');
-
         for (var i = 0; i < dataSets.length; i++) {
             if (dataSets[i].Data[0].Quantity == 0 && dataSets[i].Data[1].Quantity == 0) {
                 dataSets[i].Data[2].Quantity = 1;
@@ -164,7 +163,7 @@
     }
 
     createOrdersChart = function (textCancelled, textPending, textProcessing, textComplete, textOrders) {
-        var ordersData = $('#orders-report').data('chart');
+        var reports = $('#orders-report').data('chart');
         var percentageElement = $("#orders-delta-percentage");
         var chevronElement = $("#orders-delta-percentage-chevron");
         var sumElement = $("#orders-sum-amount");
@@ -192,10 +191,10 @@
         var order_config = {
             type: 'line',
             data: {
-                labels: ordersData.Reports[0].Labels,
+                labels: reports[0].Labels,
                 datasets: [{
                     label: textCancelled,
-                    data: ordersData.Reports[0].DataSets[0].Amount,
+                    data: reports[0].DataSets[0].Amount,
                     borderColor: colorDanger,
                     backgroundColor: cancelledGradient,
                     pointBackgroundColor: colorDanger,
@@ -203,7 +202,7 @@
                     pointHoverBorderColor: 'transparent',
                 }, {
                     label: textPending,
-                    data: ordersData.Reports[0].DataSets[1].Amount,
+                    data: reports[0].DataSets[1].Amount,
                     borderColor: colorWarning,
                     backgroundColor: pendingGradient,
                     hidden: true,
@@ -212,7 +211,7 @@
                     pointHoverBorderColor: 'transparent',
                 }, {
                     label: textProcessing,
-                    data: ordersData.Reports[0].DataSets[2].Amount,
+                    data: reports[0].DataSets[2].Amount,
                     borderColor: colorSuccess,
                     backgroundColor: processingGradient,
                     hidden: true,
@@ -221,7 +220,7 @@
                     pointHoverBorderColor: 'transparent',
                 }, {
                     label: textComplete,
-                    data: ordersData.Reports[0].DataSets[3].Amount,
+                    data: reports[0].DataSets[3].Amount,
                     borderColor: colorPrimary,
                     backgroundColor: completeGradient,
                     pointBackgroundColor: colorPrimary,
@@ -271,7 +270,7 @@
 
                         if (chart.data.labels[i]) {
                             text.push('<span>' + chart.data.datasets[i].label + '</span>');
-                            text.push('<span class="font-weight-500 pl-1 total-amount">' + ordersData.Reports[currentPeriod].DataSets[i].TotalAmount + '</span>');
+                            text.push('<span class="font-weight-500 pl-1 total-amount">' + reports[currentPeriod].DataSets[i].TotalAmountFormatted + '</span>');
                         }
                         text.push('</li>');
                     }
@@ -307,8 +306,8 @@
                     bodySpacing: 5,
                     callbacks: {
                         label: function (item, data) {
-                            return " " + textOrders + ": " + ordersData.Reports[currentPeriod].DataSets[item.datasetIndex].FormattedQuantity[item.index]
-                                + "    " + ordersData.Reports[currentPeriod].DataSets[item.datasetIndex].FormattedAmount[item.index];
+                            return " " + textOrders + ": " + reports[currentPeriod].DataSets[item.datasetIndex].QuantityFormatted[item.index]
+                                + "    " + reports[currentPeriod].DataSets[item.datasetIndex].AmountFormatted[item.index];
                         },
                         labelColor: function (tooltipItem, chart) {
                             var dataset = chart.config.data.datasets[tooltipItem.datasetIndex];
@@ -352,18 +351,18 @@
 
         function setChartData(period) {
             ordersChart.destroy();
-            order_config.data.labels = ordersData.Reports[period].Labels;
+            order_config.data.labels = reports[period].Labels;
             for (var i = 0; i < order_config.data.datasets.length; i++) {
-                order_config.data.datasets[i].data = ordersData.Reports[period].DataSets[i].Amount;
+                order_config.data.datasets[i].data = reports[period].DataSets[i].Amount;
             }
             ordersChart = new Chart(orders_ctx, order_config);
-            setPercentageDelta(period, ordersData);
+            setPercentageDelta(period, reports);
             currentPeriod = period;
             createLegend();
         }
 
         function setPercentageDelta(period) {
-            var val = ordersData.Reports[period].PercentageDelta;
+            var val = reports[period].PercentageDelta;
             if (val < 0) {
                 chevronElement.addClass("negative");
                 chevronElement.removeClass("d-none");
@@ -381,7 +380,7 @@
             }
             var delta = val == 0 ? "" : val < 0 ? "-" + Math.abs(val) + "%" : "+" + Math.abs(val) + "%"; // TODO: format value on server
             percentageElement.html(delta);
-            sumElement.html(ordersData.Reports[period].TotalAmount);
+            sumElement.html(reports[period].TotalAmountFormatted);
         }
 
         // Custom chart legend
@@ -418,7 +417,7 @@
     }
 
     createCustomersChart = function (textRegistrations, textRegistrationsShort) {
-        var customersData = $('#customers-report').data('chart');
+        var reports = $('#customers-report').data('chart');
         var percentageElement = $("#customers-delta-percentage");
         var chevronElement = $("#customers-delta-percentage-chevron");
         var sumElement = $("#customer-quantity-total");
@@ -434,10 +433,10 @@
         var customer_config = {
             type: 'line',
             data: {
-                labels: customersData.Reports[0].Labels,
+                labels: reports[0].Labels,
                 datasets: [{
                     label: textRegistrations,
-                    data: customersData.Reports[0].DataSets[0].Quantity,
+                    data: reports[0].DataSets[0].Quantity,
                     borderColor: colorSuccess,
                     backgroundColor: successGradient,
                     pointBackgroundColor: colorSuccess,
@@ -504,7 +503,7 @@
                     callbacks: {
                         label: function (item, data) {
                             return " " + textRegistrationsShort + ":  "
-                                + customersData.Reports[currentPeriod].DataSets[item.datasetIndex].FormattedQuantity[item.index];
+                                + reports[currentPeriod].DataSets[item.datasetIndex].QuantityFormatted[item.index];
                         },
                         labelColor: function (tooltipItem, chart) {
                             var dataset = chart.config.data.datasets[tooltipItem.datasetIndex];
@@ -546,17 +545,17 @@
 
         function setChartData(period) {
             customersChart.destroy();
-            customer_config.data.labels = customersData.Reports[period].Labels;
+            customer_config.data.labels = reports[period].Labels;
             for (var i = 0; i < customer_config.data.datasets.length; i++) {
-                customer_config.data.datasets[i].data = customersData.Reports[period].DataSets[i].Quantity;
+                customer_config.data.datasets[i].data = reports[period].DataSets[i].Quantity;
             }
             customersChart = new Chart(customers_ctx, customer_config);
-            setPercentageDelta(period, customersData);
+            setPercentageDelta(period, reports);
             currentPeriod = period;
         }
 
         function setPercentageDelta(period) {
-            var val = customersData.Reports[period].PercentageDelta;
+            var val = reports[period].PercentageDelta;
             if (val < 0) {
                 chevronElement.addClass("negative");
                 chevronElement.removeClass("d-none");
@@ -574,7 +573,7 @@
             }
             var delta = val == 0 ? "" : val < 0 ? "-" + Math.abs(val) + "%" : "+" + Math.abs(val) + "%";
             percentageElement.html(delta);
-            sumElement.html(customersData.Reports[period].TotalAmount);
+            sumElement.html(reports[period].TotalAmountFormatted);
         }
     }
 })(jQuery, this, document);

@@ -265,6 +265,7 @@
     <Compile Include="Models\Customers\RegisteredCustomersDashboardReportModel.cs" />
     <Compile Include="Models\Customers\CustomerRoleMappingModel.cs" />
     <Compile Include="Models\Customers\TopCustomersDashboardReportModel.cs" />
+    <Compile Include="Models\Dashboard\DashboardChartReportModel.cs" />
     <Compile Include="Models\DataExchange\CsvConfigurationModel.cs" />
     <Compile Include="Models\DataExchange\ExportDeploymentModel.cs" />
     <Compile Include="Models\DataExchange\ExportFilterModel.cs" />
@@ -285,7 +286,6 @@
     <Compile Include="Models\Messages\MessageTemplatePreviewModel.cs" />
     <Compile Include="Models\News\NewsItemListModel.cs" />
     <Compile Include="Models\Orders\AutoUpdateOrderItemModel.cs" />
-    <Compile Include="Models\Orders\DashboardChartReportModel.cs" />
     <Compile Include="Models\Orders\BestsellersDashboardReportModel.cs" />
     <Compile Include="Models\Orders\CheckoutAttributeListModel.cs" />
     <Compile Include="Models\Orders\LatestOrdersDashboardReportModel.cs" />

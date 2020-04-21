@@ -1438,18 +1438,19 @@ namespace SmartStore.Data.Setup
 					? seoFilename.Truncate(100) + ext
 					: Path.GetFileName(fileName).ToLower().Replace('_', '-');
 
-				var picture = new MediaFile
+				var file = new MediaFile
 				{
 					Name = name,
-					MimeType = mimeType,
-					MediaType = "image",
+                    MediaType = "image",
+                    MimeType = mimeType,
+                    Extension = ext.EmptyNull().TrimStart('.'),
 					CreatedOnUtc = now,
 					UpdatedOnUtc = now,
 					Size = buffer.Length,
 					MediaStorage = new MediaStorage { Data = buffer }
 				};
 
-				return picture;
+				return file;
 			}
 			catch (Exception ex) 
 			{

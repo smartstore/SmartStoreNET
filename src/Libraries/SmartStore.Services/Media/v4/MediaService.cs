@@ -15,6 +15,7 @@ using SmartStore.Core.IO;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace SmartStore.Services.Media
 {
@@ -70,6 +71,8 @@ namespace SmartStore.Services.Media
 
         public int CountFiles(MediaSearchQuery query)
         {
+            Guard.NotNull(query, nameof(query));
+            
             var q = _searcher.PrepareQuery(query, MediaLoadFlags.None);
             var count = q.Count();
             return count;
@@ -77,21 +80,88 @@ namespace SmartStore.Services.Media
 
         public Task<int> CountFilesAsync(MediaSearchQuery query)
         {
+            Guard.NotNull(query, nameof(query));
+
             var q = _searcher.PrepareQuery(query, MediaLoadFlags.None);
             return q.CountAsync();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public MediaSearchResult SearchFiles(MediaSearchQuery query, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking)
+        public FileCountResult CountFilesGrouped(MediaSearchQuery query)
         {
+            Guard.NotNull(query, nameof(query));
+
+            // Fix passed query
+            query.FolderId = null;
+            query.Deleted = null;
+            query.PageIndex = 0;
+            query.PageSize = int.MaxValue;
+            query.SortBy = null;
+
+            // Base db query
+            var q = _searcher.PrepareQuery(query, MediaLoadFlags.None);
+
+            // Get ids of untrackable folders, 'cause no orphan check can be made for them.
+            var untrackableFolderIds = _folderService.GetRootNode()
+                .SelectNodes(x => !x.Value.CanDetectTracks)
+                .Select(x => x.Value.Id)
+                .ToArray();
+
+            // Determine counts
+            var result = (from f in q
+                    group f by 1 into g
+                    select new FileCountResult
+                    {
+                        Total = g.Count(),
+                        Trash = g.Count(x => x.Deleted),
+                        Unassigned = g.Count(x => !x.Deleted && x.FolderId == null),
+                        Transient = g.Count(x => !x.Deleted && x.IsTransient == true),
+                        Orphan = g.Count(x => !x.Deleted && x.FolderId > 0 && !untrackableFolderIds.Contains(x.FolderId.Value) && !x.Tracks.Any())
+                    }).FirstOrDefault();
+
+            // Determine file count for each folder
+            var byFolders = from f in q
+                     where f.FolderId > 0
+                     group f by f.FolderId.Value into grp
+                     select grp;
+
+            result.Folders = byFolders
+                .Select(grp => new { FolderId = grp.Key, Count = grp.Count() })
+                .ToDictionary(k => k.FolderId, v => v.Count);
+
+            result.Query = query;
+
+            return result;
+        }
+
+        public MediaSearchResult SearchFiles(
+            MediaSearchQuery query,
+            Func<IQueryable<MediaFile>, IQueryable<MediaFile>> queryModifier,
+            MediaLoadFlags flags = MediaLoadFlags.AsNoTracking)
+        {
+            Guard.NotNull(query, nameof(query));
+
             var files = _searcher.SearchFiles(query, flags);
+            if (queryModifier != null)
+            {
+                files.AlterQuery(queryModifier);
+            }
+
             return new MediaSearchResult(files.Load(), ConvertMediaFile);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public async Task<MediaSearchResult> SearchFilesAsync(MediaSearchQuery query, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking)
+        public async Task<MediaSearchResult> SearchFilesAsync(
+            MediaSearchQuery query,
+            Func<IQueryable<MediaFile>, IQueryable<MediaFile>> queryModifier,
+            MediaLoadFlags flags = MediaLoadFlags.AsNoTracking)
         {
+            Guard.NotNull(query, nameof(query));
+
             var files = _searcher.SearchFiles(query, flags);
+            if (queryModifier != null)
+            {
+                files.AlterQuery(queryModifier);
+            }
+
             return new MediaSearchResult(await files.LoadAsync(), ConvertMediaFile);
         }
 

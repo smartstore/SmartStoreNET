@@ -389,6 +389,7 @@
     <Compile Include="Media\v4\MediaFileInfo.cs" />
     <Compile Include="Media\v4\MediaModule.cs" />
     <Compile Include="Media\v4\MediaUrlGenerator.cs" />
+    <Compile Include="Media\v4\Search\FileCountResult.cs" />
     <Compile Include="Media\v4\Search\IMediaSearcher.cs" />
     <Compile Include="Media\v4\Search\MediaSearcher.cs" />
     <Compile Include="Media\v4\Search\MediaSearchQuery.cs" />

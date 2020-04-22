@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.IO;
 
@@ -8,6 +9,18 @@ namespace SmartStore.Services.Media
 {
     public static class IMediaServiceExtensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static MediaSearchResult SearchFiles(this IMediaService service, MediaSearchQuery query, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking)
+        {
+            return service.SearchFiles(query, null, flags);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static async Task<MediaSearchResult> SearchFilesAsync(this IMediaService service, MediaSearchQuery query, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking)
+        {
+            return await service.SearchFilesAsync(query, null, flags);
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetUrl(this IMediaService service, int? fileId, ProcessImageQuery imageQuery, string host = null, bool doFallback = true)
         {

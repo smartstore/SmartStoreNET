@@ -35,12 +35,6 @@ namespace SmartStore.Services.Media
 
             var q = _fileRepo.TableUntracked;
 
-            // Deleted
-            if (query.Deleted != null)
-            {
-                q = q.Where(x => x.Deleted == query.Deleted.Value);
-            }
-
             // Folder
             if (query.FolderId > 0)
             {
@@ -53,6 +47,44 @@ namespace SmartStore.Services.Media
                 {
                     q = q.Where(x => x.FolderId == query.FolderId);
                 }
+            }
+            else if (query.FolderId < 0)
+            {
+                // Special folders
+                query.Deleted = false;
+
+                if (query.FolderId == (int)SpecialMediaFolder.AllFiles)
+                {
+                    query.Deleted = null;
+                }
+                else if (query.FolderId == (int)SpecialMediaFolder.Trash)
+                {
+                    query.Deleted = true;
+                }
+                else if (query.FolderId == (int)SpecialMediaFolder.Orphans)
+                {
+                    // Get ids of untrackable folders, 'cause no orphan check can be made for them.
+                    var untrackableFolderIds = _folderService.Value.GetRootNode()
+                        .SelectNodes(x => !x.Value.CanDetectTracks)
+                        .Select(x => x.Value.Id)
+                        .ToArray();
+
+                    q = q.Where(x => x.FolderId > 0 && !untrackableFolderIds.Contains(x.FolderId.Value) && !x.Tracks.Any());
+                }
+                else if (query.FolderId == (int)SpecialMediaFolder.TransientFiles)
+                {
+                    q = q.Where(x => x.IsTransient);
+                }
+                else if (query.FolderId == (int)SpecialMediaFolder.UnassignedFiles)
+                {
+                    q = q.Where(x => x.FolderId == null);
+                }
+            }
+
+            // Deleted
+            if (query.Deleted != null)
+            {
+                q = q.Where(x => x.Deleted == query.Deleted.Value);
             }
 
             // MimeType
@@ -73,7 +105,7 @@ namespace SmartStore.Services.Media
                 q = q.Where(x => query.MediaTypes.Contains(x.MediaType));
             }
 
-            // Tag
+            // Tags
             if (query.Tags != null && query.Tags.Length > 0)
             {
                 q = q.Where(x => x.Tags.Any(t => query.Tags.Contains(t.Id)));
@@ -93,9 +125,12 @@ namespace SmartStore.Services.Media
             }
 
             // Sorting
-            var ordering = query.SortBy.NullEmpty() ?? nameof(MediaFile.Name);
-            if (query.SortDescending) ordering += " descending";
-            q = q.OrderBy(ordering);
+            var ordering = query.SortBy;
+            if (ordering.HasValue())
+            {
+                if (query.SortDescending) ordering += " descending";
+                q = q.OrderBy(ordering);
+            }
 
             return ApplyLoadFlags(q, flags);
         }

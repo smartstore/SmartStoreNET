@@ -16,6 +16,7 @@ namespace SmartStore.Services.Media
         [JsonProperty("deep")]
         public bool DeepSearch { get; set; }
 
+
         [JsonProperty("mediaTypes")]
         public string[] MediaTypes { get; set; }
 

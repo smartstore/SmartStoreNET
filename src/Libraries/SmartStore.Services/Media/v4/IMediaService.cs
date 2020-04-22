@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Media.Storage;
@@ -18,6 +19,15 @@ namespace SmartStore.Services.Media
         AsNoTracking  = 1 << 4,
         Full = WithBlob | WithTags | WithTracks | WithFolder,
         FullNoTracking = Full | AsNoTracking
+    }
+
+    public enum SpecialMediaFolder
+    {
+        AllFiles = -500,
+        Trash = -400,
+        Orphans = -300,
+        TransientFiles = -200,
+        UnassignedFiles = -100
     }
 
     public enum FileHandling
@@ -52,8 +62,9 @@ namespace SmartStore.Services.Media
 
         int CountFiles(MediaSearchQuery query);
         Task<int> CountFilesAsync(MediaSearchQuery query);
-        MediaSearchResult SearchFiles(MediaSearchQuery query, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
-        Task<MediaSearchResult> SearchFilesAsync(MediaSearchQuery query, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
+        FileCountResult CountFilesGrouped(MediaSearchQuery query);
+        MediaSearchResult SearchFiles(MediaSearchQuery query, Func<IQueryable<MediaFile>, IQueryable<MediaFile>> queryModifier, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
+        Task<MediaSearchResult> SearchFilesAsync(MediaSearchQuery query, Func<IQueryable<MediaFile>, IQueryable<MediaFile>> queryModifier, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
 
         bool FileExists(string path);
         MediaFileInfo GetFileByPath(string path, MediaLoadFlags flags = MediaLoadFlags.None);

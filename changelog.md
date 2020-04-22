@@ -10,6 +10,7 @@
 * *IDiscountRequirementRule* and *IShippingMethodFilter* has been removed. Discounts and shipping methods can now be filtered by rule sets.
 * Customer navigation property *CustomerRoles* has been replaced by *CustomerRoleMappings*, a new entity for role mappings.
 * The search index must be rebuilt due to various enhancements.
+* The wrong name of API endpoint *LocalizedPropertys* has been corrected and renamed to *LocalizedProperties*.
 
 ### New Features
 * #1598 Add published property to ProductTag entity.

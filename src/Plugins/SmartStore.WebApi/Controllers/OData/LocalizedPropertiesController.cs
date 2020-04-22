@@ -8,7 +8,7 @@ using SmartStore.Web.Framework.WebApi.Security;
 namespace SmartStore.WebApi.Controllers.OData
 {
     [WebApiAuthenticate]
-	public class LocalizedPropertysController : WebApiEntityController<LocalizedProperty, ILocalizedEntityService>
+	public class LocalizedPropertiesController : WebApiEntityController<LocalizedProperty, ILocalizedEntityService>
 	{
 		protected override void Insert(LocalizedProperty entity)
 		{

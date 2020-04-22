@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Net.Http;
 using System.Web.Http;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
@@ -11,7 +10,7 @@ using SmartStore.Web.Framework.WebApi.Security;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
-	public class PicturesController : WebApiEntityController<MediaFile, IMediaService>
+    public class PicturesController : WebApiEntityController<MediaFile, IMediaService>
 	{
         protected override IQueryable<MediaFile> GetEntitySet()
         {
@@ -23,6 +22,7 @@ namespace SmartStore.WebApi.Controllers.OData
             return query;
         }
 
+        [WebApiAuthenticate(Permission = Permissions.Media.Upload)]
         protected override void Insert(MediaFile entity)
 		{
 			throw this.ExceptionNotImplemented();
@@ -37,13 +37,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Media.Delete)]
         protected override void Delete(MediaFile entity)
 		{
-            var permanent = false;
-            var queries = Request?.RequestUri?.ParseQueryString();
-
-            if (queries?.AllKeys?.Contains("permanent") ?? false)
-            {
-                permanent = queries["permanent"].ToBool(permanent);
-            }
+            var permanent = this.GetQueryStringValue<bool>("permanent");
 
             Service.DeleteFile(entity, permanent);
         }

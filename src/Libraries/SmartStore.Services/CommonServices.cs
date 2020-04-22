@@ -50,7 +50,6 @@ namespace SmartStore.Services
 			Lazy<IEventPublisher> eventPublisher,
 			Lazy<ILocalizationService> localization,
 			Lazy<ICustomerActivityService> customerActivity,
-			//Lazy<IPictureService> pictureService,
 			Lazy<IMediaService> mediaService,
 			Lazy<INotifier> notifier,
             Lazy<IPermissionService> permissions,

@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Seo;
@@ -56,6 +57,7 @@ namespace SmartStore.WebApi
             m.EntitySet<MediaFile>("Pictures");
             m.EntitySet<MediaTag>("MediaTags");
             m.EntitySet<MediaTrack>("MediaTracks");
+            m.EntitySet<NewsLetterSubscription>("NewsLetterSubscriptions");
             m.EntitySet<OrderNote>("OrderNotes");
 			m.EntitySet<Order>("Orders");
 			m.EntitySet<OrderItem>("OrderItems");

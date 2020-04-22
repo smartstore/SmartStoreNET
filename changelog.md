@@ -29,7 +29,8 @@
 	* Perf. Added option to ignore attribute filtering property on product level.
 * **Web-API**:
 	* #1809 Added a parameter to start an import after uploading import files.
-	* #1801 Added endpoints for ProductPicture, ProductCategory, ProductManufacturer to allow to update DisplayOrder.
+	* #1801 Added endpoints for ProductPictures, ProductCategories and ProductManufacturers to allow to update DisplayOrder.
+	* #1858 Added endpoints for NewsLetterSubscription.
 * #1714 Direct links to variations on a product.
 * #1733 Add ability to hide products from catalog, but not search.
 * #1754 Implement hidden boolean setting that controls which catalog search engine implementation should be used in backend.

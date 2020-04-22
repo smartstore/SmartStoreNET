@@ -778,29 +778,9 @@ namespace SmartStore.PayPal.Services
             // PayPal review: do not transmit payer_info for PP PLUS.
             if (session.ProviderSystemName == PayPalInstalmentsProvider.SystemName)
             {
+                GetPayerInfo(customer, out var firstName, out var lastName, out var email);
+
                 var payerInfo = new Dictionary<string, object>();
-                var email = string.Empty;
-                var firstName = string.Empty;
-                var lastName = string.Empty;
-
-                // PayPal review: do take name and email from account data.
-                if (customer.ShippingAddress != null)
-                {
-                    email = customer.ShippingAddress.Email;
-                    firstName = customer.ShippingAddress.FirstName;
-                    lastName = customer.ShippingAddress.LastName;
-                }
-                if (lastName.IsEmpty() && customer.BillingAddress != null)
-                {
-                    email = customer.BillingAddress.Email;
-                    firstName = customer.BillingAddress.FirstName;
-                    lastName = customer.BillingAddress.LastName;
-                }
-                if (email.IsEmpty())
-                {
-                    email = customer.Email;
-                }
-
                 payerInfo.Add("email", email.EmptyNull());
                 payerInfo.Add("first_name", firstName.EmptyNull());
                 payerInfo.Add("last_name", lastName.EmptyNull());
@@ -888,6 +868,23 @@ namespace SmartStore.PayPal.Services
 				shippingAddress.Add("value", CreateAddress(customer.ShippingAddress, true));
 				data.Add(shippingAddress);
 			}
+
+            if (customer.BillingAddress != null)
+            {
+                GetPayerInfo(customer, out var firstName, out var lastName, out var email);
+
+                var payerInfo = new Dictionary<string, object>();
+                payerInfo.Add("email", email.EmptyNull());
+                payerInfo.Add("first_name", firstName.EmptyNull());
+                payerInfo.Add("last_name", lastName.EmptyNull());
+                payerInfo.Add("billing_address", CreateAddress(customer.BillingAddress, false));
+
+                var payer = new Dictionary<string, object>();
+                payer.Add("op", "add");
+                payer.Add("path", "/payer/payer_info");
+                payer.Add("value", payerInfo);
+                data.Add(payer);
+            }
 
 			// Update of whole amount object required. patching single amount values not possible (MALFORMED_REQUEST).
 			var amount = CreateAmount(session, store, customer, cart, null);
@@ -1252,6 +1249,29 @@ namespace SmartStore.PayPal.Services
             }
 
             return new Money(decimal.Zero, targetCurrency);
+        }
+
+        private void GetPayerInfo(Customer customer, out string firstName, out string lastName, out string email)
+        {
+            firstName = lastName = email = string.Empty;
+
+            // PayPal review: do take name and email from account data.
+            if (customer.ShippingAddress != null)
+            {
+                email = customer.ShippingAddress.Email;
+                firstName = customer.ShippingAddress.FirstName;
+                lastName = customer.ShippingAddress.LastName;
+            }
+            if (lastName.IsEmpty() && customer.BillingAddress != null)
+            {
+                email = customer.BillingAddress.Email;
+                firstName = customer.BillingAddress.FirstName;
+                lastName = customer.BillingAddress.LastName;
+            }
+            if (email.IsEmpty())
+            {
+                email = customer.Email;
+            }
         }
 
         #endregion

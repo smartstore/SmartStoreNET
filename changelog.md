@@ -53,7 +53,9 @@
 * #1665 UI: ACL, discount and store selection should be done via multiple select2.
 * Updated UserAgent Parser.
 * TinyImage: updated WebP detection patterns.
-* PayPal PLUS: apply order of payment methods in backend to the list of third-party payment methods in checkout.
+* **PayPal PLUS**:
+	* Apply order of payment methods in backend to the list of third-party payment methods in checkout.
+	* #1848 Send the billing address when redirecting to PayPal.
 
 ### Bugfixes
 * Export: Fixed KeyNotFoundException when batch size was 1.

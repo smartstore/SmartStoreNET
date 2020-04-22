@@ -265,13 +265,13 @@ namespace SmartStore.AmazonPay.Services
 
 				if (type == AmazonPayRequestType.PayButtonHandler)
 				{
-					if (cart.Count <= 0 || !IsPaymentMethodActive(store.Id))
-					{
+					if (cart.Count <= 0 || !_paymentService.IsPaymentMethodActive(AmazonPayPlugin.SystemName, customer, cart, store.Id))
+                    {
 						model.Result = AmazonPayResultType.Redirect;
 						return model;
 					}
 
-					if (customer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
+                    if (customer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
 					{
 						model.Result = AmazonPayResultType.Unauthorized;
 						return model;
@@ -318,12 +318,12 @@ namespace SmartStore.AmazonPay.Services
 				}
 				else if (type == AmazonPayRequestType.ShoppingCart || type == AmazonPayRequestType.MiniShoppingCart)
 				{
-					if (cart.Count <= 0 || !IsPaymentMethodActive(store.Id))
+					if (cart.Count <= 0 || !_paymentService.IsPaymentMethodActive(AmazonPayPlugin.SystemName, customer, cart, store.Id))
 					{
 						model.Result = AmazonPayResultType.None;
 						return model;
 					}
-				}
+                }
 				else
 				{
 					if (cart.Count <= 0)
@@ -1502,12 +1502,12 @@ namespace SmartStore.AmazonPay.Services
 					Logger.Warn(T("Plugins.Payments.AmazonPay.OrderNotFound", errorId));
 				}
 
-				if (order == null || !IsPaymentMethodActive(order.StoreId))
+				if (order == null || !_paymentService.IsPaymentMethodActive(AmazonPayPlugin.SystemName, order.StoreId))
 				{
 					return;
-				}
+				}              
 
-				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(order.StoreId);
+                var settings = _services.Settings.LoadSetting<AmazonPaySettings>(order.StoreId);
 				if (settings.DataFetching != AmazonPayDataFetchingType.Ipn)
 				{
 					return;

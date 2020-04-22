@@ -34,9 +34,6 @@ Text suggestions:</div><ul>
 	<LocaleResource Name="IncompleteProfileDetails">
 		<Value>Incomplete Amazon profile data!</Value>
 	</LocaleResource>
-	<LocaleResource Name="PaymentMethodNotActive">
-		<Value>Payment method "Login and Pay with Amazon" is not available for store "{0}".</Value>
-	</LocaleResource>
 	<LocaleResource Name="MissingCheckoutSessionState">
 		<Value>Missing checkout session state for "Login and Pay with Amazon". Your payment cannot be processed. Please go to your shopping cart and checkout again.</Value>
 	</LocaleResource>

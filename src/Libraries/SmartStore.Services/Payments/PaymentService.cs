@@ -10,15 +10,11 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
-using SmartStore.Rules;
 using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Payments
 {
-    /// <summary>
-    /// Payment service
-    /// </summary>
     public partial class PaymentService : IPaymentService
     {
         private const string PAYMENT_METHODS_ALL_KEY = "SmartStore.paymentmethod.all-{0}-";
@@ -54,42 +50,35 @@ namespace SmartStore.Services.Payments
 			_providerManager = providerManager;
 			_services = services;
 			_typeFinder = typeFinder;
-
-			T = NullLocalizer.Instance;
-            Logger = NullLogger.Instance;
-            QuerySettings = DbQuerySettings.Default;
 		}
 
-		public Localizer T { get; set; }
-        public ILogger Logger { get; set; }
-        public DbQuerySettings QuerySettings { get; set; }
+		public Localizer T { get; set; } = NullLocalizer.Instance;
+        public ILogger Logger { get; set; } = NullLogger.Instance;
+        public DbQuerySettings QuerySettings { get; set; } = DbQuerySettings.Default;
 
         #region Methods
 
-		public virtual bool IsPaymentMethodActive(string systemName, int storeId = 0)
+        public virtual bool IsPaymentMethodActive(string systemName, int storeId = 0)
 		{
 			var method = LoadPaymentMethodBySystemName(systemName, true, storeId);
 			return method != null;
 		}
 
-		public virtual bool IsPaymentMethodFiltered(PaymentFilterRequest filterRequest)
-		{
-			Guard.NotNull(filterRequest, nameof(filterRequest));
+        public virtual bool IsPaymentMethodActive(
+            string systemName,
+            Customer customer = null,
+            IList<OrganizedShoppingCartItem> cart = null,
+            int storeId = 0)
+        {
+            Guard.NotEmpty(systemName, nameof(systemName));
 
-			var allFilters = GetAllPaymentMethodFilters();
-			return allFilters.Any(x => x.IsExcluded(filterRequest));
-		}
+            var activePaymentMethods = LoadActivePaymentMethods(customer, cart, storeId, null, false).ToList();
+            var method = activePaymentMethods.FirstOrDefault(x => x.Metadata.SystemName.IsCaseInsensitiveEqual(systemName));
 
-		/// <summary>
-		/// Load active payment methods
-		/// </summary>
-		/// <param name="customer">Filter payment methods by customer and apply payment method restrictions; null to load all records</param>
-		/// <param name="cart">Filter payment methods by cart amount; null to load all records</param>
-		/// <param name="storeId">Filter payment methods by store identifier; pass 0 to load all records</param>
-		/// <param name="types">Filter payment methods by payment method types</param>
-		/// <param name="provideFallbackMethod">Provide a fallback payment method if none is active</param>
-		/// <returns>Payment methods</returns>
-		public virtual IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(
+            return method != null;
+        }
+
+        public virtual IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(
 			Customer customer = null,
 			IList<OrganizedShoppingCartItem> cart = null,
 			int storeId = 0,

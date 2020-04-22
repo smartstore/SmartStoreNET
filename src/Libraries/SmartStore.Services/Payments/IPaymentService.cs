@@ -6,31 +6,33 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Payments
 {
-	/// <summary>
-	/// Payment service interface
-	/// </summary>
-	public partial interface IPaymentService
+    public partial interface IPaymentService
     {
-		/// <summary>
-		/// Determines whether a payment method is active\enabled for a shop
-		/// </summary>
-		bool IsPaymentMethodActive(string systemName, int storeId = 0);
+        /// <summary>
+        /// Checks whether a payment method is active for a shop.
+        /// </summary>
+        bool IsPaymentMethodActive(string systemName, int storeId = 0);
 
-		/// <summary>
-		/// Determines whether a payment method is excluded by a filter
-		/// </summary>
-		bool IsPaymentMethodFiltered(PaymentFilterRequest filterRequest);
+        /// <summary>
+        /// Checks whether a payment method is active, not filtered out and match applied rule sets.
+        /// A payment method that meets these requirements appears in the checkout.
+        /// </summary>
+        bool IsPaymentMethodActive(
+            string systemName,
+            Customer customer = null,
+            IList<OrganizedShoppingCartItem> cart = null,
+            int storeId = 0);
 
-		/// <summary>
-		/// Load active payment methods
-		/// </summary>
-		/// <param name="customer">Filter payment methods by customer and apply payment method restrictions; null to load all records</param>
-		/// <param name="cart">Filter payment methods by cart amount; null to load all records</param>
-		/// <param name="storeId">Filter payment methods by store identifier; pass 0 to load all records</param>
-		/// <param name="types">Filter payment methods by payment method types</param>
-		/// <param name="provideFallbackMethod">Provide a fallback payment method if none is active</param>
-		/// <returns>Payment methods</returns>
-		IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(
+        /// <summary>
+        /// Loads payment methods that are active, not filtered out and match applied rule sets.
+        /// </summary>
+        /// <param name="customer">Filter payment methods by customer. <c>null</c> to load all.</param>
+        /// <param name="cart">Filter payment methods by cart. <c>null</c> to load all.</param>
+        /// <param name="storeId">Filter payment methods by store identifier. 0 to load all.</param>
+        /// <param name="types">Filter payment methods by payment method types.</param>
+        /// <param name="provideFallbackMethod">Provide a fallback payment method if there is no match.</param>
+        /// <returns>Filtered payment methods.</returns>
+        IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(
 			Customer customer = null,
 			IList<OrganizedShoppingCartItem> cart = null,
 			int storeId = 0,

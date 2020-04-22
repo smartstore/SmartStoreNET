@@ -7,7 +7,7 @@ namespace SmartStore.Services.Media
     public partial class FileCountResult
     {
         [JsonIgnore]
-        public MediaSearchQuery Query { get; set; }
+        public MediaFilesFilter Filter { get; set; }
 
         [JsonProperty("total")]
         public int Total { get; set; }

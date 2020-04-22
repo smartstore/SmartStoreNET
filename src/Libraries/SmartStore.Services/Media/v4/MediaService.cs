@@ -86,19 +86,12 @@ namespace SmartStore.Services.Media
             return q.CountAsync();
         }
 
-        public FileCountResult CountFilesGrouped(MediaSearchQuery query)
+        public FileCountResult CountFilesGrouped(MediaFilesFilter filter)
         {
-            Guard.NotNull(query, nameof(query));
-
-            // Fix passed query
-            query.FolderId = null;
-            query.Deleted = null;
-            query.PageIndex = 0;
-            query.PageSize = int.MaxValue;
-            query.SortBy = null;
+            Guard.NotNull(filter, nameof(filter));
 
             // Base db query
-            var q = _searcher.PrepareQuery(query, MediaLoadFlags.None);
+            var q = _searcher.PrepareFilterQuery(filter);
 
             // Get ids of untrackable folders, 'cause no orphan check can be made for them.
             var untrackableFolderIds = _folderService.GetRootNode()
@@ -128,7 +121,7 @@ namespace SmartStore.Services.Media
                 .Select(grp => new { FolderId = grp.Key, Count = grp.Count() })
                 .ToDictionary(k => k.FolderId, v => v.Count);
 
-            result.Query = query;
+            result.Filter = filter;
 
             return result;
         }

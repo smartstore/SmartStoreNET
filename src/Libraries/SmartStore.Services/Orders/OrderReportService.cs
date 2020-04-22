@@ -447,7 +447,7 @@ namespace SmartStore.Services.Orders
                 query = query.Where(x => endTimeUtc.Value >= x.CreatedOnUtc);
             }
 
-            return query.Sum(x => (decimal?)x.OrderTotal ?? decimal.Zero);
+            return query.Sum(x => (decimal?)x.OrderTotal) ?? decimal.Zero;
         }
     }
 }

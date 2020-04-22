@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -385,7 +386,7 @@ namespace SmartStore.Services.Security
             }
         }
 
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool Authorize(PermissionRecord permission)
         {
             return Authorize(permission, _workContext.CurrentCustomer);
@@ -401,6 +402,7 @@ namespace SmartStore.Services.Security
             return Authorize(permission.SystemName, customer);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool Authorize(string permissionSystemName)
         {
             return Authorize(permissionSystemName, _workContext.CurrentCustomer);

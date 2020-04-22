@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.IO;
+using SmartStore.Core.Security;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Media
@@ -22,7 +24,9 @@ namespace SmartStore.Services.Media
 		}
 
 		public IMediaService MediaService { get; set; }
-        public HttpContextBase HttpContext { get; set; }
+		public IPermissionService PermissionService { get; set; }
+		public Customer CurrentCustomer { get; set; }
+		public HttpContextBase HttpContext { get; set; }
 
         public int MediaFileId { get; set; }
         public string RawPath { get; set; }
@@ -59,7 +63,11 @@ namespace SmartStore.Services.Media
 				var mediaFile = MediaService.GetFileById(MediaFileId, MediaLoadFlags.AsNoTracking);
 
 				// File must exist
-				if (mediaFile == null || mediaFile.Deleted || mediaFile.Hidden)
+				if (mediaFile == null)
+					return null;
+
+				// Serve deleted or hidden files only with sufficient permission
+				if ((mediaFile.Deleted || mediaFile.Hidden) && !PermissionService.Authorize(Permissions.Media.Update, CurrentCustomer))
 					return null;
 
 				//// File's mime must match requested mime

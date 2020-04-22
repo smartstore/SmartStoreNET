@@ -8,15 +8,8 @@ using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Media
 {
-    public partial class MediaSearchQuery
+    public partial class MediaFilesFilter
     {
-        [JsonProperty("folderId")]
-        public int? FolderId { get; set; }
-
-        [JsonProperty("deep")]
-        public bool DeepSearch { get; set; }
-
-
         [JsonProperty("mediaTypes")]
         public string[] MediaTypes { get; set; }
 
@@ -43,6 +36,15 @@ namespace SmartStore.Services.Media
 
         [JsonProperty("includeAlt")]
         public bool IncludeAltForTerm { get; set; }
+    }
+
+    public partial class MediaSearchQuery : MediaFilesFilter
+    {
+        [JsonProperty("folderId")]
+        public int? FolderId { get; set; }
+
+        [JsonProperty("deep")]
+        public bool DeepSearch { get; set; }
 
 
         [JsonProperty("page")]

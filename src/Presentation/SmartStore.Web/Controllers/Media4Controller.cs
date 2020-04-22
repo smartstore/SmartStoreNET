@@ -21,6 +21,7 @@ using System.Web.Routing;
 using SmartStore.Core.Security;
 using System.Collections.Generic;
 using SmartStore.Core.IO;
+using SmartStore.Core;
 
 namespace SmartStore.Web.Controllers
 {
@@ -38,6 +39,7 @@ namespace SmartStore.Web.Controllers
 		private readonly IFolderService _folderService;
 		private readonly IPermissionService _permissionService;
 		private readonly IEventPublisher _eventPublisher;
+		private readonly IWorkContext _workContext;
 		private readonly MediaSettings _mediaSettings;
 		private readonly MediaHelper _mediaHelper;
 
@@ -50,6 +52,7 @@ namespace SmartStore.Web.Controllers
 			IFolderService folderService,
 			IPermissionService permissionService,
 			IEventPublisher eventPublisher,
+			IWorkContext workContext,
 			MediaSettings mediaSettings,
 			MediaHelper mediaHelper,
 			Lazy<IEnumerable<IMediaHandler>> mediaHandlers,
@@ -60,7 +63,7 @@ namespace SmartStore.Web.Controllers
 			_folderService = folderService;
 			_permissionService = permissionService;
 			_eventPublisher = eventPublisher;
-			//_mediaFileSystem = mediaFileSystem;
+			_workContext = workContext;
 			_mediaSettings = mediaSettings;
 			_mediaHelper = mediaHelper;
 			_mediaHandlers = mediaHandlers;
@@ -154,6 +157,8 @@ namespace SmartStore.Web.Controllers
 			var handlerContext = new MediaHandlerContext
 			{
 				HttpContext = HttpContext,
+				CurrentCustomer = _workContext.CurrentCustomer,
+				PermissionService = _permissionService,
 				MediaFileId = id,
 				RawPath = path,
 				MediaService = _mediaService,

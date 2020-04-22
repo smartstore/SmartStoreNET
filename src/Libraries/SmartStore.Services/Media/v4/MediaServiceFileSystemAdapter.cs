@@ -95,8 +95,7 @@ namespace SmartStore.Services.Media
 
             var query = new MediaSearchQuery
             {
-                FolderId = node.Value.Id,
-                Deleted = false
+                FolderId = node.Value.Id
             };
 
             return _mediaService.SearchFiles(query);
@@ -127,8 +126,7 @@ namespace SmartStore.Services.Media
                 {
                     FolderId = node.Value.Id,
                     DeepSearch = deep,
-                    Term = pattern,
-                    Deleted = false
+                    Term = pattern
                 };
 
                 return _mediaService.CountFiles(query);
@@ -150,8 +148,7 @@ namespace SmartStore.Services.Media
             {
                 FolderId = node.Value.Id,
                 DeepSearch = deep,
-                Term = pattern,
-                Deleted = false
+                Term = pattern
             };
 
             return _mediaService.SearchFiles(query).Select(x => x.Path).ToList();

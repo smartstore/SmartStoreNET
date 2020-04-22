@@ -62,7 +62,7 @@ namespace SmartStore.Services.Media
 
         int CountFiles(MediaSearchQuery query);
         Task<int> CountFilesAsync(MediaSearchQuery query);
-        FileCountResult CountFilesGrouped(MediaSearchQuery query);
+        FileCountResult CountFilesGrouped(MediaFilesFilter filter);
         MediaSearchResult SearchFiles(MediaSearchQuery query, Func<IQueryable<MediaFile>, IQueryable<MediaFile>> queryModifier, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
         Task<MediaSearchResult> SearchFilesAsync(MediaSearchQuery query, Func<IQueryable<MediaFile>, IQueryable<MediaFile>> queryModifier, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
 

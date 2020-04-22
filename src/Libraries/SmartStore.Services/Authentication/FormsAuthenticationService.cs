@@ -73,22 +73,21 @@ namespace SmartStore.Services.Authentication
 			if (_cachedCustomer != null)
 				return _cachedCustomer;
 
-			if (_httpContext?.Request == null || !_httpContext.Request.IsAuthenticated || _httpContext.User == null)
+			if (_httpContext?.Request == null || !_httpContext.Request.IsAuthenticated)
 				return null;
 
 			Customer customer = null;
-			SmartStoreIdentity ident = null;
 
-			if (_httpContext.User.Identity is FormsIdentity formsIdentity)
-			{
-				customer = GetAuthenticatedCustomerFromTicket(formsIdentity.Ticket);
-			}
-			else if ((ident = _httpContext.User.Identity as SmartStoreIdentity) != null)
-			{
-				customer = _customerService.GetCustomerById(ident.CustomerId);
-			}
+            if (_httpContext.User.Identity is FormsIdentity formsIdent)
+            {
+                customer = GetAuthenticatedCustomerFromTicket(formsIdent.Ticket);
+            }
+            else if (_httpContext.User.Identity is SmartStoreIdentity ident)
+            {
+                customer = _customerService.GetCustomerById(ident.CustomerId);
+            }
 
-			if (customer != null && customer.Active && !customer.Deleted && customer.IsRegistered())
+            if (customer != null && customer.Active && !customer.Deleted && customer.IsRegistered())
 			{
 				_cachedCustomer = customer;
 			}

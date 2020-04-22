@@ -33,7 +33,8 @@ namespace SmartStore.Services.Media
         {
             Guard.NotNull(query, nameof(query));
 
-            var q = _fileRepo.TableUntracked;
+            var q = PrepareFilterQuery(query);
+            bool? shouldIncludeDeleted = false;
 
             // Folder
             if (query.FolderId > 0)
@@ -51,15 +52,13 @@ namespace SmartStore.Services.Media
             else if (query.FolderId < 0)
             {
                 // Special folders
-                query.Deleted = false;
-
                 if (query.FolderId == (int)SpecialMediaFolder.AllFiles)
                 {
-                    query.Deleted = null;
+                    shouldIncludeDeleted = null;
                 }
                 else if (query.FolderId == (int)SpecialMediaFolder.Trash)
                 {
-                    query.Deleted = true;
+                    shouldIncludeDeleted = true;
                 }
                 else if (query.FolderId == (int)SpecialMediaFolder.Orphans)
                 {
@@ -81,47 +80,9 @@ namespace SmartStore.Services.Media
                 }
             }
 
-            // Deleted
-            if (query.Deleted != null)
+            if (query.Deleted == null && shouldIncludeDeleted.HasValue)
             {
-                q = q.Where(x => x.Deleted == query.Deleted.Value);
-            }
-
-            // MimeType
-            if (query.MimeTypes != null && query.MimeTypes.Length > 0)
-            {
-                q = q.Where(x => query.MimeTypes.Contains(x.MimeType));
-            }
-
-            // Extension
-            if (query.Extensions != null && query.Extensions.Length > 0)
-            {
-                q = q.Where(x => query.Extensions.Contains(x.Extension));
-            }
-
-            // MediaType
-            if (query.MediaTypes != null && query.MediaTypes.Length > 0)
-            {
-                q = q.Where(x => query.MediaTypes.Contains(x.MediaType));
-            }
-
-            // Tags
-            if (query.Tags != null && query.Tags.Length > 0)
-            {
-                q = q.Where(x => x.Tags.Any(t => query.Tags.Contains(t.Id)));
-            }
-
-            // Hidden
-            if (query.Hidden != null)
-            {
-                q = q.Where(x => x.Hidden == query.Hidden.Value);
-            }
-
-            // Term
-            if (query.Term.HasValue() && query.Term != "*")
-            {
-                // Convert file pattern to SQL 'LIKE' expression
-                q = ApplySearchTerm(q, query.Term, query.IncludeAltForTerm, query.ExactMatch);
+                q = q.Where(x => x.Deleted == shouldIncludeDeleted.Value);
             }
 
             // Sorting
@@ -133,6 +94,58 @@ namespace SmartStore.Services.Media
             }
 
             return ApplyLoadFlags(q, flags);
+        }
+
+        public virtual IQueryable<MediaFile> PrepareFilterQuery(MediaFilesFilter filter)
+        {
+            Guard.NotNull(filter, nameof(filter));
+
+            var q = _fileRepo.Table;
+
+            // Deleted
+            if (filter.Deleted != null)
+            {
+                q = q.Where(x => x.Deleted == filter.Deleted.Value);
+            }
+
+            // Hidden
+            if (filter.Hidden != null)
+            {
+                q = q.Where(x => x.Hidden == filter.Hidden.Value);
+            }
+
+            // MimeType
+            if (filter.MimeTypes != null && filter.MimeTypes.Length > 0)
+            {
+                q = q.Where(x => filter.MimeTypes.Contains(x.MimeType));
+            }
+
+            // Extension
+            if (filter.Extensions != null && filter.Extensions.Length > 0)
+            {
+                q = q.Where(x => filter.Extensions.Contains(x.Extension));
+            }
+
+            // MediaType
+            if (filter.MediaTypes != null && filter.MediaTypes.Length > 0)
+            {
+                q = q.Where(x => filter.MediaTypes.Contains(x.MediaType));
+            }
+
+            // Tags
+            if (filter.Tags != null && filter.Tags.Length > 0)
+            {
+                q = q.Where(x => x.Tags.Any(t => filter.Tags.Contains(t.Id)));
+            }
+
+            // Term
+            if (filter.Term.HasValue() && filter.Term != "*")
+            {
+                // Convert file pattern to SQL 'LIKE' expression
+                q = ApplySearchTerm(q, filter.Term, filter.IncludeAltForTerm, filter.ExactMatch);
+            }
+
+            return q;
         }
 
         public virtual IQueryable<MediaFile> ApplyLoadFlags(IQueryable<MediaFile> query, MediaLoadFlags flags)

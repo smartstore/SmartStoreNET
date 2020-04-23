@@ -56,6 +56,7 @@
 * **PayPal PLUS**:
 	* Apply order of payment methods in backend to the list of third-party payment methods in checkout.
 	* #1848 Send the billing address when redirecting to PayPal.
+* Hide cart payment button for payment methods without match of applied rule sets.
 
 ### Bugfixes
 * Export: Fixed KeyNotFoundException when batch size was 1.

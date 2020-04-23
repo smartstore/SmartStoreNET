@@ -23,7 +23,7 @@
 * SVG support for image uploads.
 * Schedule tasks: new property "Priority" runs tasks with higher priority first when multiple tasks are pending.
 * **MegaSearch**:
-	* Added more text analysis options.
+	* Added more text analysis options (e.g. Lucene.Net classic analyzer).
 	* Added tool to display internal information about a search, such as Lucene.Net terms.
 	* #1693 Find the grouped product when searching for the SKU, GTIN, MPN of a non individually visible, associated product.
 	* #1711 Find product when searching for GTIN or MPN of an attribute combination.

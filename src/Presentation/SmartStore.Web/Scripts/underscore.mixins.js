@@ -184,30 +184,53 @@
         formatFileSize: function (bytes) {
             if (typeof bytes !== 'number') {
                 return '';
+			}
+
+			var val, unit;
+
+			if (bytes >= 1000000000) {
+				val = (bytes / 1000000000);
+				unit = "GB";
+			}
+			else if (bytes >= 1000000) {
+				val = (bytes / 1000000);
+				unit = "MB";
+			}
+			else {
+				val = (bytes / 1000).toFixed(0);
+				unit = "KB";
             }
-            if (bytes >= 1000000000) {
-                return (bytes / 1000000000).toFixed(2) + ' GB';
-            }
-            if (bytes >= 1000000) {
-                return (bytes / 1000000).toFixed(2) + ' MB';
-            }
-            return (bytes / 1000).toFixed(2) + ' KB';
+
+			return (unit === 'KB' ? val : SmartStore.globalization.formatNumber(val, 'N')) + ' ' + unit;
         },
 
         formatBitrate: function (bits) {
             if (typeof bits !== 'number') {
                 return '';
+			}
+
+			var val, unit, format;
+
+			if (bits >= 1000000000) {
+				val = (bits / 1000000000);
+				unit = "Gbit/s";
+				format = true;
+			}
+			else if (bits >= 1000000) {
+				val = (bits / 1000000);
+				unit = "Mbit/s";
+				format = true;
+			}
+			else if (bits >= 1000) {
+				val = (bits / 1000);
+				unit = "Kbit/s";
+			}
+			else {
+				val = bits;
+				unit = "bit/s";
             }
-            if (bits >= 1000000000) {
-                return (bits / 1000000000).toFixed(2) + ' Gbit/s';
-            }
-            if (bits >= 1000000) {
-                return (bits / 1000000).toFixed(2) + ' Mbit/s';
-            }
-            if (bits >= 1000) {
-                return (bits / 1000).toFixed(2) + ' kbit/s';
-            }
-            return bits + ' bit/s';
+
+			return (format ? val : SmartStore.globalization.formatNumber(val, 'N')) + ' ' + unit;
         },
 
         formatTime: function (seconds) {

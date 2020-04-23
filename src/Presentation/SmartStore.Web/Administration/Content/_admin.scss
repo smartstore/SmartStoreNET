@@ -116,12 +116,14 @@ body {
 }
 
 .page-main {
+    --sticky-header-left: var(--content-padding-x);
+    --sticky-header-right: var(--content-padding-x);
+    --header-height: 72px;
+    --content-height: calc(72px + var(--header-height));
     position: relative;
     display: grid;
     grid-template-columns: 100%;
-    grid-template-rows: 72px 72px minmax(calc(100vh - 144px), auto);
-    --sticky-header-left: var(--content-padding-x);
-    --sticky-header-right: var(--content-padding-x);
+    grid-template-rows: 72px var(--header-height) minmax(calc(100vh - var(--content-height)), auto);
 }
 
 #header {
@@ -314,7 +316,7 @@ body {
     .page-main {
         height: 100%;
         grid-template-columns: 1fr minmax(380px, 20%);
-        grid-template-rows: 72px 72px calc(100vh - 144px);
+        grid-template-rows: 72px var(--header-height) calc(100vh - var(--content-height));
     }
 
     .cph {
@@ -1538,7 +1540,7 @@ table.payment-method-features td {
         width: 1px;
         left: 2px;
         height: 100%;
-        background-color: $gray-200;
+        background-color: rgba(#000, 0.1);
     }
 }
 

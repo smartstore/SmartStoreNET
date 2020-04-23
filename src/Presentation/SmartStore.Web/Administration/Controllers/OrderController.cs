@@ -2773,8 +2773,9 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected void IncompleteOrdersReportAddData(OrderDataPoint dataPoint, List<OrdersIncompleteDashboardReportModel> reports, int dataIndex)
         {
+            var userTime = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow, DateTimeKind.Utc);
             // Today
-            if (dataPoint.CreatedOnUtc >= DateTime.UtcNow.Date)
+            if (dataPoint.CreatedOn >= userTime.Date)
             {
                 // Apply data to all periods
                 for (int i = 0; i < reports.Count; i++)
@@ -2785,7 +2786,7 @@ namespace SmartStore.Admin.Controllers
                 return;
             }
             // This week
-            if (dataPoint.CreatedOnUtc >= DateTime.UtcNow.AddDays(-7).Date)
+            if (dataPoint.CreatedOn >= userTime.AddDays(-7).Date)
             {
                 // Apply data to all periods but today
                 for (int i = 1; i < reports.Count; i++)
@@ -2796,7 +2797,7 @@ namespace SmartStore.Admin.Controllers
                 return;
             }
             // This month
-            if (dataPoint.CreatedOnUtc >= DateTime.UtcNow.AddDays(-28).Date)
+            if (dataPoint.CreatedOn >= userTime.AddDays(-28).Date)
             {
                 // Apply data to month and year period
                 for (int i = 2; i < reports.Count; i++)
@@ -2844,10 +2845,11 @@ namespace SmartStore.Admin.Controllers
             var beginningOfYear = new DateTime(DateTime.UtcNow.Year, 1, 1);
             var startDate = (DateTime.UtcNow.Date - beginningOfYear).Days < 28 ? DateTime.UtcNow.AddDays(-28).Date : beginningOfYear;
             var dataPoints = _orderReportService.GetIncompleteOrders(0, startDate, null).ToList();
-
+            var userTime = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow, DateTimeKind.Utc);
             // Sort pending orders by status and period
             foreach (var dataPoint in dataPoints)
             {
+                dataPoint.CreatedOn = _dateTimeHelper.ConvertToUserTime(dataPoint.CreatedOn, DateTimeKind.Utc);
                 if (dataPoint.ShippingStatusId == (int)ShippingStatus.NotYetShipped)
                 {
                     // Not Shipped = index 0
@@ -2863,21 +2865,22 @@ namespace SmartStore.Admin.Controllers
                     // New Order = index 2
                     IncompleteOrdersReportAddData(dataPoint, model, 2);
                 }
+
                 // OrdersTotal
                 if (dataPoint.OrderStatusId == (int)OrderStatus.Pending || dataPoint.OrderStatusId == (int)OrderStatus.Processing)
                 {
                     // Today
-                    if (dataPoint.CreatedOnUtc >= DateTime.UtcNow.Date)
+                    if (dataPoint.CreatedOn >= userTime.Date)
                     {
                         IncompleteOrdersReportAddTotal(dataPoint, model, 0);
                     }
                     // This week
-                    else if (dataPoint.CreatedOnUtc >= DateTime.UtcNow.AddDays(-7).Date)
+                    else if (dataPoint.CreatedOn >= userTime.AddDays(-7).Date)
                     {
                         IncompleteOrdersReportAddTotal(dataPoint, model, 1);
                     }
                     // This month 
-                    else if (dataPoint.CreatedOnUtc >= DateTime.UtcNow.AddDays(-28).Date)
+                    else if (dataPoint.CreatedOn >= userTime.AddDays(-28).Date)
                     {
                         IncompleteOrdersReportAddTotal(dataPoint, model, 2);
                     }
@@ -2913,7 +2916,6 @@ namespace SmartStore.Admin.Controllers
             watch.Start();
 
             var model = new LatestOrdersDashboardReportModel();
-
             var latestOrders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, 7).ToList();
             foreach (var order in latestOrders)
             {
@@ -2921,9 +2923,9 @@ namespace SmartStore.Admin.Controllers
                     new DashboardOrderModel(
                         order.CustomerId,
                         order.Customer.FormatUserName() ?? order.Customer.FindEmail(),
-                        order.OrderItems.Select(x => x.Quantity).Sum(),
+                        order.OrderItems.Sum(x => x.Quantity),
                         order.OrderTotal.ToString("C0"),
-                        order.CreatedOnUtc.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours).ToString("g"),
+                        _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc).ToString("g"),
                         order.OrderStatus,
                         order.Id)
                     );
@@ -2937,26 +2939,27 @@ namespace SmartStore.Admin.Controllers
 
 
         [NonAction]
-        public static void SetOrderReportData(List<DashboardChartReportModel> reports, OrderDataPoint dataPoint)
+        public void SetOrderReportData(List<DashboardChartReportModel> reports, OrderDataPoint dataPoint)
         {
+            var userTime = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow, DateTimeKind.Utc);
             PeriodState periodStatus;
             // Today (includes all but yesterday)
-            if (dataPoint.CreatedOnUtc >= DateTime.UtcNow.Date)
+            if (dataPoint.CreatedOn >= userTime.Date)
             {
                 periodStatus = PeriodState.Today;
             }
             // Yesterday (includes all but today)
-            else if (dataPoint.CreatedOnUtc >= DateTime.UtcNow.AddDays(-1).Date)
+            else if (dataPoint.CreatedOn >= userTime.AddDays(-1).Date)
             {
                 periodStatus = PeriodState.Yesterday;
             }
             // Last 7 days (older than today and yesterday)
-            else if (dataPoint.CreatedOnUtc >= DateTime.UtcNow.AddDays(-7).Date)
+            else if (dataPoint.CreatedOn >= userTime.AddDays(-7).Date)
             {
                 periodStatus = PeriodState.Week;
             }
             // Last 28 days (older than last 7 days)
-            else if (dataPoint.CreatedOnUtc >= DateTime.UtcNow.AddDays(-28).Date)
+            else if (dataPoint.CreatedOn >= userTime.AddDays(-28).Date)
             {
                 periodStatus = PeriodState.Month;
             }
@@ -2969,8 +2972,8 @@ namespace SmartStore.Admin.Controllers
             var dataIndex = dataPoint.OrderStatusId == 40 ? 0 : dataPoint.OrderStatusId / 10;
             if (periodStatus == PeriodState.Today)
             {
-                reports[0].DataSets[dataIndex].Amount[dataPoint.CreatedOnUtc.Hour] += dataPoint.OrderTotal;
-                reports[0].DataSets[dataIndex].Quantity[dataPoint.CreatedOnUtc.Hour]++;
+                reports[0].DataSets[dataIndex].Amount[dataPoint.CreatedOn.Hour] += dataPoint.OrderTotal;
+                reports[0].DataSets[dataIndex].Quantity[dataPoint.CreatedOn.Hour]++;
                 // Ignore yesterday if today
                 reports[2].DataSets[dataIndex].Amount[reports[2].DataSets[0].Amount.Length - 1] += dataPoint.OrderTotal;
                 reports[2].DataSets[dataIndex].Quantity[reports[2].DataSets[0].Quantity.Length - 1]++;
@@ -2978,15 +2981,15 @@ namespace SmartStore.Admin.Controllers
             else if (periodStatus == PeriodState.Yesterday)
             {
                 // Ignore today if yesterday
-                reports[1].DataSets[dataIndex].Amount[dataPoint.CreatedOnUtc.Hour] += dataPoint.OrderTotal;
-                reports[1].DataSets[dataIndex].Quantity[dataPoint.CreatedOnUtc.Hour]++;
+                reports[1].DataSets[dataIndex].Amount[dataPoint.CreatedOn.Hour] += dataPoint.OrderTotal;
+                reports[1].DataSets[dataIndex].Quantity[dataPoint.CreatedOn.Hour]++;
                 reports[2].DataSets[dataIndex].Amount[reports[2].DataSets[0].Amount.Length - 2] += dataPoint.OrderTotal;
                 reports[2].DataSets[dataIndex].Quantity[reports[2].DataSets[0].Quantity.Length - 2]++;
             }
             else if (periodStatus == PeriodState.Week)
             {
                 // Ignore today and yesterday
-                var weekIndex = (DateTime.UtcNow - dataPoint.CreatedOnUtc).Days;
+                var weekIndex = (userTime - dataPoint.CreatedOn).Days;
                 reports[2].DataSets[dataIndex].Amount[weekIndex] += dataPoint.OrderTotal;
                 reports[2].DataSets[dataIndex].Quantity[weekIndex]++;
             }
@@ -2995,7 +2998,7 @@ namespace SmartStore.Admin.Controllers
             if (periodStatus == PeriodState.Month)
             {
                 // Ignore last 7 days
-                var delta = (DateTime.UtcNow - dataPoint.CreatedOnUtc).Days;
+                var delta = (userTime - dataPoint.CreatedOn).Days;
                 var monthIndex = delta / 7 - (delta % 7 == 0 ? delta / 7 > 0 ? 1 : 0 : 0);
                 reports[3].DataSets[dataIndex].Amount[reports[3].DataSets[dataIndex].Amount.Length - monthIndex - 1] += dataPoint.OrderTotal;
                 reports[3].DataSets[dataIndex].Quantity[reports[3].DataSets[dataIndex].Amount.Length - monthIndex - 1]++;
@@ -3009,10 +3012,10 @@ namespace SmartStore.Admin.Controllers
             }
 
             // This year - need to check if still this year when period is not today or this year (0 || 4)
-            if (periodStatus == PeriodState.Today || periodStatus == PeriodState.Year || dataPoint.CreatedOnUtc.Year == DateTime.UtcNow.Year)
+            if (periodStatus == PeriodState.Today || periodStatus == PeriodState.Year || dataPoint.CreatedOn.Year == userTime.Year)
             {
-                reports[4].DataSets[dataIndex].Amount[dataPoint.CreatedOnUtc.Month - 1] += dataPoint.OrderTotal;
-                reports[4].DataSets[dataIndex].Quantity[dataPoint.CreatedOnUtc.Month - 1]++;
+                reports[4].DataSets[dataIndex].Amount[dataPoint.CreatedOn.Month - 1] += dataPoint.OrderTotal;
+                reports[4].DataSets[dataIndex].Quantity[dataPoint.CreatedOn.Month - 1]++;
             }
         }
 
@@ -3042,9 +3045,11 @@ namespace SmartStore.Admin.Controllers
 
             foreach (var dataPoint in orderDataPoints)
             {
+                dataPoint.CreatedOn = _dateTimeHelper.ConvertToUserTime(dataPoint.CreatedOn, DateTimeKind.Utc);
                 SetOrderReportData(model, dataPoint);
             }
 
+            var userTime = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow, DateTimeKind.Utc);
             // Format and sum values
             for (int i = 0; i < model.Count; i++)
             {
@@ -3067,24 +3072,24 @@ namespace SmartStore.Admin.Controllers
                     // Today & yesterday
                     if (i <= 1)
                     {
-                        model[i].Labels[j] = DateTime.UtcNow.Date.AddHours(j).ToString("t");
+                        model[i].Labels[j] = userTime.Date.AddHours(j).ToString("t");
                     }
                     // This year
                     else if (i == 4)
                     {
-                        model[i].Labels[j] = new DateTime(DateTime.UtcNow.Year, j + 1, 1).ToString("Y");
+                        model[i].Labels[j] = new DateTime(userTime.Year, j + 1, 1).ToString("Y");
                     }
                     // Last 7 days
                     else if (i == 2)
                     {
-                        model[i].Labels[j] = DateTime.UtcNow.Date.AddDays(-6 + j).ToString("m");
+                        model[i].Labels[j] = userTime.Date.AddDays(-6 + j).ToString("m");
                     }
                     // Last 28 days
                     else
                     {
-                        model[i].Labels[j] = DateTime.UtcNow.Date.AddDays(
+                        model[i].Labels[j] = userTime.Date.AddDays(
                             -(7 * model[i].Labels.Length) + j * 7).ToString("m") + " - "
-                            + DateTime.UtcNow.Date.AddDays(-(7 * model[i].Labels.Length) + (j + 1) * 7 - (j != model[i].Labels.Length - 1 ? 1 : 0)).ToString("m");
+                            + userTime.Date.AddDays(-(7 * model[i].Labels.Length) + (j + 1) * 7 - (j != model[i].Labels.Length - 1 ? 1 : 0)).ToString("m");
                     }
                 }
             }
@@ -3096,14 +3101,14 @@ namespace SmartStore.Admin.Controllers
                 
                 // Get orders count for day before yesterday
                 orderDataPoints.Where(
-                    x => x.CreatedOnUtc >= DateTime.UtcNow.Date.AddDays(-2) && x.CreatedOnUtc < DateTime.UtcNow.Date.AddDays(-1))
+                    x => x.CreatedOn >= DateTime.UtcNow.Date.AddDays(-2) && x.CreatedOn < DateTime.UtcNow.Date.AddDays(-1))
                 .Sum(x => x.OrderTotal),
                 
                 // Get orders count for week before
                 orderDataPoints.Where(
-                    x => x.CreatedOnUtc >= DateTime.UtcNow.Date.AddDays(-14) && x.CreatedOnUtc<DateTime.UtcNow.Date.AddDays(-7))
+                    x => x.CreatedOn >= DateTime.UtcNow.Date.AddDays(-14) && x.CreatedOn < DateTime.UtcNow.Date.AddDays(-7))
                 .Sum(x => x.OrderTotal),
-                
+
                 // Get orders count for month
                 _orderReportService.GetOrdersTotal(0, beginningOfYear.AddDays(-56), DateTime.UtcNow.Date.AddDays(-28)),
                                                                 

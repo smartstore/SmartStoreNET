@@ -1403,26 +1403,27 @@ namespace SmartStore.Admin.Controllers
 
 
         [NonAction]
-        public static void SetCustomerReportData(List<DashboardChartReportModel> reports, DateTime dataPoint)
+        public void SetCustomerReportData(List<DashboardChartReportModel> reports, DateTime dataPoint)
         {
+            var userTime = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow, DateTimeKind.Utc);
             PeriodState periodStatus;
             // Today (includes all but yesterday)
-            if (dataPoint >= DateTime.UtcNow.Date)
+            if (dataPoint >= userTime.Date)
             {
                 periodStatus = PeriodState.Today;
             }
             // Yesterday (includes all but today)
-            else if (dataPoint >= DateTime.UtcNow.AddDays(-1).Date)
+            else if (dataPoint >= userTime.AddDays(-1).Date)
             {
                 periodStatus = PeriodState.Yesterday;
             }
             // Last 7 days (older than today and yesterday)
-            else if (dataPoint >= DateTime.UtcNow.AddDays(-7).Date)
+            else if (dataPoint >= userTime.AddDays(-7).Date)
             {
                 periodStatus = PeriodState.Week;
             }
             // Last 28 days (older than last 7 days)
-            else if (dataPoint >= DateTime.UtcNow.AddDays(-28).Date)
+            else if (dataPoint >= userTime.AddDays(-28).Date)
             {
                 periodStatus = PeriodState.Month;
             }
@@ -1447,7 +1448,7 @@ namespace SmartStore.Admin.Controllers
             else if (periodStatus == PeriodState.Week)
             {
                 // Ignore today and yesterday
-                var weekIndex = (DateTime.UtcNow - dataPoint).Days;
+                var weekIndex = (userTime - dataPoint).Days;
                 reports[2].DataSets[0].Quantity[reports[2].DataSets[0].Quantity.Length - weekIndex]++;
             }
 
@@ -1455,7 +1456,7 @@ namespace SmartStore.Admin.Controllers
             if (periodStatus == PeriodState.Month)
             {
                 // Ignore last 7 days
-                var delta = (DateTime.UtcNow - dataPoint).Days;
+                var delta = (userTime - dataPoint).Days;
                 var monthIndex = delta / 7 - (delta % 7 == 0 ? delta / 7 > 0 ? 1 : 0 : 0);
                 reports[3].DataSets[0].Quantity[reports[3].DataSets[0].Amount.Length - monthIndex - 1]++;
             }
@@ -1466,7 +1467,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             // This year - need to check if still this year when period is not today or this year (0 || 4)
-            if (periodStatus == PeriodState.Today || periodStatus == PeriodState.Year || dataPoint.Year == DateTime.UtcNow.Year)
+            if (periodStatus == PeriodState.Today || periodStatus == PeriodState.Year || dataPoint.Year == userTime.Year)
             {
                 reports[4].DataSets[0].Quantity[dataPoint.Month - 1]++;
             }
@@ -1504,9 +1505,10 @@ namespace SmartStore.Admin.Controllers
 
             foreach (var dataPoint in customerDates)
             {
-                SetCustomerReportData(model, dataPoint.AddHours(_dateTimeHelper.CurrentTimeZone.BaseUtcOffset.Hours));
+                SetCustomerReportData(model, _dateTimeHelper.ConvertToUserTime(dataPoint, DateTimeKind.Utc));
             }
 
+            var userTime = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow, DateTimeKind.Utc);
             // Format and sum values, create labels for all dataPoints
             for (int i = 0; i < model.Count; i++)
             {
@@ -1527,24 +1529,24 @@ namespace SmartStore.Admin.Controllers
                     // Today & yesterday
                     if (i <= 1)
                     {
-                        model[i].Labels[j] = DateTime.UtcNow.Date.AddHours(j).ToString("t");
+                        model[i].Labels[j] = userTime.Date.AddHours(j).ToString("t");
                     }
                     // This year
                     else if (i == 4)
                     {
-                        model[i].Labels[j] = new DateTime(DateTime.UtcNow.Year, j + 1, 1).ToString("Y");
+                        model[i].Labels[j] = new DateTime(userTime.Year, j + 1, 1).ToString("Y");
                     }
                     // Last 7 days
                     else if (i == 2)
                     {
-                        model[i].Labels[j] = DateTime.UtcNow.Date.AddDays(-6 + j).ToString("m");
+                        model[i].Labels[j] = userTime.Date.AddDays(-6 + j).ToString("m");
                     }
                     // Last 28 days
                     else
                     {
-                        model[i].Labels[j] = DateTime.UtcNow.Date.AddDays(
+                        model[i].Labels[j] = userTime.Date.AddDays(
                             -(7 * model[i].Labels.Length) + j * 7).ToString("m") + " - "
-                            + DateTime.UtcNow.Date.AddDays(-(7 * model[i].Labels.Length) + (j + 1) * 7 - (j != model[i].Labels.Length - 1 ? 1 : 0)).ToString("m");
+                            + userTime.Date.AddDays(-(7 * model[i].Labels.Length) + (j + 1) * 7 - (j != model[i].Labels.Length - 1 ? 1 : 0)).ToString("m");
                     }
                 }
             }

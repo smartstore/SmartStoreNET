@@ -227,6 +227,12 @@ namespace SmartStore.Services.Catalog
 			int rootCategoryId = 0, 
 			bool includeHidden = false, 
 			int storeId = 0);
+
+		/// <summary>
+		/// Get count of all categories
+		/// </summary>
+		/// <returns>Count</returns>
+		int CountAllCategories();
 	}
 
 	public static class ICategoryServiceExtensions

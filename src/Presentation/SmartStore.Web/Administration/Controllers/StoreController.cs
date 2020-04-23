@@ -252,11 +252,11 @@ namespace SmartStore.Admin.Controllers
             var allOrders = _orderService.GetOrders(0, 0, null, null, null, null, null, null, null);
             var model = new StoreDashboardReportModel
             {
-                ProductsCount = _productService.GetAllProducts().TotalCount.ToString("N0"),
-                CategoriesCount = _categoryService.GetAllCategories().TotalCount.ToString("N0"),
+                ProductsCount = _productService.CountAllProducts().ToString("N0"),
+                CategoriesCount = _categoryService.CountAllCategories().ToString("N0"),
                 ManufacturersCount = _manufacturerService.GetManufacturers().Count().ToString("N0"),
                 AttributesCount = _productAttributeService.GetAllProductAttributes(0, int.MaxValue).TotalCount.ToString("N0"),
-                AttributeCombinationsCount = _productService.GetAllProductVariants().TotalCount.ToString("N0"),
+                AttributeCombinationsCount = _productService.CountAllProductVariants().ToString("N0"),
                 MediaCount = _mediaService.CountFiles(new MediaSearchQuery { Deleted = false }).ToString("N0"),
                 CustomersCount = _customerService.SearchCustomers(
                     new CustomerSearchQuery

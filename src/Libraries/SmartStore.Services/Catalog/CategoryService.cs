@@ -846,6 +846,14 @@ namespace SmartStore.Services.Catalog
             }
         }
 
+		public int CountAllCategories()
+		{
+			var query = _categoryRepository.Table;
+			query = query.Where(x => !x.Deleted);
+
+			return query.Count();
+		}
+
 		#region XML Sitemap
 
 		public XmlSitemapProvider PublishXmlSitemap(XmlSitemapBuildContext context)

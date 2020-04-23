@@ -17,16 +17,16 @@ namespace SmartStore.Services.Catalog
     {
         #region Products
         /// <summary>
-        /// Get all products
+        /// Get count of all products
         /// </summary>
-        /// <returns>Paged list of products</returns>
-        IPagedList<Product> GetAllProducts();
+        /// <returns>Count</returns>
+        int CountAllProducts();
 
         /// <summary>
-        /// Get all product variant combinations
+        /// Get count of all product variant combinations
         /// </summary>
-        /// <returns>Paged list of product variant combinations</returns>
-        IPagedList<ProductVariantAttributeCombination> GetAllProductVariants();
+        /// <returns>Count</returns>
+        int CountAllProductVariants();
 
         /// <summary>
         /// Delete a product

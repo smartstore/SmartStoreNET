@@ -10,7 +10,7 @@ namespace SmartStore.Core.Domain.Dashboard
         /// <summary>
         /// DateTime entity was created (Utc)
         /// </summary>
-        public DateTime CreatedOnUtc { get; set; }
+        public DateTime CreatedOn { get; set; }
 
         /// <summary>
         /// Total amount

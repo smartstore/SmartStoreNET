@@ -392,7 +392,7 @@ namespace SmartStore.Services.Orders
             );
             var dataPoints = query.Select(x => new OrderDataPoint
             {
-                CreatedOnUtc = x.CreatedOnUtc,
+                CreatedOn = x.CreatedOnUtc,
                 OrderTotal = x.OrderTotal,
                 OrderStatusId = x.OrderStatusId,
                 PaymentStatusId = x.PaymentStatusId,
@@ -422,7 +422,7 @@ namespace SmartStore.Services.Orders
 
             var dataPoints = query.Select(x => new OrderDataPoint
             {
-                CreatedOnUtc = x.CreatedOnUtc,
+                CreatedOn = x.CreatedOnUtc,
                 OrderTotal = x.OrderTotal,
                 OrderStatusId = x.OrderStatusId 
             });

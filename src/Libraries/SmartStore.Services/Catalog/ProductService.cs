@@ -144,21 +144,21 @@ namespace SmartStore.Services.Catalog
 
 		#region Products
 
-		public virtual IPagedList<Product> GetAllProducts()
+		public virtual int CountAllProducts()
 		{
 			var query = _productRepository.Table;
 			query = query.Where(x => !x.Deleted);
 
-			return new PagedList<Product>(query, 0, int.MaxValue);
+			return query.Count();
 
 		}
 
-		public virtual IPagedList<ProductVariantAttributeCombination> GetAllProductVariants()
+		public virtual int CountAllProductVariants()
 		{
 			var query = _productVariantAttributeCombinationRepository.Table;
 			query = query.Where(x => x.IsActive);
-			
-			return new PagedList<ProductVariantAttributeCombination>(query, 0, int.MaxValue);			
+
+			return query.Count();			
 		}
 
 		public virtual void DeleteProduct(Product product)

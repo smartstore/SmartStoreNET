@@ -251,8 +251,8 @@
 					idx = select.find('option:selected').index(),
 					otherIdx = otherSelect.find('option:selected').index();
 
-				function validateRangeControls() {
-					var newIdx = Math.min($('option', otherSelect).length - 1, Math.max(0, isMin ? idx + 1 : idx - 1));
+                function validateRangeControls() {
+                    var newIdx = Math.min($('option', otherSelect).length - 1, Math.max(0, isMin ? idx + 1 : idx - 1));
 					if (newIdx == idx) {
 						newIdx = 0;
 					}
@@ -261,7 +261,7 @@
 					otherSelect.trigger('change', [ true ]);
 				}
 
-				if (idx > 0 && otherIdx > 0 && ((isMin && idx >= otherIdx) || (!isMin && idx <= otherIdx))) {
+                if (idx > 0 && otherIdx > 0 && ((isMin && idx > otherIdx) || (!isMin && idx < otherIdx))) {
 					validateRangeControls();
 				}
             });

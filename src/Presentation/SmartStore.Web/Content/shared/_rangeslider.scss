@@ -19,6 +19,14 @@
         &::-ms-thumb {
             padding: 0;
         }
+
+        &[disabled] {
+            opacity: 0.5;
+
+            &::-webkit-slider-runnable-track {
+                cursor: default;
+            }
+        }
     }
 
     &.range-slider-sm {

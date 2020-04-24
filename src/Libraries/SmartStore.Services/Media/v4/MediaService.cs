@@ -35,7 +35,6 @@ namespace SmartStore.Services.Media
 
         public MediaService(
             IRepository<MediaFile> fileRepo,
-            IAlbumRegistry albumRegistry,
             IFolderService folderService,
             IMediaSearcher searcher,
             IMediaTypeResolver typeResolver,

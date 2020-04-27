@@ -1352,6 +1352,7 @@ namespace SmartStore.Admin.Controllers
         #endregion
 
         #region Reports
+
         [NonAction]
         private List<TopCustomerReportLineModel> CreateCustomerReportLineModel(IList<TopCustomerReportLine> items)
         {
@@ -1381,7 +1382,7 @@ namespace SmartStore.Admin.Controllers
             var watch = new Stopwatch();
             watch.Start();
 
-            var model = new TopCustomersDashboardReportModel()
+            var model = new TopCustomersDashboardReportModel
             {
                 TopCustomersByAmount = CreateCustomerReportLineModel(_customerReportService.GetTopCustomersReport(null, null, null, null, null, 1, 7)),
                 TopCustomersByQuantity = CreateCustomerReportLineModel(_customerReportService.GetTopCustomersReport(null, null, null, null, null, 2, 7))

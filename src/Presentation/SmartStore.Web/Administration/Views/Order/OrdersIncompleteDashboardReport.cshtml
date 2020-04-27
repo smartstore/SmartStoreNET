@@ -1,4 +1,5 @@
 ﻿@model List<OrdersIncompleteDashboardReportModel>
+
 @using Newtonsoft.Json;
 @{
     var jsonData = JsonConvert.SerializeObject(Model);
@@ -12,6 +13,7 @@
     Html.AddScriptParts("~/bundles/charting");
     Html.AddScriptParts(true, "~/Administration/Scripts/admin.dashboard.js");
 }
+
 <div class="report" id="incomplete-orders-report" data-chart="@jsonData">
     <div class="report-title-row">
         <div class="report-title">@T("Admin.SalesReport.Incomplete")</div>

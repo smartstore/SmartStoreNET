@@ -1,4 +1,11 @@
-﻿<div class="report">
+﻿@{ 
+    var arr = new object[]
+    {
+        new { Part = "Products", Label = T("Admin.Catalog.Products").Text, Icon = "fa fa-cubes" }
+    };
+}
+
+<div class="report">
     <div class="report-title-row">
         <div class="report-title">@T("Admin.Report.StoreStatistics")</div>
     </div>
@@ -169,42 +176,49 @@
     $(document).ready(function () {
         $.ajax({
             url: "@(Url.Action("StoreDashboardReport", "Store"))",
+            cache: false,
             success: function (data) {
+                //var el = $('.stats-value');
+                //el.each(function (i, val) {
+                //    var part = $(val).data('part');
+                //    $(val).html(data.model[part]);
+                //});
+
                 $('#stats-products').html(data.model.ProductsCount);
-                $('#stats-products').attr("Title", data.model.ProductsCount);
+                $('#stats-products').attr("title", data.model.ProductsCount);
 
                 $('#stats-attributes').html(data.model.AttributesCount);
-                $('#stats-attributes').attr("Title", data.model.AttributesCount);
+                $('#stats-attributes').attr("title", data.model.AttributesCount);
 
                 $('#stats-combinations').html(data.model.AttributeCombinationsCount);
-                $('#stats-combinations').attr("Title", data.model.AttributeCombinationsCount);
+                $('#stats-combinations').attr("title", data.model.AttributeCombinationsCount);
 
                 $('#stats-categories').html(data.model.CategoriesCount);
-                $('#stats-categories').attr("Title", data.model.CategoriesCount);
+                $('#stats-categories').attr("title", data.model.CategoriesCount);
 
                 $('#stats-manufacturer').html(data.model.ManufacturersCount);
-                $('#stats-manufacturer').attr("Title", data.model.ManufacturersCount);
+                $('#stats-manufacturer').attr("title", data.model.ManufacturersCount);
 
                 $('#stats-media').html(data.model.MediaCount);
-                $('#stats-media').attr("Title", data.model.MediaCount);
+                $('#stats-media').attr("title", data.model.MediaCount);
 
                 $('#stats-customers').html(data.model.CustomersCount);
-                $('#stats-customers').attr("Title", data.model.CustomersCount);
+                $('#stats-customers').attr("title", data.model.CustomersCount);
 
                 $('#stats-orders').html(data.model.OrdersCount);
-                $('#stats-orders').attr("Title", data.model.OrdersCount);
+                $('#stats-orders').attr("title", data.model.OrdersCount);
 
                 $('#stats-sales').html(data.model.Sales);
-                $('#stats-sales').attr("Title", data.model.Sales + " @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")");
+                $('#stats-sales').attr("title", data.model.Sales + " @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")");
 
                 $('#stats-online').html(data.model.OnlineCustomersCount);
-                $('#stats-online').attr("Title", data.model.OnlineCustomersCount);
+                $('#stats-online').attr("title", data.model.OnlineCustomersCount);
 
                 $('#stats-carts').html(data.model.CartsValue);
-                $('#stats-carts').attr("Title", data.model.CartsValue + " @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")");
+                $('#stats-carts').attr("title", data.model.CartsValue + " @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")");
 
                 $('#stats-wishlists').html(data.model.WishlistsValue);
-                $('#stats-wishlists').attr("Title", data.model.WishlistsValue + " @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")");
+                $('#stats-wishlists').attr("title", data.model.WishlistsValue + " @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")");
             }
         });
     });

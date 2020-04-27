@@ -2499,7 +2499,7 @@ namespace SmartStore.Admin.Controllers
         protected IList<BestsellersReportLineModel> GetBestsellersBriefReportModel(int recordsToReturn, int orderBy)
         {
             var reportLines = _orderReportService.BestSellersReport(0, null, null, null, null, null, 0, recordsToReturn, orderBy, true);
-            var products = _productService.GetProductsByIds(reportLines.Select(x => x.ProductId).ToArray()).ToDictionary(x => x.Id);
+            var products = _productService.GetProductsByIds(reportLines.Select(x => x.ProductId).ToArray()).ToDictionarySafe(x => x.Id);
 
             var model = reportLines.Select(x =>
             {
@@ -2939,7 +2939,7 @@ namespace SmartStore.Admin.Controllers
 
 
         [NonAction]
-        public void SetOrderReportData(List<DashboardChartReportModel> reports, OrderDataPoint dataPoint)
+        protected void SetOrderReportData(List<DashboardChartReportModel> reports, OrderDataPoint dataPoint)
         {
             var userTime = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow, DateTimeKind.Utc);
             PeriodState periodStatus;
@@ -2972,11 +2972,14 @@ namespace SmartStore.Admin.Controllers
             var dataIndex = dataPoint.OrderStatusId == 40 ? 0 : dataPoint.OrderStatusId / 10;
             if (periodStatus == PeriodState.Today)
             {
-                reports[0].DataSets[dataIndex].Amount[dataPoint.CreatedOn.Hour] += dataPoint.OrderTotal;
-                reports[0].DataSets[dataIndex].Quantity[dataPoint.CreatedOn.Hour]++;
+                var today = reports[0].DataSets[dataIndex];
+                var week = reports[2].DataSets[dataIndex];
+
+                today.Amount[dataPoint.CreatedOn.Hour] += dataPoint.OrderTotal;
+                today.Quantity[dataPoint.CreatedOn.Hour]++;
                 // Ignore yesterday if today
-                reports[2].DataSets[dataIndex].Amount[reports[2].DataSets[0].Amount.Length - 1] += dataPoint.OrderTotal;
-                reports[2].DataSets[dataIndex].Quantity[reports[2].DataSets[0].Quantity.Length - 1]++;
+                week.Amount[reports[2].DataSets[0].Amount.Length - 1] += dataPoint.OrderTotal;
+                week.Quantity[reports[2].DataSets[0].Quantity.Length - 1]++;
             }
             else if (periodStatus == PeriodState.Yesterday)
             {
@@ -3032,15 +3035,15 @@ namespace SmartStore.Admin.Controllers
             var model = new List<DashboardChartReportModel>()
             {
                 // Today = index 0
-                new DashboardChartReportModel(4,24),
+                new DashboardChartReportModel(4, 24),
                 // Yesterday = index 1
-                new DashboardChartReportModel(4,24),
+                new DashboardChartReportModel(4, 24),
                 // Last 7 days = index 2
-                new DashboardChartReportModel(4,7),
+                new DashboardChartReportModel(4, 7),
                 // Last 28 days = index 3
-                new DashboardChartReportModel(4,4),
+                new DashboardChartReportModel(4, 4),
                 // This year = index 4
-                new DashboardChartReportModel(4,12),
+                new DashboardChartReportModel(4, 12),
             };
 
             foreach (var dataPoint in orderDataPoints)
@@ -3063,6 +3066,7 @@ namespace SmartStore.Admin.Controllers
                     data.TotalAmount = data.Amount.Sum();
                     data.TotalAmountFormatted = data.TotalAmount.ToString("C0");
                 }
+
                 model[i].TotalAmount = model[i].DataSets.Sum(x => x.TotalAmount);
                 model[i].TotalAmountFormatted = model[i].TotalAmount.ToString("C0");
 

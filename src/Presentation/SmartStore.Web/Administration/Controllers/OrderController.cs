@@ -2989,7 +2989,7 @@ namespace SmartStore.Admin.Controllers
             else if (periodStatus == PeriodState.Week)
             {
                 // Ignore today and yesterday
-                var weekIndex = (userTime - dataPoint.CreatedOn).Days;
+                var weekIndex = (userTime - dataPoint.CreatedOn).Days - 1;
                 reports[2].DataSets[dataIndex].Amount[weekIndex] += dataPoint.OrderTotal;
                 reports[2].DataSets[dataIndex].Quantity[weekIndex]++;
             }

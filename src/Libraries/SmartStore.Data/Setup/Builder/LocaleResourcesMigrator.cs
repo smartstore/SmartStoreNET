@@ -24,7 +24,7 @@ namespace SmartStore.Data.Setup
 			_languages = _ctx.Set<Language>();
 			_resources = _ctx.Set<LocaleStringResource>();
 		}
-		
+
 		public void Migrate(IEnumerable<LocaleResourceEntry> entries, bool updateTouchedResources = false)
 		{
 			Guard.NotNull(entries, nameof(entries));
@@ -34,22 +34,49 @@ namespace SmartStore.Data.Setup
 
 			using (var scope = new DbContextScope(_ctx, autoDetectChanges: false, hooksEnabled: false))
 			{
-				var langMap = _languages.ToDictionarySafe(x => x.UniqueSeoCode.EmptyNull().ToLower());
+				var langMap = _languages.ToDictionarySafe(x => x.LanguageCulture.EmptyNull().ToLower());
 
 				var toDelete = new List<LocaleStringResource>();
 				var toUpdate = new List<LocaleStringResource>();
 				var toAdd = new List<LocaleStringResource>();
 
-				// remove all entries with invalid lang identifier
-				var invalidEntries = entries.Where(x => x.Lang != null && !langMap.ContainsKey(x.Lang.ToLower()));
+				bool IsEntryValid(LocaleResourceEntry entry, Language targetLang)
+				{
+					if (entry.Lang == null)
+						return true;
+
+					var sourceLangCode = entry.Lang.ToLower();
+
+					if (targetLang != null)
+					{
+						var culture = targetLang.LanguageCulture;
+						if (culture == sourceLangCode || culture.StartsWith(sourceLangCode + "-"))
+						{
+							return true;
+						}
+					}
+					else
+					{
+						if (langMap.ContainsKey(sourceLangCode))
+							return true;
+
+						if (langMap.Keys.Any(k => k.StartsWith(sourceLangCode + "-", StringComparison.OrdinalIgnoreCase)))
+							return true;
+					}
+
+					return false;
+				}
+
+				// Remove all entries with invalid lang identifier
+				var invalidEntries = entries.Where(x => !IsEntryValid(x, null));
 				if (invalidEntries.Any())
 				{
-					entries = entries.Except(invalidEntries);
+					entries = entries.Except(invalidEntries).ToArray();
 				}
 
 				foreach (var lang in langMap)
 				{
-					var validEntries = entries.Where(x => x.Lang == null || langMap[x.Lang.ToLower()].Id == lang.Value.Id);
+					var validEntries = entries.Where(x => IsEntryValid(x, lang.Value)).ToArray();
 					foreach (var entry in validEntries)
 					{
 						var db = GetResource(entry.Key, lang.Value.Id, toAdd, out bool isLocal);

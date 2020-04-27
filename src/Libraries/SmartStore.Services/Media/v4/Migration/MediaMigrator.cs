@@ -81,9 +81,9 @@ namespace SmartStore.Services.Media.Migration
 
                 _folderService.ClearCache();
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
             finally
             {

@@ -2786,7 +2786,7 @@ namespace SmartStore.Admin.Controllers
                 return;
             }
             // This week
-            if (dataPoint.CreatedOn >= userTime.AddDays(-7).Date)
+            if (dataPoint.CreatedOn >= userTime.AddDays(-6).Date)
             {
                 // Apply data to all periods but today
                 for (int i = 1; i < reports.Count; i++)
@@ -2797,7 +2797,7 @@ namespace SmartStore.Admin.Controllers
                 return;
             }
             // This month
-            if (dataPoint.CreatedOn >= userTime.AddDays(-28).Date)
+            if (dataPoint.CreatedOn >= userTime.AddDays(-27).Date)
             {
                 // Apply data to month and year period
                 for (int i = 2; i < reports.Count; i++)
@@ -2875,12 +2875,12 @@ namespace SmartStore.Admin.Controllers
                         IncompleteOrdersReportAddTotal(dataPoint, model, 0);
                     }
                     // This week
-                    else if (dataPoint.CreatedOn >= userTime.AddDays(-7).Date)
+                    else if (dataPoint.CreatedOn >= userTime.AddDays(-6).Date)
                     {
                         IncompleteOrdersReportAddTotal(dataPoint, model, 1);
                     }
                     // This month 
-                    else if (dataPoint.CreatedOn >= userTime.AddDays(-28).Date)
+                    else if (dataPoint.CreatedOn >= userTime.AddDays(-27).Date)
                     {
                         IncompleteOrdersReportAddTotal(dataPoint, model, 2);
                     }
@@ -2954,12 +2954,12 @@ namespace SmartStore.Admin.Controllers
                 periodStatus = PeriodState.Yesterday;
             }
             // Last 7 days (older than today and yesterday)
-            else if (dataPoint.CreatedOn >= userTime.AddDays(-7).Date)
+            else if (dataPoint.CreatedOn >= userTime.AddDays(-6).Date)
             {
                 periodStatus = PeriodState.Week;
             }
             // Last 28 days (older than last 7 days)
-            else if (dataPoint.CreatedOn >= userTime.AddDays(-28).Date)
+            else if (dataPoint.CreatedOn >= userTime.AddDays(-27).Date)
             {
                 periodStatus = PeriodState.Month;
             }
@@ -2992,7 +2992,7 @@ namespace SmartStore.Admin.Controllers
             else if (periodStatus == PeriodState.Week)
             {
                 // Ignore today and yesterday
-                var weekIndex = (userTime - dataPoint.CreatedOn).Days - 1;
+                var weekIndex = (userTime - dataPoint.CreatedOn).Days;
                 reports[2].DataSets[dataIndex].Amount[weekIndex] += dataPoint.OrderTotal;
                 reports[2].DataSets[dataIndex].Quantity[weekIndex]++;
             }

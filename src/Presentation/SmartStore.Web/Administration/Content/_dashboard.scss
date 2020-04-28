@@ -108,10 +108,11 @@
         }
     }
 
-    .chart-title {
+    .incomplete-orders-title {
         text-align: center;
         font-weight: $font-weight-medium;
         font-size: 1rem;
+        color: $gray-500;
     }
 
     .incomplete-orders-container {
@@ -121,23 +122,40 @@
     }
 
     .incomplete-orders-chart-container {
-        display: flex;
-        justify-content: center;
-        text-align: center;
-        align-items: center;
+        width: 100%;
         height: 250px;
+        position: relative;
     }
 
     .incomplete-orders-chart-text {
         position: absolute;
-        font-size: 1rem;
-        max-width: 30%;
-        z-index: 1;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        justify-content: center;
     }
 
-    .incomplete-orders-value {
+    .incomplete-orders-quantity {
         text-overflow: ellipsis;
         overflow: hidden;
+        white-space: nowrap;
+        max-width: 50%;
+        font-weight: $font-weight-bold;
+        color: $gray-500;
+        font-size: 1.5rem;
+        padding-bottom: .1em;
+    }
+
+    .incomplete-orders-amount {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        max-width: 50%;
+        font-size: 1.25rem;
+        padding-top: .1rem;
+        color: $gray-700;
     }
 
     .table {
@@ -153,7 +171,7 @@
     }
 
     .marketplace-feed-body {
-        padding: 1rem 2rem 0rem 2rem;
+        padding: 1rem 1.5rem .5rem 1.5rem;
 
         .marketplace-feed-item {
             margin-bottom: 1.25rem;
@@ -187,7 +205,7 @@
         border-top: 1px solid #eee;
         white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis;        
+        text-overflow: ellipsis;
     }
 
     .statistics-container {
@@ -293,78 +311,6 @@
             transform: rotate(180deg);
         }
     }
-
-    .products-icon {
-        &:before {
-            @include fontawesome-font("\f1b3", regular);
-        }
-    }
-
-    .categories-icon {
-        &:before {
-            @include fontawesome-font("\f0e8", regular);
-        }
-    }
-
-    .manufacturer-icon {
-        &:before {
-            @include fontawesome-font("\f1ad", regular);
-        }
-    }
-
-    .attribute-icon {
-        &:before {
-            @include fontawesome-font("\f022", regular);
-        }
-    }
-
-    .attribute-combinations-icon {
-        &:before {
-            @include fontawesome-font("\f5fd", regular);
-        }
-    }
-
-    .media-icon {
-        &:before {
-            @include fontawesome-font("\f302", regular);
-        }
-    }
-
-    .customers-icon {
-        &:before {
-            @include fontawesome-font("\f0c0", regular);
-        }
-    }
-
-    .orders-icon {
-        &:before {
-            @include fontawesome-font("\f080", regular);
-        }
-    }
-
-    .sales-icon {
-        &:before {
-            @include fontawesome-font("\f09d", regular);
-        }
-    }
-
-    .customers-online-icon {
-        &:before {
-            @include fontawesome-font("\f4fc", regular);
-        }
-    }
-
-    .wishlist-icon {
-        &:before {
-            @include fontawesome-font("\f004", regular);
-        }
-    }
-
-    .cart-icon {
-        &:before {
-            @include fontawesome-font("\f218", regular);
-        }
-    }
 }
 
 .report-incomplete-orders {
@@ -411,20 +357,12 @@
     .incomplete-orders-container {
         width: 50% !important;
     }
-
-    .incomplete-orders-chart-text {
-        max-width: 22%;
-    }
 }
 
 @include media-breakpoint-up(md) {
     .report-incomplete-orders {
         .incomplete-orders-container {
             width: 25% !important;
-        }
-
-        .incomplete-orders-chart-text {
-            max-width: 15%;
         }
     }
 
@@ -462,10 +400,6 @@
 @include media-breakpoint-up(xl) {
     .report-incomplete-orders {
         grid-column: 1 / 9;
-
-        .incomplete-orders-chart-text {
-            max-width: 11%;
-        }
     }
 
     .marketplace-feed {
@@ -505,10 +439,6 @@
 
         .incomplete-orders-chart-container {
             height: 300px;
-        }
-
-        .incomplete-orders-chart-text {
-            max-width: 8%;
         }
     }
 
@@ -560,4 +490,3 @@
         text-overflow: ellipsis;
     }
 }
-

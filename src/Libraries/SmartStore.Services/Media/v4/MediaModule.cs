@@ -1,5 +1,6 @@
 ﻿using System;
 using Autofac;
+using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Configuration;
@@ -38,7 +39,14 @@ namespace SmartStore.Services.Media
             builder.RegisterType<MediaMover>().As<IMediaMover>().InstancePerRequest();
 
             // Register factory for currently active media storage provider
-            builder.Register(MediaStorageProviderFactory);
+            if (DataSettings.DatabaseIsInstalled())
+            {
+                builder.Register(MediaStorageProviderFactory);
+            }
+            else
+            {
+                builder.Register<Func<IMediaStorageProvider>>(c => () => new FileSystemMediaStorageProvider(new MediaFileSystem()));
+            }
 
             // Register all album providers
             var albumProviderTypes = _typeFinder.FindClassesOfType<IAlbumProvider>(ignoreInactivePlugins: true);

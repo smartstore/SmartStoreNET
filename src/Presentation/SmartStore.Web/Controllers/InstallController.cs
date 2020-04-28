@@ -619,7 +619,7 @@ namespace SmartStore.Web.Controllers
 					var mediaTracker = scope.Resolve<IMediaTracker>();
 					foreach (var album in scope.Resolve<IAlbumRegistry>().GetAlbumNames(true))
 					{
-						mediaTracker.DetectAllTracks(album, false);
+						mediaTracker.DetectAllTracks(album, true);
 					}
 
 					UpdateResult(x => 

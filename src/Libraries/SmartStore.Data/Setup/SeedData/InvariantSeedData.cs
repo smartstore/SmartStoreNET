@@ -1447,7 +1447,8 @@ namespace SmartStore.Data.Setup
 					CreatedOnUtc = now,
 					UpdatedOnUtc = now,
 					Size = buffer.Length,
-					MediaStorage = new MediaStorage { Data = buffer }
+					MediaStorage = new MediaStorage { Data = buffer },
+					Version = 1 // so that FolderId is set later during track detection
 				};
 
 				return file;

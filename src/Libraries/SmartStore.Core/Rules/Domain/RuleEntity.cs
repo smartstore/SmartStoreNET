@@ -29,7 +29,7 @@ namespace SmartStore.Rules.Domain
         public string Operator { get; set; }
 
         [DataMember]
-        [StringLength(400)]
+        [MaxLength]
         public string Value { get; set; }
 
         [DataMember]

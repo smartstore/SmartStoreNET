@@ -33,7 +33,7 @@ namespace SmartStore.Data.Migrations
                         RuleSetId = c.Int(nullable: false),
                         RuleType = c.String(nullable: false, maxLength: 100),
                         Operator = c.String(nullable: false, maxLength: 10),
-                        Value = c.String(maxLength: 400),
+                        Value = c.String(),
                         DisplayOrder = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)

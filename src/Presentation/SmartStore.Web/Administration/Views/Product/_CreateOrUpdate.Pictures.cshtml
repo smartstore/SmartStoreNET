@@ -43,7 +43,8 @@
 					multifile = true,
 					deleteUrl = Url.Action("ProductPictureDelete", "Product", "Admin"),
 					sortUrl = Url.Action("SortPictures", "Product", "Admin"),
-					entityAssignmentUrl = Url.Action("ProductPictureAdd", "Product", "Admin"),
+					//entityAssignmentUrl = Url.Action("ProductPictureAdd", "Product", "Admin"),
+					entityAssignmentUrl = Url.Action("ProductMediaFilesAdd", "Product", "Admin"),
 					uploadedFiles = Model.ProductMediaFiles as IEnumerable<IMediaFile>
 				})
 				@Html.ValidationMessageFor(model => model.AddPictureModel.PictureId)
@@ -57,3 +58,41 @@ else
 		@T("Admin.Catalog.Products.Pictures.SaveBeforeEdit")
 	</div>
 }
+
+<script>
+		$(function () {
+
+			// Set MainPictureId for product
+			$(".set-main-picture").on("click", function (e) {
+
+				var el = $(this).closest('.dz-image-preview');
+
+				$.ajax({
+					async: false,
+					cache: false,
+					type: 'POST',
+					url: '@Url.Action("SetMainPictureId", "Product")',
+					data: {
+						pictureId: el.data("picture-id"),
+						productId: @Model.Id
+					},
+                    success: function () {
+						/*
+						// Set preview picture. 
+						var elDropzone = $('.fileupload-container');
+						var fileName = el.find(".name").text();
+						var fileSize = el.find(".size").text();
+						var fileUrl = el.find(".dz-image-preview img").attr("src");
+
+						elDropzone.find('.fileupload-filename').html(fileName);
+						elDropzone.find('.fileupload-filesize').html(fileSize);
+						elDropzone.find('.fileupload-thumb').css('background-image', 'url("' + fileUrl + '")');
+						elDropzone.find('.hidden').val(el.data("picture-id")).trigger('change');
+						*/
+					}
+				});
+
+				return false;
+			});
+		});
+</script>

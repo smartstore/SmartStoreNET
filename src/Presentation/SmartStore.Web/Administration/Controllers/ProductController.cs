@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
@@ -2168,11 +2169,13 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult SortPictures(string pictures, int entityId)
 		{
+			var response = new List<dynamic>();
+
 			try
 			{
 				using (var scope = new DbContextScope(ctx: Services.DbContext, validateOnSave: false, autoDetectChanges: false, autoCommit: false))
 				{
-					var files = _productService.GetProductPicturesByProductId(entityId);
+					var files = _productService.GetProductPicturesByProductId(entityId).ToList();
 					var arr = pictures.SplitSafe(",");
 					var ordinal = 5;
 
@@ -2183,6 +2186,16 @@ namespace SmartStore.Admin.Controllers
 						{
 							productPicture.DisplayOrder = ordinal;
 							_productService.UpdateProductPicture(productPicture);
+
+							// Add all relevant data of product picture to response.
+							dynamic file = new
+							{
+								DisplayOrder = productPicture.DisplayOrder,
+								MediaFileId = productPicture.MediaFileId,
+								EntityMediaId = productPicture.Id
+							};
+
+							response.Add(file);
 						}
 						ordinal += 5;
 					}
@@ -2197,37 +2210,107 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
-			return new HttpStatusCodeResult(200);
+			//return new HttpStatusCodeResult(200);
+
+			return Json(new { success = true, response }, JsonRequestBehavior.AllowGet);
 		}
 
 		[HttpPost]
 		[Permission(Permissions.Catalog.Product.EditPicture)]
-        public ActionResult ProductPictureAdd(int pictureId, int displayOrder, int entityId)
+        public ActionResult ProductPictureAdd(int mediaFileId, int displayOrder, int entityId)
         {
-            if (pictureId == 0)
+            if (mediaFileId == 0)
             {
                 throw new ArgumentException("Missing picture identifier.");
             }
 
+			var success = false;
             var product = _productService.GetProductById(entityId);
             if (product == null)
             {
                 throw new ArgumentException(T("Products.NotFound", entityId));
             }
 
-			var productPicture = new ProductMediaFile
-            {
-                MediaFileId = pictureId,
-                ProductId = entityId,
-                DisplayOrder = displayOrder
-            };
+			var currentPic = product.ProductPictures.Where(x => x.MediaFileId == mediaFileId).FirstOrDefault();
 
-            _productService.InsertProductPicture(productPicture);
+			// No duplicate assignments!
+			if (currentPic == null)
+			{
+				var productPicture = new ProductMediaFile
+				{
+					MediaFileId = mediaFileId,
+					ProductId = entityId,
+					DisplayOrder = displayOrder
+				};
 
-            return Json(new { success = true, message = T("Admin.Product.Picture.Added").JsText.ToString() }, JsonRequestBehavior.AllowGet);
+				_productService.InsertProductPicture(productPicture);
+
+				success = true;
+			}
+			
+            return Json(new { success , message = T("Admin.Product.Picture.Added").JsText.ToString() }, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpPost, GridAction(EnableCustomBinding = true)]
+		[HttpPost]
+		[Permission(Permissions.Catalog.Product.EditPicture)]
+		public ActionResult ProductMediaFilesAdd(string mediaFileIds, int entityId)
+		{
+			if (mediaFileIds.Length == 0)
+			{
+				throw new ArgumentException("Missing picture identifiers.");
+			}
+
+			var success = false;
+			var product = _productService.GetProductById(entityId);
+			if (product == null)
+			{
+				throw new ArgumentException(T("Products.NotFound", entityId));
+			}
+
+			var ids = mediaFileIds.SplitSafe(",");
+			var response = new List<dynamic>();
+
+			foreach (var id in ids)
+			{
+				// Should never happen
+				if (id.IsCaseInsensitiveEqual("undefined"))
+					continue;
+
+				var mediaFileId = Convert.ToInt32(id);
+				var currentPic = product.ProductPictures.Where(x => x.MediaFileId == mediaFileId).FirstOrDefault();
+
+				// No duplicate assignments!
+				if (currentPic == null)
+				{
+					var productPicture = new ProductMediaFile
+					{
+						MediaFileId = mediaFileId,
+						ProductId = entityId
+					};
+
+					// TODO: Performance!!! Insert in one request.
+					_productService.InsertProductPicture(productPicture);
+
+					// TODO: PERF!!!
+					var media = _mediaService.GetFileById(mediaFileId);
+
+					success = true;
+
+					dynamic respObj = new
+					{
+						MediaFileId = mediaFileId,
+						ProductMediaFileId = productPicture.Id,
+						Name = media.Name
+					};
+
+					response.Add(respObj);
+				}
+			}
+
+			return Json(new { success, response, message = T("Admin.Product.Picture.Added").JsText.ToString() }, JsonRequestBehavior.AllowGet);
+		}
+
+		[HttpPost, GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Catalog.Product.Read)]
         public ActionResult ProductPictureList(GridCommand command, int productId)
         {

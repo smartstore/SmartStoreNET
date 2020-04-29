@@ -1,12 +1,17 @@
 ﻿@using SmartStore.Web.Models.Customer;
 @using SmartStore.Web.Framework.UI;
+@using SmartStore.Core.Domain.Media;
+
 @model CustomerAvatarEditModel
+
 @{
 	Layout = "_MyAccount";
 	ViewBag.PageClassToken = "avatar";
 	ViewBag.PageTitle = T("Account.Avatar").Text;
 
 	Html.AddTitleParts(T("PageTitle.Account").Text);
+
+	var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
 }
 
 @if (!ViewData.ModelState.IsValid)
@@ -16,13 +21,13 @@
 
 <div id="AvatarUploadContainer">
 	<div class="mb-2">
-        @{ Html.RenderPartial("Customer.Avatar", Model.Avatar); }
+		@{ Html.RenderPartial("Customer.Avatar", Model.Avatar); }
 	</div>
 
 	@(Html.SmartStore().FileUploader()
 		.Name("uploadedFile")
 		.UploadUrl(Url.Action("UploadAvatar", "Customer"))
-		.AcceptedFileTypes(".gif,.jpeg,.jpg,.png,.svg")
+		.AcceptedFileTypes(mediaSettings.ImageTypes)
 		.ShowRemoveButton(Model.Avatar.PictureUrl.HasValue())
 		.ShowRemoveButtonAfterUpload(true)
 		.UploadText(T("Common.FileUploader.Upload"))
@@ -38,6 +43,7 @@
 
 <script>
     window['onAvatarUploaded'] = function (file, response, progress) {
+
         if (response.success) {
             var previewAvatar = $(".avatar-img");
             if (!previewAvatar.hasClass("d-none")) {

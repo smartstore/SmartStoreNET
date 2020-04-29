@@ -97,12 +97,17 @@
 }
 
 <div class="fileupload-container">
-	<div class="fileupload-thumb-stage">
-		<div class="fileupload-thumb" style="background-image: url('@Url.Media(fileId, mediaSettings.ProductThumbPictureSize)')">
-			@Html.HiddenFor(x => x, new { @class = "hidden" })
-		</div>
-	</div>
 
+	@if (!MultiFile)
+    {
+        // Single file uploads have preview images.
+		<div class="fileupload-thumb-stage">
+			<div class="fileupload-thumb" style="background-image: url('@Url.Media(fileId, mediaSettings.ProductThumbPictureSize)')">
+				@Html.HiddenFor(x => x, new { @class = "hidden" })
+			</div>
+		</div>
+    }
+	
 	<div class="fileupload-controls">
 
 		@*
@@ -113,8 +118,8 @@
 			.UploadUrl(Url.Action("Upload", "Media", new { isTransient = TransientUpload, path = Path, area = "Admin" }))
 			.HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
 			.AcceptedFileTypes(mediaSettings.ImageTypes)
-			.ShowRemoveButton(Model.HasValue)
-			.ShowRemoveButtonAfterUpload(true)
+			.ShowRemoveButton(!MultiFile && Model.HasValue)						// Multifile uploads don't need a remove button.
+			.ShowRemoveButtonAfterUpload(false)
 			.Compact(ViewData["compact"].Convert<bool?>() == true)
 
 			.PreviewContainerId("preview-" + random)
@@ -126,63 +131,6 @@
 			.DeleteUrl(DeleteUrl)
 			.SortUrl(SortUrl)
 			.EntityAssignmentUrl(EntityAssignmentUrl)
-
-			.OnUploadCompletedHandlerName("onUploadCompleted_" + random)
 		)
 	</div>
 </div>
-
-@if (MultiFile)
-{
-	<script>
-		$(function () {
-
-			// TODO: this belongs into _CreateOrUpdatePictures.cshtml
-			// Set MainPictureId 
-			$(".set-main-picture").on("click", function (e) {
-
-				var el = $(this).closest('.mf-image-preview');
-
-				$.ajax({
-					async: false,
-					cache: false,
-					type: 'POST',
-					url: '@Url.Action("SetMainPictureId", "Product")',
-					data: {
-						pictureId: el.data("picture-id"),
-						productId: @EntityId
-					},
-					success: function () {
-						// Set preview picture.
-						var elDropzone = $('.fileupload-container');
-						var fileName = el.find(".name").text();
-						var fileSize = el.find(".size").text();
-						var fileUrl = el.find(".dz-image-preview img").attr("src");
-
-						elDropzone.find('.fileupload-filename').html(fileName);
-						elDropzone.find('.fileupload-filesize').html(fileSize);
-						elDropzone.find('.fileupload-thumb').css('background-image', 'url("' + fileUrl + '")');
-						elDropzone.find('.hidden').val(el.data("picture-id")).trigger('change');
-					}
-				});
-
-				return false;
-			});
-		});
-	</script>
-}
-
-<script>
-	window['onUploadCompleted_@random'] = function (e, el, data) {
-		$("#add-product-picture").removeAttr('disabled');
-	}
-	window['onFileRemove_@random'] = function (e, el) {
-		$("#add-product-picture").attr('disabled', 'disabled');
-	}
-	@*window['onAborted_@random'] = function (el) {
-		//console.log("onAborted", arguments);
-	}
-	window['onError_@random'] = function (el, textStatus, errorThrown) {
-		//console.log("onError", arguments);
-	}*@
-</script>

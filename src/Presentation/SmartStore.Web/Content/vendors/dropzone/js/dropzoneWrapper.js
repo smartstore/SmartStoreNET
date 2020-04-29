@@ -137,17 +137,15 @@
 
 				console.log("uploadprogress", file, percent, bytes);
 
-
-
 				// TODO: find better way to display status bar
 				elStatusBar.removeClass("d-none");
 				elStatusBar.find(".current-file").text(file.name);
 			});
 
-			// TODO: Fired between success & successmultiple
-			el.on("totaluploadprogress", function (progress, zwei, drei) {
+			el.on("totaluploadprogress", function (progress, totalBytes, totalBytesSent) {
 
-				console.log("totaluploadprogress", progress, zwei, drei);
+				console.log("totaluploadprogress", progress, totalBytes, totalBytesSent);
+				//console.log("getUploadingFiles:", this.getUploadingFiles().length);
 
 				/*
 				console.log("getAcceptedFiles:", this.getAcceptedFiles().length);
@@ -162,18 +160,16 @@
 					.css('width', progress + '%');
 
 				elStatusBar.find(".percental-progress").text(Math.round(progress) + '%');
+
+				// TODO: For picture uploads this is way too fast. Nothing can be seen (Though the console shows it works correct).
+				elStatusBar.find(".current-file-count").text(activeFiles - this.getUploadingFiles().length);
+
+				//console.log(activeFiles, this.getUploadingFiles().length, activeFiles - this.getUploadingFiles().length);
 			});
 
 			el.on("success", function (file, response, progress) {
 
 				console.log("success", file, response, progress);
-
-				/*
-				console.log("getAcceptedFiles:", this.getAcceptedFiles().length);
-				console.log("getRejectedFiles:", this.getRejectedFiles().length);
-				console.log("getQueuedFiles:", this.getQueuedFiles().length);
-				console.log("getUploadingFiles:", this.getUploadingFiles().length);
-				*/
 
 				// Only for singleupload.
 				if (opts.maxFiles === 1) {
@@ -223,15 +219,6 @@
 						// Picture wasn't uploaded yet.
 						// TODO: If this case won't be needed by the end of development > write different if clauses.
 					}
-
-					// Status
-					var currentSuccessCount = this.files.length;
-
-					console.log("currentSuccessCount", currentSuccessCount);
-
-					if (currentSuccessCount !== 0) {
-						elStatusBar.find(".current-file-count").text(currentSuccessCount);
-					}
 				}
 
 				if (options.onUploadCompleted) options.onUploadCompleted.apply(this, [file, response, progress]);
@@ -273,6 +260,9 @@
 
 			el.on("queuecomplete", function (file) {
 				console.log("queuecomplete");
+
+				console.log("Status > getAcceptedFiles:", this.getAcceptedFiles().length);
+				console.log("Status > getRejectedFiles:", this.getRejectedFiles().length);
 			});
 
 			el.on("canceled", function (file) {
@@ -296,13 +286,13 @@
 				console.log(errMessage, file);
 
 				if (xhr && file.status === "error") {
-					displayNotification(xhr.statusText, "error");
+					console.log(xhr.statusText, "error");
 				}
 
-				// Multifile only.
-				if (!file.accepted && opts.maxFiles !== 1) {
+				// Single file only. Multifile errors must be shown in summary.
+				if (!file.accepted && opts.maxFiles === 1) {
 					displayNotification(errMessage, "error");
-					return;
+					//return;
 				}
 
 				if (options.onError) options.onError.apply(this, [file, errMessage]);
@@ -392,10 +382,8 @@
 				}
 			}
 
-			// Duplicate handling.
-			$(document).on("click", "#accept-selected", function () {
-
-				console.log("TODO: CLICK ONCE!!!");
+			// Duplicate file handling.
+			$(document).off().on("click", "#accept-selected", function () {
 
 				// Should never happen.
 				if (!remainingFiles) {
@@ -413,18 +401,22 @@
 
 				var dropzone = Dropzone.forElement($("#" + callerId).closest(".dropzone")[0]);
 
-				/*
-				$.each(remainingFiles, function (_, file) {
-					if (file.status === Dropzone.ERROR) {
-						//file.status = undefined;
-						//file.accepted = undefined;
-						//file.processing = false;
+				// Set status for remainingItems.
+				$.each(remainingFiles, function (i, file) {
+					
+					if (file.status === Dropzone.SUCCESS) {
+						file.status = undefined;
+						file.accepted = undefined;
+						file.processing = false;	
 					}
+
+					dropzone.addFile(file);
 				});
-				*/
+
+				console.log("DialogClosed > remainingFiles", remainingFiles);
 
 				dropzone.processFiles(remainingFiles);
-
+				
 				remainingFiles = [];
 
 				duplicateDialog.modal('hide');

@@ -204,7 +204,8 @@ namespace SmartStore.Services.Customers
             {
                 query = query.Where(x => endTimeUtc.Value >= x.CreatedOnUtc);
             }
-            query = query.Where(x => x.CustomerRoles.Any(y => y.Id == registeredCustomerRole.Id));
+
+            query = query.Where(x => x.CustomerRoleMappings.Any(y => y.CustomerRoleId == registeredCustomerRole.Id));
 
             return query.Count();
         }

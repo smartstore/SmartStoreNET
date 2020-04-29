@@ -465,6 +465,10 @@
     <Compile Include="Migrations\202004281754357_FixRuleEntityValueLength.Designer.cs">
       <DependentUpon>202004281754357_FixRuleEntityValueLength.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202004290853550_RemoveCustomerCustomerRoles.cs" />
+    <Compile Include="Migrations\202004290853550_RemoveCustomerCustomerRoles.Designer.cs">
+      <DependentUpon>202004290853550_RemoveCustomerCustomerRoles.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -843,6 +847,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202004281754357_FixRuleEntityValueLength.resx">
       <DependentUpon>202004281754357_FixRuleEntityValueLength.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202004290853550_RemoveCustomerCustomerRoles.resx">
+      <DependentUpon>202004290853550_RemoveCustomerCustomerRoles.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

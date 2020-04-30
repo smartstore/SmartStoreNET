@@ -3,7 +3,6 @@
 */
 
 (function ($) {
-
 	var remainingFiles;
 	var assignableFiles = [];
 	var assignableFileIds = "";
@@ -383,8 +382,8 @@
 			}
 
 			// Duplicate file handling.
-			$(document).off().on("click", "#accept-selected", function () {
-
+			$(document).one("click", "#accept-selected", function () {
+				console.log('yoooo');
 				// Should never happen.
 				if (!remainingFiles) {
 					duplicateDialog.modal('hide');

@@ -15,7 +15,7 @@ namespace SmartStore.Data.Setup
             #region tag apple
             var productTagApple = new ProductTag
             {
-                Name = "apple"
+                Name = "اپل"
             };
 
             _ctx.Set<Product>().Where(pt => pt.MetaTitle == "iPhone Plus").First().ProductTags.Add(productTagApple);
@@ -25,7 +25,7 @@ namespace SmartStore.Data.Setup
             #region tag gift
             var productTagGift = new ProductTag
             {
-                Name = "gift"
+                Name = "هدیه"
             };
 
             _ctx.Set<Product>().Where(pt => pt.MetaTitle == "$10 Virtual Gift Card").First().ProductTags.Add(productTagGift);
@@ -38,7 +38,7 @@ namespace SmartStore.Data.Setup
             #region tag book
             var productTagBook = new ProductTag
             {
-                Name = "book"
+                Name = "کتاب"
             };
 
             _ctx.Set<Product>().Where(pt => pt.MetaTitle == "Überman: The novel").First().ProductTags.Add(productTagBook);
@@ -54,7 +54,7 @@ namespace SmartStore.Data.Setup
             #region tag cooking
             var productTagCooking = new ProductTag
             {
-                Name = "cooking"
+                Name = "آشپزی"
             };
 
             _ctx.Set<Product>().Where(pt => pt.MetaTitle == "Überman: The novel").FirstOrDefault().ProductTags.Add(productTagCooking);
@@ -65,7 +65,7 @@ namespace SmartStore.Data.Setup
             #region tag cars
             var productTagCars = new ProductTag
             {
-                Name = "cars"
+                Name = "خودرو"
             };
 
             _ctx.Set<Product>().Where(pt => pt.MetaTitle == "The Car Book").FirstOrDefault().ProductTags.Add(productTagCars);
@@ -76,7 +76,7 @@ namespace SmartStore.Data.Setup
             #region tag motorbikes
             var productTagMotorbikes = new ProductTag
             {
-                Name = "motorbikes"
+                Name = "موتور"
             };
 
             _ctx.Set<Product>().Where(pt => pt.MetaTitle == "Fast Cars").FirstOrDefault().ProductTags.Add(productTagMotorbikes);
@@ -98,7 +98,7 @@ namespace SmartStore.Data.Setup
             #region tag download
             var productTagDownload = new ProductTag
             {
-                Name = "download"
+                Name = "دانلود"
             };
 
             _ctx.Set<Product>().Where(pt => pt.MetaTitle == "Antonio Vivaldi: spring").FirstOrDefault().ProductTags.Add(productTagDownload);
@@ -109,7 +109,7 @@ namespace SmartStore.Data.Setup
             #region tag watches
             var productTagWatches = new ProductTag
             {
-                Name = "watches"
+                Name = "ساعت"
             };
 
             _ctx.Set<Product>().Where(pt => pt.MetaTitle == "Certina DS Podium Big Size").FirstOrDefault().ProductTags.Add(productTagWatches);
@@ -139,9 +139,9 @@ namespace SmartStore.Data.Setup
             var converseAllStar = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                Name = "Converse All Star",
+                Name = "کفش راحتی کانورس مدل All Star High",
                 MetaTitle = "Converse All Star",
-                ShortDescription = "The classical sneaker!",
+                ShortDescription = "Converse Chuck Taylor All Star High Casual Shoes!",
                 FullDescription = "<p>Since 1912 and to this day unrivalled: the converse All Star sneaker. A shoe for every occasion.</p>",
                 Sku = "Fashion-112355",
                 ProductTemplateId = productTemplateSimple.Id,
@@ -360,7 +360,7 @@ namespace SmartStore.Data.Setup
             var result = new List<Product>();
             var productTemplateSimple = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "Product");
             var thirdDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 2);
-            var furnitureCategory = _ctx.Set<Category>().First(x => x.MetaTitle == "Furniture");
+            var furnitureCategory = _ctx.Set<Category>().First(x => x.MetaTitle == "مبلمان");
 
             // Le Corbusier LC 6 table
             var corbusierTable = new Product

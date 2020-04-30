@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ NewsLetterSubscription.Email }}</To>
+	<Subject>{{ Campaign.Subject }}</Subject>
+	<ModelTypes>NewsletterSubscription, Campaign</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+{{ Campaign.Body }}
+{% endblock %}]]></Body>
+</MessageTemplate>

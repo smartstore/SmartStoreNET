@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
+	<ReplyTo>{% if Message.SenderEmail %}{{ Message.SenderName }} &lt;{{ Message.SenderEmail }}&gt;{% endif %}</ReplyTo>
+	<Subject>{{ Message.Subject }}</Subject>
+	<ModelTypes></ModelTypes>
+	<Body>
+	  <![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Contact request,
+</h1>
+
+<p>
+  {% if Customer.IsRegistered %}
+  	<b>{{ Customer.FullName }}</b>
+  {% elsif Message.SenderName %}
+  	<b>{{ Message.SenderName }}</b>
+  {% else %}
+  	<b>{{ Message.SenderEmail }}</b>
+  {% endif %}
+  has sent a request.
+</p>
+
+<p>
+  <b>Email:</b><br />
+  <a href="mailto:{{ Message.SenderEmail }}">{{ Message.SenderEmail }}</a>
+</p>
+
+<table class="w-100 brd bg-light">
+  <tr>
+  	<td class="p-3">
+  		{{ Message.Message }}
+    </td>
+  </tr>
+</table>
+
+{% if Customer.IsRegistered %}
+<div class="mt-4">
+  <p class="text-center">
+    <a class="btn btn-primary" href="{{ Customer.EditUrl }}">View customer profile</a>
+  </p>
+</div>
+{% endif %}
+
+{% endblock %}]]></Body>
+</MessageTemplate>

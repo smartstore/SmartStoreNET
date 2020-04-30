@@ -83,7 +83,7 @@ namespace SmartStore.Data.Setup
 			{
 				new Store()
 				{
-					Name = "Your store name",
+					Name = "فروشگاه اول",
 					Url = "http://www.yourStore.com/",
 					Hosts = "yourstore.com,www.yourstore.com",
 					SslEnabled = false,
@@ -103,35 +103,35 @@ namespace SmartStore.Data.Setup
 			{
 				new MeasureDimension()
 				{
-					Name = "millimetre",
+					Name = "میلی‌متر",
 					SystemKeyword = "mm",
 					Ratio = 25.4M,
 					DisplayOrder = 1,
 				},
 				new MeasureDimension()
 				{
-					Name = "centimetre",
+					Name = "سانتی‌متر",
 					SystemKeyword = "cm",
 					Ratio = 0.254M,
 					DisplayOrder = 2,
 				},
 				new MeasureDimension()
 				{
-					Name = "meter",
+					Name = "متر",
 					SystemKeyword = "m",
 					Ratio = 0.0254M,
 					DisplayOrder = 3,
 				},
 				new MeasureDimension()
 				{
-					Name = "in",
+					Name = "اینچ",
 					SystemKeyword = "inch",
 					Ratio = 1M,
 					DisplayOrder = 4,
 				},
 				new MeasureDimension()
 				{
-					Name = "feet",
+					Name = "فوت",
 					SystemKeyword = "ft",
 					Ratio = 0.08333333M,
 					DisplayOrder = 5,
@@ -148,14 +148,14 @@ namespace SmartStore.Data.Setup
 			{
 				new MeasureWeight()
 				{
-					Name = "ounce", // Ounce, Unze
+					Name = "اونس", // Ounce, Unze
 					SystemKeyword = "oz",
 					Ratio = 16M,
 					DisplayOrder = 5,
 				},
 				new MeasureWeight()
 				{
-					Name = "lb", // Pound
+					Name = "پوند", // Pound
 					SystemKeyword = "lb",
 					Ratio = 1M,
 					DisplayOrder = 6,
@@ -163,28 +163,28 @@ namespace SmartStore.Data.Setup
 
 				new MeasureWeight()
 				{
-					Name = "kg",
+					Name = "کیلوگرم",
 					SystemKeyword = "kg",
 					Ratio = 0.45359237M,
 					DisplayOrder = 1,
 				},
 				new MeasureWeight()
 				{
-					Name = "gram",
+					Name = "گرم",
 					SystemKeyword = "g",
 					Ratio = 453.59237M,
 					DisplayOrder = 2,
 				},
 				new MeasureWeight()
 				{
-					Name = "liter",
+					Name = "لیتر",
 					SystemKeyword = "l",
 					Ratio = 0.45359237M,
 					DisplayOrder = 3,
 				},
 				new MeasureWeight()
 				{
-					Name = "milliliter",
+					Name = "میلی‌لیتر",
 					SystemKeyword = "ml",
 					Ratio = 0.45359237M,
 					DisplayOrder = 4,
@@ -197,37 +197,37 @@ namespace SmartStore.Data.Setup
 
 		protected virtual string TaxNameBooks
 		{
-			get => "Books";
+			get => "کتاب";
 		}
 
 		protected virtual string TaxNameDigitalGoods
 		{
-			get => "Downloadable Products";
+			get => "محصول قابل دانلود";
 		}
 
 		protected virtual string TaxNameJewelry
 		{
-			get => "Jewelry";
+			get => "جواهرات";
 		}
 
 		protected virtual string TaxNameApparel
 		{
-			get => "Apparel & Shoes";
+			get => "پوشاک و کفش";
 		}
 
 		protected virtual string TaxNameFood
 		{
-			get => "Food";
+			get => "غذا";
 		}
 
 		protected virtual string TaxNameElectronics
 		{
-			get => "Electronics & Software";
+			get => "نرم افزار";
 		}
 
 		protected virtual string TaxNameTaxFree
 		{
-			get => "Tax free";
+			get => "بدون مالیات";
 		}
 
 		public virtual decimal[] FixedTaxRates
@@ -274,18 +274,19 @@ namespace SmartStore.Data.Setup
 		{
 			var entities = new List<Currency>()
 			{
-				CreateCurrency("en-US", published: true, rate: 1M, order: 0),
-				CreateCurrency("en-GB", published: true, rate: 0.61M, order: 5),
-				CreateCurrency("en-AU", published: true, rate: 0.94M, order: 10),
-				CreateCurrency("en-CA", published: true, rate: 0.98M, order: 15),
-				CreateCurrency("de-DE", rate: 0.79M, order: 20/*, formatting: string.Format("0.00 {0}", "\u20ac")*/),
-				CreateCurrency("de-CH", rate: 0.93M, order: 25, formatting: "CHF #,##0.00"),
-				CreateCurrency("zh-CN", rate: 6.48M, order: 30),
-				CreateCurrency("zh-HK", rate: 7.75M, order: 35),
-				CreateCurrency("ja-JP", rate: 80.07M, order: 40),
-				CreateCurrency("ru-RU", rate: 27.7M, order: 45),
-				CreateCurrency("tr-TR", rate: 1.78M, order: 50),
-				CreateCurrency("sv-SE", rate: 6.19M, order: 55)
+				CreateCurrency("fa-IR", published: true, rate: 1M, order: 1, formatting: "#,##0 تومان"),
+				CreateCurrency("en-US", published: false, rate: 1M, order: 2)
+
+				//CreateCurrency("en-AU", published: true, rate: 0.94M, order: 10),
+				//CreateCurrency("en-CA", published: true, rate: 0.98M, order: 15),
+				//CreateCurrency("de-DE", rate: 0.79M, order: 20/*, formatting: string.Format("0.00 {0}", "\u20ac")*/),
+				//CreateCurrency("de-CH", rate: 0.93M, order: 25, formatting: "CHF #,##0.00"),
+				//CreateCurrency("zh-CN", rate: 6.48M, order: 30),
+				//CreateCurrency("zh-HK", rate: 7.75M, order: 35),
+				//CreateCurrency("ja-JP", rate: 80.07M, order: 40),
+				//CreateCurrency("ru-RU", rate: 27.7M, order: 45),
+				//CreateCurrency("tr-TR", rate: 1.78M, order: 50),
+				//CreateCurrency("sv-SE", rate: 6.19M, order: 55)
 			};
 
 			this.Alter(entities);
@@ -298,14 +299,14 @@ namespace SmartStore.Data.Setup
 			{
 				new ShippingMethod
 					{
-						Name = "In-Store Pickup",
-						Description ="Pick up your items at the store",
+						Name = "حضور در فروشگاه",
+						Description ="سفارش خود را در محل فروشگاه دریافت نمایید.",
 						DisplayOrder = 0
 					},
 				new ShippingMethod
 					{
-						Name = "By Ground",
-						Description ="Compared to other shipping methods, like by flight or over seas, ground shipping is carried out closer to the earth",
+						Name = "ارسال با پیک",
+						Description ="سفارش شما با پیک ارسال خواهد شد.",
 						DisplayOrder = 1
 					},
 			};
@@ -317,28 +318,28 @@ namespace SmartStore.Data.Setup
 		{
 			var crAdministrators = new CustomerRole
 			{
-				Name = "Administrators",
+				Name = "مدیر",
 				Active = true,
 				IsSystemRole = true,
 				SystemName = SystemCustomerRoleNames.Administrators,
 			};
 			var crForumModerators = new CustomerRole
 			{
-				Name = "Forum Moderators",
+				Name = "نویسنده",
 				Active = true,
 				IsSystemRole = true,
 				SystemName = SystemCustomerRoleNames.ForumModerators,
 			};
 			var crRegistered = new CustomerRole
 			{
-				Name = "Registered",
+				Name = "عضو",
 				Active = true,
 				IsSystemRole = true,
 				SystemName = SystemCustomerRoleNames.Registered,
 			};
 			var crGuests = new CustomerRole
 			{
-				Name = "Guests",
+				Name = "مهمان",
 				Active = true,
 				IsSystemRole = true,
 				SystemName = SystemCustomerRoleNames.Guests,
@@ -357,23 +358,23 @@ namespace SmartStore.Data.Setup
 		public Address AdminAddress()
 		{
             var cCountry = _ctx.Set<Country>()
-                .Where(x => x.ThreeLetterIsoCode == "USA")
+                .Where(x => x.ThreeLetterIsoCode == "IRN")
                 .FirstOrDefault();
 
 			var entity = new Address()
 			{
-				FirstName = "John",
-				LastName = "Smith",
-				PhoneNumber = "12345678",
+				FirstName = "محمد",
+				LastName = "رضایی",
+				PhoneNumber = "09123456789",
 				Email = "admin@myshop.com",
 				FaxNumber = "",
-				Company = "John Smith LLC",
-				Address1 = "1234 Main Road",
+				Company = "وبتینا",
+				Address1 = "خیابان اردیبهشت، کوچه نسترن",
 				Address2 = "",
-				City = "New York",
+				City = "تهران",
 				StateProvince = cCountry.StateProvinces.FirstOrDefault(),
 				Country = cCountry,
-				ZipPostalCode = "12212",
+				ZipPostalCode = "88818-15222",
 				CreatedOnUtc = DateTime.UtcNow,
 			};
 			this.Alter(entity);
@@ -444,7 +445,7 @@ namespace SmartStore.Data.Setup
 				new EmailAccount
 				{
 					Email = "test@mail.com",
-					DisplayName = "Store name",
+					DisplayName = "ایمیل",
 					Host = "smtp.mail.com",
 					Port = 25,
 					Username = "123",
@@ -466,8 +467,8 @@ namespace SmartStore.Data.Setup
 						SystemName = "AboutUs",
 						IncludeInSitemap = false,
 						IsPasswordProtected = false,
-						Title = "About Us",
-						Body = "<p>Put your &quot;About Us&quot; information here. You can edit this in the admin site.</p>"
+						Title = "درباره ما",
+						Body = "<p>هر وبسایت کسب و کاری باید یک صفحه درباره ما داشته باشد. بخش «درباره ما» وبسایت شما مکانی برای بازدیدکنندگان‌تان است که در مورد آنچه که شما چه کسی هستید؟ چه کاری انجام می‌دهید؟، و آنچه که باعث شده کسب و کار خود را راه‌اندازی کنید، اطلاعات کسب می‌کنند. اینکه آیا در حال ایجاد یک وبسایت جدید برای شرکت هستید و یا می‌خواهید وبسایت موجود را تغییر دهید، باید مقداری از زمان خود را بر روی صفحه درباره ما بگذارید. راه‌های بسیاری برای بهبود آن وجود دارد. اهمیت صفحه درباره ما از آنجایی بیشتر می‌شود که بخواهیم یک بازدیدکننده، به مشتری تبدیل شود.</p>"
 					},
 				new Topic
 					{
@@ -477,15 +478,15 @@ namespace SmartStore.Data.Setup
                         RenderAsWidget = true,
                         WidgetWrapContent = false,
 						Title = "",
-						Body = "<p><strong>Register and save time!</strong><br />Register with us for future convenience:</p><ul><li>Fast and easy check out</li><li>Easy access to your order history and status</li></ul>"
-					},
+						Body = "<p><strong>عضو شوید و از مزیت های آن بهره‌مند گردید!</strong><br /></p><ul><li>ثبت سریع و آسان سفارش</li><li>دسترسی آسان و ساده به لیست سفارشات قبلی</li><li>اطلاع از تخفیف‌ها و فروش ویژه</li></ul>"
+					}, 
 				new Topic
 					{
 						SystemName = "ConditionsOfUse",
 						IncludeInSitemap = false,
 						IsPasswordProtected = false,
-						Title = "Conditions of use",
-						Body = "<p>Put your conditions of use information here. You can edit this in the admin site.</p>"
+						Title = "شرایط استفاده",
+						Body = "<p>شرایط استفاده از وبسایت بدین شرح است: ....</p>"
 					},
 				new Topic
 					{
@@ -494,8 +495,8 @@ namespace SmartStore.Data.Setup
 						IsPasswordProtected = false,
                         RenderAsWidget = true,
                         WidgetWrapContent = false,
-                        Title = "Contact us",
-						Body = "<p>Put your contact information here. You can edit this in the admin site.</p>"
+                        Title = "تماس با ما",
+						Body = "<p>کارشناسان مرکز شبانه روزی ارتباط با، ۲۴ ساعت شبانه روز، ۷ روز هفته و ۳۶۵ روز سال، پاسخ‌گوی پرسش‌ها و مشکلات احتمالی مشتریان هستند.</p>"
 					},
 				new Topic
 					{
@@ -504,8 +505,8 @@ namespace SmartStore.Data.Setup
 						IsPasswordProtected = false,
                         RenderAsWidget = true,
                         WidgetWrapContent = false,
-                        Title = "Forums",
-						Body = "<p>Put your welcome message here. You can edit this in the admin site.</p>"
+                        Title = "فروم",
+						Body = "<p>..::خوش آمدید::..</p>"
 					},
 				new Topic
 					{
@@ -514,8 +515,8 @@ namespace SmartStore.Data.Setup
 						IsPasswordProtected = false,
                         RenderAsWidget = true,
                         WidgetWrapContent = false,
-                        Title = "Welcome to our store",
-						Body = "<p>Online shopping is the process consumers go through to purchase products or services over the Internet. You can edit this in the admin site.</p></p>"
+                        Title = "به فروشگاه ما خوش آمدید",
+						Body = "<p>برای اطلاع از تخفیف ها و فروش ویژه در سایت عضو شوید.</p></p>"
 					},
 				new Topic
 					{
@@ -524,8 +525,8 @@ namespace SmartStore.Data.Setup
 						IsPasswordProtected = false,
                         RenderAsWidget = true,
                         WidgetWrapContent = false,
-                        Title = "About login / registration",
-						Body = "<p><strong>Not registered yet?</strong></p><p>Create your own account now and experience our diversity. With an account you can place orders faster and will always have a&nbsp;perfect overview of your current and previous orders.</p>"
+                        Title = "راهنمای عضویت/ورود",
+						Body = "<p><strong>هنوز عضو نیستید؟?</strong></p><p>حساب خود را ایجاد کنید و تنوع ما را تجربه کنید. با یک حساب کاربری می توانید سفارشات را سریعتر انجام دهید و همیشه نمای کاملی از سفارشات فعلی و قبلی خود خواهید داشت.</p>"
 					},
 				new Topic
 					{
@@ -533,16 +534,16 @@ namespace SmartStore.Data.Setup
 						IncludeInSitemap = false,
 						IsPasswordProtected = false,
 						ShortTitle = "Privacy",
-						Title = "Privacy policy",
-						Body = "<p><strong></strong></p>"
+						Title = "اطلاعات حریم خصوصی",
+						Body = "<p><strong>فروشگاه ما</strong> به اطلاعات خصوصی اشخاصى که از خدمات سایت استفاده می‏‌کنند، احترام گذاشته و از آن محافظت می‏‌کند و متعهد می‏‌شود در حد توان از حریم شخصی شما دفاع کند و در این راستا، تکنولوژی مورد نیاز برای هرچه مطمئن‏‌تر و امن‏‌تر شدن استفاده شما از سایت را، توسعه دهد.</p>"
 					},
 				new Topic
 					{
 						SystemName = "ShippingInfo",
 						IncludeInSitemap = false,
 						IsPasswordProtected = false,
-						Title = "Shipping & Returns",
-						Body = "<p>Put your shipping &amp; returns information here. You can edit this in the admin site.</p>"
+						Title = "ارسال",
+						Body = "<p>شرایط ارسالو بازگشت کالا به شرح زیر است: ...</p>"
 					},
 
 				new Topic
@@ -550,7 +551,7 @@ namespace SmartStore.Data.Setup
 						SystemName = "Imprint",
 						IncludeInSitemap = false,
 						IsPasswordProtected = false,
-						Title = "Imprint",
+						Title = "چاپ",
 						Body = @"<p>Put your imprint information here. YOu can edit this in the admin site.</p>"
 					},
 				new Topic
@@ -558,16 +559,16 @@ namespace SmartStore.Data.Setup
 						SystemName = "Disclaimer",
 						IncludeInSitemap = false,
 						IsPasswordProtected = false,
-						Title = "Disclaimer",
-						Body = "<p>Put your disclaimer information here. You can edit this in the admin site.</p>"
+						Title = "سلب مسئولیت",
+						Body = "<p>ضمن تشکر از انتخاب این سایت ، از آنجا که استفاده از این سایت به هر شکل به معنای قبول شرایط مندرج در بخش قوانین است، تقاضا می شود آن را به دقت مطالعه فرمایید..</p>"
 					},
 				new Topic
 					{
 						SystemName = "PaymentInfo",
 						IncludeInSitemap = false,
 						IsPasswordProtected = false,
-						Title = "Payment info",
-						Body = "<p>Put your payment information here. You can edit this in the admin site.</p>"
+						Title = "اطلاعات پرداخت",
+						Body = "<p>در صورت پرداخت آنلاین از طریق حساب کاربری و اتصال به درگاه بانک سامان و یا پارسیان از طریق حساب کاربری، نیازی به تکمیل فرم ثبت اطلاعات پرداخت ندارید و همان لجظه پس از پرداخت، حساب کاربری شما شارژ شده و یا در صورت موجود بودن صورتحساب، صورتحساب شما پرداخت می شود.</p>"
 					},
 			};
 			this.Alter(entities);
@@ -681,7 +682,7 @@ namespace SmartStore.Data.Setup
 							   {
 									new ProductTemplate
 									{
-										Name = "Default Product Template",
+										Name = "قالب پیشفرض محصول",
 										ViewPath = "Product",
 										DisplayOrder = 10
 									}
@@ -696,7 +697,7 @@ namespace SmartStore.Data.Setup
 							   {
 								   new CategoryTemplate
 									   {
-										   Name = "Products in Grid or Lines",
+										   Name = "گرید محصولات",
 										   ViewPath = "CategoryTemplate.ProductsInGridOrLines",
 										   DisplayOrder = 1
 									   },
@@ -711,7 +712,7 @@ namespace SmartStore.Data.Setup
 							   {
 								   new ManufacturerTemplate
 									   {
-										   Name = "Products in Grid or Lines",
+										   Name = "گرید محصولات",
 										   ViewPath = "ManufacturerTemplate.ProductsInGridOrLines",
 										   DisplayOrder = 1
 									   },
@@ -832,8 +833,8 @@ namespace SmartStore.Data.Setup
             var newProductsForum = new Forum
 			{
 				ForumGroup = group,
-				Name = "New Products",
-				Description = "Discuss new products and industry trends",
+				Name = "محصولات درخواستی",
+				Description = "بحث در مورد محصولاتی که تمایل دارید به فروشگاه اضافه شود.",
 				NumTopics = 0,
 				NumPosts = 0,
 				LastPostCustomerId = 0,
@@ -844,8 +845,8 @@ namespace SmartStore.Data.Setup
 			var packagingShippingForum = new Forum
 			{
 				ForumGroup = group,
-				Name = "Packaging & Shipping",
-				Description = "Discuss packaging & shipping",
+				Name = "ارسال و بسته بندی",
+				Description = "بحث در مورد ارسال و بسته بندی سفارشات",
 				NumTopics = 0,
 				NumPosts = 0,
 				LastPostTime = null,
@@ -866,17 +867,17 @@ namespace SmartStore.Data.Setup
 		{
 			var sampleDiscountWithCouponCode = new Discount()
 				{
-					Name = "Sample discount with coupon code",
+					Name = "کد تخفیف",
 					DiscountType = DiscountType.AssignedToSkus,
 					DiscountLimitation = DiscountLimitationType.Unlimited,
 					UsePercentage = false,
 					DiscountAmount = 10,
 					RequiresCouponCode = true,
-					CouponCode = "123"
+					CouponCode = "takhfif"
 				};
 			var sampleDiscounTwentyPercentTotal = new Discount()
 				{
-					Name = "'20% order total' discount",
+					Name = "20% تخفیف روی کل سفارش",
 					DiscountType = DiscountType.AssignedToOrderTotal,
 					DiscountLimitation = DiscountLimitationType.Unlimited,
 					UsePercentage = true,
@@ -884,7 +885,7 @@ namespace SmartStore.Data.Setup
 					StartDateUtc = new DateTime(2013, 1, 1),
 					EndDateUtc = new DateTime(2020, 1, 1),
 					RequiresCouponCode = true,
-					CouponCode = "456"
+					CouponCode = "order20"
 				};
 
 			var entities = new List<Discount>
@@ -902,19 +903,19 @@ namespace SmartStore.Data.Setup
 			{
 				new DeliveryTime
 					{
-						Name = "available and ready to ship",
+						Name = "آماده ارسال",
 						DisplayOrder = 0,
 						ColorHexValue = "#008000"
 					},
 				new DeliveryTime
 					{
-						Name = "2-5 woking days",
+						Name = "2-5 روز کاری",
 						DisplayOrder = 1,
 						ColorHexValue = "#FFFF00"
 					},
 				new DeliveryTime
 					{
-						Name = "7 working days",
+						Name = "7 روز کاری",
 						DisplayOrder = 2,
 						ColorHexValue = "#FF9900"
 					},
@@ -930,34 +931,26 @@ namespace SmartStore.Data.Setup
 
             var quPluralEn = new Dictionary<string, string>
             {
-                { "Piece", "Pieces" },
-                { "Box", "Boxes" },
-                { "Parcel", "Parcels" },
-                { "Palette", "Pallets" },
-                { "Unit", "Units" },
-                { "Sack", "Sacks" },
-                { "Bag", "Bags" },
-                { "Can", "Cans" },
-                { "Packet", "Packets" },
-                { "Bar", "Bars" },
-                { "Bottle", "Bottles" },
-                { "Glass", "Glasses" },
-                { "Bunch", "Bunches" },
-                { "Roll", "Rolls" },
-                { "Cup", "Cups" },
-                { "Bundle", "Bundles" },
-                { "Barrel", "Barrels" },
-                { "Set", "Sets" },
-                { "Bucket", "Buckets" }
+                { "Piece", "قطعه" },
+                { "Box", "جعبه" },
+                { "Parcel", "بسته" },
+                { "Palette", "پالت" },
+                { "Unit", "عدد" },
+                { "Sack", "گونی" },
+                { "Bag", "کیسه" },
+                { "Can", "قوطی" },  
+                { "Bottle", "بطری" },
+                { "Glass", "شیشه" },
+                { "Bunch", "دسته" }
             };
 
             foreach (var qu in quPluralEn)
             {
                 entities.Add(new QuantityUnit
                 {
-                    Name = qu.Key,
+                    Name = qu.Value,
                     NamePlural = qu.Value,
-                    Description = qu.Key,
+                    Description = qu.Value,
                     IsDefault = qu.Key == "Piece",
                     DisplayOrder = count++
                 });
@@ -974,18 +967,18 @@ namespace SmartStore.Data.Setup
 			{
 				AllowComments = true,
 				Language = defaultLanguage,
-				Title = "Online Discount Coupons",
-				Body = "<p>Online discount coupons enable access to great offers from some of the world&rsquo;s best sites for Internet shopping. The online coupons are designed to allow compulsive online shoppers to access massive discounts on a variety of products. The regular shopper accesses the coupons in bulk and avails of great festive offers and freebies thrown in from time to time.  The coupon code option is most commonly used when using a shopping cart. The coupon code is entered on the order page just before checking out. Every online shopping resource has a discount coupon submission option to confirm the coupon code. The dedicated web sites allow the shopper to check whether or not a discount is still applicable. If it is, the sites also enable the shopper to calculate the total cost after deducting the coupon amount like in the case of grocery coupons.  Online discount coupons are very convenient to use. They offer great deals and professionally negotiated rates if bought from special online coupon outlets. With a little research and at times, insider knowledge the online discount coupons are a real steal. They are designed to promote products by offering &lsquo;real value for money&rsquo; packages. The coupons are legitimate and help with budgeting, in the case of a compulsive shopper. They are available for special trade show promotions, nightlife, sporting events and dinner shows and just about anything that could be associated with the promotion of a product. The coupons enable the online shopper to optimize net access more effectively. Getting a &lsquo;big deal&rsquo; is not more utopian amidst rising prices. The online coupons offer internet access to the best and cheapest products displayed online. Big discounts are only a code away! By Gaynor Borade (buzzle.com)</p>",
-				Tags = "e-commerce, money",
+				Title = "اگر جف بزوس تمام بیت کوین موجود در جهان را بخرد چه می‌شود؟",
+				Body = "<p>در حال حاضر تمام بیت کوین موجود در جهان حدود ۱۳۰ میلیارد دلار می‌شود. یعنی اگر جف بزوس به عنوان ثروتمندترین مرد جهان تمام دارایی ۱۴۰ میلیارد دلاری خود را بیت کوین بخرد، باز هم ۱۰ میلیارد دلار اضافه می‌آورد. اما اگر واقعا چنین اتفاقی رخ دهد چه می‌شود؟ در این مطلب مدیر سابق استخراج بیت کوین در شرکت Genesis Mining به سوال ما پاسخ می‌دهد.<br>آقای سالتر می‌گوید تا امروز حدود ۱۸ میلیون عدد بیت کوین استخراج شده است، اما باید در نظر گرفت که بخشی از این تعداد گم شده یا به هر دلیل دیگر مثل فوت مالک، در دسترس نیست. علاوه بر این همه‌ی بیت کوین‌هایی که تا امروز استخراج شده‌اند در بازار خرید و فروش نمی‌شوند و آن تعدادی که در پلتفرم‌های مختلف قابل خرید است فقط بخش کوچکی از کل بیت کوین‌های موجود در جهان را شامل می‌شود.<br>اگر جف بزوس تمام بیت‌کوین‌های دنیا را بخرد بازهم ۱۰ میلیارد دلار اضافه می‌آوردبخشی که برای خرید و فروش عرضه می‌شود را بیت کوین سیال می‌گویند، اما واقعا نمی‌توان گفت دقیقا چند عدد بیت کوین سیال وجود دارد. یک مشکل دیگر هم این است که اگر جف بزوس به خریدن تمام بیت کوین‌های سیال مشغول شود، هرچه جلوتر می‌رود با کمتر شدن موجودی باعث بالا رفتن قیمت می‌شود. وقتی قیمت بیت کوین بالا می‌رود، بسیاری از مالکان بیت کوین فروش را متوقف می‌کنند تا منتظر شوند بیت کوین به بالاترین قیمت خود برسد.</p>",
+				Tags = "بیت کوین, بلکچین",
 				CreatedOnUtc = DateTime.UtcNow,
 			};
 			var blogPostCustomerService = new BlogPost()
 			{
 				AllowComments = true,
 				Language = defaultLanguage,
-				Title = "Customer Service - Client Service",
-				Body = "<p>Managing online business requires different skills and abilities than managing a business in the &lsquo;real world.&rsquo; Customers can easily detect the size and determine the prestige of a business when they have the ability to walk in and take a look around. Not only do &lsquo;real-world&rsquo; furnishings and location tell the customer what level of professionalism to expect, but &quot;real world&quot; personal encounters allow first impressions to be determined by how the business approaches its customer service. When a customer walks into a retail business just about anywhere in the world, that customer expects prompt and personal service, especially with regards to questions that they may have about products they wish to purchase.<br /><br />Customer service or the client service is the service provided to the customer for his satisfaction during and after the purchase. It is necessary to every business organization to understand the customer needs for value added service. So customer data collection is essential. For this, a good customer service is important. The easiest way to lose a client is because of the poor customer service. The importance of customer service changes by product, industry and customer. Client service is an important part of every business organization. Each organization is different in its attitude towards customer service. Customer service requires a superior quality service through a careful design and execution of a series of activities which include people, technology and processes. Good customer service starts with the design and communication between the company and the staff.<br /><br />In some ways, the lack of a physical business location allows the online business some leeway that their &lsquo;real world&rsquo; counterparts do not enjoy. Location is not important, furnishings are not an issue, and most of the visual first impression is made through the professional design of the business website.<br /><br />However, one thing still remains true. Customers will make their first impressions on the customer service they encounter. Unfortunately, in online business there is no opportunity for front- line staff to make a good impression. Every interaction the customer has with the website will be their primary means of making their first impression towards the business and its client service. Good customer service in any online business is a direct result of good website design and planning.</p><p>By Jayashree Pakhare (buzzle.com)</p>",
-				Tags = "e-commerce, Smartstore.NET, asp.net, sample tag, money",
+				Title = "آیا استفاده از پهپادهای حمل کالا در زمان قرنطینه ایده مناسبی است؟",
+				Body = "<p>در ماه‌های اخیر که شیوع ویروس کرونا محدودیت‌هایی را برای روال طبیعی زندگی ما ایجاد کرده است، بسیاری از افراد به خریدهای آنلاین و استفاده از سرویس‌های پستی روی آورده‌اند. اما چرا سرویس‌های پستی کشور ما یا بسیاری از کشورهای دیگر همچنان از همان ساختار قدیمی تحویل بار توسط نیروی انسانی استفاده می‌کنند و فناوری‌هایی مانند پهپاد حمل کالا یا ربات‌های تحویل مرسوله استفاده نمی‌کنند؟<br>ایده نگارش این مطلب زمانی به ذهنم رسید که شنیدم در دورانی که بسیاری از ما داوطلبانه قرنطینه را انتخاب کرده‌ایم، فعالیت‌ سرویس‌های پستی افزایش یافته است. همچنین، در حالی که به دلیل جلوگیری از گسترش ویروس کرونا بسیاری از مشاغل با محدودیت یا منع فعالیت روبرو شده‌اند، ماموران اداره پست همچنان مشغول فعالیت هستند و حتی حجم کارشان نسبت به قبل از دوران قرنطینه بیشتر هم شده است.</p>",
+				Tags = "فروشگاه, خرید اینترنتی, پهپاد",
 				CreatedOnUtc = DateTime.UtcNow.AddSeconds(1),
 			};
 
@@ -1005,22 +998,22 @@ namespace SmartStore.Data.Setup
 			{
 				AllowComments = true,
 				Language = defaultLanguage,
-				Title = "Smartstore.NET 3.2 now with the new CMS Page Builder",
-                Short = "Create fascinating content with the new Page Builder",
-                Full = "<p>Create fascinating content from products, product groups, images, videos and texts. <br/>Transitions, animations, gradients, hover effects or overlays are easily applied in the WYSIWYG editor.<br/><br/>More information about Smartstore 3.2 and Page Builder can be found at <a href=\"http://www.smartstore.com/en/net\">www.smartstore.com</a></p>",
+				Title = "انتشار رسمی ویدئوهای محرمانه پنتاگون مهر تأییدی بر وجود فرازمینی‌ها است؟",
+                Short = "وزارت دفاع آمریکا به‌تازگی با انتشار سه ویدئو نشان‌دهنده‌ی اجسام پرنده‌ی ناشناس، اعتبار آن‌ها را تأیید کرده است؛ اما این اذعان رسمی به‌معنای تأیید وجود بیگانگان است؟",
+                Full = "<p>روز دوشنبه، وزارت دفاع ایالات متحده رسما سه ویدئویی را منتشر کرد که مواجهه‌ی خلبانان نیروی دریایی را با اجسام پرنده‌ی ناشناس (UFO) به‌تصویر می‌کشد. این رویدادها در سال‌های ۲۰۰۴ و ۲۰۱۵ به‌وقوع پیوست؛ اما ویدئوها از دید عموم پنهان ماند تا اینکه در سال ۲۰۱۷، نیویورک‌تایمز آن‌ها را به‌همراه سرمقاله‌ای درباره‌ی برنامه‌ی اسرارآمیز یوفو پنتاگون منتشر کرد. نیروی دریایی ارتش آمریکا پیش‌تر اذعان کرد ویدئوها معتبر است؛ اما پنتاگون تا امروز، هرگز مجوز انتشار آن‌ها را صادر نکرد.<br>هر سه ویدئو حاوی تصاویر ثبت‌شده‌ی خلبانان نیروهای دریایی است که جسمی بیضی‌شکل را با ظاهر عجیب در حال پرواز درون هوا و برفراز اقیانوس نشان می‌دهد.در ویدئو ضبط‌شده در سال ۲۰۱۵ به‌نام گیمبال(Gimbal)، جسمی پرنده به‌شکل بیضی پیش از ایستادن و چرخیدن، با سرعت برفراز ابرها حرکت می‌کند.خلبان که در حال فیلم‌برداری از این مواجهه است، جسم پرنده را در بی‌سیم «پهپاد» توصیف می‌کند.</p>",
 				Published = true,
-                MetaTitle = "Smartstore.NET 3.2",
+                MetaTitle = "انتشار رسمی ویدئوهای محرمانه پنتاگون مهر تأییدی بر وجود فرازمینی‌ها است",
 				CreatedOnUtc = DateTime.Now
 			};
 			var news2 = new NewsItem()
             {
                 AllowComments = true,
                 Language = defaultLanguage,
-                Title = "Smartstore.NET new release!",
-                Short = "Smartstore.NET includes everything you need to begin your e-commerce online store.",
-                Full = "<p>Smartstore.NET includes everything you need to begin your e-commerce online store.<br/>  We have thought of everything and it's all included!<br/><br/Smartstore.NET is a fully customizable shop-system. It's stable and highly usable.<br>  From downloads to documentation, www.smartstore.com offers a comprehensive base of information, resources, and support to the Smartstore.NET community.</p>",
+                Title = "VOD‌ها پنج ماه برای تقویت زیرساخت‌های نظارتی فرصت دارند!",
+                Short = "VOD‌ها پنج ماه مهلت دارند امکانات نظارتی ازجمله رده‌بندی سنی فیلم‌ها و سریال‌های خارجی و ایرانی را در پلتفرم خود اجرا کنند.",
+                Full = "<p>محتوایی که در سرویس‌های VOD و رسانه‌های کاربرمحور به‌اشتراک گذاشته می‌شود، همواره محل بحث بوده است؛ اما به‌نظر می‌رسد در روزهایی که استفاده‌ی مردم به‌دلیل قرنطینه‌ی خانگی از این سرویس‌ها بیشتر شده است، نظارت بر محتوای آن‌ها نیز بیش از گذشته اهمیت پیدا می‌کند. سازمان تنظیم مقررات صوت و تصویر فراگیر در فضای مجازی (ساترا) متولی نظارت بر عملکرد سامانه‌های انتشار محتوایی ویدئویی در فضای مجازی است.<br>محمدرسول حاج‌اقلی، سرپرست اداره‌ی کل صدور مجوز و امور رسانه‌های‌ ساترا، مسئولیت صدور مجوزها را برعهده دارد و در گفت‌وگو با مهر، ضمن پذیرفتن مشکلات نظارتی و محتوایی موجود در رسانه‌های مجازی، از مهلت پنج‌ماهه‌ برای رفع آن‌ها خبر داده است.او می‌گوید ساترا الزامی در تعیین نوع فعالیت رسانه‌ها ندارد و این موضوع را متقاضی دریافت مجوز تعیین می‌کند.</p>",
                 Published = true,
-                MetaTitle = "Smartstore.NET new release!",
+                MetaTitle = "VOD‌ها پنج ماه برای تقویت زیرساخت‌های نظارتی فرصت دارند",
                 CreatedOnUtc = DateTime.Now
             };
 
@@ -1037,42 +1030,42 @@ namespace SmartStore.Data.Setup
 		{
 			var pollAnswer1 = new PollAnswer()
 			{
-				Name = "Excellent",
+				Name = "عالی",
 				DisplayOrder = 1,
 			};
 			var pollAnswer2 = new PollAnswer()
 			{
-				Name = "Good",
+				Name = "خوب",
 				DisplayOrder = 2,
 			};
 			var pollAnswer3 = new PollAnswer()
 			{
-				Name = "Poor",
+				Name = "بد",
 				DisplayOrder = 3,
 			};
 			var pollAnswer4 = new PollAnswer()
 			{
-				Name = "Very bad",
+				Name = "خیلی بد",
 				DisplayOrder = 4,
 			};
 			var pollAnswer5 = new PollAnswer()
 			{
-				Name = "Daily",
+				Name = "روزانه",
 				DisplayOrder = 5,
 			};
 			var pollAnswer6 = new PollAnswer()
 			{
-				Name = "Once a week",
+				Name = "هر هفته",
 				DisplayOrder = 6,
 			};
 			var pollAnswer7 = new PollAnswer()
 			{
-				Name = "Every two weeks",
+				Name = "هر دوهفته",
 				DisplayOrder = 7,
 			};
 			var pollAnswer8 = new PollAnswer()
 			{
-				Name = "Once a month",
+				Name = "ماهی یکبار",
 				DisplayOrder = 8,
 			};
 
@@ -1091,7 +1084,7 @@ namespace SmartStore.Data.Setup
 			var poll1 = new Poll
 			{
 				Language = defaultLanguage,
-				Name = "How do you like the shop?",
+				Name = "نظر شما درباره فروشگاه چیست؟",
 				SystemKeyword = "Blog",
 				Published = true,
 				DisplayOrder = 1,
@@ -1099,25 +1092,25 @@ namespace SmartStore.Data.Setup
 
 			poll1.PollAnswers.Add(new PollAnswer
 			{
-				Name = "Excellent",
+				Name = "عالی",
 				DisplayOrder = 1,
 			});
 
 			poll1.PollAnswers.Add(new PollAnswer
 			{
-				Name = "Good",
+				Name = "خوب",
 				DisplayOrder = 2,
 			});
 
 			poll1.PollAnswers.Add(new PollAnswer
 			{
-				Name = "Poor",
+				Name = "عادی",
 				DisplayOrder = 3,
 			});
 
 			poll1.PollAnswers.Add(new PollAnswer
 			{
-				Name = "Very bad",
+				Name = "ضعیف",
 				DisplayOrder = 4,
 			});
 
@@ -1125,7 +1118,7 @@ namespace SmartStore.Data.Setup
 			var poll2 = new Poll
 			{
 				Language = defaultLanguage,
-				Name = "How often do you buy online?",
+				Name = "هرچندبار خرید اینترنتی می کنید؟",
 				SystemKeyword = "Blog",
 				Published = true,
 				DisplayOrder = 2,
@@ -1133,25 +1126,25 @@ namespace SmartStore.Data.Setup
 
 			poll2.PollAnswers.Add(new PollAnswer
 			{
-				Name = "Daily",
+				Name = "روزانه",
 				DisplayOrder = 1,
 			});
 
 			poll2.PollAnswers.Add(new PollAnswer
 			{
-				Name = "Once a week",
+				Name = "هفته‌ای یکبار",
 				DisplayOrder = 2,
 			});
 
 			poll2.PollAnswers.Add(new PollAnswer
 			{
-				Name = "Every two weeks",
+				Name = "هر دو هفته",
 				DisplayOrder = 3,
 			});
 
 			poll2.PollAnswers.Add(new PollAnswer
 			{
-				Name = "Once a month",
+				Name = "ماهی یکبار یا بیشتر",
 				DisplayOrder = 4,
 			});
 

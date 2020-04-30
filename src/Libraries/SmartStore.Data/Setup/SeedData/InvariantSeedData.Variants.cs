@@ -15,142 +15,142 @@ namespace SmartStore.Data.Setup
             {
                 new ProductAttribute
                 {
-                    Name = "Color",
+                    Name = "رنگ",
                     Alias = "color"
                 },
                 new ProductAttribute
                 {
-                    Name = "Custom Text",
+                    Name = "متن دلخواه",
                     Alias = "custom-text"
                 },
                 new ProductAttribute
                 {
-                    Name = "HDD",
+                    Name = "هارددیسک",
                     Alias = "hdd"
                 },
                 new ProductAttribute
                 {
-                    Name = "OS",
+                    Name = "سیستم عامل",
                     Alias = "os"
                 },
                 new ProductAttribute
                 {
-                    Name = "Processor",
+                    Name = "پردازنده",
                     Alias = "processor"
                 },
                 new ProductAttribute
                 {
-                    Name = "RAM",
+                    Name = "رم",
                     Alias = "ram",
                 },
                 new ProductAttribute
                 {
-                    Name = "Size",
+                    Name = "اندازه",
                     Alias = "size"
                 },
                 new ProductAttribute
                 {
-                    Name = "Software",
+                    Name = "نرم افزار",
                     Alias = "software"
                 },
                 new ProductAttribute
                 {
-                    Name = "Game",
+                    Name = "بازی",
                     Alias = "game"
                 },
                 new ProductAttribute
                 {
-                    Name = "Color",
+                    Name = "رنگ",
                     Alias = "iphone-color"
                 },
                 new ProductAttribute
                 {
-                    Name = "Color",
+                    Name = "رنگ",
                     Alias = "ipad-color"
                 },
                 new ProductAttribute
                 {
-                    Name = "Memory capacity",
+                    Name = "ظرفیت حافظه",
                     Alias = "memory-capacity"
                 },
                 new ProductAttribute
                 {
-                    Name = "Width",
+                    Name = "عرض",
                     Alias = "width"
                 },
                 new ProductAttribute
                 {
-                    Name = "Length",
+                    Name = "طول",
                     Alias = "length"
                 },
                 new ProductAttribute
                 {
-                    Name = "Plate",
+                    Name = "صفحه",
                     Alias = "plate"
                 },
                 new ProductAttribute
                 {
-                    Name = "Plate Thickness",
+                    Name = "قطر صفحه",
                     Alias = "plate-thickness"
                 },
                 new ProductAttribute
                 {
-                    Name = "Ballsize",
+                    Name = "اندازه توپ",
                     Alias = "ballsize"
                 },
                 new ProductAttribute
                 {
-                    Name = "Leather color",
+                    Name = "رنگ چرم",
                     Alias = "leather-color"
                 },
                 new ProductAttribute
                 {
-                    Name = "Seat Shell",
+                    Name = "صندلی شل",
                     Alias = "seat-shell"
                 },
                 new ProductAttribute
                 {
-                    Name = "Base",
+                    Name = "پایه",
                     Alias = "base"
                 },
                 new ProductAttribute
                 {
-                    Name = "Material",
+                    Name = "جنس",
                     Alias = "material"
                 },
                 new ProductAttribute
                 {
-                    Name = "Style",
+                    Name = "سبک",
                     Alias = "style"
                 },
                 new ProductAttribute
                 {
-                    Name = "Controller",
+                    Name = "کنترل کننده",
                     Alias = "controller"
                 },
                 new ProductAttribute
                 {
-                    Name = "Framecolor",
+                    Name = "رنگ فریم",
                     Alias = "framecolor"
                 },
                 new ProductAttribute
                 {
-                    Name = "Lenscolor",
+                    Name = "رنگ لنز",
                     Alias = "lenscolor"
                 },
                 new ProductAttribute
                 {
-                    Name = "Lenstype",
+                    Name = "نوع لنز",
                     Alias = "lenstype"
                 },
                 new ProductAttribute
                 {
-                    Name = "Lenscolor",
+                    Name = "رنگ لنز",
                     Alias = "wayfarerlenscolor"
                 },
                 new ProductAttribute
                 {
-                    Name = "Framecolor",
+                    Name = "رنگ فریم",
                     Alias = "wayfarerframecolor"
                 }
             };
@@ -166,7 +166,7 @@ namespace SmartStore.Data.Setup
 
             entities.Add(new ProductAttributeOptionsSet
             {
-                Name = "General colors",
+                Name = "رنگ های اصلی",
                 ProductAttributeId = colorAttribute.Id
             });
 
@@ -182,15 +182,15 @@ namespace SmartStore.Data.Setup
 
             var generalColors = new[]
             {
-                new { Color = "Red", Code = "#ff0000" },
-                new { Color = "Green", Code = "#008000" },
-                new { Color = "Blue", Code = "#0000ff" },
-                new { Color = "Yellow", Code = "#ffff00" },
-                new { Color = "Black", Code = "#000000" },
-                new { Color = "White", Code = "#ffffff" },
-                new { Color = "Gray", Code = "#808080" },
-                new { Color = "Silver", Code = "#dddfde" },
-                new { Color = "Brown", Code = "#a52a2a" },
+                new {Alias = "Red",   Color = "قرمز", Code = "#ff0000" },
+                new {Alias = "Green", Color = "سبز", Code = "#008000" },
+                new {Alias = "Blue",  Color = "آبی", Code = "#0000ff" },
+                new {Alias = "Yellow",Color = "زرد", Code = "#ffff00" },
+                new {Alias = "Black", Color = "مشکی", Code = "#000000" },
+                new {Alias = "White", Color = "سفید", Code = "#ffffff" },
+                new {Alias = "Gray",  Color = "خاکستری", Code = "#808080" },
+                new {Alias = "Silver",Color = "نقره‌ای", Code = "#dddfde" },
+                new {Alias = "Brown", Color = "قهوه ای", Code = "#a52a2a" },
             };
 
             for (var i = 0; i < generalColors.Length; ++i)
@@ -198,7 +198,7 @@ namespace SmartStore.Data.Setup
                 entities.Add(new ProductAttributeOption
                 {
                     ProductAttributeOptionsSetId = sets[0].Id,
-                    Alias = generalColors[i].Color.ToLower(),
+                    Alias = generalColors[i].Alias.ToLower(),
                     Name = generalColors[i].Color,
                     Quantity = 1,
                     DisplayOrder = i + 1,
@@ -237,25 +237,25 @@ namespace SmartStore.Data.Setup
 
             var generalColors = new[]
             {
-                new { Name = "Black", Color = "#000000" },
-                new { Name = "White", Color = "#ffffff" },
-                new { Name = "Anthracite", Color = "#32312f" },
-                new { Name = "Fuliginous", Color = "#5F5B5C" },
-                new { Name = "Light grey", Color = "#e3e3e5" },
-                new { Name = "Natural", Color = "#BBB98B" },
-                new { Name = "Biscuit", Color = "#e0ccab" },
-                new { Name = "Beige", Color = "#d1bc8a" },
-                new { Name = "Hazelnut", Color = "#94703e" },
-                new { Name = "Brown", Color = "#755232" },
-                new { Name = "Dark brown", Color = "#27160F" },
-                new { Name = "Dark green", Color = "#0a3210" },
-                new { Name = "Blue", Color = "#0000ff" },
-                new { Name = "Cognac", Color = "#e9aa1b" },
-                new { Name = "Yellow", Color = "#e6e60c" },
-                new { Name = "Orange", Color = "#ff6501" },
-                new { Name = "Tomato red", Color = "#b10101" },
-                new { Name = "Red", Color = "#fe0000" },
-                new { Name = "Dark red", Color = "#5e0000" }
+                new {Alias = "Black",        Name = "مشکی", Color = "#000000" },
+                new {Alias = "White",        Name = "سفید", Color = "#ffffff" },
+                new {Alias = "Anthracite",   Name = "ذغالی", Color = "#32312f" },
+                new {Alias = "Fuliginous",   Name = "دودی", Color = "#5F5B5C" },
+                new {Alias = "Light grey",   Name = "خاکستری روشن", Color = "#e3e3e5" },
+                new {Alias = "Natural",      Name = "کرمی", Color = "#BBB98B" },
+                new {Alias = "Biscuit",      Name = "بیسکوئیتی", Color = "#e0ccab" },
+                new {Alias = "Beige",        Name = "بژ", Color = "#d1bc8a" },
+                new {Alias = "Hazelnut",     Name = "فندقی", Color = "#94703e" },
+                new {Alias = "Brown",        Name = "قهوه‌ای", Color = "#755232" },
+                new {Alias = "Dark brown",   Name = "قهوه‌ای تیره", Color = "#27160F" },
+                new {Alias = "Dark green",   Name = "سبز تیره", Color = "#0a3210" },
+                new {Alias = "Blue",         Name = "آبی", Color = "#0000ff" },
+                new {Alias = "Cognac",       Name = "کنیاک", Color = "#e9aa1b" },
+                new {Alias = "Yellow",       Name = "زرد", Color = "#e6e60c" },
+                new {Alias = "Orange",       Name = "نارنجی", Color = "#ff6501" },
+                new {Alias = "tomato-red",   Name = "قرمز گوجه‌ای", Color = "#b10101" },
+                new {Alias = "Red",          Name = "قرمز", Color = "#fe0000" },
+                new {Alias = "Dark red",     Name = "جیگری", Color = "#5e0000" }
             };
 
 
@@ -274,7 +274,7 @@ namespace SmartStore.Data.Setup
 
             attributeLensType.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Standard",
+                Name = "استاندارد",
                 Alias = "standard",
                 IsPreSelected = true,
                 DisplayOrder = 1,
@@ -285,8 +285,8 @@ namespace SmartStore.Data.Setup
 
             attributeLensType.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Polarized",
-                Alias = "polarized",
+                Name = "قطبی",
+                Alias = "پولاریزه",
                 DisplayOrder = 2,
                 Quantity = 1,
                 ValueType = ProductVariantAttributeValueType.Simple,
@@ -294,7 +294,7 @@ namespace SmartStore.Data.Setup
             });
             attributeLensType.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Prizm",
+                Name = "پریزم",
                 Alias = "prizm",
                 DisplayOrder = 3,
                 Quantity = 1,
@@ -316,7 +316,7 @@ namespace SmartStore.Data.Setup
 
             attributeFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Matte Black",
+                Name = "سیاه مات",
                 Alias = "matteblack",
                 IsPreSelected = true,
                 DisplayOrder = 1,
@@ -327,7 +327,7 @@ namespace SmartStore.Data.Setup
 
             attributeFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Polishedwhite",
+                Name = "جلا سفید",
                 Alias = "polishedwhite",
                 DisplayOrder = 2,
                 Quantity = 1,
@@ -337,7 +337,7 @@ namespace SmartStore.Data.Setup
 
             attributeFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Sky Blue",
+                Name = "آبی آسمانی",
                 Alias = "skyblue",
                 DisplayOrder = 3,
                 Quantity = 1,
@@ -347,7 +347,7 @@ namespace SmartStore.Data.Setup
 
             attributeFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Orange Flare",
+                Name = "نارنجی",
                 Alias = "orangeflare",
                 DisplayOrder = 4,
                 Quantity = 1,
@@ -357,7 +357,7 @@ namespace SmartStore.Data.Setup
 
             attributeFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Redline",
+                Name = "قرمز",
                 Alias = "redline",
                 DisplayOrder = 5,
                 Quantity = 1,
@@ -378,7 +378,7 @@ namespace SmartStore.Data.Setup
 
             attributeLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Gray",
+                Name = "خاکستری",
                 Alias = "gray",
                 IsPreSelected = true,
                 DisplayOrder = 1,
@@ -389,7 +389,7 @@ namespace SmartStore.Data.Setup
 
             attributeLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Sapphire Iridium",
+                Name = "یاقوت کبود ایریدیوم",
                 Alias = "sapphireiridium",
                 DisplayOrder = 2,
                 Quantity = 1,
@@ -399,7 +399,7 @@ namespace SmartStore.Data.Setup
 
             attributeLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Violet Iridium",
+                Name = "بنفش ایریدیوم",
                 Alias = "violetiridium",
                 DisplayOrder = 3,
                 Quantity = 1,
@@ -409,7 +409,7 @@ namespace SmartStore.Data.Setup
 
             attributeLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Jade Iridium",
+                Name = "جید ایریدیم",
                 Alias = "jadeiridium",
                 DisplayOrder = 4,
                 Quantity = 1,
@@ -419,7 +419,7 @@ namespace SmartStore.Data.Setup
 
             attributeLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Ruby Iridium",
+                Name = "یاقوت ایریدیوم",
                 Alias = "rubyiridium",
                 DisplayOrder = 5,
                 Quantity = 1,
@@ -439,7 +439,7 @@ namespace SmartStore.Data.Setup
 
             attributeLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Positive Red Iridium",
+                Name = "قرمز روشن",
                 Alias = "positiverediridium",
                 DisplayOrder = 7,
                 Quantity = 1,
@@ -449,7 +449,7 @@ namespace SmartStore.Data.Setup
 
             attributeLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Clear",
+                Name = "بی رنگ",
                 Alias = "clear",
                 DisplayOrder = 7,
                 Quantity = 1,
@@ -458,7 +458,7 @@ namespace SmartStore.Data.Setup
             });
             attributeLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Fire Iridium",
+                Name = "نارنجی",
                 Alias = "fireiridium",
                 DisplayOrder = 7,
                 Quantity = 1,
@@ -487,7 +487,7 @@ namespace SmartStore.Data.Setup
 
             attributeWayfarerLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Blue-Gray classic",
+                Name = "آبی-خاکستری",
                 Alias = "blue-gray-classic",
                 IsPreSelected = true,
                 DisplayOrder = 1,
@@ -498,7 +498,7 @@ namespace SmartStore.Data.Setup
 
             attributeWayfarerLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Brown course",
+                Name = "قهوه ای",
                 Alias = "brown-course",
                 DisplayOrder = 2,
                 Quantity = 1,
@@ -508,7 +508,7 @@ namespace SmartStore.Data.Setup
 
             attributeWayfarerLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Gray course",
+                Name = "خاکستری",
                 Alias = "gray-course",
                 DisplayOrder = 3,
                 Quantity = 1,
@@ -518,7 +518,7 @@ namespace SmartStore.Data.Setup
 
             attributeWayfarerLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Green classic",
+                Name = "سبز",
                 Alias = "green-classic",
                 DisplayOrder = 4,
                 Quantity = 1,
@@ -541,7 +541,7 @@ namespace SmartStore.Data.Setup
 
             attributeWayfarerFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Black",
+                Name = "سیاه",
                 Alias = "rayban-black",
                 IsPreSelected = true,
                 DisplayOrder = 1,
@@ -554,7 +554,7 @@ namespace SmartStore.Data.Setup
             wayfarerFramePicture = wayfarerFramePictures.First(x => x.Name.Contains("-havana-black"));
             attributeWayfarerFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Havana; Black",
+                Name = "مشکی هاوانا",
                 Alias = "havana-black",
                 DisplayOrder = 2,
                 Quantity = 1,
@@ -566,7 +566,7 @@ namespace SmartStore.Data.Setup
             wayfarerFramePicture = wayfarerFramePictures.First(x => x.Name.Contains("-havana"));
             attributeWayfarerFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Havana",
+                Name = "هاوانا",
                 Alias = "havana",
                 DisplayOrder = 3,
                 Quantity = 1,
@@ -628,7 +628,7 @@ namespace SmartStore.Data.Setup
 
             attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Silver",
+                Name = "نقره‌ای",
                 Alias = "silver",
                 IsPreSelected = true,
                 DisplayOrder = 1,
@@ -639,7 +639,7 @@ namespace SmartStore.Data.Setup
 
             attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Gold",
+                Name = "طلایی",
                 Alias = "gold",
                 DisplayOrder = 2,
                 Quantity = 1,
@@ -649,7 +649,7 @@ namespace SmartStore.Data.Setup
 
             attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Spacegray",
+                Name = "خاکستری فضایی",
                 Alias = "spacegray",
                 DisplayOrder = 3,
                 Quantity = 1,
@@ -659,7 +659,7 @@ namespace SmartStore.Data.Setup
 
             attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Rose",
+                Name = "رز",
                 Alias = "rose",
                 DisplayOrder = 4,
                 Quantity = 1,
@@ -669,7 +669,7 @@ namespace SmartStore.Data.Setup
 
             attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Mint",
+                Name = "نعنایی",
                 Alias = "mint",
                 DisplayOrder = 5,
                 Quantity = 1,
@@ -679,7 +679,7 @@ namespace SmartStore.Data.Setup
 
             attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Purple",
+                Name = "بنفش",
                 Alias = "purple",
                 DisplayOrder = 6,
                 Quantity = 1,
@@ -689,7 +689,7 @@ namespace SmartStore.Data.Setup
 
             attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Lightblue",
+                Name = "آبی روشن",
                 Alias = "lightblue",
                 DisplayOrder = 7,
                 Quantity = 1,
@@ -699,7 +699,7 @@ namespace SmartStore.Data.Setup
 
             attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Turquoise",
+                Name = "فیروزه‌ای",
                 Alias = "turquoise",
                 DisplayOrder = 8,
                 Quantity = 1,
@@ -709,7 +709,7 @@ namespace SmartStore.Data.Setup
 
             attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Yellow",
+                Name = "زرد",
                 Alias = "yellow",
                 DisplayOrder = 7,
                 Quantity = 1,
@@ -770,7 +770,7 @@ namespace SmartStore.Data.Setup
 
             attributeIphone7PlusColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Silver",
+                Name = "نقره‌ای",
                 Alias = "silver",
                 IsPreSelected = true,
                 DisplayOrder = 1,
@@ -781,7 +781,7 @@ namespace SmartStore.Data.Setup
 
             attributeIphone7PlusColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Gold",
+                Name = "طلایی",
                 Alias = "gold",
                 DisplayOrder = 2,
                 Quantity = 1,
@@ -791,7 +791,7 @@ namespace SmartStore.Data.Setup
 
             attributeIphone7PlusColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Red",
+                Name = "قرمز",
                 Alias = "red",
                 DisplayOrder = 3,
                 Quantity = 1,
@@ -801,7 +801,7 @@ namespace SmartStore.Data.Setup
 
             attributeIphone7PlusColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Rose",
+                Name = "رزگلد",
                 Alias = "rose",
                 DisplayOrder = 4,
                 Quantity = 1,
@@ -811,7 +811,7 @@ namespace SmartStore.Data.Setup
 
             attributeIphone7PlusColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Black",
+                Name = "مشکی",
                 Alias = "black",
                 DisplayOrder = 5,
                 Quantity = 1,
@@ -925,7 +925,7 @@ namespace SmartStore.Data.Setup
 
             attributeDualshock3ControllerColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "without controller",
+                Name = "بدون کنترل",
                 Alias = "without_controller",
                 IsPreSelected = true,
                 DisplayOrder = 1,
@@ -935,7 +935,7 @@ namespace SmartStore.Data.Setup
 
             attributeDualshock3ControllerColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "with controller",
+                Name = "با کنترلر",
                 Alias = "with_controller",
                 PriceAdjustment = 60.0M,
                 DisplayOrder = 2,
@@ -962,7 +962,7 @@ namespace SmartStore.Data.Setup
 
             attributeAirpod.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Gold",
+                Name = "طلایی",
                 Alias = "gold",
                 DisplayOrder = 1,
                 Quantity = 1,
@@ -974,7 +974,7 @@ namespace SmartStore.Data.Setup
 
             attributeAirpod.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Rose",
+                Name = "رزگلد",
                 Alias = "rose",
                 DisplayOrder = 2,
                 Quantity = 1,
@@ -986,7 +986,7 @@ namespace SmartStore.Data.Setup
 
             attributeAirpod.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Mint",
+                Name = "سبز",
                 Alias = "mint",
                 DisplayOrder = 3,
                 Quantity = 1,
@@ -998,7 +998,7 @@ namespace SmartStore.Data.Setup
 
             attributeAirpod.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Lightblue",
+                Name = "آبی روشن",
                 Alias = "lightblue",
                 DisplayOrder = 3,
                 Quantity = 1,
@@ -1010,7 +1010,7 @@ namespace SmartStore.Data.Setup
 
             attributeAirpod.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "Turquoise",
+                Name = "فیروزه‌ای",
                 Alias = "turquoise",
                 DisplayOrder = 3,
                 Quantity = 1,
@@ -1022,7 +1022,7 @@ namespace SmartStore.Data.Setup
 
             attributeAirpod.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "White",
+                Name = "سفید",
                 Alias = "white",
                 DisplayOrder = 3,
                 Quantity = 1,
@@ -1215,8 +1215,8 @@ namespace SmartStore.Data.Setup
             var shirtMeccanicaSizes = new string[] { "XS", "S", "M", "L", "XL" };
             var shirtMeccanicaColors = new[]
             {
-                new { Color = "Red", Code = "#fe0000" },
-                new { Color = "Black", Code = "#000000" }
+                new { Color = "قرمز", Code = "#fe0000", Alias="red" },
+                new { Color = "مشکی", Code = "#000000" , Alias="black"}
             };
 
             var attrShirtMeccanicaColor = new ProductVariantAttribute
@@ -1233,11 +1233,11 @@ namespace SmartStore.Data.Setup
                 attrShirtMeccanicaColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
                 {
                     Name = shirtMeccanicaColors[i].Color,
-                    Alias = shirtMeccanicaColors[i].Color.ToLower(),
+                    Alias = shirtMeccanicaColors[i].Alias,
                     DisplayOrder = i + 1,
                     Quantity = 1,
                     Color = shirtMeccanicaColors[i].Code,
-                    IsPreSelected = shirtMeccanicaColors[i].Color == "Red"
+                    IsPreSelected = shirtMeccanicaColors[i].Alias == "Red"
                 });
             }
             entities.Add(attrShirtMeccanicaColor);
@@ -1272,13 +1272,13 @@ namespace SmartStore.Data.Setup
             var ladiesJacketSizes = new string[] { "XS", "S", "M", "L", "XL" };
             var ladiesJacketColors = new[]
             {
-                new { Color = "Red", Code = "#CE1F1C" },
-                new { Color = "Orange", Code = "#EB7F01" },
-                new { Color = "Green", Code = "#24B87E" },
-                new { Color = "Blue", Code = "#0F8CCE" },
-                new { Color = "Navy", Code = "#525671" },
-                new { Color = "Silver", Code = "#ABB0B3" },
-                new { Color = "Black", Code = "#404040" }
+                new { Alias = "red",   Color = "قرمز", Code = "#CE1F1C" },
+                new { Alias = "orange", Color = "نارنحی", Code = "#EB7F01" },
+                new { Alias = "green",  Color = "سبز", Code = "#24B87E" },
+                new { Alias = "blue",   Color = "آبی", Code = "#0F8CCE" },
+                new { Alias = "navy",   Color = "سرمه‌ای", Code = "#525671" },
+                new { Alias = "silver", Color = "نقره‌ای", Code = "#ABB0B3" },
+                new { Alias = "black",  Color = "مشکی", Code = "#404040" }
             };
 
             var attrLadiesJacketColor = new ProductVariantAttribute
@@ -1295,11 +1295,11 @@ namespace SmartStore.Data.Setup
                 attrLadiesJacketColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
                 {
                     Name = ladiesJacketColors[i].Color,
-                    Alias = ladiesJacketColors[i].Color.ToLower(),
+                    Alias = ladiesJacketColors[i].Alias,
                     DisplayOrder = i + 1,
                     Quantity = 1,
                     Color = ladiesJacketColors[i].Code,
-                    IsPreSelected = ladiesJacketColors[i].Color == "Red"
+                    IsPreSelected = ladiesJacketColors[i].Alias == "red"
                 });
             }
             entities.Add(attrLadiesJacketColor);
@@ -1394,7 +1394,7 @@ namespace SmartStore.Data.Setup
             };
             attrCorbusierTablePlate.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
             {
-                Name = "Clear glass",
+                Name = "شیشه شفاف",
                 Alias = "clear-glass",
                 DisplayOrder = 1,
                 Quantity = 1,
@@ -1402,7 +1402,7 @@ namespace SmartStore.Data.Setup
             });
             attrCorbusierTablePlate.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
             {
-                Name = "Sandblasted glass",
+                Name = "شیشه ضدغبار",
                 Alias = "sandblasted-glass",
                 DisplayOrder = 2,
                 Quantity = 1
@@ -1442,13 +1442,13 @@ namespace SmartStore.Data.Setup
             var productAdidasTANGOSALABALLSizes = new string[] { "3", "4", "5" };
             var productAdidasTANGOSALABALLColors = new[]
             {
-                new { Color = "Red", Code = "#ff0000" },
-                new { Color = "Yellow", Code = " #ffff00" },
-                new { Color = "Green", Code = "#008000" },
-                new { Color = "Blue", Code = "#0000ff" },
-                new { Color = "Gray", Code = "#808080" },
-                new { Color = "White", Code = "#ffffff" },
-                new { Color = "Brown", Code = "#a52a2a" }
+                new {Alias = "red",     Color = "قرمز", Code = "#ff0000" },
+                new {Alias = "yellow",    Color = "زرد", Code = " #ffff00" },
+                new {Alias = "green",    Color = "سبز", Code = "#008000" },
+                new {Alias = "blue",     Color = "آبی", Code = "#0000ff" },
+                new {Alias = "gray",     Color = "خاکستری", Code = "#808080" },
+                new {Alias = "white",    Color = "سفید", Code = "#ffffff" },
+                new {Alias = "brown",    Color = "قهوه‌ای", Code = "#a52a2a" }
             };
 
             var attrAdidasTANGOSALABALLColor = new ProductVariantAttribute
@@ -1465,11 +1465,11 @@ namespace SmartStore.Data.Setup
                 attrAdidasTANGOSALABALLColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
                 {
                     Name = productAdidasTANGOSALABALLColors[i].Color,
-                    Alias = productAdidasTANGOSALABALLColors[i].Color.ToLower(),
+                    Alias = productAdidasTANGOSALABALLColors[i].Alias,
                     DisplayOrder = i + 1,
                     Quantity = 1,
                     Color = productAdidasTANGOSALABALLColors[i].Code,
-                    IsPreSelected = productAdidasTANGOSALABALLColors[i].Color == "White"
+                    IsPreSelected = productAdidasTANGOSALABALLColors[i].Alias == "white"
                 });
             }
             entities.Add(attrAdidasTANGOSALABALLColor);
@@ -1503,12 +1503,13 @@ namespace SmartStore.Data.Setup
             var productTorfabrikBall = _ctx.Set<Product>().First(x => x.Sku == "P-5002");
             var productTorfabrikBallSizes = new string[] { "3", "4", "5" };
             var productTorfabrikBallColors = new[]
-            {
-                new { Color = "Red", Code = "#ff0000" },
-                new { Color = "Yellow", Code = " #ffff00" },
-                new { Color = "Green", Code = "#008000" },
-                new { Color = "Blue", Code = "#0000ff" },
-                new { Color = "White", Code = "#ffffff" },
+            { 
+                new {Alias = "red",     Color = "قرمز", Code = "#ff0000" },
+                new {Alias = "yellow",    Color = "زرد", Code = " #ffff00" },
+                new {Alias = "green",    Color = "سبز", Code = "#008000" },
+                new {Alias = "blue",     Color = "آبی", Code = "#0000ff" },
+                new {Alias = "gray",     Color = "خاکستری", Code = "#808080" },
+                new {Alias = "white",    Color = "سفید", Code = "#ffffff" }, 
             };
 
             var attrTorfabrikBallColor = new ProductVariantAttribute
@@ -1525,11 +1526,11 @@ namespace SmartStore.Data.Setup
                 attrTorfabrikBallColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
                 {
                     Name = productTorfabrikBallColors[i].Color,
-                    Alias = productTorfabrikBallColors[i].Color.ToLower(),
+                    Alias = productTorfabrikBallColors[i].Alias,
                     DisplayOrder = i + 1,
                     Quantity = 1,
                     Color = productTorfabrikBallColors[i].Code,
-                    IsPreSelected = productTorfabrikBallColors[i].Color == "White"
+                    IsPreSelected = productTorfabrikBallColors[i].Alias == "white"
                 });
             }
             entities.Add(attrTorfabrikBallColor);
@@ -1572,7 +1573,7 @@ namespace SmartStore.Data.Setup
             };
             attrBallChairMaterial.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
             {
-                Name = "Leather Special",
+                Name = "چرم",
                 Alias = "leather-special",
                 DisplayOrder = 1,
                 Quantity = 1,
@@ -1580,14 +1581,14 @@ namespace SmartStore.Data.Setup
             });
             attrBallChairMaterial.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
             {
-                Name = "Leather Aniline",
+                Name = "چرم صنعتی",
                 Alias = "leather-aniline",
                 DisplayOrder = 2,
                 Quantity = 1
             });
             attrBallChairMaterial.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
             {
-                Name = "Mixed Linen",
+                Name = "کتان مخلوط",
                 Alias = "mixed-linen",
                 DisplayOrder = 3,
                 Quantity = 1
@@ -1604,7 +1605,7 @@ namespace SmartStore.Data.Setup
             };
             attrBallChairColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
             {
-                Name = "White",
+                Name = "سفید",
                 Alias = "white",
                 Color = "#ffffff",
                 DisplayOrder = 1,
@@ -1613,7 +1614,7 @@ namespace SmartStore.Data.Setup
             });
             attrBallChairColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
             {
-                Name = "Black",
+                Name = "مشکی",
                 Alias = "black",
                 Color = "#000000",
                 DisplayOrder = 2,
@@ -1635,11 +1636,11 @@ namespace SmartStore.Data.Setup
                 attrBallChairLeatherColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
                 {
                     Name = generalColors[i].Name,
-                    Alias = generalColors[i].Name.Replace(" ", "-").ToLower(),
+                    Alias = generalColors[i].Alias.Replace(" ", "-").ToLower(),
                     DisplayOrder = i + 1,
                     Quantity = 1,
                     Color = generalColors[i].Color,
-                    IsPreSelected = (generalColors[i].Name == "Tomato red")
+                    IsPreSelected = (generalColors[i].Alias == "tomato-red")
                 });
             }
             entities.Add(attrBallChairLeatherColor);
@@ -1660,7 +1661,7 @@ namespace SmartStore.Data.Setup
             };
             attrLoungeChairMaterial.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
             {
-                Name = "Leather Special",
+                Name = "چرم",
                 Alias = "leather-special",
                 DisplayOrder = 1,
                 Quantity = 1,
@@ -1668,14 +1669,21 @@ namespace SmartStore.Data.Setup
             });
             attrLoungeChairMaterial.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
             {
-                Name = "Leather Aniline",
+                Name = "چرم مصنوعی",
                 Alias = "leather-aniline",
                 DisplayOrder = 2,
                 Quantity = 1
             });
             entities.Add(attrLoungeChairMaterial);
 
-            var loungeChairSeatShells = new string[] { "Palisander", "Cherry", "Walnut", "Wooden black lacquered" };
+            var loungeChairSeatShells = new[]
+            {
+               new { Name="قهوه‌ای-قرمز", Alias="palisander" },
+               new { Name="قهوه‌ای-گیلاسی", Alias="cherry" },
+               new { Name="فندقی", Alias="walnut" },
+               new { Name="قهوه‌ای تیره", Alias="wooden-black-lacquered" },
+
+                };
             var attrLoungeChairSeatShell = new ProductVariantAttribute
             {
                 Product = productLoungeChair,
@@ -1689,12 +1697,12 @@ namespace SmartStore.Data.Setup
             {
                 attrLoungeChairSeatShell.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
                 {
-                    Name = loungeChairSeatShells[i],
-                    Alias = loungeChairSeatShells[i].Replace(" ", "-").ToLower(),
+                    Name = loungeChairSeatShells[i].Name,
+                    Alias = loungeChairSeatShells[i].Alias,
                     DisplayOrder = i + 1,
                     Quantity = 1,
                     IsPreSelected = (i == 0),
-                    PriceAdjustment = (loungeChairSeatShells[i] == "Wooden black lacquered" ? 100.00M : decimal.Zero)
+                    PriceAdjustment = (loungeChairSeatShells[i].Alias == "wooden-black-lacquered" ? 100.00M : decimal.Zero)
                 });
             }
             entities.Add(attrLoungeChairSeatShell);
@@ -1709,7 +1717,7 @@ namespace SmartStore.Data.Setup
             };
             attrLoungeChairBase.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
             {
-                Name = "Top edge polished",
+                Name = "جلای بالا",
                 Alias = "top-edge-polished",
                 DisplayOrder = 1,
                 Quantity = 1,
@@ -1717,7 +1725,7 @@ namespace SmartStore.Data.Setup
             });
             attrLoungeChairBase.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
             {
-                Name = "Completely polished",
+                Name = "جلای کامل",
                 Alias = "completely-polished",
                 DisplayOrder = 2,
                 Quantity = 1,
@@ -1739,11 +1747,11 @@ namespace SmartStore.Data.Setup
                 attrLoungeChairLeatherColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
                 {
                     Name = generalColors[i].Name,
-                    Alias = generalColors[i].Name.Replace(" ", "-").ToLower(),
+                    Alias = generalColors[i].Alias.Replace(" ", "-").ToLower(),
                     DisplayOrder = i + 1,
                     Quantity = 1,
                     Color = generalColors[i].Color,
-                    IsPreSelected = (generalColors[i].Name == "White")
+                    IsPreSelected = (generalColors[i].Alias == "white")
                 });
             }
             entities.Add(attrLoungeChairLeatherColor);
@@ -1764,7 +1772,7 @@ namespace SmartStore.Data.Setup
             };
             attrCubeChairMaterial.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
             {
-                Name = "Leather Special",
+                Name = "چرم",
                 Alias = "leather-special",
                 DisplayOrder = 1,
                 Quantity = 1,
@@ -1772,7 +1780,7 @@ namespace SmartStore.Data.Setup
             });
             attrCubeChairMaterial.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
             {
-                Name = "Leather Aniline",
+                Name = "چرم مصنوعی",
                 Alias = "leather-aniline",
                 DisplayOrder = 2,
                 Quantity = 1,
@@ -1794,11 +1802,11 @@ namespace SmartStore.Data.Setup
                 attrCubeChairLeatherColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
                 {
                     Name = generalColors[i].Name,
-                    Alias = generalColors[i].Name.Replace(" ", "-").ToLower(),
+                    Alias = generalColors[i].Alias.Replace(" ", "-").ToLower(),
                     DisplayOrder = i + 1,
                     Quantity = 1,
                     Color = generalColors[i].Color,
-                    IsPreSelected = (generalColors[i].Name == "Black")
+                    IsPreSelected = (generalColors[i].Alias == "black")
                 });
             }
             entities.Add(attrCubeChairLeatherColor);

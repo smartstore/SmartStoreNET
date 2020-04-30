@@ -8,8 +8,8 @@ namespace SmartStore.GoogleMerchantCenter.Data.Migrations
     {
         public override void Up()
         {
-			if (DbMigrationContext.Current.SuppressInitialCreate<GoogleProductObjectContext>())
-				return;
+			//if (DbMigrationContext.Current.SuppressInitialCreate<GoogleProductObjectContext>())
+			//	return;
 			
 			CreateTable(
                 "dbo.GoogleProduct",

@@ -9,8 +9,8 @@ namespace SmartStore.ShippingByWeight.Data.Migrations
     {
         public override void Up()
         {
-			if (DbMigrationContext.Current.SuppressInitialCreate<ShippingByWeightObjectContext>())
-				return;
+			//if (DbMigrationContext.Current.SuppressInitialCreate<ShippingByWeightObjectContext>())
+			//	return;
 			
 			CreateTable(
                 "dbo.ShippingByWeight",

@@ -13,7 +13,7 @@ namespace SmartStore.Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202004290853550_RemoveCustomerCustomerRoles"; }
+            get { return "202004301922188_RemoveCustomerCustomerRoles"; }
         }
         
         string IMigrationMetadata.Source

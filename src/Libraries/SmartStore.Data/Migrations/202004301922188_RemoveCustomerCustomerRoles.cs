@@ -10,6 +10,8 @@ namespace SmartStore.Data.Migrations
     {
         public override void Up()
         {
+            AlterColumn("dbo.Rule", "Value", c => c.String());
+
             //DropForeignKey("dbo.Customer_CustomerRole_Mapping", "Customer_Id", "dbo.Customer");
             //DropForeignKey("dbo.Customer_CustomerRole_Mapping", "CustomerRole_Id", "dbo.CustomerRole");
             //DropIndex("dbo.Customer_CustomerRole_Mapping", new[] { "Customer_Id" });
@@ -19,6 +21,8 @@ namespace SmartStore.Data.Migrations
         
         public override void Down()
         {
+            AlterColumn("dbo.Rule", "Value", c => c.String(maxLength: 400));
+
             //CreateTable(
             //    "dbo.Customer_CustomerRole_Mapping",
             //    c => new

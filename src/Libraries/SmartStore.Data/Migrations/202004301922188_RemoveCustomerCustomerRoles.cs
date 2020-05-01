@@ -47,13 +47,13 @@ namespace SmartStore.Data.Migrations
                 return;
             }
 
-            try
-            {
-                // Remove Customer_CustomerRole_Mapping.
-                // Has been migrated through 202003052100521_CustomerRoleMappings.
-                context.ExecuteSqlCommand("DROP TABLE [dbo].[Customer_CustomerRole_Mapping]");
-            }
-            catch { }
+            // Remove Customer_CustomerRole_Mapping.
+            // Has been migrated through 202003052100521_CustomerRoleMappings.
+            context.ExecuteSqlCommandSafe("ALTER TABLE [dbo].[Customer_CustomerRole_Mapping] DROP CONSTRAINT [FK_dbo.Customer_CustomerRole_Mapping_dbo.Customer_Customer_Id]");
+            context.ExecuteSqlCommandSafe("ALTER TABLE [dbo].[Customer_CustomerRole_Mapping] DROP CONSTRAINT [FK_dbo.Customer_CustomerRole_Mapping_dbo.CustomerRole_CustomerRole_Id]");
+            context.ExecuteSqlCommandSafe("DROP INDEX [IX_Customer_Id] ON [dbo].[Customer_CustomerRole_Mapping]");
+            context.ExecuteSqlCommandSafe("DROP INDEX [IX_CustomerRole_Id] ON [dbo].[Customer_CustomerRole_Mapping]");
+            context.ExecuteSqlCommandSafe("DROP TABLE [dbo].[Customer_CustomerRole_Mapping]");
         }
     }
 }

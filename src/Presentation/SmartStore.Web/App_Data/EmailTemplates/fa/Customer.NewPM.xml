@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
+	<Subject>{{ Store.Name }}. New private message</Subject>
+	<ModelTypes>Customer, PrivateMessage</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Hello {{ Customer.FullName }},
+</h1>
+<p>
+  you have received a new private message from <b>{{ PrivateMessage.FromName }}</b>.
+</p>
+
+<p class="mt-4 mb-4">
+  <a href="{{ PrivateMessage.Url }}" class="btn btn-primary">Read message</a>
+</p>
+
+<table class="w-100 brd bg-light">
+	<tr>
+  	<td class="p-3">
+      <h3 class="mb-3">
+        {{ PrivateMessage.Subject }}
+      </h3>
+      <p class="message">
+        "{{ PrivateMessage.Text | Strip }}"
+      </p>
+    </td>
+  </tr> 
+</table>
+
+{% endblock %}]]></Body>
+</MessageTemplate>

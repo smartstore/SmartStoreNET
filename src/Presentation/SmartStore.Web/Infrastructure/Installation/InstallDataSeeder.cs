@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -334,7 +334,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                                 {
                                     new ManufacturerTemplate
                                         {
-                                            Name = "Products in Grid or Lines",
+                                            Name = "گرید محصول",
                                             ViewPath = "ManufacturerTemplate.ProductsInGridOrLines",
                                             DisplayOrder = 1
                                         },

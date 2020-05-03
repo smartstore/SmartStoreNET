@@ -15,7 +15,7 @@ namespace SmartStore.Data.Setup
 					{
 						SystemKeyword = "AddNewCategory",
 						Enabled = true,
-						Name = "Add a new category"
+						Name = "یک دسته بندی اضافه کرد"
 					},
 				new ActivityLogType
 					{
@@ -27,67 +27,67 @@ namespace SmartStore.Data.Setup
 					{
 						SystemKeyword = "AddNewCustomer",
 						Enabled = true,
-						Name = "Add a new customer"
+						Name = "یک مشتری اضافه کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "AddNewCustomerRole",
 						Enabled = true,
-						Name = "Add a new customer role"
+						Name = "یک رول کاربری اضافه کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "AddNewDiscount",
 						Enabled = true,
-						Name = "Add a new discount"
+						Name = "تخفیف اضافه کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "AddNewGiftCard",
 						Enabled = true,
-						Name = "Add a new gift card"
+						Name = "کارت هدیه اضافه کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "AddNewManufacturer",
 						Enabled = true,
-						Name = "Add a new manufacturer"
+						Name = "سازنده جدید اضافه کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "AddNewProduct",
 						Enabled = true,
-						Name = "Add a new product"
+						Name = "محصول جدید اضافه کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "AddNewProductAttribute",
 						Enabled = true,
-						Name = "Add a new product attribute"
+						Name = "ویژگی محصول اضافه کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "AddNewSetting",
 						Enabled = true,
-						Name = "Add a new setting"
+						Name = "تنظیمات جدید اضافه کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "AddNewSpecAttribute",
 						Enabled = true,
-						Name = "Add a new specification attribute"
+						Name = "خصوصیت جدید اضافه کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "AddNewWidget",
 						Enabled = true,
-						Name = "Add a new widget"
+						Name = "یک ابزارک اضافه کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "DeleteCategory",
 						Enabled = true,
-						Name = "Delete category"
+						Name = "دسته بندی حذف کرد"
 					},
 				new ActivityLogType
 					{
@@ -99,73 +99,73 @@ namespace SmartStore.Data.Setup
 					{
 						SystemKeyword = "DeleteCustomer",
 						Enabled = true,
-						Name = "Delete a customer"
+						Name = "مشتری حذف کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "DeleteCustomerRole",
 						Enabled = true,
-						Name = "Delete a customer role"
+						Name = "رول کاربری حذف کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "DeleteDiscount",
 						Enabled = true,
-						Name = "Delete a discount"
+						Name = "یک تخفیف حذف کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "DeleteGiftCard",
 						Enabled = true,
-						Name = "Delete a gift card"
+						Name = "یک کارت هدیه حذف کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "DeleteManufacturer",
 						Enabled = true,
-						Name = "Delete a manufacturer"
+						Name = "یک سازنده حذف کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "DeleteProduct",
 						Enabled = true,
-						Name = "Delete a product"
+						Name = "یک محصول حذف کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "DeleteProductAttribute",
 						Enabled = true,
-						Name = "Delete a product attribute"
+						Name = "ویژگی محصول حذف کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "DeleteReturnRequest",
 						Enabled = true,
-						Name = "Delete a return request"
+						Name = "یک درخواست برگشت حذف کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "DeleteSetting",
 						Enabled = true,
-						Name = "Delete a setting"
+						Name = "یک تنظیمات حذف کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "DeleteSpecAttribute",
 						Enabled = true,
-						Name = "Delete a specification attribute"
+						Name = "یک خصوصیت حذف کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "DeleteWidget",
 						Enabled = true,
-						Name = "Delete a widget"
+						Name = "یک ابزارک حذف کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "EditCategory",
 						Enabled = true,
-						Name = "Edit category"
+						Name = "دسته بندی ویرایش کرد"
 					},
 				new ActivityLogType
 					{
@@ -177,43 +177,43 @@ namespace SmartStore.Data.Setup
 					{
 						SystemKeyword = "EditCustomer",
 						Enabled = true,
-						Name = "Edit a customer"
+						Name = "مشتری ویرایش کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "EditCustomerRole",
 						Enabled = true,
-						Name = "Edit a customer role"
+						Name = "رول کابری ویرایش کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "EditDiscount",
 						Enabled = true,
-						Name = "Edit a discount"
+						Name = "کد تخفیف ویرایش کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "EditGiftCard",
 						Enabled = true,
-						Name = "Edit a gift card"
+						Name = "کارت هدیه ویرایش کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "EditManufacturer",
 						Enabled = true,
-						Name = "Edit a manufacturer"
+						Name = "سازنده ویرایش کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "EditProduct",
 						Enabled = true,
-						Name = "Edit a product"
+						Name = "محصول ویرایش کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "EditProductAttribute",
 						Enabled = true,
-						Name = "Edit a product attribute"
+						Name = "ویژگی محصول ویرایش کرد"
 					},
 				new ActivityLogType
 					{
@@ -225,49 +225,49 @@ namespace SmartStore.Data.Setup
 					{
 						SystemKeyword = "EditReturnRequest",
 						Enabled = true,
-						Name = "Edit a return request"
+						Name = "درخواست بازگشت ویرایش کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "EditSettings",
 						Enabled = true,
-						Name = "Edit setting(s)"
+						Name = "تنظیمات ویرایش کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "EditSpecAttribute",
 						Enabled = true,
-						Name = "Edit a specification attribute"
+						Name = "خصوصیت محصول ویرایش کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "EditWidget",
 						Enabled = true,
-						Name = "Edit a widget"
+						Name = "ابزارک ویرایش کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "EditThemeVars",
 						Enabled = true,
-						Name = "Edit theme variables"
+						Name = "متغیر تم ویرایش کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "ResetThemeVars",
 						Enabled = true,
-						Name = "Reset theme variables to defaults"
+						Name = "تنظیمات متغیرهای تم را ریست کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "ImportThemeVars",
 						Enabled = true,
-						Name = "Import theme variables"
+						Name = "متغیرهای تم ایمپورت کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "ExportThemeVars",
 						Enabled = true,
-						Name = "Export theme variables"
+						Name = "متغیرهای تم را اکسپورت کرد"
 					},
 
 				//public store activities
@@ -275,121 +275,121 @@ namespace SmartStore.Data.Setup
 					{
 						SystemKeyword = "PublicStore.ViewCategory",
 						Enabled = false,
-						Name = "Public store. View a category"
+						Name = "در فروشگاه یک دسته بندی را دید"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.ViewManufacturer",
 						Enabled = false,
-						Name = "Public store. View a manufacturer"
+						Name = "در فروشگاه صفحه سازنده را دید"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.ViewProduct",
 						Enabled = false,
-						Name = "Public store. View a product"
+						Name = "در فروشگاه یک محصول را مشاهده کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.PlaceOrder",
 						Enabled = false,
-						Name = "Public store. Place an order"
+						Name = "در فروشگاه یک سفارش ثبت کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.SendPM",
 						Enabled = false,
-						Name = "Public store. Send PM"
+						Name = "در فروشگاه یک پیام ارسال کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.ContactUs",
 						Enabled = false,
-						Name = "Public store. Use contact us form"
+						Name = "در فروشگاه پیغام تماس با ما ارسال کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.AddToCompareList",
 						Enabled = false,
-						Name = "Public store. Add to compare list"
+						Name = "در فروشگاه محصول ب مقایسه افزود"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.AddToShoppingCart",
 						Enabled = false,
-						Name = "Public store. Add to shopping cart"
+						Name = "در فروشگاه محصول به سبد اضافه کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.AddToWishlist",
 						Enabled = false,
-						Name = "Public store. Add to wishlist"
+						Name = "در فروشگاه محصول به علاقه مندی افزود"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.Login",
 						Enabled = false,
-						Name = "Public store. Login"
+						Name = "در فروشگاه لوگین کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.Logout",
 						Enabled = false,
-						Name = "Public store. Logout"
+						Name = "در فروشگاه لوگات کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.AddProductReview",
 						Enabled = false,
-						Name = "Public store. Add product review"
+						Name = "در فروشگاه برای محصول نقد ارسال کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.AddNewsComment",
 						Enabled = false,
-						Name = "Public store. Add news comment"
+						Name = "در فروشگاه برای محصول نظر ارسال کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.AddBlogComment",
 						Enabled = false,
-						Name = "Public store. Add blog comment"
+						Name = "در فروشگاه برای بلاگ نظر ارسال کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.AddForumTopic",
 						Enabled = false,
-						Name = "Public store. Add forum topic"
+						Name = "در فروشگاه تاپیک ارسال کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.EditForumTopic",
 						Enabled = false,
-						Name = "Public store. Edit forum topic"
+						Name = "در فروشگاه تاپیک ویرایش کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.DeleteForumTopic",
 						Enabled = false,
-						Name = "Public store. Delete forum topic"
+						Name = "در فروشگاه تاپیک حذف کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.AddForumPost",
 						Enabled = false,
-						Name = "Public store. Add forum post"
+						Name = "در فروشگاه پست فروم اضافه کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.EditForumPost",
 						Enabled = false,
-						Name = "Public store. Edit forum post"
+						Name = "در فروشگاه پست فروم ویرایش کرد"
 					},
 				new ActivityLogType
 					{
 						SystemKeyword = "PublicStore.DeleteForumPost",
 						Enabled = false,
-						Name = "Public store. Delete forum post"
+						Name = "در فروشگاه پست فروم حذف کرد"
 					},
 			//new ActivityLogType
 			//      {

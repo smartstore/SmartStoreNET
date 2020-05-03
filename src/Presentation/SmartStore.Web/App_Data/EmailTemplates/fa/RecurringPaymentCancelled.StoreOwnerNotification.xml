@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
+	<Subject>{{ Store.Name }}. Recurring payment cancelled</Subject>
+	<ModelTypes>RecurringPayment, RecurringPayment.InitialOrder, RecurringPayment.InitialOrder.Customer</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+   Recurring payment cancelled,
+</h1>
+
+<p>
+  <b>{{ Customer.FullName }}</b> has cancelled a recurring payment.
+</p>
+
+<p class="mt-4 mb-4 text-center">
+  <a class="btn btn-primary" href="{{ ReturnRequest.Url }}">View payment</a>
+</p>
+
+<p>
+  <b>ID / Customer:</b><br />
+  <span>{{ RecurringPayment.Id }}</span> /
+  {% if Customer.EditUrl %}
+  	<a href="{{ Customer.EditUrl }}">{{ Customer.FullName }}</a>
+  {% else %}
+  	<span>{{ Customer.FullName }}</span>
+  {% endif %}
+</p>
+
+<p>
+  <b>Started on:</b><br />
+  <span>{{ RecurringPayment.StartedOn }}</span>
+</p>
+
+<p>
+  <b>Next due date:</b><br />
+  <span>{{ RecurringPayment.NextOn }}</span>
+</p>
+
+<p>
+  <b>Cycle period:</b><br />
+  <span>{{ RecurringPayment.CyclePeriod }}</span>
+</p>
+
+<p>
+  <b>Cycles remaining:</b><br />
+  <span>{{ RecurringPayment.CyclesRemaining }}</span>
+</p>
+
+
+
+{% endblock %}]]></Body>
+</MessageTemplate>

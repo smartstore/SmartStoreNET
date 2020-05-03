@@ -94,23 +94,57 @@
 <!DOCTYPE html>
 <html @Html.LanguageAttributes() class="no-js not-ready loading" data-pnotify-firstpos1="140">
 <head>
-    <title>@adminPageTitle</title>
-    <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+	<title>@adminPageTitle</title>
+	<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    @{ Html.RenderPartial("_ClientRes"); }
-    @{ Html.RenderPartial("ConditionalComments"); }
-    @Html.MetaAcceptLanguage()
+	@{ Html.RenderPartial("_ClientRes"); }
+	@{ Html.RenderPartial("ConditionalComments"); }
+	@Html.MetaAcceptLanguage()
 
-    @Html.SmartCssFiles(this.Url, ResourceLocation.Head)
-    @Html.SmartScripts(this.Url, ResourceLocation.Head)
+	@Html.SmartCssFiles(this.Url, ResourceLocation.Head)
+	@Html.SmartScripts(this.Url, ResourceLocation.Head)
 
-    <link rel="shortcut icon" href="~/Administration/favicon.ico?v=@SmartStoreVersion.CurrentVersion" />
+	<link rel="shortcut icon" href="~/Administration/favicon.ico?v=@SmartStoreVersion.CurrentVersion" />
 
 	@Html.CustomHead()
 
 	<script src="~/Scripts/smartstore.globalization.adapter.js"></script>
+
+	<style>
+
+		@@font-face {
+			font-family: main;
+			font-style: normal;
+			font-weight: bold;
+			src: url("/content/fonts/iransans/eot/IRANSansWeb_Bold.eot");
+			src: url("/content/fonts/iransans/eot/IRANSansWeb_Bold.eot?#iefix") format("embedded-opentype"),
+			/* IE6-8 */ url("/content/fonts/iransans/woff2/IRANSansWeb_Bold.woff2") format("woff2"),
+			/* FF39+,Chrome36+, Opera24+*/
+			url("/content/fonts/iransans/woff/IRANSansWeb_Bold.woff") format("woff"),
+			/* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+			url("/content/fonts/iransans/ttf/IRANSansWeb_Bold.ttf") format("truetype");
+		}
+
+		@@font-face {
+			font-family: main;
+			font-style: normal;
+			font-weight: normal;
+			src: url("/content/fonts/iransans/eot/IRANSansWeb.eot");
+			src: url("/content/fonts/iransans/eot/IRANSansWeb.eot?#iefix") format("embedded-opentype"),
+			/* IE6-8 */ url("/content/fonts/iransans/woff2/IRANSansWeb.woff2") format("woff2"),
+			/* FF39+,Chrome36+, Opera24+*/
+			url("/content/fonts/iransans/woff/IRANSansWeb.woff") format("woff"),
+			/* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+			url("/content/fonts/iransans/ttf/IRANSansWeb.ttf") format("truetype");
+		}
+
+		* {
+			font-family: main
+		}
+	</style>
+
 
 	@{ Html.RenderZone("head"); }
 </head>

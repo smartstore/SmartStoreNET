@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
+	<Subject>{{ Store.Name }}. فعالسازی حساب کاربری {{ Customer.FullName }}</Subject>
+	<ModelTypes>Customer</ModelTypes>
+	<Body>
+  <![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+   {{ Customer.FullName }} سلام,
+</h1>
+<p>
+  لطفا برای فعالسازی حساب کاربری خود روی لینک زیر کلیک کنید
+</p>
+
+<p class="text-center mt-4 mb-4">
+  <a class="btn btn-primary" href="{{ Customer.AccountActivationURL }}">فعالسازی حساب</a>
+</p>
+
+<p>
+	اگر لینک بالا غیرفعال بود، میتوانید لینک زیر را کپی کرده و در مرورگر خود پیست کنید.:
+</p>
+
+<p style="direction:ltr;text-align:left">{{ Customer.AccountActivationURL }}</p>
+
+{% endblock %}]]></Body>
+</MessageTemplate>

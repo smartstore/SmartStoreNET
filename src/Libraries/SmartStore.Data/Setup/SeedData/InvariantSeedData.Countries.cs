@@ -8,565 +8,240 @@ namespace SmartStore.Data.Setup
     {
 		public IList<Country> Countries()
 		{
-			var cUsa = new Country
-			{
-				Name = "United States",
-				AllowsBilling = true,
-				AllowsShipping = true,
-				TwoLetterIsoCode = "US",
-				ThreeLetterIsoCode = "USA",
-				NumericIsoCode = 840,
-				SubjectToVat = false,
-				DisplayOrder = 1,
-				Published = true,
-			};
+			var cIran = new Country
+				{
+					Name = "ایران",
+					AllowsBilling = true,
+					AllowsShipping = true,
+					TwoLetterIsoCode = "IR",
+					ThreeLetterIsoCode = "IRN",
+					NumericIsoCode = 364,
+					SubjectToVat = false,
+					DisplayOrder = 100,
+					Published = true
+				};
 
 			#region US Regions
 
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "AA (Armed Forces Americas)",
-				Abbreviation = "AA",
+				Name = "آذربایجان شرقی",
+				Abbreviation = "آذربایجان شرقی",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "AE (Armed Forces Europe)",
-				Abbreviation = "AE",
+				Name = "آذربایجان غربی",
+				Abbreviation = "آذربایجان غربی",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Alabama",
-				Abbreviation = "AL",
+				Name = "اردبیل",
+				Abbreviation = "اردبیل",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Alaska",
-				Abbreviation = "AK",
+				Name = "اصفهان",
+				Abbreviation = "اصفهان",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "American Samoa",
-				Abbreviation = "AS",
+				Name = "البرز",
+				Abbreviation = "البرز",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "AP (Armed Forces Pacific)",
-				Abbreviation = "AP",
+				Name = "ایلام",
+				Abbreviation = "ایلام",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Arizona",
-				Abbreviation = "AZ",
+				Name = "بوشهر",
+				Abbreviation = "بوشهر",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Arkansas",
-				Abbreviation = "AR",
+				Name = "تهران",
+				Abbreviation = "تهران",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "California",
-				Abbreviation = "CA",
+				Name = "چهارمحال و بختیاری",
+				Abbreviation = "چهارمحال و بختیاری",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Colorado",
-				Abbreviation = "CO",
+				Name = "خراسان جنوبی",
+				Abbreviation = "خراسان جنوبی",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Connecticut",
-				Abbreviation = "CT",
+				Name = "خراسان رضوی",
+				Abbreviation = "خراسان رضوی",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Delaware",
-				Abbreviation = "DE",
+				Name = "خراسان شمالی",
+				Abbreviation = "خراسان شمالی",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "District of Columbia",
-				Abbreviation = "DC",
+				Name = "خوزستان",
+				Abbreviation = "خوزستان",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Federated States of Micronesia",
-				Abbreviation = "FM",
+				Name = "زنجان",
+				Abbreviation = "زنجان",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Florida",
-				Abbreviation = "FL",
+				Name = "سمنان",
+				Abbreviation = "سمنان",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Georgia",
-				Abbreviation = "GA",
+				Name = "سیستان و بلوچستان",
+				Abbreviation = "سیستان و بلوچستان",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Guam",
-				Abbreviation = "GU",
+				Name = "فارس",
+				Abbreviation = "فارس",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Hawaii",
-				Abbreviation = "HI",
+				Name = "قزوین",
+				Abbreviation = "قزوین",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Idaho",
-				Abbreviation = "ID",
+				Name = "قم",
+				Abbreviation = "قم",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Illinois",
-				Abbreviation = "IL",
+				Name = "کردستان",
+				Abbreviation = "کردستان",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Indiana",
-				Abbreviation = "IN",
+				Name = "کرمان",
+				Abbreviation = "کرمان",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Iowa",
-				Abbreviation = "IA",
+				Name = "کرمانشاه",
+				Abbreviation = "کرمانشاه",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Kansas",
-				Abbreviation = "KS",
+				Name = "کهگیلویه و بویراحمد",
+				Abbreviation = "کهگیلویه و بویراحمد",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Kentucky",
-				Abbreviation = "KY",
+				Name = "گلستان",
+				Abbreviation = "گلستان",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Louisiana",
-				Abbreviation = "LA",
+				Name = "گیلان",
+				Abbreviation = "گیلان",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Maine",
-				Abbreviation = "ME",
+				Name = "لرستان	",
+				Abbreviation = "لرستان",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Marshall Islands",
-				Abbreviation = "MH",
+				Name = "مازندران",
+				Abbreviation = "مازندران",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Maryland",
-				Abbreviation = "MD",
+				Name = "مرکزی",
+				Abbreviation = "مرکزی",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Massachusetts",
-				Abbreviation = "MA",
+				Name = "هرمزگان",
+				Abbreviation = "هرمزگان",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Michigan",
-				Abbreviation = "MI",
+				Name = "همدان",
+				Abbreviation = "همدان",
 				Published = true,
 				DisplayOrder = 1,
 			});
-			cUsa.StateProvinces.Add(new StateProvince()
+			cIran.StateProvinces.Add(new StateProvince()
 			{
-				Name = "Minnesota",
-				Abbreviation = "MN",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Mississippi",
-				Abbreviation = "MS",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Missouri",
-				Abbreviation = "MO",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Montana",
-				Abbreviation = "MT",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Nebraska",
-				Abbreviation = "NE",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Nevada",
-				Abbreviation = "NV",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "New Hampshire",
-				Abbreviation = "NH",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "New Jersey",
-				Abbreviation = "NJ",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "New Mexico",
-				Abbreviation = "NM",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "New York",
-				Abbreviation = "NY",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "North Carolina",
-				Abbreviation = "NC",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "North Dakota",
-				Abbreviation = "ND",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Northern Mariana Islands",
-				Abbreviation = "MP",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Ohio",
-				Abbreviation = "OH",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Oklahoma",
-				Abbreviation = "OK",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Oregon",
-				Abbreviation = "OR",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Palau",
-				Abbreviation = "PW",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Pennsylvania",
-				Abbreviation = "PA",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Puerto Rico",
-				Abbreviation = "PR",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Rhode Island",
-				Abbreviation = "RI",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "South Carolina",
-				Abbreviation = "SC",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "South Dakota",
-				Abbreviation = "SD",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Tennessee",
-				Abbreviation = "TN",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Texas",
-				Abbreviation = "TX",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Utah",
-				Abbreviation = "UT",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Vermont",
-				Abbreviation = "VT",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Virgin Islands",
-				Abbreviation = "VI",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Virginia",
-				Abbreviation = "VA",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Washington",
-				Abbreviation = "WA",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "West Virginia",
-				Abbreviation = "WV",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Wisconsin",
-				Abbreviation = "WI",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cUsa.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Wyoming",
-				Abbreviation = "WY",
-				Published = true,
-				DisplayOrder = 1,
-			});
-
-			#endregion
-
-			var cCanada = new Country
-			{
-				Name = "Canada",
-				AllowsBilling = true,
-				AllowsShipping = true,
-				TwoLetterIsoCode = "CA",
-				ThreeLetterIsoCode = "CAN",
-				NumericIsoCode = 124,
-				SubjectToVat = false,
-				DisplayOrder = 2,
-				Published = true,
-			};
-
-			#region CA Regions
-
-			cCanada.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Alberta",
-				Abbreviation = "AB",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cCanada.StateProvinces.Add(new StateProvince()
-			{
-				Name = "British Columbia",
-				Abbreviation = "BC",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cCanada.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Manitoba",
-				Abbreviation = "MB",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cCanada.StateProvinces.Add(new StateProvince()
-			{
-				Name = "New Brunswick",
-				Abbreviation = "NB",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cCanada.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Newfoundland and Labrador",
-				Abbreviation = "NL",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cCanada.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Northwest Territories",
-				Abbreviation = "NT",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cCanada.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Nova Scotia",
-				Abbreviation = "NS",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cCanada.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Nunavut",
-				Abbreviation = "NU",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cCanada.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Ontario",
-				Abbreviation = "ON",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cCanada.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Prince Edward Island",
-				Abbreviation = "PE",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cCanada.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Quebec",
-				Abbreviation = "QC",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cCanada.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Saskatchewan",
-				Abbreviation = "SK",
-				Published = true,
-				DisplayOrder = 1,
-			});
-			cCanada.StateProvinces.Add(new StateProvince()
-			{
-				Name = "Yukon Territory",
-				Abbreviation = "YU",
+				Name = "یزد",
+				Abbreviation = "یزد",
 				Published = true,
 				DisplayOrder = 1,
 			});
 			#endregion
+			  
 
 			var entities = new List<Country>()
 			{
@@ -607,8 +282,19 @@ namespace SmartStore.Data.Setup
 					DisplayOrder = -1,
 					Published = true
 				},
-				cUsa,
-				cCanada,
+				cIran,
+				 new Country
+			{
+				Name = "Canada",
+				AllowsBilling = true,
+				AllowsShipping = true,
+				TwoLetterIsoCode = "CA",
+				ThreeLetterIsoCode = "CAN",
+				NumericIsoCode = 124,
+				SubjectToVat = false,
+				DisplayOrder = 2,
+				Published = true,
+			},
 
 				//other countries
 				new Country
@@ -2254,19 +1940,17 @@ namespace SmartStore.Data.Setup
 					SubjectToVat = false,
 					DisplayOrder = 100,
 					Published = true
-				},
-				new Country
-				{
-					Name = "Iran (Islamic Republic of)",
-					AllowsBilling = true,
-					AllowsShipping = true,
-					TwoLetterIsoCode = "IR",
-					ThreeLetterIsoCode = "IRN",
-					NumericIsoCode = 364,
-					SubjectToVat = false,
-					DisplayOrder = 100,
-					Published = true
-				},
+				},new Country{
+				Name = "United States",
+				AllowsBilling = true,
+				AllowsShipping = true,
+				TwoLetterIsoCode = "US",
+				ThreeLetterIsoCode = "USA",
+				NumericIsoCode = 840,
+				SubjectToVat = false,
+				DisplayOrder = 1,
+				Published = true,
+			},
 				new Country
 				{
 					Name = "Iraq",

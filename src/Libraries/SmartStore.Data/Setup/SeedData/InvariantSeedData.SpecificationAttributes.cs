@@ -12,7 +12,7 @@ namespace SmartStore.Data.Setup
 
 			var sa1 = new SpecificationAttribute
 			{
-				Name = "CPU-Manufacturer",
+				Name = "سازنده پردازنده",
 				DisplayOrder = 1,
 			};
 			sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -47,42 +47,42 @@ namespace SmartStore.Data.Setup
 
 			var sa2 = new SpecificationAttribute
 			{
-				Name = "Color",
+				Name = "رنگ",
 				DisplayOrder = 2,
 			};
 			sa2.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "white",
+				Name = "سفید",
 				DisplayOrder = 1,
 			});
 			sa2.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "black",
+				Name = "مشکی",
 				DisplayOrder = 2,
 			});
 			sa2.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "beige",
+				Name = "بژ",
 				DisplayOrder = 3,
 			});
 			sa2.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "red",
+				Name = "قرمز",
 				DisplayOrder = 4,
 			});
 			sa2.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "blue",
+				Name = "آبی",
 				DisplayOrder = 5,
 			});
 			sa2.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "green",
+				Name = "سبز",
 				DisplayOrder = 6,
 			});
 			sa2.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "yellow",
+				Name = "زرد",
 				DisplayOrder = 7,
 			});
 
@@ -92,7 +92,7 @@ namespace SmartStore.Data.Setup
 
 			var sa3 = new SpecificationAttribute
 			{
-				Name = "Harddisk capacity",
+				Name = "ظرفیت هارد دیسک",
 				DisplayOrder = 3,
 			};
 			sa3.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -127,7 +127,7 @@ namespace SmartStore.Data.Setup
 
 			var sa4 = new SpecificationAttribute
 			{
-				Name = "RAM",
+				Name = "رم",
 				DisplayOrder = 4,
 			};
 			sa4.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -162,7 +162,7 @@ namespace SmartStore.Data.Setup
 
 			var sa5 = new SpecificationAttribute
 			{
-				Name = "Operating System",
+				Name = "سیستم عامل",
 				DisplayOrder = 5,
 			};
 			sa5.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -217,7 +217,7 @@ namespace SmartStore.Data.Setup
 
 			var sa6 = new SpecificationAttribute
 			{
-				Name = "Ports",
+				Name = "پورت‌ها",
 				DisplayOrder = 6,
 			};
 			sa6.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -262,22 +262,22 @@ namespace SmartStore.Data.Setup
 
 			var sa7 = new SpecificationAttribute
 			{
-				Name = "Gender",
+				Name = "جنسیت",
 				DisplayOrder = 7,
 			};
 			sa7.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "gentlemen",
+				Name = "آقا",
 				DisplayOrder = 1,
 			});
 			sa7.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "ladies",
+				Name = "خانم",
 				DisplayOrder = 2,
 			});
 			sa7.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "unisex",
+				Name = "دگر",
 				DisplayOrder = 3,
 			});
 
@@ -287,92 +287,92 @@ namespace SmartStore.Data.Setup
 
 			var sa8 = new SpecificationAttribute
 			{
-				Name = "Material",
+				Name = "جنس",
 				DisplayOrder = 8,
 			};
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "stainless steel",
+				Name = "استیل ضدزنگ",
 				DisplayOrder = 1,
 			});
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "titanium",
+				Name = "تیتانیوم",
 				DisplayOrder = 2,
 			});
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "plastic",
+				Name = "پلاستیک",
 				DisplayOrder = 3,
 			});
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "aluminium",
+				Name = "آلومینیوم",
 				DisplayOrder = 4,
 			});
 
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "leather",
+				Name = "چرم",
 				DisplayOrder = 5,
 			});
 
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "nylon",
+				Name = "نایلون",
 				DisplayOrder = 6,
 			});
 
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "silicone",
+				Name = "سیلیکون",
 				DisplayOrder = 7,
 			});
 
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "ceramic",
+				Name = "سرامیک",
 				DisplayOrder = 8,
 			});
 
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption
 			{
-				Name = "cotton",
+				Name = "پنبه",
 				DisplayOrder = 9,
 			});
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption
 			{
-				Name = "100% organic cotton",
+				Name = "100% پنبه آلی",
 				DisplayOrder = 10,
 			});
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption
 			{
-				Name = "polyamide",
+				Name = "پلی آمید",
 				DisplayOrder = 11,
 			});
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption
 			{
-				Name = "rubber",
+				Name = "لاستیک",
 				DisplayOrder = 12,
 			});
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption
 			{
-				Name = "wood",
+				Name = "چوب",
 				DisplayOrder = 13,
 			});
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption
 			{
-				Name = "glass",
+				Name = "شیشه",
 				DisplayOrder = 14,
 			});
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption
 			{
-				Name = "spandex",
+				Name = "کشی",
 				DisplayOrder = 15,
 			});
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption
 			{
-				Name = "polyester",
+				Name = "پلیستر",
 				DisplayOrder = 16,
 			});
 
@@ -382,22 +382,22 @@ namespace SmartStore.Data.Setup
 
 			var sa9 = new SpecificationAttribute
 			{
-				Name = "Movement",
+				Name = "نحوه حرکت",
 				DisplayOrder = 9,
 			};
 			sa9.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "mechanical, self winding",
+				Name = "مکانیکی، خودکار",
 				DisplayOrder = 1,
 			});
 			sa9.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "mechanical",
+				Name = "مکانیکی",
 				DisplayOrder = 2,
 			});
 			sa9.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "quarz, battery operated",
+				Name = "کوارتز",
 				DisplayOrder = 3,
 			});
 
@@ -407,22 +407,22 @@ namespace SmartStore.Data.Setup
 
 			var sa10 = new SpecificationAttribute
 			{
-				Name = "Clasp",
+				Name = "قلاب",
 				DisplayOrder = 10,
 			};
 			sa10.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "glidelock",
+				Name = "قفل کشویی",
 				DisplayOrder = 1,
 			});
 			sa10.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "folding clasp",
+				Name = "قلاب تاشو",
 				DisplayOrder = 2,
 			});
 			sa10.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "thorn close",
+				Name = "میخی",
 				DisplayOrder = 3,
 			});
 
@@ -432,17 +432,17 @@ namespace SmartStore.Data.Setup
 
 			var sa11 = new SpecificationAttribute
 			{
-				Name = "Window material",
+				Name = "جنس شیشه",
 				DisplayOrder = 11,
 			};
 			sa11.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "mineral",
+				Name = "سنگ معدنی",
 				DisplayOrder = 1,
 			});
 			sa11.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "sapphire",
+				Name = "یاقوت",
 				DisplayOrder = 2,
 			});
 
@@ -452,27 +452,27 @@ namespace SmartStore.Data.Setup
 
 			var sa12 = new SpecificationAttribute
 			{
-				Name = "Language",
+				Name = "زبان",
 				DisplayOrder = 12,
 			};
 			sa12.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "german",
+				Name = "آلمانی",
 				DisplayOrder = 1,
 			});
 			sa12.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "english",
+				Name = "انگلیسی",
 				DisplayOrder = 2,
 			});
 			sa12.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "french",
+				Name = "فرانسوی",
 				DisplayOrder = 3,
 			});
 			sa12.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "italian",
+				Name = "ایتالیایی",
 				DisplayOrder = 4,
 			});
 
@@ -482,17 +482,17 @@ namespace SmartStore.Data.Setup
 
 			var sa13 = new SpecificationAttribute
 			{
-				Name = "Edition",
+				Name = "نسخه",
 				DisplayOrder = 13,
 			};
 			sa13.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "bound",
+				Name = "کوچک",
 				DisplayOrder = 1,
 			});
 			sa13.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "paperback",
+				Name = "شومیز",
 				DisplayOrder = 2,
 			});
 
@@ -502,52 +502,52 @@ namespace SmartStore.Data.Setup
 
 			var sa14 = new SpecificationAttribute
 			{
-				Name = "Category",
+				Name = "دسته بندی",
 				DisplayOrder = 14,
 			};
 			sa14.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "adventure",
+				Name = "ماجراجویی",
 				DisplayOrder = 1,
 			});
 			sa14.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "fantasy & science fiction",
+				Name = "تخیلی",
 				DisplayOrder = 2,
 			});
 			sa14.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "history",
+				Name = "تاریخی",
 				DisplayOrder = 3,
 			});
 			sa14.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "internet & computer",
+				Name = "اینترنت و رایانه",
 				DisplayOrder = 4,
 			});
 			sa14.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "thriller",
+				Name = "دلهره‌آور",
 				DisplayOrder = 5,
 			});
 			sa14.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "cars",
+				Name = "خودرو",
 				DisplayOrder = 6,
 			});
 			sa14.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "novel",
+				Name = "رمان",
 				DisplayOrder = 7,
 			});
 			sa14.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "cook and bake",
+				Name = "آشپزی",
 				DisplayOrder = 8,
 			});
 			sa14.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "non-fiction",
+				Name = "غیرداستانی",
 				DisplayOrder = 9,
 			});
 
@@ -557,12 +557,12 @@ namespace SmartStore.Data.Setup
 
 			var sa15 = new SpecificationAttribute
 			{
-				Name = "Computer-type",
+				Name = "نوع کامپیوتر",
 				DisplayOrder = 15,
 			};
 			sa15.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "desktop",
+				Name = "رومیزی",
 				DisplayOrder = 1,
 			});
 			sa15.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -572,12 +572,12 @@ namespace SmartStore.Data.Setup
 			});
 			sa15.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "laptop",
+				Name = "لپتاپ",
 				DisplayOrder = 3,
 			});
 			sa15.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "tablet",
+				Name = "تبلت",
 				DisplayOrder = 4,
 			});
 
@@ -587,7 +587,7 @@ namespace SmartStore.Data.Setup
 
 			var sa16 = new SpecificationAttribute
 			{
-				Name = "Type of mass-storage",
+				Name = "نوع حافظه ذخیره‌سازی",
 				DisplayOrder = 16,
 			};
 			sa16.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -612,7 +612,7 @@ namespace SmartStore.Data.Setup
 
 			var sa17 = new SpecificationAttribute
 			{
-				Name = "Size (ext. HDD)",
+				Name = "سایز هارددیسک",
 				DisplayOrder = 17,
 			};
 			sa17.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -632,7 +632,7 @@ namespace SmartStore.Data.Setup
 
 			var sa18 = new SpecificationAttribute
 			{
-				Name = "MP3 quality",
+				Name = "کیفیت صوت",
 				DisplayOrder = 18,
 			};
 			sa18.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -657,37 +657,37 @@ namespace SmartStore.Data.Setup
 
 			var sa19 = new SpecificationAttribute
 			{
-				Name = "Music genre",
+				Name = "نوع موسیقی",
 				DisplayOrder = 19,
 			};
 			sa19.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "blues",
+				Name = "رپ",
 				DisplayOrder = 1,
 			});
 			sa19.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "jazz",
+				Name = "جاز",
 				DisplayOrder = 2,
 			});
 			sa19.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "disco",
+				Name = "دیسکو",
 				DisplayOrder = 3,
 			});
 			sa19.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "pop",
+				Name = "پاپ",
 				DisplayOrder = 4,
 			});
 			sa19.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "funk",
+				Name = "فانکی",
 				DisplayOrder = 5,
 			});
 			sa19.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "classical",
+				Name = "کلاسیک",
 				DisplayOrder = 6,
 			});
 			sa19.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -702,7 +702,7 @@ namespace SmartStore.Data.Setup
 
 			var sa20 = new SpecificationAttribute
 			{
-				Name = "Manufacturer",
+				Name = "سازنده",
 				DisplayOrder = 20,
 			};
 			sa20.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -817,17 +817,17 @@ namespace SmartStore.Data.Setup
 
 			var sa21 = new SpecificationAttribute
 			{
-				Name = "For whom",
+				Name = "برای چه کسی",
 				DisplayOrder = 21,
 			};
 			sa21.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "For him",
+				Name = "آقا",
 				DisplayOrder = 1,
 			});
 			sa21.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "For her",
+				Name = "خانم",
 				DisplayOrder = 2,
 			});
 
@@ -837,55 +837,55 @@ namespace SmartStore.Data.Setup
 
 			var sa22 = new SpecificationAttribute
 			{
-				Name = "Offer",
+				Name = "پیشنهاد",
 				DisplayOrder = 22,
 			};
 
 			sa22.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "Clearance",
+				Name = "ترخیص",
 				DisplayOrder = 1,
 			});
 
 			sa22.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "Permanent low price",
+				Name = "حداقل قیمت همیشگی",
 				DisplayOrder = 2,
 			});
 
 			sa22.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "Promotion",
+				Name = "ترفیع",
 				DisplayOrder = 3,
 			});
 
 			sa22.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "Reduced price",
+				Name = "تخفیف خورده",
 				DisplayOrder = 4,
 			});
 
 			sa22.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "Special Buy",
+				Name = "خرید ویژه",
 				DisplayOrder = 5,
 			});
 
 			sa22.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "Offer of the day",
+				Name = "پیشنهاد روز",
 				DisplayOrder = 6,
 			});
 
 			sa22.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "Weekly offer",
+				Name = "پیشنهاد هفتگی",
 				DisplayOrder = 7,
 			});
 
 			sa22.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "Best Price",
+				Name = "بهترین قیمت",
 				DisplayOrder = 8,
 			});
 
@@ -895,7 +895,7 @@ namespace SmartStore.Data.Setup
 
 			var sa23 = new SpecificationAttribute
 			{
-				Name = "Size",
+				Name = "اندازه",
 				DisplayOrder = 23,
 			};
 
@@ -942,7 +942,7 @@ namespace SmartStore.Data.Setup
 
 			var sa24 = new SpecificationAttribute
 			{
-				Name = "Diameter",
+				Name = "طول",
 				DisplayOrder = 24,
 			};
 
@@ -970,25 +970,25 @@ namespace SmartStore.Data.Setup
 
 			var sa25 = new SpecificationAttribute
 			{
-				Name = "Closure",
+				Name = "نحوه بسته شدن",
 				DisplayOrder = 25,
 			};
 
 			sa25.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "snap closure",
+				Name = "سریع",
 				DisplayOrder = 1,
 			});
 
 			sa25.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "folding clasp",
+				Name = "قلاب تاشو",
 				DisplayOrder = 2,
 			});
 
 			sa25.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "thorn close",
+				Name = "میخی",
 				DisplayOrder = 3,
 			});
 
@@ -998,31 +998,31 @@ namespace SmartStore.Data.Setup
 
 			var sa26 = new SpecificationAttribute
 			{
-				Name = "Facial shape",
+				Name = "شکل صورت",
 				DisplayOrder = 26,
 			};
 
 			sa26.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "oval",
+				Name = "بیضی",
 				DisplayOrder = 1,
 			});
 
 			sa26.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "round",
+				Name = "گرد",
 				DisplayOrder = 2,
 			});
 
 			sa26.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "heart shaped",
+				Name = "شکل قلب",
 				DisplayOrder = 3,
 			});
 
 			sa26.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "angular",
+				Name = "زاویه دار",
 				DisplayOrder = 4,
 			});
 
@@ -1032,7 +1032,7 @@ namespace SmartStore.Data.Setup
 
 			var sa27 = new SpecificationAttribute
 			{
-				Name = "Storage capacity",
+				Name = "ظرفیت حاقظه",
 				DisplayOrder = 27,
 			};
 
@@ -1066,13 +1066,13 @@ namespace SmartStore.Data.Setup
 
 			sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "Mineral",
+				Name = "معدنی",
 				DisplayOrder = 1,
 			});
 
 			sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "Sapphire",
+				Name = "یاقوت",
 				DisplayOrder = 2,
 			});
 

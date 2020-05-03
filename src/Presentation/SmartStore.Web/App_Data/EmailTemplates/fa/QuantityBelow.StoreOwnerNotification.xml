@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
+	<Subject>{{ Store.Name }} - Quantity of '{{ Product.Name | Truncate:30 }}' is below minimum stock quantity.</Subject>
+	<ModelTypes>Product</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+
+<h1>
+  Quantity fallen below,
+</h1>
+<p>
+  the quantity of the following product is below minimum stock quantity:
+</p>
+
+<p>
+  <b>Product:</b><br />
+  <a href="{{ Product.Url }}">{{ Product.Name }}</a>
+</p>
+
+<p>
+  <b>ID / SKU:</b><br />
+  {{ Product.Id }} / {{ Product.Sku }}
+</p>
+
+<p>
+  <b>Quantity:</b><br />
+  {{ Product.StockQuantity }}
+</p>
+
+
+{% endblock %}]]></Body>
+</MessageTemplate>

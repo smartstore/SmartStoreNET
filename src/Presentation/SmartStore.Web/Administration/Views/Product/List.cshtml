@@ -122,7 +122,7 @@
 					.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
 				columns.Bound(x => x.Sku);
 				columns.Bound(x => x.Price)
-					.Format("{0:0.00}")
+					.Format("{0:N0}")
 					.RightAlign();
 				columns.Bound(x => x.StockQuantity)
 					.Centered();
@@ -131,7 +131,7 @@
 					.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
 					.Hidden(Model.IsSingleStoreMode)
 					.Centered();
-				columns.Bound(x => x.CreatedOn);
+				columns.Bound(x => x.CreatedOnString);
 				columns.Bound(x => x.UpdatedOn);
 				columns.Bound(x => x.Published)
 					.Template(item => @Html.SymbolForBool(item.Published))

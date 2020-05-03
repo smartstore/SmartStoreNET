@@ -9,10 +9,8 @@
 // --------------------------------------------------
 
 [dir=rtl] {
-
 	// Layout
 	// ------
-
 	.section-header {
 		.title {
 			padding-right: 0;
@@ -34,21 +32,22 @@
 			padding-left: 0;
 		}
 	}
-
-
 	// Main Menu
 	// ---------
-
 	#navbar #navbar-menu .nav-item > .dropdown-menu {
 		// Dropdown bubble
-		&:before	{ right: 10px; left: auto; }
-		&:after		{ right: 11px; left: auto; }
+		&:before {
+			right: 10px;
+			left: auto;
+		}
+
+		&:after {
+			right: 11px;
+			left: auto;
+		}
 	}
-
-
 	// Forms
 	// -----
-
 	.ctl-label {
 		padding-left: 2.5rem;
 		padding-right: initial;
@@ -63,11 +62,8 @@
 			right: auto;
 		}
 	}
-
-
 	// Form Grid
 	// ---------
-
 	.adminContent {
 		&:not(.adminContent-vertical) > tbody > tr:not(.wide),
 		&:not(.adminContent-vertical) > tr:not(.wide),
@@ -108,11 +104,8 @@
 			}*/
 		}
 	}
-
-
 	// Themes
 	// ------
-
 	#theme-list .theme-broken-badge {
 		left: 0;
 		right: auto;
@@ -122,11 +115,8 @@
 		margin-right: 0.75rem;
 		margin-left: initial;
 	}
-
-
 	// Dashboard
 	// ---------
-
 	.stats-today .stats-today-item {
 		text-align: right;
 		border-left: 1px solid $gray-300;
@@ -136,12 +126,9 @@
 			border-left: none
 		}
 	}
-
-
 	//
 	// Locale Editor
 	// -------------
-
 	.locale-editor-content[data-rtl="false"] {
 		input,
 		textarea,
@@ -153,11 +140,8 @@
 			text-align: left;
 		}
 	}
-
-
 	// Plugins & Providers
 	// -------------------
-
 	.module-icon {
 		padding-right: $content-padding-x;
 		padding-left: initial;
@@ -182,20 +166,14 @@
 		padding-right: 2rem;
 		padding-left: initial;
 	}
-
-
 	// Misc
 	// ----
-
 	.color-container {
 		padding-left: 0.5rem;
 		padding-right: initial;
 	}
-
-
 	// HTML editors
 	// ------------
-
 	.note-editor .note-toolbar {
 		> .note-btn-group {
 			border-left-width: 2px;
@@ -218,16 +196,13 @@
 		}
 	}
 
-	.note-popover .popover-content .note-color .dropdown-toggle, 
+	.note-popover .popover-content .note-color .dropdown-toggle,
 	.card-header.note-toolbar .note-color .dropdown-toggle {
 		padding-left: 5px;
 		padding-right: 5px;
 	}
-
-
 	// Telerik
 	// -------
-
 	.t-numerictextbox {
 		&:after {
 			border-right-width: 1px;
@@ -254,11 +229,11 @@
 
 	.t-grid-header .t-header {
 		text-align: right;
-        
-        .t-grid-filter {
-            left: 0;
-            right: initial;
-        }
+
+		.t-grid-filter {
+			left: 0;
+			right: initial;
+		}
 	}
 
 	.t-grid-edit-row .t-numerictextbox {
@@ -278,24 +253,33 @@
 		right: auto;
 	}
 
-    .t-treeview .t-plus, .t-treeview .t-minus, .t-treeview .t-plus-disabled, .t-treeview .t-minus-disabled {
-        margin-left: inherit;
-        float: none;
-    }
+	.t-treeview .t-plus, .t-treeview .t-minus, .t-treeview .t-plus-disabled, .t-treeview .t-minus-disabled {
+		margin-left: inherit;
+		float: none;
+	}
 
-    .t-treeview .t-sprite, .t-treeview .t-image {
-        margin-left: 3px;
-    }
+	.t-treeview .t-plus {
+		transform: rotate(185deg);
+	}
 
-    .t-treeview .t-item {
-        padding: 0 16px 0 16px;
-    }
+	.t-treeview .t-minus {
+		transform: rotate(45deg);
+		margin-top: 0;
+	}
 
-    .t-treeview .t-in {
-        padding: 2px 12px 2px 3px;
-    }
+	.t-treeview .t-sprite, .t-treeview .t-image {
+		margin-left: 3px;
+	}
 
-    .t-treeview .t-state-hover, .t-treeview .t-state-selected {
-        padding: 1px 11px 1px 2px;
-    }
+	.t-treeview .t-item {
+		padding: 0 16px 0 16px;
+	}
+
+	.t-treeview .t-in {
+		padding: 2px 12px 2px 3px;
+	}
+
+	.t-treeview .t-state-hover, .t-treeview .t-state-selected {
+		padding: 1px 11px 1px 2px;
+	}
 }

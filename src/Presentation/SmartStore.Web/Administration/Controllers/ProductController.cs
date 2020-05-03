@@ -1049,6 +1049,7 @@ namespace SmartStore.Admin.Controllers
 				productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
 				productModel.UpdatedOn = _dateTimeHelper.ConvertToUserTime(x.UpdatedOnUtc, DateTimeKind.Utc);
 				productModel.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
+				productModel.CreatedOnString = ((DateTime)productModel.CreatedOn).ToString("g") ;
 
 				return productModel;
 			});

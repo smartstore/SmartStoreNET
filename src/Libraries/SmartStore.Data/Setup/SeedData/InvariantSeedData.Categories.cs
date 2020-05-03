@@ -16,49 +16,49 @@ namespace SmartStore.Data.Setup
 
             var categoryFurniture = new Category
             {
-                Name = "Furniture",
+                Name = "مبلمان",
                 Alias = "Furniture",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/furniture.jpg"),
                 Published = true,
                 DisplayOrder = 1,
-                MetaTitle = "Furniture",
+                MetaTitle = "مبلمان",
                 ShowOnHomePage = true
             };
 
             var categoryApple = new Category
             {
-                Name = "Apple",
+                Name = "اپل",
                 Alias = "Apple",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/apple.png"),
                 Published = true,
                 DisplayOrder = 1,
-                MetaTitle = "Apple",
+                MetaTitle = "اپل",
                 ShowOnHomePage = true
             };
 
             var categorySports = new Category
             {
-                Name = "Sports",
+                Name = "ورزشی",
                 Alias = "Sports",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/sports.jpg"),
                 Published = true,
                 DisplayOrder = 1,
-                MetaTitle = "Sports",
+                MetaTitle = "ورزشی",
                 ShowOnHomePage = true
             };
 
             var categoryBooks = new Category
             {
-                Name = "Books",
+                Name = "کتاب",
                 Alias = "Books",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/emblem_library.png", GetSeName("Books")),
                 Published = true,
                 DisplayOrder = 1,
-                MetaTitle = "Books"
+                MetaTitle = "کتاب"
             };
 
             //var categoryComputers = new Category
@@ -74,28 +74,28 @@ namespace SmartStore.Data.Setup
 
             var categoryFashion = new Category
             {
-                Name = "Fashion",
+                Name = "پوشاک",
                 Alias = "Fashion",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/fashion.jpg"),
                 Published = true,
                 DisplayOrder = 2,
-                MetaTitle = "Fashion",
+                MetaTitle = "پوشاک",
                 ShowOnHomePage = true,
-                BadgeText = "SALE",
+                BadgeText = "فروش ویژه",
                 BadgeStyle = 4
             };
 
             var categoryGaming = new Category
             {
-                Name = "Gaming",
+                Name = "بازی",
                 Alias = "Gaming",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("product/ps4_bundle_minecraft.jpg", GetSeName("Gaming")),
                 Published = true,
                 DisplayOrder = 3,
                 ShowOnHomePage = true,
-                MetaTitle = "Gaming"
+                MetaTitle = "بازی"
             };
 
             //var categoryCellPhones = new Category
@@ -112,37 +112,37 @@ namespace SmartStore.Data.Setup
 
             var categoryDigitalDownloads = new Category
             {
-                Name = "Digital Products",
+                Name = "محصولات دیجیتال",
                 Alias = "Digital Products",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/digitalproducts.jpg"),
                 Published = true,
                 DisplayOrder = 6,
-                MetaTitle = "Digital Products",
+                MetaTitle = "محصولات دیجیتال",
                 ShowOnHomePage = true
             };
 
             var categoryGiftCards = new Category
             {
-                Name = "Gift Cards",
+                Name = "گیفت کارت",
                 Alias = "Gift Cards",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/gift-cards.png"),
                 Published = true,
                 DisplayOrder = 12,
-                MetaTitle = "Gift cards",
+                MetaTitle = "گیفت کارت",
                 ShowOnHomePage = true,
             };
 
             var categoryWatches = new Category
             {
-                Name = "Watches",
+                Name = "ساعت",
                 Alias = "Watches",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/watches.png"),
                 Published = true,
                 DisplayOrder = 10,
-                MetaTitle = "Watches",
+                MetaTitle = "ساعت",
                 ShowOnHomePage = true,
                 BadgeText = "%",
                 BadgeStyle = 5
@@ -171,66 +171,66 @@ namespace SmartStore.Data.Setup
 
             var categoryFashionJackets = new Category
             {
-                Name = "Jackets",
+                Name = "ژاکت",
                 Alias = "Jackets",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/jackets.jpg"),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.Alias == "Fashion").First().Id,
                 DisplayOrder = 1,
-                MetaTitle = "Jackets",
+                MetaTitle = "ژاکت",
                 ShowOnHomePage = true
             };
 
             var categoryFashionLeatherJackets = new Category
             {
-                Name = "Leather jackets",
+                Name = "کت چرمی",
                 Alias = "Leather jackets",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/leather_jackets.jpg"),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.Alias == "Fashion").First().Id,
                 DisplayOrder = 1,
-                MetaTitle = "Leather jackets",
+                MetaTitle = "کت چرمی",
                 ShowOnHomePage = true
             };
 
             var categoryFashionShoes = new Category
             {
-                Name = "Shoes",
+                Name = "کفش",
                 Alias = "Shoes",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/shoes.png"),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.Alias == "Fashion").First().Id,
                 DisplayOrder = 1,
-                MetaTitle = "Shoes",
+                MetaTitle = "کفش",
                 ShowOnHomePage = true
             };
 
             var categoryFashionTrousers = new Category
             {
-                Name = "Trousers",
+                Name = "شلوار",
                 Alias = "Pants",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/trousers.png"),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.Alias == "Fashion").First().Id,
                 DisplayOrder = 1,
-                MetaTitle = "Trousers",
+                MetaTitle = "شلوار",
                 ShowOnHomePage = true
             };
 
             var categoryFashionTracksuits = new Category
             {
-                Name = "Tracksuits",
+                Name = "ورزشی",
                 Alias = "Tracksuits",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/tracksuit.png"),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.Alias == "Fashion").First().Id,
                 DisplayOrder = 1,
-                MetaTitle = "Tracksuits",
+                MetaTitle = "ورزشی",
                 ShowOnHomePage = true
             };
 
@@ -240,78 +240,78 @@ namespace SmartStore.Data.Setup
 
             var categorySportsGolf = new Category
             {
-                Name = "Golf",
+                Name = "گلف",
                 Alias = "Golf",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/golf.jpg"),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Sports").First().Id,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.Alias == "Sports").First().Id,
                 DisplayOrder = 1,
-                MetaTitle = "Golf",
+                MetaTitle = "گلف",
                 ShowOnHomePage = true
             };
 
             var categorySportsSunglasses = new Category
             {
-                Name = "Sunglasses",
+                Name = "عینک آفتابی",
                 Alias = "Sunglasses",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/glasses.png"),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.Alias == "Fashion").First().Id,
                 DisplayOrder = 1,
-                MetaTitle = "Sunglasses",
+                MetaTitle = "عینک آفتابی",
                 ShowOnHomePage = true
             };
 
             var categorySportsSoccer = new Category
             {
-                Name = "Soccer",
+                Name = "فوتبال",
                 Alias = "Soccer",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/soccer.png"),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Sports").First().Id,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.Alias == "Sports").First().Id,
                 DisplayOrder = 1,
-                MetaTitle = "Soccer",
+                MetaTitle = "فوتبال",
                 ShowOnHomePage = true
             };
 
             var categorySportsBasketball = new Category
             {
-                Name = "Basketball",
+                Name = "بسکتبال",
                 Alias = "Basketball",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/basketball.png"),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Sports").First().Id,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.Alias == "Sports").First().Id,
                 DisplayOrder = 1,
-                MetaTitle = "Basketball",
+                MetaTitle = "بسکتبال",
                 ShowOnHomePage = true
             };
 
             var categoryBooksSpiegel = new Category
             {
-                Name = "SPIEGEL-Bestseller",
+                Name = "پرفروش ها",
                 Alias = "SPIEGEL-Bestseller",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/0000930_spiegel-bestseller.png", GetSeName("SPIEGEL-Bestseller")),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Books").First().Id,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.Alias == "Books").First().Id,
                 DisplayOrder = 1,
-                MetaTitle = "SPIEGEL-Bestseller"
+                MetaTitle = "پرفروش ها"
             };
 
             var categoryBooksCookAndEnjoy = new Category
             {
-                Name = "Cook and enjoy",
+                Name = "آشپزی",
                 Alias = "Cook and enjoy",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/0000936_kochen-geniesen.jpeg", GetSeName("Cook and enjoy")),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Books").First().Id,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.Alias == "Books").First().Id,
                 DisplayOrder = 2,
-                MetaTitle = "Cook and enjoy"
+                MetaTitle = "آشپزی"
             };
 
             //var categoryDesktops = new Category
@@ -319,7 +319,7 @@ namespace SmartStore.Data.Setup
             //	Name = "Desktops",
             //             Alias = "Desktops",
             //	CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-            //	ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Computers").First().Id,
+            //	ParentCategoryId = _ctx.Set<Category>().Where(x => x.Alias == "Computers").First().Id,
             //	Picture = CreatePicture("category/desktops.png"),
             //	Published = true,
             //	DisplayOrder = 1,
@@ -331,7 +331,7 @@ namespace SmartStore.Data.Setup
             //	Name = "Notebooks",
             //             Alias = "Notebooks",
             //	CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-            //	ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Computers").First().Id,
+            //	ParentCategoryId = _ctx.Set<Category>().Where(x => x.Alias == "Computers").First().Id,
             //             Picture = CreatePicture("category/notebooks.png"),
             //	Published = true,
             //	DisplayOrder = 2,
@@ -340,26 +340,26 @@ namespace SmartStore.Data.Setup
 
             var categoryGamingAccessories = new Category
             {
-                Name = "Gaming Accessories",
+                Name = "لوازم جانبی بازی",
                 Alias = "Gaming Accessories",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.Alias == "Gaming").First().Id,
                 MediaFile = CreatePicture("category/gaming_accessories.png"),
                 Published = true,
                 DisplayOrder = 2,
-                MetaTitle = "Gaming Accessories"
+                MetaTitle = "لوازم جانبی بازی"
             };
 
             var categoryGamingGames = new Category
             {
-                Name = "Games",
+                Name = "بازی",
                 Alias = "Games",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.Alias == "Gaming").First().Id,
                 MediaFile = CreatePicture("category/games.jpg"),
                 Published = true,
                 DisplayOrder = 3,
-                MetaTitle = "Games"
+                MetaTitle = "بازی"
             };
 
             #endregion

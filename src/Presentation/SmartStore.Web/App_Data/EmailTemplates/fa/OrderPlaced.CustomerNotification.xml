@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
+	<Subject>Order receipt - {{ Store.Name }}</Subject>
+	<ModelTypes>Order, Order.Customer</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Hello {{ Customer.FullName }},
+</h1>
+<p>
+  thanks for your order at <a href="{{ Store.URL }}">{{ Store.Name }}</a> which we hereby confirm. A summary for this order can be found below.
+</p>
+
+<table class="w-100 mb-3">
+  <thead>
+  	<tr>
+      <th class="text-muted text-sm">Order date</th>
+      <th class="text-muted text-sm">Order number</th>
+      <th class="text-muted text-sm">Status</th>
+      <th class="text-muted text-sm">Total</th>
+    </tr>
+  </thead>
+  <tbody class="mb-3">
+  	<tr>
+    	<td class="text-sm">{{ Order.CreatedOn | Date:'d' }}</td>
+      <td class="text-sm">{{ Order.OrderNumber }}</td>
+      <td class="text-sm">{{ Order.Status }}</td>
+      <td class="text-sm text-success">{{ Order.Totals.Total }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="w-100 brd">
+  <tbody>
+  	<tr>
+    	<td class="p-2">
+        
+        <table class="order-details w-100">
+          <tbody>
+            <tr>
+              <td width="50%">
+                <h3>Billing address</h3>
+              	{% include 'address' with Order.Billing %}
+                {% if Order.PaymentMethod %}
+                	<h3 class="mt-2">Payment method</h3>
+                	<div class="text-sm">{{ Order.PaymentMethod }}</div>
+                {% endif %}
+              </td>
+              <td width="50%">
+                <h3>Shipping address</h3>
+                {% if Order.Shipping %}
+					{% include 'address' with Order.Shipping %}
+                {% else %}
+                	<p class="text-muted text-sm">Same as billing address</p>
+                {% endif %} 
+                {% if Order.ShippingMethod %}
+                	<h3 class="mt-2">Shipping method</h3>
+                	<div class="text-sm">{{ Order.ShippingMethod }} </div>    	
+                {% endif %}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>&nbsp;</p>
+
+{% include 'order' %}
+
+<table id="conditions-of-use">
+  <tr>
+  	<td class="text-sm text-muted-all pt-5 pb-4">
+      <h2 class="mb-3">{{ Order.ConditionsOfUse.Title }} </h2>
+    	{{ Order.ConditionsOfUse.Body }}
+    </td>
+  </tr>
+</table>
+
+<hr />
+
+<table id="disclaimer">
+  <tr>
+  	<td class="text-sm text-muted-all pt-4">
+      <h2 class="mb-3">{{ Order.Disclaimer.Title }} </h2>
+    	{{ Order.Disclaimer.Body }}
+    </td>
+  </tr>
+</table>
+{% endblock %}]]></Body>
+</MessageTemplate>

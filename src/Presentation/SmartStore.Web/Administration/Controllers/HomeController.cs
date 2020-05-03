@@ -98,61 +98,79 @@ namespace SmartStore.Admin.Controllers
 		[ChildActionOnly]
 		public ActionResult MarketplaceFeed()
 		{
-			var watch = new Stopwatch();
-			watch.Start();
+			//var watch = new Stopwatch();
+			//watch.Start();
 
-			var result = _services.Cache.Get("admin:marketplacefeed", () => {
-				try
-				{
-					string url = "http://community.smartstore.com/index.php?/rss/downloads/";
-					var request = (HttpWebRequest)WebRequest.Create(url);
-					request.Timeout = 3000;
-					request.UserAgent = "SmartStore.NET {0}".FormatInvariant(SmartStoreVersion.CurrentFullVersion);
+			//var result = _services.Cache.Get("admin:marketplacefeed", () => {
+			//	try
+			//	{
+			//		string url = "http://community.smartstore.com/index.php?/rss/downloads/";
+			//		var request = (HttpWebRequest)WebRequest.Create(url);
+			//		request.Timeout = 3000;
+			//		request.UserAgent = "SmartStore.NET {0}".FormatInvariant(SmartStoreVersion.CurrentFullVersion);
 
-					using (WebResponse response = request.GetResponse())
-					{
-						using (var reader = XmlReader.Create(response.GetResponseStream()))
-						{
-							var feed = SyndicationFeed.Load(reader);
-							var model = new List<FeedItemModel>();
-							foreach (var item in feed.Items)
-							{
-								if (!item.Id.EndsWith("error=1", StringComparison.OrdinalIgnoreCase))
-								{
-									var modelItem = new FeedItemModel();
-									modelItem.Title = item.Title.Text;
-									modelItem.Summary = item.Summary.Text.RemoveHtml().Truncate(150, "...");
-									modelItem.PublishDate = item.PublishDate.LocalDateTime.RelativeFormat();
+			//		using (WebResponse response = request.GetResponse())
+			//		{
+			//			using (var reader = XmlReader.Create(response.GetResponseStream()))
+			//			{
+			//				var feed = SyndicationFeed.Load(reader);
+			//				var model = new List<FeedItemModel>();
+			//				foreach (var item in feed.Items)
+			//				{
+			//					if (!item.Id.EndsWith("error=1", StringComparison.OrdinalIgnoreCase))
+			//					{
+			//						var modelItem = new FeedItemModel();
+			//						modelItem.Title = item.Title.Text;
+			//						modelItem.Summary = item.Summary.Text.RemoveHtml().Truncate(150, "...");
+			//						modelItem.PublishDate = item.PublishDate.LocalDateTime.RelativeFormat();
 
-									var link = item.Links.FirstOrDefault();
-									if (link != null)
-									{
-										modelItem.Link = link.Uri.ToString();
-									}
+			//						var link = item.Links.FirstOrDefault();
+			//						if (link != null)
+			//						{
+			//							modelItem.Link = link.Uri.ToString();
+			//						}
 
-									model.Add(modelItem);
-								}
-							}
+			//						model.Add(modelItem);
+			//					}
+			//				}
 
-							return model;
-						}
-					}
-				}
-				catch (Exception ex)
-				{
-					return new List<FeedItemModel> {new FeedItemModel { IsError = true, Summary = ex.Message } };
-				}
-			}, TimeSpan.FromHours(12));
+			//				return model;
+			//			}
+			//		}
+			//	}
+			//	catch (Exception ex)
+			//	{
+			//		return new List<FeedItemModel> {new FeedItemModel { IsError = true, Summary = ex.Message } };
+			//	}
+			//}, TimeSpan.FromHours(12));
 
-			if (result.Any() && result.First().IsError)
-			{
-				ModelState.AddModelError("", result.First().Summary);
-			}
+			//if (result.Any() && result.First().IsError)
+			//{
+			//	ModelState.AddModelError("", result.First().Summary);
+			//}
 
-			watch.Stop();
-			Debug.WriteLine("MarketplaceFeed >>> " + watch.ElapsedMilliseconds);
+			//watch.Stop();
+			//Debug.WriteLine("MarketplaceFeed >>> " + watch.ElapsedMilliseconds);
 
-			return PartialView(result);
+			//return PartialView(result);
+			var model = new List<FeedItemModel>();
+
+			var modelItem = new FeedItemModel();
+			modelItem.Title = "آخرین نسخه فروشگاه";
+			modelItem.Summary = "آخرین نسخه فروشگاه به 12.63 ارتقاء یافت. برای بروزرسانی اقدام نمایید.";
+			modelItem.PublishDate = "1399/01/29";
+			modelItem.Link = "#";
+			model.Add(modelItem);
+
+			var modelItem2 = new FeedItemModel();
+			modelItem2.Title = "قالب جدید کهکشان";
+			modelItem2.Summary = "قالب مینیمال کهکشان مناسب فروشگاه‌های ساده و سبک، طراحی و آماده ارائه است. برای اطلاعات بیشتر ...";
+			modelItem2.PublishDate = "1398/11/06";
+			modelItem2.Link = "#";
+			model.Add(modelItem2);
+
+			return PartialView(model);
+
 		}
 
         [HttpPost]

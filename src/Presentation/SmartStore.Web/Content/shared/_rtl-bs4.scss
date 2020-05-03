@@ -7,10 +7,8 @@
 // ==============================================================
 
 [dir=rtl] {
-
 	// Common
 	// ----------------------------------------------
-
 	dd {
 		margin-right: 0;
 	}
@@ -34,11 +32,11 @@
 		right: 0;
 		text-align: right;
 
-        &.dropdown-menu-right,
+		&.dropdown-menu-right,
 		&.dropdown-menu-left {
 			right: auto;
 			left: 0 !important;
-        }
+		}
 	}
 
 	.list-unstyled,
@@ -54,11 +52,8 @@
 	.navbar-nav {
 		padding-right: 0;
 	}
-
-
 	// Button Groups
 	// ----------------------------------------------
-
 	.btn + .btn,
 	.btn + .btn-group,
 	.btn-group + .btn,
@@ -82,19 +77,21 @@
 			border-radius: $btn-border-radius 0 0 $btn-border-radius;
 		}
 	}
-
 	// Custom controls
 	// ----------------------------------------------
 	.custom-control {
-	  padding-right: $custom-control-gutter;
-	  padding-left: 0;
+		padding-right: $custom-control-gutter;
+		padding-left: 0;
 	}
+
 	.custom-control-inline {
-	  margin-left: $custom-control-spacer-x;
-	  margin-right: 0;
+		margin-left: $custom-control-spacer-x;
+		margin-right: 0;
 	}
+
 	.custom-control-label {
-        padding-right: $custom-control-indicator-size * 1.5;
+		padding-right: $custom-control-indicator-size * 1.5;
+
 		&::before {
 			right: 0;
 			left: initial;
@@ -107,27 +104,23 @@
 	}
 
 	.custom-select {
-	  &[multiple],
-	  &[size]:not([size="1"]) {
-		padding-left: $custom-select-padding-x;
-		padding-right: 0;
-	  }
-	}
-	
-	.custom-file-label { 
-	  &::after {
-		left: 0;
-		right: initial;
-	
-		border-right: $custom-file-border-width solid $custom-file-border-color;
-		border-left: none;
-	  }
+		&[multiple],
+		&[size]:not([size="1"]) {
+			padding-left: $custom-select-padding-x;
+			padding-right: 0;
+		}
 	}
 
-
+	.custom-file-label {
+		&::after {
+			left: 0;
+			right: initial;
+			border-right: $custom-file-border-width solid $custom-file-border-color;
+			border-left: none;
+		}
+	}
 	// Input Groups
 	// ----------------------------------------------
-
 	.input-group {
 		+ .form-control,
 		+ .custom-select,
@@ -175,7 +168,7 @@
 	.input-group > .input-group-append:not(:last-child) > .input-group-text,
 	.input-group > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle),
 	.input-group > .input-group-append:last-child > .input-group-text:not(:last-child) {
-		border-radius: 0 $input-border-radius $input-border-radius 0;
+		border-radius: $input-border-radius 0 0 $input-border-radius ;
 	}
 
 	.input-group > .input-group-append > .btn,
@@ -184,7 +177,7 @@
 	.input-group > .input-group-prepend:not(:first-child) > .input-group-text,
 	.input-group > .input-group-prepend:first-child > .btn:not(:first-child),
 	.input-group > .input-group-prepend:first-child > .input-group-text:not(:first-child) {
-		border-radius: $input-border-radius 0 0 $input-border-radius;
+		border-radius: 0 $input-border-radius $input-border-radius 0;
 	}
 
 	.list-group {
@@ -201,6 +194,7 @@
 			margin-right: .25rem;
 			margin-left: initial;
 		}
+
 		> :not(:last-child) {
 			margin-left: .25rem;
 			margin-right: initial;

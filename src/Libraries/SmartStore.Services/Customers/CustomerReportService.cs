@@ -169,9 +169,9 @@ namespace SmartStore.Services.Customers
                 return new List<RegistredCustomersDate>();
 
             var query = from c in _customerRepository.Table
-                        from cr in c.CustomerRoles
+                        from rm in c.CustomerRoleMappings
                         where !c.Deleted &&
-                        cr.Id == registeredCustomerRole.Id &&
+                        rm.CustomerRoleId == registeredCustomerRole.Id &&
                         c.CreatedOnUtc >= date
                         group c.CreatedOnUtc by DbFunctions.TruncateTime(c.CreatedOnUtc) into dg
                         select new { Date = (DateTime)dg.Key, Count = dg.Count() };
@@ -204,7 +204,8 @@ namespace SmartStore.Services.Customers
             {
                 query = query.Where(x => endTimeUtc.Value >= x.CreatedOnUtc);
             }
-            query = query.Where(x => x.CustomerRoles.Any(y => y.Id == registeredCustomerRole.Id));
+
+            query = query.Where(x => x.CustomerRoleMappings.Any(y => y.CustomerRoleId == registeredCustomerRole.Id));
 
             return query.Count();
         }

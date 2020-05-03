@@ -33,7 +33,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [Permission(Permissions.Media.Upload)]
-        public async Task<ActionResult> Upload(string path, string[] acceptedMediaTypes = null, bool isTransient = false)
+        public async Task<ActionResult> Upload(string path, string[] acceptedMediaTypes = null, bool isTransient = false, DuplicateFileHandling duplicateFileHandling = DuplicateFileHandling.ThrowError)
         {
             var len = Request.Files.Count;
             var result = new List<object>(len);
@@ -56,7 +56,7 @@ namespace SmartStore.Admin.Controllers
                         }
                     }
                     
-                    var mediaFile = await _mediaService.SaveFileAsync(filePath, uploadedFile.InputStream, isTransient);
+                    var mediaFile = await _mediaService.SaveFileAsync(filePath, uploadedFile.InputStream, isTransient, duplicateFileHandling);
 
                     result.Add(new 
                     {
@@ -92,7 +92,7 @@ namespace SmartStore.Admin.Controllers
             return Json(result.Count == 1 ? result[0] : result);
         }
 
-		public ActionResult MoveFsMedia()
+        public ActionResult MoveFsMedia()
 		{
 			var count = DataMigrator.MoveFsMedia(Services.DbContext);
 			return Content("Moved and reorganized {0} media files.".FormatInvariant(count));

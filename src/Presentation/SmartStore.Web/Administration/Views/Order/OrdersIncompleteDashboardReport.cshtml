@@ -14,7 +14,7 @@
     Html.AddScriptParts(true, "~/Administration/Scripts/admin.dashboard.js");
 }
 
-<div class="report" id="incomplete-orders-report" data-chart="@jsonData">
+<div class="report" id="incomplete-orders-report">
     <div class="report-title-row">
         <div class="report-title">@T("Admin.SalesReport.Incomplete")</div>
     </div>
@@ -22,11 +22,11 @@
         @for (int i = 0; i < Model.Count; i++)
         {
             <div class="incomplete-orders-container">
-                <div class="chart-title text-muted">@labels[i]</div>
+                <div class="incomplete-orders-title">@labels[i]</div>
                 <div class="incomplete-orders-chart-container">
                     <div class="incomplete-orders-chart-text">
-                        <div class="fs-h4 incomplete-orders-value">@Model[i].QuantityTotal</div>
-                        <div class="fs-h5 incomplete-orders-value" title="@Model[i].AmountTotal @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model[i].AmountTotal</div>
+                        <div class="incomplete-orders-quantity">@Model[i].QuantityTotal</div>
+                        <div class="incomplete-orders-amount" title="@Model[i].AmountTotal @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model[i].AmountTotal</div>
                     </div>
                     <div class="canvas-container w-100 h-100">
                         <canvas id="incomplete-orders-chart-@i">
@@ -41,10 +41,13 @@
 <script>
     $(function () {
         createIncompleteOrdersCharts(
+            @Html.Raw(jsonData),
             '@T("Admin.SalesReport.NoIncompleteOrders")',
             '@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")',
             '@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")',
-            '@T("Admin.SalesReport.NewOrders")'
+            '@T("Admin.SalesReport.NewOrders")',
+            '@T("Admin.Orders")',
+            '@T("Admin.SalesReport.Sales")'
         );
     });
 </script>

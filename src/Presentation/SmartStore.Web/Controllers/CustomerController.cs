@@ -1591,7 +1591,7 @@ namespace SmartStore.Web.Controllers
                 if (IsCurrentUserRegistered() && _customerSettings.AllowCustomersToUploadAvatars)
                 {
                     var customer = _workContext.CurrentCustomer;
-                    var uploadedFile = Request.Files["file"].ToPostedFileResult();
+                    var uploadedFile = Request.Files["file[0]"].ToPostedFileResult();
 
                     if (uploadedFile != null && uploadedFile.FileName.HasValue())
                     {

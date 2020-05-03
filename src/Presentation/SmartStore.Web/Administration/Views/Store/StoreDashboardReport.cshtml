@@ -1,7 +1,42 @@
-﻿@{ 
-    var arr = new object[]
+﻿@{
+    var arr = new[]
     {
-        new { Part = "Products", Label = T("Admin.Catalog.Products").Text, Icon = "fa fa-cubes" }
+        new { Part = "ProductsCount", Label = T("Admin.Catalog.Products").Text, Title = T("Admin.Catalog.Products").Text, Icon = "fa fa-cubes" },
+        new { Part = "AttributesCount", Label = T("Admin.Catalog.Attributes").Text, Title = T("Admin.Catalog.Attributes.ProductAttributes").Text, Icon = "far fa-list-alt" },
+        new 
+        {
+            Part = "AttributeCombinationsCount", 
+            Label = T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Short").Text, 
+            Title = T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations").Text, 
+            Icon = "fa fa-layer-group" 
+        },
+        new { Part = "CategoriesCount", Label = T("Admin.Catalog.Categories").Text, Title = T("Admin.Catalog.Categories").Text, Icon = "fa fa-sitemap" },
+        new { Part = "ManufacturersCount", Label = T("Admin.Catalog.Manufacturers").Text, Title = T("Admin.Catalog.Manufacturers").Text, Icon = "far fa-building" },
+        new { Part = "MediaCount", Label = T("Admin.Catalog.Products.Pictures").Text, Title = T("Admin.Catalog.Products.Pictures").Text, Icon = "far fa-images" },
+        new { Part = "CustomersCount", Label = T("Admin.Customers.Customers").Text, Title = T("Admin.Customers.Reports.RegisteredCustomers").Text, Icon = "fa fa-users" },
+        new { Part = "OrdersCount", Label = T("Admin.Orders").Text, Title = T("Admin.Orders.Overall").Text, Icon = "fa fa-chart-bar" },
+        new
+        {
+            Part = "Sales", 
+            Label = T("Admin.SalesReport.Sales").Text, 
+            Title = T("Admin.SalesReport.Sales.Hint").Text + " " + T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax").Text, 
+            Icon = "far fa-credit-card" 
+        },
+        new { Part = "OnlineCustomersCount", Label = T("Admin.Customers.OnlineCustomers").Text, Title = T("Admin.Report.OnlineCustomers").Text, Icon = "fa fa-user-check" },
+        new 
+        {
+            Part = "CartsValue", 
+            Label = T("Admin.CurrentCarts.Short").Text, 
+            Title = T("Admin.CurrentCarts").Text + " " + T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax").Text, 
+            Icon = "fa fa-cart-arrow-down"
+        },
+        new 
+        {
+            Part = "WishlistsValue", 
+            Label = T("Admin.CurrentWishlists.Short").Text, 
+            Title = T("Admin.CurrentWishlists").Text + " " + T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax").Text, 
+            Icon = "far fa-heart" 
+        },
     };
 }
 
@@ -11,215 +46,38 @@
     </div>
     <div class="statistics-container pt-2 pb-3">
         <div class="row pl-4 pr-3 m-0">
-            <div class="col-6 col-md-4 statistics-col">
-                <div class="statistics-content">
-                    <div class="statistics-icon">
-                        <div class="products-icon"></div>
-                    </div>
-                    <div class="statistics-container-outer">
-                        <div class="statistics-container-inner">
-                            <div class="statistics-value" id="stats-products"></div>
-                            <div class="statistics-attribute" title="@T("Admin.Catalog.Products")">@T("Admin.Catalog.Products")</div>
+            @for (int i = 0; i < arr.Length; i++)
+            {
+                <div class="col-6 col-md-4 statistics-col">
+                    <div class="statistics-content">
+                        <div class="statistics-icon">
+                            <i class="@arr[i].Icon"></i>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 statistics-col">
-                <div class="statistics-content">
-                    <div class="statistics-icon">
-                        <div class="attribute-icon"></div>
-                    </div>
-                    <div class="statistics-container-outer">
-                        <div class="statistics-container-inner">
-                            <div class="statistics-value" id="stats-attributes"></div>
-                            <div class="statistics-attribute" title="@T("Admin.Catalog.Attributes.ProductAttributes")">@T("Admin.Catalog.Attributes")</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 statistics-col">
-                <div class="statistics-content">
-                    <div class="statistics-icon">
-                        <div class="attribute-combinations-icon"></div>
-                    </div>
-                    <div class="statistics-container-outer">
-                        <div class="statistics-container-inner">
-                            <div class="statistics-value" id="stats-combinations"></div>
-                            <div class="statistics-attribute" title="@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations")">
-                                @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Short")
+                        <div class="statistics-container-outer">
+                            <div class="statistics-container-inner">
+                                <div class="statistics-value" data-part="@arr[i].Part"></div>
+                                <div class="statistics-attribute" title="@arr[i].Title">@arr[i].Label</div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-6 col-md-4 statistics-col">
-                <div class="statistics-content">
-                    <div class="statistics-icon">
-                        <div class="categories-icon"></div>
-                    </div>
-                    <div class="statistics-container-outer">
-                        <div class="statistics-container-inner">
-                            <div class="statistics-value" id="stats-categories"></div>
-                            <div class="statistics-attribute" title="@T("Admin.Catalog.Categories")">@T("Admin.Catalog.Categories")</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 statistics-col">
-                <div class="statistics-content">
-                    <div class="statistics-icon">
-                        <div class="manufacturer-icon"></div>
-                    </div>
-                    <div class="statistics-container-outer">
-                        <div class="statistics-container-inner">
-                            <div class="statistics-value" id="stats-manufacturer"></div>
-                            <div class="statistics-attribute" title="@T("Admin.Catalog.Manufacturers")">@T("Admin.Catalog.Manufacturers")</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 statistics-col">
-                <div class="statistics-content">
-                    <div class="statistics-icon">
-                        <div class="media-icon"></div>
-                    </div>
-                    <div class="statistics-container-outer">
-                        <div class="statistics-container-inner">
-                            <div class="statistics-value" id="stats-media"></div>
-                            <div class="statistics-attribute" title="@T("Admin.Catalog.Products.Pictures")">@T("Admin.Catalog.Products.Pictures")</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 statistics-col">
-                <div class="statistics-content">
-                    <div class="statistics-icon">
-                        <div class="customers-icon"></div>
-                    </div>
-                    <div class="statistics-container-outer">
-                        <div class="statistics-container-inner">
-                            <div class="statistics-value" id="stats-customers"></div>
-                            <div class="statistics-attribute" title="@T("Admin.Customers.Reports.RegisteredCustomers")">@T("Admin.Customers.Customers")</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 statistics-col">
-                <div class="statistics-content">
-                    <div class="statistics-icon">
-                        <div class="orders-icon"></div>
-                    </div>
-                    <div class="statistics-container-outer">
-                        <div class="statistics-container-inner">
-                            <div class="statistics-value" id="stats-orders"></div>
-                            <div class="statistics-attribute" title="@T("Admin.Orders.Overall")">@T("Admin.Orders")</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 statistics-col">
-                <div class="statistics-content">
-                    <div class="statistics-icon">
-                        <div class="sales-icon"></div>
-                    </div>
-                    <div class="statistics-container-outer">
-                        <div class="statistics-container-inner">
-                            <div class="statistics-value" id="stats-sales"></div>
-                            <div class="statistics-attribute" title="@T("Admin.SalesReport.Sales.Hint")">@T("Admin.SalesReport.Sales")</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 statistics-col">
-                <div class="statistics-content">
-                    <div class="statistics-icon">
-                        <div class="customers-online-icon"></div>
-                    </div>
-                    <div class="statistics-container-outer">
-                        <div class="statistics-container-inner">
-                            <div class="statistics-value" id="stats-online"></div>
-                            <div class="statistics-attribute" title="@T("Admin.Report.OnlineCustomers")">@T("Admin.Customers.OnlineCustomers")</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 statistics-col">
-                <div class="statistics-content">
-                    <div class="statistics-icon">
-                        <div class="cart-icon"></div>
-                    </div>
-                    <div class="statistics-container-outer">
-                        <div class="statistics-container-inner">
-                            <div class="statistics-value" id="stats-carts"></div>
-                            <div class="statistics-attribute" title="@T("Admin.CurrentCarts")">@T("Admin.CurrentCarts.Short")</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 statistics-col">
-                <div class="statistics-content">
-                    <div class="statistics-icon">
-                        <div class="wishlist-icon"></div>
-                    </div>
-                    <div class="statistics-container-outer">
-                        <div class="statistics-container-inner">
-                            <div class="statistics-value" id="stats-wishlists"></div>
-                            <div class="statistics-attribute" title="@T("Admin.CurrentWishlists")">@T("Admin.CurrentWishlists.Short") </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            }
         </div>
     </div>
 </div>
- <script>
+<script>
     $(document).ready(function () {
         $.ajax({
             url: "@(Url.Action("StoreDashboardReport", "Store"))",
             cache: false,
             success: function (data) {
-                //var el = $('.stats-value');
-                //el.each(function (i, val) {
-                //    var part = $(val).data('part');
-                //    $(val).html(data.model[part]);
-                //});
-
-                $('#stats-products').html(data.model.ProductsCount);
-                $('#stats-products').attr("title", data.model.ProductsCount);
-
-                $('#stats-attributes').html(data.model.AttributesCount);
-                $('#stats-attributes').attr("title", data.model.AttributesCount);
-
-                $('#stats-combinations').html(data.model.AttributeCombinationsCount);
-                $('#stats-combinations').attr("title", data.model.AttributeCombinationsCount);
-
-                $('#stats-categories').html(data.model.CategoriesCount);
-                $('#stats-categories').attr("title", data.model.CategoriesCount);
-
-                $('#stats-manufacturer').html(data.model.ManufacturersCount);
-                $('#stats-manufacturer').attr("title", data.model.ManufacturersCount);
-
-                $('#stats-media').html(data.model.MediaCount);
-                $('#stats-media').attr("title", data.model.MediaCount);
-
-                $('#stats-customers').html(data.model.CustomersCount);
-                $('#stats-customers').attr("title", data.model.CustomersCount);
-
-                $('#stats-orders').html(data.model.OrdersCount);
-                $('#stats-orders').attr("title", data.model.OrdersCount);
-
-                $('#stats-sales').html(data.model.Sales);
-                $('#stats-sales').attr("title", data.model.Sales + " @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")");
-
-                $('#stats-online').html(data.model.OnlineCustomersCount);
-                $('#stats-online').attr("title", data.model.OnlineCustomersCount);
-
-                $('#stats-carts').html(data.model.CartsValue);
-                $('#stats-carts').attr("title", data.model.CartsValue + " @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")");
-
-                $('#stats-wishlists').html(data.model.WishlistsValue);
-                $('#stats-wishlists').attr("title", data.model.WishlistsValue + " @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")");
+                var elements = $('.statistics-value');
+                elements.each(function (i, element) {
+                    var part = $(element).data('part');
+                    $(element).html(data.model[part]);
+                    $(element).attr('title', data.model[part]);
+                });
             }
         });
     });
- </script>
+</script>

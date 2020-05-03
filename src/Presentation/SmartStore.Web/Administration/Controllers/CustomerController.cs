@@ -1356,7 +1356,7 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         private List<TopCustomerReportLineModel> CreateCustomerReportLineModel(IList<TopCustomerReportLine> items)
         {
-            var customers = _customerService.GetCustomersByIds(items.Select(x => x.CustomerId).ToArray());
+            var customers = _customerService.GetCustomersByIds(items.Distinct().Select(x => x.CustomerId).ToArray());
             return items.Select(x =>
              {
                  var m = new TopCustomerReportLineModel()
@@ -1419,12 +1419,12 @@ namespace SmartStore.Admin.Controllers
                 periodStatus = PeriodState.Yesterday;
             }
             // Last 7 days (older than today and yesterday)
-            else if (dataPoint >= userTime.AddDays(-7).Date)
+            else if (dataPoint >= userTime.AddDays(-6).Date)
             {
                 periodStatus = PeriodState.Week;
             }
             // Last 28 days (older than last 7 days)
-            else if (dataPoint >= userTime.AddDays(-28).Date)
+            else if (dataPoint >= userTime.AddDays(-27).Date)
             {
                 periodStatus = PeriodState.Month;
             }

@@ -563,6 +563,35 @@
             builder.AddOrUpdate("Admin.Report.OnlineCustomers", "Customers online within last 15 minutes", "Kunden in den letzten 15 Minuten online");
             builder.AddOrUpdate("Admin.Orders.Overall", "Orders overall", "Aufträge insgesamt");
             builder.AddOrUpdate("Admin.Report.Registrations", "Registrations", "Registrierungen");
+
+
+            builder.AddOrUpdate("FileUploader.Dropzone.Message",
+                "To upload files drop them here or click the button.",
+                "Zum Hochladen Dateien hier ablegen oder Button anklicken.");
+            
+            builder.AddOrUpdate("FileUploader.MultiFiles.MainMediaFile", "Main media file", "Hauptbild");
+
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Title", "Duplicates detected", "Duplikate entdeckt");
+            
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Intro",
+                "The files you selected already exist. In the following list, you will find an overview of these files. Please decide how the files should be handled.", 
+                "Die von Ihnen ausgewählten Dateien sind bereits vorhanden. In der folgenden Liste finden Sie eine Übersicht dieser Dateien. Bitte entscheiden Sie, wie die Dateien behandelt werden sollen.");
+
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Skip", "Skip files", "Dateien überspringen");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Overwrite", "Overwrite files", "Dateien überschreiben");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Keep", "Keep files", "Beide Dateien behalten");
+
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Skip.Hint",
+                "The files already uploaded will not be overwritten. The newly added files are not uploaded.",
+                "Die bereits hochgeladenen Dateien werden nicht überschrieben. Die neu hinzugefügten Dateien werden nicht hochgeladen.");
+
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Overwrite.Hint",
+                "The already uploaded files are overwritten and replaced by the newly added files.",
+                "Die bereits hochgeladenen Dateien werden überschrieben und durch die neu zugefügten Dateien ersetzt.");
+
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Keep.Hint",
+                "The files already uploaded will not be overwritten. The newly added files will be saved with new names.",
+                "Die bereits hochgeladenen Dateien werden nicht überschrieben. Die neu hinzugefügten Dateien werden mit neuem Namen gespeichert.");
         }
     }
 }

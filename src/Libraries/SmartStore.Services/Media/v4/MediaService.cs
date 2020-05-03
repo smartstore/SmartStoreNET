@@ -112,7 +112,7 @@ namespace SmartStore.Services.Media
 
             // Determine file count for each folder
             var byFolders = from f in q
-                     where f.FolderId > 0
+                     where f.FolderId > 0 && !f.Deleted
                      group f by f.FolderId.Value into grp
                      select grp;
 

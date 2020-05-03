@@ -206,7 +206,7 @@ namespace SmartStore.Web.Controllers
 			{
 				// A result stream instance is given when the file has just been processed by a media handler during this request.
 				// In this case there is no need to open the stream from storage again.
-				return new CachedFileResult(pathData.MimeType, responseFile.LastUpdated, () => handlerContext.ResultStream, handlerContext.ResultStream.Length);
+				return new CachedFileResult(MimeTypes.MapNameToMimeType(responseFile.Name), responseFile.LastUpdated, () => handlerContext.ResultStream, handlerContext.ResultStream.Length);
 			}
 			else
 			{

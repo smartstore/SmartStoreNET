@@ -9,8 +9,8 @@ namespace SmartStore.Shipping.Data.Migrations
     {
         public override void Up()
         {
-			if (DbMigrationContext.Current.SuppressInitialCreate<ByTotalObjectContext>())
-				return;
+			//if (DbMigrationContext.Current.SuppressInitialCreate<ByTotalObjectContext>())
+			//	return;
 			
 			CreateTable(
                 "dbo.ShippingByTotal",

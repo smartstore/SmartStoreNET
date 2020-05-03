@@ -596,26 +596,27 @@ namespace SmartStore.Data.Migrations
                 .Index(t => t.PictureId)
                 .Index(t => t.Deleted);
 
-            CreateTable(
-                "dbo.DiscountRequirement",
-                c => new
-                {
-                    Id = c.Int(nullable: false, identity: true),
-                    DiscountId = c.Int(nullable: false),
-                    DiscountRequirementRuleSystemName = c.String(),
-                    SpentAmount = c.Decimal(nullable: false, precision: 18, scale: 4),
-                    BillingCountryId = c.Int(nullable: false),
-                    ShippingCountryId = c.Int(nullable: false),
-                    RestrictedToCustomerRoleId = c.Int(),
-                    RestrictedProductIds = c.String(),
-                    RestrictedPaymentMethods = c.String(),
-                    RestrictedShippingOptions = c.String(),
-                    RestrictedToStoreId = c.Int(),
-                    ExtraData = c.String(),
-                })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Discount", t => t.DiscountId, cascadeDelete: true)
-                .Index(t => t.DiscountId);
+            // Obsolete. Is now implemented by rule builder.
+            //CreateTable(
+            //    "dbo.DiscountRequirement",
+            //    c => new
+            //    {
+            //        Id = c.Int(nullable: false, identity: true),
+            //        DiscountId = c.Int(nullable: false),
+            //        DiscountRequirementRuleSystemName = c.String(),
+            //        SpentAmount = c.Decimal(nullable: false, precision: 18, scale: 4),
+            //        BillingCountryId = c.Int(nullable: false),
+            //        ShippingCountryId = c.Int(nullable: false),
+            //        RestrictedToCustomerRoleId = c.Int(),
+            //        RestrictedProductIds = c.String(),
+            //        RestrictedPaymentMethods = c.String(),
+            //        RestrictedShippingOptions = c.String(),
+            //        RestrictedToStoreId = c.Int(),
+            //        ExtraData = c.String(),
+            //    })
+            //    .PrimaryKey(t => t.Id)
+            //    .ForeignKey("dbo.Discount", t => t.DiscountId, cascadeDelete: true)
+            //    .Index(t => t.DiscountId);
 
             CreateTable(
                 "dbo.DeliveryTime",
@@ -2027,18 +2028,19 @@ namespace SmartStore.Data.Migrations
                 .Index(t => t.Product_Id)
                 .Index(t => t.ProductTag_Id);
 
-            CreateTable(
-                "dbo.Customer_CustomerRole_Mapping",
-                c => new
-                {
-                    Customer_Id = c.Int(nullable: false),
-                    CustomerRole_Id = c.Int(nullable: false),
-                })
-                .PrimaryKey(t => new { t.Customer_Id, t.CustomerRole_Id })
-                .ForeignKey("dbo.Customer", t => t.Customer_Id, cascadeDelete: true)
-                .ForeignKey("dbo.CustomerRole", t => t.CustomerRole_Id, cascadeDelete: true)
-                .Index(t => t.Customer_Id)
-                .Index(t => t.CustomerRole_Id);
+            // Obsolete. Is now implemented by granular permissions.
+            //CreateTable(
+            //    "dbo.Customer_CustomerRole_Mapping",
+            //    c => new
+            //    {
+            //        Customer_Id = c.Int(nullable: false),
+            //        CustomerRole_Id = c.Int(nullable: false),
+            //    })
+            //    .PrimaryKey(t => new { t.Customer_Id, t.CustomerRole_Id })
+            //    .ForeignKey("dbo.Customer", t => t.Customer_Id, cascadeDelete: true)
+            //    .ForeignKey("dbo.CustomerRole", t => t.CustomerRole_Id, cascadeDelete: true)
+            //    .Index(t => t.Customer_Id)
+            //    .Index(t => t.CustomerRole_Id);
 
             CreateTable(
                 "dbo.PollVotingRecord",
@@ -2189,8 +2191,8 @@ namespace SmartStore.Data.Migrations
             DropForeignKey("dbo.Forums_Topic", "CustomerId", "dbo.Customer");
             DropForeignKey("dbo.Forums_Post", "CustomerId", "dbo.Customer");
             DropForeignKey("dbo.ExternalAuthenticationRecord", "CustomerId", "dbo.Customer");
-            DropForeignKey("dbo.Customer_CustomerRole_Mapping", "CustomerRole_Id", "dbo.CustomerRole");
-            DropForeignKey("dbo.Customer_CustomerRole_Mapping", "Customer_Id", "dbo.Customer");
+            //DropForeignKey("dbo.Customer_CustomerRole_Mapping", "CustomerRole_Id", "dbo.CustomerRole");
+            //DropForeignKey("dbo.Customer_CustomerRole_Mapping", "Customer_Id", "dbo.Customer");
             DropForeignKey("dbo.News", "LanguageId", "dbo.Language");
             DropForeignKey("dbo.TierPrice", "ProductId", "dbo.Product");
             DropForeignKey("dbo.TierPrice", "CustomerRoleId", "dbo.CustomerRole");
@@ -2219,7 +2221,7 @@ namespace SmartStore.Data.Migrations
             DropForeignKey("dbo.ProductBundleItemAttributeFilter", "BundleItemId", "dbo.ProductBundleItem");
             DropForeignKey("dbo.Product", "DeliveryTimeId", "dbo.DeliveryTime");
             DropForeignKey("dbo.Product", "CountryOfOriginId", "dbo.Country");
-            DropForeignKey("dbo.DiscountRequirement", "DiscountId", "dbo.Discount");
+            //DropForeignKey("dbo.DiscountRequirement", "DiscountId", "dbo.Discount");
             DropForeignKey("dbo.Discount_AppliedToProducts", "Product_Id", "dbo.Product");
             DropForeignKey("dbo.Discount_AppliedToProducts", "Discount_Id", "dbo.Discount");
             DropForeignKey("dbo.Discount_AppliedToManufacturers", "Manufacturer_Id", "dbo.Manufacturer");
@@ -2257,8 +2259,8 @@ namespace SmartStore.Data.Migrations
             DropIndex("dbo.NewsComment", new[] { "Id" });
             DropIndex("dbo.PollVotingRecord", new[] { "PollAnswerId" });
             DropIndex("dbo.PollVotingRecord", new[] { "Id" });
-            DropIndex("dbo.Customer_CustomerRole_Mapping", new[] { "CustomerRole_Id" });
-            DropIndex("dbo.Customer_CustomerRole_Mapping", new[] { "Customer_Id" });
+            //DropIndex("dbo.Customer_CustomerRole_Mapping", new[] { "CustomerRole_Id" });
+            //DropIndex("dbo.Customer_CustomerRole_Mapping", new[] { "Customer_Id" });
             DropIndex("dbo.Product_ProductTag_Mapping", new[] { "ProductTag_Id" });
             DropIndex("dbo.Product_ProductTag_Mapping", new[] { "Product_Id" });
             DropIndex("dbo.Discount_AppliedToProducts", new[] { "Product_Id" });
@@ -2354,7 +2356,7 @@ namespace SmartStore.Data.Migrations
             DropIndex("dbo.ProductBundleItemAttributeFilter", new[] { "BundleItemId" });
             DropIndex("dbo.ProductBundleItem", new[] { "BundleProductId" });
             DropIndex("dbo.ProductBundleItem", new[] { "ProductId" });
-            DropIndex("dbo.DiscountRequirement", new[] { "DiscountId" });
+            //DropIndex("dbo.DiscountRequirement", new[] { "DiscountId" });
             DropIndex("dbo.Manufacturer", new[] { "Deleted" });
             DropIndex("dbo.Manufacturer", new[] { "PictureId" });
             DropIndex("dbo.Product_Picture_Mapping", new[] { "PictureId" });
@@ -2391,7 +2393,7 @@ namespace SmartStore.Data.Migrations
             DropTable("dbo.BlogComment");
             DropTable("dbo.NewsComment");
             DropTable("dbo.PollVotingRecord");
-            DropTable("dbo.Customer_CustomerRole_Mapping");
+            //DropTable("dbo.Customer_CustomerRole_Mapping");
             DropTable("dbo.Product_ProductTag_Mapping");
             DropTable("dbo.Discount_AppliedToProducts");
             DropTable("dbo.Discount_AppliedToManufacturers");
@@ -2471,7 +2473,7 @@ namespace SmartStore.Data.Migrations
             DropTable("dbo.ProductBundleItemAttributeFilter");
             DropTable("dbo.ProductBundleItem");
             DropTable("dbo.DeliveryTime");
-            DropTable("dbo.DiscountRequirement");
+            //DropTable("dbo.DiscountRequirement");
             DropTable("dbo.Manufacturer");
             DropTable("dbo.Product_Picture_Mapping");
             DropTable("dbo.MediaStorage");

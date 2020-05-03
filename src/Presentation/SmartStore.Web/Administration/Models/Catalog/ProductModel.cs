@@ -336,6 +336,8 @@ namespace SmartStore.Admin.Models.Catalog
 
 		[SmartResourceDisplayName("Common.CreatedOn")]
 		public DateTime? CreatedOn { get; set; }
+		public string CreatedOnString { get; set; }
+
 
 		[SmartResourceDisplayName("Common.UpdatedOn")]
 		public DateTime? UpdatedOn { get; set; }

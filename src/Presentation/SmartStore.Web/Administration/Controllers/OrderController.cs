@@ -2839,7 +2839,7 @@ namespace SmartStore.Admin.Controllers
                 new OrdersIncompleteDashboardReportModel(),
                 // This year = index 3
                 new OrdersIncompleteDashboardReportModel(),
-            };
+            }; 
 
             // Query to get all incomplete orders of at least the last 28 days (if year is younger)
             var beginningOfYear = new DateTime(DateTime.UtcNow.Year, 1, 1);

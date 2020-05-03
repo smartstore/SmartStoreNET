@@ -508,7 +508,7 @@
     </Content>
     <Content Include="App_Data\Localization\App\en\head.txt" />
     <Content Include="App_Data\Localization\Installation\installation.de.xml" />
-    <Content Include="App_Data\Localization\Installation\installation.en.xml">
+    <Content Include="App_Data\Localization\Installation\installation.fa.xml">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="App_Data\Samples\brand\wilson.png" />

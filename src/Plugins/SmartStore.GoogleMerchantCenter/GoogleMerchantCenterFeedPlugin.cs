@@ -11,16 +11,11 @@ namespace SmartStore.GoogleMerchantCenter
 {
     public class GoogleMerchantCenterFeedPlugin : BasePlugin, IConfigurable
     {
-        private readonly IGoogleFeedService _googleFeedService;
 		private readonly ICommonServices _services;
         private readonly IExportProfileService _exportProfileService;
 
-        public GoogleMerchantCenterFeedPlugin(
-			IGoogleFeedService googleFeedService,
-			ICommonServices services,
-            IExportProfileService exportProfileService)
+        public GoogleMerchantCenterFeedPlugin(ICommonServices services, IExportProfileService exportProfileService)
         {
-            _googleFeedService = googleFeedService;
 			_services = services;
             _exportProfileService = exportProfileService;
         }

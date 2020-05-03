@@ -8,8 +8,8 @@ namespace SmartStore.Tax.Data.Migrations
     {
         public override void Up()
         {
-			if (DbMigrationContext.Current.SuppressInitialCreate<TaxRateObjectContext>())
-				return;
+			//if (DbMigrationContext.Current.SuppressInitialCreate<TaxRateObjectContext>())
+			//	return;
 			
 			CreateTable(
                 "dbo.TaxRate",

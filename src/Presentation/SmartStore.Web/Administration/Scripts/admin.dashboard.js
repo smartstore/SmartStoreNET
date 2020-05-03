@@ -8,9 +8,9 @@
     var colorDanger = root.css('--danger');
     var fontFamily = root.css('--font-family-sans-serif');
 
-    createIncompleteOrdersCharts = function (textFulfilled, textNotShipped, textNotPayed, textNewOrders) {
-        var dataSets = $('#incomplete-orders-report').data('chart');
+    createIncompleteOrdersCharts = function (dataSets, textFulfilled, textNotShipped, textNotPayed, textNewOrders, textOrders, textAmount) {
         for (var i = 0; i < dataSets.length; i++) {
+            // If there are no incomplete orders for set i > add 1 to new orders (data index 2) so tooltip gets displayed
             if (dataSets[i].Data[0].Quantity == 0 && dataSets[i].Data[1].Quantity == 0) {
                 dataSets[i].Data[2].Quantity = 1;
             }
@@ -47,22 +47,32 @@
                 mode: 'nearest',
                 intersect: true,
                 titleFontFamily: fontFamily,
+                titleFontSize: 13,
                 bodyFontFamily: fontFamily,
-                xPadding: 10,
-                yPadding: 8,
+                bodyFontSize: 13,
+                xPadding: 12,
+                yPadding: 10,
                 caretPadding: 6,
                 caretSize: 8,
                 cornerRadius: 4,
                 titleMarginBottom: 8,
                 bodySpacing: 5,
+                displayColors: false,
                 callbacks: {
                     label: function (item, data) {
+                        // If tooltip = newOrders (index 2) and no other data is avalable, display orders fulfilled text
                         if (item.index == 2 && data.datasets[0].data[0] == 0 && data.datasets[0].data[1] == 0) {
-                            return " " + textFulfilled;
+                            return textFulfilled;
                         }
-                        return " " + data.labels[item.index] + ": " + dataSets[this._chart.id + alreadyExistingCharts].Data[item.index].QuantityFormatted
-                            + ", " + dataSets[this._chart.id + alreadyExistingCharts].Data[item.index].AmountFormatted;
+                        return [textOrders + ":  " + dataSets[this._chart.id + alreadyExistingCharts].Data[item.index].QuantityFormatted,
+                            textAmount + ":  " + dataSets[this._chart.id + alreadyExistingCharts].Data[item.index].AmountFormatted];
                     },
+                    title: function (item, data) {
+                        if (item[0].index == 2 && data.datasets[0].data[0] == 0 && data.datasets[0].data[1] == 0) {
+                            return;
+                        }
+                        return data.labels[item[0].index];
+                    }
                 }
             },
         };

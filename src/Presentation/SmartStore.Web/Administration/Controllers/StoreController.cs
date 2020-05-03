@@ -245,11 +245,12 @@ namespace SmartStore.Admin.Controllers
 
         [Permission(Permissions.Configuration.Store.ReadStats, false)]
         public JsonResult StoreDashboardReport()
-        {            
+        {
             var watch = new Stopwatch();
             watch.Start();
 
             var allOrders = _orderService.GetOrders(0, 0, null, null, null, null, null, null, null);
+            var registeredRoleId = _customerService.GetCustomerRoleBySystemName("Registered").Id;            
             var model = new StoreDashboardReportModel
             {
                 ProductsCount = _productService.CountAllProducts().ToString("N0"),
@@ -262,7 +263,7 @@ namespace SmartStore.Admin.Controllers
                     new CustomerSearchQuery
                     {
                         Deleted = false,
-                        CustomerRoleIds = new int[] { 3 }
+                        CustomerRoleIds = new int[] { registeredRoleId }
                     }
                 ).TotalCount.ToString("N0"),
                 OrdersCount = allOrders.Count().ToString("N0"),

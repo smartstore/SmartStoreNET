@@ -182,7 +182,7 @@ namespace SmartStore.Services.Media.Migration
                             CreatedOnUtc = stub.UpdatedOnUtc,
                             UpdatedOnUtc = stub.UpdatedOnUtc,
                             Extension = stub.Extension.TrimStart('.'),
-                            Name = stub.Filename, // Extension appended later in MigrateFiles()
+                            Name = stub.Filename.Truncate(292), // Extension appended later in MigrateFiles()
                             MimeType = stub.ContentType,
                             MediaType = MediaType.Image, // Resolved later in MigrateFiles()
                             FolderId = isMailAttachment ? messagesFolderId : downloadsFolderId,
@@ -326,7 +326,7 @@ namespace SmartStore.Services.Media.Migration
                             file.Extension = MimeTypes.MapMimeTypeToExtension(file.MimeType);
                         }
                         
-                        file.Name = file.Name + "." + file.Extension;
+                        file.Name = file.Name.Truncate(292) + "." + file.Extension;
                         file.CreatedOnUtc = file.UpdatedOnUtc;
                         file.Version = 1;
 

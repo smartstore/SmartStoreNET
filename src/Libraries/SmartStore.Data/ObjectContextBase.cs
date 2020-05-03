@@ -194,11 +194,23 @@ namespace SmartStore.Data
             return result;
         }
 
-		/// <summary>
-		/// Checks whether the underlying ORM mapper is currently in the process of detecting changes.
-		/// </summary>
-		/// <returns></returns>
-		public virtual bool IsDetectingChanges()
+        public int? ExecuteSqlCommandSafe(string sql, bool doNotEnsureTransaction = false, int? timeout = null, params object[] parameters)
+        {
+            try
+            {
+                return ExecuteSqlCommand(sql, doNotEnsureTransaction, timeout, parameters);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Checks whether the underlying ORM mapper is currently in the process of detecting changes.
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool IsDetectingChanges()
 		{
 			if (_transactionManager == null && DataSettings.DatabaseIsInstalled())
 			{

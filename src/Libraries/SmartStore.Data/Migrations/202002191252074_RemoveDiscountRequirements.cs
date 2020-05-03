@@ -53,7 +53,9 @@ namespace SmartStore.Data.Migrations
 
             // Remove discount requirement.
             // Data has been migrated through 202001301039020_DiscountRuleSets.cs.
-            Execute(context, "DROP TABLE [dbo].[DiscountRequirement]");
+            context.ExecuteSqlCommandSafe("ALTER TABLE [dbo].[DiscountRequirement] DROP CONSTRAINT [FK_dbo.DiscountRequirement_dbo.Discount_DiscountId]");
+            context.ExecuteSqlCommandSafe("DROP INDEX [IX_DiscountId] ON [dbo].[DiscountRequirement]");
+            context.ExecuteSqlCommandSafe("DROP TABLE [dbo].[DiscountRequirement]");
 
             // Remove data of obsolete filter plugins.
             var syncMappingsSet = context.Set<SyncMapping>();
@@ -115,15 +117,6 @@ namespace SmartStore.Data.Migrations
                 resourceSet.RemoveRange(moreResources);
                 context.SaveChanges();
             }
-        }
-
-        private void Execute(SmartObjectContext context, string sql)
-        {
-            try
-            {
-                context.ExecuteSqlCommand(sql);
-            }
-            catch { }
         }
     }
 }

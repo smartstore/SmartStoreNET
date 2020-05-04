@@ -7,25 +7,25 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Services.Media
 {
-    public class VideoHandler : ImageHandlerBase
-    {
-        public VideoHandler(IImageCache imageCache)
-            : base(imageCache)
-        {
-        }
+    //public class VideoHandler : ImageHandlerBase
+    //{
+    //    public VideoHandler(IImageCache imageCache)
+    //        : base(imageCache)
+    //    {
+    //    }
 
-        public override int Order => -90;
+    //    public override int Order => -90;
 
-        protected override bool IsProcessable(MediaHandlerContext context)
-        {
-            // TODO: (mm) implement!
-            return false;
-        }
+    //    protected override bool IsProcessable(MediaHandlerContext context)
+    //    {
+    //        // TODO: (mm) implement!
+    //        return false;
+    //    }
 
-        protected override Task ProcessImageAsync(MediaHandlerContext context, CachedImage cachedImage, Stream inputStream)
-        {
-            // TODO: (mm) implement!
-            return Task.FromResult(0);
-        }
-    }
+    //    protected override Task ProcessImageAsync(MediaHandlerContext context, CachedImage cachedImage, Stream inputStream)
+    //    {
+    //        // TODO: (mm) implement!
+    //        return Task.FromResult(0);
+    //    }
+    //}
 }

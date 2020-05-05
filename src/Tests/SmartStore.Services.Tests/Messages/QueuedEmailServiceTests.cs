@@ -7,8 +7,10 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Email;
+using SmartStore.Core.Plugins;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Media;
+using SmartStore.Services.Media.Storage;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Tests.Configuration;
 using SmartStore.Utilities;
@@ -25,6 +27,7 @@ namespace SmartStore.Services.Tests.Messages
 		QueuedEmailService _queuedEmailService;
 		ISettingService _settingService;
         IMediaService _mediaService;
+        Provider<IMediaStorageProvider> _mediaStorageProvider;
 
         [SetUp]
 		public new void SetUp()
@@ -34,6 +37,7 @@ namespace SmartStore.Services.Tests.Messages
 			_emailSender = MockRepository.GenerateMock<IEmailSender>();
 			_services = MockRepository.GenerateMock<ICommonServices>();
             _mediaService = MockRepository.GenerateMock<IMediaService>();
+            _mediaStorageProvider = ProviderManager.GetProvider<IMediaStorageProvider>(DatabaseMediaStorageProvider.SystemName);
 
             _settingService = new ConfigFileSettingService(null, null);
 			_services.Expect(x => x.Settings).Return(_settingService);
@@ -89,25 +93,30 @@ namespace SmartStore.Services.Tests.Messages
 				Name = "path2.pdf", 
 				MimeType = "application/pdf" 
 			};
-			var attachFile = new QueuedEmailAttachment
+
+            var fileReferenceFile = new MediaFile
+            {
+                MimeType = "application/pdf",
+                MediaStorage = new MediaStorage { Id = 2, Data = pdfBinary },
+                MediaStorageId = 2,
+                Extension = ".pdf",
+                Name = "file.pdf"
+            };
+            var attachFile = new QueuedEmailAttachment
 			{
 				StorageLocation = EmailAttachmentStorageLocation.FileReference,
 				Name = "file.pdf",
 				MimeType = "application/pdf",
-				MediaFile = new MediaFile
-                {
-					MimeType = "application/pdf",
-					MediaStorage = new MediaStorage { Id = 2, Data = pdfBinary },
-					MediaStorageId = 2,
-					Extension = ".pdf",
-					Name = "file"
-				}
+				MediaFile = fileReferenceFile
 			};
 
 			qe.Attachments.Add(attachBlob);
 			qe.Attachments.Add(attachFile);
 			qe.Attachments.Add(attachPath1);
 			qe.Attachments.Add(attachPath2);
+
+            _mediaService.Expect(x => x.ConvertMediaFile(fileReferenceFile)).Return(
+                new MediaFileInfo(fileReferenceFile, _mediaStorageProvider.Value, null, null));
 
             var msg = _queuedEmailService.ConvertEmail(qe);
 

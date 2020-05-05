@@ -228,7 +228,6 @@ namespace SmartStore.Services.Messages
 						var file = qea.MediaFile;
 						if (file != null)
 						{
-                            // TODO: unit tests. Difficult to mock.
                             var mediaFile = _services.MediaService.ConvertMediaFile(file);
 							var stream = mediaFile.OpenRead();
                             if (stream != null)

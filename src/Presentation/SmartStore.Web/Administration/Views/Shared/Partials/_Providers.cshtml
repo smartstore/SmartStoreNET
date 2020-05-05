@@ -150,7 +150,7 @@
 		
 		$('.sortable-list').sortable({
             handle: '.sortable-grip',
-			ghostClass: 'sortable-gohst-class'
+            ghostClass: 'sortable-ghost'
         }).on('sort', function (e, ui) {
 
 			var items = $(this).closest('.sortable-list').find('.module-item');

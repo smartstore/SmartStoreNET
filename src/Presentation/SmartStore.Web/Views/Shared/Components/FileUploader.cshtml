@@ -197,7 +197,7 @@
 			// Sorting.
 			var sortable = $('.preview-container', fuContainer).sortable({
                 items: fuContainer.find('.dz-image-preview'),
-				ghostClass: 'sortable-gohst-class'
+				ghostClass: 'sortable-ghost'
 			}).on('sort', function (e, ui) {
 				sortPictures($(this));
 			});

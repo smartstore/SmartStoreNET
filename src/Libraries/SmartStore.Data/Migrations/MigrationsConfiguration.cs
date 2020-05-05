@@ -113,11 +113,15 @@
             builder.AddOrUpdate("Common.Notify", "Notify", "Benachrichtigen");
             builder.AddOrUpdate("Common.Approve", "Approve", "Genehmigen");
             builder.AddOrUpdate("Common.Rules", "Rules", "Regeln");
-
             builder.AddOrUpdate("Common.Allow", "Allow", "Erlaubt");
             builder.AddOrUpdate("Common.Deny", "Deny", "Verweigert");
-
             builder.AddOrUpdate("Common.ExpandCollapseAll", "Expand\\collapse all", "Alle auf\\zuklappen");
+            builder.AddOrUpdate("Common.Trash", "Trash", "Papierkorb");
+            builder.AddOrUpdate("Common.Cut", "Cut", "Ausschneiden");
+            builder.AddOrUpdate("Common.Copy", "Copy", "Kopieren");
+            builder.AddOrUpdate("Common.Paste", "Paste", "Einfügen");
+            builder.AddOrUpdate("Common.SelectAll", "Select all", "Alles auswählen");
+            builder.AddOrUpdate("Common.Rename", "Rename", "Umbenennen");
 
             builder.AddOrUpdate("Admin.Customers.PermissionViewNote",
                 "The view shows the permissions that apply to this customer based on the customer roles assigned to him. To change permissions, switch to the relevant <a class=\"alert-link\" href=\"{0}\">customer role</a>.",

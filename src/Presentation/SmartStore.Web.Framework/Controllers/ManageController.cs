@@ -36,7 +36,7 @@ namespace SmartStore.Web.Framework.Controllers
         /// <param name="configure">Configure action</param>
         protected virtual void AddLocales<TLocalizedModelLocal>(ILanguageService languageService, IList<TLocalizedModelLocal> locales, Action<TLocalizedModelLocal, int> configure) where TLocalizedModelLocal : ILocalizedModelLocal
         {
-            foreach (var language in languageService.GetAllLanguages(true))
+            foreach (var language in languageService.GetAllLanguages(false))
             {
                 var locale = Activator.CreateInstance<TLocalizedModelLocal>();
                 locale.LanguageId = language.Id;

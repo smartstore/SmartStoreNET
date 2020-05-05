@@ -76,7 +76,7 @@ namespace SmartStore
 		{
 			get
 			{
-				return decimal.Round(Amount, DecimalDigits, MidpointRounding.AwayFromZero);
+				return decimal.Round(Amount, DecimalDigits);
 			}
 		}
 

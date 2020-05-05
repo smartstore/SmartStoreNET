@@ -524,6 +524,7 @@
     <Content Include="Scripts\jquery-shims.js" />
     <Content Include="Scripts\jquery.tmpl.min.js" />
     <Content Include="Scripts\admin.globalinit.js" />
+    <Content Include="Scripts\smartstore.media.js" />
     <Content Include="Scripts\smartstore.rules.js" />
     <Content Include="Scripts\smartstore.iconchooser.js" />
     <Content Include="Scripts\smartstore.download.js" />

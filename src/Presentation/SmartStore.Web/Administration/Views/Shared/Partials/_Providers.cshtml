@@ -149,7 +149,8 @@
         });
 		
 		$('.sortable-list').sortable({
-			handle: '.sortable-grip'
+            handle: '.sortable-grip',
+			ghostClass: 'sortable-gohst-class'
         }).on('sort', function (e, ui) {
 
 			var items = $(this).closest('.sortable-list').find('.module-item');

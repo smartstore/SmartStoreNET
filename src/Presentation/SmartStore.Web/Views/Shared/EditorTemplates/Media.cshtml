@@ -98,39 +98,41 @@
 
 <div class="fileupload-container">
 
-	@if (!MultiFile)
-    {
-        // Single file uploads have preview images.
-		<div class="fileupload-thumb-stage">
-			<div class="fileupload-thumb" style="background-image: url('@Url.Media(fileId, mediaSettings.ProductThumbPictureSize)')">
-				@Html.HiddenFor(x => x, new { @class = "hidden" })
+	<div @Html.Attr("class", "dropzone-container", !MultiFile)>
+
+		@if (!MultiFile)
+		{
+			// Single file uploads have preview images.
+			<div class="fileupload-thumb-stage">
+				<div class="fileupload-thumb" style="background-image: url('@Url.Media(fileId, mediaSettings.ProductThumbPictureSize)')">
+					@Html.HiddenFor(x => x, new { @class = "hidden" })
+				</div>
 			</div>
-		</div>
-    }
-	
-	<div class="fileupload-controls">
+		}
 
-		@*
+		<div class="fileupload-controls">
+			@*
 			TODO: If multiupload > other MediaTypes may be have to be configured. Should be a property of this editor template.
-		*@
+			*@
 
-		@(Html.SmartStore().FileUploader()
-			.UploadUrl(Url.Action("Upload", "Media", new { isTransient = TransientUpload, path = Path, area = "Admin" }))
-			.HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
-			.AcceptedFileTypes(mediaSettings.ImageTypes)
-			.ShowRemoveButton(!MultiFile && Model.HasValue)						// Multifile uploads don't need a remove button.
-			.ShowRemoveButtonAfterUpload(false)
-			.Compact(ViewData["compact"].Convert<bool?>() == true)
+			@(Html.SmartStore().FileUploader()
+				.UploadUrl(Url.Action("Upload", "Media", new { isTransient = TransientUpload, path = Path, area = "Admin" }))
+				.HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
+				.AcceptedFileTypes(mediaSettings.ImageTypes)
+				.ShowRemoveButton(!MultiFile && Model.HasValue)                     // Multifile uploads don't need a remove button.
+				.ShowRemoveButtonAfterUpload(false)
+				.Compact(ViewData["compact"].Convert<bool?>() == true)
 
-			.PreviewContainerId("preview-" + random)
-			.Multifile(ViewData["multifile"].Convert<bool?>() == true)
-			.MainFileId(fileId)
-			.UploadedFiles(UploadedFiles)
-			.EntityType("Product")
-			.EntityId(EntityId)
-			.DeleteUrl(DeleteUrl)
-			.SortUrl(SortUrl)
-			.EntityAssignmentUrl(EntityAssignmentUrl)
-		)
+				.PreviewContainerId("preview-" + random)
+				.Multifile(ViewData["multifile"].Convert<bool?>() == true)
+				.MainFileId(fileId)
+				.UploadedFiles(UploadedFiles)
+				.EntityType("Product")
+				.EntityId(EntityId)
+				.DeleteUrl(DeleteUrl)
+				.SortUrl(SortUrl)
+				.EntityAssignmentUrl(EntityAssignmentUrl)
+			)
+		</div>
 	</div>
 </div>

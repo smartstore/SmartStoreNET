@@ -92,7 +92,7 @@
     Html.AddScriptParts(true, "~/Administration/Scripts/smartstore.download.js");
 }
 
-<div id="@clientId" class="form-row flex-nowrap download-editor@(MinimalMode ? " minimal" : "")"
+<div id="@clientId" class="form-row flex-nowrap fileupload-container download-editor@(MinimalMode ? " minimal" : "")"
 	 data-download-id="@Model.GetValueOrDefault()"
 	 data-use-url="@(initiallyShowUrlPanel ? "true" : "false")"
 	 data-upload-url="@Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" })"

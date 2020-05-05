@@ -30,10 +30,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AddPictureModel.PictureId)
-			</td>
-			<td class="adminData wide">
+			<td class="adminData wide" colspan="2">
 				@Html.EditorFor(model => model.AddPictureModel.PictureId, new
 				{
 					entityId = Model.Id,

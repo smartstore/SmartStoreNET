@@ -1211,6 +1211,7 @@
     <Content Include="Content\vendors\jquery\jquery.validate.unobtrusive.js" />
     <Content Include="Content\vendors\jquery\jquery.validate.unobtrusive.min.js" />
     <Content Include="Content\vendors\modernizr\modernizr.js" />
+    <Content Include="Scripts\smartstore.media.js" />
     <Content Include="Scripts\smartstore.tree.js" />
     <Content Include="Scripts\smartstore.linkbuilder.js" />
     <Content Include="Scripts\smartstore.rangeslider.js" />

@@ -53,4 +53,12 @@ namespace SmartStore.Services.Media
         {
         }
     }
+
+    public sealed class ExtractThumbnailException : SmartException
+    {
+        public ExtractThumbnailException(string path, Exception innerException)
+            : base($"Thumbnail extraction for file '{path}' failed. See inner exception for details.", innerException)
+        {
+        }
+    }
 }

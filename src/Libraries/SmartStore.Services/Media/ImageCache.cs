@@ -108,7 +108,7 @@ namespace SmartStore.Services.Media
 		{
 			Guard.NotNull(cachedImage, nameof(cachedImage));
 
-			if (stream == null || stream.Length == 0)
+			if (stream == null)
 			{
 				return false;
 			}
@@ -132,7 +132,7 @@ namespace SmartStore.Services.Media
 		{
 			Guard.NotNull(cachedImage, nameof(cachedImage));
 
-			if (buffer == null || buffer.Length == 0)
+			if (buffer == null)
 			{
 				return false;
 			}
@@ -172,11 +172,6 @@ namespace SmartStore.Services.Media
 				IsRemote = _fileSystem.IsCloudStorage
 			};
 
-			if (file.Exists && file.Size <= 0)
-			{
-				result.Exists = false;
-			}
-
 			return result;
 		}
 
@@ -196,11 +191,6 @@ namespace SmartStore.Services.Media
 				IsRemote = _fileSystem.IsCloudStorage
 			};
 
-			if (file.Exists && file.Size <= 0)
-			{
-				result.Exists = false;
-			}
-
 			return result;
         }
 
@@ -218,11 +208,6 @@ namespace SmartStore.Services.Media
 				Extension = file.Extension.TrimStart('.'),
 				IsRemote = _fileSystem.IsCloudStorage
 			};
-
-			if (file.Exists && file.Size <= 0)
-			{
-				result.Exists = false;
-			}
 
 			return result;
 		}
@@ -248,7 +233,7 @@ namespace SmartStore.Services.Media
 			
 			var file = _fileSystem.GetFile(cachedImage.File.Path);
 			cachedImage.File = file;
-			cachedImage.Exists = file.Exists && file.Size > 0;
+			cachedImage.Exists = file.Exists;
 		}
 
 		//public virtual void Delete4(MediaFile mediaFile)

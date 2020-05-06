@@ -29,7 +29,9 @@ namespace SmartStore.Data.Migrations
             string newName,
             Func<ColumnBuilder, ColumnModel> columnAction,
             string[] foreignKey = null,
-            string[] index = null)
+            string[] newForeignKey = null,
+            bool dropIndex = false,
+            bool createIndex = false)
         {
             var nativeTableName = table.StartsWith("dbo.", StringComparison.OrdinalIgnoreCase)
                 ? table.Substring(4)
@@ -54,9 +56,20 @@ namespace SmartStore.Data.Migrations
                 }
             }
 
-            if (index != null)
+            // Add new foreign key after DropForeignKey to allow using old key name.
+            if (newForeignKey != null)
             {
-                DropIndex(table, index);
+                AddForeignKey(table, newName, newForeignKey[0], newForeignKey[1], newForeignKey[2].ToBool(), newForeignKey[3]);
+            }
+
+            if (dropIndex)
+            {
+                DropIndex(table, new[] { name });
+            }
+
+            if (createIndex)
+            {
+                CreateIndex(table, newName);
             }
 
             DropColumn(table, name);
@@ -90,15 +103,30 @@ namespace SmartStore.Data.Migrations
             else
             {
                 // SQL Server CE does not support direct renaming of columns.
+                // The goal is an identical replica of the SQL-Server installation.
                 RenameColumnCe("dbo.BlogPost", "PictureId", "MediaFileId", c => c.Int());
                 RenameColumnCe("dbo.BlogPost", "PreviewPictureId", "PreviewMediaFileId", c => c.Int());
-                RenameColumnCe("dbo.Category", "PictureId", "MediaFileId", c => c.Int(), 
-                    new string[] { "PictureId", "dbo.Picture" }, new[] { "PictureId" });
+
+                RenameColumnCe("dbo.Category", "PictureId", "MediaFileId", c => c.Int(),
+                    new[] { "PictureId", "dbo.Picture" },
+                    new[] { "dbo.MediaFile", "Id", "false", "FK_dbo.Category_dbo.Picture_PictureId" },
+                    true,
+                    true);
+                
                 RenameColumnCe("dbo.MediaFile", "SeoFilename", "Name", c => c.String(maxLength: 300));
+
                 RenameColumnCe("dbo.Product_MediaFile_Mapping", "PictureId", "MediaFileId", c => c.Int(nullable: false),
-                    new string[] { "FK_dbo.Product_Picture_Mapping_dbo.Picture_PictureId" }, new string[] { "PictureId" });
+                    new[] { "FK_dbo.Product_Picture_Mapping_dbo.Picture_PictureId" },
+                    new[] { "dbo.MediaFile", "Id", "true", "FK_dbo.Product_Picture_Mapping_dbo.Picture_PictureId" },
+                    true,
+                    true);
+                
                 RenameColumnCe("dbo.Manufacturer", "PictureId", "MediaFileId", c => c.Int(),
-                    new string[] { "PictureId", "dbo.Picture" }, new[] { "PictureId" });
+                    new[] { "PictureId", "dbo.Picture" },
+                    new[] { "dbo.MediaFile", "Id", "false", "FK_dbo.Manufacturer_dbo.Picture_PictureId" },
+                    true,
+                    true);
+
                 RenameColumnCe("dbo.SpecificationAttributeOption", "PictureId", "MediaFileId", c => c.Int(nullable: false));
                 RenameColumnCe("dbo.ProductVariantAttributeCombination", "AssignedPictureIds", "AssignedMediaFileIds", c => c.String(maxLength: 1000));
                 RenameColumnCe("dbo.ProductAttributeOption", "PictureId", "MediaFileId", c => c.Int(nullable: false));

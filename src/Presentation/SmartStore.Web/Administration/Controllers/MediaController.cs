@@ -92,6 +92,13 @@ namespace SmartStore.Admin.Controllers
             return Json(result.Count == 1 ? result[0] : result);
         }
 
+        //[ChildActionOnly]
+        [HttpPost]
+        public ActionResult FileUploaderDuplicateDialog()
+        {
+            return PartialView();
+        }
+
         public ActionResult MoveFsMedia()
 		{
 			var count = DataMigrator.MoveFsMedia(Services.DbContext);

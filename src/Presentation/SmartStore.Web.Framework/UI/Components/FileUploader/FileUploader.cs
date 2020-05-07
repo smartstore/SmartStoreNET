@@ -35,9 +35,16 @@ namespace SmartStore.Web.Framework.UI
 			set { HtmlAttributes["data-upload-url"] = value; }
 		}
 
+		// BEGIN: Obsolete
 		public string IconCssClass { get; set; }
 		public ButtonStyle ButtonStyle { get; set; }
 		public bool ButtonOutlineStyle { get; set; }
+		public string CancelText { get; set; }
+		public string RemoveText { get; set; }
+		public string UploadText { get; set; }
+
+		// END: Obsolete
+
 		public bool ShowRemoveButton { get; set; }
 		public bool Compact { get; set; }
 
@@ -56,9 +63,7 @@ namespace SmartStore.Web.Framework.UI
 
 		public IEnumerable<IMediaFile> UploadedFiles { get; set; }
 
-		public string CancelText { get; set; }
-		public string RemoveText { get; set; }
-		public string UploadText { get; set; }
+
 
 		public string OnUploadingHandlerName { get; set; }
 		public string OnUploadCompletedHandlerName { get; set; }

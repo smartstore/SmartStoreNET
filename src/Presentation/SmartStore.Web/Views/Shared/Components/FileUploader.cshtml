@@ -18,113 +18,138 @@
 	}
 }
 
-<div class="dropzone-container">
+	<div @Html.Attr("class", "dropzone-container", Model.Multifile)>
 
-	<div class="col fu-message">
-		@T("FileUploader.Dropzone.Message")
-	</div>
+		<div class="dropzone-target">
 
-	<div id="@Model.Name" @Html.Attrs(Model.HtmlAttributes) class="col-auto"
-		 data-dialog-url="@Url.Action("FileUploaderDuplicateDialog", "Common", new { area = "" })"
-		 data-assignment-url="@Model.EntityAssignmentUrl"
-		 data-remove-url="@Model.DeleteUrl"
-		 data-entity-id="@Model.EntityId">
-
-		<div class="fileupload">
-			<input type="hidden" id="@(Model.Id)-file" name="@(Model.Id)-file" />
-
-			<div class="fileupload-progress">
-				<!-- The global progress bar -->
-				<div class="progress">
-					<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
-				</div>
+			<div class="fu-message">
+				@T("FileUploader.Dropzone.Message")
 			</div>
 
-			<div class="fileupload-buttons">
-				<button class="btn btn-danger remove@(Model.Compact ? " btn-sm" : "")" @Html.Attr("style", "display: none", !Model.ShowRemoveButton)>
-					<span>@Model.RemoveText</span>
-				</button>
+			<div id="@Model.Name" @Html.Attrs(Model.HtmlAttributes)
+				 data-dialog-url="@Url.Action("FileUploaderDuplicateDialog", "Media", new { area = "Admin" })"
+				 data-assignment-url="@Model.EntityAssignmentUrl"
+				 data-remove-url="@Model.DeleteUrl"
+				 data-entity-id="@Model.EntityId">
 
-				<span class="btn btn-@(Model.ButtonOutlineStyle ? "outline-" : "")@Model.ButtonStyle.ToString().ToLower() fileinput-button@(Model.Compact ? " btn-sm" : "")">
-					@if (Model.IconCssClass.HasValue())
-					{
-						<i class="@Model.IconCssClass"></i>
-					}
-					<span>@Model.UploadText</span>
+				<div class="fileupload">
 					<input type="hidden" id="@(Model.Id)-file" name="@(Model.Id)-file" />
-				</span>
 
-				<button class="btn btn-outline-secondary cancel@(Model.Compact ? " btn-sm" : "")" style="display: none">
-					<span>@Model.CancelText</span>
-				</button>
+					<div class="fileupload-progress">
+						<!-- The global progress bar -->
+						<div class="progress">
+							<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
+						</div>
+					</div>
 
-				@{ Html.RenderWidget("file_upload_buttons_bottom"); }
+					<div class="fileupload-buttons">
+						@*<span class="btn btn-@(Model.ButtonOutlineStyle ? "outline-" : "")@Model.ButtonStyle.ToString().ToLower() fileinput-button@(Model.Compact ? " btn-sm" : "")">
+							@if (Model.IconCssClass.HasValue())
+							{
+								<i class="@Model.IconCssClass"></i>
+							}
+							<span>@Model.UploadText</span>
+							<input type="hidden" id="@(Model.Id)-file" name="@(Model.Id)-file" />
+						</span>*@
 
+						<input type="hidden" id="@(Model.Id)-file" name="@(Model.Id)-file" />
+
+						@{ Html.RenderWidget("file_upload_buttons_bottom"); }
+
+					</div>
+
+					@if (Model.Multifile == true)
+					{
+						<div class="fileupload-status mt-3 fs-sm d-none">
+							<div class="">
+								<span class="current-file-count">1 Datei</span>
+								<span>von</span>
+								<span class="total-file-count">3</span>
+								<span>hochgeladen.</span>
+							</div>
+							<div>
+								<span>Aktuelle Datei:</span>
+								<span class="current-file"></span>
+							</div>
+							<div>
+								<span class="percental-progress font-weight-bold"></span>
+							</div>
+						</div>
+					}
+
+				</div>
 			</div>
+		</div>
 
-			@if (Model.Multifile == true)
+		<button class="btn btn-secondary btn-circle btn-to-danger btn-sm remove@(Model.Compact ? " btn-sm" : "")" @Html.Attr("style", "display: none", !Model.ShowRemoveButton)>
+			<i class="far fa-times"></i>
+		</button>
+	</div>
+
+	@if (Model.Multifile == true)
+	{
+		var files = Model.UploadedFiles;
+
+		// TODO: find a better way!!!
+		var mediaService = EngineContext.Current.Resolve<IMediaService>();
+
+		<!-- Placeholder to paste preview container into -->
+		<div id="@Model.PreviewContainerId" class="d-flex flex-wrap preview-container mt-3">
+			@foreach (var file in files)
 			{
-				<div class="fileupload-status mt-3 fs-sm d-none">
-					<div class="">
-						<span class="current-file-count">1 Datei</span>
-						<span>von</span>
-						<span class="total-file-count">3</span>
-						<span>hochgeladen.</span>
-					</div>
+				var fileSize = Prettifier.BytesToString(file.MediaFile.Size);
+				var isMainPic = file.MediaFileId == Model.MainFileId;
+				var entityMediaId = 0;
+				var previewUrl = mediaService.GetUrl(file.MediaFileId, 0);
+
+				if (Model.EntityType.Equals("Product"))
+				{
+					var entityMediaFile = file as ProductMediaFile;
+					entityMediaId = entityMediaFile.Id;
+				}
+
+				<div class="d-flex flex-column dz-processing dz-image-preview dz-success dz-complete"
+						data-display-order="@file.DisplayOrder"
+						data-picture-id="@file.MediaFileId"
+						data-toggle="tooltip"
+						data-html="true"
+						data-placement="bottom"
+						title='<div class="text-left px-3"><em>@file.MediaFile.Name</em> <br/> <b>@fileSize</b></div>'
+						@Html.Attr("data-entity-picture-id", entityMediaId.ToString(), entityMediaId != 0)>
 					<div>
-						<span>Aktuelle Datei:</span>
-						<span class="current-file"></span>
+						<span class="preview align-self-center">
+							<img data-dz-thumbnail src="@previewUrl" />
+						</span>
 					</div>
-					<div>
-						<span class="percental-progress font-weight-bold"></span>
+
+					@if (isMainPic)
+					{
+						<span class="main-pic-badge badge badge-success">@T("FileUploader.MultiFiles.MainMediaFile")</span>
+					}
+
+					<div class="fu-preview-toolbar">
+						<a href="#" class="fu-preview-control set-main-picture left">
+							<i class="far fa-eye"></i>
+						</a>
+						<a href="#" class="fu-preview-control delete-entity-picture right">
+							<i class="far fa-trash-alt"></i>
+						</a>
 					</div>
 				</div>
-            }
-
-		</div>
-	</div>
-</div>
-
-@if (Model.Multifile == true)
-{
-	var files = Model.UploadedFiles;
-
-	// TODO: find a better way!!!
-	var mediaService = EngineContext.Current.Resolve<IMediaService>();
-
-	<!-- Placeholder to paste preview container into -->
-	<div id="@Model.PreviewContainerId" class="d-flex flex-wrap preview-container mt-3">
-		@foreach (var file in files)
-		{
-			var fileSize = Prettifier.BytesToString(file.MediaFile.Size);
-			var isMainPic = file.MediaFileId == Model.MainFileId;
-			var entityMediaId = 0;
-			var previewUrl = mediaService.GetUrl(file.MediaFileId, 0);
-
-			if (Model.EntityType.Equals("Product"))
-			{
-				var entityMediaFile = file as ProductMediaFile;
-				entityMediaId = entityMediaFile.Id;
 			}
+		</div>
 
-			<div class="d-flex flex-column dz-processing dz-image-preview dz-success dz-complete"
-				 data-display-order="@file.DisplayOrder"
-				 data-picture-id="@file.MediaFileId"
-				 data-toggle="tooltip"
-				 data-html="true"
-				 data-placement="bottom"
-				 title='<div class="text-left px-3"><em>@file.MediaFile.Name</em> <br/> <b>@fileSize</b></div>'
-				 @Html.Attr("data-entity-picture-id", entityMediaId.ToString(), entityMediaId != 0)>
+		<div class="file-preview-template d-none">
+			<div class="d-none flex-column dz-processing dz-image-preview dz-success dz-complete"
+					data-toggle="tooltip"
+					data-html="true"
+					data-placement="bottom"
+					title="">
 				<div>
 					<span class="preview align-self-center">
-						<img data-dz-thumbnail src="@previewUrl" />
+						<img data-dz-thumbnail />
 					</span>
 				</div>
-
-				@if (isMainPic)
-				{
-					<span class="main-pic-badge badge badge-success">@T("FileUploader.MultiFiles.MainMediaFile")</span>
-				}
 
 				<div class="fu-preview-toolbar">
 					<a href="#" class="fu-preview-control set-main-picture left">
@@ -135,32 +160,8 @@
 					</a>
 				</div>
 			</div>
-		}
-	</div>
-
-	<div class="file-preview-template d-none">
-		<div class="d-none flex-column dz-processing dz-image-preview dz-success dz-complete"
-			 data-toggle="tooltip"
-			 data-html="true"
-			 data-placement="bottom"
-			 title="">
-			<div>
-				<span class="preview align-self-center">
-					<img data-dz-thumbnail />
-				</span>
-			</div>
-
-			<div class="fu-preview-toolbar">
-				<a href="#" class="fu-preview-control set-main-picture left">
-					<i class="far fa-eye"></i>
-				</a>
-				<a href="#" class="fu-preview-control delete-entity-picture right">
-					<i class="far fa-trash-alt"></i>
-				</a>
-			</div>
 		</div>
-	</div>
-}
+	}
 
 <script data-origin="FileUploader">
     $(function () {
@@ -180,10 +181,11 @@
 			previewContainerId: "@(Model.Multifile ? Model.PreviewContainerId : "")"
         });
 
-        var dropzone = Dropzone.forElement($(dzContainer)[0]);
-
 		// The following is only relevant for multfiles.
         if ("@(Model.Multifile)" == "True") {
+
+			//var dropzone = Dropzone.forElement($(dzContainer)[0]);
+			var dropzone = Dropzone.forElement(fuContainer[0]);
 
             dropzone.on("completemultiple", function (file, response, progress) {
 
@@ -194,7 +196,9 @@
 
 			// Sorting.
 			var sortable = $('.preview-container', fuContainer).sortable({
-				items: fuContainer.find('.dz-image-preview')
+                items: fuContainer.find('.dz-image-preview'),
+				ghostClass: 'sortable-ghost',
+                animation: 150
 			}).on('sort', function (e, ui) {
 				sortPictures($(this));
 			});

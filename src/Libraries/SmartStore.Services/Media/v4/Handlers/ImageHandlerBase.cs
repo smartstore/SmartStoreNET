@@ -39,7 +39,18 @@ namespace SmartStore.Services.Media
                 pathData.MimeType = cachedImage.MimeType;
             }
 
-            if (!cachedImage.Exists)
+            var exists = cachedImage.Exists;
+
+            if (exists && cachedImage.FileSize == 0)
+            {
+                // Empty file means: thumb extraction failed before and will most likely fail again.
+                // Don't bother proceeding.
+                context.Exception = new ExtractThumbnailException(cachedImage.FileName, null);
+                context.Executed = true;
+                return;
+            }
+
+            if (!exists)
             {
                 // Lock concurrent requests to same resource
                 using (await KeyedLock.LockAsync("ImageHandlerBase.Execute." + cachedImage.Path))
@@ -65,10 +76,16 @@ namespace SmartStore.Services.Media
                             }
                             catch (Exception ex)
                             {
-                                if (!(ex is ProcessImageException))
+                                Logger.Error(ex);
+
+                                if (ex is ExtractThumbnailException)
                                 {
-                                    // ProcessImageException is logged already in ImageProcessor
-                                    Logger.ErrorFormat(ex, "Error processing media file '{0}'.", cachedImage.Path);
+                                    // Thumbnail extraction failed and we must assume that it always will fail.
+                                    // Therefore we create an empty file to prevent repetitive processing.
+                                    using (var memStream = new MemoryStream())
+                                    {
+                                        await ImageCache.Put4Async(cachedImage, memStream);
+                                    }
                                 }
 
                                 context.Exception = ex;

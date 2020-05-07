@@ -22,7 +22,10 @@ namespace SmartStore.Data.Tests.Media
                 EntityId = 1,
                 MediaFile = new MediaFile
                 {
+                    CreatedOnUtc = DateTime.UtcNow,
+                    UpdatedOnUtc = DateTime.UtcNow,
                     MimeType = "application/x-zip-co",
+                    MediaType = "bin",
                     Name = "file.zip",
                     Extension = "zip",
                     IsTransient = true,

@@ -86,11 +86,13 @@ namespace SmartStore.Data.Tests.Setup
 			var migrator = new LocaleResourcesMigrator(context);
 			migrator.Migrate(entries);
 
-			var builder = new LocaleResourcesBuilder();
+            context.DetachEntities<Language>();
+
+            var builder = new LocaleResourcesBuilder();
 			builder.AddOrUpdate("Res1").Value("NewValue1");
 			migrator.Migrate(builder.Build());
 
-			resources.ToList().Count.ShouldEqual(6);
+            resources.ToList().Count.ShouldEqual(6);
 
 			var updated = resources.Where(x => x.ResourceName == "Res1").ToList();
 			updated.Count.ShouldEqual(2);
@@ -107,7 +109,9 @@ namespace SmartStore.Data.Tests.Setup
 			var migrator = new LocaleResourcesMigrator(context);
 			migrator.Migrate(entries);
 
-			var builder = new LocaleResourcesBuilder();
+            context.DetachEntities<Language>();
+
+            var builder = new LocaleResourcesBuilder();
 			builder.Delete("Res1");
 			builder.AddOrUpdate("Res1").Value("NewValue1");
 			migrator.Migrate(builder.Build());

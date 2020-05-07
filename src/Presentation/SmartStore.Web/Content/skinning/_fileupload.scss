@@ -18,12 +18,25 @@
  * http://www.opensource.org/licenses/MIT
  */
 
+.fileupload-container {
+	&.dz-highlight .dropzone-container,
+	&.dz-drag-hover .dropzone-container {
+		border-color: $primary !important;
+		background-color: lighten($primary, 50%) !important;
+		pointer-events: none;
+	}
+
+	> .dz-preview {
+		display: none !important;
+	}
+}
 
 //Dropzone skinning
-
-.dropzone {
-	border: 1px dashed $gray-400 !important;
+.dropzone-container {
+	border: 2px dashed $gray-400 !important;
 	background: $gray-100 !important;
+	pointer-events: initial !important;
+	transition: all .5s;
 
 	.fileupload,
 	.fu-message {
@@ -31,21 +44,33 @@
 		text-align: center;
 	}
 
-	&.dz-highlight,
-	&.dz-drag-hover {
-		border-color: $primary !important;
-		background-color: lighten($primary, 50%) !important;
-	}
-
 	.dz-preview,
 	.dz-message {
 		display: none;
 	}
+
+	.remove {
+		position: absolute;
+		top: -10px;
+		left: -10px;
+	}
+
+	.fu-message {
+		cursor: pointer;
+		font-size: $h5-font-size;
+		font-weight: $font-weight-medium;
+		color: $gray-600;
+	}
+}
+
+.dropzone {
+	border: none;
+	background: none;
+	width: 100%;
 }
 
 .preview-container {
-	border: 1px solid $border-color !important;
-	border-radius: $border-radius;
+	
 }
 
 // mf > own prefix TODO: find better name
@@ -125,22 +150,19 @@
 }
 
 	/// OLD
-.dropzone-container,
-.fileupload-container {
+.dropzone-container {
 	position: relative;
 	display: flex;
 	flex-wrap: nowrap;
 	border: $input-border-width solid $input-border-color;
 	background-color: $input-bg;
-	border-radius: $input-border-radius;
-	overflow: hidden;
-
+	border-radius: 5px;
+	
 	.fileupload-thumb-stage {
 		position: relative;
-		width: 108px;
-		max-width: 108px;
-		border-right: 1px solid rgba(#000, 0.2);
-		background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3ggRDQA1Yl77tAAAAN1JREFUeNrt1rEJwCAURVEVFwruv4BEMtGHdGJpF4LHLqQ7+OTm3u+0nNau9XOMx995SnK2DyxYsD4/OSK86Jt/3SwzhAXrT6d60RW8GcKCpeAVvPtihrBgKXgFb4YIYMFS8AreDGEhgKXgFbwZwoKFQMEreDOEBUvBe9EVvBnCgqXgFbz7YoawYCl4BW+GCGDBUvAK3gxhIYCl4BW8GcKChUDBK3gzhAVLwXvRFbwZwoKl4BW8+2KGsGApeAVvhghgwVLwCt4MYSGApeAVvBnCgoVAwSt4M4QF6/jzAlCrcKXDcpR1AAAAAElFTkSuQmCC') repeat;
+		width: 150px;
+		max-width: 150px;
+		margin: 0.5rem;
 	}
 
 	.fileupload-thumb {
@@ -166,7 +188,7 @@
 		}
 
 		.fileupload-buttons {
-			position: relative;
+			xposition: relative;
 		}
 
 		.fileinput-button {

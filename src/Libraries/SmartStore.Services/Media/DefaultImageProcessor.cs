@@ -168,9 +168,7 @@ namespace SmartStore.Services.Media
 			}
 			catch (Exception ex)
 			{
-				var pex = new ProcessImageException(query, ex);
-				Logger.Error(pex);
-				throw pex;
+				throw new ProcessImageException(query, ex);
 			}
 			finally
 			{

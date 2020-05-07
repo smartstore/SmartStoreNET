@@ -179,7 +179,11 @@ namespace SmartStore.Web.Controllers
 
 				if (handlerContext.Exception != null)
 				{
-					return new HttpStatusCodeResult(500, handlerContext.Exception.Message);
+					var isThumbExtractFail = handlerContext.Exception is ExtractThumbnailException;
+					var statusCode = isThumbExtractFail ? HttpStatusCode.NoContent : HttpStatusCode.InternalServerError;
+					var statusMessage = isThumbExtractFail ? handlerContext.Exception.InnerException?.Message.EmptyNull() : handlerContext.Exception.Message;
+
+					return new HttpStatusCodeResult(statusCode, statusMessage);	
 				}
 
 				if (handlerContext.Executed || handlerContext.ResultFile != null)
@@ -194,13 +198,6 @@ namespace SmartStore.Web.Controllers
 			{
 				return NotFound(pathData.MimeType);
 			}
-
-			//if (!_streamRemoteMedia && _mediaService.StorageProvider.IsCloudStorage && responseFile is MediaFile)
-			//{
-			//	// Redirect to existing remote file
-			//	Response.ContentType = pathData.MimeType;
-			//	return Redirect(_mediaService.StorageProvider.GetPublicUrl((MediaFile)responseFile));
-			//}
 
 			if (handlerContext.ResultStream != null)
 			{

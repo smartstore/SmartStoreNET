@@ -17,8 +17,10 @@ namespace SmartStore.Data.Tests.Media
 				{
 					Data = new byte[] { 1, 2, 3 }
 				},
-				UpdatedOnUtc = DateTime.UtcNow,
+                CreatedOnUtc = DateTime.UtcNow,
+                UpdatedOnUtc = DateTime.UtcNow,
 				MimeType = "image/pjpeg",
+                MediaType = "image",
                 Name = "seo filename 1",
                 IsTransient = true
             };

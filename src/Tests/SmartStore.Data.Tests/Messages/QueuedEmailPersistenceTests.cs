@@ -69,10 +69,14 @@ namespace SmartStore.Data.Tests.Messages
 
 			var file = new MediaFile
 			{
-				Extension = "txt",
+                CreatedOnUtc = DateTime.UtcNow,
+                UpdatedOnUtc = DateTime.UtcNow,
+                Extension = "txt",
 				Name = "file.txt",
 				MimeType = "text/plain",
-				MediaStorage = new MediaStorage { Data = new byte[10] }
+                MediaType = "image",
+                Version = 1,
+                MediaStorage = new MediaStorage { Data = new byte[10] }
 			};
 
 			// Add attachment
@@ -107,7 +111,6 @@ namespace SmartStore.Data.Tests.Messages
 			file.ShouldNotBeNull();
 
 			var attachId = attach.Id;
-			var fileId = file.Id;
 
 			// delete Attachment.Download
 			context.Set<MediaFile>().Remove(file);

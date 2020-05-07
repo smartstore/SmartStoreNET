@@ -305,9 +305,11 @@ namespace SmartStore.Data.Tests.Catalog
 					{
 						Data = new byte[] { 1, 2, 3 }
 					},
-					UpdatedOnUtc = DateTime.UtcNow,
-					MimeType = "image/pjpeg"
-				}
+                    CreatedOnUtc = DateTime.UtcNow,
+                    UpdatedOnUtc = DateTime.UtcNow,
+					MimeType = "image/pjpeg",
+                    MediaType = "image"
+                }
 			});
 
             var fromDb = SaveAndLoadEntity(product);

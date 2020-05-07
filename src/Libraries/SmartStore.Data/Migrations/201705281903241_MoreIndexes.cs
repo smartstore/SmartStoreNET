@@ -25,14 +25,23 @@ namespace SmartStore.Data.Migrations
 			CreateIndex("dbo.SpecificationAttribute", "AllowFiltering");
 			CreateIndex("dbo.Product_ProductAttribute_Mapping", "AttributeControlTypeId");
 			CreateIndex("dbo.ProductAttribute", "AllowFiltering");
-			CreateIndex("dbo.ProductVariantAttributeValue", "Name");
 			CreateIndex("dbo.ProductVariantAttributeValue", "ValueTypeId");
+
+            // Useless index. The name field with 4000 characters is too long for an index.
+            if (DataSettings.Current.IsSqlServer)
+            {
+                CreateIndex("dbo.ProductVariantAttributeValue", "Name");
+            }
 		}
 
 		public override void Down()
 		{
-			DropIndex("dbo.ProductVariantAttributeValue", new[] { "ValueTypeId" });
-			DropIndex("dbo.ProductVariantAttributeValue", new[] { "Name" });
+            if (DataSettings.Current.IsSqlServer)
+            {
+                DropIndex("dbo.ProductVariantAttributeValue", new[] { "Name" });
+            }
+
+            DropIndex("dbo.ProductVariantAttributeValue", new[] { "ValueTypeId" });
 			DropIndex("dbo.ProductAttribute", new[] { "AllowFiltering" });
 			DropIndex("dbo.Product_ProductAttribute_Mapping", new[] { "AttributeControlTypeId" });
 			DropIndex("dbo.SpecificationAttribute", new[] { "AllowFiltering" });

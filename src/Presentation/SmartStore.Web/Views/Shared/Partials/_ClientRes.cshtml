@@ -1,39 +1,53 @@
 ﻿@{ 
-	var clientResKeys = new[]
-	{
-		"Common.Notification",
-		"Common.Close",
-		"Common.On",
-		"Common.OK",
-		"Common.Cancel",
-		"Common.Off",
-		"Products.Longdesc.More",
-		"Products.Longdesc.Less",
-		"Jquery.Validate.Email",
-		"Jquery.Validate.Required",
-		"Jquery.Validate.Remote",
-		"Jquery.Validate.Url",
-		"Jquery.Validate.Date",
-		"Jquery.Validate.DateISO",
-		"Jquery.Validate.Number",
-		"Jquery.Validate.Digits",
-		"Jquery.Validate.Creditcard",
-		"Jquery.Validate.Equalto",
-		"Jquery.Validate.Maxlength",
-		"Jquery.Validate.Minlength",
-		"Jquery.Validate.Rangelength",
-		"jquery.Validate.Range",
-		"Jquery.Validate.Max",
-		"Jquery.Validate.Min",
-		"Admin.Common.AreYouSure"
-	};
+    var clientResKeys = new[]
+    {
+        "Common.Notification",
+        "Common.Close",
+        "Common.On",
+        "Common.OK",
+        "Common.Cancel",
+        "Common.Off",
+        "Common.CtrlKey",
+        "Common.ShiftKey",
+        "Common.AltKey",
+        "Common.DelKey",
+        "Common.EnterKey",
+        "Common.EscKey",
+        "Products.Longdesc.More",
+        "Products.Longdesc.Less",
+        "Jquery.Validate.Email",
+        "Jquery.Validate.Required",
+        "Jquery.Validate.Remote",
+        "Jquery.Validate.Url",
+        "Jquery.Validate.Date",
+        "Jquery.Validate.DateISO",
+        "Jquery.Validate.Number",
+        "Jquery.Validate.Digits",
+        "Jquery.Validate.Creditcard",
+        "Jquery.Validate.Equalto",
+        "Jquery.Validate.Maxlength",
+        "Jquery.Validate.Minlength",
+        "Jquery.Validate.Rangelength",
+        "jquery.Validate.Range",
+        "Jquery.Validate.Max",
+        "Jquery.Validate.Min",
+        "Admin.Common.AreYouSure",
+        "FileUploader.Dropzone.DictDefaultMessage",
+        "FileUploader.Dropzone.DictFallbackMessage",
+        "FileUploader.Dropzone.DictFallbackText",
+        "FileUploader.Dropzone.DictFileTooBig",
+        "FileUploader.Dropzone.DictInvalidFileType",
+        "FileUploader.Dropzone.DictResponseError",
+        "FileUploader.Dropzone.DictCancelUpload",
+        "FileUploader.Dropzone.DictUploadCanceled",
+        "FileUploader.Dropzone.DictCancelUploadConfirmation",
+        "FileUploader.Dropzone.DictRemoveFile",
+        "FileUploader.Dropzone.DictMaxFilesExceeded"
+    };
 }
 
 <script>
 	window.Res = {
-		@foreach (var key in clientResKeys)
-		{
-			<text>"@(Html.Raw(key))": @(T(key).JsText),</text>
-		}
+		@foreach (var key in clientResKeys) { <text>"@(Html.Raw(key))": @(T(key).JsText),</text> }
 	};
 </script>

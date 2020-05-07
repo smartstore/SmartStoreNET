@@ -374,13 +374,6 @@ namespace SmartStore.Web.Controllers
             return PartialView();
         }
 
-        //[ChildActionOnly]
-        [HttpPost]
-        public ActionResult FileUploaderDuplicateDialog()
-        {
-            return PartialView();
-        }
-
         [ChildActionOnly]
         public ActionResult ShopBar()
         {

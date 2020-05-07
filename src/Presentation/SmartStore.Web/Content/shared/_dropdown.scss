@@ -88,3 +88,29 @@
 		}
 	}
 }
+
+
+// Flex Dropdown item (for items with keyboard shortcuts)
+// ==============================================================
+
+.dropdown-menu-flex .dropdown-item {
+	display: flex;
+	align-items: center;
+
+	> i {
+
+	}
+
+	> span {
+		flex-grow: 1;
+	}
+
+	> em {
+		font-style: normal;
+		text-align: right;
+		padding-left: 2rem;
+		margin-left: auto;
+		font-size: 90%;
+		opacity: 0.8;
+	}
+}

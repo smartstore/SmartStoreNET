@@ -10,7 +10,14 @@ namespace SmartStore.Data.Migrations
     {
         public override void Up()
         {
-            AlterColumn("dbo.Rule", "Value", c => c.String());
+            if (DataSettings.Current.IsSqlServer)
+            {
+                AlterColumn("dbo.Rule", "Value", c => c.String());
+            }
+            else
+            {
+                // SQL Server CE cannot alter column of type NTEXT or IMAGE.
+            }
 
             //DropForeignKey("dbo.Customer_CustomerRole_Mapping", "Customer_Id", "dbo.Customer");
             //DropForeignKey("dbo.Customer_CustomerRole_Mapping", "CustomerRole_Id", "dbo.CustomerRole");

@@ -4,92 +4,94 @@
 @using System.Web.Hosting;
 
 @{
-	// page title
-	string adminPageTitle = "";
-	if (!string.IsNullOrWhiteSpace(ViewBag.Title))
-	{
-		adminPageTitle = ViewBag.Title + " / ";
-	}
-	adminPageTitle += T("Admin.PageTitle").Text;
+    // page title
+    string adminPageTitle = "";
+    if (!string.IsNullOrWhiteSpace(ViewBag.Title))
+    {
+        adminPageTitle = ViewBag.Title + " / ";
+    }
+    adminPageTitle += T("Admin.PageTitle").Text;
 
-	var adminJsRoot = "~/Administration/Scripts/";
-	var vendorsRoot = "~/Content/vendors/";
-	var contentRoot = "~/Content/";
-	var jsRoot = "~/Scripts/";
+    var adminJsRoot = "~/Administration/Scripts/";
+    var vendorsRoot = "~/Content/vendors/";
+    var contentRoot = "~/Content/";
+    var jsRoot = "~/Scripts/";
 
-	// add css assets
-	var telerikCssRoot = "~/Administration/Content/telerik/css/2012.2.607/";
+    // add css assets
+    var telerikCssRoot = "~/Administration/Content/telerik/css/2012.2.607/";
 
-	Html.AppendCssFileParts(
-		contentRoot + "fontastic/fontastic.css",
-		vendorsRoot + "fa5/css/all.css",
-		telerikCssRoot + "telerik.common.css",
-		vendorsRoot + "pnotify/css/pnotify.css",
-		vendorsRoot + "pnotify/css/pnotify.mobile.css",
-		vendorsRoot + "pnotify/css/pnotify.buttons.css");
+    Html.AppendCssFileParts(
+        contentRoot + "fontastic/fontastic.css",
+        vendorsRoot + "fa5/css/all.css",
+        telerikCssRoot + "telerik.common.css",
+        vendorsRoot + "pnotify/css/pnotify.css",
+        vendorsRoot + "pnotify/css/pnotify.mobile.css",
+        vendorsRoot + "pnotify/css/pnotify.buttons.css");
 
-	// Theme
-	Html.AddCssFileParts(true, "~/Administration/Content/theme.scss");
+    // Theme
+    Html.AddCssFileParts(true, "~/Administration/Content/theme.scss");
 
-	if (WorkContext.WorkingLanguage.Rtl)
-	{
-		Html.AddCssFileParts(true,
-			telerikCssRoot + "telerik.rtl.css",
-			"~/Administration/Content/theme-rtl.scss");
-	}
+    if (WorkContext.WorkingLanguage.Rtl)
+    {
+        Html.AddCssFileParts(true,
+            telerikCssRoot + "telerik.rtl.css",
+            "~/Administration/Content/theme-rtl.scss");
+    }
 
-	// add js assets (Head)
-	Html.AppendScriptParts(ResourceLocation.Head,
-		vendorsRoot + "modernizr/modernizr.js",
-		vendorsRoot + "jquery/jquery-3.4.1.js",
-		//vendorsRoot + "jquery/jquery-migrate-3.0.0.js",
-		adminJsRoot + "jquery-shims.js");
+    // add js assets (Head)
+    Html.AppendScriptParts(ResourceLocation.Head,
+        vendorsRoot + "modernizr/modernizr.js",
+        vendorsRoot + "jquery/jquery-3.4.1.js",
+        //vendorsRoot + "jquery/jquery-migrate-3.0.0.js",
+        adminJsRoot + "jquery-shims.js");
 
-	Html.AppendScriptParts(ResourceLocation.Foot,
-		// Vendors
-		vendorsRoot + "underscore/underscore.js",
-		vendorsRoot + "underscore/underscore.string.js",
-		vendorsRoot + "jquery/jquery.addeasing.js",
-		vendorsRoot + "jquery-ui/effect.js",
-		vendorsRoot + "jquery-ui/effect-transfer.js",
-		vendorsRoot + "jquery-ui/position.js",
-		vendorsRoot + "jquery/jquery.unobtrusive-ajax.js",
-		vendorsRoot + "jquery/jquery.validate.js",
-		vendorsRoot + "jquery/jquery.validate.unobtrusive.js",
-		vendorsRoot + "jquery/jquery.scrollTo.js",
-		vendorsRoot + "sortable/sortable.js",
-		vendorsRoot + "sortable/jquery-sortable.js",
-		vendorsRoot + "moment/moment.js",
-		vendorsRoot + "datetimepicker/js/tempusdominus-bootstrap-4.js",
-		vendorsRoot + "colorpicker/js/bootstrap-colorpicker.js",
-		vendorsRoot + "colorpicker/js/bootstrap-colorpicker-globalinit.js",
-		vendorsRoot + "select2/js/select2.js",
-		vendorsRoot + "pnotify/js/pnotify.js",
-		vendorsRoot + "pnotify/js/pnotify.mobile.js",
-		vendorsRoot + "pnotify/js/pnotify.buttons.js",
-		vendorsRoot + "pnotify/js/pnotify.animate.js",
-		contentRoot + "bs4/js/bootstrap.bundle.js",
-		// Common
-		jsRoot + "underscore.mixins.js",
-		jsRoot + "smartstore.system.js",
-		jsRoot + "smartstore.touchevents.js",
-		jsRoot + "smartstore.jquery.utils.js",
-		jsRoot + "smartstore.globalization.js",
-		jsRoot + "jquery.validate.unobtrusive.custom.js",
-		jsRoot + "smartstore.viewport.js",
-		jsRoot + "smartstore.doajax.js",
-		jsRoot + "smartstore.eventbroker.js",
-		jsRoot + "smartstore.hacks.js",
-		jsRoot + "smartstore.common.js",
-		jsRoot + "smartstore.selectwrapper.js",
-		jsRoot + "smartstore.throbber.js",
-		jsRoot + "smartstore.thumbzoomer.js",
-		jsRoot + "smartstore.entitypicker.js",
-		jsRoot + "smartstore.rangeslider.js",
+    Html.AppendScriptParts(ResourceLocation.Foot,
+        // Vendors
+        vendorsRoot + "underscore/underscore.js",
+        vendorsRoot + "underscore/underscore.string.js",
+        vendorsRoot + "jquery/jquery.addeasing.js",
+        vendorsRoot + "jquery-ui/effect.js",
+        vendorsRoot + "jquery-ui/effect-transfer.js",
+        vendorsRoot + "jquery-ui/position.js",
+        vendorsRoot + "jquery/jquery.unobtrusive-ajax.js",
+        vendorsRoot + "jquery/jquery.validate.js",
+        vendorsRoot + "jquery/jquery.validate.unobtrusive.js",
+        vendorsRoot + "jquery/jquery.scrollTo.js",
+        vendorsRoot + "sortable/sortable.js",
+        vendorsRoot + "sortable/jquery-sortable.js",
+        vendorsRoot + "moment/moment.js",
+        vendorsRoot + "datetimepicker/js/tempusdominus-bootstrap-4.js",
+        vendorsRoot + "colorpicker/js/bootstrap-colorpicker.js",
+        vendorsRoot + "colorpicker/js/bootstrap-colorpicker-globalinit.js",
+        vendorsRoot + "select2/js/select2.js",
+        vendorsRoot + "pnotify/js/pnotify.js",
+        vendorsRoot + "pnotify/js/pnotify.mobile.js",
+        vendorsRoot + "pnotify/js/pnotify.buttons.js",
+        vendorsRoot + "pnotify/js/pnotify.animate.js",
+        contentRoot + "bs4/js/bootstrap.bundle.js",
+        // Common
+        jsRoot + "underscore.mixins.js",
+        jsRoot + "smartstore.system.js",
+        jsRoot + "smartstore.touchevents.js",
+        jsRoot + "smartstore.jquery.utils.js",
+        jsRoot + "smartstore.globalization.js",
+        jsRoot + "jquery.validate.unobtrusive.custom.js",
+        jsRoot + "smartstore.viewport.js",
+        jsRoot + "smartstore.doajax.js",
+        jsRoot + "smartstore.eventbroker.js",
+        jsRoot + "smartstore.hacks.js",
+        jsRoot + "smartstore.common.js",
+        jsRoot + "smartstore.selectwrapper.js",
+        jsRoot + "smartstore.throbber.js",
+        jsRoot + "smartstore.thumbzoomer.js",
+        jsRoot + "smartstore.entitypicker.js",
+        jsRoot + "smartstore.rangeslider.js",
         jsRoot + "smartstore.tree.js",
-		// Admin
-		adminJsRoot + "admin.common.js",
-		adminJsRoot + "admin.globalinit.js");
+        jsRoot + "smartstore.media.js",
+        // Admin
+        adminJsRoot + "admin.common.js",
+        adminJsRoot + "smartstore.media.js",
+        adminJsRoot + "admin.globalinit.js");
 }
 <!DOCTYPE html>
 <html @Html.LanguageAttributes() class="no-js not-ready loading" data-pnotify-firstpos1="140">

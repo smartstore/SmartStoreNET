@@ -2,43 +2,38 @@
 * Dropzone Wrapper
 */
 
+Dropzone.prototype.defaultOptions.dictDefaultMessage = Res['FileUploader.Dropzone.DictDefaultMessage'];
+Dropzone.prototype.defaultOptions.dictFallbackMessage = Res['FileUploader.Dropzone.DictFallbackMessage'];
+Dropzone.prototype.defaultOptions.dictFallbackText = Res['FileUploader.Dropzone.DictFallbackText'];
+Dropzone.prototype.defaultOptions.dictFileTooBig = Res['FileUploader.Dropzone.DictFileTooBig'];
+Dropzone.prototype.defaultOptions.dictInvalidFileType = Res['FileUploader.Dropzone.DictInvalidFileType'];
+Dropzone.prototype.defaultOptions.dictResponseError = Res['FileUploader.Dropzone.DictResponseError'];
+Dropzone.prototype.defaultOptions.dictCancelUpload = Res['FileUploader.Dropzone.DictCancelUpload'];
+Dropzone.prototype.defaultOptions.dictUploadCanceled = Res['FileUploader.Dropzone.DictUploadCanceled'];
+Dropzone.prototype.defaultOptions.dictCancelUploadConfirmation = Res['FileUploader.Dropzone.DictCancelUploadConfirmation'];
+Dropzone.prototype.defaultOptions.dictRemoveFile = Res['FileUploader.Dropzone.DictRemoveFile'];
+Dropzone.prototype.defaultOptions.dictMaxFilesExceeded = Res['FileUploader.Dropzone.DictMaxFilesExceeded'];
+
 (function ($) {
 	var remainingFiles;
 	var assignableFiles = [];
 	var assignableFileIds = "";
 	var activeFiles = 0;
+	var canUploadMoreFiles = true;
 
 	$.fn.dropzoneWrapper = function (options) {
 		return this.each(function () {
 			var el = this, $el = $(this);
 
-			var elDropzone = $el.closest('.dropzone-container'),
+			var elDropzone = $el.closest('.dropzone-target'),
 				fuContainer = $el.closest('.fileupload-container'),
 				previewContainer = fuContainer.find(".preview-container");
 
-			var elRemove = elDropzone.find('.remove'),
+			var elRemove = fuContainer.find('.remove'),
 				elCancel = elDropzone.find('.cancel'),
 				elFile = elDropzone.find('.fileinput-button'),
 				elProgressBar = elDropzone.find('.progress-bar'),
 				elStatusBar = elDropzone.find('.fileupload-status');
-
-			// Init duplicate handling dialog.
-			var duplicateDialog = $("#duplicate-window");
-
-			if (duplicateDialog.length === 0) {
-
-				// Get dialog via ajax and append to body.
-				$.ajax({
-					async: false,
-					cache: false,
-					type: 'POST',
-					url: $el.data('dialog-url'),
-					success: function (response) {
-						$("body").append($(response));
-						duplicateDialog = $("#duplicate-window");
-					}
-				});
-			}
 
 			// Init dropzone.
 			elDropzone.addClass("dropzone");
@@ -55,7 +50,9 @@
 			// Dropzone init params.
 			var opts = {
 				url: $el.data('upload-url'),
-				clickable: $el.find(".fileinput-button")[0],
+				//clickable: $el.find(".fileinput-button")[0],
+				//clickable: elDropzone[0],
+				clickable: elDropzone.find(".fu-message")[0],
 				//autoQueue: false,
 				//autoProcessQueue: false,
 				parallelUploads: 1,
@@ -76,9 +73,7 @@
 			}
 
 			options = $.extend({}, opts, options);
-
-			el = new Dropzone(elDropzone[0], options);
-			var canUploadMoreFiles = true;
+			el = new Dropzone(fuContainer[0], options);
 
 			//console.log(el);
 
@@ -154,6 +149,8 @@
 				console.log("files:", this.files.length);
 				*/
 
+
+
 				elProgressBar
 					.attr('aria-valuenow', progress)
 					.css('width', progress + '%');
@@ -187,6 +184,10 @@
 						if (fuContainer.data("duplicate-handling") === undefined) {
 
 							// Duplicate handling user input is unset.
+
+							SmartStore.Admin.Media.initDuplicateHandlingDialog($el.data('dialog-url'), duplicateFileHandlingCallback);
+
+							var duplicateDialog = $("#duplicate-window");
 
 							// Set dz caller id to identify dropzone in outside events.
 							duplicateDialog.attr("data-caller-id", elDropzone.find(".fileupload").attr("id"));
@@ -237,6 +238,15 @@
 				}
 
 				assignableFiles = files;
+			});
+
+			el.on("complete", function (file) {
+				console.log("complete", file);
+
+				if (opts.maxFiles === 1) {
+					// Reset dropzone for single file uploads, so other files can be uploaded again.
+					this.removeAllFiles(true); 
+				}
 			});
 
 			el.on("completemultiple", function (file, response, progress) {
@@ -381,46 +391,6 @@
 				}
 			}
 
-			// Duplicate file handling.
-			$(document).one("click", "#accept-selected", function () {
-				console.log('yoooo');
-				// Should never happen.
-				if (!remainingFiles) {
-					duplicateDialog.modal('hide');
-					return;
-				}
-
-				var callerId = duplicateDialog.data("caller-id");
-				var userInput = duplicateDialog.find('input[name=duplicate-handling]:checked').data("enum-id");
-
-				// Store user decision for application at later conflicts.
-				$("#" + callerId)
-					.closest(".fileupload-container")
-					.attr("data-duplicate-handling", userInput);
-
-				var dropzone = Dropzone.forElement($("#" + callerId).closest(".dropzone")[0]);
-
-				// Set status for remainingItems.
-				$.each(remainingFiles, function (i, file) {
-					
-					if (file.status === Dropzone.SUCCESS) {
-						file.status = undefined;
-						file.accepted = undefined;
-						file.processing = false;	
-					}
-
-					dropzone.addFile(file);
-				});
-
-				console.log("DialogClosed > remainingFiles", remainingFiles);
-
-				dropzone.processFiles(remainingFiles);
-				
-				remainingFiles = [];
-
-				duplicateDialog.modal('hide');
-			});
-
 			// Deleting.
 			$(fuContainer).on("click", ".delete-entity-picture", function (e) {
 
@@ -443,21 +413,6 @@
 				});
 
 				return false;
-			});
-
-			// Used to highlight dropzone when a file is dragged into the browser.
-			$(document).bind("dragover", function (e) {
-				if (elDropzone.hasClass("dz-highlight"))
-					return;
-
-				elDropzone.addClass("dz-highlight");
-
-			}).bind("dragleave drop", function (e) {
-
-				if (!elDropzone.hasClass("dz-highlight"))
-					return;
-
-				elDropzone.removeClass("dz-highlight");
 			});
 
 			elFile.on('click', function (e) {
@@ -490,10 +445,93 @@
 	};
 
 	function dzResetProgressBar(elProgressBar) {
-		elProgressBar
-			.attr('aria-valuenow', 0)
-			.css('width', 0 + '%');
+
+		_.delay(function () {
+			// Remove transition for reset.
+			elProgressBar.css("transition", "none");
+
+			elProgressBar
+				.attr('aria-valuenow', 0)
+				.css('width', 0 + '%');
+
+			_.delay(function () {
+				// Remove inline transition style after transition (0.25s) was performed.
+				elProgressBar.css("transition", "");
+			}, 250);
+
+		}, 300);
 	}
+
+	// Global events
+
+	// Used to highlight dropzone when a file is dragged into the browser.
+	var fuContainer = $('.fileupload-container');
+
+	fuContainer.on("dragover", function (e) {
+
+		if (fuContainer.hasClass("dz-highlight"))
+			return;
+
+		fuContainer.addClass("dz-highlight");
+
+	}).on("dragleave", function (e) {
+
+		if ($(e.relatedTarget).closest('.fileupload-container').length === 0) {
+
+			if (!fuContainer.hasClass("dz-highlight"))
+				return;
+
+			fuContainer.removeClass("dz-highlight");
+		}
+	}).on("drop", function (e) {
+		if (!fuContainer.hasClass("dz-highlight"))
+			return;
+
+		fuContainer.removeClass("dz-highlight");
+	});
+
+	// Callback fdunction for duplicate file handling dialog.
+	function duplicateFileHandlingCallback() {
+
+		var duplicateDialog = $("#duplicate-window");
+
+		// Should never happen.
+		if (!remainingFiles) {
+			duplicateDialog.modal('hide');
+			return;
+		}
+
+		var callerId = duplicateDialog.data("caller-id");
+		var userInput = duplicateDialog.find('input[name=duplicate-handling]:checked').data("enum-id");
+
+		// Store user decision for application at later conflicts.
+		$("#" + callerId)
+			.closest(".fileupload-container")
+			.attr("data-duplicate-handling", userInput);
+
+		var dropzone = Dropzone.forElement($("#" + callerId).closest(".fileupload-container")[0]);
+
+		// Set status for remainingItems.
+		$.each(remainingFiles, function (i, file) {
+
+			if (file.status === Dropzone.SUCCESS) {
+				file.status = undefined;
+				file.accepted = undefined;
+				file.processing = false;
+			}
+
+			dropzone.addFile(file);
+		});
+
+		console.log("DialogClosed > remainingFiles", remainingFiles);
+
+		dropzone.processFiles(remainingFiles);
+
+		remainingFiles = [];
+
+		duplicateDialog.modal('hide');
+	}
+
 
 })(jQuery);
 

@@ -238,8 +238,16 @@ namespace SmartStore.Web.Framework.Seo
 				{
 					if (char.IsUpper(c))
 					{
-						url = url.ToLower();
+						var qIndex = url.IndexOf('?');
+						url = qIndex == -1 
+							? url.ToLower() 
+							: url.Substring(0, qIndex).ToLower() + url.Substring(qIndex);
+						
 						rewritten = true;
+						break;
+					}
+					if (c == '?')
+					{
 						break;
 					}
 				}

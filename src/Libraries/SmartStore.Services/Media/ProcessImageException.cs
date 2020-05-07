@@ -31,7 +31,7 @@ namespace SmartStore.Services.Media
 			var fileName = query?.FileName;
 
 			var msg = fileName.HasValue()
-				? "Error while processing image '{0}'".FormatCurrent(fileName)
+				? "Error while processing image '{0}'".FormatCurrent(fileName.NaIfEmpty())
 				: "Error while processing image";
 
 			if (innerException != null)

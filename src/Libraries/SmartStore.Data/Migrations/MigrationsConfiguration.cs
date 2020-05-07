@@ -1,11 +1,14 @@
 ﻿namespace SmartStore.Data.Migrations
 {
 	using System;
+    using System.Linq;
 	using System.Data.Entity.Migrations;
 	using Setup;
     using SmartStore.Core.Data;
     using SmartStore.Core.Domain.Catalog;
 	using SmartStore.Core.Domain.Common;
+    using SmartStore.Core.Domain.Configuration;
+    using SmartStore.Core.Domain.Media;
     using SmartStore.Core.Domain.Tasks;
     using SmartStore.Utilities;
 
@@ -46,8 +49,32 @@
 
 		public void MigrateSettings(SmartObjectContext context)
 		{
+            var prefix = nameof(MediaSettings) + ".";
 
-		}
+            ChangeMediaSetting(nameof(MediaSettings.AvatarPictureSize), "256", x => x == 250);
+            ChangeMediaSetting(nameof(MediaSettings.ProductThumbPictureSize), "256", x => x == 250);
+            ChangeMediaSetting(nameof(MediaSettings.CategoryThumbPictureSize), "256", x => x == 250);
+            ChangeMediaSetting(nameof(MediaSettings.ManufacturerThumbPictureSize), "256", x => x == 250);
+            ChangeMediaSetting(nameof(MediaSettings.CartThumbPictureSize), "256", x => x == 250);
+            ChangeMediaSetting(nameof(MediaSettings.MiniCartThumbPictureSize), "256", x => x == 250);
+            ChangeMediaSetting(nameof(MediaSettings.ProductThumbPictureSizeOnProductDetailsPage), "72", x => x == 70);
+            ChangeMediaSetting(nameof(MediaSettings.MessageProductThumbPictureSize), "72", x => x == 70);
+            ChangeMediaSetting(nameof(MediaSettings.BundledProductPictureSize), "72", x => x == 70);
+            ChangeMediaSetting(nameof(MediaSettings.VariantValueThumbPictureSize), "72", x => x == 70);
+            ChangeMediaSetting(nameof(MediaSettings.AttributeOptionThumbPictureSize), "72", x => x == 70);
+
+            void ChangeMediaSetting(string propName, string newVal, Func<int, bool> predicate)
+            {
+                var settings = context.Set<Setting>().Where(x => x.Name == prefix + propName).ToList();
+                foreach (var setting in settings)
+                {
+                    if (predicate(setting.Value.Convert<int>()))
+                    {
+                        setting.Value = newVal;
+                    }
+                }
+            }
+        }
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
@@ -115,13 +142,20 @@
             builder.AddOrUpdate("Common.Rules", "Rules", "Regeln");
             builder.AddOrUpdate("Common.Allow", "Allow", "Erlaubt");
             builder.AddOrUpdate("Common.Deny", "Deny", "Verweigert");
-            builder.AddOrUpdate("Common.ExpandCollapseAll", "Expand\\collapse all", "Alle auf\\zuklappen");
+            builder.AddOrUpdate("Common.ExpandCollapseAll", @"Expand\collapse all", @"Alle auf-\zuklappen");
             builder.AddOrUpdate("Common.Trash", "Trash", "Papierkorb");
             builder.AddOrUpdate("Common.Cut", "Cut", "Ausschneiden");
             builder.AddOrUpdate("Common.Copy", "Copy", "Kopieren");
             builder.AddOrUpdate("Common.Paste", "Paste", "Einfügen");
             builder.AddOrUpdate("Common.SelectAll", "Select all", "Alles auswählen");
             builder.AddOrUpdate("Common.Rename", "Rename", "Umbenennen");
+
+            builder.AddOrUpdate("Common.CtrlKey", "Ctrl", "Strg");
+            builder.AddOrUpdate("Common.ShiftKey", "Shift", "Umschalt");
+            builder.AddOrUpdate("Common.AltKey", "Alt", "Alt");
+            builder.AddOrUpdate("Common.DelKey", "Del", "Entf");
+            builder.AddOrUpdate("Common.EnterKey", "Enter", "Eingabe");
+            builder.AddOrUpdate("Common.EscKey", "Esc", "Esc");
 
             builder.AddOrUpdate("Admin.Customers.PermissionViewNote",
                 "The view shows the permissions that apply to this customer based on the customer roles assigned to him. To change permissions, switch to the relevant <a class=\"alert-link\" href=\"{0}\">customer role</a>.",

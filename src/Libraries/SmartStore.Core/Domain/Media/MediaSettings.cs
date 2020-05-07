@@ -4,20 +4,20 @@ namespace SmartStore.Core.Domain.Media
 {
     public class MediaSettings : ISettings
     {
-		public int AvatarPictureSize { get; set; } = 250;
-        public int ProductThumbPictureSize { get; set; } = 250;
+		public int AvatarPictureSize { get; set; } = 256;
+        public int ProductThumbPictureSize { get; set; } = 256;
 		public int ProductDetailsPictureSize { get; set; } = 600;
-		public int ProductThumbPictureSizeOnProductDetailsPage { get; set; } = 70;
-		public int MessageProductThumbPictureSize { get; set; } = 70;
+		public int ProductThumbPictureSizeOnProductDetailsPage { get; set; } = 72;
+		public int MessageProductThumbPictureSize { get; set; } = 72;
 		public int AssociatedProductPictureSize { get; set; } = 600;
-		public int BundledProductPictureSize { get; set; } = 70;
-		public int CategoryThumbPictureSize { get; set; } = 250;
-		public int ManufacturerThumbPictureSize { get; set; } = 250;
-		public int CartThumbPictureSize { get; set; } = 250;
+		public int BundledProductPictureSize { get; set; } = 72;
+		public int CategoryThumbPictureSize { get; set; } = 256;
+		public int ManufacturerThumbPictureSize { get; set; } = 256;
+		public int CartThumbPictureSize { get; set; } = 256;
 		public int CartThumbBundleItemPictureSize { get; set; } = 32;
-		public int MiniCartThumbPictureSize { get; set; } = 250;
-		public int VariantValueThumbPictureSize { get; set; } = 70;
-		public int AttributeOptionThumbPictureSize { get; set; } = 70;
+		public int MiniCartThumbPictureSize { get; set; } = 256;
+		public int VariantValueThumbPictureSize { get; set; } = 72;
+		public int AttributeOptionThumbPictureSize { get; set; } = 72;
 
 		public bool DefaultPictureZoomEnabled { get; set; } = true;
 		public string PictureZoomType { get; set; } = "window";

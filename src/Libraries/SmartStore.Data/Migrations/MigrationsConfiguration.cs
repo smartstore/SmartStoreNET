@@ -65,7 +65,8 @@
 
             void ChangeMediaSetting(string propName, string newVal, Func<int, bool> predicate)
             {
-                var settings = context.Set<Setting>().Where(x => x.Name == prefix + propName).ToList();
+                var name = prefix + propName;
+                var settings = context.Set<Setting>().Where(x => x.Name == name).ToList();
                 foreach (var setting in settings)
                 {
                     if (predicate(setting.Value.Convert<int>()))

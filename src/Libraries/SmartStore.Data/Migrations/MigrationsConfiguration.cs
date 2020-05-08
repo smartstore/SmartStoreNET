@@ -610,27 +610,24 @@
             
             builder.AddOrUpdate("FileUploader.MultiFiles.MainMediaFile", "Main media file", "Hauptbild");
 
-            builder.AddOrUpdate("FileUploader.DuplicateDialog.Title", "Duplicates detected", "Duplikate entdeckt");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Title", "Replace or skip", "Ersetzen oder überspringen");
             
             builder.AddOrUpdate("FileUploader.DuplicateDialog.Intro",
-                "The files you selected already exist. In the following list, you will find an overview of these files. Please decide how the files should be handled.", 
-                "Die von Ihnen ausgewählten Dateien sind bereits vorhanden. In der folgenden Liste finden Sie eine Übersicht dieser Dateien. Bitte entscheiden Sie, wie die Dateien behandelt werden sollen.");
+                "The files you selected already exist. Please decide how existing files should be handled.", 
+                "Eine der von Ihnen ausgewählten Dateien ist bereits vorhanden. Bitte entscheiden Sie, wie mit vorhandenen Dateien verfahren werden soll.");
 
-            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Skip", "Skip files", "Dateien überspringen");
-            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Overwrite", "Overwrite files", "Dateien überschreiben");
-            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Keep", "Keep files", "Beide Dateien behalten");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.DupeFile.Title", "Uploaded file", "Hochgeladene Datei");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.ExistingFile.Title", "Existing files", "Existierende Datei");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Skip", "Skip file", "Datei überspringen");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Replace", "Upload and replace", "Hochladen und ersetzen");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Rename", "Upload and rename", "Hochladen und umbenennen");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.SaveSelection",
+                "Remember this selection and apply it to the current queue.",
+                "Diese Auswahl merken und auf die aktuelle Wartenschlange anwenden.");
 
-            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Skip.Hint",
-                "The files already uploaded will not be overwritten. The newly added files are not uploaded.",
-                "Die bereits hochgeladenen Dateien werden nicht überschrieben. Die neu hinzugefügten Dateien werden nicht hochgeladen.");
-
-            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Overwrite.Hint",
-                "The already uploaded files are overwritten and replaced by the newly added files.",
-                "Die bereits hochgeladenen Dateien werden überschrieben und durch die neu zugefügten Dateien ersetzt.");
-
-            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Keep.Hint",
-                "The files already uploaded will not be overwritten. The newly added files will be saved with new names.",
-                "Die bereits hochgeladenen Dateien werden nicht überschrieben. Die neu hinzugefügten Dateien werden mit neuem Namen gespeichert.");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Btn.Skip", "Skip file", "Datei überspringen");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Btn.Replace", "Replace file", "Datei ersetzen");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Btn.Rename", "Rename file", "Datei umbenennen");
 
             builder.AddOrUpdate("FileUploader.Dropzone.DictDefaultMessage", "Drop files here to upload", "Dateien zum Hochladen hier ablegen");
             builder.AddOrUpdate("FileUploader.Dropzone.DictFallbackMessage", "Your browser does not support drag'n'drop file uploads.", "Ihr Browser unterstützt keine Datei-Uploads per Drag'n'Drop.");
@@ -643,6 +640,10 @@
             builder.AddOrUpdate("FileUploader.Dropzone.DictCancelUploadConfirmation", "Are you sure you want to cancel this upload?", "Sind Sie sicher, dass Sie den Upload abbrechen wollen?");
             builder.AddOrUpdate("FileUploader.Dropzone.DictRemoveFile", "Remove file", "Datei entfernen");
             builder.AddOrUpdate("FileUploader.Dropzone.DictMaxFilesExceeded", "You can not upload any more files.", "Sie können keine weiteren Dateien hochladen.");
+
+            builder.AddOrUpdate("FileUploader.Preview.SetMainMedia.Title", "Set as main picture", "Zum Hauptbild machen");
+            builder.AddOrUpdate("FileUploader.Preview.DeleteEntityMedia.Title", "Remove assignment", "Zuordnung entfernen");
+
         }
     }
 }

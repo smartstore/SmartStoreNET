@@ -2,17 +2,22 @@
 * Dropzone Wrapper
 */
 
-Dropzone.prototype.defaultOptions.dictDefaultMessage = Res['FileUploader.Dropzone.DictDefaultMessage'];
-Dropzone.prototype.defaultOptions.dictFallbackMessage = Res['FileUploader.Dropzone.DictFallbackMessage'];
-Dropzone.prototype.defaultOptions.dictFallbackText = Res['FileUploader.Dropzone.DictFallbackText'];
-Dropzone.prototype.defaultOptions.dictFileTooBig = Res['FileUploader.Dropzone.DictFileTooBig'];
-Dropzone.prototype.defaultOptions.dictInvalidFileType = Res['FileUploader.Dropzone.DictInvalidFileType'];
-Dropzone.prototype.defaultOptions.dictResponseError = Res['FileUploader.Dropzone.DictResponseError'];
-Dropzone.prototype.defaultOptions.dictCancelUpload = Res['FileUploader.Dropzone.DictCancelUpload'];
-Dropzone.prototype.defaultOptions.dictUploadCanceled = Res['FileUploader.Dropzone.DictUploadCanceled'];
-Dropzone.prototype.defaultOptions.dictCancelUploadConfirmation = Res['FileUploader.Dropzone.DictCancelUploadConfirmation'];
-Dropzone.prototype.defaultOptions.dictRemoveFile = Res['FileUploader.Dropzone.DictRemoveFile'];
-Dropzone.prototype.defaultOptions.dictMaxFilesExceeded = Res['FileUploader.Dropzone.DictMaxFilesExceeded'];
+(function () {
+	var dzOpts = Dropzone.prototype.defaultOptions;
+	var resRoot = 'FileUploader.Dropzone.';
+
+	dzOpts.dictDefaultMessage = Res[resRoot + 'DictDefaultMessage'];
+	dzOpts.dictFallbackMessage = Res[resRoot + 'DictFallbackMessage'];
+	dzOpts.dictFallbackText = Res[resRoot + 'DictFallbackText'];
+	dzOpts.dictFileTooBig = Res[resRoot + 'DictFileTooBig'];
+	dzOpts.dictInvalidFileType = Res[resRoot + 'DictInvalidFileType'];
+	dzOpts.dictResponseError = Res[resRoot + 'DictResponseError'];
+	dzOpts.dictCancelUpload = Res[resRoot + 'DictCancelUpload'];
+	dzOpts.dictUploadCanceled = Res[resRoot + 'DictUploadCanceled'];
+	dzOpts.dictCancelUploadConfirmation = Res[resRoot + 'DictCancelUploadConfirmation'];
+	dzOpts.dictRemoveFile = Res[resRoot + 'DictRemoveFile'];
+	dzOpts.dictMaxFilesExceeded = Res[resRoot + 'DictMaxFilesExceeded'];
+})();
 
 (function ($) {
 	var remainingFiles;

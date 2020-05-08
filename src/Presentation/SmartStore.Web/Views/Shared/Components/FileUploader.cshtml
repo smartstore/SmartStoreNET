@@ -54,7 +54,7 @@
 
 						<input type="hidden" id="@(Model.Id)-file" name="@(Model.Id)-file" />
 
-						@{ Html.RenderWidget("file_upload_buttons_bottom"); }
+						@{ Html.RenderWidget("file_uploader"); }
 
 					</div>
 
@@ -86,7 +86,7 @@
 		</button>
 	</div>
 
-	@if (Model.Multifile == true)
+	@if (Model.Multifile)
 	{
 		var files = Model.UploadedFiles;
 

@@ -37,39 +37,34 @@ using SmartStore.Web.Framework;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
-    public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
-    {
+	public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
+	{
 		#region Fields & Constants
-
 		private ILogger _logger;
 		private SmartObjectContext _ctx;
-        private SeedDataConfiguration _config;
-        private InvariantSeedData _data;
+		private SeedDataConfiguration _config;
+		private InvariantSeedData _data;
 		private ISettingService _settingService;
 		private IGenericAttributeService _gaService;
 		private ILocalizationService _locService;
 		private IUrlRecordService _urlRecordService;
 		private int _defaultStoreId;
+		#endregion Fields & Constants
 
-        #endregion Fields & Constants
-
-        #region Ctor
-
+		#region Ctor
 		public InstallDataSeeder(SeedDataConfiguration configuration, ILogger logger)
-        {
+		{
 			Guard.NotNull(configuration, nameof(configuration));
 			Guard.NotNull(configuration.Language, "Language");
 			Guard.NotNull(configuration.Data, "SeedData");
 
 			_config = configuration;
-			_data = configuration.Data;
+			_data   = configuration.Data;
 			_logger = logger;
-        }
-
+		}
 		#endregion Ctor
 
 		#region Populate
-
 		private void PopulateStores()
 		{
 			SaveRange(_data.Stores());
@@ -77,44 +72,42 @@ namespace SmartStore.Web.Infrastructure.Installation
 		}
 
 		private void PopulateTaxCategories()
-        {
+		{
 			SaveRange(_data.TaxCategories());
-                
-            // add tax rates to fixed rate provider
-            var taxCategories = _ctx.Set<TaxCategory>().ToList();
-            int i = 0;
-            var taxIds = taxCategories.OrderBy(x => x.Id).Select(x => x.Id).ToList();
-            foreach (var id in taxIds)
-            {
-                decimal rate = 0;
-                if (_data.FixedTaxRates.Any() && _data.FixedTaxRates.Length > i)
-                {
-                    rate = _data.FixedTaxRates[i];
-                }
-                i++;
-                this.SettingService.SetSetting(string.Format("Tax.TaxProvider.FixedRate.TaxCategoryId{0}", id), rate);
-            }
+
+			// add tax rates to fixed rate provider
+			var taxCategories = _ctx.Set<TaxCategory>().ToList();
+			int i             = 0;
+			var taxIds        = taxCategories.OrderBy(x => x.Id).Select(x => x.Id).ToList();
+			foreach (var id in taxIds) {
+				decimal rate = 0;
+				if (_data.FixedTaxRates.Any() && _data.FixedTaxRates.Length > i) {
+					rate = _data.FixedTaxRates[i];
+				}
+
+				i++;
+				this.SettingService.SetSetting(string.Format("Tax.TaxProvider.FixedRate.TaxCategoryId{0}", id), rate);
+			}
 
 			_ctx.SaveChanges();
-        }
+		}
 
 		private void PopulateLanguage(Language primaryLanguage)
-        {
+		{
 			primaryLanguage.Published = true;
 			Save(primaryLanguage);
-        }
+		}
 
-        private void PopulateLocaleResources() 
-        {
-            // Default primary language
-            var language = _ctx.Set<Language>().First();
+		private void PopulateLocaleResources()
+		{
+			// Default primary language
+			var language = _ctx.Set<Language>().First();
 
-            var locPath = CommonHelper.MapPath("~/App_Data/Localization/App/" + language.LanguageCulture);
-            if (!Directory.Exists(locPath))
-            {
-                // Fallback to neutral language folder (de, en etc.)
+			var locPath = CommonHelper.MapPath("~/App_Data/Localization/App/" + language.LanguageCulture);
+			if (!Directory.Exists(locPath)) {
+				// Fallback to neutral language folder (de, en etc.)
 				locPath = CommonHelper.MapPath("~/App_Data/Localization/App/" + language.UniqueSeoCode);
-            }
+			}
 
 			var localizationService = this.LocalizationService;
 
@@ -122,8 +115,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			_ctx.DetachAll(false);
 
 			// save resources
-			foreach (var filePath in Directory.EnumerateFiles(locPath, "*.smres.xml", SearchOption.TopDirectoryOnly))
-			{
+			foreach (var filePath in Directory.EnumerateFiles(locPath, "*.smres.xml", SearchOption.TopDirectoryOnly)) {
 				var doc = new XmlDocument();
 				doc.Load(filePath);
 
@@ -141,139 +133,137 @@ namespace SmartStore.Web.Infrastructure.Installation
 			}
 
 			MigratorUtils.ExecutePendingResourceMigrations(locPath, _ctx);
-        }
+		}
 
 		private void PopulateCurrencies()
-        {
+		{
 			SaveRange(_data.Currencies().Where(x => x != null));
-        }
+		}
 
 		private void PopulateCountriesAndStates()
-        {
+		{
 			SaveRange(_data.Countries().Where(x => x != null));
 			DataMigrator.ImportAddressFormats(_ctx);
-        }
+		}
 
 		private void PopulateShippingMethods()
-        {
+		{
 			SaveRange(_data.ShippingMethods().Where(x => x != null));
-        }
+		}
 
 		private void PopulateCustomersAndUsers(string defaultUserEmail, string defaultUserPassword)
-        {
-            var customerRoles = _data.CustomerRoles();
+		{
+			var customerRoles = _data.CustomerRoles();
 			SaveRange(customerRoles.Where(x => x != null));
 
-            //admin user
-            var adminUser = new Customer
-            {
-                CustomerGuid = Guid.NewGuid(),
-                Email = defaultUserEmail,
-                Username = defaultUserEmail,
-                Password = defaultUserPassword,
-                PasswordFormat = PasswordFormat.Clear,
-                PasswordSalt = "",
-                Active = true,
-                CreatedOnUtc = DateTime.UtcNow,
-                LastActivityDateUtc = DateTime.UtcNow,
-            };
+			//admin user
+			var adminUser = new Customer
+				{
+					CustomerGuid        = Guid.NewGuid(),
+					Email               = defaultUserEmail,
+					Username            = defaultUserEmail,
+					Password            = defaultUserPassword,
+					PasswordFormat      = PasswordFormat.Clear,
+					PasswordSalt        = "",
+					Active              = true,
+					CreatedOnUtc        = DateTime.UtcNow,
+					LastActivityDateUtc = DateTime.UtcNow,
+				};
 
-            var adminAddress = _data.AdminAddress();
+			var adminAddress = _data.AdminAddress();
 
-            adminUser.Addresses.Add(adminAddress);
-            adminUser.BillingAddress = adminAddress;
-            adminUser.ShippingAddress = adminAddress;
+			adminUser.Addresses.Add(adminAddress);
+			adminUser.BillingAddress  = adminAddress;
+			adminUser.ShippingAddress = adminAddress;
 
-            var adminRole = customerRoles.First(x => x.SystemName == SystemCustomerRoleNames.Administrators);
-            var forumRole = customerRoles.First(x => x.SystemName == SystemCustomerRoleNames.ForumModerators);
-            var registeredRole = customerRoles.First(x => x.SystemName == SystemCustomerRoleNames.Registered);
+			var adminRole      = customerRoles.First(x => x.SystemName == SystemCustomerRoleNames.Administrators);
+			var forumRole      = customerRoles.First(x => x.SystemName == SystemCustomerRoleNames.ForumModerators);
+			var registeredRole = customerRoles.First(x => x.SystemName == SystemCustomerRoleNames.Registered);
 
-            adminUser.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = adminUser.Id, CustomerRoleId = adminRole.Id });
-            adminUser.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = adminUser.Id, CustomerRoleId = forumRole.Id });
-            adminUser.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = adminUser.Id, CustomerRoleId = registeredRole.Id });
-            Save(adminUser);
+			adminUser.CustomerRoleMappings.Add(new CustomerRoleMapping {CustomerId = adminUser.Id, CustomerRoleId = adminRole.Id});
+			adminUser.CustomerRoleMappings.Add(new CustomerRoleMapping {CustomerId = adminUser.Id, CustomerRoleId = forumRole.Id});
+			adminUser.CustomerRoleMappings.Add(new CustomerRoleMapping {CustomerId = adminUser.Id, CustomerRoleId = registeredRole.Id});
+			Save(adminUser);
 
 			// Set default customer name
 			var firstAddress = adminUser.Addresses.FirstOrDefault();
 			GenericAttributeService.InsertAttribute(new GenericAttribute
-			{
-				EntityId = adminUser.Id,
-				Key = "FirstName",
-				KeyGroup = "Customer",
-				Value = firstAddress.FirstName,
-				StoreId = 0
-			});
+				{
+					EntityId = adminUser.Id,
+					Key      = "FirstName",
+					KeyGroup = "Customer",
+					Value    = firstAddress.FirstName,
+					StoreId  = 0
+				});
 			GenericAttributeService.InsertAttribute(new GenericAttribute
-			{
-				EntityId = adminUser.Id,
-				Key = "LastName",
-				KeyGroup = "Customer",
-				Value = firstAddress.LastName,
-				StoreId = 0
-			});
+				{
+					EntityId = adminUser.Id,
+					Key      = "LastName",
+					KeyGroup = "Customer",
+					Value    = firstAddress.LastName,
+					StoreId  = 0
+				});
 			_ctx.SaveChanges();
 
-            // Built-in user for search engines (crawlers)
-            var guestRole = customerRoles.FirstOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests);
+			// Built-in user for search engines (crawlers)
+			var guestRole = customerRoles.FirstOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests);
 
-            var customer = _data.SearchEngineUser();
-            customer.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = guestRole.Id });
-            Save(customer);
+			var customer = _data.SearchEngineUser();
+			customer.CustomerRoleMappings.Add(new CustomerRoleMapping {CustomerId = customer.Id, CustomerRoleId = guestRole.Id});
+			Save(customer);
 
-            // Built-in user for background tasks
-            customer = _data.BackgroundTaskUser();
-            customer.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = guestRole.Id });
-            Save(customer);
+			// Built-in user for background tasks
+			customer = _data.BackgroundTaskUser();
+			customer.CustomerRoleMappings.Add(new CustomerRoleMapping {CustomerId = customer.Id, CustomerRoleId = guestRole.Id});
+			Save(customer);
 
 			// Built-in user for the PDF converter
 			customer = _data.PdfConverterUser();
-            customer.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = guestRole.Id });
+			customer.CustomerRoleMappings.Add(new CustomerRoleMapping {CustomerId = customer.Id, CustomerRoleId = guestRole.Id});
 			Save(customer);
-        }
+		}
 
 		private void HashDefaultCustomerPassword(string defaultUserEmail, string defaultUserPassword)
-        {
-            var encryptionService = new EncryptionService(new SecuritySettings());
-			var saltKey = encryptionService.CreateSaltKey(5);
-            var adminUser = _ctx.Set<Customer>().FirstOrDefault(x => x.Email == _config.DefaultUserName);
+		{
+			var encryptionService = new EncryptionService(new SecuritySettings());
+			var saltKey           = encryptionService.CreateSaltKey(5);
+			var adminUser         = _ctx.Set<Customer>().FirstOrDefault(x => x.Email == _config.DefaultUserName);
 
-            adminUser.PasswordSalt = saltKey;
+			adminUser.PasswordSalt   = saltKey;
 			adminUser.PasswordFormat = PasswordFormat.Hashed;
-			adminUser.Password = encryptionService.CreatePasswordHash(defaultUserPassword, saltKey, new CustomerSettings().HashedPasswordFormat);
+			adminUser.Password       = encryptionService.CreatePasswordHash(defaultUserPassword, saltKey, new CustomerSettings().HashedPasswordFormat);
 
 			_ctx.SaveChanges();
-        }
+		}
 
 		private void PopulateSettings()
-        {
+		{
 			var method = typeof(ISettingService).GetMethods().FirstOrDefault(x =>
 			{
-				if (x.Name == "SaveSetting")
-				{
+				if (x.Name == "SaveSetting") {
 					var parameters = x.GetParameters();
 					return parameters[0].ParameterType.Name == "T" && parameters[1].ParameterType.Equals(typeof(int));
 				}
+
 				return false;
 			});
 
 			var settings = _data.Settings();
-			foreach (var setting in settings)
-			{
-				Type settingType = setting.GetType();
+			foreach (var setting in settings) {
+				Type settingType        = setting.GetType();
 				Type settingServiceType = typeof(ISettingService);
 
 				var settingService = this.SettingService;
-				if (settingService != null)
-				{
+				if (settingService != null) {
 					var genericMethod = method.MakeGenericMethod(settingType);
-					int storeId = settingType.Equals(typeof(ThemeSettings)) ? _defaultStoreId : 0;
+					int storeId       = settingType.Equals(typeof(ThemeSettings)) ? _defaultStoreId : 0;
 
-					genericMethod.Invoke(settingService, new object[] { setting, storeId });
+					genericMethod.Invoke(settingService, new object[] {setting, storeId});
 				}
 			}
 
 			_ctx.SaveChanges();
-        }
+		}
 
 		private void PopulateMessageTemplates()
 		{
@@ -282,29 +272,29 @@ namespace SmartStore.Web.Infrastructure.Installation
 		}
 
 		private void PopulateCategories()
-        {
+		{
 			var categoriesFirstLevel = _data.CategoriesFirstLevel();
 			SaveRange(categoriesFirstLevel);
 			PopulateUrlRecordsFor(categoriesFirstLevel);
 
-            var categoriesSecondLevel = _data.CategoriesSecondLevel();
+			var categoriesSecondLevel = _data.CategoriesSecondLevel();
 			SaveRange(categoriesSecondLevel);
 			PopulateUrlRecordsFor(categoriesSecondLevel);
-        }
+		}
 
 		private void PopulateManufacturers()
-        {
-            var manufacturers = _data.Manufacturers();
+		{
+			var manufacturers = _data.Manufacturers();
 			SaveRange(manufacturers);
 			PopulateUrlRecordsFor(manufacturers);
 		}
 
 		private void PopulateProducts()
-        {
-            var products = _data.Products();
+		{
+			var products = _data.Products();
 			SaveRange(products);
 
-            _data.AddDownloads(products);
+			_data.AddDownloads(products);
 
 			// Fix MainPictureId
 			DataMigrator.FixProductMainPictureIds(_ctx);
@@ -312,35 +302,27 @@ namespace SmartStore.Web.Infrastructure.Installation
 			PopulateUrlRecordsFor(products);
 
 			_data.AssignGroupedProducts(products);
-        }
+		}
 
-        private void PopulateBlogPosts()
-        {
-            var blogPosts = _data.BlogPosts();
+		private void PopulateBlogPosts()
+		{
+			var blogPosts = _data.BlogPosts();
 			SaveRange(blogPosts);
 			PopulateUrlRecordsFor(blogPosts);
 		}
 
 		private void PopulateNews()
-        {
-            var newsItems = _data.NewsItems();
+		{
+			var newsItems = _data.NewsItems();
 			SaveRange(newsItems);
 			PopulateUrlRecordsFor(newsItems);
 		}
 
 		private void PopulateManufacturerTemplates()
-        {
-            var manufacturerTemplates = new List<ManufacturerTemplate>
-                                {
-                                    new ManufacturerTemplate
-                                        {
-                                            Name = "Products in Grid or Lines",
-                                            ViewPath = "ManufacturerTemplate.ProductsInGridOrLines",
-                                            DisplayOrder = 1
-                                        },
-                                };
-            SaveRange(_data.ManufacturerTemplates());
-        }
+		{
+			var manufacturerTemplates = new List<ManufacturerTemplate> {new ManufacturerTemplate {Name = "Products in Grid or Lines", ViewPath = "ManufacturerTemplate.ProductsInGridOrLines", DisplayOrder = 1},};
+			SaveRange(_data.ManufacturerTemplates());
+		}
 
 		private void PopulateTopics()
 		{
@@ -349,48 +331,37 @@ namespace SmartStore.Web.Infrastructure.Installation
 			PopulateUrlRecordsFor(topics);
 		}
 
-        private void PopulateMenus()
-        {
-            DataMigrator.CreateSystemMenus(_ctx);
-        }
+		private void PopulateMenus()
+		{
+			DataMigrator.CreateSystemMenus(_ctx);
+		}
 
-        private void AddProductTag(Product product, string tag)
-        {
+		private void AddProductTag(Product product, string tag)
+		{
 			var productTag = _ctx.Set<ProductTag>().FirstOrDefault(pt => pt.Name == tag);
-            if (productTag == null)
-            {
-                productTag = new ProductTag
-                {
-                    Name = tag,
-                    Published = true
-                };
-            }
+			if (productTag == null) {
+				productTag = new ProductTag {Name = tag, Published = true};
+			}
+
 			product.ProductTags.Add(productTag);
 			Save(product);
-        }
+		}
 
 		private void MoveMedia()
 		{
-			if (!_config.StoreMediaInDB)
-			{
+			if (!_config.StoreMediaInDB) {
 				// All pictures have initially been stored in the DB. Move the binaries to disk.
 				var fileSystemStorageProvider = new FileSystemMediaStorageProvider(new MediaFileSystem());
-				var mediaStorages = _ctx.Set<MediaStorage>();
+				var mediaStorages             = _ctx.Set<MediaStorage>();
 
-				using (var scope = new DbContextScope(ctx: _ctx, autoDetectChanges: true, autoCommit: false))
-				{
-					var mediaFiles = _ctx.Set<MediaFile>()
-						.Expand(x => x.MediaStorage)
-						.Where(x => x.MediaStorageId != null)
-						.ToList();
+				using (var scope = new DbContextScope(ctx: _ctx, autoDetectChanges: true, autoCommit: false)) {
+					var mediaFiles = _ctx.Set<MediaFile>().Expand(x => x.MediaStorage).Where(x => x.MediaStorageId != null).ToList();
 
-					foreach (var mediaFile in mediaFiles)
-					{
-						if (mediaFile.MediaStorage?.Data?.LongLength > 0)
-						{
+					foreach (var mediaFile in mediaFiles) {
+						if (mediaFile.MediaStorage?.Data?.LongLength > 0) {
 							fileSystemStorageProvider.Save(mediaFile, mediaFile.MediaStorage.Data.ToStream());
 							mediaFile.MediaStorageId = null;
-							mediaFile.MediaStorage = null;
+							mediaFile.MediaStorage   = null;
 						}
 					}
 
@@ -398,25 +369,17 @@ namespace SmartStore.Web.Infrastructure.Installation
 				}
 			}
 		}
+		#endregion
 
-        #endregion
-
-        #region Properties
-
-        protected SeedDataConfiguration Configuration
-        {
-            get
-            {
-                return _config;
-            }
-        }
+		#region Properties
+		protected SeedDataConfiguration Configuration
+		{
+			get { return _config; }
+		}
 
 		protected SmartObjectContext DataContext
 		{
-			get
-			{
-				return _ctx;
-			}
+			get { return _ctx; }
 		}
 
 
@@ -424,8 +387,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 		{
 			get
 			{
-				if (_settingService == null)
-				{
+				if (_settingService == null) {
 					var rs = new EfRepository<Setting>(_ctx);
 					rs.AutoCommitEnabled = false;
 
@@ -440,8 +402,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 		{
 			get
 			{
-				if (_gaService == null)
-				{
+				if (_gaService == null) {
 					var rs = new EfRepository<GenericAttribute>(_ctx);
 					rs.AutoCommitEnabled = false;
 
@@ -459,8 +420,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 		{
 			get
 			{
-				if (_locService == null)
-				{
+				if (_locService == null) {
 					var rsLanguage = new EfRepository<Language>(_ctx);
 					rsLanguage.AutoCommitEnabled = false;
 
@@ -471,57 +431,37 @@ namespace SmartStore.Web.Infrastructure.Installation
 					rsStore.AutoCommitEnabled = false;
 
 					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
-					var storeService = new StoreService(rsStore);
-					var storeContext = new WebStoreContext(new Lazy<IRepository<Store>>(() => rsStore), null, NullCache.Instance);
-                    
+					var storeService        = new StoreService(rsStore);
+					var storeContext        = new WebStoreContext(new Lazy<IRepository<Store>>(() => rsStore), null, NullCache.Instance);
+
 					var locSettings = new LocalizationSettings();
 
-					var languageService = new LanguageService(
-						NullRequestCache.Instance, 
-						NullCache.Instance,
-						rsLanguage,
-						this.SettingService,
-						locSettings,
-						NullEventPublisher.Instance,
-						storeMappingService,
-						storeService,
-						storeContext);
+					var languageService = new LanguageService(NullRequestCache.Instance, NullCache.Instance, rsLanguage, this.SettingService, locSettings, NullEventPublisher.Instance, storeMappingService, storeService, storeContext);
 
-					_locService = new LocalizationService(
-						NullCache.Instance,
-						NullLogger.Instance,
-						null /* IWorkContext: not needed during install */,
-						rsResources,
-						languageService,
-						NullEventPublisher.Instance);
+					_locService = new LocalizationService(NullCache.Instance, NullLogger.Instance, null /* IWorkContext: not needed during install */, rsResources, languageService, NullEventPublisher.Instance);
 				}
 
 				return _locService;
 			}
 		}
+		#endregion Properties
 
-        #endregion Properties
-
-        #region Methods
-
-        public virtual void Seed(SmartObjectContext context)
-        {
+		#region Methods
+		public virtual void Seed(SmartObjectContext context)
+		{
 			Guard.NotNull(context, nameof(context));
 
 			_ctx = context;
 			_data.Initialize(_ctx);
-			
+
 			_ctx.Configuration.AutoDetectChangesEnabled = false;
-			_ctx.Configuration.ValidateOnSaveEnabled = false;
-			_ctx.HooksEnabled = false;
+			_ctx.Configuration.ValidateOnSaveEnabled    = false;
+			_ctx.HooksEnabled                           = false;
 
 			_config.ProgressMessageCallback("Progress.CreatingRequiredData");
 
-            // special mandatory (non-visible) settings
-			_ctx.MigrateSettings(x =>
-			{
-				x.Add("Media.Storage.Provider", _config.StoreMediaInDB ? DatabaseMediaStorageProvider.SystemName : FileSystemMediaStorageProvider.SystemName);
-			});
+			// special mandatory (non-visible) settings
+			_ctx.MigrateSettings(x => { x.Add("Media.Storage.Provider", _config.StoreMediaInDB ? DatabaseMediaStorageProvider.SystemName : FileSystemMediaStorageProvider.SystemName); });
 
 			Populate("PopulatePictures", _data.Pictures());
 			Populate("PopulateCurrencies", PopulateCurrencies);
@@ -533,12 +473,12 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Populate("PopulateCountriesAndStates", PopulateCountriesAndStates);
 			Populate("PopulateShippingMethods", PopulateShippingMethods);
 			Populate("PopulateDeliveryTimes", _data.DeliveryTimes());
-            Populate("PopulateQuantityUnits", _data.QuantityUnits());
-            Populate("PopulateCustomersAndUsers", () => PopulateCustomersAndUsers(_config.DefaultUserName, _config.DefaultUserPassword));
+			Populate("PopulateQuantityUnits", _data.QuantityUnits());
+			Populate("PopulateCustomersAndUsers", () => PopulateCustomersAndUsers(_config.DefaultUserName, _config.DefaultUserPassword));
 			Populate("PopulateEmailAccounts", _data.EmailAccounts());
 			Populate("PopulateMessageTemplates", PopulateMessageTemplates);
 			Populate("PopulateTopics", PopulateTopics);
-            Populate("PopulateSettings", PopulateSettings);
+			Populate("PopulateSettings", PopulateSettings);
 			Populate("PopulateActivityLogTypes", _data.ActivityLogTypes());
 			Populate("PopulateCustomersAndUsers", () => HashDefaultCustomerPassword(_config.DefaultUserName, _config.DefaultUserPassword));
 			Populate("PopulateProductTemplates", _data.ProductTemplates());
@@ -546,10 +486,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Populate("PopulateManufacturerTemplates", PopulateManufacturerTemplates);
 			Populate("PopulateScheduleTasks", _data.ScheduleTasks());
 			Populate("PopulateLocaleResources", PopulateLocaleResources);
-            Populate("PopulateMenus", PopulateMenus);
+			Populate("PopulateMenus", PopulateMenus);
 
-            if (_config.SeedSampleData)
-            {
+			if (_config.SeedSampleData) {
 				_logger.Info("Seeding sample data");
 
 				_config.ProgressMessageCallback("Progress.CreatingSampleData");
@@ -571,64 +510,51 @@ namespace SmartStore.Web.Infrastructure.Installation
 				Populate("PopulateBlogPosts", PopulateBlogPosts);
 				Populate("PopulateNews", PopulateNews);
 				Populate("PopulatePolls", _data.Polls());
-            }
+			}
 
 			Populate("MovePictures", MoveMedia);
 
 			// Perf
 			_ctx.DetachAll();
-        }
+		}
 
 		public bool RollbackOnFailure
 		{
 			get { return false; }
 		}
-
 		#endregion
 
 		#region Utils
-
 		private void PopulateUrlRecordsFor<T>(IEnumerable<T> entities) where T : BaseEntity, ISlugSupported, new()
 		{
-			foreach (var entity in entities)
-			{
+			foreach (var entity in entities) {
 				var ur = _data.CreateUrlRecordFor(entity);
-				if (ur != null)
-				{
+				if (ur != null) {
 					ur.Slug = ValidateSeName(entity, ur.Slug);
 					Save(ur);
 				}
 			}
 		}
 
-		private string ValidateSeName<TEntity>(TEntity entity, string name)
-			where TEntity : BaseEntity, ISlugSupported
+		private string ValidateSeName<TEntity>(TEntity entity, string name) where TEntity : BaseEntity, ISlugSupported
 		{
-			var seoSettings = new SeoSettings { LoadAllUrlAliasesOnStartup = false };
+			var seoSettings  = new SeoSettings {LoadAllUrlAliasesOnStartup = false};
 			var perfSettings = new PerformanceSettings();
 
-			if (_urlRecordService == null)
-			{
-				_urlRecordService = new UrlRecordService(
-					NullCache.Instance, 
-					new EfRepository<UrlRecord>(_ctx) { AutoCommitEnabled = false },
-					seoSettings,
-					perfSettings);
+			if (_urlRecordService == null) {
+				_urlRecordService = new UrlRecordService(NullCache.Instance, new EfRepository<UrlRecord>(_ctx) {AutoCommitEnabled = false}, seoSettings, perfSettings);
 			}
 
 			return entity.ValidateSeName<TEntity>("", name, true, _urlRecordService, seoSettings);
 		}
 
-		private void Populate<TEntity>(string stage, IEnumerable<TEntity> entities) 
-			where TEntity : BaseEntity
+		private void Populate<TEntity>(string stage, IEnumerable<TEntity> entities) where TEntity : BaseEntity
 		{
-			try
-			{
+			try {
 				_logger.DebugFormat("Populate: {0}", stage);
 				SaveRange(entities);
 			}
-			catch (Exception ex)
-			{
+			catch (Exception ex) {
 				var ex2 = new SeedDataException(stage, ex);
 				_logger.Error(ex2);
 				throw ex2;
@@ -637,13 +563,11 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 		private void Populate(string stage, Action populateAction)
 		{
-			try
-			{
+			try {
 				_logger.DebugFormat("Populate: {0}", stage);
 				populateAction();
 			}
-			catch (Exception ex)
-			{
+			catch (Exception ex) {
 				var ex2 = new SeedDataException(stage, ex);
 				_logger.Error(ex2);
 				throw ex2;
@@ -661,9 +585,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 			_ctx.Set<TEntity>().AddRange(entities);
 			_ctx.SaveChanges();
 		}
-
 		#endregion
-
 	}
-        
-} 
+}

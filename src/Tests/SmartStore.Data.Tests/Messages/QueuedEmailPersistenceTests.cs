@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core.Domain.Messages;
-using SmartStore.Tests;
 using NUnit.Framework;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Messages;
+using SmartStore.Tests;
 
 namespace SmartStore.Data.Tests.Messages
 {
@@ -79,7 +78,7 @@ namespace SmartStore.Data.Tests.Messages
                 MediaStorage = new MediaStorage { Data = new byte[10] }
 			};
 
-			// Add attachment
+			// Add attachment.
 			var attach = new QueuedEmailAttachment
 			{
 				StorageLocation = EmailAttachmentStorageLocation.FileReference,
@@ -110,37 +109,37 @@ namespace SmartStore.Data.Tests.Messages
 			file = attach.MediaFile;
 			file.ShouldNotBeNull();
 
-			var attachId = attach.Id;
+            // Delete Attachment.Download. Commented out because foreign key has no cascade delete anymore.
+            // var attachId = attach.Id;
+            // context.Set<MediaFile>().Remove(file);
+            //context.SaveChanges();
+            //base.ReloadContext();
 
-			// delete Attachment.Download
-			context.Set<MediaFile>().Remove(file);
+            //attach = context.Set<QueuedEmailAttachment>().Find(attachId);
+            //attach.ShouldBeNull();
+
+            // Add new attachment.
+            qe = context.Set<QueuedEmail>().FirstOrDefault();
+
+            qe.Attachments.Add(new QueuedEmailAttachment
+            {
+                StorageLocation = EmailAttachmentStorageLocation.FileReference,
+                Name = "file.txt",
+                MimeType = "text/plain"
+            });
+
+            context.SaveChanges();
+            ReloadContext();
+
+            fromDb = context.Set<QueuedEmail>().FirstOrDefault();
+            fromDb.ShouldNotBeNull();
+
+            // Delete QueuedEmail.
+            context.Set<QueuedEmail>().Remove(fromDb);
 			context.SaveChanges();
-			base.ReloadContext();
 
-			attach = context.Set<QueuedEmailAttachment>().Find(attachId);
-			attach.ShouldBeNull();
-
-			// add new attachment
-			attach = new QueuedEmailAttachment
-			{
-				StorageLocation = EmailAttachmentStorageLocation.FileReference,
-				Name = "file.txt",
-				MimeType = "text/plain"
-			};
-
-			qe = context.Set<QueuedEmail>().FirstOrDefault();
-			qe.Attachments.Add(attach);
-
-			fromDb = SaveAndLoadEntity(qe);
-			fromDb.ShouldNotBeNull();
-
-			// delete QueuedEmail
-			context.Set<QueuedEmail>().Remove(fromDb);
-			context.SaveChanges();
-			base.ReloadContext();
-
-			// Attachment should also be gone now
-			attach = context.Set<QueuedEmailAttachment>().FirstOrDefault();
+            // Attachment should also be gone now.
+            attach = context.Set<QueuedEmailAttachment>().FirstOrDefault();
 			attach.ShouldBeNull();
 		}
     }

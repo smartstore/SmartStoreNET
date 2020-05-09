@@ -1851,7 +1851,6 @@
     <Content Include="Views\Blog\Partials\BlogSummary.cshtml" />
     <Content Include="Views\Common\Partials\CookieManager.cshtml" />
     <Content Include="Views\Shared\Components\_FileUploader.cshtml" />
-    <Content Include="Views\Common\Partials\FileUploaderDuplicateDialog.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

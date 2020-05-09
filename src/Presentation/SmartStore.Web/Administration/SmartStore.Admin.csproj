@@ -524,7 +524,7 @@
     <Content Include="Scripts\jquery-shims.js" />
     <Content Include="Scripts\jquery.tmpl.min.js" />
     <Content Include="Scripts\admin.globalinit.js" />
-    <Content Include="Scripts\smartstore.media.js" />
+    <Content Include="Scripts\admin.media.js" />
     <Content Include="Scripts\smartstore.rules.js" />
     <Content Include="Scripts\smartstore.iconchooser.js" />
     <Content Include="Scripts\smartstore.download.js" />
@@ -653,6 +653,7 @@
     <Content Include="Views\Store\StoreDashboardReport.cshtml" />
     <Content Include="Views\Order\OrdersDashboardReport.cshtml" />
     <Content Include="Views\Customer\RegisteredCustomersDashboardReport.cshtml" />
+    <Content Include="Views\Media\DupeFileHandlerDialog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

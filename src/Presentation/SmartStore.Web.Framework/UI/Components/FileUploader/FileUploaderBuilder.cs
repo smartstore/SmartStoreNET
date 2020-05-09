@@ -18,6 +18,12 @@ namespace SmartStore.Web.Framework.UI
 			WithRenderer(new ViewBasedComponentRenderer<FileUploader>("FileUploader"));
 		}
 
+		public FileUploaderBuilder<TModel> Path(string value)
+		{
+			base.Component.Path = value;
+			return this;
+		}
+
 		public FileUploaderBuilder<TModel> UploadUrl(string value)
 		{
 			base.Component.UploadUrl = value;

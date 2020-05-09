@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
+using SmartStore.Services.Media;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -29,6 +30,8 @@ namespace SmartStore.Web.Framework.UI
 			}
 		}
 
+		public string Path { get; set; } = SystemAlbumProvider.Files;
+
 		public string UploadUrl
 		{
 			get { return HtmlAttributes["data-upload-url"] as string; }
@@ -42,13 +45,10 @@ namespace SmartStore.Web.Framework.UI
 		public string CancelText { get; set; }
 		public string RemoveText { get; set; }
 		public string UploadText { get; set; }
-
 		// END: Obsolete
 
 		public bool ShowRemoveButton { get; set; }
 		public bool Compact { get; set; }
-
-
 
 		public bool Multifile { get; set; }
 		public string PreviewContainerId { get; set; }

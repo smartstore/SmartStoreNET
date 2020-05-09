@@ -89,6 +89,11 @@ namespace SmartStore.Web.Framework.Theming
 			get { return _helper.EnableHoneypotProtection; }
 		}
 
+		public string FileManagerUrl
+		{
+			get { return _helper.FileManagerUrl; }
+		}
+
 		protected bool HasMessages
 		{
 			get

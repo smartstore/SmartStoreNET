@@ -81,6 +81,9 @@ namespace SmartStore.Admin.Controllers
                     {
                         resultParams.fileId = dupe.Id;
                         resultParams.url = _mediaService.GetUrl(dupe, _mediaSettings.ProductThumbPictureSize, host: string.Empty);
+                        resultParams.date = dupe.CreatedOn.ToString();
+                        resultParams.dimensions = dupe.Dimensions.Width + " x " + dupe.Dimensions.Height;
+                        resultParams.size = dupe.Size;
                     }
                     
                     result.Add(resultParams);
@@ -94,7 +97,7 @@ namespace SmartStore.Admin.Controllers
 
         //[ChildActionOnly]
         [HttpPost]
-        public ActionResult FileUploaderDuplicateDialog()
+        public ActionResult DupeFileHandlerDialog()
         {
             return PartialView();
         }

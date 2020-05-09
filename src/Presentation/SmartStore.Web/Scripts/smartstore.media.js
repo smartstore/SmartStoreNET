@@ -43,6 +43,51 @@ SmartStore.media = (function () {
 	return {
 		getIconHint: function (file) {
             return iconHints[file.ext] || iconHints[file.type] || iconHints['misc'];
+        },
+        openFileManager: function (opts) {
+            /*
+                opts = {
+                    id: (#modalId) || null,
+                    el: (element that triggered this call) || null,
+                    backdrop: false,
+                    type: (ext || mediaType),
+                    multiSelect: false,
+                    ???(path: (initialPath) || null),
+                    onSelect: function(filesArray) {}
+                };
+            */
+
+            var url = $(opts.el || document.body).closest('[data-file-manager-url]').attr('data-file-manager-url');
+            if (!url)
+                return;
+
+            // Append querystring to file manager root url
+            if (opts.multiSelect) {
+                url = modifyUrl(url, "multiSelect", opts.multiSelect);
+            }           
+
+            if (opts.type) {
+                url = modifyUrl(url, "typeFilter", opts.type);
+            }           
+
+            opts.id = opts.id || 'modal-file-manager';
+
+            var popup = openPopup({
+                id: opts.id,
+                url: url,
+                backdrop: opts.backdrop,
+                flex: true,
+                large: true,
+                onMessage: function (files) {
+                    if (_.isFunction(opts.onSelect)) {
+                        opts.onSelect(files);
+                    }
+
+                    closePopup(opts.id);
+                }
+            });
+
+            return popup;
         }
 	};
 })();

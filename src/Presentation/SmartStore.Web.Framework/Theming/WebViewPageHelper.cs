@@ -18,6 +18,12 @@ using System.Globalization;
 
 namespace SmartStore.Web.Framework.Theming
 {
+	public class FileManagerUrlRequested
+	{
+		public UrlHelper UrlHelper { get; set; }
+		public string Url { get; set; }
+	}
+	
 	public class WebViewPageHelper
 	{
 		private bool _initialized;
@@ -32,6 +38,7 @@ namespace SmartStore.Web.Framework.Theming
 		private bool? _isMobileDevice;
         private bool? _isStoreClosed;
 		private bool? _enableHoneypot;
+		private string _fileManagerUrl;
 
 		public WebViewPageHelper()
 		{
@@ -45,6 +52,7 @@ namespace SmartStore.Web.Framework.Theming
 		public IThemeContext ThemeContext { get; set; }
 		public IMobileDeviceHelper MobileDeviceHelper { get; set; }
 		public ILinkResolver LinkResolver { get; set; }
+		public UrlHelper UrlHelper { get; set; }
 
 		public void Initialize(ControllerContext controllerContext)
 		{
@@ -74,7 +82,7 @@ namespace SmartStore.Web.Framework.Theming
 
             _currentPageType = "system";
             _currentPageId = controllerName + "." + actionName;
-
+			
             if (IsHomePage)
             {
                 _currentPageType = "home";
@@ -166,6 +174,28 @@ namespace SmartStore.Web.Framework.Theming
 				}
 
 				return _enableHoneypot.Value;
+			}
+		}
+
+		public string FileManagerUrl
+		{
+			get
+			{
+				if (_fileManagerUrl == null)
+				{
+					var defaultUrl = UrlHelper.Action("Index", "RoxyFileManager", new { area = "admin" });
+					var message = new FileManagerUrlRequested
+					{
+						UrlHelper = UrlHelper,
+						Url = defaultUrl
+					};
+
+					Services.EventPublisher.Publish(message);
+
+					_fileManagerUrl = message.Url ?? defaultUrl;
+				}
+
+				return _fileManagerUrl;
 			}
 		}
 

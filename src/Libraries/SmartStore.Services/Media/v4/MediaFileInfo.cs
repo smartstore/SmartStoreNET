@@ -89,7 +89,7 @@ namespace SmartStore.Services.Media
         [JsonProperty("url")]
         public string Url
         {
-            get { return _url ?? (_url = _urlGenerator.GenerateUrl(this, null)); }
+            get { return _url ?? (_url = _urlGenerator.GenerateUrl(this, null, string.Empty)); }
         }
 
         [JsonIgnore]

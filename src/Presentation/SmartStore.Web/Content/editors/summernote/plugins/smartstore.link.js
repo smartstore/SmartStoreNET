@@ -344,20 +344,15 @@
 
 						$fileBrowse.on('click.linkDialog', function (e) {
 							e.preventDefault();
-							var url = context.$note.data('file-browser-url');
-							if (url) {
-								var modalId = "modal-browse-files";
-								url = modifyUrl(url, "type", "#");
-								url = modifyUrl(url, "field", "note-link-url");
-								url = modifyUrl(url, "mid", modalId);
-								openPopup({
-									id: modalId,
-									url: url,
-									flex: true,
-									large: true,
-									backdrop: false
-								});
-							}
+
+							SmartStore.media.openFileManager({
+								el: this,
+								backdrop: false,
+								onSelect: function (files) {
+									if (!files.length) return;
+									$linkUrl.val(files[0].url).trigger('change').trigger('input');
+								}
+							});
 						});
 
 						if (!Modernizr.touchevents) {

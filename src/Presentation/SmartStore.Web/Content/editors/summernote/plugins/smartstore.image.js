@@ -247,20 +247,16 @@
 
 						$imageBrowse.on('click.imageDialog', function (e) {
 							e.preventDefault();
-							var url = context.$note.data('file-browser-url');
-							if (url) {
-								var modalId = "modal-browse-files";
-								url = modifyUrl(url, "type", "image");
-								url = modifyUrl(url, "field", "note-image-src");
-								url = modifyUrl(url, "mid", modalId);
-								openPopup({
-									id: modalId,
-									url: url,
-									flex: true,
-									large: true,
-									backdrop: false
-								});
-							}
+
+							SmartStore.media.openFileManager({
+								el: this,
+								type: 'image',
+								backdrop: false,
+								onSelect: function (files) {
+									if (!files.length) return;
+									$imageUrl.val(files[0].url).trigger('change').trigger('input');
+                                }
+							});
 						});
 
 						if (!Modernizr.touchevents) {

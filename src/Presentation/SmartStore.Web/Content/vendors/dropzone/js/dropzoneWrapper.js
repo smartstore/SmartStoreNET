@@ -2,20 +2,25 @@
 * Dropzone Wrapper
 */
 
-Dropzone.prototype.defaultOptions.dictDefaultMessage = Res['FileUploader.Dropzone.DictDefaultMessage'];
-Dropzone.prototype.defaultOptions.dictFallbackMessage = Res['FileUploader.Dropzone.DictFallbackMessage'];
-Dropzone.prototype.defaultOptions.dictFallbackText = Res['FileUploader.Dropzone.DictFallbackText'];
-Dropzone.prototype.defaultOptions.dictFileTooBig = Res['FileUploader.Dropzone.DictFileTooBig'];
-Dropzone.prototype.defaultOptions.dictInvalidFileType = Res['FileUploader.Dropzone.DictInvalidFileType'];
-Dropzone.prototype.defaultOptions.dictResponseError = Res['FileUploader.Dropzone.DictResponseError'];
-Dropzone.prototype.defaultOptions.dictCancelUpload = Res['FileUploader.Dropzone.DictCancelUpload'];
-Dropzone.prototype.defaultOptions.dictUploadCanceled = Res['FileUploader.Dropzone.DictUploadCanceled'];
-Dropzone.prototype.defaultOptions.dictCancelUploadConfirmation = Res['FileUploader.Dropzone.DictCancelUploadConfirmation'];
-Dropzone.prototype.defaultOptions.dictRemoveFile = Res['FileUploader.Dropzone.DictRemoveFile'];
-Dropzone.prototype.defaultOptions.dictMaxFilesExceeded = Res['FileUploader.Dropzone.DictMaxFilesExceeded'];
+(function () {
+	var dzOpts = Dropzone.prototype.defaultOptions;
+	var resRoot = 'FileUploader.Dropzone.';
+
+	dzOpts.dictDefaultMessage = Res[resRoot + 'DictDefaultMessage'];
+	dzOpts.dictFallbackMessage = Res[resRoot + 'DictFallbackMessage'];
+	dzOpts.dictFallbackText = Res[resRoot + 'DictFallbackText'];
+	dzOpts.dictFileTooBig = Res[resRoot + 'DictFileTooBig'];
+	dzOpts.dictInvalidFileType = Res[resRoot + 'DictInvalidFileType'];
+	dzOpts.dictResponseError = Res[resRoot + 'DictResponseError'];
+	dzOpts.dictCancelUpload = Res[resRoot + 'DictCancelUpload'];
+	dzOpts.dictUploadCanceled = Res[resRoot + 'DictUploadCanceled'];
+	dzOpts.dictCancelUploadConfirmation = Res[resRoot + 'DictCancelUploadConfirmation'];
+	dzOpts.dictRemoveFile = Res[resRoot + 'DictRemoveFile'];
+	dzOpts.dictMaxFilesExceeded = Res[resRoot + 'DictMaxFilesExceeded'];
+})();
 
 (function ($) {
-	var remainingFiles;
+
 	var assignableFiles = [];
 	var assignableFileIds = "";
 	var activeFiles = 0;
@@ -115,9 +120,9 @@ Dropzone.prototype.defaultOptions.dictMaxFilesExceeded = Res['FileUploader.Dropz
 				console.log("sending");
 
 				// Write user decision of duplicate handling into formdata before sending so it'll be sent to the server with each file upload.
-				var enumId = fuContainer.data("duplicate-handling");
+				var enumId = fuContainer.data("dupe-handling-type");
 				if (enumId) {
-					formData.append("duplicateFileHandling", fuContainer.data("duplicate-handling"));
+					formData.append("duplicateFileHandling", fuContainer.data("dupe-handling-type"));
 				}
 
 				if (options.onUploading) options.onUploading.apply(this, [file]);
@@ -149,8 +154,6 @@ Dropzone.prototype.defaultOptions.dictMaxFilesExceeded = Res['FileUploader.Dropz
 				console.log("files:", this.files.length);
 				*/
 
-
-
 				elProgressBar
 					.attr('aria-valuenow', progress)
 					.css('width', progress + '%');
@@ -178,46 +181,10 @@ Dropzone.prototype.defaultOptions.dictMaxFilesExceeded = Res['FileUploader.Dropz
 				}
 				else {
 
-					// If there was an error returned by the server.
+					// If there was an error returned by the server set file status accordingly.
 					if (!response.success) {
-
-						if (fuContainer.data("duplicate-handling") === undefined) {
-
-							// Duplicate handling user input is unset.
-
-							SmartStore.Admin.Media.initDuplicateHandlingDialog($el.data('dialog-url'), duplicateFileHandlingCallback);
-
-							var duplicateDialog = $("#duplicate-window");
-
-							// Set dz caller id to identify dropzone in outside events.
-							duplicateDialog.attr("data-caller-id", elDropzone.find(".fileupload").attr("id"));
-
-							// Ask user once what he wants to do with conflicting files.
-							duplicateDialog.modal('show');
-
-							// Store all remaining files to be able to add them again after duplicate handling by user decision.
-							remainingFiles = this.getActiveFiles();
-
-							// Add current file to remaining files.
-							remainingFiles.push(file);
-
-							// Copy into new array.
-							remainingFiles = remainingFiles.slice(0, remainingFiles.length);
-
-							// Remove all files to break the upload chain. They'll be added again in duplicate handling dialog click event.
-							this.removeAllFiles();
-						}
-						else {
-
-							// Duplicate handling user input is set.
-							
-							// File was rejected by the server thus remove it from dropzone.
-							this.removeFile(file);
-						}
-					}
-					else {
-						// Picture wasn't uploaded yet.
-						// TODO: If this case won't be needed by the end of development > write different if clauses.
+						file.status = Dropzone.ERROR;
+						file.response = response;
 					}
 				}
 
@@ -253,7 +220,10 @@ Dropzone.prototype.defaultOptions.dictMaxFilesExceeded = Res['FileUploader.Dropz
 				
 				console.log("completemultiple", activeFiles, assignableFiles.length, assignableFileIds);
 
-				if (activeFiles === assignableFiles.length) {
+				var errorFiles = this.getFilesWithStatus(Dropzone.ERROR);
+				var dupeFiles = errorFiles.filter(file => file.response.dupe === true);
+
+				if (activeFiles === assignableFiles.length && dupeFiles.length === 0) {
 					assignFilesToEntity(assignableFiles, assignableFileIds);
 				}
 				else {
@@ -267,11 +237,32 @@ Dropzone.prototype.defaultOptions.dictMaxFilesExceeded = Res['FileUploader.Dropz
 				console.log("canceledmultiple");
 			});
 
-			el.on("queuecomplete", function (file) {
+			el.on("queuecomplete", function () {
 				console.log("queuecomplete");
-
 				console.log("Status > getAcceptedFiles:", this.getAcceptedFiles().length);
 				console.log("Status > getRejectedFiles:", this.getRejectedFiles().length);
+				console.log("Status > ERROR:", this.getFilesWithStatus(Dropzone.ERROR).length);
+
+				// Handle errors.
+				var errorFiles = this.getFilesWithStatus(Dropzone.ERROR);
+				var dupeFiles = errorFiles.filter(file => file.response.dupe === true);
+
+				// TODO: these errors also need to be displayed (and maybe) somehow. 
+				var otherErrors = errorFiles.filter(file => file.response.dupe === false);
+
+				if (dupeFiles.length !== 0) {
+
+					// Open duplicate file handler dialog
+					SmartStore.Admin.Media.openDupeFileHandlerDialog(
+						$el.data('dialog-url'),						// TODO: Place dialogUrl somewhere, where it can be accessed by openDuplicateHandlingDialog directly. 
+						dupeFileHandlerCallback,		
+						elDropzone.find(".fileupload").attr("id"),
+						dupeFiles[0]								// Pass first conflicted file to function so it can be displayed.
+					);
+				}
+
+				updateUploadStatus(this);
+				$(".show-upload-summmary").show();
 			});
 
 			el.on("canceled", function (file) {
@@ -329,8 +320,6 @@ Dropzone.prototype.defaultOptions.dictMaxFilesExceeded = Res['FileUploader.Dropz
 
 			function assignFilesToEntity(assignableFiles, assignableFileIds) {
 
-				console.log("assignFilesToEntity", assignableFileIds);
-
 				if ($el.data('assignment-url')) {
 
 					$.ajax({
@@ -378,9 +367,6 @@ Dropzone.prototype.defaultOptions.dictMaxFilesExceeded = Res['FileUploader.Dropz
 										.attr('src', file.dataUrl);
 
 									previewContainer.append(elPreview);
-
-									//console.log("pop", file);
-									//assignableFiles.pop(file);
 								}
 								else {
 									console.log("Error when adding preview element.", value.Name.toLowerCase());
@@ -444,6 +430,115 @@ Dropzone.prototype.defaultOptions.dictMaxFilesExceeded = Res['FileUploader.Dropz
 		});
 	};
 
+	// Global events
+
+	// Used to highlight dropzone when a file is dragged into the browser.
+	var fuContainer = $('.fileupload-container');
+
+	fuContainer.on("dragover", function (e) {
+
+		if (fuContainer.hasClass("dz-highlight"))
+			return;
+
+		fuContainer.addClass("dz-highlight");
+
+	}).on("dragleave", function (e) {
+		if ($(e.relatedTarget).closest('.fileupload-container').length === 0) {
+
+			if (!fuContainer.hasClass("dz-highlight"))
+				return;
+
+			fuContainer.removeClass("dz-highlight");
+		}
+	}).on("drop", function (e) {
+		if (!fuContainer.hasClass("dz-highlight"))
+			return;
+
+		fuContainer.removeClass("dz-highlight");
+	});
+
+	$(document).on("drag", ".dz-image-preview", function (e) {
+		$(".dz-image-preview").tooltip("hide").trigger('mouseleave');
+	});
+
+	$(document).on("click", ".show-upload-summmary", function (e) {
+
+		alert("Not implemented yet!");
+
+		//$(".fileupload-status").show();
+
+		return false;
+	});
+
+	// Callback function for duplicate file handling dialog.
+	function dupeFileHandlerCallback(userInput, saveSelection) {
+
+		var duplicateDialog = $("#duplicate-window");
+		var callerId = duplicateDialog.data("caller-id");
+
+		// Store user decision where it can be accessed by other events (e.g. sending).
+		$("#" + callerId)
+			.closest(".fileupload-container")
+			.attr("data-dupe-handling-type", userInput);
+
+		var dropzone = Dropzone.forElement($("#" + callerId).closest(".fileupload-container")[0]);
+		var errorFiles = dropzone.getFilesWithStatus(Dropzone.ERROR);
+
+		// Get all duplicate files.
+		var dupeFiles = errorFiles.filter(file => file.response.dupe === true);
+
+		if (!saveSelection) {
+			var firstFile = dupeFiles[0];
+
+			// Reset file status.
+			resetFileStatus(firstFile);
+
+			// Process first file. 
+			dropzone.processFile(firstFile);
+
+			// If current file is last file > close dialog else display next file.
+			if (dupeFiles.length === 1) {
+				duplicateDialog.modal('hide');
+			}
+			else {
+				SmartStore.Admin.Media.displayDuplicateFileInDialog(dupeFiles[1]);
+			}
+
+			// And leave.
+			return;
+		}
+		else {
+			// Process all files and leave.
+			dropzone.processFiles(dupeFiles);
+			duplicateDialog.modal('hide');
+		}
+	}
+
+	function updateUploadStatus(dropzone) {
+		var cntStatus = $(".fileupload-status"),
+			summary = cntStatus.find(".fileupload-status-summary"),
+			uploadedFileCount = summary.find(".uploaded-file-count"),
+			totalFileCount = summary.find(".total-file-count"),
+			errors = cntStatus.find(".erroneous-files"),
+			updated = cntStatus.find(".updated-files"),
+			replaced = cntStatus.find(".replaced-files"),
+			uploaded = cntStatus.find(".uploaded-files");
+
+		var errorFiles = dropzone.getFilesWithStatus(Dropzone.ERROR);
+		var dupeFiles = errorFiles.filter(file => file.response.dupe === true);
+		var otherErrors = errorFiles.filter(file => file.response.dupe === false);
+
+		// TODO: finish the job ;-)
+	}
+
+	function resetFileStatus(file) {
+		if (file.status === Dropzone.SUCCESS) {
+			file.status = undefined;
+			file.accepted = undefined;
+			file.processing = false;
+		}
+	}
+
 	function dzResetProgressBar(elProgressBar) {
 
 		_.delay(function () {
@@ -461,77 +556,6 @@ Dropzone.prototype.defaultOptions.dictMaxFilesExceeded = Res['FileUploader.Dropz
 
 		}, 300);
 	}
-
-	// Global events
-
-	// Used to highlight dropzone when a file is dragged into the browser.
-	var fuContainer = $('.fileupload-container');
-
-	fuContainer.on("dragover", function (e) {
-
-		if (fuContainer.hasClass("dz-highlight"))
-			return;
-
-		fuContainer.addClass("dz-highlight");
-
-	}).on("dragleave", function (e) {
-
-		if ($(e.relatedTarget).closest('.fileupload-container').length === 0) {
-
-			if (!fuContainer.hasClass("dz-highlight"))
-				return;
-
-			fuContainer.removeClass("dz-highlight");
-		}
-	}).on("drop", function (e) {
-		if (!fuContainer.hasClass("dz-highlight"))
-			return;
-
-		fuContainer.removeClass("dz-highlight");
-	});
-
-	// Callback fdunction for duplicate file handling dialog.
-	function duplicateFileHandlingCallback() {
-
-		var duplicateDialog = $("#duplicate-window");
-
-		// Should never happen.
-		if (!remainingFiles) {
-			duplicateDialog.modal('hide');
-			return;
-		}
-
-		var callerId = duplicateDialog.data("caller-id");
-		var userInput = duplicateDialog.find('input[name=duplicate-handling]:checked').data("enum-id");
-
-		// Store user decision for application at later conflicts.
-		$("#" + callerId)
-			.closest(".fileupload-container")
-			.attr("data-duplicate-handling", userInput);
-
-		var dropzone = Dropzone.forElement($("#" + callerId).closest(".fileupload-container")[0]);
-
-		// Set status for remainingItems.
-		$.each(remainingFiles, function (i, file) {
-
-			if (file.status === Dropzone.SUCCESS) {
-				file.status = undefined;
-				file.accepted = undefined;
-				file.processing = false;
-			}
-
-			dropzone.addFile(file);
-		});
-
-		console.log("DialogClosed > remainingFiles", remainingFiles);
-
-		dropzone.processFiles(remainingFiles);
-
-		remainingFiles = [];
-
-		duplicateDialog.modal('hide');
-	}
-
 
 })(jQuery);
 

@@ -61,6 +61,17 @@
 		font-weight: $font-weight-medium;
 		color: $gray-600;
 	}
+
+	.show-upload-summmary {
+		display: none;
+		position: absolute;
+		right: 10px;
+		bottom: 5px;
+	}
+}
+
+.fileupload-status {
+	display: none;
 }
 
 .dropzone {
@@ -73,83 +84,96 @@
 	
 }
 
-// mf > own prefix TODO: find better name
 .dz-image-preview {
-	margin: 5px;
+	margin: 0 10px 10px 0;
 	position: relative;
 	border: 1px solid $border-color;
 	border-radius: $border-radius;
-	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3ggRDQA1Yl77tAAAAN1JREFUeNrt1rEJwCAURVEVFwruv4BEMtGHdGJpF4LHLqQ7+OTm3u+0nNau9XOMx995SnK2DyxYsD4/OSK86Jt/3SwzhAXrT6d60RW8GcKCpeAVvPtihrBgKXgFb4YIYMFS8AreDGEhgKXgFbwZwoKFQMEreDOEBUvBe9EVvBnCgqXgFbz7YoawYCl4BW+GCGDBUvAK3gxhIYCl4BW8GcKChUDBK3gzhAVLwXvRFbwZwoKl4BW8+2KGsGApeAVvhghgwVLwCt4MYSGApeAVvBnCgoVAwSt4M4QF6/jzAlCrcKXDcpR1AAAAAElFTkSuQmCC') repeat;
+	background: $light;
 	display: flex;
 	justify-content: center;
-	cursor: grab;
+	cursor: move;
+	width: 150px;
+	height: 150px;
+	overflow: hidden;
 
-	& > div {
-		width: 120px;
-		height: 120px;
-		max-width: 120px;
-		display: flex;
-		justify-content: center;
-		padding: 5px;
-
-		img {
-			max-width: 120px;
-			max-height: 120px;
-		}
+	& > img {
+		width: 100%;
+		object-fit: cover;
+		max-width: 150px;
+		max-height: 150px;
 	}
 
-	.fu-preview-toolbar {
+	.fu-preview-overlay {
 		position: absolute;
 		top: 0;
-		right: 0;
+		width: 100%;
 		left: 0;
-		height: 30px;
-		background: #000;
-		opacity: .1;
+		bottom: 0;
 		visibility: hidden;
-		transition: opacity 0.6s, visibility 0.3s;
-		border-radius: $border-radius $border-radius 0 0;
-		border: 1px solid $border-color !important;
-		border-bottom: 0px !important;
-		padding: 5px 10px 0 10px;
-		background-image: linear-gradient($gray-400, $gray-300, $gray-100);
+		background-image: linear-gradient($gray-100, $gray-300, $gray-600);
+		transition: opacity 0.3s, visibility 0.1s;
+		opacity: .1;
+		z-index: 1;
+	}
 
-		.fu-preview-control {
-			color: $gray-900;
-			opacity: 1 !important;
-			position: absolute;
+	.toolbar {
+		position: absolute;
+		bottom: 0;
+		min-width: 100%;
+		background-color: $gray-100;
+		visibility: hidden;
+		transition: visibility 0.1s;
+		border-top: 1px solid $gray-500;
+		z-index: 2;
 
-			&.left {
-				left: 5px;
-			}
-
-			&.right {
-				right: 5px;
-			}
+		> .btn {
+			border-radius: 0 !important;
 		}
 	}
 
-	&:hover {
+	&:hover:not(.sortable-ghost) {
+		border: 1px solid $gray-400;
 
-		.fu-preview-toolbar {
+		.toolbar {
 			visibility: visible;
-			opacity: .9;
-
-			&:hover {
-				text-decoration: none !important;
-			}
 		}
+
+		.fu-preview-overlay {
+			visibility: visible;
+			opacity: .5;
+		}
+	}
+
+	&.sortable-ghost .toolbar {
+		visibility: hidden;
 	}
 
 	.main-pic-badge {
 		z-index: 1000;
 		position: absolute;
-		bottom: 5px;
-		right: 10px;
+		top: 5px;
+		left: 10px;
 	}
 }
 
-	/// OLD
+#duplicate-window {
+
+	.file-display {
+		border: 1px solid $gray-400;
+
+		.file-img {
+			width: 100px;
+		}
+
+		.file-date {
+			white-space: nowrap;
+			overflow: hidden;
+		}
+	}
+}
+
+/// OLD
 .dropzone-container {
 	position: relative;
 	display: flex;
@@ -157,7 +181,7 @@
 	border: $input-border-width solid $input-border-color;
 	background-color: $input-bg;
 	border-radius: 5px;
-	
+
 	.fileupload-thumb-stage {
 		position: relative;
 		width: 150px;

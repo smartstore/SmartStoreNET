@@ -97,7 +97,6 @@
 }
 
 <div class="fileupload-container">
-
 	<div @Html.Attr("class", "dropzone-container", !MultiFile)>
 
 		@if (!MultiFile)
@@ -112,19 +111,19 @@
 
 		<div class="fileupload-controls">
 			@*
-			TODO: If multiupload > other MediaTypes may be have to be configured. Should be a property of this editor template.
+				TODO: If multiupload > other MediaTypes may be have to be configured. Should be a property of this editor template.
 			*@
 
 			@(Html.SmartStore().FileUploader()
 				.UploadUrl(Url.Action("Upload", "Media", new { isTransient = TransientUpload, path = Path, area = "Admin" }))
+				.Path(Path)
 				.HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
 				.AcceptedFileTypes(mediaSettings.ImageTypes)
-				.ShowRemoveButton(!MultiFile && Model.HasValue)                     // Multifile uploads don't need a remove button.
+				.ShowRemoveButton(!MultiFile && Model.HasValue) // Multifile uploads don't need a remove button
 				.ShowRemoveButtonAfterUpload(false)
-				.Compact(ViewData["compact"].Convert<bool?>() == true)
-
+				.Compact(Compact)
 				.PreviewContainerId("preview-" + random)
-				.Multifile(ViewData["multifile"].Convert<bool?>() == true)
+				.Multifile(MultiFile)
 				.MainFileId(fileId)
 				.UploadedFiles(UploadedFiles)
 				.EntityType("Product")

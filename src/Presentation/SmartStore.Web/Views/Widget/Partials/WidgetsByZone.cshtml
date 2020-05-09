@@ -10,5 +10,5 @@
 }
 
 @foreach (var widget in Model.Widgets) {
-	Html.RenderAction(widget.ActionName, widget.ControllerName, widget.RouteValues);
+	Html.RenderAction(widget.ActionName, widget.ControllerName, new RouteValueDictionary(widget.RouteValues));
 }

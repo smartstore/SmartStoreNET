@@ -293,6 +293,8 @@
     <Compile Include="Infrastructure\DefaultBundles.cs" />
     <Compile Include="Infrastructure\DefaultWidgetSelector.cs" />
     <Compile Include="Infrastructure\DependencyRegistrar.cs" />
+    <Compile Include="Infrastructure\Installation\AzeriSeedData.cs" />
+    <Compile Include="Infrastructure\Installation\RuSeedData.cs" />
     <Compile Include="Infrastructure\Menus\MainMenuInvalidator.cs" />
     <Compile Include="Infrastructure\Menus\MyAccountMenu.cs" />
     <Compile Include="Infrastructure\Routes\2_DefaultRoutes.cs" />
@@ -466,13 +468,17 @@
     <Content Include="App_Data\EmailTemplates\en\System.Campaign.xml" />
     <Content Include="App_Data\EmailTemplates\en\System.ContactUs.xml" />
     <Content Include="App_Data\EmailTemplates\en\Wishlist.EmailAFriend.xml" />
+    <Content Include="App_Data\Localization\App\az\all.smres.xml" />
     <Content Include="App_Data\Localization\App\en\all.smres.xml">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="App_Data\Localization\App\en\head.txt" />
+    <Content Include="App_Data\Localization\App\ru\all.smres.xml" />
+    <Content Include="App_Data\Localization\Installation\installation.az.xml" />
     <Content Include="App_Data\Localization\Installation\installation.en.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="App_Data\Localization\Installation\installation.ru.xml" />
     <Content Include="App_Data\Samples\brand\wilson.png" />
     <Content Include="App_Data\Samples\category\0000930_spiegel-bestseller.png" />
     <Content Include="App_Data\Samples\product\0000932_uberman-der-roman.jpeg" />
@@ -518,7 +524,7 @@
     <Content Include="App_Data\Samples\category\tracksuit.png" />
     <Content Include="App_Data\Samples\category\trousers.png" />
     <Content Include="App_Data\Samples\category\watches.png" />
-    <Content Include="App_Data\Samples\company-logo.png" />
+    <Content Include="App_Data\Samples\beauty_logo.png" />
     <Content Include="App_Data\Samples\category\emblem_library.png" />
     <Content Include="App_Data\Samples\product\gift-card.jpg" />
     <Content Include="App_Data\Samples\brand\android.png" />

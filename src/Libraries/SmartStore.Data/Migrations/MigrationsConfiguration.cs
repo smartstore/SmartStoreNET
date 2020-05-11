@@ -67,6 +67,7 @@
             {
                 var name = prefix + propName;
                 var settings = context.Set<Setting>().Where(x => x.Name == name).ToList();
+
                 foreach (var setting in settings)
                 {
                     if (predicate(setting.Value.Convert<int>()))
@@ -81,18 +82,18 @@
 		{
             // FluentValidation splits messages by dot for client validation. Don't use abbrevs.
             builder.AddOrUpdate("Validation.MinimumLengthValidator")
-                .Value("de", "'{PropertyName}' muss mindestens {MinLength} Zeichen lang sein. Sie haben {TotalLength} Zeichen eingegeben.");
+                .Value("az", "'{PropertyName}' ən azı {MinLength} simvoldan ibarət olmalıdır. Siz isə {TotalLength} simvol daxil etdiniz.");
             builder.AddOrUpdate("Validation.MaximumLengthValidator")
-                .Value("de", "'{PropertyName}' darf maximal {MaxLength} Zeichen lang sein. Sie haben {TotalLength} Zeichen eingegeben.");
+                .Value("az", "'{PropertyName}' maksimum {MaxLength} simvol ola bilər. Siz isə {TotalLength} simvol daxil etdiniz.");
 
-            builder.AddOrUpdate("Admin.Configuration.Measures.Weights.AddWeight", "Add weight", "Gewicht hinzufügen");
-            builder.AddOrUpdate("Admin.Configuration.Measures.Weights.EditWeight", "Edit weight", "Gewicht bearbeiten");
+            builder.AddOrUpdate("Admin.Configuration.Measures.Weights.AddWeight", "Add weight", "Kilo əlavə edin");
+            builder.AddOrUpdate("Admin.Configuration.Measures.Weights.EditWeight", "Edit weight", "Ağırlığı dəyişin");
 
-            builder.AddOrUpdate("Admin.Configuration.Measures.Dimensions.AddDimension", "Add dimension", "Abmessung hinzufügen");
-            builder.AddOrUpdate("Admin.Configuration.Measures.Dimensions.EditDimension", "Edit dimension", "Abmessung bearbeiten");
+            builder.AddOrUpdate("Admin.Configuration.Measures.Dimensions.AddDimension", "Add dimension", "Ölçü əlavə edin");
+            builder.AddOrUpdate("Admin.Configuration.Measures.Dimensions.EditDimension", "Edit dimension", "Ölçünü dəyişin");
 
-            builder.AddOrUpdate("Admin.Configuration.QuantityUnit.AddQuantityUnit", "Add quantity unit", "Verpackungseinheit hinzufügen");
-            builder.AddOrUpdate("Admin.Configuration.QuantityUnit.EditQuantityUnit", "Edit quantity unit", "Verpackungseinheit bearbeiten");
+            builder.AddOrUpdate("Admin.Configuration.QuantityUnit.AddQuantityUnit", "Add quantity unit", "Ölçü vahidi əlavə edin");
+            builder.AddOrUpdate("Admin.Configuration.QuantityUnit.EditQuantityUnit", "Edit quantity unit", "Ölçü vahidini dəyişin");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ApplyPercentageDiscountOnTierPrice",
                 "Apply percentage discounts on tier prices",

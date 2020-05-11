@@ -56,7 +56,7 @@ namespace SmartStore.Data.Setup
 		{
 			var entities = new List<MediaFile>
 			{
-				CreatePicture("company-logo.png"),
+				CreatePicture("beauty_logo.png"),
 				CreatePicture("product/allstar_charcoal.jpg"),
 				CreatePicture("product/allstar_maroon.jpg"),
 				CreatePicture("product/allstar_navy.jpg"),
@@ -73,7 +73,7 @@ namespace SmartStore.Data.Setup
 
 		public IList<Store> Stores()
 		{
-			var imgCompanyLogo = _ctx.Set<MediaFile>().Where(x => x.Name == "company-logo.png").FirstOrDefault();
+			var imgCompanyLogo = _ctx.Set<MediaFile>().Where(x => x.Name == "beauty_logo.png").FirstOrDefault();
 			
 			var currency = _ctx.Set<Currency>().FirstOrDefault(x => x.CurrencyCode == "EUR");
 			if (currency == null)
@@ -83,9 +83,9 @@ namespace SmartStore.Data.Setup
 			{
 				new Store()
 				{
-					Name = "Your store name",
-					Url = "http://www.yourStore.com/",
-					Hosts = "yourstore.com,www.yourstore.com",
+					Name = "Beauty.az",
+					Url = "https://www.beauty.az/",
+					Hosts = "beauty.az,www.beauty.az",
 					SslEnabled = false,
 					DisplayOrder = 1,
 					LogoMediaFileId = imgCompanyLogo.Id,
@@ -103,35 +103,35 @@ namespace SmartStore.Data.Setup
 			{
 				new MeasureDimension()
 				{
-					Name = "millimetre",
+					Name = "millimetr",
 					SystemKeyword = "mm",
 					Ratio = 25.4M,
 					DisplayOrder = 1,
 				},
 				new MeasureDimension()
 				{
-					Name = "centimetre",
+					Name = "santimetr",
 					SystemKeyword = "cm",
 					Ratio = 0.254M,
 					DisplayOrder = 2,
 				},
 				new MeasureDimension()
 				{
-					Name = "meter",
+					Name = "metr",
 					SystemKeyword = "m",
 					Ratio = 0.0254M,
 					DisplayOrder = 3,
 				},
 				new MeasureDimension()
 				{
-					Name = "in",
+					Name = "düymə",
 					SystemKeyword = "inch",
 					Ratio = 1M,
 					DisplayOrder = 4,
 				},
 				new MeasureDimension()
 				{
-					Name = "feet",
+					Name = "fut",
 					SystemKeyword = "ft",
 					Ratio = 0.08333333M,
 					DisplayOrder = 5,
@@ -148,14 +148,14 @@ namespace SmartStore.Data.Setup
 			{
 				new MeasureWeight()
 				{
-					Name = "ounce", // Ounce, Unze
+					Name = "unsiya", // Ounce, Unze
 					SystemKeyword = "oz",
 					Ratio = 16M,
 					DisplayOrder = 5,
 				},
 				new MeasureWeight()
 				{
-					Name = "lb", // Pound
+					Name = "funt", // Pound
 					SystemKeyword = "lb",
 					Ratio = 1M,
 					DisplayOrder = 6,
@@ -163,28 +163,28 @@ namespace SmartStore.Data.Setup
 
 				new MeasureWeight()
 				{
-					Name = "kg",
+					Name = "kq",
 					SystemKeyword = "kg",
 					Ratio = 0.45359237M,
 					DisplayOrder = 1,
 				},
 				new MeasureWeight()
 				{
-					Name = "gram",
+					Name = "qram",
 					SystemKeyword = "g",
 					Ratio = 453.59237M,
 					DisplayOrder = 2,
 				},
 				new MeasureWeight()
 				{
-					Name = "liter",
+					Name = "litr",
 					SystemKeyword = "l",
 					Ratio = 0.45359237M,
 					DisplayOrder = 3,
 				},
 				new MeasureWeight()
 				{
-					Name = "milliliter",
+					Name = "millilitr",
 					SystemKeyword = "ml",
 					Ratio = 0.45359237M,
 					DisplayOrder = 4,

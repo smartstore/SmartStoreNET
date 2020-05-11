@@ -100,13 +100,13 @@ namespace SmartStore.Data.Setup
 		/// </summary>
 		/// <param name="key">The key of the resource</param>
 		/// <param name="value">Primary English (untranslated) value of the resource</param>
-		/// <param name="deValue">German value of the resource</param>
-		public void AddOrUpdate(string key, string value, string deValue)
+		/// <param name="azValue">Azeri value of the resource</param>
+		public void AddOrUpdate(string key, string value, string azValue)
 		{
 			Guard.NotEmpty(key, nameof(key));
 
 			_entries.Add(new LocaleResourceEntry { Key = key, Value = value });
-			_entries.Add(new LocaleResourceEntry { Key = key, Value = deValue, Lang = "de" });
+			_entries.Add(new LocaleResourceEntry { Key = key, Value = azValue, Lang = "az" });
 		}
 
 		/// <summary>
@@ -114,15 +114,15 @@ namespace SmartStore.Data.Setup
 		/// </summary>
 		/// <param name="key">The key of the resource</param>
 		/// <param name="value">Primary English (untranslated) value of the resource</param>
-		/// <param name="deValue">German value of the resource</param>
+		/// <param name="azValue">Azeri value of the resource</param>
 		/// <param name="hint">Primary English (untranslated) hint resource</param>
-		/// <param name="deHint">German hint resource</param>
-		public void AddOrUpdate(string key, string value, string deValue, string hint, string deHint)
+		/// <param name="azHint">Azeri hint resource</param>
+		public void AddOrUpdate(string key, string value, string azValue, string hint, string azHint)
 		{
 			Guard.NotEmpty(key, nameof(key));
 
-			AddOrUpdate(key, value, deValue);
-			AddOrUpdate(key + ".Hint", hint, deHint);
+			AddOrUpdate(key, value, azValue);
+			AddOrUpdate(key + ".Hint", hint, azHint);
 		}
 
 		internal void Reset()

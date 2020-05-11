@@ -1,0 +1,175 @@
+﻿<Language Name="Azərbaycanca" IsDefault="true" IsRightToLeft="false" LanguageCulture="az-Latn-AZ"
+          FlagImageFileName="az.png">
+	<LocaleResource Name="AdminEmail">
+		<Value>Admin e-poçtu</Value>
+	</LocaleResource>
+	<LocaleResource Name="AdminPassword">
+		<Value>Admin şifrəsi</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConfigureDirectoryPermissions">
+		<Value>'{0}' hesabına '{1}' qovluğunda Modify icazəsi verilmir. Zəhmət olmasa bu icazələri konfiqurasiya edin.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConfigureFilePermissions">
+		<Value>'{0}' hesabına '{1}' sənədində Modify icazəsi verilmir. Zəhmət olmasa bu icazələri konfiqurasiya edin.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConfirmPassword">
+		<Value>Şifrəni təsdiqləyin</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConnectionString">
+		<Value>Bağlantı məlumatı (Connection string)</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConnectionStringValues">
+		<Value>SQL bağlantı məlumatını daxil edin</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConnectionStringWrongFormat">
+		<Value>SQL bağlantı məlumatının formatı düzgün deyildir</Value>
+	</LocaleResource>
+	<LocaleResource Name="CreateDatabaseIfDoesNotExist">
+		<Value>Mövcud deyilsə, yaradılsın</Value>
+	</LocaleResource>
+	<LocaleResource Name="CreateSampleData">
+		<Value>Nümunə məlumatları yaradılsın</Value>
+	</LocaleResource>
+	<LocaleResource Name="CustomCollation">
+		<Value>Xüsusi SQL Server təsnifatını göstərin</Value>
+	</LocaleResource>
+	<LocaleResource Name="DatabaseCreationError">
+		<Value>Verilənlər bazasının yaradılması zamanı xəta baş verdi: {0}</Value>
+	</LocaleResource>
+	<LocaleResource Name="DatabaseInformation">
+		<Value>Verilənlər bazası haqqında məlumat</Value>
+	</LocaleResource>
+	<LocaleResource Name="DatabaseName">
+		<Value>Verilənlər bazası adı</Value>
+	</LocaleResource>
+	<LocaleResource Name="DatabaseNotExists">
+		<Value>Verilənlər bazası mövcud deyil və ya ona qoşulmaq üçün icazəniz yoxdur</Value>
+	</LocaleResource>
+	<LocaleResource Name="Example">
+		<Value>Nümunə</Value>
+	</LocaleResource>
+	<LocaleResource Name="Install">
+		<Value>Başlayın</Value>
+	</LocaleResource>
+	<LocaleResource Name="Installing">
+		<Value>Beauty.az quraşdırılır...</Value>
+	</LocaleResource>
+	<LocaleResource Name="PasswordsDoNotMatch">
+		<Value>Şifrələr uyğun gəlmir</Value>
+	</LocaleResource>
+	<LocaleResource Name="RawConnectionString">
+		<Value>Bağlantı məlumatının daxil edilməsi (advanced)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Recommended">
+		<Value>[Tövsiyə olunur]</Value>
+	</LocaleResource>
+	<LocaleResource Name="RestartInstallation">
+		<Value>Quraşdırmanı yenidən başladın</Value>
+	</LocaleResource>
+	<LocaleResource Name="RestartInstallationTooltip">
+		<Value>Quraşdırma prosesini yenidən başlatmaq üçün klikləyin (bütün yaddaşları təmizləyin)</Value>
+	</LocaleResource>
+	<LocaleResource Name="SetupFailed">
+		<Value>Quraşdırma alınmadı: {0}</Value>
+	</LocaleResource>
+	<LocaleResource Name="SqlAuthentication">
+		<Value>SQL Server hesabından istifadə edin</Value>
+	</LocaleResource>
+	<LocaleResource Name="SqlCompact">
+		<Value>Daxili məlumat yaddaşından istifadə edin (SQL Server Compact)</Value>
+	</LocaleResource>
+	<LocaleResource Name="SqlServerName">
+		<Value>SQL Server adı</Value>
+	</LocaleResource>
+	<LocaleResource Name="SqlServerPassword">
+		<Value>SQL şifrə</Value>
+	</LocaleResource>
+	<LocaleResource Name="SqlServerUsername">
+		<Value>SQL istifadəçi adı</Value>
+	</LocaleResource>
+	<LocaleResource Name="SqlStandard">
+		<Value>SQL Server (və ya SQL Express) verilənlər bazasından istifadə edin</Value>
+	</LocaleResource>
+	<LocaleResource Name="StoreInformation">
+		<Value>Sayt haqqında məlumat</Value>
+	</LocaleResource>
+	<LocaleResource Name="Title">
+		<Value>Quraşdırma</Value>
+	</LocaleResource>
+	<LocaleResource Name="Tooltip1">
+		<Value>SmartStore.NET aparıcı ASP.NET onlayn mağaza elektron ticarət həllidir. Bu səhifə Beauty.az saytının konfiqurasiya prosesində sizə rəhbərlik edəcəkdir</Value>
+	</LocaleResource>
+	<LocaleResource Name="Tooltip2">
+		<Value>Quraşdırmanı başa çatdırmaq üçün verilənlər bazası və serverinizlə bağlı bəzi məlumatları bilməlisiniz ("Bağlantı məlumatı"). Zəruri hallarda Sistem Administratoru ilə əlaqə saxlayın.</Value>
+	</LocaleResource>
+	<LocaleResource Name="WindowsAuthentication">
+		<Value>Vahid Windows identifikasiyasından istifadə edin</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="PrimaryLanguage">
+		<Value>Əsas dil</Value>
+	</LocaleResource>
+	<LocaleResource Name="PrimaryLanguageRequired">
+		<Value>Əsas dil tələb olunur</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConfirmInstall">
+		<Value>Beauty.az saytını indi quraşdırmaq istəyirsiniz?</Value>
+	</LocaleResource>
+	<LocaleResource Name="AdminEmailValue">
+		<Value>admin@mystore.com</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="MediaStorage.Label">
+		<Value>Media yaddaşı</Value>
+	</LocaleResource>
+	<LocaleResource Name="MediaStorage.Hint">
+		<Value>Verilənlər bazanızda kifayət qədər disk sahəsi təmin etmirsə 'Fayl sistemi' seçin (&lt; 500 MB). Əks təqdirdə, 'Verilənlər bazası' tövsiyə olunur.</Value>
+	</LocaleResource>
+	<LocaleResource Name="MediaStorage.DB">
+		<Value>Verilənlər bazası</Value>
+	</LocaleResource>
+	<LocaleResource Name="MediaStorage.FS">
+		<Value>Fayl sistemi</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="Common.Notification">
+		<Value>Xəbərdarlıq</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.StartShop">
+		<Value>Əla! Quraşdırma uğurla başa çatdı! Beauty.az saytına keçid olunur...</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="Progress.CheckingRequirements">
+		<Value>Tələblərin yoxlanılması</Value>
+	</LocaleResource>
+	<LocaleResource Name="Progress.BuildingDatabase">
+		<Value>Bazanın yaradılması</Value>
+	</LocaleResource>
+	<LocaleResource Name="Progress.InstallingPlugins">
+		<Value>Plugin quraşdırılır {0} of {1}</Value>
+	</LocaleResource>
+	<LocaleResource Name="Progress.Finalizing">
+		<Value>Quraşdırma yekunlaşır</Value>
+	</LocaleResource>
+	<LocaleResource Name="Progress.CreatingRequiredData">
+		<Value>Lazımi məlumatların yaradılması</Value>
+	</LocaleResource>
+	<LocaleResource Name="Progress.CreatingSampleData">
+		<Value>Nümunə məlumatların yaradılması</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="InstallOptions">
+		<Value>Seçimlər</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="Database">
+		<Value>Verilənlər bazası</Value>
+	</LocaleResource>
+	<LocaleResource Name="Connection">
+		<Value>Bağlantı</Value>
+	</LocaleResource>
+	<LocaleResource Name="Authentication">
+		<Value>İdentifikasiya</Value>
+	</LocaleResource>
+
+</Language>

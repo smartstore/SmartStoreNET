@@ -514,6 +514,7 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
+        [HttpGet]
         [RewriteUrl(SslRequirement.Yes)]
 		[GdprConsent]
 		public ActionResult Register()
@@ -612,6 +613,7 @@ namespace SmartStore.Web.Controllers
                 ModelState.AddModelError("", captchaError);
             }
             
+            
             if (ModelState.IsValid)
             {
                 if (_customerSettings.CustomerLoginType != CustomerLoginType.Email && model.Username != null)
@@ -620,8 +622,13 @@ namespace SmartStore.Web.Controllers
                 }
 
                 bool isApproved = _customerSettings.UserRegistrationType == UserRegistrationType.Standard;
-                var registrationRequest = new CustomerRegistrationRequest(customer, model.Email,
-                    _customerSettings.CustomerLoginType != CustomerLoginType.Email ? model.Username : model.Email, model.Password, _customerSettings.DefaultPasswordFormat, isApproved);
+
+                var registrationRequest = new CustomerRegistrationRequest(customer, 
+                                                                          model.Email,
+                    _customerSettings.CustomerLoginType != CustomerLoginType.Email ? model.Username : model.Email, 
+                                                                          model.Password, 
+                                                                          _customerSettings.DefaultPasswordFormat, isApproved);
+
                 var registrationResult = _customerRegistrationService.RegisterCustomer(registrationRequest);
 
                 if (registrationResult.Success)

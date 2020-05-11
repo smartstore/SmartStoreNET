@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Autofac;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
@@ -34,6 +34,28 @@ namespace SmartStore.Web.Infrastructure
                     m.For(em => em.FlagImageFileName, "us.png");
                 })
                 .InstancePerRequest();
+
+			builder.RegisterType<AzeriSeedData>()
+				.As<InvariantSeedData>()
+				.WithMetadata<InstallationAppLanguageMetadata>(m =>
+				{ 
+					m.For(em => em.Culture, "az-Latn-AZ");
+					m.For(em => em.Name, "Azərbaycanca");
+					m.For(em => em.UniqueSeoCode, "az");
+					m.For(em => em.FlagImageFileName, "az.png");
+				})
+				.InstancePerRequest();
+
+			builder.RegisterType<RuSeedData>()
+				.As<InvariantSeedData>()
+				.WithMetadata<InstallationAppLanguageMetadata>(m =>
+				{ 
+					m.For(em => em.Culture, "ru-RU");
+					m.For(em => em.Name, "Russian");
+					m.For(em => em.UniqueSeoCode, "ru");
+					m.For(em => em.FlagImageFileName, "ru.png");
+				})
+				.InstancePerRequest();
            
         }
 

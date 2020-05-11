@@ -1,0 +1,174 @@
+﻿<Language Name="Русский" IsDefault="false" IsRightToLeft="false" LanguageCulture="ru-RU" FlagImageFileName="ru.png">
+	<LocaleResource Name="AdminEmail">
+		<Value>Электронная почта администратора</Value>
+	</LocaleResource>
+	<LocaleResource Name="AdminPassword">
+		<Value>Пароль администратора</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConfigureDirectoryPermissions">
+		<Value>Учетная запись {0} не имеет разрешения на изменение папки «{1}». Пожалуйста, настройте эти разрешения.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConfigureFilePermissions">
+		<Value>Учетная запись {0} не имеет разрешения на изменение файла '{1}'. Пожалуйста, настройте эти разрешения.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConfirmPassword">
+		<Value>Подтвердите пароль</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConnectionString">
+		<Value>Строка подключения</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConnectionStringValues">
+		<Value>Введите значения SQL-соединения</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConnectionStringWrongFormat">
+		<Value>Неверный формат строки подключения SQL</Value>
+	</LocaleResource>
+	<LocaleResource Name="CreateDatabaseIfDoesNotExist">
+		<Value>Создать базу данных, если она не существует</Value>
+	</LocaleResource>
+	<LocaleResource Name="CreateSampleData">
+		<Value>Создать образец данных</Value>
+	</LocaleResource>
+	<LocaleResource Name="CustomCollation">
+		<Value>Укажите пользовательские параметры сортировки SQL Server.</Value>
+	</LocaleResource>
+	<LocaleResource Name="DatabaseCreationError">
+		<Value>Произошла ошибка при создании базы данных: {0}</Value>
+	</LocaleResource>
+	<LocaleResource Name="DatabaseInformation">
+		<Value>Информация о базе данных</Value>
+	</LocaleResource>
+	<LocaleResource Name="DatabaseName">
+		<Value>Имя базы данных</Value>
+	</LocaleResource>
+	<LocaleResource Name="DatabaseNotExists">
+		<Value>База данных не существует или у вас нет прав для подключения к ней</Value>
+	</LocaleResource>
+	<LocaleResource Name="Example">
+		<Value>Пример</Value>
+	</LocaleResource>
+	<LocaleResource Name="Install">
+		<Value>Установить</Value>
+	</LocaleResource>
+	<LocaleResource Name="Installing">
+		<Value>Установка Beauty.az...</Value>
+	</LocaleResource>
+	<LocaleResource Name="PasswordsDoNotMatch">
+		<Value>Пароли не совпадают</Value>
+	</LocaleResource>
+	<LocaleResource Name="RawConnectionString">
+		<Value>Введите необработанную строку подключения (дополнительно)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Recommended">
+		<Value>[Рекомендуется]</Value>
+	</LocaleResource>
+	<LocaleResource Name="RestartInstallation">
+		<Value>Перезапустите установку</Value>
+	</LocaleResource>
+	<LocaleResource Name="RestartInstallationTooltip">
+		<Value>Нажмите, чтобы возобновить процесс установки (очистить все кэшированные значения)</Value>
+	</LocaleResource>
+	<LocaleResource Name="SetupFailed">
+		<Value>Установка не удалась: {0}</Value>
+	</LocaleResource>
+	<LocaleResource Name="SqlAuthentication">
+		<Value>Использовать учетную запись SQL Server</Value>
+	</LocaleResource>
+	<LocaleResource Name="SqlCompact">
+		<Value>Используйте встроенное хранилище данных (SQL Server Compact)</Value>
+	</LocaleResource>
+	<LocaleResource Name="SqlServerName">
+		<Value>Имя сервера SQL</Value>
+	</LocaleResource>
+	<LocaleResource Name="SqlServerPassword">
+		<Value>Пароль SQL</Value>
+	</LocaleResource>
+	<LocaleResource Name="SqlServerUsername">
+		<Value>Имя пользователя SQL</Value>
+	</LocaleResource>
+	<LocaleResource Name="SqlStandard">
+		<Value>Использовать базу данных SQL Server (или SQL Express)</Value>
+	</LocaleResource>
+	<LocaleResource Name="StoreInformation">
+		<Value>Информация о сайте</Value>
+	</LocaleResource>
+	<LocaleResource Name="Title">
+		<Value>Установка</Value>
+	</LocaleResource>
+	<LocaleResource Name="Tooltip1">
+		<Value>SmartStore.NET - ведущее решение для интернет-магазина ASP.NET. Этот мастер проведет вас через процесс настройки Beauty.az</Value>
+	</LocaleResource>
+	<LocaleResource Name="Tooltip2">
+		<Value>Чтобы завершить работу этого мастера, вы должны знать некоторую информацию о вашем сервере и базы данных («строка подключения»). Если вы устанавливаете на локальный компьютер или на сервер, вам может потребоваться информация от системного администратора.</Value>
+	</LocaleResource>
+	<LocaleResource Name="WindowsAuthentication">
+		<Value>Использовать встроенную проверку подлинности Windows</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="PrimaryLanguage">
+		<Value>Основной язык</Value>
+	</LocaleResource>
+	<LocaleResource Name="PrimaryLanguageRequired">
+		<Value>Требуется основной язык </Value>
+	</LocaleResource>
+	<LocaleResource Name="ConfirmInstall">
+		<Value>Вы хотите установить SmartStore.NET сейчас?</Value>
+	</LocaleResource>
+	<LocaleResource Name="AdminEmailValue">
+		<Value>admin@mystore.com</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="MediaStorage.Label">
+		<Value>Хранилище данных</Value>
+	</LocaleResource>
+	<LocaleResource Name="MediaStorage.Hint">
+		<Value>Выберите «Файловая система», если в вашей базе данных недостаточно места на диске. (&lt; 500 MB). В противном случае рекомендуется «База данных».</Value>
+	</LocaleResource>
+	<LocaleResource Name="MediaStorage.DB">
+		<Value>База данных</Value>
+	</LocaleResource>
+	<LocaleResource Name="MediaStorage.FS">
+		<Value>Файловая система</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="Common.Notification">
+		<Value>Предупреждение</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.StartShop">
+		<Value>Ура! Установка была успешно завершена ;-) Beauty.az запускается...</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="Progress.CheckingRequirements">
+		<Value>Проверка требований</Value>
+	</LocaleResource>
+	<LocaleResource Name="Progress.BuildingDatabase">
+		<Value>Создание базы данных</Value>
+	</LocaleResource>
+	<LocaleResource Name="Progress.InstallingPlugins">
+		<Value>Установка плагина {0} из {1}</Value>
+	</LocaleResource>
+	<LocaleResource Name="Progress.Finalizing">
+		<Value>Завершение установки</Value>
+	</LocaleResource>
+	<LocaleResource Name="Progress.CreatingRequiredData">
+		<Value>Создание необходимых данных</Value>
+	</LocaleResource>
+	<LocaleResource Name="Progress.CreatingSampleData">
+		<Value>Создание образца данных</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="InstallOptions">
+		<Value>Параметры</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="Database">
+		<Value>База данных</Value>
+	</LocaleResource>
+	<LocaleResource Name="Connection">
+		<Value>Cоединение</Value>
+	</LocaleResource>
+	<LocaleResource Name="Authentication">
+		<Value>Аутентификация</Value>
+	</LocaleResource>
+
+</Language>

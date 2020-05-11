@@ -22,6 +22,7 @@ namespace SmartStore.Services.Tests.Directory
 
             _addresses = new Dictionary<string, LookupCountryResponse>
             {
+                ["109.127.18.171"] = new LookupCountryResponse { IsoCode = "AZ", Name = "Azerbaijan" },
                 ["0:0:0:0:0:ffff:b0eb:6304"] = new LookupCountryResponse { IsoCode = "TR", Name = "Turkey" },
                 ["104.221.132.123"] = new LookupCountryResponse { IsoCode= "US", Name = "United States" },
                 ["14.232.208.88"] = new LookupCountryResponse { IsoCode = "VN", Name = "Vietnam" },

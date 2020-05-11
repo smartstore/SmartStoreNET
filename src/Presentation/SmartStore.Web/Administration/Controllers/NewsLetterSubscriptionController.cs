@@ -6,7 +6,6 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Security;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Messages;
-using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
@@ -20,27 +19,23 @@ namespace SmartStore.Admin.Controllers
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly AdminAreaSettings _adminAreaSettings;
-        private readonly IStoreService _storeService;
 
         public NewsLetterSubscriptionController(
             INewsLetterSubscriptionService newsLetterSubscriptionService,
             IDateTimeHelper dateTimeHelper,
-            AdminAreaSettings adminAreaSettings,
-            IStoreService storeService)
+            AdminAreaSettings adminAreaSettings)
         {
             _newsLetterSubscriptionService = newsLetterSubscriptionService;
             _dateTimeHelper = dateTimeHelper;
             _adminAreaSettings = adminAreaSettings;
-            _storeService = storeService;
         }
 
         private void PrepareNewsLetterSubscriptionListModel(NewsLetterSubscriptionListModel model)
         {
-            var stores = _storeService.GetAllStores().ToList();
-
-            model.GridPageSize = _adminAreaSettings.GridPageSize;
+            var stores = Services.StoreService.GetAllStores().ToList();
 
             model.AvailableStores = stores.ToSelectListItems();
+            model.GridPageSize = _adminAreaSettings.GridPageSize;
         }
 
         public ActionResult Index()
@@ -51,7 +46,9 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Promotion.Newsletter.Read)]
         public ActionResult List()
         {
-            var newsletterSubscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(String.Empty, 0, _adminAreaSettings.GridPageSize, true);
+            var newsletterSubscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscribers(string.Empty, 0, _adminAreaSettings.GridPageSize, true);
+
+            var allStores = Services.StoreService.GetAllStores().ToDictionary(x => x.Id);
             var model = new NewsLetterSubscriptionListModel();
             PrepareNewsLetterSubscriptionListModel(model);
 
@@ -59,16 +56,17 @@ namespace SmartStore.Admin.Controllers
             {
                 Data = newsletterSubscriptions.Select(x =>
                 {
-                    var m = x.ToModel();
-                    var store = _storeService.GetStoreById(x.StoreId);
+                    var m = x.Subscription.ToModel();
+                    allStores.TryGetValue(x.Subscription.StoreId, out var store);
 
-                    m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
-                    m.StoreName = store != null ? store.Name : "".NaIfEmpty();
+                    m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.Subscription.CreatedOnUtc, DateTimeKind.Utc);
+                    m.StoreName = store?.Name.NaIfEmpty();
 
                     return m;
                 }),
                 Total = newsletterSubscriptions.TotalCount
             };
+
             return View(model);
         }
 
@@ -77,17 +75,21 @@ namespace SmartStore.Admin.Controllers
         public ActionResult SubscriptionList(GridCommand command, NewsLetterSubscriptionListModel model)
         {
             var gridModel = new GridModel<NewsLetterSubscriptionModel>();
-
-            var newsletterSubscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(
-                model.SearchEmail, command.Page - 1, command.PageSize, true, model.StoreId);
+            var allStores = Services.StoreService.GetAllStores().ToDictionary(x => x.Id);
+            var newsletterSubscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscribers(
+                model.SearchEmail,
+                command.Page - 1,
+                command.PageSize,
+                true,
+                model.StoreId != 0 ? new int[] { model.StoreId } : null);
 
             gridModel.Data = newsletterSubscriptions.Select(x =>
             {
-                var m = x.ToModel();
-                var store = _storeService.GetStoreById(x.StoreId);
+                var m = x.Subscription.ToModel();
+                allStores.TryGetValue(x.Subscription.StoreId, out var store);
 
-                m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
-                m.StoreName = store != null ? store.Name : "".NaIfEmpty();
+                m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.Subscription.CreatedOnUtc, DateTimeKind.Utc);
+                m.StoreName = store?.Name.NaIfEmpty();
 
                 return m;
             });

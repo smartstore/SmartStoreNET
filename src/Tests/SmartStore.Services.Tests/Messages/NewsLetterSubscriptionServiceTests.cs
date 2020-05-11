@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using Rhino.Mocks;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Events;
 using SmartStore.Services.Messages;
@@ -8,13 +9,14 @@ using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Messages
 {
-	[TestFixture]
+    [TestFixture]
 	public class NewsLetterSubscriptionServiceTests : ServiceTest
     {
 		ICommonServices _services;
 		IEventPublisher _eventPublisher;
 		IRepository<NewsLetterSubscription> _subscriptionRepository;
-		IDbContext _dbContext;
+        IRepository<Customer> _customerRepository;
+        IDbContext _dbContext;
 		NewsLetterSubscriptionService _newsLetterSubscriptionService;
 
 		[SetUp]
@@ -23,9 +25,10 @@ namespace SmartStore.Services.Tests.Messages
 			_eventPublisher = MockRepository.GenerateStub<IEventPublisher>();
 			_services = new MockCommonServices { EventPublisher = _eventPublisher };
 			_subscriptionRepository = MockRepository.GenerateStub<IRepository<NewsLetterSubscription>>();
-			_dbContext = MockRepository.GenerateStub<IDbContext>();
+            _customerRepository = MockRepository.GenerateStub<IRepository<Customer>>();
+            _dbContext = MockRepository.GenerateStub<IDbContext>();
 
-			_newsLetterSubscriptionService = new NewsLetterSubscriptionService(_subscriptionRepository, _services);
+			_newsLetterSubscriptionService = new NewsLetterSubscriptionService(_subscriptionRepository, _customerRepository, _services);
 		}
 
         /// <summary>

@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Messages;
-using SmartStore.Services.Customers;
-using SmartStore.Core.Email;
-using SmartStore.Services.Stores;
-using SmartStore.Templating;
 using SmartStore.Core.Localization;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Messages
 {
@@ -16,33 +13,25 @@ namespace SmartStore.Services.Messages
 		private readonly ICommonServices _services;
 		private readonly IRepository<Campaign> _campaignRepository;
 		private readonly IMessageTemplateService _messageTemplateService;
-		private readonly IEmailSender _emailSender;
-        private readonly IQueuedEmailService _queuedEmailService;
-        private readonly ICustomerService _customerService;
 		private readonly IStoreMappingService _storeMappingService;
+        private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
 
         public CampaignService(
 			ICommonServices services,
 			IRepository<Campaign> campaignRepository,
 			IMessageTemplateService messageTemplateService,
-			IEmailSender emailSender, 
-			IQueuedEmailService queuedEmailService,
-			ICustomerService customerService,
-			IStoreMappingService storeMappingService)
+			IStoreMappingService storeMappingService,
+            INewsLetterSubscriptionService newsLetterSubscriptionService)
         {
 			_services = services;
 			_campaignRepository = campaignRepository;
 			_messageTemplateService = messageTemplateService;
-            _emailSender = emailSender;
-            _queuedEmailService = queuedEmailService;
-            _customerService = customerService;
 			_storeMappingService = storeMappingService;
-
-			T = NullLocalizer.Instance;
+            _newsLetterSubscriptionService = newsLetterSubscriptionService;
         }
 
-		public Localizer T { get; set; }
-      
+		public Localizer T { get; set; } = NullLocalizer.Instance;
+
         public virtual void InsertCampaign(Campaign campaign)
         {
 			Guard.NotNull(campaign, nameof(campaign));
@@ -85,41 +74,70 @@ namespace SmartStore.Services.Messages
             return campaigns;
         }
 
-        public virtual int SendCampaign(Campaign campaign, IEnumerable<NewsLetterSubscription> subscriptions)
+        public virtual int SendCampaign(Campaign campaign)
         {
-			Guard.NotNull(campaign, nameof(campaign));
+            Guard.NotNull(campaign, nameof(campaign));
 
-			if (subscriptions == null || subscriptions.Count() <= 0)
-				return 0;
+            var totalEmailsSent = 0;
+            var pageIndex = -1;
+            var alreadyProcessedEmails = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 
-            int totalEmailsQueued = 0;
-
-			var subscriptionData = subscriptions
-				.Where(x => _storeMappingService.Authorize<Campaign>(campaign, x.StoreId))
-				.GroupBy(x => x.Email);
-
-			foreach (var group in subscriptionData)
+            while (true)
             {
-				var subscription = group.First();   // only one email per email address
-				var customer = _customerService.GetCustomerByEmail(subscription.Email);
-				var messageContext = new MessageContext
-				{
-					MessageTemplate = GetCampaignTemplate(),
-					Customer = customer
-				};
+                // TODO: campaign role IDs
+                var subscribers = _newsLetterSubscriptionService.GetAllNewsLetterSubscribers(null, ++pageIndex, 500, false);
 
-				var msg = _services.MessageFactory.CreateMessage(messageContext, true, subscription, campaign);
+                foreach (var subscriber in subscribers)
+                {
+                    // Create only one message per subscription email.
+                    if (alreadyProcessedEmails.Contains(subscriber.Subscription.Email))
+                    {
+                        continue;
+                    }
 
-				if (msg.Email?.Id != null)
-				{
-					totalEmailsQueued++;
-				}
-			}
+                    if (!_storeMappingService.Authorize(campaign, subscriber.Subscription.StoreId))
+                    {
+                        continue;
+                    }
 
-            return totalEmailsQueued;
+                    var result = SendCampaign(campaign, subscriber);
+                    if ((result?.Email?.Id ?? 0) != 0)
+                    {
+                        alreadyProcessedEmails.Add(subscriber.Subscription.Email);
+
+                        ++totalEmailsSent;
+                    }
+                }
+
+                if (!subscribers.HasNextPage)
+                {
+                    break;
+                }
+            }
+
+            return totalEmailsSent;
         }
 
-		public virtual CreateMessageResult Preview(Campaign campaign)
+        public virtual CreateMessageResult SendCampaign(Campaign campaign, NewsletterSubscriber subscriber)
+        {
+            Guard.NotNull(campaign, nameof(campaign));
+
+            if (subscriber?.Subscription == null)
+            {
+                return null;
+            }
+
+            var messageContext = new MessageContext
+            {
+                MessageTemplate = GetCampaignTemplate(),
+                Customer = subscriber.Customer
+            };
+
+            var message = _services.MessageFactory.CreateMessage(messageContext, true, subscriber.Subscription, campaign);
+            return message;
+        }
+
+        public virtual CreateMessageResult Preview(Campaign campaign)
 		{
 			Guard.NotNull(campaign, nameof(campaign));
 
@@ -131,9 +149,8 @@ namespace SmartStore.Services.Messages
 
 			var subscription =_services.MessageFactory.GetTestModels(messageContext).OfType<NewsLetterSubscription>().FirstOrDefault();
 
-			var result = _services.MessageFactory.CreateMessage(messageContext, false /* do NOT queue */, subscription, campaign);
-
-			return result;
+			var message = _services.MessageFactory.CreateMessage(messageContext, false /* do NOT queue */, subscription, campaign);
+			return message;
 		}
 
 		private MessageTemplate GetCampaignTemplate()

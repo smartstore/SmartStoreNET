@@ -6,7 +6,6 @@ using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Security;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Stores;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -18,18 +17,15 @@ namespace SmartStore.Admin.Controllers
     public class CampaignController : AdminControllerBase
     {
         private readonly ICampaignService _campaignService;
-        private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
         private readonly IMessageModelProvider _messageModelProvider;
         private readonly IStoreMappingService _storeMappingService;
 
         public CampaignController(
             ICampaignService campaignService,
-            INewsLetterSubscriptionService newsLetterSubscriptionService,
             IMessageModelProvider messageModelProvider,
             IStoreMappingService storeMappingService)
         {
             _campaignService = campaignService;
-            _newsLetterSubscriptionService = newsLetterSubscriptionService;
             _messageModelProvider = messageModelProvider;
             _storeMappingService = storeMappingService;
         }
@@ -156,31 +152,30 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Edit")]
-        [FormValueRequired("send-mass-email")]
+        [FormValueRequired("send-campaign")]
         [Permission(Permissions.System.Message.Send)]
-        public ActionResult SendMassEmail(CampaignModel model)
+        public ActionResult SendCampaign(CampaignModel model)
         {
             var campaign = _campaignService.GetCampaignById(model.Id);
             if (campaign == null)
+            {
                 return RedirectToAction("List");
+            }
 
             PrepareCampaignModel(model, campaign, false);
 
             try
             {
-                var subscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(null, 0, int.MaxValue, false);
-                var totalEmailsSent = _campaignService.SendCampaign(campaign, subscriptions);
+                var numberOfQueuedMessages = _campaignService.SendCampaign(campaign);
 
-                NotifySuccess(string.Format(T("Admin.Promotions.Campaigns.MassEmailSentToCustomers"), totalEmailsSent), false);
-                return View(model);
+                NotifySuccess(string.Format(T("Admin.Promotions.Campaigns.MassEmailSentToCustomers"), numberOfQueuedMessages));
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
-                NotifyError(exc, false);
+                NotifyError(ex, false);
             }
 
-            // If we got this far, something failed, redisplay form
-            return View(model);
+            return RedirectToAction("Edit");
         }
 
         [HttpPost, ActionName("Delete")]

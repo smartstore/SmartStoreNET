@@ -415,6 +415,7 @@
     <Compile Include="Messages\MessageModelProvider.OrderParts.cs" />
     <Compile Include="Messages\MessageModelProvider.Utils.cs" />
     <Compile Include="Messages\MessageModelProvider.cs" />
+    <Compile Include="Messages\NewsletterSubscriber.cs" />
     <Compile Include="Messages\TemplateModel.cs" />
     <Compile Include="Messages\QueuedMessagesClearTask.cs" />
     <Compile Include="Messages\CreateAttachmentsConsumer.cs" />

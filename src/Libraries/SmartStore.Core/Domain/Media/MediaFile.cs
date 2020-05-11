@@ -20,10 +20,11 @@ namespace SmartStore.Core.Domain.Media
 		[DataMember]
 		public int? FolderId { get; set; }
 
-		/// <summary>
-		/// Gets or sets the associated folder.
-		/// </summary>
-		public virtual MediaFolder Folder { get; set; }
+        /// <summary>
+        /// Gets or sets the associated folder.
+        /// </summary>
+        [DataMember]
+        public virtual MediaFolder Folder { get; set; }
 
 		/// <summary>
 		/// Gets or sets the SEO friendly name of the media file including file extension

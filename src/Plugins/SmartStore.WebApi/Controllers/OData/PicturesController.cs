@@ -10,6 +10,8 @@ using SmartStore.Web.Framework.WebApi.Security;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
+    // TODO: do not support direct MediaFile entity editing through API.
+    // Add MediasController for IMediaService methods instead.
     public class PicturesController : WebApiEntityController<MediaFile, IMediaService>
 	{
         protected override IQueryable<MediaFile> GetEntitySet()
@@ -22,24 +24,22 @@ namespace SmartStore.WebApi.Controllers.OData
             return query;
         }
 
-        [WebApiAuthenticate(Permission = Permissions.Media.Upload)]
+        //[WebApiAuthenticate(Permission = Permissions.Media.Upload)]
         protected override void Insert(MediaFile entity)
 		{
 			throw this.ExceptionNotImplemented();
 		}
 
-        [WebApiAuthenticate(Permission = Permissions.Media.Update)]
+        //[WebApiAuthenticate(Permission = Permissions.Media.Update)]
         protected override void Update(MediaFile entity)
 		{
 			throw this.ExceptionNotImplemented();
 		}
 
-        [WebApiAuthenticate(Permission = Permissions.Media.Delete)]
+        //[WebApiAuthenticate(Permission = Permissions.Media.Delete)]
         protected override void Delete(MediaFile entity)
 		{
-            var permanent = this.GetQueryStringValue<bool>("permanent");
-
-            Service.DeleteFile(entity, permanent);
+            throw this.ExceptionNotImplemented();
         }
 
 		[WebApiQueryable]

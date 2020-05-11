@@ -68,7 +68,7 @@ namespace SmartStore.Services.Messages
 		/// <param name="storeIds">Filter by store identifiers.</param>
         /// <<param name="customerRolesIds">Filter by customer role identifiers.</param>
         /// <returns>List of newsletter scubscribers.</returns>
-        IPagedList<NewsletterSubscriber> GetAllNewsLetterSubscribers(
+        IPagedList<NewsletterSubscriber> GetAllNewsLetterSubscriptions(
             string email,
             int pageIndex,
             int pageSize,

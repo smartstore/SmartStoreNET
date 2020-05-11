@@ -181,7 +181,7 @@ namespace SmartStore.Services.Messages
 			return subscription;
         }
 
-        public virtual IPagedList<NewsletterSubscriber> GetAllNewsLetterSubscribers(
+        public virtual IPagedList<NewsletterSubscriber> GetAllNewsLetterSubscriptions(
             string email,
             int pageIndex,
             int pageSize,
@@ -189,10 +189,12 @@ namespace SmartStore.Services.Messages
             int[] storeIds = null,
             int[] customerRolesIds = null)
         {
+            var customerQuery = _customerRepository.Table.Where(x => !x.Deleted);
+
             // Note, changing the shape makes eager loading for customer entity impossible here.
             var query =
                 from ns in _subscriptionRepository.Table
-                join c in _customerRepository.Table on ns.Email equals c.Email into customers
+                join c in customerQuery on ns.Email equals c.Email into customers
                 from c in customers.DefaultIfEmpty()
                 select new NewsletterSubscriber
                 {

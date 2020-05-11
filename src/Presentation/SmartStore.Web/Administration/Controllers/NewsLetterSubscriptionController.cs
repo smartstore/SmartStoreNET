@@ -46,7 +46,7 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Promotion.Newsletter.Read)]
         public ActionResult List()
         {
-            var newsletterSubscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscribers(string.Empty, 0, _adminAreaSettings.GridPageSize, true);
+            var newsletterSubscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(string.Empty, 0, _adminAreaSettings.GridPageSize, true);
 
             var allStores = Services.StoreService.GetAllStores().ToDictionary(x => x.Id);
             var model = new NewsLetterSubscriptionListModel();
@@ -76,7 +76,7 @@ namespace SmartStore.Admin.Controllers
         {
             var gridModel = new GridModel<NewsLetterSubscriptionModel>();
             var allStores = Services.StoreService.GetAllStores().ToDictionary(x => x.Id);
-            var newsletterSubscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscribers(
+            var newsletterSubscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(
                 model.SearchEmail,
                 command.Page - 1,
                 command.PageSize,

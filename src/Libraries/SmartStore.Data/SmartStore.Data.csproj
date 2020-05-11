@@ -465,6 +465,10 @@
     <Compile Include="Migrations\202004301922188_RemoveCustomerCustomerRoles.Designer.cs">
       <DependentUpon>202004301922188_RemoveCustomerCustomerRoles.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202005111006305_CampaignSubjectToAcl.cs" />
+    <Compile Include="Migrations\202005111006305_CampaignSubjectToAcl.Designer.cs">
+      <DependentUpon>202005111006305_CampaignSubjectToAcl.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -843,6 +847,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202004301922188_RemoveCustomerCustomerRoles.resx">
       <DependentUpon>202004301922188_RemoveCustomerCustomerRoles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005111006305_CampaignSubjectToAcl.resx">
+      <DependentUpon>202005111006305_CampaignSubjectToAcl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

@@ -27,6 +27,7 @@ namespace SmartStore.Core.Domain.Messages
         /// Gets or sets a value indicating whether subscription is active
         /// </summary>
         [DataMember]
+        [Index]
         public bool Active { get; set; }
 
         /// <summary>

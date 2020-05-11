@@ -49,6 +49,15 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedCustomerRoleIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedCustomerRoleIds)
+                @Html.ValidationMessageFor(model => model.SelectedCustomerRoleIds)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.LastModelTree)
             </td>
             <td class="adminData">

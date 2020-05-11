@@ -5,6 +5,7 @@ using SmartStore.Admin.Models.Messages;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Security;
 using SmartStore.Services.Messages;
+using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -19,27 +20,27 @@ namespace SmartStore.Admin.Controllers
         private readonly ICampaignService _campaignService;
         private readonly IMessageModelProvider _messageModelProvider;
         private readonly IStoreMappingService _storeMappingService;
+        private readonly IAclService _aclService;
 
         public CampaignController(
             ICampaignService campaignService,
             IMessageModelProvider messageModelProvider,
-            IStoreMappingService storeMappingService)
+            IStoreMappingService storeMappingService,
+            IAclService aclService)
         {
             _campaignService = campaignService;
             _messageModelProvider = messageModelProvider;
             _storeMappingService = storeMappingService;
+            _aclService = aclService;
         }
 
-        private void PrepareCampaignModel(CampaignModel model, Campaign campaign, bool excludeProperties)
+        private void PrepareCampaignModel(CampaignModel model, Campaign campaign)
         {
-            if (!excludeProperties)
-            {
-                model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(campaign);
-            }
-
             if (campaign != null)
             {
                 model.CreatedOn = Services.DateTimeHelper.ConvertToUserTime(campaign.CreatedOnUtc, DateTimeKind.Utc);
+                model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(campaign);
+                model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(campaign);
             }
 
             model.LastModelTree = _messageModelProvider.GetLastModelTree(MessageTemplateNames.SystemCampaign);
@@ -85,7 +86,8 @@ namespace SmartStore.Admin.Controllers
         public ActionResult Create()
         {
             var model = new CampaignModel();
-            PrepareCampaignModel(model, null, false);
+            PrepareCampaignModel(model, null);
+
             return View(model);
         }
 
@@ -99,13 +101,14 @@ namespace SmartStore.Admin.Controllers
                 campaign.CreatedOnUtc = DateTime.UtcNow;
                 _campaignService.InsertCampaign(campaign);
 
+                SaveAclMappings(campaign, model.SelectedCustomerRoleIds);
                 SaveStoreMappings(campaign, model.SelectedStoreIds);
 
                 NotifySuccess(T("Admin.Promotions.Campaigns.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = campaign.Id }) : RedirectToAction("List");
             }
 
-            PrepareCampaignModel(model, null, true);
+            PrepareCampaignModel(model, null);
 
             return View(model);
         }
@@ -118,7 +121,7 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             var model = campaign.ToModel();
-            PrepareCampaignModel(model, campaign, false);
+            PrepareCampaignModel(model, campaign);
 
             return View(model);
         }
@@ -140,13 +143,14 @@ namespace SmartStore.Admin.Controllers
                 campaign = model.ToEntity(campaign);
                 _campaignService.UpdateCampaign(campaign);
 
+                SaveAclMappings(campaign, model.SelectedCustomerRoleIds);
                 SaveStoreMappings(campaign, model.SelectedStoreIds);
 
                 NotifySuccess(T("Admin.Promotions.Campaigns.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = campaign.Id }) : RedirectToAction("List");
             }
 
-            PrepareCampaignModel(model, campaign, true);
+            PrepareCampaignModel(model, campaign);
 
             return View(model);
         }
@@ -162,7 +166,7 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
             }
 
-            PrepareCampaignModel(model, campaign, false);
+            PrepareCampaignModel(model, campaign);
 
             try
             {
@@ -183,19 +187,14 @@ namespace SmartStore.Admin.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             var campaign = _campaignService.GetCampaignById(id);
-            if (campaign == null)
-                return RedirectToAction("List");
+            if (campaign != null)
+            {
+                _campaignService.DeleteCampaign(campaign);
 
-            _campaignService.DeleteCampaign(campaign);
+                NotifySuccess(T("Admin.Promotions.Campaigns.Deleted"));
+            }
 
-            NotifySuccess(T("Admin.Promotions.Campaigns.Deleted"));
             return RedirectToAction("List");
-        }
-
-        private void DeserializeLastModelTree(MessageTemplate template)
-        {
-            ViewBag.LastModelTreeJson = template.LastModelTree;
-            ViewBag.LastModelTree = _messageModelProvider.GetLastModelTree(template);
         }
     }
 }

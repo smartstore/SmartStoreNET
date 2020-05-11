@@ -1,4 +1,5 @@
 ﻿using System;
+using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Messages
@@ -6,7 +7,7 @@ namespace SmartStore.Core.Domain.Messages
     /// <summary>
     /// Represents a campaign
     /// </summary>
-	public partial class Campaign : BaseEntity, IStoreMappingSupported
+	public partial class Campaign : BaseEntity, IStoreMappingSupported, IAclSupported
     {
         /// <summary>
         /// Gets or sets the name
@@ -28,9 +29,14 @@ namespace SmartStore.Core.Domain.Messages
         /// </summary>
         public DateTime CreatedOnUtc { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
-		/// </summary>
-		public bool LimitedToStores { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
+        /// </summary>
+        public bool LimitedToStores { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the entity is subject to ACL.
+        /// </summary>
+        public bool SubjectToAcl { get; set; }
     }
 }

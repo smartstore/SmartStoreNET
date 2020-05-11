@@ -4,6 +4,7 @@ using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Localization;
+using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Messages
@@ -13,21 +14,24 @@ namespace SmartStore.Services.Messages
 		private readonly ICommonServices _services;
 		private readonly IRepository<Campaign> _campaignRepository;
 		private readonly IMessageTemplateService _messageTemplateService;
-		private readonly IStoreMappingService _storeMappingService;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
+        private readonly IStoreMappingService _storeMappingService;
+        private readonly IAclService _aclService;
 
         public CampaignService(
 			ICommonServices services,
 			IRepository<Campaign> campaignRepository,
 			IMessageTemplateService messageTemplateService,
-			IStoreMappingService storeMappingService,
-            INewsLetterSubscriptionService newsLetterSubscriptionService)
+            INewsLetterSubscriptionService newsLetterSubscriptionService,
+            IStoreMappingService storeMappingService,
+            IAclService aclService)
         {
 			_services = services;
 			_campaignRepository = campaignRepository;
 			_messageTemplateService = messageTemplateService;
-			_storeMappingService = storeMappingService;
             _newsLetterSubscriptionService = newsLetterSubscriptionService;
+            _storeMappingService = storeMappingService;
+            _aclService = aclService;
         }
 
 		public Localizer T { get; set; } = NullLocalizer.Instance;
@@ -80,12 +84,29 @@ namespace SmartStore.Services.Messages
 
             var totalEmailsSent = 0;
             var pageIndex = -1;
+            int[] storeIds = null;
+            int[] rolesIds = null;
             var alreadyProcessedEmails = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+
+            if (campaign.LimitedToStores)
+            {
+                storeIds = _storeMappingService.GetStoreMappings(campaign)
+                    .Select(x => x.StoreId)
+                    .Distinct()
+                    .ToArray();
+            }
+
+            if (campaign.SubjectToAcl)
+            {
+                rolesIds = _aclService.GetAclRecords(campaign)
+                    .Select(x => x.CustomerRoleId)
+                    .Distinct()
+                    .ToArray();
+            }
 
             while (true)
             {
-                // TODO: campaign role IDs
-                var subscribers = _newsLetterSubscriptionService.GetAllNewsLetterSubscribers(null, ++pageIndex, 500, false);
+                var subscribers = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(null, ++pageIndex, 500, false, storeIds, rolesIds);
 
                 foreach (var subscriber in subscribers)
                 {
@@ -95,7 +116,7 @@ namespace SmartStore.Services.Messages
                         continue;
                     }
 
-                    if (!_storeMappingService.Authorize(campaign, subscriber.Subscription.StoreId))
+                    if (subscriber.Customer != null && !subscriber.Customer.Active)
                     {
                         continue;
                     }

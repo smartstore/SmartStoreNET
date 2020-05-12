@@ -108,7 +108,13 @@ namespace SmartStore.Services.Media
                         Unassigned = g.Count(x => !x.Deleted && x.FolderId == null),
                         Transient = g.Count(x => !x.Deleted && x.IsTransient == true),
                         Orphan = g.Count(x => !x.Deleted && x.FolderId > 0 && !untrackableFolderIds.Contains(x.FolderId.Value) && !x.Tracks.Any())
-                    }).FirstOrDefault();
+                    }).FirstOrDefault() ?? new FileCountResult();
+
+            if (result.Total == 0)
+            {
+                result.Folders = new Dictionary<int, int>();
+                return result;
+            }
 
             // Determine file count for each folder
             var byFolders = from f in q

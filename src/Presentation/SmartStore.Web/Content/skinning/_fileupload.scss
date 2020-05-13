@@ -62,7 +62,7 @@
 		color: $gray-600;
 	}
 
-	.show-upload-summmary {
+	.open-upload-summmary {
 		display: none;
 		position: absolute;
 		right: 10px;
@@ -87,8 +87,8 @@
 .dz-image-preview {
 	margin: 0 10px 10px 0;
 	position: relative;
-	border: 1px solid $border-color;
-	border-radius: $border-radius;
+	border: 1px solid $gray-400;
+	border-radius: $border-radius-sm;
 	background: $light;
 	display: flex;
 	justify-content: center;
@@ -126,6 +126,7 @@
 		transition: visibility 0.1s;
 		border-top: 1px solid $gray-500;
 		z-index: 2;
+		cursor: default;
 
 		> .btn {
 			border-radius: 0 !important;
@@ -157,6 +158,7 @@
 	}
 }
 
+// DupeFileHandlerDialog
 #duplicate-window {
 
 	.file-display {
@@ -164,6 +166,8 @@
 
 		.file-img {
 			width: 100px;
+			height: 80px;
+			object-fit: cover;
 		}
 
 		.file-date {

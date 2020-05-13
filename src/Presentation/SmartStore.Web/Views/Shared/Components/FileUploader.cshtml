@@ -51,10 +51,9 @@
 			</div>
 		</div>
 
-		<a href="#" class="show-upload-summmary">
+		<a href="#" class="open-upload-summmary">
 			<i class="fa fa-question-circle"></i>
 		</a>
-
 	</div>
 
 	<button class="btn btn-secondary btn-circle btn-to-danger btn-sm remove@(Model.Compact ? " btn-sm" : "")" @Html.Attr("style", "display: none", !Model.ShowRemoveButton)>
@@ -66,34 +65,40 @@
 {
 	<div class="fileupload-status">
 		<div class="fileupload-status-summary">
-			<span class="uploaded-file-count">1 Datei</span>
+			<span class="uploaded-file-count">0</span>
 			<span>von</span>
-			<span class="total-file-count">3</span>
+			<span class="total-file-count">0</span>
 			<span>hochgeladen.</span>
 		</div>
 
-		<div class="erroneous-files">
+		<div class="erroneous-files d-none">
 			<h6>Nicht hochgeladene Dateien</h6>
-			<div>
+			<div class="file-list">
 				<span>Dateiname</span>
 				<span>Grund</span>
 			</div>
 		</div>
-		<div class="updated-files">
-			<h6>Aktualisierte Dateien</h6>
-			<div>
+		<div class="skipped-files d-none">
+			<h6>Übersprungene Dateien</h6>
+			<div class="file-list">
 				<span>Dateiname</span>
 			</div>
 		</div>
-		<div class="replaced-files">
+		<div class="renamed-files d-none">
+			<h6>Umbenannte Dateien</h6>
+			<div class="file-list">
+				<span>Dateiname</span>
+			</div>
+		</div>
+		<div class="replaced-files d-none">
 			<h6>Ersetzte Dateien</h6>
-			<div>
+			<div class="file-list">
 				<span>Dateiname</span>
 			</div>
 		</div>
-		<div class="uploaded-files">
+		<div class="uploaded-files d-none">
 			<h6>Neue Dateien</h6>
-			<div>
+			<div class="file-list">
 				<span>Dateiname</span>
 			</div>
 		</div>
@@ -121,14 +126,14 @@
 				entityMediaId = entityMediaFile.Id;
 			}
 
-			<div class="dz-processing dz-image-preview dz-success dz-complete"
+			<div class="dz-processing dz-image-preview dz-success dz-complete shadow-sm"
 				 data-display-order="@file.DisplayOrder"
-				 data-picture-id="@file.MediaFileId"
+				 data-media-id="@file.MediaFileId"
 				 data-toggle="tooltip"
 				 data-html="true"
 				 data-placement="top"
 				 title='<div class="text-left px-3"><em>@file.MediaFile.Name</em> <br/> <b>@fileSize</b></div>'
-				 @Html.Attr("data-entity-picture-id", entityMediaId.ToString(), entityMediaId != 0)>
+				 @Html.Attr("data-entity-media-id", entityMediaId.ToString(), entityMediaId != 0)>
 
 				@if (isMainPic)
 				{
@@ -141,7 +146,7 @@
 	</div>
 
 	<div class="file-preview-template d-none">
-		<div class="d-none dz-processing dz-image-preview dz-success dz-complete"
+		<div class="d-none dz-processing dz-image-preview dz-success dz-complete shadow-sm"
 			 data-toggle="tooltip"
 			 data-html="true"
 			 data-placement="top"
@@ -191,10 +196,10 @@
 
             dropzone.on("completemultiple", function (file, response, progress) {
 
-                console.log("Sorting now...");
+                //console.log("Sorting now...");
 
-				var errorFiles = this.getFilesWithStatus(Dropzone.ERROR);
-				var dupeFiles = errorFiles.filter(file => file.response.dupe === true);
+                var errorFiles = this.getFilesWithStatus(Dropzone.ERROR);
+                var dupeFiles = errorFiles.filter(file => file.response != undefined && file.response.dupe === true);
                 if (dupeFiles.length === 0) {
 					sortPictures(sortable);
                 }
@@ -216,7 +221,7 @@
 
 		var newOrder = [];
 		$.each(items, function (i, val) {
-			newOrder.push($(val).data('entity-picture-id'));
+			newOrder.push($(val).data('entity-media-id'));
 		});
 
 		// Set display order of ProductPicture.

@@ -79,6 +79,9 @@ namespace SmartStore.Admin.Controllers
 
                     if (dupe != null)
                     {
+                        _mediaService.CheckUniqueFileName(filePath, out string newPath);
+
+                        resultParams.newPath = newPath;
                         resultParams.fileId = dupe.Id;
                         resultParams.url = _mediaService.GetUrl(dupe, _mediaSettings.ProductThumbPictureSize, host: string.Empty);
                         resultParams.date = dupe.CreatedOn.ToString();

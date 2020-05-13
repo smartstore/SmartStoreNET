@@ -310,6 +310,7 @@
     <Compile Include="IAuditable.cs" />
     <Compile Include="ITransient.cs" />
     <Compile Include="Collections\TrimmedBuffer.cs" />
+    <Compile Include="Linq\ExpressionStarter.cs" />
     <Compile Include="Localization\ILocalizationFileResolver.cs" />
     <Compile Include="Localization\LocalizationFileResolver.cs" />
     <Compile Include="Localization\LocalizationHelper.cs" />

@@ -8,6 +8,15 @@ using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Media
 {
+    public enum ImageDimension
+    {
+        VerySmall = 0,
+        Small = 1,
+        Medium = 2,
+        Large = 3,
+        VeryLarge = 4
+    }
+    
     public partial class MediaFilesFilter
     {
         [JsonProperty("mediaTypes")]
@@ -18,6 +27,9 @@ namespace SmartStore.Services.Media
 
         [JsonProperty("extensions")]
         public string[] Extensions { get; set; }
+
+        [JsonProperty("dimensions")]
+        public ImageDimension[] Dimensions { get; set; }
 
         [JsonProperty("tags")]
         public int[] Tags { get; set; }

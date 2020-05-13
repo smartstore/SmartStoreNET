@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Dynamic;
+using SmartStore.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Infrastructure.DependencyManagement;
+using System.Linq.Expressions;
 
 namespace SmartStore.Services.Media
 {
@@ -136,6 +138,36 @@ namespace SmartStore.Services.Media
             if (filter.Tags != null && filter.Tags.Length > 0)
             {
                 q = q.Where(x => x.Tags.Any(t => filter.Tags.Contains(t.Id)));
+            }
+
+            // Extensions
+            if (filter.Dimensions != null && filter.Dimensions.Length > 0)
+            {
+                var predicates = new List<Expression<Func<MediaFile, bool>>>(5);
+
+                foreach (var dim in filter.Dimensions.OrderBy(x => x).Distinct()) 
+                {
+                    if (dim == ImageDimension.VerySmall)
+                        predicates.Add(x => x.PixelSize > 0 && x.PixelSize <= 50000);
+                    else if (dim == ImageDimension.Small)
+                        predicates.Add(x => x.PixelSize > 50000 && x.PixelSize <= 250000);
+                    else if (dim == ImageDimension.Medium)
+                        predicates.Add(x => x.PixelSize > 250000 && x.PixelSize <= 1000000);
+                    else if (dim == ImageDimension.Large)
+                        predicates.Add(x => x.PixelSize > 1000000 && x.PixelSize <= 2000000);
+                    else if (dim == ImageDimension.VeryLarge)
+                        predicates.Add(x => x.PixelSize > 2000000);
+                }
+
+                if (predicates.Any())
+                {
+                    var predicate = PredicateBuilder.New(predicates.First());
+                    for (var i = 1; i < predicates.Count; i++)
+                    {
+                        predicate = PredicateBuilder.Or(predicate, predicates[i]);
+                    }
+                    q = q.Where(predicate);
+                }
             }
 
             // Term

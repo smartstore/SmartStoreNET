@@ -74,7 +74,7 @@ SmartStore.Admin.Media = (function () {
 				get file() {
 					return _file;
 				},
-				set file() {
+				set file(value) {
 					// Do something
 					_file = value;
 					refreshDialog(value);

@@ -65,7 +65,7 @@ else
 				var el = $(this).closest('.dz-image-preview');
 
 				$.ajax({
-					async: false,
+					async: true,
 					cache: false,
 					type: 'POST',
 					url: '@Url.Action("SetMainPictureId", "Product")',

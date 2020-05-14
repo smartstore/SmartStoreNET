@@ -129,23 +129,6 @@
 
 		return url + createQueryString(qs);
 
-		// http://stackoverflow.com/questions/2907482
-		// Gets Querystring from window.location and converts all keys to lowercase
-		function getQueryStrings(search) {
-			var assoc = { };
-			var decode = function (s) { return decodeURIComponent(s.replace(/\+/g, " ")); };
-			var queryString = (search || location.search).substring(1);
-			var keyValues = queryString.split('&');
-
-			for (var i in keyValues) {
-				var key = keyValues[i].split('=');
-				if (key.length > 1)
-					assoc[decode(key[0]).toLowerCase()] = decode(key[1]);
-			}
-
-			return assoc;
-		}
-
 		function createQueryString(dict) {
 			var bits = [];
 			for (var key in dict) {
@@ -155,6 +138,23 @@
 			}
 			return bits.length > 0 ? "?" + bits.join("&") : "";
 		}
+	}
+
+	// http://stackoverflow.com/questions/2907482
+	// Gets Querystring from window.location and converts all keys to lowercase
+	window.getQueryStrings = function(search) {
+		var assoc = {};
+		var decode = function (s) { return decodeURIComponent(s.replace(/\+/g, " ")); };
+		var queryString = (search || location.search).substring(1);
+		var keyValues = queryString.split('&');
+
+		for (var i in keyValues) {
+			var key = keyValues[i].split('=');
+			if (key.length > 1)
+				assoc[decode(key[0]).toLowerCase()] = decode(key[1]);
+		}
+
+		return assoc;
 	}
 
 	window.htmlEncode = function (value) {

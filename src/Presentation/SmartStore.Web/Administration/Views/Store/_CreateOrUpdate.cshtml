@@ -6,11 +6,11 @@
 <table class="adminContent">
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.LogoPictureId)
+            @Html.SmartLabelFor(model => model.LogoMediaFileId)
         </td>
         <td class="adminData" id="store-logo-picture">
-            @Html.EditorFor(model => model.LogoPictureId, "#store-logo-picture", new { transientUpload = true })
-            @Html.ValidationMessageFor(model => model.LogoPictureId)
+            @Html.EditorFor(model => model.LogoMediaFileId, "#store-logo-picture", new { transientUpload = true })
+            @Html.ValidationMessageFor(model => model.LogoMediaFileId)
         </td>
     </tr>
 	<tr>

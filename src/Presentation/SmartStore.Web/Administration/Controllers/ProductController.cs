@@ -2383,7 +2383,7 @@ namespace SmartStore.Admin.Controllers
             //    _mediaService.DeleteFile(file.File, true);
             //}
 
-			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+			NotifySuccess(T("Admin.Catalog.Products.ProductPictures.Delete.Success"));
 			return new HttpStatusCodeResult(200);
 		}
 

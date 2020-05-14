@@ -29,6 +29,37 @@
 	> .dz-preview {
 		display: none !important;
 	}
+
+	// TODO: DRY!!!
+	.fileupload-progress {
+		position: absolute;
+		left: 0;
+		bottom: -1px;
+		right: 0;
+
+		.progress {
+			height: 0.25rem;
+			background: transparent;
+			margin: 0;
+			border-radius: 0;
+			border-bottom-left-radius: $input-border-radius;
+			border-bottom-right-radius: $input-border-radius;
+			box-shadow: none;
+
+			.progress-bar {
+				background-color: $primary;
+				transition: width 0.25s ease, background-color 0.25s ease;
+			}
+		}
+
+		&.success {
+			transition-delay: 0.4s;
+		}
+
+		&.success .progress-bar {
+			background-color: $success !important;
+		}
+	}
 }
 
 //Dropzone skinning
@@ -36,7 +67,8 @@
 	border: 2px dashed $gray-400 !important;
 	background: $gray-100 !important;
 	pointer-events: initial !important;
-	transition: all .5s;
+	transition: all .2s;
+	line-height: 1.2;
 
 	.fileupload,
 	.fu-message {
@@ -238,7 +270,7 @@
 			cursor: pointer;
 		}
 
-		> .fileupload-progress {
+		.fileupload-progress {
 			position: absolute;
 			left: 0;
 			bottom: -1px;

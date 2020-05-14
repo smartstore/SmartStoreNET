@@ -22,12 +22,13 @@
 (function ($) {
 
 	// Temporary helper var
-	var logEvents = false;
+	var logEvents = true;
 
 	var assignableFiles = [];
 	var assignableFileIds = "";
 	var activeFiles = 0;
 	var canUploadMoreFiles = true;
+	var dupeFileHandlerDisplayFile;
 
 	$.fn.dropzoneWrapper = function (options) {
 		return this.each(function () {
@@ -40,7 +41,7 @@
 			var elRemove = fuContainer.find('.remove'),
 				elCancel = elDropzone.find('.cancel'),
 				elFile = elDropzone.find('.fileinput-button'),
-				elProgressBar = elDropzone.find('.progress-bar'),
+				elProgressBar = fuContainer.find('.progress-bar'),
 				elStatus = fuContainer.find('.fileupload-status');
 
 			// Init dropzone.
@@ -52,7 +53,7 @@
 				acceptedFiles = "." + $el.data('accept').replace(/\,/g, ",.");
 
 				// Test
-				//acceptedFiles += ",.mp4";
+				acceptedFiles += ",.mp4";
 			}
 
 			// Dropzone init params.
@@ -67,6 +68,7 @@
 				uploadMultiple: true,
 				acceptedFiles: acceptedFiles,
 				maxFiles: options.maxFiles,
+				maxFilesize: 2048,
 				previewsContainer: options.previewContainerId !== "" ? "#" + options.previewContainerId : null
 			};
 
@@ -84,39 +86,41 @@
 			el = new Dropzone(fuContainer[0], options);
 
 			el.on("addedfile", function (file) {
+				logEvent("addedfile", file);
 
-				if (logEvents) console.log("addedfile", file);
-
+				// If file is a duplicate prevent it from being displayed in preview container.
+				if (preCheckForDuplicates(file.name, previewContainer)) {
+					$(file.previewTemplate).addClass("d-none");
+				}
+				
 				// Reset progressbar when a new file was added.
 				dzResetProgressBar(elProgressBar);
 			});
 
 			el.on("addedfiles", function (files) {
-
-				if (logEvents) console.log("addedfiles", files);
+				logEvent("addedfiles", files);
 
 				// Reset progressbar when new files were added.
 				dzResetProgressBar(elProgressBar);
 			});
 
 			el.on("processing", function (file) {
-
 				var currentProcessingCount = el.getFilesWithStatus(Dropzone.PROCESSING).length;
 
-				if (logEvents) console.log("processing", currentProcessingCount);
+				logEvent("processing", file, currentProcessingCount);
 
 				if (activeFiles === 0) {
 					activeFiles = this.files.length;
 				}
 			});
 
-			el.on("processingmultiple", function (file) {
-				if (logEvents) console.log("processingmultiple", file);
+			el.on("processingmultiple", function (files) {
+				logEvent("processingmultiple", files);
 			});
 
 			el.on("sending", function (file, xhr, formData) {
 
-				if (logEvents) console.log("sending", file);
+				logEvent("sending", file, xhr, formData);
 
 				// Write user decision of duplicate handling into formdata before sending so it'll be sent to the server with each file upload.
 				var enumId = fuContainer.data("dupe-handling-type");
@@ -128,36 +132,35 @@
 				if (options.onUploading) options.onUploading.apply(this, [file]);
 			});
 
-			el.on("sendingmultiple", function (file, xhr, formData) {
-				if (logEvents) console.log("sendingmultiple");
+			el.on("sendingmultiple", function (files, xhr, formData) {
+				logEvent("sendingmultiple", files, xhr, formData);
 			});
 
-			el.on("uploadprogress", function (file, percent, bytes) {
-				if (logEvents) console.log("uploadprogress", file, percent, bytes);
+			el.on("uploadprogress", function (file, progress, bytes) {
+				logEvent("uploadprogress", file, progress, bytes);
+
+				if (opts.maxFiles === 1) {
+					// Singlefile.
+					elProgressBar.attr('aria-valuenow', progress).css('width', progress + '%');
+				}
+				else {
+					// Mulifile.
+					var fileProgressBar = $(file.previewTemplate).find(".progress-bar");
+					fileProgressBar.attr('aria-valuenow', progress).css('width', progress + '%');
+				}
 			});
 
 			el.on("totaluploadprogress", function (progress, totalBytes, totalBytesSent) {
-
-				if (logEvents) console.log("totaluploadprogress", progress, totalBytes, totalBytesSent);
-
-				/*
-				console.log("getUploadingFiles:", this.getUploadingFiles().length);
-				console.log("getAcceptedFiles:", this.getAcceptedFiles().length);
-				console.log("getRejectedFiles:", this.getRejectedFiles().length);
-				console.log("getQueuedFiles:", this.getQueuedFiles().length);
-				console.log("files:", this.files.length);
-				console.log(activeFiles, this.getUploadingFiles().length, activeFiles - this.getUploadingFiles().length);
-				*/
-
-				elProgressBar.attr('aria-valuenow', progress).css('width', progress + '%');
+				logEvent("totaluploadprogress", progress, totalBytes, totalBytesSent);
 			});
 
 			el.on("success", function (file, response, progress) {
-
-				console.log("success", file, response, progress);
+				logEvent("success", file, response, progress);
 
 				// Only for singleupload.
 				if (opts.maxFiles === 1) {
+
+					console.log(response.url);
 
 					//fuContainer.find('.fileupload-filename').html(file.name);
 					//fuContainer.find('.fileupload-filesize').html(this.filesize(file.size));
@@ -188,8 +191,7 @@
 			});
 
 			el.on("successmultiple", function (files, response, progress) {
-
-				if (logEvents) console.log("successmultiple", files.length, response, progress);
+				logEvent("successmultiple", files.length, response, progress);
 
 				if (response.length) {
 					$.each(response, function (i, value) {
@@ -204,7 +206,7 @@
 			});
 
 			el.on("complete", function (file) {
-				if (logEvents) console.log("complete", file);
+				logEvent("complete", file);
 
 				if (opts.maxFiles === 1) {
 					// Reset dropzone for single file uploads, so other files can be uploaded again.
@@ -212,9 +214,9 @@
 				}
 			});
 
-			el.on("completemultiple", function (files, response, progress) {
-				
-				if (logEvents) console.log("completemultiple", activeFiles, assignableFiles.length, assignableFileIds);
+			el.on("completemultiple", function (files) {
+				logEvent("completemultiple", files);
+				logEvent("completemultiple", " > activeFiles, assignableFiles.length, assignableFileIds", activeFiles, assignableFiles.length, assignableFileIds);
 
 				var dupeFiles = this.getFilesWithStatus(Dropzone.ERROR)
 					.filter(file => file.response && file.response.dupe === true);
@@ -229,7 +231,7 @@
 					}
 				}
 
-				//console.log(activeFiles, assignableFiles.length, dupeFiles.length);
+				console.log(activeFiles, assignableFiles.length, dupeFiles.length);
 
 				// TODO: find safer way to determine whether all files were processed.
 				if (activeFiles === assignableFiles.length && dupeFiles.length === 0) {
@@ -242,19 +244,19 @@
 				}
 			});
 
-			el.on("canceledmultiple", function (file, response, progress) {
-				if (logEvents) console.log("canceledmultiple");
+			el.on("canceledmultiple", function (files) {
+				logEvent("canceledmultiple", files);
 			});
 
 			el.on("queuecomplete", function () {
-				if (logEvents) console.log("queuecomplete");
+				logEvent("queuecomplete");
 
 				var dupeFiles = this.getFilesWithStatus(Dropzone.ERROR)
 					.filter(file => file.response && file.response.dupe === true);
 
 				// If there are duplicates & dialog isn't already open > open duplicate file handler dialog.
 				if (dupeFiles.length !== 0 && !$("#duplicate-window").hasClass("show")) {
-					SmartStore.Admin.Media.openDupeFileHandlerDialog(
+					dupeFileHandlerDisplayFile = SmartStore.Admin.Media.openDupeFileHandlerDialog(
 						dupeFileHandlerCallback,		
 						elDropzone.find(".fileupload").attr("id"),
 						dupeFiles[0]								// Pass first duplicate file to be displayed in dialog.
@@ -263,14 +265,17 @@
 
 				updateUploadStatus(this, elStatus);
 
-				$(".open-upload-summmary").show();
+				// DEV
+				//$(".open-upload-summmary").show();
 			});
 
 			el.on("canceled", function (file) {
+				logEvent("canceled", file);
 				if (options.onAborted) options.onAborted.apply(this, [file]);
 			});
 
 			el.on("removedfile", function (file) {
+				logEvent("removedfile", file);
 
 				// Reset progress bar when file was removed.
 				dzResetProgressBar(elProgressBar);
@@ -279,12 +284,12 @@
 			});
 
 			el.on("complete", function (file) {
+				logEvent("complete", file);
 				if (options.onCompleted) options.onCompleted.apply(this, [file]);
 			});
 
 			el.on("error", function (file, errMessage, xhr) {
-
-				if (logEvents) console.log("error", file, errMessage, xhr);
+				logEvent("error", file, errMessage, xhr);
 
 				// Write current message into file so it can be displayed in file upload status.
 				file.message = errMessage;
@@ -306,16 +311,17 @@
 			});
 
 			el.on("errormultiple", function (files, errMessage) {
-				if (logEvents) console.log("errormultiple", files, errMessage);
+				logEvent("errormultiple", files, errMessage);
 			});
 			
 			el.on("drop", function (files) {
-
+				logEvent("drop", files);
 				// Reset canUploadMoreFiles if new files have been added.
 				canUploadMoreFiles = true;
 			});
 
 			el.on("maxfilesexceeded", function (file) {
+				logEvent("maxfilesexceeded", file);
 
 				// Only for singleupload.
 				if (opts.maxFiles === 1) {
@@ -330,11 +336,9 @@
 			});
 
 			function assignFilesToEntity(assignableFiles, assignableFileIds) {
-
 				if ($el.data('assignment-url') && assignableFileIds !== "" && assignableFiles.length > 0) {
-
 					$.ajax({
-						async: false,
+						async: true,
 						cache: false,
 						type: 'POST',
 						url: $el.data('assignment-url'),
@@ -365,9 +369,10 @@
 									elPreview
 										.attr("data-display-order", 1000)
 										.attr("data-media-id", value.MediaFileId)
+										.attr("data-media-name", value.Name)
 										.attr("data-entity-media-id", value.ProductMediaFileId)
 										.attr("data-original-title", '<div class="text-left px-3"><em>' + file.name + '</em> <br/> <b>' + el.filesize(file.size) + '</b></div>')
-										.removeClass("d-none")
+										//.removeClass("d-none")
 										.tooltip();
 
 									elPreview
@@ -484,7 +489,6 @@
 
 	// Callback function for duplicate file handling dialog.
 	function dupeFileHandlerCallback(dupeFileHandlingType, saveSelection, callerId) {
-
 		var duplicateDialog = $("#duplicate-window");
 		var dropzone = Dropzone.forElement($("#" + callerId).closest(".fileupload-container")[0]);
 		var errorFiles = dropzone.getFilesWithStatus(Dropzone.ERROR);
@@ -493,18 +497,15 @@
 		var dupeFiles = errorFiles.filter(file => file.response && file.response.dupe === true);
 
 		if (!saveSelection) {
-
 			var firstFile = dupeFiles[0];
-
 			firstFile.dupeHandlingType = dupeFileHandlingType;
 
 			// Do nothing on skip.
 			if (dupeFileHandlingType === "0") {
-
 				dropzone.removeFile(firstFile);
 
 				if (dupeFiles[1]) {
-					SmartStore.Admin.Media.displayDuplicateFileInDialog(dupeFiles[1]);
+					dupeFileHandlerDisplayFile.file = dupeFiles[1];
 				}
 				else {
 					dropzone.emit("queuecomplete");
@@ -525,7 +526,7 @@
 				duplicateDialog.modal('hide');
 			}
 			else {
-				SmartStore.Admin.Media.displayDuplicateFileInDialog(dupeFiles[1]);
+				dupeFileHandlerDisplayFile.file = dupeFiles[1];
 			}
 
 			// And leave.
@@ -555,8 +556,22 @@
 		}
 	}
 
-	function updateUploadStatus(dropzone, elStatus) {
+	function preCheckForDuplicates(addFileName, previewContainer) {
+		var files = previewContainer.find(".dz-image-preview");
 
+		var dupe = files.filter(function () {
+			var mediaName = $(this).data("media-name");
+
+			if (mediaName)
+				mediaName = mediaName.toLowerCase();
+
+			return mediaName === addFileName.toLowerCase();
+		});
+
+		return dupe.length === 1;
+	}
+
+	function updateUploadStatus(dropzone, elStatus) {
 		var summary = elStatus.find(".fileupload-status-summary"),
 			uploadedFileCount = summary.find(".uploaded-file-count"),
 			totalFileCount = summary.find(".total-file-count"),
@@ -608,7 +623,6 @@
 	}
 
 	function resetFileStatus(file) {
-
 		if (file.status === Dropzone.SUCCESS) {
 			file.status = undefined;
 			file.accepted = undefined;
@@ -618,7 +632,6 @@
 	}
 
 	function dzResetProgressBar(elProgressBar) {
-
 		_.delay(function () {
 			// Remove transition for reset.
 			elProgressBar.css("transition", "none");
@@ -633,6 +646,16 @@
 			}, 250);
 
 		}, 300);
+	}
+
+	function logEvent() {
+		var keyValues = getQueryStrings();
+
+		// logEvents should be a get parameter ?logEvents=all || ?logEvents=eventname
+		var paramValue = keyValues.logevents;
+		if (paramValue === "all" || paramValue === logEvent.arguments[0]) {
+			console.log.apply(console, logEvent.arguments);
+		}
 	}
 
 })(jQuery);

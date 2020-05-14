@@ -629,6 +629,8 @@
             builder.AddOrUpdate("FileUploader.Dropzone.DictCancelUploadConfirmation", "Are you sure you want to cancel this upload?", "Sind Sie sicher, dass Sie den Upload abbrechen wollen?");
             builder.AddOrUpdate("FileUploader.Dropzone.DictRemoveFile", "Remove file", "Datei entfernen");
             builder.AddOrUpdate("FileUploader.Dropzone.DictMaxFilesExceeded", "You can not upload any more files.", "Sie können keine weiteren Dateien hochladen.");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.ProductPictures.Delete.Success", "The assignment was successfully removed.", "Die Zuordnung wurde erfolgreich entfernt.");
         }
     }
 }

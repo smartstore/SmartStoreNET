@@ -708,8 +708,8 @@
 
 		// Event logging can be turned on by a GET parameter e.g. ?logEvents=all || ?logEvents=eventname
 		var paramValue = keyValues.logevents;
-		if (paramValue === "all" || paramValue === logEvent.arguments[0]) {
-			console.log.apply(console, logEvent.arguments);
+		if (paramValue === "all" || paramValue === arguments[0]) {
+			console.log.apply(console, arguments);
 		}
 	}
 

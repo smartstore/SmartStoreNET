@@ -406,6 +406,7 @@ namespace SmartStore.Services.Media
             var pathData = CreatePathData(path);
 
             var file = await _fileRepo.Table.FirstOrDefaultAsync(x => x.Name == pathData.FileName && x.FolderId == pathData.Folder.Id);
+            var isNewFile = file == null;
             stream = ProcessFile(ref file, pathData, stream, isTransient, dupeFileHandling);
 
             using (var scope = new DbContextScope(_fileRepo.Context, autoCommit: false))
@@ -416,8 +417,27 @@ namespace SmartStore.Services.Media
                     await scope.CommitAsync();
                 }
 
-                await _storageProvider.SaveAsync(file, stream);
-                await scope.CommitAsync();
+                try
+                {
+                    await _storageProvider.SaveAsync(file, stream);
+                    await scope.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    if (isNewFile) 
+                    {
+                        // New file's metadata should be removed on storage save failure immediately
+                        if (file.MediaStorage != null)
+                        {
+                            file.MediaStorage.Data = null;
+                            file.MediaStorage = null;
+                        }
+                        _fileRepo.Delete(file);
+                        await scope.CommitAsync();
+                    }
+                    
+                    Logger.Error(ex);
+                }
             }
 
             return ConvertMediaFile(file, pathData.Folder);

@@ -231,17 +231,27 @@ namespace SmartStore
 				{
 					return buffer.Array;
 				}
-
 				return mem.ToArray();
 			}
 			else
 			{
-				using (var streamReader = new MemoryStream())
-				{
-					stream.CopyTo(streamReader);
-					return streamReader.ToArray();
-				}
-			}
+                try
+                {
+                    var len = stream.Length;
+                    if (len > Int32.MaxValue)
+                    {
+                        return ToByteArrayCopy(stream);
+                    }
+
+                    var buffer = new byte[(int)len];
+                    stream.Read(buffer, 0, (int)len);
+                    return buffer;
+                }
+                catch
+                {
+                    return ToByteArrayCopy(stream);
+                }
+            }
 		}
 
 		public static async Task<byte[]> ToByteArrayAsync(this Stream stream)
@@ -255,18 +265,46 @@ namespace SmartStore
 				{
 					return buffer.Array;
 				}
-
 				return mem.ToArray();
 			}
 			else
 			{
-				using (var streamReader = new MemoryStream())
-				{
-					await stream.CopyToAsync(streamReader);
-					return streamReader.ToArray();
-				}
-			}
+                try
+                {
+                    var len = stream.Length;
+                    if (len > Int32.MaxValue)
+                    {
+                        return await ToByteArrayCopyAsync(stream);
+                    }
+
+                    var buffer = new byte[(int)len];
+                    stream.Read(buffer, 0, (int)len);
+                    return buffer;
+                }
+                catch
+                {
+                    return await ToByteArrayCopyAsync(stream);
+                }
+            }
 		}
+
+        private static byte[] ToByteArrayCopy(Stream stream, int capacity = 0)
+        {
+            using (var memStream = new MemoryStream(capacity))
+            {
+                stream.CopyTo(memStream);
+                return memStream.ToArray();
+            }
+        }
+
+        private static async Task<byte[]> ToByteArrayCopyAsync(Stream stream, int capacity = 0)
+        {
+            using (var memStream = new MemoryStream(capacity))
+            {
+                await stream.CopyToAsync(memStream);
+                return memStream.ToArray();
+            }
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string AsString(this Stream stream)

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Schema;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
@@ -68,11 +69,13 @@ namespace SmartStore.Services.Media.Storage
 		{
 			Guard.NotNull(mediaFile, nameof(mediaFile));
 
+			byte[] buffer;
 			using (stream ?? new MemoryStream())
 			{
-				mediaFile.ApplyBlob(stream.ToByteArray());
+				buffer = stream.ToByteArray();
 			}
 
+			mediaFile.ApplyBlob(buffer);
 			_mediaFileRepo.Update(mediaFile);
 		}
 
@@ -80,11 +83,13 @@ namespace SmartStore.Services.Media.Storage
 		{
 			Guard.NotNull(mediaFile, nameof(mediaFile));
 
+			byte[] buffer;
 			using (stream ?? new MemoryStream())
 			{
-				mediaFile.ApplyBlob(await stream.ToByteArrayAsync());
+				buffer = await stream.ToByteArrayAsync();
 			}
 
+			mediaFile.ApplyBlob(buffer);
 			_mediaFileRepo.Update(mediaFile);
 		}
 

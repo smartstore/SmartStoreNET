@@ -103,6 +103,7 @@
 * #1818 The order list summary do not respect all list filters and shows wrong aggregate values.
 * #1835 Removing gift card issue.
 * #1875 A delivery time cannot be deleted if it is assigned to a variant combination of a deleted product.
+* BeezUp: fixes ArgumentNullException, parameter name "source".
 
 
 ## SmartStore.NET 3.2.2

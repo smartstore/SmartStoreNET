@@ -2209,7 +2209,7 @@ namespace SmartStore.Admin.Controllers
 				return new HttpStatusCodeResult(501, ex.Message);
 			}
 
-			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+			NotifySuccess(T("Admin.Catalog.Products.ProductPictures.Sort.Success"));
 			//return new HttpStatusCodeResult(200);
 
 			return Json(new { success = true, response }, JsonRequestBehavior.AllowGet);

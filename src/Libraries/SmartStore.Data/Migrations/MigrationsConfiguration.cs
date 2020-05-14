@@ -631,6 +631,7 @@
             builder.AddOrUpdate("FileUploader.Dropzone.DictMaxFilesExceeded", "You can not upload any more files.", "Sie können keine weiteren Dateien hochladen.");
 
             builder.AddOrUpdate("Admin.Catalog.Products.ProductPictures.Delete.Success", "The assignment was successfully removed.", "Die Zuordnung wurde erfolgreich entfernt.");
+            builder.AddOrUpdate("Admin.Catalog.Products.ProductPictures.Sort.Success", "The new order of your product images has been saved successfully.", "Die neue Anordnung Ihrer Produktbilder wurde erfolgreich gespeichert.");
         }
     }
 }

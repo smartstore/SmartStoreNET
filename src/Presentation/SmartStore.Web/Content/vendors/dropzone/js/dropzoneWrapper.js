@@ -92,16 +92,10 @@
 				if (preCheckForDuplicates(file.name, previewContainer)) {
 					$(file.previewTemplate).addClass("d-none");
 				}
-				
-				// Reset progressbar when a new file was added.
-				dzResetProgressBar(elProgressBar);
 			});
 
 			el.on("addedfiles", function (files) {
 				logEvent("addedfiles", files);
-
-				// Reset progressbar when new files were added.
-				dzResetProgressBar(elProgressBar);
 			});
 
 			el.on("processing", function (file) {
@@ -191,7 +185,7 @@
 			});
 
 			el.on("successmultiple", function (files, response, progress) {
-				logEvent("successmultiple", files.length, response, progress);
+				logEvent("successmultiple", files, response, progress);
 
 				if (response.length) {
 					$.each(response, function (i, value) {
@@ -202,7 +196,12 @@
 					assignableFileIds += response.fileId + ",";
 				}
 
-				assignableFiles = files;
+				if (files.length) {
+					assignableFiles = files;
+				}
+				else {
+					assignableFiles.push(files);
+				}
 			});
 
 			el.on("complete", function (file) {
@@ -231,7 +230,7 @@
 					}
 				}
 
-				console.log(activeFiles, assignableFiles.length, dupeFiles.length);
+				//console.log(activeFiles, assignableFiles.length, dupeFiles.length);
 
 				// TODO: find safer way to determine whether all files were processed.
 				if (activeFiles === assignableFiles.length && dupeFiles.length === 0) {
@@ -264,6 +263,19 @@
 				}
 
 				updateUploadStatus(this, elStatus);
+
+				// Reset progressbar when queue is complete.
+				if (opts.maxFiles === 1) {
+					// SingleFile
+					dzResetProgressBar(elProgressBar);
+				}
+				else {
+					// MultiFile
+					var uploadedFiles = this.files;
+					for (file of uploadedFiles) {
+						dzResetProgressBar($(file.previewElement).find(".fileupload-progress"));
+					}
+				}
 
 				// DEV
 				//$(".open-upload-summmary").show();
@@ -298,14 +310,10 @@
 					console.log(xhr.statusText, "error");
 				}
 
-				// Single file only. Multifile errors must be shown in summary & displayNotification must be done in queuecomplete
-				if (!file.accepted && opts.maxFiles === 1) {
-
-					// TODO: There must be some notification if there was an error on multiple upload.
-					// but NOT here as this event will get fired on every error & thus would maybe terrorize the user. (probably queuecomplete is a save place)
-
-					displayNotification(errMessage, "error");
-				}
+				//if (!file.accepted && opts.maxFiles === 1) {
+				displayNotification(errMessage, "error");
+				this.removeFile(file);
+				//}
 
 				if (options.onError) options.onError.apply(this, [file, errMessage]);
 			});
@@ -533,11 +541,9 @@
 			return;
 		}
 		else {
-
 			// Reset file status.
 			for (file of dupeFiles) {
 				resetFileStatus(file);
-
 				file.dupeHandlingType = dupeFileHandlingType;
 			}
 
@@ -644,7 +650,6 @@
 				// Remove inline transition style after transition (0.25s) was performed.
 				elProgressBar.css("transition", "");
 			}, 250);
-
 		}, 300);
 	}
 

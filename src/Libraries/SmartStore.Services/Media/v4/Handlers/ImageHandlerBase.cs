@@ -68,41 +68,55 @@ namespace SmartStore.Services.Media
                             return;
                         }
 
-                        using (var inputStream = sourceFile.OpenRead())
+                        var inputStream = sourceFile.OpenRead();
+
+                        if (inputStream == null)
                         {
-                            try
-                            {
-                                await ProcessImageAsync(context, cachedImage, inputStream);
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Error(ex);
-
-                                if (ex is ExtractThumbnailException)
-                                {
-                                    // Thumbnail extraction failed and we must assume that it always will fail.
-                                    // Therefore we create an empty file to prevent repetitive processing.
-                                    using (var memStream = new MemoryStream())
-                                    {
-                                        await ImageCache.Put4Async(cachedImage, memStream);
-                                    }
-                                }
-
-                                context.Exception = ex;
-                                context.Executed = true;
-                                return;
-                            }
-
-                            if (context.ResultStream != null && context.ResultStream.Length > 0)
-                            {
-                                await ImageCache.Put4Async(cachedImage, context.ResultStream);
-                                context.ResultStream.Position = 0;
-                                context.ResultFile = cachedImage.File;
-                            }
-
+                            context.Exception = new ExtractThumbnailException("No input stream", null); // TODO: (mm) better exception
                             context.Executed = true;
                             return;
                         }
+
+                        try
+                        {
+                            await ProcessImageAsync(context, cachedImage, inputStream);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex);
+
+                            if (ex is ExtractThumbnailException)
+                            {
+                                // Thumbnail extraction failed and we must assume that it always will fail.
+                                // Therefore we create an empty file to prevent repetitive processing.
+                                using (var memStream = new MemoryStream())
+                                {
+                                    await ImageCache.Put4Async(cachedImage, memStream);
+                                }
+                            }
+
+                            context.Exception = ex;
+                            context.Executed = true;
+                            return;
+                        }
+                        finally
+                        {
+                            if (inputStream != null)
+                            {
+                                inputStream.Dispose();
+                            }
+                        }
+
+                        if (context.ResultStream != null && context.ResultStream.Length > 0)
+                        {
+                            await ImageCache.Put4Async(cachedImage, context.ResultStream);
+                            context.ResultStream.Position = 0;
+                            context.ResultFile = cachedImage.File;
+                        }
+
+                        context.Executed = true;
+                        return;
+
                     }
                 }
             }

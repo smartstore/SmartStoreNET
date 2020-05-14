@@ -62,7 +62,6 @@ SmartStore.Admin.Media = (function () {
 			}
 
 			dupeFileHandlerDialog.on('hidden.bs.modal', function (e) {
-
 				console.log("hidden.bs.modal", $("#" + callerId).closest(".fileupload-container"));
 
 				// Reset user selection so dialog can open for the next queue.
@@ -111,7 +110,6 @@ SmartStore.Admin.Media = (function () {
 
 			// Listen to change events of radio button and display name of renamed file accordingly.
 			$(document).on("change", dupeFileHandlerDialog.find('input[name=dupe-handling-type]'), function (e) {
-
 				var currentSelection = $(e.target).val();
 
 				if (currentSelection === "2") {

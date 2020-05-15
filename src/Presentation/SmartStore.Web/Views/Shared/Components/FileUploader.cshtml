@@ -21,7 +21,6 @@
 <div @Html.Attr("class", "dropzone-container", Model.Multifile)>
 
 	<div class="dropzone-target">
-
 		<div class="fu-message">
 			@T("FileUploader.Dropzone.Message")
 		</div>
@@ -30,15 +29,12 @@
 			 data-dialog-url="@Url.Action("DupeFileHandlerDialog", "Media", new { area = "Admin" })"
 			 data-assignment-url="@Model.EntityAssignmentUrl"
 			 data-remove-url="@Model.DeleteUrl"
+			 data-sort-url="@Model.SortUrl"
 			 data-entity-id="@Model.EntityId">
 
 			<div class="fileupload">
 				<input type="hidden" id="@(Model.Id)-file" name="@(Model.Id)-file" />
-
 				<div class="fileupload-buttons">
-
-					<input type="hidden" id="@(Model.Id)-file" name="@(Model.Id)-file" />
-
 					@{ Html.RenderWidget("file_uploader"); }
 				</div>
 			</div>
@@ -49,7 +45,7 @@
 		</a>
 	</div>
 
-	<button class="btn btn-secondary btn-circle btn-to-danger btn-sm remove@(Model.Compact ? " btn-sm" : "")" @Html.Attr("style", "display: none", !Model.ShowRemoveButton)>
+	<button class="btn btn-secondary btn-circle btn-to-danger btn-sm remove@(Model.Compact ? " btn-sm" : "")" @Html.Attr("style", "display: none", Model.ShowRemoveButton)>
 		<i class="far fa-times"></i>
 	</button>
 </div>
@@ -176,7 +172,6 @@
 <script data-origin="FileUploader">
     $(function () {
         var elUpload = $("#@Model.Id");
-        var fuContainer = elUpload.closest(".fileupload-container");
 
 		// Init dropzone
 		elUpload.dropzoneWrapper({
@@ -189,62 +184,5 @@
             maxFiles: @(Model.Multifile ? 100 : 1),
 			previewContainerId: "@(Model.Multifile ? Model.PreviewContainerId : "")"
         });
-
-		// The following is only relevant for multfiles.
-        if ("@(Model.Multifile)" == "True") {
-
-			var dropzone = Dropzone.forElement(fuContainer[0]);
-
-            dropzone.on("completemultiple", function (file, response, progress) {
-
-                //console.log("Sorting now...");
-
-                var errorFiles = this.getFilesWithStatus(Dropzone.ERROR);
-                var dupeFiles = errorFiles.filter(file => file.response != undefined && file.response.dupe === true);
-                if (dupeFiles.length === 0) {
-					sortPictures(sortable);
-                }
-			});
-
-			// Sorting.
-			var sortable = $('.preview-container', fuContainer).sortable({
-                items: fuContainer.find('.dz-image-preview'),
-				ghostClass: 'sortable-ghost',
-                animation: 150
-			}).on('sort', function (e, ui) {
-				sortPictures($(this));
-			});
-        }
     });
-
-	function sortPictures(sortableContainer) {
-        var items = sortableContainer.find('.dz-image-preview');
-
-		var newOrder = [];
-		$.each(items, function (i, val) {
-			newOrder.push($(val).data('entity-media-id'));
-		});
-
-		// Set display order of ProductPicture.
-		$.ajax({
-			async: false,
-			cache: false,
-			type: 'POST',
-			url: '@Model.SortUrl',
-            data: {
-                pictures: newOrder.join(","),
-				entityId: @Model.EntityId,
-            },
-            success: function (response) {
-				// Set EntityMediaId & current DisplayOrder
-                $.each(response.response, function (index, value) {
-                    var preview = $(".dz-image-preview[data-picture-id='" + value.MediaFileId + "']");
-
-                    preview.attr("data-display-order", value.DisplayOrder);
-					preview.attr("data-entity-picture-id", value.EntityMediaId);
-				});
-            }
-		});
-    }
-
 </script>

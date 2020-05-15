@@ -15,12 +15,12 @@
 @helper FileInfo()
 {
 	<div class="file-display">
-		<div class="row">
+		<div class="row no-gutters">
 			<div class="col-auto">
 				<img src="" class="file-img img-fluid" />
 			</div>
-			<div class="col file-info p-1">
-				<div class="file-name"></div>
+			<div class="col file-info p-1 pl-3">
+				<div class="file-name text-truncate"></div>
 				<div class="text-muted fs-sm mt-1">
 					<div>
 						<span class="file-dimensions"></span>
@@ -43,11 +43,11 @@
 
 	<div class="container p-0">
 		<div class="row no-gutters mb-3 dupe-media-comparison">
-			<div class="col pr-3 dupe-file-display">
+			<div class="col-6 pr-3 dupe-file-display">
 				<h6>@T("FileUploader.DuplicateDialog.DupeFile.Title")</h6>
 				@FileInfo()
 			</div>
-			<div class="col existing-file-display">
+			<div class="col-6 existing-file-display">
 				<h6>@T("FileUploader.DuplicateDialog.ExistingFile.Title")</h6>
 				@FileInfo()
 			</div>

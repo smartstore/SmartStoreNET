@@ -20,14 +20,10 @@
 })();
 
 (function ($) {
-
-	// Temporary helper var
-	var logEvents = true;
-
 	var assignableFiles = [];
 	var assignableFileIds = "";
 	var activeFiles = 0;
-	var canUploadMoreFiles = true;
+	var canUploadMoreFiles = true;	// TODO: investigate!!! This can be done better.
 	var dupeFileHandlerDisplayFile;
 
 	$.fn.dropzoneWrapper = function (options) {
@@ -39,8 +35,6 @@
 				previewContainer = fuContainer.find(".preview-container");
 
 			var elRemove = fuContainer.find('.remove'),
-				elCancel = elDropzone.find('.cancel'),
-				elFile = elDropzone.find('.fileinput-button'),
 				elProgressBar = fuContainer.find('.progress-bar'),
 				elStatus = fuContainer.find('.fileupload-status');
 
@@ -68,7 +62,7 @@
 				uploadMultiple: true,
 				acceptedFiles: acceptedFiles,
 				maxFiles: options.maxFiles,
-				maxFilesize: 2048,
+				maxFilesize: 2048,				// TODO: get maxFilesize from media settings.
 				previewsContainer: options.previewContainerId !== "" ? "#" + options.previewContainerId : null
 			};
 
@@ -81,6 +75,30 @@
 					opts.previewTemplate = previewTemplate[0].innerHTML;
 				}
 			}
+
+			// If multifile > display tooltips for preview images in preview container.
+			if (opts.maxFiles !== 1) {
+				$(".dz-image-preview").tooltip();
+			}
+			else {
+				// SingleFile: If there's no file, there's no remove button.
+				var currentFileId = fuContainer.find('.hidden').val();
+
+				if (!currentFileId || currentFileId == 0)
+					elRemove.hide();
+				else {
+					elRemove.show();
+				}
+			}
+
+			// Sorting.
+			var sortable = previewContainer.sortable({
+				items: fuContainer.find('.dz-image-preview'),
+				ghostClass: 'sortable-ghost',
+				animation: 150
+			}).on('sort', function (e, ui) {
+				sortMediaFiles();
+			});
 
 			options = $.extend({}, opts, options);
 			el = new Dropzone(fuContainer[0], options);
@@ -119,7 +137,6 @@
 				// Write user decision of duplicate handling into formdata before sending so it'll be sent to the server with each file upload.
 				var enumId = fuContainer.data("dupe-handling-type");
 				if (enumId) {
-					//file.dupeHandlingType = enumId;
 					formData.append("duplicateFileHandling", enumId);
 				}
 
@@ -151,19 +168,11 @@
 			el.on("success", function (file, response, progress) {
 				logEvent("success", file, response, progress);
 
-				// Only for singleupload.
 				if (opts.maxFiles === 1) {
-
-					console.log(response.url);
-
-					//fuContainer.find('.fileupload-filename').html(file.name);
-					//fuContainer.find('.fileupload-filesize').html(this.filesize(file.size));
-					fuContainer.find('.fileupload-thumb').css('background-image', 'url("' + response.url + '")');
-					fuContainer.find('.hidden').val(response.fileId).trigger('change');
-					elRemove.show();
+					displaySingleFilePreview(response);
 				}
 				else {
-
+					// Multifile
 					// If there was an error returned by the server set file status accordingly.
 					if (response.length) {
 						for (fileResponse of response) {
@@ -173,11 +182,9 @@
 							}
 						}
 					}
-					else {
-						if (!response.success) {
-							file.status = Dropzone.ERROR;
-							file.response = response;
-						}
+					else if (!response.success) {
+						file.status = Dropzone.ERROR;
+						file.response = response;
 					}
 				}
 
@@ -235,6 +242,8 @@
 				// TODO: find safer way to determine whether all files were processed.
 				if (activeFiles === assignableFiles.length && dupeFiles.length === 0) {
 					assignFilesToEntity(assignableFiles, assignableFileIds);
+					// Has to be done after success of assignFilesToEntity
+					//sortMediaFiles();
 				}
 				else {
 					// Duplicate handling user decision wasn't done yet.
@@ -310,11 +319,9 @@
 					console.log(xhr.statusText, "error");
 				}
 
-				//if (!file.accepted && opts.maxFiles === 1) {
-				displayNotification(errMessage, "error");
+				displayNotification("<b>" + file.name + "</b>: " + errMessage, "error");
 				this.removeFile(file);
-				//}
-
+				
 				if (options.onError) options.onError.apply(this, [file, errMessage]);
 			});
 
@@ -344,7 +351,7 @@
 			});
 
 			function assignFilesToEntity(assignableFiles, assignableFileIds) {
-				if ($el.data('assignment-url') && assignableFileIds !== "" && assignableFiles.length > 0) {
+				if ($el.data('assignment-url') && $el.data('entity-id') && assignableFileIds !== "" && assignableFiles.length > 0) {
 					$.ajax({
 						async: true,
 						cache: false,
@@ -355,10 +362,9 @@
 							entityId: $el.data('entity-id')
 						},
 						success: function (response) {
-
 							$.each(response.response, function (i, value) {
 
-								var file = assignableFiles.find(x => x.name.toLowerCase() === value.Name.toLowerCase());
+								var file = assignableFiles.find(x => x.id === value.MediaFileId);
 
 								if (!file) {
 									// Try get renamed file.
@@ -370,9 +376,8 @@
 								}
 
 								if (file) {
-
-									// set properties for newly added file preview
-									var elPreview = $(file.previewElement);
+									// Set properties for newly added file preview.
+									var elPreview = file.previewElement ? $(file.previewElement) : $(fuContainer.find(".file-preview-template").html());
 
 									elPreview
 										.attr("data-display-order", 1000)
@@ -380,12 +385,12 @@
 										.attr("data-media-name", value.Name)
 										.attr("data-entity-media-id", value.ProductMediaFileId)
 										.attr("data-original-title", '<div class="text-left px-3"><em>' + file.name + '</em> <br/> <b>' + el.filesize(file.size) + '</b></div>')
-										//.removeClass("d-none")
+										.removeClass("d-none")
 										.tooltip();
 
 									elPreview
 										.find('img')
-										.attr('src', file.dataUrl);
+										.attr('src', file.dataUrl ? file.dataUrl : file.url);
 
 									previewContainer.append(elPreview);
 								}
@@ -393,10 +398,58 @@
 									console.log("Error when adding preview element.", value.Name.toLowerCase());
 								}
 							});
+
+							sortMediaFiles();
 						}
 					});
 				}
 			}
+
+			function sortMediaFiles() {
+				if ($el.data('sort-url') && $el.data('entity-id')) {
+					var items = previewContainer.find('.dz-image-preview');
+
+					var newOrder = [];
+					$.each(items, function (i, val) {
+						newOrder.push($(val).data('entity-media-id'));
+					});
+
+					// Set display order of ProductPicture.
+					$.ajax({
+						async: true,
+						cache: false,
+						type: 'POST',
+						url: $el.data('sort-url'),
+						data: {
+							pictures: newOrder.join(","),
+							entityId: $el.data('entity-id')
+						},
+						success: function (response) {
+							// Set EntityMediaId & current DisplayOrder.
+							$.each(response.response, function (index, value) {
+								var preview = $(".dz-image-preview[data-media-id='" + value.MediaFileId + "']");
+								preview.attr("data-display-order", value.DisplayOrder);
+								preview.attr("data-entity-media-id", value.EntityMediaId);
+							});
+						}
+					});
+				}
+			}
+
+			fuContainer.on("mediaselected", function (e, files) {
+				if (files.length === 1) {
+					displaySingleFilePreview(files[0]);
+				}
+				else {
+					var ids = "";
+
+					files.forEach(function (file) {
+						ids += file.id + ",";
+					});
+
+					assignFilesToEntity(files, ids);
+				}
+			});
 
 			// Deleting.
 			$(fuContainer).on("click", ".delete-entity-picture", function (e) {
@@ -427,21 +480,12 @@
 
 			// Show summary.
 			$(fuContainer).on("click", ".open-upload-summmary", function (e) {
-
 				elStatus.show();
-
 				return false;
-			});
-
-			elFile.on('click', function (e) {
-
-				// Reset canUploadMoreFiles if a new file is about to be selected via FileOpen dialog.
-				canUploadMoreFiles = true;
 			});
 
 			// Remove uploaded file (single upload only).
 			elRemove.on('click', function (e) {
-
 				e.preventDefault();
 
 				fuContainer.find('.fileupload-thumb').css('background-image', 'url("' + $el.data('fallback-url') + '")');
@@ -454,11 +498,6 @@
 
 				return false;
 			});
-
-			// If multiupload > display tooltips for preview images in preview container.
-			if (opts.maxFiles !== 1) {
-				$(".dz-image-preview").tooltip();
-			}
 		});
 	};
 
@@ -562,6 +601,17 @@
 		}
 	}
 
+	function displaySingleFilePreview(file) {
+		//fuContainer.find('.fileupload-filename').html(file.name);
+		//fuContainer.find('.fileupload-filesize').html(this.filesize(file.size));
+		fuContainer.find('.fileupload-thumb').css('background-image', 'url("' + file.url + '")');
+
+		// TODO: .find('.hidden') doesn't seems safe. Do it better.
+		// TODO: response objects from Media>Upload & MediSelected differ [decide whether id or fileId]. 
+		fuContainer.find('.hidden').val(file.id ? file.id : file.fileId).trigger('change');
+		fuContainer.find('.remove').show();
+	}
+
 	function preCheckForDuplicates(addFileName, previewContainer) {
 		var files = previewContainer.find(".dz-image-preview");
 
@@ -656,7 +706,7 @@
 	function logEvent() {
 		var keyValues = getQueryStrings();
 
-		// logEvents should be a get parameter ?logEvents=all || ?logEvents=eventname
+		// Event logging can be turned on by a GET parameter e.g. ?logEvents=all || ?logEvents=eventname
 		var paramValue = keyValues.logevents;
 		if (paramValue === "all" || paramValue === logEvent.arguments[0]) {
 			console.log.apply(console, logEvent.arguments);

@@ -19,6 +19,7 @@
  */
 
 .fileupload-container {
+
 	&.dz-highlight .dropzone-container,
 	&.dz-drag-hover .dropzone-container {
 		border-color: $primary !important;
@@ -30,7 +31,30 @@
 		display: none !important;
 	}
 
-	// TODO: DRY!!!
+	.fu-message {
+		cursor: pointer;
+		font-size: $h5-font-size;
+		font-weight: $font-weight-medium;
+		color: $gray-600;
+	}
+
+	// Compact display.
+	&.compact {
+		.fu-message {
+			font-size: $h6-font-size;
+			font-weight: $font-weight-normal;
+		}
+
+		.dropzone {
+			padding: 10px;
+		}
+
+		.fileupload-buttons .btn {
+			@extend .btn-sm;
+		}
+	}
+
+	// Progress bars.
 	.fileupload-progress {
 		position: absolute;
 		left: 0;
@@ -70,6 +94,13 @@
 	transition: all .2s;
 	line-height: 1.2;
 
+	.dropzone {
+		border: none;
+		background: none;
+		width: 100%;
+		padding: 20px;
+	}
+
 	.fileupload,
 	.fu-message {
 		align-self: center;
@@ -85,13 +116,7 @@
 		position: absolute;
 		top: -10px;
 		left: -10px;
-	}
-
-	.fu-message {
-		cursor: pointer;
-		font-size: $h5-font-size;
-		font-weight: $font-weight-medium;
-		color: $gray-600;
+		display: none;
 	}
 
 	.open-upload-summmary {
@@ -102,14 +127,9 @@
 	}
 }
 
+
 .fileupload-status {
 	display: none;
-}
-
-.dropzone {
-	border: none;
-	background: none;
-	width: 100%;
 }
 
 .preview-container {
@@ -138,8 +158,8 @@
 
 	.fu-preview-overlay {
 		position: absolute;
-		top: 0;
 		width: 100%;
+		top: 0;
 		left: 0;
 		bottom: 0;
 		visibility: hidden;
@@ -190,26 +210,6 @@
 	}
 }
 
-// DupeFileHandlerDialog
-#duplicate-window {
-
-	.file-display {
-		border: 1px solid $gray-400;
-
-		.file-img {
-			width: 100px;
-			height: 80px;
-			object-fit: cover;
-		}
-
-		.file-date {
-			white-space: nowrap;
-			overflow: hidden;
-		}
-	}
-}
-
-/// OLD
 .dropzone-container {
 	position: relative;
 	display: flex;
@@ -242,136 +242,49 @@
 	}
 }
 
-	.fileupload {
-		.btn.cancel {
-			display: none;
-		}
-
-		.fileupload-buttons {
-			xposition: relative;
-		}
-
-		.fileinput-button {
-			position: relative;
-			overflow: hidden;
-		}
-
-		.fileinput-button input {
-			position: absolute;
-			left: 0;
-			top: 0;
-			width: 100%;
-			height: 100%;
-			margin: 0;
-			padding: 0;
-			border: 0;
-			opacity: 0;
-			direction: ltr;
-			cursor: pointer;
-		}
-
-		.fileupload-progress {
-			position: absolute;
-			left: 0;
-			bottom: -1px;
-			right: 0;
-
-			.progress {
-				height: 0.25rem;
-				background: transparent;
-				margin: 0;
-				border-radius: 0;
-				border-bottom-left-radius: $input-border-radius;
-				border-bottom-right-radius: $input-border-radius;
-				box-shadow: none;
-
-				.progress-bar {
-					background-color: $primary;
-					transition: width 0.25s ease, background-color 0.25s ease;
-				}
-			}
-
-			&.success {
-				transition-delay: 0.4s;
-			}
-
-			&.success .progress-bar {
-				background-color: $success !important;
-			}
-		}
+.fileupload {
+	.btn.cancel {
+		display: none;
 	}
-
-	// Multi file uploader
-	// =======================================
-	/*.fileupload-multi {
+		
 	.fileinput-button {
 		position: relative;
 		overflow: hidden;
-		float: left;
-		margin-right: 4px;
 	}
 
 	.fileinput-button input {
 		position: absolute;
+		left: 0;
 		top: 0;
-		right: 0;
+		width: 100%;
+		height: 100%;
 		margin: 0;
-		border: solid transparent;
-		border-width: 0 0 100px 200px;
+		padding: 0;
+		border: 0;
 		opacity: 0;
-		-moz-transform: translate(-300px, 0) scale(4);
 		direction: ltr;
 		cursor: pointer;
 	}
+}
 
-	.fileupload-buttonbar .btn,
-	.fileupload-buttonbar .toggle {
-		margin-bottom: 5px;
-	}
+// DupeFileHandlerDialog
+#duplicate-window {
+	.file-display {
+		border: 1px solid $gray-400;
 
-	.files .progress {
-		width: 200px;
-	}
-
-	.progress-animated .bar {
-		background: url(images/progressbar.gif) !important;
-		filter: none;
-	}
-
-	.fileupload-loading {
-		position: absolute;
-		left: 50%;
-		width: 128px;
-		height: 128px;
-		background: url(images/loading.gif) center no-repeat;
-		display: none;
-	}
-
-	.fileupload-processing .fileupload-loading {
-		display: block;
-	}
-
-	@media (max-width: 480px) {
-		.files .btn span {
-			display: none;
+		.file-info {
+			overflow: hidden; 
 		}
 
-		.files .preview * {
-			width: 40px;
+		.file-img {
+			width: 100px;
+			height: 80px;
+			object-fit: cover;
 		}
 
-		.files .name * {
-			width: 80px;
-			display: inline-block;
-			word-wrap: break-word;
-		}
-
-		.files .progress {
-			width: 20px;
-		}
-
-		.files .delete {
-			width: 60px;
+		.file-date {
+			white-space: nowrap;
+			overflow: hidden;
 		}
 	}
-}*/
+}

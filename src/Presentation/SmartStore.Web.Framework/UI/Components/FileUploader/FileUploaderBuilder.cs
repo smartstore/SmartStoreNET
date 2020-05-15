@@ -30,24 +30,6 @@ namespace SmartStore.Web.Framework.UI
 			return this;
 		}
 
-		public FileUploaderBuilder<TModel> IconCssClass(string value)
-		{
-			base.Component.IconCssClass = value;
-			return this;
-		}
-
-		public FileUploaderBuilder<TModel> ButtonStyle(ButtonStyle value)
-		{
-			base.Component.ButtonStyle = value;
-			return this;
-		}
-
-		public FileUploaderBuilder<TModel> ButtonOutlineStyle(bool value)
-		{
-			base.Component.ButtonOutlineStyle = value;
-			return this;
-		}
-
 		public FileUploaderBuilder<TModel> ShowRemoveButton(bool value)
 		{
 			base.Component.ShowRemoveButton = value;
@@ -132,18 +114,6 @@ namespace SmartStore.Web.Framework.UI
 				base.Component.HtmlAttributes["data-accept"] = value;
 			}
 			
-			return this;
-		}
-
-		public FileUploaderBuilder<TModel> CancelText(string value)
-		{
-			base.Component.CancelText = value;
-			return this;
-		}
-
-		public FileUploaderBuilder<TModel> RemoveText(string value)
-		{
-			base.Component.RemoveText = value;
 			return this;
 		}
 

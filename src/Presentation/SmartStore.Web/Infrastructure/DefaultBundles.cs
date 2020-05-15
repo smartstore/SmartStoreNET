@@ -23,14 +23,6 @@ namespace SmartStore.Web.Infrastructure
 				"~/Content/vendors/photoswipe/photoswipe-ui-default.js",
 				"~/Scripts/smartstore.gallery.js"));
 
-			/* File Upload
-			-----------------------------------------------------*/
-			bundles.Add(new CustomScriptBundle("~/bundles/fileupload").Include(
-				"~/Content/vendors/jquery-ui/widget.js",
-				"~/Content/vendors/fileuploader/jquery.iframe-transport.js",
-				"~/Content/vendors/fileuploader/jquery.fileupload.js",
-				"~/Content/vendors/fileuploader/jquery.fileupload-single-ui.js"));
-
 			/* Summernote
 			-----------------------------------------------------*/
 			bundles.Add(new CustomScriptBundle("~/bundles/summernote").Include(

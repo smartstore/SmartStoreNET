@@ -131,7 +131,7 @@
 	</div>
 
 	<!-- Main Panel -->
-	<div class="col panel-upload">
+	<div class="col panel-upload fileupload-container">
 		<!-- FileUpload Panel  -->
 		<div class="form-row flex-nowrap panel-file@(initiallyShowUrlPanel ? " hide": "")">
 			@if (hasFile)
@@ -144,18 +144,20 @@
 					</div>
 				</div>
 			}
-			<div class="col">
+			<div class="col dropzone-container">
 				@(Html.SmartStore().FileUploader()
-					.UploadUrl(Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" }))
-					.AcceptedFileTypes("")
-					.IconCssClass(MinimalMode ? "fa fa-upload" : "")
-					.ButtonOutlineStyle(hasFile)
-					.UploadText(hasFile ? T("Common.Replace").Text : T("Common.Fileuploader.Upload").Text)
-					.ShowRemoveButton(false)
-					.ShowRemoveButtonAfterUpload(false)
-					.OnUploadingHandlerName("onUploading_" + random)
-					.OnCompletedHandlerName("onCompleted_" + random)
-					.OnUploadCompletedHandlerName("onUploadCompleted_" + random)
+                    .UploadUrl(Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" }))
+                    .AcceptedFileTypes("")
+
+					.Multifile(false)
+                    //.IconCssClass(MinimalMode ? "fa fa-upload" : "")
+                    //.ButtonOutlineStyle(hasFile)
+                    //.UploadText(hasFile ? T("Common.Replace").Text : T("Common.Fileuploader.Upload").Text)
+                    .ShowRemoveButton(false)
+                    .ShowRemoveButtonAfterUpload(false)
+                    .OnUploadingHandlerName("onUploading_" + random)
+                    .OnCompletedHandlerName("onCompleted_" + random)
+                    .OnUploadCompletedHandlerName("onUploadCompleted_" + random)
 				)
 			</div>
 		</div>

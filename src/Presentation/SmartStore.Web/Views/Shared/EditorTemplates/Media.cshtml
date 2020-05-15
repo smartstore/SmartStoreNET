@@ -96,7 +96,7 @@
 	var fileId = Model;
 }
 
-<div class="fileupload-container">
+<div class="fileupload-container@(Compact ? " compact" : "")">
 	<div @Html.Attr("class", "dropzone-container", !MultiFile)>
 
 		@if (!MultiFile)

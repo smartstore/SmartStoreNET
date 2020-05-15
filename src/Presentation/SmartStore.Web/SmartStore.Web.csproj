@@ -875,14 +875,6 @@
     <Content Include="Content\vendors\fa5\webfonts\fa-brands-400.svg" />
     <Content Include="Content\vendors\fa5\webfonts\fa-regular-400.svg" />
     <Content Include="Content\vendors\fa5\webfonts\fa-solid-900.svg" />
-    <Content Include="Content\vendors\fileuploader\images\loading.gif" />
-    <Content Include="Content\vendors\fileuploader\images\progressbar.gif" />
-    <Content Include="Content\vendors\fileuploader\jquery.fileupload-fp.js" />
-    <Content Include="Content\vendors\fileuploader\jquery.fileupload-single-ui.js" />
-    <Content Include="Content\vendors\fileuploader\jquery.fileupload-ui.js" />
-    <Content Include="Content\vendors\fileuploader\jquery.fileupload.js" />
-    <Content Include="Content\vendors\fileuploader\jquery.iframe-transport.js" />
-    <Content Include="Content\vendors\fileuploader\locale.js" />
     <Content Include="Content\vendors\font-awesome\font-awesome.css" />
     <Content Include="Content\vendors\font-awesome\font-awesome.min.css" />
     <Content Include="App_GlobalResources\MvcLocalization.de.resx">
@@ -1066,8 +1058,6 @@
     <Content Include="Content\bs4\scss\bootstrap-head.scss" />
     <Content Include="Content\bs4\scss\bootstrap-main.scss" />
     <Content Include="Content\shared\_custom-scrollbar.scss" />
-    <Content Include="Content\vendors\dropzone\scss\basic.scss" />
-    <Content Include="Content\vendors\dropzone\scss\dropzone.scss" />
     <Content Include="Content\shared\_custom-scrollbar-buttons.scss" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
@@ -1850,7 +1840,6 @@
     <Content Include="Views\Blog\Partials\BlogSummaryHeading.cshtml" />
     <Content Include="Views\Blog\Partials\BlogSummary.cshtml" />
     <Content Include="Views\Common\Partials\CookieManager.cshtml" />
-    <Content Include="Views\Shared\Components\_FileUploader.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

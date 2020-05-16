@@ -182,11 +182,8 @@ namespace SmartStore.Services.Media.Storage
 
 			try
 			{
-				// Read data from file
-				var data = _fileSystem.ReadAllBytes(filePath);
-
 				// Let target store data (into database for example)
-				target.Receive(context, mediaFile, data);
+				target.Receive(context, mediaFile, OpenRead(mediaFile));
 
 				// Remember file path: we must be able to rollback IO operations on transaction failure
 				context.AffectedFiles.Add(filePath);
@@ -197,13 +194,13 @@ namespace SmartStore.Services.Media.Storage
 			}
 		}
 
-		public void Receive(MediaMoverContext context, MediaFile mediaFile, byte[] data)
+		public void Receive(MediaMoverContext context, MediaFile mediaFile, Stream stream)
 		{
 			Guard.NotNull(context, nameof(context));
 			Guard.NotNull(mediaFile, nameof(mediaFile));
 
 			// store data into file
-			if (data != null && data.LongLength != 0)
+			if (stream != null && stream.Length > 0)
 			{
 				var filePath = GetPath(mediaFile);
 
@@ -214,24 +211,40 @@ namespace SmartStore.Services.Media.Storage
 					// is a cloud based file system (like Azure BLOB).
 					// In such a scenario it'd be advisable to copy the files manually
 					// with other - maybe more performant - tools before performing the provider switch.
-					_fileSystem.WriteAllBytes(filePath, data);
+					using (stream)
+					{
+						_fileSystem.SaveStream(filePath, stream);
+					}
+					
 					context.AffectedFiles.Add(filePath);
 				}
 			}
 		}
 
-		public async Task ReceiveAsync(MediaMoverContext context, MediaFile mediaFile, byte[] data)
+		public async Task ReceiveAsync(MediaMoverContext context, MediaFile mediaFile, Stream stream)
 		{
 			Guard.NotNull(context, nameof(context));
 			Guard.NotNull(mediaFile, nameof(mediaFile));
 
 			// store data into file
-			if (data != null && data.LongLength != 0)
+			if (stream != null && stream.Length > 0)
 			{
 				var filePath = GetPath(mediaFile);
 
-				await _fileSystem.WriteAllBytesAsync(filePath, data);
-				context.AffectedFiles.Add(filePath);
+				if (!_fileSystem.FileExists(filePath))
+				{
+					// TBD: (mc) We only save the file if it doesn't exist yet.
+					// This should save time and bandwidth in the case where the target
+					// is a cloud based file system (like Azure BLOB).
+					// In such a scenario it'd be advisable to copy the files manually
+					// with other - maybe more performant - tools before performing the provider switch.
+					using (stream)
+					{
+						await _fileSystem.SaveStreamAsync(filePath, stream);
+					}
+
+					context.AffectedFiles.Add(filePath);
+				}
 			}
 		}
 

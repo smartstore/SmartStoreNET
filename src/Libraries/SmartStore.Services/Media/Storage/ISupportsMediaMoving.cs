@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Media.Storage
@@ -18,16 +19,16 @@ namespace SmartStore.Services.Media.Storage
 		/// </summary>
 		/// <param name="context">Media storage mover context</param>
 		/// <param name="mediaFile">Media file item</param>
-		/// <param name="data">Binary data</param>
-		void Receive(MediaMoverContext context, MediaFile mediaFile, byte[] data);
+		/// <param name="stream">Source stream</param>
+		void Receive(MediaMoverContext context, MediaFile mediaFile, Stream stream);
 
 		/// <summary>
 		/// Data received by the source provider to be stored by the target provider (async)
 		/// </summary>
 		/// <param name="context">Media storage mover context</param>
 		/// <param name="mediaFile">Media file item</param>
-		/// <param name="data">Binary data</param>
-		Task ReceiveAsync(MediaMoverContext context, MediaFile mediaFile, byte[] data);
+		/// <param name="stream">Source stream</param>
+		Task ReceiveAsync(MediaMoverContext context, MediaFile mediaFile, Stream stream);
 
 		/// <summary>
 		/// Called when batch media moving completes

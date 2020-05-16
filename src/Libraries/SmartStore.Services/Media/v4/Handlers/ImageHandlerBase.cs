@@ -28,6 +28,7 @@ namespace SmartStore.Services.Media
 
             var query = context.ImageQuery;
             var pathData = context.PathData;
+            pathData.Extension = "jpg";
 
             var cachedImage = ImageCache.Get4(context.MediaFileId, pathData, query);
 

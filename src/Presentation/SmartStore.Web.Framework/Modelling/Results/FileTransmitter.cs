@@ -71,7 +71,7 @@ namespace SmartStore.Web.Framework.Modelling
 			var stream = GetStream();
 
 			response.BufferOutput = false;
-			//response.Buffer = true; // Buffering leads to hight RAM usage
+			//response.Buffer = true; // Buffering leads to high RAM usage
 
 			using (stream)
 			{
@@ -81,7 +81,10 @@ namespace SmartStore.Web.Framework.Modelling
 				int read;
 				long remaining = length;
 
-				stream.Seek(offset, SeekOrigin.Begin);
+				if (stream.CanSeek)
+				{
+					stream.Seek(offset, SeekOrigin.Begin);
+				}
 				while ((remaining > 0) && (read = stream.Read(buffer, 0, buffer.Length)) != 0)
 				{
 					if (response.IsClientConnected)

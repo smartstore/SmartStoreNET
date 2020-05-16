@@ -2,6 +2,8 @@
 using System.Text;
 using System.IO;
 using System.Runtime.CompilerServices;
+using SmartStore.Core.IO;
+using System.Diagnostics;
 
 namespace SmartStore
 {
@@ -19,7 +21,17 @@ namespace SmartStore
 			return new StreamReader(stream, encoding, detectEncoding, bufferSize, leaveOpen);
 		}
 
-		public static bool ToFile(this Stream srcStream, string path) 
+        public static Stream MakeSeekable(this Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                Debug.WriteLine("The stream is seekable already.");
+            }
+
+            return new SeekableReadOnlyStream(stream, (int)stream.Length);
+        }
+
+        public static bool ToFile(this Stream srcStream, string path) 
         {
 			if (srcStream == null)
 				return false;

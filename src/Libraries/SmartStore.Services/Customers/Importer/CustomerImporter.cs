@@ -620,7 +620,7 @@ namespace SmartStore.Services.Customers.Importer
                         {
                             var currentFiles = new List<MediaFileInfo>();
                             var fileId = row.Entity.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
-                            var file = _mediaService.GetFileById(fileId, MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithBlob);
+                            var file = _mediaService.GetFileById(fileId, MediaLoadFlags.AsNoTracking);
                             if (file != null)
                             {
                                 currentFiles.Add(file);

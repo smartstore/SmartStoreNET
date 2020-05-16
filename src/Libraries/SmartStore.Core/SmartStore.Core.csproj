@@ -296,6 +296,7 @@
     <Compile Include="Infrastructure\ApplicationEnvironment.cs" />
     <Compile Include="Infrastructure\IApplicationEnvironment.cs" />
     <Compile Include="IO\ImageHeader.cs" />
+    <Compile Include="IO\SeekableReadOnlyStream.cs" />
     <Compile Include="IO\SymLink\FileSystemInfoExtensions.cs" />
     <Compile Include="IO\SymLink\SymbolicLink.cs" />
     <Compile Include="IO\VirtualPath\DefaultVirtualPathProvider.cs" />

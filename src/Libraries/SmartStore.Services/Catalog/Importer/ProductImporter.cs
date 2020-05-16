@@ -902,7 +902,7 @@ namespace SmartStore.Services.Catalog.Importer
                             {
                                 if ((stream?.Length ?? 0) > 0)
                                 {
-                                    var tmpFileMap = _productService.GetProductPicturesByProductIds(new int[] { productId }, null, MediaLoadFlags.WithBlob);                                    
+                                    var tmpFileMap = _productService.GetProductPicturesByProductIds(new int[] { productId }, null, MediaLoadFlags.None);                                    
                                     
                                     var currentFiles = tmpFileMap.ContainsKey(productId)
                                         ? tmpFileMap[productId]

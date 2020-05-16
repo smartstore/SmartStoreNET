@@ -98,16 +98,14 @@ namespace SmartStore.Services.Media.Storage
 					try
 					{
 						// Files
-						var queryFiles = _pictureRepository.Table
-							.Expand(x => x.MediaStorage)
-							.OrderBy(x => x.Id);
+						var queryFiles = _pictureRepository.Table.OrderBy(x => x.Id);
 
-						PageEntities(queryFiles, picture =>
+						PageEntities(queryFiles, file =>
 						{
 							// move item from source to target
-							source.MoveTo(target, context, picture);
+							source.MoveTo(target, context, file);
 
-							picture.UpdatedOnUtc = utcNow;
+							file.UpdatedOnUtc = utcNow;
 							++context.MovedItems;
 						});
 

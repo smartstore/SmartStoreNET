@@ -57,8 +57,6 @@ namespace SmartStore.Services.Media
 
             // Handlers
             builder.RegisterType<ImageHandler>().As<IMediaHandler>().InstancePerRequest();
-            //builder.RegisterType<VideoHandler>().As<IMediaHandler>().InstancePerRequest();
-            builder.RegisterType<PdfHandler>().As<IMediaHandler>().InstancePerRequest();
         }
 
         private static Func<IMediaStorageProvider> MediaStorageProviderFactory(IComponentContext c)

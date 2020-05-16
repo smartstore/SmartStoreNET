@@ -382,8 +382,6 @@
     <Compile Include="Media\v4\Handlers\ImageHandlerBase.cs" />
     <Compile Include="Media\v4\Handlers\IMediaHandler.cs" />
     <Compile Include="Media\v4\Handlers\MediaHandlerContext.cs" />
-    <Compile Include="Media\v4\Handlers\PdfHandler.cs" />
-    <Compile Include="Media\v4\Handlers\VideoHandler.cs" />
     <Compile Include="Media\v4\IMediaService.cs" />
     <Compile Include="Media\v4\IMediaUrlGenerator.cs" />
     <Compile Include="Media\v4\MediaFileInfo.cs" />

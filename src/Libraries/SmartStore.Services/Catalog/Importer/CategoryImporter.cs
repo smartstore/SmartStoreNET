@@ -201,7 +201,7 @@ namespace SmartStore.Services.Catalog.Importer
                             if ((stream?.Length ?? 0) > 0)
                             {
                                 var currentFiles = new List<MediaFileInfo>();
-                                var file = _mediaService.GetFileById(row.Entity.MediaFileId ?? 0, MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithBlob);
+                                var file = _mediaService.GetFileById(row.Entity.MediaFileId ?? 0, MediaLoadFlags.AsNoTracking);
                                 if (file != null)
                                 {
                                     currentFiles.Add(file);

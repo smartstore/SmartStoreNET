@@ -213,7 +213,7 @@ namespace SmartStore.Services.Media
             // Get all source files in one go
             var files = _searcher.SearchFiles(
                 new MediaSearchQuery { FolderId = source.Value.Id }, 
-                MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithBlob | MediaLoadFlags.WithTags).Load();
+                MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithTags).Load();
 
             IDictionary<string, MediaFile> destFiles = null;
             HashSet<string> destNames = null;

@@ -605,6 +605,7 @@
     <Compile Include="Utilities\DataMigrator.cs" />
     <Compile Include="Utilities\FastPager.cs" />
     <Compile Include="Utilities\MessageTemplateConverter.cs" />
+    <Compile Include="Utilities\SqlBlobStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -28,9 +28,8 @@ namespace SmartStore.Services.Media
 
             var query = context.ImageQuery;
             var pathData = context.PathData;
-            pathData.Extension = "jpg";
 
-            var cachedImage = ImageCache.Get4(context.MediaFileId, pathData, query);
+            var cachedImage = ImageCache.Get(context.MediaFileId, pathData, query);
 
             if (!pathData.Extension.IsCaseInsensitiveEqual(cachedImage.Extension))
             {
@@ -73,7 +72,7 @@ namespace SmartStore.Services.Media
 
                         if (inputStream == null)
                         {
-                            context.Exception = new ExtractThumbnailException("No input stream", null); // TODO: (mm) better exception
+                            context.Exception = new ExtractThumbnailException("Input stream was null.", null);
                             context.Executed = true;
                             return;
                         }
@@ -92,7 +91,7 @@ namespace SmartStore.Services.Media
                                 // Therefore we create an empty file to prevent repetitive processing.
                                 using (var memStream = new MemoryStream())
                                 {
-                                    await ImageCache.Put4Async(cachedImage, memStream);
+                                    await ImageCache.PutAsync(cachedImage, memStream);
                                 }
                             }
 
@@ -110,7 +109,7 @@ namespace SmartStore.Services.Media
 
                         if (context.ResultStream != null && context.ResultStream.Length > 0)
                         {
-                            await ImageCache.Put4Async(cachedImage, context.ResultStream);
+                            await ImageCache.PutAsync(cachedImage, context.ResultStream);
                             context.ResultStream.Position = 0;
                             context.ResultFile = cachedImage.File;
                         }

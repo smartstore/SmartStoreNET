@@ -29,7 +29,7 @@ namespace SmartStore.Services.Media
             _folderService = folderService;
             _mediaHelper = mediaHelper;
             _storageProvider = mediaService.StorageProvider;
-            _mediaRootPath = "media4/"; // MediaFileSystem.GetMediaPublicPath(); // TODO: (mm) switch
+            _mediaRootPath = MediaFileSystem.GetMediaPublicPath();
         }
 
         protected string Fix(string path)

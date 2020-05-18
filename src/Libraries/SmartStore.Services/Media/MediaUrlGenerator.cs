@@ -20,7 +20,7 @@ namespace SmartStore.Services.Media
 
 		static MediaUrlGenerator()
         {
-			_processedImagesRootPath = "media4/"; // MediaFileSystem.GetMediaPublicPath(); // TODO: (mm) change
+			_processedImagesRootPath = MediaFileSystem.GetMediaPublicPath();
             _fallbackImagesRootPath = "content/images/";
         }
 

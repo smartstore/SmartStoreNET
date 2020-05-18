@@ -18,11 +18,18 @@
 	}
 }
 
-<div @Html.Attr("class", "dropzone-container", Model.Multifile)>
+<div @Html.Attr("class", "dropzone-container", Model.Multifile || Model.EntityId == 0)>
 
 	<div class="dropzone-target">
 		<div class="fu-message">
-			@T("FileUploader.Dropzone.Message")
+			@if (Model.UploadText.HasValue())
+			{
+				@Model.UploadText
+			}
+			else
+			{
+				@T("FileUploader.Dropzone.Message")
+			}
 		</div>
 
 		<div id="@Model.Name" @Html.Attrs(Model.HtmlAttributes)
@@ -148,6 +155,8 @@
 
 @helper FilePreviewTemplate(string previewUrl)
 {
+	<i class="file-icon fa-fw d-none"></i>
+
 	<img data-dz-thumbnail @Html.Attr("src", previewUrl, previewUrl.HasValue()) />
 
 	<div class="fu-preview-overlay"></div>

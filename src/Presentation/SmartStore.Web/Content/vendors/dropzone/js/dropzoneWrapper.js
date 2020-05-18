@@ -34,6 +34,11 @@
 				fuContainer = $el.closest('.fileupload-container'),
 				previewContainer = fuContainer.find(".preview-container");
 
+			if (!fuContainer.length) {
+				$el.closest('.dropzone-container').wrap('<div class="fileupload-container"></div>');
+				fuContainer = $el.closest('.fileupload-container');
+			}
+
 			var elRemove = fuContainer.find('.remove'),
 				elProgressBar = fuContainer.find('.progress-bar'),
 				elStatus = fuContainer.find('.fileupload-status');
@@ -105,7 +110,7 @@
 
 			el.on("addedfile", function (file) {
 				logEvent("addedfile", file);
-
+				
 				// If file is a duplicate prevent it from being displayed in preview container.
 				if (preCheckForDuplicates(file.name, previewContainer)) {
 					$(file.previewTemplate).addClass("d-none");
@@ -114,6 +119,7 @@
 
 			el.on("addedfiles", function (files) {
 				logEvent("addedfiles", files);
+				activeFiles = files.filter(file => file.accepted === true).length;
 			});
 
 			el.on("processing", function (file) {
@@ -121,9 +127,11 @@
 
 				logEvent("processing", file, currentProcessingCount);
 
+				/*
 				if (activeFiles === 0) {
 					activeFiles = this.files.length;
 				}
+				*/
 			});
 
 			el.on("processingmultiple", function (files) {
@@ -186,6 +194,9 @@
 						file.status = Dropzone.ERROR;
 						file.response = response;
 					}
+					else {
+						file.response = response;
+					}
 				}
 
 				if (options.onUploadCompleted) options.onUploadCompleted.apply(this, [file, response, progress]);
@@ -237,9 +248,6 @@
 					}
 				}
 
-				//console.log(activeFiles, assignableFiles.length, dupeFiles.length);
-
-				// TODO: find safer way to determine whether all files were processed.
 				if (activeFiles === assignableFiles.length && dupeFiles.length === 0) {
 					assignFilesToEntity(assignableFiles, assignableFileIds);
 					// Has to be done after success of assignFilesToEntity
@@ -301,7 +309,8 @@
 				// Reset progress bar when file was removed.
 				dzResetProgressBar(elProgressBar);
 
-				if (options.onFileRemove) options.onFileRemove.apply(this, [file]);
+				// Apply remove event only on explicit user interaction via remove button.
+                //if (options.onFileRemove) options.onFileRemove.apply(this, [file]);
 			});
 
 			el.on("complete", function (file) {
@@ -364,7 +373,8 @@
 						success: function (response) {
 							$.each(response.response, function (i, value) {
 
-								var file = assignableFiles.find(x => x.id === value.MediaFileId);
+								//var file = assignableFiles.find(x => x.id === value.MediaFileId);
+								var file = assignableFiles.find(x => x.response.fileId === value.MediaFileId);
 
 								if (!file) {
 									// Try get renamed file.
@@ -445,6 +455,8 @@
 
 					files.forEach(function (file) {
 						ids += file.id + ",";
+						file.response = [];
+						file.response.fileId = file.id;
 					});
 
 					assignFilesToEntity(files, ids);
@@ -465,7 +477,7 @@
 					url: $el.data('remove-url'),
 					data: { id: entityMediaFileId },
 					success: function () {
-
+						previewThumb.tooltip("hide");
 						previewThumb.remove();
 
 						// File must be removed from dropzone if it was added in current queue.

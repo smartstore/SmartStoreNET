@@ -603,7 +603,7 @@
             builder.AddOrUpdate("Admin.Orders.Overall", "Orders overall", "Aufträge insgesamt");
             builder.AddOrUpdate("Admin.Report.Registrations", "Registrations", "Registrierungen");
 
-
+            builder.AddOrUpdate("Common.FileUploader.Upload", "To upload files drop them here or click.", "Zum Hochladen Dateien hier ablegen oder klicken.");
             builder.AddOrUpdate("FileUploader.Dropzone.Message", "To upload files drop them here or click.", "Zum Hochladen Dateien hier ablegen oder klicken.");
             builder.AddOrUpdate("FileUploader.MultiFiles.MainMediaFile", "Main media file", "Hauptbild");
             builder.AddOrUpdate("FileUploader.Preview.SetMainMedia.Title", "Set as main picture", "Zum Hauptbild machen");

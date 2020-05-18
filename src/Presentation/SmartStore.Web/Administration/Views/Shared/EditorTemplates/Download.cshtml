@@ -131,7 +131,7 @@
 	</div>
 
 	<!-- Main Panel -->
-	<div class="col panel-upload fileupload-container">
+	<div class="col panel-upload">
 		<!-- FileUpload Panel  -->
 		<div class="form-row flex-nowrap panel-file@(initiallyShowUrlPanel ? " hide": "")">
 			@if (hasFile)
@@ -144,7 +144,7 @@
 					</div>
 				</div>
 			}
-			<div class="col dropzone-container">
+			<div class="col">
 				@(Html.SmartStore().FileUploader()
                     .UploadUrl(Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" }))
                     .AcceptedFileTypes("")
@@ -184,9 +184,10 @@
 <script>
 		window['onUploading_@random'] = function (e, el, data) { }
 		window['onCompleted_@random'] = function (e, el, data) { }
-		window['onUploadCompleted_@random'] = function (e, el, data) {
-			if (data.result.html) {
-				el.closest('.download-editor').replaceWith($(data.result.html));
+        window['onUploadCompleted_@random'] = function (file, response, progress) {
+            if (response.html && response.clientCtrlId) {
+                var el = $("#" + response.clientCtrlId);
+                el.closest('.download-editor').replaceWith($(response.html));
 			}
 		}
 

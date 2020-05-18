@@ -53,7 +53,7 @@
                     @Html.SmartLabelFor(model => model.NewVersionDownloadId)
                 </td>
                 <td class="adminData">
-                    @Html.EditorFor(model => model.NewVersionDownloadId, new { entityId = Model.Id, entityName = "Product" })
+                    @Html.EditorFor(model => model.NewVersionDownloadId, new { entityId = Model.Id, entityName = nameof(Product) })
                     @Html.ValidationMessageFor(model => model.NewVersionDownloadId)
                 </td>
             </tr>

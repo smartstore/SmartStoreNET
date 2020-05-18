@@ -2217,42 +2217,6 @@ namespace SmartStore.Admin.Controllers
 
 		[HttpPost]
 		[Permission(Permissions.Catalog.Product.EditPicture)]
-        public ActionResult ProductPictureAdd(int mediaFileId, int displayOrder, int entityId)
-        {
-            if (mediaFileId == 0)
-            {
-                throw new ArgumentException("Missing picture identifier.");
-            }
-
-			var success = false;
-            var product = _productService.GetProductById(entityId);
-            if (product == null)
-            {
-                throw new ArgumentException(T("Products.NotFound", entityId));
-            }
-
-			var currentPic = product.ProductPictures.Where(x => x.MediaFileId == mediaFileId).FirstOrDefault();
-
-			// No duplicate assignments!
-			if (currentPic == null)
-			{
-				var productPicture = new ProductMediaFile
-				{
-					MediaFileId = mediaFileId,
-					ProductId = entityId,
-					DisplayOrder = displayOrder
-				};
-
-				_productService.InsertProductPicture(productPicture);
-
-				success = true;
-			}
-			
-            return Json(new { success , message = T("Admin.Product.Picture.Added").JsText.ToString() }, JsonRequestBehavior.AllowGet);
-        }
-
-		[HttpPost]
-		[Permission(Permissions.Catalog.Product.EditPicture)]
 		public ActionResult ProductMediaFilesAdd(string mediaFileIds, int entityId)
 		{
 			if (mediaFileIds.Length == 0)
@@ -2267,38 +2231,33 @@ namespace SmartStore.Admin.Controllers
 				throw new ArgumentException(T("Products.NotFound", entityId));
 			}
 
-			var ids = mediaFileIds.SplitSafe(",");
+			var ids = mediaFileIds.ToIntArray();
 			var response = new List<dynamic>();
+			var existingFiles = product.ProductPictures.Select(x => x.MediaFileId).ToList();
 
 			foreach (var id in ids)
 			{
-				// Should never happen
-				if (id.IsCaseInsensitiveEqual("undefined"))
-					continue;
-
-				var mediaFileId = Convert.ToInt32(id);
-				var currentPic = product.ProductPictures.Where(x => x.MediaFileId == mediaFileId).FirstOrDefault();
+				var exists = existingFiles.Contains(id);
 
 				// No duplicate assignments!
-				if (currentPic == null)
+				if (!exists)
 				{
 					var productPicture = new ProductMediaFile
 					{
-						MediaFileId = mediaFileId,
+						MediaFileId = id,
 						ProductId = entityId
 					};
 
-					// TODO: Performance!!! Insert in one request.
 					_productService.InsertProductPicture(productPicture);
 
 					// TODO: PERF!!!
-					var media = _mediaService.GetFileById(mediaFileId);
+					var media = _mediaService.GetFileById(id);
 
 					success = true;
 
 					dynamic respObj = new
 					{
-						MediaFileId = mediaFileId,
+						MediaFileId = id,
 						ProductMediaFileId = productPicture.Id,
 						Name = media.Name
 					};
@@ -2309,62 +2268,6 @@ namespace SmartStore.Admin.Controllers
 
 			return Json(new { success, response, message = T("Admin.Product.Picture.Added").JsText.ToString() }, JsonRequestBehavior.AllowGet);
 		}
-
-		[HttpPost, GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Catalog.Product.Read)]
-        public ActionResult ProductPictureList(GridCommand command, int productId)
-        {
-			var model = new GridModel<ProductModel.ProductPictureModel>();
-			var files = _productService.GetProductPicturesByProductId(productId);
-
-			var productPicturesModel = files
-				.Select(x =>
-				{
-					var pictureModel = new ProductModel.ProductPictureModel
-					{
-						Id = x.Id,
-						ProductId = x.ProductId,
-						PictureId = x.MediaFileId,
-						DisplayOrder = x.DisplayOrder
-					};
-
-                    try
-                    {
-                        pictureModel.PictureUrl = _mediaService.GetUrl(x.MediaFile, 0);
-                    }
-                    catch (Exception ex)
-                    {
-                        // The user must always have the possibility to delete faulty images.
-                        Logger.Error(ex);
-                    }
-
-                    return pictureModel;
-				})
-				.ToList();
-
-			model.Data = productPicturesModel;
-			model.Total = productPicturesModel.Count;
-
-            return new JsonResult
-            {
-                Data = model
-            };
-        }
-
-        [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Catalog.Product.EditPicture)]
-        public ActionResult ProductPictureUpdate(ProductModel.ProductPictureModel model, GridCommand command)
-        {
-			var productPicture = _productService.GetProductPictureById(model.Id);
-			if (productPicture != null)
-			{
-				productPicture.DisplayOrder = model.DisplayOrder;
-
-				_productService.UpdateProductPicture(productPicture);
-			}
-
-            return ProductPictureList(command, model.ProductId);
-        }
 
 		[HttpPost]
         [Permission(Permissions.Catalog.Product.EditPicture)]

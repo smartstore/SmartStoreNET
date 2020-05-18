@@ -77,7 +77,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [Permission(Permissions.Media.Download.Create)]
-        public ActionResult AsyncUpload(bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
+        public ActionResult AsyncUpload(string clientCtrlId, bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
         {
 			var postedFile = Request.ToPostedFileResult();
 			if (postedFile == null)
@@ -99,8 +99,9 @@ namespace SmartStore.Admin.Controllers
 
             return Json(new 
             { 
-                success = true, 
-				downloadId = download.Id,
+                success = true,
+                clientCtrlId = clientCtrlId,
+                downloadId = download.Id,
 				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, download.Id, new { minimalMode, fieldName, entityId, entityName })
             });
         }

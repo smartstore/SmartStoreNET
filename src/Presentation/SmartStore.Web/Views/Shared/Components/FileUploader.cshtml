@@ -39,12 +39,12 @@
 			 data-sort-url="@Model.SortUrl"
 			 data-entity-id="@Model.EntityId">
 
-			<div class="fileupload">
+			@*<div class="fileupload">*@
 				<input type="hidden" id="@(Model.Id)-file" name="@(Model.Id)-file" />
 				<div class="fileupload-buttons">
 					@{ Html.RenderWidget("file_uploader"); }
 				</div>
-			</div>
+			@*</div>*@
 		</div>
 
 		<a href="#" class="open-upload-summmary">

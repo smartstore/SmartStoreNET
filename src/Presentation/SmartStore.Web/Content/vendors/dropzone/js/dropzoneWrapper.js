@@ -35,7 +35,7 @@
 				previewContainer = fuContainer.find(".preview-container");
 
 			if (!fuContainer.length) {
-				$el.closest('.dropzone-container').wrap('<div class="fileupload-container"></div>');
+				$el.closest('.dropzone-container').wrap('<div class="fileupload-container h-100"></div>');
 				fuContainer = $el.closest('.fileupload-container');
 			}
 
@@ -127,9 +127,8 @@
 
 				logEvent("processing", file, currentProcessingCount);
 
+				// Data attribute can be altered by MediaManager to specify the designated media folder.
 				this.options.url = $el.data("upload-url");
-
-				//console.log($el.data("upload-url"));
 			});
 
 			el.on("processingmultiple", function (files) {
@@ -445,8 +444,8 @@
 			}
 
 			fuContainer.on("mediaselected", function (e, files) {
-				if (files.length === 1) {
-					displaySingleFilePreview(files[0]);
+				if (opts.maxFiles === 1) {
+					displaySingleFilePreview(files[0], fuContainer);
 				}
 				else {
 					var ids = "";
@@ -611,7 +610,7 @@
 		}
 	}
 
-	function displaySingleFilePreview(file) {
+	function displaySingleFilePreview(file, fuContainer) {
 		//fuContainer.find('.fileupload-filename').html(file.name);
 		//fuContainer.find('.fileupload-filesize').html(this.filesize(file.size));
 		fuContainer.find('.fileupload-thumb').css('background-image', 'url("' + file.url + '")');

@@ -127,11 +127,9 @@
 
 				logEvent("processing", file, currentProcessingCount);
 
-				/*
-				if (activeFiles === 0) {
-					activeFiles = this.files.length;
-				}
-				*/
+				this.options.url = $el.data("upload-url");
+
+				//console.log($el.data("upload-url"));
 			});
 
 			el.on("processingmultiple", function (files) {

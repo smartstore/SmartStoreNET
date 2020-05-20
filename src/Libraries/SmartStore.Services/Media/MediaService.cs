@@ -515,7 +515,11 @@ namespace SmartStore.Services.Media
                 FolderId = pathData.Node.Value.Id
             };
 
-            // TODO: (mm) Get pretty SeName
+            var name = pathData.FileName.ToValidFileName();
+            if (name != pathData.FileName)
+            {
+                pathData.FileName = name;
+            }
 
             file.Name = pathData.FileName;
             file.Extension = pathData.Extension;

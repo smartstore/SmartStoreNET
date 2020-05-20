@@ -7,7 +7,7 @@
 
 .custom-scrollbar {
     --overflow-x: hidden;
-    --overflow-y: scroll;
+    --overflow-y: auto;
     --scrollbar-size: 14px;
     --scrollbar-track-color: transparent;
     --scrollbar-track-hover-color: rgba(0,0,0, 0.05);

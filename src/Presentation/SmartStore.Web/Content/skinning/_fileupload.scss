@@ -86,7 +86,7 @@
 	}
 }
 
-//Dropzone skinning
+// Dropzone skinning
 .dropzone-container {
 	border: 2px dashed $gray-400 !important;
 	background: $gray-100 !important;
@@ -95,12 +95,9 @@
 	line-height: 1.2;
 
 	&.fullscreen {
-		position: absolute;
-		top: 0;
-		left: 0;
+		position: relative;
 		width: 100%;
 		height: 100%;
-		border: none !important;
 
 		.fu-message {
 			display: flex;

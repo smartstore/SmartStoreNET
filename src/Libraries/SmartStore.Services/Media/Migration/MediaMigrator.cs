@@ -326,7 +326,7 @@ namespace SmartStore.Services.Media.Migration
                             file.Extension = MimeTypes.MapMimeTypeToExtension(file.MimeType);
                         }
                         
-                        file.Name = file.Name.Truncate(292) + "." + file.Extension;
+                        file.Name = file.Name.Truncate(292).ToValidFileName() + "." + file.Extension;
                         file.CreatedOnUtc = file.UpdatedOnUtc;
                         file.Version = 1;
 

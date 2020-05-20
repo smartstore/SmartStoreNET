@@ -1093,7 +1093,7 @@ namespace SmartStore
 
 			replacement = replacement ?? "-";
 
-			var sb = new StringBuilder();
+			var sb = new StringBuilder(input.Length);
 			foreach (var c in input.ToSafe())
 			{
 				if (invalidChars.Contains(c))

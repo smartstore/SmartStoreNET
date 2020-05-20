@@ -176,7 +176,7 @@ namespace SmartStore.WebApi.Controllers.Api
                         {
                             if (!_mediaService.Value.FindEqualFile(stream, pictures, true, out equalPictureId))
                             {
-                                var path = _mediaService.Value.CombinePaths(SystemAlbumProvider.Products, image.FileName.ToValidFileName());
+                                var path = _mediaService.Value.CombinePaths(SystemAlbumProvider.Catalog, image.FileName.ToValidFileName());
                                 var newFile = await _mediaService.Value.SaveFileAsync(path, stream, false, DuplicateFileHandling.Rename);
 
                                 if ((newFile?.Id ?? 0) != 0)

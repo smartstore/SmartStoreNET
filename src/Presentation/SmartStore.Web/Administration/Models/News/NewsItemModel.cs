@@ -46,11 +46,11 @@ namespace SmartStore.Admin.Models.News
         [AllowHtml]
         public string Full { get; set; }
 
-        [UIHint("Media"), AdditionalMetadata("album", "news")]
+        [UIHint("Media"), AdditionalMetadata("album", "content")]
         [SmartResourceDisplayName("Admin.Catalog.News.NewsItems.Fields.Picture")]
         public int? PictureId { get; set; }
 
-        [UIHint("Media"), AdditionalMetadata("album", "news")]
+        [UIHint("Media"), AdditionalMetadata("album", "content")]
         [SmartResourceDisplayName("Admin.Catalog.News.NewsItems.Fields.PreviewPictureId")]
         public int? PreviewPictureId { get; set; }
 

@@ -469,6 +469,10 @@
     <Compile Include="Migrations\202005111006305_CampaignSubjectToAcl.Designer.cs">
       <DependentUpon>202005111006305_CampaignSubjectToAcl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202005201826512_MediaManager3.cs" />
+    <Compile Include="Migrations\202005201826512_MediaManager3.Designer.cs">
+      <DependentUpon>202005201826512_MediaManager3.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -851,6 +855,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202005111006305_CampaignSubjectToAcl.resx">
       <DependentUpon>202005111006305_CampaignSubjectToAcl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005201826512_MediaManager3.resx">
+      <DependentUpon>202005201826512_MediaManager3.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

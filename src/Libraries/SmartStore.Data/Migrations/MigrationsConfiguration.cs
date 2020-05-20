@@ -546,6 +546,7 @@
 
             builder.AddOrUpdate("Admin.Media.Album.Message", "Messages", "Nachrichten");
             builder.AddOrUpdate("Admin.Media.Album.File", "Files", "Dateien");
+            builder.AddOrUpdate("Admin.Media.Album.Content", "Content", "Inhalte");
 
             builder.AddOrUpdate("Admin.SalesReport.LatestOrders", "Latest orders", "Neueste Bestellungen");
             builder.AddOrUpdate("Admin.SalesReport.TopCustomers", "Top customers", "Top Kunden");

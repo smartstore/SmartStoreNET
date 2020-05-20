@@ -353,6 +353,7 @@
     <Compile Include="Media\Imaging\ProcessImageException.cs" />
     <Compile Include="Media\Imaging\ProcessImageQuery.cs" />
     <Compile Include="Media\Imaging\ProcessImageResult.cs" />
+    <Compile Include="Media\Migration\MediaMigrator3.cs" />
     <Compile Include="Media\Storage\DatabaseMediaStorageProvider.cs" />
     <Compile Include="Media\Storage\FileSystemMediaStorageProvider.cs" />
     <Compile Include="Media\Storage\IMediaStorageProvider.cs" />

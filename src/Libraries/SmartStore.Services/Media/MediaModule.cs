@@ -22,6 +22,7 @@ namespace SmartStore.Services.Media
         {
             // Migration utils
             builder.RegisterType<MediaMigrator>().InstancePerRequest();
+            builder.RegisterType<MediaMigrator3>().InstancePerRequest();
             builder.RegisterType<MediaHelper>().InstancePerRequest();
 
             builder.RegisterType<MediaTypeResolver>().As<IMediaTypeResolver>().InstancePerRequest();

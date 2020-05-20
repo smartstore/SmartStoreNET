@@ -44,7 +44,7 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml, UIHint("Color")]
         public string Color { get; set; }
 
-        [UIHint("Media"), AdditionalMetadata("album", "product")]
+        [UIHint("Media"), AdditionalMetadata("album", "catalog")]
         [SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Picture")]
         public int PictureId { get; set; }
     }

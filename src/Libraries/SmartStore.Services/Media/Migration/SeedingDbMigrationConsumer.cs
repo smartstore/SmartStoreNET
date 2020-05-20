@@ -12,11 +12,14 @@ namespace SmartStore.Services.Media.Migration
     {
         public void Handle(SeedingDbMigrationEvent message, IComponentContext componentContext)
         {
-            if (message.MigrationName != MediaMigrator.MigrationName)
-                return;
-
-            var mediaMigrator = componentContext.Resolve<MediaMigrator>();
-            mediaMigrator.Migrate();
+            if (message.MigrationName == MediaMigrator.MigrationName)
+            {
+                componentContext.Resolve<MediaMigrator>().Migrate();
+            }
+            else if (message.MigrationName == MediaMigrator3.MigrationName)
+            {
+                componentContext.Resolve<MediaMigrator3>().Migrate();
+            } 
         }
     }
 }

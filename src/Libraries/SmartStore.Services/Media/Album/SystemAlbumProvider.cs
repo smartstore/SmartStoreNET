@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Messages;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.Media
 {
@@ -23,15 +24,11 @@ namespace SmartStore.Services.Media
             _dbContext = dbContext;
         }
 
-        public const string Products = "product";
-        public const string Categories = "category";
-        public const string Brands = "brand";
-        public const string Customers = "customer";
-        public const string Blog = "blog";
-        public const string News = "news";
-        public const string Forums = "forum";
+        public const string Catalog = "catalog";
+        public const string Content = "content";
         public const string Downloads = "download";
         public const string Messages = "message";
+        public const string Customers = "customer";
         public const string Files = "file";
 
         #region Album Provider
@@ -42,66 +39,38 @@ namespace SmartStore.Services.Media
             {
                 new MediaAlbum
                 {
-                    Name = Products,
-                    ResKey = "Admin.Catalog.Products",
+                    Name = Catalog,
+                    ResKey = "Admin.Catalog",
                     CanDetectTracks = true,
                     Order = int.MinValue
                 },
                 new MediaAlbum
                 {
-                    Name = Categories,
-                    ResKey = "Admin.Catalog.Categories",
+                    Name = Content,
+                    ResKey = "Admin.Media.Album.Content",
                     CanDetectTracks = true,
                     Order = int.MinValue + 10
-                },
-                new MediaAlbum
-                {
-                    Name = Brands,
-                    ResKey = "Manufacturers",
-                    CanDetectTracks = true,
-                    Order = int.MinValue + 20
-                },
-                new MediaAlbum
-                {
-                    Name = Customers,
-                    ResKey = "Admin.Customers",
-                    CanDetectTracks = true, // TBD
-                    Order = int.MinValue + 30
-                },
-                new MediaAlbum
-                {
-                    Name = Blog,
-                    ResKey = "Blog",
-                    CanDetectTracks = true,
-                    Order = int.MinValue + 40
-                },
-                new MediaAlbum
-                {
-                    Name = News,
-                    ResKey = "News",
-                    CanDetectTracks = true,
-                    Order = int.MinValue + 50
-                },
-                new MediaAlbum
-                {
-                    Name = Forums,
-                    ResKey = "Forum.Forum",
-                    CanDetectTracks = false, // TBD
-                    Order = int.MinValue + 60
                 },
                 new MediaAlbum
                 {
                     Name = Downloads,
                     ResKey = "Common.Downloads",
                     CanDetectTracks = true,
-                    Order = int.MinValue + 70
+                    Order = int.MinValue + 30
                 },
                 new MediaAlbum
                 {
                     Name = Messages,
                     ResKey = "Admin.Media.Album.Message",
                     CanDetectTracks = true,
-                    Order = int.MinValue + 80
+                    Order = int.MinValue + 40
+                },
+                new MediaAlbum
+                {
+                    Name = Customers,
+                    ResKey = "Admin.Customers",
+                    CanDetectTracks = true, // TBD
+                    Order = int.MinValue + 50
                 },
                 new MediaAlbum
                 {
@@ -109,7 +78,6 @@ namespace SmartStore.Services.Media
                     ResKey = "Admin.Media.Album.File",
                     CanDetectTracks = false,
                     IncludePath = true,
-                    // Slug = "uploaded", // TBD: hmmmm??
                     Order = int.MaxValue
                 }
             };
@@ -117,33 +85,14 @@ namespace SmartStore.Services.Media
 
         public AlbumDisplayHint GetDisplayHint(MediaAlbum album)
         {
-            if (album.Name == Products)
+
+            if (album.Name == Catalog)
             {
                 return new AlbumDisplayHint { OverlayIcon = "fa fa-cube" };
             }
-            if (album.Name == Categories)
+            if (album.Name == Content)
             {
                 return new AlbumDisplayHint { OverlayIcon = "fa fa-sitemap" };
-            }
-            if (album.Name == Brands)
-            {
-                return new AlbumDisplayHint { OverlayIcon = "far fa-building" };
-            }
-            if (album.Name == Customers)
-            {
-                return new AlbumDisplayHint { OverlayIcon = "fa fa-user" };
-            }
-            if (album.Name == Blog)
-            {
-                return new AlbumDisplayHint { OverlayIcon = "fa fa-blog" };
-            }
-            if (album.Name == News)
-            {
-                return new AlbumDisplayHint { OverlayIcon = "fa fa-newspaper" };
-            }
-            if (album.Name == Forums)
-            {
-                return new AlbumDisplayHint { OverlayIcon = "fa fa-users" };
             }
             if (album.Name == Downloads)
             {
@@ -152,6 +101,10 @@ namespace SmartStore.Services.Media
             if (album.Name == Messages)
             {
                 return new AlbumDisplayHint { OverlayIcon = "fa fa-envelope" };
+            }
+            if (album.Name == Customers)
+            {
+                return new AlbumDisplayHint { OverlayIcon = "fa fa-user" };
             }
             if (album.Name == Files)
             {
@@ -168,30 +121,22 @@ namespace SmartStore.Services.Media
 
         public void ConfigureTracks(string albumName, TrackedMediaPropertyTable table)
         {
-            if (albumName == Products)
+            if (albumName == Catalog)
             {
                 table.Register<ProductMediaFile>(x => x.MediaFileId);
                 table.Register<ProductAttributeOption>(x => x.MediaFileId);
                 table.Register<ProductVariantAttributeValue>(x => x.MediaFileId);
                 table.Register<SpecificationAttributeOption>(x => x.MediaFileId);
-            }
-            else if (albumName == Categories)
-            {
                 table.Register<Category>(x => x.MediaFileId);
-            }
-            else if (albumName == Brands)
-            {
                 table.Register<Manufacturer>(x => x.MediaFileId);
             }
-            else if (albumName == Blog)
+            else if (albumName == Content)
             {
                 table.Register<BlogPost>(x => x.MediaFileId);
                 table.Register<BlogPost>(x => x.PreviewMediaFileId);
-            }
-            else if (albumName == News)
-            {
                 table.Register<NewsItem>(x => x.MediaFileId);
                 table.Register<NewsItem>(x => x.PreviewMediaFileId);
+                table.Register<Store>(x => x.LogoMediaFileId);
             }
             else if (albumName == Downloads)
             {
@@ -214,7 +159,7 @@ namespace SmartStore.Services.Media
             // TODO: Messages, Forums (?), Store (?)
 
             // Products
-            if (albumName == Products)
+            if (albumName == Catalog)
             {
                 // Products
                 {
@@ -268,96 +213,79 @@ namespace SmartStore.Services.Media
                     }
                 }
 
-                yield break;
-            }
-
-            // Categories
-            if (albumName == Categories)
-            {
-                var name = nameof(Category);
-                var p = new FastPager<Category>(ctx.Set<Category>().AsNoTracking().Where(x => x.MediaFileId.HasValue));
-                while (p.ReadNextPage(x => new { x.Id, x.MediaFileId }, x => x.Id, out var list))
+                // Categories
                 {
-                    foreach (var x in list)
+                    var name = nameof(Category);
+                    var p = new FastPager<Category>(ctx.Set<Category>().AsNoTracking().Where(x => x.MediaFileId.HasValue));
+                    while (p.ReadNextPage(x => new { x.Id, x.MediaFileId }, x => x.Id, out var list))
                     {
-                        yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value, Property = nameof(x.MediaFileId) };
-                    }
-                }
-
-                yield break;
-            }
-
-            // Brands
-            if (albumName == Brands)
-            {
-                var name = nameof(Manufacturer);
-                var p = new FastPager<Manufacturer>(ctx.Set<Manufacturer>().AsNoTracking().Where(x => x.MediaFileId.HasValue));
-                while (p.ReadNextPage(x => new { x.Id, x.MediaFileId }, x => x.Id, out var list))
-                {
-                    foreach (var x in list)
-                    {
-                        yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value, Property = nameof(x.MediaFileId) };
-                    }
-                }
-
-                yield break;
-            }
-
-            // BlogPost
-            if (albumName == Blog)
-            {
-                var name = nameof(BlogPost);
-                var p = new FastPager<BlogPost>(ctx.Set<BlogPost>().AsNoTracking().Where(x => x.MediaFileId.HasValue || x.PreviewMediaFileId.HasValue));
-                while (p.ReadNextPage(x => new { x.Id, x.MediaFileId, x.PreviewMediaFileId }, x => x.Id, out var list))
-                {
-                    foreach (var x in list)
-                    {
-                        if (x.MediaFileId.HasValue)
-                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value, Property = nameof(x.MediaFileId) };
-                        if (x.PreviewMediaFileId.HasValue)
-                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.PreviewMediaFileId.Value, Property = nameof(x.PreviewMediaFileId) };
-                    }
-                }
-
-                yield break;
-            }
-
-            // NewsItem
-            if (albumName == News)
-            {
-                var name = nameof(NewsItem);
-                var p = new FastPager<NewsItem>(ctx.Set<NewsItem>().AsNoTracking().Where(x => x.MediaFileId.HasValue || x.PreviewMediaFileId.HasValue));
-                while (p.ReadNextPage(x => new { x.Id, x.MediaFileId, x.PreviewMediaFileId }, x => x.Id, out var list))
-                {
-                    foreach (var x in list)
-                    {
-                        if (x.MediaFileId.HasValue)
-                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value, Property = nameof(x.MediaFileId) };
-                        if (x.PreviewMediaFileId.HasValue)
-                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.PreviewMediaFileId.Value, Property = nameof(x.PreviewMediaFileId) };
-                    }
-                }
-
-                yield break;
-            }
-
-            // Customer
-            if (albumName == Customers)
-            {
-                var name = nameof(Customer);
-                var key = SystemCustomerAttributeNames.AvatarPictureId;
-
-                // Avatars
-                var p = new FastPager<GenericAttribute>(ctx.Set<GenericAttribute>().AsNoTracking()
-                    .Where(x => x.KeyGroup == nameof(Customer) && x.Key == key));
-                while (p.ReadNextPage(x => new { x.Id, x.EntityId, x.Value }, x => x.Id, out var list))
-                {
-                    foreach (var x in list)
-                    {
-                        var id = x.Value.ToInt();
-                        if (id > 0)
+                        foreach (var x in list)
                         {
-                            yield return new MediaTrack { EntityId = x.EntityId, EntityName = name, MediaFileId = id, Property = key };
+                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value, Property = nameof(x.MediaFileId) };
+                        }
+                    }
+                }
+
+                // Brands
+                {
+                    var name = nameof(Manufacturer);
+                    var p = new FastPager<Manufacturer>(ctx.Set<Manufacturer>().AsNoTracking().Where(x => x.MediaFileId.HasValue));
+                    while (p.ReadNextPage(x => new { x.Id, x.MediaFileId }, x => x.Id, out var list))
+                    {
+                        foreach (var x in list)
+                        {
+                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value, Property = nameof(x.MediaFileId) };
+                        }
+                    }
+                }
+
+                yield break;
+            }
+
+            // Content
+            if (albumName == Content)
+            {
+                // Blog
+                {
+                    var name = nameof(BlogPost);
+                    var p = new FastPager<BlogPost>(ctx.Set<BlogPost>().AsNoTracking().Where(x => x.MediaFileId.HasValue || x.PreviewMediaFileId.HasValue));
+                    while (p.ReadNextPage(x => new { x.Id, x.MediaFileId, x.PreviewMediaFileId }, x => x.Id, out var list))
+                    {
+                        foreach (var x in list)
+                        {
+                            if (x.MediaFileId.HasValue)
+                                yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value, Property = nameof(x.MediaFileId) };
+                            if (x.PreviewMediaFileId.HasValue)
+                                yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.PreviewMediaFileId.Value, Property = nameof(x.PreviewMediaFileId) };
+                        }
+                    }
+                }
+
+                // NewsItem
+                {
+                    var name = nameof(NewsItem);
+                    var p = new FastPager<NewsItem>(ctx.Set<NewsItem>().AsNoTracking().Where(x => x.MediaFileId.HasValue || x.PreviewMediaFileId.HasValue));
+                    while (p.ReadNextPage(x => new { x.Id, x.MediaFileId, x.PreviewMediaFileId }, x => x.Id, out var list))
+                    {
+                        foreach (var x in list)
+                        {
+                            if (x.MediaFileId.HasValue)
+                                yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value, Property = nameof(x.MediaFileId) };
+                            if (x.PreviewMediaFileId.HasValue)
+                                yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.PreviewMediaFileId.Value, Property = nameof(x.PreviewMediaFileId) };
+                        }
+                    }
+                }
+
+                // Store
+                {
+                    var name = nameof(Store);
+                    var p = new FastPager<Store>(ctx.Set<Store>().AsNoTracking().Where(x => x.LogoMediaFileId > 0));
+                    while (p.ReadNextPage(x => new { x.Id, x.LogoMediaFileId }, x => x.Id, out var list))
+                    {
+                        foreach (var x in list)
+                        {
+                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.LogoMediaFileId, Property = nameof(x.LogoMediaFileId) };
                         }
                     }
                 }
@@ -396,6 +324,30 @@ namespace SmartStore.Services.Media
                             yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.Attachment2FileId.Value, Property = nameof(x.Attachment2FileId) };
                         if (x.Attachment3FileId.HasValue)
                             yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.Attachment3FileId.Value, Property = nameof(x.Attachment3FileId) };
+                    }
+                }
+
+                yield break;
+            }
+
+            // Customer
+            if (albumName == Customers)
+            {
+                var name = nameof(Customer);
+                var key = SystemCustomerAttributeNames.AvatarPictureId;
+
+                // Avatars
+                var p = new FastPager<GenericAttribute>(ctx.Set<GenericAttribute>().AsNoTracking()
+                    .Where(x => x.KeyGroup == nameof(Customer) && x.Key == key));
+                while (p.ReadNextPage(x => new { x.Id, x.EntityId, x.Value }, x => x.Id, out var list))
+                {
+                    foreach (var x in list)
+                    {
+                        var id = x.Value.ToInt();
+                        if (id > 0)
+                        {
+                            yield return new MediaTrack { EntityId = x.EntityId, EntityName = name, MediaFileId = id, Property = key };
+                        }
                     }
                 }
 

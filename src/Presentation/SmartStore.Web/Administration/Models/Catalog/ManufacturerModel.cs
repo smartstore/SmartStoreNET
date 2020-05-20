@@ -58,7 +58,7 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string SeName { get; set; }
 
-        [UIHint("Media"), AdditionalMetadata("album", "brand")]
+        [UIHint("Media"), AdditionalMetadata("album", "catalog")]
         [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.Picture")]
         public int? PictureId { get; set; }
 

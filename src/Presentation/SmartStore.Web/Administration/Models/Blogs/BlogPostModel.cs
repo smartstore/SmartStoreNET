@@ -44,11 +44,11 @@ namespace SmartStore.Admin.Models.Blogs
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.PreviewDisplayType")]
         public PreviewDisplayType PreviewDisplayType { get; set; }
 
-        [UIHint("Media"), AdditionalMetadata("album", "blog")]
+        [UIHint("Media"), AdditionalMetadata("album", "content")]
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Picture")]
         public int? PictureId { get; set; }
 
-        [UIHint("Media"), AdditionalMetadata("album", "blog")]
+        [UIHint("Media"), AdditionalMetadata("album", "content")]
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.PreviewPicture")]
         public int? PreviewPictureId { get; set; }
 

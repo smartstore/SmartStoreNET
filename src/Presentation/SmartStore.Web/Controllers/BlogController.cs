@@ -103,7 +103,7 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected PictureModel PrepareBlogPostPictureModel(BlogPost blogPost, int? fileId)
         {
-            var file = _mediaService.GetFileById(fileId ?? 0);
+            var file = _mediaService.GetFileById(fileId ?? 0, MediaLoadFlags.AsNoTracking);
 
             var pictureModel = new PictureModel
             {

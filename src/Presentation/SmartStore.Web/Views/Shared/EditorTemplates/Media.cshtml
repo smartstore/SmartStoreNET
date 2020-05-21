@@ -7,86 +7,94 @@
 @using SmartStore.Utilities;
 
 @functions {
-	private bool TransientUpload
-	{
-		get
-		{
-			return GetMetadata<bool>("transientUpload");
-		}
-	}
+    private bool TransientUpload
+    {
+        get
+        {
+            return GetMetadata<bool>("transientUpload");
+        }
+    }
 
-	private bool Compact
-	{
-		get
-		{
-			return GetMetadata<bool>("compact");
-		}
-	}
+    private bool Compact
+    {
+        get
+        {
+            return GetMetadata<bool>("compact");
+        }
+    }
 
-	private string Path
-	{
-		get
-		{
-			return GetMetadata<string>("path") ?? GetMetadata<string>("album");
-		}
-	}
+    private string Path
+    {
+        get
+        {
+            return GetMetadata<string>("path") ?? GetMetadata<string>("album");
+        }
+    }
 
-	private int EntityId
-	{
-		get
-		{
-			return GetMetadata<int>("entityId");
-		}
-	}
+    private string TypeFilter
+    {
+        get
+        {
+            return GetMetadata<string>("typeFilter");
+        }
+    }
 
-	private string EntityType
-	{
-		get
-		{
-			return GetMetadata<string>("entityType");
-		}
-	}
+    private int EntityId
+    {
+        get
+        {
+            return GetMetadata<int>("entityId");
+        }
+    }
 
-	private string DeleteUrl
-	{
-		get
-		{
-			return GetMetadata<string>("deleteUrl");
-		}
-	}
+    private string EntityType
+    {
+        get
+        {
+            return GetMetadata<string>("entityType");
+        }
+    }
 
-	private string SortUrl
-	{
-		get
-		{
-			return GetMetadata<string>("sortUrl");
-		}
-	}
+    private string DeleteUrl
+    {
+        get
+        {
+            return GetMetadata<string>("deleteUrl");
+        }
+    }
 
-	private string EntityAssignmentUrl
-	{
-		get
-		{
-			return GetMetadata<string>("entityAssignmentUrl");
-		}
-	}
+    private string SortUrl
+    {
+        get
+        {
+            return GetMetadata<string>("sortUrl");
+        }
+    }
 
-	// TODO: make enum UploadType > Compact, Default, Multifile
-	private bool MultiFile
-	{
-		get
-		{
-			return GetMetadata<bool>("multifile");
-		}
-	}
+    private string EntityAssignmentUrl
+    {
+        get
+        {
+            return GetMetadata<string>("entityAssignmentUrl");
+        }
+    }
 
-	private IEnumerable<IMediaFile> UploadedFiles
-	{
-		get
-		{
-			return GetMetadata<IEnumerable<IMediaFile>>("uploadedFiles");
-		}
-	}
+    // TODO: make enum UploadType > Compact, Default, Multifile
+    private bool MultiFile
+    {
+        get
+        {
+            return GetMetadata<bool>("multifile");
+        }
+    }
+
+    private IEnumerable<IMediaFile> UploadedFiles
+    {
+        get
+        {
+            return GetMetadata<IEnumerable<IMediaFile>>("uploadedFiles");
+        }
+    }
 }
 
 @{
@@ -112,6 +120,7 @@
 		<div class="fileupload-controls">
 			@*
 				TODO: If multiupload > other MediaTypes may be have to be configured. Should be a property of this editor template.
+                TODO: (mm) take "typeFilter" into account while uploading files or opening media manager for browsing."
 			*@
 
 			@(Html.SmartStore().FileUploader()

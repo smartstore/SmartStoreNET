@@ -1492,7 +1492,7 @@ namespace SmartStore.Web.Controllers
             }
             else
             {
-                _mediaService.GetFileById(manufacturer.MediaFileId ?? 0);
+                _mediaService.GetFileById(manufacturer.MediaFileId ?? 0, MediaLoadFlags.AsNoTracking);
             }
 
 			var model = new PictureModel

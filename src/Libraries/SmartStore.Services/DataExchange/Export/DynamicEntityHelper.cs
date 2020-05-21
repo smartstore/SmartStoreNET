@@ -1510,7 +1510,7 @@ namespace SmartStore.Services.DataExchange.Export
             {
                 // Reduce traffic and do not export default avatar.
                 var fileId = genericAttributes.FirstOrDefault(x => x.Key == SystemCustomerAttributeNames.AvatarPictureId)?.Value?.ToInt() ?? 0;
-                var file = _mediaService.Value.GetFileById(fileId);
+                var file = _mediaService.Value.GetFileById(fileId, MediaLoadFlags.AsNoTracking);
                 if (file != null)
                 {
                     dynObject._AvatarPictureUrl = _mediaService.Value.GetUrl(file, new ProcessImageQuery { MaxSize = _mediaSettings.Value.AvatarPictureSize }, _services.StoreService.GetHost(ctx.Store));

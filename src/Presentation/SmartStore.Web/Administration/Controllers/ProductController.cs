@@ -2251,7 +2251,7 @@ namespace SmartStore.Admin.Controllers
 					_productService.InsertProductPicture(productPicture);
 
 					// TODO: PERF!!!
-					var media = _mediaService.GetFileById(id);
+					var media = _mediaService.GetFileById(id, MediaLoadFlags.AsNoTracking);
 
 					success = true;
 

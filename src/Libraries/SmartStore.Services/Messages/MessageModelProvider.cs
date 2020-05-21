@@ -466,7 +466,7 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(part, nameof(part));
 
 			var host = messageContext.BaseUri.ToString();
-            var logoFile = _services.MediaService.GetFileById(messageContext.Store.LogoMediaFileId);
+            var logoFile = _services.MediaService.GetFileById(messageContext.Store.LogoMediaFileId, MediaLoadFlags.AsNoTracking);
 
 			// Issue: https://github.com/smartstore/SmartStoreNET/issues/1321
 

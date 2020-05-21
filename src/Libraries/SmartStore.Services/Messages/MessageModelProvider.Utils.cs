@@ -162,14 +162,14 @@ namespace SmartStore.Services.Messages
                     var fileIds = combination.GetAssignedMediaIds();
                     if (fileIds?.Any() ?? false)
                     {
-                        file = _services.MediaService.GetFileById(fileIds[0]);
+                        file = _services.MediaService.GetFileById(fileIds[0], MediaLoadFlags.AsNoTracking);
                     }
                 }
             }
 
             if (file == null)
             {
-                file = _services.MediaService.GetFileById(product.MainPictureId ?? 0);
+                file = _services.MediaService.GetFileById(product.MainPictureId ?? 0, MediaLoadFlags.AsNoTracking);
             }
 
             if (file == null && product.Visibility == ProductVisibility.Hidden && product.ParentGroupedProductId > 0)

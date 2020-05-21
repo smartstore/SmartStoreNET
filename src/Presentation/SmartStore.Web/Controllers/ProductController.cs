@@ -537,7 +537,7 @@ namespace SmartStore.Web.Controllers
 				if (!bundleItem.Item.HideThumbnail)
 				{
                     var assignedMediaIds = m.SelectedCombination?.GetAssignedMediaIds() ?? new int[0];
-                    if (assignedMediaIds.Any() && _mediaService.GetFileById(assignedMediaIds[0]) != null)
+                    if (assignedMediaIds.Any() && _mediaService.GetFileById(assignedMediaIds[0], MediaLoadFlags.AsNoTracking) != null)
                     {
                         var file = _productService.GetProductPicturesByProductId(bundleItem.Item.ProductId, 1)
                             .Select(x => x.MediaFile)
@@ -551,7 +551,7 @@ namespace SmartStore.Web.Controllers
 			{
                 // Update associated product thumbnail.
                 var assignedMediaIds = m.SelectedCombination?.GetAssignedMediaIds() ?? new int[0];
-                if (assignedMediaIds.Any() && _mediaService.GetFileById(assignedMediaIds[0]) != null)
+                if (assignedMediaIds.Any() && _mediaService.GetFileById(assignedMediaIds[0], MediaLoadFlags.AsNoTracking) != null)
                 {
                     var file = _productService.GetProductPicturesByProductId(productId, 1)
                         .Select(x => x.MediaFile)

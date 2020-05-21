@@ -24,7 +24,7 @@ namespace SmartStore.Services.Media
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetUrl(this IMediaService service, int? fileId, ProcessImageQuery imageQuery, string host = null, bool doFallback = true)
         {
-            return service.GetUrl(service.GetFileById(fileId ?? 0), imageQuery, host, doFallback);
+            return service.GetUrl(service.GetFileById(fileId ?? 0, MediaLoadFlags.AsNoTracking), imageQuery, host, doFallback);
         }
 
         public static string GetUrl(this IMediaService service, int? fileId, int thumbnailSize, string host = null, bool doFallback = true)
@@ -33,7 +33,7 @@ namespace SmartStore.Services.Media
                 ? new ProcessImageQuery { MaxSize = thumbnailSize } 
                 : null;
             
-            return service.GetUrl(service.GetFileById(fileId ?? 0), query, host, doFallback);
+            return service.GetUrl(service.GetFileById(fileId ?? 0, MediaLoadFlags.AsNoTracking), query, host, doFallback);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

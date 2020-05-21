@@ -90,10 +90,11 @@ namespace SmartStore.Services.Media
         public string Url
         {
             get { return _url ?? (_url = _urlGenerator.GenerateUrl(this, null, string.Empty)); }
+            set { _url = value; }
         }
 
         [JsonIgnore]
-        public bool Exists => File.Id > 0;
+        public bool Exists => File?.Id > 0;
 
         public Stream OpenRead()
         {

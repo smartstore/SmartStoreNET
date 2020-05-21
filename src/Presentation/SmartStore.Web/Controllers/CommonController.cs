@@ -285,7 +285,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult Logo()
         {
             var store = Services.StoreContext.CurrentStore;
-            var logo = _mediaService.Value.GetFileById(store.LogoMediaFileId);
+            var logo = _mediaService.Value.GetFileById(store.LogoMediaFileId, MediaLoadFlags.AsNoTracking);
 
             var model = new ShopHeaderModel
             {
@@ -772,10 +772,10 @@ namespace SmartStore.Web.Controllers
 				model.StoreName = store.Name;
 				model.StoreUrl = store.Url;
 
-                var logo = _mediaService.Value.GetFileById(pdfSettings.LogoPictureId);
+                var logo = _mediaService.Value.GetFileById(pdfSettings.LogoPictureId, MediaLoadFlags.AsNoTracking);
                 if (logo == null)
                 {
-                    logo = _mediaService.Value.GetFileById(store.LogoMediaFileId);
+                    logo = _mediaService.Value.GetFileById(store.LogoMediaFileId, MediaLoadFlags.AsNoTracking);
                 }
                 if (logo != null)
                 {

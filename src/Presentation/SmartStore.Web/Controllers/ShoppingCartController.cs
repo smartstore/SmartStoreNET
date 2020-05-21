@@ -224,7 +224,7 @@ namespace SmartStore.Web.Controllers
                     var fileIds = combination.GetAssignedMediaIds();
                     if (fileIds?.Any() ?? false)
                     {
-                        file = _mediaService.GetFileById(fileIds[0]);
+                        file = _mediaService.GetFileById(fileIds[0], MediaLoadFlags.AsNoTracking);
                     }
                 }
 

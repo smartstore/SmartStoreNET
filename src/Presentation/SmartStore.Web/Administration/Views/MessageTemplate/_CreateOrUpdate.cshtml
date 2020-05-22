@@ -135,7 +135,7 @@
 	 			@Html.SmartLabelFor(model => model.Locales[item].Attachment1FileId)
 	 		</td>
 	 		<td class="adminData">
-	 			@Html.EditorFor(model => Model.Locales[item].Attachment1FileId, "Download", new { minimalMode = true })
+	 			@Html.EditorFor(model => Model.Locales[item].Attachment1FileId, "Media", new { compact = true, path = "message" })
 	 			@Html.ValidationMessageFor(model => model.Locales[item].Attachment1FileId)
 			</td>
 		 </tr>
@@ -144,7 +144,7 @@
 	 			@Html.SmartLabelFor(model => model.Locales[item].Attachment2FileId)
 			</td>
 			<td class="adminData">
-	 			@Html.EditorFor(model => Model.Locales[item].Attachment2FileId, "Download", new { minimalMode = true })
+	 			@Html.EditorFor(model => Model.Locales[item].Attachment2FileId, "Media", new { compact = true, path = "message"})
 				@Html.ValidationMessageFor(model => model.Locales[item].Attachment2FileId)
 			</td>
 		 </tr>
@@ -153,7 +153,7 @@
 	 			@Html.SmartLabelFor(model => model.Locales[item].Attachment3FileId)
 			</td>
 			<td class="adminData">
-	 			@Html.EditorFor(model => Model.Locales[item].Attachment3FileId, "Download", new { minimalMode = true })
+	 			@Html.EditorFor(model => Model.Locales[item].Attachment3FileId, "Media", new { compact = true, path = "message"})
 				@Html.ValidationMessageFor(model => model.Locales[item].Attachment3FileId)
 			</td>
 		</tr>
@@ -216,7 +216,7 @@
 	 			@Html.SmartLabelFor(model => model.Attachment1FileId)
 	 		</td>
 	 		<td class="adminData">
-	 			@Html.EditorFor(model => Model.Attachment1FileId, "Download", new { minimalMode = true })
+	 			@Html.EditorFor(model => Model.Attachment1FileId, "Media", new { compact = true, path = "message" })
 	 			@Html.ValidationMessageFor(model => model.Attachment1FileId)
 			</td>
 		</tr>
@@ -225,7 +225,7 @@
 	 			@Html.SmartLabelFor(model => model.Attachment2FileId)
 	 		</td>
 	 		<td class="adminData">
-	 			@Html.EditorFor(model => Model.Attachment2FileId, "Download", new { minimalMode = true })
+	 			@Html.EditorFor(model => Model.Attachment2FileId, "Media", new { compact = true, path = "message" })
 	 			@Html.ValidationMessageFor(model => model.Attachment2FileId)
 			</td>
 		</tr>
@@ -234,7 +234,7 @@
 	 			@Html.SmartLabelFor(model => model.Attachment3FileId)
 	 		</td>
 	 		<td class="adminData">
-	 			@Html.EditorFor(model => Model.Attachment3FileId, "Download", new { minimalMode = true })
+	 			@Html.EditorFor(model => Model.Attachment3FileId, "Media", new { compact = true, path = "message" })
 	 			@Html.ValidationMessageFor(model => model.Attachment3FileId)
 			</td>
 		</tr>

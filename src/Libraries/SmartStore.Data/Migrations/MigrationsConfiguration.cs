@@ -633,6 +633,15 @@
 
             builder.AddOrUpdate("Admin.Catalog.Products.ProductPictures.Delete.Success", "The assignment was successfully removed.", "Die Zuordnung wurde erfolgreich entfernt.");
             builder.AddOrUpdate("Admin.Catalog.Products.ProductPictures.Sort.Success", "The new order of your product images has been saved successfully.", "Die neue Anordnung Ihrer Produktbilder wurde erfolgreich gespeichert.");
+
+            builder.AddOrUpdate("Common.Entity.Customer", "Customer", "Kunde");
+            builder.AddOrUpdate("Common.Entity.ProductAttributeOption", "Product attribute options set", "Produktattribut-Options-Set");
+            builder.AddOrUpdate("Common.Entity.ProductVariantAttributeValue", "Product attribute option", "Produktattribut-Option");
+            builder.AddOrUpdate("Common.Entity.SpecificationAttributeOption", "Specification attribute option", "Spezifikationsattribut-Option");
+            builder.AddOrUpdate("Common.Entity.BlogPost", "Blog post", "Blog-Eintrag");
+            builder.AddOrUpdate("Common.Entity.NewsItem", "News item", "News");
+            builder.AddOrUpdate("Common.Entity.Download", "Download", "Download");
+            builder.AddOrUpdate("Common.Entity.MessageTemplate", "Message template", "Nachrichtenvorlage");
         }
     }
 }

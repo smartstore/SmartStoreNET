@@ -20,24 +20,63 @@
         </td>
     </tr>
     <tbody id="pnlIsDownload">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.DownloadId)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.DownloadId, new { entityId = Model.Id, entityName = nameof(Product) })
-                @Html.ValidationMessageFor(model => model.DownloadId)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.DownloadFileVersion)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.DownloadFileVersion)
-                @Html.ValidationMessageFor(model => model.DownloadFileVersion)
-            </td>
-        </tr>
+
+        @if (Model.DownloadId == null)
+        {
+            @*If there is no download yet show download template*@
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.DownloadId)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.DownloadId, new { entityId = Model.Id, entityName = nameof(Product) })
+                    @Html.ValidationMessageFor(model => model.DownloadId)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.DownloadFileVersion)
+                </td>
+                <td class="adminData">
+                    @Html.TextBoxFor(model => model.DownloadFileVersion, new { placeholder = T("Common.Download.Version.Placeholder") })
+                    @Html.ValidationMessageFor(model => model.DownloadFileVersion)
+                </td>
+            </tr>
+        }
+        else
+        {
+            // Else show file preview and make version info readonly.
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.DownloadId)
+                </td>
+                <td class="adminData">
+                    @if (!Model.CurrentDownload.UseDownloadUrl)
+                    {
+                        <div style="max-width: 150px; max-height: 150px">
+                            <a href="@Model.CurrentDownload.DownloadUrl" class="filename" title="@Model.CurrentDownload.MediaFile.Name" target="_blank">
+                                <img src="@Model.DownloadThumbUrl" class="img-fluid" />
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <a href="@Model.CurrentDownload.DownloadUrl" class="form-control-plaintext text-truncate" title="@Model.CurrentDownload.DownloadUrl" target="_blank">
+                            @Model.CurrentDownload.DownloadUrl
+                        </a>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.DownloadFileVersion)
+                </td>
+                <td class="adminData">
+                    @Html.TextBoxFor(model => model.DownloadFileVersion, new { @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.DownloadFileVersion)
+                </td>
+            </tr>
+        }
 
         @if (Model.DownloadId != null)
         {
@@ -62,12 +101,12 @@
                     @Html.SmartLabelFor(model => model.NewVersion)
                 </td>
                 <td class="adminData">
-                    @Html.EditorFor(model => model.NewVersion)
+                    @Html.TextBoxFor(model => model.NewVersion, new { placeholder = T("Common.Download.Version.Placeholder") })
                     @Html.ValidationMessageFor(model => model.NewVersion)
                 </td>
             </tr>
 
-            if(Model.DownloadVersions.Count > 1)
+            if (Model.DownloadVersions.Count > 0)
             {
                 <tr>
                     <td class="adminTitle"></td>
@@ -91,7 +130,7 @@
                                         </th>
                                         <td>
                                             <div class="form-control-plaintext text-truncate" style="min-width: 180px; max-width: 180px">
-                                                <a href="@download.DownloadUrl" class="filename" title="@download.FileName">
+                                                <a href="@download.DownloadUrl" class="filename" title="@download.FileName" target="_blank">
                                                     @download.FileName
                                                 </a>
                                             </div>
@@ -101,7 +140,7 @@
                                                 <i class="fa fa-edit"></i>
                                             </a>
                                             <a href="@Url.Action("DeleteDownloadVersion", "Product", new { downloadId = download.DownloadId, productId = Model.Id })"
-                                                class="btn btn-outline-secondary btn-to-danger btn-sm btn-icon" title="@T("Common.Download.Delete")">
+                                               class="btn btn-outline-secondary btn-to-danger btn-sm btn-icon" title="@T("Common.Download.Delete")">
                                                 <i class="far fa-trash-alt"></i>
                                             </a>
                                         </td>
@@ -260,7 +299,6 @@
         dialog.on('shown.bs.modal', function (e) {
             $(window).trigger('resize');
         })
-
     });
 </script>
 

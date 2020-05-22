@@ -89,7 +89,7 @@
 				// SingleFile: If there's no file, there's no remove button.
 				var currentFileId = fuContainer.find('.hidden').val();
 
-				if (!currentFileId || currentFileId == 0)
+				if ((!currentFileId || currentFileId == 0) || !options.showRemoveButton)
 					elRemove.hide();
 				else {
 					elRemove.show();
@@ -119,7 +119,8 @@
 
 			el.on("addedfiles", function (files) {
 				logEvent("addedfiles", files);
-				activeFiles = files.filter(file => file.accepted === true).length;
+				if (Array.isArray(files))
+					activeFiles = files.filter(file => file.accepted === true).length;
 			});
 
 			el.on("processing", function (file) {
@@ -174,7 +175,7 @@
 				logEvent("success", file, response, progress);
 
 				if (opts.maxFiles === 1) {
-					displaySingleFilePreview(response);
+					displaySingleFilePreview(response, fuContainer, options);
 				}
 				else {
 					// Multifile
@@ -204,11 +205,11 @@
 
 				if (response.length) {
 					$.each(response, function (i, value) {
-						assignableFileIds += value.fileId + ",";
+						assignableFileIds += value.id + ",";
 					});
 				}
 				else {
-					assignableFileIds += response.fileId + ",";
+					assignableFileIds += response.id + ",";
 				}
 
 				if (files.length) {
@@ -239,7 +240,7 @@
 				if (fuContainer.data("dupe-handling-type") === 1) {
 					// Update preview pic of replaced media file.
 					for (var newFile of files) {
-						var elCurrentFile = previewContainer.find(".dz-image-preview[data-media-id='" + newFile.response.fileId + "']");
+						var elCurrentFile = previewContainer.find(".dz-image-preview[data-media-id='" + newFile.response.id + "']");
 						elCurrentFile.find("img").attr("src", newFile.dataURL);
 						this.removeFile(newFile);
 					}
@@ -369,9 +370,7 @@
 						},
 						success: function (response) {
 							$.each(response.response, function (i, value) {
-
-								//var file = assignableFiles.find(x => x.id === value.MediaFileId);
-								var file = assignableFiles.find(x => x.response.fileId === value.MediaFileId);
+								var file = assignableFiles.find(x => x.response.id === value.MediaFileId);
 
 								if (!file) {
 									// Try get renamed file.
@@ -445,15 +444,16 @@
 
 			fuContainer.on("mediaselected", function (e, files) {
 				if (opts.maxFiles === 1) {
-					displaySingleFilePreview(files[0], fuContainer);
+					displaySingleFilePreview(files[0], fuContainer, options);
+
+					if (options.onMediaSelected) options.onMediaSelected.apply(this, [files[0]]);
 				}
 				else {
 					var ids = "";
 
 					files.forEach(function (file) {
 						ids += file.id + ",";
-						file.response = [];
-						file.response.fileId = file.id;
+						file.response = file;
 					});
 
 					assignFilesToEntity(files, ids);
@@ -478,7 +478,7 @@
 						previewThumb.remove();
 
 						// File must be removed from dropzone if it was added in current queue.
-						var file = el.files.find(file => file.response.fileId === mediaFileId);
+						var file = el.files.find(file => file.response.id === mediaFileId);
 						if (file)
 							el.removeFile(file);
 					}
@@ -610,15 +610,19 @@
 		}
 	}
 
-	function displaySingleFilePreview(file, fuContainer) {
+	function displaySingleFilePreview(file, fuContainer, options) {
 		//fuContainer.find('.fileupload-filename').html(file.name);
 		//fuContainer.find('.fileupload-filesize').html(this.filesize(file.size));
 		fuContainer.find('.fileupload-thumb').css('background-image', 'url("' + file.url + '")');
 
 		// TODO: .find('.hidden') doesn't seems safe. Do it better.
-		// TODO: response objects from Media>Upload & MediSelected differ [decide whether id or fileId]. 
-		fuContainer.find('.hidden').val(file.id ? file.id : file.fileId).trigger('change');
-		fuContainer.find('.remove').show();
+		if (file.downloadId)
+			fuContainer.find('.hidden').val(file.downloadId).trigger('change');
+		else
+			fuContainer.find('.hidden').val(file.id).trigger('change');
+
+		if (options.showRemoveButtonAfterUpload)
+			fuContainer.find('.remove').show();
 	}
 
 	function preCheckForDuplicates(addFileName, previewContainer) {
@@ -652,7 +656,6 @@
 
 		// Errors.
 		if (otherErrors.length > 0) {
-
 			var errorMarkUp = "";
 			for (file of errorFiles) {
 				errorMarkUp += "<div><span>" + file.name + "</span>";

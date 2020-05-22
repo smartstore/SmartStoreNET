@@ -101,7 +101,6 @@
 	var random = CommonHelper.GenerateRandomInteger();
 	var mediaService = this.CommonServices.MediaService;
 	var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
-	var fileId = Model;
 }
 
 <div class="fileupload-container@(Compact ? " compact" : "")">
@@ -111,7 +110,7 @@
 		{
 			// Single file uploads have preview images.
 			<div class="fileupload-thumb-stage">
-				<div class="fileupload-thumb" style="background-image: url('@Url.Media(fileId, mediaSettings.ProductThumbPictureSize)')">
+				<div class="fileupload-thumb" style="background-image: url('@Url.Media(Model, mediaSettings.ProductThumbPictureSize)')">
 					@Html.HiddenFor(x => x, new { @class = "hidden" })
 				</div>
 			</div>
@@ -129,11 +128,11 @@
 				.HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
 				.AcceptedFileTypes(mediaSettings.ImageTypes)
 				.ShowRemoveButton(!MultiFile && Model.HasValue) // Multifile uploads don't need a remove button
-				.ShowRemoveButtonAfterUpload(false)
+				.ShowRemoveButtonAfterUpload(true)
 				.Compact(Compact)
 				.PreviewContainerId("preview-" + random)
 				.Multifile(MultiFile)
-				.MainFileId(fileId)
+				.MainFileId(Model)
 				.UploadedFiles(UploadedFiles)
 				.EntityType("Product")
 				.EntityId(EntityId)

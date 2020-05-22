@@ -18,7 +18,7 @@
 	}
 }
 
-<div @Html.Attr("class", "dropzone-container", Model.Multifile || Model.EntityId == 0)>
+<div @Html.Attr("class", "dropzone-container", Model.Multifile)>
 
 	<div class="dropzone-target">
 		<div class="fu-message">
@@ -39,12 +39,10 @@
 			 data-sort-url="@Model.SortUrl"
 			 data-entity-id="@Model.EntityId">
 
-			@*<div class="fileupload">*@
-				<input type="hidden" id="@(Model.Id)-file" name="@(Model.Id)-file" />
-				<div class="fileupload-buttons">
-					@{ Html.RenderWidget("file_uploader"); }
-				</div>
-			@*</div>*@
+			<input type="hidden" id="@(Model.Id)-file" name="@(Model.Id)-file" />
+			<div class="fileupload-buttons">
+				@{ Html.RenderWidget("file_uploader"); }
+			</div>			
 		</div>
 
 		<a href="#" class="open-upload-summmary">
@@ -183,15 +181,18 @@
         var elUpload = $("#@Model.Id");
 
 		// Init dropzone
-		elUpload.dropzoneWrapper({
+        elUpload.dropzoneWrapper({
 			onUploading: @Html.Raw(Model.OnUploadingHandlerName.HasValue() ? Model.OnUploadingHandlerName : "null"),
 			onUploadCompleted: @Html.Raw(Model.OnUploadCompletedHandlerName.HasValue() ? Model.OnUploadCompletedHandlerName : "null"),
 			onAborted: @Html.Raw(Model.OnAbortedHandlerName.HasValue() ? Model.OnAbortedHandlerName : "null"),
 			onError: @Html.Raw(Model.OnErrorHandlerName.HasValue() ? Model.OnErrorHandlerName : "null"),
 			onFileRemove: @Html.Raw(Model.OnFileRemoveHandlerName.HasValue() ? Model.OnFileRemoveHandlerName : "null"),
             onCompleted: @Html.Raw(Model.OnCompletedHandlerName.HasValue() ? Model.OnCompletedHandlerName : "null"),
+			onMediaSelected: @Html.Raw(Model.OnMediaSelectedHandlerName.HasValue() ? Model.OnMediaSelectedHandlerName : "null"),
             maxFiles: @(Model.Multifile ? 100 : 1),
-			previewContainerId: "@(Model.Multifile ? Model.PreviewContainerId : "")"
+            previewContainerId: "@(Model.Multifile ? Model.PreviewContainerId : "")",
+            showRemoveButton: @(Model.ShowRemoveButton ? "true" : "false" ),
+			showRemoveButtonAfterUpload: @(Model.ShowRemoveButtonAfterUpload ? "true" : "false" )
         });
     });
 </script>

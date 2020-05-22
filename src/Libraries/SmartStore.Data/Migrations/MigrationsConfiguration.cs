@@ -642,6 +642,9 @@
             builder.AddOrUpdate("Common.Entity.NewsItem", "News item", "News");
             builder.AddOrUpdate("Common.Entity.Download", "Download", "Download");
             builder.AddOrUpdate("Common.Entity.MessageTemplate", "Message template", "Nachrichtenvorlage");
+            
+            builder.AddOrUpdate("Common.Download.Version.Hint", "Enter the version number in the correct format (e.g.: 1.0.0.0, 2.0 or 3.1.5).", "Geben Sie die Versionsnummer in korrektem Format an (z.B.: 1.0.0.0, 2.0 oder 3.1.5).");
+            builder.AddOrUpdate("Common.Download.Version.Placeholder", "e.g.: 1.0.0.0, 2.0 or 3.1.5", "z.B.: 1.0.0.0, 2.0 oder 3.1.5");
         }
     }
 }

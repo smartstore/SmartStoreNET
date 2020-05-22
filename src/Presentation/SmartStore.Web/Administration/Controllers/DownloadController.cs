@@ -14,10 +14,17 @@ namespace SmartStore.Admin.Controllers
 		private const string DOWNLOAD_TEMPLATE = "~/Administration/Views/Shared/EditorTemplates/Download.cshtml";
 		
 		private readonly IDownloadService _downloadService;
+        private readonly IMediaService _mediaService;
+        private readonly MediaSettings _mediaSettings;
 
-        public DownloadController(IDownloadService downloadService)
+        public DownloadController(
+            IDownloadService downloadService,
+            IMediaService mediaService,
+            MediaSettings mediaSettings)
         {
             _downloadService = downloadService;
+            _mediaService = mediaService;
+            _mediaSettings = mediaSettings;
         }
 
         [Permission(Permissions.Media.Download.Read)]
@@ -76,6 +83,33 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateInput(false)]
+        [Permission(Permissions.Media.Download.Create)]
+        public ActionResult CreateDownloadFromMediaFile(int mediaFileId, int entityId = 0, string entityName = "")
+        {
+            var download = new Download
+            {
+                EntityId = entityId,
+                EntityName = entityName,
+                MediaFileId = mediaFileId,
+                DownloadGuid = Guid.NewGuid(),
+                UseDownloadUrl = false,
+                IsTransient = true,
+                UpdatedOnUtc = DateTime.UtcNow
+            };
+
+            _downloadService.InsertDownload(download);
+
+            return Json(new
+            {
+                success = true,
+                downloadId = download.Id,
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+        [HttpPost]
         [Permission(Permissions.Media.Download.Create)]
         public ActionResult AsyncUpload(string clientCtrlId, bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
         {
@@ -102,7 +136,9 @@ namespace SmartStore.Admin.Controllers
                 success = true,
                 clientCtrlId = clientCtrlId,
                 downloadId = download.Id,
-				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, download.Id, new { minimalMode, fieldName, entityId, entityName })
+                id = download.MediaFileId,
+                url = _mediaService.GetUrl(download.MediaFileId, _mediaSettings.ProductThumbPictureSize, host: string.Empty),
+                html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, download.Id, new { minimalMode, fieldName, entityId, entityName })
             });
         }
 
@@ -149,9 +185,9 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Media.Download.Delete)]
         public ActionResult DeleteDownload(bool minimalMode = false, string fieldName = null)
 		{
-			// We don't actually delete here. We just return the editor in it's init state.
-			// So the download entity can be set to transient state and deleted later by a scheduled task.
-			return Json(new
+            // We don't actually delete here. We just return the editor in it's init state.
+            // So the download entity can be set to transient state and deleted later by a scheduled task.
+            return Json(new
 			{
 				success = true,
 				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, null, new { minimalMode, fieldName }),

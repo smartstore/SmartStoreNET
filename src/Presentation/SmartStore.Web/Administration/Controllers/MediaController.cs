@@ -61,7 +61,7 @@ namespace SmartStore.Admin.Controllers
                     result.Add(new 
                     {
                         success = true,
-                        fileId = mediaFile.Id,
+                        id = mediaFile.Id,
                         path = mediaFile.Path,
                         url = _mediaService.GetUrl(mediaFile, _mediaSettings.ProductThumbPictureSize, host: string.Empty)
                     });
@@ -82,7 +82,7 @@ namespace SmartStore.Admin.Controllers
                         _mediaService.CheckUniqueFileName(filePath, out string newPath);
 
                         resultParams.newPath = newPath;
-                        resultParams.fileId = dupe.Id;
+                        resultParams.id = dupe.Id;
                         resultParams.url = _mediaService.GetUrl(dupe, _mediaSettings.ProductThumbPictureSize, host: string.Empty);
                         resultParams.date = dupe.CreatedOn.ToString();
                         resultParams.dimensions = dupe.Dimensions.Width + " x " + dupe.Dimensions.Height;

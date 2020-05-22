@@ -36,6 +36,7 @@ namespace SmartStore.Web.Framework.UI
 
 		public string UploadText { get; set; }
 		public bool ShowRemoveButton { get; set; }
+		public bool ShowRemoveButtonAfterUpload { get; set; }
 		public bool Compact { get; set; }
 
 		public bool Multifile { get; set; }
@@ -53,5 +54,6 @@ namespace SmartStore.Web.Framework.UI
 		public string OnFileRemoveHandlerName { get; set; }
 		public string OnAbortedHandlerName { get; set; }
 		public string OnCompletedHandlerName { get; set; }
+		public string OnMediaSelectedHandlerName { get; set; }
 	}
 }

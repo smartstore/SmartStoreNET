@@ -78,8 +78,8 @@ namespace SmartStore.Services.Media
 				if (downloads.Any())
 				{
 					var idsOrderedByVersion = downloads
-						.Select(x => new { x.Id, Version = new SemanticVersion(x.FileVersion.HasValue() ? x.FileVersion : "1.0.0.0") })
-						.OrderBy(x => x.Version)
+                        .Select(x => new { x.Id, Version = new SemanticVersion(x.FileVersion.HasValue() ? x.FileVersion : "1.0.0.0") })
+                        .OrderByDescending(x => x.Version)
 						.Select(x => x.Id);
 
 					downloads = new List<Download>(downloads.OrderBySequence(idsOrderedByVersion));

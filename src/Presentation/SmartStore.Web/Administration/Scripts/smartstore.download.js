@@ -59,7 +59,7 @@
 				var hasVal = !!(txt.val()) && txt.val() != txt.data('value');
 				var btn = txt.parent().find('.save-download-url');
 				if (hasVal)
-					btn.removeClass('disabled')
+					btn.removeClass('disabled');
 				else
 					btn.addClass('disabled');
 

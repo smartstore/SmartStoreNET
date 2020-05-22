@@ -107,6 +107,10 @@
 		}
 	}
 
+	&.hide {
+		display: none;
+	}
+
 	.dropzone {
 		border: none;
 		background: none;

@@ -274,7 +274,7 @@ namespace SmartStore.Admin.Controllers
             var p = product;
             var m = model;
 
-            p.IsDownload = m.IsDownload;
+			p.IsDownload = m.IsDownload;
             //p.DownloadId = m.DownloadId ?? 0;
             p.UnlimitedDownloads = m.UnlimitedDownloads;
             p.MaxNumberOfDownloads = m.MaxNumberOfDownloads;
@@ -300,7 +300,7 @@ namespace SmartStore.Admin.Controllers
                 var download = _downloadService.GetDownloadsFor(p).FirstOrDefault();
                 if (download != null)
                 {
-                    download.FileVersion = new SemanticVersion(m.DownloadFileVersion).ToString();
+                    download.FileVersion = m.DownloadFileVersion;
                     download.EntityId = p.Id;
                     download.IsTransient = false;
 
@@ -543,20 +543,29 @@ namespace SmartStore.Admin.Controllers
 					model.ProductUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, Request.Url.Scheme);
 				}
 
-                // Downloads.
-                model.DownloadVersions = _downloadService.GetDownloadsFor(product)
-                    .Select(x => new DownloadVersion
+				// Downloads.
+				var productDownloads = _downloadService.GetDownloadsFor(product);
+
+				model.DownloadVersions = productDownloads
+					.Select(x => new DownloadVersion
                     {
                         FileVersion = x.FileVersion,
                         DownloadId = x.Id,
-                        FileName = x.MediaFile?.Name,
-                        DownloadUrl = Url.Action("DownloadFile", "Download", new { downloadId = x.Id })
+                        FileName = x.UseDownloadUrl ? x.DownloadUrl : x.MediaFile?.Name,
+                        DownloadUrl = x.UseDownloadUrl ? x.DownloadUrl : Url.Action("DownloadFile", "Download", new { downloadId = x.Id })
                     })
-                    .ToList();
+					.ToList();
 
-                var currentDownload = _downloadService.GetDownloadsFor(product).FirstOrDefault();
+                var currentDownload = productDownloads.FirstOrDefault();
 
                 model.DownloadId = currentDownload?.Id;
+				model.CurrentDownload = currentDownload;
+				if (currentDownload != null && currentDownload.MediaFile != null)
+				{
+					model.DownloadThumbUrl = _mediaService.GetUrl(currentDownload.MediaFile.Id, _mediaSettings.CartThumbPictureSize, null, true);
+					currentDownload.DownloadUrl = Url.Action("DownloadFile", "Download", new { downloadId = currentDownload.Id });
+				}
+				
                 model.DownloadFileVersion = (currentDownload?.FileVersion).EmptyNull();
 
                 // Media files.
@@ -1236,9 +1245,21 @@ namespace SmartStore.Admin.Controllers
                 {
                     ModelState.AddModelError("FileVersion", T("Admin.Catalog.Products.Download.SemanticVersion.NotValid"));
                 }
-            } 
+            }
 
-            if (ModelState.IsValid)
+			if (model.NewVersion.HasValue() && model.NewVersionDownloadId != null)
+			{
+				try
+				{
+					var test = new SemanticVersion(model.NewVersion).ToString();
+				}
+				catch
+				{
+					ModelState.AddModelError("FileVersion", T("Admin.Catalog.Products.Download.SemanticVersion.NotValid"));
+				}
+			}
+
+			if (ModelState.IsValid)
             {
 				MapModelToProduct(model, product, form, out var nameChanged);
 				UpdateDataOfExistingProduct(product, model, true, nameChanged);
@@ -1250,6 +1271,24 @@ namespace SmartStore.Admin.Controllers
                 NotifySuccess(T("Admin.Catalog.Products.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = product.Id }) : RedirectToAction("List");
             }
+			else
+			{
+				// Remove uploaded Download
+				if (model.DownloadId != null)
+				{
+					var currentDownload = _downloadService.GetDownloadById((int)model.DownloadId);
+					_downloadService.DeleteDownload(currentDownload);
+				}
+				else if (model.NewVersionDownloadId != null)
+				{
+					var currentDownload = _downloadService.GetDownloadById((int)model.NewVersionDownloadId);
+					_downloadService.DeleteDownload(currentDownload);
+				}
+				else if (model.SampleDownloadId != null) {
+					var currentDownload = _downloadService.GetDownloadById((int)model.SampleDownloadId);
+					_downloadService.DeleteDownload(currentDownload);
+				}
+			}
 
             // If we got this far, something failed, redisplay form.
 			PrepareProductModel(model, product, false, true);

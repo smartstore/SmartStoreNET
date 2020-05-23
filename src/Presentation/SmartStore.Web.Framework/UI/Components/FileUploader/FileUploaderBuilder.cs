@@ -55,6 +55,12 @@ namespace SmartStore.Web.Framework.UI
 			return this;
 		}
 
+		public FileUploaderBuilder<TModel> TypeFilter(string value)
+		{
+			base.Component.TypeFilter = value;
+			return this;
+		}
+
 		public FileUploaderBuilder<TModel> PreviewContainerId(string value)
 		{
 			base.Component.PreviewContainerId = value;

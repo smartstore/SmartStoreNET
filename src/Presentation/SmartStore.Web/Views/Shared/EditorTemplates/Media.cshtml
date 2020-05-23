@@ -126,6 +126,7 @@
 				.UploadUrl(Url.Action("Upload", "Media", new { isTransient = TransientUpload, path = Path, area = "Admin" }))
 				.Path(Path)
 				.HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
+                .TypeFilter(TypeFilter)
 				.AcceptedFileTypes(mediaSettings.ImageTypes)
 				.ShowRemoveButton(!MultiFile && Model.HasValue) // Multifile uploads don't need a remove button
 				.ShowRemoveButtonAfterUpload(true)

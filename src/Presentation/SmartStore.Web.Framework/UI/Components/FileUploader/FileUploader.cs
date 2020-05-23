@@ -40,6 +40,7 @@ namespace SmartStore.Web.Framework.UI
 		public bool Compact { get; set; }
 
 		public bool Multifile { get; set; }
+		public string TypeFilter { get; set; }
 		public string PreviewContainerId { get; set; }
 		public int? MainFileId { get; set; }
 		public string EntityType { get; set; }

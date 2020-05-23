@@ -36,7 +36,7 @@ namespace SmartStore.Web.Infrastructure
 
 			#region V3 Media legacy routes
 
-			// TODO: (mm) reroute legacy URLs 'media/image/234/file.png' > 'media/product/234/path/to/file.png'; 
+			// TODO: (mm) reroute legacy URLs 'media/image/234/file.png' > 'media/catalog/234/path/to/file.png'; 
 			
 			//// Match URL pattern /{pub}/image/{id}/{path}[?{query}], e.g. '/media/image/234/myproduct.png?size=250' 
 			//SmartUrlRoutingModule.RegisterRoutablePath(@"/{0}image/([1-9]\d*|0)/.*?$".FormatInvariant(mediaPublicPath), "GET|HEAD");

@@ -1076,43 +1076,22 @@ namespace SmartStore
         }
 
         [DebuggerStepThrough]
-        public static string ToValidFileName(this string input, string replacement = "-")
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static string ToValidFileName(this string input, string replacement = "-")
         {
-            return input.ToValidPathInternal(false, replacement);
-        }
+			return string.Join(
+				replacement ?? "-",
+				input.ToSafe().Split(Path.GetInvalidFileNameChars()));
+		}
 
         [DebuggerStepThrough]
-        public static string ToValidPath(this string input, string replacement = "-")
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static string ToValidPath(this string input, string replacement = "-")
         {
-            return input.ToValidPathInternal(true, replacement);
-        }
-
-        private static string ToValidPathInternal(this string input, bool isPath, string replacement)
-        {
-            if ((input?.Length ?? 0) == 0)
-            {
-                return string.Empty;
-            }
-
-            var invalidChars = new HashSet<char>(isPath ? Path.GetInvalidPathChars() : Path.GetInvalidFileNameChars());
-
-			replacement = replacement ?? "-";
-
-			var sb = new StringBuilder(input.Length);
-			foreach (var c in input.ToSafe())
-			{
-				if (invalidChars.Contains(c))
-				{
-					sb.Append(replacement);
-				}
-				else
-				{
-					sb.Append(c);
-				}
-			}
-
-			return sb.ToString();
-        }
+			return string.Join(
+				replacement ?? "-",
+				input.ToSafe().Split(Path.GetInvalidPathChars()));
+		}
 
 		[DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -127,7 +127,7 @@ namespace SmartStore.Core.Data.Hooks
 					continue;
 				}
 
-				var hooks = GetSaveHookInstancesFor(e, HookStage.PostSave, importantHooksOnly);
+				var hooks = GetSaveHookInstancesFor(e, HookStage.PostSave, importantHooksOnly).ToList();
 				
 				foreach (var hook in hooks)
 				{

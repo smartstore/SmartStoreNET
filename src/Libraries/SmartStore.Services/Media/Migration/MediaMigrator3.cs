@@ -25,9 +25,21 @@ namespace SmartStore.Services.Media.Migration
             var setFolders = _db.Set<MediaFolder>();
 
             // Insert new Albums: Catalog & Content
-            var catalogAlbum = new MediaAlbum { Name = SystemAlbumProvider.Catalog, ResKey = "Admin.Catalog", CanDetectTracks = true, Order = int.MinValue };
-            var contentAlbum = new MediaAlbum { Name = SystemAlbumProvider.Content, ResKey = "Admin.Media.Album.Content", CanDetectTracks = true, Order = int.MinValue + 10 };
-            setFolders.AddRange(new[] { catalogAlbum, contentAlbum });
+            // Entity has an unique index of ParentId and Name.
+            var catalogAlbum = setFolders.FirstOrDefault(x => x.ParentId == null && x.Name == SystemAlbumProvider.Catalog) as MediaAlbum;
+            if (catalogAlbum == null)
+            {
+                catalogAlbum = new MediaAlbum { Name = SystemAlbumProvider.Catalog, ResKey = "Admin.Catalog", CanDetectTracks = true, Order = int.MinValue };
+                setFolders.Add(catalogAlbum);
+            }
+
+            var contentAlbum = setFolders.FirstOrDefault(x => x.ParentId == null && x.Name == SystemAlbumProvider.Content) as MediaAlbum;
+            if (contentAlbum == null)
+            {
+                contentAlbum = new MediaAlbum { Name = SystemAlbumProvider.Content, ResKey = "Admin.Media.Album.Content", CanDetectTracks = true, Order = int.MinValue + 10 };
+                setFolders.Add(contentAlbum);
+            }
+
             _db.SaveChanges();
 
             // Load all db albums into a dictionary (Key = AlbumName)
@@ -56,11 +68,13 @@ namespace SmartStore.Services.Media.Migration
             _db.ExecuteSqlCommand($"UPDATE [MediaFile] SET [FolderId] = {contentAlbum.Id} WHERE ([FolderId] IS NULL)");
 
             // Delete all obsolete albums
-            setFolders.RemoveRange(new[] 
-            { 
-                GetAlbum("product"), GetAlbum("category"), GetAlbum("brand"), 
-                GetAlbum("blog"), GetAlbum("news"), GetAlbum("forum") 
-            });
+            var namesToDelete = new[] { "product", "category", "brand", "blog", "news", "forum" };
+            var toDelete = albums
+                .Select(x => x.Value)
+                .Where(x => namesToDelete.Contains(x.Name))
+                .ToList();
+            setFolders.RemoveRange(toDelete);
+
             _db.SaveChanges();
 
             MediaAlbum GetAlbum(string name)

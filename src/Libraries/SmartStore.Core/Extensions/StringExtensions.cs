@@ -1089,6 +1089,11 @@ namespace SmartStore
 
         private static string ToValidPathInternal(this string input, bool isPath, string replacement)
         {
+            if ((input?.Length ?? 0) == 0)
+            {
+                return string.Empty;
+            }
+
             var invalidChars = new HashSet<char>(isPath ? Path.GetInvalidPathChars() : Path.GetInvalidFileNameChars());
 
 			replacement = replacement ?? "-";

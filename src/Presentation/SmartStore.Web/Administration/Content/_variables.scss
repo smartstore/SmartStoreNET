@@ -241,10 +241,14 @@ $custom-range-thumb-active-bg:              lighten($primary, 20%);
 
 // Dashboard
 $chart-color-danger: lighten($danger, 40%);
+$chart-color-danger-dark: lighten($danger, 15%);
 $chart-color-danger-light: lighten($danger, 55%);
 $chart-color-warning: lighten($warning, 25%);
+$chart-color-warning-dark: lighten($warning, 10%);
 $chart-color-warning-light: lighten($warning, 40%);
 $chart-color-success: lighten($success, 50%);
+$chart-color-success-dark: lighten($success, 10%);
 $chart-color-success-light: lighten($success, 65%);
 $chart-color-primary: lighten($primary, 35%);
+$chart-color-primary-dark: lighten($primary, 15%);
 $chart-color-primary-light: lighten($primary, 50%);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
@@ -1379,17 +1378,11 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Customer.Read, false)]
         public ActionResult TopCustomersDashboardReport()
         {
-            var watch = new Stopwatch();
-            watch.Start();
-
             var model = new TopCustomersDashboardReportModel
             {
                 TopCustomersByAmount = CreateCustomerReportLineModel(_customerReportService.GetTopCustomersReport(null, null, null, null, null, 1, 7)),
                 TopCustomersByQuantity = CreateCustomerReportLineModel(_customerReportService.GetTopCustomersReport(null, null, null, null, null, 2, 7))
             };
-
-            watch.Stop();
-            Debug.WriteLine("TopCustomersDashboardReport >>> " + watch.ElapsedMilliseconds);
 
             return PartialView(model);
         }
@@ -1402,7 +1395,11 @@ namespace SmartStore.Admin.Controllers
             return PartialView(model);
         }
 
-
+        /// <summary>
+        /// Sorts customer registration dataPoint into customer chart report accordingly to period 
+        /// </summary>
+        /// <param name="reports">Registrations chart report</param>
+        /// <param name="dataPoint">Current registration data</param>
         [NonAction]
         public void SetCustomerReportData(List<DashboardChartReportModel> reports, DateTime dataPoint)
         {
@@ -1474,11 +1471,12 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
+        /// <summary>
+        /// Evaluates and displays customer registrations of this year as line chart
+        /// </summary>
+        /// <returns>Customers registrations chart</returns>
         public ActionResult RegisteredCustomersDashboardReport()
         {
-            var watch = new Stopwatch();
-            watch.Start();
-
             // Get customers of at least last 28 days (if year is younger)
             var beginningOfYear = new DateTime(DateTime.UtcNow.Year, 1, 1);
             var startDate = (DateTime.UtcNow.Date - beginningOfYear).Days < 28 ? DateTime.UtcNow.AddDays(-27).Date : beginningOfYear;
@@ -1504,6 +1502,7 @@ namespace SmartStore.Admin.Controllers
                 new DashboardChartReportModel(1, 12)
             };
 
+            // Sort data for chart display
             foreach (var dataPoint in customerDates)
             {
                 SetCustomerReportData(model, _dateTimeHelper.ConvertToUserTime(dataPoint, DateTimeKind.Utc));
@@ -1557,14 +1556,14 @@ namespace SmartStore.Admin.Controllers
             {
                 // Get registration count for day before
                 model[1].TotalAmount,
-                customerDates.Where(
-                    x => x >= DateTime.UtcNow.Date.AddDays(-2) && x < DateTime.UtcNow.Date.AddDays(-1))
-                .Count(),
+                customerDates.Where( x =>
+                    x >= DateTime.UtcNow.Date.AddDays(-2) && x < DateTime.UtcNow.Date.AddDays(-1)
+                ).Count(),
 
                 // Get registration count for week before
-                customerDates.Where(
-                    x => x >= DateTime.UtcNow.Date.AddDays(-14) && x < DateTime.UtcNow.Date.AddDays(-7))
-                .Count(),
+                customerDates.Where( x =>
+                    x >= DateTime.UtcNow.Date.AddDays(-14) && x < DateTime.UtcNow.Date.AddDays(-7)
+                ).Count(),
 
                 // Get registration count for month before
                 _customerReportService.GetCustomerRegistrations(beginningOfYear.AddDays(-56), DateTime.UtcNow.Date.AddDays(-28)),
@@ -1576,12 +1575,10 @@ namespace SmartStore.Admin.Controllers
             // Format percentage value
             for (int i = 0; i < model.Count; i++)
             {
-                model[i].PercentageDelta = model[i].TotalAmount <= 0 ?
-                    0 : sumBefore[i] <= 0 ? 100 : (int)Math.Round(model[i].TotalAmount / sumBefore[i] * 100 - 100);
+                model[i].PercentageDelta = model[i].TotalAmount <= 0 ? 0
+                    : sumBefore[i] <= 0 ? 100
+                    : (int)Math.Round(model[i].TotalAmount / sumBefore[i] * 100 - 100);
             }
-
-            watch.Stop();
-            Debug.WriteLine("RegistredCustomersDashboardReport >>> " + watch.ElapsedMilliseconds);
 
             return PartialView(model);
         }

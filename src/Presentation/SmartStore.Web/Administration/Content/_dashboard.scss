@@ -3,7 +3,7 @@
 /// <reference path="../../Content/shared/_mixins.scss" />
 /// <reference path="../../Content/bs4/scss/bootstrap.scss" />
 
-:root {
+.chart-colors {
     --chart-color-danger: #{$chart-color-danger};
     --chart-color-warning: #{$chart-color-warning};
     --chart-color-success: #{$chart-color-success};
@@ -12,6 +12,10 @@
     --chart-color-warning-light: #{$chart-color-warning-light};
     --chart-color-success-light: #{$chart-color-success-light};
     --chart-color-primary-light: #{$chart-color-primary-light};
+    --chart-color-danger-dark: #{$chart-color-danger-dark};
+    --chart-color-warning-dark: #{$chart-color-warning-dark};
+    --chart-color-success-dark: #{$chart-color-success-dark};
+    --chart-color-primary-dark: #{$chart-color-primary-dark};
 }
 
 .dashboard-grid {

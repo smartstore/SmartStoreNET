@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Store;
@@ -11,6 +10,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Search;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -30,6 +30,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IOrderService _orderService;
         private readonly IMediaService _mediaService;
         private readonly IShoppingCartService _shoppingCartService;
+        private readonly ICatalogSearchService _catalogSearchService;
 
         public StoreController(
             ICurrencyService currencyService,
@@ -40,7 +41,8 @@ namespace SmartStore.Admin.Controllers
             ICustomerService customerService,
             IOrderService orderService,
             IMediaService mediaService,
-            IShoppingCartService shoppingCartService)
+            IShoppingCartService shoppingCartService,
+            ICatalogSearchService catalogSearchService)
         {
             _currencyService = currencyService;
             _productService = productService;
@@ -52,6 +54,7 @@ namespace SmartStore.Admin.Controllers
             _orderService = orderService;
             _mediaService = mediaService;
             _shoppingCartService = shoppingCartService;
+            _catalogSearchService = catalogSearchService;
         }
 
         private void PrepareStoreModel(StoreModel model, Store store)
@@ -246,15 +249,12 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Configuration.Store.ReadStats, false)]
         public JsonResult StoreDashboardReport()
         {
-            var watch = new Stopwatch();
-            watch.Start();
-
             var allOrders = _orderService.GetOrders(0, 0, null, null, null, null, null, null, null);
-            var registeredRoleId = _customerService.GetCustomerRoleBySystemName("Registered").Id;            
+            var registeredRoleId = _customerService.GetCustomerRoleBySystemName("Registered").Id;
             var model = new StoreDashboardReportModel
             {
-                ProductsCount = _productService.CountAllProducts().ToString("N0"),
-                CategoriesCount = _categoryService.CountAllCategories().ToString("N0"),
+                ProductsCount = _catalogSearchService.PrepareQuery(new CatalogSearchQuery()).Count().ToString("N0"),
+                CategoriesCount = _categoryService.BuildCategoriesQuery(showHidden: true).Count().ToString("N0"),
                 ManufacturersCount = _manufacturerService.GetManufacturers().Count().ToString("N0"),
                 AttributesCount = _productAttributeService.GetAllProductAttributes(0, int.MaxValue).TotalCount.ToString("N0"),
                 AttributeCombinationsCount = _productService.CountAllProductVariants().ToString("N0"),
@@ -272,9 +272,6 @@ namespace SmartStore.Admin.Controllers
                 CartsValue = _shoppingCartService.GetAllOpenCartSubTotal().ToString("C0"),
                 WishlistsValue = _shoppingCartService.GetAllOpenWishlistSubTotal().ToString("C0")
             };
-
-            watch.Stop();
-            Debug.WriteLine("StoreDashboardReport >>> " + watch.ElapsedMilliseconds);
 
             return new JsonResult
             {

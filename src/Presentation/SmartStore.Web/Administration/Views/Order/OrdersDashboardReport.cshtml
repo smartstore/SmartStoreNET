@@ -7,7 +7,7 @@
     Html.AddScriptParts(true, "~/Administration/Scripts/admin.dashboard.js");
 }
 
-<div class="report" id="orders-report" data-chart="@jsonData">
+<div class="report chart-colors" id="orders-report">
     <div class="report-title-row">
         <div class="report-title pr-3">@T("Admin.Orders")</div>
         <div class="pl-1 fs-h5 pr-3">
@@ -47,12 +47,13 @@
 
 <script>
     $(function () {
-        createOrdersChart(
+        SmartStore.Admin.Charts.Create.OrdersChart(
+        @Html.Raw(jsonData),
             '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled")',
             '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending")',
             '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing")',
             '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")',
             '@T("Admin.Orders")'
-        )
+        );
     });
 </script>

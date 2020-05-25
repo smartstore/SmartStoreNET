@@ -7,7 +7,7 @@
     Html.AddScriptParts(true, "~/Administration/Scripts/admin.dashboard.js");
 }
 
-<div class="report" id="customers-report" data-chart="@jsonData">
+<div class="report chart-colors" id="customers-report">
     <div class="report-title-row">
         <div class="report-title pr-3">@T("Admin.Report.CustomerRegistrations")</div>
 
@@ -49,6 +49,10 @@
 
 <script>
     $(function () {
-        createCustomersChart('@T("Admin.Report.CustomerRegistrations")', '@T("Admin.Report.Registrations")');
+        SmartStore.Admin.Charts.Create.CustomersChart(
+        @Html.Raw(jsonData),
+            '@T("Admin.Report.CustomerRegistrations")',
+            '@T("Admin.Report.Registrations")'
+        );
     });
 </script>

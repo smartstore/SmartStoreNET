@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -2526,68 +2525,13 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Order.Read, false)]
         public ActionResult BestsellersDashboardReport()
         {
-            var watch = new Stopwatch();
-            watch.Start();
-
             var model = new BestsellersDashboardReportModel
             {
                 BestsellersByQuantity = GetBestsellersBriefReportModel(7, 1),
                 BestsellersByAmount = GetBestsellersBriefReportModel(7, 2)
             };
 
-            watch.Stop();
-            Debug.WriteLine("BestsellersDashboardReport >>> " + watch.ElapsedMilliseconds);
-
             return PartialView(model);
-        }
-
-
-        [Permission(Permissions.Order.Read, false)]
-        public ActionResult BestsellersBriefReportByQuantity()
-        {
-            var model = GetBestsellersBriefReportModel(5, 1);
-            return PartialView(model);
-        }
-
-        [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Order.Read)]
-        public ActionResult BestsellersBriefReportByQuantityList(GridCommand command)
-        {
-            var model = GetBestsellersBriefReportModel(5, 1);
-            var gridModel = new GridModel<BestsellersReportLineModel>
-            {
-                Data = model,
-                Total = model.Count
-            };
-
-            return new JsonResult
-            {
-                Data = gridModel
-            };
-        }
-
-        [Permission(Permissions.Order.Read, false)]
-        public ActionResult BestsellersBriefReportByAmount()
-        {
-            var model = GetBestsellersBriefReportModel(5, 2);
-            return PartialView(model);
-        }
-
-        [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Order.Read)]
-        public ActionResult BestsellersBriefReportByAmountList(GridCommand command)
-        {
-            var model = GetBestsellersBriefReportModel(5, 2);
-            var gridModel = new GridModel<BestsellersReportLineModel>
-            {
-                Data = model,
-                Total = model.Count
-            };
-
-            return new JsonResult
-            {
-                Data = gridModel
-            };
         }
 
         [Permission(Permissions.Order.Read)]
@@ -2697,79 +2641,6 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        [HttpPost]
-        [Permission(Permissions.Order.Read)]
-        public ActionResult PendingTodayReport()
-        {
-            var report = _orderReportService.OrderAverageReport(0, OrderStatus.Pending);
-            var data = new
-            {
-                Count = report.CountTodayOrders,
-                Amount = _priceFormatter.FormatPrice(report.SumTodayOrders, true, false)
-            };
-
-            return Json(data/*, JsonRequestBehavior.AllowGet*/);
-        }
-
-        [NonAction]
-        protected virtual IList<OrderAverageReportLineSummaryModel> GetOrderAverageReportModel()
-        {
-            var report = new List<OrderAverageReportLineSummary>
-            {
-                _orderReportService.OrderAverageReport(0, OrderStatus.Pending),
-                _orderReportService.OrderAverageReport(0, OrderStatus.Processing),
-                _orderReportService.OrderAverageReport(0, OrderStatus.Complete),
-                _orderReportService.OrderAverageReport(0, OrderStatus.Cancelled)
-            };
-
-            var model = report.Select(x =>
-            {
-                return new OrderAverageReportLineSummaryModel
-                {
-                    OrderStatus = x.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
-                    CountTodayOrders = x.CountTodayOrders,
-                    SumTodayOrders = _priceFormatter.FormatPrice(x.SumTodayOrders, true, false),
-                    SumThisWeekOrders = _priceFormatter.FormatPrice(x.SumThisWeekOrders, true, false),
-                    SumThisMonthOrders = _priceFormatter.FormatPrice(x.SumThisMonthOrders, true, false),
-                    SumThisYearOrders = _priceFormatter.FormatPrice(x.SumThisYearOrders, true, false),
-                    SumAllTimeOrders = _priceFormatter.FormatPrice(x.SumAllTimeOrders, true, false),
-                    SumTodayOrdersRaw = x.SumTodayOrders,
-                    SumThisWeekOrdersRaw = x.SumThisWeekOrders,
-                    SumThisMonthOrdersRaw = x.SumThisMonthOrders,
-                    SumThisYearOrdersRaw = x.SumThisYearOrders,
-                    SumAllTimeOrdersRaw = x.SumAllTimeOrders,
-                    Url = Url.Action("List", "Order", new { OrderStatusIds = (int)x.OrderStatus })
-                };
-            }).ToList();
-
-            return model;
-        }
-
-        [ChildActionOnly]
-        [Permission(Permissions.Order.Read, false)]
-        public ActionResult OrderAverageReport()
-        {
-            var model = GetOrderAverageReportModel();
-            return PartialView(model);
-        }
-
-        [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Order.Read)]
-        public ActionResult OrderAverageReportList(GridCommand command)
-        {
-            var model = GetOrderAverageReportModel();
-            var gridModel = new GridModel<OrderAverageReportLineSummaryModel>
-            {
-                Data = model,
-                Total = model.Count
-            };
-
-            return new JsonResult
-            {
-                Data = gridModel
-            };
-        }
-
         [NonAction]
         protected void IncompleteOrdersReportAddData(OrderDataPoint dataPoint, List<OrdersIncompleteDashboardReportModel> reports, int dataIndex)
         {
@@ -2826,9 +2697,6 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Order.Read, false)]
         public ActionResult OrdersIncompleteDashboardReport()
         {
-            var watch = new Stopwatch();
-            watch.Start();
-
             var model = new List<OrdersIncompleteDashboardReportModel>()
             {
                 // Today = index 0
@@ -2903,18 +2771,12 @@ namespace SmartStore.Admin.Controllers
                 }
             }
 
-            watch.Stop();
-            Debug.WriteLine("OrdersIncompleteDashboardReport >>> " + watch.ElapsedMilliseconds);
-
             return PartialView(model);
         }
 
         [Permission(Permissions.Order.Read, false)]
         public ActionResult LatestOrdersDashboardReport()
         {
-            var watch = new Stopwatch();
-            watch.Start();
-
             var model = new LatestOrdersDashboardReportModel();
             var latestOrders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, 7).ToList();
             foreach (var order in latestOrders)
@@ -2930,9 +2792,6 @@ namespace SmartStore.Admin.Controllers
                         order.Id)
                     );
             }
-
-            watch.Stop();
-            Debug.WriteLine("LatestOrdersDashboardReport >>> " + watch.ElapsedMilliseconds);
 
             return PartialView(model);
         }
@@ -3025,9 +2884,6 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Order.Read, false)]
         public ActionResult OrdersDashboardReport()
         {
-            var watch = new Stopwatch();
-            watch.Start();
-
             // Get orders of at least last 28 days (if year is younger)
             var beginningOfYear = new DateTime(DateTime.UtcNow.Year, 1, 1);
             var startDate = (DateTime.UtcNow.Date - beginningOfYear).Days < 28 ? DateTime.UtcNow.AddDays(-27).Date : beginningOfYear;
@@ -3104,14 +2960,14 @@ namespace SmartStore.Admin.Controllers
                 model[1].TotalAmount,
                 
                 // Get orders count for day before yesterday
-                orderDataPoints.Where(
-                    x => x.CreatedOn >= DateTime.UtcNow.Date.AddDays(-2) && x.CreatedOn < DateTime.UtcNow.Date.AddDays(-1))
-                .Sum(x => x.OrderTotal),
+                orderDataPoints.Where( x => 
+                    x.CreatedOn >= DateTime.UtcNow.Date.AddDays(-2) && x.CreatedOn < DateTime.UtcNow.Date.AddDays(-1)
+                ).Sum(x => x.OrderTotal),
                 
                 // Get orders count for week before
-                orderDataPoints.Where(
-                    x => x.CreatedOn >= DateTime.UtcNow.Date.AddDays(-14) && x.CreatedOn < DateTime.UtcNow.Date.AddDays(-7))
-                .Sum(x => x.OrderTotal),
+                orderDataPoints.Where( x => 
+                    x.CreatedOn >= DateTime.UtcNow.Date.AddDays(-14) && x.CreatedOn < DateTime.UtcNow.Date.AddDays(-7)
+                ).Sum(x => x.OrderTotal),
 
                 // Get orders count for month
                 _orderReportService.GetOrdersTotal(0, beginningOfYear.AddDays(-56), DateTime.UtcNow.Date.AddDays(-28)),
@@ -3123,12 +2979,10 @@ namespace SmartStore.Admin.Controllers
             // Format percentage value
             for (int i = 0; i < model.Count; i++)
             {
-                model[i].PercentageDelta = model[i].TotalAmount <= 0 ?
-                    0 : sumBefore[i] <= 0 ? 100 : (int)Math.Round(model[i].TotalAmount / sumBefore[i] * 100 - 100);
+                model[i].PercentageDelta = model[i].TotalAmount <= 0 ? 0
+                    : sumBefore[i] <= 0 ? 100 
+                    : (int)Math.Round(model[i].TotalAmount / sumBefore[i] * 100 - 100);
             }
-
-            watch.Stop();
-            Debug.WriteLine("OrdersDashboardReport >>> " + watch.ElapsedMilliseconds);
 
             return PartialView(model);
         }

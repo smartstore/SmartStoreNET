@@ -3,12 +3,12 @@
     {
         new { Part = "ProductsCount", Label = T("Admin.Catalog.Products").Text, Title = T("Admin.Catalog.Products").Text, Icon = "fa fa-cubes" },
         new { Part = "AttributesCount", Label = T("Admin.Catalog.Attributes").Text, Title = T("Admin.Catalog.Attributes.ProductAttributes").Text, Icon = "far fa-list-alt" },
-        new 
+        new
         {
-            Part = "AttributeCombinationsCount", 
-            Label = T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Short").Text, 
-            Title = T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations").Text, 
-            Icon = "fa fa-layer-group" 
+            Part = "AttributeCombinationsCount",
+            Label = T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Short").Text,
+            Title = T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations").Text,
+            Icon = "fa fa-layer-group"
         },
         new { Part = "CategoriesCount", Label = T("Admin.Catalog.Categories").Text, Title = T("Admin.Catalog.Categories").Text, Icon = "fa fa-sitemap" },
         new { Part = "ManufacturersCount", Label = T("Admin.Catalog.Manufacturers").Text, Title = T("Admin.Catalog.Manufacturers").Text, Icon = "far fa-building" },
@@ -17,25 +17,25 @@
         new { Part = "OrdersCount", Label = T("Admin.Orders").Text, Title = T("Admin.Orders.Overall").Text, Icon = "fa fa-chart-bar" },
         new
         {
-            Part = "Sales", 
-            Label = T("Admin.SalesReport.Sales").Text, 
-            Title = T("Admin.SalesReport.Sales.Hint").Text + " " + T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax").Text, 
-            Icon = "far fa-credit-card" 
+            Part = "Sales",
+            Label = T("Admin.SalesReport.Sales").Text,
+            Title = T("Admin.SalesReport.Sales.Hint").Text + " " + T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax").Text,
+            Icon = "far fa-credit-card"
         },
         new { Part = "OnlineCustomersCount", Label = T("Admin.Customers.OnlineCustomers").Text, Title = T("Admin.Report.OnlineCustomers").Text, Icon = "fa fa-user-check" },
-        new 
+        new
         {
-            Part = "CartsValue", 
-            Label = T("Admin.CurrentCarts.Short").Text, 
-            Title = T("Admin.CurrentCarts").Text + " " + T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax").Text, 
+            Part = "CartsValue",
+            Label = T("Admin.CurrentCarts.Short").Text,
+            Title = T("Admin.CurrentCarts").Text + " " + T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax").Text,
             Icon = "fa fa-cart-arrow-down"
         },
-        new 
+        new
         {
-            Part = "WishlistsValue", 
-            Label = T("Admin.CurrentWishlists.Short").Text, 
-            Title = T("Admin.CurrentWishlists").Text + " " + T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax").Text, 
-            Icon = "far fa-heart" 
+            Part = "WishlistsValue",
+            Label = T("Admin.CurrentWishlists.Short").Text,
+            Title = T("Admin.CurrentWishlists").Text + " " + T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax").Text,
+            Icon = "far fa-heart"
         },
     };
 }
@@ -65,10 +65,12 @@
         </div>
     </div>
 </div>
+
 <script>
-    $(document).ready(function () {
+    $(function () {
         $.ajax({
             url: "@(Url.Action("StoreDashboardReport", "Store"))",
+            type: "GET",
             cache: false,
             success: function (data) {
                 var elements = $('.statistics-value');

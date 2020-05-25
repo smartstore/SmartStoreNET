@@ -9,12 +9,12 @@
         @T("Admin.Report.LastWeek"),
         @T("Admin.Report.LastMonth"),
         @T("Admin.Report.ThisYear")
-    };
+            };
     Html.AddScriptParts("~/bundles/charting");
     Html.AddScriptParts(true, "~/Administration/Scripts/admin.dashboard.js");
 }
 
-<div class="report" id="incomplete-orders-report">
+<div class="report chart-colors" id="incomplete-orders-report">
     <div class="report-title-row">
         <div class="report-title">@T("Admin.SalesReport.Incomplete")</div>
     </div>
@@ -40,8 +40,8 @@
 
 <script>
     $(function () {
-        createIncompleteOrdersCharts(
-            @Html.Raw(jsonData),
+        SmartStore.Admin.Charts.Create.IncompleteOrdersCharts(
+        @Html.Raw(jsonData),
             '@T("Admin.SalesReport.NoIncompleteOrders")',
             '@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")',
             '@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")',

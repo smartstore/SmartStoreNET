@@ -947,8 +947,12 @@ namespace SmartStore.Data.Utilities
             var permissionSet = ctx.Set<PermissionRecord>();
             var allPermissions = permissionSet.ToList();
             var oldPermissions = GetOldPermissions();
-            var allRoles = ctx.Set<CustomerRole>().ToList();
-            var adminRole = allRoles.FirstOrDefault(x => x.SystemName.IsCaseInsensitiveEqual("Administrators"));
+            var allRoles = ctx.Set<CustomerRole>().ToList().ToDictionarySafe(x => x.SystemName, x => x, StringComparer.OrdinalIgnoreCase);
+
+            allRoles.TryGetValue(SystemCustomerRoleNames.Administrators, out var adminRole);
+            allRoles.TryGetValue(SystemCustomerRoleNames.ForumModerators, out var forumModRole);
+            allRoles.TryGetValue(SystemCustomerRoleNames.Registered, out var registeredRole);
+            allRoles.TryGetValue(SystemCustomerRoleNames.Guests, out var guestRole);
 
             // Mapping has no entity and no navigation property -> use SQL.
             var oldMappings = context.SqlQuery<OldPermissionRoleMapping>("select * from [dbo].[PermissionRecord_Role_Mapping]")
@@ -1002,7 +1006,7 @@ namespace SmartStore.Data.Utilities
                     newPermissions[Permissions.System.Rule.Self]);
 
                 // Add mappings originally added by old migrations.
-                // We had to remove these migration statementent again because the table does not yet exist at this time.
+                // We had to remove these migration statements again because the table does not yet exist at this time.
                 AllowForRole(adminRole,
                     newPermissions[Permissions.Configuration.Export.Self],
                     newPermissions[Permissions.Configuration.Import.Self],
@@ -1028,6 +1032,7 @@ namespace SmartStore.Data.Utilities
                     { "ManageDlm", "SmartStore.Dlm.Security.DlmPermissions, SmartStore.Dlm" }
                 };
 
+                // Get new plugin permission names.
                 var allPluginPermissionNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 foreach (var kvp in pluginPermissionNames)
                 {
@@ -1064,18 +1069,66 @@ namespace SmartStore.Data.Utilities
                     .ToList()
                     .ToDictionarySafe(x => x.SystemName, x => x);
 
+                // Add PermissionRoleMapping for old plugin permissions.
                 PermissionRecord pr;
-                if (newPermissions.TryGetValue("debitoor", out pr)) Allow("ManageDebitoor", pr);
-                if (newPermissions.TryGetValue("bizimporter", out pr)) Allow("AccessImportBiz", pr);
-                if (newPermissions.TryGetValue("shopconnector", out pr)) Allow("ManageShopConnector", pr);
-                if (newPermissions.TryGetValue("newsimporter", out pr)) Allow("ManageNewsImporter", pr);
-                if (newPermissions.TryGetValue("webapi", out pr)) Allow("ManageWebApi", pr);
-                if (newPermissions.TryGetValue("megasearch", out pr)) Allow("ManageMegaSearch", pr);
-                if (newPermissions.TryGetValue("erpconnector", out pr)) Allow("ManageErpConnector", pr);
-                if (newPermissions.TryGetValue("powerbi", out pr)) Allow("ManagePowerBi", pr);
-                if (newPermissions.TryGetValue("wallet", out pr)) Allow("ManageWallet", pr);
-                if (newPermissions.TryGetValue("pagebuilder", out pr)) Allow("ManageStories", pr);
-                if (newPermissions.TryGetValue("dlm", out pr)) Allow("ManageDlm", pr);
+                if (newPermissions.TryGetValue("debitoor", out pr))
+                {
+                    Allow("ManageDebitoor", pr);
+                }
+                if (newPermissions.TryGetValue("bizimporter", out pr))
+                {
+                    Allow("AccessImportBiz", pr);
+                }
+                if (newPermissions.TryGetValue("shopconnector", out pr))
+                {
+                    Allow("ManageShopConnector", pr);
+                }
+                if (newPermissions.TryGetValue("newsimporter", out pr))
+                {
+                    Allow("ManageNewsImporter", pr);
+                }
+                if (newPermissions.TryGetValue("webapi", out pr))
+                {
+                    Allow("ManageWebApi", pr);
+                }
+                if (newPermissions.TryGetValue("megasearch", out pr))
+                {
+                    Allow("ManageMegaSearch", pr);
+                }
+                if (newPermissions.TryGetValue("erpconnector", out pr))
+                {
+                    Allow("ManageErpConnector", pr);
+                }
+                if (newPermissions.TryGetValue("powerbi", out pr))
+                {
+                    Allow("ManagePowerBi", pr);
+                }
+                if (newPermissions.TryGetValue("wallet", out pr))
+                {
+                    Allow("ManageWallet", pr);
+                }
+                if (newPermissions.TryGetValue("pagebuilder", out pr))
+                {
+                    Allow("ManageStories", pr);
+                }
+                if (newPermissions.TryGetValue("dlm", out pr))
+                {
+                    Allow("ManageDlm", pr);
+                }
+
+                // Add PermissionRoleMapping for default plugin permissions.
+                if (newPermissions.TryGetValue("pagebuilder.displaystory", out pr))
+                {
+                    AllowForRole(forumModRole, pr);
+                    AllowForRole(guestRole, pr);
+                    AllowForRole(registeredRole, pr);
+                }
+                if (newPermissions.TryGetValue("contentslider.displayslider", out pr))
+                {
+                    AllowForRole(forumModRole, pr);
+                    AllowForRole(guestRole, pr);
+                    AllowForRole(registeredRole, pr);
+                }
 
                 scope.Commit();
 

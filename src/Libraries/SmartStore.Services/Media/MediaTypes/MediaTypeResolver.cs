@@ -58,7 +58,34 @@ namespace SmartStore.Services.Media
             return (MediaType)mediaType ?? MediaType.Binary;
         }
 
-        private Dictionary<string, string> GetExtensionMediaTypeMap()
+        public IEnumerable<string> ParseTypeFilter(string typeFilter)
+        {
+            return ParseTypeFilter(typeFilter.SplitSafe(","));
+        }
+
+        public IEnumerable<string> ParseTypeFilter(string[] typeFilter)
+        {
+            if (typeFilter == null || typeFilter.Length == 0)
+                return Enumerable.Empty<string>();
+
+            var extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var filter in typeFilter.Select(x => x.Trim()))
+            {
+                if (filter[0] == '.')
+                {
+                    extensions.Add(filter.Substring(1));
+                }
+                else
+                {
+                    extensions.AddRange(GetExtensionMediaTypeMap().Where(x => x.Value == filter).Select(x => x.Key));
+                }
+            }
+
+            return extensions;
+        }
+
+        public IDictionary<string, string> GetExtensionMediaTypeMap()
         {
             return _cache.Get(MapCacheKey, () => 
             {

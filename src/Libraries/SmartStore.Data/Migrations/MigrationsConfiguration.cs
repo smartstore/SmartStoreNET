@@ -610,6 +610,15 @@
             builder.AddOrUpdate("FileUploader.Preview.SetMainMedia.Title", "Set as main picture", "Zum Hauptbild machen");
             builder.AddOrUpdate("FileUploader.Preview.DeleteEntityMedia.Title", "Remove assignment", "Zuordnung entfernen");
 
+            builder.AddOrUpdate("FileUploader.StatusSideBar.Uploading.File", "file is uploading", "Datei wird hochgeladen");
+            builder.AddOrUpdate("FileUploader.StatusSideBar.Uploading.Files", "files are uploading", "Dateien werden hochgeladen");
+            builder.AddOrUpdate("FileUploader.StatusSideBar.Complete.File", "upload complete", "Upload abgeschloßen");
+            builder.AddOrUpdate("FileUploader.StatusSideBar.Complete.Files", "uploads complete", "Uploads abgeschloßen");
+            builder.AddOrUpdate("FileUploader.StatusSideBar.Canceled.File", "upload canceled", "Upload abgebrochen");
+            builder.AddOrUpdate("FileUploader.StatusSideBar.Canceled.Files", "uploads canceled", "Uploads abgebrochen");
+
+            builder.AddOrUpdate("FileUploader.StatusSideBar.Collapse.Title", "Minimize", "Minimieren");
+
             builder.AddOrUpdate("FileUploader.DuplicateDialog.Title", "Replace or skip", "Ersetzen oder überspringen");
             builder.AddOrUpdate("FileUploader.DuplicateDialog.Intro", "The file <span class='current-file'></span> already exists.", "Die Datei <span class='current-file'></span> ist bereits vorhanden.");
             builder.AddOrUpdate("FileUploader.DuplicateDialog.DupeFile.Title", "Uploaded file", "Hochgeladene Datei");

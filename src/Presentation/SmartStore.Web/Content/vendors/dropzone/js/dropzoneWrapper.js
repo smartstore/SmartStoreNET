@@ -5,7 +5,7 @@
 (function () {
 	var dzOpts = Dropzone.prototype.defaultOptions;
 	var resRoot = 'FileUploader.Dropzone.';
-
+	
 	dzOpts.dictDefaultMessage = Res[resRoot + 'DictDefaultMessage'];
 	dzOpts.dictFallbackMessage = Res[resRoot + 'DictFallbackMessage'];
 	dzOpts.dictFallbackText = Res[resRoot + 'DictFallbackText'];
@@ -31,8 +31,7 @@
 			var el = this, $el = $(this);
 
 			var elDropzone = $el.closest('.dropzone-target'),
-				fuContainer = $el.closest('.fileupload-container'),
-				previewContainer = fuContainer.find(".preview-container");
+				fuContainer = $el.closest('.fileupload-container');
 
 			if (!fuContainer.length) {
 				$el.closest('.dropzone-container').wrap('<div class="fileupload-container h-100"></div>');
@@ -41,7 +40,12 @@
 
 			var elRemove = fuContainer.find('.remove'),
 				elProgressBar = fuContainer.find('.progress-bar'),
-				elStatus = fuContainer.find('.fileupload-status');
+				elStatus = fuContainer.find('.fileupload-status'),
+				elStatusSidebar = $(".fu-status-sidebar"),
+				previewContainer = fuContainer.find(".preview-container"),
+				elCancel = fuContainer.find('.cancel');
+
+			var displayPreviewInList = previewContainer.data("display-list-items");
 
 			// Init dropzone.
 			elDropzone.addClass("dropzone");
@@ -73,12 +77,15 @@
 
 			// Place multifile upload preview into the designated spot defined by Media editor template.
 			var previewTemplate;
-			if (options.maxFiles > 1 && options.previewContainerId !== "") {
-				previewTemplate = fuContainer.find(".file-preview-template");
 
-				if (previewTemplate && previewTemplate.length !== 0) {
+			if (options.maxFiles > 1 && options.previewContainerId !== "") {
+				if (displayPreviewInList)
+					previewTemplate = fuContainer.find(".file-preview-template-list");
+				else 
+					previewTemplate = fuContainer.find(".file-preview-template");
+
+				if (previewTemplate && previewTemplate.length !== 0) 
 					opts.previewTemplate = previewTemplate[0].innerHTML;
-				}
 			}
 
 			// If multifile > display tooltips for preview images in preview container.
@@ -96,15 +103,17 @@
 				}
 			}
 
-			// Sorting.
-			var sortable = previewContainer.sortable({
-				items: fuContainer.find('.dz-image-preview'),
-				ghostClass: 'sortable-ghost',
-				animation: 150
-			}).on('sort', function (e, ui) {
-				sortMediaFiles();
-			});
-
+			// Init sorting  if preview items aren't displayed in a list.
+			if (!displayPreviewInList) {
+				previewContainer.sortable({
+					items: fuContainer.find('.dz-image-preview'),
+					ghostClass: 'sortable-ghost',
+					animation: 150
+				}).on('sort', function (e, ui) {
+					sortMediaFiles();
+				});
+			}
+			
 			options = $.extend({}, opts, options);
 			el = new Dropzone(fuContainer[0], options);
 
@@ -121,6 +130,12 @@
 				logEvent("addedfiles", files);
 				if (Array.isArray(files))
 					activeFiles = files.filter(file => file.accepted === true).length;
+
+				// Status
+				if (elStatusSidebar.length > 0) {
+					elStatusSidebar.find(".current-file-count").text(files.length);
+					elStatusSidebar.find(".current-file-text").text(Res['FileUploader.StatusSideBar.Uploading.File' + (files.length === 1 ? "" : "s")]);
+				}
 			});
 
 			el.on("processing", function (file) {
@@ -137,7 +152,7 @@
 			});
 
 			el.on("sending", function (file, xhr, formData) {
-
+				
 				logEvent("sending", file, xhr, formData);
 
 				// Write user decision of duplicate handling into formdata before sending so it'll be sent to the server with each file upload.
@@ -194,6 +209,13 @@
 					}
 					else {
 						file.response = response;
+					}
+
+					if (displayPreviewInList) {
+						var template = $(file.previewTemplate);
+						template.removeClass("dz-image-preview");
+						var icon = template.find(".upload-status > i");
+						icon.removeClass("fa-spinner fa-spin").addClass("fa-check text-success");
 					}
 				}
 
@@ -279,16 +301,25 @@
 
 				updateUploadStatus(this, elStatus);
 
+				// Status
+				if (elStatusSidebar.length > 0) {
+					var successFiles = this.getFilesWithStatus(Dropzone.SUCCESS).length;
+
+					elStatusSidebar.find(".current-file-count").text(successFiles);
+					elStatusSidebar.find(".current-file-text").text(Res['FileUploader.StatusSideBar.Complete.File' + (successFiles === 1 ? "" : "s")]);
+					elCancel.hide();
+				}
+
 				// Reset progressbar when queue is complete.
 				if (opts.maxFiles === 1) {
 					// SingleFile
 					dzResetProgressBar(elProgressBar);
 				}
-				else {
+				else if (!displayPreviewInList) {
 					// MultiFile
 					var uploadedFiles = this.files;
 					for (file of uploadedFiles) {
-						dzResetProgressBar($(file.previewElement).find(".fileupload-progress"));
+						dzResetProgressBar($(file.previewElement).find(".progress-bar"));
 					}
 				}
 
@@ -299,6 +330,10 @@
 			el.on("canceled", function (file) {
 				logEvent("canceled", file);
 				if (options.onAborted) options.onAborted.apply(this, [file]);
+			});
+
+			el.on("canceledmultiple", function (file) {
+				logEvent("canceledmultiple", file);
 			});
 
 			el.on("removedfile", function (file) {
@@ -359,6 +394,7 @@
 
 			function assignFilesToEntity(assignableFiles, assignableFileIds) {
 				if ($el.data('assignment-url') && $el.data('entity-id') && assignableFileIds !== "" && assignableFiles.length > 0) {
+
 					$.ajax({
 						async: true,
 						cache: false,
@@ -369,6 +405,7 @@
 							entityId: $el.data('entity-id')
 						},
 						success: function (response) {
+
 							$.each(response.response, function (i, value) {
 								var file = assignableFiles.find(x => x.response.id === value.MediaFileId);
 
@@ -383,7 +420,8 @@
 
 								if (file) {
 									// Set properties for newly added file preview.
-									var elPreview = file.previewElement ? $(file.previewElement) : $(fuContainer.find(".file-preview-template").html());
+									//var elPreview = file.previewElement ? $(file.previewElement) : $(fuContainer.find(".file-preview-template").html());
+									var elPreview = file.previewElement ? $(file.previewElement) : $(previewTemplate.html());
 
 									elPreview
 										.attr("data-display-order", 1000)
@@ -504,6 +542,30 @@
 
 				if (options.onFileRemove)
 					options.onFileRemove.apply(this, [e, el]);
+
+				return false;
+			});
+
+			// Cancel all uploads
+			elCancel.on('click', function (e) {
+				e.preventDefault();
+
+				var currentlyUploading = el.getFilesWithStatus(Dropzone.UPLOADING);
+
+				// Status
+				if (elStatusSidebar.length > 0) {
+					elStatusSidebar.find(".current-file-count").text(currentlyUploading.length);
+					elStatusSidebar.find(".current-file-text").text(Res['FileUploader.StatusSideBar.Canceled.File' + (currentlyUploading.length === 1 ? "" : "s")]);
+				}
+
+				for (file of currentlyUploading) {
+					el.removeFile(file);
+				}
+				
+				$(this).hide();
+
+				if (options.onAborted)
+					options.onAborted.apply(this, [e, el]);
 
 				return false;
 			});
@@ -696,6 +758,16 @@
 			file.accepted = undefined;
 			file.processing = false;
 			file.response = null;
+		}
+
+		// Reset sidebar item status here.
+		var elStatusSidebar = $(".fu-status-sidebar");	// Status sidebar is unique thus no need to pass it as a parameter.
+		if (elStatusSidebar.length > 0) {
+			var el = $(file.previewElement);
+			var icon = el.find(".upload-status > i");
+			icon.removeClass("fa-check text-success").addClass("fa-spinner fa-spin");
+			
+			dzResetProgressBar(el.find(".progress-bar"));
 		}
 	}
 

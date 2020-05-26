@@ -362,8 +362,6 @@ namespace SmartStore.Admin.Controllers
 
 		private void DownloadDir(string path)
 		{
-			// TODO: (mm) limit zip creation to 1000 files or a max size.
-			
 			path = GetRelativePath(path);
 
 			var folder = _fileSystem.GetFolder(path);

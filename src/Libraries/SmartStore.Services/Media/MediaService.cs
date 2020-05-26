@@ -364,21 +364,6 @@ namespace SmartStore.Services.Media
 
         #region Create/Update/Delete
 
-        //public MediaFileInfo CreateFile(string path)
-        //{
-        //    if (_mediaHelper.TokenizePath(path, out var tokens))
-        //    {
-        //        return SaveFile(
-        //            null, // album
-        //            new MediaFile { Name = tokens.FileName, FolderId = tokens.Folder.Id },
-        //            null, // stream
-        //            false);
-        //    }
-
-        //    // TODO: (mm) throw
-        //    throw new Exception();
-        //}
-
         public MediaFileInfo SaveFile(string path, Stream stream, bool isTransient = true, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError)
         {
             var pathData = CreatePathData(path);
@@ -703,8 +688,8 @@ namespace SmartStore.Services.Media
 
         private void InternalCopyFileData(MediaFile file, MediaFile copy)
         {
-            // TODO: (mm) copy tags
-            // TODO: (mm) Copy localized values (Alt, Title)
+            // TODO: (mm) (mg) copy tags
+            // TODO: (mm) (mg) Copy localized values (Alt, Title)
             _storageProvider.Save(copy, _storageProvider.OpenRead(file));
         }
 

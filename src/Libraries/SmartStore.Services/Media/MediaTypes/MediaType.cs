@@ -40,6 +40,14 @@ namespace SmartStore.Services.Media
 
         public string[] DefaultExtensions { get; private set; }
 
+        public static IEnumerable<string> AllExtensions
+        {
+            get
+            {
+                return _defaultExtensionsMap.SelectMany(x => x.Value);
+            }
+        }
+
         public override string ToString() => Name;
 
         public static implicit operator string(MediaType obj) => obj?.Name;

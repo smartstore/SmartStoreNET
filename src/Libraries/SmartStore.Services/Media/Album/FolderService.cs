@@ -148,7 +148,7 @@ namespace SmartStore.Services.Media
         {
             Guard.NotEmpty(path, nameof(path));
 
-            // TODO: (mm) throw when path is not a folder path
+            // TODO: (mm) (mc) throw when path is not a folder path
 
             newName = null;
 

@@ -35,7 +35,7 @@
     {
         get
         {
-            return GetMetadata<string>("typeFilter");
+            return GetMetadata<string>("typeFilter", "image");
         }
     }
 
@@ -119,7 +119,7 @@
 		<div class="fileupload-controls">
 			@*
 				TODO: If multiupload > other MediaTypes may be have to be configured. Should be a property of this editor template.
-                TODO: (mm) take "typeFilter" into account while uploading files or opening media manager for browsing."
+                TODO: (mm) (mc) take "typeFilter" into account while uploading files or opening media manager for browsing."
 			*@
 
 			@(Html.SmartStore().FileUploader()

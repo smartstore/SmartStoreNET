@@ -421,7 +421,7 @@ namespace SmartStore.Services.Media.Migration
                                 var newPath = GetStoragePath(newFile.MediaFile);
                                 if (!_mediaFileSystem.FileExists(newPath))
                                 {
-                                    // TODO: (mm) should we actually MOVE the file?
+                                    // TODO: (mm) (mc) should we actually MOVE the file?
                                     _mediaFileSystem.CopyFile(newFile.UploadedFile.Path, newPath);
                                 }
                             }

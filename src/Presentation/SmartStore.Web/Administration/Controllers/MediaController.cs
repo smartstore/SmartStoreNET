@@ -48,7 +48,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     if (acceptedMediaTypes != null)
                     {
-                        // TODO: (mm) pass acceptedMediaTypes. It is always null at the moment.
+                        // TODO: (mm) (mc) pass acceptedMediaTypes. It is always null at the moment.
                         var mediaType = _mediaTypeResolver.Resolve(Path.GetExtension(fileName), uploadedFile.ContentType);
                         if (!acceptedMediaTypes.Contains((string)mediaType))
                         {
@@ -93,7 +93,7 @@ namespace SmartStore.Admin.Controllers
                 }
             }
 
-            // TODO: (mm) display error notification for every failed file
+            // TODO: (mm) (mc) display error notification for every failed file
 
             return Json(result.Count == 1 ? result[0] : result);
         }

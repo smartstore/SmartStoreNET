@@ -144,7 +144,7 @@ namespace SmartStore.Services.Media
             }
             else if (albumName == Messages)
             {
-                // TODO: (mm) These props are localizable
+                // TODO: (mm) (mc) These props are localizable
                 table.Register<MessageTemplate>(x => x.Attachment1FileId);
                 table.Register<MessageTemplate>(x => x.Attachment2FileId);
                 table.Register<MessageTemplate>(x => x.Attachment3FileId);

@@ -187,7 +187,7 @@ namespace SmartStore.Services.Media
             {
                 var table = _fileRepo.Table;
 
-                // TODO: (mm) LoadFlags > Blob | Tags | Tracks
+                // TODO: (mm) (mc) LoadFlags > Blob | Tags | Tracks
 
                 var entity = table.FirstOrDefault(x => x.FolderId == tokens.Folder.Id && x.Name == tokens.FileName);
                 if (entity != null)
@@ -249,7 +249,7 @@ namespace SmartStore.Services.Media
         {
             Guard.NotEmpty(path, nameof(path));
 
-            // TODO: (mm) throw when path is not a file path
+            // TODO: (mm) (mc) throw when path is not a file path
 
             newPath = null;
 

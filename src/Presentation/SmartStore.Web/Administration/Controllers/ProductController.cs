@@ -2318,12 +2318,12 @@ namespace SmartStore.Admin.Controllers
 				_productService.DeleteProductPicture(productPicture);
 			}
 
-            // TODO: (mm) OPTIONALLY delete file!
-            //var file = _mediaService.GetFileById(productPicture.MediaFileId);
-            //if (file != null)
-            //{
-            //    _mediaService.DeleteFile(file.File, true);
-            //}
+			// TODO: (mm) (mc) OPTIONALLY delete file!
+			//var file = _mediaService.GetFileById(productPicture.MediaFileId);
+			//if (file != null)
+			//{
+			//    _mediaService.DeleteFile(file.File, true);
+			//}
 
 			NotifySuccess(T("Admin.Catalog.Products.ProductPictures.Delete.Success"));
 			return new HttpStatusCodeResult(200);

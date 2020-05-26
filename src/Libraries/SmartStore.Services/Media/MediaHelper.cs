@@ -43,7 +43,7 @@ namespace SmartStore.Services.Media
 
 		#region Legacy (remove later)
 
-		// TODO: (mm) remove this stuff
+		// TODO: (mm) (mc) remove this stuff
 
 		public static void UpdateDownloadTransientStateFor<TEntity>(TEntity entity, Expression<Func<TEntity, int>> downloadIdProp, bool save = false) where TEntity : BaseEntity
 		{

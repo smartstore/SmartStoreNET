@@ -75,7 +75,7 @@ namespace SmartStore.Services.Media
 				//	return null;
 
 				// File path must match requested path and file title
-				// TODO: (mm) what about MIME and EXT?
+				// TODO: (mm) (mc) what about MIME and EXT?
 				if (mediaFile.FolderId != PathData.Folder?.Id || !mediaFile.Title.IsCaseInsensitiveEqual(PathData.FileTitle))
 					return null;
 

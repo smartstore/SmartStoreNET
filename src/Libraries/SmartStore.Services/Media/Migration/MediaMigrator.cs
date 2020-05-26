@@ -325,8 +325,18 @@ namespace SmartStore.Services.Media.Migration
                         {
                             file.Extension = MimeTypes.MapMimeTypeToExtension(file.MimeType);
                         }
-                        
-                        file.Name = file.Name.Truncate(292).ToValidFileName() + "." + file.Extension;
+
+                        var name = file.Name;
+                        if (name.IsEmpty())
+                        {
+                            name = file.Id.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                        }
+                        else
+                        {
+                            name = file.Name.Truncate(292).ToValidFileName();
+                        }
+
+                        file.Name = name + "." + file.Extension;
                         file.CreatedOnUtc = file.UpdatedOnUtc;
                         file.Version = 1;
 

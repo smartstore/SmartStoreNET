@@ -161,8 +161,8 @@
 
             var usePercentage = !!(pane.style.width + '').match('%');
 
-            var addEventListener = window.addEventListener;
-            var removeEventListener = window.removeEventListener;
+            var addEventListener = document.addEventListener;
+            var removeEventListener = document.removeEventListener;
 
             var resize = function (initialSize, offset) {
                 if (offset === void 0) offset = 0;
@@ -196,6 +196,13 @@
 
                 removeEventListener('mousemove', onMouseMove);
                 removeEventListener('mouseup', onMouseUp);
+
+                // Create resized event
+                var data = { "pane": pane, "resizer": resizer, "width": pane.style.width, "initialWidth": initialPaneWidth };
+                var event = new CustomEvent("resized", { "detail": data });
+
+                // Trigger the event
+                resizer.dispatchEvent(event);
             };
 
             addEventListener('mousemove', onMouseMove);

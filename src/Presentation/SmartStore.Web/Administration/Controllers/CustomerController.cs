@@ -509,19 +509,6 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Customer.Create)]
         public ActionResult Create(CustomerModel model, bool continueEditing, FormCollection form)
         {
-            /// Validate unique user. <see cref="ICustomerRegistrationService.RegisterCustomer(CustomerRegistrationRequest)"/>
-            if (model.Email.HasValue() && _customerService.GetCustomerByEmail(model.Email) != null)
-            {
-                ModelState.AddModelError("", T("Account.Register.Errors.EmailAlreadyExists"));
-            }
-
-            if (model.Username.HasValue() &&
-                _customerSettings.CustomerLoginType != CustomerLoginType.Email &&
-                _customerService.GetCustomerByUsername(model.Username) != null)
-            {
-                ModelState.AddModelError("", T("Account.Register.Errors.UsernameAlreadyExists"));
-            }
-
             // Validate customer roles.
             var allowManagingCustomerRoles = Services.Permissions.Authorize(Permissions.Customer.EditRole);
             var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
@@ -587,55 +574,65 @@ namespace SmartStore.Admin.Controllers
                     }
                 }
 
-                _customerService.InsertCustomer(customer);
+                try
+                {
+                    _customerService.InsertCustomer(customer);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
 
                 // Form fields.
-                if (_dateTimeSettings.AllowCustomersToSetTimeZone)
-                    customer.TimeZoneId = model.TimeZoneId;
-                if (_customerSettings.GenderEnabled)
-                    customer.Gender = model.Gender;
-                if (_customerSettings.StreetAddressEnabled)
-                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StreetAddress, model.StreetAddress);
-                if (_customerSettings.StreetAddress2Enabled)
-                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StreetAddress2, model.StreetAddress2);
-                if (_customerSettings.ZipPostalCodeEnabled)
-                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.ZipPostalCode, model.ZipPostalCode);
-                if (_customerSettings.CityEnabled)
-                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.City, model.City);
-                if (_customerSettings.CountryEnabled)
-                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CountryId, model.CountryId);
-                if (_customerSettings.CountryEnabled && _customerSettings.StateProvinceEnabled)
-                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StateProvinceId, model.StateProvinceId);
-                if (_customerSettings.PhoneEnabled)
-                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Phone, model.Phone);
-                if (_customerSettings.FaxEnabled)
-                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Fax, model.Fax);
-
-                // Password.
-                if (model.Password.HasValue())
+                if (ModelState.IsValid)
                 {
-                    var changePassRequest = new ChangePasswordRequest(model.Email, false, _customerSettings.DefaultPasswordFormat, model.Password);
-                    var changePassResult = _customerRegistrationService.ChangePassword(changePassRequest);
-                    if (!changePassResult.Success)
+                    if (_dateTimeSettings.AllowCustomersToSetTimeZone)
+                        customer.TimeZoneId = model.TimeZoneId;
+                    if (_customerSettings.GenderEnabled)
+                        customer.Gender = model.Gender;
+                    if (_customerSettings.StreetAddressEnabled)
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StreetAddress, model.StreetAddress);
+                    if (_customerSettings.StreetAddress2Enabled)
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StreetAddress2, model.StreetAddress2);
+                    if (_customerSettings.ZipPostalCodeEnabled)
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.ZipPostalCode, model.ZipPostalCode);
+                    if (_customerSettings.CityEnabled)
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.City, model.City);
+                    if (_customerSettings.CountryEnabled)
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CountryId, model.CountryId);
+                    if (_customerSettings.CountryEnabled && _customerSettings.StateProvinceEnabled)
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StateProvinceId, model.StateProvinceId);
+                    if (_customerSettings.PhoneEnabled)
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Phone, model.Phone);
+                    if (_customerSettings.FaxEnabled)
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Fax, model.Fax);
+
+                    // Password.
+                    if (model.Password.HasValue())
                     {
-                        foreach (var changePassError in changePassResult.Errors)
+                        var changePassRequest = new ChangePasswordRequest(model.Email, false, _customerSettings.DefaultPasswordFormat, model.Password);
+                        var changePassResult = _customerRegistrationService.ChangePassword(changePassRequest);
+                        if (!changePassResult.Success)
                         {
-                            NotifyError(changePassError);
+                            foreach (var changePassError in changePassResult.Errors)
+                            {
+                                NotifyError(changePassError);
+                            }
                         }
                     }
+
+                    // Customer roles.
+                    if (allowManagingCustomerRoles)
+                    {
+                        newCustomerRoles.Each(x => _customerService.InsertCustomerRoleMapping(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = x.Id }));
+                    }
+
+                    Services.EventPublisher.Publish(new ModelBoundEvent(model, customer, form));
+                    Services.CustomerActivity.InsertActivity("AddNewCustomer", T("ActivityLog.AddNewCustomer"), customer.Id);
+
+                    NotifySuccess(T("Admin.Customers.Customers.Added"));
+                    return continueEditing ? RedirectToAction("Edit", new { id = customer.Id }) : RedirectToAction("List");
                 }
-
-                // Customer roles.
-                if (allowManagingCustomerRoles)
-                {
-                    newCustomerRoles.Each(x => _customerService.InsertCustomerRoleMapping(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = x.Id }));
-                }
-
-                Services.EventPublisher.Publish(new ModelBoundEvent(model, customer, form));
-                Services.CustomerActivity.InsertActivity("AddNewCustomer", T("ActivityLog.AddNewCustomer"), customer.Id);
-
-                NotifySuccess(T("Admin.Customers.Customers.Added"));
-                return continueEditing ? RedirectToAction("Edit", new { id = customer.Id }) : RedirectToAction("List");
             }
 
             // If we got this far, something failed, redisplay form.

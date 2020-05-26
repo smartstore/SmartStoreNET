@@ -478,7 +478,20 @@ namespace SmartStore.Services.Customers
         {
 			Guard.NotNull(customer, nameof(customer));
 
-			_customerRepository.Insert(customer);
+            /// Validate unique user. <see cref="ICustomerRegistrationService.RegisterCustomer(CustomerRegistrationRequest)"/>
+            if (customer.Email.HasValue() && GetCustomerByEmail(customer.Email) != null)
+            {
+                throw new SmartException(T("Account.Register.Errors.EmailAlreadyExists"));
+            }
+
+            if (customer.Username.HasValue() &&
+                _customerSettings.CustomerLoginType != CustomerLoginType.Email &&
+                GetCustomerByUsername(customer.Username) != null)
+            {
+                throw new SmartException(T("Account.Register.Errors.UsernameAlreadyExists"));
+            }
+
+            _customerRepository.Insert(customer);
         }
         
         public virtual void UpdateCustomer(Customer customer)

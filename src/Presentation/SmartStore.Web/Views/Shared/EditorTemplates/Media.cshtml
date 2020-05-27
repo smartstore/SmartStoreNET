@@ -23,6 +23,14 @@
         }
     }
 
+    private bool ShowBrowseMedia
+    {
+        get
+        {
+            return HasMetadata("showBrowseMedia") ? GetMetadata<bool>("showBrowseMedia") : true;
+        }
+    }
+
     private string Path
     {
         get
@@ -79,7 +87,6 @@
         }
     }
 
-    // TODO: make enum UploadType > Compact, Default, Multifile
     private bool MultiFile
     {
         get
@@ -134,8 +141,10 @@
 				.PreviewContainerId("preview-" + random)
 				.Multifile(MultiFile)
 				.MainFileId(Model)
+                .ShowBrowseMedia(ShowBrowseMedia)
+                .HasTemplatePreview(true)
 				.UploadedFiles(UploadedFiles)
-				.EntityType("Product")
+				.EntityType(EntityType)
 				.EntityId(EntityId)
 				.DeleteUrl(DeleteUrl)
 				.SortUrl(SortUrl)

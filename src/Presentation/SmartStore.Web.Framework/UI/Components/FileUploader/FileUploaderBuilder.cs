@@ -48,6 +48,18 @@ namespace SmartStore.Web.Framework.UI
 			base.Component.Compact = value;
 			return this;
 		}
+		
+		public FileUploaderBuilder<TModel> ShowBrowseMedia(bool value)
+		{
+			base.Component.ShowBrowseMedia = value;
+			return this;
+		}
+
+		public FileUploaderBuilder<TModel> HasTemplatePreview(bool value)
+		{
+			base.Component.HasTemplatePreview = value;
+			return this;
+		}
 
 		public FileUploaderBuilder<TModel> Multifile(bool value)
 		{

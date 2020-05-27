@@ -19,6 +19,7 @@
 	@(Html.SmartStore().FileUploader()
 		.Name(clientId)
 		.UploadUrl(Model.GetFileUploadUrl(Url))
+		.ShowBrowseMedia(false)
 		.AcceptedFileTypes(allowedFileExtensions)
 		.ShowRemoveButton(Model.UploadedFileGuid.HasValue())
 		.ShowRemoveButtonAfterUpload(true)

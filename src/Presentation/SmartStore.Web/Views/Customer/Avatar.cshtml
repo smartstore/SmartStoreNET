@@ -28,6 +28,7 @@
 		.Name("uploadedFile")
 		.UploadUrl(Url.Action("UploadAvatar", "Customer"))
 		.AcceptedFileTypes(mediaSettings.ImageTypes)
+		.ShowBrowseMedia(false)
 		.ShowRemoveButton(Model.Avatar.PictureUrl.HasValue())
 		.ShowRemoveButtonAfterUpload(true)
 		.UploadText(T("Common.FileUploader.Upload"))

@@ -18,7 +18,7 @@
 	}
 }
 
-<div @Html.Attr("class", "dropzone-container", Model.Multifile)>
+<div @Html.Attr("class", "dropzone-container", Model.Multifile || !Model.HasTemplatePreview)>
 
 	<div class="dropzone-target">
 		<div class="fu-message">
@@ -40,9 +40,13 @@
 			 data-entity-id="@Model.EntityId">
 
 			<input type="hidden" id="@(Model.Id)-file" name="@(Model.Id)-file" />
-			<div class="fileupload-buttons">
-				@{ Html.RenderWidget("file_uploader"); }
-			</div>			
+
+			@if (Model.ShowBrowseMedia)
+            {
+				<div class="fileupload-buttons">
+					@{ Html.RenderWidget("file_uploader"); }
+				</div>
+            }
 		</div>
 
 		<a href="#" class="open-upload-summmary">

@@ -87,15 +87,6 @@
         }
     }
 
-    private string AcceptedFileTypes
-    {
-        get
-        {
-            var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
-            return GetMetadata<string>("acceptedFileTypes", mediaSettings.ImageTypes);
-        }
-    }
-
     private bool MultiFile
     {
         get
@@ -143,7 +134,6 @@
 				.Path(Path)
 				.HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
                 .TypeFilter(TypeFilter)
-				.AcceptedFileTypes(AcceptedFileTypes)
 				.ShowRemoveButton(!MultiFile && Model.HasValue) // Multifile uploads don't need a remove button.
 				.ShowRemoveButtonAfterUpload(true)
 				.Compact(Compact)

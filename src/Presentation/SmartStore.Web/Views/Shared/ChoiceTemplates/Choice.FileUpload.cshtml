@@ -20,7 +20,7 @@
 		.Name(clientId)
 		.UploadUrl(Model.GetFileUploadUrl(Url))
 		.ShowBrowseMedia(false)
-		.AcceptedFileTypes(allowedFileExtensions)
+		.TypeFilter(allowedFileExtensions)
 		.ShowRemoveButton(Model.UploadedFileGuid.HasValue())
 		.ShowRemoveButtonAfterUpload(true)
 		.UploadText(T("Common.FileUploader.Upload"))

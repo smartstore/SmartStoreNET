@@ -154,7 +154,6 @@
 					.UploadUrl(Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" }))
 					.HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
 					.DeleteUrl(Url.Action("DeleteDownload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, downloadId = Model, area = "Admin" }))
-					.AcceptedFileTypes("")
 					.Multifile(false)
 					.Compact(true)
 					.Path(Path)

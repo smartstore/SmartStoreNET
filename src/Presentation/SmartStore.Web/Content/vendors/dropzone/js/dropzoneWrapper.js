@@ -50,12 +50,6 @@
 			// Init dropzone.
 			elDropzone.addClass("dropzone");
 
-			// File extensions of MediaManager are dotless but dropzone expects dots.
-			var acceptedFiles = "";
-			if ($el.data('accept')) {
-				acceptedFiles = "." + $el.data('accept').replace(/\,/g, ",.");
-			}
-
 			// Dropzone init params.
 			var opts = {
 				url: $el.data('upload-url'),
@@ -66,7 +60,7 @@
 				//autoProcessQueue: false,
 				parallelUploads: 1,
 				uploadMultiple: true,
-				acceptedFiles: acceptedFiles,
+				acceptedFiles: $el.data('accept'),
 				maxFiles: options.maxFiles,
 				maxFilesize: 2048,				// TODO: get maxFilesize from media settings.
 				previewsContainer: options.previewContainerId !== "" ? "#" + options.previewContainerId : null

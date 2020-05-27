@@ -1,6 +1,5 @@
 ﻿@using SmartStore.Web.Models.Customer;
 @using SmartStore.Web.Framework.UI;
-@using SmartStore.Core.Domain.Media;
 
 @model CustomerAvatarEditModel
 
@@ -10,8 +9,6 @@
 	ViewBag.PageTitle = T("Account.Avatar").Text;
 
 	Html.AddTitleParts(T("PageTitle.Account").Text);
-
-	var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
 }
 
 @if (!ViewData.ModelState.IsValid)
@@ -27,7 +24,7 @@
 	@(Html.SmartStore().FileUploader()
 		.Name("uploadedFile")
 		.UploadUrl(Url.Action("UploadAvatar", "Customer"))
-		.AcceptedFileTypes(mediaSettings.ImageTypes)
+		.TypeFilter("image")
 		.ShowBrowseMedia(false)
 		.ShowRemoveButton(Model.Avatar.PictureUrl.HasValue())
 		.ShowRemoveButtonAfterUpload(true)

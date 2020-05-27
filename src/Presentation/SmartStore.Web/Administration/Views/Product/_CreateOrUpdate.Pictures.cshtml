@@ -2,12 +2,9 @@
 
 @using SmartStore.Admin.Models.Catalog;
 @using SmartStore.Core.Domain.Catalog;
-@using SmartStore.Core.Domain.Media;
 
 @if (Model.Id > 0)
 {
-	var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
-
 	<table class="adminContent mb-5">
 		<tr>
 			<td colspan="2">
@@ -45,7 +42,7 @@
 					sortUrl = Url.Action("SortPictures", "Product", "Admin"),
 					entityAssignmentUrl = Url.Action("ProductMediaFilesAdd", "Product", "Admin"),
 					uploadedFiles = Model.ProductMediaFiles as IEnumerable<IMediaFile>,
-					acceptedFileTypes = mediaSettings.ImageTypes + mediaSettings.VideoTypes
+					typeFilter = "image,video"
 				})
 				@Html.ValidationMessageFor(model => model.AddPictureModel.PictureId)
 			</td>
@@ -61,10 +58,8 @@ else
 
 <script>
 		$(function () {
-
 			// Set MainPictureId for product
 			$(".set-main-picture").on("click", function (e) {
-
 				var el = $(this).closest('.dz-image-preview');
 
 				$.ajax({

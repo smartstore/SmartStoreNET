@@ -131,7 +131,7 @@ else
 					@(Html.SmartStore().FileUploader()
 						.Name("ImportFileUploader")
 						.UploadUrl(Url.Action("FileUpload", new { id = Model.Id }))
-						.AcceptedFileTypes("csv|xlsx|txt|tab")
+						.TypeFilter(".csv,.xlsx,.txt,.tab")
 						.ShowBrowseMedia(false)
 						.ShowRemoveButton(false)
 						.ShowRemoveButtonAfterUpload(false)

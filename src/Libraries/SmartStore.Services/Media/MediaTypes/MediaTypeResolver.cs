@@ -105,7 +105,7 @@ namespace SmartStore.Services.Media
                     var arr = extensions.EmptyNull()
                         .Replace(Environment.NewLine, " ")
                         .ToLower()
-                        .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        .Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                     if (arr.Length == 0)
                     {

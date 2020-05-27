@@ -1,4 +1,6 @@
 ﻿using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Services.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +18,7 @@ namespace SmartStore.Web.Framework.UI
             : base(component, htmlHelper)
         {
 			WithRenderer(new ViewBasedComponentRenderer<FileUploader>("FileUploader"));
+			TypeFilter("*");
 		}
 
 		public FileUploaderBuilder<TModel> Path(string value)
@@ -69,7 +72,21 @@ namespace SmartStore.Web.Framework.UI
 
 		public FileUploaderBuilder<TModel> TypeFilter(string value)
 		{
+			var mediaTypeResolver = EngineContext.Current.Resolve<IMediaTypeResolver>();
+			IEnumerable<string> extensions;
+
+			if (value.IsEmpty() || value == "*")
+			{
+				extensions = mediaTypeResolver.GetExtensionMediaTypeMap().Keys;
+			}
+			else
+			{
+				extensions = mediaTypeResolver.ParseTypeFilter(value);
+			}
+
+			base.Component.HtmlAttributes["data-accept"] = "." + String.Join(",.", extensions);
 			base.Component.TypeFilter = value;
+
 			return this;
 		}
 
@@ -118,21 +135,6 @@ namespace SmartStore.Web.Framework.UI
 		public FileUploaderBuilder<TModel> EntityAssignmentUrl(string value)
 		{
 			base.Component.EntityAssignmentUrl = value;
-			return this;
-		}
-
-		public FileUploaderBuilder<TModel> AcceptedFileTypes(string value)
-		{
-			if (value.IsEmpty())
-			{
-				if (base.Component.HtmlAttributes.ContainsKey("data-accept"))
-					base.Component.HtmlAttributes.Remove("data-accept");
-			}
-			else
-			{
-				base.Component.HtmlAttributes["data-accept"] = value;
-			}
-			
 			return this;
 		}
 

@@ -11,7 +11,7 @@ $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
 // ------------------------------------
 
 /*.modal-backdrop.show {
-    backdrop-filter: blur(3px);
+    backdrop-filter: blur(20px);
 }*/
 
 .modal-backdrop.fade {
@@ -71,7 +71,6 @@ $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
 }
 
 .modal-closer {
-    $c: color-yiq($modal-backdrop-bg);
 	position: absolute;
 	display: none;
 	font-size: 2.5rem;
@@ -82,11 +81,17 @@ $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
 	line-height: 1;
 	text-decoration: none !important;
 	z-index: $zindex-modal-backdrop + 1;
-    color: mix($c, $modal-backdrop-bg, 60%);
 	transition: color 0.1s;
 
+	color: $gray-600;
 	&:hover {
-        color: $c;
+        color: inherit;
+	}
+
+	.modal[data-backdrop=true] > & {
+		$c: color-yiq($modal-backdrop-bg);
+		color: mix($c, $modal-backdrop-bg, 70%);
+		&:hover { color: $c; }
 	}
 }
 

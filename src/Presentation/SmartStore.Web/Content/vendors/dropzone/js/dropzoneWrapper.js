@@ -41,7 +41,7 @@
 			var elRemove = fuContainer.find('.remove'),
 				elProgressBar = fuContainer.find('.progress-bar'),
 				elStatus = fuContainer.find('.fileupload-status'),
-				elStatusSidebar = $(".fu-status-sidebar"),
+				elStatusWindow = $(".fu-status-window"),
 				previewContainer = fuContainer.find(".preview-container"),
 				elCancel = fuContainer.find('.cancel');
 
@@ -132,9 +132,9 @@
 					activeFiles = files.filter(file => file.accepted === true).length;
 
 				// Status
-				if (elStatusSidebar.length > 0) {
-					elStatusSidebar.find(".current-file-count").text(files.length);
-					elStatusSidebar.find(".current-file-text").text(Res['FileUploader.StatusSideBar.Uploading.File' + (files.length === 1 ? "" : "s")]);
+				if (elStatusWindow.length > 0) {
+					elStatusWindow.find(".current-file-count").text(files.length);
+					elStatusWindow.find(".current-file-text").text(Res['FileUploader.StatusWindow.Uploading.File' + (files.length === 1 ? "" : "s")]);
 				}
 			});
 
@@ -302,11 +302,11 @@
 				updateUploadStatus(this, elStatus);
 
 				// Status
-				if (elStatusSidebar.length > 0) {
+				if (elStatusWindow.length > 0) {
 					var successFiles = this.getFilesWithStatus(Dropzone.SUCCESS).length;
 
-					elStatusSidebar.find(".current-file-count").text(successFiles);
-					elStatusSidebar.find(".current-file-text").text(Res['FileUploader.StatusSideBar.Complete.File' + (successFiles === 1 ? "" : "s")]);
+					elStatusWindow.find(".current-file-count").text(successFiles);
+					elStatusWindow.find(".current-file-text").text(Res['FileUploader.StatusWindow.Complete.File' + (successFiles === 1 ? "" : "s")]);
 					elCancel.hide();
 				}
 
@@ -553,9 +553,9 @@
 				var currentlyUploading = el.getFilesWithStatus(Dropzone.UPLOADING);
 
 				// Status
-				if (elStatusSidebar.length > 0) {
-					elStatusSidebar.find(".current-file-count").text(currentlyUploading.length);
-					elStatusSidebar.find(".current-file-text").text(Res['FileUploader.StatusSideBar.Canceled.File' + (currentlyUploading.length === 1 ? "" : "s")]);
+				if (elStatusWindow.length > 0) {
+					elStatusWindow.find(".current-file-count").text(currentlyUploading.length);
+					elStatusWindow.find(".current-file-text").text(Res['FileUploader.StatusWindow.Canceled.File' + (currentlyUploading.length === 1 ? "" : "s")]);
 				}
 
 				for (file of currentlyUploading) {
@@ -761,8 +761,8 @@
 		}
 
 		// Reset sidebar item status here.
-		var elStatusSidebar = $(".fu-status-sidebar");	// Status sidebar is unique thus no need to pass it as a parameter.
-		if (elStatusSidebar.length > 0) {
+		var elStatusWindow = $(".fu-status-window");	// Status window is unique thus no need to pass it as a parameter.
+		if (elStatusWindow.length > 0) {
 			var el = $(file.previewElement);
 			var icon = el.find(".upload-status > i");
 			icon.removeClass("fa-check text-success").addClass("fa-spinner fa-spin");

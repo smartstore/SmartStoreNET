@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Linq.Dynamic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Events;
-using SmartStore.Core.Logging;
-using SmartStore.Services.Media.Storage;
 using SmartStore.Core.IO;
-using System.Drawing;
-using System.Runtime.CompilerServices;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
+using SmartStore.Core.Logging;
+using SmartStore.Services.Localization;
+using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Services.Media
 {
@@ -27,6 +25,8 @@ namespace SmartStore.Services.Media
         private readonly IMediaTypeResolver _typeResolver;
         private readonly IMediaUrlGenerator _urlGenerator;
         private readonly IEventPublisher _eventPublisher;
+        private readonly ILanguageService _languageService;
+        private readonly ILocalizedEntityService _localizedEntityService;
         private readonly MediaSettings _mediaSettings;
         private readonly IImageProcessor _imageProcessor;
         private readonly IImageCache _imageCache;
@@ -40,6 +40,8 @@ namespace SmartStore.Services.Media
             IMediaTypeResolver typeResolver,
             IMediaUrlGenerator urlGenerator,
             IEventPublisher eventPublisher,
+            ILanguageService languageService,
+            ILocalizedEntityService localizedEntityService,
             MediaSettings mediaSettings,
             IImageProcessor imageProcessor,
             IImageCache imageCache,
@@ -52,6 +54,8 @@ namespace SmartStore.Services.Media
             _typeResolver = typeResolver;
             _urlGenerator = urlGenerator;
             _eventPublisher = eventPublisher;
+            _languageService = languageService;
+            _localizedEntityService = localizedEntityService;
             _mediaSettings = mediaSettings;
             _imageProcessor = imageProcessor;
             _imageCache = imageCache;
@@ -688,9 +692,44 @@ namespace SmartStore.Services.Media
 
         private void InternalCopyFileData(MediaFile file, MediaFile copy)
         {
-            // TODO: (mm) (mg) copy tags
-            // TODO: (mm) (mg) Copy localized values (Alt, Title)
             _storageProvider.Save(copy, _storageProvider.OpenRead(file));
+
+            using (var scope = new DbContextScope(_fileRepo.Context, autoCommit: false))
+            {
+                // Tags.
+                _fileRepo.Context.LoadCollection(file, (MediaFile x) => x.Tags);
+
+                var existingTagsIds = copy.Tags.Select(x => x.Id).ToList();
+
+                foreach (var tag in file.Tags)
+                {
+                    if (!existingTagsIds.Contains(tag.Id))
+                    {
+                        copy.Tags.Add(tag);
+                        existingTagsIds.Add(tag.Id);
+                    }
+                }
+
+                // Localized values.
+                var languages = _languageService.GetAllLanguages(true);
+
+                foreach (var language in languages)
+                {
+                    var title = file.GetLocalized(x => x.Title, language.Id, false, false).Value;
+                    if (title.HasValue())
+                    {
+                        _localizedEntityService.SaveLocalizedValue(copy, x => x.Title, title, language.Id);
+                    }
+
+                    var alt = file.GetLocalized(x => x.Alt, language.Id, false, false).Value;
+                    if (alt.HasValue())
+                    {
+                        _localizedEntityService.SaveLocalizedValue(copy, x => x.Alt, alt, language.Id);
+                    }
+                }
+
+                scope.Commit();
+            }
         }
 
         public MediaFileInfo MoveFile(MediaFile file, string destinationFileName)

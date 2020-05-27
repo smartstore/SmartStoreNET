@@ -13,6 +13,7 @@
 * The wrong name of API endpoint *LocalizedPropertys* has been corrected and renamed to *LocalizedProperties*.
 
 ### New Features
+* #1805 Added XML Sitemap settings to backend UI.
 * #1598 Add published property to ProductTag entity.
 * #1669 Apply percentage discounts also on tier prices.
 * #1618 Implement ACL and multistore capability on menu item level.

@@ -98,6 +98,30 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.ExtraRobotsDisallows")]
             public string ExtraRobotsDisallows { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.XmlSitemapEnabled")]
+            public bool XmlSitemapEnabled { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesBlog")]
+            public bool XmlSitemapIncludesBlog { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesCategories")]
+            public bool XmlSitemapIncludesCategories { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesForum")]
+            public bool XmlSitemapIncludesForum { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesManufacturers")]
+            public bool XmlSitemapIncludesManufacturers { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesNews")]
+            public bool XmlSitemapIncludesNews { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesProducts")]
+            public bool XmlSitemapIncludesProducts { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesTopics")]
+            public bool XmlSitemapIncludesTopics { get; set; }
         }
 
 		public partial class SecuritySettingsModel

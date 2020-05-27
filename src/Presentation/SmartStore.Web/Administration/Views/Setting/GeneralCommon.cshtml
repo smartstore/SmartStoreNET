@@ -232,6 +232,88 @@
 
 			</td>
 		</tr>
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">@T("Admin.System.XMLSitemap")</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SeoSettings.XmlSitemapEnabled)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SeoSettings.XmlSitemapEnabled,
+                Html.CheckBoxFor(model => model.SeoSettings.XmlSitemapEnabled, new { data_toggler_for = "#xml-sitemap" }))
+                @Html.ValidationMessageFor(model => model.SeoSettings.XmlSitemapEnabled)
+            </td>
+        </tr>
+        <tbody id="xml-sitemap">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SeoSettings.XmlSitemapIncludesProducts)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.SeoSettings.XmlSitemapIncludesProducts)
+                    @Html.ValidationMessageFor(model => model.SeoSettings.XmlSitemapIncludesProducts)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SeoSettings.XmlSitemapIncludesCategories)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.SeoSettings.XmlSitemapIncludesCategories)
+                    @Html.ValidationMessageFor(model => model.SeoSettings.XmlSitemapIncludesCategories)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SeoSettings.XmlSitemapIncludesManufacturers)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.SeoSettings.XmlSitemapIncludesManufacturers)
+                    @Html.ValidationMessageFor(model => model.SeoSettings.XmlSitemapIncludesManufacturers)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SeoSettings.XmlSitemapIncludesTopics)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.SeoSettings.XmlSitemapIncludesTopics)
+                    @Html.ValidationMessageFor(model => model.SeoSettings.XmlSitemapIncludesTopics)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SeoSettings.XmlSitemapIncludesNews)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.SeoSettings.XmlSitemapIncludesNews)
+                    @Html.ValidationMessageFor(model => model.SeoSettings.XmlSitemapIncludesNews)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SeoSettings.XmlSitemapIncludesBlog)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.SeoSettings.XmlSitemapIncludesBlog)
+                    @Html.ValidationMessageFor(model => model.SeoSettings.XmlSitemapIncludesBlog)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SeoSettings.XmlSitemapIncludesForum)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.SeoSettings.XmlSitemapIncludesForum)
+                    @Html.ValidationMessageFor(model => model.SeoSettings.XmlSitemapIncludesForum)
+                </td>
+            </tr>
+        </tbody>
     </table>
 }
 

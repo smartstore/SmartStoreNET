@@ -659,6 +659,56 @@
                 "Maximale Dateigröße",
                 "Specifies the maximum file size in KB of an upload file. The default is 102,400 (100 MB).",
                 "Legt die maximale Dateigröße einer hochzuladenen Datei in KB fest. Der Standardwert ist 102.400 (100 MB).");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.XmlSitemapEnabled",
+                "Enable XML Sitemap",
+                "XML-Sitemap aktivieren",
+                "The XML sitemap defines which URLs are to be submitted to search engines such as Google or Yahoo.",
+                "Die XML-Sitemap definiert, welche URLs bei Suchmaschinen wie Google oder Yahoo eingereicht werden sollen.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesBlog",
+                "Includes blog posts",
+                "Beinhaltet Blog-Einträge",
+                "Adds blog posts to XML Sitemap.",
+                "Fügt Blog-Einträge zu der XML-Sitemap hinzu.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesCategories",
+                "Includes categories",
+                "Beinhaltet Warengruppen",
+                "Adds categories to XML Sitemap.",
+                "Fügt Warengruppen zu der XML-Sitemap hinzu.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesForum",
+                "Includes forums",
+                "Beinhaltet Foren",
+                "Adds forums to XML Sitemap.",
+                "Fügt Foren zu der XML-Sitemap hinzu.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesManufacturers",
+                "Includes manufacturer",
+                "Beinhaltet Hersteller",
+                "Adds manufacturers to XML Sitemap.",
+                "Fügt Hersteller zu der XML-Sitemap hinzu.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesNews",
+                "Includes news",
+                "Beinhaltet News",
+                "Adds news to XML Sitemap.",
+                "Fügt News zu der XML-Sitemap hinzu.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesProducts",
+                "Includes products",
+                "Beinhaltet Produkte",
+                "Adds products posts to XML Sitemap.",
+                "Fügt Produkte zu der XML-Sitemap hinzu.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesTopics",
+                "Includes topics",
+                "Beinhaltet Seiten & Inhalte",
+                "Adds topics to XML Sitemap.",
+                "Fügt Seiten und Inhalte zu der XML-Sitemap hinzu.");
+
+            builder.AddOrUpdate("Admin.System.XMLSitemap", "XML Sitemap", "XML-Sitemap");
         }
     }
 }

@@ -2,9 +2,12 @@
 
 @using SmartStore.Admin.Models.Catalog;
 @using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Core.Domain.Media;
 
 @if (Model.Id > 0)
 {
+	var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
+
 	<table class="adminContent mb-5">
 		<tr>
 			<td colspan="2">
@@ -41,7 +44,8 @@
 					deleteUrl = Url.Action("ProductPictureDelete", "Product", "Admin"),
 					sortUrl = Url.Action("SortPictures", "Product", "Admin"),
 					entityAssignmentUrl = Url.Action("ProductMediaFilesAdd", "Product", "Admin"),
-					uploadedFiles = Model.ProductMediaFiles as IEnumerable<IMediaFile>
+					uploadedFiles = Model.ProductMediaFiles as IEnumerable<IMediaFile>,
+					acceptedFileTypes = mediaSettings.ImageTypes + mediaSettings.VideoTypes
 				})
 				@Html.ValidationMessageFor(model => model.AddPictureModel.PictureId)
 			</td>
@@ -74,7 +78,7 @@ else
 					},
                     success: function () {
 						/*
-						// Set preview picture. 
+						// Set preview picture.
 						var elDropzone = $('.fileupload-container');
 						var fileName = el.find(".name").text();
 						var fileSize = el.find(".size").text();

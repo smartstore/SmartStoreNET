@@ -54,9 +54,6 @@
 			var acceptedFiles = "";
 			if ($el.data('accept')) {
 				acceptedFiles = "." + $el.data('accept').replace(/\,/g, ",.");
-
-				// Test
-				acceptedFiles += ",.mp4";
 			}
 
 			// Dropzone init params.

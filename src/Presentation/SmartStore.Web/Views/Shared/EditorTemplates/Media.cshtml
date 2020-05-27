@@ -27,7 +27,7 @@
     {
         get
         {
-            return HasMetadata("showBrowseMedia") ? GetMetadata<bool>("showBrowseMedia") : true;
+            return GetMetadata<bool>("showBrowseMedia", true);
         }
     }
 
@@ -87,6 +87,15 @@
         }
     }
 
+    private string AcceptedFileTypes
+    {
+        get
+        {
+            var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
+            return GetMetadata<string>("acceptedFileTypes", mediaSettings.ImageTypes);
+        }
+    }
+
     private bool MultiFile
     {
         get
@@ -107,7 +116,7 @@
 @{
 	var random = CommonHelper.GenerateRandomInteger();
 	var mediaService = this.CommonServices.MediaService;
-	var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
+    var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
 }
 
 <div class="fileupload-container@(Compact ? " compact" : "")">
@@ -134,8 +143,8 @@
 				.Path(Path)
 				.HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
                 .TypeFilter(TypeFilter)
-				.AcceptedFileTypes(mediaSettings.ImageTypes)
-				.ShowRemoveButton(!MultiFile && Model.HasValue) // Multifile uploads don't need a remove button
+				.AcceptedFileTypes(AcceptedFileTypes)
+				.ShowRemoveButton(!MultiFile && Model.HasValue) // Multifile uploads don't need a remove button.
 				.ShowRemoveButtonAfterUpload(true)
 				.Compact(Compact)
 				.PreviewContainerId("preview-" + random)

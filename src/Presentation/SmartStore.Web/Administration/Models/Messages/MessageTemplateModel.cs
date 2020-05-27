@@ -6,6 +6,8 @@ using FluentValidation;
 using FluentValidation.Attributes;
 using Newtonsoft.Json;
 using SmartStore.Collections;
+using SmartStore.Core.Domain.Media;
+using SmartStore.Services;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
@@ -19,7 +21,7 @@ namespace SmartStore.Admin.Models.Messages
         {
             Locales = new List<MessageTemplateLocalizedModel>();
             AvailableEmailAccounts = new List<EmailAccountModel>();
-		}
+        }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.AllowedTokens")]
         [ScriptIgnore, JsonIgnore]
@@ -63,13 +65,16 @@ namespace SmartStore.Admin.Models.Messages
 		public bool SendManually { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment1FileId")]
-		public int? Attachment1FileId { get; set; }
+        [UIHint("Media")]
+        public int? Attachment1FileId { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment2FileId")]
-		public int? Attachment2FileId { get; set; }
+        [UIHint("Media")]
+        public int? Attachment2FileId { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment3FileId")]
-		public int? Attachment3FileId { get; set; }
+        [UIHint("Media")]
+        public int? Attachment3FileId { get; set; }
 
         // Store mapping.
         [UIHint("Stores")]
@@ -112,13 +117,16 @@ namespace SmartStore.Admin.Models.Messages
         public int EmailAccountId { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment1FileId")]
-		public int? Attachment1FileId { get; set; }
+        [UIHint("Media")]
+        public int? Attachment1FileId { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment2FileId")]
-		public int? Attachment2FileId { get; set; }
+        [UIHint("Media")]
+        public int? Attachment2FileId { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment3FileId")]
-		public int? Attachment3FileId { get; set; }
+        [UIHint("Media")]
+        public int? Attachment3FileId { get; set; }
     }
 
     public partial class MessageTemplateValidator : AbstractValidator<MessageTemplateModel>

@@ -351,7 +351,11 @@
 				if (options.onCompleted) options.onCompleted.apply(this, [file]);
 			});
 
-			el.on("error", function (file, errMessage, xhr) {
+            el.on("error", function (file, errMessage, xhr) {
+                if (errMessage && !_.isEmpty(errMessage.message)) {
+                    errMessage = errMessage.message;
+                }
+
 				logEvent("error", file, errMessage, xhr);
 
 				// Write current message into file so it can be displayed in file upload status.
@@ -359,7 +363,7 @@
 
 				if (xhr && file.status === "error") {
 					console.log(xhr.statusText, "error");
-				}
+                }
 
 				displayNotification("<b>" + file.name + "</b>: " + errMessage, "error");
 				this.removeFile(file);

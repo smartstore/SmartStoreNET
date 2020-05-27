@@ -53,12 +53,17 @@ namespace SmartStore.Core.Domain.Media
 		/// </summary>
 		public bool MakeFilesTransientWhenOrphaned { get; set; } = true;
 
-		#region MediaTypes
+        /// <summary>
+        /// Gets or sets the maximum size (in KB) of an uploaded media file. The default is 102,400 (100 MB).
+        /// </summary>
+        public int MaxUploadFileSize { get; set; } = 102400;
 
-		/// <summary>
-		/// A space separated list of image type file extensions (dotless)
-		/// </summary>
-		public string ImageTypes { get; set; }
+        #region MediaTypes
+
+        /// <summary>
+        /// A space separated list of image type file extensions (dotless)
+        /// </summary>
+        public string ImageTypes { get; set; }
 
 		/// <summary>
 		/// A space separated list of video type file extensions (dotless)

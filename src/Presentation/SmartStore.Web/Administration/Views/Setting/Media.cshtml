@@ -160,6 +160,15 @@
                 @Html.ValidationMessageFor(model => model.MaximumImageSize)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MaxUploadFileSize)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.MaxUploadFileSize, null, new { postfix = "KB" })
+                @Html.ValidationMessageFor(model => model.MaxUploadFileSize)
+            </td>
+        </tr>
 		<tr>
 			<td colspan="2">
 				<div class="admin-config-group">

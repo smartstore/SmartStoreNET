@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Security;
 using SmartStore.Data.Utilities;
 using SmartStore.Services.Media;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
-using System.Dynamic;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -33,6 +34,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [Permission(Permissions.Media.Upload)]
+        [MaxMediaFileSize]
         public async Task<ActionResult> Upload(string path, string[] acceptedMediaTypes = null, bool isTransient = false, DuplicateFileHandling duplicateFileHandling = DuplicateFileHandling.ThrowError)
         {
             var len = Request.Files.Count;

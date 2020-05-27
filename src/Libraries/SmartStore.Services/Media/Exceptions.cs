@@ -1,5 +1,4 @@
-﻿using SmartStore.Core.Domain.Media;
-using System;
+﻿using System;
 
 namespace SmartStore.Services.Media
 {
@@ -49,7 +48,7 @@ namespace SmartStore.Services.Media
     public sealed class DeniedMediaTypeException : SmartException
     {
         public DeniedMediaTypeException(string fileName, string currentType, string[] acceptedTypes)
-            : base($"The media type of '{fileName}' does not match the list of accesped media types. Accepted: {string.Join(", ", acceptedTypes)}, current: {currentType}")
+            : base($"The media type of '{fileName}' does not match the list of accepted media types. Accepted: {string.Join(", ", acceptedTypes)}, current: {currentType}")
         {
         }
     }
@@ -59,6 +58,14 @@ namespace SmartStore.Services.Media
         public ExtractThumbnailException(string path, Exception innerException)
             : base($"Thumbnail extraction for file '{path}' failed. See inner exception for details.", innerException)
         {
+        }
+    }
+
+    public sealed class MaxMediaFileSizeExceededException : SmartException
+    {
+        public MaxMediaFileSizeExceededException(string fileName, long fileSize, long maxSize)
+            : base($"The size {fileSize.ToString("N0")} of file '{fileName.NaIfEmpty()}' exceeds the maximum allowed file size {maxSize.ToString("N0")}.")
+        {            
         }
     }
 }

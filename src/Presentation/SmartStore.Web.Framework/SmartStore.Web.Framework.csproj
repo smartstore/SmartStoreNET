@@ -223,6 +223,7 @@
     <Compile Include="Filters\GdprConsentAttribute.cs" />
     <Compile Include="Filters\CookieConsentFilter.cs" />
     <Compile Include="Filters\JsonNetAttribute.cs" />
+    <Compile Include="Filters\MaxMediaFileSizeAttribute.cs" />
     <Compile Include="Filters\ResponseFilterStream.cs" />
     <Compile Include="FrameworkCacheConsumer.cs" />
     <Compile Include="Localization\SetWorkingCultureAttribute.cs" />

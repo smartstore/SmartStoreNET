@@ -857,7 +857,12 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, SaveSetting, FormValueRequired("save")]
         public ActionResult Media(MediaSettings mediaSettings, MediaSettingsModel model)
         {
-			mediaSettings = model.ToEntity(mediaSettings);
+            if (!ModelState.IsValid)
+            {
+                return Media(mediaSettings);
+            }
+
+            mediaSettings = model.ToEntity(mediaSettings);
 
             return NotifyAndRedirect("Media");
         }

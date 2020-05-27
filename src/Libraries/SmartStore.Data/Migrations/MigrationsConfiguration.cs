@@ -653,6 +653,12 @@
             
             builder.AddOrUpdate("Common.Download.Version.Hint", "Enter the version number in the correct format (e.g.: 1.0.0.0, 2.0 or 3.1.5).", "Geben Sie die Versionsnummer in korrektem Format an (z.B.: 1.0.0.0, 2.0 oder 3.1.5).");
             builder.AddOrUpdate("Common.Download.Version.Placeholder", "e.g.: 1.0.0.0, 2.0 or 3.1.5", "z.B.: 1.0.0.0, 2.0 oder 3.1.5");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Media.MaxUploadFileSize",
+                "Maximum file size",
+                "Maximale Dateigröße",
+                "Specifies the maximum file size in KB of an upload file. The default is 102,400 (100 MB).",
+                "Legt die maximale Dateigröße einer hochzuladenen Datei in KB fest. Der Standardwert ist 102.400 (100 MB).");
         }
     }
 }

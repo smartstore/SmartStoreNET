@@ -62,7 +62,7 @@
 				uploadMultiple: true,
 				acceptedFiles: $el.data('accept'),
 				maxFiles: options.maxFiles,
-				maxFilesize: 2048,				// TODO: get maxFilesize from media settings.
+				maxFilesize: Math.round(options.maxFilesSize / 1024),
 				previewsContainer: options.previewContainerId !== "" ? "#" + options.previewContainerId : null
 			};
 
@@ -143,7 +143,6 @@
 			});
 
 			el.on("sending", function (file, xhr, formData) {
-				
 				logEvent("sending", file, xhr, formData);
 
 				// Write user decision of duplicate handling into formdata before sending so it'll be sent to the server with each file upload.
@@ -342,12 +341,12 @@
 				if (options.onCompleted) options.onCompleted.apply(this, [file]);
 			});
 
-            el.on("error", function (file, errMessage, xhr) {
+			el.on("error", function (file, errMessage, xhr) {
+				logEvent("error", file, errMessage, xhr);
+
                 if (errMessage && !_.isEmpty(errMessage.message)) {
                     errMessage = errMessage.message;
                 }
-
-				logEvent("error", file, errMessage, xhr);
 
 				// Write current message into file so it can be displayed in file upload status.
 				file.message = errMessage;

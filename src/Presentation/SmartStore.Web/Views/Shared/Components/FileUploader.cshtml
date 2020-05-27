@@ -1,5 +1,6 @@
 ﻿@model FileUploader
 
+@using SmartStore.Core.Domain.Media;
 @using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Services.Media;
 
@@ -16,6 +17,9 @@
 	{
 		Model.Id = Model.Name;
 	}
+
+	var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
+	var maxFilesSize = mediaSettings.MaxUploadFileSize;
 }
 
 <div @Html.Attr("class", "dropzone-container", Model.Multifile || !Model.HasTemplatePreview)>
@@ -42,11 +46,11 @@
 			<input type="hidden" id="@(Model.Id)-file" name="@(Model.Id)-file" />
 
 			@if (Model.ShowBrowseMedia)
-            {
+			{
 				<div class="fileupload-buttons">
 					@{ Html.RenderWidget("file_uploader"); }
 				</div>
-            }
+			}
 		</div>
 
 		<a href="#" class="open-upload-summmary">
@@ -194,6 +198,7 @@
             onCompleted: @Html.Raw(Model.OnCompletedHandlerName.HasValue() ? Model.OnCompletedHandlerName : "null"),
 			onMediaSelected: @Html.Raw(Model.OnMediaSelectedHandlerName.HasValue() ? Model.OnMediaSelectedHandlerName : "null"),
             maxFiles: @(Model.Multifile ? 100 : 1),
+			maxFilesSize: @maxFilesSize,
             previewContainerId: "@(Model.Multifile ? Model.PreviewContainerId : "")",
             showRemoveButton: @(Model.ShowRemoveButton ? "true" : "false" ),
 			showRemoveButtonAfterUpload: @(Model.ShowRemoveButtonAfterUpload ? "true" : "false" )

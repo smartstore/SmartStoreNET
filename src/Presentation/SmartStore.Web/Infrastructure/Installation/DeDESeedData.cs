@@ -2835,23 +2835,34 @@ namespace SmartStore.Web.Infrastructure.Installation
 				{
 					x.ShortDescription = "Der Sneaker-Klassiker!";
 					x.FullDescription = "<p>Seit 1912 und bis heute unerreicht: Der Converse All Star Sneaker. Ein Schuh für jede Gelegenheit.</p>";
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 				.Alter("Fashion-987693502", x =>
 				{
 					x.Name = "Ärmelloses Shirt Meccanica";
 					x.ShortDescription = "Frauen Shirt mit trendigem Aufdruck";
 					x.FullDescription = "<p>Auch im Sommer geht der Ducati Stil mit der Mode! Mit dem ärmellosen Shirt Meccanica kann jede Frau ihrer Leidenschaft für Ducati mit einem bequemen und vielseitigen Kleidungsstück Ausdruck verleihen. Das Shirt gibt es in schwarz und vintagerot. Es trägt auf der Vorderseite den traditionellen Schriftzug in Plastisoldruck, wodurch er noch deutlicher und strahlender wird, während sich auf der Rückseite im Nackenbereich das berühmte Logo mit den typischen \"Flügeln\" der fünfziger Jahre befindet.</p>";
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 				.Alter("Fashion-JN1107", x =>
 				{
 					x.Name = "Damen Sport-Jacke";
 					x.FullDescription = "<p>Leichtes wind- und wasserabweisendes Gewebe, Futter aus weichem Single-Jersey Strickbündchen an Arm und Bund, 2 seitliche Taschen mit Reißverschluss, Kapuze in leicht tailliertem Schnitt.</p><ul><li>Oberstoff: 100%</li><li>Polyamid Futterstoff: 65% Polyester, 35% Baumwolle</li><li>Futterstoff 2: 100% Polyester</li></ul>";
-				})
-				.Alter("Fashion-65986524", x =>
-				 {
-					 x.ShortDescription = "Moderne Jeans in Easy Comfort Fit";
-					 x.FullDescription = "<p>Echte Five-Pocket-Jeans von Joker mit zusätzlicher, aufgesetzter Uhrentasche. Dank Easy Comfort Fit mit normaler Leibhöhe und bequemer Beinweite passend für jeden Figurtyp. Gerader Beinverlauf.</p><ul><li>Material: weicher, leichterer Premium-Denim aus 100% Baumwolle</li><li>Bundweite (Zoll): 29-46</li><li>Beinlänge (Zoll): 30 bis 38</li></ul>";
-				 });
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
+                .Alter("Fashion-65986524", x =>
+                {
+                    x.ShortDescription = "Moderne Jeans in Easy Comfort Fit";
+                    x.FullDescription = "<p>Echte Five-Pocket-Jeans von Joker mit zusätzlicher, aufgesetzter Uhrentasche. Dank Easy Comfort Fit mit normaler Leibhöhe und bequemer Beinweite passend für jeden Figurtyp. Gerader Beinverlauf.</p><ul><li>Material: weicher, leichterer Premium-Denim aus 100% Baumwolle</li><li>Bundweite (Zoll): 29-46</li><li>Beinlänge (Zoll): 30 bis 38</li></ul>";
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
+                .Alter("jack-1305851", x =>
+                {
+                    x.Name = "KANUKA POINT JACKET M";
+                    x.ShortDescription = "SOFTSHELLJACKE MÄNNER";
+                    x.FullDescription = "<p>Sportliches Design für sportliche Touren: Die KANUKA POINT ist so gern in Bewegung wie du. Die Softshelljacke besteht aus superelastischem und sehr atmungsaktivem Material, das sich unterwegs jeder deiner Bewegungen anpasst. Deswegen nimmst du mit der KANUKA POINT jeden Pass mit Leichtigkeit.Und musst dir auch bei Kraxeleien zum Gipfel keine Gedanken um deine Jacke machen, denn ihr Material hält einiges aus.Auch bei Wind und leichten Schauern bleibst du gelassen.</p>";
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                });
 		}
 
 		private void AlterFurnitureProducts(IList<Product> entities)
@@ -2862,24 +2873,28 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.Name = "Le Corbusier LC 6 Esstisch (1929)";
 					x.ShortDescription = "Esstisch LC6, Designer: Le Corbusier, B x H x T: 225 x 69/74 (verstellbar) x 85 cm, Unterkonstruktion: Stahlrohr, Glasplatte: klar oder sandgestrahlt, 15 oder 19 mm, höhenverstellbar.";
 					x.FullDescription = "<p>Vier kleine Teller tragen eine Platte aus Glas. Darunter erstreckt sich in klarer Struktur die Konstruktion aus Stahlrohr. Der LC6 ist echter Klassiker der Bauhaus-Kunst und dient in Kombination mit den Drehstühlen LC7 als formschöne Le Corbusier-Essecke. Darüber hinaus findet man den Tisch auch vermehrt in Büros oder in Hallen. Er ist höhenverstellbar und kann so dem jeweiligen Zweck perfekt angepasst werden.</p><p>Der formschöne Tisch von Le Corbusier ist mit klarer oder mit sandgestrahlter Glasplatte erhältlich. Die Unterkonstruktion besteht aus ovalen Stahlrohren.</p>";
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 				.Alter("Furniture-ball-chair", x =>
 				{
 					x.Name = "Eero Aarnio Kugelsessel (1966)";
 					x.FullDescription = "<p>Der Ball Chair oder auch Globe Chair genannt, ist ein echtes Meisterwerk des legendären Designers Eero Aarnio. Der Kugelsessel aus den sechziger Jahren hat Designergeschichte geschrieben. Der eiförmig gestaltet Sessel ruht auf einem Trompetenfuss und wird nicht zu letzt aufgrund seiner Form und der ruhigen Atmophäre im Innern dieses Möbels besonders geschätzt. Das Design des Möbelkörpers lässt  Geräusche und störende Außenweltelemente in den Hintergurnd tretten. Ein Platz, wie geschaffen zum ausruhen und entspannen. Mit der großen Auswahl an Farben passt passt sich der Eyeball Chair jeder Wohn- und Arbeitsumgebung gekonnt an. Ein Sessel, der sich durch zeitloses Design auszeichnet und die Moderne immer im Blick haben wird. Der Ball Chair ist 360° zu drehen, um den Blick auf die Umgebung zu veränderen. Die Aussenschale in Fiberglas weiss oder schwarz. Der Bezug ist in Leder oder Linen Mixed.<p><p>Abmessung: Breite 102 cm, Tiefe 87 cm, Höhe 124 cm, Sitzhöhe: 44 cm.</p>";
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 				.Alter("Furniture-lounge-chair", x =>
 				{
 					x.Name = "Charles Eames Lounge Sessel (1956)";
 					x.ShortDescription = "Club Sessel, Lounge Chair, Designer: Charles Eames, Breite 80 cm, Tiefe 80 cm, Höhe 60 cm, Sitzschale: Sperrholz, Fuß (drehbar): Aluminiumguss, Kissen (gepolstert) mit Lederbezug.";
 					x.FullDescription = "<p>So sitzt man in einem Baseball-Handschuh. Das war jedenfalls eine der Vorstellungen, die Charles Eames beim Entwurf dieses Clubsessels im Kopf hatte. Der Lounge Chair sollte ein Komfort-Sessel sein, in den man luxuriös einsinken kann. Durch die Konstruktion aus drei miteinander verbundenen, beweglichen Sitzschalen und einer bequemen Polsterung gelang Charles Eames die Umsetzung. Eigentlich ist der Clubsessel mit drehbarem Fuß ein Gegensatz zu den Bauhaus-Charakteristiken, die Minimalismus und Funktionalität in den Vordergrund stellten. Dennoch wurde er zu einem Klassiker der Bauhaus-Geschichte und sorgt noch heute in vielen Wohnräumen und Clubs für absoluten Komfort mit Stil.</p><p>Abmessung: Breite 80 cm, Tiefe 60 cm,  Höhe Gesamt 80 cm (Höhe Rückenlehne: 60 cm). CBM: 0,70.</p><p>Verarbeitung: Lounge Chair mit Sitzschale aus schichtverleimten gebogenen Sperrholz mit Palisander furniert, Nussbaum natur oder in schwarz. Drehbarer Fuß aus Aluminiumguss schwarz mit polierten Kanten oder auch wahlweise vollständig verchromt. Aufwendige Polsterung der Kissen in Leder.</p><p>Alle POLSTEREINHEITEN sind bei dem EAMES LOUNGE CHAIR (Sitz, Armlehne, Rückenlehne, Kopflehne) abnehmbar.</p><p></p>";
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 				.Alter("Furniture-cube-chair", x =>
 				{
 					x.Name = "Josef Hoffmann Sessel Kubus (1910)";
 					x.ShortDescription = "Sessel Kubus, Designer: Josef Hoffmann, Breite 93 cm, Tiefe 72 cm, Höhe 77 cm, Grundgestell: massives Buchenholz, Polsterung: fester Polyurethan Schaum (formbeständig), Bezug: Leder";
 					x.FullDescription = "<p>Der Sessel Kubus von Josef Hoffmann hält, was der Name verspricht und das gleich in zweierlei Hinsicht. Er besteht aus vielen Quadraten, sowohl was die Konstruktion angeht als auch im Bezug auf das Design der Oberfläche. Zudem war der Kubus mit seiner rein geometrischen Form eine Art Vorbote des Kubismus. Der Sessel von Josef Hoffmann wurde 1910 entworfen und steht noch heute als Nachbau in zahlreichen Geschäfts- und Wohnräumen.</p><p>Ursprünglich war der Kubus ein Clubsessel. Zusammen mit dem zwei- und dem dreisitzigen Sofa der Serie entsteht eine gemütliche Sitzecke mit einer kultivierten und gehobenen Ausstrahlung. Das Grundgestell des Sessels besteht aus Holz. Die formbeständige Polsterung ist mit Leder überzogen und wurde mit einer speziellen Nähtechnik optisch zu Quadraten geformt.</p><p>Abmessung: Breite 93 cm, Tiefe 72 cm, Höhe 77 cm. CBM: 0,70.</p>";
-				});
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                });
 		}
 
 		protected override void Alter(IList<Product> entities)
@@ -3226,27 +3241,31 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.Name = "10 € Geschenkgutschein";
 					x.ShortDescription = "5 € Geschenkgutschein. Eine ideale Geschenkidee.";
 					x.FullDescription = "<p>Wenn in letzter Minute mal wieder ein Geschenk fehlt oder man nicht weiß, was man schenken soll, dann bietet sich der Kauf eines Geschenkgutscheins an.</p>";
-				})
+                    x.TaxCategoryId = _taxCategories["Befreit"].Id;
+                })
 
 				.Alter("$25 Virtual Gift Card", x =>
 				{
 					x.Name = "25 € Geschenkgutschein";
 					x.ShortDescription = "25 € Geschenkgutschein. Eine ideale Geschenkidee.";
 					x.FullDescription = "<p>Wenn in letzter Minute mal wieder ein Geschenk fehlt oder man nicht weiß, was man schenken soll, dann bietet sich der Kauf eines Geschenkgutscheins an.</p>";
-				})
+                    x.TaxCategoryId = _taxCategories["Befreit"].Id;
+                })
 
 				.Alter("$50 Virtual Gift Card", x =>
 				{
 					x.Name = "50 € Geschenkgutschein";
 					x.ShortDescription = "50 € Geschenkgutschein. Eine ideale Geschenkidee.";
 					x.FullDescription = "<p>Wenn in letzter Minute mal wieder ein Geschenk fehlt oder man nicht weiß, was man schenken soll, dann bietet sich der Kauf eines Geschenkgutscheins an.</p>";
-				})
+                    x.TaxCategoryId = _taxCategories["Befreit"].Id;
+                })
 
                 .Alter("$100 Virtual Gift Card", x =>
                 {
                     x.Name = "100 € Geschenkgutschein";
                     x.ShortDescription = "100 € Geschenkgutschein. Eine ideale Geschenkidee.";
                     x.FullDescription = "<p>Wenn in letzter Minute mal wieder ein Geschenk fehlt oder man nicht weiß, was man schenken soll, dann bietet sich der Kauf eines Geschenkgutscheins an.</p>";
+                    x.TaxCategoryId = _taxCategories["Befreit"].Id;
                 })
 
                 #endregion
@@ -3593,7 +3612,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "MP3, 320 kbit/s";
 					x.FullDescription = "<p>Antonio Vivaldi: Der Fr&uuml;hling</p> <p><b>Antonio Lucio Vivaldi</b><span>&nbsp;(*&nbsp;</span>4. M&auml;rz<span>&nbsp;</span>1678<span>&nbsp;in&nbsp;</span>Venedig<span>; &dagger;&nbsp;</span>28. Juli<span>&nbsp;</span>1741<span>&nbsp;in&nbsp;</span>Wien<span>) war ein venezianischer&nbsp;</span>Komponist<span>&nbsp;und&nbsp;</span>Violinist<span>&nbsp;im&nbsp;</span>Barock<span>.</span></p> <p><b>Die vier Jahreszeiten</b>&nbsp;(italienisch&nbsp;<span lang=\"it\" class=\"lang\"><i>Le quattro stagioni</i></span>) hei&szlig;t das wohl bekannteste Werk&nbsp;Antonio Vivaldis. Es handelt sich um vier&nbsp;Violinkonzerte&nbsp;mit au&szlig;ermusikalischen&nbsp;Programmen; jedes Konzert portr&auml;tiert eine&nbsp;Jahreszeit. Dazu ist den einzelnen Konzerten jeweils ein &ndash; vermutlich von Vivaldi selbst geschriebenes &ndash;&nbsp;Sonett&nbsp;vorangestellt; fortlaufende Buchstaben vor den einzelnen Zeilen und an den entsprechenden Stellen in der&nbsp;Partitur&nbsp;ordnen die verbale Beschreibung der Musik zu.</p> <p>Vivaldi hatte bereits zuvor immer wieder mit au&szlig;ermusikalischen Programmen experimentiert, die sich h&auml;ufig in seinen Titeln niederschlagen; die genaue Ausdeutung von Einzelstellen der Partitur ist aber f&uuml;r ihn ungew&ouml;hnlich. Seine Erfahrung als virtuoser Geiger erlaubte ihm den Zugriff auf besonders wirkungsvolle Spieltechniken; als Opernkomponist hatte er einen starken Sinn f&uuml;r Effekte entwickelt; beides kam ihm hier zugute.</p> <p>Wie der Titel bereits nahelegt, werden vor allem Naturerscheinungen imitiert &ndash; sanfte Winde, heftige St&uuml;rme und Gewitter sind Elemente, die in allen vier Konzerten auftreten. Hinzu kommen verschiedene Vogelstimmen und sogar ein Hund, weiter menschliche Bet&auml;tigungen wie etwa die Jagd, ein Bauerntanz, das Schlittschuhlaufen einschlie&szlig;lich Stolpern und Hinfallen bis hin zum schweren Schlaf eines Betrunkenen.</p> <p>Das Werk stammt aus dem Jahre 1725 und ist in zwei Druckausgaben erhalten, die offenbar mehr oder weniger zeitgleich in Amsterdam und Paris erschienen.</p> <p><span><br /></span></p>";
 					x.ProductReviews.Clear();
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 
 				#endregion Antonio Vivildi: then spring
 
@@ -3604,15 +3624,31 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Ludwig van Beethoven: Für Elise. Eine von Beethovens populärsten Kompositionen.";
 					x.FullDescription = "<p> Die früheste, 1973 bekannt gewordene Fassung der „Kernmelodie“[5] notierte Beethoven 1808 in ein Skizzenbuch zur Pastorale. Einige aus dem Skizzenbuch herausgelöste Seiten bilden heute das Autograph Mus. ms. autograph. Beethoven Landsberg 10 der Staatsbibliothek Preußischer Kulturbesitz in Berlin. Die Melodie, die eindeutig als Kern des Klavierstückes WoO 59 zu erkennen ist,[2] befindet sich in den Zeilen 6 und 7 der Seite 149. Es handelt sich um eine einstimmige, sechzehntaktige Melodie, die sich besonders bei den Auftakten des Mittelteiles und bei den Schlusswendungen der Takte 7 und 15 sowie durch das Fehlen des zweitaktigen Orgelpunktes auf E von späteren Fassungen unterscheidet.[2] Diese Melodie nahm Beethoven 1810 wieder auf, modifizierte sie und fügte ihr weitere Teile hinzu. Das geschah in Beethovens Handschrift BH 116[6] und vermutlich auch in dem Autograph, das zu Babette Bredl gelangte und von Ludwig Nohl abgeschrieben und 1867 erstmals veröffentlicht wurde.[7][8] </p> <p> In BH 116 lassen sich drei Arbeitsphasen erkennen: eine erste Niederschrift im Jahre 1810, Korrekturen daran von 1810 und eine Bearbeitung aus dem Jahre 1822. Die Bearbeitung von 1822 hatte das Ziel, das Klavierstück in eine für eine Veröffentlichung taugliche Fassung zu bringen. Es sollte als No 12 den Schluss eines Zyklus von Bagatellen bilden. Dieser Plan wurde allerdings nicht ausgeführt.[9] 1822 überschrieb Beethoven das Klavierstück mit „molto grazioso“. Er verschob die Begleitfiguren des A-Teils in der linken Hand um ein Sechzehntel nach rechts und entlastete dabei den Taktanfang. Außerdem führte er die Begleitfigur teilweise in eine tiefere Lage und weitete damit den Klang aus.[10] Im Teil B kehrte Beethoven zu einer melodisch und rhythmisch komplizierteren, 1810 verworfenen Fassung zurück. Den vermutlichen Gesamtaufbau des Klavierstückes ließ er nicht völlig unangetastet und fügte vier bisher ungenutzte Takte als Überleitung zum Teil B ein. Vier 1822 notierte Einleitungstakte, die zum A-Teil passen, strich er dagegen wieder.[11] Bei der Anweisung für die Reprise des letztmals wiederkehrenden Teiles A schrieb er „una corda“ vor, was sich auf diesen Teil selbst beziehen kann oder nur auf den neu entworfenen, dreitaktigen, wahrscheinlich akkordisch gedachten, aber nur einstimmig notierten Schluss.[12] Eine vollständige Fassung als Resultat der Bearbeitung von 1822 stellte Beethoven nicht her.[13][14] </p>";
 					x.ProductReviews.Clear();
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 
-				#endregion Beethoven für Elise
+                #endregion Beethoven für Elise
 
-				#endregion Instant Downloads
+                .Alter("Ebook 'Stone of the Wise' in 'Lorem ipsum'", x =>
+                {
+                    x.Name = "Ludwig van Beethoven: Für Elise";
+                    x.ShortDescription = "E-Book, 465 pages";
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 
-				#region watches
+                #endregion Instant Downloads
 
-				#region Certina DS Podium Big Size
+                #region Watches
+
+                #region Watch Series 2
+                .Alter("Watch Series 2", x =>
+                {
+                    x.Name = "Watch Series 2";                    
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
+                #endregion
+
+                #region Certina DS Podium Big Size
                 .Alter("Certina DS Podium Big Size", x =>
 				{
 					x.Name = "Certina DS Podium Big Size Herrenchronograph";
@@ -3708,105 +3744,124 @@ namespace SmartStore.Web.Infrastructure.Installation
 				{
 					x.ShortDescription = "Die Sony PlayStation 3 ist die Multi-Media-Console für die nächste Generation digitalem Home-Entertainment. Mit der Blu-Ray-Technologie genießen Sie Filme in HD.";
 					x.FullDescription = ps3FullDescription;
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 				.Alter("DUALSHOCK 3 Wireless Controller", x =>
 				{
 					x.ShortDescription = "Ausgestattet mit SIXAXIS™ Motion-sensing-Technologie und Drucksensoren für jede Aktionsschaltfläche, bietet die DUALSHOCK®3 wireless Controller für die PlayStation ® 3 die intuitivste Gameplay-Erfahrung.";
 					x.FullDescription = "<ul><li><h4>Gewicht und Maße</h4><ul><li>Größe und Gewicht (ca.) : 27 x 23,5 x 4 cm ; 191 g</li></ul></li></ul>";
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 				.Alter("Assassin's Creed III", x =>
 				{
 					x.ShortDescription = "Eliminieren Sie Ihre Gegner mit einem erweiterten Waffenarsenal, darunter Bögen, Pistolen, Tomahawk und die charakteristische Klinge des Assassinenordens. Erkunden Sie dicht bevölkerte Städte entlang der ausgedehnten und gefährlichen Grenze zur Wildnis, wo es von wilden Tieren nur so wimmelt. Eine ganz neue Spielengine zeigt die Brutalität und Schönheit einer Nation während ihres epischen Kampfes um Unabhängigkeit.";
 					x.FullDescription = "<p>Vor dem Hintergrund der Amerikanischen Revolution im späten 18. Jahrhundert präsentiert Assassin’s Creed III einen neuen Helden: Ratohnhaké:ton, der teils uramerikanischer, teils englischer Abstammung ist. Er nennt sich selbst Connor und wird die neue Stimme der Gerechtigkeit im uralten Krieg zwischen Assassinen und Templern. Der Spieler wird zum Assassinen im Krieg um Freiheit und gegen Tyrannei in der aufwändigsten und flüssigsten Kampferfahrung der Reihe. Assassin’s Creed III umfasst die Amerikanische Revolution und nimmt den Spieler mit auf eine Reise durch das lebhafte, ungezähmte Grenzland, vorbei an geschäftigen Kolonialstädten, bis hin zu den erbittert umkämpften und chaotischen Schlachtfeldern, auf denen George Washingtons Kontinentalarmee mit der eindrucksvollen Britischen Armee zusammenstieß.</p><p>Das 18. Jahrhundert in Nordamerika. Nach mehr als 20 Jahren voller Konflikte stehen die 13 amerikanischen Kolonien und die Britische Krone am Rande eines handfesten Krieges. Die Schlachtlinien werden vorbereitet. Blutvergießen ist unvermeidbar. Aus der Asche dieses brennenden Dorfes wird ein neuer Assassine auferstehen. Als Sohn mohikanischer und britischer Vorfahren wird sein Kampf für Freiheit und Gerechtigkeit in den Wirren der Revolution Gestalt annehmen.</p>";
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 				.Alter("PlayStation 3 Assassin's Creed III Bundle", x =>
 				{
 					x.ShortDescription = "500GB PlayStation®3 Console, 2 × DUALSHOCK®3 wireless controller und Assassin's Creed® III.";
 					x.FullDescription = ps3FullDescription;
                     x.BundleTitleText = "Produktset besteht aus";
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 				.Alter("PlayStation 4", x =>
 				{
 					x.ShortDescription = "In Zusammenarbeit mit einigen der kreativsten Köpfe der Industrie entstanden, bietet die PlayStation® 4 atemberaubende und einzigartige Gaming-Erlebnis.";
 					x.FullDescription = ps4FullDescription;
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 
                 .Alter("Playstation 4 Pro", x =>
                 {
                     x.ShortDescription = "Die Sony PlayStation 4 Pro ist die Multi-Media-Konsole für die nächste Generation der digitalen Home Entertainment. Es bietet die Blu-ray-Technologie, mit der Sie Filme in High Definition genießen können.";
                     x.FullDescription = ps4FullDescription;
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                 })
                 .Alter("FIFA 17 - PlayStation 4", x =>
                 {
                     x.ShortDescription = "Powered by Frostbite";
                     x.FullDescription = "<ul>  <li>Powered by Frostbite: Einer der führenden Game-Engines der Branche, Frostbite liefert authentische, wahrheitsgetreue Action, nimmt Spieler auf neue Fußball-Welten und stellt Fans zu Charakteren voller Tiefe und Emotionen in der FIFA 17 vor.</li>  <li>Die Reise: Zum ersten Mal in der FIFA, lebe deine Geschichte auf und abseits des Platzes als der nächste aufsteigende Star der Premier League, Alex Hunter. Spielen Sie auf jedem Club in der Premier League, für authentische Manager und neben einigen der besten Spieler auf dem Planeten.</li>  <li>Erleben Sie brandneue Welten in der FIFA 17, während Sie sich durch die emotionalen Höhen und Tiefen der Reise bewegen.</li>  <li>Komplette Innovation in der Art und Weise, wie Spieler denken und bewegen, körperlich mit Gegnern interagieren und im Angriff ausführen, bringt euch die volle Kontrolle über jeden Moment auf dem Spielfeld.</li></ul>";
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                 })
                 .Alter("Horizon Zero Dawn - PlayStation 4", x =>
                 {
                     x.ShortDescription = "Erleben Sie eine lebendige, üppige Welt, die von geheimnisvollen mechanisierten Kreaturen bewohnt wird";
                     x.FullDescription = "<Ul> <li> Eine üppige Post-Apokalyptische Welt - Wie haben Maschinen diese Welt dominiert und was ist ihr Zweck? Was ist mit der Zivilisation passiert? Scour jede Ecke eines Reiches mit alten Reliquien und geheimnisvollen Gebäuden gefüllt, um Ihre Vergangenheit aufzudecken und die vielen Geheimnisse eines vergessenen Landes zu entdecken. </ Li>  <li> Natur und Maschinen Collide - Horizon Zero Dawn stellt zwei kontrastierende Elemente vor, die eine lebendige Welt mit der wunderschönen Natur reichen und sie mit einer beeindruckenden hochentwickelten Technologie füllen. Diese Ehe schafft eine dynamische Kombination für Erkundung und Gameplay. </ Li> <li> Defy Overwhelming Odds - Die Gründung des Kampfes in Horizon Zero Dawn ist auf die Geschwindigkeit und Schlauheit von Aloy im Vergleich zu der Rohstärke und Größe der Maschinen gebaut. Um einen viel größeren und technologisch überlegenen Feind zu überwinden, muss Aloy jede Unze ihres Wissens, ihrer Intelligenz und ihrer Beweglichkeit nutzen, um jede Begegnung zu überleben. </ Li> <li> Cutting Edge Open World Tech - Atemberaubend detaillierte Wälder, Und atmosphärische Ruinen einer vergangenen Zivilisation verschmelzen in einer Landschaft, die mit wechselnden Wettersystemen und einem vollen Tag / Nacht-Zyklus lebendig ist. </ Li> </ ul>";
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                 })
                 .Alter("LEGO Worlds - PlayStation 4", x =>
                 {
                     x.ShortDescription = "Erleben Sie eine Galaxie von Welten, die ganz aus LEGO-Steinen hergestellt wurden.";
                     x.FullDescription = "<Ul>   <Li> Erleben Sie eine Galaxie von Welten, die vollständig aus LEGO-Ziegeln hergestellt wurden. </ Li>   <Li> LEGO Worlds ist eine offene Umgebung von prozessual generierten Welten, die ganz aus LEGO-Steinen bestehen, die man mit LEGO-Modellen frei manipulieren und dynamisch bevölkern kann. </ Li>   <Li> Schaffen Sie alles, was Sie sich vorstellen können, einen Ziegelstein zu einer Zeit, oder verwenden Sie groß angelegte Landschafts-Werkzeuge, um riesige Gebirgszüge zu schaffen und Ihre Welt mit tropischen Inseln zu platzieren. </ Li>   <Li> Entdecken Sie mit Hubschraubern, Drachen, Motorrädern oder sogar Gorillas und entsperren Sie Schätze, die Ihr Gameplay verbessern. </ Li>   <Li> Beobachten Sie Ihre Kreationen durch Charaktere und Kreaturen, die mit Ihnen und einander in unerwarteter Weise interagieren, zum Leben. </ Li></ Ul><P></ P>";
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                 })
                 .Alter("Minecraft - Playstation 4 Edition", x =>
                 {
                     x.ShortDescription = "Third-Person Action-Abenteuer Titel Set.";
                     x.FullDescription = "<P>Aufbau! Kunst! Erforschen! </p> <p> Die kritisch gefeierte Minecraft kommt zu PlayStation 4 und bietet größere Welten und größere Distanz als die PS3- und PS-Vita-Editionen. </ P> <p> Erstellen Sie Ihre eigene Welt, dann bauen Sie Erforschen und erobern Wenn die Nacht fällt die Monster erscheinen, so sicher sein, einen Schutz zu errichten, bevor sie ankommen. </ P> <p> Die Welt ist nur durch Ihre Phantasie begrenzt! Größere Welten und größere Distanz als PS3 und PS Vita Editions Beinhaltet alle Features aus der PS3-Version Importieren Sie Ihre PS3 und PS Vita Welten auf die PS4-Bearbeitung. </ P>";
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                 })
                 .Alter("PlayStation 4 Minecraft Bundle", x =>
                 {
                     x.ShortDescription = "100GB PlayStation®4 system, 2 × DUALSHOCK®4 wireless controller unf Minecraft für PS4 Edition.";
                     x.FullDescription = "'<ul>  <li>PlayStation 4, die neueste Generation des Entertainment Systems, definiert reichhaltiges und beeindruckendes Gameplay, völlig neu.</li>  <li>Den Kern der PS4 bilden ein leistungsstarker, eigens entwickelter Chip mit acht x86-Kernen (64 bit) sowie ein hochmoderner optimierter Grafikprozessor.</li>  <li>Ein neuer, hochsensibler SIXAXIS-Sensor ermöglicht mit dem DualShock 4 Wireless Controller eine erstklassige Bewegungssteuerung.</li>  <li>Der DualShock 4 bietet als Neuerungen ein Touchpad, eine Share-Taste, einen eingebauten Lautsprecher und einen Headset-Anschluss.</li>  <li>PS4 integriert Zweitbildschirme, darunter PS Vita, Smartphones und Tablets, damit Spieler ihre Lieblingsinhalte überall hin mitnehmen können.</li></ul>";
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
                 })
 
                 .Alter("DUALSHOCK 4 Wireless Controller", x =>
 				{
 					x.ShortDescription = "Durch Kombination klassischer Steuerelemente mit innovativen neuen Möglichkeiten des Spielens, ist der Wireless Controller DUALSHOCK® 4 der evolutionäre Controller für eine neue Ära des Gaming.";
 					x.FullDescription = "<div><div><p>Der DualShock 4 Controller bietet einige neue Features, die völlig neue Wege des Spielens ermöglichen und wohlüberlegt mit Unterstützung aus der Entwickler-Community zusammengestellt wurden. Die “Share”-Taste erlaubt es Ihnen ganz einfach, Gameplay in Echtzeit über Streaming-Seiten wie Ustream zu veröffentlichen. Dort können andere Gamer Spiele kommentieren oder sogar direkt beitreten und aushelfen. Daneben können Sie über die “Share”-Taste Bilder oder Videos zu Facebook hochladen. Auf der Vorderseite des DualShock 4 befindet sich eine LED-Leuchte, die in unterschiedlichen Farben erstrahlen kann, um die Farbe des Charakters im Spiel abzubilden und einen Spieler so leicht zu identifizieren. Die Farben können dem Spieler auch nützliche Informationen liefern, zum Beispiel wenn der Charakter im Spiel Schaden nimmt.</p> <p>Der DualShock 4 wurde zusammen mit einem zweiten Peripherie-Gerät entwickelt, einer Kamera (nicht im Lieferumfang enthalten), die die Tiefe der Umgebung vor ihr wahrnehmen kann und die mithilfe der LED-Leuchte die Position des Controllers im dreidimensionalen Raum bestimmen kann.</p> <p>Der DualShock 4 bietet auf seiner Vorderseite ein Touchpad und somit eine neue Input-Methode. Zusätzlich gibt es einen eingebauten Lautsprecher und einen Headset-Anschluss, um hochklassige Soundeffekte aus den Spielen zu übertragen. Mithilfe eines Headsets (nicht im Lieferumfang enthalten) können Sie während des Online-Gamings mit Ihren Freunden chatten und Soundeffekte aus dem Controller hören können. Der DualShock 4 adaptiert die bekannte Form des kabellosen DualShock 3 Controllers und bietet einige entscheidende Verbesserungen:</p> <ul> <li>Ein neuer, hochsensibler SIXAXIS-Sensor ermöglicht eine erstklassige Bewegungssteuerung.</li> <li>Die Dual-Analogsticks wurden verbessert und bieten eine größere Präzision, ein besseres Material auf den Oberflächen sowie eine verbesserte Form, um eine noch genauere Steuerung zu ermöglichen.</li> <li>Die L2/R2-Tasten oben auf dem Controller wurden abgerundet und sind jetzt einfacher und flüssiger zu bedienen.</li> <li>Eine neue “Options”-Taste kombiniert die Funktionen der “Select”- und “Start”-Tasten auf dem DualShock 3 zur Steuerung der Ingame-Menüs.</li> </ul> <h4>Technische Spezifikationen</h4> <ul> <li>Außenabmessungen Ca. 162 × 52 × 98 mm (B × H × T) (vorläufig) </li><li>Gewicht Ca. 210 g (vorläufig) </li><li><b>Tasten / Schalter:</b> PS-Taste, SHARE-Taste, OPTIONS-Taste, Richtungstasten (oben/unten/links/rechts), Aktionstasten (Dreieck, Kreis, Kreuz, Quadrat), R1/L1/R2/L2-Taste, linker Stick / L3-Taste, rechter Stick / R3-Taste, Pad-Taste </li><li><b>Touchpad:</b> 2-Punkt-Touchpad, Klick-Mechanismus, kapazitiv</li> <li><b>Bewegungssensor:</b> Sechsachsiges Motion-Sensing-System (dreiachsiges Gyroskop, dreiachsiger Beschleunigungssensor) </li><li><b>Sonstige Funktionen:</b> Lichtbalken, Vibration, integrierter MonoLautsprecher</li> <li><b>Anschluss:</b> USB (Micro B), Erweiterungs-Port, Stereo-Kopfhörerbuchse </li><li><b>Wireless-Kommunikation:</b> Bluetooth 2.1+EDR</li> <li><b>Batterie:</b> Typ Eingebauter Lithium-Ionen-Akku</li> <li><b>Spannung:</b> 3,7 V Gleichspannung (vorläufig)</li> <li><b>Kapazität:</b> 1000 mAh (vorläufig)</li> <p></p> <p> <i>Kurzfristige Änderungen des Herstellers vorbehalten.</i> </p> </ul></div><div></div></div>";
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 				.Alter("PlayStation 4 Camera", x =>
 				{
 					x.Name = "PlayStation 4 Kamera";
 					x.ShortDescription = "Eine Kamera, die die Tiefe der Umgebung vor ihr wahrnehmen kann und die mithilfe der LED-Leuchte die Position des Controllers im dreidimensionalen Raum bestimmen kann.";
 					x.FullDescription = "<p>Die neue Kamera besitzt vier Mikrofone mit der eine präzise Geräusch-Erkennung und -Ortung möglich ist und wird den PlayStation Move-Motion-Controller (nicht im Lieferumfang enthalten) mit einer größeren Präzision als je zuvor unterstützen.</p><p><ul><li><b>Farbe:</b> Jet Black</li> <li><b>Außenabmessungen:</b> Ca. 186 × 27 × 27 mm (B × H × T) (vorläufig)</li> <li><b>Gewicht:</b> Ca. 183 g (vorläufig)</li> <li><b>Videopixel:</b> (Maximum) 2 × 1280 × 800 Pixel</li> <li><b>Videobildrate:</b> 1280×800 Pixel bei 60 fps, 640×400 Pixel bei 120 fps, 320×192 Pixel bei 240 fps</li> <li><b>Videoformat:</b> RAW, YUV (unkomprimiert)</li> <li><b>Objektiv:</b> Zwei Objektive, F-Wert/F2.0 Fixfokus</li> <li><b>Erfassungsbereich</b> 30 cm ～ ∞</li> <li><b>Sichtfeld</b> 85°</li> <li><b>Mikrofon:</b> 4-Kanal Mikrofon-Array</li> <li><b>Verbindungsart:</b> Spezieller PS4-Stecker (AUX-Stecker)</li> <li><b>Kabellänge:</b> Ca. 2 m (vorläufig)</li> <p></p><p> <i>Kurzfristige Änderungen des Herstellers vorbehalten.</i> </p></ul></p>";
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 				.Alter("PlayStation 4 Bundle", x =>
 				{
 					x.ShortDescription = "PlayStation®4 Console, DUALSHOCK®4 wireless controller und PS4 Kamera.";
 					x.FullDescription = ps4FullDescription;
                     x.BundleTitleText = "Produktset besteht aus";
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 				.Alter("Accessories for unlimited gaming experience", x =>
 				{
 					x.Name = "Zubehör für unbegrenzte Gaming-Erlebnis";
 					x.ShortDescription = "Die Zukunft des Gaming ist jetzt mit dynamischen, verbundenen Spiele, starke Grafikleistung und Geschwindigkeit, intelligente Personalisierung, integrierter sozialer Fähigkeiten und innovative Second-Screen-Funktionen. Der geniale Höhepunkt der kreativsten Köpfe in der Industrie, bietet PlayStation® 4 eine einzigartige Spielumgebung, die Ihnen den Atem rauben wird.";
 					x.FullDescription = "<ul><li>Tauchen Sie ein in eine neue Welt des Spielens mit starker Grafikleistung und Geschwindigkeit.</li><li>Beseitigen Sie längere Ladezeiten der gespeicherte Spiele mit Suspend-Modus.</li><li>Sofortiges spielen ohne zu warten dank Herunterladen und Aktialisierung im Hintergrund.</li><li>Teilen Sie sofort Bilder und Videos Ihrer Lieblings-Gaming-Momente auf Facebook mit dem DUALSHOCK® 4 Controller.</li><li>Ausgestrahlt, während Sie Echtzeit über Ustream spielen.</li></ul>";
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 				.Alter("Watch Dogs", x =>
 				{
 					x.ShortDescription = "Hacken Sie die Stadt und machen Sie sie zu Ihrer Waffe. Bewegen Sie sich dynamisch durch die Stadt, nutzen Sie Abkürzungen durch Gebäude, klettern Sie auf Dächer und über Hindernisse";
 					x.FullDescription = "<p>Es braucht nur eine Fingerbewegung und wir sind mit unseren Freunden verbunden. Wir kaufen die aktuellsten Gadgets und Ausrüstungen. Wir finden heraus, was in der Welt passiert. Aber mit der gleichen Bewegung entsteht ein digitaler Schatten, der sich zunehmend vergrößert. Mit jeder Verbindung hinterlassen wir eine digitale Spur, die jede Bewegung von uns aufzeichnet: unsere Vorlieben sowie unsere Abneigungen. Und es sind nicht nur die Menschen – jede Großstadt ist heutzutage vernetzt. Die städtische Infrastruktur wird von komplexen Systemen überwacht und kontrolliert.</p><p>In Watch Dogs heißt dieses System Central Operating System (ctOS). Es kontrolliert den Großteil der Technologie der Stadt und verfügt über wichtige Informationen über jeden Einwohner. Du spielst Aiden Pearce, einen brillanten Hacker und ehemaligen Gangster, dessen kriminelle Vergangenheit zu einer blutigen Familientragödie führte. Jetzt bist du auf der Jagd nach den Leuten, die deiner Familie Leid zugefügt haben, und du hast die Möglichkeit jeden in deinem Umfeld zu überwachen und zu hacken, indem du alles manipulierst, was mit dem Netzwerk der Stadt verbunden ist. Greife auf die allgegenwärtigen Überwachungskameras zu, lade persönliche Informationen herunter, um eine Zielperson zu finden, kontrolliere Ampeln und öffentliche Verkehrsmittel… und vieles mehr. Nutze die Stadt Chicago als deine ultimative Waffe und nimm auf deine persönliche Art Rache.</p><p><ul> <li><strong>Hacke die Stadt</strong> - <i>Watch Dogs</i> spielt in einer vollständig simulierten Stadt, in der du in Echtzeit die öffentlichen Verkehrsmittel mit deinem Smartphone kontrollieren kannst. Alles, was mit dem ctOS der Stadt verbunden ist, kann zu deiner Waffe werden.</li> <li><strong>Gerechtigkeit der Straße</strong> - In einer Stadt, in der auf Gewalt am besten mit Gewalt geantwortet wird, hast du die Fähigkeiten, um den Kampf auf die Straßen zu bringen. Insgesamt wirst du Zugriff auf ein Arsenal von über 30 traditionellen Waffen haben.</li> <li><strong>Volle Power</strong> - Setze dich hinter das Lenkrad von mehr als 65 Fahrzeugen, jedes ausgestattet mit Handling und Fahrphysik auf dem neusten Stand der Technik, und erkunde die riesige Stadt während du Missionen erfüllst.</li> <li> <strong>Alles unter Kontrolle</strong> - Die komplett neue Disrupt Engine, die eigenes für <i>Watch Dogs</i> programmiert wurde, nutzt fortschrittliche Technologien, um ein beeindruckende Grafik und eine unglaublich realistische Spielerfahrung zu bieten. </li> <li> <strong>Dynamische Navigation</strong> - <i>Watch Dogs</i> bietet dir nicht nur die Möglichkeit das ctOS zu deinem Vorteil zu nutzen, sondern auch deine Umgebung. Nimm Abkürzungen durch Gebäude oder klettere über die Dächer, um dein Ziel in einem realistischen Chicago zu erreichen. </li> </ul></p>";
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 				.Alter("Prince of Persia", x =>
 				{
 					x.Name = "Prince of Persia \"Die vergessene Zeit\"";
 					x.ShortDescription = "Mit Prince of Persia: Die Vergessene Zeit erscheint eine völlig neue Geschichte aus dem Prince of Persia-Universum. Auf den Spieler warten bisher unbekannte Charaktere und neuartige Kräfte, mit denen die Natur und die Zeit kontrolliert werden können. Die Handlung des Spiels ist zwischen Prince of Persia The Sands of Time und Prince of Persia Warrior Within angesiedelt.";
 					x.FullDescription = "<p>Prince of Persia: Die Vergessene Zeit stellt das nächste Kapitel aus dem von Fans geliebten Sands of Time-Universum dar. Nach seinem Abenteuer in Azad reist der Prinz in das Königreich seines Bruders. Doch eine mächtige Armee belagert den königlichen Palast und droht diesen zu vernichten. Um das Königreich vor dem sicheren Untergang zu bewahren, entschließt sich der Prinz, die uralten Kräfte des Sands nutzen – der Beginn eines epischen Abenteuers. Der Prinz muss sich als Anführer beweisen und lernen, dass große Macht oft einen hohen Preis fordert.</p><p>Klassisches Gameplay mit neuen Elementen Prince of Persia: Die Vergessene Zeit handelt von den Ereignissen zwischen Prince of Persia The Sands of Time und Prince of Persia: Warrior Within und eröffnet den Fans ein völlig neues Kapitel der Prince of Persia-Reihe. Dadurch verleiht das Spiel dem Sands of Time-Universum noch mehr Tiefe. Den Prinzen erwarten epische Kämpfe gegen mehrere Feinde gleichzeitig sowie spektakuläre Akrobatikeinlagen in schwindelerregender Höhe und gewaltigen Spielumgebungen. Glücklicherweise verfügt er in über besondere Kräfte, durch die er die Natur und die Zeit kontrollieren kann, denn Prince of Persia: Die Vergessene Zeit wird seine außerordentlichen Talente fordern wie niemals zuvor.</p><p>Prince of Persia: Die Vergessene Zeit entführt den Spieler zu unvergesslichen Schauplätzen, die durch die fortschrittliche und preisgekrönte Anvil-Engine zum Leben erweckt werden. Während vor den Toren des Königreichs ein schrecklicher Krieg tobt, werden die Fähigkeiten des Prinzen wie noch nie zuvor auf die Probe gestellt. Das epische Abenteuer des Prinzen hält etliche atemberaubende Momente bereit, die dem Spieler während des gesamten Abenteuers die Sprache verschlagen werden.</p><p>Herrschaft über die Natur. Da der Prinz die Natur und die Zeit beeinflussen kann, hat er stets die volle Kontrolle über seine Umgebung und einen gewaltigen Vorteil gegenüber seinen Widersachern. Er wird feststellen, dass seine Macht über die Natur in Kombination mit der Fähigkeit, die Zeit zurückzudrehen, ganz besonders durchschlagende Effekte haben kann. Somit eröffnen sich neue Wege und Ansätze Gebiete zu überwinden oder Rätsel zu lösen. Abwechslung und Spannung erwartet den Spieler dabei während des gesamten Abenteuers.</p><p><ul><li><b>Klassisches Gameplay mit neuen Elementen:</b> Den Prinzen erwarten epische Kämpfe gegen mehrere Feinde gleichzeitig sowie spektakuläre Akrobatikeinlagen in schwindelerregender Höhe und gewaltigen Spielumgebungen.</li><li><b>Eine kinoreife Spielerfahrung:</b> Prince of Persia: Die Vergessene Zeit entführt den Spieler zu unvergesslichen Schauplätzen, die durch die fortschrittliche und preisgekrönte Anvil-Engine zum Leben erweckt werden.</li><li><b>Herrschaft über die Natur:</b> Da der Prinz die Natur und die Zeit beeinflussen kann, hat er stets die volle Kontrolle über seine Umgebung und einen gewaltigen Vorteil gegenüber seinen Widersachern.</li><li><b>Rückkehr der beliebten Serie:</b> Prince of Persia: Die Vergessene Zeit handelt von den Ereignissen zwischen Prince of Persia The Sands of Time und Prince of Persia: Warrior Within und eröffnet den Fans ein völlig neues Kapitel der Prince of Persia-Reihe.</li></ul></p>";
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 				.Alter("Driver San Francisco", x =>
 				{
 					x.ShortDescription = "Gangsterboss Charles Jericho ist wieder auf freiem Fuß und wird zu einer enormen Bedrohung für ganz San Francisco. Nur ein Mann vermag ihn jetzt noch aufzuhalten. Er hat die Straßen hunderter Städte befahren und sein ganzes Leben damit verbracht, Verbrecher hinter Schloss und Riegel zu bringen. Nun gibt es kein Zurück mehr! Um Jericho zur Strecke zu bringen muss er alles riskieren und er weiß, dass es sich dabei um seine vielleicht letzte Fahrt handeln könnte. Sein Name ist John Tanner. Er ist der Driver.";
 					x.FullDescription = "<p>Mit Ubisoft Reflections kehren die Entwickler des Originals zurück und erschaffen mit Driver San Francisco einen brandneuen Ableger der weltweit über 14 Millionen Mal verkauften Driver-Reihe. Der Spieler schlüpft in die Rolle von Detective John Tanner und wird in eine unerbittliche Jagd in den Straßen der weltberühmten Stadt an der Bucht verwickelt. Dank eines revolutionären Features wird es nun möglich, nahtlos zwischen hunderten lizensierten Wagen hin und her zu wechseln. Der Spieler bleibt so immer mitten in der Action. Mir seiner zeitlose Atmosphäre, einzigartigem Fahrverhalten und einer grunderneuerten Spielbarkeit wird Driver San Francisco zu einer klassischen und kinoreifen Verfolgungsjagd in einer offenen Spielwelt.</p><p><ul> <li><strong>Verfolgungsjagd pur:</strong><br>Zurück zu den Ursprüngen des cinematischen Fahrerlebnis von DRIVER: Weiche Radaufhängungen, lange Drifts, enge Kurven und High-Speed Verfolgungen im dichten Verkehr. Über 120 lizensierte Fahrzeuge stehen in der intensiven Hatz durch die Straßen San Franciscos zur Verfügung.<br><br></li> <li><strong>Eine unerbitterliche Hetzjagd:</strong><br>Auf Tanners von Rache erfüllter Jagd nach Jericho enthüllt der Spieler eine spannende Geschichte. Er verfolgt Tanners PS geladenen Überlebenskampf durch San Francisco bis zu dem Punkt, an dem es kein Zurück mehr gibt. <br><br></li> <li><strong>Shift:</strong><br>Während Tanner sich von der Folgen eines dramatischen Unfalls erholt, wird ihm bewusst, dass er eine neue Fähigkeit erlang hat: Shift. Sie ermöglicht es ihm nahtlos zwischen Fahrzeugen hin und her zu wechseln um deren Kontrolle zu übernehmen. Dies hat eine beispiellose Intensität, Vielfältigkeit und Freiheit zur Folge: Es wird möglich, in schnellere Vehikel zu wechseln, mit zivilen Fahrzeugen seine Kontrahenten auszuschalten oder in den Wagen des Gegner zu schlüpfen, um ihn ins Verderben zu stürzen.<br><br></li> <li><strong>Ein Spielplatz für Verfolgungsjagden:</strong><br>Ein mehr als 200km umfassendes Straßen-Netzwerk reicht bis über die Golden Gate Bridge und ist gespickt mit vielen Sehenswürdigkeiten von San Francisco. Der Spieler wechselt von einem zum nächsten Fahrzeug und taucht ab in das Leben verschiedenster Stadtbewohner. Eine schwindelerregende Vielzahl an Charakteren, alle mit einem ganz eigenen Blick auf eine Stadt im Ausnahmezustand.<br><br></li> <li><strong>Wahnwitziger Mehrspieler-Action:</strong><br>Neun mitreißende Online-Modi, lassen die Spieler dank der SHIFT-Funktion nahezu zu jeder Zeit an jedem beliebigen Ort auftauchen.&nbsp; Sowohl offline im Splitscreen als auch online setzt man zum Rammen, Abhängen und Überholen seines Freundes an.<br><br> </li> <li><strong>Und vieles mehr:</strong><br>Wie ein echter Regisseur kann der Spieler seine besten Stunts in packenden Filmen festhalten, bearbeiten und mit seinen Freunden teilen. Wer sein fahrerisches Können unter Beweis stellen will, kann sich in 20 Rennen und bei 80 Herausforderungen austoben. Über 60 bekannte Songs und natürlich das originale Driver-Thema sorgen während der Action auf heißem Asphalt für ebenso heiße Ohren.</li> </ul></p>";
-				})
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                })
 				.Alter("PlayStation 3 plus game cheaper", x =>
 				{
 					x.Name = "PlayStation 3 plus Spiel günstiger";
 					x.ShortDescription = "Unser besonderes Angebot: PlayStation 3 plus ein Spiel Ihrer Wahl günstiger.";
 					x.FullDescription = ps3FullDescription;
-				});
+                    x.TaxCategoryId = _taxCategories["Normal"].Id;
+                });
 
 				#endregion gaming
 

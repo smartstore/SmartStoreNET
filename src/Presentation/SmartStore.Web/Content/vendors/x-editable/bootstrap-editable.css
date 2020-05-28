@@ -12,7 +12,9 @@
 	min-width: 300px; /* ensures more clean look & feel */
 	max-width: 500px;
 }
-
+.editable-checklist label {
+    display: block !important;
+}
 /* ABS4 end
 -------------------------------------------------------------- */
 

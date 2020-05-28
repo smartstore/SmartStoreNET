@@ -26,7 +26,7 @@ namespace SmartStore.Web.Framework.Filters
                 return;
             }
 
-            long maxBytes = 1024 * MediaSettings.Value.MaxUploadFileSize;
+            long maxBytes = 1024 * (long)MediaSettings.Value.MaxUploadFileSize;
 
             for (var i = 0; i < request.Files.Count; ++i)
             {

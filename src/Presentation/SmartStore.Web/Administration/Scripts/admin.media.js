@@ -56,10 +56,11 @@ SmartStore.Admin.Media = (function () {
 		});
 
 		$(document).on("click", "#cancel-upload", function () {
-
-			// TODO: all pending files need to removed from dropzone!!!
-
 			dupeFileHandlerDialog.modal('hide');
+
+			// All pending files must be removed from dropzone.
+			var dropzone = Dropzone.forElement(fuContainer[0]);
+			dropzone.removeAllFiles();
 		});
 	}
 

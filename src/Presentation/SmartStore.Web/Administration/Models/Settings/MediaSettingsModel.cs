@@ -58,7 +58,7 @@ namespace SmartStore.Admin.Models.Settings
         public int MaximumImageSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.MaxUploadFileSize")]
-        public int MaxUploadFileSize { get; set; }
+        public long MaxUploadFileSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.MakeFilesTransientWhenOrphaned")]
         public bool MakeFilesTransientWhenOrphaned { get; set; }
@@ -100,7 +100,7 @@ namespace SmartStore.Admin.Models.Settings
     {
         public MediaSettingsValidator()
         {
-            RuleFor(x => x.MaxUploadFileSize).NotEmpty();
+            RuleFor(x => x.MaxUploadFileSize).GreaterThan(0);
         }
     }
 }

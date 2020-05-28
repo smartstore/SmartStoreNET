@@ -1839,6 +1839,7 @@
     <Content Include="Views\Blog\Partials\BlogSummaryHeading.cshtml" />
     <Content Include="Views\Blog\Partials\BlogSummary.cshtml" />
     <Content Include="Views\Common\Partials\CookieManager.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Int64.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

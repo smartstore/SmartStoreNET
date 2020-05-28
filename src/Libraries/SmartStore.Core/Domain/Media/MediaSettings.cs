@@ -56,7 +56,7 @@ namespace SmartStore.Core.Domain.Media
         /// <summary>
         /// Gets or sets the maximum size (in KB) of an uploaded media file. The default is 102,400 (100 MB).
         /// </summary>
-        public int MaxUploadFileSize { get; set; } = 102400;
+        public long MaxUploadFileSize { get; set; } = 102400;
 
         #region MediaTypes
 

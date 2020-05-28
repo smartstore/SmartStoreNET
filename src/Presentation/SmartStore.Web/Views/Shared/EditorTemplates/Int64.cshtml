@@ -1,0 +1,60 @@
+﻿@using Telerik.Web.Mvc.UI
+
+@functions
+{
+	private long? Value
+	{
+		get
+		{
+			long? value = null;
+			if (ViewData.Model != null)
+			{
+				value = Convert.ToInt64(ViewData.Model, System.Globalization.CultureInfo.InvariantCulture);
+			}
+            else
+            {
+                var htmlAttributes = new RouteValueDictionary(ViewData["htmlAttributes"] ?? new object());
+                if (htmlAttributes.TryGetValue("value", out var rawValue))
+                {
+                    value = Convert.ToInt64(rawValue, System.Globalization.CultureInfo.InvariantCulture);
+                }
+            }
+
+			return value;
+		}
+	}
+
+	private string CssClass
+	{
+		get
+		{
+			var cls = "numerictextbox-group flex-grow-1";
+
+			if (TryGetMetadata<string>("size", out var size))
+			{
+				cls += " numerictextbox-group-" + size;
+			}
+
+			return cls;
+		}
+	}
+}
+
+<div class="@CssClass">
+	@(Html.Telerik().NumericTextBox<long>()
+			.Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
+			.EmptyMessage(GetMetadata<string>("placeholder") ?? T("Common.EnterValue"))
+            .ButtonTitleUp(T("Common.IncreaseValue"))
+            .ButtonTitleDown(T("Common.DecreaseValue"))
+			.MinValue(GetMetadata<long?>("min"))
+			.MaxValue(GetMetadata<long?>("max"))
+			.IncrementStep(GetMetadata<long?>("step") ?? 1)
+            .DecimalDigits(0)
+			.Value(Value)
+	)
+
+	@if (TryGetMetadata<string>("postfix", out var postfix))
+	{
+		<span class="numerictextbox-postfix">@postfix</span>
+	}
+</div>

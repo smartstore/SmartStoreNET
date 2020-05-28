@@ -2187,25 +2187,6 @@ namespace SmartStore.Admin.Controllers
 		#region Product pictures
 
 		[HttpPost]
-		public ActionResult SetMainPictureId(int pictureId, int productId)
-		{
-			try
-			{
-				var product = _productService.GetProductById(productId);
-				product.MainPictureId = pictureId;
-				_productService.UpdateProduct(product);
-			}
-			catch (Exception ex)
-			{
-				NotifyError(ex.Message);
-				return new HttpStatusCodeResult(501, ex.Message);
-			}
-
-			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
-			return new HttpStatusCodeResult(200);
-		}
-
-		[HttpPost]
 		public ActionResult SortPictures(string pictures, int entityId)
 		{
 			var response = new List<dynamic>();

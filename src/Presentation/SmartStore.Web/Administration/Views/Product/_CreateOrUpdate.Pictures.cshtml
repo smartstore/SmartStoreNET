@@ -61,31 +61,19 @@ else
 			// Set MainPictureId for product
 			$(".set-main-picture").on("click", function (e) {
 				var el = $(this).closest('.dz-image-preview');
+                var previewContainer = $(this).closest(".preview-container");
 
-				$.ajax({
-					async: true,
-					cache: false,
-					type: 'POST',
-					url: '@Url.Action("SetMainPictureId", "Product")',
-					data: {
-						pictureId: el.data("media-id"),
-						productId: @Model.Id
-					},
-                    success: function () {
-						/*
-						// Set preview picture.
-						var elDropzone = $('.fileupload-container');
-						var fileName = el.find(".name").text();
-						var fileSize = el.find(".size").text();
-						var fileUrl = el.find(".dz-image-preview img").attr("src");
+				// Insert choosen media file at beginning of the list & trigger sort so dropzoneWrapper > sortMediaFiles can send new order to server.
+				el.insertBefore(previewContainer.find('.dz-image-preview').first());
+				previewContainer.trigger("sort", { item : el });
 
-						elDropzone.find('.fileupload-filename').html(fileName);
-						elDropzone.find('.fileupload-filesize').html(fileSize);
-						elDropzone.find('.fileupload-thumb').css('background-image', 'url("' + fileUrl + '")');
-						elDropzone.find('.hidden').val(el.data("picture-id")).trigger('change');
-						*/
-					}
-				});
+				// Move badge.
+                var badge = previewContainer.find(".main-pic-badge");
+                el.append(badge);
+
+				// Update preview pic in upper right corner of product detail page.
+                var productThumb = $(".section-header .title > img");
+                productThumb.attr("src", el.find("img").attr("src"));
 
 				return false;
 			});

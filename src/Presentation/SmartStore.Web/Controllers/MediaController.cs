@@ -22,6 +22,7 @@ using SmartStore.Core.Security;
 using System.Collections.Generic;
 using SmartStore.Core.IO;
 using SmartStore.Core;
+using System.Globalization;
 
 namespace SmartStore.Web.Controllers
 {
@@ -122,7 +123,38 @@ namespace SmartStore.Web.Controllers
 			return RedirectToActionPermanent("File", routeValues);
 		}
 
-		[AcceptVerbs("GET", "HEAD")]
+        /// <summary>
+        /// Redirect legacy URL "/media/image/234/file.png" to "/media/234/catalog/path/to/file.png"
+        /// </summary>
+        [AcceptVerbs("GET", "HEAD")]
+        public ActionResult Image(string path)
+        {
+            var segments = path.SplitSafe("/");
+
+            if (!segments.Any() || !CommonHelper.TryConvert(segments[0], CultureInfo.InvariantCulture, out int fileId))
+            {
+                return NotFound(null);
+            }
+
+            var file = _mediaService.GetFileById(fileId, MediaLoadFlags.AsNoTracking);
+            if (file == null)
+            {
+                return NotFound(null);
+            }
+
+            var routeValues = new RouteValueDictionary(RouteData.Values)
+            {
+                ["id"] = file.Id,
+                ["path"] = file.Path
+            };
+
+            var qs = Request.QueryString;
+            qs.AllKeys.Each(key => routeValues.Add(key, qs[key]));
+
+            return RedirectToActionPermanent("File", routeValues);
+        }
+
+        [AcceptVerbs("GET", "HEAD")]
 		public async Task<ActionResult> File(int id /* mediaFileId */, string path)
 		{
 			MediaFileInfo mediaFile = null;

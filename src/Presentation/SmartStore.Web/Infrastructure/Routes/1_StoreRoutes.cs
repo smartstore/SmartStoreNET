@@ -3,14 +3,13 @@ using System.Web.Mvc.Routing.Constraints;
 using System.Web.Routing;
 using SmartStore.Core.Data;
 using SmartStore.Services.Media;
-using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Routing;
 
 namespace SmartStore.Web.Infrastructure
 {
-	public partial class StoreRoutes : IRouteProvider
+    public partial class StoreRoutes : IRouteProvider
     {
         public void RegisterRoutes(RouteCollection routes)
         {
@@ -34,24 +33,22 @@ namespace SmartStore.Web.Infrastructure
 					new[] { "SmartStore.Web.Controllers" });
 			}
 
-			#region V3 Media legacy routes
+            #region V3 Media legacy routes
 
-			// TODO: (mm) (mg) reroute legacy URLs 'media/image/234/file.png' > 'media/catalog/234/path/to/file.png'; 
-			
-			//// Match URL pattern /{pub}/image/{id}/{path}[?{query}], e.g. '/media/image/234/myproduct.png?size=250' 
-			//SmartUrlRoutingModule.RegisterRoutablePath(@"/{0}image/([1-9]\d*|0)/.*?$".FormatInvariant(mediaPublicPath), "GET|HEAD");
-			//routes.MapRoute("Image",
-			//	mediaPublicPath + "image/{id}/{*name}",
-			//	new { controller = "Media", action = "Image" },
-			//	//new { id = new MinRouteConstraint(0) }, // Don't bother with this, the Regex matches this already
-			//	new[] { "SmartStore.Web.Controllers" });
+            //// Match URL pattern /{pub}/image/{id}/{path}[?{query}], e.g. '/media/image/234/myproduct.png?size=250' 
+            //SmartUrlRoutingModule.RegisterRoutablePath(@"/{0}image/([1-9]\d*|0)/.*?$".FormatInvariant(mediaPublicPath), "GET|HEAD");
+            //routes.MapRoute("Image",
+            //	mediaPublicPath + "image/{id}/{*name}",
+            //	new { controller = "Media", action = "Image" },
+            //	//new { id = new MinRouteConstraint(0) }, // Don't bother with this, the Regex matches this already
+            //	new[] { "SmartStore.Web.Controllers" });
 
-			#endregion
+            #endregion
 
-			#region Media routes
+            #region Media routes
 
-			// Legacy URL redirection: match URL pattern /{pub}/uploaded/{path}[?{query}], e.g. '/media/uploaded/subfolder/image.png' 
-			SmartUrlRoutingModule.RegisterRoutablePath(@"/{0}uploaded/.*?$".FormatInvariant(mediaPublicPath), "GET|HEAD");
+            // Legacy URL redirection: match URL pattern /{pub}/uploaded/{path}[?{query}], e.g. '/media/uploaded/subfolder/image.png' 
+            SmartUrlRoutingModule.RegisterRoutablePath(@"/{0}uploaded/.*?$".FormatInvariant(mediaPublicPath), "GET|HEAD");
 			RegisterMediaRoute("MediaUploaded", "Uploaded", "uploaded");
 
 			// Legacy tenant URL redirection: match URL pattern /{pub}/{tenant}/uploaded/{path}[?{query}], e.g. '/media/default/uploaded/subfolder/image.png' 
@@ -59,8 +56,12 @@ namespace SmartStore.Web.Infrastructure
 			SmartUrlRoutingModule.RegisterRoutablePath(@"/{0}{1}/.*?$".FormatInvariant(mediaPublicPath, str), "GET|HEAD");
 			RegisterMediaRoute("MediaUploadedWithTenant", "Uploaded", str);
 
-			// Match URL pattern /{pub}/media/{id}/{path}[?{query}], e.g. '/media/234/{album}/myproduct.png?size=250'
-			SmartUrlRoutingModule.RegisterRoutablePath(@"/{0}[0-9]*/.*?$".FormatInvariant(mediaPublicPath), "GET|HEAD");
+            // Legacy media URL redirection: /{pub}/image/{id}/{path}[?{query}], e.g. '/media/image/234/myproduct.png?size=250' 
+            SmartUrlRoutingModule.RegisterRoutablePath(@"/{0}image/([1-9]\d*|0)/.*?$".FormatInvariant(mediaPublicPath), "GET|HEAD");
+            RegisterMediaRoute("MediaImage", "Image", "image");
+
+            // Match URL pattern /{pub}/media/{id}/{path}[?{query}], e.g. '/media/234/{album}/myproduct.png?size=250'
+            SmartUrlRoutingModule.RegisterRoutablePath(@"/{0}[0-9]*/.*?$".FormatInvariant(mediaPublicPath), "GET|HEAD");
 			RegisterMediaRoute("Media", "File", "{id}");
 
 			#endregion

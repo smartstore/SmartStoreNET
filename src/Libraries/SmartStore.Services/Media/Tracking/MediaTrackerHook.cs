@@ -143,7 +143,6 @@ namespace SmartStore.Services.Media
             var tracker = _mediaTracker.Value;
             using (tracker.BeginScope(false))
             {
-                // TODO: (mm) (mg) make media setting: MakeFilesTransientWhenOrphaned
                 tracker.TrackMany(_actionsUnit);
             }
 

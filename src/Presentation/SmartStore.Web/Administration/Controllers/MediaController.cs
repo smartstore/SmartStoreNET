@@ -50,11 +50,18 @@ namespace SmartStore.Admin.Controllers
                 {
                     if (acceptedMediaTypes != null)
                     {
-                        // TODO: (mm) (mc) pass acceptedMediaTypes. It is always null at the moment.
-                        var mediaType = _mediaTypeResolver.Resolve(Path.GetExtension(fileName), uploadedFile.ContentType);
-                        if (!acceptedMediaTypes.Contains((string)mediaType))
+                        var mediaTypeExtensions = _mediaTypeResolver.ParseTypeFilter(acceptedMediaTypes);
+                        var extension = Path.GetExtension(fileName).TrimStart('.').ToLower();
+                        //var mediaType = _mediaTypeResolver.Resolve(extension, uploadedFile.ContentType);
+
+                        //if (!acceptedMediaTypes.Contains((string)mediaType))
+                        if (!mediaTypeExtensions.Contains(extension))
                         {
-                            throw new DeniedMediaTypeException(fileName, mediaType, acceptedMediaTypes);
+                            // TBD MC: Maybe better pass file extensions into exception (else in case of type filter "mp4" a message like this will pop up: "accepted: video, current: ogg")
+                            //throw new DeniedMediaTypeException(fileName, mediaType, acceptedMediaTypes);
+                            // TODO: If it stays this way DeniedMediaTypeException has to be slightly refactored to handle extensions instead of media types 
+                            // DISADVANTAGE: very long error messages with file extension lists will pop up
+                            throw new DeniedMediaTypeException(fileName, extension, mediaTypeExtensions.ToArray());
                         }
                     }
                     
@@ -70,6 +77,9 @@ namespace SmartStore.Admin.Controllers
                 }
                 catch (Exception ex)
                 {
+                    if (ex is DeniedMediaTypeException)
+                        throw;
+
                     var dupe = (ex as DuplicateMediaFileException)?.File;
 
                     dynamic resultParams = new ExpandoObject();

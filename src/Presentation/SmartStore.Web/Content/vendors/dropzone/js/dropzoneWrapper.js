@@ -151,6 +151,13 @@
 					formData.append("duplicateFileHandling", enumId);
 				}
 
+				if (formData.has("acceptedMediaTypes"))
+					formData.delete("acceptedMediaTypes");
+
+				for (type of $el.data('type-filter').split(",")) {
+					formData.append("acceptedMediaTypes", type);
+				}
+
 				if (options.onUploading) options.onUploading.apply(this, [file]);
 			});
 
@@ -353,7 +360,7 @@
 
 				if (xhr && file.status === "error") {
 					console.log(xhr.statusText, "error");
-                }
+				}
 
 				displayNotification("<b>" + file.name + "</b>: " + errMessage, "error");
 				this.removeFile(file);

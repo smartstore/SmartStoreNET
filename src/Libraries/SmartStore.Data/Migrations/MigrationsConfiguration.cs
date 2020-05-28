@@ -709,6 +709,44 @@
                 "Fügt Inhalts-Seiten zur Sitemap hinzu.");
 
             builder.AddOrUpdate("Admin.System.XMLSitemap", "XML Sitemap", "XML-Sitemap");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Media.MakeFilesTransientWhenOrphaned",
+                "Automatically delete orphaned files",
+                "Verwaiste Dateien automatisch löschen",
+                "Specifies whether orphaned media files should be automatically deleted during the next cleanup operation.",
+                "Legt fest, ob verwaiste Mediendateien beim nächsten Aufräumvorgang automatisch gelöscht werden sollen.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Media.MediaTypes", "Media types", "Medientypen");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Media.ImageTypes",
+                "Images",
+                "Bilder",
+                "Specifies the supported file types for images. Please enter types separated by spaces and without dots.",
+                "Legt die unterstützten Dateitypen für Bilder fest. Bitte Leerzeichen getrennt und ohne Punkt angeben.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Media.VideoTypes",
+                "Videos",
+                "Videos",
+                "Specifies the supported file types for videos. Please enter types separated by spaces and without dots.",
+                "Legt die unterstützten Dateitypen für Videos fest. Bitte Leerzeichen getrennt und ohne Punkt angeben.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Media.AudioTypes",
+                "Audios",
+                "Audios",
+                "Specifies the supported types for audio files. Please enter types separated by spaces and without dots.",
+                "Legt die unterstützten Typen für Audiodateien fest. Bitte Leerzeichen getrennt und ohne Punkt angeben.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Media.DocumentTypes",
+                "Documents",
+                "Dokumente",
+                "Specifies the supported file types for documents. Please enter types separated by spaces and without dots.",
+                "Legt die unterstützten Dateitypen für Dokumente fest. Bitte Leerzeichen getrennt und ohne Punkt angeben.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Media.TextTypes",
+                "Text files",
+                "Textdateien",
+                "Specifies the supported types for text files. Please enter types separated by spaces and without dots.",
+                "Legt die unterstützten Typen für Textdateien fest. Bitte Leerzeichen getrennt und ohne Punkt angeben.");
         }
     }
 }

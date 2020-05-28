@@ -60,6 +60,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.MaxUploadFileSize")]
         public int MaxUploadFileSize { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.MakeFilesTransientWhenOrphaned")]
+        public bool MakeFilesTransientWhenOrphaned { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.DefaultPictureZoomEnabled")]
         public bool DefaultPictureZoomEnabled { get; set; }
 
@@ -69,7 +72,26 @@ namespace SmartStore.Admin.Models.Settings
 
         public List<SelectListItem> AvailablePictureZoomTypes { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.StorageProvider")]
+        #region Media types
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.ImageTypes")]
+        public string ImageTypes { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.VideoTypes")]
+        public string VideoTypes { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.AudioTypes")]
+        public string AudioTypes { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.DocumentTypes")]
+        public string DocumentTypes { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.TextTypes")]
+        public string TextTypes { get; set; }
+
+        #endregion
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.StorageProvider")]
 		public string StorageProvider { get; set; }
 		public List<SelectListItem> AvailableStorageProvider { get; set; }
 	}

@@ -1994,7 +1994,6 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.DisplayTaxSuffix = true;
                     x.ShippingIsTaxable = true;
                     x.ShippingPriceIncludesTax = true;
-                    x.ShippingTaxClassId = _taxCategories["Normal"].Id;
                     x.EuVatEnabled = true;
                     x.EuVatShopCountryId = defaultCountryId ?? x.EuVatShopCountryId;
                     x.EuVatAllowVatExemption = true;
@@ -3253,7 +3252,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.FullDescription = "<p> Nach Der Schatten des Windes und Das Spiel des Engels der neue große Barcelona-Roman von Carlos Ruiz Zafón. - Barcelona, Weihnachten 1957. Der Buchhändler Daniel Sempere und sein Freund Fermín werden erneut in ein großes Abenteuer hineingezogen. In der Fortführung seiner Welterfolge nimmt Carlos Ruiz Zafón den Leser mit auf eine fesselnde Reise in sein Barcelona. Unheimlich und spannend, mit unglaublicher Sogkraft und viel Humor schildert der Roman die Geschichte von Fermín, der 'von den Toten auferstanden ist und den Schlüssel zur Zukunft hat'. Fermíns Lebensgeschichte verknüpft die Fäden von Der Schatten des Windes mit denen aus Das Spiel des Engels. Ein meisterliches Vexierspiel, das die Leser rund um die Welt in Bann hält. </p> <p> Produktinformation<br> Gebundene Ausgabe: 416 Seiten<br> Verlag: S. Fischer Verlag; Auflage: 1 (25. Oktober 2012)<br> Sprache: Deutsch<br> ISBN-10: 3100954025<br> ISBN-13: 978-3100954022<br> Originaltitel: El prisionero del cielo<br> Größe und/oder Gewicht: 21,4 x 13,6 x 4,4 cm<br> </p>";
 					x.Price = 16.99M;
 					x.DeliveryTime = _defaultDeliveryTime;
-					x.TaxCategoryId = _taxCategories[TaxNameBooks].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3273,7 +3271,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "Mehr als 100 regionale Favoriten Grill-Rezepte getestet und und für den Freiluft-Koch perfektioniert";
 					x.Price = 16.99M;
 					x.DeliveryTime = _defaultDeliveryTime;
-					x.TaxCategoryId = _taxCategories[TaxNameBooks].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3292,7 +3289,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 					x.Price = 27.00M;
 					x.DeliveryTime = _defaultDeliveryTime;
-					x.TaxCategoryId = _taxCategories[TaxNameBooks].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3313,7 +3309,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.FullDescription = "<p> Für manche ist das Auto nur ein nützliches Fortbewegungsmittel.<br> Für alle anderen gibt es 'Autos - Das ultimative Handbuch' des Technik-Kenners Michael Dörflinger. Mit authentischen Bildern, allen wichtigen Daten und jeder Menge Infos präsentiert es die schnellsten, die innovativsten, die stärksten, die ungewöhnlichsten und die erfolgreichsten Exemplare der Automobilgeschichte. Ein umfassendes Handbuch zum gezielten Nachschlagen und ausgiebigen Schmökern. </p>";
 					x.Price = 14.95M;
 					x.DeliveryTime = _defaultDeliveryTime;
-					x.TaxCategoryId = _taxCategories[TaxNameBooks].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3331,7 +3326,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.FullDescription = "<p> Motorräder stehen wie kein anderes Fortbewegungsmittel für den großen Traum von Freiheit und Abenteuer. Dieser reich illustrierte Bildatlas porträtiert in brillanten Farbfotografien und informativen Texten die berühmtesten Zweiräder der Motorradgeschichte weltweit. Von der urtümlichen Dampfmaschine unter dem Fahrradsattel des ausgehenden 19. Jahrhunderts bis hin zu den kraftstrotzenden, mit modernster Elektronik und Computertechnik ausgestatteten Superbikes unserer Tage zeichnet er ein eindrucksvolles Bild der Entwicklung und Fabrikation edler und rasanter Motorräder. Dem Mythos des motorisierten Zweirads wird dabei ebenso nachgegangen wie dem Motorrad als modernem Lifestyle-Produkt unserer Zeit. Länderspezifische Besonderheiten, firmenhistorische Hintergrundinformationen sowie spannende Geschichten und Geschichtliches über die Menschen, die eine der wegweisendsten Erfindungen der letzten Jahrhunderte vorantrieben und weiterentwickelten, machen diesen umfangreichen Bildband zu einem unvergleichlichen Nachschlagewerk für jeden Motorradliebhaber und Technikbegeisterten. </p> <p> • Umfassende Geschichte der legendärsten Modelle aller bedeutenden Motorradhersteller weltweit<br> • Mit mehr als 350 brillanten Farbaufnahmen und fesselnden Hintergrundtexten<br> • Mit informativen Zeichnungen, beeindruckenden Detailaufnahmen und erläuternden Info-Kästen<br> </p> <p> Inhalt • 1817 1913: Die Anfänge einer Erfolgsgeschichte<br> • 1914 1945: Massenmobilität<br> • 1946 1990: Kampf um den Weltmarkt<br> • Ab 1991: Das moderne Motorrad<br> • Kultobjekt Motorrad: Von der Fortbewegung zum Lifestyle<br> </p>";
 					x.Price = 14.99M;
 					x.DeliveryTime = _defaultDeliveryTime;
-					x.TaxCategoryId = _taxCategories[TaxNameBooks].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3349,7 +3343,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.FullDescription = "<p> Marken, Modelle, Meilensteine<br> Das Auto - für manche ein Gebrauchsgegenstand, für andere Ausdruck des Lebensstils, Kultobjekt und große Leidenschaft. Nur wenige Erfindungen haben das Leben so verändert wie die des Automobils vor gut 125 Jahren - ein Grund mehr für diese umfangreiche Chronik. Das Auto-Buch lässt die Geschichte des Automobils lebendig werden. Es stellt über 1200 wichtige Modelle vor - von Karl Benz' Motorwagen über legendäre Kultautos bis zu modernsten Hybridfahrzeugen. Es erklärt die Meilensteine der Motortechnik und porträtiert die großen Marken und ihre Konstrukteure. Steckbriefe vom Kleinwagen bis zur Limousine und schicken Rennwagen jeder Epoche laden zum Stöbern und Entdecken ein. Der umfassendste und bestbebildert Bildband auf dem Markt - darüber freut sich jeder Autoliebhaber! </p> <p> Gebundene Ausgabe: 360 Seiten<br> Verlag: Dorling Kindersley Verlag (27. September 2012)<br> Sprache: Deutsch<br> ISBN-10: 3831022062<br> ISBN-13: 978-3831022069<br> Größe und/oder Gewicht: 30,6 x 25,8 x 2,8 cm<br> </p>";
 					x.Price = 29.95M;
 					x.DeliveryTime = _defaultDeliveryTime;
-					x.TaxCategoryId = _taxCategories["Ermäßigt"].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3367,7 +3360,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.FullDescription = "<p> Großformat: 48,5 x 34 cm.<br> Dieser imposante Bildkalender mit silberner Ringbindung begeistert mit eindrucksvollen Aufnahmen von exklusiven Sportwagen. Wer Autos nicht nur als reine Nutzfahrzeuge begreift, findet hier die begehrtesten Statussymbole überhaupt: Die schnellen Fahrzeuge sind wirkungsvoll auf den gestochen scharfen, farbintensiven Fotos in Szene gesetzt und vermitteln Freiheit, Geschwindigkeit, Stärke und höchste technische Vollkommenheit. </p> <p> Angefangen vom 450 PS-starken Maserati GranTurismo MC Stradale über den stilvoll-luxuriösen Aston Martin Virage Volante bis zu dem nur in geringen Stückzahlen produzierten Mosler MT900S Photon begleiten die schnellen Flitzer mit Stil und Eleganz durch die Monate. Neben dem Kalendarium lenkt ein weiteres Foto den Blick auf sehenswerte Details. Dazu gibt es die wesentlichen Informationen zu jedem Sportwagen in englischer Sprache. Nach Ablauf des Jahres sind die hochwertigen Fotos eingerahmt ein absoluter Blickfang an der Wand eines jeden Liebhabers schneller Autos. Auch als Geschenk ist dieser schöne Jahresbegleiter wunderbar geeignet. 12 Kalenderblätter, neutrales und dezent gehaltenes Kalendarium. Gedruckt auf Papier aus nachhaltiger Forstwirtschaft. </p> <p> Für Freunde von luxuriösen Oldtimern ebenfalls bei ALPHA EDITION erhältlich: der großformatige Classic Cars Bildkalender 2013: ISBN 9783840733376. </p> <p> Produktinformation<br> Spiralbindung: 14 Seiten<br> Verlag: Alpha Edition (1. Juni 2012)<br> Sprache: Deutsch<br> ISBN-10: 3840733383<br> ISBN-13: 978-3840733383<br> Größe und/oder Gewicht: 48,8 x 34,2 x 0,6 cm<br> </p>";
 					x.Price = 16.95M;
 					x.DeliveryTime = _defaultDeliveryTime;
-					x.TaxCategoryId = _taxCategories["Ermäßigt"].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3385,7 +3377,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.FullDescription = "<p> Moderne Reise-Enduros sind ideale Motorräder für eine Abenteuerreise. Ihre Technik ist jedoch komplex, ihr Gewicht beträchtlich. Das Fahrverhalten verändert sich je nach Zuladung und Strecke. Bevor die Reise losgeht, sollte man unbedingt ein Fahrtraining absolvieren. <br> Dieses hervorragend illustrierte Praxisbuch zeigt anhand vieler aussagekräftiger Serienfotos das richtige Fahren im Gelände in Sand und Schlamm, auf Schotter und Fels mit Gepäck und ohne. Neben dem Fahrtraining werden zahlreiche Informationen und Tipps zur Auswahl des richtigen Motorrades, zur Reiseplanung und zu praktischen Fragen unterwegs gegeben. </p>";
 					//x.Price = 44.90M;
 					x.DeliveryTime = _defaultDeliveryTime;
-					x.TaxCategoryId = _taxCategories["Ermäßigt"].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3428,7 +3419,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.FullDescription = "<p>Extrem leistungsstarker All-in-One PC mit Windows 8, Intel® Core™ i7 Prozessor, riesiger 2TB Festplatte und Blu-Ray Laufwerk.  </p>  <p>  Intel® Core™ i7-3770S Prozessor ( 3,1 GHz, 6 MB Cache) Windows 8 64bit , Deutsch<br> 8 GB1 DDR3 SDRAM bei 1600 MHz<br> 2 TB-Serial ATA-Festplatte (7.200 U/min)<br> 1GB AMD Radeon HD 7650<br> </p>";
 					x.Price = 589.00M;
 					x.DeliveryTime = _defaultDeliveryTime;
-					x.TaxCategoryId = _taxCategories["Normal"].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3447,7 +3437,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.FullDescription = "<p>Ebenfalls im Lieferumfang dieses Systems enthalten</p> <p> 1 Jahr Basis-Service - Vor-Ort-Service am nächsten Arbeitstag - kein Upgrade ausgewählt Keine Asset-Tag erforderlich</p> <p> Die folgenden Optionen sind in Ihren Auftrag aufgenommene Standardauswahlen.<br> German (QWERTZ) Dell KB212-B QuietKey USB Keyboard Black<br> X11301001<br> WINDOWS LIVE<br> OptiPlex™ Bestellung - Deutschland<br> OptiPlex™ Intel® Core™ i3 Aufkleber<br> Optische Software nicht erforderlich, Betriebssystemsoftware ausreichend<br> </p>";
 					x.Price = 419.00M;
 					x.DeliveryTime = _defaultDeliveryTime;
-					x.TaxCategoryId = _taxCategories["Normal"].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3470,7 +3459,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.FullDescription = "<p> Von der Betätigung des Powerknopfes an, ist das Aspire One in nur wenigen Sekunden betriebsbereit. Sobald an, ist die Arbeit sehr einfach: ein Heimarbeitsplatz der die heute benötigten vier Bereiche abdeckt, verbunden bleiben, arbeiten, spielen und Ihr Leben unterwegs organisieren. Und der Aspire One ist etwas Besonderes, Sie können alles so individualisieren das es für Sie das Richtige ist. Schnell, einfach und unbeschreiblich schick. Ihr Style ist Ihre Unterschrift. Es ist Ihre Identität, Ihre Persönlichkeit und Ihre Visitenkarte. Ihr Style zeigt Ihrer Umwelt wie Sie sind und wie Sie Ihr Leben leben, online und offline. Das alles benötigen Sie, um Sie selbst zu sein. Ihr Style kommt in verschiedenen Farben, jede mit einem individuellen Charakter. Kleiner als ein durchschnittliches Tagebuch, das Aspire One bringt Freiheit in Ihre Hände. </p> <p> Allgemein<br> Betriebssystem: Microsoft Windows XP Home Edition, Linux Linpus Lite <br> Herstellergarantie: 1 Jahr Garantie<br> Systemtyp: Netbook<br> MPN: LU.S080B.069, LU.S050B.081, LU.S040B.079, LU.S090B.079, LU.S040B.198, LU.S040A.048, LU.S050A.050, LU.S050B.080, LU.S040B.078, 099915639, LU.S050A.074, LU.S360A.203, LU.S450B.030, LU.S050B.159<br> Speicher<br> RAM: 1 GB ( 1 x 512 MB + 512 MB (integriert) ), 1 GB<br> Max. unterstützter RAM-Speicher: 1.5 GB<br> Technologie: DDR2 SDRAM<br> Geschwindigkeit: 533 MHz   <br> Formfaktor: SO DIMM 200-polig  <br> Anz. Steckplätze: 1<br> Leere Steckplätze: 0, 1<br> Display<br> Typ: 22.6 cm ( 8.9\" )<br> Auflösung: 1024 x 600 ( WSVGA )<br> Breitwand: Ja<br> LCD-Hintergrundbeleuchtung: LED-Hintergrundbeleuchtung     <br> Farbunterstützung: 262.144 Farben, 24 Bit (16,7 Millionen Farben)<br> Besonderheiten: CrystalBrite<br> Batterie<br> Betriebszeit: Bis zu 7 Stunden, Bis zu 3 Stunden<br> Kapazität: 2600 mAh, 2200 mAh<br> Technologie: 6 Zellen Lithium-Ionen, 3 Zellen Lithium-Ionen, Lithium-Ionen<br> Herstellergarantie<br> Service & Support:<br> Reisegarantie - 1 Jahr, Begrenzte Garantie - 1 Jahr, Internationale Garantie - 1 Jahr<br> Begrenzte Garantie - 1 Jahr, Reisegarantie - 1 Jahr<br> Begrenzte Garantie - 1 Jahr, Begrenzte Garantie - 1 Jahr<br> Reisegarantie - 1 Jahr<br> Navigation<br>Empfänger: GPS<br></p>";
 					x.Price = 210.60M;
 					x.DeliveryTime = _defaultDeliveryTime;
-					x.TaxCategoryId = _taxCategories["Normal"].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3496,7 +3484,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.FullDescription = "";
 					x.Price = 799.00M;
 					x.DeliveryTime = _defaultDeliveryTime;
-					x.TaxCategoryId = _taxCategories["Normal"].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;
@@ -3621,7 +3608,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.FullDescription = "<p><strong>Produktbeschreibung</strong></p> <ul> <li>Artikelnr.: 3528 C001.617.26.037.00</li> <li>Certina DS Podium Big Size Herrenchronograph</li> <li>Schweizer ETA Werk</li> <li>Silberfarbenes Edelstahlgeh&auml;use mit schwarzer L&uuml;nette</li> <li>Wei&szlig;es Zifferblatt mit silberfarbenen Ziffern und Indizes</li> <li>Schwarzes Lederarmband mit Faltschliesse</li> <li>Kratzfestes Saphirglas</li> <li>Datumsanzeige</li> <li>Tachymeterskala</li> <li>Chronograph mit Stoppfunktion</li> <li>Durchmesser: 42 mm</li> <li>Wasserdichtigkeits -Klassifizierung 10 Bar (nach ISO 2281): Perfekt zum Schwimmen und Schnorcheln</li> <li>100 Tage Niedrigpreisgarantie, bei uhrzeit.org kaufen Sie ohne Preisrisiko!</li> </ul>";
 					x.Price = 479.00M;
 					x.DeliveryTime = _defaultDeliveryTime;
-					x.TaxCategoryId = _taxCategories["Normal"].Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
 					x.OrderMinimumQuantity = 1;
 					x.OrderMaximumQuantity = 10000;

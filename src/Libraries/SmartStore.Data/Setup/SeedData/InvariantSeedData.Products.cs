@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using SmartStore.Core.Domain.Catalog;
 using System.IO;
-using SmartStore.Core.Domain.Media;
+using System.Linq;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Data.Setup
 {
@@ -134,8 +134,10 @@ namespace SmartStore.Data.Setup
             var fashionCategory = _ctx.Set<Category>().First(x => x.Alias == "Fashion");
             var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);
             var specOptionCotton = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 9);
+            var taxCategoryIdApparel = TaxCategories().First(x => x.Name.Equals(TaxNameApparel)).Id;
 
-            // Converse All Star
+            #region Converse All Star
+
             var converseAllStar = new Product
             {
                 ProductType = ProductType.SimpleProduct,
@@ -156,7 +158,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 IsShipEnabled = true,
                 DeliveryTime = firstDeliveryTime,
-                DisplayOrder = 1
+                DisplayOrder = 1,
+                TaxCategoryId = taxCategoryIdApparel
             };
 
             converseAllStar.ProductCategories.Add(new ProductCategory
@@ -187,7 +190,10 @@ namespace SmartStore.Data.Setup
 
             result.Add(converseAllStar);
 
-            // Shirt Meccanica
+            #endregion
+
+            #region Shirt Meccanica
+
             var shirtMeccanica = new Product
             {
                 ProductType = ProductType.SimpleProduct,
@@ -209,7 +215,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 IsShipEnabled = true,
                 DeliveryTime = firstDeliveryTime,
-                DisplayOrder = 4
+                DisplayOrder = 4,
+                TaxCategoryId = taxCategoryIdApparel
             };
 
             shirtMeccanica.ProductCategories.Add(new ProductCategory
@@ -251,7 +258,10 @@ namespace SmartStore.Data.Setup
 
             result.Add(shirtMeccanica);
 
-            // Ladies jacket
+            #endregion
+
+            #region Ladies jacket
+
             var ladiesJacket = new Product
             {
                 ProductType = ProductType.SimpleProduct,
@@ -276,7 +286,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 IsShipEnabled = true,
                 DeliveryTime = firstDeliveryTime,
-                DisplayOrder = 2
+                DisplayOrder = 2,
+                TaxCategoryId = taxCategoryIdApparel
             };
 
             ladiesJacket.ProductCategories.Add(new ProductCategory
@@ -307,7 +318,10 @@ namespace SmartStore.Data.Setup
 
             result.Add(ladiesJacket);
 
-            // Clark Premium Blue Jeans
+            #endregion
+
+            #region Clark Premium Blue Jeans
+
             var clarkJeans = new Product
             {
                 ProductType = ProductType.SimpleProduct,
@@ -327,7 +341,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 IsShipEnabled = true,
                 DeliveryTime = firstDeliveryTime,
-                DisplayOrder = 5
+                DisplayOrder = 5,
+                TaxCategoryId = taxCategoryIdApparel
             };
 
             clarkJeans.ProductCategories.Add(new ProductCategory
@@ -351,6 +366,8 @@ namespace SmartStore.Data.Setup
             });
 
             result.Add(clarkJeans);
+            
+            #endregion
 
             return result;
         }
@@ -361,8 +378,10 @@ namespace SmartStore.Data.Setup
             var productTemplateSimple = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "Product");
             var thirdDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 2);
             var furnitureCategory = _ctx.Set<Category>().First(x => x.MetaTitle == "Furniture");
+            var taxCategoryIdElectronics = TaxCategories().First(x => x.Name.Equals(TaxNameElectronics)).Id;
 
-            // Le Corbusier LC 6 table
+            #region Le Corbusier LC 6 table
+            
             var corbusierTable = new Product
             {
                 ProductType = ProductType.SimpleProduct,
@@ -382,7 +401,8 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 NotifyAdminForQuantityBelow = 1,
                 IsShipEnabled = true,
-                DeliveryTime = thirdDeliveryTime
+                DeliveryTime = thirdDeliveryTime,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             corbusierTable.ProductCategories.Add(new ProductCategory
@@ -431,7 +451,10 @@ namespace SmartStore.Data.Setup
 
             result.Add(corbusierTable);
 
-            // Ball Chair
+            #endregion
+
+            #region Ball Chair
+
             var ballChair = new Product
             {
                 ProductType = ProductType.SimpleProduct,
@@ -450,7 +473,8 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 NotifyAdminForQuantityBelow = 1,
                 IsShipEnabled = true,
-                DeliveryTime = thirdDeliveryTime
+                DeliveryTime = thirdDeliveryTime,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             ballChair.ProductCategories.Add(new ProductCategory
@@ -498,7 +522,10 @@ namespace SmartStore.Data.Setup
 
             result.Add(ballChair);
 
-            // Lounge chair
+            #endregion
+
+            #region Lounge chair
+
             var loungeChair = new Product
             {
                 ProductType = ProductType.SimpleProduct,
@@ -520,7 +547,8 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 NotifyAdminForQuantityBelow = 1,
                 IsShipEnabled = true,
-                DeliveryTime = thirdDeliveryTime
+                DeliveryTime = thirdDeliveryTime,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             loungeChair.ProductCategories.Add(new ProductCategory
@@ -580,7 +608,10 @@ namespace SmartStore.Data.Setup
 
             result.Add(loungeChair);
 
-            // Cube chair
+            #endregion
+
+            #region Cube chair
+
             var cubeChair = new Product
             {
                 ProductType = ProductType.SimpleProduct,
@@ -601,7 +632,8 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 NotifyAdminForQuantityBelow = 1,
                 IsShipEnabled = true,
-                DeliveryTime = thirdDeliveryTime
+                DeliveryTime = thirdDeliveryTime,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             cubeChair.ProductCategories.Add(new ProductCategory
@@ -637,6 +669,8 @@ namespace SmartStore.Data.Setup
 
             result.Add(cubeChair);
 
+            #endregion
+
             return result;
         }
 
@@ -653,8 +687,14 @@ namespace SmartStore.Data.Setup
             var categories = _ctx.Set<Category>().ToList().ToDictionarySafe(x => x.Alias, x => x);
             var specAttributes = _ctx.Set<SpecificationAttribute>().ToList().ToDictionarySafe(x => x.DisplayOrder, x => x);
 
+            var taxCategoryIdApparel = TaxCategories().First(x => x.Name.Equals(TaxNameApparel)).Id;
+            var taxCategoryIdFree = TaxCategories().First(x => x.Name.Equals(TaxNameTaxFree)).Id;
+            var taxCategoryIdElectronics = TaxCategories().First(x => x.Name.Equals(TaxNameElectronics)).Id;
+            var taxCategoryIdBooks = TaxCategories().First(x => x.Name.Equals(TaxNameBooks)).Id;
+            var taxCategoryIdDigitial = TaxCategories().First(x => x.Name.Equals(TaxNameDigitalGoods)).Id;
+            var taxCategoryIdJewelry = TaxCategories().First(x => x.Name.Equals(TaxNameJewelry)).Id;
 
-            //#region category shoes
+            #region Category Shoes
 
             //var categoryShoes = _ctx.Set<Category>().First(x => x.Alias == "Shoes");
 
@@ -731,13 +771,13 @@ namespace SmartStore.Data.Setup
 
 
             //#endregion product Adidas SUPERSTAR SCHUH
-            //#endregion category shoes
+            #endregion
 
-            #region category jackets
+            #region Category Jackets
 
             var categoryJackets = _ctx.Set<Category>().First(x => x.Alias == "Jackets");
 
-            #region product Jack Wolfskin KANUKA POINT
+            #region Jack Wolfskin KANUKA POINT
 
             var productJackWolfsKinKanukaPoint = new Product
             {
@@ -759,7 +799,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 IsShipEnabled = true,
                 DeliveryTime = firstDeliveryTime,
-                DisplayOrder = 5
+                DisplayOrder = 5,
+                TaxCategoryId = taxCategoryIdApparel
             };
 
             AddProductPicture(productJackWolfsKinKanukaPoint, "product/jack_wolfskin_kanuka_point_1.png");
@@ -772,457 +813,13 @@ namespace SmartStore.Data.Setup
                 DisplayOrder = 1,
             });
 
-            #endregion product Jack Wolfskin KANUKA POINT
-            #endregion category jackets
+            #endregion
 
+            #endregion
 
-            #region category golf
+            #region Category Sunglasses
 
-            #region product Titleist SM6 Tour Chrome
-
-            var productTitleistSM6TourChrome = new Product
-            {
-                ProductType = ProductType.SimpleProduct,
-                Name = "Titleist SM6 Tour Chrome",
-                IsEsd = false,
-                ShortDescription = "For golfers who want maximum impact control and feedback.",
-                FullDescription = "​​<p><strong>Inspired by the best iron players in the world</strong> </p> <p>The new 'Spin Milled 6' wages establish a new performance class in three key areas of the Wedge game: precise length steps, bounce and maximum spin. </p> <p>   <br />   For each loft the center of gravity of the wedge is determined individually. Therefore, the SM6 offers a particularly precise length and flight curve control combined with great impact.   <br />   Bob Vokey's tourer-puffed sole cleat allows all golfers more bounce, adapted to their personal swing profile and the respective ground conditions. </p> <p>   <br />   A new, parallel face texture was developed for the absolutely exact and with 100% quality control machined grooves. The result is a consistently higher edge sharpness for more spin. </p> <p> </p> <ul>   <li>Precise lengths and flight curve control thanks to progressively placed center of gravity.</li>   <li>Improved bounce due to Bob Vokey's proven soles.</li>   <li>TX4 grooves produce more spin through a new surface and edge sharpness.</li>   <li>Multiple personalization options.</li> </ul> ",
-                Sku = "P-7004",
-                ProductTemplateId = productTemplate.Id,
-                AllowCustomerReviews = true,
-                Published = true,
-                MetaTitle = "Titleist SM6 Tour Chrome",
-                Price = 164.95M,
-                OldPrice = 199.95M,
-                IsGiftCard = false,
-                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
-            };
-
-            AddProductPicture(productTitleistSM6TourChrome, "product/titleist_sm6_tour_chrome.jpg");
-
-            productTitleistSM6TourChrome.ProductCategories.Add(new ProductCategory { Category = categories["Golf"], DisplayOrder = 1 });
-
-            productTitleistSM6TourChrome.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Titleist"], DisplayOrder = 1 });
-
-            #endregion product Titleist SM6 Tour Chrome
-
-            #region product Titleist Pro V1x
-
-            var productTitleistProV1x = new Product
-            {
-                ProductType = ProductType.SimpleProduct,
-                Name = "Titleist Pro V1x",
-                IsEsd = false,
-                ShortDescription = "Golf ball with high ball flight",
-                FullDescription = "​​The top players rely on the new Titleist Pro V1x. High ball flight, soft feel and more spin in the short game are the advantages of the V1x version. Perfect performance from the leading manufacturer. The new Titleist Pro V1 golf ball is exactly defined and promises penetrating ball flight with very soft hit feeling.",
-                Sku = "P-7001",
-                ProductTemplateId = productTemplate.Id,
-                AllowCustomerReviews = true,
-                Published = true,
-                MetaTitle = "Titleist Pro V1x",
-                Price = 2.1M,
-                IsGiftCard = false,
-                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
-            };
-
-            AddProductPicture(productTitleistProV1x, "product/titleist-pro-v1x.jpg");
-
-            productTitleistProV1x.ProductCategories.Add(new ProductCategory { Category = categories["Golf"], DisplayOrder = 1 });
-
-            productTitleistProV1x.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Titleist"], DisplayOrder = 1 });
-
-            #endregion product Titleist Pro V1x
-
-            #region product Supreme Golfball
-
-            var productSupremeGolfball = new Product
-            {
-                ProductType = ProductType.SimpleProduct,
-                Name = "Supreme Golfball",
-                IsEsd = false,
-                ShortDescription = "Training balls with perfect flying characteristics",
-                FullDescription = "​Perfect golf exercise ball with the characteristics like the 'original', but in a glass-fracture-proof execution. Massive core, an ideal training ball for yard and garden. Colors: white, yellow, orange.",
-                Sku = "P-7002",
-                ProductTemplateId = productTemplate.Id,
-                AllowCustomerReviews = true,
-                Published = true,
-                MetaTitle = "Supreme Golfball",
-                Price = 1.9M,
-                IsGiftCard = false,
-                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
-            };
-
-            AddProductPicture(productSupremeGolfball, "product/supremeGolfball_1.jpg");
-            AddProductPicture(productSupremeGolfball, "product/supremeGolfball_2.jpg");
-
-            productSupremeGolfball.ProductCategories.Add(new ProductCategory { Category = categories["Golf"], DisplayOrder = 1 });
-
-            productSupremeGolfball.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Titleist"], DisplayOrder = 1 });
-
-            #endregion product Supreme Golfball
-
-            #region product GBB Epic Sub Zero Driver
-
-            var productGBBEpicSubZeroDriver = new Product
-            {
-                ProductType = ProductType.SimpleProduct,
-                Name = "GBB Epic Sub Zero Driver",
-                IsEsd = false,
-                ShortDescription = "Low spin for good golfing!",
-                FullDescription = "Your game wins with the GBB Epic Sub Zero Driver. A golf club with an extremely low spin and the phenomenal high-speed characteristic.",
-                Sku = "P-7003",
-                ProductTemplateId = productTemplate.Id,
-                AllowCustomerReviews = true,
-                Published = true,
-                MetaTitle = "GBB Epic Sub Zero Driver",
-                Price = 489M,
-                IsGiftCard = false,
-                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
-            };
-
-            AddProductPicture(productGBBEpicSubZeroDriver, "product/gbb-epic-sub-zero-driver.jpg");
-
-            productGBBEpicSubZeroDriver.ProductCategories.Add(new ProductCategory { Category = categories["Golf"], DisplayOrder = 1 });
-
-            productGBBEpicSubZeroDriver.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Titleist"], DisplayOrder = 1 });
-
-            #endregion product GBB Epic Sub Zero Driver
-
-            #endregion category golf
-
-            #region category Soccer
-
-            #region product Nike Strike Football
-
-            var productNikeStrikeFootball = new Product
-            {
-                ProductType = ProductType.SimpleProduct,
-                Name = "Nike Strike Football",
-                IsEsd = false,
-                ShortDescription = "GREAT TOUCH. HIGH VISIBILITY.",
-                FullDescription = "<p><strong>Enhance play everyday, with the Nike Strike Football. </strong> </p> <p>Reinforced rubber retains its shape for confident and consistent control. A stand out Visual Power graphic in black, green and orange is best for ball tracking, despite dark or inclement conditions. </p> <ul>   <li>Visual Power graphic helps give a true read on flight trajectory.</li>   <li>Textured casing offers superior touch.</li>   <li>Reinforced rubber bladder supports air and shape retention.</li>   <li>66% rubber/ 15% polyurethane/ 13% polyester/ 7% EVA.</li> </ul> ",
-                Sku = "P-5004",
-                ProductTemplateId = productTemplate.Id,
-                AllowCustomerReviews = true,
-                Published = true,
-                MetaTitle = "Nike Strike Football",
-                Price = 59.90M,
-                OldPrice = 69.90M,
-                IsGiftCard = false,
-                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id,
-                HasTierPrices = true
-            };
-
-            AddProductPicture(productNikeStrikeFootball, "product/nike-strike-football.jpg");
-
-            productNikeStrikeFootball.ProductCategories.Add(new ProductCategory { Category = categories["Soccer"], DisplayOrder = 1 });
-
-            productNikeStrikeFootball.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Nike"], DisplayOrder = 1 });
-
-            productNikeStrikeFootball.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-            {
-                AllowFiltering = true,
-                ShowOnProductPage = true,
-                DisplayOrder = 3,
-                // Manufacturer -> Nike
-                SpecificationAttributeOption = specAttributes[20].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 20)
-            });
-            productNikeStrikeFootball.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-            {
-                AllowFiltering = true,
-                ShowOnProductPage = true,
-                DisplayOrder = 3,
-                // Material -> rubber
-                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 12)
-            });
-
-            productNikeStrikeFootball.TierPrices.Add(new TierPrice { Quantity = 6, Price = 26.90M });
-            productNikeStrikeFootball.TierPrices.Add(new TierPrice { Quantity = 12, Price = 24.90M });
-            productNikeStrikeFootball.TierPrices.Add(new TierPrice { Quantity = 24, Price = 22.90M });
-
-            #endregion product Nike Strike Football
-
-            #region product Evopower 5.3 Trainer HS Ball
-
-            var productNikeEvoPowerBall = new Product
-            {
-                ProductType = ProductType.SimpleProduct,
-                Name = "Evopower 5.3 Trainer HS Ball",
-                IsEsd = false,
-                ShortDescription = "Entry level training ball.",
-                FullDescription = "<p><strong>Entry level training ball.</strong></ p >< p > Constructed from 32 panels with equal surface areas for reduced seam-stress and a perfectly round shape.Handstitched panels with multilayered woven backing for enhanced stability and aerodynamics.</ p >",
-                Sku = "P-5003",
-                ProductTemplateId = productTemplate.Id,
-                AllowCustomerReviews = true,
-                Published = true,
-                MetaTitle = "Evopower 5.3 Trainer HS Ball",
-                Price = 59.90M,
-                IsGiftCard = false,
-                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
-            };
-
-            AddProductPicture(productNikeEvoPowerBall, "product/nike-vopower-53-trainer-hs-ball.jpg");
-
-            productNikeEvoPowerBall.ProductCategories.Add(new ProductCategory { Category = categories["Soccer"], DisplayOrder = 1 });
-
-            productNikeEvoPowerBall.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Nike"], DisplayOrder = 1 });
-
-            productNikeEvoPowerBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-            {
-                AllowFiltering = true,
-                ShowOnProductPage = true,
-                DisplayOrder = 3,
-                // Manufacturer -> Nike
-                SpecificationAttributeOption = specAttributes[20].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 20)
-            });
-            productNikeEvoPowerBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-            {
-                AllowFiltering = true,
-                ShowOnProductPage = true,
-                DisplayOrder = 3,
-                // Material -> leather
-                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
-            });
-
-            #endregion Evopower 5.3 Trainer HS Ball
-
-            #region product Torfabrik official game ball
-
-            var productTorfabrikOfficialGameBall = new Product
-            {
-                ProductType = ProductType.SimpleProduct,
-                Name = "Torfabrik official game ball",
-                IsEsd = false,
-                ShortDescription = "Available in different colors",
-                FullDescription = "",
-                Sku = "P-5002",
-                ProductTemplateId = productTemplate.Id,
-                AllowCustomerReviews = true,
-                Published = true,
-                MetaTitle = "Torfabrik official game ball",
-                Price = 59.90M,
-                IsGiftCard = false,
-                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
-            };
-
-            AddProductPicture(productTorfabrikOfficialGameBall, "product/torfabrik-offizieller-spielball_white.png", "official-game-ball-white");
-            AddProductPicture(productTorfabrikOfficialGameBall, "product/torfabrik-offizieller-spielball_red.png", "official-game-ball-red");
-            AddProductPicture(productTorfabrikOfficialGameBall, "product/torfabrik-offizieller-spielball_yellow.png", "official-game-ball-yellow");
-            AddProductPicture(productTorfabrikOfficialGameBall, "product/torfabrik-offizieller-spielball_blue.png", "official-game-ball-blue");
-            AddProductPicture(productTorfabrikOfficialGameBall, "product/torfabrik-offizieller-spielball_green.png", "official-game-ball-green");
-
-            productTorfabrikOfficialGameBall.ProductCategories.Add(new ProductCategory { Category = categories["Soccer"], DisplayOrder = 1 });
-
-            productTorfabrikOfficialGameBall.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Adidas"], DisplayOrder = 1 });
-
-            productTorfabrikOfficialGameBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-            {
-                AllowFiltering = true,
-                ShowOnProductPage = true,
-                DisplayOrder = 3,
-                // Manufacturer -> Adidas
-                SpecificationAttributeOption = specAttributes[20].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 19)
-            });
-            productTorfabrikOfficialGameBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-            {
-                AllowFiltering = true,
-                ShowOnProductPage = true,
-                DisplayOrder = 3,
-                // Material -> leather
-                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
-            });
-
-            #endregion Torfabrik official game ball
-
-            #region product Adidas TANGO SALA BALL
-
-            var productAdidasTangoSalaBall = new Product
-            {
-                ProductType = ProductType.SimpleProduct,
-                Name = "Adidas TANGO SALA BALL",
-                IsEsd = false,
-                ShortDescription = "In different colors",
-                FullDescription = "<p><strong>TANGO SALA BALL</strong>   <br />   A SALA BALL TO MATCH YOUR INDOOR PLAYMAKING. </p> <p>Take the game indoors. With a design nod to the original Tango ball that set the performance standard, this indoor soccer is designed for low rebound and enhanced control for futsal. Machine-stitched for a soft touch and high durability. </p> <ul>   <li>Machine-stitched for soft touch and high durability</li>   <li>Low rebound for enhanced ball control</li>   <li>Butyl bladder for best air retention</li>   <li>Requires inflation</li>   <li>100% natural rubber</li>   <li>Imported</li> </ul> <p> </p> ",
-                Sku = "P-5001",
-                ProductTemplateId = productTemplate.Id,
-                AllowCustomerReviews = true,
-                Published = true,
-                MetaTitle = "Adidas TANGO SALA BALL",
-                Price = 59.90M,
-                IsGiftCard = false,
-                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
-            };
-
-            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-white.png");
-            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-yellow.jpg");
-            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-red.jpg");
-            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-green.jpg");
-            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-gray.jpg");
-            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-brown.jpg");
-            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-blue.jpg");
-
-            productAdidasTangoSalaBall.ProductCategories.Add(new ProductCategory { Category = categories["Soccer"], DisplayOrder = 1 });
-
-            productAdidasTangoSalaBall.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Adidas"], DisplayOrder = 1 });
-
-            productAdidasTangoSalaBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-            {
-                AllowFiltering = true,
-                ShowOnProductPage = true,
-                DisplayOrder = 3,
-                // Manufacturer -> Adidas
-                SpecificationAttributeOption = specAttributes[20].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 19)
-            });
-            productAdidasTangoSalaBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-            {
-                AllowFiltering = true,
-                ShowOnProductPage = true,
-                DisplayOrder = 3,
-                // Material -> leather
-                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
-            });
-
-            #endregion Adidas TANGO SALA BALL
-
-            #endregion category Soccer
-
-            #region category Basketball
-
-            #region Wilson Evolution High School Game Basketball
-
-            var productEvolutionHighSchoolGameBasketball = new Product
-            {
-                ProductType = ProductType.SimpleProduct,
-                Name = "Evolution High School Game Basketball",
-                IsEsd = false,
-                ShortDescription = "For all positions on all levels, match day and every day",
-                FullDescription = "<p>The Wilson Evolution High School Game Basketball has exclusive microfiber composite leather construction with deep embossed pebbles to give you the ultimate in feel and control.</p><p>Its patented Cushion Core Technology enhances durability for longer play. This microfiber composite Evolution high school basketball is pebbled with composite channels for better grip, helping players raise their game to the next level.</p><p>For all positions at all levels of play, game day and every day, Wilson delivers the skill-building performance that players demand.</p><p>This regulation-size 29.5' Wilson basketball is an ideal basketball for high school players, and is designed for either recreational use or for league games. It is NCAA and NFHS approved, so you know it's a high-quality basketball that will help you hone your shooting, passing and ball-handling skills.</p><p>Take your team all the way to the championship with the Wilson Evolution High School Game Basketball.</p>",
-                Sku = "P-4001",
-                ProductTemplateId = productTemplate.Id,
-                AllowCustomerReviews = true,
-                Published = true,
-                MetaTitle = "Evolution High School Game Basketball",
-                Price = 25.90M,
-                OldPrice = 29.90M,
-                IsGiftCard = false,
-                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id,
-                HasTierPrices = true
-            };
-
-            AddProductPicture(productEvolutionHighSchoolGameBasketball, "product/evolution-high-school-game-basketball.jpg");
-
-            productEvolutionHighSchoolGameBasketball.ProductCategories.Add(new ProductCategory { Category = categories["Basketball"], DisplayOrder = 1 });
-
-            productEvolutionHighSchoolGameBasketball.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Adidas"], DisplayOrder = 1 });
-
-            productEvolutionHighSchoolGameBasketball.TierPrices.Add(new TierPrice { Quantity = 6, Price = 24.90M });
-            productEvolutionHighSchoolGameBasketball.TierPrices.Add(new TierPrice { Quantity = 12, Price = 22.90M });
-            productEvolutionHighSchoolGameBasketball.TierPrices.Add(new TierPrice { Quantity = 24, Price = 20.90M });
-
-            #endregion Wilson Evolution High School Game Basketball
-
-            #region All Court Basketball
-
-            var productAllCourtBasketball = new Product
-            {
-                ProductType = ProductType.SimpleProduct,
-                Name = "All-Court Basketball",
-                IsEsd = false,
-                ShortDescription = "A durable Basketball for all surfaces",
-                FullDescription = "<p><strong>All-Court Prep Ball</strong> </p> <p>A durable basketball for all surfaces. </p> <p>Whether on parquet or on asphalt - the adidas All-Court Prep Ball hat has only one goal: the basket. This basketball is made of durable artificial leather, was also predestined for indoor games also for outdoor games. </p> <ul>   <li>Composite cover made of artificial leather</li>   <li>suitable for indoors and outdoors</li>   <li>Delivered unpumped</li> </ul> ",
-                Sku = "P-4002",
-                ProductTemplateId = productTemplate.Id,
-                AllowCustomerReviews = true,
-                Published = true,
-                MetaTitle = "All-Court Basketball",
-                Price = 25.90M,
-                IsGiftCard = false,
-                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
-            };
-
-            AddProductPicture(productAllCourtBasketball, "product/all-court-basketball.png");
-
-            productAllCourtBasketball.ProductCategories.Add(new ProductCategory { Category = categories["Basketball"], DisplayOrder = 1 });
-
-            productAllCourtBasketball.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Adidas"], DisplayOrder = 1 });
-
-            #endregion All Court Basketball
-
-            #endregion category Basketball
-
-            #region category sunglasses
-
-            #region product Top bar
+            #region RayBan TopBar
 
             var productRayBanTopBar = new Product
             {
@@ -1245,7 +842,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdApparel
             };
 
             AddProductPicture(productRayBanTopBar, "product/RayBanTopBar_1.jpg", "rayban-top-bar-1");
@@ -1256,9 +854,9 @@ namespace SmartStore.Data.Setup
 
             productRayBanTopBar.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Ray-Ban"], DisplayOrder = 1 });
 
-            #endregion product Top bar
+            #endregion
 
-            #region product ORIGINAL WAYFARER AT COLLECTION
+            #region ORIGINAL WAYFARER AT COLLECTION
 
             var productOriginalWayfarer = new Product
             {
@@ -1281,7 +879,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdApparel
             };
 
             AddProductPicture(productOriginalWayfarer, "product/OriginalWayfarer_1.jpg", "wayfarer-blue-gray-classic-black-1");
@@ -1295,9 +894,9 @@ namespace SmartStore.Data.Setup
 
             productOriginalWayfarer.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Ray-Ban"], DisplayOrder = 1 });
 
-            #endregion product ORIGINAL WAYFARER AT COLLECTION
+            #endregion
 
-            #region product Radar EV Prizm Sports Sunglasses
+            #region Radar EV Prizm Sports Sunglasses
 
             var productRadarEVPrizmSportsSunglasses = new Product
             {
@@ -1320,7 +919,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdApparel
             };
 
             AddProductPicture(productRadarEVPrizmSportsSunglasses, "product/radar_ev_prizm.jpg");
@@ -1329,9 +929,9 @@ namespace SmartStore.Data.Setup
 
             productRadarEVPrizmSportsSunglasses.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Oakley"], DisplayOrder = 1 });
 
-            #endregion product Radar EV Prizm Sports Sunglasses
+            #endregion
 
-            #region product Custom Flak Sunglasses
+            #region Custom Flak Sunglasses
 
             var productCustomFlakSunglasses = new Product
             {
@@ -1354,7 +954,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdApparel
             };
 
             AddProductPicture(productCustomFlakSunglasses, "product/CustomFlakSunglasses.jpg", "customflak");
@@ -1409,14 +1010,598 @@ namespace SmartStore.Data.Setup
 
             productCustomFlakSunglasses.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Oakley"], DisplayOrder = 1 });
 
-            #endregion product Custom Flak Sunglasses
+            #endregion
 
+            #endregion
 
-            #endregion category sunglasses
+            #region Category Golf
 
-            #region category apple
+            #region Titleist SM6 Tour Chrome
 
-            #region product iphone plus
+            var productTitleistSM6TourChrome = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "Titleist SM6 Tour Chrome",
+                IsEsd = false,
+                ShortDescription = "For golfers who want maximum impact control and feedback.",
+                FullDescription = "​​<p><strong>Inspired by the best iron players in the world</strong> </p> <p>The new 'Spin Milled 6' wages establish a new performance class in three key areas of the Wedge game: precise length steps, bounce and maximum spin. </p> <p>   <br />   For each loft the center of gravity of the wedge is determined individually. Therefore, the SM6 offers a particularly precise length and flight curve control combined with great impact.   <br />   Bob Vokey's tourer-puffed sole cleat allows all golfers more bounce, adapted to their personal swing profile and the respective ground conditions. </p> <p>   <br />   A new, parallel face texture was developed for the absolutely exact and with 100% quality control machined grooves. The result is a consistently higher edge sharpness for more spin. </p> <p> </p> <ul>   <li>Precise lengths and flight curve control thanks to progressively placed center of gravity.</li>   <li>Improved bounce due to Bob Vokey's proven soles.</li>   <li>TX4 grooves produce more spin through a new surface and edge sharpness.</li>   <li>Multiple personalization options.</li> </ul> ",
+                Sku = "P-7004",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Titleist SM6 Tour Chrome",
+                Price = 164.95M,
+                OldPrice = 199.95M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdApparel
+            };
+
+            AddProductPicture(productTitleistSM6TourChrome, "product/titleist_sm6_tour_chrome.jpg");
+
+            productTitleistSM6TourChrome.ProductCategories.Add(new ProductCategory { Category = categories["Golf"], DisplayOrder = 1 });
+
+            productTitleistSM6TourChrome.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Titleist"], DisplayOrder = 1 });
+
+            #endregion
+
+            #region Titleist Pro V1x
+
+            var productTitleistProV1x = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "Titleist Pro V1x",
+                IsEsd = false,
+                ShortDescription = "Golf ball with high ball flight",
+                FullDescription = "​​The top players rely on the new Titleist Pro V1x. High ball flight, soft feel and more spin in the short game are the advantages of the V1x version. Perfect performance from the leading manufacturer. The new Titleist Pro V1 golf ball is exactly defined and promises penetrating ball flight with very soft hit feeling.",
+                Sku = "P-7001",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Titleist Pro V1x",
+                Price = 2.1M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdApparel
+            };
+
+            AddProductPicture(productTitleistProV1x, "product/titleist-pro-v1x.jpg");
+
+            productTitleistProV1x.ProductCategories.Add(new ProductCategory { Category = categories["Golf"], DisplayOrder = 1 });
+
+            productTitleistProV1x.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Titleist"], DisplayOrder = 1 });
+
+            #endregion
+
+            #region Supreme Golfball
+
+            var productSupremeGolfball = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "Supreme Golfball",
+                IsEsd = false,
+                ShortDescription = "Training balls with perfect flying characteristics",
+                FullDescription = "​Perfect golf exercise ball with the characteristics like the 'original', but in a glass-fracture-proof execution. Massive core, an ideal training ball for yard and garden. Colors: white, yellow, orange.",
+                Sku = "P-7002",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Supreme Golfball",
+                Price = 1.9M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdApparel
+            };
+
+            AddProductPicture(productSupremeGolfball, "product/supremeGolfball_1.jpg");
+            AddProductPicture(productSupremeGolfball, "product/supremeGolfball_2.jpg");
+
+            productSupremeGolfball.ProductCategories.Add(new ProductCategory { Category = categories["Golf"], DisplayOrder = 1 });
+
+            productSupremeGolfball.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Titleist"], DisplayOrder = 1 });
+
+            #endregion
+
+            #region GBB Epic Sub Zero Driver
+
+            var productGBBEpicSubZeroDriver = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "GBB Epic Sub Zero Driver",
+                IsEsd = false,
+                ShortDescription = "Low spin for good golfing!",
+                FullDescription = "Your game wins with the GBB Epic Sub Zero Driver. A golf club with an extremely low spin and the phenomenal high-speed characteristic.",
+                Sku = "P-7003",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "GBB Epic Sub Zero Driver",
+                Price = 489M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdApparel
+            };
+
+            AddProductPicture(productGBBEpicSubZeroDriver, "product/gbb-epic-sub-zero-driver.jpg");
+
+            productGBBEpicSubZeroDriver.ProductCategories.Add(new ProductCategory { Category = categories["Golf"], DisplayOrder = 1 });
+
+            productGBBEpicSubZeroDriver.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Titleist"], DisplayOrder = 1 });
+
+            #endregion
+
+            #endregion
+
+            #region Category Soccer
+
+            #region Nike Strike Football
+
+            var productNikeStrikeFootball = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "Nike Strike Football",
+                IsEsd = false,
+                ShortDescription = "GREAT TOUCH. HIGH VISIBILITY.",
+                FullDescription = "<p><strong>Enhance play everyday, with the Nike Strike Football. </strong> </p> <p>Reinforced rubber retains its shape for confident and consistent control. A stand out Visual Power graphic in black, green and orange is best for ball tracking, despite dark or inclement conditions. </p> <ul>   <li>Visual Power graphic helps give a true read on flight trajectory.</li>   <li>Textured casing offers superior touch.</li>   <li>Reinforced rubber bladder supports air and shape retention.</li>   <li>66% rubber/ 15% polyurethane/ 13% polyester/ 7% EVA.</li> </ul> ",
+                Sku = "P-5004",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Nike Strike Football",
+                Price = 59.90M,
+                OldPrice = 69.90M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                HasTierPrices = true,
+                TaxCategoryId = taxCategoryIdApparel
+            };
+
+            AddProductPicture(productNikeStrikeFootball, "product/nike-strike-football.jpg");
+
+            productNikeStrikeFootball.ProductCategories.Add(new ProductCategory { Category = categories["Soccer"], DisplayOrder = 1 });
+
+            productNikeStrikeFootball.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Nike"], DisplayOrder = 1 });
+
+            productNikeStrikeFootball.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Manufacturer -> Nike
+                SpecificationAttributeOption = specAttributes[20].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 20)
+            });
+            productNikeStrikeFootball.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Material -> rubber
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 12)
+            });
+
+            productNikeStrikeFootball.TierPrices.Add(new TierPrice { Quantity = 6, Price = 26.90M });
+            productNikeStrikeFootball.TierPrices.Add(new TierPrice { Quantity = 12, Price = 24.90M });
+            productNikeStrikeFootball.TierPrices.Add(new TierPrice { Quantity = 24, Price = 22.90M });
+
+            #endregion
+
+            #region Evopower 5.3 Trainer HS Ball
+
+            var productNikeEvoPowerBall = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "Evopower 5.3 Trainer HS Ball",
+                IsEsd = false,
+                ShortDescription = "Entry level training ball.",
+                FullDescription = "<p><strong>Entry level training ball.</strong></ p >< p > Constructed from 32 panels with equal surface areas for reduced seam-stress and a perfectly round shape.Handstitched panels with multilayered woven backing for enhanced stability and aerodynamics.</ p >",
+                Sku = "P-5003",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Evopower 5.3 Trainer HS Ball",
+                Price = 59.90M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdApparel
+            };
+
+            AddProductPicture(productNikeEvoPowerBall, "product/nike-vopower-53-trainer-hs-ball.jpg");
+
+            productNikeEvoPowerBall.ProductCategories.Add(new ProductCategory { Category = categories["Soccer"], DisplayOrder = 1 });
+
+            productNikeEvoPowerBall.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Nike"], DisplayOrder = 1 });
+
+            productNikeEvoPowerBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Manufacturer -> Nike
+                SpecificationAttributeOption = specAttributes[20].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 20)
+            });
+            productNikeEvoPowerBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Material -> leather
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
+            });
+
+            #endregion
+
+            #region Torfabrik official game ball
+
+            var productTorfabrikOfficialGameBall = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "Torfabrik official game ball",
+                IsEsd = false,
+                ShortDescription = "Available in different colors",
+                FullDescription = "",
+                Sku = "P-5002",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Torfabrik official game ball",
+                Price = 59.90M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdApparel
+            };
+
+            AddProductPicture(productTorfabrikOfficialGameBall, "product/torfabrik-offizieller-spielball_white.png", "official-game-ball-white");
+            AddProductPicture(productTorfabrikOfficialGameBall, "product/torfabrik-offizieller-spielball_red.png", "official-game-ball-red");
+            AddProductPicture(productTorfabrikOfficialGameBall, "product/torfabrik-offizieller-spielball_yellow.png", "official-game-ball-yellow");
+            AddProductPicture(productTorfabrikOfficialGameBall, "product/torfabrik-offizieller-spielball_blue.png", "official-game-ball-blue");
+            AddProductPicture(productTorfabrikOfficialGameBall, "product/torfabrik-offizieller-spielball_green.png", "official-game-ball-green");
+
+            productTorfabrikOfficialGameBall.ProductCategories.Add(new ProductCategory { Category = categories["Soccer"], DisplayOrder = 1 });
+
+            productTorfabrikOfficialGameBall.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Adidas"], DisplayOrder = 1 });
+
+            productTorfabrikOfficialGameBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Manufacturer -> Adidas
+                SpecificationAttributeOption = specAttributes[20].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 19)
+            });
+            productTorfabrikOfficialGameBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Material -> leather
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
+            });
+
+            #endregion
+
+            #region Adidas TANGO SALA BALL
+
+            var productAdidasTangoSalaBall = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "Adidas TANGO SALA BALL",
+                IsEsd = false,
+                ShortDescription = "In different colors",
+                FullDescription = "<p><strong>TANGO SALA BALL</strong>   <br />   A SALA BALL TO MATCH YOUR INDOOR PLAYMAKING. </p> <p>Take the game indoors. With a design nod to the original Tango ball that set the performance standard, this indoor soccer is designed for low rebound and enhanced control for futsal. Machine-stitched for a soft touch and high durability. </p> <ul>   <li>Machine-stitched for soft touch and high durability</li>   <li>Low rebound for enhanced ball control</li>   <li>Butyl bladder for best air retention</li>   <li>Requires inflation</li>   <li>100% natural rubber</li>   <li>Imported</li> </ul> <p> </p> ",
+                Sku = "P-5001",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Adidas TANGO SALA BALL",
+                Price = 59.90M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdApparel
+            };
+
+            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-white.png");
+            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-yellow.jpg");
+            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-red.jpg");
+            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-green.jpg");
+            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-gray.jpg");
+            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-brown.jpg");
+            AddProductPicture(productAdidasTangoSalaBall, "product/adidas-tango-pasadena-ball-blue.jpg");
+
+            productAdidasTangoSalaBall.ProductCategories.Add(new ProductCategory { Category = categories["Soccer"], DisplayOrder = 1 });
+
+            productAdidasTangoSalaBall.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Adidas"], DisplayOrder = 1 });
+
+            productAdidasTangoSalaBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Manufacturer -> Adidas
+                SpecificationAttributeOption = specAttributes[20].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 19)
+            });
+            productAdidasTangoSalaBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Material -> leather
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
+            });
+
+            #endregion
+
+            #endregion
+
+            #region Category Basketball
+
+            #region Wilson Evolution High School Game Basketball
+
+            var productEvolutionHighSchoolGameBasketball = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "Evolution High School Game Basketball",
+                IsEsd = false,
+                ShortDescription = "For all positions on all levels, match day and every day",
+                FullDescription = "<p>The Wilson Evolution High School Game Basketball has exclusive microfiber composite leather construction with deep embossed pebbles to give you the ultimate in feel and control.</p><p>Its patented Cushion Core Technology enhances durability for longer play. This microfiber composite Evolution high school basketball is pebbled with composite channels for better grip, helping players raise their game to the next level.</p><p>For all positions at all levels of play, game day and every day, Wilson delivers the skill-building performance that players demand.</p><p>This regulation-size 29.5' Wilson basketball is an ideal basketball for high school players, and is designed for either recreational use or for league games. It is NCAA and NFHS approved, so you know it's a high-quality basketball that will help you hone your shooting, passing and ball-handling skills.</p><p>Take your team all the way to the championship with the Wilson Evolution High School Game Basketball.</p>",
+                Sku = "P-4001",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Evolution High School Game Basketball",
+                Price = 25.90M,
+                OldPrice = 29.90M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                HasTierPrices = true,
+                TaxCategoryId = taxCategoryIdApparel
+            };
+
+            AddProductPicture(productEvolutionHighSchoolGameBasketball, "product/evolution-high-school-game-basketball.jpg");
+
+            productEvolutionHighSchoolGameBasketball.ProductCategories.Add(new ProductCategory { Category = categories["Basketball"], DisplayOrder = 1 });
+
+            productEvolutionHighSchoolGameBasketball.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Adidas"], DisplayOrder = 1 });
+
+            productEvolutionHighSchoolGameBasketball.TierPrices.Add(new TierPrice { Quantity = 6, Price = 24.90M });
+            productEvolutionHighSchoolGameBasketball.TierPrices.Add(new TierPrice { Quantity = 12, Price = 22.90M });
+            productEvolutionHighSchoolGameBasketball.TierPrices.Add(new TierPrice { Quantity = 24, Price = 20.90M });
+
+            #endregion
+
+            #region All Court Basketball
+
+            var productAllCourtBasketball = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "All-Court Basketball",
+                IsEsd = false,
+                ShortDescription = "A durable Basketball for all surfaces",
+                FullDescription = "<p><strong>All-Court Prep Ball</strong> </p> <p>A durable basketball for all surfaces. </p> <p>Whether on parquet or on asphalt - the adidas All-Court Prep Ball hat has only one goal: the basket. This basketball is made of durable artificial leather, was also predestined for indoor games also for outdoor games. </p> <ul>   <li>Composite cover made of artificial leather</li>   <li>suitable for indoors and outdoors</li>   <li>Delivered unpumped</li> </ul> ",
+                Sku = "P-4002",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "All-Court Basketball",
+                Price = 25.90M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdApparel
+            };
+
+            AddProductPicture(productAllCourtBasketball, "product/all-court-basketball.png");
+
+            productAllCourtBasketball.ProductCategories.Add(new ProductCategory { Category = categories["Basketball"], DisplayOrder = 1 });
+
+            productAllCourtBasketball.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Adidas"], DisplayOrder = 1 });
+
+            #endregion
+
+            #endregion category Basketball
+
+            #region Category Gift Cards
+
+            #region GiftCard10
+
+            var product10GiftCard = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "$10 Virtual Gift Card",
+                IsEsd = true,
+                ShortDescription = "$10 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
+                FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
+                Sku = "P-1000",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "$10 Virtual Gift Card",
+                Price = 10M,
+                IsGiftCard = true,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                DisplayOrder = 1,
+                TaxCategoryId = taxCategoryIdFree
+            };
+
+            AddProductPicture(product10GiftCard, "product/gift_card_10.png");
+            product10GiftCard.ProductCategories.Add(new ProductCategory { Category = categories["Gift Cards"], DisplayOrder = 1 });
+
+            #endregion
+
+            #region GiftCard25
+
+            var product25GiftCard = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "$25 Virtual Gift Card",
+                IsEsd = true,
+                ShortDescription = "$25 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
+                FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
+                Sku = "P-1001",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "$25 Virtual Gift Card",
+                Price = 25M,
+                IsGiftCard = true,
+                GiftCardType = GiftCardType.Virtual,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                DisplayOrder = 2,
+                TaxCategoryId = taxCategoryIdFree
+            };
+
+            AddProductPicture(product25GiftCard, "product/gift_card_25.png");
+            product25GiftCard.ProductCategories.Add(new ProductCategory { Category = categories["Gift Cards"], DisplayOrder = 1 });
+
+            #endregion product25GiftCard
+
+            #region GiftCard50
+
+            var product50GiftCard = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "$50 Virtual Gift Card",
+                IsEsd = true,
+                ShortDescription = "$50 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
+                FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
+                Sku = "P-1002",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "$50 Virtual Gift Card",
+                Price = 50M,
+                IsGiftCard = true,
+                GiftCardType = GiftCardType.Virtual,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                DisplayOrder = 3,
+                TaxCategoryId = taxCategoryIdFree
+            };
+
+            AddProductPicture(product50GiftCard, "product/gift_card_50.png");
+            product50GiftCard.ProductCategories.Add(new ProductCategory { Category = categories["Gift Cards"], DisplayOrder = 1 });
+
+            #endregion product50GiftCard
+
+            #region GiftCard100
+
+            var product100GiftCard = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "$100 Virtual Gift Card",
+                IsEsd = true,
+                ShortDescription = "$100 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
+                FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
+                Sku = "P-10033",
+                ProductTemplateId = productTemplate.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "$100 Virtual Gift Card",
+                Price = 100M,
+                IsGiftCard = true,
+                GiftCardType = GiftCardType.Virtual,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                DisplayOrder = 4,
+                TaxCategoryId = taxCategoryIdFree
+            };
+
+            AddProductPicture(product100GiftCard, "product/gift_card_100.png");
+            product100GiftCard.ProductCategories.Add(new ProductCategory { Category = categories["Gift Cards"], DisplayOrder = 1 });
+
+            #endregion product100GiftCard
+
+            #endregion
+
+            #region Category Apple
+
+            #region IPhone Plus
 
             var productIphoneplus = new Product
             {
@@ -1441,7 +1626,8 @@ namespace SmartStore.Data.Setup
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
                 IsFreeShipping = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             AddProductPicture(productIphoneplus, "product/iphone-plus_all_colors.jpg");
@@ -1488,9 +1674,9 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[5].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 9)
             });
 
-            #endregion product iphone plus
+            #endregion
 
-            #region product Watch Series 2
+            #region Watch Series 2
 
             var productWatchSeries2 = new Product
             {
@@ -1515,7 +1701,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             AddProductPicture(productWatchSeries2, "product/watchseries2_1.jpg");
@@ -1552,9 +1739,9 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[5].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 9)
             });
 
-            #endregion product Watch Series 2
+            #endregion
 
-            #region product Airpods
+            #region Airpods
 
             var productAirpods = new Product
             {
@@ -1577,7 +1764,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             AddProductPicture(productAirpods, "product/airpods_white.jpg", "airpods-white");
@@ -1591,9 +1779,9 @@ namespace SmartStore.Data.Setup
 
             productAirpods.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Apple"], DisplayOrder = 7 });
 
-            #endregion product Airpods
+            #endregion
 
-            #region product Ultimate Apple Pro Hipster Bundle
+            #region Ultimate Apple Pro Hipster Bundle
 
             var productAppleProHipsterBundle = new Product
             {
@@ -1620,7 +1808,8 @@ namespace SmartStore.Data.Setup
                 DeliveryTimeId = thirdDeliveryTime.Id,
                 BundleTitleText = "Bundle includes",
                 BundlePerItemPricing = true,
-                BundlePerItemShoppingCart = true
+                BundlePerItemShoppingCart = true,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             AddProductPicture(productAppleProHipsterBundle, "product/ultimate-apple-pro-hipster-bundle.jpg");
@@ -1633,9 +1822,9 @@ namespace SmartStore.Data.Setup
 
             productAppleProHipsterBundle.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Apple"], DisplayOrder = 1 });
 
-            #endregion product Ultimate Apple Pro Hipster Bundle
+            #endregion
 
-            #region product 9,7 iPad
+            #region 9,7 IPad
 
             var product97ipad = new Product
             {
@@ -1663,7 +1852,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             AddProductPicture(product97ipad, "product/ipad_1.jpg");
@@ -1716,140 +1906,13 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[5].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 9)
             });
 
-            #endregion product 9,7 iPad
+            #endregion
 
-            #endregion category apple
+            #endregion
 
-            #region category Gift Cards
+            #region Category Books
 
-            #region product10GiftCard
-
-            var product10GiftCard = new Product
-            {
-                ProductType = ProductType.SimpleProduct,
-                Name = "$10 Virtual Gift Card",
-                IsEsd = true,
-                ShortDescription = "$10 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
-                FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
-                Sku = "P-1000",
-                ProductTemplateId = productTemplate.Id,
-                AllowCustomerReviews = true,
-                Published = true,
-                MetaTitle = "$10 Virtual Gift Card",
-                Price = 10M,
-                IsGiftCard = true,
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                DisplayOrder = 1
-            };
-
-            AddProductPicture(product10GiftCard, "product/gift_card_10.png");
-            product10GiftCard.ProductCategories.Add(new ProductCategory { Category = categories["Gift Cards"], DisplayOrder = 1 });
-
-            #endregion product10GiftCard
-
-            #region product25GiftCard
-
-            var product25GiftCard = new Product
-            {
-                ProductType = ProductType.SimpleProduct,
-                Name = "$25 Virtual Gift Card",
-                IsEsd = true,
-                ShortDescription = "$25 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
-                FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
-                Sku = "P-1001",
-                ProductTemplateId = productTemplate.Id,
-                AllowCustomerReviews = true,
-                Published = true,
-                MetaTitle = "$25 Virtual Gift Card",
-                Price = 25M,
-                IsGiftCard = true,
-                GiftCardType = GiftCardType.Virtual,
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                DisplayOrder = 2
-            };
-
-            AddProductPicture(product25GiftCard, "product/gift_card_25.png");
-            product25GiftCard.ProductCategories.Add(new ProductCategory { Category = categories["Gift Cards"], DisplayOrder = 1 });
-
-            #endregion product25GiftCard
-
-            #region product50GiftCard
-
-            var product50GiftCard = new Product
-            {
-                ProductType = ProductType.SimpleProduct,
-                Name = "$50 Virtual Gift Card",
-                IsEsd = true,
-                ShortDescription = "$50 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
-                FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
-                Sku = "P-1002",
-                ProductTemplateId = productTemplate.Id,
-                AllowCustomerReviews = true,
-                Published = true,
-                MetaTitle = "$50 Virtual Gift Card",
-                Price = 50M,
-                IsGiftCard = true,
-                GiftCardType = GiftCardType.Virtual,
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                DisplayOrder = 3
-            };
-
-            AddProductPicture(product50GiftCard, "product/gift_card_50.png");
-            product50GiftCard.ProductCategories.Add(new ProductCategory { Category = categories["Gift Cards"], DisplayOrder = 1 });
-
-            #endregion product50GiftCard
-
-            #region product100GiftCard
-
-            var product100GiftCard = new Product
-            {
-                ProductType = ProductType.SimpleProduct,
-                Name = "$100 Virtual Gift Card",
-                IsEsd = true,
-                ShortDescription = "$100 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
-                FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
-                Sku = "P-10033",
-                ProductTemplateId = productTemplate.Id,
-                AllowCustomerReviews = true,
-                Published = true,
-                MetaTitle = "$100 Virtual Gift Card",
-                Price = 100M,
-                IsGiftCard = true,
-                GiftCardType = GiftCardType.Virtual,
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                DisplayOrder = 4,
-            };
-
-            AddProductPicture(product100GiftCard, "product/gift_card_100.png");
-            product100GiftCard.ProductCategories.Add(new ProductCategory { Category = categories["Gift Cards"], DisplayOrder = 1 });
-
-            #endregion product100GiftCard
-
-            #endregion category Gift Cards
-
-            #region category books
-
-            #region productBooksUberMan
+            #region Überman
 
             var productBooksUberMan = new Product
             {
@@ -1869,7 +1932,8 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
-                IsShipEnabled = true
+                IsShipEnabled = true,
+                TaxCategoryId = taxCategoryIdBooks
             };
 
             AddProductPicture(productBooksUberMan, "product/0000932_uberman-der-roman.jpeg");
@@ -1897,9 +1961,9 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
 
-            #endregion productBooksUberMan
+            #endregion
 
-            #region productBooksGefangeneDesHimmels
+            #region Gefangene des Himmels
 
             var productBooksGefangeneDesHimmels = new Product
             {
@@ -1920,7 +1984,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = firstDeliveryTime.Id
+                DeliveryTimeId = firstDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdBooks
             };
 
             AddProductPicture(productBooksGefangeneDesHimmels, "product/0000935_der-gefangene-des-himmels-roman_300.jpeg");
@@ -1952,9 +2017,9 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
 
-            #endregion productBooksGefangeneDesHimmels
+            #endregion
 
-            #region productBooksBestGrillingRecipes
+            #region Best grilling recipes
 
             var productBooksBestGrillingRecipes = new Product
             {
@@ -1975,7 +2040,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = firstDeliveryTime.Id
+                DeliveryTimeId = firstDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdBooks
             };
 
             AddProductPicture(productBooksBestGrillingRecipes, "product/bestgrillingrecipes.jpg");
@@ -2006,9 +2072,9 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 2)
             });
 
-            #endregion productBooksBestGrillingRecipes
+            #endregion
 
-            #region productBooksCookingForTwo
+            #region Cooking for two
 
             var productBooksCookingForTwo = new Product
             {
@@ -2029,7 +2095,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = secondDeliveryTime.Id
+                DeliveryTimeId = secondDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdBooks
             };
 
             AddProductPicture(productBooksCookingForTwo, "product/cookingfortwo.jpg");
@@ -2060,9 +2127,9 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 2)
             });
 
-            #endregion productBooksCookingForTwo
+            #endregion
 
-            #region productBooksAutosDerSuperlative
+            #region Autos der Superlative
 
             var productBooksAutosDerSuperlative = new Product
             {
@@ -2083,7 +2150,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdBooks
             };
 
             AddProductPicture(productBooksAutosDerSuperlative, "product/0000944_autos-der-superlative-die-starksten-die-ersten-die-schonsten-die-schnellsten.jpeg");
@@ -2114,9 +2182,9 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
 
-            #endregion productBooksAutosDerSuperlative
+            #endregion
 
-            #region productBooksBildatlasMotorraeder
+            #region Bildatlas Motorraeder
 
             var productBooksBildatlasMotorraeder = new Product
             {
@@ -2137,7 +2205,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = firstDeliveryTime.Id
+                DeliveryTimeId = firstDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdBooks
             };
 
             AddProductPicture(productBooksBildatlasMotorraeder, "product/0000942_bildatlas-motorrader-mit-mehr-als-350-brillanten-abbildungen.jpeg");
@@ -2168,9 +2237,9 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
 
-            #endregion productBooksBildatlasMotorraeder
+            #endregion
 
-            #region productBooksAutoBuch
+            #region Auto Buch
 
             var productBooksAutoBuch = new Product
             {
@@ -2191,7 +2260,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = firstDeliveryTime.Id
+                DeliveryTimeId = firstDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdBooks
             };
 
             AddProductPicture(productBooksAutoBuch, "product/0000947_das-auto-buch-die-grose-chronik-mit-uber-1200-modellen_300.jpeg");
@@ -2222,9 +2292,9 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
 
-            #endregion productBooksAutoBuch
+            #endregion
 
-            #region productBooksFastCars
+            #region Fast cars
 
             var productBooksFastCars = new Product
             {
@@ -2245,7 +2315,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = firstDeliveryTime.Id
+                DeliveryTimeId = firstDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdBooks
             };
 
             AddProductPicture(productBooksFastCars, "product/0000946_fast-cars-bildkalender-2013_300.jpeg");
@@ -2276,9 +2347,9 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
 
-            #endregion productBooksFastCars
+            #endregion
 
-            #region productBooksMotorradAbenteuer
+            #region Motorrad Abenteuer
 
             var productBooksMotorradAbenteuer = new Product
             {
@@ -2299,7 +2370,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = secondDeliveryTime.Id
+                DeliveryTimeId = secondDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdBooks
             };
 
             AddProductPicture(productBooksMotorradAbenteuer, "product/0000943_motorrad-abenteuer-fahrtechnik-fur-reise-enduros.jpeg");
@@ -2330,13 +2402,13 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
 
-            #endregion productBooksMotorradAbenteuer
+            #endregion
 
-            #endregion category books
+            #endregion
 
-            #region Instant Download Music / Digital Products
+            #region Category Digital Products & Instant Downloads
 
-            #region product Books Stone of the Wise
+            #region Stone of the Wise
 
             var productBooksStoneOfTheWise = new Product
             {
@@ -2358,7 +2430,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsDownload = true,
-                HasSampleDownload = true
+                HasSampleDownload = true,
+                TaxCategoryId = taxCategoryIdDigitial
             };
 
             AddProductPicture(productBooksStoneOfTheWise, "product/stone_of_wisdom.jpg");
@@ -2389,10 +2462,9 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[12].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
 
-            #endregion product Books Stone of the Wise
+            #endregion
 
-
-            #region Antonio Vivaldi: then spring
+            #region Antonio Vivaldi: Spring
 
             var productInstantDownloadVivaldi = new Product
             {
@@ -2414,7 +2486,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsDownload = true,
-                HasSampleDownload = true
+                HasSampleDownload = true,
+                TaxCategoryId = taxCategoryIdDigitial
             };
 
             AddProductPicture(productInstantDownloadVivaldi, "product/vivaldi.jpg");
@@ -2437,7 +2510,7 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[19].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 6)
             });
 
-            #endregion Antonio Vivildi: then spring
+            #endregion
 
             #region Beethoven für Elise
 
@@ -2462,7 +2535,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsDownload = true,
-                HasSampleDownload = true
+                HasSampleDownload = true,
+                TaxCategoryId = taxCategoryIdDigitial
             };
 
             AddProductPicture(productInstantDownloadBeethoven, "product/Beethoven.jpg");
@@ -2485,15 +2559,15 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[19].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 6)
             });
 
-            #endregion Beethoven für Elise
+            #endregion
 
-            #endregion Instant Download Music
+            #endregion
 
-            #region watches
+            #region Category Watches
 
-            #region productTRANSOCEANCHRONOGRAPH
+            #region Transocean Chronograph
 
-            var productTRANSOCEANCHRONOGRAPH = new Product
+            var productTransoceanChronograph = new Product
             {
                 ProductType = ProductType.SimpleProduct,
                 Name = "TRANSOCEAN CHRONOGRAPH",
@@ -2514,15 +2588,16 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdJewelry
             };
 
-            AddProductPicture(productTRANSOCEANCHRONOGRAPH, "product/transocean-chronograph.jpg");
-            productTRANSOCEANCHRONOGRAPH.ProductCategories.Add(new ProductCategory { Category = categories["Watches"], DisplayOrder = 1 });
+            AddProductPicture(productTransoceanChronograph, "product/transocean-chronograph.jpg");
+            productTransoceanChronograph.ProductCategories.Add(new ProductCategory { Category = categories["Watches"], DisplayOrder = 1 });
 
-            productTRANSOCEANCHRONOGRAPH.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Breitling"], DisplayOrder = 1 });
+            productTransoceanChronograph.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Breitling"], DisplayOrder = 1 });
 
-            productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            productTransoceanChronograph.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -2530,7 +2605,7 @@ namespace SmartStore.Data.Setup
                 // offer > promotion
                 SpecificationAttributeOption = specAttributes[22].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 3)
             });
-            productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            productTransoceanChronograph.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -2538,7 +2613,7 @@ namespace SmartStore.Data.Setup
                 // manufacturer > Breitling
                 SpecificationAttributeOption = specAttributes[20].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 18)
             });
-            productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            productTransoceanChronograph.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -2546,7 +2621,7 @@ namespace SmartStore.Data.Setup
                 // housing > steel
                 SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
-            productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            productTransoceanChronograph.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -2554,7 +2629,7 @@ namespace SmartStore.Data.Setup
                 // material -> leather
                 SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
             });
-            productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            productTransoceanChronograph.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -2562,7 +2637,7 @@ namespace SmartStore.Data.Setup
                 // Gender -> gentlemen
                 SpecificationAttributeOption = specAttributes[7].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
-            productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            productTransoceanChronograph.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -2570,7 +2645,7 @@ namespace SmartStore.Data.Setup
                 // movement -> mechanical, self winding
                 SpecificationAttributeOption = specAttributes[9].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
             });
-            productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            productTransoceanChronograph.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -2578,7 +2653,7 @@ namespace SmartStore.Data.Setup
                 // diameter -> 44mm
                 SpecificationAttributeOption = specAttributes[24].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 3)
             });
-            productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            productTransoceanChronograph.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -2587,9 +2662,9 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[25].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 2)
             });
 
-            #endregion productTRANSOCEANCHRONOGRAPH
+            #endregion
 
-            #region productTissotT-TouchExpertSolar
+            #region TissotT Touch Expert Solar
 
             var productTissotTTouchExpertSolar = new Product
             {
@@ -2612,7 +2687,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdJewelry
             };
 
             AddProductPicture(productTissotTTouchExpertSolar, "product/tissot-t-touch-expert-solar.jpg");
@@ -2687,9 +2763,9 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[25].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 3)
             });
 
-            #endregion productTissotT-TouchExpertSolar
+            #endregion
 
-            #region productSeikoSRPA49K1
+            #region Seiko SRPA49K1
 
             var productSeikoSRPA49K1 = new Product
             {
@@ -2712,7 +2788,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdJewelry
             };
 
             AddProductPicture(productSeikoSRPA49K1, "product/SeikoSRPA49K1.jpg");
@@ -2779,8 +2856,7 @@ namespace SmartStore.Data.Setup
 
             #endregion productSeikoSRPA49K1 
 
-
-            #region productWatchesCertinaDSPodiumBigSize
+            #region Certina DS Podium Big Size
 
             var productWatchesCertinaDSPodiumBigSize = new Product
             {
@@ -2802,7 +2878,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = thirdDeliveryTime.Id
+                DeliveryTimeId = thirdDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdJewelry
             };
 
             AddProductPicture(productWatchesCertinaDSPodiumBigSize, "product/certina_ds_podium_big.png");
@@ -2867,11 +2944,11 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[24].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 2)
             });
 
-            #endregion productWatchesCertinaDSPodiumBigSize
+            #endregion
 
-            #endregion watches                      
+            #endregion
 
-            #region gaming
+            #region Category Gaming
 
             var manuSony = _ctx.Set<Manufacturer>().First(c => c.Name == "Sony");
             var manuMicrosoft = _ctx.Set<Manufacturer>().First(c => c.Name == "Microsoft");
@@ -2882,7 +2959,7 @@ namespace SmartStore.Data.Setup
             var categoryGamingGames = _ctx.Set<Category>().First(c => c.Alias == "Games");
             var manuWarnerHomme = _ctx.Set<Manufacturer>().First(c => c.Name == "Warner Home Video Games");
 
-            #region bundlePs3AssassinCreed
+            #region PS3
 
             var productPs3 = new Product
             {
@@ -2905,7 +2982,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = firstDeliveryTime.Id
+                DeliveryTimeId = firstDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             AddProductPicture(productPs3, "product/ps4_w_controller.jpg", "ps4-w-controller");
@@ -2913,6 +2991,10 @@ namespace SmartStore.Data.Setup
 
             productPs3.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
             productPs3.ProductCategories.Add(new ProductCategory { Category = categories["Gaming"], DisplayOrder = 4 });
+
+            #endregion
+
+            #region Dualshock 4 Controller
 
             var productDualshock4Controller = new Product
             {
@@ -2934,13 +3016,17 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = firstDeliveryTime.Id
+                DeliveryTimeId = firstDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             AddProductPicture(productDualshock4Controller, "product/dualshock4.jpg");
             productDualshock4Controller.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
             productDualshock4Controller.ProductCategories.Add(new ProductCategory { Category = categories["Gaming Accessories"], DisplayOrder = 1 });
 
+            #endregion
+
+            #region Minecraft
 
             var productMinecraft = new Product
             {
@@ -2964,15 +3050,19 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = firstDeliveryTime.Id
+                DeliveryTimeId = firstDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             AddProductPicture(productMinecraft, "product/minecraft.jpg");
             productMinecraft.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
             productMinecraft.ProductCategories.Add(new ProductCategory { Category = categories["Games"], DisplayOrder = 4 });
 
+            #endregion
 
-            var productBundlePs3AssassinCreed = new Product
+            #region Bundle PS3, Controller & Minecraft
+
+            var productBundleMindecraftPs3 = new Product
             {
                 ProductType = ProductType.BundledProduct,
                 Sku = "Sony-PS399105",
@@ -2999,20 +3089,18 @@ namespace SmartStore.Data.Setup
                 BundlePerItemShoppingCart = true
             };
 
-            AddProductPicture(productBundlePs3AssassinCreed, "product/ps4_bundle_minecraft.jpg");
-            productBundlePs3AssassinCreed.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
-            productBundlePs3AssassinCreed.ProductCategories.Add(new ProductCategory { Category = categories["Gaming"], DisplayOrder = 1 });
+            AddProductPicture(productBundleMindecraftPs3, "product/ps4_bundle_minecraft.jpg");
+            productBundleMindecraftPs3.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
+            productBundleMindecraftPs3.ProductCategories.Add(new ProductCategory { Category = categories["Gaming"], DisplayOrder = 1 });
 
-            #endregion bundlePs3AssassinCreed
+            #endregion
 
-            #region bundlePs4
+            #region PS4
 
             var productPs4 = new Product
             {
                 ProductType = ProductType.SimpleProduct,
                 Sku = "Sony-PS410034",
-                //Sku = "PS410037",
-
                 Name = "PlayStation 4",
                 ShortDescription = "The best place to play. Working with some of the most creative minds in the industry, PlayStation®4 delivers breathtaking and unique gaming experiences.",
                 FullDescription = "<p><h4>The power to perform.</h4><div>PlayStation®4 was designed from the ground up to ensure that game creators can unleash their imaginations to develop the very best games and deliver new play experiences never before possible. With ultra-fast customized processors and 8GB of high-performance unified system memory, PS4™ is the home to games with rich, high-fidelity graphics and deeply immersive experiences that shatter expectations.</div></p><p><ul><li><h4>Processor</h4><ul><li>Processor Technology : Low power x86-64 AMD 'Jaguar', 8 cores</li></ul></li><li><h4>Software</h4><ul><li>Processor : Single-chip custom processor</li></ul></li><li><h4>Display</h4><ul><li>Display Technology : HDMI<br />Digital Output (optical)</li></ul></li><li><h4>General</h4><ul><li>Ethernet ports x speed : Ethernet (10BASE-T, 100BASE-TX, 1000BASE-T); IEEE 802.11 b/g/n; Bluetooth® 2.1 (EDR)</li><li>Hard disk : Built-in</li></ul></li><li><h4>General Specifications</h4><ul><li>Video : BD 6xCAV<br />DVD 8xCAV</li></ul></li><li><h4>Graphics</h4><ul><li>Graphics Processor : 1.84 TFLOPS, AMD Radeon™ Graphics Core Next engine</li></ul></li><li><h4>Interface</h4><ul><li>I/O Port : Super-Speed USB (USB 3.0), AUX</li></ul></li><li><h4>Memory</h4><ul><li>Internal Memory : GDDR5 8GB</li></ul></li></ul></p>",
@@ -3028,7 +3116,8 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = firstDeliveryTime.Id
+                DeliveryTimeId = firstDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             AddProductPicture(productPs4, "product/sony_ps4.png", "sony-ps4");
@@ -3037,6 +3126,9 @@ namespace SmartStore.Data.Setup
             productPs4.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
             productPs4.ProductCategories.Add(new ProductCategory { Category = categories["Gaming"], DisplayOrder = 5 });
 
+            #endregion
+
+            #region PS4 Camera
 
             var productPs4Camera = new Product
             {
@@ -3057,13 +3149,17 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = firstDeliveryTime.Id
+                DeliveryTimeId = firstDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             AddProductPicture(productPs4Camera, "product/sony_ps4_camera.png");
             productPs4Camera.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
             productPs4Camera.ProductCategories.Add(new ProductCategory { Category = categories["Gaming Accessories"], DisplayOrder = 3 });
 
+            #endregion
+
+            #region Bundle PS4, Controller & Camera
 
             var productBundlePs4 = new Product
             {
@@ -3087,16 +3183,17 @@ namespace SmartStore.Data.Setup
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
                 DeliveryTimeId = firstDeliveryTime.Id,
-                BundleTitleText = "Bundle includes"
+                BundleTitleText = "Bundle includes",
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             AddProductPicture(productBundlePs4, "product/sony_ps4_bundle.png");
             productBundlePs4.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
             productBundlePs4.ProductCategories.Add(new ProductCategory { Category = categories["Gaming"], DisplayOrder = 2 });
 
-            #endregion bundlePs4
+            #endregion
 
-            #region groupAccessories
+            #region Accessories
 
             var productGroupAccessories = new Product
             {
@@ -3117,16 +3214,17 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                ShowOnHomePage = true
+                ShowOnHomePage = true,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             AddProductPicture(productGroupAccessories, "category/gaming_accessories.png");
             productGroupAccessories.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
             productGroupAccessories.ProductCategories.Add(new ProductCategory { Category = categories["Gaming"], DisplayOrder = 3 });
 
-            #endregion groupAccessories
+            #endregion
 
-            #region Ps3PlusOneGame
+            #region PS3 & Prince of Persia
 
             var productPrinceOfPersia = new Product
             {
@@ -3147,14 +3245,15 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = firstDeliveryTime.Id
+                DeliveryTimeId = firstDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             AddProductPicture(productPrinceOfPersia, "product/princeofpersia.jpg");
             productPrinceOfPersia.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Ubisoft"], DisplayOrder = 1 });
             productPrinceOfPersia.ProductCategories.Add(new ProductCategory { Category = categories["Games"], DisplayOrder = 2 });
 
-            #endregion Ps3PlusOneGame
+            #endregion
 
             #region Horizon Zero Down
 
@@ -3179,16 +3278,17 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = firstDeliveryTime.Id
+                DeliveryTimeId = firstDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             AddProductPicture(productHorizonZeroDown, "product/horizon.jpg");
             productHorizonZeroDown.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Sony"], DisplayOrder = 1 });
             productHorizonZeroDown.ProductCategories.Add(new ProductCategory { Category = categories["Games"], DisplayOrder = 2 });
 
-            #endregion Horizon Zero Down
+            #endregion
 
-            #region Fifa 17
+            #region FIFA 17
 
             var productFifa17 = new Product
             {
@@ -3211,14 +3311,15 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = firstDeliveryTime.Id
+                DeliveryTimeId = firstDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             AddProductPicture(productFifa17, "product/fifa17.jpg");
             productFifa17.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["EA Sports"], DisplayOrder = 1 });
             productFifa17.ProductCategories.Add(new ProductCategory { Category = categories["Games"], DisplayOrder = 2 });
 
-            #endregion Fifa 17
+            #endregion
 
             #region Lego Worlds
 
@@ -3242,15 +3343,17 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTimeId = firstDeliveryTime.Id
+                DeliveryTimeId = firstDeliveryTime.Id,
+                TaxCategoryId = taxCategoryIdElectronics
             };
 
             AddProductPicture(productLegoWorlds, "product/legoworlds.jpg");
             productLegoWorlds.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manufacturers["Warner Home Video Games"], DisplayOrder = 1 });
             productLegoWorlds.ProductCategories.Add(new ProductCategory { Category = categories["Games"], DisplayOrder = 3 });
 
-            #endregion Lego Worlds
+            #endregion
 
+            #region XBox One S
             //#region XBox One S
 
             //var productXBoxOneS = new Product
@@ -3282,11 +3385,13 @@ namespace SmartStore.Data.Setup
 
             //#endregion
 
-            #endregion gaming
+            #endregion
+
+            #endregion
 
             var entities = new List<Product>
             {
-                productTRANSOCEANCHRONOGRAPH, productTissotTTouchExpertSolar, productSeikoSRPA49K1,
+                productTransoceanChronograph, productTissotTTouchExpertSolar, productSeikoSRPA49K1,
                 productTitleistSM6TourChrome, productTitleistProV1x, productGBBEpicSubZeroDriver,
                 productSupremeGolfball, productBooksStoneOfTheWise, productNikeStrikeFootball, productNikeEvoPowerBall,
                 productTorfabrikOfficialGameBall, productAdidasTangoSalaBall, productAllCourtBasketball, productEvolutionHighSchoolGameBasketball, productRayBanTopBar,
@@ -3295,7 +3400,7 @@ namespace SmartStore.Data.Setup
                 productBooksBestGrillingRecipes, productBooksCookingForTwo, productBooksAutosDerSuperlative, productBooksBildatlasMotorraeder,
                 productBooksAutoBuch, productBooksFastCars, productBooksMotorradAbenteuer,
                 productInstantDownloadVivaldi, productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize,
-                productPs3, productMinecraft, productBundlePs3AssassinCreed,
+                productPs3, productMinecraft, productBundleMindecraftPs3,
                 productPs4, productDualshock4Controller, productPs4Camera, productBundlePs4,
                 productGroupAccessories, productPrinceOfPersia, productLegoWorlds, productHorizonZeroDown, productFifa17, productJackWolfsKinKanukaPoint
             };
@@ -3355,7 +3460,7 @@ namespace SmartStore.Data.Setup
                 Discount = 30.0M,
                 Visible = true,
                 Published = true,
-                DisplayOrder = 3
+                DisplayOrder = 3                
             };
 
             #endregion apple bundles

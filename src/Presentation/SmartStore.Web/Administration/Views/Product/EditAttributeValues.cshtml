@@ -66,7 +66,7 @@
 @helper GridCommands(Grid<ProductModel.ProductVariantAttributeValueModel> grid)
 {
 	<button class="t-button t-button-primary" type="submit" id="btnAddNewValue" name="btnAddNewValue" value="btnAddNewValue"
-			onclick="javascript:openPopup('@(Url.Action("ProductAttributeValueCreatePopup", "Product", new { productVariantAttributeId = Model.ProductVariantAttributeId, btnId = "btnRefresh", formId = "productvariantattribute-form" }))'); return false;">
+			onclick="javascript:openPopup('@(Url.Action("ProductAttributeValueCreatePopup", "Product", new { productVariantAttributeId = Model.ProductVariantAttributeId, btnId = "btnRefresh", formId = "productvariantattribute-form" }))', true); return false;">
 		<i class="fa fa-plus"></i>
 		<span>@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.AddNew")</span>
 	</button>
@@ -78,9 +78,8 @@
 <script>
 	$(function () {
         $('#btnRefresh').on('click', function () {
-            // refresh grid
             $('#pvav-grid').data('tGrid').ajaxRequest();
-            // return false to don't reload a page
+            // Return false to don't reload a page.
             return false;
         });
 
@@ -91,8 +90,7 @@
 			var id = grid.dataItem(tr).Id;
 			var href = '@Url.Content("~/Admin/Product/ProductAttributeValueEditPopup/")' + id + '?btnId=btnRefresh&formId=productvariantattribute-form';
 
-			openPopup(href);
-
+			openPopup(href, true);
 			return false;
 		});
     });

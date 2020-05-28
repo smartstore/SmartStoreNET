@@ -227,37 +227,37 @@
 
 				var mainGrid = $('#productattributeoptionsset-grid');
 
-				// refresh options set grid
+				// Refresh options set grid.
                 $('#btnRefresh').click(function () {
 					mainGrid.data('tGrid').ajaxRequest();
                     return false;
                 });
 				
-				// refresh options set child grid
+				// Refresh options set child grid.
 				$(document).on('click', 'input[id=btnOptionRefresh]', function () {
                 	$('#productattributeoptions-grid' + $(this).val()).data('tGrid').ajaxRequest();
                 	return false;
                 });
 
-				// add option
+				// Add option.
 				$(mainGrid).on('click', '.t-grid-insert-option', function (e) {
                 	e.preventDefault();
                 	var id = $(this).closest('.t-grid').attr('id').replace('productattributeoptions-grid', '');
 					$('#btnOptionRefresh').val(id);
-                	openPopup('@Url.Content("~/Admin/ProductAttribute/OptionCreatePopup/")' + id + '?&btnId=btnOptionRefresh');
+                	openPopup('@Url.Content("~/Admin/ProductAttribute/OptionCreatePopup/")' + id + '?&btnId=btnOptionRefresh', true);
                 	return false;
                 });
 
-				// edit option
+				// Edit option.
 				$(mainGrid).on('click', 'a.edit-option', function (e) {
 					e.preventDefault();
 					var id = $(this).closest('.t-grid').attr('id').replace('productattributeoptions-grid', '');
 					$('#btnOptionRefresh').val(id);
-					openPopup($(this).attr('href'));
+					openPopup($(this).attr('href'), true);
 					return false;
 				});
 
-				// delete option
+				// Delete option.
 				$(mainGrid).on('click', 'a.delete-option', function (e) {
 					e.preventDefault();
 					var grid = $(this).closest('.t-grid').data('tGrid');

@@ -9,7 +9,6 @@
     x.Add().Text(T("Admin.Catalog.Attributes.SpecificationAttributes.Info").Text).Content(TabInfo()).Selected(true);
     x.Add().Text(T("Admin.Catalog.Attributes.SpecificationAttributes.Options").Text).Content(TabOptions());
     
-    //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "specificationattribute-edit", this.Html, this.Model));
 })
 
@@ -196,7 +195,7 @@
 @helper SpecificationAttributeOptionGridCommands(Grid<SpecificationAttributeOptionModel> grid)
 {
 	<button type="submit" id="btnAddNewOption" name="btnAddNewOption" class="btn btn-below"
-			onclick="javascript:openPopup('@(Url.Action("OptionCreatePopup", "SpecificationAttribute", new { specificationAttributeId = Model.Id, btnId = "btnRefresh", formId = "specificationattribute-form" }))'); return false;">
+			onclick="javascript:openPopup('@(Url.Action("OptionCreatePopup", "SpecificationAttribute", new { specificationAttributeId = Model.Id, btnId = "btnRefresh", formId = "specificationattribute-form" }))', true); return false;">
 		<i class="fa fa-plus"></i>
 		<span>@T("Admin.Catalog.Attributes.SpecificationAttributes.Options.AddNew")</span>
 	</button>
@@ -206,11 +205,9 @@
 <script type="text/javascript">
 	$(document).ready(function () {
 		$('#btnRefresh').click(function () {
-			//refresh grid
 			var optionsGrid = $("#specificationattributeoptions-grid");
 			optionsGrid.data('tGrid').ajaxRequest();
-
-			//return false to don't reload a page
+			// Return false to don't reload a page.
 			return false;
 		});
 
@@ -221,8 +218,7 @@
 			var id = grid.dataItem(tr).Id;
 			var href = "@Url.Content("~/Admin/SpecificationAttribute/OptionEditPopup/")" + id + "?btnId=btnRefresh&formId=specificationattribute-form";
 			
-			openPopup(href);
-
+			openPopup(href, true);
 			return false;
 		});
 	});

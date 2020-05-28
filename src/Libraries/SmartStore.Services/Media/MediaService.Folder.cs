@@ -1,18 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Linq.Dynamic;
-using System.Threading.Tasks;
-using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
-using SmartStore.Core.Events;
-using SmartStore.Core.Logging;
-using SmartStore.Services.Media.Storage;
-using SmartStore.Core.IO;
-using System.Drawing;
 using System.Runtime.CompilerServices;
 using SmartStore.Collections;
 
@@ -59,7 +51,7 @@ namespace SmartStore.Services.Media
                         }
                         else
                         {
-                            if (i == 0) throw new NotSupportedException($"Creating top-level (album) folders is not supported. Folder: {path}.");
+                            if (i == 0) throw new NotSupportedException($"Creating top-level (album) folders is not supported. Folder: {path}."); // TODO: (mm) Loc
                             flag = true;
                         }
                     }
@@ -91,18 +83,18 @@ namespace SmartStore.Services.Media
             var node = _folderService.GetNodeByPath(path);
             if (node == null)
             {
-                throw new MediaFolderNotFoundException(path);
+                throw new MediaFolderNotFoundException(path); // TODO: (mm) Loc
             }
 
             if (node.Value.IsAlbum)
             {
-                throw new NotSupportedException($"Moving or renaming root album folders is not supported. Folder: {node.Value.Name}.");
+                throw new NotSupportedException($"Moving or renaming root album folders is not supported. Folder: {node.Value.Name}."); // TODO: (mm) Loc
             }
 
             var folder = _folderService.GetFolderById(node.Value.Id);
             if (folder == null)
             {
-                throw new MediaFolderNotFoundException(path);
+                throw new MediaFolderNotFoundException(path); // TODO: (mm) Loc
             }
 
             ValidateFolderPath(destinationPath, "MoveFolder", nameof(destinationPath));
@@ -110,7 +102,7 @@ namespace SmartStore.Services.Media
             // Destination must not exist
             if (FolderExists(destinationPath))
             {
-                throw new ArgumentException("Folder '" + destinationPath + "' already exists.");
+                throw new ArgumentException("Folder '" + destinationPath + "' already exists."); // TODO: (mm) Loc
             }
 
             var destParent = FolderService.NormalizePath(Path.GetDirectoryName(destinationPath));
@@ -119,18 +111,18 @@ namespace SmartStore.Services.Media
             var destParentNode = _folderService.GetNodeByPath(destParent);
             if (destParentNode == null)
             {
-                throw new MediaFolderNotFoundException(destinationPath);
+                throw new MediaFolderNotFoundException(destinationPath); // TODO: (mm) Loc
             }
 
             // Cannot move outside source album
             if (!_folderService.AreInSameAlbum(folder.Id, destParentNode.Value.Id))
             {
-                throw new NotSameAlbumException(node.Value.Path, destParent);
+                throw new NotSameAlbumException(node.Value.Path, destParent); // TODO: (mm) Loc
             }
 
             if (destParentNode.IsDescendantOfOrSelf(node))
             {
-                throw new ArgumentException("Destination folder '" + destinationPath + "' is not allowed to be a descendant of source folder '" + node.Value.Path + "'.");
+                throw new ArgumentException("Destination folder '" + destinationPath + "' is not allowed to be a descendant of source folder '" + node.Value.Path + "'."); // TODO: (mm) Loc
             }
 
             // Set new values
@@ -156,18 +148,18 @@ namespace SmartStore.Services.Media
             destinationPath = FolderService.NormalizePath(destinationPath);
             if (destinationPath.EnsureEndsWith("/").StartsWith(path.EnsureEndsWith("/")))
             {
-                throw new ArgumentException("Destination folder '" + destinationPath + "' is not allowed to be a descendant of source folder '" + path + "'.", nameof(destinationPath));
+                throw new ArgumentException("Destination folder '" + destinationPath + "' is not allowed to be a descendant of source folder '" + path + "'.", nameof(destinationPath)); // TODO: (mm) Loc
             }
 
             var node = _folderService.GetNodeByPath(path);
             if (node == null)
             {
-                throw new MediaFolderNotFoundException(path);
+                throw new MediaFolderNotFoundException(path); // TODO: (mm) Loc
             }
 
             if (node.Value.IsAlbum)
             {
-                throw new NotSupportedException($"Copying root album folders is not supported. Folder: {node.Value.Name}.");
+                throw new NotSupportedException($"Copying root album folders is not supported. Folder: {node.Value.Name}."); // TODO: (mm) Loc
             }
 
             using (new DbContextScope(autoCommit: false, validateOnSave: false, autoDetectChanges: false))
@@ -188,7 +180,7 @@ namespace SmartStore.Services.Media
                 switch (dupeEntryHandling)
                 {
                     case DuplicateEntryHandling.ThrowError:
-                        throw new DuplicateMediaFolderException(source.Value.Path);
+                        throw new DuplicateMediaFolderException(source.Value.Path); // TODO: (mm) Loc
                     case DuplicateEntryHandling.Skip:
                         return new MediaFolderInfo(destNode);
                     case DuplicateEntryHandling.Rename:
@@ -292,7 +284,7 @@ namespace SmartStore.Services.Media
             var node = _folderService.GetNodeByPath(path);
             if (node == null)
             {
-                throw new MediaFolderNotFoundException(path);
+                throw new MediaFolderNotFoundException(path); // TODO: (mm) Loc
             }
 
             // Collect all affected subfolder ids also
@@ -389,7 +381,7 @@ namespace SmartStore.Services.Media
             else
             {
                 var fullPath = CombinePaths(node.Path, lockedFiles[0].Name);
-                throw new IOException("Cannot delete file '{0}' because it is being used by another process.".FormatCurrent(fullPath));
+                throw new IOException("Cannot delete file '{0}' because it is being used by another process.".FormatCurrent(fullPath)); // TODO: (mm) Loc
             }
 
             return numFiles;

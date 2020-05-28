@@ -112,7 +112,7 @@ namespace SmartStore.Services.Media
                         arr = forType.DefaultExtensions;
                     }
 
-                    arr.Each(x => map[x] = forType.Name);
+                    arr.Each(x => map[x.Trim()] = forType.Name);
                 }
             });
         }

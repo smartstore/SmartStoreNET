@@ -261,6 +261,7 @@
 					for (var newFile of files) {
 						var elCurrentFile = previewContainer.find(".dz-image-preview[data-media-id='" + newFile.response.id + "']");
 						elCurrentFile.find("img").attr("src", newFile.dataURL);
+
 						this.removeFile(newFile);
 					}
 				}
@@ -435,7 +436,7 @@
 
 									elPreview
 										.find('img')
-										.attr('src', file.dataUrl ? file.dataUrl : file.url);
+										.attr('src', file.dataUrl ? file.dataUrl : file.response.url);
 
 									previewContainer.append(elPreview);
 								}
@@ -578,25 +579,26 @@
 
 	// Highlight dropzone element when a file is dragged into it.
 	fuContainer.on("dragover", function (e) {
-
-		if (fuContainer.hasClass("dz-highlight"))
+		var el = $(this);
+		if (el.hasClass("dz-highlight"))
 			return;
 
-		fuContainer.addClass("dz-highlight");
+		el.addClass("dz-highlight");
 
 	}).on("dragleave", function (e) {
 		if ($(e.relatedTarget).closest('.fileupload-container').length === 0) {
-
-			if (!fuContainer.hasClass("dz-highlight"))
+			var el = $(this);
+			if (!el.hasClass("dz-highlight"))
 				return;
 
-			fuContainer.removeClass("dz-highlight");
+			el.removeClass("dz-highlight");
 		}
 	}).on("drop", function (e) {
-		if (!fuContainer.hasClass("dz-highlight"))
+		var el = $(this);
+		if (!el.hasClass("dz-highlight"))
 			return;
 
-		fuContainer.removeClass("dz-highlight");
+		el.removeClass("dz-highlight");
 	});
 
 	// Disable tooltips on preview sorting.

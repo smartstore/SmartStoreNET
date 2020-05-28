@@ -19,6 +19,7 @@
  */
 
 .fileupload-container {
+	position: relative;
 
 	&.dz-highlight .dropzone-container,
 	&.dz-drag-hover .dropzone-container {
@@ -347,7 +348,16 @@
 		border: 1px solid $gray-400;
 
 		.file-info {
-			overflow: hidden; 
+			overflow: hidden;
+		}
+
+		.file-figure {
+			width: 100px;
+			height: 80px;
+			display: flex;
+			margin: 0;
+			align-items: center;
+			justify-content: center;
 		}
 
 		.file-img {

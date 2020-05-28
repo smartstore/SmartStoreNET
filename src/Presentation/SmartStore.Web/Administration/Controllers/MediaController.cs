@@ -88,6 +88,7 @@ namespace SmartStore.Admin.Controllers
                     resultParams.path = filePath;
                     resultParams.dupe = ex is DuplicateMediaFileException;
                     resultParams.message = ex.Message;
+                    resultParams.type = dupe.MediaType;
 
                     if (dupe != null)
                     {

@@ -12,13 +12,20 @@
 	</div>
 </div>
 
-@helper FileInfo()
+@helper FileInfo(bool renderIcon)
 {
 	<div class="file-display">
 		<div class="row no-gutters">
 			<div class="col-auto">
-				<img src="" class="file-img img-fluid" />
-			</div>
+				<figure class="file-figure">
+					@if (renderIcon)
+					{
+						<i class="file-icon fa-4x"></i>
+					}
+					<img src="" class="file-img img-fluid @(renderIcon ? "d-none" : "")" />
+				</figure>
+
+				</div>
 			<div class="col file-info p-1 pl-3">
 				<div class="file-name text-truncate"></div>
 				<div class="text-muted fs-sm mt-1">
@@ -45,11 +52,11 @@
 		<div class="row no-gutters mb-3 dupe-media-comparison">
 			<div class="col-6 pr-3 dupe-file-display">
 				<h6>@T("FileUploader.DuplicateDialog.DupeFile.Title")</h6>
-				@FileInfo()
+				@FileInfo(true)
 			</div>
 			<div class="col-6 existing-file-display">
 				<h6>@T("FileUploader.DuplicateDialog.ExistingFile.Title")</h6>
-				@FileInfo()
+				@FileInfo(false)
 			</div>
 		</div>
 	</div>

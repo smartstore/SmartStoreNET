@@ -71,7 +71,16 @@ SmartStore.Admin.Media = (function () {
 		dupeFileHandlerDialog.find(".intro .current-file").text(file.name);
 
 		// Display uploaded file.
-		dupeFileDisplay.find(".file-img").attr("src", file.dataURL);
+		if (!file.dataURL) {
+			// Dropzone couldn't fetch a preview for the file currently uploading.
+			var icon = SmartStore.media.getIconHint(file.response);
+			var elIcon = dupeFileDisplay.find(".file-icon");
+			elIcon.attr("class", "file-icon fa-4x " + icon.name).css("color", icon.color);
+		}
+		else {
+			dupeFileDisplay.find(".file-img").attr("src", file.dataURL).removeClass("d-none");
+		}
+
 		dupeFileDisplay.find(".file-name").text(file.name);
 		dupeFileDisplay.find(".file-date").text(formatedDateFile);
 		dupeFileDisplay.find(".file-size").text(_.formatFileSize(file.size));

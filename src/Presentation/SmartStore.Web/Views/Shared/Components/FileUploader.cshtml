@@ -7,6 +7,7 @@
 @{
 	Html.AddScriptParts("~/Content/vendors/dropzone/js/dropzone.js");
 	Html.AddScriptParts("~/Content/vendors/dropzone/js/dropzoneWrapper.js");
+	Html.AddScriptParts("~/Scripts/smartstore.media.js");
 
 	if (!Model.Name.HasValue())
 	{
@@ -118,7 +119,7 @@
 	<div id="@Model.PreviewContainerId" class="d-flex flex-wrap preview-container mt-3">
 		@foreach (var file in files)
 		{
-			var previewUrl = mediaService.GetUrl(file.MediaFileId, 0);
+			var previewUrl = mediaService.GetUrl(file.MediaFileId, 250);
 			var fileSize = Prettifier.BytesToString(file.MediaFile.Size);
 			var isMainPic = file.MediaFileId == Model.MainFileId;
 			var entityMediaId = 0;

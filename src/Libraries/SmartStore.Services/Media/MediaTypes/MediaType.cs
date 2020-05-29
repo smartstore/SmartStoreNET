@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartStore.Services.Media
 {
@@ -25,7 +23,7 @@ namespace SmartStore.Services.Media
         public readonly static MediaType Audio = new MediaType("audio", _defaultExtensionsMap["audio"]);
         public readonly static MediaType Document = new MediaType("document", _defaultExtensionsMap["document"]);
         public readonly static MediaType Text = new MediaType("text", _defaultExtensionsMap["text"]);
-        public readonly static MediaType Binary = new MediaType("bin");
+        public readonly static MediaType Binary = new MediaType("bin", _defaultExtensionsMap["bin"]);
 
         protected MediaType(string name, params string[] defaultExtensions)
         {

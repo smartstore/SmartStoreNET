@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core.Caching;
-using SmartStore.Core.Domain.Media;
-using SmartStore.Core.Events;
-using SmartStore.Core.IO;
-using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Data.Hooks;
+using SmartStore.Core.Domain.Configuration;
+using SmartStore.Core.Domain.Media;
+using SmartStore.Core.IO;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Media
@@ -24,7 +23,8 @@ namespace SmartStore.Services.Media
             TypeHelper.NameOf<MediaSettings>(x => x.VideoTypes, true),
             TypeHelper.NameOf<MediaSettings>(x => x.AudioTypes, true),
             TypeHelper.NameOf<MediaSettings>(x => x.DocumentTypes, true),
-            TypeHelper.NameOf<MediaSettings>(x => x.TextTypes, true)
+            TypeHelper.NameOf<MediaSettings>(x => x.TextTypes, true),
+            TypeHelper.NameOf<MediaSettings>(x => x.BinTypes, true)
         };
         
         public MediaTypeResolver(ICacheManager cache, Lazy<MediaSettings> mediaSettings)
@@ -104,6 +104,7 @@ namespace SmartStore.Services.Media
                 AddExtensionsToMap(mediaSettings.AudioTypes, MediaType.Audio);
                 AddExtensionsToMap(mediaSettings.DocumentTypes, MediaType.Document);
                 AddExtensionsToMap(mediaSettings.TextTypes, MediaType.Text);
+                AddExtensionsToMap(mediaSettings.BinTypes, MediaType.Binary);
 
                 return map;
 

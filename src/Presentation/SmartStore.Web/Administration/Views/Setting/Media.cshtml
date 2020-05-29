@@ -182,8 +182,11 @@
 			<td colspan="2">
 				<div class="admin-config-group">
 					<div class="title">
-						@(T("Admin.Configuration.Settings.Media.MediaTypes"))
+						@T("Admin.Configuration.Settings.Media.MediaTypes")
 					</div>
+                    <div class="text-muted">
+                        @T("Admin.Configuration.Settings.Media.MediaTypesNotes")
+                    </div>
 				</div>
 			</td>
 		</tr>
@@ -230,6 +233,15 @@
             <td class="adminData">
 				@Html.SettingEditorFor(model => model.TextTypes, Html.TextAreaFor(model => Model.TextTypes, new { rows = 2 }))
                 @Html.ValidationMessageFor(model => model.TextTypes)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.BinTypes)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(model => model.BinTypes, Html.TextAreaFor(model => Model.BinTypes, new { rows = 2 }))
+                @Html.ValidationMessageFor(model => model.BinTypes)
             </td>
         </tr>
 

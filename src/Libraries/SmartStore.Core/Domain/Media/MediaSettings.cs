@@ -58,7 +58,7 @@ namespace SmartStore.Core.Domain.Media
         /// </summary>
         public long MaxUploadFileSize { get; set; } = 102400;
 
-        #region MediaTypes
+        #region Media types
 
         /// <summary>
         /// A space separated list of image type file extensions (dotless)
@@ -85,6 +85,11 @@ namespace SmartStore.Core.Domain.Media
 		/// </summary>
 		public string TextTypes { get; set; }
 
-		#endregion
-	}
+        /// <summary>
+        /// A space separated list of other types file extensions (dotless)
+        /// </summary>
+        public string BinTypes { get; set; }
+
+        #endregion
+    }
 }

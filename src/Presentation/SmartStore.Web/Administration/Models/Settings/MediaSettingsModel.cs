@@ -74,20 +74,23 @@ namespace SmartStore.Admin.Models.Settings
 
         #region Media types
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.ImageTypes")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.Type.Image")]
         public string ImageTypes { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.VideoTypes")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.Type.Video")]
         public string VideoTypes { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.AudioTypes")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.Type.Audio")]
         public string AudioTypes { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.DocumentTypes")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.Type.Document")]
         public string DocumentTypes { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.TextTypes")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.Type.Text")]
         public string TextTypes { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.Type.Bin")]
+        public string BinTypes { get; set; }
 
         #endregion
 

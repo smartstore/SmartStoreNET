@@ -718,35 +718,16 @@
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Media.MediaTypes", "Media types", "Medientypen");
 
-            builder.AddOrUpdate("Admin.Configuration.Settings.Media.ImageTypes",
-                "Images",
-                "Bilder",
-                "Specifies the supported file types for images. Please enter types separated by spaces and without dots.",
-                "Legt die unterstützten Dateitypen für Bilder fest. Bitte Leerzeichen getrennt und ohne Punkt angeben.");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Media.MediaTypesNotes",
+                "Media types control which files can be uploaded. All other media types are generally rejected. Please enter types separated by spaces and without dots.",
+                "Medientypen steuern, welche Dateien hochgeladen werden können. Alle anderen Medientypen werden grundsätzlich abgelehnt. Die Typen bitte Leerzeichen getrennt und ohne Punkt angeben.");
 
-            builder.AddOrUpdate("Admin.Configuration.Settings.Media.VideoTypes",
-                "Videos",
-                "Videos",
-                "Specifies the supported file types for videos. Please enter types separated by spaces and without dots.",
-                "Legt die unterstützten Dateitypen für Videos fest. Bitte Leerzeichen getrennt und ohne Punkt angeben.");
-
-            builder.AddOrUpdate("Admin.Configuration.Settings.Media.AudioTypes",
-                "Audios",
-                "Audios",
-                "Specifies the supported types for audio files. Please enter types separated by spaces and without dots.",
-                "Legt die unterstützten Typen für Audiodateien fest. Bitte Leerzeichen getrennt und ohne Punkt angeben.");
-
-            builder.AddOrUpdate("Admin.Configuration.Settings.Media.DocumentTypes",
-                "Documents",
-                "Dokumente",
-                "Specifies the supported file types for documents. Please enter types separated by spaces and without dots.",
-                "Legt die unterstützten Dateitypen für Dokumente fest. Bitte Leerzeichen getrennt und ohne Punkt angeben.");
-
-            builder.AddOrUpdate("Admin.Configuration.Settings.Media.TextTypes",
-                "Text files",
-                "Textdateien",
-                "Specifies the supported types for text files. Please enter types separated by spaces and without dots.",
-                "Legt die unterstützten Typen für Textdateien fest. Bitte Leerzeichen getrennt und ohne Punkt angeben.");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Media.Type.Image", "Image", "Bild");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Media.Type.Video", "Video", "Video");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Media.Type.Audio", "Audio", "Audio");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Media.Type.Document", "Document", "Dokument");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Media.Type.Text", "Text", "Text");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Media.Type.Bin", "Other", "Sonstige");
         }
     }
 }

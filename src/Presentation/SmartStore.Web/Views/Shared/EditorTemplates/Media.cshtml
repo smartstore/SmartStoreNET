@@ -43,7 +43,20 @@
     {
         get
         {
-            return GetMetadata<string>("typeFilter", "image");
+            // Always allow 'Bin' type (empty by default).
+            var typeFilter = GetMetadata<string>("typeFilter");
+
+            if (!typeFilter.HasValue())
+            {
+                return "image,bin";
+            }
+
+            if (!typeFilter.Split(',').Contains("bin"))
+            {
+                return typeFilter + ",bin";
+            }
+
+            return typeFilter;
         }
     }
 

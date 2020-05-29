@@ -241,6 +241,11 @@ namespace SmartStore.Data.Setup
 			{
 				new TaxCategory
 				{
+					Name = this.TaxNameTaxFree,
+					DisplayOrder = 0,
+				},
+				new TaxCategory
+				{
 					Name = this.TaxNameBooks,
 					DisplayOrder = 1,
 				},
@@ -263,7 +268,7 @@ namespace SmartStore.Data.Setup
 				{
 					Name = this.TaxNameApparel,
 					DisplayOrder = 20,
-				},
+				}
 			};
 
 			this.Alter(entities);

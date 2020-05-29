@@ -42,7 +42,7 @@ SmartStore.media = (function () {
 
 	return {
 		getIconHint: function (file) {
-            return iconHints[file.ext] || iconHints[file.type] || (file.mime ? iconHints[file.mime.split('/')[0]] : null) || iconHints['misc'];
+            return iconHints[file.ext] || iconHints[file.type] || (file.type ? iconHints[file.type.split('/')[0]] : null) || iconHints['misc'];
         },
         openFileManager: function (opts) {
             /*

@@ -182,6 +182,25 @@
 		color: #fff;
 		padding: 10px 0;
 	}
+	// TODO: I don't like the name... (perhaps cancel-bar ???)
+	.flyout-commands {
+		background: $gray-100;
+		border: 1px solid $gray-400;
+		border-top: none;
+		border-bottom: none;
+		max-height: 0;
+		transition: max-height .2s;
+		overflow: hidden;
+
+		& > div {
+			padding-top: 7px;
+			padding-bottom: 7px;
+		}
+
+		&.show {
+			max-height: 50px;
+		}
+	}
 
 	.preview-container {
 		border: 1px solid $gray-400;
@@ -193,12 +212,23 @@
 
 		.dz-preview {
 			display: flex;
-		}
-
-		.dz-preview {
 			margin: 0;
 			padding: 5px;
 			width: 100%;
+			align-items: center;
+
+			.file-figure {
+				display: flex;
+				margin: 0;
+				align-items: center;
+				justify-content: center;
+				width: auto;
+				height: auto;
+			}
+
+			.file-icon:not(.show) {
+				display: none;
+			}
 		}
 
 		.dz-image-preview {
@@ -220,15 +250,27 @@
 	display: flex;
 	justify-content: center;
 	cursor: move;
-	width: 150px;
-	height: 150px;
 	overflow: hidden;
 
-	& > img {
-		width: 100%;
-		object-fit: cover;
-		max-width: 150px;
-		max-height: 150px;
+	.file-figure {
+		display: flex;
+		margin: 0;
+		align-items: center;
+		justify-content: center;
+		width: 150px;
+		height: 150px;
+
+		& > img {
+			width: 100%;
+			height: 100%;
+			max-width: 150px;
+			max-height: 150px;
+			object-fit: cover;
+		}
+
+		.file-icon:not(.show) {
+			display: none;
+		}
 	}
 
 	.fu-preview-overlay {

@@ -59,7 +59,7 @@ else
 <script>
 		$(function () {
 			// Set MainPictureId for product
-			$(".set-main-picture").on("click", function (e) {
+            $(document).on("click", ".set-main-picture", function (e) {
 				var el = $(this).closest('.dz-image-preview');
                 var previewContainer = $(this).closest(".preview-container");
 

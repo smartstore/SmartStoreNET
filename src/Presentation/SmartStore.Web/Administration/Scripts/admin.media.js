@@ -33,7 +33,7 @@ SmartStore.Admin.Media = (function () {
 					var fileName = _file.name;
 
 					if ($(e.target).val() === "2") {
-						var newPath = _file.response.newPath;
+						var newPath = _file.media.newPath;
 						fileName = newPath.substr(newPath.lastIndexOf("/") + 1);
 					}
 					
@@ -72,14 +72,18 @@ SmartStore.Admin.Media = (function () {
 		dupeFileHandlerDialog.find(".intro .current-file").text(file.name);
 
 		// Display uploaded file.
+		var elIcon = dupeFileDisplay.find(".file-icon");
+		var elImage = dupeFileDisplay.find(".file-img");
+
 		if (!file.dataURL) {
 			// Dropzone couldn't fetch a preview for the file currently uploading.
-			var icon = SmartStore.media.getIconHint(file.response);
-			var elIcon = dupeFileDisplay.find(".file-icon");
+			var icon = SmartStore.media.getIconHint(file.media);
 			elIcon.attr("class", "file-icon fa-4x " + icon.name).css("color", icon.color);
+			elImage.addClass("d-none");
 		}
 		else {
-			dupeFileDisplay.find(".file-img").attr("src", file.dataURL).removeClass("d-none");
+			elIcon.attr("class", "file-icon");
+			elImage.attr("src", file.dataURL).removeClass("d-none");
 		}
 
 		dupeFileDisplay.find(".file-name").text(file.name);
@@ -92,11 +96,11 @@ SmartStore.Admin.Media = (function () {
 		}
 
 		// Display existing file.
-		existingFileDisplay.find(".file-img").attr("src", file.response.url);
+		existingFileDisplay.find(".file-img").attr("src", file.media.url);
 		existingFileDisplay.find(".file-name").text(file.name);		// No need for writing the name of the existing file into the response. We know its the same as the uploaded file.
-		existingFileDisplay.find(".file-date").text(file.response.date);
-		existingFileDisplay.find(".file-dimensions").text(file.response.dimensions);
-		existingFileDisplay.find(".file-size").text(_.formatFileSize(file.response.size));
+		existingFileDisplay.find(".file-date").text(file.media.createdOn);
+		existingFileDisplay.find(".file-dimensions").text(file.media.dimensions);
+		existingFileDisplay.find(".file-size").text(_.formatFileSize(file.media.size));
     }
 
 	return {

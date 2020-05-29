@@ -163,9 +163,10 @@
 
 @helper FilePreviewTemplate(string previewUrl)
 {
-	<i class="file-icon fa-fw d-none"></i>
-
-	<img data-dz-thumbnail @Html.Attr("src", previewUrl, previewUrl.HasValue()) />
+	<figure class="file-figure">
+		<i class="file-icon fa-fw show"></i>
+		<img data-dz-thumbnail @Html.Attr("src", previewUrl, previewUrl.HasValue()) />
+	</figure>
 
 	<div class="fu-preview-overlay"></div>
 

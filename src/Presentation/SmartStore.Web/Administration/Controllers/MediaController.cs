@@ -21,15 +21,18 @@ namespace SmartStore.Admin.Controllers
         private readonly IMediaService _mediaService;
         private readonly IMediaTypeResolver _mediaTypeResolver;
         private readonly MediaSettings _mediaSettings;
+        private readonly MediaExceptionFactory _exceptionFactory;
 
-		public MediaController(
+        public MediaController(
             IMediaService mediaService,
             IMediaTypeResolver mediaTypeResolver,
-            MediaSettings mediaSettings)
+            MediaSettings mediaSettings,
+            MediaExceptionFactory exceptionFactory)
         {
             _mediaService = mediaService;
             _mediaTypeResolver = mediaTypeResolver;
 			_mediaSettings = mediaSettings;
+            _exceptionFactory = exceptionFactory;
         }
 
         [HttpPost]
@@ -61,7 +64,7 @@ namespace SmartStore.Admin.Controllers
                             //throw new DeniedMediaTypeException(fileName, mediaType, acceptedMediaTypes);
                             // TODO: If it stays this way DeniedMediaTypeException has to be slightly refactored to handle extensions instead of media types 
                             // DISADVANTAGE: very long error messages with file extension lists will pop up
-                            throw new DeniedMediaTypeException(fileName, extension, mediaTypeExtensions.ToArray());
+                            throw _exceptionFactory.DeniedMediaType(fileName, extension, mediaTypeExtensions.ToArray());
                         }
                     }
                     

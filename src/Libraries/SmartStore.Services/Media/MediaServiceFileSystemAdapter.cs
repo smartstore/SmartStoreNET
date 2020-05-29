@@ -18,17 +18,20 @@ namespace SmartStore.Services.Media
         private readonly MediaHelper _mediaHelper;
         private readonly IFolderService _folderService;
         private readonly IMediaStorageProvider _storageProvider;
+        private readonly MediaExceptionFactory _exceptionFactory;
         private readonly string _mediaRootPath;
 
         public MediaServiceFileSystemAdapter(
             IMediaService mediaService, 
             IFolderService folderService,
-            MediaHelper mediaHelper)
+            MediaHelper mediaHelper,
+            MediaExceptionFactory exceptionFactory)
         {
             _mediaService = mediaService;
             _folderService = folderService;
             _mediaHelper = mediaHelper;
             _storageProvider = mediaService.StorageProvider;
+            _exceptionFactory = exceptionFactory;
             _mediaRootPath = MediaFileSystem.GetMediaPublicPath();
         }
 
@@ -90,7 +93,7 @@ namespace SmartStore.Services.Media
             var node = _folderService.GetNodeByPath(path);
             if (node == null)
             {
-                throw new MediaFolderNotFoundException(path);
+                throw _exceptionFactory.FolderNotFound(path);
             }
 
             var query = new MediaSearchQuery
@@ -106,7 +109,7 @@ namespace SmartStore.Services.Media
             var node = _folderService.GetNodeByPath(path);
             if (node == null)
             {
-                throw new MediaFolderNotFoundException(path);
+                throw _exceptionFactory.FolderNotFound(path);
             }
 
             return node.Children.Select(x => new MediaFolderInfo(x));
@@ -119,7 +122,7 @@ namespace SmartStore.Services.Media
                 var node = _folderService.GetNodeByPath(path);
                 if (node == null)
                 {
-                    throw new MediaFolderNotFoundException(path);
+                    throw _exceptionFactory.FolderNotFound(path);
                 }
 
                 var query = new MediaSearchQuery
@@ -141,7 +144,7 @@ namespace SmartStore.Services.Media
             var node = _folderService.GetNodeByPath(path);
             if (node == null)
             {
-                throw new MediaFolderNotFoundException(path);
+                throw _exceptionFactory.FolderNotFound(path);
             }
             
             var query = new MediaSearchQuery
@@ -228,7 +231,7 @@ namespace SmartStore.Services.Media
         {
             if (!_mediaHelper.TokenizePath(path, out var pathData))
             {
-                throw new MediaFolderNotFoundException(Fix(Path.GetDirectoryName(path)));
+                throw _exceptionFactory.FolderNotFound(Fix(Path.GetDirectoryName(path)));
             }
 
             return new MediaFolderInfo(pathData.Node);
@@ -247,7 +250,7 @@ namespace SmartStore.Services.Media
             var sourceFile = (MediaFile)_mediaService.GetFileByPath(path);
             if (sourceFile == null)
             {
-                throw new MediaFileNotFoundException(path);
+                throw _exceptionFactory.FileNotFound(path);
             }
 
             _mediaService.CopyFile(
@@ -264,7 +267,7 @@ namespace SmartStore.Services.Media
             var sourceFile = (MediaFile)_mediaService.GetFileByPath(path);
             if (sourceFile == null)
             {
-                throw new MediaFileNotFoundException(path);
+                throw _exceptionFactory.FileNotFound(path);
             }
 
             _mediaService.MoveFile(sourceFile, newPath);

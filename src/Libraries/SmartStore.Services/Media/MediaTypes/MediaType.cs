@@ -14,7 +14,8 @@ namespace SmartStore.Services.Media
             ["video"] = new[] { "mp4", "m4v", "mkv", "wmv", "avi", "asf", "mpg", "mpeg", "webm", "flv", "ogv", "mov", "3gp" },
             ["audio"] = new[] { "mp3", "wav", "wma", "aac", "flac", "oga", "wav", "m4a", "ogg" },
             ["document"] = new[] { "pdf", "doc", "docx", "ppt", "pptx", "pps", "ppsx", "docm", "odt", "ods", "dot", "dotx", "dotm", "psd", "xls", "xlsx", "rtf" },
-            ["text"] = new[] { "txt", "xml", "csv", "htm", "html", "json", "css", "js" }
+            ["text"] = new[] { "txt", "xml", "csv", "htm", "html", "json", "css", "js" },
+            ["bin"] = new string[0]
         };
         
         private readonly static IDictionary<string, MediaType> _map = new Dictionary<string, MediaType>(StringComparer.OrdinalIgnoreCase);

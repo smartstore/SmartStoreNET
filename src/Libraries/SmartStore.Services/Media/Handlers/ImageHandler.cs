@@ -12,8 +12,8 @@ namespace SmartStore.Services.Media
     {
         private readonly IImageProcessor _imageProcessor;
         
-        public ImageHandler(IImageProcessor imageProcessor, IImageCache imageCache)
-            : base(imageCache)
+        public ImageHandler(IImageProcessor imageProcessor, IImageCache imageCache, MediaExceptionFactory exceptionFactory)
+            : base(imageCache, exceptionFactory)
         {
             _imageProcessor = imageProcessor;
         }

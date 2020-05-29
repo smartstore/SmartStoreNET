@@ -45,6 +45,7 @@ namespace SmartStore.Admin.Controllers
 			IAlbumRegistry albumRegistry,
 			IMediaTypeResolver mediaTypeResolver,
 			MediaHelper mediaHelper,
+			MediaExceptionFactory exceptionFactory,
 			//IMediaFileSystem fileSystem,
 			ILocalizationFileResolver locFileResolver)
 		{
@@ -53,7 +54,7 @@ namespace SmartStore.Admin.Controllers
 			_locFileResolver = locFileResolver;
 
 			_album = albumRegistry.GetAlbumByName(SystemAlbumProvider.Files);
-			_fileSystem = new MediaServiceFileSystemAdapter(mediaService, folderService, _mediaHelper);
+			_fileSystem = new MediaServiceFileSystemAdapter(mediaService, folderService, _mediaHelper, exceptionFactory);
 			_fileRoot = _album.Name;
 
 			//_fileSystem = fileSystem;

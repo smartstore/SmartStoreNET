@@ -252,8 +252,7 @@ namespace SmartStore.Web.Infrastructure.Installation
             // clear all tax categories
             entities.Clear();
 
-			// add de-DE specific ones
-
+			// Add de-DE specific ones
 			_taxCategories.Add("Normal", new TaxCategory { DisplayOrder = 0, Name = "Normal" });
 			_taxCategories.Add("Ermäßigt", new TaxCategory { DisplayOrder = 1, Name = "Ermäßigt" });
 			_taxCategories.Add(TaxNameTaxFree, new TaxCategory { DisplayOrder = 2, Name = TaxNameTaxFree });

@@ -17,6 +17,7 @@ namespace SmartStore.Services.Media
 
         /// <summary>
         /// Parses and expands a given type filter, returning a distinct list of all suitable file extensions.
+        /// If <paramref name="typeFilter"/> is empty or '*', all supported file extensions are returned.
         /// </summary>
         /// <param name="typeFilter">A comma separated list of either file extensions and/or media type names, e.g.: "image,.mp4,audio,.pdf". Extensions must start with a dot.</param>
         /// <returns>All suitable file extensions.</returns>
@@ -34,7 +35,7 @@ namespace SmartStore.Services.Media
         /// "Key" is the dot-less file extension and "Value" is the corresponding media type name.
         /// </summary>
         /// <returns>The cached dictionary</returns>
-        IDictionary<string, string> GetExtensionMediaTypeMap();
+        IReadOnlyDictionary<string, string> GetExtensionMediaTypeMap();
     }
 
     public static class IMediaTypeResolverExtensions 

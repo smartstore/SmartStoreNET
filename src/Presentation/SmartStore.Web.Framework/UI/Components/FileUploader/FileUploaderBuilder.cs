@@ -73,16 +73,7 @@ namespace SmartStore.Web.Framework.UI
 		public FileUploaderBuilder<TModel> TypeFilter(string value)
 		{
 			var mediaTypeResolver = EngineContext.Current.Resolve<IMediaTypeResolver>();
-			IEnumerable<string> extensions;
-
-			if (value.IsEmpty() || value == "*")
-			{
-				extensions = mediaTypeResolver.GetExtensionMediaTypeMap().Keys;
-			}
-			else
-			{
-				extensions = mediaTypeResolver.ParseTypeFilter(value);
-			}
+			var extensions = mediaTypeResolver.ParseTypeFilter(value);
 
 			base.Component.HtmlAttributes["data-accept"] = "." + String.Join(",.", extensions);
 			base.Component.TypeFilter = value;

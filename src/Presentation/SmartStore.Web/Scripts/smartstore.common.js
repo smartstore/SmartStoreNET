@@ -1,4 +1,4 @@
-﻿(function ($, window, document, undefined) {
+﻿(function ($, window, document) {
 	var viewport = ResponsiveBootstrapToolkit;
 
 	// TODO: (mc) ABS4 > delete viewport specific stuff from ~/Scripts/public.common.js, it's shared now.'
@@ -12,85 +12,6 @@
 
 	window.setLocation = function (url) {
 		window.location.href = url;
-	}
-
-	window.openPopup = function (url, large, flex) {
-		var opts = $.isPlainObject(url) ? url : {
-			/* id, backdrop */
-			url: url,
-			large: large,
-			flex: flex
-		};
-
-		var id = (opts.id || "modal-popup-shared");
-		var modal = $('#' + id);
-		var iframe;
-		var sizeClass = "";
-
-		if (opts.flex === undefined) opts.flex = true;
-		if (opts.flex) sizeClass = "modal-flex";
-		if (opts.backdrop === undefined) opts.backdrop = true;
-
-		if (opts.large && !opts.flex)
-			sizeClass = "modal-lg";
-		else if (!opts.large && opts.flex)
-			sizeClass += " modal-flex-sm";
-
-		if (modal.length === 0) {
-			var html = [
-				'<div id="' + id + '" class="modal fade" data-backdrop="' + opts.backdrop + '" role="dialog" aria-hidden="true" tabindex="-1" style="border-radius: 0">',
-					'<a href="javascript:void(0)" class="modal-closer d-none d-md-block" data-dismiss="modal" title="' + window.Res['Common.Close'] + '">&times;</a>',
-					'<div class="modal-dialog{0} modal-dialog-app" role="document">'.format(!!(sizeClass) ? " " + sizeClass : ""),
-						'<div class="modal-content">',
-							'<div class="modal-body">',
-								'<iframe class="modal-flex-fill-area" frameborder="0" src="' + opts.url + '" />',
-							'</div>',
-							'<div class="modal-footer d-md-none">',
-								'<button type="button" class="btn btn-secondary btn-sm btn-default" data-dismiss="modal">' + window.Res['Common.Close'] + '</button>',
-							'</div>',
-						'</div>',
-					'</div>',
-				'</div>'
-			].join("");
-
-            modal = $(html).appendTo('body').on('hidden.bs.modal', function (e) {
-                // Cleanup
-                $(modal.find('iframe').attr('src', 'about:blank')).remove();
-				modal.remove();
-			});
-
-			// Create spinner
-			var spinner = $('<div class="spinner-container w-100 h-100 active" style="position:absolute; top:0; background:#fff; border-radius:4px"></div>').append(createCircularSpinner(64, true, 2));
-			modal.find('.modal-body').append(spinner);
-
-			iframe = modal.find('.modal-body > iframe');
-			iframe.on('load', function (e) {
-				modal.find('.modal-body > .spinner-container').removeClass('active');
-			});
-		}
-		else {
-			iframe = modal.find('.modal-body > iframe');
-			modal.find('.modal-body > .spinner-container').addClass('active');
-			iframe.attr('src', opts.url);
-		}
-
-		if (_.isFunction(opts.onMessage)) {
-			$(iframe.get(0).contentWindow).one('message', function (e) {
-				var result = e.originalEvent.data;
-				opts.onMessage.apply(this, [result]);
-			});
-        }
-
-		modal.modal('show');
-
-		return iframe.get(0);
-	}
-
-	window.closePopup = function (id) {
-		var modal = $('#' + (id || "modal-popup-shared"));
-		if (modal.length > 0) {
-			modal.modal('hide');
-		}
 	}
 
 	window.openWindow = function (url, w, h, scroll) {
@@ -171,8 +92,8 @@
 
 		var notify = function (msg) {
 
-		    if (!msg)
-		        return;
+			if (!msg)
+				return;
 
 			EventBroker.publish("message", {
 				text: msg,

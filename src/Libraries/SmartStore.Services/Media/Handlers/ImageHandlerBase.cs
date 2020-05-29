@@ -9,13 +9,15 @@ namespace SmartStore.Services.Media
 {
     public abstract class ImageHandlerBase : IMediaHandler
     {
-        protected ImageHandlerBase(IImageCache imageCache)
+        protected ImageHandlerBase(IImageCache imageCache, MediaExceptionFactory exceptionFactory)
         {
             ImageCache = imageCache;
+            ExceptionFactory = exceptionFactory;
         }
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
         public IImageCache ImageCache { get; set; }
+        public MediaExceptionFactory ExceptionFactory { get; set; }
 
         public virtual int Order => -100;
 
@@ -45,7 +47,7 @@ namespace SmartStore.Services.Media
             {
                 // Empty file means: thumb extraction failed before and will most likely fail again.
                 // Don't bother proceeding.
-                context.Exception = new ExtractThumbnailException(cachedImage.FileName, null);
+                context.Exception = ExceptionFactory.ExtractThumbnail(cachedImage.FileName);
                 context.Executed = true;
                 return;
             }
@@ -72,7 +74,7 @@ namespace SmartStore.Services.Media
 
                         if (inputStream == null)
                         {
-                            context.Exception = new ExtractThumbnailException("Input stream was null.", null);
+                            context.Exception = ExceptionFactory.ExtractThumbnail(sourceFile.Path, "Input stream was null.");
                             context.Executed = true;
                             return;
                         }

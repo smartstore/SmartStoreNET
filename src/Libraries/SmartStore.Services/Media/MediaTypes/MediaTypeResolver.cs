@@ -60,7 +60,14 @@ namespace SmartStore.Services.Media
 
         public IEnumerable<string> ParseTypeFilter(string typeFilter)
         {
-            return ParseTypeFilter(typeFilter.SplitSafe(","));
+            if (typeFilter.IsEmpty() || typeFilter == "*")
+            {
+                return GetExtensionMediaTypeMap().Keys;
+            }
+            else
+            {
+                return ParseTypeFilter(typeFilter.SplitSafe(","));
+            }
         }
 
         public IEnumerable<string> ParseTypeFilter(string[] typeFilter)
@@ -85,7 +92,7 @@ namespace SmartStore.Services.Media
             return extensions;
         }
 
-        public IDictionary<string, string> GetExtensionMediaTypeMap()
+        public IReadOnlyDictionary<string, string> GetExtensionMediaTypeMap()
         {
             return _cache.Get(MapCacheKey, () => 
             {

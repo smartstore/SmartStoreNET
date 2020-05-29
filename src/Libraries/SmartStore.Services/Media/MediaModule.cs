@@ -20,10 +20,11 @@ namespace SmartStore.Services.Media
 
         protected override void Load(ContainerBuilder builder)
         {
-            // Migration utils
+            // Utils
             builder.RegisterType<MediaMigrator>().InstancePerRequest();
             builder.RegisterType<MediaMigrator3>().InstancePerRequest();
             builder.RegisterType<MediaHelper>().InstancePerRequest();
+            builder.RegisterType<MediaExceptionFactory>().InstancePerRequest();
 
             builder.RegisterType<MediaTypeResolver>().As<IMediaTypeResolver>().InstancePerRequest();
             builder.RegisterType<MediaUrlGenerator>().As<IMediaUrlGenerator>().InstancePerRequest();

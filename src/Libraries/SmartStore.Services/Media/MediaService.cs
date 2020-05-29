@@ -30,6 +30,7 @@ namespace SmartStore.Services.Media
         private readonly MediaSettings _mediaSettings;
         private readonly IImageProcessor _imageProcessor;
         private readonly IImageCache _imageCache;
+        private readonly MediaExceptionFactory _exceptionFactory;
         private readonly IMediaStorageProvider _storageProvider;
         private readonly MediaHelper _helper;
 
@@ -45,6 +46,7 @@ namespace SmartStore.Services.Media
             MediaSettings mediaSettings,
             IImageProcessor imageProcessor,
             IImageCache imageCache,
+            MediaExceptionFactory exceptionFactory,
             Func<IMediaStorageProvider> storageProvider,
             MediaHelper helper)
         {
@@ -59,6 +61,7 @@ namespace SmartStore.Services.Media
             _mediaSettings = mediaSettings;
             _imageProcessor = imageProcessor;
             _imageCache = imageCache;
+            _exceptionFactory = exceptionFactory;
             _storageProvider = storageProvider();
             _helper = helper;
         }
@@ -481,7 +484,7 @@ namespace SmartStore.Services.Media
             {
                 if (dupeFileHandling == DuplicateFileHandling.ThrowError)
                 {
-                    throw new DuplicateMediaFileException(pathData.FullPath, ConvertMediaFile(file));
+                    throw _exceptionFactory.DuplicateFile(pathData.FullPath, ConvertMediaFile(file));
                 }
                 else if (dupeFileHandling == DuplicateFileHandling.Rename)
                 {
@@ -637,7 +640,7 @@ namespace SmartStore.Services.Media
                     case DuplicateEntryHandling.Skip:
                         return null;
                     case DuplicateEntryHandling.ThrowError:
-                        throw new DuplicateMediaFileException(destPathData.FullPath, ConvertMediaFile(dupe));
+                        throw _exceptionFactory.DuplicateFile(destPathData.FullPath, ConvertMediaFile(dupe));
                     case DuplicateEntryHandling.Rename:
                         uniqueFileNameChecker(destPathData);
                         if (dupe == file)
@@ -792,7 +795,7 @@ namespace SmartStore.Services.Media
             var dupe = _fileRepo.Table.FirstOrDefault(x => x.Name == destFileName && x.FolderId == destFolderId);
             if (dupe != null)
             {
-                throw new DuplicateMediaFileException(destPathData.FullPath, ConvertMediaFile(dupe));
+                throw _exceptionFactory.DuplicateFile(destPathData.FullPath, ConvertMediaFile(dupe));
             }
 
             return folderChanged || nameChanged;
@@ -933,7 +936,7 @@ namespace SmartStore.Services.Media
         {
             if (!_folderService.AreInSameAlbum(folderId1, folderId2))
             {
-                throw new NotSameAlbumException(
+                throw _exceptionFactory.NotSameAlbum(
                     _folderService.GetNodeById(folderId1).Value.Path, 
                     _folderService.GetNodeById(folderId2).Value.Path);
             }

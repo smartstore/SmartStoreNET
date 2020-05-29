@@ -83,7 +83,7 @@ namespace SmartStore.Services.Media
             var node = _folderService.GetNodeByPath(path);
             if (node == null)
             {
-                throw new MediaFolderNotFoundException(path); // TODO: (mm) Loc
+                throw _exceptionFactory.FolderNotFound(path);
             }
 
             if (node.Value.IsAlbum)
@@ -94,7 +94,7 @@ namespace SmartStore.Services.Media
             var folder = _folderService.GetFolderById(node.Value.Id);
             if (folder == null)
             {
-                throw new MediaFolderNotFoundException(path); // TODO: (mm) Loc
+                throw _exceptionFactory.FolderNotFound(path);
             }
 
             ValidateFolderPath(destinationPath, "MoveFolder", nameof(destinationPath));
@@ -111,13 +111,13 @@ namespace SmartStore.Services.Media
             var destParentNode = _folderService.GetNodeByPath(destParent);
             if (destParentNode == null)
             {
-                throw new MediaFolderNotFoundException(destinationPath); // TODO: (mm) Loc
+                throw _exceptionFactory.FolderNotFound(destinationPath);
             }
 
             // Cannot move outside source album
             if (!_folderService.AreInSameAlbum(folder.Id, destParentNode.Value.Id))
             {
-                throw new NotSameAlbumException(node.Value.Path, destParent); // TODO: (mm) Loc
+                throw _exceptionFactory.NotSameAlbum(node.Value.Path, destParent);
             }
 
             if (destParentNode.IsDescendantOfOrSelf(node))
@@ -154,7 +154,7 @@ namespace SmartStore.Services.Media
             var node = _folderService.GetNodeByPath(path);
             if (node == null)
             {
-                throw new MediaFolderNotFoundException(path); // TODO: (mm) Loc
+                throw _exceptionFactory.FolderNotFound(path);
             }
 
             if (node.Value.IsAlbum)
@@ -180,7 +180,7 @@ namespace SmartStore.Services.Media
                 switch (dupeEntryHandling)
                 {
                     case DuplicateEntryHandling.ThrowError:
-                        throw new DuplicateMediaFolderException(source.Value.Path); // TODO: (mm) Loc
+                        throw _exceptionFactory.DuplicateFolder(source.Value.Path, destNode.Value);
                     case DuplicateEntryHandling.Skip:
                         return new MediaFolderInfo(destNode);
                     case DuplicateEntryHandling.Rename:
@@ -284,7 +284,7 @@ namespace SmartStore.Services.Media
             var node = _folderService.GetNodeByPath(path);
             if (node == null)
             {
-                throw new MediaFolderNotFoundException(path); // TODO: (mm) Loc
+                throw _exceptionFactory.FolderNotFound(path);
             }
 
             // Collect all affected subfolder ids also

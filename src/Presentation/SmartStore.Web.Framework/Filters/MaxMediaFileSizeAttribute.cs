@@ -11,6 +11,7 @@ namespace SmartStore.Web.Framework.Filters
     public class MaxMediaFileSizeAttribute : FilterAttribute, IActionFilter
     {
         public Lazy<MediaSettings> MediaSettings { get; set; }
+        public Lazy<MediaExceptionFactory> ExceptionFactory { get; set; }
 
         public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {
@@ -34,7 +35,7 @@ namespace SmartStore.Web.Framework.Filters
 
                 if (file.ContentLength > maxBytes)
                 {
-                    throw new MaxMediaFileSizeExceededException(file.FileName, file.ContentLength / 1024, MediaSettings.Value.MaxUploadFileSize);
+                    throw ExceptionFactory.Value.MaxFileSizeExceeded(file.FileName, file.ContentLength / 1024, MediaSettings.Value.MaxUploadFileSize);
                 }
             }
         }

@@ -348,6 +348,7 @@
     <Compile Include="Logging\DbLogService.cs" />
     <Compile Include="Logging\ILogService.cs" />
     <Compile Include="Media\Events.cs" />
+    <Compile Include="Media\MediaExceptionFactory.cs" />
     <Compile Include="Media\MediaFileSystem.cs" />
     <Compile Include="Media\MediaPathData.cs" />
     <Compile Include="Media\Imaging\ProcessImageException.cs" />
@@ -361,7 +362,6 @@
     <Compile Include="Media\Storage\IMediaMover.cs" />
     <Compile Include="Media\Storage\ISupportsMediaMoving.cs" />
     <Compile Include="Media\Storage\MediaMoverContext.cs" />
-    <Compile Include="Media\Exceptions.cs" />
     <Compile Include="Media\Extensions\IMediaServiceExtensions.cs" />
     <Compile Include="Media\Extensions\IMediaTrackerExtensions.cs" />
     <Compile Include="Media\Extensions\MediaFileExtensions.cs" />

@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
-using System.Text;
 
 namespace SmartStore.Data.Setup
 {
@@ -258,11 +257,11 @@ namespace SmartStore.Data.Setup
                 new { Name = "Dark red", Color = "#5e0000" }
             };
 
+            var products = _ctx.Set<Product>().ToList().ToDictionarySafe(x => x.Sku, x => x);
 
             #region Oakley custom flak
 
-            var productCustomFlak = _ctx.Set<Product>().First(x => x.Sku == "P-3002");
-
+            var productCustomFlak = products["P-3002"];
             var attributeLensType = new ProductVariantAttribute()
             {
                 Product = productCustomFlak,
@@ -470,10 +469,9 @@ namespace SmartStore.Data.Setup
 
             #endregion Oakley custom flak
 
+            #region Wayfarer
 
-            #region wayfarer
-
-            var productWayfarer = _ctx.Set<Product>().First(x => x.Sku == "P-3003");
+            var productWayfarer = products["P-3003"];
             var wayfarerFramePictures = _ctx.Set<MediaFile>().Where(x => x.Name.StartsWith("wayfarer-")).ToList();
 
             var attributeWayfarerLenscolor = new ProductVariantAttribute()
@@ -575,15 +573,13 @@ namespace SmartStore.Data.Setup
                 MediaFileId = wayfarerFramePicture.Id
             });
 
-
             entities.Add(attributeWayfarerFramecolor);
 
             #endregion wayfarer
 
             #region 9,7 iPad
 
-            var product97iPad = _ctx.Set<Product>().First(x => x.Sku == "P-2004");
-
+            var product97iPad = products["P-2004"];
             var attribute97iPadMemoryCapacity = new ProductVariantAttribute()
             {
                 Product = product97iPad,
@@ -615,7 +611,6 @@ namespace SmartStore.Data.Setup
             });
 
             entities.Add(attribute97iPadMemoryCapacity);
-
 
             var attribute97iPadColor = new ProductVariantAttribute()
             {
@@ -717,15 +712,13 @@ namespace SmartStore.Data.Setup
                 Color = "#dfddb6"
             });
 
-
             entities.Add(attribute97iPadColor);
 
             #endregion 9,7 iPad
 
             #region iPhone 7 plus
 
-            var productIphone7Plus = _ctx.Set<Product>().First(x => x.Sku == "P-2001");
-
+            var productIphone7Plus = products["P-2001"];
             var attributeIphone7PlusMemoryCapacity = new ProductVariantAttribute()
             {
                 Product = productIphone7Plus,
@@ -823,97 +816,9 @@ namespace SmartStore.Data.Setup
 
             #endregion iPhone 7 plus
 
-            #region iPhone
+            #region Dualshock3ControllerColor
 
-            //         var productIphone = _ctx.Set<Product>().First(x => x.Sku == "Apple-1001");
-
-            //var attributeIphoneMemoryCapacity = new ProductVariantAttribute()
-            //{
-            //	Product = productIphone,
-            //	ProductAttribute = attrMemoryCapacity,
-            //	IsRequired = true,
-            //	DisplayOrder = 1,
-            //	AttributeControlType = AttributeControlType.DropdownList
-            //};
-
-            //attributeIphoneMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
-            //{
-            //	Name = "16 GB",
-            //	Alias = "16gb",
-            //	IsPreSelected = true,
-            //	DisplayOrder = 1,
-            //	Quantity = 1,
-            //	ValueType = ProductVariantAttributeValueType.Simple
-            //});
-
-            //attributeIphoneMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
-            //{
-            //	Name = "64 GB",
-            //	Alias = "64gb",
-            //	DisplayOrder = 2,
-            //	Quantity = 1,
-            //	ValueType = ProductVariantAttributeValueType.Simple,
-            //	PriceAdjustment = 100.0M
-            //});
-
-            //attributeIphoneMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
-            //{
-            //	Name = "128 GB",
-            //	Alias = "128gb",
-            //	DisplayOrder = 3,
-            //	Quantity = 1,
-            //	ValueType = ProductVariantAttributeValueType.Simple,
-            //	PriceAdjustment = 200.0M
-            //});
-
-            //entities.Add(attributeIphoneMemoryCapacity);
-
-
-            //var attributeIphoneColor = new ProductVariantAttribute()
-            //{
-            //	Product = productIphone,
-            //	ProductAttribute = attrIphoneColor,
-            //	IsRequired = true,
-            //	DisplayOrder = 2,
-            //	AttributeControlType = AttributeControlType.DropdownList
-            //};
-
-            //attributeIphoneColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
-            //{
-            //	Name = "Silver",
-            //	Alias = "silver",
-            //	IsPreSelected = true,
-            //	DisplayOrder = 1,
-            //	Quantity = 1,
-            //	ValueType = ProductVariantAttributeValueType.Simple
-            //});
-
-            //attributeIphoneColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
-            //{
-            //	Name = "Gold",
-            //	Alias = "gold",
-            //	DisplayOrder = 2,
-            //	Quantity = 1,
-            //	ValueType = ProductVariantAttributeValueType.Simple
-            //});
-
-            //attributeIphoneColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
-            //{
-            //	Name = "Space gray",
-            //	Alias = "spacegray",
-            //	DisplayOrder = 3,
-            //	Quantity = 1,
-            //	ValueType = ProductVariantAttributeValueType.Simple
-            //});
-
-            //entities.Add(attributeIphoneColor);
-
-            #endregion iPhone
-
-            #region attributeDualshock3ControllerColor
-
-            var productPs3 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000");
-
+            var productPs3 = products["Sony-PS399000"];
             var attributeDualshock3ControllerColor = new ProductVariantAttribute()
             {
                 Product = productPs3,
@@ -945,12 +850,11 @@ namespace SmartStore.Data.Setup
 
             entities.Add(attributeDualshock3ControllerColor);
 
-            #endregion attributeDualshock3ControllerColor
+            #endregion Dualshock3ControllerColor
 
-            #region attribute  Apple Airpod
+            #region Apple Airpod
 
-            var productAirpod = _ctx.Set<Product>().First(x => x.Sku == "P-2003");
-
+            var productAirpod = products["P-2003"];
             var attributeAirpod = new ProductVariantAttribute()
             {
                 Product = productAirpod,
@@ -1035,12 +939,11 @@ namespace SmartStore.Data.Setup
 
             entities.Add(attributeAirpod);
 
-            #endregion attribute Apple Airpod
+            #endregion Apple Airpod
 
-            #region attribute Evopower 5.3 Trainer HS Ball
+            #region Evopower 5.3 Trainer HS Ball
 
-            var productEvopower = _ctx.Set<Product>().First(x => x.Sku == "P-5003");
-
+            var productEvopower = products["P-5003"];
             var attributeEvopower = new ProductVariantAttribute()
             {
                 Product = productEvopower,
@@ -1083,15 +986,14 @@ namespace SmartStore.Data.Setup
                 PriceAdjustment = 15.00M
                 //LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-princepersia").Id
             });
-
-
+            
             entities.Add(attributeEvopower);
 
-            #endregion attribute Evopower 5.3 Trainer HS Ball
+            #endregion Evopower 5.3 Trainer HS Ball
 
-            #region attributePs3OneGameFree
+            #region Ps3OneGameFree
 
-            //         var productPs3OneGameFree = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS310111");
+            //var productPs3OneGameFree = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS310111");
 
             //var attributePs3OneGameFree = new ProductVariantAttribute()
             //{
@@ -1144,11 +1046,11 @@ namespace SmartStore.Data.Setup
 
             //entities.Add(attributePs3OneGameFree);
 
-            #endregion attributePs3OneGameFree
+            #endregion Ps3OneGameFree
 
             #region Fashion - Converse All Star
 
-            var productAllStar = _ctx.Set<Product>().First(x => x.Sku == "Fashion-112355");
+            var productAllStar = products["Fashion-112355"];
             var allStarColors = new string[] { "Charcoal", "Maroon", "Navy", "Purple", "White" };
             var allStarPictures = _ctx.Set<MediaFile>().Where(x => x.Name.StartsWith("allstar-")).ToList();
 
@@ -1211,7 +1113,7 @@ namespace SmartStore.Data.Setup
 
             #region Fashion - Shirt Meccanica
 
-            var productShirtMeccanica = _ctx.Set<Product>().First(x => x.Sku == "Fashion-987693502");
+            var productShirtMeccanica = products["Fashion-987693502"];
             var shirtMeccanicaSizes = new string[] { "XS", "S", "M", "L", "XL" };
             var shirtMeccanicaColors = new[]
             {
@@ -1268,7 +1170,7 @@ namespace SmartStore.Data.Setup
 
             #region Fashion - Ladies Jacket
 
-            var productLadiesJacket = _ctx.Set<Product>().First(x => x.Sku == "Fashion-JN1107");
+            var productLadiesJacket = products["Fashion-JN1107"];
             var ladiesJacketSizes = new string[] { "XS", "S", "M", "L", "XL" };
             var ladiesJacketColors = new[]
             {
@@ -1330,7 +1232,7 @@ namespace SmartStore.Data.Setup
 
             #region Fashion - Clark Jeans
 
-            var productClarkJeans = _ctx.Set<Product>().First(x => x.Sku == "Fashion-65986524");
+            var productClarkJeans = products["Fashion-65986524"];
             var clarkJeansWidth = new string[] { "31", "32", "33", "34", "35", "36", "38", "40", "42", "44", "46" };
             var clarkJeansLength = new string[] { "30", "32", "34" };
 
@@ -1382,8 +1284,7 @@ namespace SmartStore.Data.Setup
 
             #region Furniture - Le Corbusier LC 6 table
 
-            var productCorbusierTable = _ctx.Set<Product>().First(x => x.Sku == "Furniture-lc6");
-
+            var productCorbusierTable = products["Furniture-lc6"];
             var attrCorbusierTablePlate = new ProductVariantAttribute
             {
                 Product = productCorbusierTable,
@@ -1438,7 +1339,7 @@ namespace SmartStore.Data.Setup
 
             #region Soccer Adidas TANGO SALA BALL
 
-            var productAdidasTANGOSALABALL = _ctx.Set<Product>().First(x => x.Sku == "P-5001");
+            var productAdidasTANGOSALABALL = products["P-5001"];
             var productAdidasTANGOSALABALLSizes = new string[] { "3", "4", "5" };
             var productAdidasTANGOSALABALLColors = new[]
             {
@@ -1500,7 +1401,7 @@ namespace SmartStore.Data.Setup
 
             #region Torfabrik official game ball
 
-            var productTorfabrikBall = _ctx.Set<Product>().First(x => x.Sku == "P-5002");
+            var productTorfabrikBall = products["P-5002"];
             var productTorfabrikBallSizes = new string[] { "3", "4", "5" };
             var productTorfabrikBallColors = new[]
             {
@@ -1560,8 +1461,7 @@ namespace SmartStore.Data.Setup
 
             #region Furniture - Ball chair
 
-            var productBallChair = _ctx.Set<Product>().First(x => x.Sku == "Furniture-ball-chair");
-
+            var productBallChair = products["Furniture-ball-chair"];
             var attrBallChairMaterial = new ProductVariantAttribute
             {
                 Product = productBallChair,
@@ -1648,8 +1548,7 @@ namespace SmartStore.Data.Setup
 
             #region Furniture - Lounge chair
 
-            var productLoungeChair = _ctx.Set<Product>().First(x => x.Sku == "Furniture-lounge-chair");
-
+            var productLoungeChair = products["Furniture-lounge-chair"];
             var attrLoungeChairMaterial = new ProductVariantAttribute
             {
                 Product = productLoungeChair,
@@ -1752,8 +1651,7 @@ namespace SmartStore.Data.Setup
 
             #region Furniture - Cube chair
 
-            var productCubeChair = _ctx.Set<Product>().First(x => x.Sku == "Furniture-cube-chair");
-
+            var productCubeChair = products["Furniture-cube-chair"];
             var attrCubeChairMaterial = new ProductVariantAttribute
             {
                 Product = productCubeChair,
@@ -1830,14 +1728,11 @@ namespace SmartStore.Data.Setup
             var attrWayfarerLenscolor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "wayfarerlenscolor");
             var attrWayfarerFramecolor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "wayfarerframecolor");
 
-
             #region ORIGINAL WAYFARER AT COLLECTION
 
             var productWayfarer = _ctx.Set<Product>().First(x => x.Sku == "P-3003");
             var wayfarerPictureIds = productWayfarer.ProductPictures.Select(pp => pp.MediaFileId).ToList();
             var picturesWayfarer = _ctx.Set<MediaFile>().Where(x => wayfarerPictureIds.Contains(x.Id)).ToList();
-
-            //var attributeColorIphone7Plus = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productIphone7Plus.Id && x.ProductAttributeId == attrColor.Id);
 
             var wayfarerLenscolor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productWayfarer.Id && x.ProductAttributeId == attrWayfarerLenscolor.Id);
             var wayfarerLenscolorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == wayfarerLenscolor.Id).ToList();
@@ -1846,6 +1741,7 @@ namespace SmartStore.Data.Setup
             var wayfarerFramecolorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == wayfarerFramecolor.Id).ToList();
 
             #region blue-gray-classic-black
+
             entities.Add(new ProductVariantAttributeCombination()
             {
                 Product = productWayfarer,
@@ -1865,6 +1761,7 @@ namespace SmartStore.Data.Setup
             #endregion blue-gray-classic-black
 
             #region gray-course-black
+
             entities.Add(new ProductVariantAttributeCombination()
             {
                 Product = productWayfarer,
@@ -1884,6 +1781,7 @@ namespace SmartStore.Data.Setup
             #endregion gray-course-black
 
             #region brown-course-havana
+
             entities.Add(new ProductVariantAttributeCombination()
             {
                 Product = productWayfarer,
@@ -1903,6 +1801,7 @@ namespace SmartStore.Data.Setup
             #endregion brown-course-havana
 
             #region green-classic-havana-black
+
             entities.Add(new ProductVariantAttributeCombination()
             {
                 Product = productWayfarer,
@@ -1921,9 +1820,8 @@ namespace SmartStore.Data.Setup
 
             #endregion green-classic-havana-black
 
-            // not available products not available products not available products not available products not available products
-
             #region blue-gray-classic-havana-black
+
             entities.Add(new ProductVariantAttributeCombination()
             {
                 Product = productWayfarer,
@@ -1943,6 +1841,7 @@ namespace SmartStore.Data.Setup
             #endregion green-classic-havana-black
 
             #region blue-gray-classic-havana
+
             entities.Add(new ProductVariantAttributeCombination()
             {
                 Product = productWayfarer,
@@ -1961,8 +1860,8 @@ namespace SmartStore.Data.Setup
 
             #endregion green-classic-rayban-black
 
-            // gray-course
             #region gray-course-havana-black
+
             entities.Add(new ProductVariantAttributeCombination()
             {
                 Product = productWayfarer,
@@ -1982,6 +1881,7 @@ namespace SmartStore.Data.Setup
             #endregion gray-course-havana-black
 
             #region gray-course-havana
+
             entities.Add(new ProductVariantAttributeCombination()
             {
                 Product = productWayfarer,
@@ -2001,6 +1901,7 @@ namespace SmartStore.Data.Setup
             #endregion gray-course-rayban-black
 
             #region green-classic-rayban-black
+
             entities.Add(new ProductVariantAttributeCombination()
             {
                 Product = productWayfarer,
@@ -2020,6 +1921,7 @@ namespace SmartStore.Data.Setup
             #endregion green-classic-rayban-black
 
             #region green-classic-havana
+
             entities.Add(new ProductVariantAttributeCombination()
             {
                 Product = productWayfarer,
@@ -2038,8 +1940,8 @@ namespace SmartStore.Data.Setup
 
             #endregion gray-course-rayban-black
 
-            // brown-course
             #region brown-course-havana-black
+
             entities.Add(new ProductVariantAttributeCombination()
             {
                 Product = productWayfarer,
@@ -2059,6 +1961,7 @@ namespace SmartStore.Data.Setup
             #endregion brown-course-havana-black
 
             #region brown-course-rayban-black
+
             entities.Add(new ProductVariantAttributeCombination()
             {
                 Product = productWayfarer,
@@ -2128,9 +2031,6 @@ namespace SmartStore.Data.Setup
                     }
                 }
             }
-
-
-
 
             #endregion Custom Flak
 

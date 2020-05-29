@@ -1,6 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Data.Setup
@@ -10,9 +9,10 @@ namespace SmartStore.Data.Setup
         public IList<Category> CategoriesFirstLevel()
         {
             var sampleImagesPath = this._sampleImagesPath;
-            var categoryTemplateInGridAndLines = this.CategoryTemplates().Where(pt => pt.ViewPath == "CategoryTemplate.ProductsInGridOrLines").FirstOrDefault();
+            var categoryTemplateInGridAndLines =
+                this.CategoryTemplates().Where(pt => pt.ViewPath == "CategoryTemplate.ProductsInGridOrLines").FirstOrDefault();
 
-            #region category definitions
+            #region Categories
 
             var categoryFurniture = new Category
             {
@@ -61,17 +61,6 @@ namespace SmartStore.Data.Setup
                 MetaTitle = "Books"
             };
 
-            //var categoryComputers = new Category
-            //{
-            //	Name = "Computers",
-            //             Alias = "Computers",
-            //	CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-            //             Picture = CreatePicture("category/computers.png"),
-            //	Published = true,
-            //	DisplayOrder = 2,
-            //	MetaTitle = "Computers"
-            //};
-
             var categoryFashion = new Category
             {
                 Name = "Fashion",
@@ -97,18 +86,6 @@ namespace SmartStore.Data.Setup
                 ShowOnHomePage = true,
                 MetaTitle = "Gaming"
             };
-
-            //var categoryCellPhones = new Category
-            //{
-            //	Name = "Cell phones",
-            //             Alias = "Cell phones",
-            //	CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-            //	//ParentCategoryId = categoryElectronics.Id,
-            //             Picture = CreatePicture("category/cellphone.png"),
-            //	Published = true,
-            //	DisplayOrder = 4,
-            //	MetaTitle = "Cell phones"
-            //};
 
             var categoryDigitalDownloads = new Category
             {
@@ -148,12 +125,35 @@ namespace SmartStore.Data.Setup
                 BadgeStyle = 5
             };
 
-            #endregion
+            //var categoryComputers = new Category
+            //{
+            //	Name = "Computers",
+            //             Alias = "Computers",
+            //	CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+            //             Picture = CreatePicture("category/computers.png"),
+            //	Published = true,
+            //	DisplayOrder = 2,
+            //	MetaTitle = "Computers"
+            //};
+
+            //var categoryCellPhones = new Category
+            //{
+            //	Name = "Cell phones",
+            //             Alias = "Cell phones",
+            //	CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+            //	//ParentCategoryId = categoryElectronics.Id,
+            //             Picture = CreatePicture("category/cellphone.png"),
+            //	Published = true,
+            //	DisplayOrder = 4,
+            //	MetaTitle = "Cell phones"
+            //};
+
+            #endregion Categories
 
             var entities = new List<Category>
             {
-                categoryApple, categorySports, categoryBooks, categoryFurniture, categoryDigitalDownloads, categoryGaming,
-                categoryGiftCards, categoryFashion, categoryWatches
+                categoryApple, categorySports, categoryBooks, categoryFurniture, categoryDigitalDownloads,
+                categoryGaming, categoryGiftCards, categoryFashion, categoryWatches                
             };
 
             this.Alter(entities);
@@ -164,10 +164,9 @@ namespace SmartStore.Data.Setup
         {
             var sampleImagesPath = this._sampleImagesPath;
             var categoryTemplateInGridAndLines = this.CategoryTemplates().Where(pt => pt.ViewPath == "CategoryTemplate.ProductsInGridOrLines").FirstOrDefault();
+            var categories = _ctx.Set<Category>().ToList().ToDictionarySafe(x => x.Alias, x => x);
 
-            #region category definitions
-
-            #region new
+            #region Categories Second Level
 
             var categoryFashionJackets = new Category
             {
@@ -176,22 +175,9 @@ namespace SmartStore.Data.Setup
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/jackets.jpg"),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
+                ParentCategoryId = categories["Fashion"].Id,
                 DisplayOrder = 1,
                 MetaTitle = "Jackets",
-                ShowOnHomePage = true
-            };
-
-            var categoryFashionLeatherJackets = new Category
-            {
-                Name = "Leather jackets",
-                Alias = "Leather jackets",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture("category/leather_jackets.jpg"),
-                Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
-                DisplayOrder = 1,
-                MetaTitle = "Leather jackets",
                 ShowOnHomePage = true
             };
 
@@ -202,41 +188,37 @@ namespace SmartStore.Data.Setup
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/shoes.png"),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
+                ParentCategoryId = categories["Fashion"].Id,
                 DisplayOrder = 1,
                 MetaTitle = "Shoes",
+                ShowOnHomePage = true
+            };
+
+            var categorySunglasses = new Category
+            {
+                Name = "Sunglasses",
+                Alias = "Sunglasses",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                MediaFile = CreatePicture("category/glasses.png"),
+                Published = true,
+                ParentCategoryId = categories["Fashion"].Id,
+                DisplayOrder = 1,
+                MetaTitle = "Sunglasses",
                 ShowOnHomePage = true
             };
 
             var categoryFashionTrousers = new Category
             {
                 Name = "Trousers",
-                Alias = "Pants",
+                Alias = "Trousers",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/trousers.png"),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
+                ParentCategoryId = categories["Fashion"].Id,
                 DisplayOrder = 1,
                 MetaTitle = "Trousers",
                 ShowOnHomePage = true
             };
-
-            var categoryFashionTracksuits = new Category
-            {
-                Name = "Tracksuits",
-                Alias = "Tracksuits",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture("category/tracksuit.png"),
-                Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
-                DisplayOrder = 1,
-                MetaTitle = "Tracksuits",
-                ShowOnHomePage = true
-            };
-
-            #endregion
-
-
 
             var categorySportsGolf = new Category
             {
@@ -245,22 +227,9 @@ namespace SmartStore.Data.Setup
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/golf.jpg"),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Sports").First().Id,
+                ParentCategoryId = categories["Sports"].Id,
                 DisplayOrder = 1,
                 MetaTitle = "Golf",
-                ShowOnHomePage = true
-            };
-
-            var categorySportsSunglasses = new Category
-            {
-                Name = "Sunglasses",
-                Alias = "Sunglasses",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                MediaFile = CreatePicture("category/glasses.png"),
-                Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
-                DisplayOrder = 1,
-                MetaTitle = "Sunglasses",
                 ShowOnHomePage = true
             };
 
@@ -271,7 +240,7 @@ namespace SmartStore.Data.Setup
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/soccer.png"),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Sports").First().Id,
+                ParentCategoryId = categories["Sports"].Id,
                 DisplayOrder = 1,
                 MetaTitle = "Soccer",
                 ShowOnHomePage = true
@@ -284,7 +253,7 @@ namespace SmartStore.Data.Setup
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/basketball.png"),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Sports").First().Id,
+                ParentCategoryId = categories["Sports"].Id,
                 DisplayOrder = 1,
                 MetaTitle = "Basketball",
                 ShowOnHomePage = true
@@ -297,7 +266,7 @@ namespace SmartStore.Data.Setup
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/0000930_spiegel-bestseller.png", GetSeName("SPIEGEL-Bestseller")),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Books").First().Id,
+                ParentCategoryId = categories["Books"].Id,
                 DisplayOrder = 1,
                 MetaTitle = "SPIEGEL-Bestseller"
             };
@@ -309,10 +278,60 @@ namespace SmartStore.Data.Setup
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 MediaFile = CreatePicture("category/0000936_kochen-geniesen.jpeg", GetSeName("Cook and enjoy")),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Books").First().Id,
+                ParentCategoryId = categories["Books"].Id,
                 DisplayOrder = 2,
                 MetaTitle = "Cook and enjoy"
             };
+
+            var categoryGamingAccessories = new Category
+            {
+                Name = "Gaming Accessories",
+                Alias = "Gaming Accessories",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                ParentCategoryId = categories["Gaming"].Id,
+                MediaFile = CreatePicture("category/gaming_accessories.png"),
+                Published = true,
+                DisplayOrder = 2,
+                MetaTitle = "Gaming Accessories"
+            };
+
+            var categoryGamingGames = new Category
+            {
+                Name = "Games",
+                Alias = "Games",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                ParentCategoryId = categories["Gaming"].Id,
+                MediaFile = CreatePicture("category/games.jpg"),
+                Published = true,
+                DisplayOrder = 3,
+                MetaTitle = "Games"
+            };
+
+            //var categoryFashionLeatherJackets = new Category
+            //{
+            //    Name = "Leather jackets",
+            //    Alias = "Leather jackets",
+            //    CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+            //    MediaFile = CreatePicture("category/leather_jackets.jpg"),
+            //    Published = true,
+            //    ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
+            //    DisplayOrder = 1,
+            //    MetaTitle = "Leather jackets",
+            //    ShowOnHomePage = true
+            //};
+
+            //var categoryFashionTracksuits = new Category
+            //{
+            //    Name = "Tracksuits",
+            //    Alias = "Tracksuits",
+            //    CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+            //    MediaFile = CreatePicture("category/tracksuit.png"),
+            //    Published = true,
+            //    ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
+            //    DisplayOrder = 1,
+            //    MetaTitle = "Tracksuits",
+            //    ShowOnHomePage = true
+            //};
 
             //var categoryDesktops = new Category
             //{
@@ -338,37 +357,13 @@ namespace SmartStore.Data.Setup
             //	MetaTitle = "Notebooks"
             //};
 
-            var categoryGamingAccessories = new Category
-            {
-                Name = "Gaming Accessories",
-                Alias = "Gaming Accessories",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
-                MediaFile = CreatePicture("category/gaming_accessories.png"),
-                Published = true,
-                DisplayOrder = 2,
-                MetaTitle = "Gaming Accessories"
-            };
-
-            var categoryGamingGames = new Category
-            {
-                Name = "Games",
-                Alias = "Games",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
-                MediaFile = CreatePicture("category/games.jpg"),
-                Published = true,
-                DisplayOrder = 3,
-                MetaTitle = "Games"
-            };
-
             #endregion
 
             var entities = new List<Category>
             {
-                categorySportsSunglasses,categorySportsSoccer, categorySportsBasketball,categorySportsGolf, categoryBooksSpiegel, categoryBooksCookAndEnjoy,
-                categoryGamingAccessories, categoryGamingGames, categoryFashionJackets, categoryFashionLeatherJackets, categoryFashionShoes, categoryFashionTrousers,
-                categoryFashionTracksuits
+                categorySunglasses, categorySportsSoccer, categorySportsBasketball, categorySportsGolf, categoryBooksSpiegel, 
+                categoryBooksCookAndEnjoy, categoryGamingAccessories, categoryGamingGames, categoryFashionJackets, categoryFashionShoes,
+                categoryFashionTrousers
             };
 
             this.Alter(entities);

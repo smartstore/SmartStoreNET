@@ -213,7 +213,8 @@ namespace SmartStore.Web.Controllers
                         FullSizeImageWidth = file?.Dimensions.Width,
                         FullSizeImageHeight = file?.Dimensions.Height,
                         Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), name),
-                        AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), name)
+                        AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), name),
+                        File = file
                     };
 
                     return model;
@@ -585,7 +586,8 @@ namespace SmartStore.Web.Controllers
 				FullSizeImageWidth = file?.Width,
 				FullSizeImageHeight = file?.Height,
 				Title = model.Name,
-				AlternateText = model.AlternateText
+				AlternateText = model.AlternateText,
+                File = _mediaService.ConvertMediaFile(file)
 			};
 
 			return result;
@@ -1484,15 +1486,15 @@ namespace SmartStore.Web.Controllers
             string localizedName,
             IDictionary<int, MediaFileInfo> fileLookup = null)
         {
-            MediaFileInfo file = null;
-            
+            MediaFileInfo file;
+
             if (fileLookup != null)
             {
                 fileLookup.TryGetValue(manufacturer.MediaFileId ?? 0, out file);
             }
             else
             {
-                _mediaService.GetFileById(manufacturer.MediaFileId ?? 0, MediaLoadFlags.AsNoTracking);
+                file = _mediaService.GetFileById(manufacturer.MediaFileId ?? 0, MediaLoadFlags.AsNoTracking);
             }
 
 			var model = new PictureModel
@@ -1501,7 +1503,8 @@ namespace SmartStore.Web.Controllers
 				Size = _mediaSettings.ManufacturerThumbPictureSize,
 				ImageUrl = _mediaService.GetUrl(file, _mediaSettings.ManufacturerThumbPictureSize, null, !_catalogSettings.HideManufacturerDefaultPictures),
 				Title = string.Format(T("Media.Manufacturer.ImageLinkTitleFormat"), localizedName),
-				AlternateText = string.Format(T("Media.Manufacturer.ImageAlternateTextFormat"), localizedName)
+				AlternateText = string.Format(T("Media.Manufacturer.ImageAlternateTextFormat"), localizedName),
+                File = file
 			};
 
             return model;

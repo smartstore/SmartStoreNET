@@ -372,7 +372,8 @@ namespace SmartStore.Web.Controllers
                 FullSizeImageWidth = file?.Dimensions.Width,
                 FullSizeImageHeight = file?.Dimensions.Height,
                 Title = newsItem.Title,
-                AlternateText = newsItem.Title
+                AlternateText = newsItem.Title,
+                File = file
             };
 
             return pictureModel;

@@ -92,7 +92,7 @@ namespace SmartStore.Web.Controllers
         {
             Guard.NotNull(product, nameof(product));
 
-            MediaFile file = null;
+            MediaFileInfo file = null;
             var combination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, attributesXml);
 
             if (combination != null)
@@ -100,24 +100,24 @@ namespace SmartStore.Web.Controllers
                 var mediaIds = combination.GetAssignedMediaIds();
                 if (mediaIds != null && mediaIds.Length > 0)
                 {
-                    file = _mediaService.GetFileById(mediaIds[0], MediaLoadFlags.AsNoTracking)?.File;
+                    file = _mediaService.GetFileById(mediaIds[0], MediaLoadFlags.AsNoTracking);
                 }
             }
 
-            // No attribute combination image, then load product picture
+            // No attribute combination image, then load product picture.
             if (file == null)
             {
-                file = _productService.GetProductPicturesByProductId(product.Id, 1)
+                file = _mediaService.ConvertMediaFile(_productService.GetProductPicturesByProductId(product.Id, 1)
                     .Select(x => x.MediaFile)
-                    .FirstOrDefault();
+                    .FirstOrDefault());
             }
 
             if (file == null && product.Visibility == ProductVisibility.Hidden && product.ParentGroupedProductId > 0)
             {
-                // Let's check whether this product has some parent "grouped" product
-                file = _productService.GetProductPicturesByProductId(product.ParentGroupedProductId, 1)
+                // Let's check whether this product has some parent "grouped" product.
+                file = _mediaService.ConvertMediaFile(_productService.GetProductPicturesByProductId(product.ParentGroupedProductId, 1)
                     .Select(x => x.MediaFile)
-                    .FirstOrDefault();
+                    .FirstOrDefault());
             }
 
             return new PictureModel
@@ -126,7 +126,8 @@ namespace SmartStore.Web.Controllers
                 Size = pictureSize,
                 ImageUrl = _mediaService.GetUrl(file, pictureSize, null, !catalogSettings.HideProductDefaultPictures),
                 Title = T("Media.Product.ImageLinkTitleFormat", productName),
-                AlternateText = T("Media.Product.ImageAlternateTextFormat", productName)
+                AlternateText = T("Media.Product.ImageAlternateTextFormat", productName),
+                File = file
             };
         }
 

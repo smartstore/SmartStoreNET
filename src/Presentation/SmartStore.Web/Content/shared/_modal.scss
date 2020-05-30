@@ -8,7 +8,7 @@ $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
 
 
 // FLEX MODAL
-// ------------------------------------
+// ------------------------------------------------------------
 
 /*.modal-backdrop.show {
     backdrop-filter: blur(20px);
@@ -164,9 +164,11 @@ $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
 
 
 // Alert / Confirm / Prompt
-// ------------------------------------
+// ------------------------------------------------------------
 
-.modal-box {
+.modal.modal-box {
+	overflow-y: hidden;
+
 	.modal-header {
 		border-bottom-width: 1px;
 		padding-top: 0.75rem;
@@ -179,19 +181,29 @@ $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
 	}
 
 	&.fade .modal-dialog {
-		transform: scale(0.93, 0.93);
-		//transition-duration: 0.4s;
+		transition-duration: 0.25s !important;
 	}
 
-	&.modal-box-center {
-		.modal-box-body,
-		.modal-footer {
-			display: flex;
-		}
+	.modal-box-body {
+		align-items: center;
+		flex-wrap: wrap;
 
+		> div + .modal-box-input {
+			padding-top: 1rem;
+		}
+	}
+
+	.modal-box-message b {
+		font-weight: $font-weight-medium;
+	}
+
+	.modal-footer {
+		justify-content: flex-end;
+	}
+
+	.modal-box-center {
 		.modal-box-body {
 			flex-direction: column;
-			align-items: center;
 		}
 
 		.modal-footer {
@@ -205,5 +217,5 @@ $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
     // "Fix" font-size
     font-size: 1.5rem;
 	font-weight: $font-weight-normal;
-	outline: 0;
+	outline: 0 !important;
 }

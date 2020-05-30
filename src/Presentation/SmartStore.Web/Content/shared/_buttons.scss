@@ -470,20 +470,17 @@ $btn-size-sm: $input-height-sm;
 }
 
 .btn.btn-to-danger {
-	&:not([disabled]):not(.disabled):hover,
-	&:not([disabled]):not(.disabled).hover {
+	&:not([disabled]):not(.disabled):hover {
 		@extend .btn-danger:hover;
 		> i { opacity: 1; }
 	}
 
-	&:focus,
-	&.focus {
+	&:focus:hover {
 		@extend .btn-danger:focus;
 		> i { opacity: 1; }
 	}
 
 	&:not([disabled]):not(.disabled):active,
-	&:not([disabled]):not(.disabled).active,
 	.show > &.dropdown-toggle {
 		@extend .btn-danger:active;
 		> i { opacity: 1; }
@@ -491,18 +488,15 @@ $btn-size-sm: $input-height-sm;
 }
 
 .btn.btn-to-primary {
-	&:not([disabled]):not(.disabled):hover,
-	&:not([disabled]):not(.disabled).hover {
+	&:not([disabled]):not(.disabled):hover {
 		@extend .btn-primary:hover;
 	}
 
-	&:focus,
-	&.focus {
+	&:focus:hover {
 		@extend .btn-primary:focus;
 	}
 
 	&:not([disabled]):not(.disabled):active,
-	&:not([disabled]):not(.disabled).active,
 	.show > &.dropdown-toggle {
 		@extend .btn-primary:active;
 	}

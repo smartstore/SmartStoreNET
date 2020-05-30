@@ -928,7 +928,8 @@ namespace SmartStore.Services.Media
         {
             if (!mime1.Equals(mime2, StringComparison.OrdinalIgnoreCase))
             {
-                throw new NotSupportedException($"The file operation '{operation}' does not allow MIME type switching. Source mime: ${mime1}, target mime: ${mime2}.");
+                // TODO: (mm) Create this and all other generic exceptions by MediaExceptionFactory
+                throw new NotSupportedException($"The file operation '{operation}' does not allow MIME type switching. Source mime: {mime1}, target mime: {mime2}.");
             }
         }
 

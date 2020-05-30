@@ -5,30 +5,63 @@
 		$(document).on('show.bs.modal', '.modal', function () {
 			if ($(this).data('backdrop') || $('body > .modal-backdrop').length) {
 				$('body').addClass('modal-has-backdrop');
-            }
+			}
 		});
 		$(document).on('hidden.bs.modal', '.modal', function () {
 			$('body').removeClass('modal-has-backdrop');
 		});
 	});
 
-	function createBoxModal(type, id, opts) {
-		var dialogClass = 'modal-dialog';
+
+
+
+	var iconHints = {
+		check: { name: 'fa fa-check', color: 'success' },
+		question: { name: 'far fa-question-circle', color: 'warning' },
+		danger: { name: 'fa fa-exclamation-triangle', color: 'danger' },
+		info: { name: 'fa fa-info', color: 'info' },
+		warning: { name: 'fa fa-exclamation-circle', color: 'warning' },
+		delete: { name: 'fa fa-trash-alt', color: 'danger' }
+	};
+
+	function createBoxModal(type, opts) {
+		/*
+		 * ==============================
+			opts = {
+				backdrop: true,
+				title: null,
+				center: true,
+				centerContent: true,
+				size: 'md', // sm | md | lg
+				message: message,
+				icon: null, // { type: 'check | question | warning | danger | info', color: <BrandColor> }
+				prompt: null // { value: <string>, onInit: <fn> }
+				callback: callback,
+				show: true
+			};
+		* ==============================
+		*/
+
+		var dialogClass = 'modal-dialog modal-dialog-scrollable',
+			center = toBool(opts.center, true),
+			centerContent = toBool(opts.centerContent, type !== 'prompt');
+
 		if (opts.size === 'sm' || opts.size === 'lg') dialogClass += ' modal-' + opts.size;
-		if (toBool(opts.center, true)) dialogClass += ' modal-dialog-centered';
+		if (center) dialogClass += ' modal-dialog-centered';
+		if (centerContent) dialogClass += ' modal-box-center';
 
 		var html = [
-			'<div id="modal-confirm-shared" class="modal fade modal-box modal-{0}" data-backdrop="{1}" role="dialog" aria-hidden="true" tabindex="-1">'.format(type, toBool(opts.backdrop, true)),
+			'<div id="modal-{0}-shared" class="modal fade modal-box modal-{0}" data-backdrop="{1}" role="dialog" aria-hidden="true">'.format(type, toBool(opts.backdrop, true)),
 				'<div class="{0}" role="document">'.format(dialogClass),
 					'<div class="modal-content rounded-sm">',
 						'<div class="modal-body">',
-							'<div class="modal-box-body"><div><i class="far fa-question-circle fa-3x text-success mb-3"></i></div>',
-								'<div class="modal-box-message">' + opts.message + '</div>',
+							'<div class="modal-box-body d-flex">',
+								!opts.message ? '' : '<div class="modal-box-message">{0}</div>',
 							'</div>',
 						'</div>',
-						'<div class="modal-footer d-flex justify-content-center">',
-							'<button type="button" class="btn btn-primary btn-sm btn-accept" data-dismiss="modal">' + window.Res['Common.OK'] + '</button>',
-							'<button type="button" class="btn btn-secondary btn-sm btn-cancel" data-dismiss="modal">' + window.Res['Common.Cancel'] + '</button>',
+						'<div class="modal-footer d-flex">',
+							'<button type="button" class="btn btn-primary btn-sm btn-accept" data-dismiss="modal" tabindex="2">' + window.Res['Common.OK'] + '</button>',
+							'<button type="button" class="btn btn-secondary btn-sm btn-cancel" data-dismiss="modal" tabindex="3">' + window.Res['Common.Cancel'] + '</button>',
 						'</div>',
 					'</div>',
 				'</div>',
@@ -37,9 +70,9 @@
 
 		var modal = $(html).appendTo('body');
 
-		if (toBool(opts.centerContent, true)) {
-			modal.addClass('modal-box-center');
-		}
+		if (type === 'alert') {
+			modal.find('.modal-footer > .btn-cancel').remove();
+        }
 
 		if (opts.title) {
 			var header = [
@@ -51,20 +84,52 @@
 			$(header).prependTo(modal.find('.modal-content'));
 		}
 
-		if (opts.type) {
-			var boxBody = modal.find('.modal-box-body');
-			if (opts.type === 'question') {
-				// ...
-			}
-			// ...
+		var boxBody = modal.find('.modal-box-body');
+		var color;
+
+		if (opts.icon && opts.icon.type) {
+			var hint = iconHints[opts.icon.type];
+			if (hint) {
+				color = opts.icon.color || hint.color;
+				if (type === 'confirm' && color === 'danger') {
+					modal.find('.btn-accept').addClass('btn-to-danger');
+                }
+				var icon = $('<i class="{0} text-{1} fa-fw fa-3x"></i>'.format(hint.name, opts.icon.color || hint.color));
+				icon.addClass('m{0}-3'.format(centerContent ? 'b' : 'r'));
+				boxBody.prepend(icon.wrap('<div class="modal-box-icon"></div>').parent());
+            }
 		}
 
+		var input;
+		if (type === 'prompt') {
+			input = $('<input type="text" class="form-control prompt-control" autocomplete="off" tabindex="1" />');
+			if (opts.prompt && opts.prompt.value) {
+				input.val(opts.prompt.value);
+            }
+			boxBody.append(input.wrap('<div class="modal-box-input w-100"></div>').parent());
+        }
+
 		modal.on('shown.bs.modal', function (e) {
-			modal.find('.btn-accept').first().trigger('focus');
+			(input || modal.find('.btn-accept')).first().trigger('focus');
+			if (input) {
+				var fn = opts.prompt ? opts.prompt.onInit : null;
+				if (_.isFunction(fn)) {
+					fn.apply(input.get(0), [input.get(0)]);
+				}
+				else {
+					input.select();
+                }
+            }
 		});
 		modal.on('hidden.bs.modal', function (e) {
-			if ((type === 'confirm' || type === 'prompt') && _.isFunction(opts.callback)) {
-				opts.callback.apply(this, [modal.data('accept')]);
+			if (type !== 'alert' && _.isFunction(opts.callback)) {
+				var accepted = modal.data('accept');
+				if (input) {
+					if (accepted) opts.callback.apply(this, [input.val()]);
+				}
+				else {
+					opts.callback.apply(this, [accepted]);
+                }
 			}
 			modal.remove();
 		});
@@ -76,25 +141,50 @@
 		return modal;
     }
 
+	window.alert2 = function (message) {
+		var opts = $.isPlainObject(message) ? message : { message: message };
+
+		var modal = $('#modal-alert-shared');
+		if (modal.length)
+			modal.remove();
+
+		modal = createBoxModal('alert', opts);
+
+		if (toBool(opts.show, true))
+			modal.modal('show');
+
+		return modal;
+	}
+
 	window.confirm2 = function (message, callback) {
-		var opts = $.isPlainObject(message) ? message : {
-			backdrop: true,
-			title: null,
-			icon: null,
-			center: true,
-			centerContent: true,
-			size: 'md', // sm | md | lg
-			message: message,
-			type: null, // question | warning | danger | info
-			callback: callback
-		};
+		var opts = $.isPlainObject(message) ? message : { message: message, callback: callback };
 
 		var modal = $('#modal-confirm-shared');
 		if (modal.length)
-			return;
+			modal.remove();
 
-		return createBoxModal('confirm', 'modal-confirm-shared', opts).modal('show');
-    }
+		modal = createBoxModal('confirm', opts);
+
+		if (toBool(opts.show, true))
+			modal.modal('show');
+
+		return modal;
+	}
+
+	window.prompt2 = function (message, callback) {
+		var opts = $.isPlainObject(message) ? message : { message: message, callback: callback };
+
+		var modal = $('#modal-prompt-shared');
+		if (modal.length)
+			modal.remove();
+
+		modal = createBoxModal('prompt', opts);
+
+		if (toBool(opts.show, true))
+			modal.modal('show');
+
+		return modal;
+	}
 
 	window.popup = window.openPopup = function (url, large, flex) {
 		var opts = $.isPlainObject(url) ? url : {

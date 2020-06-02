@@ -69,7 +69,8 @@ namespace SmartStore.Admin.Controllers
                             !_mediaSettings.ImageTypes.Contains(extension) &&
                             !_mediaSettings.VideoTypes.Contains(extension) &&
                             !_mediaSettings.AudioTypes.Contains(extension) &&
-                            !_mediaSettings.TextTypes.Contains(extension))      // TODO: BinaryTypes
+                            !_mediaSettings.TextTypes.Contains(extension) &&
+                            !_mediaSettings.BinTypes.Contains(extension))
                         {
                             throw _exceptionFactory.DeniedMediaType(fileName, extension);
                         }

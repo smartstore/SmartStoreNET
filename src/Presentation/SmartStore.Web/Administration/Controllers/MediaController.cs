@@ -56,7 +56,6 @@ namespace SmartStore.Admin.Controllers
                     if (typeFilter != null)
                     {
                         var mediaTypeExtensions = _mediaTypeResolver.ParseTypeFilter(typeFilter);
-                        
                         if (!mediaTypeExtensions.Contains(extension))
                         {
                             throw _exceptionFactory.DeniedMediaType(fileName, extension, typeFilter);
@@ -65,12 +64,7 @@ namespace SmartStore.Admin.Controllers
                     else
                     {
                         // Check if extension is allowed by media settings.
-                        if (!_mediaSettings.DocumentTypes.Contains(extension) &&
-                            !_mediaSettings.ImageTypes.Contains(extension) &&
-                            !_mediaSettings.VideoTypes.Contains(extension) &&
-                            !_mediaSettings.AudioTypes.Contains(extension) &&
-                            !_mediaSettings.TextTypes.Contains(extension) &&
-                            !_mediaSettings.BinTypes.Contains(extension))
+                        if (!_mediaTypeResolver.GetExtensionMediaTypeMap().Keys.Contains(extension))
                         {
                             throw _exceptionFactory.DeniedMediaType(fileName, extension);
                         }

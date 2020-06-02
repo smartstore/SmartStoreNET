@@ -65,15 +65,15 @@ namespace SmartStore.Admin.Models.Messages
 		public bool SendManually { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment1FileId")]
-        [UIHint("Media")]
+        [UIHint("Media"), AdditionalMetadata("album", "content")]
         public int? Attachment1FileId { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment2FileId")]
-        [UIHint("Media")]
+        [UIHint("Media"), AdditionalMetadata("album", "content")]
         public int? Attachment2FileId { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment3FileId")]
-        [UIHint("Media")]
+        [UIHint("Media"), AdditionalMetadata("album", "content")]
         public int? Attachment3FileId { get; set; }
 
         // Store mapping.
@@ -117,15 +117,15 @@ namespace SmartStore.Admin.Models.Messages
         public int EmailAccountId { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment1FileId")]
-        [UIHint("Media")]
+        [UIHint("Media"), AdditionalMetadata("album", "content")]
         public int? Attachment1FileId { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment2FileId")]
-        [UIHint("Media")]
+        [UIHint("Media"), AdditionalMetadata("album", "content")]
         public int? Attachment2FileId { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment3FileId")]
-        [UIHint("Media")]
+        [UIHint("Media"), AdditionalMetadata("album", "content")]
         public int? Attachment3FileId { get; set; }
     }
 

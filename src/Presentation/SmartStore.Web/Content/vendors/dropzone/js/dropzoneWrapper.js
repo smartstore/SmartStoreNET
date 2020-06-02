@@ -95,7 +95,7 @@
 			}
 
 			// Init sorting  if preview items aren't displayed in a list.
-			if (!displayPreviewInList) {
+			if (!displayPreviewInList && options.maxFiles > 1) {
 				previewContainer.sortable({
 					items: fuContainer.find('.dz-image-preview'),
 					ghostClass: 'sortable-ghost',

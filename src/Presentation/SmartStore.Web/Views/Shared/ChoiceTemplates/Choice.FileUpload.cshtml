@@ -32,11 +32,9 @@
 </div>
 
 <script type="text/javascript">
-	window['onFileUploaded@(clientId)'] = function (e, el, data) {
-		var result = data.result;
-
+	window['onFileUploaded@(clientId)'] = function (file, result, progress) {		
 		if (result.downloadGuid) {
-			setUploadedFile(result.downloadGuid, data.files[0].name, "@(containerId)");
+			setUploadedFile(result.downloadGuid, file.name, "@(containerId)");
 		}
 
 		if (result.message) {

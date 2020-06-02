@@ -107,7 +107,8 @@ namespace SmartStore.Data.Setup
 
             #endregion tag download
 
-            #region tag watches
+            #region Tag Watches
+
             var productTagWatches = new ProductTag
             {
                 Name = "watches"
@@ -115,12 +116,23 @@ namespace SmartStore.Data.Setup
 
             _ctx.Set<Product>().Where(pt => pt.MetaTitle == "Certina DS Podium Big Size").FirstOrDefault().ProductTags.Add(productTagWatches);
 
-            #endregion tag download
+            #endregion Tag Watches
+
+            #region Tag Furniture
+
+            var productTagFurniture = new ProductTag
+            {
+                Name = "Furniture"
+            };
+
+            _ctx.Set<Product>().Where(x => x.ProductCategories.Any(x => x.Category.ParentCategoryId == 4)).Each(y => y.ProductTags.Add(productTagFurniture));
+
+            #endregion Tag Furniture
 
             var entities = new List<ProductTag>
             {
                productTagGift, productTagBook, productTagCooking, productTagCars, productTagMotorbikes,
-               productTagMP3, productTagDownload
+               productTagMP3, productTagDownload, productTagFurniture
             };
 
             this.Alter(entities);
@@ -641,14 +653,215 @@ namespace SmartStore.Data.Setup
             };
         }
 
-        private List<Product> GetFurnitureProducts(Dictionary<int, SpecificationAttribute> specAttributes)
+        private List<Product> GetFurnitureProducts(Dictionary<string, Category> categories, Dictionary<int, SpecificationAttribute> specAttributes)
         {
             var productTemplateSimple = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "Product");
             var thirdDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 2);
-            var furnitureCategory = _ctx.Set<Category>().First(x => x.MetaTitle == "Furniture");
             var taxCategoryIdElectronics = _ctx.Set<TaxCategory>().First(x => x.Name.Equals(TaxNameElectronics)).Id;
 
-            #region Le Corbusier LC 6 table
+            #region Category Sofas
+
+            #region Le Corbusier LC2 Sofa
+
+            var corbusierSofa = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "Le Corbusier LC2 Sofa, 3-Sitzer (1929)",
+                MetaTitle = "Le Corbusier LC2 Sofa, 3-Sitzer (1929)",
+                ShortDescription = "Sofa 3-Sitzer LC 2, Designer: Le Corbusier, Stahlrohrrahmen (Chrom), Kissen aus Polyurethan Schaum und Dacronwatte, Sitzpolster mit Daunenauflage, Bezug: Leder",
+                FullDescription = "<p>Das 3-Sitzer-Sofa LC2 ist zusammen mit dem gleichnamigen Zweisitzer die vollkommene Ergänzung der bekannten	Corbusier-Sessel. Zusammen ergibt sich eine formvollendete Sitzgruppe für Lobbys, Lofts oder Salons mit hohem Design-Anspruch." +
+                "Auch wenn die Corbusier Sofas das Kürzel des Designers (LC) tragen, sind sie nicht von ihm entworfen worden. Sie lehnen sich lediglich eng an die	von Le Corbusier entworfenen Sitzmöbel LC2 und LC3 an. Der Optik und dem Komfort schadet dieser Umstand jedoch nicht. " +
+                "Das Gestell dieses Sofas besteht aus einem aufwendig gebogenen Stahlrohrahmen in Chrom.Die Lederkissen sind mit    Polyurethan Schaum und Dacronwatte gefüllt.Die Sitzfläche des Sofas wurde für einen optimalen Sitzkomfort zusätzlich mit Daunenfedern  aufgepolstert. " +
+                "</p><p>Abmessungen: B x T x H: 180 x 70 x 67 cm, Sitzhöhe: ca. 45 cm</p>",
+                Sku = "LC2 DS/23-1",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                Price = 1999.00M,
+                HasTierPrices = true,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                IsShipEnabled = true,
+                DeliveryTime = thirdDeliveryTime,
+                TaxCategoryId = taxCategoryIdElectronics
+            };
+
+            AddProductPicture(corbusierSofa, "product/le_corbusier_lc2_sofa_1.jpg");
+
+            corbusierSofa.ProductCategories.Add(new ProductCategory { Category = categories["Sofas"], DisplayOrder = 1 });
+
+            corbusierSofa.TierPrices.Add(new TierPrice
+            {
+                Quantity = 2,
+                Price = 1799.10M
+            });
+            corbusierSofa.TierPrices.Add(new TierPrice
+            {
+                Quantity = 4,
+                Price = 1699.15M
+            });
+
+            corbusierSofa.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
+            corbusierSofa.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 2,
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 14)
+            });
+
+            #endregion Le Corbusier LC2 Sofa
+
+            #region Josef Hoffmann Sofa
+
+            var josefHoffmannSofa = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "Josef Hoffmann Sofa 2-Sitzer Cubus (1910)",
+                MetaTitle = "Josef Hoffmann Sofa 2-Sitzer Cubus (1910)",
+                ShortDescription = "Sofa Kubus, 2-Sitzer, Designer: Josef Hoffmann, Breite 166 cm, Tiefe 72 cm, Höhe 77 cm, Grundgestell: massives Buchenholz, Polsterung: fester Polyurethan Schaum (formbeständig), Bezug: Leder",
+                FullDescription = "<p>Der Zweisitzer aus der Kubus-Serie von Josef Hoffmann ist ein stilvoller Blickfang in Wohn- und Geschäftsräumen. Gemeinsam mit dem Sessel Kubus und dem Kubus Dreisitzer entsteht eine stilvolle Sitzgruppe für Empfangshallen und große Wohnzimmer." +
+                "Das Sofa von Josef Hoffmann ist mit einer formbeständige Polsterung versehen, mit Leder überzogen und zeigt durch eine spezielle Nähtechnik zahlreiche Quadrate, die sich zu einem Gesamtbild Formen. " +
+                "Das Grundgestell besteht aus Buchenholz.Die rein geometrische Form dieses Hoffman Entwurfs war auch Vorreiter für den Kubismus, der Anfang des 20.Jahrhunderts seine Hochphase erreichte. " +
+                "</p><p>Abmessung:  Breite 166 cm, Tiefe 72 cm, Höhe 77 cm, cbm:  1,50</p>",
+                Sku = "JH DS/82-1",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                Price = 3099.00M,
+                HasTierPrices = true,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                IsShipEnabled = true,
+                DeliveryTime = thirdDeliveryTime,
+                TaxCategoryId = taxCategoryIdElectronics
+            };
+
+            AddProductPicture(josefHoffmannSofa, "product/josef_hoffmann_sofa_cubus_1.jpg");
+
+            josefHoffmannSofa.ProductCategories.Add(new ProductCategory { Category = categories["Sofas"], DisplayOrder = 1 });
+
+            josefHoffmannSofa.TierPrices.Add(new TierPrice
+            {
+                Quantity = 2,
+                Price = 2659.05M
+            });
+            josefHoffmannSofa.TierPrices.Add(new TierPrice
+            {
+                Quantity = 4,
+                Price = 2519.10M
+            });
+            josefHoffmannSofa.TierPrices.Add(new TierPrice
+            {
+                Quantity = 6,
+                Price = 2379.15M
+            });
+            josefHoffmannSofa.TierPrices.Add(new TierPrice
+            {
+                Quantity = 10,
+                Price = 2239.20M
+            });
+
+            josefHoffmannSofa.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
+            josefHoffmannSofa.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 2,
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 14)
+            });
+
+            #endregion Josef Hoffmann Sofa
+
+            #region Mies van der Rohe Barcelona Sofa
+
+            var miesBarcelonaSofa = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "Mies van der Rohe Barcelona - Loveseat Sofa (1929)",
+                MetaTitle = "Mies van der Rohe Barcelona - Loveseat Sofa (1929)",
+                ShortDescription = "Sessel Barcelona lang, Designer: Mies van der Rohe, L x T x H: 147 x 75 x 75 cm, verchromtes Gestell aus Spezialfederstahl, Bespannung: Kernlederstreifen, Polster mit Polyurethanschaum-Kern, Bezug: Leder",
+                FullDescription = "<p>Der Loveseat Sofa Barcelona ist eines der bekanntesten Möbelstücke der Bauhaus-Ära. Er wurde von Mies van der Rohe entworfen und 1929 bei der Weltausstellung in Barcelona vorgestellt. Mies van der Rohe widmete ihn dem spanischen Königspaar. Der Barcelona Sofa in der langen Ausführung eignet sich hervorragend als Sitzmöbel für Ausstellungen oder Geschäftsräume. " +
+                "Zusammen mit der schmalen Ausführung und einem Tisch von Mies van der Rohe entsteht außerdem eine stilvolle Sitzecke für Wohnräume. " +
+                "Der Loveseat Sofa Barcelona hat ein Gestell aus besonders hochwertigem Spezialfederstahl.Als Bespannung dienen Kernlederstreifen. " +
+                "Darauf liegt die Polsterung mit Lederbezug.Einzelne Quadrate ergeben hierbei ein symmetrisches, stilvolles Bild.</p>" +
+                "<p>Abmessung:  Länge 147 cm, Tiefe 75 cm, Höhe 75 cm, cbm:  0,96 </p>",
+                Sku = "LR 556",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                Price = 2799.00M,
+                HasTierPrices = true,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                IsShipEnabled = true,
+                DeliveryTime = thirdDeliveryTime,
+                TaxCategoryId = taxCategoryIdElectronics
+            };
+
+            AddProductPicture(miesBarcelonaSofa, "product/mies_van_der_rohe_sofa_barcelona_1.jpg");
+
+            miesBarcelonaSofa.ProductCategories.Add(new ProductCategory { Category = categories["Sofas"], DisplayOrder = 1 });
+
+            miesBarcelonaSofa.TierPrices.Add(new TierPrice
+            {
+                Quantity = 4,
+                Price = 2659.05M
+            });
+            miesBarcelonaSofa.TierPrices.Add(new TierPrice
+            {
+                Quantity = 6,
+                Price = 2519.10M
+            });
+            miesBarcelonaSofa.TierPrices.Add(new TierPrice
+            {
+                Quantity = 10,
+                Price = 2379.15M
+            });
+
+            miesBarcelonaSofa.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
+            miesBarcelonaSofa.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 2,
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 14)
+            });
+
+            #endregion Mies van der Rohe Barcelona
+
+            #endregion Category Sofas
+
+            #region Category Tables
+
+            #region Le Corbusier LC 6 tTble
 
             var corbusierTable = new Product
             {
@@ -678,7 +891,7 @@ namespace SmartStore.Data.Setup
             AddProductPicture(corbusierTable, "product/corbusier_lc6_table_3.jpg", "corbusier-lc6-table-3");
             AddProductPicture(corbusierTable, "product/corbusier_lc6_table_4.jpg", "corbusier-lc6-table-4");
 
-            corbusierTable.ProductCategories.Add(new ProductCategory { Category = furnitureCategory, DisplayOrder = 1 });
+            corbusierTable.ProductCategories.Add(new ProductCategory { Category = categories["Tables"], DisplayOrder = 1 });
 
             corbusierTable.TierPrices.Add(new TierPrice
             {
@@ -706,7 +919,140 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 14)
             });
 
-            #endregion Le Corbusier LC 6 table
+            #endregion Le Corbusier LC 6 Table
+
+            #region Isamu Noguchi Coffee Table
+
+            var noguchiTable = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "Isamu Noguchi Couchtisch, Coffee Table (1945)",
+                MetaTitle = "Isamu Noguchi Couchtisch, Coffee Table (1945)",
+                ShortDescription = "Couchtisch, Designer: Isamu Noguchi, B x H x T: 128 x 40 x 92,5 cm, Untergestell: Holz, Tischplatte: Kristallglas, 15 oder 19 mm",
+                FullDescription = "<p>Der Kaffeetisch von Isamu Noguchi hat einst sogar den Präsidenten des New Yorker Museums für moderne Kunst beeindruckt. " +
+                "Für ihn ist er nämlich ursprünglich entworfen worden. Das geschwungene Untergestell aus Esche ist ein eleganter Blickfang. " +
+                "Es wirkt unaufdringlich und kommt durch die durchsichtige, dreiseitige Glasplatte perfekt zur Geltung. " +
+                "Ein Bauhaus - Möbel, das heute in vielen Räumen mit gehobener Ausstattung als Beistelltisch genutzt wird. " +
+                "Es passt perfekt in die Lounge, ins Wohnzimmer und in Empfangsräume.</p>" +
+                "<p>Abmessungen:  Breite 128 cm, Höhe 40 cm, Tiefe 92,5 cm </p>",
+                Sku = "IN 200",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                Price = 499.00M,
+                HasTierPrices = true,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                IsShipEnabled = true,
+                DeliveryTime = thirdDeliveryTime,
+                TaxCategoryId = taxCategoryIdElectronics
+            };
+
+            AddProductPicture(noguchiTable, "product/isamu_noguchi_coffeetable_1.jpg");
+            AddProductPicture(noguchiTable, "product/isamu_noguchi_coffeetable_2.jpg");
+
+            noguchiTable.ProductCategories.Add(new ProductCategory { Category = categories["Tables"], DisplayOrder = 1 });
+
+            noguchiTable.TierPrices.Add(new TierPrice
+            {
+                Quantity = 2,
+                Price = 449.10M
+            });
+            noguchiTable.TierPrices.Add(new TierPrice
+            {
+                Quantity = 4,
+                Price = 424.15M
+            });
+
+            noguchiTable.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
+            noguchiTable.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 2,
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 14)
+            });
+
+            #endregion Isamu Noguchi Coffee Table
+
+            #region Mies van der Rohe Barcelona Table
+
+            var miesBarcelonaTable = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                Name = "Ludwig Mies van der Rohe Tisch Barcelona (1930)",
+                MetaTitle = "Ludwig Mies van der Rohe Tisch Barcelona (1930)",
+                ShortDescription = "Tisch Barcelona, Designer: Mies van der Rohe, Breite 90 cm, Höhe 46 cm, Tiefe 90 cm, Untergestell: verchromter Flachstahl, Tischplatte: Glas (12 mm)",
+                FullDescription = "<p>Dieser Tisch von Mies van der Rohe passt zur berühmten Barcelona-Serie aus Sessel und Hocker, die für den spanischen König entworfen und  1929 bei der Weltausstellung präsentiert wurde. " +
+                "Der Couchtisch wurde zwar erst einige Zeit später von Mies van der Rohe für das Haus „Tugendhat“ angefertigt, bildet aber mit den Möbeln der Barcelona-Serie eine attraktive Sitzecke für Büros und Wohnräume. " +
+                "Der Tisch von Mies van der Rohe besteht aus einem Gestell aus Flachstahl und einer 12 mm dicken Glasplatte.Unter der durchsichtigen Platte erscheint durch die Konstruktion ein verchromtes „X“.</p>" +
+                "<p>Abmessung:  Breite 90 cm, Höhe 46 cm, Tiefe 90 cm" +
+                "Stärke Glasplatte: 12 mm </p>",
+                Sku = "LM T/98",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                Price = 629.00M,
+                HasTierPrices = true,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                IsShipEnabled = true,
+                DeliveryTime = thirdDeliveryTime,
+                TaxCategoryId = taxCategoryIdElectronics
+            };
+
+            AddProductPicture(miesBarcelonaTable, "product/mies_van_der_rohe_tisch_barcelona_1.jpg");
+
+            miesBarcelonaTable.ProductCategories.Add(new ProductCategory { Category = categories["Tables"], DisplayOrder = 1 });
+
+            miesBarcelonaTable.TierPrices.Add(new TierPrice
+            {
+                Quantity = 2,
+                Price = 597.55M
+            });
+            miesBarcelonaTable.TierPrices.Add(new TierPrice
+            {
+                Quantity = 4,
+                Price = 566.10M
+            });
+            miesBarcelonaTable.TierPrices.Add(new TierPrice
+            {
+                Quantity = 6,
+                Price = 534.65M
+            });
+
+            miesBarcelonaTable.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 1)
+            });
+            miesBarcelonaTable.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 2,
+                SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 14)
+            });
+
+            #endregion Mies van der Rohe Barcelona Table
+
+            #endregion Category Tables
+
+            #region Category Chairs
 
             #region Ball Chair
 
@@ -735,7 +1081,7 @@ namespace SmartStore.Data.Setup
             AddProductPicture(ballChair, "product/ball_chair_white.jpg", "ball-chair-white");
             AddProductPicture(ballChair, "product/ball_chair_black.jpg", "ball-chair-black");
 
-            ballChair.ProductCategories.Add(new ProductCategory { Category = furnitureCategory, DisplayOrder = 1 });
+            ballChair.ProductCategories.Add(new ProductCategory { Category = categories["Chairs"], DisplayOrder = 1 });
 
             ballChair.TierPrices.Add(new TierPrice
             {
@@ -765,7 +1111,7 @@ namespace SmartStore.Data.Setup
 
             #endregion Ball Chair
 
-            #region Lounge chair
+            #region Charles Eames Lounge Chair
 
             var loungeChair = new Product
             {
@@ -795,7 +1141,7 @@ namespace SmartStore.Data.Setup
             AddProductPicture(loungeChair, "product/charles_eames_lounge_chair_white.jpg", "charles-eames-lounge-chair-white");
             AddProductPicture(loungeChair, "product/charles_eames_lounge_chair_black.jpg", "charles-eames-lounge-chair-black");
 
-            loungeChair.ProductCategories.Add(new ProductCategory { Category = furnitureCategory, DisplayOrder = 1 });
+            loungeChair.ProductCategories.Add(new ProductCategory { Category = categories["Chairs"], DisplayOrder = 1 });
 
             loungeChair.TierPrices.Add(new TierPrice
             {
@@ -835,9 +1181,9 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 4)
             });
 
-            #endregion Lounge chair
+            #endregion Charles Eames Lounge Chair
 
-            #region Cube chair
+            #region Josef Hoffmann Cube Chair
 
             var cubeChair = new Product
             {
@@ -865,7 +1211,7 @@ namespace SmartStore.Data.Setup
 
             AddProductPicture(cubeChair, "product/hoffmann_cube_chair_black.jpg", "hoffmann-cube-chair-black");
 
-            cubeChair.ProductCategories.Add(new ProductCategory { Category = furnitureCategory, DisplayOrder = 1 });
+            cubeChair.ProductCategories.Add(new ProductCategory { Category = categories["Chairs"], DisplayOrder = 1 });
 
             cubeChair.TierPrices.Add(new TierPrice
             {
@@ -886,11 +1232,14 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
             });
 
-            #endregion Cube chair
+            #endregion Josef Hoffmann Cube Chair
+
+            #endregion Category Chairs
 
             return new List<Product>
             {
-                corbusierTable, ballChair, loungeChair, cubeChair
+               miesBarcelonaTable, noguchiTable, corbusierTable, ballChair, loungeChair, cubeChair,
+               miesBarcelonaSofa, corbusierSofa, josefHoffmannSofa
             };
         }
 
@@ -3269,7 +3618,7 @@ namespace SmartStore.Data.Setup
             };
 
             entities.AddRange(GetFashionProducts(categories, manufacturers, specAttributes));
-            entities.AddRange(GetFurnitureProducts(specAttributes));
+            entities.AddRange(GetFurnitureProducts(categories, specAttributes));
 
             this.Alter(entities);
             return entities;

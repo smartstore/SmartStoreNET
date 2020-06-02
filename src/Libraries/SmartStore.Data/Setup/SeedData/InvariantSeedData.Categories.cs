@@ -194,7 +194,7 @@ namespace SmartStore.Data.Setup
                 ShowOnHomePage = true
             };
 
-            var categorySunglasses = new Category
+            var categoryFashionSunglasses = new Category
             {
                 Name = "Sunglasses",
                 Alias = "Sunglasses",
@@ -307,6 +307,42 @@ namespace SmartStore.Data.Setup
                 MetaTitle = "Games"
             };
 
+            var categoryFurnitureSofas = new Category
+            {
+                Name = "Sofas",
+                Alias = "Sofas",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                ParentCategoryId = categories["Furniture"].Id,
+                MediaFile = CreatePicture("category/sofas.jpg"),
+                Published = true,
+                DisplayOrder = 3,
+                MetaTitle = "Sofas"
+            };
+
+            var categoryFurnitureChairs = new Category
+            {
+                Name = "Chairs",
+                Alias = "Chairs",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                ParentCategoryId = categories["Furniture"].Id,
+                MediaFile = CreatePicture("category/furniture.jpg"),
+                Published = true,
+                DisplayOrder = 3,
+                MetaTitle = "Chairs"
+            };
+
+            var categoryFurnitureTables = new Category
+            {
+                Name = "Tables",
+                Alias = "Tables",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                ParentCategoryId = categories["Furniture"].Id,
+                MediaFile = CreatePicture("category/tables.jpg"),
+                Published = true,
+                DisplayOrder = 3,
+                MetaTitle = "Tables"
+            };
+
             //var categoryFashionLeatherJackets = new Category
             //{
             //    Name = "Leather jackets",
@@ -361,9 +397,9 @@ namespace SmartStore.Data.Setup
 
             var entities = new List<Category>
             {
-                categorySunglasses, categorySportsSoccer, categorySportsBasketball, categorySportsGolf, categoryBooksSpiegel, 
+                categorySportsSoccer, categorySportsBasketball, categorySportsGolf, categoryBooksSpiegel, 
                 categoryBooksCookAndEnjoy, categoryGamingAccessories, categoryGamingGames, categoryFashionJackets, categoryFashionShoes,
-                categoryFashionTrousers
+                categoryFashionTrousers, categoryFashionSunglasses, categoryFurnitureChairs, categoryFurnitureSofas, categoryFurnitureTables
             };
 
             this.Alter(entities);

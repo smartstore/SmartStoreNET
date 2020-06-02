@@ -507,6 +507,12 @@ namespace SmartStore.Services.Media
                 FolderId = pathData.Node.Value.Id
             };
 
+            // Untrackable folders can never contain transient files.
+            if (!pathData.Folder.CanDetectTracks)
+            {
+                file.IsTransient = false;
+            }
+
             var name = pathData.FileName.ToValidFileName();
             if (name != pathData.FileName)
             {

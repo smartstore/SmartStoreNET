@@ -728,6 +728,12 @@
             builder.AddOrUpdate("Admin.Configuration.Settings.Media.Type.Document", "Document", "Dokument");
             builder.AddOrUpdate("Admin.Configuration.Settings.Media.Type.Text", "Text", "Text");
             builder.AddOrUpdate("Admin.Configuration.Settings.Media.Type.Bin", "Other", "Sonstige");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowDiscountSign",
+                "Show discount sign",
+                "Specifies whether a discount sign should be displayed on product pictures when discounts were applied",
+                "Rabattzeichen anzeigen",
+                "Legt fest, ob ein Rabattzeichen auf dem Produktbild angezeigt werden soll, wenn Rabatte angewendet wurden.");
         }
     }
 }

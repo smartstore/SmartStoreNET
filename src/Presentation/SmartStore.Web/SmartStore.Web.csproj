@@ -1841,6 +1841,13 @@
     <Content Include="Views\Blog\Partials\BlogSummary.cshtml" />
     <Content Include="Views\Common\Partials\CookieManager.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Int64.cshtml" />
+    <Content Include="Views\Shared\MediaTemplates\Image.cshtml" />
+    <Content Include="Views\Shared\MediaTemplates\Video.cshtml" />
+    <Content Include="Views\Shared\MediaTemplates\Audio.cshtml" />
+    <Content Include="Views\Shared\MediaTemplates\Document.cshtml" />
+    <Content Include="Views\Shared\MediaTemplates\Text.cshtml" />
+    <Content Include="Views\Shared\MediaTemplates\Bin.cshtml" />
+    <Content Include="Views\Shared\MediaTemplates\_Thumbnail.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

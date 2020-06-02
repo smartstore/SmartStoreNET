@@ -16,6 +16,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Utilities;
 using SmartStore.Utilities.ObjectPools;
 using SmartStore.Web.Framework.Localization;
@@ -922,6 +923,64 @@ namespace SmartStore.Web.Framework
 
 			return MvcHtmlString.Create(result);
 		}
-	}
+
+        #region Media
+
+        public static MvcHtmlString MediaImage(
+            this HtmlHelper helper,
+            MediaFileInfo file,
+            int size,
+            string extraCssClasses = null)
+        {
+            return MediaInternal(helper, file, false, size, extraCssClasses);
+        }
+
+        public static MvcHtmlString MediaViewer(
+            this HtmlHelper helper,
+            MediaFileInfo file,
+            int size = 0,
+            string extraCssClasses = null)
+        {
+            return MediaInternal(helper, file, true, size, extraCssClasses);
+        }
+
+        private static MvcHtmlString MediaInternal(
+            this HtmlHelper helper,
+            MediaFileInfo file,
+            bool renderViewer,
+            int size,
+            string extraCssClasses)
+        {
+            if (file?.File == null)
+            {
+                return MvcHtmlString.Empty;
+            }
+
+            // Validate size parameter.
+            if (file.MediaType != "image")
+            {
+                if (renderViewer)
+                {
+                    // Force 0 to not get the URL of the thumbnail.
+                    size = 0;
+                }
+                else
+                {
+                    Guard.IsPositive(size, nameof(size), $"The size must be greater than 0 to get a thumbnail for type '{file.MediaType}'.");
+                }
+            }
+
+            var urlHelper = new UrlHelper(helper.ViewContext.RequestContext);
+            var model = new MediaTemplateModel(file, renderViewer)
+            {
+                Url = urlHelper.Media(file, size),
+                ExtraCssClasses = extraCssClasses
+            };
+
+            return helper.Partial("MediaTemplates/" + file.MediaType, model);
+        }
+
+        #endregion
+    }
 }
 

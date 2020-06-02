@@ -44,6 +44,41 @@ SmartStore.media = (function () {
 		getIconHint: function (file) {
             return iconHints[file.ext] || iconHints[file.type] || (file.type ? iconHints[file.type.split('/')[0]] : null) || iconHints['misc'];
         },
+        initFiles: function (selector) {
+            var self = this;
+
+            // Init file icons.
+            $(selector || document).find('i.file-icon').each(function () {
+                try {
+                    var icon = $(this);
+                    var file = icon.parent().data('file');
+                    var hint = self.getIconHint(file);
+                    icon.addClass(hint.name).css('color', hint.color);
+                }
+                catch (err) {
+                    console.log(err);
+                }
+            });
+        },
+        lazyLoadThumbnails: function (selector) {
+            $(selector || document).find('img.file-img').each(function () {
+                try {
+                    var img = $(this);
+                    if (img.attr('src') === undefined) {
+                        var src = img.data('src');
+                        if (src) {
+                            img.one('load', function () {
+                                img.parent().addClass('show').prev().removeClass('show');
+                            });
+                            img.prop('src', src);
+                        }
+                    }
+                }
+                catch (err) {
+                    console.log(err);
+                }
+            });
+        },
         openFileManager: function (opts) {
             /*
                 opts = {

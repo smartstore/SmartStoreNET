@@ -1,0 +1,11 @@
+﻿@using SmartStore.Web.Framework.Modelling;
+@model MediaTemplateModel
+<figure class="file-figure" data-file='{ "type": "@Model.File.MediaType" }'>
+    <i class="file-icon fa-fw show"></i>
+    <picture class="file-thumb" data-type="@Model.File.MediaType">
+        <img class="@("file-img".Grow(Model.ExtraCssClasses, " "))" 
+                alt="@Model.File.File.Alt" 
+                title="@Model.File.File.Title"
+                data-src="@Model.Url" />
+    </picture>
+</figure>

@@ -94,7 +94,8 @@ namespace SmartStore.Web.Framework.Filters
 
                 response.Clear();
                 response.StatusCode = 500;
-                response.StatusDescription = exception.Message;
+                // Truncate message to avoid ArgumentOutOfRangeException.
+                response.StatusDescription = exception.Message?.Truncate(512);
                 response.TrySkipIisCustomErrors = true;
             }
         }

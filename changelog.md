@@ -105,6 +105,7 @@
 * #1835 Removing gift card issue.
 * #1875 A delivery time cannot be deleted if it is assigned to a variant combination of a deleted product.
 * BeezUp: fixes ArgumentNullException, parameter name "source".
+* #1743 Avoid redirecting to the account activation page when trying to log in for the first time.
 
 
 ## SmartStore.NET 3.2.2

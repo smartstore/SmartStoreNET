@@ -1,0 +1,6 @@
+﻿@using SmartStore.Web.Framework.Modelling;
+@model MediaTemplateModel
+<img src="@Model.Url"
+     class="@("file-img".Grow(Model.ExtraCssClasses, " "))" 
+     alt="@Model.File.File.Alt" 
+     title="@Model.File.File.Title" />

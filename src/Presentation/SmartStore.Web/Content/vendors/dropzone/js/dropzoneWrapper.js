@@ -452,7 +452,7 @@
 								if (file) {
 									// Set properties for newly added file preview.
 									//var elPreview = file.previewElement ? $(file.previewElement) : $(fuContainer.find(".file-preview-template").html());
-									var elPreview = file.previewElement ? $(file.previewElement) : $(previewTemplate.html());
+                                    var elPreview = file.previewElement ? $(file.previewElement) : $(previewTemplate.html());
 
 									elPreview
 										.attr("data-display-order", 1000)
@@ -465,7 +465,7 @@
 
                                     elPreview
                                         .find('img')
-                                        .attr('src', value.ThumbUrl || file.dataUrl || file.media.url);
+                                        .attr('src', file.media.thumbUrl);
 
 									previewContainer.append(elPreview);
 								}

@@ -2283,8 +2283,7 @@ namespace SmartStore.Admin.Controllers
 					{
 						MediaFileId = id,
 						ProductMediaFileId = productPicture.Id,
-						file?.Name,
-                        ThumbUrl = _mediaService.GetUrl(file, _mediaSettings.ProductThumbPictureSize)
+						file?.Name
                     };
 
                     response.Add(respObj);

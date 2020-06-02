@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
@@ -92,6 +91,9 @@ namespace SmartStore.Services.Media
             get { return _url ?? (_url = _urlGenerator.GenerateUrl(this, null, string.Empty)); }
             set { _url = value; }
         }
+
+        [JsonProperty("thumbUrl")]
+        public string ThumbUrl { get; set; }
 
         [JsonIgnore]
         public bool Exists => File?.Id > 0;

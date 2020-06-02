@@ -817,13 +817,16 @@ namespace SmartStore.Services.Media
 
         public MediaFileInfo ConvertMediaFile(MediaFile file)
         {
-            var folder = _folderService.FindNode(file)?.Value;
-            return new MediaFileInfo(file, _storageProvider, _urlGenerator, folder?.Path);
+            return ConvertMediaFile(file, _folderService.FindNode(file)?.Value);
         }
 
         protected MediaFileInfo ConvertMediaFile(MediaFile file, MediaFolderNode folder)
         {
-            return new MediaFileInfo(file, _storageProvider, _urlGenerator, folder?.Path);
+            var mediaFile = new MediaFileInfo(file, _storageProvider, _urlGenerator, folder?.Path);
+
+            mediaFile.ThumbUrl = _urlGenerator.GenerateUrl(mediaFile, new ProcessImageQuery { MaxSize = _mediaSettings.ProductThumbPictureSize });
+
+            return mediaFile;
         }
 
         private void EnsureMetadataResolved(MediaFile file, bool saveOnResolve)

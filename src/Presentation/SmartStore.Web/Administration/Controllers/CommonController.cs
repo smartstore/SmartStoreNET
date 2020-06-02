@@ -186,7 +186,7 @@ namespace SmartStore.Admin.Controllers
                         client.Timeout = TimeSpan.FromMilliseconds(3000);
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        client.DefaultRequestHeaders.UserAgent.ParseAdd("SmartStore.NET {0}".FormatInvariant(curVersion));
+                        client.DefaultRequestHeaders.UserAgent.ParseAdd("Smartstore {0}".FormatInvariant(curVersion));
                         client.DefaultRequestHeaders.Add("Authorization-Key", _services.StoreContext.CurrentStore.Url.TrimEnd('/'));
                         client.DefaultRequestHeaders.Add("X-Application-ID", HostingEnvironment.ApplicationID);
 

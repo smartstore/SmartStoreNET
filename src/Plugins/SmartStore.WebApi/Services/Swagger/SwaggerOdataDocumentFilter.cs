@@ -14,7 +14,7 @@ namespace SmartStore.WebApi.Services.Swagger
 	{
 		public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
 		{
-			swaggerDoc.info.title = "SmartStore.NET Web-API";
+			swaggerDoc.info.title = "Smartstore Web-API";
 
 			var thisAssemblyTypes = Assembly.GetExecutingAssembly().GetTypes().ToList();
 

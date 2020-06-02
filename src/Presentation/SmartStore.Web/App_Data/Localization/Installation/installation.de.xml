@@ -54,7 +54,7 @@
     <Value>Installieren</Value>
   </LocaleResource>
   <LocaleResource Name="Installing">
-    <Value>SmartStore.NET wird installiert...</Value>
+    <Value>Smartstore wird installiert...</Value>
   </LocaleResource>
   <LocaleResource Name="PasswordsDoNotMatch">
     <Value>Passwort und Bestätigung stimmen nicht überein</Value>
@@ -99,7 +99,7 @@
     <Value>Installation</Value>
   </LocaleResource>
   <LocaleResource Name="Tooltip1">
-    <Value>SmartStore.NET ist eine leistungsfähige E-Commerce Lösung für kleine- und mittelständische Unternehmen. Dieser Assistent führt Sie durch die Konfiguration von SmartStore.NET</Value>
+    <Value>Smartstore ist eine leistungsfähige E-Commerce Lösung für kleine- und mittelständische Unternehmen. Dieser Assistent führt Sie durch die Konfiguration von Smartstore</Value>
   </LocaleResource>
   <LocaleResource Name="Tooltip2">
  <Value>Um den Assistenten abzuschliessen, müssen Sie u.U. Verbindungsdaten zu Ihrem Datenbankserver angeben. Bitte kontaktieren Sie hierfür gegebenenfalls Ihren ISP. Falls Sie auf einem lokalen Computer installieren, benötigen Sie eventuell Informationen von Ihrem Systemadministrator.</Value> 
@@ -112,7 +112,7 @@
     <Value>Primäre Sprache</Value>
   </LocaleResource>
   <LocaleResource Name="ConfirmInstall">
-    <Value>Möchten Sie SmartStore.NET jetzt installieren?</Value>
+    <Value>Möchten Sie Smartstore jetzt installieren?</Value>
   </LocaleResource>
   <LocaleResource Name="AdminEmailValue">
     <Value>admin@meinstore.de</Value>

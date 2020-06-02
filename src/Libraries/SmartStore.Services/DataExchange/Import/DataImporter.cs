@@ -289,7 +289,7 @@ namespace SmartStore.Services.DataExchange.Import
                     var sb = new StringBuilder();
                     sb.AppendLine();
                     sb.AppendLine(new string('-', 40));
-                    sb.AppendLine("SmartStore.NET: v." + SmartStoreVersion.CurrentFullVersion);
+                    sb.AppendLine("Smartstore: v." + SmartStoreVersion.CurrentFullVersion);
                     sb.AppendLine("Import profile: {0} {1}".FormatInvariant(profile.Name, profile.Id == 0 ? " (volatile)" : $" (Id {profile.Id})"));
                     foreach (var fileGroup in groupedFiles)
                     {

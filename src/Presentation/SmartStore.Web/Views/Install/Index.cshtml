@@ -47,7 +47,7 @@
 			<header id="header">
 				<nav id="navbar" class="navbar navbar-dark navbar-expand-sm content p-0">
 					<a class="navbar-brand mx-0 mr-3" href="https://www.smartstore.com">
-						<img class="navbar-img" src="~/Administration/Content/images/smartstore.svg" alt="SmartStore.NET" />
+						<img class="navbar-img" src="~/Administration/Content/images/smartstore.svg" alt="Smartstore" />
 					</a>
 					<div class="navbar-text h5 p-0 m-0 pl-1" style="height: 20px; vertical-align: bottom">
 						@ILS.GetResource("Title")
@@ -407,7 +407,8 @@
                         console.log(data);
 
                         if (!data.Completed) {
-                        	if (data.ProgressMessage !== undefined && _.isString(data.ProgressMessage) && data.ProgressMessage) {
+							if (data.ProgressMessage !== undefined && _.isString(data.ProgressMessage) && data.ProgressMessage) {
+								console.log(data.ProgressMessage);
                         		$("#install-progress").html(data.ProgressMessage);
                         	}
                         }

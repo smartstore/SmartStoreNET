@@ -1625,7 +1625,7 @@ namespace SmartStore.Services.DataExchange.Export
 				var logHead = new StringBuilder();
 				logHead.AppendLine();
 				logHead.AppendLine(new string('-', 40));
-				logHead.AppendLine("SmartStore.NET: v." + SmartStoreVersion.CurrentFullVersion);
+				logHead.AppendLine("Smartstore: v." + SmartStoreVersion.CurrentFullVersion);
 				logHead.Append("Export profile: " + profile.Name);
 				logHead.AppendLine(profile.Id == 0 ? " (volatile)" : $" (Id {profile.Id})");
 

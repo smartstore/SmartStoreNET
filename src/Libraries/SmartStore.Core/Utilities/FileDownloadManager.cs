@@ -48,7 +48,7 @@ namespace SmartStore.Utilities
 			else
 			{
 				req = WebRequest.CreateHttp(url);
-				req.UserAgent = "SmartStore.NET";
+				req.UserAgent = "Smartstore";
 			}
 
 			if (timeout.HasValue)

@@ -544,7 +544,7 @@ namespace SmartStore.AmazonPay.Services
 				.WithClientId(settings.ClientId)
 				.WithSecretKey(settings.SecretKey)
 				.WithSandbox(settings.UseSandbox)
-				.WithApplicationName("SmartStore.Net " + AmazonPayPlugin.SystemName)
+				.WithApplicationName("Smartstore " + AmazonPayPlugin.SystemName)
 				.WithApplicationVersion(appVersion)
 				.WithRegion(region);
 

@@ -1,4 +1,4 @@
-﻿FriendlyName: SmartStore.NET Developer Tools (MiniProfiler and other goodies)
+﻿FriendlyName: Smartstore Developer Tools (MiniProfiler and other goodies)
 SystemName: SmartStore.DevTools
 Group: Developer
 Version: 3.2.2

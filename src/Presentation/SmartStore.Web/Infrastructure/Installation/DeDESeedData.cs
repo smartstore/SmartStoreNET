@@ -4078,7 +4078,7 @@ namespace SmartStore.Web.Infrastructure.Installation
             {
                 x.Title = "Kundendienst - Unser Service";
                 x.Body = "<p>Bei uns wird Service GROSS geschrieben! Auch nach Ihrem Einkauf bei uns können Sie mit uns Rechnen!<br></p>";
-                x.Tags = "Shopsystem, Smartstore.NET, asp.net, sample tag, Service";
+                x.Tags = "Shopsystem, Smartstore, asp.net, sample tag, Service";
 				x.Language = base.DbContext.Set<Language>().FirstOrDefault();
             });
             
@@ -4091,19 +4091,22 @@ namespace SmartStore.Web.Infrastructure.Installation
             base.Alter(entities);
 
             entities.WithKey(x => x.MetaTitle)
-            .Alter("Smartstore.NET new release!", x =>
+            .Alter("Smartstore new release!", x =>
             {
-                x.Title = "Smartstore.NET - das clevere Shopsystem!";
-                x.Short = "Smartstore.NET ist die neue dynamische E-Commerce Lösung von Smartstore. Smartstore.NET bietet alle Funktionen und Möglichkeiten, um schnell und einfach einen leistungsfähigen und funktional kompletten Online-Shop zu erstellen.";
-                x.Full = "<p>Mit Smartstore.NET haben Sie alles im Griff. Verwalten Sie Ihren Lagerbestand, Ihre Aufträge und alle kundenspezifischen Funktionen, wie kundenindividuelle Rabatte, Gutscheine oder Zugriffsrechte für spezielle Kundengruppen.  </p>  <p>  Durch sprechende URL's und eine durchdachte HTML-Struktur ist Smartstore.NET perfekt für Suchmaschinen optimiert.  </p>  <p>  Smartstore.NET erkennt automatisch, ob Ihre Shopbesucher mit einem mobilen Endgerät auf Ihren Shop zugreifen und zeigt den Shop in einer Ansicht, die für geringe Auflösungen optimiert ist.  </p>  <p>  Steigern sie Ihren Umsatz und animieren Sie mehr Kunden zum Kauf mit Produkt-Rezensionen und -Bewertungen.  </p>  <p>  Smartstore.NET wird bereits mit Sprachpaketen für Deutsch und Englisch ausgeliefert und unterstützt die Verwaltung unendlich vieler weiterer Sprachen.  </p>  <p>  Starten Sie sofort durch!<br>  Importieren Sie Ihren Smartstore.biz Shop mit nur einem Klick in Smartstore.NET.</p>";
+                x.Title = "Smartstore - das clevere Shopsystem!";
+                x.Short = "Smartstore ist die neue dynamische E-Commerce Lösung der SmartStore AG. Smartstore bietet alle Funktionen und Möglichkeiten, um schnell und einfach einen leistungsfähigen und funktional kompletten Online-Shop zu erstellen.";
+                x.Full = "<p>Mit Smartstore haben Sie alles im Griff. Verwalten Sie Ihren Lagerbestand, Ihre Aufträge und alle kundenspezifischen Funktionen, wie kundenindividuelle Rabatte, Gutscheine oder Zugriffsrechte für spezielle Kundengruppen.</p>" +
+                "<p>Durch sprechende URL's und eine durchdachte HTML-Struktur ist Smartstore perfekt für Suchmaschinen optimiert.</p><p>Smartstore erkennt automatisch, ob Ihre Shopbesucher mit einem mobilen Endgerät auf Ihren Shop zugreifen und zeigt den Shop in einer Ansicht, die für geringe Auflösungen optimiert ist.</p>" +
+                "<p>Steigern sie Ihren Umsatz und animieren Sie mehr Kunden zum Kauf mit Produkt-Rezensionen und -Bewertungen.</p><p>Smartstore wird bereits mit Sprachpaketen für Deutsch und Englisch ausgeliefert und unterstützt die Verwaltung unendlich vieler weiterer Sprachen.</p><p>Starten Sie sofort durch!<br>Importieren Sie Ihren Smartstore.biz Shop mit nur einem Klick nach Smartstore.</p>";
                 x.Language = defaultLanguage;
             })
 
-            .Alter("Smartstore.NET 3.2", x =>
+            .Alter("Smartstore 3.2", x =>
             {
-                x.Title = "Smartstore.NET 3.2 jetzt mit dem neuen CMS Page Builder";
+                x.Title = "Smartstore 3.2 jetzt mit dem neuen CMS Page Builder";
                 x.Short = "Erstellen Sie faszinierende Inhalte mit dem neuen Page Builder.";
-                x.Full = "<p>Mit dem neuen Smartstore.NET Page Builder gestalten Sie faszinierende Inhalte aus Produkten, Warengruppen, Bildern, Videos und Texten. Designelemente wie Animationen, Übergänge, Verläufe, Hover-Effekte, Overlays und die Bedienung über den WYSIWYG Editor lassen in Bezug auf Design und Flexibilität keine Wünsche offen.<br/>Mehr Informationen über Smartstore 3.2 und Page Builder finden Sie unter <a href=\"http://www.smartstore.com\">www.smartstore.com</a></p>";
+                x.Full = "<p>Mit dem neuen Smartstore Page Builder gestalten Sie faszinierende Inhalte aus Produkten, Warengruppen, Bildern, Videos und Texten. Designelemente wie Animationen, Übergänge, Verläufe, Hover-Effekte, Overlays und die Bedienung über den WYSIWYG Editor lassen in Bezug auf Design und Flexibilität keine Wünsche offen.<br/>" +
+                "Mehr Informationen über Smartstore 3.2 und Smartstore Page Builder finden Sie unter <a href=\"http://www.smartstore.com\">www.smartstore.com</a></p>";
                 x.Language = defaultLanguage;
             });
         }

@@ -105,7 +105,7 @@ namespace SmartStore.Core.Plugins
             var isFullTrust = WebHelper.GetTrustLevel() == AspNetHostingPermissionLevel.Unrestricted;
             if (!isFullTrust)
             {
-                throw new ApplicationException("SmartStore.NET requires Full Trust mode. Please enable Full Trust for your web site or contact your hosting provider.");
+                throw new ApplicationException("Smartstore requires Full Trust mode. Please enable Full Trust for your web site or contact your hosting provider.");
             }
 
             using (var updater = new AppUpdater())

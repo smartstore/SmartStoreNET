@@ -51,7 +51,7 @@
     <Value>Install</Value>
   </LocaleResource>
   <LocaleResource Name="Installing">
-    <Value>Installing SmartStore.NET...</Value>
+    <Value>Installing Smartstore...</Value>
   </LocaleResource>
   <LocaleResource Name="PasswordsDoNotMatch">
     <Value>The passwords do not match</Value>
@@ -96,7 +96,7 @@
     <Value>Installation</Value>
   </LocaleResource>
   <LocaleResource Name="Tooltip1">
-    <Value>SmartStore.NET is the leading ASP.NET online shop e-commerce solution. This wizard will guide you through the process of configuring SmartStore.NET</Value>
+    <Value>Smartstore is the leading ASP.NET online shop e-commerce solution. This wizard will guide you through the process of configuring Smartstore</Value>
   </LocaleResource>
   <LocaleResource Name="Tooltip2">
     <Value>To complete this wizard, you must know some information regarding your database server ("connection string"). Please contact your ISP if necessary. If you're installing on a local machine or server, you might need information from your System Admin.</Value>
@@ -112,7 +112,7 @@
     <Value>Primary language is required</Value>
   </LocaleResource>
   <LocaleResource Name="ConfirmInstall">
-    <Value>Do you want to install SmartStore.NET now?</Value>
+    <Value>Do you want to install Smartstore now?</Value>
   </LocaleResource>
   <LocaleResource Name="AdminEmailValue">
     <Value>admin@mystore.com</Value>

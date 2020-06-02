@@ -152,10 +152,10 @@ namespace SmartStore.Services.Tests.Search
 		{
 			var products = new List<Product>
 			{
-				new SearchProduct { Name = "SmartStore.NET" },
+				new SearchProduct { Name = "Smartstore" },
 				new SearchProduct { Name = "Apple iPhone Smartphone 6" },
 				new SearchProduct { Name = "Energistically recaptiualize superior e-markets without next-generation platforms" },
-				new SearchProduct { Name = "Rapidiously conceptualize future-proof imperatives", ShortDescription = "Shopping System powered by SmartStore" }
+				new SearchProduct { Name = "Rapidiously conceptualize future-proof imperatives", ShortDescription = "Shopping System powered by Smartstore" }
 			};
 
 			var result = Search(new CatalogSearchQuery(new string[] { "name", "shortdescription" }, "cook"), products);
@@ -169,10 +169,10 @@ namespace SmartStore.Services.Tests.Search
 		{
 			var products = new List<Product>
 			{
-				new SearchProduct(1) { Name = "SmartStore.NET" },
+				new SearchProduct(1) { Name = "Smartstore" },
 				new SearchProduct(2) { Name = "Apple iPhone Smartphone 6" },
 				new SearchProduct(3) { Name = "Energistically recaptiualize superior e-markets without next-generation platforms" },
-				new SearchProduct(4) { Name = "Rapidiously conceptualize future-proof imperatives", ShortDescription = "Shopping System powered by SmartStore" }
+				new SearchProduct(4) { Name = "Rapidiously conceptualize future-proof imperatives", ShortDescription = "Shopping System powered by Smartstore" }
 			};
 
 			var result = Search(new CatalogSearchQuery(new string[] { "name", "shortdescription" }, "Smart", SearchMode.Contains), products);

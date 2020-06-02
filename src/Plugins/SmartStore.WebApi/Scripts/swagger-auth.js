@@ -15,7 +15,7 @@
 			var publicKey = $('#input_publickey').val(),
 				secretKey = $('#input_secretkey').val();
 
-			// add headers required for SmartStore.NET HMAC authentication
+			// Add headers required for Smartstore HMAC authentication
 			if (publicKey && publicKey.trim() != '' && secretKey && secretKey.trim() != '') {
 
 				smNetConsumer.init({
@@ -65,7 +65,7 @@
 
 			$(authUi).insertBefore('#api_selector div.input:last-child');
 
-			// add SmartStore.NET HMAC authentication
+			// Add Smartstore HMAC authentication
 			swaggerUi.api.clientAuthorizations.add('SmNetHmac1', new SmNetHmacSigner('SmNetHmac1'));
 		}
 	});

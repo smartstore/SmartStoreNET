@@ -3,7 +3,7 @@
         <Value>Developer Tools</Value>
     </LocaleResource>
     <LocaleResource Name="Plugins.Description.SmartStore.DevTools" AppendRootKey="false">
-        <Value>SmartStore.NET Developer Tools (MiniProfiler and other goodies).</Value>
+        <Value>Smartstore Developer Tools (MiniProfiler and other goodies).</Value>
     </LocaleResource>
     <LocaleResource Name="Plugins.FriendlyName.Widgets.DevToolsDemo" AppendRootKey="false">
         <Value>Developer Tools Demo Widget</Value>

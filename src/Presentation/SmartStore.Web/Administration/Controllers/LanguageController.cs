@@ -214,7 +214,7 @@ namespace SmartStore.Admin.Controllers
                         client.Timeout = TimeSpan.FromMilliseconds(10000);
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        client.DefaultRequestHeaders.UserAgent.ParseAdd("SmartStore.NET " + currentVersion);
+                        client.DefaultRequestHeaders.UserAgent.ParseAdd("Smartstore " + currentVersion);
                         client.DefaultRequestHeaders.Add("Authorization-Key", Services.StoreContext.CurrentStore.Url.EmptyNull().TrimEnd('/'));
 
                         var url = CommonHelper.GetAppSetting<string>("sm:TranslateCheckUrl").FormatInvariant(currentVersion);
@@ -254,7 +254,7 @@ namespace SmartStore.Admin.Controllers
             {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Text.Xml));
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("SmartStore.NET " + SmartStoreVersion.CurrentFullVersion);
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("Smartstore " + SmartStoreVersion.CurrentFullVersion);
                 client.DefaultRequestHeaders.Add("Authorization-Key", storeUrl.EmptyNull().TrimEnd('/'));
 
                 using (var sourceStream = await client.GetStreamAsync(downloadUrl))

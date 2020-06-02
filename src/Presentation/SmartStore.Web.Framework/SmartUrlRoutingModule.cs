@@ -120,7 +120,7 @@ namespace SmartStore.Web.Framework
 		/// <param name="path">The app relative path to handle (regular expression, e.g. <c>/sitemap.xml</c> or <c>/mini-profiler-resources/(.*)</c>)</param>
 		/// <param name="verb">The http method constraint (regular expression, e.g. <c>GET|POST</c>)</param>
 		/// <remarks>
-		/// For performance reasons SmartStore.NET is configured to serve static files (files with extensions other than those mapped to managed handlers)
+		/// For performance reasons Smartstore is configured to serve static files (files with extensions other than those mapped to managed handlers)
 		/// through the native <c>StaticFileModule</c>. This method lets you define exceptions to this default rule: every path registered as routable gets
 		/// handled by the <see cref="UrlRoutingModule"/> and therefore enables dynamic processing of (physically non-existent) static files.
 		/// </remarks>

@@ -121,7 +121,7 @@ namespace SmartStore.Core
 		}
 
         /// <summary>
-        /// Gets a list of SmartStore.NET versions in which breaking changes occured,
+        /// Gets a list of Smartstore versions in which breaking changes occured,
         /// which could lead to plugins malfunctioning.
         /// </summary>
         /// <remarks>

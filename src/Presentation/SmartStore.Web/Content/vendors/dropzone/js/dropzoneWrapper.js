@@ -463,9 +463,9 @@
 										.removeClass("d-none")
 										.tooltip();
 
-									elPreview
-										.find('img')
-										.attr('src', file.dataUrl ? file.dataUrl : file.media.url);
+                                    elPreview
+                                        .find('img')
+                                        .attr('src', value.ThumbUrl || file.dataUrl || file.media.url);
 
 									previewContainer.append(elPreview);
 								}

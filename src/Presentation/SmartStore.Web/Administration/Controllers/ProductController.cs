@@ -2239,7 +2239,12 @@ namespace SmartStore.Admin.Controllers
 		[Permission(Permissions.Catalog.Product.EditPicture)]
 		public ActionResult ProductMediaFilesAdd(string mediaFileIds, int entityId)
 		{
-			if (mediaFileIds.Length == 0)
+            var ids = mediaFileIds
+                .ToIntArray()
+                .Distinct()
+                .ToArray();
+
+            if (!ids.Any())
 			{
 				throw new ArgumentException("Missing picture identifiers.");
 			}
@@ -2251,11 +2256,11 @@ namespace SmartStore.Admin.Controllers
 				throw new ArgumentException(T("Products.NotFound", entityId));
 			}
 
-			var ids = mediaFileIds.ToIntArray();
 			var response = new List<dynamic>();
 			var existingFiles = product.ProductPictures.Select(x => x.MediaFileId).ToList();
+            var files = _mediaService.GetFilesByIds(ids, MediaLoadFlags.AsNoTracking).ToDictionary(x => x.Id);
 
-			foreach (var id in ids)
+            foreach (var id in ids)
 			{
 				var exists = existingFiles.Contains(id);
 
@@ -2270,8 +2275,7 @@ namespace SmartStore.Admin.Controllers
 
 					_productService.InsertProductPicture(productPicture);
 
-					// TODO: PERF!!!
-					var media = _mediaService.GetFileById(id, MediaLoadFlags.AsNoTracking);
+                    files.TryGetValue(id, out var file);
 
 					success = true;
 
@@ -2279,14 +2283,20 @@ namespace SmartStore.Admin.Controllers
 					{
 						MediaFileId = id,
 						ProductMediaFileId = productPicture.Id,
-						Name = media.Name
-					};
+						file?.Name,
+                        ThumbUrl = _mediaService.GetUrl(file, _mediaSettings.ProductThumbPictureSize)
+                    };
 
-					response.Add(respObj);
+                    response.Add(respObj);
 				}
 			}
 
-			return Json(new { success, response, message = T("Admin.Product.Picture.Added").JsText.ToString() }, JsonRequestBehavior.AllowGet);
+			return Json(new
+            {
+                success,
+                response,
+                message = T("Admin.Product.Picture.Added").JsText.ToString()
+            }, JsonRequestBehavior.AllowGet);
 		}
 
 		[HttpPost]

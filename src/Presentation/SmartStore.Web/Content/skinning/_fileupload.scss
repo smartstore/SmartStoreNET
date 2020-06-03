@@ -217,6 +217,13 @@
 			width: 100%;
 			align-items: center;
 
+			&.canceled {
+				.progress-bar {
+					width: 100% !important;
+					background-color: $danger;
+				}
+			}
+
 			.file-figure {
 				display: flex;
 				margin: 0;

@@ -580,8 +580,20 @@
 			// Cancel all uploads.
 			elCancel.on('click', function (e) {
 				e.preventDefault();
+				cancelAllUploads(false);
+				return false;
+			});
 
-				var currentlyUploading = el.getFilesWithStatus(Dropzone.UPLOADING);
+			elStatusWindow.on('uploadcanceled', function (e) {
+				cancelAllUploads(true);
+			});
+
+			function cancelAllUploads(removeFiles) {
+
+				var currentlyUploading = el.getFilesWithStatus(Dropzone.QUEUED);
+
+				// Add currently uploading file to queued files.
+				currentlyUploading.push(el.getFilesWithStatus(Dropzone.UPLOADING)[0]);
 
 				// Status
 				if (elStatusWindow.length > 0) {
@@ -594,19 +606,33 @@
 				}
 
 				for (file of currentlyUploading) {
-					el.removeFile(file);
+					if (removeFiles) {
+						el.removeFile(file);
+						//el.cancelUpload(file);
+					}
+					else {
+						file.status = Dropzone.CANCELED;
+						var template = $(file.previewTemplate);
+						template.addClass("canceled");
+						var icon = template.find(".upload-status > i");
+						icon.removeClass("fa-spinner fa-spin").addClass("fa-times text-danger");
+					}
 				}
-				
+
 				if (options.onAborted)
 					options.onAborted.apply(this, [e, el]);
 
-				return false;
-			});
+				el.emit("queuecomplete");
+			}
 
 			// On preview container close (StatusWindow)
 			$(document).on("click", ".fu-status-window .close-status-window", function () {
-				el.removeAllFiles();
+				// Only reset dropzone if there are no more files uploading. Else uploads will be canceled by uploadcanceled event.
+				if (el.getFilesWithStatus(Dropzone.UPLOADING).length === 0) {
+					el.removeAllFiles();
+				}
 			});
+			
 		});
 	};
 

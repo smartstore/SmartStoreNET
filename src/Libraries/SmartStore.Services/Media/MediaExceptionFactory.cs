@@ -68,54 +68,55 @@ namespace SmartStore.Services.Media
 
         public MediaFileNotFoundException FileNotFound(string path)
         {
-            return new MediaFileNotFoundException($"Media file '{path}' does not exist."); // TODO: (mm) Loc
+            return new MediaFileNotFoundException(string.Format(T("Admin.Media.Exception.FileNotFound"), path));
         }
 
         public MediaFolderNotFoundException FolderNotFound(string path)
         {
-            return new MediaFolderNotFoundException($"Media folder '{path}' does not exist."); // TODO: (mm) Loc
+            return new MediaFolderNotFoundException(string.Format(T("Admin.Media.Exception.FolderNotFound"), path)); 
         }
 
         public DuplicateMediaFileException DuplicateFile(string fullPath, MediaFileInfo dupeFile)
         {
-            return new DuplicateMediaFileException($"File {fullPath} already exists.", dupeFile); // TODO: (mm) Loc
+            return new DuplicateMediaFileException(string.Format(T("Admin.Media.Exception.DuplicateFile"), fullPath), dupeFile);
         }
 
         public DuplicateMediaFolderException DuplicateFolder(string fullPath, MediaFolderNode dupeFolder)
         {
-            return new DuplicateMediaFolderException($"Folder {fullPath} already exists.", dupeFolder); // TODO: (mm) Loc
+            return new DuplicateMediaFolderException(string.Format(T("Admin.Media.Exception.DuplicateFolder"), fullPath), dupeFolder);
         }
 
         public NotSameAlbumException NotSameAlbum(string path1, string path2)
         {
-            return new NotSameAlbumException($"The file operation requires that the destination path belongs to the source album. Source: {path1}, Destination: {path2}."); // TODO: (mm) Loc
+            return new NotSameAlbumException(string.Format(T("Admin.Media.Exception.NotSameAlbum"), path1, path2));
         }
 
         public DeniedMediaTypeException DeniedMediaType(string fileName, string currentType, string[] acceptedTypes = null)
         {
-            var msg = $"The media type of '{fileName}' does not match the list of accepted media types"; // TODO: (mm) Loc
+            var msg = string.Format(T("Admin.Media.Exception.DeniedMediaType"), fileName); 
             if (acceptedTypes != null && acceptedTypes.Length > 0)
             {
-                msg += $" Accepted: {string.Join(", ", acceptedTypes)}, current: {currentType}."; // TODO: (mm) Loc
+                var types = string.Join(", ", acceptedTypes);
+                msg += string.Format(T("Admin.Media.Exception.DeniedMediaType.Hint"), types, currentType);
             }
-            
+
             return new DeniedMediaTypeException(msg);
         }
 
         public ExtractThumbnailException ExtractThumbnail(string path, string reason = null)
         {
-            return new ExtractThumbnailException($"Thumbnail extraction for file '{path}' failed. Reason: {reason.NaIfEmpty()}."); // TODO: (mm) Loc
+            return new ExtractThumbnailException(string.Format(T("Admin.Media.Exception.ExtractThumbnail"), path, reason.NaIfEmpty()));
         }
 
         public ExtractThumbnailException ExtractThumbnail(string path, Exception innerException)
         {
             Guard.NotNull(innerException, nameof(innerException));
-            return new ExtractThumbnailException($"Thumbnail extraction for file '{path}' failed. Reason: {innerException.Message}.", innerException); // TODO: (mm) Loc
+            return new ExtractThumbnailException(string.Format(T("Admin.Media.Exception.ExtractThumbnail"), path, innerException.Message), innerException);
         }
 
         public MaxMediaFileSizeExceededException MaxFileSizeExceeded(string fileName, long fileSize, long maxSize)
         {
-            return new MaxMediaFileSizeExceededException($"The size {fileSize:N0)} of file '{fileName.NaIfEmpty()}' exceeds the maximum allowed file size {maxSize:N0)}."); // TODO: (mm) Loc
+            return new MaxMediaFileSizeExceededException(string.Format(T("Admin.Media.Exception.MaxFileSizeExceeded"), fileSize, fileName.NaIfEmpty(), maxSize));
         }
     }
 }

@@ -7,11 +7,14 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using System.Runtime.CompilerServices;
 using SmartStore.Collections;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Services.Media
 {
     public partial class MediaService : IMediaService
     {
+        public static Localizer T { get; set; } = NullLocalizer.Instance;
+
         #region Folder
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -51,7 +54,7 @@ namespace SmartStore.Services.Media
                         }
                         else
                         {
-                            if (i == 0) throw new NotSupportedException($"Creating top-level (album) folders is not supported. Folder: {path}."); // TODO: (mm) Loc
+                            if (i == 0) throw new NotSupportedException(string.Format(T("Admin.Media.Exception.TopLevelAlbum"), path));
                             flag = true;
                         }
                     }
@@ -88,7 +91,7 @@ namespace SmartStore.Services.Media
 
             if (node.Value.IsAlbum)
             {
-                throw new NotSupportedException($"Moving or renaming root album folders is not supported. Folder: {node.Value.Name}."); // TODO: (mm) Loc
+                throw new NotSupportedException(string.Format(T("Admin.Media.Exception.AlterRootAlbum"), node.Value.Name));
             }
 
             var folder = _folderService.GetFolderById(node.Value.Id);
@@ -102,7 +105,7 @@ namespace SmartStore.Services.Media
             // Destination must not exist
             if (FolderExists(destinationPath))
             {
-                throw new ArgumentException("Folder '" + destinationPath + "' already exists."); // TODO: (mm) Loc
+                throw new ArgumentException(string.Format(T("Admin.Media.Exception.DuplicateFolder"), destinationPath));
             }
 
             var destParent = FolderService.NormalizePath(Path.GetDirectoryName(destinationPath));
@@ -122,7 +125,7 @@ namespace SmartStore.Services.Media
 
             if (destParentNode.IsDescendantOfOrSelf(node))
             {
-                throw new ArgumentException("Destination folder '" + destinationPath + "' is not allowed to be a descendant of source folder '" + node.Value.Path + "'."); // TODO: (mm) Loc
+                throw new ArgumentException(string.Format(T("Admin.Media.Exception.DescendantFolder"), destinationPath, node.Value.Path));
             }
 
             // Set new values
@@ -148,7 +151,7 @@ namespace SmartStore.Services.Media
             destinationPath = FolderService.NormalizePath(destinationPath);
             if (destinationPath.EnsureEndsWith("/").StartsWith(path.EnsureEndsWith("/")))
             {
-                throw new ArgumentException("Destination folder '" + destinationPath + "' is not allowed to be a descendant of source folder '" + path + "'.", nameof(destinationPath)); // TODO: (mm) Loc
+                throw new ArgumentException(string.Format(T("Admin.Media.Exception.DescendantFolder"), destinationPath, path), nameof(destinationPath));
             }
 
             var node = _folderService.GetNodeByPath(path);
@@ -159,7 +162,7 @@ namespace SmartStore.Services.Media
 
             if (node.Value.IsAlbum)
             {
-                throw new NotSupportedException($"Copying root album folders is not supported. Folder: {node.Value.Name}."); // TODO: (mm) Loc
+                throw new NotSupportedException(string.Format(T("Admin.Media.Exception.CopyRootAlbum"), node.Value.Name));
             }
 
             using (new DbContextScope(autoCommit: false, validateOnSave: false, autoDetectChanges: false))
@@ -381,7 +384,7 @@ namespace SmartStore.Services.Media
             else
             {
                 var fullPath = CombinePaths(node.Path, lockedFiles[0].Name);
-                throw new IOException("Cannot delete file '{0}' because it is being used by another process.".FormatCurrent(fullPath)); // TODO: (mm) Loc
+                throw new IOException(string.Format(T("Admin.Media.Exception.InUse"), fullPath));
             }
 
             return numFiles;
@@ -396,7 +399,7 @@ namespace SmartStore.Services.Media
             if (!IsPath(path))
             {
                 // Destination cannot be an album
-                throw new ArgumentException("Invalid path specification '" + path + "' for '" + operation + "' operation.", paramName); // TODO: (mm) Loc
+                throw new ArgumentException(string.Format(T("Admin.Media.Exception.PathSpecification"), path, operation), paramName);
             }
         }
 

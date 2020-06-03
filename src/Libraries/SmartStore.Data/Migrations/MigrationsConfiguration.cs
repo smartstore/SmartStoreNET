@@ -741,7 +741,7 @@
                 "&lt;p&gt;This update can be installed automatically. For this Smartstore downloads an installation package to your webserver, executes it and restarts the application. Before the installation your shop directory is backed up, except the folders &lt;i&gt;App_Data&lt;/i&gt; and &lt;i&gt;Media&lt;/i&gt;, as well as the SQL Server database file. &lt;/p&gt;&lt;p&gt;Click the &lt;b&gt;Update now&lt;/b&gt; button to download and install the package. As an alternative to this, you can download the package to your local PC further below and perform the installation at a later time manually.&lt;/p&gt;",
                 "&lt;p&gt;Dieses Update kann automatisch installiert werden. Hierfür lädt Smartstore ein Installationspaket auf Ihren Webserver herunter, führt die Installation durch und startet die Anwendung neu. Vor der Installation wird der Verzeichnisinhalt Ihres Shops gesichert, mit Ausnahme der Ordner &lt;i&gt;App_Data&lt;/i&gt; und &lt;i&gt;Media&lt;/i&gt; sowie der SQL Server Datenbank. &lt;/p&gt;&lt;p&gt;Klicken Sie die Schaltfläche &lt;b&gt;Jetzt aktualisieren&lt;/b&gt;, um das Paket downzuloaden und zu installieren. Alternativ hierzu können Sie weiter unten das Paket auf Ihren lokalen PC downloaden und die Installation zu einem späteren Zeitpunkt manuell durchführen.&lt;/p&gt;");
 
-            builder.AddOrUpdate("admin.appnews",
+            builder.AddOrUpdate("Admin.AppNews",
                 "Smartstore News",
                 "Smartstore News");
 
@@ -752,10 +752,6 @@
             builder.AddOrUpdate("Admin.Common.About",
                 "About Smartstore",
                 "Über Smartstore");
-
-            builder.AddOrUpdate("Admin.Help.NopCommerceNote",
-                "Smartstore is a fork of the ASP.NET open source e-commerce solution {0}.",
-                "Smartstore ist ein Fork der ASP.NET Open-Source E-Commerce-Lösung {0}.");
 
             builder.AddOrUpdate("Admin.Help.OtherWorkNote",
                 "Smartstore includes works distributed under the licenses listed below. Please refer to the specific resources for more detailed information about the authors, copyright notices and licenses.",
@@ -769,7 +765,7 @@
                 "The package is not compatible the current app version {0}. Please update Smartstore or install another version of this package.",
                 "Das Paket ist nicht kompatibel mit der aktuellen Programmversion {0}. Bitte aktualisieren Sie Smartstore oder nutzen Sie eine andere, kompatible Paket-Version.");
 
-            builder.AddOrUpdate("admin.pagetitle",
+            builder.AddOrUpdate("Admin.PageTitle",
                 "Smartstore administration",
                 "Smartstore Administration");
 
@@ -777,17 +773,77 @@
                 "The creation date of this Smartstore version.",
                 "Das Erstellungsdatum dieser Smartstore Version.");
 
-            builder.AddOrUpdate("admin.system.systeminfo.appversion",
+            builder.AddOrUpdate("Admin.System.SystemInfo.Appversion",
                 "Smartstore version",
                 "Smartstore Version");
 
-            builder.AddOrUpdate("admin.system.systeminfo.appversion.hint",
+            builder.AddOrUpdate("Admin.System.SystemInfo.AppVersion.Hint",
                "Smartstore version",
                "Smartstore Version");
 
-            builder.AddOrUpdate("admin.system.warnings.incompatibleplugin",
+            builder.AddOrUpdate("Admin.System.Warnings.IncompatiblePlugin",
                 "'{0}' plugin is incompatible with your Smartstore version. Delete it or update to the latest version.",
                 "'{0}' Plugin ist nicht kompatibel mit Ihrer Smartstore-Version. Löschen Sie es oder installieren Sie die richtige Version.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.FileNotFound",
+                "Media file '{0}' does not exist.",
+                "Die Mediendatei '{0}' existiert nicht.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.FolderNotFound",
+                "Media folder '{0}' does not exist.",
+                "Der Medienordner '{0}' existiert nicht.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.DuplicateFile",
+                "File '{0}' already exists.",
+                "Die Datei '{0}' existiert bereits.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.DuplicateFolder",
+                "Folder '{0}' already exists.",
+                "Der Ordner '{0}' existiert bereits.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.NotSameAlbum",
+                "The file operation requires that the destination path belongs to the source album. Source: {0}, Destination: {1}.",
+                "Die Dateioperation erfordert, dass der Zielpfad zum Ursprungsalbum gehört. Quelle: {0}, Ziel: {1}.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.DeniedMediaType",
+                "The media type of '{0}' does not match the list of accepted media type",
+                "Der Medientyp von '{0}' stimmt nicht mit der Liste der akzeptierten Medientypen überein");
+
+            builder.AddOrUpdate("Admin.Media.Exception.DeniedMediaType.Hint",
+                " Accepted: {0}, current: {1}.",
+                " Akzeptiert: {0}, ausgewählt: {1}.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.ExtractThumbnail",
+                "Thumbnail extraction for file '{0}' failed. Reason: {1}.",
+                "Die Thumbnail-Extraktion für die Datei '{0}' ist fehlgeschlagen. Grund: {1}.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.MaxFileSizeExceeded",
+                "The size {0:N0} of file '{1}' exceeds the maximum allowed file size {2:N0}.",
+                "Die Größe {0:N0} der Datei '{1}' überschreitet die maximal zulässige Dateigröße {2:N0}.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.TopLevelAlbum",
+                "Creating top-level (album) folders is not supported. Folder: {0}.",
+                "Das Erstellen von Ordnern auf oberster Ebene (Album) wird nicht unterstützt. Ordner: {0}.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.AlterRootAlbum",
+                "Moving or renaming root album folders is not supported. Folder: {0}.",
+                "Das Verschieben oder Umbenennen von Album-Stammordnern wird nicht unterstützt. Ordner: {0}.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.DescendantFolder",
+                "Destination folder '{0}' is not allowed to be a descendant of source folder '{1}'.",
+                "Der Zielordner '{0}' darf kein Unterordner von '{1}' sein.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.CopyRootAlbum",
+                "Copying root album folders is not supported. Folder: {0}.",
+                "Das Kopieren von Album-Stammordnern wird nicht unterstützt. Ordner: {0}.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.InUse",
+                "Cannot delete file '{0}' because it is being used by another process.",
+                "Datei '{0}' kann nicht gelöscht werden, da sie von einem anderen Prozess verwendet wird.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.PathSpecification",
+                "Invalid path specification '{0}' for '{1}' operation.",
+                "Ungültige Pfadangabe '{0}' für den Befehl '{1}'.");
         }
     }
 }

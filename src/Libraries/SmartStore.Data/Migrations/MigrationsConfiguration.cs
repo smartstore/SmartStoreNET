@@ -734,6 +734,10 @@
                 "Specifies whether a discount sign should be displayed on product pictures when discounts were applied",
                 "Rabattzeichen anzeigen",
                 "Legt fest, ob ein Rabattzeichen auf dem Produktbild angezeigt werden soll, wenn Rabatte angewendet wurden.");
+
+
+            builder.AddOrUpdate("Admin.Common.IsPublished", "Published", "Veröffentlicht");
+
         }
     }
 }

@@ -938,10 +938,9 @@ namespace SmartStore.Web.Framework
         public static MvcHtmlString MediaViewer(
             this HtmlHelper helper,
             MediaFileInfo file,
-            int size = 0,
             string extraCssClasses = null)
         {
-            return MediaInternal(helper, file, true, size, extraCssClasses);
+            return MediaInternal(helper, file, true, 0, extraCssClasses);
         }
 
         private static MvcHtmlString MediaInternal(

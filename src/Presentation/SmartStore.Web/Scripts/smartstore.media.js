@@ -63,6 +63,34 @@ SmartStore.media = (function () {
                 }
             });
         },
+        getPreview: function (file, opts) {
+            opts = opts || {};
+
+            var o = {
+                thumbUrl: file.thumbUrl,
+                isImage: file.type === 'image',
+                thumbHtml: ''
+            };
+
+            var iconHint = this.getIconHint(file);
+            var imgCssClasses = !_.isEmpty(opts.imgCssClasses)
+                ? 'file-img ' + opts.imgCssClasses
+                : 'file-img';
+
+            if (o.isImage) {
+                o.thumbHtml = '<img class="' + imgCssClasses + '" title="' + file.title + '" src="' + file.thumbUrl + '" />';
+            }
+            else {
+                o.thumbHtml = '<figure class="file-figure">'
+                    + '<i class="file-icon show fa-fw ' + iconHint.name + '" style="color: ' + iconHint.color + '"></i>'
+                    + '<picture class="file-thumb" data-type="' + file.type + '">'
+                    + '<img class="' + imgCssClasses + '" title="' + file.title + '" data-src="' + file.thumbUrl + '" />'
+                    + '</picture>'
+                    + '</figure>';
+            }
+
+            return o;
+        },
         openFileManager: function (opts) {
             /*
                 opts = {

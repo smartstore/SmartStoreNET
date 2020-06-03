@@ -828,9 +828,10 @@ namespace SmartStore.Services.Media
 
         protected MediaFileInfo ConvertMediaFile(MediaFile file, MediaFolderNode folder)
         {
-            var mediaFile = new MediaFileInfo(file, _storageProvider, _urlGenerator, folder?.Path);
-
-            mediaFile.ThumbUrl = _urlGenerator.GenerateUrl(mediaFile, new ProcessImageQuery { MaxSize = _mediaSettings.ProductThumbPictureSize }, string.Empty);
+            var mediaFile = new MediaFileInfo(file, _storageProvider, _urlGenerator, folder?.Path)
+            {
+                ThumbSize = _mediaSettings.ProductThumbPictureSize
+            };
 
             return mediaFile;
         }

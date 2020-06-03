@@ -3,7 +3,7 @@
 @if (Model.RenderViewer)
 {
     <div class="w-100 embed-responsive embed-responsive-16by9 file-preview-container">
-        <video class="@("file-preview".Grow(Model.ExtraCssClasses, " "))" src="@Model.Url" controls preload="metadata" />
+        <video class="@("file-preview".Grow(Model.ExtraCssClasses, " "))" src="@Model.File.Url" controls preload="metadata" />
     </div>
 }
 else

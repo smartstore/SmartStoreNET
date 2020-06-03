@@ -1,6 +1,6 @@
 ﻿@using SmartStore.Web.Framework.Modelling;
 @model MediaTemplateModel
-<img src="@Model.Url"
+<img src="@(Model.RenderViewer ? Model.File.Url : Model.File.ThumbUrl)"
      class="@("file-img".Grow(Model.ExtraCssClasses, " "))" 
      alt="@Model.File.File.Alt" 
      title="@Model.File.File.Title" />

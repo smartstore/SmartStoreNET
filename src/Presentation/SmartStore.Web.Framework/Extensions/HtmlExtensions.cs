@@ -926,7 +926,7 @@ namespace SmartStore.Web.Framework
 
         #region Media
 
-        public static MvcHtmlString MediaImage(
+        public static MvcHtmlString MediaThumbnail(
             this HtmlHelper helper,
             MediaFileInfo file,
             int size,
@@ -957,23 +957,18 @@ namespace SmartStore.Web.Framework
             }
 
             // Validate size parameter.
-            if (file.MediaType != "image")
+            if (file.MediaType != "image" && !renderViewer)
             {
-                if (renderViewer)
-                {
-                    // Force 0 to not get the URL of the thumbnail.
-                    size = 0;
-                }
-                else
-                {
-                    Guard.IsPositive(size, nameof(size), $"The size must be greater than 0 to get a thumbnail for type '{file.MediaType}'.");
-                }
+                Guard.IsPositive(size, nameof(size), $"The size must be greater than 0 to get a thumbnail for type '{file.MediaType.NaIfEmpty()}'.");
             }
 
-            var urlHelper = new UrlHelper(helper.ViewContext.RequestContext);
+            if (size > 0)
+            {
+                file.ThumbSize = size;
+            }
+
             var model = new MediaTemplateModel(file, renderViewer)
             {
-                Url = urlHelper.Media(file, size),
                 ExtraCssClasses = extraCssClasses
             };
 

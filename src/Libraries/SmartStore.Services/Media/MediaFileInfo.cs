@@ -12,7 +12,8 @@ namespace SmartStore.Services.Media
     public partial class MediaFileInfo : IFile
     {
         private string _url;
-        
+        private string _thumbUrl;
+
         private readonly IMediaStorageProvider _storageProvider;
         private readonly IMediaUrlGenerator _urlGenerator;
 
@@ -93,7 +94,14 @@ namespace SmartStore.Services.Media
         }
 
         [JsonProperty("thumbUrl")]
-        public string ThumbUrl { get; set; }
+        public string ThumbUrl
+        {
+            get { return _thumbUrl ?? (_thumbUrl = _urlGenerator.GenerateUrl(this, new ProcessImageQuery { MaxSize = ThumbSize }, string.Empty)); }
+            set { _thumbUrl = value; }
+        }
+
+        [JsonIgnore]
+        public int ThumbSize { get; set; } = 256;
 
         [JsonIgnore]
         public bool Exists => File?.Id > 0;

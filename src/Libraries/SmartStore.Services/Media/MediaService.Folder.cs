@@ -396,7 +396,7 @@ namespace SmartStore.Services.Media
             if (!IsPath(path))
             {
                 // Destination cannot be an album
-                throw new ArgumentException("Invalid path specification '" + path + "' for '" + operation + "' operation.", paramName);
+                throw new ArgumentException("Invalid path specification '" + path + "' for '" + operation + "' operation.", paramName); // TODO: (mm) Loc
             }
         }
 

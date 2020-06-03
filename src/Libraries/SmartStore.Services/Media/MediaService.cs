@@ -462,12 +462,12 @@ namespace SmartStore.Services.Media
 
             if (!_helper.TokenizePath(path, out var pathData))
             {
-                throw new ArgumentException("Invalid path '{0}'. Valid path expression is: {{albumName}}[/subfolders]/{{fileName}}.{{extension}}".FormatInvariant(path), nameof(path));
+                throw new ArgumentException("Invalid path '{0}'. Valid path expression is: {{albumName}}[/subfolders]/{{fileName}}.{{extension}}".FormatInvariant(path), nameof(path)); // TODO: (mm) Loc
             }
 
             if (pathData.Extension.IsEmpty())
             {
-                throw new ArgumentException($"Cannot process files without file extension. Path: {path}", nameof(path));
+                throw new ArgumentException($"Cannot process files without file extension. Path: {path}", nameof(path)); // TODO: (mm) Loc
             }
 
             return pathData;
@@ -657,7 +657,7 @@ namespace SmartStore.Services.Media
                     case DuplicateEntryHandling.Overwrite:
                         if (file.FolderId == destPathData.Folder.Id)
                         {
-                            throw new IOException("Overwrite operation is not possible if source and destination folders are identical.");
+                            throw new IOException("Overwrite operation is not possible if source and destination folders are identical."); // TODO: (mm) Loc
                         }
                         break;
                 }
@@ -919,12 +919,12 @@ namespace SmartStore.Services.Media
                 if (IsPath(destinationFileName))
                 {
                     // ...but file name includes path chars, which is not allowed
-                    throw new ArgumentException("Invalid path '{0}'.".FormatInvariant(Path.GetDirectoryName(destinationFileName)), nameof(destinationFileName));
+                    throw new ArgumentException("Invalid path '{0}'.".FormatInvariant(Path.GetDirectoryName(destinationFileName)), nameof(destinationFileName)); // TODO: (mm) Loc
                 }
 
                 if (file.FolderId == null)
                 {
-                    throw new NotSupportedException("Cannot operate on files without folder assignment.");
+                    throw new NotSupportedException("Cannot operate on files without folder assignment."); // TODO: (mm) Loc
                 }
 
                 pathData = new MediaPathData(_folderService.GetNodeById(file.FolderId.Value), destinationFileName);
@@ -938,7 +938,7 @@ namespace SmartStore.Services.Media
             if (!mime1.Equals(mime2, StringComparison.OrdinalIgnoreCase))
             {
                 // TODO: (mm) Create this and all other generic exceptions by MediaExceptionFactory
-                throw new NotSupportedException($"The file operation '{operation}' does not allow MIME type switching. Source mime: {mime1}, target mime: {mime2}.");
+                throw new NotSupportedException($"The file operation '{operation}' does not allow MIME type switching. Source mime: {mime1}, target mime: {mime2}."); // TODO: (mm) Loc
             }
         }
 

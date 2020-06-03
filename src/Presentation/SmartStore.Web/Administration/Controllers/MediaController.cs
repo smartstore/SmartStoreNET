@@ -90,7 +90,7 @@ namespace SmartStore.Admin.Controllers
                     dynamic o = dupe != null ? JObject.FromObject(dupe) : new JObject();
                     o.success = false;
                     o.dupe = ex is DuplicateMediaFileException;
-                    o.message = ex.Message;             // TODO: rename to errMessage
+                    o.message = ex.Message; // TODO: rename to errMessage
 
                     if (dupe != null)
                     {

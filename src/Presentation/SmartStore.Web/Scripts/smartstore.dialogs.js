@@ -56,7 +56,7 @@
 					'<div class="modal-content rounded-sm">',
 						'<div class="modal-body">',
 							'<div class="modal-box-body d-flex">',
-								!opts.message ? '' : '<div class="modal-box-message">{0}</div>',
+								!opts.message ? '' : '<div class="modal-box-message">{0}</div>'.format(opts.message),
 							'</div>',
 						'</div>',
 						'<div class="modal-footer d-flex">',

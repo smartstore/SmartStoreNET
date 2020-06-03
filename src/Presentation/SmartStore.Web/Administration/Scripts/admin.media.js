@@ -96,7 +96,7 @@ SmartStore.Admin.Media = (function () {
 		}
 
 		// Display existing file.
-		existingFileDisplay.find(".file-img").attr("src", file.media.url);
+		existingFileDisplay.find(".file-img").attr("src", file.media.thumbUrl);
 		existingFileDisplay.find(".file-name").text(file.name);		// No need for writing the name of the existing file into the response. We know its the same as the uploaded file.
 		existingFileDisplay.find(".file-date").text(file.media.createdOn);
 		existingFileDisplay.find(".file-dimensions").text(file.media.dimensions);

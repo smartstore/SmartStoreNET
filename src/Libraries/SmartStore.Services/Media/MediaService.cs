@@ -830,7 +830,7 @@ namespace SmartStore.Services.Media
         {
             var mediaFile = new MediaFileInfo(file, _storageProvider, _urlGenerator, folder?.Path);
 
-            mediaFile.ThumbUrl = _urlGenerator.GenerateUrl(mediaFile, new ProcessImageQuery { MaxSize = _mediaSettings.ProductThumbPictureSize });
+            mediaFile.ThumbUrl = _urlGenerator.GenerateUrl(mediaFile, new ProcessImageQuery { MaxSize = _mediaSettings.ProductThumbPictureSize }, string.Empty);
 
             return mediaFile;
         }

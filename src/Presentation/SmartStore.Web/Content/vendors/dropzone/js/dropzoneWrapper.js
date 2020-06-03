@@ -282,8 +282,8 @@
 				// Dupe file handling is 'replace' thus no need for assignment to entity (media IDs remain the same, while file was altered). 
 				if (fuContainer.data("dupe-handling-type") === 1) {
 					// Update preview pic of replaced media file.
-					for (var newFile of files) {
-						var elCurrentFile = previewContainer.find(".dz-image-preview[data-media-id='" + newFile.media.id + "']");
+                    for (var newFile of files) {
+                        var elCurrentFile = previewContainer.find(".dz-image-preview[data-media-id='" + newFile.media.id + "']");
 						elCurrentFile.find("img").attr("src", newFile.dataURL);
 
 						this.removeFile(newFile);
@@ -465,7 +465,7 @@
 
                                     elPreview
                                         .find('img')
-                                        .attr('src', file.media.thumbUrl);
+                                        .attr('src', file.dataURL || file.media.thumbUrl);
 
 									previewContainer.append(elPreview);
 								}
@@ -728,7 +728,7 @@
 	function displaySingleFilePreview(file, fuContainer, options) {
 		//fuContainer.find('.fileupload-filename').html(file.name);
 		//fuContainer.find('.fileupload-filesize').html(this.filesize(file.size));
-		fuContainer.find('.fileupload-thumb').css('background-image', 'url("' + file.url + '")');
+		fuContainer.find('.fileupload-thumb').css('background-image', 'url("' + file.thumbUrl + '")');
 
 		// TODO: .find('.hidden') doesn't seems safe. Do it better.
 		if (file.downloadId)

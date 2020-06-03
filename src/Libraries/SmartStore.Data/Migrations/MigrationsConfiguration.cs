@@ -735,9 +735,59 @@
                 "Rabattzeichen anzeigen",
                 "Legt fest, ob ein Rabattzeichen auf dem Produktbild angezeigt werden soll, wenn Rabatte angewendet wurden.");
 
-
             builder.AddOrUpdate("Admin.Common.IsPublished", "Published", "Veröffentlicht");
 
+            builder.AddOrUpdate("Admin.CheckUpdate.AutoUpdatePossibleInfo",
+                "&lt;p&gt;This update can be installed automatically. For this Smartstore downloads an installation package to your webserver, executes it and restarts the application. Before the installation your shop directory is backed up, except the folders &lt;i&gt;App_Data&lt;/i&gt; and &lt;i&gt;Media&lt;/i&gt;, as well as the SQL Server database file. &lt;/p&gt;&lt;p&gt;Click the &lt;b&gt;Update now&lt;/b&gt; button to download and install the package. As an alternative to this, you can download the package to your local PC further below and perform the installation at a later time manually.&lt;/p&gt;",
+                "&lt;p&gt;Dieses Update kann automatisch installiert werden. Hierfür lädt Smartstore ein Installationspaket auf Ihren Webserver herunter, führt die Installation durch und startet die Anwendung neu. Vor der Installation wird der Verzeichnisinhalt Ihres Shops gesichert, mit Ausnahme der Ordner &lt;i&gt;App_Data&lt;/i&gt; und &lt;i&gt;Media&lt;/i&gt; sowie der SQL Server Datenbank. &lt;/p&gt;&lt;p&gt;Klicken Sie die Schaltfläche &lt;b&gt;Jetzt aktualisieren&lt;/b&gt;, um das Paket downzuloaden und zu installieren. Alternativ hierzu können Sie weiter unten das Paket auf Ihren lokalen PC downloaden und die Installation zu einem späteren Zeitpunkt manuell durchführen.&lt;/p&gt;");
+
+            builder.AddOrUpdate("admin.appnews",
+                "Smartstore News",
+                "Smartstore News");
+
+            builder.AddOrUpdate("Admin.CheckUpdate.IsUpToDate",
+                "Smartstore is up to date",
+                "Smartstore ist auf dem neuesten Stand");
+
+            builder.AddOrUpdate("Admin.Common.About",
+                "About Smartstore",
+                "Über Smartstore");
+
+            builder.AddOrUpdate("Admin.Help.NopCommerceNote",
+                "Smartstore is a fork of the ASP.NET open source e-commerce solution {0}.",
+                "Smartstore ist ein Fork der ASP.NET Open-Source E-Commerce-Lösung {0}.");
+
+            builder.AddOrUpdate("Admin.Help.OtherWorkNote",
+                "Smartstore includes works distributed under the licenses listed below. Please refer to the specific resources for more detailed information about the authors, copyright notices and licenses.",
+                "Smartstore beinhaltet Werke, die unter den unten aufgeführten Lizenzen vertrieben werden. Bitte beachten Sie die betreffenden Ressourcen für ausführlichere Informationen über Autoren, Copyright-Vermerke und Lizenzen.");
+
+            builder.AddOrUpdate("Admin.Marketplace.ComingSoon",
+                "In the Smartstore Marketplace we offer modules, themes &amp; language packages, which will make your shop better and more successful. Once we are ready to go, you'll be informed about the latest extensions here. Stay tuned...",
+                "Im Smartstore Marketplace werden Module, Themes &amp; Sprachpakete angeboten, die Ihren Onlineshop besser, flexibler und erfolgreicher machen sollen. Sobald wir die Arbeiten am Marketplace abgeschlossen haben, werden Sie hier über die neuesten Erweiterungen informiert.");
+
+            builder.AddOrUpdate("Admin.Packaging.IsIncompatible",
+                "The package is not compatible the current app version {0}. Please update Smartstore or install another version of this package.",
+                "Das Paket ist nicht kompatibel mit der aktuellen Programmversion {0}. Bitte aktualisieren Sie Smartstore oder nutzen Sie eine andere, kompatible Paket-Version.");
+
+            builder.AddOrUpdate("admin.pagetitle",
+                "Smartstore administration",
+                "Smartstore Administration");
+
+            builder.AddOrUpdate("Admin.System.SystemInfo.AppDate.Hint",
+                "The creation date of this Smartstore version.",
+                "Das Erstellungsdatum dieser Smartstore Version.");
+
+            builder.AddOrUpdate("admin.system.systeminfo.appversion",
+                "Smartstore version",
+                "Smartstore Version");
+
+            builder.AddOrUpdate("admin.system.systeminfo.appversion.hint",
+               "Smartstore version",
+               "Smartstore Version");
+
+            builder.AddOrUpdate("admin.system.warnings.incompatibleplugin",
+                "'{0}' plugin is incompatible with your Smartstore version. Delete it or update to the latest version.",
+                "'{0}' Plugin ist nicht kompatibel mit Ihrer Smartstore-Version. Löschen Sie es oder installieren Sie die richtige Version.");
         }
     }
 }

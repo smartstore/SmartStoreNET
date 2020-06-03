@@ -74,7 +74,9 @@ namespace SmartStore.Admin.Controllers
 
                     dynamic o = JObject.FromObject(mediaFile);
                     o.success = true;
-                    o.url = _mediaService.GetUrl(mediaFile, _mediaSettings.ProductThumbPictureSize, host: string.Empty);
+                    o.url = _mediaService.GetUrl(mediaFile,
+                        mediaFile.MediaType == MediaType.Image || mediaFile.MediaType == MediaType.Video ? _mediaSettings.ProductThumbPictureSize : 0, 
+                        host: string.Empty);
                     o.createdOn = mediaFile.CreatedOn.ToString();
                     o.lastUpdated = mediaFile.LastUpdated.ToString();
 
@@ -95,9 +97,10 @@ namespace SmartStore.Admin.Controllers
                     if (dupe != null)
                     {
                         _mediaService.CheckUniqueFileName(filePath, out string newPath);
-                        
                         o.newPath = newPath;
-                        o.url = _mediaService.GetUrl(dupe, _mediaSettings.ProductThumbPictureSize, host: string.Empty);
+                        o.url = _mediaService.GetUrl(dupe,
+                            dupe.MediaType == MediaType.Image || dupe.MediaType == MediaType.Video ? _mediaSettings.ProductThumbPictureSize : 0,
+                            host: string.Empty);
                         o.createdOn = dupe.CreatedOn.ToString();
                         o.lastUpdated = dupe.LastUpdated.ToString();
                         o.dimensions = dupe.Dimensions.Width + " x " + dupe.Dimensions.Height;

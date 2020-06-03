@@ -71,20 +71,26 @@ namespace SmartStore.Services.Media
 
 			if (prevMediaFileId > 0 && isModified)
 			{
-				tracks.Add(new MediaTrack { EntityId = entityId, 
+				tracks.Add(new MediaTrack 
+				{ 
+					EntityId = entityId, 
 					EntityName = entityName, 
 					MediaFileId = prevMediaFileId.Value, 
 					Property = propertyName,
-					Operation = MediaTrackOperation.Untrack });
+					Operation = MediaTrackOperation.Untrack 
+				});
 			}
 
 			if (currentMediaFileId > 0 && isModified)
 			{
-				tracks.Add(new MediaTrack { EntityId = entityId, 
+				tracks.Add(new MediaTrack 
+				{ 
+					EntityId = entityId, 
 					EntityName = entityName, 
 					MediaFileId = currentMediaFileId.Value,
 					Property = propertyName,
-					Operation = MediaTrackOperation.Track });
+					Operation = MediaTrackOperation.Track 
+				});
 			}
 
 			if (tracks.Count > 0)

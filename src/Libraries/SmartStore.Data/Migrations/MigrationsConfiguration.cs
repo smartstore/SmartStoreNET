@@ -23,6 +23,7 @@
             if (DataSettings.Current.IsSqlServer)
             {
                 var commandTimeout = CommonHelper.GetAppSetting<int?>("sm:EfMigrationsCommandTimeout");
+                var commandTimeout = CommonHelper.GetAppSetting<int?>("sm:EfMigrationsCommandTimeout");
                 if (commandTimeout.HasValue)
                 {
                     CommandTimeout = commandTimeout.Value;
@@ -806,7 +807,7 @@
                 "Die Dateioperation erfordert, dass der Zielpfad zum Ursprungsalbum gehört. Quelle: {0}, Ziel: {1}.");
 
             builder.AddOrUpdate("Admin.Media.Exception.DeniedMediaType",
-                "The media type of '{0}' does not match the list of accepted media type",
+                "The media type of '{0}' does not match the list of accepted media types",
                 "Der Medientyp von '{0}' stimmt nicht mit der Liste der akzeptierten Medientypen überein");
 
             builder.AddOrUpdate("Admin.Media.Exception.DeniedMediaType.Hint",
@@ -815,7 +816,7 @@
 
             builder.AddOrUpdate("Admin.Media.Exception.ExtractThumbnail",
                 "Thumbnail extraction for file '{0}' failed. Reason: {1}.",
-                "Die Thumbnail-Extraktion für die Datei '{0}' ist fehlgeschlagen. Grund: {1}.");
+                "Thumbnail-Erstellung für die Datei '{0}' ist fehlgeschlagen. Grund: {1}.");
 
             builder.AddOrUpdate("Admin.Media.Exception.MaxFileSizeExceeded",
                 "The size {0:N0} of file '{1}' exceeds the maximum allowed file size {2:N0}.",

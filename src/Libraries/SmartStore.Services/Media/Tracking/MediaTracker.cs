@@ -308,14 +308,14 @@ namespace SmartStore.Services.Media
             var albumInfo = _albumRegistry.GetAlbumByName(albumName);
             if (albumInfo == null)
             {
-                throw new InvalidOperationException(T("Admin.Media.Exception.AlbumNonexistent").Text.FormatInvariant(albumName));
+                throw new InvalidOperationException(T("Admin.Media.Exception.AlbumNonexistent", albumName));
             }
 
             // load corresponding detector provider for current album...
             var provider = _albumProviderFactory[albumInfo.ProviderType] as IMediaTrackDetector;
             if (provider == null)
             {
-                throw new InvalidOperationException(T("Admin.Media.Exception.AlbumNoTrack").Text.FormatInvariant(albumName));
+                throw new InvalidOperationException(T("Admin.Media.Exception.AlbumNoTrack", albumName));
             }
 
             if (!isMigration)

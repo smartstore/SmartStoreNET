@@ -465,12 +465,12 @@ namespace SmartStore.Services.Media
 
             if (!_helper.TokenizePath(path, out var pathData))
             {
-                throw new ArgumentException(T("Admin.Media.Exception.InvalidPathExample").Text.FormatInvariant(path), nameof(path));
+                throw new ArgumentException(T("Admin.Media.Exception.InvalidPathExample", path), nameof(path));
             }
 
             if (pathData.Extension.IsEmpty())
             {
-                throw new ArgumentException(T("Admin.Media.Exception.FileExtension").Text.FormatInvariant(path), nameof(path));
+                throw new ArgumentException(T("Admin.Media.Exception.FileExtension", path), nameof(path));
             }
 
             return pathData;
@@ -500,7 +500,7 @@ namespace SmartStore.Services.Media
 
             if (file != null)
             {
-                ValidateMimeTypes("Save", file.MimeType, pathData.MimeType, T);
+                ValidateMimeTypes("Save", file.MimeType, pathData.MimeType);
                 _imageCache.Delete(file);
             }
 
@@ -796,8 +796,8 @@ namespace SmartStore.Services.Media
 
             if (nameChanged)
             {
-                // Ensure bot MIME types are equal
-                ValidateMimeTypes("Move", file.MimeType, destPathData.MimeType, T);
+                // Ensure both MIME types are equal
+                ValidateMimeTypes("Move", file.MimeType, destPathData.MimeType);
             }
 
             // Check whether destination file exists
@@ -924,7 +924,7 @@ namespace SmartStore.Services.Media
                 {
                     // ...but file name includes path chars, which is not allowed
                     throw new ArgumentException(
-                        T("Admin.Media.Exception.InvalidPath").Text.FormatInvariant(Path.GetDirectoryName(destinationFileName)), 
+                        T("Admin.Media.Exception.InvalidPath", Path.GetDirectoryName(destinationFileName)), 
                         nameof(destinationFileName));
                 }
 
@@ -939,12 +939,12 @@ namespace SmartStore.Services.Media
             return pathData;
         }
 
-        private static void ValidateMimeTypes(string operation, string mime1, string mime2, Localizer t)
+        private void ValidateMimeTypes(string operation, string mime1, string mime2)
         {
             if (!mime1.Equals(mime2, StringComparison.OrdinalIgnoreCase))
             {
                 // TODO: (mm) Create this and all other generic exceptions by MediaExceptionFactory
-                throw new NotSupportedException(t("Admin.Media.Exception.MimeType").Text.FormatInvariant(operation, mime1, mime2));
+                throw new NotSupportedException(T("Admin.Media.Exception.MimeType", operation, mime1, mime2));
             }
         }
 

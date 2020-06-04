@@ -26,7 +26,7 @@ namespace SmartStore.Services.Media
             Guard.NotEmpty(path, nameof(path));
 
             path = FolderService.NormalizePath(path, false);
-            ValidateFolderPath(path, "CreateFolder", nameof(path), T);
+            ValidateFolderPath(path, "CreateFolder", nameof(path));
 
             var sep = "/";
             var folderNames = path.Split(new[] { sep }, StringSplitOptions.RemoveEmptyEntries);
@@ -52,7 +52,7 @@ namespace SmartStore.Services.Media
                         }
                         else
                         {
-                            if (i == 0) throw new NotSupportedException(T("Admin.Media.Exception.TopLevelAlbum").Text.FormatInvariant(path));
+                            if (i == 0) throw new NotSupportedException(T("Admin.Media.Exception.TopLevelAlbum", path));
                             flag = true;
                         }
                     }
@@ -79,7 +79,7 @@ namespace SmartStore.Services.Media
             Guard.NotEmpty(destinationPath, nameof(destinationPath));
 
             path = FolderService.NormalizePath(path);
-            ValidateFolderPath(path, "MoveFolder", nameof(path), T);
+            ValidateFolderPath(path, "MoveFolder", nameof(path));
 
             var node = _folderService.GetNodeByPath(path);
             if (node == null)
@@ -89,7 +89,7 @@ namespace SmartStore.Services.Media
 
             if (node.Value.IsAlbum)
             {
-                throw new NotSupportedException(T("Admin.Media.Exception.AlterRootAlbum").Text.FormatInvariant(node.Value.Name));
+                throw new NotSupportedException(T("Admin.Media.Exception.AlterRootAlbum", node.Value.Name));
             }
 
             var folder = _folderService.GetFolderById(node.Value.Id);
@@ -98,12 +98,12 @@ namespace SmartStore.Services.Media
                 throw _exceptionFactory.FolderNotFound(path);
             }
 
-            ValidateFolderPath(destinationPath, "MoveFolder", nameof(destinationPath), T);
+            ValidateFolderPath(destinationPath, "MoveFolder", nameof(destinationPath));
 
             // Destination must not exist
             if (FolderExists(destinationPath))
             {
-                throw new ArgumentException(T("Admin.Media.Exception.DuplicateFolder").Text.FormatInvariant(destinationPath));
+                throw new ArgumentException(T("Admin.Media.Exception.DuplicateFolder", destinationPath));
             }
 
             var destParent = FolderService.NormalizePath(Path.GetDirectoryName(destinationPath));
@@ -123,7 +123,7 @@ namespace SmartStore.Services.Media
 
             if (destParentNode.IsDescendantOfOrSelf(node))
             {
-                throw new ArgumentException(T("Admin.Media.Exception.DescendantFolder").Text.FormatInvariant(destinationPath, node.Value.Path));
+                throw new ArgumentException(T("Admin.Media.Exception.DescendantFolder", destinationPath, node.Value.Path));
             }
 
             // Set new values
@@ -144,12 +144,12 @@ namespace SmartStore.Services.Media
             Guard.NotEmpty(destinationPath, nameof(destinationPath));
 
             path = FolderService.NormalizePath(path);
-            ValidateFolderPath(path, "CopyFolder", nameof(path), T);
+            ValidateFolderPath(path, "CopyFolder", nameof(path));
 
             destinationPath = FolderService.NormalizePath(destinationPath);
             if (destinationPath.EnsureEndsWith("/").StartsWith(path.EnsureEndsWith("/")))
             {
-                throw new ArgumentException(T("Admin.Media.Exception.DescendantFolder").Text.FormatInvariant(destinationPath, path), nameof(destinationPath));
+                throw new ArgumentException(T("Admin.Media.Exception.DescendantFolder", destinationPath, path), nameof(destinationPath));
             }
 
             var node = _folderService.GetNodeByPath(path);
@@ -160,7 +160,7 @@ namespace SmartStore.Services.Media
 
             if (node.Value.IsAlbum)
             {
-                throw new NotSupportedException(T("Admin.Media.Exception.CopyRootAlbum").Text.FormatInvariant(node.Value.Name));
+                throw new NotSupportedException(T("Admin.Media.Exception.CopyRootAlbum", node.Value.Name));
             }
 
             using (new DbContextScope(autoCommit: false, validateOnSave: false, autoDetectChanges: false))
@@ -280,7 +280,7 @@ namespace SmartStore.Services.Media
             Guard.NotEmpty(path, nameof(path));
 
             path = FolderService.NormalizePath(path);
-            ValidateFolderPath(path, "DeleteFolder", nameof(path), T);
+            ValidateFolderPath(path, "DeleteFolder", nameof(path));
 
             var node = _folderService.GetNodeByPath(path);
             if (node == null)
@@ -382,7 +382,7 @@ namespace SmartStore.Services.Media
             else
             {
                 var fullPath = CombinePaths(node.Path, lockedFiles[0].Name);
-                throw new IOException(T("Admin.Media.Exception.InUse").Text.FormatInvariant(fullPath));
+                throw new IOException(T("Admin.Media.Exception.InUse", fullPath));
             }
 
             return numFiles;
@@ -392,12 +392,12 @@ namespace SmartStore.Services.Media
 
         #region Utils
 
-        private static void ValidateFolderPath(string path, string operation, string paramName, Localizer t)
+        private void ValidateFolderPath(string path, string operation, string paramName)
         {
             if (!IsPath(path))
             {
                 // Destination cannot be an album                
-                throw new ArgumentException(t("Admin.Media.Exception.PathSpecification").Text.FormatInvariant(path, operation), paramName);
+                throw new ArgumentException(T("Admin.Media.Exception.PathSpecification", path, operation), paramName);
             }
         }
 

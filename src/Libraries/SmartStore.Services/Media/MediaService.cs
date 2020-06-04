@@ -11,6 +11,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Events;
 using SmartStore.Core.IO;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media.Storage;
@@ -19,6 +20,8 @@ namespace SmartStore.Services.Media
 {
     public partial class MediaService : IMediaService
     {
+        public Localizer T { get; set; } = NullLocalizer.Instance;
+
         private readonly IRepository<MediaFile> _fileRepo;
         private readonly IFolderService _folderService;
         private readonly IMediaSearcher _searcher;
@@ -462,12 +465,12 @@ namespace SmartStore.Services.Media
 
             if (!_helper.TokenizePath(path, out var pathData))
             {
-                throw new ArgumentException("Invalid path '{0}'. Valid path expression is: {{albumName}}[/subfolders]/{{fileName}}.{{extension}}".FormatInvariant(path), nameof(path)); // TODO: (mm) Loc
+                throw new ArgumentException(T("Admin.Media.Exception.InvalidPathExample").Text.FormatInvariant(path), nameof(path));
             }
 
             if (pathData.Extension.IsEmpty())
             {
-                throw new ArgumentException($"Cannot process files without file extension. Path: {path}", nameof(path)); // TODO: (mm) Loc
+                throw new ArgumentException(T("Admin.Media.Exception.FileExtension").Text.FormatInvariant(path), nameof(path));
             }
 
             return pathData;
@@ -497,7 +500,7 @@ namespace SmartStore.Services.Media
 
             if (file != null)
             {
-                ValidateMimeTypes("Save", file.MimeType, pathData.MimeType);
+                ValidateMimeTypes("Save", file.MimeType, pathData.MimeType, T);
                 _imageCache.Delete(file);
             }
 
@@ -657,7 +660,7 @@ namespace SmartStore.Services.Media
                     case DuplicateEntryHandling.Overwrite:
                         if (file.FolderId == destPathData.Folder.Id)
                         {
-                            throw new IOException("Overwrite operation is not possible if source and destination folders are identical."); // TODO: (mm) Loc
+                            throw new IOException(T("Admin.Media.Exception.Overwrite"));
                         }
                         break;
                 }
@@ -794,7 +797,7 @@ namespace SmartStore.Services.Media
             if (nameChanged)
             {
                 // Ensure bot MIME types are equal
-                ValidateMimeTypes("Move", file.MimeType, destPathData.MimeType);
+                ValidateMimeTypes("Move", file.MimeType, destPathData.MimeType, T);
             }
 
             // Check whether destination file exists
@@ -920,12 +923,14 @@ namespace SmartStore.Services.Media
                 if (IsPath(destinationFileName))
                 {
                     // ...but file name includes path chars, which is not allowed
-                    throw new ArgumentException("Invalid path '{0}'.".FormatInvariant(Path.GetDirectoryName(destinationFileName)), nameof(destinationFileName)); // TODO: (mm) Loc
+                    throw new ArgumentException(
+                        T("Admin.Media.Exception.InvalidPath").Text.FormatInvariant(Path.GetDirectoryName(destinationFileName)), 
+                        nameof(destinationFileName));
                 }
 
                 if (file.FolderId == null)
                 {
-                    throw new NotSupportedException("Cannot operate on files without folder assignment."); // TODO: (mm) Loc
+                    throw new NotSupportedException(T("Admin.Media.Exception.FolderAssignment"));
                 }
 
                 pathData = new MediaPathData(_folderService.GetNodeById(file.FolderId.Value), destinationFileName);
@@ -934,12 +939,12 @@ namespace SmartStore.Services.Media
             return pathData;
         }
 
-        private static void ValidateMimeTypes(string operation, string mime1, string mime2)
+        private static void ValidateMimeTypes(string operation, string mime1, string mime2, Localizer t)
         {
             if (!mime1.Equals(mime2, StringComparison.OrdinalIgnoreCase))
             {
                 // TODO: (mm) Create this and all other generic exceptions by MediaExceptionFactory
-                throw new NotSupportedException($"The file operation '{operation}' does not allow MIME type switching. Source mime: {mime1}, target mime: {mime2}."); // TODO: (mm) Loc
+                throw new NotSupportedException(t("Admin.Media.Exception.MimeType").Text.FormatInvariant(operation, mime1, mime2));
             }
         }
 

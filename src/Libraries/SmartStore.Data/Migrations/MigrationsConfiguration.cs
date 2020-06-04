@@ -844,6 +844,42 @@
             builder.AddOrUpdate("Admin.Media.Exception.PathSpecification",
                 "Invalid path specification '{0}' for '{1}' operation.",
                 "Ungültige Pfadangabe '{0}' für den Befehl '{1}'.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.InvalidPath",
+                "Invalid path '{0}'.",
+                "Ungültiger Pfad '{0}'.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.InvalidPathExample",
+                "Invalid path '{0}'. Valid path expression is: {{albumName}}[/subfolders]/{{fileName}}.{{extension}}",
+                "Ungültiger Pfad '{0}'. Ein gültiger Pfadausdruck lautet: {{albumName}}[/subfolders]/{{fileName}}.{{extension}}");
+
+            builder.AddOrUpdate("Admin.Media.Exception.FileExtension",
+                "Cannot process files without file extension. Path: {0}",
+                "Dateien ohne Dateiendung können nicht verarbeitet werden. Pfad: {0}");
+
+            builder.AddOrUpdate("Admin.Media.Exception.Overwrite",
+                "Overwrite operation is not possible if source and destination folders are identical.",
+                "Ein Überschreibvorgang ist nicht möglich, wenn Quell- und Zielordner identisch sind.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.FolderAssignment",
+                "Cannot operate on files without folder assignment.",
+                "Kann nicht mit Dateien ohne Ordnerzuweisung arbeiten.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.MimeType",
+                "The file operation '{0}' does not allow MIME type switching. Source MIME: {1}, target MIME: {2}.",
+                "Die Dateioperation '{0}' erlaubt keine Änderung des MIME-Typs. Quell-MIME: {1}, Ziel-MIME: {2}.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.TrackUnassignedFile",
+                "Cannot track a media file that is not assigned to any album.",
+                "Es kann keine Mediendatei verfolgt werden, die keinem Album zugeordnet ist.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.AlbumNonexistent",
+                "The album '{0}' does not exist.",
+                "Das Album '{0}' existiert nicht.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.AlbumNoTrack",
+                "The album '{0}' does not support track detection.",
+                "Das Album '{0}' unterstützt die Erkennung von Verweisen nicht.");            
         }
     }
 }

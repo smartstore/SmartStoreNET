@@ -17,11 +17,14 @@ using SmartStore.Services.Configuration;
 using SmartStore.Core.Configuration;
 using System.Linq.Expressions;
 using SmartStore.ComponentModel;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Services.Media
 {
     public class MediaTracker : IMediaTracker
     {
+        public Localizer T { get; set; } = NullLocalizer.Instance;
+
         internal const string TrackedPropertiesKey = "media:trackedprops:all";
 
         private readonly ICacheManager _cache;
@@ -129,7 +132,7 @@ namespace SmartStore.Services.Media
                 var album = _folderService.FindAlbum(file)?.Value;
                 if (album == null)
                 {
-                    throw new InvalidOperationException("Cannot track a media file that is not assigned to any album."); // TODO: (mm) Loc
+                    throw new InvalidOperationException(T("Admin.Media.Exception.TrackUnassignedFile"));
                 }
                 else if (!album.CanDetectTracks)
                 {
@@ -305,14 +308,14 @@ namespace SmartStore.Services.Media
             var albumInfo = _albumRegistry.GetAlbumByName(albumName);
             if (albumInfo == null)
             {
-                throw new InvalidOperationException($"The album '{albumName}' does not exist."); // TODO: (mm) Loc
+                throw new InvalidOperationException(T("Admin.Media.Exception.AlbumNonexistent").Text.FormatInvariant(albumName));
             }
 
             // load corresponding detector provider for current album...
             var provider = _albumProviderFactory[albumInfo.ProviderType] as IMediaTrackDetector;
             if (provider == null)
             {
-                throw new InvalidOperationException($"The album '{albumName}' does not support track detection."); // TODO: (mm) Loc
+                throw new InvalidOperationException(T("Admin.Media.Exception.AlbumNoTrack").Text.FormatInvariant(albumName));
             }
 
             if (!isMigration)

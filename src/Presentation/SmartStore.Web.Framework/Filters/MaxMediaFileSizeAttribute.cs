@@ -21,21 +21,18 @@ namespace SmartStore.Web.Framework.Filters
             }
 
             var request = filterContext.HttpContext.Request;
-
             if (request.Files.Count <= 0)
             {
                 return;
             }
 
             long maxBytes = 1024 * MediaSettings.Value.MaxUploadFileSize;
-
             for (var i = 0; i < request.Files.Count; ++i)
             {
                 var file = request.Files[i];
-
                 if (file.ContentLength > maxBytes)
                 {
-                    throw ExceptionFactory.Value.MaxFileSizeExceeded(file.FileName, file.ContentLength / 1024, MediaSettings.Value.MaxUploadFileSize);
+                    throw ExceptionFactory.Value.MaxFileSizeExceeded(file.FileName, file.ContentLength, maxBytes);
                 }
             }
         }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SmartStore.Core.Localization;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Media
 {
@@ -116,7 +117,12 @@ namespace SmartStore.Services.Media
 
         public MaxMediaFileSizeExceededException MaxFileSizeExceeded(string fileName, long fileSize, long maxSize)
         {
-            return new MaxMediaFileSizeExceededException(T("Admin.Media.Exception.MaxFileSizeExceeded").Text.FormatInvariant(fileSize, fileName.NaIfEmpty(), maxSize));
+            return new MaxMediaFileSizeExceededException(T(
+                "Admin.Media.Exception.MaxFileSizeExceeded", 
+                fileName.NaIfEmpty(),
+                Prettifier.BytesToString(fileSize), 
+                Prettifier.BytesToString(maxSize))
+                );
         }
     }
 }

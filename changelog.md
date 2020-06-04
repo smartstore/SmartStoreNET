@@ -107,6 +107,7 @@
 * #1875 A delivery time cannot be deleted if it is assigned to a variant combination of a deleted product.
 * BeezUp: fixes ArgumentNullException, parameter name "source".
 * #1743 Avoid redirecting to the account activation page when trying to log in for the first time.
+* #1895 The checkout button disappears when moving a product from the shopping cart to the wishlist.
 
 
 ## SmartStore.NET 3.2.2

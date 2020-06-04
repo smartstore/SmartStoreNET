@@ -2429,7 +2429,7 @@ namespace SmartStore.Web.Controllers
 			return View(model);
 		}
 
-		// ajax
+		// Ajax.
 		[HttpPost]
         [ActionName("MoveItemBetweenCartAndWishlist")]
         public ActionResult MoveItemBetweenCartAndWishlistAjax(int cartItemId, ShoppingCartType cartType, bool isCartPage = false)
@@ -2439,72 +2439,79 @@ namespace SmartStore.Web.Controllers
                 return Json(new
                 {
                     success = false,
-					message = _localizationService.GetResource("Common.NoProcessingSecurityIssue")
+					message = T("Common.NoProcessingSecurityIssue").Text
                 });
             }
 
+            var showCheckoutButtons = true;
             var customer = _workContext.CurrentCustomer;
-			var cart = customer.GetCartItems(cartType, _storeContext.CurrentStore.Id);
+            var storeId = _storeContext.CurrentStore.Id;
+            var cart = customer.GetCartItems(cartType, storeId);
             var sci = cart.Where(x => x.Item.Id == cartItemId).FirstOrDefault();
 
 			if (sci != null)
 			{
-				var warnings = _shoppingCartService.Copy(sci, customer, 
-                    cartType == ShoppingCartType.Wishlist ? ShoppingCartType.ShoppingCart : ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id, true);
+				var warnings = _shoppingCartService.Copy(sci, customer, cartType == ShoppingCartType.Wishlist ? ShoppingCartType.ShoppingCart : ShoppingCartType.Wishlist, storeId, true);
 
-				if (_shoppingCartSettings.MoveItemsFromWishlistToCart && warnings.Count == 0) //no warnings ( already in the cart)
+				if (_shoppingCartSettings.MoveItemsFromWishlistToCart && warnings.Count == 0)
 				{
-					//let's remove the item from origin
-					_shoppingCartService.DeleteShoppingCartItem(sci.Item);
+                    // No warnings (already in cart). Let's remove the item from origin.
+                    _shoppingCartService.DeleteShoppingCartItem(sci.Item);
 				}
 
 				if (warnings.Count == 0)
 				{
-                    var cartHtml = String.Empty;
-                    var totalsHtml = String.Empty;
-                    var message = String.Empty;
+                    var cartHtml = string.Empty;
+                    var totalsHtml = string.Empty;
+                    var message = string.Empty;
                     var cartItemCount = 0;
+
+                    if (_shoppingCartSettings.DisplayCartAfterAddingProduct && cartType == ShoppingCartType.Wishlist)
+                    {
+                        // Redirect to the shopping cart page.
+                        return Json(new
+                        {
+                            redirect = Url.RouteUrl("ShoppingCart")
+                        });
+                    }
 
                     if (isCartPage)
                     {
                         if (cartType == ShoppingCartType.Wishlist)
                         {
                             var model = new WishlistModel();
-                            var wishlist = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
+                            var wishlist = customer.GetCartItems(ShoppingCartType.Wishlist, storeId);
+
                             PrepareWishlistModel(model, wishlist);
+
                             cartHtml = this.RenderPartialViewToString("WishlistItems", model);
-                            message = _localizationService.GetResource("Products.ProductHasBeenAddedToTheCart");
+                            message = T("Products.ProductHasBeenAddedToTheCart");
                             cartItemCount = wishlist.Count;
                         }
                         else
                         {
                             var model = new ShoppingCartModel();
-                            cart = customer.GetCartItems(cartType, _storeContext.CurrentStore.Id);
+                            cart = customer.GetCartItems(cartType, storeId);
+
                             PrepareShoppingCartModel(model, cart);
+
                             cartHtml = this.RenderPartialViewToString("CartItems", model);
                             totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
-                            message = _localizationService.GetResource("Products.ProductHasBeenAddedToTheWishlist");
+                            message = T("Products.ProductHasBeenAddedToTheWishlist");
                             cartItemCount = cart.Count;
+                            showCheckoutButtons = model.IsValidMinOrderSubtotal;
                         }
-                    }
-
-                    if (_shoppingCartSettings.DisplayCartAfterAddingProduct)
-                    {
-                        //redirect to the shopping cart page
-                        return Json(new
-                        {
-                            redirect = Url.RouteUrl("ShoppingCart"),
-                        });
                     }
                     
                     return Json(new
                     {
                         success = true,
                         wasMoved = _shoppingCartSettings.MoveItemsFromWishlistToCart,
-                        message = message,
-                        cartHtml = cartHtml,
-                        totalsHtml = totalsHtml,
-                        cartItemCount = cartItemCount
+                        message,
+                        cartHtml,
+                        totalsHtml,
+                        cartItemCount,
+                        showCheckoutButtons
                     });
 				}
 			}
@@ -2512,7 +2519,7 @@ namespace SmartStore.Web.Controllers
             return Json(new
             {
                 success = false,
-				message = _localizationService.GetResource("Products.ProductNotAddedToTheCart")
+				message = T("Products.ProductNotAddedToTheCart").Text
             });
         }
 

@@ -2,10 +2,9 @@
 	$(function () {
 		var orderSummary = $(".cart-content");
 		var isWishlist = orderSummary.is('.wishlist-content');
-		var cmd = isWishlist ? 'wishlist' : 'cart';
 		var updatingCart = false;
 
-		// remove cart item & move to wishlist
+		// Remove cart item and move to wishlist.
 		orderSummary.on("click", ".ajax-action-link", function (e) {
 			e.preventDefault();
 			var link = $(this);
@@ -13,7 +12,7 @@
 			return false;
 		});
 
-		// quantity touchspin change
+		// Quantity touchspin change.
 		var debouncedUpdate = _.debounce(function (e) {
 			e.preventDefault();
 			var link = $(this);
@@ -35,7 +34,12 @@
 				url: link.data("href"),
 				data: data,
 				type: 'POST',
-				success: function (response) {
+                success: function (response) {
+                    if (!_.isEmpty(response.redirect)) {
+                        location.href = response.redirect;
+                        return false;
+                    }
+
 					if (response.cartItemCount == 0) {
 						orderSummary.html('<div class="alert alert-warning fade show">' + orderSummary.data('empty-text') + '</div>');
 					}
@@ -43,25 +47,22 @@
 					var cartBody = $(".cart-body");
 					var totals = $("#order-totals");
 
-					$("#start-checkout-buttons").toggleClass("d-none", !response.showCheckoutButtons);
+                    if (response.success) {
+                        $("#start-checkout-buttons").toggleClass("d-none", !response.showCheckoutButtons);
 
-					if (response.success) {
-						// replace html
+						// Replace HTML.
 						cartBody.html(response.cartHtml);
 						totals.html(response.totalsHtml);
 					}
 
 					displayNotification(response.message, response.success ? "success" : "error");
 
-					// reinit qty ctls
+					// Reinit qty controls.
 					applyCommonPlugins(cartBody);
 
-					// update shopbar
-					ShopBar.loadSummary(cmd, true);
-
-					if (link.data("type") == "wishlist") {
-						ShopBar.loadSummary("wishlist", true);
-					}
+					// Update shopbar.
+                    ShopBar.loadSummary('cart', true);
+                    ShopBar.loadSummary('wishlist', true);
 
 					hideThrobber();
 				},

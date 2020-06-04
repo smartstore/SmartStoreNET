@@ -23,7 +23,6 @@
             if (DataSettings.Current.IsSqlServer)
             {
                 var commandTimeout = CommonHelper.GetAppSetting<int?>("sm:EfMigrationsCommandTimeout");
-                var commandTimeout = CommonHelper.GetAppSetting<int?>("sm:EfMigrationsCommandTimeout");
                 if (commandTimeout.HasValue)
                 {
                     CommandTimeout = commandTimeout.Value;

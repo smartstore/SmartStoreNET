@@ -71,6 +71,9 @@ namespace SmartStore.Services.Media
         [JsonProperty("name")]
         public string Name => File.Name;
 
+        [JsonProperty("alt")]
+        public string Alt => File.Alt;
+
         [JsonProperty("title")]
         public string Title => System.IO.Path.GetFileNameWithoutExtension(File.Name);
 

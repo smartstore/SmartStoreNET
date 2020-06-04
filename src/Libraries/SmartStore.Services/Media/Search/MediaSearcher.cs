@@ -91,7 +91,7 @@ namespace SmartStore.Services.Media
             var ordering = query.SortBy;
             if (ordering.HasValue())
             {
-                if (query.SortDescending) ordering += " descending";
+                if (query.SortDesc) ordering += " descending";
                 q = q.OrderBy(ordering);
             }
 

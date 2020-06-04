@@ -69,6 +69,6 @@ namespace SmartStore.Services.Media
         public string SortBy { get; set; } = nameof(MediaFile.Name);
 
         [JsonProperty("sortDesc")]
-        public bool SortDescending { get; set; }
+        public bool SortDesc { get; set; }
     }
 }

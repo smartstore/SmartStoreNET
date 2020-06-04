@@ -34,8 +34,8 @@
 				centerContent: true,
 				size: 'md', // sm | md | lg
 				message: message,
-				icon: null, // { type: 'check | question | warning | danger | info', color: <BrandColor> }
-				prompt: null // { value: <string>, onInit: <fn> }
+				icon: null, // { type: 'check | question | warning | danger | info', name: <FaIconClass>, color: <BrandColor> }
+				prompt: null // { value: <string>, onInit: <fn>, invalidChars: <string> }
 				callback: callback,
 				show: true
 			};
@@ -55,7 +55,7 @@
 				'<div class="{0}" role="document">'.format(dialogClass),
 					'<div class="modal-content rounded-sm">',
 						'<div class="modal-body">',
-							'<div class="modal-box-body d-flex">',
+							'<div class="modal-box-body d-flex{0}">'.format(centerContent || type === 'prompt' ? '' : ' flex-nowrap'),
 								!opts.message ? '' : '<div class="modal-box-message">{0}</div>'.format(opts.message),
 							'</div>',
 						'</div>',
@@ -87,13 +87,12 @@
 		var boxBody = modal.find('.modal-box-body');
 		var color;
 
-		if (opts.icon && opts.icon.type) {
+		if (opts.icon && (opts.icon.type)) {
 			var hint = iconHints[opts.icon.type];
 			if (hint) {
+				if (opts.icon.name) hint.name = opts.icon.name;
 				color = opts.icon.color || hint.color;
-				if (type === 'confirm' && color === 'danger') {
-					modal.find('.btn-accept').addClass('btn-to-danger');
-                }
+				if (type === 'confirm' && color === 'danger') modal.find('.btn-accept').addClass('btn-to-danger');
 				var icon = $('<i class="{0} text-{1} fa-fw fa-3x"></i>'.format(hint.name, opts.icon.color || hint.color));
 				icon.addClass('m{0}-3'.format(centerContent ? 'b' : 'r'));
 				boxBody.prepend(icon.wrap('<div class="modal-box-icon"></div>').parent());
@@ -103,9 +102,19 @@
 		var input;
 		if (type === 'prompt') {
 			input = $('<input type="text" class="form-control prompt-control" autocomplete="off" tabindex="1" />');
-			if (opts.prompt && opts.prompt.value) {
-				input.val(opts.prompt.value);
+			if (opts.prompt) {
+				if (opts.prompt.value) {
+					input.val(opts.prompt.value);
+				}
+				if (opts.prompt.invalidChars) {
+					input.on('keydown', function (e) {
+						if (opts.prompt.invalidChars.indexOf(e.key) > -1) {
+							e.preventDefault();
+                        }
+					});
+				}
             }
+
 			boxBody.append(input.wrap('<div class="modal-box-input w-100"></div>').parent());
         }
 

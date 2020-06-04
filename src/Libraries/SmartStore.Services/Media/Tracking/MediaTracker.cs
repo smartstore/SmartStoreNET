@@ -129,7 +129,7 @@ namespace SmartStore.Services.Media
                 var album = _folderService.FindAlbum(file)?.Value;
                 if (album == null)
                 {
-                    throw new InvalidOperationException("Cannot track a media file that is not assigned to any album.");
+                    throw new InvalidOperationException("Cannot track a media file that is not assigned to any album."); // TODO: (mm) Loc
                 }
                 else if (!album.CanDetectTracks)
                 {
@@ -305,14 +305,14 @@ namespace SmartStore.Services.Media
             var albumInfo = _albumRegistry.GetAlbumByName(albumName);
             if (albumInfo == null)
             {
-                throw new InvalidOperationException($"The album '{albumName}' does not exist.");
+                throw new InvalidOperationException($"The album '{albumName}' does not exist."); // TODO: (mm) Loc
             }
 
             // load corresponding detector provider for current album...
             var provider = _albumProviderFactory[albumInfo.ProviderType] as IMediaTrackDetector;
             if (provider == null)
             {
-                throw new InvalidOperationException($"The album '{albumName}' does not support track detection.");
+                throw new InvalidOperationException($"The album '{albumName}' does not support track detection."); // TODO: (mm) Loc
             }
 
             if (!isMigration)

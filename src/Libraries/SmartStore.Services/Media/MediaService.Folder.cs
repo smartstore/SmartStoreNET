@@ -13,8 +13,6 @@ namespace SmartStore.Services.Media
 {
     public partial class MediaService : IMediaService
     {
-        public Localizer T { get; set; } = NullLocalizer.Instance;
-
         #region Folder
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -54,7 +52,7 @@ namespace SmartStore.Services.Media
                         }
                         else
                         {
-                            if (i == 0) throw new NotSupportedException(string.Format(T("Admin.Media.Exception.TopLevelAlbum"), path));
+                            if (i == 0) throw new NotSupportedException(T("Admin.Media.Exception.TopLevelAlbum").Text.FormatInvariant(path));
                             flag = true;
                         }
                     }
@@ -91,7 +89,7 @@ namespace SmartStore.Services.Media
 
             if (node.Value.IsAlbum)
             {
-                throw new NotSupportedException(string.Format(T("Admin.Media.Exception.AlterRootAlbum"), node.Value.Name));
+                throw new NotSupportedException(T("Admin.Media.Exception.AlterRootAlbum").Text.FormatInvariant(node.Value.Name));
             }
 
             var folder = _folderService.GetFolderById(node.Value.Id);
@@ -105,7 +103,7 @@ namespace SmartStore.Services.Media
             // Destination must not exist
             if (FolderExists(destinationPath))
             {
-                throw new ArgumentException(string.Format(T("Admin.Media.Exception.DuplicateFolder"), destinationPath));
+                throw new ArgumentException(T("Admin.Media.Exception.DuplicateFolder").Text.FormatInvariant(destinationPath));
             }
 
             var destParent = FolderService.NormalizePath(Path.GetDirectoryName(destinationPath));
@@ -125,7 +123,7 @@ namespace SmartStore.Services.Media
 
             if (destParentNode.IsDescendantOfOrSelf(node))
             {
-                throw new ArgumentException(string.Format(T("Admin.Media.Exception.DescendantFolder"), destinationPath, node.Value.Path));
+                throw new ArgumentException(T("Admin.Media.Exception.DescendantFolder").Text.FormatInvariant(destinationPath, node.Value.Path));
             }
 
             // Set new values
@@ -151,7 +149,7 @@ namespace SmartStore.Services.Media
             destinationPath = FolderService.NormalizePath(destinationPath);
             if (destinationPath.EnsureEndsWith("/").StartsWith(path.EnsureEndsWith("/")))
             {
-                throw new ArgumentException(string.Format(T("Admin.Media.Exception.DescendantFolder"), destinationPath, path), nameof(destinationPath));
+                throw new ArgumentException(T("Admin.Media.Exception.DescendantFolder").Text.FormatInvariant(destinationPath, path), nameof(destinationPath));
             }
 
             var node = _folderService.GetNodeByPath(path);
@@ -162,7 +160,7 @@ namespace SmartStore.Services.Media
 
             if (node.Value.IsAlbum)
             {
-                throw new NotSupportedException(string.Format(T("Admin.Media.Exception.CopyRootAlbum"), node.Value.Name));
+                throw new NotSupportedException(T("Admin.Media.Exception.CopyRootAlbum").Text.FormatInvariant(node.Value.Name));
             }
 
             using (new DbContextScope(autoCommit: false, validateOnSave: false, autoDetectChanges: false))
@@ -384,7 +382,7 @@ namespace SmartStore.Services.Media
             else
             {
                 var fullPath = CombinePaths(node.Path, lockedFiles[0].Name);
-                throw new IOException(string.Format(T("Admin.Media.Exception.InUse"), fullPath));
+                throw new IOException(T("Admin.Media.Exception.InUse").Text.FormatInvariant(fullPath));
             }
 
             return numFiles;
@@ -399,8 +397,7 @@ namespace SmartStore.Services.Media
             if (!IsPath(path))
             {
                 // Destination cannot be an album                
-                var msg = string.Format(t("Admin.Media.Exception.PathSpecification"), path, operation);
-                throw new ArgumentException(msg, paramName);
+                throw new ArgumentException(t("Admin.Media.Exception.PathSpecification").Text.FormatInvariant(path, operation), paramName);
             }
         }
 

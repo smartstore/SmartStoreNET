@@ -13,7 +13,7 @@ namespace SmartStore.Services.Media
 {
     public partial class MediaService : IMediaService
     {
-        public static Localizer T { get; set; } = NullLocalizer.Instance;
+        public Localizer T { get; set; } = NullLocalizer.Instance;
 
         #region Folder
 
@@ -28,7 +28,7 @@ namespace SmartStore.Services.Media
             Guard.NotEmpty(path, nameof(path));
 
             path = FolderService.NormalizePath(path, false);
-            ValidateFolderPath(path, "CreateFolder", nameof(path));
+            ValidateFolderPath(path, "CreateFolder", nameof(path), T);
 
             var sep = "/";
             var folderNames = path.Split(new[] { sep }, StringSplitOptions.RemoveEmptyEntries);
@@ -81,7 +81,7 @@ namespace SmartStore.Services.Media
             Guard.NotEmpty(destinationPath, nameof(destinationPath));
 
             path = FolderService.NormalizePath(path);
-            ValidateFolderPath(path, "MoveFolder", nameof(path));
+            ValidateFolderPath(path, "MoveFolder", nameof(path), T);
 
             var node = _folderService.GetNodeByPath(path);
             if (node == null)
@@ -100,7 +100,7 @@ namespace SmartStore.Services.Media
                 throw _exceptionFactory.FolderNotFound(path);
             }
 
-            ValidateFolderPath(destinationPath, "MoveFolder", nameof(destinationPath));
+            ValidateFolderPath(destinationPath, "MoveFolder", nameof(destinationPath), T);
 
             // Destination must not exist
             if (FolderExists(destinationPath))
@@ -146,7 +146,7 @@ namespace SmartStore.Services.Media
             Guard.NotEmpty(destinationPath, nameof(destinationPath));
 
             path = FolderService.NormalizePath(path);
-            ValidateFolderPath(path, "CopyFolder", nameof(path));
+            ValidateFolderPath(path, "CopyFolder", nameof(path), T);
 
             destinationPath = FolderService.NormalizePath(destinationPath);
             if (destinationPath.EnsureEndsWith("/").StartsWith(path.EnsureEndsWith("/")))
@@ -282,7 +282,7 @@ namespace SmartStore.Services.Media
             Guard.NotEmpty(path, nameof(path));
 
             path = FolderService.NormalizePath(path);
-            ValidateFolderPath(path, "DeleteFolder", nameof(path));
+            ValidateFolderPath(path, "DeleteFolder", nameof(path), T);
 
             var node = _folderService.GetNodeByPath(path);
             if (node == null)
@@ -394,12 +394,13 @@ namespace SmartStore.Services.Media
 
         #region Utils
 
-        private static void ValidateFolderPath(string path, string operation, string paramName)
+        private static void ValidateFolderPath(string path, string operation, string paramName, Localizer t)
         {
             if (!IsPath(path))
             {
-                // Destination cannot be an album
-                throw new ArgumentException(string.Format(T("Admin.Media.Exception.PathSpecification"), path, operation), paramName);
+                // Destination cannot be an album                
+                var msg = string.Format(t("Admin.Media.Exception.PathSpecification"), path, operation);
+                throw new ArgumentException(msg, paramName);
             }
         }
 

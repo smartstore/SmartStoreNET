@@ -884,7 +884,7 @@ namespace SmartStore.Web.Controllers
 							var priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out var _);
 							var priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, currency);
 
-							if (_catalogSettings.ShowVariantCombinationPriceAdjustment)
+							if (_catalogSettings.ShowVariantCombinationPriceAdjustment && !product.CallForPrice)
 							{
                                 if (priceAdjustmentBase > decimal.Zero)
                                 {

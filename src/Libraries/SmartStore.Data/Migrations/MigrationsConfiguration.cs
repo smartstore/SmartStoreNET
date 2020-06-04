@@ -806,8 +806,8 @@
                 "Die Dateioperation erfordert, dass der Zielpfad zum Ursprungsalbum gehört. Quelle: {0}, Ziel: {1}.");
 
             builder.AddOrUpdate("Admin.Media.Exception.DeniedMediaType",
-                "The media type of '{0}' does not match the list of accepted media types",
-                "Der Medientyp von '{0}' stimmt nicht mit der Liste der akzeptierten Medientypen überein");
+                "The media type of '{0}' is not allowed. If you want this media type supported, enter the file name extension to the media configuration under 'Configuration > Settings > Media > Media types'.",
+                "Der Medientyp von '{0}' ist unzulässig. Wenn Sie wollen, dass dieser Medientyp unterstützt wird, tragen Sie die Dateinamenendungen in die Medienkonfiguration unter 'Konfiguration > Einstellungen > Medien > Medientypen' ein.");
 
             builder.AddOrUpdate("Admin.Media.Exception.DeniedMediaType.Hint",
                 " Accepted: {0}, current: {1}.",
@@ -818,8 +818,8 @@
                 "Thumbnail-Erstellung für die Datei '{0}' ist fehlgeschlagen. Grund: {1}.");
 
             builder.AddOrUpdate("Admin.Media.Exception.MaxFileSizeExceeded",
-                "The size {0:N0} of file '{1}' exceeds the maximum allowed file size {2:N0}.",
-                "Die Größe {0:N0} der Datei '{1}' überschreitet die maximal zulässige Dateigröße {2:N0}.");
+               "The file '{0}' with a size of {1} exceeds the maximum allowed file size of {2}.",
+               "Die Datei '{0}' mit einer Größe von {1} überschreitet die maximal zulässige Dateigröße von {2}.");
 
             builder.AddOrUpdate("Admin.Media.Exception.TopLevelAlbum",
                 "Creating top-level (album) folders is not supported. Folder: {0}.",

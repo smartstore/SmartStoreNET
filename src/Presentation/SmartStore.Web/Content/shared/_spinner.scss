@@ -106,3 +106,13 @@
     animation-name: spinner-dash, spinner-rotate;
 }
 
+.circular-progress {
+    transform: rotate(-90deg);
+
+    circle {
+        stroke: $primary;
+    }
+    circle, svg {
+        animation: none;
+    }
+}

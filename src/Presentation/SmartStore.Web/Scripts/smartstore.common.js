@@ -161,7 +161,7 @@
 		if (active) spinner.addClass('active');
 		if (boxed) spinner.addClass('spinner-boxed').css('font-size', size + 'px');
 		if (white) spinner.addClass('white');
-	    
+
 		if (!_.isNumber(strokeWidth)) {
 			strokeWidth = 4;
 		}
@@ -170,7 +170,36 @@
 		spinner.append($(svg));
 
 		return spinner;
-	}
+	};
+
+	window.createCircularProgress = function (size, active, strokeWidth, boxed, white) {
+		var html = window.createCircularSpinner(size, active, strokeWidth, boxed, white);
+		html.addClass("circular-progress");
+
+		var circle = html.find("circle");
+		var radius = circle.attr("r");
+		var circumference = 2 * Math.PI * radius;
+		circle.css({
+			'stroke-dashoffset': circumference,
+			'stroke-dasharray': circumference
+		});
+		
+		return html;
+	};
+
+	window.setCircularProgressValue = function (context, progress) {
+		var value = Math.abs(parseInt(progress));
+		if (!isNaN(value)) {
+
+			var circle = $(context).find("circle");
+			var radius = circle.attr("r");
+			var circumference = 2 * Math.PI * radius;
+			var percent = value / 100;
+			var dashoffset = circumference * (1 - percent);
+
+			circle.css('stroke-dashoffset', dashoffset);
+		}
+	};
 
 	window.copyTextToClipboard = function (text) {
 		var result = false;

@@ -113,28 +113,16 @@
 
 				setPreviewIcon(file, displayPreviewInList);
 
+				if (displayPreviewInList) {
+					var progress = window.createCircularProgress(24, true, 6);
+					$(file.previewTemplate).find(".upload-status").append(progress);
+				}
+				
 				// If file is a duplicate prevent it from being displayed in preview container.
 				if (preCheckForDuplicates(file.name, previewContainer)) {
 					$(file.previewTemplate).addClass("d-none");
 				}
 			});
-
-			function setPreviewIcon(file, small) {
-				var el = $(file.previewTemplate);
-				var elIcon = el.find('.file-icon');
-				var elImage = el.find('.file-figure > img').addClass("hide");
-				var icon = SmartStore.media.getIconHint(file);
-
-				elIcon.attr("class", "file-icon show " + icon.name + (small ? " fa-2x" : " fa-4x")).css("color", icon.color);
-
-				if (small)
-					return;
-
-				elImage.one('load', function () {
-					elImage.removeClass('hide');
-					elIcon.removeClass('show');
-				});
-			}
 
 			el.on("addedfiles", function (files) {
 				logEvent("addedfiles", files);
@@ -198,8 +186,13 @@
 				}
 				else {
 					// Mulifile.
-					var fileProgressBar = $(file.previewTemplate).find(".progress-bar");
-					fileProgressBar.attr('aria-valuenow', progress).css('width', progress + '%');
+					if (!displayPreviewInList) {
+						var fileProgressBar = $(file.previewTemplate).find(".progress-bar");
+						fileProgressBar.attr('aria-valuenow', progress).css('width', progress + '%');
+					}
+					else {
+						window.setCircularProgressValue($(file.previewTemplate), progress);
+					}
 				}
 			});
 
@@ -236,7 +229,8 @@
 						var template = $(file.previewTemplate);
 						template.removeClass("dz-image-preview");
 						var icon = template.find(".upload-status > i");
-						icon.removeClass("fa-spinner fa-spin").addClass("fa-check text-success");
+						icon.removeClass("d-none");
+						template.find(".circular-progress").addClass("d-none");
 					}
 				}
 
@@ -511,6 +505,23 @@
 				}
 			}
 
+			function setPreviewIcon(file, small) {
+				var el = $(file.previewTemplate);
+				var elIcon = el.find('.file-icon');
+				var elImage = el.find('.file-figure > img').addClass("hide");
+				var icon = SmartStore.media.getIconHint(file);
+
+				elIcon.attr("class", "file-icon show " + icon.name + (small ? " fa-2x" : " fa-4x")).css("color", icon.color);
+
+				if (small)
+					return;
+
+				elImage.one('load', function () {
+					elImage.removeClass('hide');
+					elIcon.removeClass('show');
+				});
+			}
+
 			fuContainer.on("mediaselected", function (e, files) {
 				if (opts.maxFiles === 1) {
 					displaySingleFilePreview(files[0], fuContainer, options);
@@ -615,7 +626,8 @@
 						var template = $(file.previewTemplate);
 						template.addClass("canceled");
 						var icon = template.find(".upload-status > i");
-						icon.removeClass("fa-spinner fa-spin").addClass("fa-times text-danger");
+						icon.removeClass("d-none").addClass("fa-times text-danger");
+						template.find(".circular-progress").remove();
 					}
 				}
 
@@ -844,8 +856,10 @@
 		if (elStatusWindow.length > 0) {
 			var el = $(file.previewElement);
 			var icon = el.find(".upload-status > i");
-			icon.removeClass("fa-check text-success").addClass("fa-spinner fa-spin");
-			
+			icon.addClass("d-none");
+			window.setCircularProgressValue(el, 0);
+			el.find(".circular-progress").removeClass("d-none");
+
 			//dzResetProgressBar(el.find(".progress-bar"));
 		}
 	}

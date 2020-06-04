@@ -162,8 +162,8 @@ namespace SmartStore.Data.Setup
                 ProductType = ProductType.SimpleProduct,
                 Name = "COOGEE LOW M",
                 MetaTitle = "COOGEE LOW M",
-                ShortDescription = "MÄNNER FREIZEITSCHUHE",
-                FullDescription = "<p>Du bist immer auf dem Sprung: zum Kino, zur neueröffneten Bar oder zum nächsten Stadtfest. Der stylische COOGEE LOW ist DER Schuh für dein Leben in der Stadt. Denn er verbindet Funktion mit Style. Die sportliche EVA - Zwischensohle ist nicht nur leicht und flexibel, sondern dämpft deine Ferse mit ihrer Erhöhung im hinteren Bereich auch besonders gut und ist sehr komfortabel.So sind deine Füße auch nach vielen Stunden noch fit – du wirst es merken, wenn nach einem langen Tag z.B.noch eine spontane Party ansteht. Die Passform haben wir nach dem Vorbild einer Socke gestaltet, sie ist locker und komfortabel.Dennoch bleibt der Schuh in seiner schmalen Form. Dank des atmungsaktiven Obermaterials bleibt das Fußklima angenehm, egal, wie warm es draussen ist.Gleichzeitig ist der Schuh sehr pflegeleicht.Worauf wartest du also noch ? Ab in die City!</p>",
+                ShortDescription = "MEN'S LEISURE SHOES",
+                FullDescription = "<p>You are always on the go: to the cinema, to the newly opened bar or to the next city festival. The stylish COOGEE XT LOW is THE shoe for your life in the city. Because it combines function with style.</p>",
                 Sku = "Wolfskin-4032541",
                 ProductTemplateId = productTemplate.Id,
                 AllowCustomerReviews = true,
@@ -193,10 +193,10 @@ namespace SmartStore.Data.Setup
             var adidasSuperstarSchuh = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                Name = "SUPERSTAR SCHUH",
-                MetaTitle = "SUPERSTAR SCHUH",
-                ShortDescription = "DER STREETWEAR-KLASSIKER MIT DER SHELL TOE.",
-                FullDescription = "<p>Der adidas Superstar wurde erstmals 1969 herausgebracht und machte seinem Namen schon bald alle Ehre. Heute gilt er als Streetstyle-Legende. In dieser Version kommt der Schuh mit einem bequemen Obermaterial aus Full-Grain-Leder. Perfekt wird der Look durch die klassische Shell Toe aus Gummi für mehr Strapazierfähigkeit.</p>",
+                Name = "SUPERSTAR SHOE",
+                MetaTitle = "SUPERSTAR SHOE",
+                ShortDescription = "THE STREETWEAR CLASSIC WITH THE SHELL TOE.",
+                FullDescription = "<p>The Adidas Superstar was first released in 1969 and soon lived up to its name. Today he is considered a street style legend. In this version, the shoe comes with a comfortable full grain leather upper. The look is perfected by the classic rubber shell toe for added durability.</p>",
                 Sku = "Adidas-C77124",
                 ProductTemplateId = productTemplate.Id,
                 AllowCustomerReviews = true,
@@ -326,8 +326,8 @@ namespace SmartStore.Data.Setup
                 ProductType = ProductType.SimpleProduct,
                 Name = "KANUKA POINT JACKET M",
                 MetaTitle = "KANUKA POINT JACKET M",
-                ShortDescription = "SOFTSHELLJACKE MÄNNER",
-                FullDescription = "<p>Sportliches Design für sportliche Touren: Die KANUKA POINT ist so gern in Bewegung wie du. Die Softshelljacke besteht aus superelastischem und sehr atmungsaktivem Material, das sich unterwegs jeder deiner Bewegungen anpasst. Deswegen nimmst du mit der KANUKA POINT jeden Pass mit Leichtigkeit.Und musst dir auch bei Kraxeleien zum Gipfel keine Gedanken um deine Jacke machen, denn ihr Material hält einiges aus.Auch bei Wind und leichten Schauern bleibst du gelassen.</p>",
+                ShortDescription = "SOFTSHELL JACKET MEN",
+                FullDescription = "<p>Sporty design for sporty tours: The KANUKA POINT likes to be on the move as much as you do. The softshell jacket is made of super-elastic and very breathable material that adapts to your every move on the road. With the KANUKA POINT, you can take every pass with ease, and you don't have to worry about your jacket even when you're scrambling to the top, because its material is very durable, even in windy conditions and light showers.</p>",
                 Sku = "jack-1305851",
                 ProductTemplateId = productTemplate.Id,
                 AllowCustomerReviews = true,
@@ -666,13 +666,13 @@ namespace SmartStore.Data.Setup
             var corbusierSofa = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                Name = "Le Corbusier LC2 Sofa, 3-Sitzer (1929)",
-                MetaTitle = "Le Corbusier LC2 Sofa, 3-Sitzer (1929)",
-                ShortDescription = "Sofa 3-Sitzer LC 2, Designer: Le Corbusier, Stahlrohrrahmen (Chrom), Kissen aus Polyurethan Schaum und Dacronwatte, Sitzpolster mit Daunenauflage, Bezug: Leder",
-                FullDescription = "<p>Das 3-Sitzer-Sofa LC2 ist zusammen mit dem gleichnamigen Zweisitzer die vollkommene Ergänzung der bekannten	Corbusier-Sessel. Zusammen ergibt sich eine formvollendete Sitzgruppe für Lobbys, Lofts oder Salons mit hohem Design-Anspruch." +
-                "Auch wenn die Corbusier Sofas das Kürzel des Designers (LC) tragen, sind sie nicht von ihm entworfen worden. Sie lehnen sich lediglich eng an die	von Le Corbusier entworfenen Sitzmöbel LC2 und LC3 an. Der Optik und dem Komfort schadet dieser Umstand jedoch nicht. " +
-                "Das Gestell dieses Sofas besteht aus einem aufwendig gebogenen Stahlrohrahmen in Chrom.Die Lederkissen sind mit    Polyurethan Schaum und Dacronwatte gefüllt.Die Sitzfläche des Sofas wurde für einen optimalen Sitzkomfort zusätzlich mit Daunenfedern  aufgepolstert. " +
-                "</p><p>Abmessungen: B x T x H: 180 x 70 x 67 cm, Sitzhöhe: ca. 45 cm</p>",
+                Name = "Le Corbusier LC2 sofa, 3-seater (1929)",
+                MetaTitle = "Le Corbusier LC2 sofa, 3-seater (1929)",
+                ShortDescription = "Sofa 3-seater LC 2, Designer: Le Corbusier, tubular steel frame (chrome), cushions of polyurethane foam and dacron wadding, seat upholstery with down, cover: leather",
+                FullDescription = "<p>The 3-seater sofa LC2, together with the two-seater of the same name, is the perfect complement to the well-known Corbusier armchairs. " +
+                "Together they form a perfectly shaped seating group for lobbies, lofts or salons with high design standards. Even though the Corbusier sofas bear the abbreviation of the designer (LC), they were not designed by him. They merely lean closely on the LC2 and LC3 seating furniture designed by Le Corbusier. " +
+                "However, this circumstance does not harm the appearance and comfort. The frame of this sofa consists of an elaborately curved tubular steel frame in chrome. The leather cushions are filled with polyurethane foam and dacron wadding, and the seat of the sofa is additionally upholstered with down feathers for optimum seating comfort.</p>" +
+                "<p>Dimensions of the sofa: W x D x H: 180 x 70 x 67 cm, seat height: approx. 45 cm</p>",
                 Sku = "LC2 DS/23-1",
                 ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
@@ -726,13 +726,13 @@ namespace SmartStore.Data.Setup
             var josefHoffmannSofa = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                Name = "Josef Hoffmann Sofa 2-Sitzer Cubus (1910)",
-                MetaTitle = "Josef Hoffmann Sofa 2-Sitzer Cubus (1910)",
-                ShortDescription = "Sofa Kubus, 2-Sitzer, Designer: Josef Hoffmann, Breite 166 cm, Tiefe 72 cm, Höhe 77 cm, Grundgestell: massives Buchenholz, Polsterung: fester Polyurethan Schaum (formbeständig), Bezug: Leder",
-                FullDescription = "<p>Der Zweisitzer aus der Kubus-Serie von Josef Hoffmann ist ein stilvoller Blickfang in Wohn- und Geschäftsräumen. Gemeinsam mit dem Sessel Kubus und dem Kubus Dreisitzer entsteht eine stilvolle Sitzgruppe für Empfangshallen und große Wohnzimmer." +
-                "Das Sofa von Josef Hoffmann ist mit einer formbeständige Polsterung versehen, mit Leder überzogen und zeigt durch eine spezielle Nähtechnik zahlreiche Quadrate, die sich zu einem Gesamtbild Formen. " +
-                "Das Grundgestell besteht aus Buchenholz.Die rein geometrische Form dieses Hoffman Entwurfs war auch Vorreiter für den Kubismus, der Anfang des 20.Jahrhunderts seine Hochphase erreichte. " +
-                "</p><p>Abmessung:  Breite 166 cm, Tiefe 72 cm, Höhe 77 cm, cbm:  1,50</p>",
+                Name = "Josef Hoffmann sofa 2-seater Cubus (1910)",
+                MetaTitle = "Josef Hoffmann sofa 2-seater Cubus (1910)",
+                ShortDescription = "Sofa Kubus, 2-seater, Designer: Josef Hoffmann, width 166 cm, depth 72 cm, height 77 cm, base frame: solid beech wood, upholstery: solid polyurethane foam (dimensionally stable), cover: leather",
+                FullDescription = "<p>The two-seater from Josef Hoffmann's Kubus series is a stylish eye-catcher in residential and business premises. Together with the Kubus armchair and the Kubus three-seater, it creates a stylish seating group for reception halls and large living rooms." +
+                "Josef Hoffmann's sofa is upholstered with a shape-retaining upholstery, covered with leather and, using a special sewing technique, shows numerous squares that form an overall picture. " +
+                "The purely geometric form of this Hoffman design was also a pioneer of Cubism, which reached its peak at the beginning of the 20th century.</p>" +
+                "<p>Dimensions: width 166 cm, depth 72 cm, height 77 cm, cbm: 1,50</p>",
                 Sku = "JH DS/82-1",
                 ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
@@ -796,14 +796,14 @@ namespace SmartStore.Data.Setup
             var miesBarcelonaSofa = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                Name = "Mies van der Rohe Barcelona - Loveseat Sofa (1929)",
-                MetaTitle = "Mies van der Rohe Barcelona - Loveseat Sofa (1929)",
-                ShortDescription = "Sessel Barcelona lang, Designer: Mies van der Rohe, L x T x H: 147 x 75 x 75 cm, verchromtes Gestell aus Spezialfederstahl, Bespannung: Kernlederstreifen, Polster mit Polyurethanschaum-Kern, Bezug: Leder",
-                FullDescription = "<p>Der Loveseat Sofa Barcelona ist eines der bekanntesten Möbelstücke der Bauhaus-Ära. Er wurde von Mies van der Rohe entworfen und 1929 bei der Weltausstellung in Barcelona vorgestellt. Mies van der Rohe widmete ihn dem spanischen Königspaar. Der Barcelona Sofa in der langen Ausführung eignet sich hervorragend als Sitzmöbel für Ausstellungen oder Geschäftsräume. " +
-                "Zusammen mit der schmalen Ausführung und einem Tisch von Mies van der Rohe entsteht außerdem eine stilvolle Sitzecke für Wohnräume. " +
-                "Der Loveseat Sofa Barcelona hat ein Gestell aus besonders hochwertigem Spezialfederstahl.Als Bespannung dienen Kernlederstreifen. " +
-                "Darauf liegt die Polsterung mit Lederbezug.Einzelne Quadrate ergeben hierbei ein symmetrisches, stilvolles Bild.</p>" +
-                "<p>Abmessung:  Länge 147 cm, Tiefe 75 cm, Höhe 75 cm, cbm:  0,96 </p>",
+                Name = "Mies van der Rohe Barcelona - Loveseat sofa (1929)",
+                MetaTitle = "Mies van der Rohe Barcelona - Loveseat sofa (1929)",
+                ShortDescription = "Armchair Barcelona long, Designer: Mies van der Rohe, L x D x H: 147 x 75 x 75 cm, chrome-plated frame of special spring steel, covering: core leather strips, upholstery with polyurethane foam core, cover: leather",
+                FullDescription = "<p>The Loveseat Sofa Barcelona is one of the most famous pieces of furniture of the Bauhaus era. It was designed by Mies van der Rohe and presented at the World Exhibition in Barcelona in 1929. Mies van der Rohe dedicated it to the Spanish royal couple. The Barcelona sofa in the long version is ideal as a seating furniture for exhibitions or business premises. " +
+                "Together with the slim design and a table by Mies van der Rohe, a stylish sitting area for living rooms is also created. " +
+                "The Loveseat Barcelona sofa has a frame made of special high quality spring steel, covered with leather strips. " +
+                "On top of this lies the upholstery with leather covering.individual squares create a symmetrical, stylish picture.</p>" +
+                "<p>Dimensions: length 147 cm, depth 75 cm, height 75 cm, cbm: 0.96 </p>",
                 Sku = "LR 556",
                 ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
@@ -868,7 +868,7 @@ namespace SmartStore.Data.Setup
                 ProductType = ProductType.SimpleProduct,
                 Name = "Le Corbusier LC 6 dining table (1929)",
                 MetaTitle = "Le Corbusier LC 6 dining table (1929)",
-                ShortDescription = "Dining table LC 6, designer: Le Corbusier, W x H x D: 225 x 69/74 (adjustable) x 85 cm, substructure: steel pipe, glass plate: Clear or sandblasted, 15 or 19 mm, height-adjustable.",
+                ShortDescription = "Dining table LC 6, Designer: Le Corbusier, W x H x D: 225 x 69/74 (adjustable) x 85 cm, substructure: steel pipe, glass plate: Clear or sandblasted, 15 or 19 mm, height-adjustable.",
                 FullDescription = "<p>Four small plates carry a glass plate. The structure of the steel pipe is covered in clear structures. The LC6 is a true classic of Bauhaus art and is used in combination with the swivel chairs LC7 as a form-beautiful Le Corbusier dining area. In addition, the table is also increasingly found in offices or in halls. It is height-adjustable and can thus be perfectly adapted to the respective purpose.</p><p>Le Corbusier's beautifully shaped table is available with a clear or sandblasted glass plate. The substructure consists of oval steel tubes.</p>",
                 Sku = "Furniture-lc6",
                 ProductTemplateId = productTemplateSimple.Id,
@@ -926,15 +926,15 @@ namespace SmartStore.Data.Setup
             var noguchiTable = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                Name = "Isamu Noguchi Couchtisch, Coffee Table (1945)",
-                MetaTitle = "Isamu Noguchi Couchtisch, Coffee Table (1945)",
-                ShortDescription = "Couchtisch, Designer: Isamu Noguchi, B x H x T: 128 x 40 x 92,5 cm, Untergestell: Holz, Tischplatte: Kristallglas, 15 oder 19 mm",
-                FullDescription = "<p>Der Kaffeetisch von Isamu Noguchi hat einst sogar den Präsidenten des New Yorker Museums für moderne Kunst beeindruckt. " +
-                "Für ihn ist er nämlich ursprünglich entworfen worden. Das geschwungene Untergestell aus Esche ist ein eleganter Blickfang. " +
-                "Es wirkt unaufdringlich und kommt durch die durchsichtige, dreiseitige Glasplatte perfekt zur Geltung. " +
-                "Ein Bauhaus - Möbel, das heute in vielen Räumen mit gehobener Ausstattung als Beistelltisch genutzt wird. " +
-                "Es passt perfekt in die Lounge, ins Wohnzimmer und in Empfangsräume.</p>" +
-                "<p>Abmessungen:  Breite 128 cm, Höhe 40 cm, Tiefe 92,5 cm </p>",
+                Name = "Isamu Noguchi couch table, Coffee Table (1945)",
+                MetaTitle = "Isamu Noguchi couch table, Coffee Table (1945)",
+                ShortDescription = "Coffee table, Designer: Isamu Noguchi, W x H x D: 128 x 40 x 92.5 cm, base: wood, table top: crystal glass, 15 or 19 mm",
+                FullDescription = "<p>The coffee table of Isamu Noguchi once impressed even the president of the New York Museum of Modern Art. " +
+                "Because it was originally designed for him. The curved ash base is an elegant eye-catcher. " +
+                "It appears unobtrusive and is perfectly shown off to advantage through the transparent, three-sided glass plate. " +
+                "A Bauhaus - furniture, which today is used in many rooms with upscale furnishings as a side table. " +
+                "It fits perfectly in the lounge, living room and reception areas.</p>" +
+                "<p>Dimensions:  width 128 cm, height 40 cm, depth 92,5 cm </p>",
                 Sku = "IN 200",
                 ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
@@ -989,14 +989,13 @@ namespace SmartStore.Data.Setup
             var miesBarcelonaTable = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                Name = "Ludwig Mies van der Rohe Tisch Barcelona (1930)",
-                MetaTitle = "Ludwig Mies van der Rohe Tisch Barcelona (1930)",
-                ShortDescription = "Tisch Barcelona, Designer: Mies van der Rohe, Breite 90 cm, Höhe 46 cm, Tiefe 90 cm, Untergestell: verchromter Flachstahl, Tischplatte: Glas (12 mm)",
-                FullDescription = "<p>Dieser Tisch von Mies van der Rohe passt zur berühmten Barcelona-Serie aus Sessel und Hocker, die für den spanischen König entworfen und  1929 bei der Weltausstellung präsentiert wurde. " +
-                "Der Couchtisch wurde zwar erst einige Zeit später von Mies van der Rohe für das Haus „Tugendhat“ angefertigt, bildet aber mit den Möbeln der Barcelona-Serie eine attraktive Sitzecke für Büros und Wohnräume. " +
-                "Der Tisch von Mies van der Rohe besteht aus einem Gestell aus Flachstahl und einer 12 mm dicken Glasplatte.Unter der durchsichtigen Platte erscheint durch die Konstruktion ein verchromtes „X“.</p>" +
-                "<p>Abmessung:  Breite 90 cm, Höhe 46 cm, Tiefe 90 cm" +
-                "Stärke Glasplatte: 12 mm </p>",
+                Name = "Ludwig Mies van der Rohe table Barcelona (1930)",
+                MetaTitle = "Ludwig Mies van der Rohe table Barcelona (1930)",
+                ShortDescription = "Table Barcelona, Designer: Mies van der Rohe, width 90 cm, height 46 cm, depth 90 cm, base: chromed flat steel, table top: glass (12 mm)",
+                FullDescription = "<p>This table by Mies van der Rohe matches the famous Barcelona series of armchair and stool, which was designed for the King of Spain and presented at the World Fair in 1929. " +
+                "Although the coffee table was not made until some time later by Mies van der Rohe for the house 'Tugendhat', it forms an attractive sitting area for offices and living rooms with the furniture of the Barcelona series. " +
+                "The table by Mies van der Rohe consists of a flat steel frame and a 12 mm thick glass plate, under the transparent plate a chromed 'X' appears through the construction.</p>"+
+                "<p>dimensions: width 90 cm, height 46 cm, depth 90 cm, glass plate thickness: 12 mm </p>",
                 Sku = "LM T/98",
                 ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
@@ -1052,7 +1051,7 @@ namespace SmartStore.Data.Setup
 
             #endregion Category Tables
 
-            #region Category Chairs
+            #region Category Armchairs
 
             #region Ball Chair
 
@@ -1118,7 +1117,7 @@ namespace SmartStore.Data.Setup
                 ProductType = ProductType.SimpleProduct,
                 Name = "Charles Eames Lounge Chair (1956)",
                 MetaTitle = "Charles Eames Lounge Chair (1956)",
-                ShortDescription = "Club lounge chair, designer: Charles Eames, width 80 cm, depth 80 cm, height 60 cm, seat shell: plywood, foot (rotatable): Aluminium casting, cushion (upholstered) with leather cover.",
+                ShortDescription = "Club lounge chair, Designer: Charles Eames, width 80 cm, depth 80 cm, height 60 cm, seat shell: plywood, foot (rotatable): Aluminium casting, cushion (upholstered) with leather cover.",
                 FullDescription = "<p>That's how you sit in a baseball glove. In any case, this was one of the ideas Charles Eames had in mind when designing this club chair. The lounge chair should be a comfort armchair, in which one can sink luxuriously. Through the construction of three interconnected, movable seat shells and a comfortable upholstery Charles Eames succeeded in the implementation. In fact, the club armchair with a swiveling foot is a contrast to the Bauhaus characteristics that emphasized minimalism and functionality. Nevertheless, he became a classic of Bauhaus history and still provides in many living rooms and clubs for absolute comfort with style.</p><p>Dimensions: Width 80 cm, depth 60 cm, height total 80 cm (height backrest: 60 cm). CBM: 0.70.</p><p>Lounge chair with seat shell of laminated curved plywood with rosewood veneer, walnut nature or in black. Rotatable base made of aluminium cast black with polished edges or optionally fully chromed. Elaborate upholstery of pillows in leather.</p><p>All upholstery units are removable at the Eames Lounge chair (seat, armrest, backrest, headrest).</p>",
                 Sku = "Furniture-lounge-chair",
                 ProductTemplateId = productTemplateSimple.Id,
@@ -1234,7 +1233,7 @@ namespace SmartStore.Data.Setup
 
             #endregion Josef Hoffmann Cube Chair
 
-            #endregion Category Chairs
+            #endregion Category Armchairs
 
             return new List<Product>
             {
@@ -1242,7 +1241,7 @@ namespace SmartStore.Data.Setup
                miesBarcelonaSofa, corbusierSofa, josefHoffmannSofa
             };
         }
-
+                
         public IList<Product> Products()
         {
             var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);
@@ -1256,6 +1255,8 @@ namespace SmartStore.Data.Setup
             var categories = _ctx.Set<Category>().ToList().ToDictionarySafe(x => x.Alias, x => x);
             var specAttributes = _ctx.Set<SpecificationAttribute>().ToList().ToDictionarySafe(x => x.DisplayOrder, x => x);
             var taxCategories = _ctx.Set<TaxCategory>().ToList().ToDictionarySafe(x => x.Name, x => x);
+
+            #region Category Sports
 
             #region Category Golf
 
@@ -1700,6 +1701,8 @@ namespace SmartStore.Data.Setup
             #endregion All Court Basketball
 
             #endregion Category Basketball
+
+            #endregion Category Sports
 
             #region Category Gift Cards
 
@@ -2363,9 +2366,9 @@ namespace SmartStore.Data.Setup
             var booksAutosDerSuperlative = new Product
             {
                 ProductType = ProductType.SimpleProduct,
-                Name = "Car of superlatives: the strongest, the first, the most beautiful, the fastest",
+                Name = "Cars of superlatives: The strongest, the first, the most beautiful, the fastest",
                 ShortDescription = "Hardcover",
-                FullDescription = "<p> For some, the car is only a useful means of transportation. For everyone else, there are 'cars - The Ultimate Guide' of art-connoisseur Michael Doerflinger. With authentic images, all important data and a lot of information can be presented to the fastest, most innovative, the strongest, the most unusual and the most successful examples of automotive history. A comprehensive manual for the specific reference and extensive browsing. </p>",
+                FullDescription = "<p>For some, the car is only a useful means of transportation. For everyone else, there are 'cars - The Ultimate Guide' of art-connoisseur Michael Doerflinger. With authentic images, all important data and a lot of information can be presented to the fastest, most innovative, the strongest, the most unusual and the most successful examples of automotive history. A comprehensive manual for the specific reference and extensive browsing. </p>",
                 Sku = "P-1007",
                 ProductTemplateId = productTemplate.Id,
                 AllowCustomerReviews = true,

@@ -28,6 +28,12 @@ namespace SmartStore.Services.Media
             path = FolderService.NormalizePath(path, false);
             ValidateFolderPath(path, "CreateFolder", nameof(path));
 
+            var dupe = _folderService.GetNodeByPath(path);
+            if (_folderService.GetNodeByPath(path) != null)
+            {
+                throw _exceptionFactory.DuplicateFolder(path, dupe.Value);
+            }
+
             var sep = "/";
             var folderNames = path.Split(new[] { sep }, StringSplitOptions.RemoveEmptyEntries);
             bool flag = false;

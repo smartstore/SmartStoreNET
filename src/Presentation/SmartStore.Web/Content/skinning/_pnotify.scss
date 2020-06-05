@@ -10,6 +10,11 @@
     //background: #fff !important;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175) !important;
     border-width: 1px;
+    min-height: 75px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: $border-radius-lg;
 
     &.alert { border-color: rgba(0,0,0, 0.12) !important }
 
@@ -77,17 +82,19 @@
 
 .ui-pnotify-closer, 
 .ui-pnotify-sticker {
-    width: 16px;
     opacity: .35;
 	margin: 0;
-	padding-left: 2px;
-	position: relative;
-	top: -5px;
-	left: 5px;
+	padding: 0 5px;
+	position: absolute;
+	top: 5px;
+	right: 8px;
+    outline: 0;
+    font-size: 12px;
+    vertical-align: middle;
 }
 
-.ui-pnotify-closer {
-    padding-left: 7px;
+.ui-pnotify-sticker {
+    right: 25px;
 }
 
 .ui-pnotify-closer:hover, 

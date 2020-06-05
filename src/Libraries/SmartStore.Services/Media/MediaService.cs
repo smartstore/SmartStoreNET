@@ -791,7 +791,7 @@ namespace SmartStore.Services.Media
             if (file.FolderId.HasValue && folderChanged)
             {
                 // When "Move" operation: ensure file stays in source album.
-                ValidateAlbums("Move", destFolderId, file.FolderId.Value);
+                ValidateAlbums("Move", file.FolderId.Value, destFolderId);
             }
 
             if (nameChanged)

@@ -786,8 +786,8 @@
                 "'{0}' Plugin ist nicht kompatibel mit Ihrer Smartstore-Version. Löschen Sie es oder installieren Sie die richtige Version.");
 
             builder.AddOrUpdate("Admin.Media.Exception.FileNotFound",
-                "Media file '{0}' does not exist.",
-                "Die Mediendatei '{0}' existiert nicht.");
+                "Media file with Id '{0}' does not exist.",
+                "Die Mediendatei mit der Id '{0}' existiert nicht.");
 
             builder.AddOrUpdate("Admin.Media.Exception.FolderNotFound",
                 "Media folder '{0}' does not exist.",
@@ -806,8 +806,8 @@
                 "Die Dateioperation erfordert, dass der Zielpfad zum Ursprungsalbum gehört. Quelle: {0}, Ziel: {1}.");
 
             builder.AddOrUpdate("Admin.Media.Exception.DeniedMediaType",
-                "The media type of '{0}' is not allowed. If you want this media type supported, enter the file name extension to the media configuration under 'Configuration > Settings > Media > Media types'.",
-                "Der Medientyp von '{0}' ist unzulässig. Wenn Sie wollen, dass dieser Medientyp unterstützt wird, tragen Sie die Dateinamenendungen in die Medienkonfiguration unter 'Konfiguration > Einstellungen > Medien > Medientypen' ein.");
+                "The media type of '{0}' is not allowed. If you want the media type '{1}' supported, enter the file name extension to the media configuration under 'Configuration > Settings > Media > Media types'.",
+                "Der Medientyp von '{0}' ist unzulässig. Wenn Sie wollen, dass der Medientyp '{1}' unterstützt wird, tragen Sie die Dateiendung in die Medienkonfiguration unter 'Konfiguration > Einstellungen > Medien > Medientypen' ein.");
 
             builder.AddOrUpdate("Admin.Media.Exception.DeniedMediaType.Hint",
                 " Accepted: {0}, current: {1}.",
@@ -879,7 +879,11 @@
 
             builder.AddOrUpdate("Admin.Media.Exception.AlbumNoTrack",
                 "The album '{0}' does not support track detection.",
-                "Das Album '{0}' unterstützt die Erkennung von Verweisen nicht.");            
+                "Das Album '{0}' unterstützt die Erkennung von Verweisen nicht.");
+
+            builder.AddOrUpdate("Admin.Media.Exception.NullInputStream",
+                "Input stream was null",
+                "Eingabe-Stream war null");
         }
     }
 }

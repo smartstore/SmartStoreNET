@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Utilities.Threading;
 
@@ -18,6 +18,7 @@ namespace SmartStore.Services.Media
         public ILogger Logger { get; set; } = NullLogger.Instance;
         public IImageCache ImageCache { get; set; }
         public MediaExceptionFactory ExceptionFactory { get; set; }
+        public Localizer T { get; set; } = NullLocalizer.Instance;
 
         public virtual int Order => -100;
 
@@ -71,11 +72,10 @@ namespace SmartStore.Services.Media
                         }
 
                         var inputStream = sourceFile.OpenRead();
-
                         if (inputStream == null)
                         {
-                            context.Exception = ExceptionFactory.ExtractThumbnail(sourceFile.Path, "Input stream was null.");
-                            context.Executed = true;
+                            context.Exception = ExceptionFactory.ExtractThumbnail(sourceFile.Path, T("Admin.Media.Exception.NullInputStream"));
+                            context.Executed = true;                         
                             return;
                         }
 

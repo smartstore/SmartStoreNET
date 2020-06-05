@@ -44,7 +44,7 @@ SmartStore.Admin.Media = (function () {
 		});
 
 		// User has made a decision.
-		$(document).on("click", "#start-upload", function () {
+		$(document).on("click", ".start-upload", function () {
 			var dupeFileHandlingType = dupeFileHandlerDialog.find('input[name=dupe-handling-type]:checked').val();
 			var saveSelection = dupeFileHandlerDialog.find('#save-selection').is(":checked");
 
@@ -55,7 +55,7 @@ SmartStore.Admin.Media = (function () {
 				callback.apply(this, [dupeFileHandlingType, saveSelection, callerId]);
 		});
 
-		$(document).on("click", "#cancel-upload", function () {
+		$(document).on("click", ".cancel-upload", function () {
 			dupeFileHandlerDialog.modal('hide');
 
 			// All pending files must be removed from dropzone.

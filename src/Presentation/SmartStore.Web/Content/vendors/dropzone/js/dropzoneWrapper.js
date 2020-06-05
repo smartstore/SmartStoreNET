@@ -377,7 +377,7 @@
                 }
 
 				// Write current message into file so it can be displayed in file upload status.
-				file.message = errMessage;
+				file.errMessage = errMessage;
 
 				if (xhr && file.status === "error") {
 					console.log(xhr.statusText, "error");

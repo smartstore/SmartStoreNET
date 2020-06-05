@@ -15,6 +15,7 @@
     flex-direction: column;
     justify-content: center;
     border-radius: $border-radius-lg;
+    overflow: hidden;
 
     &.alert { border-color: rgba(0,0,0, 0.12) !important }
 

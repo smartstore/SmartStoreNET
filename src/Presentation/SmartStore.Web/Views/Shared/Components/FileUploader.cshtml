@@ -5,9 +5,7 @@
 @using SmartStore.Services.Media;
 
 @{
-	Html.AddScriptParts("~/Content/vendors/dropzone/js/dropzone.js");
-	Html.AddScriptParts("~/Content/vendors/dropzone/js/dropzoneWrapper.js");
-	Html.AddScriptParts("~/Scripts/smartstore.media.js");
+	Html.AddScriptParts(true, "~/bundles/fileuploader");
 
 	if (!Model.Name.HasValue())
 	{

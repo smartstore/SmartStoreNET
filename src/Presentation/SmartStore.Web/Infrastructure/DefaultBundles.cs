@@ -10,17 +10,26 @@ namespace SmartStore.Web.Infrastructure
 	{
 		public void RegisterBundles(BundleCollection bundles)
 		{
+			var vendors = "~/Content/vendors/";
+
 			/* Vue
 			-----------------------------------------------------*/
 			bundles.Add(new CustomScriptBundle("~/bundles/vue").Include(
-				"~/Content/vendors/vue/vue.js"));
+				vendors + "vue/vue.js"));
+
+			/* File uploader
+			------------------------------------------------------*/
+			bundles.Add(new CustomScriptBundle("~/bundles/fileuploader").Include(
+				vendors + "dropzone/js/dropzone.js",
+				vendors + "dropzone/js/dropzoneWrapper.js"
+			));
 
 			/* Image Gallery
 			-----------------------------------------------------*/
 			bundles.Add(new CustomScriptBundle("~/bundles/smart-gallery").Include(
-				"~/Content/vendors/drift/Drift.js",
-				"~/Content/vendors/photoswipe/photoswipe.js",
-				"~/Content/vendors/photoswipe/photoswipe-ui-default.js",
+				vendors + "drift/Drift.js",
+				vendors + "photoswipe/photoswipe.js",
+				vendors + "photoswipe/photoswipe-ui-default.js",
 				"~/Scripts/smartstore.gallery.js"));
 
 			/* Summernote
@@ -31,9 +40,9 @@ namespace SmartStore.Web.Infrastructure
 				"~/Content/editors/summernote/plugins/smartstore.link.js",
 				"~/Content/editors/summernote/plugins/smartstore.tablestyles.js",
 				"~/Content/editors/summernote/plugins/smartstore.cssclass.js",
-				"~/Content/vendors/beautify/beautify.min.js",
-				"~/Content/vendors/beautify/beautify-css.min.js",
-				"~/Content/vendors/beautify/beautify-html.min.js",
+				vendors + "beautify/beautify.min.js",
+				vendors + "beautify/beautify-css.min.js",
+				vendors + "beautify/beautify-html.min.js",
 				"~/Content/editors/summernote/globalinit.js"));
 
 			/* CodeMirror (V 5.3.3)
@@ -88,8 +97,7 @@ namespace SmartStore.Web.Infrastructure
 			/* Chart.js
 			------------------------------------------------------*/
 			bundles.Add(new CustomScriptBundle("~/bundles/charting").Include(
-			"~/Content/vendors/Chart.js/Chart.js",
-			"~/Content/vendors/Chart.js/Chart.min.js"
+				vendors + "Chart.js/Chart.js"
 			));
 		}
 

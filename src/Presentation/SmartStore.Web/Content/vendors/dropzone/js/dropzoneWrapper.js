@@ -263,6 +263,8 @@
 					// Reset dropzone for single file uploads, so other files can be uploaded again.
 					this.removeAllFiles(true); 
 				}
+
+				if (options.onUploadCompleted) options.onUploadCompleted.apply(this, [file]);
 			});
 
 			el.on("completemultiple", function (files) {
@@ -304,6 +306,7 @@
 
 				var dupeFiles = this.getFilesWithStatus(Dropzone.ERROR)
 					.filter(file => file.media && file.media.dupe === true);
+				var successFiles = this.getFilesWithStatus(Dropzone.SUCCESS);
 
 				// If there are duplicates & dialog isn't already open > open duplicate file handler dialog.
 				if (dupeFiles.length !== 0 && !$("#duplicate-window").hasClass("show")) {
@@ -318,10 +321,8 @@
 
 				// Status
 				if (elStatusWindow.length > 0) {
-					var successFiles = this.getFilesWithStatus(Dropzone.SUCCESS).length;
-
-					elStatusWindow.find(".current-file-count").text(successFiles);
-					elStatusWindow.find(".current-file-text").text(Res['FileUploader.StatusWindow.Complete.File' + (successFiles === 1 ? "" : "s")]);
+					elStatusWindow.find(".current-file-count").text(successFiles.length);
+					elStatusWindow.find(".current-file-text").text(Res['FileUploader.StatusWindow.Complete.File' + (successFiles.length === 1 ? "" : "s")]);
 					elStatusWindow.find(".flyout-commands").removeClass("show");
 				}
 
@@ -340,6 +341,8 @@
 						}
 					}
 				}
+
+				if (options.onCompleted) options.onCompleted.apply(this, [successFiles]);
 
 				// DEV
 				//$(".open-upload-summmary").show();
@@ -362,11 +365,6 @@
 
 				// Apply remove event only on explicit user interaction via remove button.
                 //if (options.onFileRemove) options.onFileRemove.apply(this, [file]);
-			});
-
-			el.on("complete", function (file) {
-				logEvent("complete", file);
-				if (options.onCompleted) options.onCompleted.apply(this, [file]);
 			});
 
 			el.on("error", function (file, errMessage, xhr) {

@@ -313,7 +313,7 @@
 					dupeFileHandlerDisplayFile = SmartStore.Admin.Media.openDupeFileHandlerDialog(
 						dupeFileHandlerCallback,		
 						elDropzone.find(".fileupload").attr("id"),
-						dupeFiles[0]								// Pass first duplicate file to be displayed in dialog.
+						dupeFiles[0] // Pass first duplicate file to be displayed in dialog.
 					);
 				}
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Media.Storage;
 
@@ -53,6 +54,26 @@ namespace SmartStore.Services.Media
         Skip
     }
 
+    public class DuplicateFileInfo
+    {
+        [JsonProperty("file")]
+        public MediaFileInfo File { get; set; }
+
+        /// <summary>
+        /// The attempted destination folder path
+        /// </summary>
+        [JsonProperty("destPath")]
+        public string DestPath { get; set; }
+    }
+
+    public class FolderOperationResult
+    {
+        public string Operation { get; set; }
+        public MediaFolderInfo Folder { get; set; }
+        public DuplicateEntryHandling DuplicateEntryHandling { get; set; }
+        public IList<DuplicateFileInfo> DuplicateFiles { get; set; }
+    }
+
     public partial interface IMediaService
     {
         /// <summary>
@@ -92,7 +113,7 @@ namespace SmartStore.Services.Media
         bool FolderExists(string path);
         MediaFolderInfo CreateFolder(string path);
         MediaFolderInfo MoveFolder(string path, string destinationPath);
-        MediaFolderInfo CopyFolder(string path, string destinationPath, DuplicateEntryHandling dupeEntryHandling = DuplicateEntryHandling.Skip);
+        FolderOperationResult CopyFolder(string path, string destinationPath, DuplicateEntryHandling dupeEntryHandling = DuplicateEntryHandling.Skip);
         void DeleteFolder(string path, FileHandling fileHandling = FileHandling.SoftDelete);
 
         MediaFileInfo ConvertMediaFile(MediaFile file);

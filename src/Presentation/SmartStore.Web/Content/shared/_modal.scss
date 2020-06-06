@@ -2,6 +2,7 @@
 /// <reference path="_mixins.scss" />
 /// <reference path="../bs4/scss/bootstrap.scss" />
 
+$modal-transition-duration: 0.4s;
 //$modal-transition-timing: cubic-bezier(0.25, 0.46, 0.45, 0.94); // easeOutQuad
 $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
 //$modal-transition-timing: cubic-bezier(0.19, 1, 0.22, 1); // easeOutExpo
@@ -16,7 +17,7 @@ $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
 
 .modal-backdrop.fade {
     // fade out
-    transition: opacity 0.4s $modal-transition-timing;
+    transition: opacity $modal-transition-duration $modal-transition-timing;
     // fade in
     &.show {
         transition: opacity 0.15s ease-out;
@@ -25,7 +26,9 @@ $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
 
 .modal.fade {
     .modal-dialog {
-        transition: opacity 0.4s $modal-transition-timing, transform 0.4s $modal-transition-timing;
+		transition-property: opacity, transform;
+		transition-duration: $modal-transition-duration;
+		transition-timing-function: $modal-transition-timing;
         transform: scale(1.1, 1.1);
         will-change: transform, opacity;
     }
@@ -40,13 +43,13 @@ $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
 	&.modal-open #page {
 		// fade in
 		filter: blur(2px);
-		transition: filter 0.4s $modal-transition-timing 0.15s;
+		transition: filter $modal-transition-duration $modal-transition-timing 0.15s;
 	}
 
 	&.modal-hiding #page {
 		// fade out
 		filter: blur(0);
-		transition: filter 0.4s $modal-transition-timing;
+		transition: filter $modal-transition-duration $modal-transition-timing;
 	}
 }
 
@@ -181,7 +184,7 @@ $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
 	}
 
 	&.fade .modal-dialog {
-		transition-duration: 0.25s !important;
+		//transition-duration: 0.25s !important;
 	}
 
 	.modal-box-body {

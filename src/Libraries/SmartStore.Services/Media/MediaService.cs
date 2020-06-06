@@ -647,7 +647,7 @@ namespace SmartStore.Services.Media
                 switch (dupeEntryHandling)
                 {
                     case DuplicateEntryHandling.Skip:
-                        return null;
+                        return dupe;
                     case DuplicateEntryHandling.ThrowError:
                         throw _exceptionFactory.DuplicateFile(destPathData.FullPath, ConvertMediaFile(dupe));
                     case DuplicateEntryHandling.Rename:

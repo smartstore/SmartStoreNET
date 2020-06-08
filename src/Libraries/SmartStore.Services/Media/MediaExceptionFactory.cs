@@ -65,32 +65,32 @@ namespace SmartStore.Services.Media
 
         public MediaFileNotFoundException FileNotFound(string path)
         {
-            return new MediaFileNotFoundException(T("Admin.Media.Exception.FileNotFound", "<b>" + path + "</b>"));
+            return new MediaFileNotFoundException(T("Admin.Media.Exception.FileNotFound", path));
         }
 
         public MediaFolderNotFoundException FolderNotFound(string path)
         {
-            return new MediaFolderNotFoundException(T("Admin.Media.Exception.FolderNotFound", "<b>" + path + "</b>"));
+            return new MediaFolderNotFoundException(T("Admin.Media.Exception.FolderNotFound", path));
         }
 
         public DuplicateMediaFileException DuplicateFile(string fullPath, MediaFileInfo dupeFile)
         {
-            return new DuplicateMediaFileException(T("Admin.Media.Exception.DuplicateFile", "<b>" + fullPath + "</b>"), dupeFile);
+            return new DuplicateMediaFileException(T("Admin.Media.Exception.DuplicateFile", fullPath), dupeFile);
         }
 
         public DuplicateMediaFolderException DuplicateFolder(string fullPath, MediaFolderNode dupeFolder)
         {
-            return new DuplicateMediaFolderException(T("Admin.Media.Exception.DuplicateFolder", "<b>" + fullPath + "</b>"), dupeFolder);
+            return new DuplicateMediaFolderException(T("Admin.Media.Exception.DuplicateFolder", fullPath), dupeFolder);
         }
 
         public NotSameAlbumException NotSameAlbum(string sourcePath, string destPath)
         {
-            return new NotSameAlbumException(T("Admin.Media.Exception.NotSameAlbum", "<b>" + sourcePath + "</b>", "<b>" + destPath + "</b>"));
+            return new NotSameAlbumException(T("Admin.Media.Exception.NotSameAlbum", sourcePath, destPath));
         }
 
         public DeniedMediaTypeException DeniedMediaType(string fileName, string currentType, string[] acceptedTypes = null)
         {
-            var msg = T("Admin.Media.Exception.DeniedMediaType", "<b>" + fileName + "</b>", "<b>" + currentType + "</b>");
+            var msg = T("Admin.Media.Exception.DeniedMediaType", fileName, currentType);
             if (acceptedTypes != null && acceptedTypes.Length > 0)
             {
                 var types = string.Join(", ", acceptedTypes);
@@ -102,22 +102,22 @@ namespace SmartStore.Services.Media
 
         public ExtractThumbnailException ExtractThumbnail(string path, string reason = null)
         {
-            return new ExtractThumbnailException(T("Admin.Media.Exception.ExtractThumbnail", "<b>" + path + "</b>", reason.NaIfEmpty()));
+            return new ExtractThumbnailException(T("Admin.Media.Exception.ExtractThumbnail", path, reason.NaIfEmpty()));
         }
 
         public ExtractThumbnailException ExtractThumbnail(string path, Exception innerException)
         {
             Guard.NotNull(innerException, nameof(innerException));
-            return new ExtractThumbnailException(T("Admin.Media.Exception.ExtractThumbnail", "<b>" + path + "</b>", innerException.Message), innerException);
+            return new ExtractThumbnailException(T("Admin.Media.Exception.ExtractThumbnail", path, innerException.Message), innerException);
         }
 
         public MaxMediaFileSizeExceededException MaxFileSizeExceeded(string fileName, long fileSize, long maxSize)
         {
             return new MaxMediaFileSizeExceededException(T(
                 "Admin.Media.Exception.MaxFileSizeExceeded",
-                "<b>" + fileName.NaIfEmpty() + "</b>",
-                "<b>" + Prettifier.BytesToString(fileSize) + "</b>",
-                "<b>" + Prettifier.BytesToString(maxSize)) + "</b>"
+                fileName.NaIfEmpty(),
+                Prettifier.BytesToString(fileSize),
+                Prettifier.BytesToString(maxSize))
                 );
         }
     }

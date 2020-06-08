@@ -156,8 +156,8 @@
 		}
 	})();
 
-	window.createCircularSpinner = function (size, active, strokeWidth, boxed, white) {
-		var spinner = $('<div class="spinner"></div>');
+	window.createCircularSpinner = function (size, active, strokeWidth, boxed, white, isProgress, showtext) {
+		var spinner = $('<div class="{0}"></div>'.format(!isProgress ? "spinner" : "spinner circular-progress"));
 		if (active) spinner.addClass('active');
 		if (boxed) spinner.addClass('spinner-boxed').css('font-size', size + 'px');
 		if (white) spinner.addClass('white');
@@ -166,38 +166,50 @@
 			strokeWidth = 4;
 		}
 
-		var svg = '<svg style="width:{0}px; height:{0}px" viewBox="0 0 64 64"><circle cx="32" cy="32" r="{1}" fill="none" stroke-width="{2}" stroke-miterlimit="10"></circle></svg>'.format(size, 32 - strokeWidth, strokeWidth);
+		var svg = $('<svg style="width:{0}px; height:{0}px" viewBox="0 0 64 64">{3}<circle class="circle" cx="32" cy="32" r="{1}" fill="none" stroke-width="{2}"></circle></svg>'
+			.format(size,
+				32 - strokeWidth,
+				strokeWidth,
+				isProgress ? '<circle class="circle-below" cx="32" cy="32" r="{0}" fill="none" stroke-width="{1}"></circle>'.format(32 - strokeWidth, strokeWidth) : "" // SVG markup must be complete before turned into dom object
+			));
+
 		spinner.append($(svg));
 
+		if (isProgress) {
+			svg.wrap('<div class="wrapper"></div>');
+			
+			if (showtext) {
+				spinner.append('<div class="progress-text">0</div>');
+				// TODO: set font-size according to size param :-/ maybe subtract a fixed value???
+			}
+
+			var circle = svg.find(".circle");
+			var radius = circle.attr("r");
+			var circumference = 2 * Math.PI * radius;
+			circle.css({
+				'stroke-dashoffset': circumference,
+				'stroke-dasharray': circumference
+			});
+		}
+
 		return spinner;
-	};
-
-	window.createCircularProgress = function (size, active, strokeWidth, boxed, white) {
-		var html = window.createCircularSpinner(size, active, strokeWidth, boxed, white);
-		html.addClass("circular-progress");
-
-		var circle = html.find("circle");
-		var radius = circle.attr("r");
-		var circumference = 2 * Math.PI * radius;
-		circle.css({
-			'stroke-dashoffset': circumference,
-			'stroke-dasharray': circumference
-		});
-		
-		return html;
 	};
 
 	window.setCircularProgressValue = function (context, progress) {
 		var value = Math.abs(parseInt(progress));
 		if (!isNaN(value)) {
 
-			var circle = $(context).find("circle");
+			var text = $(context).find(".progress-text");
+			var circle = $(context).find(".circle");
 			var radius = circle.attr("r");
 			var circumference = 2 * Math.PI * radius;
 			var percent = value / 100;
 			var dashoffset = circumference * (1 - percent);
 
 			circle.css('stroke-dashoffset', dashoffset);
+
+			if (text.length > 0)
+				text.text(value);
 		}
 	};
 

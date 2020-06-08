@@ -236,6 +236,11 @@
 			.file-icon:not(.show) {
 				display: none;
 			}
+
+			.dz-details {
+				// Height of circular progress. Setting min-height here prevents list from jumping.
+				min-height: 36px;
+			}
 		}
 
 		.dz-image-preview {

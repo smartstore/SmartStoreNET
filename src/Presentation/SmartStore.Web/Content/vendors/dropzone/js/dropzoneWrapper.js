@@ -113,7 +113,7 @@
 				setPreviewIcon(file, displayPreviewInList);
 
 				if (displayPreviewInList) {
-					var progress = window.createCircularProgress(24, true, 6);
+					var progress = window.createCircularSpinner(36, true, 6, null, null, true, true, true);
 					$(file.previewTemplate).find(".upload-status").append(progress);
 				}
 				

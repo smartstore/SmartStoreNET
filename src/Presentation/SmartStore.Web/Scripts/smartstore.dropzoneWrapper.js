@@ -381,7 +381,7 @@
 					console.log(xhr.statusText, "error");
 				}
 
-				displayNotification("<b>" + file.name + "</b>: " + errMessage, "error");
+				displayNotification(errMessage, "error");
 				this.removeFile(file);
 				
 				if (options.onError) options.onError.apply(this, [file, errMessage]);

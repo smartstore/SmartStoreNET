@@ -21,7 +21,7 @@ namespace SmartStore.Web.Infrastructure
 			------------------------------------------------------*/
 			bundles.Add(new CustomScriptBundle("~/bundles/fileuploader").Include(
 				vendors + "dropzone/js/dropzone.js",
-				vendors + "dropzone/js/dropzoneWrapper.js"
+				"~/Scripts/smartstore.dropzoneWrapper.js"
 			));
 
 			/* Image Gallery

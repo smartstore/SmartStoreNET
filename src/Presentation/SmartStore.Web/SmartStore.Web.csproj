@@ -862,7 +862,7 @@
     <Content Include="Content\vendors\drift\Drift.min.js" />
     <Content Include="Content\vendors\dropzone\js\dropzone.min.js" />
     <Content Include="Content\vendors\dropzone\js\dropzone.js" />
-    <Content Include="Content\vendors\dropzone\js\dropzoneWrapper.js" />
+    <Content Include="Scripts\smartstore.dropzoneWrapper.js" />
     <Content Include="Content\vendors\fa5\css\all.css" />
     <Content Include="Content\vendors\fa5\css\all.min.css" />
     <Content Include="Content\vendors\fa5\css\brands.css" />

@@ -314,6 +314,31 @@
 		}
 	}
 
+	.fu-file-info {
+		transition: opacity .3s;
+		opacity: 0;
+		visibility: visible;
+		background-color: rgba(#fff, .85);
+		border-top: 1px solid #ccc;
+	}
+
+	.fu-preview-control-menu {
+		border-top: 0;
+		top: 0;
+		background-color: transparent;
+
+		& .fu-preview-control-remove {
+			border-radius: 0 !important;
+			border-bottom-left-radius: 20% !important;
+		}
+
+		& .fu-preview-control-set {
+			border-radius: 0 !important;
+			border-bottom-left-radius: 20% !important;
+			border-bottom-right-radius: 20% !important;
+		}
+	}
+
 	&:hover:not(.sortable-ghost) {
 		border: 1px solid $gray-400;
 
@@ -324,6 +349,10 @@
 		.fu-preview-overlay {
 			visibility: visible;
 			opacity: .5;
+		}
+
+		.fu-file-info {
+			opacity: 1;
 		}
 	}
 

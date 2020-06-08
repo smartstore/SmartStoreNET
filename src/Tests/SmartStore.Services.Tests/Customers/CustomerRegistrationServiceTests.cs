@@ -36,7 +36,7 @@ namespace SmartStore.Services.Tests.Customers
         CustomerSettings _customerSettings;
         INewsLetterSubscriptionService _newsLetterSubscriptionService;
         IEventPublisher _eventPublisher;
-        RewardPointsSettings _rewardPointsSettings;
+        Lazy<RewardPointsSettings> _rewardPointsSettings;
         SecuritySettings _securitySettings;
 		IStoreContext _storeContext;
 		ICommonServices _services;
@@ -51,10 +51,10 @@ namespace SmartStore.Services.Tests.Customers
             {
                 EncryptionKey = "273ece6f97dd844d"
             };
-            _rewardPointsSettings = new RewardPointsSettings()
+            _rewardPointsSettings = new Lazy<RewardPointsSettings>(() => new RewardPointsSettings
             {
                 Enabled = false,
-            };
+            });
 
             _encryptionService = new EncryptionService(_securitySettings);
             _customerRepo = MockRepository.GenerateMock<IRepository<Customer>>();
@@ -152,7 +152,7 @@ namespace SmartStore.Services.Tests.Customers
 				_gdprTool);
 
             _customerRegistrationService = new CustomerRegistrationService(_customerService,
-                _encryptionService, _newsLetterSubscriptionService, _rewardPointsSettings, _customerSettings, _storeContext, _eventPublisher);
+                _encryptionService, _newsLetterSubscriptionService, _rewardPointsSettings.Value, _customerSettings, _storeContext, _eventPublisher);
         }
 
         //[Test]

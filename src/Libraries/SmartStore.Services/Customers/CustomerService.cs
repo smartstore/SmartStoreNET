@@ -34,7 +34,7 @@ namespace SmartStore.Services.Customers
 		private readonly IRepository<RewardPointsHistory> _rewardPointsHistoryRepository;
         private readonly IRepository<ShoppingCartItem> _shoppingCartItemRepository;
         private readonly IGenericAttributeService _genericAttributeService;
-		private readonly RewardPointsSettings _rewardPointsSettings;
+		private readonly Lazy<RewardPointsSettings> _rewardPointsSettings;
 		private readonly ICommonServices _services;
 		private readonly HttpContextBase _httpContext;
 		private readonly IUserAgent _userAgent;
@@ -49,7 +49,7 @@ namespace SmartStore.Services.Customers
 			IRepository<RewardPointsHistory> rewardPointsHistoryRepository,
             IRepository<ShoppingCartItem> shoppingCartItemRepository,
             IGenericAttributeService genericAttributeService,
-			RewardPointsSettings rewardPointsSettings,
+			Lazy<RewardPointsSettings> rewardPointsSettings,
 			ICommonServices services,
 			HttpContextBase httpContext,
 			IUserAgent userAgent,
@@ -825,11 +825,13 @@ namespace SmartStore.Services.Customers
 
         public virtual void RewardPointsForProductReview(Customer customer, Product product, bool add)
 		{
-			if (_rewardPointsSettings.Enabled && _rewardPointsSettings.PointsForProductReview > 0)
+            var rpSettings = _rewardPointsSettings.Value;
+
+			if (rpSettings.Enabled && rpSettings.PointsForProductReview > 0)
 			{
 				string message = T(add ? "RewardPoints.Message.EarnedForProductReview" : "RewardPoints.Message.ReducedForProductReview", product.GetLocalized(x => x.Name));
 
-				customer.AddRewardPointsHistoryEntry(_rewardPointsSettings.PointsForProductReview * (add ? 1 : -1), message);
+				customer.AddRewardPointsHistoryEntry(rpSettings.PointsForProductReview * (add ? 1 : -1), message);
 
 				UpdateCustomer(customer);
 			}

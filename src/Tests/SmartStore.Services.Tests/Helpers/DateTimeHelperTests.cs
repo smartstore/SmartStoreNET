@@ -37,7 +37,7 @@ namespace SmartStore.Services.Tests.Helpers
         ICustomerService _customerService;
         ICommonServices _services;
         DateTimeSettings _dateTimeSettings;
-        RewardPointsSettings _rewardPointsSettings;
+        Lazy<RewardPointsSettings> _rewardPointsSettings;
         IDateTimeHelper _dateTimeHelper;
 		Store _store;
         IUserAgent _userAgent;
@@ -59,10 +59,10 @@ namespace SmartStore.Services.Tests.Helpers
                 DefaultStoreTimeZoneId = ""
             };
 
-            _rewardPointsSettings = new RewardPointsSettings
+            _rewardPointsSettings = new Lazy<RewardPointsSettings>(() => new RewardPointsSettings
             {
-                Enabled = false,
-            };
+                Enabled = false
+            });
 
             var customer1 = new Customer
             {

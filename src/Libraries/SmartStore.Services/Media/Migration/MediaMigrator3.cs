@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 
@@ -45,23 +41,15 @@ namespace SmartStore.Services.Media.Migration
             // Load all db albums into a dictionary (Key = AlbumName)
             var albums = setFolders.OfType<MediaAlbum>().ToDictionary(x => x.Name);
 
-            var folderMappings = new Dictionary<MediaAlbum, MediaAlbum>
-            {
-                [GetAlbum("product")] = catalogAlbum,
-                [GetAlbum("category")] = catalogAlbum,
-                [GetAlbum("brand")] = catalogAlbum,
-                [GetAlbum("blog")] = contentAlbum,
-                [GetAlbum("news")] = contentAlbum,
-                [GetAlbum("forum")] = contentAlbum,
-            };
-
             // Reorganize all files (product/brand/category >> catalog && news/blog/forum >> content)
-            foreach (var kvp in folderMappings)
+            foreach (var oldName in new[] { "product", "category", "brand" })
             {
-                var oldId = kvp.Key.Id;
-                var newId = kvp.Value.Id;
+                UpdateFolderId(oldName, catalogAlbum);
+            }
 
-                _db.ExecuteSqlCommand($"UPDATE [MediaFile] SET [FolderId] = {newId} WHERE [FolderId] = {oldId}");
+            foreach (var oldName in new[] { "blog", "news", "forum" })
+            {
+                UpdateFolderId(oldName, contentAlbum);
             }
 
             // Put all unassigned files to content album
@@ -77,9 +65,13 @@ namespace SmartStore.Services.Media.Migration
 
             _db.SaveChanges();
 
-            MediaAlbum GetAlbum(string name)
+            void UpdateFolderId(string oldAlbumName, MediaAlbum newAlbum)
             {
-                return albums.Get(name) ?? albums.Get(SystemAlbumProvider.Files);
+                var oldAlbum = albums.Get(oldAlbumName);
+                if (oldAlbum != null)
+                {
+                    _db.ExecuteSqlCommand($"UPDATE [MediaFile] SET [FolderId] = {newAlbum.Id} WHERE [FolderId] = {oldAlbum.Id}");
+                }
             }
         }
     }

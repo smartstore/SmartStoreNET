@@ -272,28 +272,31 @@ namespace SmartStore.Services.Media.Migration
             Dictionary<int, Download> downloadsDict, 
             Dictionary<int, DownloadStub> downloadStubs)
         {
-            var downloadFiles = _mediaFileSystem.ListFiles("Downloads");
-            foreach (var downloadFile in downloadFiles)
+            if (_mediaFileSystem.FolderExists("Downloads"))
             {
-                if (int.TryParse(downloadFile.Title, out var downloadId) && downloadId > 0 && downloadsDict.TryGetValue(downloadId, out var d))
+                var downloadFiles = _mediaFileSystem.ListFiles("Downloads");
+                foreach (var downloadFile in downloadFiles)
                 {
-                    var stub = downloadStubs.Get(d.Id);
-                    if (stub == null || d.MediaFileId == null)
-                        continue;
-                    
-                    var file = newFilesDict.Get(d.MediaFileId.Value);
-                    if (file != null)
+                    if (int.TryParse(downloadFile.Title, out var downloadId) && downloadId > 0 && downloadsDict.TryGetValue(downloadId, out var d))
                     {
-                        try
+                        var stub = downloadStubs.Get(d.Id);
+                        if (stub == null || d.MediaFileId == null)
+                            continue;
+                    
+                        var file = newFilesDict.Get(d.MediaFileId.Value);
+                        if (file != null)
                         {
-                            // Copy now
-                            var newPath = GetStoragePath(file);
-                            if (!_mediaFileSystem.FileExists(newPath))
+                            try
                             {
-                                _mediaFileSystem.CopyFile(downloadFile.Path, newPath);
-                            } 
+                                // Copy now
+                                var newPath = GetStoragePath(file);
+                                if (!_mediaFileSystem.FileExists(newPath))
+                                {
+                                    _mediaFileSystem.CopyFile(downloadFile.Path, newPath);
+                                } 
+                            }
+                            catch { }
                         }
-                        catch { }
                     }
                 }
             }

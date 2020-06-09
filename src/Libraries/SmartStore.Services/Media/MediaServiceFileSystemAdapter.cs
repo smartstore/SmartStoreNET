@@ -247,7 +247,7 @@ namespace SmartStore.Services.Media
             Guard.NotEmpty(path, nameof(path));
             Guard.NotEmpty(newPath, nameof(newPath));
 
-            var sourceFile = (MediaFile)_mediaService.GetFileByPath(path);
+            var sourceFile = _mediaService.GetFileByPath(path);
             if (sourceFile == null)
             {
                 throw _exceptionFactory.FileNotFound(path);

@@ -56,14 +56,11 @@ namespace SmartStore.Services.Media
 
     public class DuplicateFileInfo
     {
-        [JsonProperty("file")]
-        public MediaFileInfo File { get; set; }
+        [JsonProperty("source")]
+        public MediaFileInfo SourceFile { get; set; }
 
-        /// <summary>
-        /// The attempted destination folder path
-        /// </summary>
-        [JsonProperty("destPath")]
-        public string DestPath { get; set; }
+        [JsonProperty("dest")]
+        public MediaFileInfo DestinationFile { get; set; }
     }
 
     public class FolderOperationResult
@@ -72,6 +69,15 @@ namespace SmartStore.Services.Media
         public MediaFolderInfo Folder { get; set; }
         public DuplicateEntryHandling DuplicateEntryHandling { get; set; }
         public IList<DuplicateFileInfo> DuplicateFiles { get; set; }
+    }
+
+    public class FileOperationResult
+    {
+        public string Operation { get; set; }
+        public MediaFileInfo SourceFile { get; set; }
+        public MediaFileInfo DestinationFile { get; set; }
+        public DuplicateFileHandling DuplicateFileHandling { get; set; }
+        public bool IsDuplicate { get; set; }
     }
 
     public partial interface IMediaService
@@ -107,8 +113,8 @@ namespace SmartStore.Services.Media
         MediaFileInfo SaveFile(string path, Stream stream, bool isTransient = true, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError);
         Task<MediaFileInfo> SaveFileAsync(string path, Stream stream, bool isTransient = true, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError);
         void DeleteFile(MediaFile file, bool permanent);
-        MediaFileInfo CopyFile(MediaFile file, string destinationFileName, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError);
-        MediaFileInfo MoveFile(MediaFile file, string destinationFileName);
+        FileOperationResult CopyFile(MediaFileInfo mediaFile, string destinationFileName, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError);
+        MediaFileInfo MoveFile(MediaFile file, string destinationFileName, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError);
 
         bool FolderExists(string path);
         MediaFolderInfo CreateFolder(string path);

@@ -189,7 +189,7 @@ namespace SmartStore.Services.Media
             }
         }
 
-        private MediaFolderInfo InternalCopyFolder(TreeNode<MediaFolderNode> source, string destPath, DuplicateEntryHandling dupeEntryHandling, IList<DuplicateFileInfo> dupeFiles)
+        private MediaFolderInfo InternalCopyFolder(TreeNode<MediaFolderNode> sourceNode, string destPath, DuplicateEntryHandling dupeEntryHandling, IList<DuplicateFileInfo> dupeFiles)
         {
             // Get dest node
             var destNode = _folderService.GetNodeByPath(destPath);
@@ -197,7 +197,7 @@ namespace SmartStore.Services.Media
             // Dupe handling
             if (destNode != null && dupeEntryHandling == DuplicateEntryHandling.ThrowError)
             {
-                throw _exceptionFactory.DuplicateFolder(source.Value.Path, destNode.Value);
+                throw _exceptionFactory.DuplicateFolder(sourceNode.Value.Path, destNode.Value);
             }
 
             var doDupeCheck = destNode != null;
@@ -215,7 +215,7 @@ namespace SmartStore.Services.Media
 
             // Get all source files in one go
             var files = _searcher.SearchFiles(
-                new MediaSearchQuery { FolderId = source.Value.Id },
+                new MediaSearchQuery { FolderId = sourceNode.Value.Id },
                 MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithTags).Load();
 
             IDictionary<string, MediaFile> destFiles = null;
@@ -239,17 +239,32 @@ namespace SmartStore.Services.Media
                 foreach (var file in batch)
                 {
                     destPathData.FileName = file.Name;
+
+                    // >>> Do copy
                     var copy = InternalCopyFile(
                         file,
                         destPathData,
                         false /* copyData */,
                         dupeEntryHandling,
-                        () => SelectDupeFile(file.Name),
-                        UniqueFileNameChecker);
+                        () => destFiles?.Get(file.Name),
+                        UniqueFileNameChecker,
+                        out var isDupe);
 
-                    if (copy != null && copy != file)
+                    if (copy != null)
                     {
-                        tuples.Add((file, copy));
+                        if (isDupe)
+                        {
+                            dupeFiles.Add(new DuplicateFileInfo
+                            {
+                                SourceFile = ConvertMediaFile(file, sourceNode.Value),
+                                DestinationFile = ConvertMediaFile(copy, destNode.Value)
+                            });
+                        }
+                        if (!isDupe || dupeEntryHandling != DuplicateEntryHandling.Skip)
+                        {
+                            // When dupe: add to processing queue only if file was NOT skipped
+                            tuples.Add((file, copy));
+                        }
                     }
                 }
 
@@ -271,23 +286,13 @@ namespace SmartStore.Services.Media
             }
 
             // Copy folders
-            foreach (var node in source.Children)
+            foreach (var node in sourceNode.Children)
             {
                 destPath = destNode.Value.Path + "/" + node.Value.Name;
                 InternalCopyFolder(node, destPath, dupeEntryHandling, dupeFiles);
             }
 
             return new MediaFolderInfo(destNode);
-
-            MediaFile SelectDupeFile(string name)
-            {
-                var dupe = destFiles?.Get(name);
-                if (dupe != null)
-                {
-                    dupeFiles.Add(new DuplicateFileInfo { File = ConvertMediaFile(dupe, destNode.Value), DestPath = destPath });
-                }
-                return dupe;
-            }
 
             void UniqueFileNameChecker(MediaPathData pathData)
             {

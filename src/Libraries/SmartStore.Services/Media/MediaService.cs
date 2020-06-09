@@ -303,11 +303,16 @@ namespace SmartStore.Services.Media
             return false;
         }
 
-        private bool InternalCheckUniqueFileName(string title, string ext, HashSet<string> fileNames, out string uniqueName)
+        private bool InternalCheckUniqueFileName(string title, string ext, string destFileName, out string uniqueName)
+        {
+            return InternalCheckUniqueFileName(title, ext, new HashSet<string>( new[] { destFileName }, StringComparer.CurrentCultureIgnoreCase), out uniqueName);
+        }
+
+        private bool InternalCheckUniqueFileName(string title, string ext, HashSet<string> destFileNames, out string uniqueName)
         {
             uniqueName = null;
 
-            if (fileNames.Count == 0)
+            if (destFileNames.Count == 0)
             {
                 return false;
             }
@@ -316,7 +321,7 @@ namespace SmartStore.Services.Media
             while (true)
             {
                 var test = string.Concat(title, "-", i, ".", ext.TrimStart('.'));
-                if (!fileNames.Contains(test))
+                if (!destFileNames.Contains(test))
                 {
                     // Found our gap
                     uniqueName = test;
@@ -606,30 +611,38 @@ namespace SmartStore.Services.Media
 
         #region Copy & Move
 
-        public MediaFileInfo CopyFile(MediaFile file, string destinationFileName, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError)
+        public FileOperationResult CopyFile(MediaFileInfo mediaFile, string destinationFileName, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError)
         {
-            Guard.NotNull(file, nameof(file));
+            Guard.NotNull(mediaFile, nameof(mediaFile));
             Guard.NotEmpty(destinationFileName, nameof(destinationFileName));
 
-            var destPathData = CreateDestinationPathData(file, destinationFileName);
+            var destPathData = CreateDestinationPathData(mediaFile.File, destinationFileName);
             var destFileName = destPathData.FileName;
             var destFolderId = destPathData.Folder.Id;
 
-            var dupe = file.FolderId == destPathData.Folder.Id
+            var dupe = mediaFile.FolderId == destPathData.Folder.Id
                 // Source folder equals dest folder, so same file
-                ? file
+                ? mediaFile.File
                 // Another dest folder, check for duplicate by file name
                 : _fileRepo.Table.FirstOrDefault(x => x.Name == destFileName && x.FolderId == destFolderId);
 
             var copy = InternalCopyFile(
-                file,
+                mediaFile.File,
                 destPathData,
                 true /* copyData */,
                 (DuplicateEntryHandling)((int)dupeFileHandling),
                 () => dupe,
-                p => CheckUniqueFileName(p));
+                p => CheckUniqueFileName(p), 
+                out var isDupe);
 
-            return ConvertMediaFile(copy, destPathData.Folder);
+            return new FileOperationResult
+            {
+                Operation = "copy",
+                DuplicateFileHandling = dupeFileHandling,
+                SourceFile = mediaFile,
+                DestinationFile = ConvertMediaFile(copy, destPathData.Folder),
+                IsDuplicate = isDupe
+            };
         }
 
         private MediaFile InternalCopyFile(
@@ -638,15 +651,18 @@ namespace SmartStore.Services.Media
             bool copyData,
             DuplicateEntryHandling dupeEntryHandling,
             Func<MediaFile> dupeFileSelector,
-            Action<MediaPathData> uniqueFileNameChecker)
+            Action<MediaPathData> uniqueFileNameChecker,
+            out bool isDupe)
         {
             // Find dupe and handle
+            isDupe = false;
             var dupe = dupeFileSelector();
             if (dupe != null)
             {
                 switch (dupeEntryHandling)
                 {
                     case DuplicateEntryHandling.Skip:
+                        isDupe = true;
                         return dupe;
                     case DuplicateEntryHandling.ThrowError:
                         throw _exceptionFactory.DuplicateFile(destPathData.FullPath, ConvertMediaFile(dupe));
@@ -666,7 +682,7 @@ namespace SmartStore.Services.Media
                 }
             }
 
-            var isOverwrite = dupe != null;
+            isDupe = dupe != null;
             var copy = dupe ?? new MediaFile();
 
             // Simple clone
@@ -684,7 +700,7 @@ namespace SmartStore.Services.Media
             }
 
             // Save to DB
-            if (isOverwrite)
+            if (isDupe)
             {
                 _fileRepo.Update(copy);
             }
@@ -744,9 +760,9 @@ namespace SmartStore.Services.Media
             }
         }
 
-        public MediaFileInfo MoveFile(MediaFile file, string destinationFileName)
+        public MediaFileInfo MoveFile(MediaFile file, string destinationFileName, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError)
         {
-            if (ValidateMoveOperation(file, destinationFileName, out var nameChanged, out var destPathData))
+            if (ValidateMoveOperation(file, destinationFileName, dupeFileHandling, out var nameChanged, out var destPathData))
             {
                 file.FolderId = destPathData.Folder.Id;
 
@@ -774,7 +790,8 @@ namespace SmartStore.Services.Media
 
         private bool ValidateMoveOperation(
             MediaFile file, 
-            string destinationFileName, 
+            string destinationFileName,
+            DuplicateFileHandling dupeFileHandling,
             out bool nameChanged, 
             out MediaPathData destPathData)
         {
@@ -804,7 +821,22 @@ namespace SmartStore.Services.Media
             var dupe = _fileRepo.Table.FirstOrDefault(x => x.Name == destFileName && x.FolderId == destFolderId);
             if (dupe != null)
             {
-                throw _exceptionFactory.DuplicateFile(destPathData.FullPath, ConvertMediaFile(dupe));
+                switch (dupeFileHandling)
+                {
+                    case DuplicateFileHandling.ThrowError:
+                        throw _exceptionFactory.DuplicateFile(destPathData.FullPath, ConvertMediaFile(dupe, destPathData.Folder));
+                    case DuplicateFileHandling.Rename:
+                        if (InternalCheckUniqueFileName(destPathData.FileTitle, destPathData.Extension, dupe.Name, out var uniqueName))
+                        {
+                            nameChanged = true;
+                            destPathData.FileName = uniqueName;
+                            return true;
+                        }
+                        break;
+                    case DuplicateFileHandling.Overwrite:
+                        DeleteFile(dupe, true);
+                        break;
+                }
             }
 
             return folderChanged || nameChanged;

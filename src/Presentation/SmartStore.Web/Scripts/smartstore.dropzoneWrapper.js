@@ -323,14 +323,14 @@
 
 					// Open duplicate file handler dialog.
 					if (!dialog) {
-						var dialogOpts = {
+						dialog = new FileConflictResolutionDialog(
+						{
 							url: fuContainer.find(".fileupload").data('dialog-url'),
 							queue: SmartStore.Admin.Media.convertDropzoneFileQueue(dupeFiles),
 							callerId: elDropzone.find(".fileupload").attr("id"),
 							onResolve: dupeFileHandlerCallback,
 							onComplete: dupeFileHandlerCompletedCallback
-						};
-						dialog = new FileConflictResolutionDialog(dialogOpts);
+						});
 					}
 					
 					dialog.open();
@@ -623,14 +623,14 @@
 
 				// TODO: DRY > make function and pass dupeFiles as param
 				if (dupeFiles.length !== 0 && !dialog.isOpen) {
-					var dialogOpts = {
+					dialog = new FileConflictResolutionDialog(
+					{
 						url: fuContainer.find(".fileupload").data('dialog-url'),
 						queue: SmartStore.Admin.Media.convertDropzoneFileQueue(dupeFiles),
 						callerId: elDropzone.find(".fileupload").attr("id"),
 						onResolve: dupeFileHandlerCallback,
 						onComplete: dupeFileHandlerCompletedCallback
-					};
-					dialog = new FileConflictResolutionDialog(dialogOpts);
+					});
 					dialog.open();
 				}
 			});

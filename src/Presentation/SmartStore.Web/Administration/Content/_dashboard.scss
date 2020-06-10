@@ -479,13 +479,6 @@
         grid-row: 4 / 5;
     }
 }
-// Not Dashboard specific
-//--------------------------------------
-.text-truncate {
-    overflow: hidden;    
-    text-overflow: ellipsis;
-}
-
 .table-prevent-overflow {
     tr > th,
     tr > td {

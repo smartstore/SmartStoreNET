@@ -22,7 +22,7 @@ SmartStore.Admin.Media = (function () {
 	};
 })();
 
-FileConflictResolver = function (options) {
+FileConflictResolutionDialog = function (options) {
 	var self = this;
 
 	// Private variables.

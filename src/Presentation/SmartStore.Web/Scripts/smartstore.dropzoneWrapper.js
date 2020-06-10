@@ -471,9 +471,9 @@
 										.attr("data-media-id", value.MediaFileId)
 										.attr("data-media-name", value.Name)
 										.attr("data-entity-media-id", value.ProductMediaFileId)
-										.attr("data-original-title", '<div class="text-left px-3"><em>' + file.name + '</em> <br/> <b>' + el.filesize(file.size) + '</b></div>')
-										.removeClass("d-none")
-										.tooltip();
+										.removeClass("d-none");
+
+									elPreview.find(".fu-file-info-name").html(file.name);
 
                                     elPreview
                                         .find('img')

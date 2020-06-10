@@ -29,32 +29,22 @@ function FileConflictResolutionDialog(options) {
 	var _dialog = $("#duplicate-window");
 	var _dupeFileDisplay = _dialog.find(".dupe-file-display");
 
-	this.currentIndex = 0;
-
 	// Public variables.
-	Object.defineProperty(this, 'currentFile', {
-		get: function () { return this.queue[this.currentIndex]; },
-		//set: function (v) { currentFile = v; }
-	});
-
-	//Object.defineProperty(this, 'currentIndex', {
-	//	get: function () { return this._currentIndex; },
-	//	set: function (v) {
-	//		currentFile = this.queue[v];
-	//		currentIndex = v;
-	//	}
-	//});
-
-	Object.defineProperty(this, 'isOpen', {
-		get: function () { return _dialog && _dialog.hasClass("show"); }
-	});
-
+	this.currentIndex = 0;
 	this.url = options.url;
 	this.callerId = options.callerId;
 	this.queue = options.queue;
 	this.onResolve = options.onResolve || _.noop;			// return params => self, dupeFileHandlingType, saveSelection, files
-	this.onComplete = options.onComplete || _.noop;		// return params => self, isCanceled
+	this.onComplete = options.onComplete || _.noop;			// return params => self, isCanceled
 	this.closeOnCompleted = toBool(options.closeOnCompleted, true);
+
+	Object.defineProperty(this, 'currentFile', {
+		get: function () { return this.queue[this.currentIndex]; }
+	});
+
+	Object.defineProperty(this, 'isOpen', {
+		get: function () { return _dialog && _dialog.hasClass("show"); }
+	});
 
 	// Public functions.
 	this.open = function () {
@@ -165,7 +155,6 @@ function FileConflictResolutionDialog(options) {
 					if (self.onResolve) {
 						var start = self.currentIndex;
 						var end = applyToRemaining ? self.queue.length - 1 : self.currentIndex + 1;
-						//var nextQueue = applyToRemaining ? null : [self.currentFile];
 						var remainingFiles = self.queue.slice(start, end);
 						self.onResolve.apply(self, [resolutionType, remainingFiles]);
 					}
@@ -182,4 +171,4 @@ function FileConflictResolutionDialog(options) {
 			}
 		});
 	};
-};
+}

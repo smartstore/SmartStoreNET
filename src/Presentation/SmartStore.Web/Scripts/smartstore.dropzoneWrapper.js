@@ -729,13 +729,13 @@
 	});
 
 	// Callback function for duplicate file handling dialog.
-	function dupeFileHandlerCallback(resolutionType, applyToRemaining, remainingFiles) {
+	function dupeFileHandlerCallback(resolutionType, remainingFiles) {
 		var fuContainer = $("#" + this.callerId).closest(".fileupload-container");
 		var dropzone = Dropzone.forElement(fuContainer[0]);
 		var errorFiles = dropzone.getFilesWithStatus(Dropzone.ERROR);
 		var displayPreviewInList = fuContainer.find(".preview-container").data("display-list-items");
 		var resumeUpload = false;
-
+		var applyToRemaining = remainingFiles.length > 1;
 		// Store user decision where it can be accessed by other events (e.g. dropzone > sending).
 		fuContainer.data("resolution-type", resolutionType);
 

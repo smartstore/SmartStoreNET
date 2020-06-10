@@ -508,7 +508,9 @@ namespace SmartStore.Services.Media
                 {
                     if (dupeFileHandling == DuplicateFileHandling.ThrowError)
                     {
-                        throw _exceptionFactory.DuplicateFile(pathData.FullPath, ConvertMediaFile(file));
+                        var fullPath = pathData.FullPath;
+                        CheckUniqueFileName(pathData);
+                        throw _exceptionFactory.DuplicateFile(fullPath, ConvertMediaFile(file, pathData.Folder), pathData.FullPath);
                     }
                     else if (dupeFileHandling == DuplicateFileHandling.Rename)
                     {
@@ -658,7 +660,8 @@ namespace SmartStore.Services.Media
                 DuplicateFileHandling = dupeFileHandling,
                 SourceFile = mediaFile,
                 DestinationFile = ConvertMediaFile(copy, destPathData.Folder),
-                IsDuplicate = isDupe
+                IsDuplicate = isDupe,
+                UniquePath = isDupe ? destPathData.FullPath : (string)null
             };
         }
 
@@ -689,7 +692,9 @@ namespace SmartStore.Services.Media
                             isDupe = true;
                             return dupe;
                         case DuplicateEntryHandling.ThrowError:
-                            throw _exceptionFactory.DuplicateFile(destPathData.FullPath, ConvertMediaFile(dupe));
+                            var fullPath = destPathData.FullPath;
+                            uniqueFileNameChecker(destPathData);
+                            throw _exceptionFactory.DuplicateFile(fullPath, ConvertMediaFile(dupe), destPathData.FullPath);
                         case DuplicateEntryHandling.Rename:
                             uniqueFileNameChecker(destPathData);
                             dupe = null;
@@ -860,7 +865,9 @@ namespace SmartStore.Services.Media
                     switch (dupeFileHandling)
                     {
                         case DuplicateFileHandling.ThrowError:
-                            throw _exceptionFactory.DuplicateFile(destPathData.FullPath, ConvertMediaFile(dupe, destPathData.Folder));
+                            var fullPath = destPathData.FullPath;
+                            InternalCheckUniqueFileName(destPathData.FileTitle, destPathData.Extension, dupe.Name, out _);
+                            throw _exceptionFactory.DuplicateFile(fullPath, ConvertMediaFile(dupe, destPathData.Folder), destPathData.FullPath);
                         case DuplicateFileHandling.Rename:
                             if (InternalCheckUniqueFileName(destPathData.FileTitle, destPathData.Extension, dupe.Name, out var uniqueName))
                             {

@@ -61,6 +61,9 @@ namespace SmartStore.Services.Media
 
         [JsonProperty("dest")]
         public MediaFileInfo DestinationFile { get; set; }
+
+        [JsonProperty("uniquePath")]
+        public string UniquePath { get; set; }
     }
 
     public class FolderOperationResult
@@ -78,6 +81,7 @@ namespace SmartStore.Services.Media
         public MediaFileInfo DestinationFile { get; set; }
         public DuplicateFileHandling DuplicateFileHandling { get; set; }
         public bool IsDuplicate { get; set; }
+        public string UniquePath { get; set; }
     }
 
     public partial interface IMediaService

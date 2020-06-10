@@ -18,12 +18,14 @@ namespace SmartStore.Services.Media
 
     public sealed class DuplicateMediaFileException : SmartException
     {
-        public DuplicateMediaFileException(string message, MediaFileInfo dupeFile) : base(message)
+        public DuplicateMediaFileException(string message, MediaFileInfo dupeFile, string uniquePath) : base(message)
         {
             File = dupeFile;
+            UniquePath = uniquePath;
         }
 
         public MediaFileInfo File { get; }
+        public string UniquePath { get; }
     }
 
     public sealed class DuplicateMediaFolderException : SmartException
@@ -73,9 +75,9 @@ namespace SmartStore.Services.Media
             return new MediaFolderNotFoundException(T("Admin.Media.Exception.FolderNotFound", path));
         }
 
-        public DuplicateMediaFileException DuplicateFile(string fullPath, MediaFileInfo dupeFile)
+        public DuplicateMediaFileException DuplicateFile(string fullPath, MediaFileInfo dupeFile, string uniquePath)
         {
-            return new DuplicateMediaFileException(T("Admin.Media.Exception.DuplicateFile", fullPath), dupeFile);
+            return new DuplicateMediaFileException(T("Admin.Media.Exception.DuplicateFile", fullPath), dupeFile, uniquePath);
         }
 
         public DuplicateMediaFolderException DuplicateFolder(string fullPath, MediaFolderNode dupeFolder)

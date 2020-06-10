@@ -257,7 +257,8 @@ namespace SmartStore.Services.Media
                             dupeFiles.Add(new DuplicateFileInfo
                             {
                                 SourceFile = ConvertMediaFile(file, sourceNode.Value),
-                                DestinationFile = ConvertMediaFile(copy, destNode.Value)
+                                DestinationFile = ConvertMediaFile(copy, destNode.Value),
+                                UniquePath = destPathData.FullPath
                             });
                         }
                         if (!isDupe || dupeEntryHandling != DuplicateEntryHandling.Skip)

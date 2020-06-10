@@ -74,39 +74,34 @@ namespace SmartStore.Admin.Controllers
 
                     dynamic o = JObject.FromObject(mediaFile);
                     o.success = true;
-                    o.thumbUrl = _mediaService.GetUrl(mediaFile,
-                        mediaFile.MediaType == MediaType.Image || mediaFile.MediaType == MediaType.Video ? _mediaSettings.ProductThumbPictureSize : 0, 
-                        host: string.Empty);
                     o.createdOn = mediaFile.CreatedOn.ToString();
                     o.lastUpdated = mediaFile.LastUpdated.ToString();
 
                     result.Add(o);
                 }
-                catch (Exception ex)
+                catch (DuplicateMediaFileException dex)
                 {
-                    if (ex is DeniedMediaTypeException)
-                        throw;
+                    var dupe = dex.File;
 
-                    var dupe = (ex as DuplicateMediaFileException)?.File;
+                    dynamic o = JObject.FromObject(dupe);
+                    o.dupe = true;
+                    o.errMessage = dex.Message;
 
-                    dynamic o = dupe != null ? JObject.FromObject(dupe) : new JObject();
-                    o.success = false;
-                    o.dupe = ex is DuplicateMediaFileException;
-                    o.errMessage = ex.Message;
-
-                    if (dupe != null)
-                    {
-                        _mediaService.CheckUniqueFileName(filePath, out string newPath);
-                        o.newPath = newPath;
-                        o.thumbUrl = _mediaService.GetUrl(dupe,
-                            dupe.MediaType == MediaType.Image || dupe.MediaType == MediaType.Video ? _mediaSettings.ProductThumbPictureSize : 0,
-                            host: string.Empty);
-                        o.createdOn = dupe.CreatedOn.ToString();
-                        o.lastUpdated = dupe.LastUpdated.ToString();
-                        //o.dimensions = dupe.Dimensions.Width + " x " + dupe.Dimensions.Height;
-                    }
+                    _mediaService.CheckUniqueFileName(filePath, out string newPath);
+                    o.uniquePath = newPath;
+                    o.createdOn = dupe.CreatedOn.ToString();
+                    o.lastUpdated = dupe.LastUpdated.ToString();
+                    //o.dimensions = dupe.Dimensions.Width + " x " + dupe.Dimensions.Height;
 
                     result.Add(o);
+                }
+                catch (DeniedMediaTypeException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    result.Add(new { errMessage = ex.Message });
                 }
             }
 

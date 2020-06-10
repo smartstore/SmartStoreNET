@@ -22,7 +22,7 @@ SmartStore.Admin.Media = (function () {
 	};
 })();
 
-DupFileHandlerDialog = function (options) {
+FileConflictResolver = function (options) {
 	var self = this;
 
 	// Private variables.

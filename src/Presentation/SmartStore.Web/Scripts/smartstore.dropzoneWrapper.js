@@ -330,7 +330,7 @@
 							onResolve: dupeFileHandlerCallback,
 							onComplete: dupeFileHandlerCompletedCallback
 						};
-						dialog = new DupFileHandlerDialog(dialogOpts);
+						dialog = new FileConflictResolutionDialog(dialogOpts);
 					}
 					
 					dialog.open();
@@ -630,7 +630,7 @@
 						onResolve: dupeFileHandlerCallback,
 						onComplete: dupeFileHandlerCompletedCallback
 					};
-					dialog = new DupFileHandlerDialog(dialogOpts);
+					dialog = new FileConflictResolutionDialog(dialogOpts);
 					dialog.open();
 				}
 			});

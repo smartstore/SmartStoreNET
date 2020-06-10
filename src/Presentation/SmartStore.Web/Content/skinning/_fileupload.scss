@@ -130,12 +130,12 @@
 		display: none;
 	}
 
-	.remove {
+    /*.remove {
 		position: absolute;
 		top: -10px;
 		left: -10px;
 		display: none;
-	}
+	}*/
 
 	.open-upload-summmary {
 		display: none;
@@ -264,130 +264,106 @@
 	cursor: move;
 	overflow: hidden;
 
-	.file-figure {
-		display: flex;
-		margin: 0;
-		align-items: center;
-		justify-content: center;
+    .file-figure {
+        min-width: 200px;
+        max-width: 500px;
+        height: 200px;
 
-		.file-icon:not(.show) {
-			display: none;
-		}
+        .file-icon:not(.show) {
+            display: none;
+        }
 
-		min-width: 200px;
-		max-width: 500px;
-		height: 200px;
+        & > img {
+            height: 100%;
+            max-width: 500px;
+            max-height: 200px;
+            object-fit: contain;
+        }
+    }
 
-		& > img {
-			height: 100%;
-			max-width: 500px;
-			max-height: 200px;
-			object-fit: contain;
-		}
-	}
+    .toolbar {
+        position: absolute;
+        bottom: 0;
+        min-width: 100%;
+        background-color: $gray-100;
+        visibility: hidden;
+        transition: visibility 0.1s;
+        border-top: 1px solid $gray-500;
+        z-index: 2;
+        cursor: default;
 
-	.fu-preview-overlay {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		visibility: hidden;
-		background-color: black;
-		transition: opacity 0.3s, visibility 0.1s;
-		opacity: .1;
-	}
+        > .btn {
+            border-radius: 0 !important;
+        }
+    }
 
-	.toolbar {
-		position: absolute;
-		bottom: 0;
-		min-width: 100%;
-		background-color: $gray-100;
-		visibility: hidden;
-		transition: visibility 0.1s;
-		border-top: 1px solid $gray-500;
-		z-index: 2;
-		cursor: default;
+    .fu-file-info-container {
+        position: absolute;
+        transition: opacity .3s;
+        opacity: 0;
+        visibility: visible;
+        background-color: rgba(black, .4);
 
-		> .btn {
-			border-radius: 0 !important;
-		}
-	}
+        .fu-file-dragarea {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: move;
+            z-index: 5;
+            
 
-	.fu-file-info-container {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		transition: opacity .3s;
-		opacity: 0;
-		visibility: visible;
+            > .drag-icon {
+                width: 2.9rem;
+                height: 2.9rem;
+                line-height: 2.9rem;
+            }
+        }
 
-		> .fu-file-info {
-			height: 100%;
-			display: flex;
-			align-items: center;
-			text-align: center;
+        > .fu-file-info > .fu-file-info-name {
+            z-index: 3;
+            padding: 0rem 0.875rem;
+            text-shadow: 1px 1px 1px rgba(0,0,0, 0.5);
+        }
 
-			> .fu-file-info-name {
-				z-index: 3;
-				padding: 0rem 0.875rem;
-				width: 100%;
-				color: $light;
-				font-weight: $font-weight-bold;
-			}
-		}
+        > .fu-preview-control-menu {
+            position: absolute;
+            bottom: 0;
+            margin-top: -6px;
+            padding: 0rem 0.875rem 0.75rem 0.875rem;
 
-		> .fu-preview-control-menu {
-			position: absolute;
-			width: 100%;
-			bottom: 0;
-			display: flex;
-			justify-content: flex-end;
-			margin-top: -6px;
-			padding: 0rem 0.875rem 0.75rem 0.875rem;
-			flex-wrap: wrap;
+            > * {
+                margin-top: 6px;
+            }
+        }
+    }
 
-			> .fu-preview-control-set {
-				margin-top: 6px;
-			}
+    &:hover:not(.sortable-ghost) {
+        border: 1px solid $gray-400;
 
-			> .fu-preview-control-remove {
-				margin-top: 6px;
-				margin-left: .875rem;
+        .toolbar {
+            visibility: visible;
+        }
 
-				> .fu-remove-text {
-					font-size: $font-size-sm;
-					padding-left: 4px;
-				}
-			}
-		}
-	}
+        .fu-preview-overlay {
+            visibility: visible;
+            opacity: .5;
+        }
 
-	&:hover:not(.sortable-ghost) {
-		border: 1px solid $gray-400;
+        .fu-file-info-container {
+            opacity: 1;
+        }
+    }
 
-		.toolbar {
-			visibility: visible;
-		}
+    &.sortable-ghost .toolbar {
+        visibility: hidden;
+    }
 
-		.fu-preview-overlay {
-			visibility: visible;
-			opacity: .5;
-		}
-
-		.fu-file-info-container {
-			opacity: 1;
-		}
-	}
-
-	&.sortable-ghost .toolbar {
-		visibility: hidden;
-	}
-
-	.main-pic-badge {
-		z-index: 1000;
-		position: absolute;
-		top: .5rem;
-		left: .75rem;
-	}
+    .main-pic-badge {
+        z-index: 1000;
+        position: absolute;
+        top: .75rem;
+        right: .875rem;
+    }
 }
 
 .dropzone-container {
@@ -420,60 +396,89 @@
 		flex-grow: 1;
 		padding: 0.5rem 0.5rem;
 	}
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    border: $input-border-width solid $input-border-color;
+    background-color: $input-bg;
+    border-radius: 5px;
+
+    .fileupload-thumb-stage {
+        position: relative;
+        width: 150px;
+        max-width: 150px;
+        margin: 0.5rem;
+    }
+
+    .fileupload-thumb {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .fileupload-controls {
+        flex-grow: 1;
+        padding: 0.5rem 0.5rem;
+    }
 }
 
 .fileupload {
-	.btn.cancel {
-		display: none;
-	}
-		
-	.fileinput-button {
-		position: relative;
-		overflow: hidden;
-	}
+    .btn.cancel {
+        display: none;
+    }
 
-	.fileinput-button input {
-		position: absolute;
-		left: 0;
-		top: 0;
-		width: 100%;
-		height: 100%;
-		margin: 0;
-		padding: 0;
-		border: 0;
-		opacity: 0;
-		direction: ltr;
-		cursor: pointer;
-	}
+    .fileinput-button {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .fileinput-button input {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        opacity: 0;
+        direction: ltr;
+        cursor: pointer;
+    }
 }
 
 // DupeFileHandlerDialog
 #duplicate-window {
-	.file-display {
-		border: 1px solid $gray-400;
+    .file-display {
+        border: 1px solid $gray-400;
 
-		.file-info {
-			overflow: hidden;
-		}
+        .file-info {
+            overflow: hidden;
+        }
 
-		.file-figure {
-			width: 100px;
-			height: 80px;
-			display: flex;
-			margin: 0;
-			align-items: center;
-			justify-content: center;
-		}
+        .file-figure {
+            width: 100px;
+            height: 80px;
+            display: flex;
+            margin: 0;
+            align-items: center;
+            justify-content: center;
+        }
 
-		.file-img {
-			width: 100px;
-			height: 80px;
-			object-fit: cover;
-		}
+        .file-img {
+            width: 100px;
+            height: 80px;
+            object-fit: cover;
+        }
 
-		.file-date {
-			white-space: nowrap;
-			overflow: hidden;
-		}
-	}
+        .file-date {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+    }
 }

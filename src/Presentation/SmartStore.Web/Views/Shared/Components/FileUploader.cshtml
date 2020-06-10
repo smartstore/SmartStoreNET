@@ -137,6 +137,7 @@
                 {
                     <span class="main-pic-badge badge badge-success">@T("FileUploader.MultiFiles.MainMediaFile")</span>
                 }
+
                 @FilePreviewTemplate(previewUrl, file.MediaFile.Name)
             </div>
         }
@@ -151,23 +152,24 @@
 
 @helper FilePreviewTemplate(string previewUrl, string fileName)
 {
-    <figure class="file-figure">
+    <figure class="file-figure d-flex m-0 align-items-center justify-content-center">
         <i class="file-icon fa-fw show d-none"></i>
         <img data-dz-thumbnail @Html.Attr("src", previewUrl, previewUrl.HasValue()) />
     </figure>
 
-    <div class="fu-file-info-container">
-        <div class="fu-preview-overlay"></div>
-        <div class="fu-file-info">
-            <div class="fu-file-info-name text-truncate">@fileName</div>
-        </div>        
-        <div class="fu-preview-control-menu">
-            <a href="#" class="fu-preview-control-set set-main-picture btn btn-sm rounded-circle btn-outline-light btn-action btn-icon" title="@T("FileUploader.Preview.SetMainMedia.Title")">
+    <div class="fu-file-info-container w-100 h-100">
+        <div class="fu-file-dragarea text-center align-middle">
+            <i class="drag-icon fas fa-grip-vertical fs-h5 text-white p-0"></i>
+        </div>
+        <div class="fu-file-info h-100 d-flex justify-content-center align-items-center">
+            <div class="fu-file-info-name text-white text-truncate font-weight-medium">@fileName</div>
+        </div>
+        <div class="fu-preview-control-menu w-100 d-flex flex-wrap justify-content-between ">
+            <a href="#" class="fu-preview-control-set set-main-picture btn btn-sm rounded btn-dark btn-action btn-icon" title="@T("FileUploader.Preview.SetMainMedia.Title")">
                 <i class="far fa-camera"></i>
             </a>
-            <a href="#" class="fu-preview-control-remove delete-entity-picture btn btn-sm btn-outline-light btn-action rounded-pill text-truncate" title="@T("FileUploader.Preview.DeleteEntityMedia.Title")">
-                <i class="far fa-times"></i>
-                <span class="fu-remove-text">@T("Common.Remove")</span>
+            <a href="#" class="fu-preview-control-remove delete-entity-picture btn btn-sm rounded btn-dark btn-action text-truncate" title="@T("FileUploader.Preview.DeleteEntityMedia.Title")">
+                <span class="fs-sm">@T("Common.Remove")</span>
             </a>
         </div>
     </div>

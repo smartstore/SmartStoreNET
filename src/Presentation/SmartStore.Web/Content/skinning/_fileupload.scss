@@ -273,115 +273,121 @@
 		.file-icon:not(.show) {
 			display: none;
 		}
-        min-width: 200px;
-        max-width: 500px;
-        height: 200px;
 
-        & > img {
-            height: 100%;
-            max-width: 500px;
-            max-height: 200px;
-            object-fit: contain;
-        }
-    }
+		min-width: 200px;
+		max-width: 500px;
+		height: 200px;
 
-    .fu-preview-overlay {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        visibility: hidden;
-        background-color: black;
-        transition: opacity 0.3s, visibility 0.1s;
-        opacity: .1;
-    }
+		& > img {
+			height: 100%;
+			max-width: 500px;
+			max-height: 200px;
+			object-fit: contain;
+		}
+	}
 
-    .toolbar {
-        position: absolute;
-        bottom: 0;
-        min-width: 100%;
-        background-color: $gray-100;
-        visibility: hidden;
-        transition: visibility 0.1s;
-        border-top: 1px solid $gray-500;
-        z-index: 2;
-        cursor: default;
+	.fu-preview-overlay {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		visibility: hidden;
+		background-color: black;
+		transition: opacity 0.3s, visibility 0.1s;
+		opacity: .1;
+	}
 
-        > .btn {
-            border-radius: 0 !important;
-        }
-    }
+	.toolbar {
+		position: absolute;
+		bottom: 0;
+		min-width: 100%;
+		background-color: $gray-100;
+		visibility: hidden;
+		transition: visibility 0.1s;
+		border-top: 1px solid $gray-500;
+		z-index: 2;
+		cursor: default;
 
-    .fu-file-info-container {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        transition: opacity .3s;
-        opacity: 0;
-        visibility: visible;
+		> .btn {
+			border-radius: 0 !important;
+		}
+	}
 
-        > .fu-file-info {
-            height: 100%;
-            display: flex;
-            align-items: center;
-            text-align: center;
+	.fu-file-info-container {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		transition: opacity .3s;
+		opacity: 0;
+		visibility: visible;
 
-            > .fu-file-info-name {
-                z-index: 3;
-                padding: 0rem 0.875rem;
-                width: 100%;
-                color: $light;
-                font-weight: $font-weight-bold;
-            }
-        }
+		> .fu-file-info {
+			height: 100%;
+			display: flex;
+			align-items: center;
+			text-align: center;
 
-        > .fu-preview-control-menu {
-            position: absolute;
-            width: 100%;
-            bottom: 0;
-            display: flex;
-            justify-content: space-between;
-            margin-top: -6px;
-            padding: 0rem 0.875rem 0.75rem 0.875rem;
-            flex-wrap: wrap;
+			> .fu-file-info-name {
+				z-index: 3;
+				padding: 0rem 0.875rem;
+				width: 100%;
+				color: $light;
+				font-weight: $font-weight-bold;
+			}
+		}
 
-            > * {
-                margin-top: 6px;
-            }
+		> .fu-preview-control-menu {
+			position: absolute;
+			width: 100%;
+			bottom: 0;
+			display: flex;
+			justify-content: flex-end;
+			margin-top: -6px;
+			padding: 0rem 0.875rem 0.75rem 0.875rem;
+			flex-wrap: wrap;
 
-            & .fu-remove-text{
-                font-size: $font-size-sm;
-                padding-left: 4px;
-            }
-        }
-    }
+			> .fu-preview-control-set {
+				margin-top: 6px;
+			}
 
-    &:hover:not(.sortable-ghost) {
-        border: 1px solid $gray-400;
+			> .fu-preview-control-remove {
+				margin-top: 6px;
+				margin-left: .875rem;
 
-        .toolbar {
-            visibility: visible;
-        }
+				> .fu-remove-text {
+					font-size: $font-size-sm;
+					padding-left: 4px;
+				}
+			}
+		}
+	}
 
-        .fu-preview-overlay {
-            visibility: visible;
-            opacity: .5;
-        }
+	&:hover:not(.sortable-ghost) {
+		border: 1px solid $gray-400;
 
-        .fu-file-info-container {
-            opacity: 1;
-        }
-    }
+		.toolbar {
+			visibility: visible;
+		}
 
-    &.sortable-ghost .toolbar {
-        visibility: hidden;
-    }
+		.fu-preview-overlay {
+			visibility: visible;
+			opacity: .5;
+		}
 
-    .main-pic-badge {
-        z-index: 1000;
-        position: absolute;
-        top: .5rem;
-        left: .75rem;
-    }
+		.fu-file-info-container {
+			opacity: 1;
+		}
+	}
+
+	&.sortable-ghost .toolbar {
+		visibility: hidden;
+	}
+
+	.main-pic-badge {
+		z-index: 1000;
+		position: absolute;
+		top: .5rem;
+		left: .75rem;
+	}
 }
 
 .dropzone-container {

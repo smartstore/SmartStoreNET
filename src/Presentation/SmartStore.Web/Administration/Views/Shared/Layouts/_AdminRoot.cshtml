@@ -100,8 +100,9 @@
 <head>
     <title>@adminPageTitle</title>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-	<meta http-equiv="x-ua-compatible" content="ie=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta property="sm:root" content="@Url.Content("~/")" />
 
     @{ Html.RenderPartial("_ClientRes"); }
     @{ Html.RenderPartial("ConditionalComments"); }
@@ -112,11 +113,11 @@
 
     <link rel="shortcut icon" href="~/Administration/favicon.ico?v=@SmartStoreVersion.CurrentVersion" />
 
-	@Html.CustomHead()
+    @Html.CustomHead()
 
-	<script src="~/Scripts/smartstore.globalization.adapter.js"></script>
+    <script src="~/Scripts/smartstore.globalization.adapter.js"></script>
 
-	@{ Html.RenderZone("head"); }
+    @{ Html.RenderZone("head"); }
 </head>
 <body @Html.BodyAttributes()>   
 	@{ Html.RenderZone("start"); }

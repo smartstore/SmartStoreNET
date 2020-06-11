@@ -24,7 +24,7 @@
 	var assignableFileIds = "";
 	var activeFiles = 0;
 	var canUploadMoreFiles = true;	// TODO: investigate!!! This can be done better.
-	var dialog;
+	var dialog = SmartStore.Admin.Media.fileConflictResolutionDialog;
 	var file;
 
 	$.fn.dropzoneWrapper = function (options) {
@@ -314,7 +314,7 @@
 				var successFiles = this.getFilesWithStatus(Dropzone.SUCCESS);
 
 				// If there are duplicates & dialog isn't already open > open duplicate file handler dialog.
-				if (dupeFiles.length !== 0 && (!dialog || !dialog.isOpen)) {
+				if (dupeFiles.length !== 0 && !dialog.isOpen) {
 
 					// Close confirmation dialog. User was to slow. Uploads are complete.
 					if (elStatusWindow.data("confirmation-requested")) {
@@ -322,18 +322,12 @@
 					}
 
 					// Open duplicate file handler dialog.
-					if (!dialog) {
-						dialog = new FileConflictResolutionDialog(
-						{
-							url: fuContainer.find(".fileupload").data('dialog-url'),
-							queue: SmartStore.Admin.Media.convertDropzoneFileQueue(dupeFiles),
-							callerId: elDropzone.find(".fileupload").attr("id"),
-							onResolve: dupeFileHandlerCallback,
-							onComplete: dupeFileHandlerCompletedCallback
-						});
-					}
-					
-					dialog.open();
+					dialog.open({
+						queue: SmartStore.Admin.Media.convertDropzoneFileQueue(dupeFiles),
+						callerId: elDropzone.find(".fileupload").attr("id"),
+						onResolve: dupeFileHandlerCallback,
+						onComplete: dupeFileHandlerCompletedCallback
+					});
 				}
 
 				updateUploadStatus(this, elStatus);
@@ -623,15 +617,12 @@
 
 				// TODO: DRY > make function and pass dupeFiles as param
 				if (dupeFiles.length !== 0 && !dialog.isOpen) {
-					dialog = new FileConflictResolutionDialog(
-					{
-						url: fuContainer.find(".fileupload").data('dialog-url'),
+					dialog.open({
 						queue: SmartStore.Admin.Media.convertDropzoneFileQueue(dupeFiles),
 						callerId: elDropzone.find(".fileupload").attr("id"),
 						onResolve: dupeFileHandlerCallback,
 						onComplete: dupeFileHandlerCompletedCallback
 					});
-					dialog.open();
 				}
 			});
 
@@ -755,7 +746,7 @@
 				}
 				else {
 					dropzone.emit("queuecomplete");
-					dialog.hide();
+					dialog.close();
 				}
 
 				return;
@@ -770,7 +761,7 @@
 
 			// If current file is last file > close dialog else display next file.
 			if (dupeFiles.length === 1) {
-				dialog.hide();
+				dialog.close();
 			}
 			else {
 				dialog.next();
@@ -786,7 +777,7 @@
 			// Do nothing on skip.
 			if (resolutionType === "0") {
 				dropzone.emit("queuecomplete");
-				dialog.hide();
+				dialog.close();
 				return;
 			}
 
@@ -803,7 +794,7 @@
 				resumeUpload = true;
 			}
 
-			dialog.hide();
+			dialog.close();
 		}
 
 		if (resumeUpload) {

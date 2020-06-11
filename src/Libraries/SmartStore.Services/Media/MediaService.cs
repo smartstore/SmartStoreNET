@@ -690,6 +690,7 @@ namespace SmartStore.Services.Media
                     {
                         case DuplicateEntryHandling.Skip:
                             isDupe = true;
+                            uniqueFileNameChecker(destPathData);
                             return dupe;
                         case DuplicateEntryHandling.ThrowError:
                             var fullPath = destPathData.FullPath;

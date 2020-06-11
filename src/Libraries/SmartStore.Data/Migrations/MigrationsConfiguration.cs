@@ -623,13 +623,13 @@
             builder.AddOrUpdate("FileUploader.StatusWindow.Collapse.Title", "Minimize", "Minimieren");
 
             builder.AddOrUpdate("FileUploader.DuplicateDialog.Title", "Replace or skip", "Ersetzen oder überspringen");
-            builder.AddOrUpdate("FileUploader.DuplicateDialog.Intro", "The file <span class='current-file'></span> already exists.", "Die Datei <span class='current-file'></span> ist bereits vorhanden.");
-            builder.AddOrUpdate("FileUploader.DuplicateDialog.DupeFile.Title", "Uploaded file", "Hochgeladene Datei");
-            builder.AddOrUpdate("FileUploader.DuplicateDialog.ExistingFile.Title", "Existing files", "Existierende Datei");
-            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Skip", "Skip file", "Datei überspringen");
-            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Replace", "Upload and replace", "Hochladen und ersetzen");
-            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Rename", "Upload and rename", "Hochladen und umbenennen");
-            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.SaveSelection", "Remember this selection and apply it to the current queue.", "Diese Auswahl merken und auf die aktuelle Wartenschlange anwenden.");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Intro", "A file with the name <span class='current-file'></span> already exists in the target.", "Im Ziel ist bereits eine Datei mit dem Namen <span class='current-file'></span> vorhanden.");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.DupeFile.Title", "Source file", "Quelldatei");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.ExistingFile.Title", "Destination file", "Zieldatei");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Skip", "Skip this file", "Diese Datei überspringen");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Replace", "Replace file in target", "Datei im Ziel ersetzen");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.Rename", "Rename file", "Datei umbenennen");
+            builder.AddOrUpdate("FileUploader.DuplicateDialog.Option.SaveSelection", "Remember selection and apply to remaing conflicts", "Auswahl merken und auf verbleibende Konflikte anwenden");
 
             builder.AddOrUpdate("FileUploader.Dropzone.DictDefaultMessage", "Drop files here to upload", "Dateien zum Hochladen hier ablegen");
             builder.AddOrUpdate("FileUploader.Dropzone.DictFallbackMessage", "Your browser does not support drag'n'drop file uploads.", "Ihr Browser unterstützt keine Datei-Uploads per Drag'n'Drop.");

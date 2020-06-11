@@ -12,7 +12,7 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Directory
 {
     [Validator(typeof(CountryValidator))]
-    public class CountryModel : EntityModelBase, ILocalizedModel<CountryLocalizedModel>
+    public class CountryModel : TabbableModel, ILocalizedModel<CountryLocalizedModel>
     {
         public CountryModel()
         {

@@ -5,14 +5,13 @@ using System.Web.Mvc;
 using SmartStore.Admin.Models.Directory;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Security;
-using SmartStore.Services;
 using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Stores;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
@@ -21,27 +20,20 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class CountryController : AdminControllerBase
     {
-        #region Fields
-
         private readonly ICountryService _countryService;
         private readonly IStateProvinceService _stateProvinceService;
         private readonly IAddressService _addressService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ILanguageService _languageService;
         private readonly IStoreMappingService _storeMappingService;
-        private readonly ICommonServices _services;
 
-        #endregion
-
-        #region Constructors
-
-        public CountryController(ICountryService countryService,
+        public CountryController(
+            ICountryService countryService,
             IStateProvinceService stateProvinceService,
             IAddressService addressService,
             ILocalizedEntityService localizedEntityService,
             ILanguageService languageService,
-            IStoreMappingService storeMappingService,
-            ICommonServices services)
+            IStoreMappingService storeMappingService)
         {
             _countryService = countryService;
             _stateProvinceService = stateProvinceService;
@@ -49,10 +41,7 @@ namespace SmartStore.Admin.Controllers
             _localizedEntityService = localizedEntityService;
             _languageService = languageService;
             _storeMappingService = storeMappingService;
-            _services = services;
         }
-
-        #endregion
 
         #region Utilities 
 
@@ -98,7 +87,7 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Configuration.Country.Read)]
         public ActionResult List()
         {
-            var allStores = _services.StoreService.GetAllStores();
+            var allStores = Services.StoreService.GetAllStores();
 
             var model = new CountryListModel
             {
@@ -177,7 +166,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [Permission(Permissions.Configuration.Country.Create)]
-        public ActionResult Create(CountryModel model, bool continueEditing)
+        public ActionResult Create(CountryModel model, bool continueEditing, FormCollection form)
         {
             if (ModelState.IsValid)
             {
@@ -186,6 +175,8 @@ namespace SmartStore.Admin.Controllers
 
                 UpdateLocales(country, model);
                 SaveStoreMappings(country, model.SelectedStoreIds);
+
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, country, form));
 
                 NotifySuccess(T("Admin.Configuration.Countries.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = country.Id }) : RedirectToAction("List");
@@ -217,7 +208,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [Permission(Permissions.Configuration.Country.Update)]
-        public ActionResult Edit(CountryModel model, bool continueEditing)
+        public ActionResult Edit(CountryModel model, bool continueEditing, FormCollection form)
         {
             var country = _countryService.GetCountryById(model.Id);
             if (country == null)
@@ -232,6 +223,8 @@ namespace SmartStore.Admin.Controllers
 
                 UpdateLocales(country, model);
                 SaveStoreMappings(country, model.SelectedStoreIds);
+
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, country, form));
 
                 NotifySuccess(T("Admin.Configuration.Countries.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = country.Id }) : RedirectToAction("List");

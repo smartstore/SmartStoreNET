@@ -257,7 +257,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [Permission(Permissions.Catalog.Manufacturer.Create)]
-        public ActionResult Create(ManufacturerModel model, bool continueEditing)
+        public ActionResult Create(ManufacturerModel model, bool continueEditing, FormCollection form)
         {
             if (ModelState.IsValid)
             {
@@ -288,6 +288,8 @@ namespace SmartStore.Admin.Controllers
 
                 SaveAclMappings(manufacturer, model.SelectedCustomerRoleIds);
                 SaveStoreMappings(manufacturer, model.SelectedStoreIds);
+
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, manufacturer, form));
 
                 _customerActivityService.InsertActivity("AddNewManufacturer", T("ActivityLog.AddNewManufacturer"), manufacturer.Name);
 
@@ -370,10 +372,10 @@ namespace SmartStore.Admin.Controllers
 
                 _manufacturerService.UpdateManufacturer(manufacturer);
 
-                Services.EventPublisher.Publish(new ModelBoundEvent(model, manufacturer, form));
-
                 SaveAclMappings(manufacturer, model.SelectedCustomerRoleIds);
                 SaveStoreMappings(manufacturer, model.SelectedStoreIds);
+
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, manufacturer, form));
 
                 _customerActivityService.InsertActivity("EditManufacturer", T("ActivityLog.EditManufacturer"), manufacturer.Name);
 

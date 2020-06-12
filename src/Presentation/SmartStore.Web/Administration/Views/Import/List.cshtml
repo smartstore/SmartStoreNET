@@ -154,20 +154,19 @@ else
 }
 
 <script>
-	window['onUploadCompleted'] = function (e, el, data) {
-		if (!_.isEmpty(data.result.tempFile)) {
-			$('#import-profile-dialog').find('input[name=TempFileName]').val(data.result.tempFile);
-			$('#ImportFileList').html(data.result.tempFile).show();
+    window['onUploadCompleted'] = function (file, data) {
+		if (!_.isEmpty(data.tempFile)) {
+			$('#import-profile-dialog').find('input[name=TempFileName]').val(data.tempFile);
+			$('#ImportFileList').html(data.tempFile).show();
 			$('#ImportFileUploadContainer').hide();		// just one initial file to specify the file type
 			$('#import-profile-dialog').find('.btn-primary').prop('disabled', false);
 		}
-		else if (!_.isEmpty(data.result.error)) {
-			$('#ImportFileList').html('<div class="alert alert-danger">' + data.result.error + '</div>').show();
+		else if (!_.isEmpty(data.error)) {
+			$('#ImportFileList').html('<div class="alert alert-danger">' + data.error + '</div>').show();
 		}
 	}
 
-	jQuery(document).ready(function () {
-
+	$(function() {
 		// show profile dialog
 		$(document).on('click', '.import-profile-button', function (e) {
 			e.preventDefault();

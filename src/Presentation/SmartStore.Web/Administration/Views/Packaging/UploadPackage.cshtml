@@ -10,42 +10,50 @@
 		.Title(dialogTitle)
 		.Size(WindowSize.Large)
 		.Content(@<text>
-		<form enctype="multipart/form-data" method="POST" action="@Url.Action("UploadPackage", "Packaging")">
 			<div class="alert alert-info">
 				@dialogInfo
 			</div>
-			<div class="adminContent">
-				<div class="adminRow">
-					<div class="adminTitle">
-						<div class="ctl-label">
-							<label class="col-form-label" for="packagefile">@T("Admin.Packaging.Dialog.File"):</label>
-						</div>
+			<div class="adminContent fileupload-container">
+				<div>
+					<div class="fileupload-thumb-stage">
+						<div class="fileupload-thumb"></div>
 					</div>
-					<div class="adminData">
-						<input type="file" id="packagefile" name="packagefile" class="form-control-plaintext" />
+
+					@(Html.SmartStore().FileUploader()
+						.Name("packagefile")
+						.UploadUrl(Url.Action("UploadPackage", "Packaging"))
+						.TypeFilter(".nupkg")
+						.Multifile(false)
+						.ShowBrowseMedia(false)
+						.ShowRemoveButton(false)
+						.ShowRemoveButtonAfterUpload(false)
+						.UploadText(T("Admin.Packaging.Dialog.Upload").Text)
+						.OnUploadCompletedHandlerName("onComplete")
+					)
+				</div>
+				<div class="fileupload-progress">
+					<div class="progress">
+						<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
 					</div>
 				</div>
 			</div>
-		</form>
 		</text>)
 		.FooterContent(@<text>
 			<a href="#" class="btn btn-secondary btn-flat" data-dismiss="modal">
 				<span>@T("Common.Cancel")</span>
 			</a>
-			<button id="uploadpackagesubmit" type="submit" class="btn btn-primary">
-				<span>@T("Admin.Packaging.Dialog.Upload")</span>
-			</button>
 		</text>)
 	  .Render();
 }
 
 <script>
-	$(function () {
-		$("#uploadpackagesubmit").click(function (e) {
-			e.preventDefault();
-			var btn = $(this);
-			var win = $('#uploadpackage-window');
-			win.find("form").submit();
-		});
-	});
+    window['onComplete'] = function (file, response) {
+        if (response.message) {
+            $("#uploadpackage-window").modal("hide");
+            displayNotification(response.message, response.success ? "success" : "error");
+        }
+        else if (response.returnUrl) {
+            location.href = response.returnUrl;
+        }
+	};
 </script>

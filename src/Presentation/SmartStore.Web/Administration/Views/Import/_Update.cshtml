@@ -228,12 +228,12 @@
 <script>
 	var mappedProperties = [];
 
-	window['onUploadCompleted'] = function (e, el, data) {
+	window['onUploadCompleted'] = function (file, data) {
 		$('#ImportFileListContainer').show();
 
-		if (!_.isEmpty(data.result.tempFile)) {
-			$('input[name=TempFileName]').val(data.result.tempFile);
-			$('#ImportFileList').html(data.result.tempFile);
+		if (!_.isEmpty(data.tempFile)) {
+			$('input[name=TempFileName]').val(data.tempFile);
+			$('#ImportFileList').html(data.tempFile);
 			$('#ImportFileUploadContainer').hide();		// just one initial file to specify the file type
 		}
 		else {
@@ -241,7 +241,7 @@
 		}
 	}
 
-	jQuery(document).ready(function () {
+	$(function() {
 		var maxMappingLableLength = @(Model.MaxMappingLabelTextLength);
 
 		// delete import file

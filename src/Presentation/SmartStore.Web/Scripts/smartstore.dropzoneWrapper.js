@@ -169,7 +169,7 @@
 					if (formData.has("typeFilter"))
 						formData.delete("typeFilter");
 
-					for (type of $el.data('type-filter').split(",")) {
+					for (var type of $el.data('type-filter').split(",")) {
 						formData.append("typeFilter", type);
 					}
 				}
@@ -244,6 +244,9 @@
 			el.on("successmultiple", function (files, response, progress) {
 				logEvent("successmultiple", files, response, progress);
 
+				if (opts.maxFiles === 1)
+					return;
+
 				if (response.length) {
 					$.each(response, function (i, value) {
 						assignableFileIds += value.id + ",";
@@ -269,7 +272,7 @@
 					this.removeAllFiles(true); 
 				}
 
-				if (options.onUploadCompleted) options.onUploadCompleted.apply(this, [file]);
+				//if (options.onUploadCompleted) options.onUploadCompleted.apply(this, [file]);
 			});
 
 			el.on("completemultiple", function (files) {

@@ -35,13 +35,16 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult UploadPackage(FormCollection form, string returnUrl = "")
+		public ActionResult UploadPackage(string returnUrl = "")
 		{
 			var isTheme = false;
+			var success = false;
+			string message = null;
+			string tempFile = "";
 
 			try
 			{
-				var file = Request.Files["packagefile"].ToPostedFileResult();
+				var file = Request.ToPostedFileResult();
 				if (file != null)
 				{
                     var requiredPermission = (isTheme = PackagingUtils.IsTheme(file.FileName))
@@ -50,13 +53,13 @@ namespace SmartStore.Admin.Controllers
 
 					if (!Services.Permissions.Authorize(requiredPermission))
 					{
-						return AccessDeniedView();
+						message = T("Admin.AccessDenied.Description");
+						return Json(new { success, file.FileName, message });
 					}
 
 					if (!file.FileExtension.IsCaseInsensitiveEqual(".nupkg"))
 					{
-						NotifyError(T("Admin.Packaging.NotAPackage"));
-						return RedirectToReferrer(returnUrl);
+						return Json(new { success, file.FileName, T("Admin.Packaging.NotAPackage").Text, returnUrl });
 					}
 
 					var location = CommonHelper.MapPath("~/App_Data");
@@ -88,24 +91,29 @@ namespace SmartStore.Admin.Controllers
 				}
 				else
 				{
-					NotifyError(T("Admin.Common.UploadFile"));
-					return RedirectToReferrer(returnUrl);
+					return Json(new { success, file.FileName, T("Admin.Common.UploadFile").Text, returnUrl });
 				}
 
 				if (!isTheme)
 				{
+					message = T("Admin.Packaging.InstallSuccess").Text;
 					Services.WebHelper.RestartAppDomain();
 				}
+				else
+				{
+					message = T("Admin.Packaging.InstallSuccess.Theme").Text;
+				}
 
-				NotifySuccess(T("Admin.Packaging.InstallSuccess"));
+				success = true;
+				
 			}
 			catch (Exception ex)
 			{
-				NotifyError(ex);
+				message = ex.Message;
 				Logger.Error(ex);
 			}
 
-            return RedirectToReferrer(returnUrl);
-        }
+			return Json(new { success, tempFile, message, returnUrl });
+		}
 	}
 }

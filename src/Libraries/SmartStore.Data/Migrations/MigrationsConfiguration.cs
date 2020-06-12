@@ -789,6 +789,7 @@
                 "'{0}' plugin is incompatible with your Smartstore version. Delete it or update to the latest version.",
                 "'{0}' Plugin ist nicht kompatibel mit Ihrer Smartstore-Version. Löschen Sie es oder installieren Sie die richtige Version.");
 
+
             builder.AddOrUpdate("Admin.Media.Exception.FileNotFound",
                 "Media file with Id '{0}' does not exist.",
                 "Die Mediendatei mit der Id '{0}' existiert nicht.");
@@ -888,6 +889,11 @@
             builder.AddOrUpdate("Admin.Media.Exception.NullInputStream",
                 "Input stream was null",
                 "Eingabe-Stream war null");
+
+            builder.AddOrUpdate("Admin.Packaging.Dialog.Upload", "Upload & Install package file", "Paket-Datei hochladen & installieren");
+
+            builder.AddOrUpdate("Admin.Packaging.InstallSuccess.Theme", "Theme was uploaded and installed successfully. Please reload the list.", "Theme wurde hochgeladen und erfolgreich installiert. Bitte laden Sie die Liste neu.");
+            
         }
     }
 }

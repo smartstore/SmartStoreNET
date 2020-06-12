@@ -432,6 +432,18 @@
             builder.AddOrUpdate("Enums.SmartStore.Rules.RuleScope.Customer", "Customer", "Kunde");
             builder.AddOrUpdate("Enums.SmartStore.Rules.RuleScope.Product", "Product", "Produkt");
 
+            builder.AddOrUpdate("Enums.SmartStore.Rules.RuleScope.Cart.Hint",
+                "Rule to grant discounts to the customer or offer payment and shipping methods.",
+                "Regel, um dem Kunden Rabatte zu gewähren oder Zahl- und Versandarten anzubieten.");
+
+            builder.AddOrUpdate("Enums.SmartStore.Rules.RuleScope.Customer.Hint",
+                "Rule to automatically assign customers to customer roles per scheduled task.",
+                "Regel, um Kunden automatisch per geplanter Aufgabe Kundengruppen zuzuordnen.");
+
+            builder.AddOrUpdate("Enums.SmartStore.Rules.RuleScope.Product.Hint",
+                "Rule to automatically assign products to categories per scheduled task.",
+                "Regel, um Produkte automatisch per geplanter Aufgabe Warengruppen zuzuordnen.");
+
             builder.AddOrUpdate("SmartStore.Blog.Button", "Visit our blog", "Zum Blog");
             builder.AddOrUpdate("SmartStore.Blog.Button.Hint", "Click here to be forwarded to our blog", "Klicken Sie hier um zu unserem Blog weitergeleitet zu werden");
 

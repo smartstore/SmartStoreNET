@@ -26,6 +26,8 @@ namespace SmartStore.Admin.Models.Rules
         [SmartResourceDisplayName("Admin.Rules.RuleSet.Fields.Scope")]
         public string ScopeName { get; set; }
 
+        public IList<ExtendedSelectListItem> Scopes { get; set; }
+
         [SmartResourceDisplayName("Admin.Rules.RuleSet.Fields.IsSubGroup")]
         public bool IsSubGroup { get; set; }
 

@@ -51,7 +51,12 @@
         <div class="adminData">
             @if (Model.Id == 0)
             {
-                @Html.DropDownListForEnum(model => model.Scope)
+			    <select name="@Html.FieldNameFor(x => x.Scope)" id="@Html.FieldIdFor(x => x.Scope)" class="form-control">
+				    @foreach (var item in Model.Scopes)
+				    {
+                        <option value="@item.Value" @Html.Attr("selected", "selected", item.Selected) data-description="@(item.Get<string>("Description"))">@item.Text</option>
+				    }
+			    </select>
             }
             else
             {

@@ -267,8 +267,10 @@
                         text = item.text,
                         title = '',
                         preHtml = '',
+                        postHtml = '',
                         classes = '',
                         hint = item.hint || option.attr('data-hint'),
+                        description = item.description || option.attr('data-description'),
                         icon = option.data('icon'),
                         truncateText = options.maxTextLength > 0 && text.length > options.maxTextLength,
                         appendHint = !isResult && hint && hint.length > 0;
@@ -284,28 +286,34 @@
                         text = text.substring(0, options.maxTextLength) + '…';
                     }
 
-                    if (isResult && !_.isEmpty(item.id) && !_.isEmpty(item.url)) {
-                        if (item.id === '-1') {
-                            // Item is a link to open add-entity page.
-                            classes += ' select2-item-link prevent-selection';
+                    if (isResult) {
+                        if (!_.isEmpty(item.id) && !_.isEmpty(item.url)) {
+                            if (item.id === '-1') {
+                                // Item is a link to open add-entity page.
+                                classes += ' select2-item-link prevent-selection';
+                            }
+                            else {
+                                // Add small item button to open detail page.
+                                preHtml += '<span class="select2-item-btn float-right">';
+                                preHtml += '<a href="' + item.url.replace('__id__', item.id) + '" class="btn btn-flat btn-icon btn-light prevent-selection"' + attr('title', item.urlTitle) + '>';
+                                preHtml += '<i class="fa fa-link fa-fw prevent-selection" /></a>';
+                                preHtml += '</span>';
+                            }
                         }
-                        else {
-                            // Add small item button to open detail page.
-                            preHtml += '<span class="select2-item-btn float-right">';
-                            preHtml += '<a href="' + item.url.replace('__id__', item.id) + '" class="btn btn-flat btn-icon btn-light prevent-selection"' + attr('title', item.urlTitle) + '>';
-                            preHtml += '<i class="fa fa-link fa-fw prevent-selection" /></a>';
-                            preHtml += '</span>';
+
+                        if (!_.isEmpty(description)) {
+                            postHtml += '<span class="select2-item-description muted">' + description + '</span>'
                         }
-                    }                    
-                    
+                    }
+
                     if (imageUrl) {
-                        return $(preHtml + '<span class="choice-item' + classes + '"' + attr('title', title) + '><img class="choice-item-img" src="' + imageUrl + '" />' + text + '</span>');
+                        return $(preHtml + '<span class="choice-item' + classes + '"' + attr('title', title) + '><img class="choice-item-img" src="' + imageUrl + '" />' + text + '</span>' + postHtml);
                     }
                     else if (color) {
-                        return $(preHtml + '<span class="choice-item' + classes + '"' + attr('title', title) + '><span class="choice-item-color" style="background-color: ' + color + '"></span>' + text + '</span>');
+                        return $(preHtml + '<span class="choice-item' + classes + '"' + attr('title', title) + '><span class="choice-item-color" style="background-color: ' + color + '"></span>' + text + '</span>' + postHtml);
                     }
                     else if (hint && isResult) {
-                        return $(preHtml + '<span class="select2-option' + classes + '"><span' + attr('title', title) + '>' + text + '</span><span class="option-hint muted float-right">' + hint + '</span></span>');
+                        return $(preHtml + '<span class="select2-option' + classes + '"><span' + attr('title', title) + '>' + text + '</span><span class="option-hint muted float-right">' + hint + '</span></span>' + postHtml);
                     }
                     else if (icon) {
                         var html = ['<span class="choice-item' + classes + '"' + attr('title', title) + '>'];
@@ -323,7 +331,7 @@
                         return html;
                     }
                     else {
-                        return $(preHtml + '<span class="select2-option' + classes + '"' + attr('title', title) + '>' + text + '</span>');
+                        return $(preHtml + '<span class="select2-option' + classes + '"' + attr('title', title) + '>' + text + '</span>' + postHtml);
                     }
                 }
                 catch (e) {

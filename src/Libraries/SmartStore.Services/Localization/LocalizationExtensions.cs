@@ -252,14 +252,14 @@ namespace SmartStore.Services.Localization
         /// <param name="enumValue">Enum value</param>
         /// <param name="localizationService">Localization service</param>
         /// <param name="workContext">Work context</param>
+        /// <param name="hint">Whether to load the hint.</param>
         /// <returns>Localized value</returns>
-        public static string GetLocalizedEnum<T>(this T enumValue, ILocalizationService localizationService, IWorkContext workContext)
+        public static string GetLocalizedEnum<T>(this T enumValue, ILocalizationService localizationService, IWorkContext workContext, bool hint = false)
             where T : struct
         {
-			if (workContext == null)
-				throw new ArgumentNullException(nameof(workContext));
+            Guard.NotNull(workContext, nameof(workContext));
 
-			return GetLocalizedEnum<T>(enumValue, localizationService, workContext.WorkingLanguage.Id);
+			return GetLocalizedEnum<T>(enumValue, localizationService, workContext.WorkingLanguage.Id, hint);
         }
 
         /// <summary>
@@ -269,26 +269,34 @@ namespace SmartStore.Services.Localization
         /// <param name="enumValue">Enum value</param>
         /// <param name="localizationService">Localization service</param>
         /// <param name="languageId">Language identifier</param>
+        /// <param name="hint">Whether to load the hint.</param>
         /// <returns>Localized value</returns>
-        public static string GetLocalizedEnum<T>(this T enumValue, ILocalizationService localizationService, int languageId = 0)
+        public static string GetLocalizedEnum<T>(this T enumValue, ILocalizationService localizationService, int languageId = 0, bool hint = false)
             where T : struct
         {
-			if (localizationService == null)
-				throw new ArgumentNullException(nameof(localizationService));
+            Guard.NotNull(localizationService, nameof(localizationService));
 
-			if (!typeof(T).IsEnum) throw new ArgumentException("T must be an enumerated type");
+            if (!typeof(T).IsEnum)
+            {
+                throw new ArgumentException("T must be an enumerated type.");
+            }
 
-            //localized value
-            string resourceName = string.Format("Enums.{0}.{1}", 
+            var resourceName = string.Format("Enums.{0}.{1}", 
                 typeof(T).ToString(), 
-                //Convert.ToInt32(enumValue)
                 enumValue.ToString());
 
-            string result = localizationService.GetResource(resourceName, languageId, false, "", true);
+            if (hint)
+            {
+                resourceName += ".Hint";
+            }
 
-            // Set default value if required
-            if (String.IsNullOrEmpty(result))
+            var result = localizationService.GetResource(resourceName, languageId, false, "", true);
+
+            // Set default value if required.
+            if (string.IsNullOrEmpty(result))
+            {
                 result = Inflector.Titleize(enumValue.ToString());
+            }
 
             return result;
         }

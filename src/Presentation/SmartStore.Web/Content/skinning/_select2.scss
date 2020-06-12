@@ -591,11 +591,14 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
         position: relative;
         border-bottom: 1px solid $s2sm-inner-border-color;
 
-        > .select2-option {
+        > .select2-option,
+        > .select2-item-description {
             display: block;
             font-size: $s2sm-option-font-size;
             padding-left: 18px;
+        }
 
+        > .select2-option {
             &:before {
                 position: absolute;
                 left: $s2bs-padding-base-horizontal;
@@ -606,6 +609,10 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
                 line-height: $line-height-base;
                 visibility: hidden;
             }
+        }
+
+        > .select2-item-description {
+            font-weight: normal;
         }
 
         &[aria-selected=true] > .select2-option:before {

@@ -24,6 +24,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Payments;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
@@ -140,6 +141,7 @@ namespace SmartStore.Admin.Controllers
         {
             var model = new RuleSetModel();
 
+            PrepareModel(model, null);
             PrepareTemplateViewBag(0);
 
             return View(model);
@@ -173,44 +175,9 @@ namespace SmartStore.Admin.Controllers
                 return HttpNotFound();
             }
 
-            var provider = _ruleProvider(entity.Scope);
             var model = MiniMapper.Map<RuleSetEntity, RuleSetModel>(entity);
 
-            model.ScopeName = entity.Scope.GetLocalizedEnum(Services.Localization, Services.WorkContext);
-            model.ExpressionGroup = _ruleFactory.CreateExpressionGroup(entity, provider, true);
-
-            model.AssignedToDiscounts = entity.Discounts
-                .Select(x => new RuleSetModel.AssignedToEntityModel { Id = x.Id, Name = x.Name.NullEmpty() ?? x.Id.ToString() })
-                .ToList();
-
-            model.AssignedToShippingMethods = entity.ShippingMethods
-                .Select(x => new RuleSetModel.AssignedToEntityModel { Id = x.Id, Name = x.GetLocalized(y => y.Name) })
-                .ToList();
-
-            var paymentMethods = entity.PaymentMethods;
-            if (paymentMethods.Any())
-            {
-                var paymentProviders = _paymentService.Value.LoadAllPaymentMethods().ToDictionarySafe(x => x.Metadata.SystemName);
-
-                model.AssignedToPaymentMethods = paymentMethods
-                    .Select(x =>
-                    {
-                        string friendlyName = null;
-                        if (paymentProviders.TryGetValue(x.PaymentMethodSystemName, out var paymentProvider))
-                        {
-                            friendlyName = _pluginMediator.Value.GetLocalizedFriendlyName(paymentProvider.Metadata);
-                        }
-
-                        return new RuleSetModel.AssignedToEntityModel
-                        {
-                            Id = x.Id,
-                            Name = friendlyName.NullEmpty() ?? x.PaymentMethodSystemName,
-                            SystemName = x.PaymentMethodSystemName
-                        };
-                    })
-                    .ToList();
-            }
-
+            PrepareModel(model, entity);
             PrepareExpressions(model.ExpressionGroup);
             PrepareTemplateViewBag(entity.Id);
 
@@ -663,6 +630,68 @@ namespace SmartStore.Admin.Controllers
             ViewBag.RootRuleSetId = rootRuleSetId;
             ViewBag.TemplateSelector = _ruleTemplateSelector;
             //ViewBag.LanguageSeoCode = Services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower();
+        }
+
+        private void PrepareModel(RuleSetModel model, RuleSetEntity entity)
+        {
+            var scopes = (entity?.Scope ?? RuleScope.Cart).ToSelectList();
+
+            model.Scopes = scopes
+                .Select(x =>
+                {
+                    var item = new ExtendedSelectListItem
+                    {
+                        Value = x.Value,
+                        Text = x.Text,
+                        Selected = x.Selected
+                    };
+
+                    var scope = (RuleScope)x.Value.ToInt();
+                    item.CustomProperties["Description"] = scope.GetLocalizedEnum(Services.Localization, Services.WorkContext, true);
+
+                    return item;
+                })
+                .ToList();
+
+            if ((entity?.Id ?? 0) != 0)
+            {
+                var provider = _ruleProvider(entity.Scope);
+
+                model.ScopeName = entity.Scope.GetLocalizedEnum(Services.Localization, Services.WorkContext);
+                model.ExpressionGroup = _ruleFactory.CreateExpressionGroup(entity, provider, true);
+
+                model.AssignedToDiscounts = entity.Discounts
+                    .Select(x => new RuleSetModel.AssignedToEntityModel { Id = x.Id, Name = x.Name.NullEmpty() ?? x.Id.ToString() })
+                    .ToList();
+
+                model.AssignedToShippingMethods = entity.ShippingMethods
+                    .Select(x => new RuleSetModel.AssignedToEntityModel { Id = x.Id, Name = x.GetLocalized(y => y.Name) })
+                    .ToList();
+
+                var paymentMethods = entity.PaymentMethods;
+                if (paymentMethods.Any())
+                {
+                    var paymentProviders = _paymentService.Value.LoadAllPaymentMethods().ToDictionarySafe(x => x.Metadata.SystemName);
+
+                    model.AssignedToPaymentMethods = paymentMethods
+                        .Select(x =>
+                        {
+                            string friendlyName = null;
+                            if (paymentProviders.TryGetValue(x.PaymentMethodSystemName, out var paymentProvider))
+                            {
+                                friendlyName = _pluginMediator.Value.GetLocalizedFriendlyName(paymentProvider.Metadata);
+                            }
+
+                            return new RuleSetModel.AssignedToEntityModel
+                            {
+                                Id = x.Id,
+                                Name = friendlyName.NullEmpty() ?? x.PaymentMethodSystemName,
+                                SystemName = x.PaymentMethodSystemName
+                            };
+                        })
+                        .ToList();
+                }
+            }
         }
 
         private void SaveRuleData(RuleEditItem[] ruleData, RuleScope ruleScope)

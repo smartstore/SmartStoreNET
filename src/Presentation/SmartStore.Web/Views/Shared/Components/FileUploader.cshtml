@@ -21,47 +21,51 @@
 	var maxFilesSize = mediaSettings.MaxUploadFileSize;
 }
 
-<div @Html.Attr("class", "dropzone-container", Model.Multifile || !Model.HasTemplatePreview)>
+    <div @Html.Attr("class", "dropzone-container", Model.Multifile || !Model.HasTemplatePreview)>
 
-	<div class="dropzone-target">
-		<div class="fu-message">
-			@if (Model.UploadText.HasValue())
-			{
-				@Model.UploadText
-			}
-			else
-			{
-				@T("FileUploader.Dropzone.Message")
-			}
-		</div>
+        <div class="dropzone-target">
+            <div class="fu-message">
+                @if (Model.UploadText.HasValue())
+                {
+                    @Model.UploadText
+                }
+                else
+                {
+                    @T("FileUploader.Dropzone.Message")
+                }
+            </div>
 
-		<div id="@Model.Name" @Html.Attrs(Model.HtmlAttributes)
-			 data-dialog-url="@Url.Action("DupeFileHandlerDialog", "Media", new { area = "Admin" })"
-			 data-assignment-url="@Model.EntityAssignmentUrl"
-			 data-remove-url="@Model.DeleteUrl"
-			 data-sort-url="@Model.SortUrl"
-			 data-entity-id="@Model.EntityId"
-			 data-type-filter="@Model.TypeFilter">
+            <div id="@Model.Name" @Html.Attrs(Model.HtmlAttributes)
+                 data-dialog-url="@Url.Action("DupeFileHandlerDialog", "Media", new { area = "Admin" })"
+                 data-assignment-url="@Model.EntityAssignmentUrl"
+                 data-remove-url="@Model.DeleteUrl"
+                 data-sort-url="@Model.SortUrl"
+                 data-entity-id="@Model.EntityId"
+                 data-type-filter="@Model.TypeFilter">
 
-			<input type="hidden" id="@(Model.Id)-file" name="@(Model.Id)-file" />
+                <input type="hidden" id="@(Model.Id)-file" name="@(Model.Id)-file" />
 
-			@if (Model.ShowBrowseMedia)
-			{
-				<div class="fileupload-buttons">
-					@{ Html.RenderWidget("file_uploader"); }
-				</div>
-			}
-		</div>
+                @if (Model.ShowBrowseMedia)
+                {
+                    <div class="fileupload-buttons">
+                        @{ Html.RenderWidget("file_uploader"); }
+                    </div>
+                }
+            </div>
+        </div>
 
-		<a href="#" class="open-upload-summmary">
-			<i class="fa fa-question-circle"></i>
-		</a>
-	</div>
-
-	<button class="btn btn-secondary btn-circle btn-to-danger btn-sm remove@(Model.Compact ? " btn-sm" : "")" @Html.Attr("style", "display: none", Model.ShowRemoveButton)>
-		<i class="far fa-times"></i>
-	</button>
-</div>
+        @if (!Model.Compact && !Model.ShowBrowseMedia)
+        {
+            <!--File uploader(product attributes) -->
+            <!-- TODO: File uploader for avatar and plugin upload -->
+            <div class="uploaded-file-container align-items-center" @Html.Attr("style", "display: none", Model.ShowRemoveButton)>
+                <a href="#" class="uploaded-file-remove remove btn btn-outline-danger btn-no-border btn-sm p-0" title="@T("FileUploader.Dropzone.DictRemoveFile")">
+                    <i class="uploaded-file-remove-button d-flex justify-content-center align-items-center fs-h4">&times;</i>
+                </a>
+                <div class="uploaded-file text-truncate ml-1"></div>
+            </div>
+            }
+        </div>
 
 @if (Model.Multifile)
 {
@@ -157,18 +161,19 @@
         <img data-dz-thumbnail @Html.Attr("src", previewUrl, previewUrl.HasValue()) />
     </figure>
 
-    <div class="fu-file-info-container w-100 h-100">
-        <div class="fu-file-dragarea text-center align-middle">
-            <i class="drag-icon fas fa-grip-vertical fs-h5 text-white p-0"></i>
+    <!-- File (product) gallery preview overlay -->
+    <div class="fu-file-info-container d-flex flex-column w-100 h-100 justify-content-between">
+        <div class="drag-gripper align-middle">
+            <i class="drag-icon fas fa-grip-vertical fs-h5 text-white p-0 text-center"></i>
         </div>
-        <div class="fu-file-info h-100 d-flex justify-content-center align-items-center">
-            <div class="fu-file-info-name text-white text-truncate font-weight-medium">@fileName</div>
+        <div class="fu-file-info h-100 w-100 d-flex position-absolute justify-content-center align-items-center">
+            <div class="fu-file-info-name text-white font-weight-medium text-center">@fileName</div>
         </div>
-        <div class="fu-preview-control-menu w-100 d-flex flex-wrap justify-content-between ">
-            <a href="#" class="fu-preview-control-set set-main-picture btn btn-sm rounded btn-dark btn-action btn-icon" title="@T("FileUploader.Preview.SetMainMedia.Title")">
-                <i class="far fa-camera"></i>
+        <div class="fu-preview-control-menu w-100 d-flex flex-wrap justify-content-between">
+            <a href="#" class="fu-preview-control-set set-main-picture btn btn-sm rounded-sm btn-dark btn-action btn-icon" title="@T("FileUploader.Preview.SetMainMedia.Title")">
+                <i class="fa fa-image fs-h6"></i>
             </a>
-            <a href="#" class="fu-preview-control-remove delete-entity-picture btn btn-sm rounded btn-dark btn-action text-truncate" title="@T("FileUploader.Preview.DeleteEntityMedia.Title")">
+            <a href="#" class="fu-preview-control-remove delete-entity-picture btn btn-sm rounded-sm btn-dark btn-action text-truncate" title="@T("FileUploader.Preview.DeleteEntityMedia.Title")">
                 <span class="fs-sm">@T("Common.Remove")</span>
             </a>
         </div>

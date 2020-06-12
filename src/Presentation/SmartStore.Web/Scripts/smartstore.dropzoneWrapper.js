@@ -88,9 +88,9 @@
 				var currentFileId = fuContainer.find('.hidden').val();
 
 				if ((!currentFileId || currentFileId == 0) || !options.showRemoveButton)
-					elRemove.hide();
+					elRemove.parent().hide();
 				else {
-					elRemove.show();
+					elRemove.parent().show();
 				}
 			}
 
@@ -98,7 +98,7 @@
 			if (!displayPreviewInList && options.maxFiles > 1) {
 				previewContainer.sortable({
 					items: fuContainer.find('.dz-image-preview'),
-					handle: '.fu-file-gripper',
+					handle: '.drag-gripper',
 					ghostClass: 'sortable-ghost',
 					animation: 150
 				}).on('sort', function (e, ui) {
@@ -586,7 +586,7 @@
 			});
 
 			// Show summary.
-			$(fuContainer).on("click", ".open-upload-summmary", function (e) {
+			$(fuContainer).on("click", ".file-upload-remove", function (e) {
 				elStatus.show();
 				return false;
 			});
@@ -598,7 +598,7 @@
 				fuContainer.find('.fileupload-thumb').css('background-image', 'url("' + $el.data('fallback-url') + '")');
 				fuContainer.find('.hidden').val(0).trigger('change');
 
-				$(this).hide();
+				$(this).parent().hide();
 
 				if (options.onFileRemove)
 					options.onFileRemove.apply(this, [e, el]);
@@ -718,12 +718,12 @@
 		el.removeClass("dz-highlight");
 	});
 
-	// Disable tooltips on preview sorting.
-	$(document).on("dragstart", ".dz-image-preview", function (e) {
-		$(".dz-image-preview").tooltip("disable");
-	}).on("dragend", ".dz-image-preview", function (e) {
-		$(".dz-image-preview").tooltip("enable");
-	});
+	// Disable tooltips on preview sorting. - There are no tooltips anyway
+	//$(document).on("dragstart", ".dz-image-preview-drag", function (e) {
+	//	$(".dz-image-preview").tooltip("disable");
+	//}).on("dragend", ".dz-image-preview-drag", function (e) {
+	//	$(".dz-image-preview").tooltip("enable");
+	//});
 
 	// Callback function for duplicate file handling dialog.
 	function dupeFileHandlerCallback(resolutionType, remainingFiles) {
@@ -834,7 +834,7 @@
 		fuContainer.find('.hidden').val(id).trigger('change');
 
 		if (options.showRemoveButtonAfterUpload)
-			fuContainer.find('.remove').show();
+			fuContainer.find('.remove').parent().show();
 	}
 
 	function preCheckForDuplicates(addFileName, previewContainer) {

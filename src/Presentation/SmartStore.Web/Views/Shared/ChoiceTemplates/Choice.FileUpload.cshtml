@@ -27,8 +27,6 @@
 		.OnUploadCompletedHandlerName("onFileUploaded" + clientId)
 		.OnFileRemoveHandlerName("onFileRemoved" + clientId)
 	)
-
-	<div class="uploaded-file mt-2 hide"></div>
 </div>
 
 <script type="text/javascript">
@@ -43,8 +41,8 @@
 	};
 
 	window['onFileRemoved@(clientId)'] = function (e, el) {
-		$('#@containerId .hidden').val('');
-		$('#@containerId .uploaded-file').empty().hide();
+        $('#@containerId .hidden').val('');
+        $('#@containerId .uploaded-file').empty().parent().hide();
     }
 
     function setUploadedFile(downloadGuid, fileName, containerId) {
@@ -54,7 +52,7 @@
         	var downloadLink = "@storeUrl" + "download/getfileupload/?downloadId=" + downloadGuid;
         	var fileLink = '<a href="' + downloadLink + '" class="fileuploadattribute" rel="nofollow">' + fileName + '</a>';
 
-            $('#' + containerId + ' .uploaded-file').html(fileLink).show();
+            $('#' + containerId + ' .uploaded-file').html(fileLink).parent().show(); 
         }
     }
 

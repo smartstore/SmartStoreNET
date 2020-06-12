@@ -1,4 +1,6 @@
 /// <reference path="../bs4/scss/bootstrap.scss" />
+/// <reference path="../../Content/bs4/scss/_variables.scss" />
+
 
 
 /* File Upload
@@ -19,258 +21,281 @@
  */
 
 .fileupload-container {
-	position: relative;
+    position: relative;
 
-	&.dz-highlight .dropzone-container,
-	&.dz-drag-hover .dropzone-container {
-		border-color: $primary !important;
-		background-color: lighten($primary, 50%) !important;
-		pointer-events: none;
-	}
+    &.dz-highlight .dropzone-container,
+    &.dz-drag-hover .dropzone-container {
+        border-color: $primary !important;
+        background-color: lighten($primary, 50%) !important;
+        pointer-events: none;
+    }
 
-	> .dz-preview {
-		display: none !important;
-	}
+    > .dz-preview {
+        display: none !important;
+    }
 
-	.fu-message {
-		cursor: pointer;
-		font-size: $h5-font-size;
-		font-weight: $font-weight-medium;
-		color: $gray-600;
-	}
+    .fu-message {
+        cursor: pointer;
+        font-size: $h5-font-size;
+        font-weight: $font-weight-medium;
+        color: $gray-600;
+    }
+    // Compact display.
+    &.compact {
+        .fu-message {
+            font-size: $h6-font-size;
+            font-weight: $font-weight-normal;
+        }
 
-	// Compact display.
-	&.compact {
-		.fu-message {
-			font-size: $h6-font-size;
-			font-weight: $font-weight-normal;
-		}
+        .dropzone {
+            padding: 10px;
+        }
 
-		.dropzone {
-			padding: 10px;
-		}
+        .fileupload-buttons .btn {
+            @extend .btn-sm;
+        }
+    }
+    // Progress bars.
+    .fileupload-progress:not(.list) {
+        position: absolute;
+        left: 0;
+        bottom: -1px;
+        right: 0;
 
-		.fileupload-buttons .btn {
-			@extend .btn-sm;
-		}
-	}
+        .progress {
+            height: 0.25rem;
+            background: transparent;
+            margin: 0;
+            border-radius: 0;
+            border-bottom-left-radius: $input-border-radius;
+            border-bottom-right-radius: $input-border-radius;
+            box-shadow: none;
 
-	// Progress bars.
-	.fileupload-progress:not(.list) {
-		position: absolute;
-		left: 0;
-		bottom: -1px;
-		right: 0;
+            .progress-bar {
+                background-color: $primary;
+                transition: width 0.25s ease, background-color 0.25s ease;
+            }
+        }
 
-		.progress {
-			height: 0.25rem;
-			background: transparent;
-			margin: 0;
-			border-radius: 0;
-			border-bottom-left-radius: $input-border-radius;
-			border-bottom-right-radius: $input-border-radius;
-			box-shadow: none;
+        &.success {
+            transition-delay: 0.4s;
+        }
 
-			.progress-bar {
-				background-color: $primary;
-				transition: width 0.25s ease, background-color 0.25s ease;
-			}
-		}
-
-		&.success {
-			transition-delay: 0.4s;
-		}
-
-		&.success .progress-bar {
-			background-color: $success !important;
-		}
-	}
+        &.success .progress-bar {
+            background-color: $success !important;
+        }
+    }
 }
 
 // Dropzone skinning
 .dropzone-container {
-	border: 2px dashed $gray-400 !important;
-	background: $gray-100 !important;
-	pointer-events: initial !important;
-	transition: all .2s;
-	line-height: 1.2;
+    border: 2px dashed $gray-400 !important;
+    background: $gray-100 !important;
+    pointer-events: initial !important;
+    transition: all .2s;
+    line-height: 1.2;
 
-	&.fullscreen {
-		position: relative;
-		width: 100%;
-		height: 100%;
-		
-		.fu-message {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			height: 100%;
-		}
-	}
+    &.fullscreen {
+        position: relative;
+        width: 100%;
+        height: 100%;
 
-	&.hide {
-		display: none;
-	}
+        .fu-message {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+    }
 
-	.dropzone {
-		border: none;
-		background: none;
-		width: 100%;
-		padding: 20px;
-	}
+    &.hide {
+        display: none;
+    }
 
-	.fileupload,
-	.fu-message {
-		align-self: center;
-		text-align: center;
-	}
+    .dropzone {
+        border: none;
+        background: none;
+        width: 100%;
+        padding: 20px;
+    }
 
-	.dz-preview,
-	.dz-message {
-		display: none;
-	}
+    .fileupload,
+    .fu-message {
+        align-self: center;
+        text-align: center;
+    }
 
-	.open-upload-summmary {
-		display: none;
-		position: absolute;
-		right: 10px;
-		bottom: 5px;
-	}
+    .dz-preview,
+    .dz-message {
+        display: none;
+    }
+
+    .uploaded-file-container {
+        display: flex;
+        border-top: inherit;
+
+        .uploaded-file {
+            padding-right: 20px;
+        }
+
+        .uploaded-file-remove.upload-compact {
+            border-top-right-radius: 0;
+            border-bottom-left-radius: 0;
+            border: 0;
+            position: absolute;
+        }
+
+        .uploaded-file-remove-button {
+            width: 2.5rem;
+            height: 2.5rem;
+            xmargin-top: -4px !important;
+        }
+
+        &.upload-compact {
+            opacity: 0;
+            width: calc(100% + 1rem);
+            height: calc(100% + 1rem);
+            margin: -.5rem;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
 }
 
-// TODO: Remove
 .fileupload-status {
-	display: none;
+    display: none;
 }
 
 .fu-status-window {
-	position: fixed;
-	visibility: visible;
-	bottom: 0;
-	right: 20px;
-	z-index: $zindex-fixed;
-	width: 400px;
-	height: 250px;
-	transform: translate3d(0, 100%, 0) scale(0.85);
-	transition-property: transform;
-	transition-timing-function: cubic-bezier(.21,.57,.2,1.02);
-	transition-duration: 0.4s;
+    position: fixed;
+    visibility: visible;
+    bottom: 0;
+    right: 20px;
+    z-index: $zindex-fixed;
+    width: 400px;
+    height: 250px;
+    transform: translate3d(0, 100%, 0) scale(0.85);
+    transition-property: transform;
+    transition-timing-function: cubic-bezier(.21,.57,.2,1.02);
+    transition-duration: 0.4s;
 
-	&.show,
-	&.collapsed {
-		transition-timing-function: cubic-bezier(.13,.66,.08,.96);
-		transition-duration: 0.175s;
-		transform: translate3d(0, 0, 0) scale(1);
-		bottom: 20px;
-	}
+    &.show,
+    &.collapsed {
+        transition-timing-function: cubic-bezier(.13,.66,.08,.96);
+        transition-duration: 0.175s;
+        transform: translate3d(0, 0, 0) scale(1);
+        bottom: 20px;
+    }
 
-	&.collapsed {
-		transform: translate3d(0, 200px, 0) scale(1);
-		bottom: 0;
-	}
+    &.collapsed {
+        transform: translate3d(0, 200px, 0) scale(1);
+        bottom: 0;
+    }
 
-	.header {
-		background-color: #18509f;
-		font-size: $font-size-lg;
-		color: #fff;
-		padding: 10px 0;
-	}
-	// TODO: I don't like the name... (perhaps cancel-bar ???)
-	.flyout-commands {
-		background: $gray-100;
-		border: 1px solid $gray-400;
-		border-top: none;
-		border-bottom: none;
-		max-height: 0;
-		transition: max-height .2s;
-		overflow: hidden;
+    .header {
+        background-color: #18509f;
+        font-size: $font-size-lg;
+        color: #fff;
+        padding: 10px 0;
+    }
+    // TODO: I don't like the name... (perhaps cancel-bar ???)
+    .flyout-commands {
+        background: $gray-100;
+        border: 1px solid $gray-400;
+        border-top: none;
+        border-bottom: none;
+        max-height: 0;
+        transition: max-height .2s;
+        overflow: hidden;
 
-		& > div {
-			padding-top: 7px;
-			padding-bottom: 7px;
-		}
+        & > div {
+            padding-top: 7px;
+            padding-bottom: 7px;
+        }
 
-		&.show {
-			max-height: 50px;
-		}
-	}
+        &.show {
+            max-height: 50px;
+        }
+    }
 
-	.preview-container {
-		border: 1px solid $gray-400;
-		height: 80%;
-		background: #fff;
-		padding: 10px 0;
-		align-items: start;
-		align-content: start;
+    .preview-container {
+        border: 1px solid $gray-400;
+        height: 80%;
+        background: #fff;
+        padding: 10px 0;
+        align-items: start;
+        align-content: start;
 
-		.dz-preview {
-			display: flex;
-			margin: 0;
-			padding: 5px;
-			width: 100%;
-			align-items: center;
+        .dz-preview {
+            display: flex;
+            margin: 0;
+            padding: 5px;
+            width: 100%;
+            align-items: center;
 
-			&.canceled {
-				.progress-bar {
-					width: 100% !important;
-					background-color: $danger;
-				}
-			}
+            &.canceled {
+                .progress-bar {
+                    width: 100% !important;
+                    background-color: $danger;
+                }
+            }
 
-			.file-figure {
-				display: flex;
-				margin: 0;
-				align-items: center;
-				justify-content: center;
-				width: auto;
-				height: auto;
-				min-width: auto;
-			}
+            .file-figure {
+                display: flex;
+                margin: 0;
+                align-items: center;
+                justify-content: center;
+                width: auto;
+                height: auto;
+            }
 
-			.file-icon:not(.show) {
-				display: none;
-			}
+            .file-icon:not(.show) {
+                display: none;
+            }
 
-			.dz-details {
-				// Height of circular progress. Setting min-height here prevents list from jumping.
-				min-height: 36px;
-			}
-		}
+            .dz-details {
+                // Height of circular progress. Setting min-height here prevents list from jumping.
+                min-height: 36px;
+            }
+        }
 
-		.dz-image-preview {
-			border: none !important;
-			cursor: initial;
-			width: 100%;
-			height: auto;
-			background: #fff;
-		}
-	}
+        .dz-image-preview {
+            border: none !important;
+            cursor: initial;
+            width: 100%;
+            height: auto;
+            background: #fff;
+        }
+    }
 }
 
 .dz-image-preview {
-	margin: 0 10px 10px 0;
-	position: relative;
-	border: 1px solid $gray-400;
-	border-radius: $border-radius-sm;
-	background: $light;
-	display: flex;
-	justify-content: center;
-	overflow: hidden;
+    margin: 0 10px 10px 0;
+    position: relative;
+    border: 1px solid $gray-400;
+    border-radius: $border-radius-sm;
+    background: $light;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
 
     .file-figure {
-        min-width: 200px;
-        max-width: 500px;
-        height: 200px;
+        min-width: $file-thumbnail-min-size;
+        max-width: $file-thumbnail-max-width;
+        height: $file-thumbnail-min-size;
 
         .file-icon:not(.show) {
             display: none;
         }
 
         & > img {
-            height: 100%;
-            max-width: 500px;
-            max-height: 200px;
+            height: auto;
+            max-width: 100%;
+            max-height: $file-thumbnail-min-size;
             object-fit: contain;
+            padding: 10px;
         }
     }
 
@@ -297,13 +322,11 @@
         visibility: visible;
         background-color: rgba(black, .4);
 
-        .fu-file-gripper {
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 5;
+        .drag-gripper {
+            width: 0;
             cursor: move;
-            
+            z-index: 10;
+
             > .drag-icon {
                 width: 2.75rem;
                 height: 2.75rem;
@@ -312,16 +335,20 @@
         }
 
         > .fu-file-info > .fu-file-info-name {
-            z-index: 3;
-            padding: 0rem 0.875rem;
+            z-index: 2;
+            padding: 0rem 0.75rem;
             text-shadow: 1px 1px 1px rgba(0,0,0, 0.5);
+            max-height: calc(1.313rem * 3);
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: .75rem;
         }
 
         > .fu-preview-control-menu {
-            position: absolute;
-            bottom: 0;
+            z-index: 5;
             margin-top: -6px;
-            padding: 0rem 0.875rem 0.75rem 0.875rem;
+            padding: 0rem 0.75rem 0.5rem 0.75rem;
 
             > * {
                 margin-top: 6px;
@@ -353,64 +380,68 @@
     .main-pic-badge {
         z-index: 1000;
         position: absolute;
-        top: .75rem;
-        right: .875rem;
+        right: 0;
+        border-top-left-radius: 0;
+        border-bottom-right-radius: 0;
     }
 }
 
 .dropzone-container {
-	position: relative;
-	display: flex;
-	flex-wrap: nowrap;
-	border: $input-border-width solid $input-border-color;
-	background-color: $input-bg;
-	border-radius: 5px;
+    position: relative;
+    border: $input-border-width solid $input-border-color;
+    background-color: $input-bg;
+    border-radius: 5px;
 
-	.fileupload-thumb-stage {
-		position: relative;
-		width: 150px;
-		max-width: 150px;
-		margin: 0.5rem;
-	}
+    .compact & {
+        display: flex;
+        flex-wrap: nowrap;
+    }
 
-	.fileupload-thumb {
-		position: absolute;
-		left: 0;
-		top: 0;
-		width: 100%;
-		height: 100%;
-		background-size: contain;
-		background-position: center;
-		background-repeat: no-repeat;
-	}
+    .fileupload-thumb-stage {
+        position: relative;
+        width: 150px;
+        max-width: 150px;
+        margin: 0.5rem;
+    }
 
-	.fileupload-controls {
-		flex-grow: 1;
-		padding: 0.5rem 0.5rem;
-	}
+    .fileupload-thumb {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
 
-	.fileupload-thumb-stage {
-		position: relative;
-		width: 150px;
-		max-width: 150px;
-		margin: 0.5rem;
-	}
+    .fileupload-controls {
+        flex-grow: 1;
+        padding: 0.5rem 0.5rem;
+    }
 
-	.fileupload-thumb {
-		position: absolute;
-		left: 0;
-		top: 0;
-		width: 100%;
-		height: 100%;
-		background-size: contain;
-		background-position: center;
-		background-repeat: no-repeat;
-	}
+    .fileupload-thumb-stage {
+        position: relative;
+        width: 150px;
+        max-width: 150px;
+        margin: 0.5rem;
+    }
 
-	.fileupload-controls {
-		flex-grow: 1;
-		padding: 0.5rem 0.5rem;
-	}
+    .fileupload-thumb {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .fileupload-controls {
+        flex-grow: 1;
+        padding: 0.5rem 0.5rem;
+    }
 }
 
 .fileupload {

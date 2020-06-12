@@ -111,20 +111,27 @@
 }
 
 <div class="fileupload-container@(Compact ? " compact" : "")">
-	<div @Html.Attr("class", "dropzone-container", !MultiFile)>
+    <div @Html.Attr("class", "dropzone-container", !MultiFile)>
 
-		@if (!MultiFile)
-		{
-			// Single file uploads have preview images.
-			<div class="fileupload-thumb-stage">
-				<div class="fileupload-thumb" style="background-image: url('@Url.Media(Model, mediaSettings.ProductThumbPictureSize)')">
-					@Html.HiddenFor(x => x, new { @class = "hidden" })
-				</div>
-			</div>
-		}
+        @if (!MultiFile)
+        {
+            // Single file uploads have preview images.
+            <div class="fileupload-thumb-stage">
+                <div class="fileupload-thumb" style="background-image: url('@Url.Media(Model, mediaSettings.ProductThumbPictureSize)')">
+                    @Html.HiddenFor(x => x, new { @class = "hidden" })
+                </div>
 
-		<div class="fileupload-controls">
-			@(Html.SmartStore().FileUploader()
+                <!-- File uploader compact Page Builder -->
+                <div class="uploaded-file-container upload-compact">
+                    <a href="#" class="uploaded-file-remove upload-compact remove btn btn-danger btn-icon btn-sm m-0" title="@T("FileUploader.Dropzone.DictRemoveFile")">
+                        <i class="fa fa-trash-alt small"></i>
+                    </a>
+                </div>
+            </div>
+        }
+
+        <div class="fileupload-controls">
+            @(Html.SmartStore().FileUploader()
 				.UploadUrl(Url.Action("Upload", "Media", new { isTransient = TransientUpload, path = Path, area = "Admin" }))
 				.Path(Path)
 				.HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))

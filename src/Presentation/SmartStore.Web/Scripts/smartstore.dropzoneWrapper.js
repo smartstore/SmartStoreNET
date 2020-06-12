@@ -98,7 +98,7 @@
 			if (!displayPreviewInList && options.maxFiles > 1) {
 				previewContainer.sortable({
 					items: fuContainer.find('.dz-image-preview'),
-					handle: '.fu-file-dragarea',
+					handle: '.fu-file-gripper',
 					ghostClass: 'sortable-ghost',
 					animation: 150
 				}).on('sort', function (e, ui) {

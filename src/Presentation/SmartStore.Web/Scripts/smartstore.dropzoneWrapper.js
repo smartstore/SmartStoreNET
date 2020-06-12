@@ -130,9 +130,6 @@
 				if (Array.isArray(files))
 					activeFiles = files.filter(file => file.accepted === true).length;
 
-				// Reset former decision (maybe better placed in onCompletedHandler)
-				fuContainer.data("resolution-type", "");
-
 				// Status
 				if (elStatusWindow.length > 0) {
 					elStatusWindow.find(".current-file-count").text(files.length);
@@ -747,7 +744,7 @@
 			firstFile.resolutionType = resolutionType;
 
 			// Do nothing on skip.
-			if (resolutionType === "0") {
+			if (resolutionType === "3") {
 				dropzone.removeFile(firstFile);
 
 				if (dupeFiles[1]) {
@@ -784,7 +781,7 @@
 			}
 
 			// Do nothing on skip.
-			if (resolutionType === "0") {
+			if (resolutionType === "3") {
 				dropzone.emit("queuecomplete");
 				dialog.close();
 				return;
@@ -814,6 +811,7 @@
 				.addClass("show");
 		}
 
+		fuContainer.data("resolution-type", "");
 		return;
 	}
 
@@ -882,7 +880,7 @@
 		}
 
 		// Renamed, replaced, skipped.
-		var skippedFiles = dropzone.files.filter(file => file.resolutionType === "0");
+		var skippedFiles = dropzone.files.filter(file => file.resolutionType === "3");
 		var replacedFiles = dropzone.files.filter(file => file.resolutionType === "1");
 		var renamedFiles = dropzone.files.filter(file => file.resolutionType === "2");
 

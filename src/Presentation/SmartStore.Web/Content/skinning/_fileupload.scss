@@ -138,6 +138,7 @@
 	}
 }
 
+// TODO: Remove
 .fileupload-status {
 	display: none;
 }
@@ -223,6 +224,7 @@
 				justify-content: center;
 				width: auto;
 				height: auto;
+				min-width: auto;
 			}
 
 			.file-icon:not(.show) {

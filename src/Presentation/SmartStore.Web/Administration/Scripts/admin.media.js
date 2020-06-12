@@ -201,7 +201,12 @@ SmartStore.Admin.Media = (function () {
 					createdOn: moment(file.lastModifiedDate).format('L LTS'),
 					width: file.width,
 					height: file.height,
-					size: file.size
+					size: file.size,
+					mime: file.type,
+					type: file.type.split("/")[0],
+					ext: "." + file.name.split(".")[1],
+					title: file.name.split(".")[0],
+					dimensions: file.width + ", " + file.height
 				};
 
 				return { source: convertedFile, dest: file.media };

@@ -390,7 +390,7 @@
 				logEvent("error", file, errMessage, xhr);
 
                 if (errMessage && !_.isEmpty(errMessage.message)) {
-                    errMessage = errMessage.message;
+					errMessage = errMessage.message;
                 }
 
 				// Write current message into file so it can be displayed in file upload status.
@@ -398,6 +398,11 @@
 
 				if (xhr && file.status === "error") {
 					console.log(xhr.statusText, "error");
+
+					// Can be removed when issue was resolved (dropzone Update 5.8.03)
+					// https://gitlab.com/meno/dropzone/-/issues/217
+					if (errMessage.indexOf(el.options.timeout) > 0) 
+						errMessage = errMessage.replace(el.options.timeout, el.options.timeout / 1000);
 				}
 
 				displayNotification(errMessage, "error");

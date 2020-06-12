@@ -108,6 +108,7 @@
 * BeezUp: fixes ArgumentNullException, parameter name "source".
 * #1743 Avoid redirecting to the account activation page when trying to log in for the first time.
 * #1895 The checkout button disappears when moving a product from the shopping cart to the wishlist.
+* Menu builder: in case of system menus the template can changes accidentally when saving.
 
 
 ## SmartStore.NET 3.2.2

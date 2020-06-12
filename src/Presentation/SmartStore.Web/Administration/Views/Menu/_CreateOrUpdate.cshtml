@@ -38,17 +38,24 @@
                 @Html.SmartLabelFor(model => model.Template)
             </div>
             <div class="adminData">
-                <select id="@Html.IdFor(x => x.Template)" name="@Html.NameFor(x => x.Template)" data-tags="true" data-minimum-results-for-search="0"
-                        class="form-control" @Html.Attr("disabled", "disabled", Model.IsSystemMenu)>
-			        @if (Model.IsCustomTemplate)
-			        {
-				        <option value="@Model.Template" selected="selected">@Model.Template</option>
-			        }
-                    @foreach (var template in Model.AllTemplates)
-                    {
-                        <option value="@template.Value" @Html.Attr("selected", "selected", !Model.IsCustomTemplate && template.Selected)>@template.Text</option>
-                    }
-                </select>
+                @if (!Model.IsSystemMenu)
+                {
+                    <select id="@Html.IdFor(x => x.Template)" name="@Html.NameFor(x => x.Template)" data-tags="true" data-minimum-results-for-search="0">
+			            @if (Model.IsCustomTemplate)
+                        {
+				            <option value="@Model.Template" selected="selected">@Model.Template</option>
+                        }
+                        @foreach (var template in Model.AllTemplates)
+                        {
+                            <option value="@template.Value" @Html.Attr("selected", "selected", !Model.IsCustomTemplate && template.Selected)>@template.Text</option>
+                        }
+                    </select>
+                }
+                else
+                {
+                    @Html.HiddenFor(model => model.Template)
+                    @Html.TextBoxFor(model => model.Template, new { @readonly = "readonly" })
+                }
                 @Html.ValidationMessageFor(model => model.Template)
             </div>
         </div>

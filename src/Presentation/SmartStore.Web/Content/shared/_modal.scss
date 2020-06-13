@@ -209,6 +209,10 @@ $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
 			flex-direction: column;
 		}
 
+		.modal-box-message {
+			text-align: center;
+		}
+
 		.modal-footer {
 			justify-content: center;
 		}

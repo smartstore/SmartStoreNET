@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Linq.Dynamic;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using System.Runtime.CompilerServices;
 using SmartStore.Collections;
 using SmartStore.Core.Localization;
+using System.Data.Entity;
 
 namespace SmartStore.Services.Media
 {
@@ -304,43 +306,57 @@ namespace SmartStore.Services.Media
             }
         }
 
-        public void DeleteFolder(string path, FileHandling fileHandling = FileHandling.SoftDelete)
+        public FolderDeleteResult DeleteFolder(string path, FileHandling fileHandling = FileHandling.SoftDelete)
         {
             Guard.NotEmpty(path, nameof(path));
 
             path = FolderService.NormalizePath(path);
             ValidateFolderPath(path, "DeleteFolder", nameof(path));
 
-            var node = _folderService.GetNodeByPath(path);
-            if (node == null)
+            var root = _folderService.GetNodeByPath(path);
+            if (root == null)
             {
                 throw _exceptionFactory.FolderNotFound(path);
             }
 
-            // Collect all affected subfolder ids also
-            var folderIds = _folderService.GetNodesFlattened(node.Value.Id, true).Select(x => x.Id).Reverse().ToArray();
+            // Collect all affected subfolders also
+            var allNodes = root.FlattenNodes(true).Reverse().ToArray();
+            var result = new FolderDeleteResult();
 
             using (new DbContextScope(autoDetectChanges: false, autoCommit: false))
             {
                 using (_folderService.BeginScope(true))
                 {
                     // Delete all from DB
-                    foreach (var folderId in folderIds)
+                    foreach (var node in allNodes)
                     {
-                        var folder = _folderService.GetFolderById(folderId);
+                        var folder = _folderService.GetFolderById(node.Value.Id);
                         if (folder != null)
                         {
-                            InternalDeleteFolder(folder, node.Value, fileHandling);
+                            InternalDeleteFolder(folder, node, root, result, fileHandling);
                         }
                     }
                 }
             }
+
+            return result;
         }
 
-        private int InternalDeleteFolder(MediaFolder folder, MediaFolderNode node, FileHandling strategy)
+        private void InternalDeleteFolder(
+            MediaFolder folder,
+            TreeNode<MediaFolderNode> node,
+            TreeNode<MediaFolderNode> root,
+            FolderDeleteResult result,
+            FileHandling strategy)
         {
-            int numFiles = 0;
-            List<MediaFile> lockedFiles = null;
+            int numDeleted = 0;
+            
+            // (perf) We gonna check file tracks, so we should preload all tracks.
+            _fileRepo.Context.LoadCollection(folder, (MediaFolder x) => x.Files, false, q => q.Include(f => f.Tracks));
+
+            var files = folder.Files.ToList();
+            var lockedFiles = new List<MediaFile>(files.Count);
+            var trackedFiles = new List<MediaFile>(files.Count);
 
             // First delete files
             if (folder.Files.Any())
@@ -349,14 +365,17 @@ namespace SmartStore.Services.Media
                     ? _folderService.FindAlbum(folder.Id).Value.Id 
                     : (int?)null;
 
-                var files = folder.Files.ToList();
-                
-                lockedFiles = new List<MediaFile>(files.Count);
-
                 foreach (var batch in files.Slice(500))
                 {
                     foreach (var file in batch)
                     {
+                        if (strategy != FileHandling.MoveToRoot && file.Tracks.Any())
+                        {
+                            // Don't delete tracked files
+                            trackedFiles.Add(file);
+                            continue;
+                        }
+                        
                         if (strategy == FileHandling.Delete)
                         {
                             try
@@ -378,7 +397,7 @@ namespace SmartStore.Services.Media
                             file.FolderId = albumId;
                         }
 
-                        numFiles++;
+                        numDeleted++;
                     }
 
                     _fileRepo.Context.SaveChanges();
@@ -402,19 +421,24 @@ namespace SmartStore.Services.Media
                 }
             }
 
-            if (lockedFiles == null || lockedFiles.Count == 0)
+            if (lockedFiles.Count > 0)
             {
-                // Don't delete folder if a containing file could not be deleted.
-                _folderService.DeleteFolder(folder);
-                _fileRepo.Context.SaveChanges();
-            }
-            else
-            {
-                var fullPath = CombinePaths(node.Path, lockedFiles[0].Name);
+                var fullPath = CombinePaths(root.Value.Path, lockedFiles[0].Name);
                 throw new IOException(T("Admin.Media.Exception.InUse", fullPath));
             }
 
-            return numFiles;
+            if (lockedFiles.Count == 0 && trackedFiles.Count == 0 && node.Children.All(x => result.DeletedFolderIds.Contains(x.Value.Id)))
+            {
+                // Don't delete folder if a containing file could not be deleted, 
+                // any tracked file was found or any of its child folders could not be deleted..
+                _folderService.DeleteFolder(folder);
+                _fileRepo.Context.SaveChanges();
+                result.DeletedFolderIds.Add(folder.Id);
+            }
+
+            result.NumDeletedFiles += numDeleted;
+            result.NumLockedFiles += lockedFiles.Count;
+            result.NumTrackedFiles += trackedFiles.Count;
         }
 
         #endregion

@@ -74,6 +74,15 @@ namespace SmartStore.Services.Media
         public IList<DuplicateFileInfo> DuplicateFiles { get; set; }
     }
 
+    public class FolderDeleteResult
+    {
+        public HashSet<int> DeletedFolderIds { get; set; } = new HashSet<int>();
+        public int NumDeletedFiles { get; set; }
+        public int NumTrackedFiles { get; set; }
+        public IList<MediaFileInfo> LockedFiles { get; set; }
+        public int NumLockedFiles { get; set; }
+    }
+
     public class FileOperationResult
     {
         public string Operation { get; set; }
@@ -124,7 +133,7 @@ namespace SmartStore.Services.Media
         MediaFolderInfo CreateFolder(string path);
         MediaFolderInfo MoveFolder(string path, string destinationPath);
         FolderOperationResult CopyFolder(string path, string destinationPath, DuplicateEntryHandling dupeEntryHandling = DuplicateEntryHandling.Skip);
-        void DeleteFolder(string path, FileHandling fileHandling = FileHandling.SoftDelete);
+        FolderDeleteResult DeleteFolder(string path, FileHandling fileHandling = FileHandling.SoftDelete);
 
         MediaFileInfo ConvertMediaFile(MediaFile file);
         string GetUrl(MediaFileInfo file, ProcessImageQuery query, string host = null, bool doFallback = true);

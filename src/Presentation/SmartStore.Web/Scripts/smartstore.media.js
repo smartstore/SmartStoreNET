@@ -1,18 +1,18 @@
 
 SmartStore.media = (function () {
-    var img = { name: "far fa-file-image", color: "#e77c00" };
-    var video = { name: "far fa-file-video", color: "#ff5722" };
-    var word = { name: "far fa-file-word", color: "#2b579a" };
-    var excel = { name: "far fa-file-excel", color: "#217346" };
-    var ppt = { name: "far fa-file-powerpoint", color: "#d24726" };
-    var pdf = { name: "far fa-file-pdf", color: "#f44336" };
-    var zip = { name: "far fa-file-archive", color: "#3f51b5" };
-    var csv = { name: "fas fa-file-csv", color: "#607d8b" };
-    var markup = { name: "far fa-file-code", color: "#4caf50" };
-    var app = { name: "fa fa-cog", color: "#58595b" };
-    var db = { name: "fa fa-database", color: "#3ba074" };
-    var font = { name: "fa fa-font", color: "#797985" };
-    var code = { name: "fa fa-bolt", color: "#4caf50" };
+    var img = { name: "far fa-file-image", color: "#e77c00", mediaType: 'image' };
+    var video = { name: "far fa-file-video", color: "#ff5722", mediaType: 'video' };
+    var word = { name: "far fa-file-word", color: "#2b579a", mediaType: 'document' };
+    var excel = { name: "far fa-file-excel", color: "#217346", mediaType: 'document' };
+    var ppt = { name: "far fa-file-powerpoint", color: "#d24726", mediaType: 'document' };
+    var pdf = { name: "far fa-file-pdf", color: "#f44336", mediaType: 'document' };
+    var zip = { name: "far fa-file-archive", color: "#3f51b5", mediaType: 'bin' };
+    var csv = { name: "fas fa-file-csv", color: "#607d8b", mediaType: 'text' };
+    var markup = { name: "far fa-file-code", color: "#4caf50", mediaType: 'text' };
+    var app = { name: "fa fa-cog", color: "#58595b", mediaType: 'bin' };
+    var db = { name: "fa fa-database", color: "#3ba074", mediaType: 'bin' };
+    var font = { name: "fa fa-font", color: "#797985", mediaType: 'bin' };
+    var code = { name: "fa fa-bolt", color: "#4caf50", mediaType: 'text' };
 
     var iconHints = {
         // Common extensions
@@ -32,17 +32,17 @@ SmartStore.media = (function () {
         // Media types
         "image": img,
         "video": video,
-        "audio": { name: "far fa-file-audio", color: "#009688" },
-        "document": { name: "fas fa-file-alt", color: "#2b579a" },
-        "text": { name: "far fa-file-alt", color: "#607d8B" },
-        "bin": { name: "far fa-file", color: "#bbb" },
+        "audio": { name: "far fa-file-audio", color: "#009688", mediaType: 'audio' },
+        "document": { name: "fas fa-file-alt", color: "#2b579a", mediaType: 'document' },
+        "text": { name: "far fa-file-alt", color: "#607d8B", mediaType: 'text' },
+        "bin": { name: "far fa-file", color: "#bbb", mediaType: 'bin' },
         // Rescue
-        "misc": { name: "far fa-file", color: "#bbb" },
+        "misc": { name: "far fa-file", color: "#bbb", mediaType: 'bin' },
     };
 
 	return {
 		getIconHint: function (file) {
-            return iconHints[file.ext] || iconHints[file.type] || (file.type ? iconHints[file.type.split('/')[0]] : null) || iconHints['misc'];
+            return iconHints[file.ext] || iconHints[file.type] || (file.mime ? iconHints[file.mime.split('/')[0]] : null) || iconHints['misc'];
         },
         lazyLoadThumbnails: function (selector) {
             $(selector || document).find('img.file-img').each(function () {

@@ -194,22 +194,30 @@ SmartStore.Admin.Media = (function () {
 
 	return {
 		convertDropzoneFileQueue: function (queue) {
-			return _.map(queue, function (file) {
-				var convertedFile = {
-					thumbUrl: file.dataURL,
-					name: file.name,
-					createdOn: moment(file.lastModifiedDate).format('L LTS'),
-					width: file.width,
-					height: file.height,
-					size: file.size,
-					mime: file.type,
-					type: file.type.split("/")[0],
-					ext: "." + file.name.split(".")[1],
-					title: file.name.split(".")[0],
-					dimensions: file.width + ", " + file.height
+			return _.map(queue, function (dzfile) {
+				var idx = dzfile.name.lastIndexOf('.');
+				var title = idx > -1 ? dzfile.name.substring(0, idx) : dzfile.name;
+				var ext = idx > -1 ? dzfile.name.substring(idx) : '';
+
+				// Temp stub for resolving media type only
+				var stub = { ext: ext, mime: dzfile.type };
+				var mediaType = SmartStore.media.getIconHint(stub).mediaType;
+
+				var file = {
+					thumbUrl: dzfile.dataURL,
+					name: dzfile.name,
+					title: title,
+					ext: ext,
+					mime: dzfile.type,
+					type: mediaType,
+					createdOn: moment(dzfile.lastModifiedDate).format('L LTS'), // TODO: (mm) (mh) not this way!
+					width: dzfile.width,
+					height: dzfile.height,
+					size: dzfile.size,
+					dimensions: dzfile.width + ", " + dzfile.height
 				};
 
-				return { source: convertedFile, dest: file.media };
+				return { source: file, dest: dzfile.media };
 			});
 		},
 		fileConflictResolutionDialog: new FileConflictResolutionDialog()

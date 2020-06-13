@@ -447,6 +447,7 @@ namespace SmartStore.Services.Media
         {
             Guard.NotNull(file, nameof(file));
 
+            // Delete thumb
             _imageCache.Delete(file);
 
             if (!permanent)
@@ -456,11 +457,11 @@ namespace SmartStore.Services.Media
             }
             else
             {
-                // Delete from storage
-                _storageProvider.Remove(file);
-
                 // Delete entity
                 _fileRepo.Delete(file);
+
+                // Delete from storage
+                _storageProvider.Remove(file);
             }
         }
 

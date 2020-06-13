@@ -37,9 +37,6 @@
 				// reject .t-button that has a .t-group-indicator as parent
 				return !$(this).parent().hasClass("t-group-indicator");
 			}));
-
-			//// skin telerik grids with bootstrap table (obsolete: styled per Sass @extend now)
-			//ctx.find(".t-grid > table").addClass("table");
 		},
 		// btn-trigger
 		function (ctx) {

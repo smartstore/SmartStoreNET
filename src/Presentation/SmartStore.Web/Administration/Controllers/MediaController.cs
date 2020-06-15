@@ -114,8 +114,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost]
         public ActionResult FileConflictResolutionDialog()
         {
-            var hasPermision = Services.Permissions.Authorize(Permissions.Media.Update);
-            if (!hasPermision)
+            if (!Services.Permissions.Authorize(Permissions.Media.Update))
             {
                 return AccessDeniedView();
             }

@@ -24,7 +24,7 @@
 	var assignableFileIds = "";
 	var activeFiles = 0;
 	var canUploadMoreFiles = true;	// TODO: investigate!!! This can be done better.
-	var dialog = SmartStore.Admin.Media.fileConflictResolutionDialog;
+	var dialog = SmartStore.Admin ? SmartStore.Admin.Media.fileConflictResolutionDialog : null;
 	var file;
 
 	$.fn.dropzoneWrapper = function (options) {
@@ -315,7 +315,7 @@
 				var successFiles = this.getFilesWithStatus(Dropzone.SUCCESS);
 
 				// If there are duplicates & dialog isn't already open > open duplicate file handler dialog.
-				if (dupeFiles.length !== 0 && !dialog.isOpen) {
+				if (dupeFiles.length !== 0 && dialog && !dialog.isOpen) {
 
 					// Close confirmation dialog. User was to slow. Uploads are complete.
 					if (elStatusWindow.data("confirmation-requested")) {

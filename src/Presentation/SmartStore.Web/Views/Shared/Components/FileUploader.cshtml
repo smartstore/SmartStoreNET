@@ -21,51 +21,51 @@
 	var maxFilesSize = mediaSettings.MaxUploadFileSize;
 }
 
-    <div @Html.Attr("class", "dropzone-container", Model.Multifile || !Model.HasTemplatePreview)>
+<div @Html.Attr("class", "dropzone-container", Model.Multifile || !Model.HasTemplatePreview)>
 
-        <div class="dropzone-target">
-            <div class="fu-message">
-                @if (Model.UploadText.HasValue())
-                {
-                    @Model.UploadText
-                }
-                else
-                {
-                    @T("FileUploader.Dropzone.Message")
-                }
-            </div>
-
-            <div id="@Model.Name" @Html.Attrs(Model.HtmlAttributes)
-                 data-dialog-url="@Url.Action("DupeFileHandlerDialog", "Media", new { area = "Admin" })"
-                 data-assignment-url="@Model.EntityAssignmentUrl"
-                 data-remove-url="@Model.DeleteUrl"
-                 data-sort-url="@Model.SortUrl"
-                 data-entity-id="@Model.EntityId"
-                 data-type-filter="@Model.TypeFilter">
-
-                <input type="hidden" id="@(Model.Id)-file" name="@(Model.Id)-file" />
-
-                @if (Model.ShowBrowseMedia)
-                {
-                    <div class="fileupload-buttons">
-                        @{ Html.RenderWidget("file_uploader"); }
-                    </div>
-                }
-            </div>
-        </div>
-
-        @if (!Model.Compact && !Model.ShowBrowseMedia)
-        {
-            <!--File uploader(product attributes) -->
-            <!-- TODO: File uploader for avatar and plugin upload -->
-            <div class="uploaded-file-container align-items-center" @Html.Attr("style", "display: none", Model.ShowRemoveButton)>
-                <a href="#" class="uploaded-file-remove remove btn btn-outline-danger btn-no-border btn-sm p-0" title="@T("FileUploader.Dropzone.DictRemoveFile")">
-                    <i class="uploaded-file-remove-button d-flex justify-content-center align-items-center fs-h4">&times;</i>
-                </a>
-                <div class="uploaded-file text-truncate ml-1"></div>
-            </div>
+    <div class="dropzone-target">
+        <div class="fu-message">
+            @if (Model.UploadText.HasValue())
+            {
+                @Model.UploadText
+            }
+            else
+            {
+                @T("FileUploader.Dropzone.Message")
             }
         </div>
+
+        <div id="@Model.Name" @Html.Attrs(Model.HtmlAttributes)
+                data-dialog-url="@Url.Action("DupeFileHandlerDialog", "Media", new { area = "Admin" })"
+                data-assignment-url="@Model.EntityAssignmentUrl"
+                data-remove-url="@Model.DeleteUrl"
+                data-sort-url="@Model.SortUrl"
+                data-entity-id="@Model.EntityId"
+                data-type-filter="@Model.TypeFilter">
+
+            <input type="hidden" id="@(Model.Id)-file" name="@(Model.Id)-file" />
+
+            @if (Model.ShowBrowseMedia)
+            {
+                <div class="fileupload-buttons">
+                    @{ Html.RenderWidget("file_uploader"); }
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (!Model.Compact && !Model.ShowBrowseMedia)
+    {
+        <!--File uploader(product attributes) -->
+        <!-- TODO: File uploader for avatar and plugin upload -->
+        <div class="uploaded-file-container align-items-center" @Html.Attr("style", "display: none", Model.ShowRemoveButton)>
+            <a href="#" class="uploaded-file-remove remove btn btn-outline-danger btn-no-border btn-sm p-0" title="@T("FileUploader.Dropzone.DictRemoveFile")">
+                <i class="uploaded-file-remove-button d-flex justify-content-center align-items-center fs-h4">&times;</i>
+            </a>
+            <div class="uploaded-file text-truncate ml-1"></div>
+        </div>
+    }
+</div>
 
 @if (Model.Multifile)
 {

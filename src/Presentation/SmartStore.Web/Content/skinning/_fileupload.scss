@@ -1,25 +1,8 @@
 /// <reference path="../bs4/scss/bootstrap.scss" />
 /// <reference path="../../Content/bs4/scss/_variables.scss" />
 
-
-
 /* File Upload
 ------------------------------------*/
-
-/*
- * User Interface Plugin (for single file uploads)
- *
- * Based on:
- * jQuery File Upload UI Plugin CSS 6.3
- * https://github.com/blueimp/jQuery-File-Upload
- *
- * Copyright 2010, Sebastian Tschan
- * https://blueimp.net
- *
- * Licensed under the MIT license:
- * http://www.opensource.org/licenses/MIT
- */
-
 .fileupload-container {
     position: relative;
 
@@ -89,11 +72,13 @@
 
 // Dropzone skinning
 .dropzone-container {
-    border: 2px dashed $gray-400 !important;
-    background: $gray-100 !important;
     pointer-events: initial !important;
     transition: all .2s;
     line-height: 1.2;
+    position: relative;
+    border: $input-border-width solid $input-border-color;
+    background-color: $input-bg;
+    border-radius: 5px;
 
     &.fullscreen {
         position: relative;
@@ -128,6 +113,34 @@
     .dz-preview,
     .dz-message {
         display: none;
+    }
+
+    .compact & {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+
+    .fileupload-thumb-stage {
+        position: relative;
+        width: 150px;
+        max-width: 150px;
+        margin: 0.5rem;
+    }
+
+    .fileupload-thumb {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .fileupload-controls {
+        flex-grow: 1;
+        padding: 0.5rem 0.5rem;
     }
 
     .uploaded-file-container {
@@ -383,64 +396,6 @@
         right: 0;
         border-top-left-radius: 0;
         border-bottom-right-radius: 0;
-    }
-}
-
-.dropzone-container {
-    position: relative;
-    border: $input-border-width solid $input-border-color;
-    background-color: $input-bg;
-    border-radius: 5px;
-
-    .compact & {
-        display: flex;
-        flex-wrap: nowrap;
-    }
-
-    .fileupload-thumb-stage {
-        position: relative;
-        width: 150px;
-        max-width: 150px;
-        margin: 0.5rem;
-    }
-
-    .fileupload-thumb {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-
-    .fileupload-controls {
-        flex-grow: 1;
-        padding: 0.5rem 0.5rem;
-    }
-
-    .fileupload-thumb-stage {
-        position: relative;
-        width: 150px;
-        max-width: 150px;
-        margin: 0.5rem;
-    }
-
-    .fileupload-thumb {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-
-    .fileupload-controls {
-        flex-grow: 1;
-        padding: 0.5rem 0.5rem;
     }
 }
 

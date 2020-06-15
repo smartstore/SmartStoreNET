@@ -125,7 +125,10 @@
     });
 
     // Change rule set operator.
-    $(document).on('click', '.ruleset-operator .dropdown-item:not(.disabled)', function () {
+    $(document).on('click', '.ruleset-operator .dropdown-item:not(.disabled)', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+
         var item = $(this);
         var parentSetId = item.closest('.ruleset').data('ruleset-id');
         var operator = item.closest('.ruleset-operator');

@@ -477,23 +477,11 @@
                 "Specifies requirements for the applying of the discount. The discount is applied when one of the selected rules is fulfilled.",
                 "Legt Voraussetzungen für die Anwendung des Rabatts fest. Der Rabatt wird gewährt, wenn eine der ausgewählten Regeln erfüllt ist.");
 
-            builder.AddOrUpdate("Admin.Rules.RuleSet.Fields.AssignedToDiscounts",
-                "Assigned to discounts",
-                "Rabatten zugeordnet",
-                "A list of discounts to which the rule is assigned. The assignment can be made on the discount details page.",
-                "Eine Liste von Rabatten, denen die Regel zugeordnet ist. Die Zuordnung kann auf der Rabattdetailseite vorgenommen werden.");
-
-            builder.AddOrUpdate("Admin.Rules.RuleSet.Fields.AssignedToShippingMethods",
-                "Assigned to shipping methods",
-                "Versandarten zugeordnet",
-                "A list of shipping methods to which the rule is assigned. The assignment can be made on the shipping method details page.",
-                "Eine Liste von Versandarten, denen die Regel zugeordnet ist. Die Zuordnung kann auf der Detailseite der Versandart vorgenommen werden.");
-
-            builder.AddOrUpdate("Admin.Rules.RuleSet.Fields.AssignedToPaymentMethods",
-                "Assigned to payment methods",
-                "Zahlarten zugeordnet",
-                "A list of payment methods to which the rule is assigned. The assignment can be made on the payment method details page.",
-                "Eine Liste von Zahlarten, denen die Regel zugeordnet ist. Die Zuordnung kann auf der Detailseite der Zahlart vorgenommen werden.");
+            builder.AddOrUpdate("Admin.Rules.RuleSet.AssignedObjects",
+                "Assigned {0}",
+                "Zugeordnete {0}",
+                "A list of objects to which the rule is assigned. The assignment can be made on the details page of the object.",
+                "Eine Liste von Objekten, denen die Regel zugeordnet ist. Die Zuordnung kann auf der Detailseite des Objektes vorgenommen werden.");
 
             builder.AddOrUpdate("Admin.Configuration.Shipping.Methods.Fields.Requirements",
                 "Requirements",
@@ -583,12 +571,12 @@
             builder.AddOrUpdate("Admin.Rules.ReapplyRules", "Reapply rules", "Regeln neu anwenden");
             
             builder.AddOrUpdate("Admin.CustomerRoleMapping.RoleMappingListDescription",
-                "The list shows customers who are assigned to this customer role. Customers are automatically assigned by scheduled task as long as the group is active and rules are specified for it. You can make a manual assignment using the customer role selection at the respective customer.",
-                "Die Liste zeigt Kunden, die dieser Kundengruppe zugeordnet sind. Kunden werden automatisch per geplanter Aufgabe zugeordnet, sofern die Gruppe aktiv ist und für sie Regeln festgelegt sind. Eine manuelle Zuordnung können Sie über die Kundengruppenauswahl beim jeweiligen Kunden vornehmen.");
+                "The list shows customers who are assigned to this customer role. Customers are automatically assigned by scheduled task as long as the group is active and active rules are specified for it. You can make a manual assignment using the customer role selection at the respective customer.",
+                "Die Liste zeigt Kunden, die dieser Kundengruppe zugeordnet sind. Kunden werden automatisch per geplanter Aufgabe zugeordnet, sofern die Gruppe aktiv ist und für sie aktive Regeln festgelegt sind. Eine manuelle Zuordnung können Sie über die Kundengruppenauswahl beim jeweiligen Kunden vornehmen.");
 
             builder.AddOrUpdate("Admin.Catalog.Categories.ProductListDescription",
-                "The list shows products that are assigned to this category. Products are automatically assigned by scheduled task as long as the category is published and rules are specified for it.",
-                "Die Liste zeigt Produkte, die dieser Warenruppe zugeordnet sind. Produkte werden automatisch per geplanter Aufgabe zugeordnet, sofern die Warengruppe veröffentlicht ist und für sie Regeln festgelegt sind.");
+                "The list shows products that are assigned to this category. Products are automatically assigned by scheduled task as long as the category is published and active rules are specified for it.",
+                "Die Liste zeigt Produkte, die dieser Warenruppe zugeordnet sind. Produkte werden automatisch per geplanter Aufgabe zugeordnet, sofern die Warengruppe veröffentlicht ist und für sie aktive Regeln festgelegt sind.");
 
             builder.AddOrUpdate("Admin.System.ScheduleTasks.TaskNotFound",
                 "The scheduled task \"{0}\" was not found.",

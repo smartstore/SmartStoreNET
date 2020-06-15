@@ -69,7 +69,7 @@
     {
         <div class="adminRow">
             <div class="adminTitle">
-                @Html.SmartLabelFor(model => model.AssignedToDiscounts)
+                @Html.SmartLabel("AssignedToDiscounts", T("Admin.Rules.RuleSet.AssignedObjects", T("Admin.Promotions.Discounts")), T("Admin.Rules.RuleSet.AssignedObjects.Hint"))
             </div>
             <div class="adminData form-control-plaintext wide">
                 @Html.Raw(string.Join(" · ", Model.AssignedToDiscounts.Select(x => $"<a href='{Url.Action("Edit", "Discount", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
@@ -80,7 +80,7 @@
     {
         <div class="adminRow">
             <div class="adminTitle">
-                @Html.SmartLabelFor(model => model.AssignedToShippingMethods)
+                @Html.SmartLabel("AssignedToShippingMethods", T("Admin.Rules.RuleSet.AssignedObjects", T("Admin.Configuration.Shipping.Methods")), T("Admin.Rules.RuleSet.AssignedObjects.Hint"))
             </div>
             <div class="adminData form-control-plaintext wide">
                 @Html.Raw(string.Join(" · ", Model.AssignedToShippingMethods.Select(x => $"<a href='{Url.Action("EditMethod", "Shipping", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
@@ -91,10 +91,32 @@
     {
         <div class="adminRow">
             <div class="adminTitle">
-                @Html.SmartLabelFor(model => model.AssignedToPaymentMethods)
+                @Html.SmartLabel("AssignedToPaymentMethods", T("Admin.Rules.RuleSet.AssignedObjects", T("Admin.Configuration.Payment.Methods")), T("Admin.Rules.RuleSet.AssignedObjects.Hint"))
             </div>
             <div class="adminData form-control-plaintext wide">
                 @Html.Raw(string.Join(" · ", Model.AssignedToPaymentMethods.Select(x => $"<a href='{Url.Action("Edit", "Payment", new { systemName = x.SystemName })}' title='{x.SystemName.HtmlEncode()}'>{x.Name.HtmlEncode()}</a>")))
+            </div>
+        </div>
+    }
+    @if (Model.AssignedToCustomerRoles?.Any() ?? false)
+    {
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabel("AssignedToCustomerRoles", T("Admin.Rules.RuleSet.AssignedObjects", T("Admin.Customers.CustomerRoles")), T("Admin.Rules.RuleSet.AssignedObjects.Hint"))
+            </div>
+            <div class="adminData form-control-plaintext wide">
+                @Html.Raw(string.Join(" · ", Model.AssignedToCustomerRoles.Select(x => $"<a href='{Url.Action("Edit", "CustomerRole", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
+            </div>
+        </div>
+    }
+    @if (Model.AssignedToCategories?.Any() ?? false)
+    {
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabel("AssignedToCategories", T("Admin.Rules.RuleSet.AssignedObjects", T("Admin.Catalog.Categories")), T("Admin.Rules.RuleSet.AssignedObjects.Hint"))
+            </div>
+            <div class="adminData form-control-plaintext wide">
+                @Html.Raw(string.Join(" · ", Model.AssignedToCategories.Select(x => $"<a href='{Url.Action("Edit", "Category", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
             </div>
         </div>
     }

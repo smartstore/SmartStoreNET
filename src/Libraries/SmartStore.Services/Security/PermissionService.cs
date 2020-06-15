@@ -78,7 +78,7 @@ namespace SmartStore.Services.Security
             { "acl", "Admin.Configuration.ACL" },
             { "emailaccount", "Admin.Configuration.EmailAccounts" },
             { "store", "Admin.Common.Stores" },
-            { "shipping", "Admin.Configuration.DeliveryTimes" },
+            { "shipping", "Admin.Configuration.Shipping.Methods" },
             { "tax", "Admin.Configuration.Tax.Providers" },
             { "plugin", "Admin.Configuration.Plugins" },
             { "upload", "Common.Upload" },

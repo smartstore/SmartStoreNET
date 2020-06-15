@@ -691,6 +691,14 @@ namespace SmartStore.Admin.Controllers
                         })
                         .ToList();
                 }
+
+                model.AssignedToCustomerRoles = entity.CustomerRoles
+                    .Select(x => new RuleSetModel.AssignedToEntityModel { Id = x.Id, Name = x.Name })
+                    .ToList();
+
+                model.AssignedToCategories = entity.Categories
+                    .Select(x => new RuleSetModel.AssignedToEntityModel { Id = x.Id, Name = x.GetLocalized(y => y.Name) })
+                    .ToList();
             }
         }
 

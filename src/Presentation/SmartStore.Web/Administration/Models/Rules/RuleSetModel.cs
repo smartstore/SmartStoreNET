@@ -38,14 +38,11 @@ namespace SmartStore.Admin.Models.Rules
         public DateTime UpdatedOnUtc { get; set; }
         public DateTime? LastProcessedOnUtc { get; set; }
 
-        [SmartResourceDisplayName("Admin.Rules.RuleSet.Fields.AssignedToDiscounts")]
         public IList<AssignedToEntityModel> AssignedToDiscounts { get; set; }
-
-        [SmartResourceDisplayName("Admin.Rules.RuleSet.Fields.AssignedToShippingMethods")]
         public IList<AssignedToEntityModel> AssignedToShippingMethods { get; set; }
-
-        [SmartResourceDisplayName("Admin.Rules.RuleSet.Fields.AssignedToPaymentMethods")]
         public IList<AssignedToEntityModel> AssignedToPaymentMethods { get; set; }
+        public IList<AssignedToEntityModel> AssignedToCustomerRoles { get; set; }
+        public IList<AssignedToEntityModel> AssignedToCategories { get; set; }
 
         public IRuleExpressionGroup ExpressionGroup { get; set; }
 

@@ -88,8 +88,8 @@
             <span class="logical-operator">@T(op == LogicalRuleOperator.And ? "Admin.Rules.Operator.All" : "Admin.Rules.Operator.One")</span>
         </button>
         <div class="dropdown-menu logical-operator-chooser">
-            <a href="#" class="dropdown-item" data-value="And">@T("Admin.Rules.Operator.All")</a>
-            <a href="#" class="dropdown-item@(Model.Provider.Scope == RuleScope.Product ? " disabled" : "")" data-value="Or">@T("Admin.Rules.Operator.One")</a>
+            <a href="javascript:void(0)" class="dropdown-item" data-value="And">@T("Admin.Rules.Operator.All")</a>
+            <a href="javascript:void(0)" class="dropdown-item@(Model.Provider.Scope == RuleScope.Product ? " disabled" : "")" data-value="Or">@T("Admin.Rules.Operator.One")</a>
         </div>
     </div>
 }

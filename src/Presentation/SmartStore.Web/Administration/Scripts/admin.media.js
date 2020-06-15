@@ -3,7 +3,7 @@ SmartStore.Admin.Media = (function () {
 		var self = this;
 
 		// Private variables.
-		var _url = $('head > meta[property="sm:root"]').attr('content') + 'admin/media/dupefilehandlerdialog';
+		var _url = $('head > meta[property="sm:root"]').attr('content') + 'admin/media/fileconflictresolutiondialog';
 		var _dialog = null;
 		var _dupeFileDisplay = null;
 
@@ -112,11 +112,16 @@ SmartStore.Admin.Media = (function () {
 
 		var refreshFileDisplay = function (el, file) {
 			el.find(".file-name").text(file.name);
-			el.find(".file-date").text(file.createdOn);
+			//el.find(".file-date").text(moment(file.createdOn).format('L LTS'));
 			el.find(".file-size").text(_.formatFileSize(file.size));
 
-			if (file.width && file.height) {
-				el.find(".file-dimensions").text(file.width + " x " + file.height);
+			if (file.dimensions) {
+				var width = parseInt(file.dimensions.split(",")[0]);
+				var height = parseInt(file.dimensions.split(",")[1]);
+
+				if (width && height) {
+					el.find(".file-dimensions").text(width + " x " + height);
+				}
 			}
 		};
 
@@ -212,7 +217,7 @@ SmartStore.Admin.Media = (function () {
 					ext: ext,
 					mime: dzfile.type,
 					type: mediaType,
-					createdOn: moment(dzfile.lastModifiedDate).format('L LTS'), // TODO: (mm) (mh) not this way!
+					createdOn: dzfile.lastModifiedDate,
 					width: dzfile.width,
 					height: dzfile.height,
 					size: dzfile.size,

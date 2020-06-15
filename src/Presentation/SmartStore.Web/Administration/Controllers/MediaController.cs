@@ -112,7 +112,7 @@ namespace SmartStore.Admin.Controllers
 
         //[ChildActionOnly]
         [HttpPost]
-        public ActionResult DupeFileHandlerDialog()
+        public ActionResult FileConflictResolutionDialog()
         {
             return PartialView();
         }

@@ -653,7 +653,7 @@
     <Content Include="Views\Store\StoreDashboardReport.cshtml" />
     <Content Include="Views\Order\OrdersDashboardReport.cshtml" />
     <Content Include="Views\Customer\RegisteredCustomersDashboardReport.cshtml" />
-    <Content Include="Views\Media\DupeFileHandlerDialog.cshtml" />
+    <Content Include="Views\Media\FileConflictResolutionDialog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

@@ -116,16 +116,12 @@
         @if (!MultiFile)
         {
             // Single file uploads have preview images.
+            <a href="#" class="fileupload-remove remove btn btn-outline-danger btn-no-border btn-sm m-0" title="@T("FileUploader.Dropzone.DictRemoveFile")">
+                <i class="fileupload-remove-icon fa-lg">&times;</i>
+            </a>
             <div class="fileupload-thumb-stage">
                 <div class="fileupload-thumb" style="background-image: url('@Url.Media(Model, mediaSettings.ProductThumbPictureSize)')">
                     @Html.HiddenFor(x => x, new { @class = "hidden" })
-                </div>
-
-                <!-- File uploader compact Page Builder -->
-                <div class="uploaded-file-container upload-compact">
-                    <a href="#" class="uploaded-file-remove upload-compact remove btn btn-danger btn-icon btn-sm m-0" title="@T("FileUploader.Dropzone.DictRemoveFile")">
-                        <i class="fa fa-trash-alt small"></i>
-                    </a>
                 </div>
             </div>
         }

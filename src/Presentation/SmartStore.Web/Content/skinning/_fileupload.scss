@@ -75,6 +75,8 @@
     pointer-events: initial !important;
     transition: all .2s;
     line-height: 1.2;
+    align-items: center;
+    display: flex;
     position: relative;
     border: 2px dashed $gray-400 !important;
     background: $gray-100 !important;
@@ -115,16 +117,16 @@
         display: none;
     }
 
-    .compact & {
-        display: flex;
-        flex-wrap: nowrap;
-    }
-
     .fileupload-thumb-stage {
         position: relative;
-        width: 150px;
-        max-width: 150px;
+        min-width: 150px;
+        min-height: 150px;
         margin: 0.5rem;
+
+        .compact & {
+            min-width: 90px;
+            min-height: 90px;
+        }
     }
 
     .fileupload-thumb {
@@ -143,36 +145,20 @@
         padding: 0.5rem 0.5rem;
     }
 
-    .uploaded-file-container {
-        display: flex;
-        border-top: inherit;
+    .fileupload-remove {
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 1.75rem;
+        min-height: 1.75rem;
+        z-index: 10;
 
-        .uploaded-file {
-            padding-right: 20px;
-        }
-
-        .uploaded-file-remove.upload-compact {
-            border-top-right-radius: 0;
-            border-bottom-left-radius: 0;
-            border: 0;
+        > .fileupload-remove-icon {
+            margin-top: -0.125rem;
             position: absolute;
-        }
-
-        .uploaded-file-remove-button {
-            width: 2.5rem;
-            height: 2.5rem;
-            xmargin-top: -4px !important;
-        }
-
-        &.upload-compact {
-            opacity: 0;
-            width: calc(100% + 1rem);
-            height: calc(100% + 1rem);
-            margin: -.5rem;
-
-            &:hover {
-                opacity: 1;
-            }
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
         }
     }
 }

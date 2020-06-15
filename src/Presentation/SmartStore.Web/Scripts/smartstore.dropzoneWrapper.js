@@ -88,9 +88,9 @@
 				var currentFileId = fuContainer.find('.hidden').val();
 
 				if ((!currentFileId || currentFileId == 0) || !options.showRemoveButton)
-					elRemove.parent().hide();
+					elRemove.hide();
 				else {
-					elRemove.parent().show();
+					elRemove.show();
 				}
 			}
 
@@ -113,6 +113,7 @@
 				logEvent("addedfile", file);
 
 				setPreviewIcon(file, displayPreviewInList);
+				elRemove.show();
 
 				if (displayPreviewInList) {
 					var progress = window.createCircularSpinner(36, true, 6, null, null, true, true, true);
@@ -547,7 +548,7 @@
 			fuContainer.on("mediaselected", function (e, files) {
 				if (opts.maxFiles === 1) {
 					displaySingleFilePreview(files[0], fuContainer, options);
-
+					elRemove.show();
 					if (options.onMediaSelected) options.onMediaSelected.apply(this, [files[0]]);
 				}
 				else {
@@ -590,7 +591,7 @@
 			});
 
 			// Show summary.
-			$(fuContainer).on("click", ".file-upload-remove", function (e) {
+			$(fuContainer).on("click", ".fileupload-remove", function (e) {
 				elStatus.show();
 				return false;
 			});
@@ -602,7 +603,7 @@
 				fuContainer.find('.fileupload-thumb').css('background-image', 'url("' + $el.data('fallback-url') + '")');
 				fuContainer.find('.hidden').val(0).trigger('change');
 
-				$(this).parent().hide();
+				$(this).hide();
 
 				if (options.onFileRemove)
 					options.onFileRemove.apply(this, [e, el]);

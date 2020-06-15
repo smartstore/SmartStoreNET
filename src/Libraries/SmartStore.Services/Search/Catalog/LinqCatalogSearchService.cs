@@ -459,12 +459,10 @@ namespace SmartStore.Services.Search
                 }
                 else if (filter.FieldName == "available")
                 {
-                    // We cannot include ManageInventoryMethod.ManageStockByAttributes because it's only functional with MergeWithCombination.
-                    var manageStock = (int)ManageInventoryMethod.ManageStock;
-
                     query = query.Where(x =>
-                        x.ManageInventoryMethodId != manageStock ||
-                        (x.ManageInventoryMethodId == manageStock && (x.StockQuantity > 0 || x.BackorderModeId != (int)BackorderMode.NoBackorders))
+                        x.ManageInventoryMethodId == (int)ManageInventoryMethod.DontManageStock ||
+                        (x.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStock && (x.StockQuantity > 0 || x.BackorderModeId != (int)BackorderMode.NoBackorders)) ||
+                        (x.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStockByAttributes && x.ProductVariantAttributeCombinations.Any(pvac => pvac.StockQuantity > 0 || pvac.AllowOutOfStockOrders))
                     );
                 }
                 else if (filter.FieldName.StartsWith("price"))

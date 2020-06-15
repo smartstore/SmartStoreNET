@@ -423,7 +423,6 @@
 
 				// Only for singleupload.
 				if (opts.maxFiles === 1) {
-
 					// Remove all files which may have been dropped for single uploads. Only accept the first file.
 					if (canUploadMoreFiles) {
 						this.removeAllFiles();
@@ -688,6 +687,17 @@
 					el.removeAllFiles();
 				}
 			});
+
+			$(document).one("resolution-complete", "#duplicate-window", function () {
+				if (options.onCompleted) {
+					var files = {};
+					for (var file of dialog.queue) {
+						files[file.dest.id] = file.dest;
+					}
+						
+					options.onCompleted.apply(this, [files, true]);
+				}
+			});
 		});
 	};
 
@@ -717,13 +727,6 @@
 
 		el.removeClass("dz-highlight");
 	});
-
-	// Disable tooltips on preview sorting. - There are no tooltips anyway
-	//$(document).on("dragstart", ".dz-image-preview-drag", function (e) {
-	//	$(".dz-image-preview").tooltip("disable");
-	//}).on("dragend", ".dz-image-preview-drag", function (e) {
-	//	$(".dz-image-preview").tooltip("enable");
-	//});
 
 	// Callback function for duplicate file handling dialog.
 	function dupeFileHandlerCallback(resolutionType, remainingFiles) {

@@ -76,8 +76,8 @@
     transition: all .2s;
     line-height: 1.2;
     position: relative;
-    border: $input-border-width solid $input-border-color;
-    background-color: $input-bg;
+    border: 2px dashed $gray-400 !important;
+    background: $gray-100 !important;
     border-radius: 5px;
 
     &.fullscreen {

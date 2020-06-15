@@ -179,6 +179,8 @@ SmartStore.Admin.Media = (function () {
 							self.onComplete.apply(self, [_dialog.data('cancelled')]);
                         }
 
+						_dialog.trigger("resolution-complete");
+
 						self.currentIndex = 0;
 						self.callerId = null;
 						self.queue = null;

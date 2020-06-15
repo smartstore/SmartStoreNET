@@ -598,15 +598,15 @@ namespace SmartStore.Admin.Controllers
 
             foreach (var expression in group.Expressions)
             {
-                if (!expression.Descriptor.IsValid)
-                {
-                    expression.Metadata["Error"] = T("Admin.Rules.InvalidDescriptor").Text;
-                }
-
                 if (expression is IRuleExpressionGroup subGroup)
                 {
                     PrepareExpressions(subGroup);
                     continue;
+                }
+
+                if (!expression.Descriptor.IsValid)
+                {
+                    expression.Metadata["Error"] = T("Admin.Rules.InvalidDescriptor").Text;
                 }
 
                 // Load name and subtitle (e.g. SKU) for selected options.

@@ -85,9 +85,11 @@
 * **Product tags**:
 	* #1730 Product tag count should filter also based on Visibility.
 	* Product tag count sometimes not up-to-date due to missing cache clearance.
+* **Debitoor**:
+	* Avoid errors due to invalid quantity unit Id of 0.
+	* #1952 rework quantity units. 
 * Multistore mapping was ignored for manufacturers in sitemap.
 * Categories limited to stores were not displayed in tree view.
-* Debitoor: avoid errors due to invalid product unitId of 0.
 * Fixed InvalidOperationException in CreatePdfInvoiceAttachment when an order is placed by a guest.
 * The ShowDescriptionInSubPages setting should also be applied to the bottom category description.
 * #1774 Recaptcha: doesn't work for product reviews, blog and news comments if hidden captcha is activated.

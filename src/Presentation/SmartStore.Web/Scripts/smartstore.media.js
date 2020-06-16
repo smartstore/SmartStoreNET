@@ -28,7 +28,7 @@ SmartStore.media = (function () {
         ".ttf": font, ".eot": font, ".woff": font, ".woff2": font,
         ".xml": markup, ".html": markup, ".htm": markup,
         ".js": code, ".json": code,
-        ".swf": video,
+        ".mp4": video, ".webm": video, ".ogg": video, ".swf": video,
         // Media types
         "image": img,
         "video": video,

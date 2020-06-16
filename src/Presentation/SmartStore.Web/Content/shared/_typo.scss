@@ -60,9 +60,13 @@ h6, .h6 {
     }
 }
 
-.font-weight-medium {
+.font-weight-medium, .fwm {
     font-weight: $font-weight-medium !important;
 }
+
+.fwb { @extend .font-weight-bold; }
+.fwn { @extend .font-weight-normal; }
+.fwl { @extend .font-weight-light; }
 
 
 // Heading & Title

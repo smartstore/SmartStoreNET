@@ -197,7 +197,7 @@
 			var $t = this.length > 1 ? this.eq(0) : this,
 				isContained = typeof container !== 'undefined' && container !== null,
 				$c = isContained ? $(container) : $w,
-				wPosition = isContained ? $c.position() : 0,
+				wPosition = isContained ? $c.offset() : 0,
 				t = $t.get(0),
 				vpWidth = $c.outerWidth(),
 				vpHeight = $c.outerHeight(),

@@ -341,7 +341,7 @@
         transition: opacity .3s;
         opacity: 0;
         visibility: visible;
-        background-color: rgba(black, .4);
+        background-color: rgba($indigo, 0.7);
 
         .drag-gripper {
             width: 0;
@@ -357,19 +357,19 @@
 
         > .fu-file-info > .fu-file-info-name {
             z-index: 2;
-            padding: 0rem 0.75rem;
-            text-shadow: 1px 1px 1px rgba(0,0,0, 0.5);
-            max-height: calc(1.313rem * 3);
+            padding: 0 0.5rem;
+            text-shadow: 1px 1px 1px rgba(#000, 0.5);
+            line-height: 1.3;
+            max-height: calc(#{$font-size-base} * 1.3 * 3);
             max-width: 100%;
             overflow: hidden;
-            text-overflow: ellipsis;
+            word-break: break-all;
             margin-bottom: .75rem;
         }
 
         > .fu-preview-control-menu {
             z-index: 5;
             margin-top: -6px;
-            padding: 0rem 0.75rem 0.5rem 0.75rem;
 
             > * {
                 margin-top: 6px;
@@ -391,6 +391,7 @@
 
         .fu-file-info-container {
             opacity: 1;
+            backdrop-filter: blur(2px);
         }
     }
 

@@ -378,7 +378,7 @@ namespace SmartStore.Admin.Controllers
 					var originAddress = _addressService.GetAddressById(addressId) ?? new Address { CreatedOnUtc = DateTime.UtcNow };
 
 					// Update ID manually (in case we're in multi-store configuration mode it'll be set to the shared one).
-					model.ShippingOriginAddress.Id = addressId;
+					model.ShippingOriginAddress.Id = originAddress.Id == 0 ? 0 : addressId;
 					originAddress = model.ShippingOriginAddress.ToEntity(originAddress);
 
 					if (originAddress.Id > 0)
@@ -503,7 +503,7 @@ namespace SmartStore.Admin.Controllers
 					var originAddress = _addressService.GetAddressById(addressId) ?? new Address { CreatedOnUtc = DateTime.UtcNow };
 
 					// Update ID manually (in case we're in multi-store configuration mode it'll be set to the shared one).
-					model.DefaultTaxAddress.Id = addressId;
+					model.DefaultTaxAddress.Id = originAddress.Id == 0 ? 0 : addressId;
 					originAddress = model.DefaultTaxAddress.ToEntity(originAddress);
 
 					if (originAddress.Id > 0)

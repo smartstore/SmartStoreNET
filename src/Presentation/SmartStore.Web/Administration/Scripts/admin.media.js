@@ -170,6 +170,12 @@ SmartStore.Admin.Media = (function () {
 							if (applyToRemaining) {
 								self.currentIndex = self.queue.length - 1;
 							}
+
+							// Set file status for later access.
+							for (var i in slice) {
+								slice[i].resolutionType = self.resolutionType;
+							}
+
 							self.onResolve.apply(self, [self.resolutionType, slice]);
 						}
 					});

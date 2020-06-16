@@ -69,50 +69,6 @@
 
 @if (Model.Multifile)
 {
-	<div class="fileupload-status">
-		<div class="fileupload-status-summary">
-			<span class="uploaded-file-count">0</span>
-			<span>von</span>
-			<span class="total-file-count">0</span>
-			<span>hochgeladen.</span>
-		</div>
-
-		<div class="erroneous-files d-none">
-			<h6>Nicht hochgeladene Dateien</h6>
-			<div class="file-list">
-				<span>Dateiname</span>
-				<span>Grund</span>
-			</div>
-		</div>
-		<div class="skipped-files d-none">
-			<h6>Übersprungene Dateien</h6>
-			<div class="file-list">
-				<span>Dateiname</span>
-			</div>
-		</div>
-		<div class="renamed-files d-none">
-			<h6>Umbenannte Dateien</h6>
-			<div class="file-list">
-				<span>Dateiname</span>
-			</div>
-		</div>
-		<div class="replaced-files d-none">
-			<h6>Ersetzte Dateien</h6>
-			<div class="file-list">
-				<span>Dateiname</span>
-			</div>
-		</div>
-		<div class="uploaded-files d-none">
-			<h6>Neue Dateien</h6>
-			<div class="file-list">
-				<span>Dateiname</span>
-			</div>
-		</div>
-	</div>
-}
-
-@if (Model.Multifile)
-{
     // TODO: find a better way!!!
     var mediaService = EngineContext.Current.Resolve<IMediaService>();
     var files = Model.UploadedFiles;

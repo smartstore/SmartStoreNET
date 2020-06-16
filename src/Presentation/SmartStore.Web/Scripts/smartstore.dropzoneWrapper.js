@@ -41,7 +41,6 @@
 
 			var elRemove = fuContainer.find('.remove'),
 				elProgressBar = fuContainer.find('.progress-bar'),
-				elStatus = fuContainer.find('.fileupload-status'),
 				elStatusWindow = $(".fu-status-window"),
 				previewContainer = fuContainer.find(".preview-container"),
 				elCancel = fuContainer.find('.cancel');
@@ -335,8 +334,6 @@
 					});
 				}
 
-				updateUploadStatus(this, elStatus);
-
 				// Status
 				if (elStatusWindow.length > 0) {
 					elStatusWindow.find(".current-file-count").text(successFiles.length);
@@ -593,12 +590,6 @@
 				return false;
 			});
 
-			// Show summary.
-			$(fuContainer).on("click", ".fileupload-remove", function (e) {
-				elStatus.show();
-				return false;
-			});
-
 			// Remove uploaded file (single upload only).
 			elRemove.on('click', function (e) {
 				e.preventDefault();
@@ -753,7 +744,6 @@
 
 		if (!applyToRemaining) {
 			var firstFile = dupeFiles[0];
-			firstFile.resolutionType = resolutionType;
 
 			// Do nothing on skip.
 			if (resolutionType === "3") {
@@ -789,7 +779,6 @@
 			// Reset file status.
 			for (file of dupeFiles) {
 				resetFileStatus(file);
-				file.resolutionType = resolutionType;
 			}
 
 			// Do nothing on skip.
@@ -868,56 +857,6 @@
 		});
 
 		return dupe.length === 1;
-	}
-
-	function updateUploadStatus(dropzone, elStatus) {
-		var summary = elStatus.find(".fileupload-status-summary"),
-			uploadedFileCount = summary.find(".uploaded-file-count"),
-			totalFileCount = summary.find(".total-file-count"),
-			errors = elStatus.find(".erroneous-files");
-
-		var successFiles = dropzone.getFilesWithStatus(Dropzone.SUCCESS);
-		var errorFiles = dropzone.getFilesWithStatus(Dropzone.ERROR);
-		var otherErrors = errorFiles.filter(file => !file.media && file.message);
-
-		// Summary.
-		uploadedFileCount.text(successFiles.length);
-		totalFileCount.text(dropzone.files.length);
-
-		// Errors.
-		if (otherErrors.length > 0) {
-			var errorMarkUp = "";
-			for (file of errorFiles) {
-				errorMarkUp += "<div><span>" + file.name + "</span>";
-				errorMarkUp += "<span>" + file.message + "</span></div>";
-			}
-
-			errors.find(".file-list")
-				.html(errorMarkUp)
-				.removeClass("d-none");
-		}
-
-		// Renamed, replaced, skipped.
-		var skippedFiles = dropzone.files.filter(file => file.resolutionType === "3");
-		var replacedFiles = dropzone.files.filter(file => file.resolutionType === "1");
-		var renamedFiles = dropzone.files.filter(file => file.resolutionType === "2");
-
-		fillStatusList(skippedFiles, elStatus.find(".skipped-files"));
-		fillStatusList(renamedFiles, elStatus.find(".renamed-files"));
-		fillStatusList(replacedFiles, elStatus.find(".replaced-files"));
-	}
-
-	function fillStatusList(files, elList) {
-		if (files.length > 0) {
-			var markUp = "";
-
-			for (file of files) {
-				markUp += "<div><span>" + file.name + "</span></div>";
-			}
-
-			elList.find(".file-list").html(markUp);
-			elList.removeClass("d-none");
-		}
 	}
 
 	function resetFileStatus(file) {

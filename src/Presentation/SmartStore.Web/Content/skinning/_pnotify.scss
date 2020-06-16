@@ -7,8 +7,7 @@
 
 .alert.ui-pnotify-container {
     padding-left: 70px !important;
-    //background: #fff !important;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175) !important;
+    box-shadow: 0 6px 12px rgba(#000, 0.175) !important;
     border-width: 1px;
     min-height: 75px !important;
     display: flex;
@@ -16,6 +15,7 @@
     justify-content: center;
     border-radius: $border-radius-lg;
     overflow: hidden;
+    padding-right: 1.5rem;
 
     &.alert { border-color: rgba(0,0,0, 0.12) !important }
 
@@ -85,17 +85,19 @@
 .ui-pnotify-sticker {
     opacity: .35;
 	margin: 0;
-	padding: 0 5px;
 	position: absolute;
+    width: 20px;
+    text-align: center;
 	top: 5px;
-	right: 8px;
+	right: 3px;
     outline: 0;
     font-size: 12px;
     vertical-align: middle;
 }
 
 .ui-pnotify-sticker {
-    right: 25px;
+    font-size: 10px;
+    top: 24px;
 }
 
 .ui-pnotify-closer:hover, 

@@ -339,7 +339,7 @@
 				styling: "fontawesome",
 				stack: stack,
 				addclass: 'stack-bottom' + (rtl ? 'right' : 'left'),
-				width: "450px",
+				width: "500px",
 				mobile: { swipe_dismiss: true, styling: true },
 				animate: {
 					animate: true,

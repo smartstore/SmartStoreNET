@@ -37,7 +37,6 @@ namespace SmartStore.Web.Framework.UI
 		public string UploadText { get; set; }
 		public bool ShowRemoveButton { get; set; }
 		public bool ShowRemoveButtonAfterUpload { get; set; }
-		public bool Compact { get; set; }
 		public bool ShowBrowseMedia { get; set; }
 		public bool HasTemplatePreview { get; set; }
 

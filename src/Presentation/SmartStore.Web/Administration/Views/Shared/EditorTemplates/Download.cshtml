@@ -140,7 +140,7 @@
 	</div>
 
 	<!-- Main Panel -->
-	<div class="col panel-upload fileupload-container compact">
+	<div class="col panel-upload fileupload-container">
 
 		<!-- FileUpload Panel  -->
 		<div class="form-row flex-nowrap dropzone-container panel-file@(initiallyShowUrlPanel ? " hide": "")">
@@ -157,7 +157,6 @@
 					.HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
 					.DeleteUrl(Url.Action("DeleteDownload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, downloadId = Model, area = "Admin" }))
 					.Multifile(false)
-					.Compact(true)
 					.Path(Path)
 					//.IconCssClass(MinimalMode ? "fa fa-upload" : "")
 					//.ButtonOutlineStyle(hasFile)

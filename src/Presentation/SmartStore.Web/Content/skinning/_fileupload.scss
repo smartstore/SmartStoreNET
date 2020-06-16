@@ -19,17 +19,19 @@
 
     .fu-message {
         cursor: pointer;
-        font-size: $h5-font-size;
-        font-weight: $font-weight-medium;
+        font-size: $h6-font-size;
+        font-weight: $font-weight-normal;
         color: $gray-600;
     }
-    // Compact display.
-    &.compact {
+    // Xl display.
+    &.xl {
         .fu-message {
-            font-size: $h6-font-size;
-            font-weight: $font-weight-normal;
+            font-size: $h5-font-size;
+            font-weight: $font-weight-medium;
         }
+    }
 
+    &:not(.xl) {
         .dropzone {
             padding: 10px;
         }
@@ -38,6 +40,7 @@
             @extend .btn-sm;
         }
     }
+
     // Progress bars.
     .fileupload-progress:not(.list) {
         position: absolute;
@@ -109,6 +112,9 @@
     .fileupload,
     .fu-message {
         align-self: center;
+         .xl & {
+             text-align: center;
+         }
     }
 
     .dz-preview,
@@ -118,16 +124,16 @@
 
     .fileupload-thumb {
         position: relative;
-        width: 150px;
-        height: 150px;
         margin: 0.5rem;
         display: flex;
         align-items: center;
         justify-content: center;
+        width: 90px;
+        height: 90px;
 
-        .compact & {
-            width: 90px;
-            height: 90px;
+        .xl & {
+            width: 150px;
+            height: 150px;
         }
 
         &.no-file-selected {

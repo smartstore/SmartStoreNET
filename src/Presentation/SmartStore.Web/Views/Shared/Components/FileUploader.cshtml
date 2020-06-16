@@ -54,7 +54,7 @@
         </div>
     </div>
 
-    @if (!Model.Compact && !Model.ShowBrowseMedia)
+    @if (Model.Multifile && !Model.ShowBrowseMedia)
     {
         <!--File uploader(product attributes) -->
         <!-- TODO: File uploader for avatar and plugin upload -->

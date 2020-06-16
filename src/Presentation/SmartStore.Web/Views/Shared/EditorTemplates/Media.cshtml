@@ -15,14 +15,6 @@
         }
     }
 
-    private bool Compact
-    {
-        get
-        {
-            return GetMetadata<bool>("compact");
-        }
-    }
-
     private bool ShowBrowseMedia
     {
         get
@@ -112,7 +104,7 @@
     var thumbUrl = Model != null ? Url.Media(Model, mediaSettings.ProductThumbPictureSize) : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
 }
 
-<div class="fileupload-container@(!MultiFile ? " compact" : "")">
+<div class="fileupload-container@(MultiFile ? " xl" : "")">
     <div @Html.Attr("class", "dropzone-container", !MultiFile)>
 
         @if (!MultiFile)
@@ -135,7 +127,6 @@
                 .TypeFilter(TypeFilter)
                 .ShowRemoveButton(!MultiFile && Model.HasValue) // Multifile uploads don't need a remove button.
                 .ShowRemoveButtonAfterUpload(true)
-                .Compact(Compact)
                 .PreviewContainerId("preview-" + random)
                 .Multifile(MultiFile)
                 .MainFileId(Model)

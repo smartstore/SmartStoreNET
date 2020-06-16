@@ -45,12 +45,6 @@ namespace SmartStore.Web.Framework.UI
 			base.Component.ShowRemoveButtonAfterUpload = value;
 			return this;
 		}
-
-		public FileUploaderBuilder<TModel> Compact(bool value)
-		{
-			base.Component.Compact = value;
-			return this;
-		}
 		
 		public FileUploaderBuilder<TModel> ShowBrowseMedia(bool value)
 		{

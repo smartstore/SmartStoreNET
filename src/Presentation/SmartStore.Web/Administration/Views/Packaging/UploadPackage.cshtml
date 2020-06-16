@@ -14,11 +14,9 @@
 				@dialogInfo
 			</div>
 			<div class="adminContent fileupload-container">
-				<div>
-					<div class="fileupload-thumb-stage">
-						<div class="fileupload-thumb"></div>
-					</div>
-
+				<div>	
+					<div class="fileupload-thumb"></div>
+				
 					@(Html.SmartStore().FileUploader()
 						.Name("packagefile")
 						.UploadUrl(Url.Action("UploadPackage", "Packaging"))

@@ -54,7 +54,7 @@
                     @if (!Model.CurrentDownload.UseDownloadUrl)
                     {
                         <div style="max-width: 150px; max-height: 150px">
-                            <a href="@Model.CurrentDownload.DownloadUrl" class="filename" title="@Model.CurrentDownload?.MediaFile?.Name" target="_blank">
+                            <a href="@Model.CurrentDownload.DownloadUrl" class="filename" title="@(Model.CurrentDownload?.MediaFile?.Name)" target="_blank">
                                 <img src="@Model.DownloadThumbUrl" class="img-fluid" />
                             </a>
                         </div>

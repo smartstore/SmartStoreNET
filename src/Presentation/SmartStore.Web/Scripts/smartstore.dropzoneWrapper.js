@@ -79,17 +79,20 @@
 					opts.previewTemplate = previewTemplate[0].innerHTML;
 			}
 
-			// If multifile > display tooltips for preview images in preview container.
-			if (opts.maxFiles !== 1) {
-				$(".dz-image-preview").tooltip();
-			}
-			else {
-				// SingleFile: If there's no file, there's no remove button.
-				var currentFileId = fuContainer.find('.hidden').val();
+			// SingleFile only
+			if (opts.maxFiles === 1) {
+				var currentFileId = parseInt(fuContainer.find('.hidden').val());
 
-				if ((!currentFileId || currentFileId == 0) || !options.showRemoveButton)
+				if (!currentFileId || currentFileId === 0 || !options.showRemoveButton) {
+					// If there's no file, there's no remove button.
 					elRemove.hide();
+
+					// Display icon according to type filter.
+					setSingleFilePreviewIcon(fuContainer, $el.attr("data-type-filter"));
+				}
 				else {
+					// Set current filename as fu-message on init.
+					fuContainer.find(".fu-message").text(fuContainer.find(".fileupload-thumb").attr("data-current-filename"));
 					elRemove.show();
 				}
 			}
@@ -600,9 +603,9 @@
 			elRemove.on('click', function (e) {
 				e.preventDefault();
 
-				fuContainer.find('.fileupload-thumb').css('background-image', 'url("' + $el.data('fallback-url') + '")');
+				setSingleFilePreviewIcon(fuContainer, $el.attr("data-type-filter"));
+				fuContainer.find('.fu-message').html(Res['FileUploader.Dropzone.DictDefaultMessage']);
 				fuContainer.find('.hidden').val(0).trigger('change');
-
 				$(this).hide();
 
 				if (options.onFileRemove)
@@ -834,9 +837,9 @@
 	}
 
 	function displaySingleFilePreview(file, fuContainer, options) {
-		//fuContainer.find('.fileupload-filename').html(file.name);
-		//fuContainer.find('.fileupload-filesize').html(this.filesize(file.size));
-		fuContainer.find('.fileupload-thumb').css('background-image', 'url("' + file.thumbUrl + '")');
+		var preview = SmartStore.media.getPreview(file, { iconCssClasses: "fa-4x" });
+		fuContainer.find('.fileupload-thumb').removeClass("no-file-selected").html(preview.thumbHtml);
+		fuContainer.find('.fu-message').html(file.name);
 
 		var id = file.downloadId ? file.downloadId : file.id;
 		// TODO: .find('.hidden') doesn't seems safe. Do it better.
@@ -844,6 +847,12 @@
 
 		if (options.showRemoveButtonAfterUpload)
 			fuContainer.find('.remove').parent().show();
+	}
+
+	function setSingleFilePreviewIcon(fuContainer, type) {
+		var icon = SmartStore.media.getIconHint({ type: type });
+		var html = '<i class="file-icon show fa-2x ' + icon.name + '"></i>';
+		fuContainer.find('.fileupload-thumb').addClass("no-file-selected").html(html);
 	}
 
 	function preCheckForDuplicates(addFileName, previewContainer) {

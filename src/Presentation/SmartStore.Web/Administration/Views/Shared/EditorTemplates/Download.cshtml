@@ -97,12 +97,14 @@
 	var initiallyShowUrlPanel = false;
 	var hasFile = false;
 	var downloadUrl = "";
+	var thumbUrl = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
 	if (download != null)
 	{
 		downloadUrl = Url.Action("DownloadFile", "Download", new { downloadId = download.Id });
 		initiallyShowUrlPanel = !MinimalMode && download.UseDownloadUrl;
 		hasFile = !download.UseDownloadUrl;
 		fileName = download.MediaFile?.Name ?? (download.Id.ToString().Grow(download.MediaFile?.Extension, "."));
+		thumbUrl = Url.Media(download.MediaFileId, mediaSettings.ProductThumbPictureSize);
 	}
 
 	Html.AddScriptParts(true, "~/Administration/Scripts/smartstore.download.js");
@@ -138,16 +140,16 @@
 	</div>
 
 	<!-- Main Panel -->
-	<div class="col panel-upload fileupload-container">
+	<div class="col panel-upload fileupload-container compact">
 
 		<!-- FileUpload Panel  -->
 		<div class="form-row flex-nowrap dropzone-container panel-file@(initiallyShowUrlPanel ? " hide": "")">
 
-			<div class="fileupload-thumb-stage" data-debug-info="@(download != null ? download.MediaFileId : 0)">
-				<div class="fileupload-thumb" style="background-image: url('@Url.Media(download != null ? download.MediaFileId : 0, mediaSettings.ProductThumbPictureSize)')">
-					<input type="hidden" id="@FieldName.SanitizeHtmlId()" name="@FieldName" value="@Model" class="hidden" />
-				</div>
+			<div class="fileupload-thumb" data-debug-info="@(download != null ? download.MediaFileId : 0)">
+				<img class="file-img" title="icon" src="@thumbUrl">
 			</div>
+
+			<input type="hidden" id="@FieldName.SanitizeHtmlId()" name="@FieldName" value="@Model" class="hidden" />
 
 			<div class="fileupload-controls">
 				@(Html.SmartStore().FileUploader()
@@ -160,6 +162,7 @@
 					//.IconCssClass(MinimalMode ? "fa fa-upload" : "")
 					//.ButtonOutlineStyle(hasFile)
 					.UploadText(hasFile ? T("Common.Replace").Text : T("Common.Fileuploader.Upload").Text)
+					.HasTemplatePreview(true)
 					.ShowRemoveButton(false)
 					.ShowRemoveButtonAfterUpload(false)
 					.OnUploadCompletedHandlerName("onUploadCompleted_" + random)

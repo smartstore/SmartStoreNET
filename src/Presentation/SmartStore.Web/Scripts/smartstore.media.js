@@ -77,12 +77,16 @@ SmartStore.media = (function () {
                 ? 'file-img ' + opts.imgCssClasses
                 : 'file-img';
 
+            var iconCssClasses = !_.isEmpty(opts.iconCssClasses)
+                ? 'file-icon show fa-fw ' + opts.iconCssClasses + ' '
+                : 'file-icon show fa-fw ';
+
             if (o.isImage) {
                 o.thumbHtml = '<img class="' + imgCssClasses + '" title="' + file.title + '" src="' + file.thumbUrl + '" />';
             }
             else {
                 o.thumbHtml = '<figure class="file-figure">'
-                    + '<i class="file-icon show fa-fw ' + iconHint.name + '" style="color: ' + iconHint.color + '"></i>'
+                    + '<i class="' + iconCssClasses + iconHint.name + '" style="color: ' + iconHint.color + '"></i>'
                     + '<picture class="file-thumb" data-type="' + file.type + '">'
                     + '<img class="' + imgCssClasses + '" title="' + file.title + '" data-src="' + file.thumbUrl + '" />'
                     + '</picture>'

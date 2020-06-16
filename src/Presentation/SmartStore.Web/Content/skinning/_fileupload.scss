@@ -116,27 +116,31 @@
         display: none;
     }
 
-    .fileupload-thumb-stage {
+    .fileupload-thumb {
         position: relative;
-        min-width: 150px;
-        min-height: 150px;
+        width: 150px;
+        height: 150px;
         margin: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
         .compact & {
-            min-width: 90px;
-            min-height: 90px;
+            width: 90px;
+            height: 90px;
         }
-    }
 
-    .fileupload-thumb {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
+        &.no-file-selected {
+            border: 2px dashed $gray-400;
+
+            & > i {
+                color: $gray-600;
+            }
+        }
+
+        .file-img {
+            width: 100%;
+        }
     }
 
     .fileupload-controls {

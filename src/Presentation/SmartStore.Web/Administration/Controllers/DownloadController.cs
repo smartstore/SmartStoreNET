@@ -131,14 +131,18 @@ namespace SmartStore.Admin.Controllers
 
             _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
 
+            var mediaFile = _mediaService.GetFileById((int)download.MediaFileId);
+
             return Json(new 
             { 
                 success = true,
                 clientCtrlId = clientCtrlId,
                 downloadId = download.Id,
                 id = download.MediaFileId,
-                url = _mediaService.GetUrl(download.MediaFileId, _mediaSettings.ProductThumbPictureSize, host: string.Empty),
-                html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, download.Id, new { minimalMode, fieldName, entityId, entityName })
+                name = mediaFile.Name,
+                type = mediaFile.MediaType,
+                thumbUrl = _mediaService.GetUrl(download.MediaFileId, _mediaSettings.ProductThumbPictureSize, host: string.Empty),
+                html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, download.Id, new { minimalMode, fieldName, entityId, entityName }) // OBSOLETE
             });
         }
 

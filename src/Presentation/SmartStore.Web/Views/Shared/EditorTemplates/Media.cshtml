@@ -108,9 +108,11 @@
 	var random = CommonHelper.GenerateRandomInteger();
 	var mediaService = this.CommonServices.MediaService;
     var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
+    var currentFile = Model != null ? mediaService.GetFileById((int)Model) : null;
+    var thumbUrl = Model != null ? Url.Media(Model, mediaSettings.ProductThumbPictureSize) : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
 }
 
-<div class="fileupload-container@(Compact ? " compact" : "")">
+<div class="fileupload-container@(!MultiFile ? " compact" : "")">
     <div @Html.Attr("class", "dropzone-container", !MultiFile)>
 
         @if (!MultiFile)
@@ -119,36 +121,35 @@
             <a href="#" class="fileupload-remove remove btn btn-outline-danger btn-no-border btn-sm m-0" title="@T("FileUploader.Dropzone.DictRemoveFile")">
                 <i class="fileupload-remove-icon fa-lg">&times;</i>
             </a>
-            <div class="fileupload-thumb-stage">
-                <div class="fileupload-thumb" style="background-image: url('@Url.Media(Model, mediaSettings.ProductThumbPictureSize)')">
-                    @Html.HiddenFor(x => x, new { @class = "hidden" })
-                </div>
+            <div class="fileupload-thumb" data-current-filename="@(currentFile?.Name)">
+                <img class="file-img" title="icon" src="@thumbUrl">
             </div>
+            @Html.HiddenFor(x => x, new { @class = "hidden" })
         }
 
         <div class="fileupload-controls">
             @(Html.SmartStore().FileUploader()
-				.UploadUrl(Url.Action("Upload", "Media", new { isTransient = TransientUpload, path = Path, area = "Admin" }))
-				.Path(Path)
-				.HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
+                .UploadUrl(Url.Action("Upload", "Media", new { isTransient = TransientUpload, path = Path, area = "Admin" }))
+                .Path(Path)
+                .HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
                 .TypeFilter(TypeFilter)
-				.ShowRemoveButton(!MultiFile && Model.HasValue) // Multifile uploads don't need a remove button.
-				.ShowRemoveButtonAfterUpload(true)
-				.Compact(Compact)
-				.PreviewContainerId("preview-" + random)
-				.Multifile(MultiFile)
-				.MainFileId(Model)
+                .ShowRemoveButton(!MultiFile && Model.HasValue) // Multifile uploads don't need a remove button.
+                .ShowRemoveButtonAfterUpload(true)
+                .Compact(Compact)
+                .PreviewContainerId("preview-" + random)
+                .Multifile(MultiFile)
+                .MainFileId(Model)
                 .ShowBrowseMedia(ShowBrowseMedia)
                 .HasTemplatePreview(true)
-				.UploadedFiles(UploadedFiles)
-				.EntityType(EntityType)
-				.EntityId(EntityId)
-				.DeleteUrl(DeleteUrl)
-				.SortUrl(SortUrl)
-				.EntityAssignmentUrl(EntityAssignmentUrl)
-			)
-		</div>
-	</div>
+                .UploadedFiles(UploadedFiles)
+                .EntityType(EntityType)
+                .EntityId(EntityId)
+                .DeleteUrl(DeleteUrl)
+                .SortUrl(SortUrl)
+                .EntityAssignmentUrl(EntityAssignmentUrl)
+            )
+        </div>
+    </div>
 
 	<div class="fileupload-progress">
 		<!-- The single upload progress bar -->

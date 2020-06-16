@@ -2,7 +2,7 @@
 @model IRuleExpressionGroup
 
 <div class="ruleset" data-ruleset-id="@Model.Id" data-refrule-id="@Model.RefRuleId">
-    <div class="ruleset-header d-flex justify-content-between">
+    <div class="ruleset-header d-flex align-items-center justify-content-between">
         <div class="ruleset-operator" data-url="@Url.Action("ChangeOperator")">
             <div class="ruleset-op-one align-items-center justify-content-stretch @(Model.LogicalOperator == LogicalRuleOperator.And ? "hide" : "d-flex")">
                 @Html.Raw(T("Admin.Rules.OneCondition", RuleSetConditionsButton(LogicalRuleOperator.Or)))

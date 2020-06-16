@@ -120,11 +120,22 @@
             </div>
         </div>
     }
+    @if (Model.Id == 0)
+    {
+        <div class="adminRow">
+            <div class="adminTitle">
+                &nbsp;
+            </div>
+            <div class="adminData muted">
+                @T("Admin.Rules.SaveToCreateConditions")
+            </div>
+        </div>
+    }
 </div>
 
 @if (Model.Id != 0)
 {
-    <h4 class="my-4">@T("Admin.Rules.Execute", "<a id=\"execute-rules\" class=\"btn btn-sm btn-primary align-top\" href=\"" + Url.Action("Execute") + "\">", "</a>")</h4>
+    <h4 class="my-4">@T("Admin.Rules.TestConditions", "<a id=\"execute-rules\" class=\"btn btn-sm btn-primary align-top\" href=\"" + Url.Action("Execute") + "\">", "</a>")</h4>
     <div id="excute-result" class="alert alert-warning hide"></div>
 
     <div id="ruleset-root" class="ruleset-root" 

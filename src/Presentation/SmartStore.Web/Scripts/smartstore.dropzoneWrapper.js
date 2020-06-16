@@ -828,6 +828,7 @@
 	function displaySingleFilePreview(file, fuContainer, options) {
 		var preview = SmartStore.media.getPreview(file, { iconCssClasses: "fa-4x" });
 		fuContainer.find('.fileupload-thumb').removeClass("no-file-selected").html(preview.thumbHtml);
+		SmartStore.media.lazyLoadThumbnails(fuContainer.find('.fileupload-thumb'));
 		fuContainer.find('.fu-message').html(file.name);
 
 		var id = file.downloadId ? file.downloadId : file.id;
@@ -838,8 +839,30 @@
 			fuContainer.find('.remove').parent().show();
 	}
 
-	function setSingleFilePreviewIcon(fuContainer, type) {
-		var icon = SmartStore.media.getIconHint({ type: type });
+	function setSingleFilePreviewIcon(fuContainer, typeFilter) {
+		var types = typeFilter.split(",");
+
+		// Icon should be misc now (fall back & icon for typefilter === '*')
+		var icon = SmartStore.media.getIconHint({});
+
+		if (typeFilter !== '*') {
+			for (var type of types) {
+				if (type.indexOf('.') === 0) {
+					// Type should be a valid extension now.
+					icon = SmartStore.media.getIconHint({ ext: type });
+					if (icon.name !== "far fa-file") {
+						break;
+					}
+				} else {
+					// Type should be a valid media type now.
+					icon = SmartStore.media.getIconHint({ type: type });
+					if (icon.name !== "far fa-file") {
+						break;
+					}
+				}
+			}
+		}
+		
 		var html = '<i class="file-icon show fa-2x ' + icon.name + '"></i>';
 		fuContainer.find('.fileupload-thumb').addClass("no-file-selected").html(html);
 	}

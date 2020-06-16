@@ -112,9 +112,10 @@
     .fileupload,
     .fu-message {
         align-self: center;
-         .xl & {
-             text-align: center;
-         }
+
+        .xl & {
+            text-align: center;
+        }
     }
 
     .dz-preview,
@@ -130,6 +131,7 @@
         justify-content: center;
         width: 90px;
         height: 90px;
+        min-width: 90px;
 
         .xl & {
             width: 150px;
@@ -145,7 +147,8 @@
         }
 
         .file-img {
-            width: 100%;
+            max-width: 100%;
+            max-height: 100%;
         }
     }
 

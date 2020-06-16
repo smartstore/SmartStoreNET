@@ -41,7 +41,7 @@ SmartStore.media = (function () {
     };
 
 	return {
-		getIconHint: function (file) {
+        getIconHint: function (file) {
             return iconHints[file.ext] || iconHints[file.type] || (file.mime ? iconHints[file.mime.split('/')[0]] : null) || iconHints['misc'];
         },
         lazyLoadThumbnails: function (selector) {

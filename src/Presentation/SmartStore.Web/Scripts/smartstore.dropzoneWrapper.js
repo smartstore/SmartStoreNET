@@ -827,9 +827,9 @@
 
 	function displaySingleFilePreview(file, fuContainer, options) {
 		var preview = SmartStore.media.getPreview(file, { iconCssClasses: "fa-4x" });
-		fuContainer.find('.fileupload-thumb').removeClass("no-file-selected").html(preview.thumbHtml);
+		fuContainer.find('.fileupload-thumb').removeClass("empty").html(preview.thumbHtml);
 		SmartStore.media.lazyLoadThumbnails(fuContainer.find('.fileupload-thumb'));
-		fuContainer.find('.fu-message').html(file.name);
+		fuContainer.find('.fu-message').removeClass("empty").html(file.name);
 
 		var id = file.downloadId ? file.downloadId : file.id;
 		// TODO: .find('.hidden') doesn't seems safe. Do it better.
@@ -864,7 +864,8 @@
 		}
 		
 		var html = '<i class="file-icon show fa-2x ' + icon.name + '"></i>';
-		fuContainer.find('.fileupload-thumb').addClass("no-file-selected").html(html);
+		fuContainer.find('.fileupload-thumb').addClass("empty").html(html);
+		fuContainer.find('.fu-message').addClass("empty");
 	}
 
 	function preCheckForDuplicates(addFileName, previewContainer) {

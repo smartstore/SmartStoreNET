@@ -17,6 +17,14 @@
         display: none !important;
     }
 
+    .dropzone-file-info {
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
     .fu-message {
         cursor: pointer;
         font-size: $h6-font-size;
@@ -71,13 +79,17 @@
             background-color: $success !important;
         }
     }
+
+    .empty {
+        font-weight: $font-weight-light !important;
+        color: $gray-600 !important;
+    }
 }
 
 // Dropzone skinning
 .dropzone-container {
     pointer-events: initial !important;
     transition: all .2s;
-    line-height: 1.2;
     align-items: center;
     display: flex;
     position: relative;
@@ -112,6 +124,9 @@
     .fileupload,
     .fu-message {
         align-self: center;
+        font-weight: $font-weight-medium;
+        color: inherit;
+        font-size: $font-size-base;
 
         .xl & {
             text-align: center;
@@ -138,7 +153,7 @@
             height: 150px;
         }
 
-        &.no-file-selected {
+        &.empty {
             border: 2px dashed $gray-400;
 
             & > i {
@@ -154,24 +169,22 @@
 
     .fileupload-controls {
         flex-grow: 1;
-        padding: 0.5rem 0.5rem;
         overflow: hidden;
     }
 
     .fileupload-remove {
-        position: absolute;
-        top: 0;
-        right: 0;
-        min-width: 1.75rem;
-        min-height: 1.75rem;
-        z-index: 10;
+        display: flex;
+        min-width: 1.25rem;
+        width: 1.25rem;
+        height: 1.25rem;
+        transition: 0.2s;
+
+        &:hover {
+            background-color: rgba($danger,.2);
+        }
 
         > .fileupload-remove-icon {
             margin-top: -0.125rem;
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
         }
     }
 }

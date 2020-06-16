@@ -1064,6 +1064,7 @@
     <Content Include="Content\bs4\scss\bootstrap-main.scss" />
     <Content Include="Content\shared\_custom-scrollbar.scss" />
     <Content Include="Content\shared\_custom-scrollbar-buttons.scss" />
+    <Content Include="Content\shared\_media.scss" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />

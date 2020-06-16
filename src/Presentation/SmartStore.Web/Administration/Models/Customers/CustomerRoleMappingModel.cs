@@ -26,7 +26,7 @@ namespace SmartStore.Admin.Models.Customers
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.LastActivityDate")]
         public DateTime LastActivityDate { get; set; }
 
-        [SmartResourceDisplayName("Admin.Rules.AutomaticAssignment")]
+        [SmartResourceDisplayName("Admin.Rules.AddedByRule")]
         public bool IsSystemMapping { get; set; }
     }
 }

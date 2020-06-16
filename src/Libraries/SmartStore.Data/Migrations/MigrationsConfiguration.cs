@@ -243,7 +243,7 @@
             // Rule
             builder.AddOrUpdate("Admin.Rules.SystemName", "System name", "Systemname");
             builder.AddOrUpdate("Admin.Rules.Title", "Title", "Titel");
-            builder.AddOrUpdate("Admin.Rules.Execute", "{0} Execute {1} Rules", "Bedingungen {0} Ausführen {1}");
+            builder.AddOrUpdate("Admin.Rules.TestConditions", "{0} Test {1} Rules", "Bedingungen {0} Testen {1}");
             builder.AddOrUpdate("Admin.Rules.AddGroup", "Add group", "Gruppe hinzufügen");
             builder.AddOrUpdate("Admin.Rules.DeleteGroup", "Delete group", "Gruppe löschen");
             builder.AddOrUpdate("Admin.Rules.AddCondition", "Add condition", "Bedingung hinzufügen");
@@ -273,6 +273,10 @@
             builder.AddOrUpdate("Admin.Rules.InvalidDescriptor",
                 "Invalid rule. This rule is no longer supported and should be deleted.",
                 "Ungültige Regel. Diese Regel wird nicht mehr unterstützt und sollte gelöscht werden.");
+
+            builder.AddOrUpdate("Admin.Rules.SaveToCreateConditions",
+                "Conditions can only be created after saving the rule.",
+                "Bedingungen können erst nach Speichern der Regel festgelegt werden.");
 
             builder.AddOrUpdate("Admin.Rules.Execute.MatchCustomers",
                 "<b class=\"font-weight-medium\">{0}</b> customers match the rule conditions.",
@@ -380,50 +384,50 @@
             builder.AddOrUpdate("Admin.Rules.RuleOperator.NotAllInOperator", "Not all in", "Sind nicht alle von");
 
             builder.AddOrUpdate("Admin.Rules.RuleOperator.Sequence.InOperator",
-                "At least one value of the left list is contained in the right list",
-                "Mind. ein Wert der linken Liste ist in der rechten Liste enthalten",
+                "At least one value left is included right",
+                "Mind. ein Wert links ist rechts enthalten",
                 "True for left {1,2,3} and right {5,4,3}. False for left {1,2,3} and right {6,5,4}.",
                 "Wahr für links {1,2,3} und rechts {5,4,3}. Falsch für links {1,2,3} und rechts {6,5,4}.");
 
             builder.AddOrUpdate("Admin.Rules.RuleOperator.Sequence.NotInOperator",
-                "At least one value of the left list is missing in the right list",
-                "Mind. ein Wert der linken Liste fehlt in der rechten Liste",
+                "At least one value left is missing right",
+                "Mind. ein Wert links fehlt rechts",
                 "True for left {1,2,3} and right {3,4,5,6}. False for left {1,2,3} and right {5,4,3,2,1}.",
                 "Wahr für links {1,2,3} und rechts {3,4,5,6}. Falsch für links {1,2,3} und rechts {5,4,3,2,1}.");
 
             builder.AddOrUpdate("Admin.Rules.RuleOperator.Sequence.AllInOperator",
-                "Right list contains ALL values of the left list",
-                "Rechte Liste enthält ALLE Werte der linken Liste",
+                "Right contains ALL values of left",
+                "Rechts enthält ALLE Werte von links",
                 "True for left {3,2,1} and right {0,1,2,3}. False for left {1,2,9} and right {9,8,2}.",
                 "Wahr für links {3,2,1} und rechts {0,1,2,3}. Falsch für links {1,2,9} und rechts {9,8,2}.");
 
             builder.AddOrUpdate("Admin.Rules.RuleOperator.Sequence.NotAllInOperator",
-                "Right list contains NO value of the left list",
-                "Rechte Liste enthält KEINEN Wert der linken Liste",
+                "Right contains NO value of left",
+                "Rechts enthält KEINEN Wert von links",
                 "True for left {1,2,3} and right {4,5}. False for left {1,2,3} and right {3,4,5}.",
                 "Wahr für links {1,2,3} und rechts {4,5}. Falsch für links {1,2,3} und rechts {3,4,5}.");
 
             builder.AddOrUpdate("Admin.Rules.RuleOperator.Sequence.ContainsOperator",
-                "Left list contains ALL values of the right list",
-                "Linke Liste enthält ALLE Werte der rechten Liste",
+                "Left contains ALL values of right",
+                "Links enthält ALLE Werte von rechts",
                 "True for left {3,2,1,0} and right {2,3}. False for left {3,2,1} and right {0,1,2,3}.",
                 "Wahr für links {3,2,1,0} und rechts {2,3}. Falsch für links {3,2,1} und rechts {0,1,2,3}.");
 
             builder.AddOrUpdate("Admin.Rules.RuleOperator.Sequence.NotContainsOperator",
-                "Left list contains NO value of the right list",
-                "Linke Liste enthält KEINEN Wert der rechten Liste",
+                "Left contains NO value of right",
+                "Links enthält KEINEN Wert von rechts",
                 "True for left {1,2,3} and right {9,8}. False for left {1,2,3} and right {9,8,2}.",
                 "Wahr für links {1,2,3} und rechts {9,8}. Falsch für links {1,2,3} und rechts {9,8,2}.");
 
             builder.AddOrUpdate("Admin.Rules.RuleOperator.Sequence.EqualOperator",
-                "Left and right list contain the same values",
-                "Linke und rechte Liste enthalten dieselben Werte",
+                "Left and right contain the same values",
+                "Links und rechts enthalten dieselben Werte",
                 "True for left {1,2,3} and right {3,1,2}. False for left {1,2,3} and right {1,2,3,4}.",
                 "Wahr für links {1,2,3} und rechts {3,1,2}. Falsch für links {1,2,3} und rechts {1,2,3,4}.");
 
             builder.AddOrUpdate("Admin.Rules.RuleOperator.Sequence.NotEqualOperator",
-                "Left and right list differ in at least one value",
-                "Linke und rechte Liste unterscheiden sich in mind. einem Wert",
+                "Left and right differ in at least one value",
+                "Links und rechts unterscheiden sich in mind. einem Wert",
                 "True for left {1,2,3} and right {1,2,3,4}. False for left {1,2,3} and right {3,1,2}.",
                 "Wahr für links {1,2,3} und rechts {1,2,3,4}. Falsch für links {1,2,3} und rechts {3,1,2}.");
 
@@ -567,7 +571,7 @@
                 "Products are automatically assigned to this category by scheduled task if they fulfill one of the selected rules.",
                 "Produkte werden automatisch per geplanter Aufgabe dieser Warengruppe zugeordnet, wenn sie eine der gewählten Regeln erfüllen.");
 
-            builder.AddOrUpdate("Admin.Rules.AutomaticAssignment", "Automatic assignment", "Automatische Zuordnung");
+            builder.AddOrUpdate("Admin.Rules.AddedByRule", "Added by rule", "Durch Regel hinzugefügt");
             builder.AddOrUpdate("Admin.Rules.ReapplyRules", "Reapply rules", "Regeln neu anwenden");
             
             builder.AddOrUpdate("Admin.CustomerRoleMapping.RoleMappingListDescription",
@@ -576,7 +580,7 @@
 
             builder.AddOrUpdate("Admin.Catalog.Categories.ProductListDescription",
                 "The list shows products that are assigned to this category. Products are automatically assigned by scheduled task as long as the category is published and active rules are specified for it.",
-                "Die Liste zeigt Produkte, die dieser Warenruppe zugeordnet sind. Produkte werden automatisch per geplanter Aufgabe zugeordnet, sofern die Warengruppe veröffentlicht ist und für sie aktive Regeln festgelegt sind.");
+                "Die Liste zeigt Produkte, die dieser Warengruppe zugeordnet sind. Produkte werden automatisch per geplanter Aufgabe zugeordnet, sofern die Warengruppe veröffentlicht ist und für sie aktive Regeln festgelegt sind.");
 
             builder.AddOrUpdate("Admin.System.ScheduleTasks.TaskNotFound",
                 "The scheduled task \"{0}\" was not found.",

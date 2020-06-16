@@ -492,7 +492,7 @@ namespace SmartStore.Admin.Models.Catalog
             [SmartResourceDisplayName("Common.DisplayOrder")]
             public int DisplayOrder { get; set; }
 
-            [SmartResourceDisplayName("Admin.Rules.AutomaticAssignment")]
+            [SmartResourceDisplayName("Admin.Rules.AddedByRule")]
             public bool IsSystemMapping { get; set; }
         }
 

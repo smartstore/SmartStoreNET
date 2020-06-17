@@ -164,6 +164,9 @@ namespace SmartStore.Admin.Controllers
                 model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(category);
                 model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(category);
                 model.SelectedRuleSetIds = category.RuleSets.Select(x => x.Id).ToArray();
+
+                var productCategoriesQuery = _categoryService.GetProductCategoriesByCategoryId(category.Id, 0, int.MaxValue, true).SourceQuery;
+                model.HasAutomatedAssignments = productCategoriesQuery.Any(x => x.IsSystemMapping);
             }
 
             model.AvailableDefaultViewModes.Add(

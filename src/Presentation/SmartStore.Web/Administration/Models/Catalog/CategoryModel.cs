@@ -152,6 +152,7 @@ namespace SmartStore.Admin.Models.Catalog
         [AdditionalMetadata("scope", RuleScope.Product)]
         [SmartResourceDisplayName("Admin.Catalog.Categories.AutomatedAssignmentRules")]
         public int[] SelectedRuleSetIds { get; set; }
+        public bool HasAutomatedAssignments { get; set; }
 
         #region Nested classes
 

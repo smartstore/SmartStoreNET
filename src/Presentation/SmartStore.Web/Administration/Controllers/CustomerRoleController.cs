@@ -359,6 +359,9 @@ namespace SmartStore.Admin.Controllers
             if (role != null)
             {
                 model.SelectedRuleSetIds = role.RuleSets.Select(x => x.Id).ToArray();
+
+                var customerRoleMappingQuery = _customerService.GetCustomerRoleMappings(null, new[] { role.Id }, true, 0, int.MaxValue, false).SourceQuery;
+                model.HasAutomatedAssignments = customerRoleMappingQuery.Any();
             }
 
             model.TaxDisplayTypes = model.TaxDisplayType.HasValue

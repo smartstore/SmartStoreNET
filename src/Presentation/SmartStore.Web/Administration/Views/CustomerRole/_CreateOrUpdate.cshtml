@@ -199,10 +199,13 @@
 
 @helper RoleMappingsGridCommands(Grid<CustomerRoleMappingModel> grid)
 {
-	<button type="button" id="btnReapplyRules" class="t-button t-grid-save-changes" data-url="@Url.Action("ApplyRules", new { id = Model.Id })" data-ask="@T("Admin.Common.AskToProceed")">
-		<i class="fa fa-play"></i>
-		<span>@T("Admin.Rules.ReapplyRules")</span>
-	</button>
+    if (Model.SelectedRuleSetIds.Any() || Model.HasAutomatedAssignments)
+    {
+	    <button type="button" id="btnReapplyRules" class="t-button t-grid-save-changes" data-url="@Url.Action("ApplyRules", new { id = Model.Id })" data-ask="@T("Admin.Common.AskToProceed")">
+		    <i class="fa fa-play"></i>
+		    <span>@T("Admin.Rules.ReapplyRules")</span>
+	    </button>
+    }
 }
 
 @helper PermissionNode(TreeNode<IPermissionNode> node)
